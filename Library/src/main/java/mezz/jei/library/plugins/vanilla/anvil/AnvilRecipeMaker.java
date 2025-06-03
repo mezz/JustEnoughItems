@@ -1,6 +1,5 @@
 package mezz.jei.library.plugins.vanilla.anvil;
 
-import com.google.common.collect.Lists;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
@@ -24,6 +23,7 @@ import net.minecraft.world.entity.EntityEquipment;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -35,6 +35,8 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 import java.util.Objects;
@@ -44,6 +46,7 @@ import java.util.stream.Stream;
 public final class AnvilRecipeMaker {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ItemStack ENCHANTED_BOOK = new ItemStack(Items.ENCHANTED_BOOK);
+	private static @Nullable AnvilMenu ANVIL_MENU = null;
 
 	private AnvilRecipeMaker() {
 	}
@@ -59,6 +62,7 @@ public final class AnvilRecipeMaker {
 
 	private static final class EnchantmentData {
 		private final Holder<Enchantment> enchantment;
+		@Unmodifiable
 		private final List<ItemStack> enchantedBooks;
 
 		private EnchantmentData(Holder<Enchantment> enchantment) {
@@ -66,13 +70,9 @@ public final class AnvilRecipeMaker {
 			this.enchantedBooks = getEnchantedBooks(enchantment);
 		}
 
-		public List<ItemStack> getEnchantedBooks(ItemStack ingredient) {
-			IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
-			var list = enchantedBooks.stream()
-				.filter(enchantedBook -> itemStackHelper.isBookEnchantable(ingredient, enchantedBook))
-				.toList();
-			// avoid using copy of list if it contains the exact same items
-			return list.size() == enchantedBooks.size() ? enchantedBooks : list;
+		@Unmodifiable
+		public List<ItemStack> getEnchantedBooks() {
+			return enchantedBooks;
 		}
 
 		private boolean canEnchant(IPlatformItemStackHelper itemStackHelper, ItemStack ingredient) {
@@ -120,25 +120,34 @@ public final class AnvilRecipeMaker {
 		var ingredientSingletonList = List.of(ingredient);
 		return enchantmentDatas.stream()
 			.filter(data -> data.canEnchant(itemStackHelper, ingredient))
-			.map(data -> data.getEnchantedBooks(ingredient))
-			.filter(enchantedBooks -> !enchantedBooks.isEmpty())
-			.map(enchantedBooks -> {
+			.mapMulti((data, consumer) -> {
+				List<ItemStack> enchantedBooks = data.getEnchantedBooks();
 				List<ItemStack> outputs = getEnchantedIngredients(ingredient, enchantedBooks);
-				// All lists given here are immutable, and we want to keep the transforming list from outputs,
-				// so we call the AnvilRecipe constructor directly
-				return new AnvilRecipe(ingredientSingletonList, enchantedBooks, outputs, null);
+				if (outputs.isEmpty()) {
+					return;
+				}
+				// All lists given here are immutable, so we call the AnvilRecipe constructor directly
+				AnvilRecipe anvilRecipe = new AnvilRecipe(ingredientSingletonList, enchantedBooks, outputs, null);
+				consumer.accept(anvilRecipe);
 			});
 	}
 
 	private static List<ItemStack> getEnchantedIngredients(ItemStack ingredient, List<ItemStack> enchantedBooks) {
-		return Lists.transform(enchantedBooks, enchantedBook -> getEnchantedIngredient(ingredient, enchantedBook));
-	}
-
-	private static ItemStack getEnchantedIngredient(ItemStack ingredient, ItemStack enchantedBook) {
-		ItemStack enchantedIngredient = ingredient.copy();
-		ItemEnchantments enchantments = EnchantmentHelper.getEnchantmentsForCrafting(enchantedBook);
-		EnchantmentHelper.setEnchantments(enchantedIngredient, enchantments);
-		return enchantedIngredient;
+		AnvilMenu anvilMenu = getFakeAnvilMenu();
+		if (anvilMenu == null) {
+			return List.of();
+		}
+		return enchantedBooks.stream()
+			.map(enchantedBook -> {
+				AnvilMenu result = setAnvilMenu(anvilMenu, ingredient, enchantedBook);
+				if (result == null) {
+					return ItemStack.EMPTY;
+				}
+				Slot resultSlot = result.slots.get(result.getResultSlot());
+				return resultSlot.getItem();
+			})
+			.filter(i -> !i.isEmpty())
+			.toList();
 	}
 
 	private static class RepairData {
@@ -312,21 +321,50 @@ public final class AnvilRecipeMaker {
 	}
 
 	public static int findLevelsCost(ItemStack leftStack, ItemStack rightStack) {
-		Player player = Minecraft.getInstance().player;
-		if (player == null) {
+		AnvilMenu anvilMenu = getFakeAnvilMenu();
+		if (anvilMenu == null) {
 			return -1;
 		}
-		Inventory fakeInventory = new Inventory(player, new EntityEquipment());
+		AnvilMenu result = setAnvilMenu(anvilMenu, leftStack, rightStack);
+		if (result == null) {
+			return -1;
+		}
+		return result.getCost();
+	}
+
+	@Nullable
+	private static AnvilMenu getFakeAnvilMenu() {
+		if (ANVIL_MENU == null) {
+			Player player = Minecraft.getInstance().player;
+			if (player == null) {
+				return null;
+			}
+			Inventory fakeInventory = new Inventory(player, new EntityEquipment());
+			ANVIL_MENU = new AnvilMenu(0, fakeInventory);
+			return ANVIL_MENU;
+		}
+		return ANVIL_MENU;
+	}
+
+	@Nullable
+	private static AnvilMenu setAnvilMenu(AnvilMenu anvilMenu, ItemStack leftStack, ItemStack rightStack) {
 		try {
-			AnvilMenu repair = new AnvilMenu(0, fakeInventory);
-			repair.slots.get(0).set(leftStack);
-			repair.slots.get(1).set(rightStack);
-			return repair.getCost();
+			Slot leftSlot = anvilMenu.slots.get(0);
+			Slot rightSlot = anvilMenu.slots.get(1);
+
+			// setting the stack triggers a recalculation of the recipe, so avoid it when possible
+			if (leftSlot.getItem() != leftStack) {
+				leftSlot.set(leftStack);
+			}
+			if (rightSlot.getItem() != rightStack) {
+				rightSlot.set(rightStack);
+			}
+			return anvilMenu;
 		} catch (RuntimeException e) {
 			String left = ErrorUtil.getItemStackInfo(leftStack);
 			String right = ErrorUtil.getItemStackInfo(rightStack);
-			LOGGER.error("Could not get anvil level cost for: ({} and {}).", left, right, e);
-			return -1;
+			LOGGER.error("Could not set anvil recipe for: ({} and {}).", left, right, e);
+			return null;
 		}
 	}
 }

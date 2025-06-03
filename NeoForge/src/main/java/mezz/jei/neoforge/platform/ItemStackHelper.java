@@ -40,12 +40,6 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 	}
 
 	@Override
-	public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-		Item item = stack.getItem();
-		return item.isBookEnchantable(stack, book);
-	}
-
-	@Override
 	public Optional<String> getCreatorModId(ItemStack stack) {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientLevel level = minecraft.level;

@@ -27,11 +27,6 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 	}
 
 	@Override
-	public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-		return true;
-	}
-
-	@Override
 	public Optional<String> getCreatorModId(ItemStack stack) {
 		return Optional.empty();
 	}

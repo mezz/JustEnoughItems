@@ -17,8 +17,6 @@ import java.util.Optional;
 public interface IPlatformItemStackHelper {
 	int getBurnTime(ItemStack itemStack, RecipeType<?> recipeType, FuelValues fuelValues);
 
-	boolean isBookEnchantable(ItemStack stack, ItemStack book);
-
 	Optional<String> getCreatorModId(ItemStack stack);
 
 	List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack);
