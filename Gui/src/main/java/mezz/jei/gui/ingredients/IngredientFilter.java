@@ -130,7 +130,8 @@ public class IngredientFilter implements
 		this.elementSearch.addAll(elementInfos);
 	}
 
-	public <V> Optional<IListElement<V>> searchForMatchingElement(
+	@Nullable
+	public <V> IListElement<V> searchForMatchingElement(
 		IIngredientHelper<V> ingredientHelper,
 		ITypedIngredient<V> typedIngredient
 	) {
@@ -141,11 +142,14 @@ public class IngredientFilter implements
 		String lowercaseDisplayName = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
 
 		ElementPrefixParser.TokenInfo tokenInfo = new ElementPrefixParser.TokenInfo(lowercaseDisplayName, ElementPrefixParser.NO_PREFIX);
-		return this.elementSearch.getSearchResults(tokenInfo)
-			.stream()
-			.map(elementInfo -> checkForMatch(elementInfo, type, ingredientUid, uidFunction))
-			.flatMap(Optional::stream)
-			.findFirst();
+		Set<IListElement<?>> searchResults = this.elementSearch.getSearchResults(tokenInfo);
+		for (IListElement<?> element : searchResults) {
+			IListElement<V> match = checkForMatch(element, type, ingredientUid, uidFunction);
+			if (match != null) {
+				return match;
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -178,13 +182,11 @@ public class IngredientFilter implements
 	public <V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible) {
 		IIngredientType<V> ingredientType = ingredient.getType();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		searchForMatchingElement(ingredientHelper, ingredient)
-			.ifPresent(element -> {
-				if (element.isVisible() != visible) {
-					element.setVisible(visible);
-					notifyListenersOfChange();
-				}
-			});
+		IListElement<V> match = searchForMatchingElement(ingredientHelper, ingredient);
+		if (match != null && match.isVisible() != visible) {
+			match.setVisible(visible);
+			notifyListenersOfChange();
+		}
 	}
 
 	@Override
@@ -232,31 +234,36 @@ public class IngredientFilter implements
 			.map(IListElement::getTypedIngredient);
 	}
 
-	private static <T> Optional<IListElement<T>> checkForMatch(IListElement<?> element, IIngredientType<T> ingredientType, Object uid, Function<ITypedIngredient<T>, Object> uidFunction) {
-		return optionalCast(element, ingredientType)
-			.filter(cast -> {
-				ITypedIngredient<T> typedIngredient = cast.getTypedIngredient();
-				Object elementUid = uidFunction.apply(typedIngredient);
-				return uid.equals(elementUid);
-			});
+	@Nullable
+	private static <T> IListElement<T> checkForMatch(IListElement<?> element, IIngredientType<T> ingredientType, Object uid, Function<ITypedIngredient<T>, Object> uidFunction) {
+		IListElement<T> cast = optionalCast(element, ingredientType);
+		if (cast == null) {
+			return null;
+		}
+		ITypedIngredient<T> typedIngredient = cast.getTypedIngredient();
+		Object elementUid = uidFunction.apply(typedIngredient);
+		if (uid.equals(elementUid)) {
+			return cast;
+		}
+		return null;
 	}
 
-	private static <T> Optional<IListElement<T>> optionalCast(IListElement<?> element, IIngredientType<T> ingredientType) {
+	@Nullable
+	private static <T> IListElement<T> optionalCast(IListElement<?> element, IIngredientType<T> ingredientType) {
 		ITypedIngredient<?> typedIngredient = element.getTypedIngredient();
 		if (typedIngredient.getType() == ingredientType) {
 			@SuppressWarnings("unchecked")
 			IListElement<T> cast = (IListElement<T>) element;
-			return Optional.of(cast);
+			return cast;
 		}
-		return Optional.empty();
+		return null;
 	}
 
 	@Override
 	public <V> void onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
 		for (ITypedIngredient<V> value : ingredients) {
-			Optional<IListElement<V>> matchingElementOptional = searchForMatchingElement(ingredientHelper, value);
-			if (matchingElementOptional.isPresent()) {
-				IListElement<V> matchingElement = matchingElementOptional.get();
+			IListElement<V> matchingElement = searchForMatchingElement(ingredientHelper, value);
+			if (matchingElement != null) {
 				updateHiddenState(matchingElement);
 				if (DebugConfig.isDebugModeEnabled()) {
 					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
@@ -277,15 +284,14 @@ public class IngredientFilter implements
 	@Override
 	public <V> void onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
 		for (ITypedIngredient<V> typedIngredient : ingredients) {
-			Optional<IListElement<V>> matchingElementOptional = searchForMatchingElement(ingredientHelper, typedIngredient);
-			if (matchingElementOptional.isEmpty()) {
+			IListElement<V> matchingElement = searchForMatchingElement(ingredientHelper, typedIngredient);
+			if (matchingElement == null) {
 				String errorInfo = ingredientHelper.getErrorInfo(typedIngredient.getIngredient());
 				LOGGER.error("Could not find a matching ingredient to remove: {}", errorInfo);
 			} else {
 				if (DebugConfig.isDebugModeEnabled()) {
 					LOGGER.debug("Removed ingredient: {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
 				}
-				IListElement<V> matchingElement = matchingElementOptional.get();
 				matchingElement.setVisible(false);
 			}
 		}
