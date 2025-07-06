@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay.bookmarks.history;
 
+import mezz.jei.common.config.HistoryViewSide;
 import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.gui.overlay.elements.IElement;
 import org.jetbrains.annotations.Unmodifiable;
@@ -12,10 +13,15 @@ public class HistoryList implements IIngredientGridSource {
 
     private final List<IElement<?>> elements = new ArrayList<>();
     private final List<SourceListChangedListener> listeners = new ArrayList<>();
-    private int maxSize;
+    private int leftMaxSize;
+    private int rightMaxSize;
 
-    public void setMaxSize(int maxSize) {
-        this.maxSize = maxSize;
+    public void setMaxSize(HistoryViewSide side,int maxSize) {
+        if (side == HistoryViewSide.LEFT) {
+            this.leftMaxSize = maxSize;
+        } else {
+            this.rightMaxSize = maxSize;
+        }
     }
 
     public void add(IElement<?> element) {
@@ -23,7 +29,7 @@ public class HistoryList implements IIngredientGridSource {
             return;
         }
         elements.addFirst(element);
-        if (elements.size() > maxSize) {
+        if (elements.size() > Math.max(leftMaxSize, rightMaxSize)) {
             elements.removeLast();
         }
         notifyListeners();
