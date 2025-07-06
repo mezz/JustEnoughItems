@@ -5,7 +5,6 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -119,7 +118,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		Set<ImmutableRect2i> guiExclusionAreas = this.screenPropertiesCache.getGuiExclusionAreas();
 		ImmutablePoint2i mouseExclusionArea = this.screenPropertiesCache.getMouseExclusionArea();
 		ImmutableRect2i availableContentsArea = displayArea.cropBottom(BUTTON_SIZE + INNER_PADDING);
-		if (clientConfig.isHistoryEnabled()) {
+		if (clientConfig.isHistoryEnabled()  && historyOverlay.isOnSide()) {
 			int historyRows = clientConfig.getMaxHistoryRows();
 			availableContentsArea  = availableContentsArea.cropBottom(historyRows * HistoryOverlay.SLOT_HEIGHT);
 			ImmutableRect2i historyArea = displayArea
@@ -162,19 +161,23 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		if (isListDisplayed()) {
 			this.bookmarkDragManager.updateDrag(mouseX, mouseY);
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
-			this.historyOverlay.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
+		if (screenPropertiesCache.hasValidScreen()) {
+            this.historyOverlay.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+        }
 		if (this.screenPropertiesCache.hasValidScreen()) {
 			this.bookmarkButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 	}
 
 	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
-		if (isListDisplayed()) {
-			if (!this.bookmarkDragManager.drawDraggedItem(guiGraphics, mouseX, mouseY)) {
+		if (!this.bookmarkDragManager.drawDraggedItem(guiGraphics, mouseX, mouseY)) {
+			if (isListDisplayed()) {
 				this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
-				this.historyOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 			}
+			if (screenPropertiesCache.hasValidScreen()) {
+                this.historyOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+            }
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
 			bookmarkButton.drawTooltips(guiGraphics, mouseX, mouseY);

@@ -141,10 +141,13 @@ public class JeiGuiStarter {
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
 		registration.setIngredientFilter(ingredientFilterApi);
 
+		HistoryList historyList = new HistoryList();
+
 		IngredientListOverlay ingredientListOverlay = OverlayHelper.createIngredientListOverlay(
 			ingredientManager,
 			screenHelper,
 			ingredientFilter,
+			historyList,
 			filterTextSource,
 			keyMappings,
 			ingredientListConfig,
@@ -159,7 +162,6 @@ public class JeiGuiStarter {
 
 		BookmarkList bookmarkList = new BookmarkList(recipeManager, focusFactory, ingredientManager, registryAccess, bookmarkConfig, clientConfig, guiHelper, codecHelper);
 		bookmarkConfig.loadBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarkList, codecHelper);
-		HistoryList historyList = new HistoryList();
 
 		BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
 			ingredientManager,

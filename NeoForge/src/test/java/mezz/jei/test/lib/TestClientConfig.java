@@ -1,10 +1,6 @@
 package mezz.jei.test.lib;
 
-import mezz.jei.common.config.BookmarkTooltipFeature;
-import mezz.jei.common.config.GiveMode;
-import mezz.jei.common.config.IngredientSortStage;
-import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.common.config.*;
 
 import java.util.List;
 import java.util.Set;
@@ -84,6 +80,11 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public int getMaxHistoryRows() {
 		return 0;
+	}
+
+	@Override
+	public HistoryViewSide getHistoryViewSide() {
+		return HistoryViewSide.LEFT;
 	}
 
 	@Override

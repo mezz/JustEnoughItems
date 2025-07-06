@@ -36,6 +36,7 @@ public final class ClientConfig implements IClientConfig {
 	// history
 	private final Supplier<Boolean> historyEnabled;
 	private final Supplier<Integer> maxHistoryRows;
+	private final Supplier<HistoryViewSide> historyViewSide;
 
 	// advanced
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
@@ -116,17 +117,24 @@ public final class ClientConfig implements IClientConfig {
 			"Drag bookmarks to rearrange them in the list."
 		);
 
-		historyEnabled = bookmarks.addBoolean(
+		IConfigCategoryBuilder history = schema.addCategory("history");
+
+		historyEnabled = history.addBoolean(
 			"HistoryEnabled",
 			false,
 			"Enable the history overlay."
 		);
-		maxHistoryRows = bookmarks.addInteger(
+		maxHistoryRows = history.addInteger(
 			"MaxHistoryRows",
 			1,
 			0,
-			5,
+			7,
 			"Max number of rows in the history overlay."
+		);
+		historyViewSide = history.addEnum(
+				"HistoryViewSide",
+				HistoryViewSide.LEFT,
+				"Side of the screen to show the history overlay on."
 		);
 
 		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
@@ -281,6 +289,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public int getMaxHistoryRows() {
 		return maxHistoryRows.get();
+	}
+
+	@Override
+	public HistoryViewSide getHistoryViewSide() {
+		return historyViewSide.get();
 	}
 
 	@Override

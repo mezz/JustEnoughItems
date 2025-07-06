@@ -9,10 +9,7 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.config.IClientToggleState;
-import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.*;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutablePoint2i;
@@ -47,6 +44,7 @@ public class HistoryOverlay implements IRecipeFocusSource {
     // data
     private final HistoryList historyList;
     private final IClientConfig clientConfig;
+    private final HistoryViewSide ownerSide;
     private int rows;
 
     public HistoryOverlay(
@@ -56,6 +54,7 @@ public class HistoryOverlay implements IRecipeFocusSource {
             IIngredientGridConfig historyListConfig,
             IIngredientFilterConfig ingredientFilterConfig,
             IClientConfig clientConfig,
+            HistoryViewSide ownerSide,
             IClientToggleState toggleState,
             IConnectionToServer serverConnection,
             IColorHelper colorHelper
@@ -73,12 +72,18 @@ public class HistoryOverlay implements IRecipeFocusSource {
                 colorHelper,
                 false
         );
+        this.ownerSide = ownerSide;
         historyList.addSourceListChangedListener(this::updateLayout);
     }
 
     public boolean isListDisplayed() {
         return clientConfig.isHistoryEnabled() &&
+                isOnSide() &&
                 contents.hasRoom();
+    }
+
+    public boolean isOnSide() {
+        return ownerSide.isSide(clientConfig.getHistoryViewSide());
     }
 
     public HistoryList getHistoryList() {
@@ -90,7 +95,7 @@ public class HistoryOverlay implements IRecipeFocusSource {
         int rows = this.contents.getArea().getHeight() / SLOT_HEIGHT;
         this.rows = Math.min(rows, clientConfig.getMaxHistoryRows());
         int maxSize = this.contents.getArea().getWidth() / SLOT_WIDTH * this.rows;
-        this.historyList.setMaxSize(maxSize);
+        this.historyList.setMaxSize(ownerSide, maxSize);
     }
 
     public void updateLayout() {

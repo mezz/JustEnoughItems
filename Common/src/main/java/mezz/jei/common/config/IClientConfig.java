@@ -36,6 +36,8 @@ public interface IClientConfig {
 
 	int getMaxHistoryRows();
 
+	HistoryViewSide getHistoryViewSide();
+
 	int getDragDelayMs();
 
 	int getSmoothScrollRate();
