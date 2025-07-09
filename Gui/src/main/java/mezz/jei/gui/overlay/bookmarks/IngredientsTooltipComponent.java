@@ -1,6 +1,5 @@
 package mezz.jei.gui.overlay.bookmarks;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -93,13 +92,13 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 			int elementX = INGREDIENT_PADDING + x + ((i % MAX_INGREDIENTS_PER_ROW) * INGREDIENT_SIZE);
 			int elementY = INGREDIENT_PADDING + y + ((i / MAX_INGREDIENTS_PER_ROW) * INGREDIENT_SIZE);
 			RenderElement<?> renderElement = ingredients.get(i);
-			PoseStack pose = guiGraphics.pose();
-			pose.pushPose();
+			var pose = guiGraphics.pose();
+			pose.pushMatrix();
 			{
-				pose.translate(elementX, elementY, 0);
+				pose.translate(elementX, elementY);
 				renderElement.render(guiGraphics);
 			}
-			pose.popPose();
+			pose.popMatrix();
 		}
 	}
 

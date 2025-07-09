@@ -1,7 +1,6 @@
 package mezz.jei.library.gui.recipes.layout;
 
 import com.google.gson.JsonElement;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
@@ -102,20 +101,20 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 	public void drawRecipe(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		background.draw(guiGraphics, getRectWithBorder());
 
-		PoseStack poseStack = guiGraphics.pose();
-		poseStack.pushPose();
+		var poseStack = guiGraphics.pose();
+		poseStack.pushMatrix();
 		{
-			poseStack.translate(area.x(), area.y(), 0);
+			poseStack.translate(area.x(), area.y());
 			int recipeMouseX = mouseX - area.x();
 			int recipeMouseY = mouseY - area.y();
 			ScreenPosition position = scrollBoxWidget.getPosition();
-			poseStack.pushPose();
+			poseStack.pushMatrix();
 			{
-				poseStack.translate(position.x(), position.y(), 0);
+				poseStack.translate(position.x(), position.y());
 				scrollBoxWidget.drawWidget(guiGraphics, recipeMouseX - position.x(), recipeMouseY - position.y());
 			}
 		}
-		poseStack.popPose();
+		poseStack.popMatrix();
 	}
 
 	@Override

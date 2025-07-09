@@ -1,11 +1,10 @@
 package mezz.jei.gui.input.handlers;
 
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.platform.IPlatformScreenHelper;
-import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
@@ -26,12 +25,11 @@ public class GuiAreaInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
 		if (input.is(keyBindings.getLeftClick())) {
 			if (screen instanceof AbstractContainerScreen<?> guiContainer) {
-				IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-				final int guiLeft = screenHelper.getGuiLeft(guiContainer);
-				final int guiTop = screenHelper.getGuiTop(guiContainer);
+				final int guiLeft = guiProperties.guiLeft();
+				final int guiTop = guiProperties.guiTop();
 				final double guiMouseX = input.getMouseX() - guiLeft;
 				final double guiMouseY = input.getMouseY() - guiTop;
 				return this.screenHelper.getGuiClickableArea(guiContainer, guiMouseX, guiMouseY)

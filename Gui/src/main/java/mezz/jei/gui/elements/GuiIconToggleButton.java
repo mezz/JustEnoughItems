@@ -1,6 +1,7 @@
 package mezz.jei.gui.elements;
 
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -86,8 +87,8 @@ public abstract class GuiIconToggleButton {
 		}
 
 		@Override
-		public final Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-			return buttonInputHandler.handleUserInput(screen, input, keyBindings)
+		public final Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
+			return buttonInputHandler.handleUserInput(screen, guiProperties, input, keyBindings)
 				.flatMap(handled -> {
 					if (onMouseClicked(input)) {
 						return Optional.of(this);

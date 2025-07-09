@@ -1,5 +1,7 @@
 package mezz.jei.gui.input;
 
+import mezz.jei.api.gui.handlers.IGuiProperties;
+import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.core.util.ReflectionUtil;
 import mezz.jei.gui.input.handlers.DragRouter;
@@ -15,18 +17,21 @@ public class ClientInputHandler {
 	private final UserInputRouter inputRouter;
 	private final DragRouter dragRouter;
 	private final IInternalKeyMappings keybindings;
+	private final IScreenHelper screenHelper;
 	private final ReflectionUtil reflectionUtil = new ReflectionUtil();
 
 	public ClientInputHandler(
 		List<ICharTypedHandler> charTypedHandlers,
 		UserInputRouter inputRouter,
 		DragRouter dragRouter,
-		IInternalKeyMappings keybindings
+		IInternalKeyMappings keybindings,
+		IScreenHelper screenHelper
 	) {
 		this.charTypedHandlers = charTypedHandlers;
 		this.inputRouter = inputRouter;
 		this.dragRouter = dragRouter;
 		this.keybindings = keybindings;
+		this.screenHelper = screenHelper;
 	}
 
 	public void onInitGui() {
@@ -39,7 +44,10 @@ public class ClientInputHandler {
 	 */
 	public boolean onKeyboardKeyPressedPre(Screen screen, UserInput input) {
 		if (!isContainerTextFieldFocused(screen)) {
-			return this.inputRouter.handleUserInput(screen, input, keybindings);
+			IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
+			if (guiProperties != null) {
+				return this.inputRouter.handleUserInput(screen, guiProperties, input, keybindings);
+			}
 		}
 		return false;
 	}
@@ -49,7 +57,10 @@ public class ClientInputHandler {
 	 */
 	public boolean onKeyboardKeyPressedPost(Screen screen, UserInput input) {
 		if (isContainerTextFieldFocused(screen)) {
-			return this.inputRouter.handleUserInput(screen, input, keybindings);
+			IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
+			if (guiProperties != null) {
+				return this.inputRouter.handleUserInput(screen, guiProperties, input, keybindings);
+			}
 		}
 		return false;
 	}
@@ -74,7 +85,12 @@ public class ClientInputHandler {
 	}
 
 	public boolean onGuiMouseClicked(Screen screen, UserInput input) {
-		boolean handled = this.inputRouter.handleUserInput(screen, input, keybindings);
+		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
+		if (guiProperties == null) {
+			return false;
+		}
+
+		boolean handled = this.inputRouter.handleUserInput(screen, guiProperties, input, keybindings);
 
 		if (Minecraft.getInstance().screen == screen && input.is(keybindings.getLeftClick())) {
 			handled |= this.dragRouter.startDrag(screen, input);
@@ -83,7 +99,12 @@ public class ClientInputHandler {
 	}
 
 	public boolean onGuiMouseReleased(Screen screen, UserInput input) {
-		boolean handled = this.inputRouter.handleUserInput(screen, input, keybindings);
+		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
+		if (guiProperties == null) {
+			return false;
+		}
+
+		boolean handled = this.inputRouter.handleUserInput(screen, guiProperties, input, keybindings);
 
 		if (input.is(keybindings.getLeftClick())) {
 			handled |= this.dragRouter.completeDrag(screen, input);

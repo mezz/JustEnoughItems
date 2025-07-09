@@ -11,7 +11,6 @@ import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
@@ -88,7 +87,6 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 		super.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		if (bookmarked) {
 			guiGraphics.fill(
-				RenderType.gui(),
 				button.getX(),
 				button.getY(),
 				button.getX() + button.getWidth(),

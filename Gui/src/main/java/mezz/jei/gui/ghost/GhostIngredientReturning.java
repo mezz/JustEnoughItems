@@ -61,15 +61,15 @@ public class GhostIngredientReturning<T> {
 		double percent = Math.min(elapsed / (double) this.duration, 1);
 		double dx = end.x - start.x;
 		double dy = end.y - start.y;
-		double x = start.x + Math.round(dx * percent);
-		double y = start.y + Math.round(dy * percent);
+		float x = start.x + Math.round(dx * percent);
+		float y = start.y + Math.round(dy * percent);
 		var poseStack = guiGraphics.pose();
-		poseStack.pushPose();
+		poseStack.pushMatrix();
 		{
-			poseStack.translate(x, y, 0);
+			poseStack.translate(x, y);
 			SafeIngredientUtil.render(guiGraphics, ingredientRenderer, ingredient, 0, 0);
 		}
-		poseStack.popPose();
+		poseStack.popMatrix();
 	}
 
 	public boolean isComplete() {

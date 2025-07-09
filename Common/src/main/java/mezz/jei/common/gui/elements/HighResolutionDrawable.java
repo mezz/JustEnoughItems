@@ -40,23 +40,23 @@ public class HighResolutionDrawable implements IDrawable {
 	@Override
 	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
 		var poseStack = guiGraphics.pose();
-		poseStack.pushPose();
+		poseStack.pushMatrix();
 		{
-			poseStack.translate(xOffset, yOffset, 0);
-			poseStack.scale(1 / (float) scale, 1 / (float) scale, 1);
+			poseStack.translate(xOffset, yOffset);
+			poseStack.scale(1 / (float) scale, 1 / (float) scale);
 			this.drawable.draw(guiGraphics);
 		}
-		poseStack.popPose();
+		poseStack.popMatrix();
 	}
 
 	@Override
 	public void draw(GuiGraphics guiGraphics) {
 		var poseStack = guiGraphics.pose();
-		poseStack.pushPose();
+		poseStack.pushMatrix();
 		{
-			poseStack.scale(1 / (float) scale, 1 / (float) scale, 1);
+			poseStack.scale(1 / (float) scale, 1 / (float) scale);
 			this.drawable.draw(guiGraphics);
 		}
-		poseStack.popPose();
+		poseStack.popMatrix();
 	}
 }

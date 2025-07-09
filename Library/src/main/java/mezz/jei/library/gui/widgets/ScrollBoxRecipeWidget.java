@@ -1,6 +1,5 @@
 package mezz.jei.library.gui.widgets;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
@@ -56,7 +55,7 @@ public class ScrollBoxRecipeWidget extends AbstractScrollWidget implements IScro
 
 	@Override
 	protected void drawContents(GuiGraphics guiGraphics, double mouseX, double mouseY, float scrollOffsetY) {
-		PoseStack poseStack = guiGraphics.pose();
+		var poseStack = guiGraphics.pose();
 
 		guiGraphics.enableScissor(
 			contentsArea.x(),
@@ -64,13 +63,13 @@ public class ScrollBoxRecipeWidget extends AbstractScrollWidget implements IScro
 			contentsArea.width(),
 			contentsArea.height()
 		);
-		poseStack.pushPose();
+		poseStack.pushMatrix();
 		float scrollAmount = getHiddenAmount() * scrollOffsetY;
-		poseStack.translate(0.0, -scrollAmount, 0.0);
+		poseStack.translate(0f, -scrollAmount);
 		try {
 			contents.draw(guiGraphics);
 		} finally {
-			poseStack.popPose();
+			poseStack.popMatrix();
 			guiGraphics.disableScissor();
 		}
 	}

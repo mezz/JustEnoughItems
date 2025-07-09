@@ -283,16 +283,13 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 		@Override
 		public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
 			var poseStack = guiGraphics.pose();
-			poseStack.pushPose();
+			poseStack.pushMatrix();
 			{
-				// this z level seems to be the sweet spot so that
-				// 2D icons draw above the items, and
-				// 3D icons draw still draw under tooltips.
-				poseStack.translate(8 + xOffset, 8 + yOffset, 200);
-				poseStack.scale(0.5f, 0.5f, 0.5f);
+				poseStack.translate(8 + xOffset, 8 + yOffset);
+				poseStack.scale(0.5f, 0.5f);
 				icon.draw(guiGraphics);
 			}
-			poseStack.popPose();
+			poseStack.popMatrix();
 		}
 	}
 }

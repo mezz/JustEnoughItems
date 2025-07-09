@@ -17,7 +17,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -112,7 +111,6 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 		if (recipeTransferError != null) {
 			if (recipeTransferError.getType() == IRecipeTransferError.Type.COSMETIC) {
 				guiGraphics.fill(
-					RenderType.guiOverlay(),
 					this.button.getX(),
 					this.button.getY(),
 					this.button.getX() + this.button.getWidth(),

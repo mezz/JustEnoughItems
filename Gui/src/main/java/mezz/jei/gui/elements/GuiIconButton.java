@@ -1,6 +1,7 @@
 package mezz.jei.gui.elements;
 
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -11,7 +12,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
@@ -59,21 +60,22 @@ public class GuiIconButton extends Button {
 
 	@Override
 	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		guiGraphics.blitSprite(RenderType::guiTextured, SPRITES.get(this.active, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
+		ResourceLocation spriteLocation = SPRITES.get(this.active, this.isHoveredOrFocused());
+		guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, spriteLocation, this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
 
-		double xOffset = getX() + (width - icon.getWidth()) / 2.0;
-		double yOffset = getY() + (height - icon.getHeight()) / 2.0;
+		float xOffset = getX() + (width - icon.getWidth()) / 2.0f;
+		float yOffset = getY() + (height - icon.getHeight()) / 2.0f;
 		if (this.pressed || this.forcePressed) {
-			xOffset += 0.5;
-			yOffset += 0.5;
+			xOffset += 0.5f;
+			yOffset += 0.5f;
 		}
 		var poseStack = guiGraphics.pose();
-		poseStack.pushPose();
+		poseStack.pushMatrix();
 		{
-			poseStack.translate(xOffset, yOffset, 0);
+			poseStack.translate(xOffset, yOffset);
 			icon.draw(guiGraphics);
 		}
-		poseStack.popPose();
+		poseStack.popMatrix();
 	}
 
 	public IUserInputHandler createInputHandler() {
@@ -100,7 +102,7 @@ public class GuiIconButton extends Button {
 		}
 
 		@Override
-		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+		public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
 			this.button.pressed = false;
 
 			double mouseX = input.getMouseX();

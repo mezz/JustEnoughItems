@@ -8,7 +8,7 @@ import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
@@ -94,7 +94,7 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		{
 			renderHelper.blitTiledSprite(
 				guiGraphics,
-				RenderType::guiTextured,
+				RenderPipelines.GUI_TEXTURED,
 				sprite,
 				tileScaling,
 				posX,

@@ -2,6 +2,7 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -65,7 +66,7 @@ public record RecipeLayoutWithButtons<R>(
 	private record RecipeLayoutUserInputHandler<R>(IRecipeLayoutDrawable<R> recipeLayout) implements IUserInputHandler {
 
 		@Override
-		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+		public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
 			final double mouseX = input.getMouseX();
 			final double mouseY = input.getMouseY();
 			if (recipeLayout.isMouseOver(mouseX, mouseY)) {

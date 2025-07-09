@@ -1,5 +1,6 @@
 package mezz.jei.gui.input.handlers;
 
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.common.config.IClientToggleState;
@@ -25,7 +26,7 @@ public class EditInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
 		if (!toggleState.isEditModeEnabled()) {
 			return Optional.empty();
 		}

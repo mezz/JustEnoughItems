@@ -124,13 +124,16 @@ public class ScreenHelper implements IScreenHelper {
 	private Optional<IClickableIngredient<ItemStack>> getClickedIngredient(ClickableIngredientFactory factory, Slot slot, AbstractContainerScreen<?> guiContainer) {
 		ItemStack stack = slot.getItem();
 		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-		return factory.createBuilder(stack)
-			.buildWithArea(
-				screenHelper.getGuiLeft(guiContainer) + slot.x,
-				screenHelper.getGuiTop(guiContainer) + slot.y,
-				16,
-				16
-			);
+		return getGuiProperties(guiContainer)
+			.flatMap(guiProperties -> {
+				return factory.createBuilder(stack)
+					.buildWithArea(
+						guiProperties.guiLeft() + slot.x,
+						guiProperties.guiTop() + slot.y,
+						16,
+						16
+					);
+			});
 	}
 
 	private <T extends AbstractContainerScreen<?>> Stream<IClickableIngredient<?>> getGuiContainerHandlerIngredients(IClickableIngredientFactory factory, T guiContainer, double mouseX, double mouseY) {

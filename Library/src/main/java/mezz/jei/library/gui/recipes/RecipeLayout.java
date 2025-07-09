@@ -179,15 +179,15 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		IRecipeSlotsView recipeCategorySlotsView = () -> Collections.unmodifiableList(slots);
 
 		var poseStack = guiGraphics.pose();
-		poseStack.pushPose();
+		poseStack.pushMatrix();
 		{
-			poseStack.translate(area.getX(), area.getY(), 0);
+			poseStack.translate(area.getX(), area.getY());
 			if (background != null) {
 				background.draw(guiGraphics);
 			}
 
 			// defensive push/pop to protect against recipe categories changing the last pose
-			poseStack.pushPose();
+			poseStack.pushMatrix();
 			{
 				recipeCategory.draw(recipe, recipeCategorySlotsView, guiGraphics, recipeMouseX, recipeMouseY);
 				for (IRecipeSlotDrawable slot : slots) {
@@ -195,39 +195,39 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 				}
 				for (IRecipeWidget widget : allWidgets) {
 					ScreenPosition position = widget.getPosition();
-					poseStack.pushPose();
+					poseStack.pushMatrix();
 					{
-						poseStack.translate(position.x(), position.y(), 0);
+						poseStack.translate(position.x(), position.y());
 						widget.drawWidget(guiGraphics, recipeMouseX - position.x(), recipeMouseY - position.y());
 					}
-					poseStack.popPose();
+					poseStack.popMatrix();
 				}
 			}
-			poseStack.popPose();
+			poseStack.popMatrix();
 
 			for (IDrawable drawable : drawables) {
 				// defensive push/pop to protect against recipe category drawables changing the last pose
-				poseStack.pushPose();
+				poseStack.pushMatrix();
 				{
 					drawable.draw(guiGraphics);
 				}
-				poseStack.popPose();
+				poseStack.popMatrix();
 			}
 
 			for (IRecipeCategoryDecorator<R> decorator : recipeCategoryDecorators) {
 				// defensive push/pop to protect against recipe category decorators changing the last pose
-				poseStack.pushPose();
+				poseStack.pushMatrix();
 				{
 					decorator.draw(recipe, recipeCategory, recipeCategorySlotsView, guiGraphics, recipeMouseX, recipeMouseY);
 				}
-				poseStack.popPose();
+				poseStack.popMatrix();
 			}
 
 			if (shapelessIcon != null) {
 				shapelessIcon.draw(guiGraphics);
 			}
 		}
-		poseStack.popPose();
+		poseStack.popMatrix();
 	}
 
 	@Override
@@ -244,13 +244,13 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		if (hoveredSlotResult != null) {
 			IRecipeSlotDrawable hoveredSlot = hoveredSlotResult.slot();
 
-			poseStack.pushPose();
+			poseStack.pushMatrix();
 			{
 				ScreenPosition offset = hoveredSlotResult.offset();
-				poseStack.translate(offset.x(), offset.y(), 0);
+				poseStack.translate(offset.x(), offset.y());
 				hoveredSlot.drawHoverOverlays(guiGraphics);
 			}
-			poseStack.popPose();
+			poseStack.popMatrix();
 
 			hoveredSlot.drawTooltip(guiGraphics, mouseX, mouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {

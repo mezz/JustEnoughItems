@@ -1,6 +1,7 @@
 package mezz.jei.gui.input.handlers;
 
 import com.google.common.base.MoreObjects;
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
@@ -24,8 +25,8 @@ public class ProxyInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-		return this.source.get().handleUserInput(screen, input, keyBindings);
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
+		return this.source.get().handleUserInput(screen, guiProperties, input, keyBindings);
 	}
 
 	@Override

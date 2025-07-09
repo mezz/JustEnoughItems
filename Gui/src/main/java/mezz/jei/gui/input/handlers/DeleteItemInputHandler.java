@@ -1,5 +1,6 @@
 package mezz.jei.gui.input.handlers;
 
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.GiveMode;
 import mezz.jei.common.config.IClientConfig;
@@ -45,7 +46,7 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput userInput, IInternalKeyMappings keyBindings) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput userInput, IInternalKeyMappings keyBindings) {
 		if (!userInput.is(keyBindings.getLeftClick())) {
 			return Optional.empty();
 		}

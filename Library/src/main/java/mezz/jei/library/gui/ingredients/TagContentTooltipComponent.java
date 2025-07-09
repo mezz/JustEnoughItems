@@ -1,6 +1,5 @@
 package mezz.jei.library.gui.ingredients;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.Font;
@@ -50,17 +49,16 @@ public class TagContentTooltipComponent<T> implements ClientTooltipComponent, To
 		for (int i = 0; i < ingredients.size() && i < maxIngredients; i++) {
 			int column = i % maxPerLine;
 			int row = i / maxPerLine;
-			PoseStack poseStack = guiGraphics.pose();
-			poseStack.pushPose();
+			var poseStack = guiGraphics.pose();
+			poseStack.pushMatrix();
 			{
 				poseStack.translate(
 					x + column * INGREDIENT_SIZE + INGREDIENT_PADDING,
-					y + row * INGREDIENT_SIZE + INGREDIENT_PADDING,
-					0.0D
+					y + row * INGREDIENT_SIZE + INGREDIENT_PADDING
 				);
 				renderer.render(guiGraphics, ingredients.get(i));
 			}
-			poseStack.popPose();
+			poseStack.popMatrix();
 		}
 	}
 

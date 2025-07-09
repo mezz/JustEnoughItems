@@ -14,7 +14,6 @@ import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.core.collect.ListMultiMap;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -145,7 +144,6 @@ public class IngredientListRenderer {
 			boolean single = hideModes.contains(IEditModeConfig.HideMode.SINGLE);
 			if (wildcard && single) {
 				guiGraphics.fill(
-					RenderType.guiOverlay(),
 					area.getX() + padding,
 					area.getY() + padding,
 					area.getX() + 16 + padding,
@@ -153,7 +151,6 @@ public class IngredientListRenderer {
 					WILDCARD_BLACKLIST_COLOR
 				);
 				guiGraphics.fill(
-					RenderType.guiOverlay(),
 					area.getX() + padding,
 					area.getY() + 8 + padding,
 					area.getX() + 16 + padding,
@@ -162,7 +159,6 @@ public class IngredientListRenderer {
 				);
 			} else if (wildcard) {
 				guiGraphics.fill(
-					RenderType.guiOverlay(),
 					area.getX() + padding,
 					area.getY() + padding,
 					area.getX() + 16 + padding,
@@ -171,7 +167,6 @@ public class IngredientListRenderer {
 				);
 			} else if (single) {
 				guiGraphics.fill(
-					RenderType.guiOverlay(),
 					area.getX() + padding,
 					area.getY() + padding,
 					area.getX() + 16 + padding,

@@ -97,14 +97,15 @@ public class EventRegistration {
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			guiEventHandler.onDrawForeground(containerScreen, guiGraphics, mouseX, mouseY);
+			guiEventHandler.drawForContainerScreen(containerScreen, guiGraphics, mouseX, mouseY);
 		});
+		// TODO this event renders tooltips before the JEI overlay can draw, see https://github.com/neoforged/NeoForge/pull/2418
 		subscriptions.register(ScreenEvent.Render.Post.class, event -> {
 			Screen screen = event.getScreen();
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			guiEventHandler.onDrawScreenPost(screen, guiGraphics, mouseX, mouseY);
+			guiEventHandler.drawForScreen(screen, guiGraphics, mouseX, mouseY);
 		});
 		subscriptions.register(ScreenEvent.RenderInventoryMobEffects.class, event -> {
 			if (guiEventHandler.renderCompactPotionIndicators()) {

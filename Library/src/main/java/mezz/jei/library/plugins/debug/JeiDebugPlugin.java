@@ -5,8 +5,6 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.builder.IClickableIngredientFactory;
-import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
@@ -21,17 +19,14 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
-import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
-import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.plugins.debug.ingredients.DebugIngredient;
 import mezz.jei.library.plugins.debug.ingredients.DebugIngredientHelper;
@@ -43,7 +38,6 @@ import mezz.jei.library.plugins.debug.ingredients.ErrorIngredientListFactory;
 import mezz.jei.library.plugins.debug.ingredients.ErrorIngredientRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -257,30 +251,7 @@ public class JeiDebugPlugin implements IModPlugin {
 			IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 			IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
 
-			registration.addGuiContainerHandler(BrewingStandScreen.class, new IGuiContainerHandler<>() {
-				@Override
-				public List<Rect2i> getGuiExtraAreas(BrewingStandScreen containerScreen) {
-					int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);
-					int size = 25 + widthMovement;
-					IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-					int guiLeft = screenHelper.getGuiLeft(containerScreen);
-					int xSize = screenHelper.getXSize(containerScreen);
-					int guiTop = screenHelper.getGuiTop(containerScreen);
-					return List.of(
-						new Rect2i(guiLeft + xSize, guiTop + 40, size, size)
-					);
-				}
-
-				@Override
-				public Optional<? extends IClickableIngredient<?>> getClickableIngredientUnderMouse(IClickableIngredientFactory factory, BrewingStandScreen containerScreen, double mouseX, double mouseY) {
-					Rect2i area = new Rect2i(0, 0, 10, 10);
-					if (MathUtil.contains(area, mouseX, mouseY)) {
-						return factory.createBuilder(new ItemStack(Items.BOW))
-							.buildWithArea(area);
-					}
-					return Optional.empty();
-				}
-			});
+			registration.addGuiContainerHandler(BrewingStandScreen.class, new DebugBrewingStandScreenHandler());
 
 			registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>(ingredientManager));
 			registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandlerTwo<>(ingredientManager));

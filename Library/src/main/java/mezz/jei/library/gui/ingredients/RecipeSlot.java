@@ -28,7 +28,6 @@ import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -182,14 +181,12 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		int height = this.rect.getHeight();
 
 		guiGraphics.fillGradient(
-			RenderType.guiOverlay(),
 			x,
 			y,
 			x + width,
 			y + height,
 			color,
-			color,
-			0
+			color
 		);
 	}
 
@@ -295,13 +292,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			.ifPresent(ingredient -> drawIngredient(guiGraphics, ingredient, x, y));
 
 		if (overlay != null) {
-			var poseStack = guiGraphics.pose();
-			poseStack.pushPose();
-			{
-				poseStack.translate(0, 0, 200);
-				overlay.draw(guiGraphics, x, y);
-			}
-			poseStack.popPose();
+			overlay.draw(guiGraphics, x, y);
 		}
 	}
 

@@ -1,6 +1,5 @@
 package mezz.jei.api.ingredients;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
 import mezz.jei.api.registration.IModIngredientRegistration;
@@ -41,13 +40,13 @@ public interface IIngredientRenderer<T> {
 	 * @since 19.5.5
 	 */
 	default void render(GuiGraphics guiGraphics, T ingredient, int posX, int posY) {
-		PoseStack poseStack = guiGraphics.pose();
-		poseStack.pushPose();
+		var poseStack = guiGraphics.pose();
+		poseStack.pushMatrix();
 		{
-			poseStack.translate(posX, posY, 0);
+			poseStack.translate(posX, posY);
 			render(guiGraphics, ingredient);
 		}
-		poseStack.popPose();
+		poseStack.popMatrix();
 	}
 
 	/**

@@ -46,6 +46,10 @@ public class ScreenPropertiesCache {
 				.flatMap(cache.screenHelper::getGuiProperties)
 				.orElse(null);
 
+			return updateScreen(currentGuiProperties);
+		}
+
+		public Updater updateScreen(@Nullable IGuiProperties currentGuiProperties) {
 			if (!GuiProperties.areEqual(cache.previousGuiProperties, currentGuiProperties)) {
 				boolean previouslyValid = cache.guiPropertiesAreValid;
 				cache.guiPropertiesAreValid = validateGuiProperties(currentGuiProperties);

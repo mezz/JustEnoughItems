@@ -44,7 +44,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
@@ -217,16 +216,20 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
+	protected void renderMenuBackground(GuiGraphics guiGraphics, int x, int y, int width, int height) {
+		if (minecraft == null) {
+			return;
+		}
+		this.renderTransparentBackground(guiGraphics);
+		this.background.draw(guiGraphics, area);
+	}
+
+	@Override
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (minecraft == null) {
 			return;
 		}
-		renderTransparentBackground(guiGraphics);
-		guiGraphics.flush();
-		this.background.draw(guiGraphics, area);
-
 		guiGraphics.fill(
-			RenderType.gui(),
 			previousRecipeCategory.getX() + previousRecipeCategory.getWidth(),
 			previousRecipeCategory.getY(),
 			nextRecipeCategory.getX(),
@@ -234,7 +237,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			0x30000000
 		);
 		guiGraphics.fill(
-			RenderType.gui(),
 			previousPage.getX() + previousPage.getWidth(),
 			previousPage.getY(),
 			nextPage.getX(),
@@ -280,7 +282,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		if (DebugConfig.isDebugGuisEnabled()) {
 			guiGraphics.fill(
-				RenderType.gui(),
 				idealArea.getX(),
 				idealArea.getY(),
 				idealArea.getX() + idealArea.getWidth(),
@@ -289,7 +290,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			);
 
 			guiGraphics.fill(
-				RenderType.gui(),
 				area.getX(),
 				area.getY(),
 				area.getX() + area.getWidth(),
@@ -299,7 +299,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 			ImmutableRect2i recipeLayoutsArea = getRecipeLayoutsArea();
 			guiGraphics.fill(
-				RenderType.gui(),
 				recipeLayoutsArea.getX(),
 				recipeLayoutsArea.getY(),
 				recipeLayoutsArea.getX() + recipeLayoutsArea.getWidth(),
@@ -417,7 +416,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	private boolean handleInput(UserInput input) {
-		return this.inputHandler.handleUserInput(this, input, keyBindings);
+		IGuiProperties guiProperties = this.getProperties();
+		if (guiProperties == null) {
+			return false;
+		}
+		return this.inputHandler.handleUserInput(this, guiProperties, input, keyBindings);
 	}
 
 	public boolean isOpen() {
@@ -590,7 +593,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 
 		@Override
-		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+		public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
 			double mouseX = input.getMouseX();
 			double mouseY = input.getMouseY();
 			if (recipesGui.isMouseOver(mouseX, mouseY)) {

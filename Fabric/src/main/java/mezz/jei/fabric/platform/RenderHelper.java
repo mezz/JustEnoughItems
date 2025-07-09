@@ -1,5 +1,6 @@
 package mezz.jei.fabric.platform;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.datafixers.util.Either;
 import mezz.jei.common.platform.IPlatformRenderHelper;
@@ -8,8 +9,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
@@ -18,7 +17,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -29,7 +27,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -58,19 +55,19 @@ public class RenderHelper implements IPlatformRenderHelper {
 	}
 
 	@Override
-	public void blitSprite(GuiGraphics guiGraphics, Function<ResourceLocation, RenderType> renderType, TextureAtlasSprite sprite, int textureWidth, int textureHeight, int uPosition, int vPosition, int x, int y, int uWidth, int vHeight) {
-		guiGraphics.blitSprite(renderType, sprite, textureWidth, textureHeight, uPosition, vPosition, x, y, uWidth, vHeight, -1);
+	public void blitSprite(GuiGraphics guiGraphics, RenderPipeline renderPipeline, TextureAtlasSprite sprite, int textureWidth, int textureHeight, int uPosition, int vPosition, int x, int y, int uWidth, int vHeight) {
+		guiGraphics.blitSprite(renderPipeline, sprite, textureWidth, textureHeight, uPosition, vPosition, x, y, uWidth, vHeight, -1);
 	}
 
 	@Override
-	public void blitNineSlicedSprite(GuiGraphics guiGraphics, Function<ResourceLocation, RenderType> renderType, TextureAtlasSprite sprite, GuiSpriteScaling.NineSlice scaling, int xOffset, int yOffset, int width, int height) {
-		guiGraphics.blitNineSlicedSprite(renderType, sprite, scaling, xOffset, yOffset, width, height, -1);
+	public void blitNineSlicedSprite(GuiGraphics guiGraphics, RenderPipeline renderPipeline, TextureAtlasSprite sprite, GuiSpriteScaling.NineSlice scaling, int xOffset, int yOffset, int width, int height) {
+		guiGraphics.blitNineSlicedSprite(renderPipeline, sprite, scaling, xOffset, yOffset, width, height, -1);
 	}
 
 	@Override
-	public void blitTiledSprite(GuiGraphics guiGraphics, Function<ResourceLocation, RenderType> renderType, TextureAtlasSprite sprite, GuiSpriteScaling.Tile scaling, int xOffset, int yOffset, int width, int height, int color) {
+	public void blitTiledSprite(GuiGraphics guiGraphics, RenderPipeline renderPipeline, TextureAtlasSprite sprite, GuiSpriteScaling.Tile scaling, int xOffset, int yOffset, int width, int height, int color) {
 		guiGraphics.blitTiledSprite(
-			renderType,
+			renderPipeline,
 			sprite,
 			xOffset,
 			yOffset,
@@ -107,17 +104,12 @@ public class RenderHelper implements IPlatformRenderHelper {
 			))
 			.collect(Collectors.toCollection(ArrayList::new));
 
-		guiGraphics.renderTooltipInternal(font, components, x, y, DefaultTooltipPositioner.INSTANCE, null);
+		guiGraphics.setTooltipForNextFrameInternal(font, components, x, y, DefaultTooltipPositioner.INSTANCE, null, true);
 	}
 
 	@Override
 	public Component getName(TagKey<?> tagKey) {
 		return tagKey.getName();
-	}
-
-	@Override
-	public MultiBufferSource getBufferSource(GuiGraphics guiGraphics) {
-		return guiGraphics.bufferSource;
 	}
 
 	private ClientTooltipComponent createClientTooltipComponent(TooltipComponent tooltipComponent) {

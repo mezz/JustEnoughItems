@@ -1,5 +1,6 @@
 package mezz.jei.gui.input.handlers;
 
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
@@ -24,9 +25,9 @@ public class CombinedInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
 		return switch (input.getInputType()) {
-			case IMMEDIATE, SIMULATE -> handleClickInternal(screen, input, keyBindings);
+			case IMMEDIATE, SIMULATE -> handleClickInternal(screen, guiProperties, input, keyBindings);
 			case EXECUTE -> Optional.empty();
 		};
 	}
@@ -38,11 +39,11 @@ public class CombinedInputHandler implements IUserInputHandler {
 	 * 1. every mouse handler that fails to handleClick (returned null).
 	 * 2. every mouse handler that never got a chance to handleClick because something else handled it first.
 	 */
-	private Optional<IUserInputHandler> handleClickInternal(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+	private Optional<IUserInputHandler> handleClickInternal(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
 		Optional<IUserInputHandler> firstHandled = Optional.empty();
 		for (IUserInputHandler inputHandler : this.inputHandlers) {
 			if (firstHandled.isEmpty()) {
-				firstHandled = inputHandler.handleUserInput(screen, input, keyBindings);
+				firstHandled = inputHandler.handleUserInput(screen, guiProperties, input, keyBindings);
 				if (firstHandled.isEmpty()) {
 					inputHandler.unfocus();
 				}

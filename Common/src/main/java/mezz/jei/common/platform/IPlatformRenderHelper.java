@@ -1,17 +1,15 @@
 package mezz.jei.common.platform;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -21,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 public interface IPlatformRenderHelper {
 	Font getFontRenderer(Minecraft minecraft, ItemStack itemStack);
@@ -34,14 +31,12 @@ public interface IPlatformRenderHelper {
 
 	Component getName(TagKey<?> tagKey);
 
-	MultiBufferSource getBufferSource(GuiGraphics guiGraphics);
-
 	@Nullable
 	TextureAtlasSprite getTextureAtlasSprite(BlockState blockState);
 
-	void blitSprite(GuiGraphics guiGraphics, Function<ResourceLocation, RenderType> renderType, TextureAtlasSprite sprite, int textureWidth, int textureHeight, int uPosition, int vPosition, int x, int y, int uWidth, int vHeight);
+	void blitSprite(GuiGraphics guiGraphics, RenderPipeline renderPipeline, TextureAtlasSprite sprite, int textureWidth, int textureHeight, int uPosition, int vPosition, int x, int y, int uWidth, int vHeight);
 
-	void blitNineSlicedSprite(GuiGraphics guiGraphics, Function<ResourceLocation, RenderType> renderType, TextureAtlasSprite sprite, GuiSpriteScaling.NineSlice scaling, int xOffset, int yOffset, int width, int height);
+	void blitNineSlicedSprite(GuiGraphics guiGraphics, RenderPipeline renderPipeline, TextureAtlasSprite sprite, GuiSpriteScaling.NineSlice scaling, int xOffset, int yOffset, int width, int height);
 
-	void blitTiledSprite(GuiGraphics guiGraphics, Function<ResourceLocation, RenderType> renderType, TextureAtlasSprite sprite, GuiSpriteScaling.Tile scaling, int xOffset, int yOffset, int width, int height, int color);
+	void blitTiledSprite(GuiGraphics guiGraphics, RenderPipeline renderPipeline, TextureAtlasSprite sprite, GuiSpriteScaling.Tile scaling, int xOffset, int yOffset, int width, int height, int color);
 }

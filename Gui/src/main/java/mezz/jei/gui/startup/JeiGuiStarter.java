@@ -221,7 +221,8 @@ public class JeiGuiStarter {
 			charTypedHandlers,
 			userInputRouter,
 			dragRouter,
-			keyMappings
+			keyMappings,
+			screenHelper
 		);
 		ResourceReloadHandler resourceReloadHandler = new ResourceReloadHandler(
 			ingredientListOverlay,

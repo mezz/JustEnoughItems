@@ -1,6 +1,7 @@
 package mezz.jei.gui.input.handlers;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.KeyNameUtil;
@@ -27,14 +28,14 @@ public class UserInputRouter {
 		this.combinedInputHandler = new CombinedInputHandler(debugName, inputHandlers);
 	}
 
-	public boolean handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+	public boolean handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
 		if (DebugConfig.isDebugInputsEnabled()) {
 			LOGGER.debug("{} received user input: {}", debugName, input);
 		}
 		return switch (input.getInputType()) {
-			case IMMEDIATE -> handleImmediateClick(screen, input, keyBindings);
-			case SIMULATE -> handleSimulateClick(screen, input, keyBindings);
-			case EXECUTE -> handleExecuteClick(screen, input, keyBindings);
+			case IMMEDIATE -> handleImmediateClick(screen, guiProperties, input, keyBindings);
+			case SIMULATE -> handleSimulateClick(screen, guiProperties, input, keyBindings);
+			case EXECUTE -> handleExecuteClick(screen, guiProperties, input, keyBindings);
 		};
 	}
 
@@ -43,7 +44,7 @@ public class UserInputRouter {
 	 * We do not track the mousedDown for it,
 	 * the first handler to use it will be the "winner", the rest will get a clicked-out.
 	 */
-	private boolean handleImmediateClick(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+	private boolean handleImmediateClick(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
 		IUserInputHandler oldClick = this.pending.remove(input.getKey());
 		if (oldClick != null) {
 			if (DebugConfig.isDebugInputsEnabled()) {
@@ -51,7 +52,7 @@ public class UserInputRouter {
 			}
 		}
 
-		return this.combinedInputHandler.handleUserInput(screen, input, keyBindings)
+		return this.combinedInputHandler.handleUserInput(screen, guiProperties, input, keyBindings)
 			.map(callback -> {
 				if (DebugConfig.isDebugInputsEnabled()) {
 					LOGGER.debug("{} immediate click handled by: {}\n{}", debugName, callback, input);
@@ -69,7 +70,7 @@ public class UserInputRouter {
 	 * and it will be added to mousedDown.
 	 * In the second pass, all handlers that were in mousedDown will be sent the real click.
 	 */
-	private boolean handleSimulateClick(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+	private boolean handleSimulateClick(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
 		IUserInputHandler oldClick = this.pending.remove(input.getKey());
 		if (oldClick != null) {
 			if (DebugConfig.isDebugInputsEnabled()) {
@@ -77,7 +78,7 @@ public class UserInputRouter {
 			}
 		}
 
-		return this.combinedInputHandler.handleUserInput(screen, input, keyBindings)
+		return this.combinedInputHandler.handleUserInput(screen, guiProperties, input, keyBindings)
 			.map(callback -> {
 				this.pending.put(input.getKey(), callback);
 				if (DebugConfig.isDebugInputsEnabled()) {
@@ -88,9 +89,9 @@ public class UserInputRouter {
 			.orElse(false);
 	}
 
-	private boolean handleExecuteClick(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+	private boolean handleExecuteClick(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
 		return Optional.ofNullable(this.pending.remove(input.getKey()))
-			.flatMap(inputHandler -> inputHandler.handleUserInput(screen, input, keyBindings))
+			.flatMap(inputHandler -> inputHandler.handleUserInput(screen, guiProperties, input, keyBindings))
 			.map(callback -> {
 				if (DebugConfig.isDebugInputsEnabled()) {
 					LOGGER.debug("{} click successfully executed by: {}\n{}", debugName, callback, input);

@@ -31,7 +31,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -165,21 +164,19 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		}
 	}
 
-	// TODO also draw slot highlight back
+	// TODO use the proper slot highlight sprite and also draw slot highlight back sprite
 	/**
 	 * Matches the highlight code in {@link AbstractContainerScreen#renderSlotHighlightFront(GuiGraphics)}
 	 * but with a custom area width and height
 	 */
 	public static void drawHighlight(GuiGraphics guiGraphics, ImmutableRect2i area) {
 		guiGraphics.fillGradient(
-			RenderType.guiOverlay(),
 			area.getX(),
 			area.getY(),
 			area.getX() + area.getWidth(),
 			area.getY() + area.getHeight(),
 			0x80FFFFFF,
-			0x80FFFFFF,
-			0
+			0x80FFFFFF
 		);
 	}
 

@@ -11,7 +11,6 @@ import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
 
 public class PageNavigation {
 	private final IPaged paged;
@@ -56,7 +55,6 @@ public class PageNavigation {
 	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (isVisible()) {
 			guiGraphics.fill(
-				RenderType.gui(),
 				backButton.getX() + backButton.getWidth(),
 				backButton.getY(),
 				nextButton.getX(),

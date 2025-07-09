@@ -1,6 +1,5 @@
 package mezz.jei.gui.overlay.bookmarks;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
@@ -41,10 +40,10 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 
 	@Override
 	public void renderImage(Font font, int x, int y, int p_368529_, int p_368584_, GuiGraphics guiGraphics) {
-		PoseStack pose = guiGraphics.pose();
-		pose.pushPose();
+		var pose = guiGraphics.pose();
+		pose.pushMatrix();
 		{
-			pose.translate(x + 2, y + 5, 0);
+			pose.translate(x + 2, y + 5);
 			drawable.drawRecipe(guiGraphics, 0, 0);
 			updateTransferError();
 			if (transferError != null) {
@@ -52,7 +51,7 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 				transferError.showError(guiGraphics, x, y, drawable.getRecipeSlotsView(), recipeRect.getX(), recipeRect.getY());
 			}
 		}
-		pose.popPose();
+		pose.popMatrix();
 	}
 
 	private void updateTransferError() {

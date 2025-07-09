@@ -11,6 +11,6 @@ public record ErrorIngredient(CrashType crashType) {
 		.xmap(ErrorIngredient::new, ErrorIngredient::crashType);
 
 	public enum CrashType {
-		RenderBreakVertexBufferCrash, TooltipCrash
+		TooltipCrash
 	}
 }

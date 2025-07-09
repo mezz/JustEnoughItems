@@ -65,6 +65,13 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 		this.guiScreenHandlers.put(guiClass, handler);
 	}
 
+	@Override
+	public <T extends Screen> void addGenericGuiScreenHandler(Class<T> guiClass, IScreenHandler<?> handler) {
+		ErrorUtil.checkNotNull(guiClass, "guiClass");
+		ErrorUtil.checkNotNull(handler, "handler");
+		this.guiScreenHandlers.put(guiClass, handler);
+	}
+
 	@Unmodifiable
 	private static final List<Class<? extends Screen>> ghostIngredientGuiBlacklist = List.of(
 		Screen.class, InventoryScreen.class, CreativeModeInventoryScreen.class

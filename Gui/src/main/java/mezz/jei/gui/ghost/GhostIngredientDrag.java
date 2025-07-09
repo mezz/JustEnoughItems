@@ -12,7 +12,6 @@ import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.phys.Vec2;
 
 import java.util.List;
@@ -97,7 +96,6 @@ public class GhostIngredientDrag<T> {
 				color = targetColor;
 			}
 			guiGraphics.fill(
-				RenderType.guiOverlay(),
 				area.getX(),
 				area.getY(),
 				area.getX() + area.getWidth(),

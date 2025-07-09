@@ -42,6 +42,13 @@ public interface IGuiHandlerRegistration {
 	<T extends Screen> void addGuiScreenHandler(Class<T> guiClass, IScreenHandler<T> handler);
 
 	/**
+	 * Same as {@link #addGuiScreenHandler(Class, IScreenHandler)} but for handlers that use Java Generics to
+	 * support multiple types of containers. This type of handler runs into type issues with the regular method.
+	 * @since 22.0.0
+	 */
+	<T extends Screen> void addGenericGuiScreenHandler(Class<T> guiClass, IScreenHandler<?> handler);
+
+	/**
 	 * Add a handler to give JEI extra information about how to layout the ingredient list.
 	 * Used for guis that display next to GUIs and would normally intersect with JEI.
 	 */

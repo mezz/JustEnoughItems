@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IRecipeManager;
@@ -43,7 +44,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+	public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
 		if (!isMouseOver(input.getMouseX(), input.getMouseY())) {
 			return Optional.empty();
 		}

@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay;
 
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
@@ -457,7 +458,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		}
 
 		@Override
-		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+		public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
 			if (input.is(keyBindings.getNextPage())) {
 				this.paged.nextPage();
 				return Optional.of(this);
