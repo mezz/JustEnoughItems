@@ -3,7 +3,7 @@ package mezz.jei.common.gui.elements;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.common.Constants;
-import mezz.jei.common.gui.textures.JeiSpriteUploader;
+import mezz.jei.common.gui.textures.JeiGuiSpriteManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix4f;
 
 public class DrawableSprite implements IDrawableStatic {
-	private final JeiSpriteUploader spriteUploader;
+	private final JeiGuiSpriteManager spriteManager;
 	private final ResourceLocation location;
 	private final int width;
 	private final int height;
@@ -21,8 +21,8 @@ public class DrawableSprite implements IDrawableStatic {
 	private int trimTop;
 	private int trimBottom;
 
-	public DrawableSprite(JeiSpriteUploader spriteUploader, ResourceLocation location, int width, int height) {
-		this.spriteUploader = spriteUploader;
+	public DrawableSprite(JeiGuiSpriteManager spriteManager, ResourceLocation location, int width, int height) {
+		this.spriteManager = spriteManager;
 		this.location = location;
 		this.width = width;
 		this.height = height;
@@ -53,7 +53,7 @@ public class DrawableSprite implements IDrawableStatic {
 
 	@Override
 	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
-		TextureAtlasSprite sprite = spriteUploader.getSprite(location);
+		TextureAtlasSprite sprite = spriteManager.getSprite(location);
 		int textureWidth = this.width;
 		int textureHeight = this.height;
 

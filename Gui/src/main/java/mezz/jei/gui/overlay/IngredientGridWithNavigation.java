@@ -6,7 +6,7 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutablePoint2i;
@@ -61,8 +61,8 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private final IClientConfig clientConfig;
 	private final IngredientGrid ingredientGrid;
 	private final IIngredientGridSource ingredientSource;
-	private final DrawableNineSliceTexture background;
-	private final DrawableNineSliceTexture slotBackground;
+	private final ScalableDrawable background;
+	private final ScalableDrawable slotBackground;
 	private final CommandUtil commandUtil;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
 
@@ -79,8 +79,8 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		IClientConfig clientConfig,
 		IConnectionToServer serverConnection,
 		IIngredientGridConfig gridConfig,
-		DrawableNineSliceTexture background,
-		DrawableNineSliceTexture slotBackground,
+		ScalableDrawable background,
+		ScalableDrawable slotBackground,
 		IScreenHelper screenHelper,
 		IIngredientManager ingredientManager
 	) {

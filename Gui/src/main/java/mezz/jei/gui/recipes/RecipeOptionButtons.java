@@ -2,7 +2,7 @@ package mezz.jei.gui.recipes;
 
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.RecipeSorterStage;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.elements.GuiIconToggleButton;
@@ -22,7 +22,7 @@ public class RecipeOptionButtons {
 
 	private final List<GuiIconToggleButton> buttons;
 
-	private final DrawableNineSliceTexture backgroundTab;
+	private final ScalableDrawable backgroundTab;
 	private ImmutableRect2i area;
 
 	public RecipeOptionButtons(Runnable onValueChanged) {

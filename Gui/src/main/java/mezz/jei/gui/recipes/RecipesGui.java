@@ -20,7 +20,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ErrorUtil;
@@ -75,7 +75,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final RecipeGuiLayouts layouts;
 
 	private String pageString = "1/1";
-	private final DrawableNineSliceTexture background;
+	private final ScalableDrawable background;
 
 	private final CraftingStations craftingStations;
 	private final RecipeGuiTabs recipeGuiTabs;

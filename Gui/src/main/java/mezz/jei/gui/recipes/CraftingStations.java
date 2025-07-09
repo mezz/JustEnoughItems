@@ -6,7 +6,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
@@ -33,10 +33,10 @@ public class CraftingStations implements IRecipeFocusSource {
 	private static final int borderSize = 5;
 	private static final int overlapSize = 6;
 
-	private final DrawableNineSliceTexture backgroundTab;
+	private final ScalableDrawable backgroundTab;
 
 	private final List<IRecipeSlotDrawable> recipeSlots;
-	private final DrawableNineSliceTexture slotBackground;
+	private final ScalableDrawable slotBackground;
 	private final IRecipeManager recipeManager;
 	private int left = 0;
 	private int top = 0;

@@ -7,7 +7,7 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
@@ -27,8 +27,8 @@ public final class OverlayHelper {
 		IIngredientGridSource ingredientFilter,
 		IIngredientManager ingredientManager,
 		IIngredientGridConfig ingredientGridConfig,
-		DrawableNineSliceTexture background,
-		DrawableNineSliceTexture slotBackground,
+		ScalableDrawable background,
+		ScalableDrawable slotBackground,
 		IInternalKeyMappings keyMappings,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IClientConfig clientConfig,
