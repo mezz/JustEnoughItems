@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -97,6 +98,46 @@ public class RenderHelper implements IPlatformRenderHelper {
 	@Override
 	public BakedModel createLimitedQuadItemModel(BakedModel bakedModel) {
 		return ForgeLimitedQuadItemModel.wrap(bakedModel);
+	}
+
+	@Override
+	public void blitSprite(GuiGraphics guiGraphics, TextureAtlasSprite sprite, int textureWidth, int textureHeight, int uPosition, int vPosition, int x, int y, int uWidth, int vHeight) {
+		guiGraphics.blitSprite(sprite, textureWidth, textureHeight, uPosition, vPosition, x, y, 0, uWidth, vHeight);
+	}
+
+	@Override
+	public void blitNineSlicedSprite(GuiGraphics guiGraphics, TextureAtlasSprite sprite, GuiSpriteScaling.NineSlice scaling, int xOffset, int yOffset, int width, int height) {
+		guiGraphics.blitNineSlicedSprite(sprite, scaling, xOffset, yOffset, 0, width, height);
+	}
+
+	@Override
+	public void blitTiledSprite(GuiGraphics guiGraphics, TextureAtlasSprite sprite, GuiSpriteScaling.Tile scaling, int xOffset, int yOffset, int width, int height, int color) {
+		setColor(guiGraphics, color);
+		{
+			guiGraphics.blitTiledSprite(
+				sprite,
+				xOffset,
+				yOffset,
+				0,
+				width,
+				height,
+				0,
+				0,
+				scaling.width(),
+				scaling.height(),
+				scaling.width(),
+				scaling.height()
+			);
+		}
+		guiGraphics.setColor(1, 1, 1, 1);
+	}
+
+	private static void setColor(GuiGraphics guiGraphics, int color) {
+		float alpha = (color >> 24 & 0xFF) / 255F;
+		float red = (color >> 16 & 0xFF) / 255F;
+		float green = (color >> 8 & 0xFF) / 255F;
+		float blue = (color & 0xFF) / 255F;
+		guiGraphics.setColor(red, green, blue, alpha);
 	}
 
 	private static String getTagTranslationKey(TagKey<?> tagKey) {

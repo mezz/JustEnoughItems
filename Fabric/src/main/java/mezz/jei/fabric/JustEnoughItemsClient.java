@@ -1,7 +1,7 @@
 package mezz.jei.fabric;
 
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.textures.JeiSpriteUploader;
+import mezz.jei.common.gui.textures.JeiGuiSpriteManager;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.MinecraftLocaleSupplier;
 import mezz.jei.common.util.Translator;
@@ -24,8 +24,8 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 
 		JeiLifecycleEvents.REGISTER_RESOURCE_RELOAD_LISTENER.register((resourceManager, textureManager) -> {
 			Textures textures = Internal.getTextures();
-			JeiSpriteUploader spriteUploader = textures.getSpriteUploader();
-			resourceManager.registerReloadListener(new JeiIdentifiableResourceReloadListener("sprite_uploader", spriteUploader));
+			JeiGuiSpriteManager guiSpriteManager = textures.getGuiSpriteManager();
+			resourceManager.registerReloadListener(new JeiIdentifiableResourceReloadListener("gui_sprite_manager", guiSpriteManager));
 
 			ClientLifecycleEvents.CLIENT_STARTED.register(event -> {
 				clientLifecycleHandler.registerEvents();

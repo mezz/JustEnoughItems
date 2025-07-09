@@ -1,26 +1,21 @@
 package mezz.jei.library.render;
 
 import com.google.common.base.Preconditions;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
+import mezz.jei.common.platform.IPlatformRenderHelper;
+import mezz.jei.common.platform.Services;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import org.joml.Matrix4f;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -28,7 +23,6 @@ import java.util.List;
 
 public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	private static final NumberFormat nf = NumberFormat.getIntegerInstance();
-	private static final int TEXTURE_SIZE = 16;
 	private static final int MIN_FLUID_HEIGHT = 1; // ensure tiny amounts of fluid are still visible
 
 	private final IPlatformFluidHelperInternal<T> fluidHelper;
@@ -69,93 +63,46 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, T ingredient, int posX, int posY) {
-		RenderSystem.enableBlend();
-
 		drawFluid(guiGraphics, width, height, ingredient, posX, posY);
-
-		RenderSystem.setShaderColor(1, 1, 1, 1);
-
-		RenderSystem.disableBlend();
 	}
 
-	private void drawFluid(GuiGraphics guiGraphics, final int width, final int height, T fluidStack, int posX, int posY) {
+	private void drawFluid(GuiGraphics guiGraphics, final int width, final int height, T ingredient, int posX, int posY) {
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
-		Fluid fluid = type.getBase(fluidStack);
+		Fluid fluid = type.getBase(ingredient);
 		if (fluid.isSame(Fluids.EMPTY)) {
 			return;
 		}
 
-		fluidHelper.getStillFluidSprite(fluidStack)
+		fluidHelper.getStillFluidSprite(ingredient)
 			.ifPresent(fluidStillSprite -> {
-				int fluidColor = fluidHelper.getColorTint(fluidStack);
+				int fluidColor = fluidHelper.getColorTint(ingredient);
 
-				long amount = fluidHelper.getAmount(fluidStack);
-				long scaledAmount = (amount * height) / capacity;
-				if (amount > 0 && scaledAmount < MIN_FLUID_HEIGHT) {
-					scaledAmount = MIN_FLUID_HEIGHT;
+				long amount = fluidHelper.getAmount(ingredient);
+				if (amount > 0) {
+					long longScaledAmount = (amount * height) / capacity;
+					int scaledAmount = Math.clamp(longScaledAmount, MIN_FLUID_HEIGHT, height);
+					drawTiledSprite(guiGraphics, width, height, fluidColor, scaledAmount, fluidStillSprite, posX, posY);
 				}
-				if (scaledAmount > height) {
-					scaledAmount = height;
-				}
-
-				drawTiledSprite(guiGraphics, width, height, fluidColor, scaledAmount, fluidStillSprite, posX, posY);
 			});
 	}
 
-	private static void drawTiledSprite(GuiGraphics guiGraphics, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite, int posX, int posY) {
-		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
-		Matrix4f matrix = guiGraphics.pose().last().pose();
-		setGLColorFromInt(color);
+	private static void drawTiledSprite(GuiGraphics guiGraphics, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite, int posX, int posY) {
+		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+		SpriteContents spriteContents = sprite.contents();
+		GuiSpriteScaling.Tile tileScaling = new GuiSpriteScaling.Tile(spriteContents.width(), spriteContents.height());
 
-		final int xTileCount = tiledWidth / TEXTURE_SIZE;
-		final int xRemainder = tiledWidth - (xTileCount * TEXTURE_SIZE);
-		final long yTileCount = scaledAmount / TEXTURE_SIZE;
-		final long yRemainder = scaledAmount - (yTileCount * TEXTURE_SIZE);
+		posY = posY + tiledHeight - scaledAmount;
 
-		final int yStart = tiledHeight + posY;
-
-		for (int xTile = 0; xTile <= xTileCount; xTile++) {
-			for (int yTile = 0; yTile <= yTileCount; yTile++) {
-				int width = (xTile == xTileCount) ? xRemainder : TEXTURE_SIZE;
-				long height = (yTile == yTileCount) ? yRemainder : TEXTURE_SIZE;
-				int x = posX + (xTile * TEXTURE_SIZE);
-				int y = yStart - ((yTile + 1) * TEXTURE_SIZE);
-				if (width > 0 && height > 0) {
-					long maskTop = TEXTURE_SIZE - height;
-					int maskRight = TEXTURE_SIZE - width;
-
-					drawTextureWithMasking(matrix, x, y, sprite, maskTop, maskRight, 100);
-				}
-			}
-		}
-	}
-
-	private static void setGLColorFromInt(int color) {
-		float red = (color >> 16 & 0xFF) / 255.0F;
-		float green = (color >> 8 & 0xFF) / 255.0F;
-		float blue = (color & 0xFF) / 255.0F;
-		float alpha = ((color >> 24) & 0xFF) / 255F;
-
-		RenderSystem.setShaderColor(red, green, blue, alpha);
-	}
-
-	private static void drawTextureWithMasking(Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, long maskTop, long maskRight, float zLevel) {
-		float uMin = textureSprite.getU0();
-		float uMax = textureSprite.getU1();
-		float vMin = textureSprite.getV0();
-		float vMax = textureSprite.getV1();
-		uMax = uMax - (maskRight / 16F * (uMax - uMin));
-		vMax = vMax - (maskTop / 16F * (vMax - vMin));
-
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
-
-		Tesselator tesselator = Tesselator.getInstance();
-		BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-		bufferBuilder.addVertex(matrix, xCoord, yCoord + 16, zLevel).setUv(uMin, vMax);
-		bufferBuilder.addVertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).setUv(uMax, vMax);
-		bufferBuilder.addVertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).setUv(uMax, vMin);
-		bufferBuilder.addVertex(matrix, xCoord, yCoord + maskTop, zLevel).setUv(uMin, vMin);
-		BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+		renderHelper.blitTiledSprite(
+			guiGraphics,
+			sprite,
+			tileScaling,
+			posX,
+			posY,
+			tiledWidth,
+			scaledAmount,
+			color
+		);
 	}
 
 	@Override

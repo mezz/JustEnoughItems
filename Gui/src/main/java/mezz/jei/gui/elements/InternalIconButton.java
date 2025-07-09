@@ -6,7 +6,7 @@ import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.DrawableBlank;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.GuiGraphics;
@@ -57,7 +57,7 @@ class InternalIconButton extends Button implements IButtonState {
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		Textures textures = Internal.getTextures();
 		boolean isPressed = this.pressed || this.forcePressed;
-		DrawableNineSliceTexture texture = textures.getButtonForState(isPressed, this.active, hovered);
+		ScalableDrawable texture = textures.getButtonForState(isPressed, this.active, hovered);
 		texture.draw(guiGraphics, this.getX(), this.getY(), this.width, this.height);
 
 		int color = 0xFFE0E0E0;

@@ -43,7 +43,14 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	public int getColorTint(FluidStack ingredient) {
 		Fluid fluid = ingredient.getFluid();
 		IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
-		return renderProperties.getTintColor(ingredient);
+		return normalizeColor(renderProperties.getTintColor(ingredient));
+	}
+
+	private static int normalizeColor(int color) {
+		if ((color & 0xFF000000) == 0) {
+			return color | 0xFF000000;
+		}
+		return color;
 	}
 
 	@Override

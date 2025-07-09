@@ -84,7 +84,7 @@ public class JustEnoughItemsClient {
 
 	private void onRegisterReloadListenerEvent(RegisterClientReloadListenersEvent event) {
 		Textures textures = Internal.getTextures();
-		event.registerReloadListener(textures.getSpriteUploader());
+		event.registerReloadListener(textures.getGuiSpriteManager());
 		event.registerReloadListener(createReloadListener());
 	}
 

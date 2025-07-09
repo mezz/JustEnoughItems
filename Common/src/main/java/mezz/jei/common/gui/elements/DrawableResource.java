@@ -1,17 +1,8 @@
 package mezz.jei.common.gui.elements;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import net.minecraft.client.gui.GuiGraphics;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
-
 import mezz.jei.api.gui.drawable.IDrawableStatic;
-import org.joml.Matrix4f;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 
 public class DrawableResource implements IDrawableStatic {
 
@@ -61,24 +52,19 @@ public class DrawableResource implements IDrawableStatic {
 
 	@Override
 	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
-		RenderSystem.setShaderTexture(0, this.resourceLocation);
+		int uWidth = this.width - (maskRight + maskLeft);
+		int vHeight = this.height - (maskBottom + maskTop);
 
-		int x = xOffset + this.paddingLeft + maskLeft;
-		int y = yOffset + this.paddingTop + maskTop;
-		int u = this.u + maskLeft;
-		int v = this.v + maskTop;
-		int width = this.width - maskRight - maskLeft;
-		int height = this.height - maskBottom - maskTop;
-		float f = 1.0F / this.textureWidth;
-		float f1 = 1.0F / this.textureHeight;
-		Tesselator tesselator = Tesselator.getInstance();
-		BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-		Matrix4f matrix = guiGraphics.pose().last().pose();
-		bufferBuilder.addVertex(matrix, x, y + height, 0).setUv(u * f, (v + (float) height) * f1);
-		bufferBuilder.addVertex(matrix, x + width, y + height, 0).setUv((u + (float) width) * f, (v + (float) height) * f1);
-		bufferBuilder.addVertex(matrix, x + width, y, 0).setUv((u + (float) width) * f, v * f1);
-		bufferBuilder.addVertex(matrix, x, y, 0).setUv(u * f, v * f1);
-		BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+		guiGraphics.blit(
+			this.resourceLocation,
+			xOffset + maskLeft,
+			yOffset + maskTop,
+			u + maskLeft,
+			v + maskTop,
+			uWidth,
+			vHeight,
+			this.textureWidth,
+			this.textureHeight
+		);
 	}
 }

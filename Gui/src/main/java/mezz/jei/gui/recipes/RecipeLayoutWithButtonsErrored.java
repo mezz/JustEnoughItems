@@ -3,7 +3,7 @@ package mezz.jei.gui.recipes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.RecipeLayoutDrawableErrored;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
@@ -18,7 +18,7 @@ public final class RecipeLayoutWithButtonsErrored<R> implements IRecipeLayoutWit
 	private final RecipeLayoutDrawableErrored<R> errorLayout;
 
 	public RecipeLayoutWithButtonsErrored(IRecipeLayoutDrawable<R> brokenRecipeLayout) {
-		DrawableNineSliceTexture recipeBackground = Internal.getTextures().getRecipeBackground();
+		ScalableDrawable recipeBackground = Internal.getTextures().getRecipeBackground();
 		this.errorLayout = new RecipeLayoutDrawableErrored<>(brokenRecipeLayout.getRecipeCategory(), brokenRecipeLayout.getRecipe(), recipeBackground, 4);
 		Rect2i rect = brokenRecipeLayout.getRect();
 		this.errorLayout.setPosition(rect.getX(), rect.getY());

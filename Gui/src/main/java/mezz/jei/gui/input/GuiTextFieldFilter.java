@@ -2,7 +2,7 @@ package mezz.jei.gui.input;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.TextHistory;
@@ -25,7 +25,7 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 	private final BooleanSupplier filterEmpty;
 
 	private ImmutableRect2i area;
-	private final DrawableNineSliceTexture background;
+	private final ScalableDrawable background;
 	private ImmutableRect2i backgroundBounds;
 
 	private @Nullable ScreenFocusHandler screenUnfocusHandler;

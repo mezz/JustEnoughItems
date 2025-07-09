@@ -6,7 +6,7 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -37,8 +37,9 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	private final IIngredientGridConfig gridConfig;
 	private final IngredientGrid ingredientGrid;
 	private final IIngredientGridSource ingredientSource;
-	private final DrawableNineSliceTexture background;
-	private final DrawableNineSliceTexture slotBackground;
+	private final ScalableDrawable background;
+	private final ScalableDrawable slotBackground;
+	private final CommandUtil commandUtil;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private final IUserInputHandler inputHandler;
 
@@ -55,8 +56,8 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		IClientConfig clientConfig,
 		IConnectionToServer serverConnection,
 		IIngredientGridConfig gridConfig,
-		DrawableNineSliceTexture background,
-		DrawableNineSliceTexture slotBackground,
+		ScalableDrawable background,
+		ScalableDrawable slotBackground,
 		IScreenHelper screenHelper,
 		IIngredientManager ingredientManager
 	) {
@@ -65,7 +66,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.gridConfig = gridConfig;
 		this.background = background;
 		this.slotBackground = slotBackground;
-		CommandUtil commandUtil = new CommandUtil(clientConfig, serverConnection);
+		this.commandUtil = new CommandUtil(clientConfig, serverConnection);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.ingredientGrid, screenHelper, ingredientManager, toggleState);
 		GhostIngredientQuickMoveManager ghostIngredientQuickMoveManager = new GhostIngredientQuickMoveManager(this.ingredientGrid, screenHelper);
 		this.controller = new IngredientGridWithNavigationController(
@@ -73,7 +74,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 			this.ingredientGrid,
 			toggleState,
 			clientConfig,
-			commandUtil,
+			this.commandUtil,
 			ingredientManager,
 			this::isMouseOver,
 			ghostIngredientQuickMoveManager
