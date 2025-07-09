@@ -6,10 +6,10 @@ plugins {
     id("com.dorongold.task-tree") version("4.0.0")
 
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
-    id("fabric-loom") version("1.11.0-alpha.26") apply(false)
+    id("fabric-loom") version("1.11.4") apply(false)
 
     // https://projects.neoforged.net/neoforged/moddevgradle
-    id("net.neoforged.moddev") version("2.0.88") apply(false)
+    id("net.neoforged.moddev") version("2.0.99") apply(false)
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
     id("me.modmuss50.mod-publish-plugin") version("0.8.4") apply(false)

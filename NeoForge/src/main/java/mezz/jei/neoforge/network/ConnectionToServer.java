@@ -5,7 +5,7 @@ import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PlayToServerPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -35,7 +35,7 @@ public final class ConnectionToServer implements IConnectionToServer {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientPacketListener netHandler = minecraft.getConnection();
 		if (netHandler != null && isJeiOnServer()) {
-			PacketDistributor.sendToServer(packet);
+			ClientPacketDistributor.sendToServer(packet);
 		}
 	}
 }
