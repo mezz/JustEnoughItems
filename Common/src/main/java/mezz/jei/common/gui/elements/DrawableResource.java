@@ -1,12 +1,9 @@
 package mezz.jei.common.gui.elements;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import org.joml.Matrix4f;
 
 public class DrawableResource implements IDrawableStatic {
 
@@ -56,30 +53,20 @@ public class DrawableResource implements IDrawableStatic {
 
 	@Override
 	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
-		RenderType rendertype = RenderType.guiTextured(this.resourceLocation);
-		VertexConsumer bufferBuilder = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(rendertype);
+		int uWidth = this.width - (maskRight + maskLeft);
+		int vHeight = this.height - (maskBottom + maskTop);
 
-		int x = xOffset + this.paddingLeft + maskLeft;
-		int y = yOffset + this.paddingTop + maskTop;
-		int u = this.u + maskLeft;
-		int v = this.v + maskTop;
-		int width = this.width - maskRight - maskLeft;
-		int height = this.height - maskBottom - maskTop;
-		float f = 1.0F / this.textureWidth;
-		float f1 = 1.0F / this.textureHeight;
-
-		Matrix4f matrix = guiGraphics.pose().last().pose();
-		bufferBuilder.addVertex(matrix, x, y + height, 0)
-			.setColor(255, 255, 255, 255)
-			.setUv(u * f, (v + (float) height) * f1);
-		bufferBuilder.addVertex(matrix, x + width, y + height, 0)
-			.setColor(255, 255, 255, 255)
-			.setUv((u + (float) width) * f, (v + (float) height) * f1);
-		bufferBuilder.addVertex(matrix, x + width, y, 0)
-			.setColor(255, 255, 255, 255)
-			.setUv((u + (float) width) * f, v * f1);
-		bufferBuilder.addVertex(matrix, x, y, 0)
-			.setColor(255, 255, 255, 255)
-			.setUv(u * f, v * f1);
+		guiGraphics.blit(
+			RenderType::guiTextured,
+			this.resourceLocation,
+			xOffset + maskLeft,
+			yOffset + maskTop,
+			u + maskLeft,
+			v + maskTop,
+			uWidth,
+			vHeight,
+			this.textureWidth,
+			this.textureHeight
+		);
 	}
 }

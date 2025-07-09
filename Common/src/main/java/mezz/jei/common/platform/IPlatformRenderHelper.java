@@ -39,7 +39,9 @@ public interface IPlatformRenderHelper {
 	@Nullable
 	TextureAtlasSprite getTextureAtlasSprite(BlockState blockState);
 
+	void blitSprite(GuiGraphics guiGraphics, Function<ResourceLocation, RenderType> renderType, TextureAtlasSprite sprite, int textureWidth, int textureHeight, int uPosition, int vPosition, int x, int y, int uWidth, int vHeight);
+
 	void blitNineSlicedSprite(GuiGraphics guiGraphics, Function<ResourceLocation, RenderType> renderType, TextureAtlasSprite sprite, GuiSpriteScaling.NineSlice scaling, int xOffset, int yOffset, int width, int height);
 
-	void blitTiledSprite(GuiGraphics guiGraphics, Function<ResourceLocation, RenderType> renderType, TextureAtlasSprite sprite, GuiSpriteScaling.Tile scaling, int xOffset, int yOffset, int width, int height);
+	void blitTiledSprite(GuiGraphics guiGraphics, Function<ResourceLocation, RenderType> renderType, TextureAtlasSprite sprite, GuiSpriteScaling.Tile scaling, int xOffset, int yOffset, int width, int height, int color);
 }

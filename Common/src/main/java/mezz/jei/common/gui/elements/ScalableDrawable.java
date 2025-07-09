@@ -40,7 +40,8 @@ public class ScalableDrawable implements IScalableDrawable {
 					xOffset,
 					yOffset,
 					width,
-					height
+					height,
+					-1
 				);
 			}
 			case GuiSpriteScaling.NineSlice nineSliceScaling -> {
@@ -56,14 +57,16 @@ public class ScalableDrawable implements IScalableDrawable {
 					height
 				);
 			}
-			default -> guiGraphics.blitSprite(
-				RenderType::guiTextured,
-				location,
-				xOffset,
-				yOffset,
-				width,
-				height
-			);
+			default -> {
+				guiGraphics.blitSprite(
+					RenderType::guiTextured,
+					sprite,
+					xOffset,
+					yOffset,
+					width,
+					height
+				);
+			}
 		}
 	}
 }

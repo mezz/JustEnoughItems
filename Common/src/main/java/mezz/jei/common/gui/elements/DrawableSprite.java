@@ -1,15 +1,13 @@
 package mezz.jei.common.gui.elements;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
-import mezz.jei.common.Constants;
 import mezz.jei.common.gui.textures.JeiGuiSpriteManager;
-import net.minecraft.client.Minecraft;
+import mezz.jei.common.platform.IPlatformRenderHelper;
+import mezz.jei.common.platform.Services;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
-import org.joml.Matrix4f;
 
 public class DrawableSprite implements IDrawableStatic {
 	private final JeiGuiSpriteManager spriteManager;
@@ -54,41 +52,28 @@ public class DrawableSprite implements IDrawableStatic {
 	@Override
 	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
 		TextureAtlasSprite sprite = spriteManager.getSprite(location);
-		int textureWidth = this.width;
-		int textureHeight = this.height;
-
-		RenderType rendertype = RenderType.guiTextured(Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
-		VertexConsumer bufferBuilder = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(rendertype);
 
 		maskTop += trimTop;
 		maskBottom += trimBottom;
 		maskLeft += trimLeft;
 		maskRight += trimRight;
 
-		int x = xOffset + maskLeft;
-		int y = yOffset + maskTop;
-		int width = textureWidth - maskRight - maskLeft;
-		int height = textureHeight - maskBottom - maskTop;
-		float uSize = sprite.getU1() - sprite.getU0();
-		float vSize = sprite.getV1() - sprite.getV0();
+		int uWidth = this.width - (maskRight + maskLeft);
+		int vHeight = this.height - (maskBottom + maskTop);
 
-		float minU = sprite.getU0() + uSize * (maskLeft / (float) textureWidth);
-		float minV = sprite.getV0() + vSize * (maskTop / (float) textureHeight);
-		float maxU = sprite.getU1() - uSize * (maskRight / (float) textureWidth);
-		float maxV = sprite.getV1() - vSize * (maskBottom / (float) textureHeight);
-
-		Matrix4f matrix = guiGraphics.pose().last().pose();
-		bufferBuilder.addVertex(matrix, x, y + height, 0)
-			.setColor(255, 255, 255, 255)
-			.setUv(minU, maxV);
-		bufferBuilder.addVertex(matrix, x + width, y + height, 0)
-			.setColor(255, 255, 255, 255)
-			.setUv(maxU, maxV);
-		bufferBuilder.addVertex(matrix, x + width, y, 0)
-			.setColor(255, 255, 255, 255)
-			.setUv(maxU, minV);
-		bufferBuilder.addVertex(matrix, x, y, 0)
-			.setColor(255, 255, 255, 255)
-			.setUv(minU, minV);
+		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+		renderHelper.blitSprite(
+			guiGraphics,
+			RenderType::guiTextured,
+			sprite,
+			this.width,
+			this.height,
+			maskLeft,
+			maskTop,
+			xOffset + maskLeft,
+			yOffset + maskTop,
+			uWidth,
+			vHeight
+		);
 	}
 }

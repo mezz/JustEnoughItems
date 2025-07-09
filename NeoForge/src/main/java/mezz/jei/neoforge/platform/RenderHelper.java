@@ -92,12 +92,17 @@ public class RenderHelper implements IPlatformRenderHelper {
 	}
 
 	@Override
+	public void blitSprite(GuiGraphics guiGraphics, Function<ResourceLocation, RenderType> renderType, TextureAtlasSprite sprite, int textureWidth, int textureHeight, int uPosition, int vPosition, int x, int y, int uWidth, int vHeight) {
+		guiGraphics.blitSprite(renderType, sprite, textureWidth, textureHeight, uPosition, vPosition, x, y, uWidth, vHeight, -1);
+	}
+
+	@Override
 	public void blitNineSlicedSprite(GuiGraphics guiGraphics, Function<ResourceLocation, RenderType> renderType, TextureAtlasSprite sprite, GuiSpriteScaling.NineSlice scaling, int xOffset, int yOffset, int width, int height) {
 		guiGraphics.blitNineSlicedSprite(renderType, sprite, scaling, xOffset, yOffset, width, height, -1);
 	}
 
 	@Override
-	public void blitTiledSprite(GuiGraphics guiGraphics, Function<ResourceLocation, RenderType> renderType, TextureAtlasSprite sprite, GuiSpriteScaling.Tile scaling, int xOffset, int yOffset, int width, int height) {
+	public void blitTiledSprite(GuiGraphics guiGraphics, Function<ResourceLocation, RenderType> renderType, TextureAtlasSprite sprite, GuiSpriteScaling.Tile scaling, int xOffset, int yOffset, int width, int height, int color) {
 		guiGraphics.blitTiledSprite(
 			renderType,
 			sprite,
@@ -111,7 +116,7 @@ public class RenderHelper implements IPlatformRenderHelper {
 			scaling.height(),
 			scaling.width(),
 			scaling.height(),
-			-1
+			color
 		);
 	}
 }
