@@ -1,16 +1,11 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "mezz.jei.fabric.mixin",
+  "package": "mezz.jei.neoforge.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
   ],
   "client": [
-    "AbstractContainerScreenMixin",
-    "ClientPacketListenerMixin",
-    "EffectsInInventoryMixin",
-    "KeyboardHandlerMixin",
-    "MinecraftMixin",
     "MixinGrindstoneResultSlotInvoker"
   ],
   "injectors": {
