@@ -5,7 +5,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mezz.jei.api.fabric.constants.FabricTypes;
 import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
-import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -96,7 +95,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	}
 
 	@Override
-	public void getTooltip(ITooltipBuilder tooltip, IJeiFluidIngredient ingredient, TooltipFlag tooltipFlag) {
+	public void getTooltip(List<Component> tooltip, IJeiFluidIngredient ingredient, TooltipFlag tooltipFlag) {
 		FluidVariant fluidVariant = ingredient.getFluidVariant();
 		List<Component> components = FluidVariantRendering.getTooltip(fluidVariant, tooltipFlag);
 		tooltip.addAll(components);
