@@ -2,7 +2,13 @@ package mezz.jei.api.constants;
 
 import mezz.jei.api.recipe.types.IRecipeHolderType;
 import mezz.jei.api.recipe.types.IRecipeType;
-import mezz.jei.api.recipe.vanilla.*;
+import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
+import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
+import mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe;
+import mezz.jei.api.recipe.vanilla.IJeiFuelingRecipe;
+import mezz.jei.api.recipe.vanilla.IJeiGrindstoneRecipe;
+import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
+import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
