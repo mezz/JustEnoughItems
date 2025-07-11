@@ -39,12 +39,18 @@ public interface IJeiGrindstoneRecipe {
     List<ItemStack> getOutputs();
 
     /**
-     * The average amount of XP that a player receives.
+     * The minimum XP that a player can receive.
      *
      * @since 21.3.2.9999
      */
-    @Unmodifiable
-    float getAverageXpReward();
+    int getMinXpReward();
+
+    /**
+     * The maximum XP that a player can receive.
+     *
+     * @since 21.3.2.9999
+     */
+    int getMaxXpReward();
 
     /**
      * Unique ID for this recipe.

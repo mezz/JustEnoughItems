@@ -13,7 +13,8 @@ public record GrindstoneRecipe(
         List<ItemStack> topInputs,
         List<ItemStack> bottomInputs,
         List<ItemStack> outputs,
-        float averageXpReward,
+        int minXpReward,
+        int maxXpReward,
         @Nullable ResourceLocation uid,
         boolean isOutputRenderOnly
 ) implements IJeiGrindstoneRecipe {
@@ -22,9 +23,10 @@ public record GrindstoneRecipe(
             List<ItemStack> topInputs,
             List<ItemStack> bottomInputs,
             List<ItemStack> outputs,
-            float averageXpReward,
+            int minXpReward,
+            int maxXpReward,
             @Nullable ResourceLocation uid) {
-        this(topInputs, bottomInputs, outputs, averageXpReward, uid, true);
+        this(topInputs, bottomInputs, outputs, minXpReward, maxXpReward, uid, true);
     }
 
     @Override
@@ -49,9 +51,13 @@ public record GrindstoneRecipe(
     }
 
     @Override
-    @Unmodifiable
-    public float getAverageXpReward() {
-        return averageXpReward;
+    public int getMinXpReward() {
+        return minXpReward;
+    }
+
+    @Override
+    public int getMaxXpReward() {
+        return maxXpReward;
     }
 
     @Override

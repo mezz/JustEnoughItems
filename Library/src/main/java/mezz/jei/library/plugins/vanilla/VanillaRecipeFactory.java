@@ -46,12 +46,12 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	}
 
 	@Override
-	public GrindstoneRecipe createGrindstoneRecipe(List<ItemStack> topInputs, List<ItemStack> bottomInputs, List<ItemStack> outputs, float averageXP, @Nullable ResourceLocation uid) {
+	public GrindstoneRecipe createGrindstoneRecipe(List<ItemStack> topInputs, List<ItemStack> bottomInputs, List<ItemStack> outputs, int minXp, int maxXp, @Nullable ResourceLocation uid) {
 		ErrorUtil.checkNotEmpty(topInputs, "topInputs");
 		ErrorUtil.checkNotNull(bottomInputs, "bottomInputs");
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 
-		return new GrindstoneRecipe(List.copyOf(topInputs), List.copyOf(bottomInputs), List.copyOf(outputs), averageXP, uid);
+		return new GrindstoneRecipe(List.copyOf(topInputs), List.copyOf(bottomInputs), List.copyOf(outputs), minXp, maxXp, uid);
 	}
 
 	@Override

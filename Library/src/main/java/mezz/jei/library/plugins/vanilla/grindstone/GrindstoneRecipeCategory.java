@@ -17,7 +17,6 @@ import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 public class GrindstoneRecipeCategory extends AbstractRecipeCategory<IJeiGrindstoneRecipe> {
@@ -72,18 +71,16 @@ public class GrindstoneRecipeCategory extends AbstractRecipeCategory<IJeiGrindst
     public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiGrindstoneRecipe recipe, @NotNull IFocusGroup focuses) {
         builder.addRecipeArrow().setPosition(20, 12);
 
-        float averageXpReward = recipe.getAverageXpReward();
-        DecimalFormat format = new DecimalFormat("0.#");
-        String rewardText = averageXpReward < 0 ? "Invalid exp amount" : format.format(recipe.getAverageXpReward());
-        Component text = Component.translatable("gui.jei.category.grindstone.average_experience_reward", rewardText);
-
-        int textColor = 0xFF80FF20;
-
-        builder.addText(text, getWidth(), 10)
+        int maxXpReward = recipe.getMaxXpReward();
+        if (maxXpReward > 0) {
+            int minXpReward = recipe.getMinXpReward();
+            Component text = Component.translatable("gui.jei.category.grindstone.experience", minXpReward, maxXpReward);
+            builder.addText(text, getWidth(), 10)
                 .setPosition(0, 43)
-                .setColor(textColor)
+                .setColor(0xFF80FF20)
                 .setShadow(true)
                 .setTextAlignment(HorizontalAlignment.RIGHT);
+        }
     }
 
     @Override

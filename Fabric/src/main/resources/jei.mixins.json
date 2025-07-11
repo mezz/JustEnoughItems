@@ -10,8 +10,7 @@
     "ClientPacketListenerMixin",
     "EffectsInInventoryMixin",
     "KeyboardHandlerMixin",
-    "MinecraftMixin",
-    "MixinGrindstoneResultSlotInvoker"
+    "MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1

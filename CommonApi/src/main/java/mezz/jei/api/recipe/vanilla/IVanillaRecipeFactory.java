@@ -51,12 +51,13 @@ public interface IVanillaRecipeFactory {
 	 * @param topInputs    The itemStack(s) placed on the left slot.
 	 * @param bottomInputs The itemStack(s) placed on the right slot.
 	 * @param outputs      The resulting itemStack(s).
-	 * @param averageXP    The average amount of XP that a player receives.
+	 * @param minXp        The minimum amount of XP that a player receives.
+	 * @param maxXp        The maximum amount of XP that a player receives.
 	 * @param uid		   The unique ID for this recipe.
 	 *
 	 * @since 21.3.2.9999
 	 */
-	IJeiGrindstoneRecipe createGrindstoneRecipe(List<ItemStack> topInputs, List<ItemStack> bottomInputs, List<ItemStack> outputs, float averageXP, ResourceLocation uid);
+	IJeiGrindstoneRecipe createGrindstoneRecipe(List<ItemStack> topInputs, List<ItemStack> bottomInputs, List<ItemStack> outputs, int minXp, int maxXp, ResourceLocation uid);
 
 	/**
 	 * Create a new brewing recipe.
