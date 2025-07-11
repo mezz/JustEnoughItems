@@ -10,65 +10,65 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.List;
 
 public record GrindstoneRecipe(
-        List<ItemStack> topInputs,
-        List<ItemStack> bottomInputs,
-        List<ItemStack> outputs,
-        int minXpReward,
-        int maxXpReward,
-        @Nullable ResourceLocation uid,
-        boolean isOutputRenderOnly
+		List<ItemStack> topInputs,
+		List<ItemStack> bottomInputs,
+		List<ItemStack> outputs,
+		int minXpReward,
+		int maxXpReward,
+		@Nullable ResourceLocation uid,
+		boolean isOutputRenderOnly
 ) implements IJeiGrindstoneRecipe {
 
-    public GrindstoneRecipe(
-            List<ItemStack> topInputs,
-            List<ItemStack> bottomInputs,
-            List<ItemStack> outputs,
-            int minXpReward,
-            int maxXpReward,
-            @Nullable ResourceLocation uid) {
-        this(topInputs, bottomInputs, outputs, minXpReward, maxXpReward, uid, true);
-    }
+	public GrindstoneRecipe(
+			List<ItemStack> topInputs,
+			List<ItemStack> bottomInputs,
+			List<ItemStack> outputs,
+			int minXpReward,
+			int maxXpReward,
+			@Nullable ResourceLocation uid) {
+		this(topInputs, bottomInputs, outputs, minXpReward, maxXpReward, uid, true);
+	}
 
-    @Override
-    @Unmodifiable
-    @NotNull
-    public List<ItemStack> getTopInputs() {
-        return topInputs;
-    }
+	@Override
+	@Unmodifiable
+	@NotNull
+	public List<ItemStack> getTopInputs() {
+		return topInputs;
+	}
 
-    @Override
-    @Unmodifiable
-    @NotNull
-    public List<ItemStack> getBottomInputs() {
-        return bottomInputs;
-    }
+	@Override
+	@Unmodifiable
+	@NotNull
+	public List<ItemStack> getBottomInputs() {
+		return bottomInputs;
+	}
 
-    @Override
-    @Unmodifiable
-    @NotNull
-    public List<ItemStack> getOutputs() {
-        return outputs;
-    }
+	@Override
+	@Unmodifiable
+	@NotNull
+	public List<ItemStack> getOutputs() {
+		return outputs;
+	}
 
-    @Override
-    public int getMinXpReward() {
-        return minXpReward;
-    }
+	@Override
+	public int getMinXpReward() {
+		return minXpReward;
+	}
 
-    @Override
-    public int getMaxXpReward() {
-        return maxXpReward;
-    }
+	@Override
+	public int getMaxXpReward() {
+		return maxXpReward;
+	}
 
-    @Override
-    @Nullable
-    public ResourceLocation getUid() {
-        return uid;
-    }
+	@Override
+	@Nullable
+	public ResourceLocation getUid() {
+		return uid;
+	}
 
-    @Override
-    @Unmodifiable
-    public boolean isOutputRenderOnly() {
-        return isOutputRenderOnly;
-    }
+	@Override
+	@Unmodifiable
+	public boolean isOutputRenderOnly() {
+		return isOutputRenderOnly;
+	}
 }
