@@ -32,7 +32,7 @@ public interface IJeiGrindstoneRecipe {
 	List<ItemStack> getBottomInputs();
 
 	/**
-	 * Get the outputs of the Anvil recipe.
+	 * Get the outputs of the Grindstone recipe.
 	 *
 	 * @since 21.4.0
 	 */
@@ -55,13 +55,14 @@ public interface IJeiGrindstoneRecipe {
 
 	/**
 	 * Unique ID for this recipe.
+	 *
 	 * @since 21.4.0
 	 */
 	@Nullable
 	ResourceLocation getUid();
 
 	/**
-	 * Make the output render only, to avoid displaying unnecessary crafting recipes.
+	 * Make the output render only, to avoid displaying unnecessary crafting recipes when looking up outputs.
 	 *
 	 * @since 21.4.0
 	 */

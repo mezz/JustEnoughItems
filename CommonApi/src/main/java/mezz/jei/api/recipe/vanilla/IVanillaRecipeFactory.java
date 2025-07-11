@@ -45,14 +45,14 @@ public interface IVanillaRecipeFactory {
 	IJeiAnvilRecipe createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs, ResourceLocation uid);
 
 	/**
-	 * Create an grindstone recipe for the given inputs and output.
-	 * The number of inputs in the left and right side must match.
+	 * Create a grindstone recipe for the given inputs and output.
+	 * The number of inputs in the top and bottom must match.
 	 *
-	 * @param topInputs    The itemStack(s) placed on the left slot.
-	 * @param bottomInputs The itemStack(s) placed on the right slot.
+	 * @param topInputs    The itemStack(s) placed on the top slot.
+	 * @param bottomInputs The itemStack(s) placed on the bottom slot.
 	 * @param outputs      The resulting itemStack(s).
-	 * @param minXp        The minimum amount of XP that a player receives.
-	 * @param maxXp        The maximum amount of XP that a player receives.
+	 * @param minXp        The minimum amount of XP that a player can receive.
+	 * @param maxXp        The maximum amount of XP that a player can receive.
 	 * @param uid		   The unique ID for this recipe.
 	 *
 	 * @since 21.4.0
