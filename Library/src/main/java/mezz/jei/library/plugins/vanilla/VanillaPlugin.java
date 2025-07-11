@@ -56,6 +56,8 @@ import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.library.plugins.vanilla.crafting.VanillaRecipes;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.ShieldDecorationRecipeMaker;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
+import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipeCategory;
+import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipeMaker;
 import mezz.jei.library.plugins.vanilla.gui.InventoryEffectRendererGuiHandler;
 import mezz.jei.library.plugins.vanilla.gui.RecipeBookGuiHandler;
 import mezz.jei.library.plugins.vanilla.gui.ToastGuiHandler;
@@ -79,6 +81,7 @@ import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.client.gui.screens.inventory.CrafterScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.client.gui.screens.inventory.FurnaceScreen;
+import net.minecraft.client.gui.screens.inventory.GrindstoneScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
@@ -225,7 +228,8 @@ public class VanillaPlugin implements IModPlugin {
 			new SmokingFuelCategory(guiHelper, textures),
 			new BlastingFuelCategory(guiHelper, textures),
 			new BrewingRecipeCategory(guiHelper),
-			new AnvilRecipeCategory(guiHelper)
+			new AnvilRecipeCategory(guiHelper),
+			new GrindstoneRecipeCategory(guiHelper)
 		);
 	}
 
@@ -289,6 +293,7 @@ public class VanillaPlugin implements IModPlugin {
 		List<IJeiBrewingRecipe> brewingRecipes = recipeHelper.getBrewingRecipes(ingredientManager, vanillaRecipeFactory, potionBrewing);
 		brewingRecipes.sort(Comparator.comparingInt(IJeiBrewingRecipe::getBrewingSteps));
 		registration.addRecipes(RecipeTypes.BREWING, brewingRecipes);
+		registration.addRecipes(RecipeTypes.GRINDSTONE, GrindstoneRecipeMaker.getGrindstoneRecipes(ingredientManager, recipeHelper));
 	}
 
 	@Override
@@ -301,6 +306,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipeClickArea(SmokerScreen.class, 78, 32, 28, 23, RecipeTypes.SMOKING, RecipeTypes.SMOKING_FUEL);
 		registration.addRecipeClickArea(BlastFurnaceScreen.class, 78, 32, 28, 23, RecipeTypes.BLASTING, RecipeTypes.BLASTING_FUEL);
 		registration.addRecipeClickArea(AnvilScreen.class, 102, 48, 22, 15, RecipeTypes.ANVIL);
+		registration.addRecipeClickArea(GrindstoneScreen.class, 92, 31, 28, 21, RecipeTypes.GRINDSTONE);
 		registration.addRecipeClickArea(SmithingScreen.class, 68, 49, 22, 15, RecipeTypes.SMITHING);
 
 		registration.addGenericGuiContainerHandler(AbstractContainerScreen.class, new InventoryEffectRendererGuiHandler());
@@ -348,6 +354,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addCraftingStation(RecipeTypes.BLASTING_FUEL, Blocks.BLAST_FURNACE);
 		registration.addCraftingStation(RecipeTypes.BREWING, Blocks.BREWING_STAND);
 		registration.addCraftingStation(RecipeTypes.ANVIL, Blocks.ANVIL);
+		registration.addCraftingStation(RecipeTypes.GRINDSTONE, Blocks.GRINDSTONE);
 		registration.addCraftingStation(RecipeTypes.SMITHING, Blocks.SMITHING_TABLE);
 		registration.addCraftingStation(RecipeTypes.COMPOSTING, Blocks.COMPOSTER);
 	}

@@ -299,6 +299,8 @@
   "gui.jei.category.brewing.steps": "Steps: %s",
   "gui.jei.category.compostable": "Composting",
   "gui.jei.category.compostable.chance": "Chance: %s%%",
+  "gui.jei.category.grindstone": "Grinding",
+  "gui.jei.category.grindstone.experience": "%s to %s XP",
   "gui.jei.category.itemInformation": "Information",
   "gui.jei.category.tagInformation": "%s Tags",
   "gui.jei.category.tagInformation.block": "Block Tags",
