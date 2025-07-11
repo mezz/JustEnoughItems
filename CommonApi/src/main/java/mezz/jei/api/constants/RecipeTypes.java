@@ -138,7 +138,7 @@ public final class RecipeTypes {
 	 *
 	 * @see IVanillaRecipeFactory#createGrindstoneRecipe to create new grindstone recipes in JEI.
 	 *
-	 * @since 21.3.2.9999
+	 * @since 21.4.0
 	 */
 	public static final IRecipeType<IJeiGrindstoneRecipe> GRINDSTONE =
 			IRecipeType.create(ModIds.MINECRAFT_ID, "grindstone", IJeiGrindstoneRecipe.class);
