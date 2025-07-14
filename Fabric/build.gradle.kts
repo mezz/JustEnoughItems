@@ -252,24 +252,6 @@ publishing {
             artifactId = baseArchivesName
             artifact(tasks.remapJar)
             artifact(tasks.remapSourcesJar)
-
-            val dependencyInfos = dependencyProjects.map {
-                mapOf(
-                    "groupId" to it.group,
-                    "artifactId" to it.dependencyProject.base.archivesName.get(),
-                    "version" to it.version
-                )
-            }
-
-            pom.withXml {
-                val dependenciesNode = asNode().appendNode("dependencies")
-                dependencyInfos.forEach {
-                    val dependencyNode = dependenciesNode.appendNode("dependency")
-                    it.forEach { (key, value) ->
-                        dependencyNode.appendNode(key, value)
-                    }
-                }
-            }
         }
     }
     repositories {
