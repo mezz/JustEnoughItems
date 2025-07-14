@@ -75,10 +75,6 @@ public class JeiShapedRecipe implements CraftingRecipe {
 		);
 	}
 
-	public List<SlotDisplay> getDisplays() {
-		return displays;
-	}
-
 	@Override
 	public boolean showNotification() {
 		return false;
@@ -158,7 +154,7 @@ public class JeiShapedRecipe implements CraftingRecipe {
 			buffer.writeEnum(recipe.category);
 			ShapedRecipePattern.STREAM_CODEC.encode(buffer, recipe.pattern);
 
-			List<SlotDisplay> displays = recipe.getDisplays();
+			List<SlotDisplay> displays = recipe.displays;
 			buffer.writeVarInt(displays.size());
 			for (SlotDisplay display : displays) {
 				SlotDisplay.STREAM_CODEC.encode(buffer, display);
