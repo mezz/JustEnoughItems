@@ -280,7 +280,7 @@
   "_comment": "隐藏材料模式",
   "gui.jei.editMode.description": "JEI 隐藏材料模式：",
   "gui.jei.editMode.description.hide": "按下 %s 隐藏。",
-  "gui.jei.editMode.description.hide.wild": "按下 %s 通过通配符隐藏。"，
+  "gui.jei.editMode.description.hide.wild": "按下 %s 通过通配符隐藏。",
 
 "_comment": "配方分类",
 "gui.jei.category.craftingTable": "合成",
@@ -295,7 +295,7 @@
 "gui.jei.category.smoking_fuel": "烟熏燃料",
 "gui.jei.category.blasting_fuel": "煅烧燃料",
 "gui.jei.category.fuel.smeltCount.single": "可熔炼1个物品",
-"gui.jei.category.fuel.smeltCount": "可熔炼 %s 个物品"，
+"gui.jei.category.fuel.smeltCount": "可熔炼 %s 个物品",
 "gui.jei.category.brewing": "酿造",
 "gui.jei.category.brewing.steps": "步骤：%s",
 "gui.jei.category.compostable": "堆肥",
@@ -310,7 +310,7 @@
 "gui.jei.category.recipe.crashed": "此配方已崩溃。请查看客户端日志了解详情。",
 
 "_comment": "信息",
-"jei.message.configured": "安装 Configured 模组以访问游戏内配置"，
+"jei.message.configured": "安装 Configured 模组以访问游戏内配置",
 "jei.message.config.folder": "或点击此处打开 JEI 配置文件夹",
 "jei.message.copy.recipe.id.success": "以下配方ID已复制到剪贴板：%s",
 "jei.message.copy.recipe.id.failure": "无法复制配方ID到剪贴板，因为ID未知",
