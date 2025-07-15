@@ -4,10 +4,8 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.GuiProperties;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,14 +20,6 @@ public class AbstractContainerScreenHandler<T extends AbstractContainerMenu> imp
 		int y = screenHelper.getGuiTop(containerScreen);
 		int width = screenHelper.getXSize(containerScreen);
 		int height = screenHelper.getYSize(containerScreen);
-		if (containerScreen instanceof AbstractRecipeBookScreen<?> r) {
-			ImmutableRect2i bookArea = screenHelper.getBookArea(r);
-			if (!bookArea.isEmpty()) {
-				width += (x - bookArea.getX());
-				x = bookArea.getX();
-			}
-		}
-
 		if (x < 0) {
 			width -= x;
 			x = 0;

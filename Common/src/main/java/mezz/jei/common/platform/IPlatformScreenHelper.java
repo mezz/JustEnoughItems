@@ -23,13 +23,13 @@ public interface IPlatformScreenHelper {
 
 	int getYSize(AbstractContainerScreen<?> containerScreen);
 
-	ImmutableRect2i getBookArea(AbstractRecipeBookScreen<?> screen);
-
 	ImmutableRect2i getToastsArea();
 
 	List<RecipeBookTabButton> getTabButtons(RecipeBookComponent<?> recipeBookComponent);
 
 	<T extends RecipeBookMenu> RecipeBookComponent<?> getRecipeBookComponent(AbstractRecipeBookScreen<T> screen);
+
+	ImmutableRect2i getBookArea(RecipeBookComponent<?> guiRecipeBook);
 
 	boolean canLoseFocus(EditBox editBox);
 }

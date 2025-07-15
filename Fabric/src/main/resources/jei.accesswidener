@@ -12,6 +12,8 @@ accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent height I
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent xOffset I
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent tabButtons Ljava/util/List;
+accessible method net/minecraft/client/gui/screens/recipebook/RecipeBookComponent getXOrigin ()I
+accessible method net/minecraft/client/gui/screens/recipebook/RecipeBookComponent getYOrigin ()I
 
 accessible field net/minecraft/client/gui/screens/inventory/AbstractRecipeBookScreen recipeBookComponent Lnet/minecraft/client/gui/screens/recipebook/RecipeBookComponent;
 

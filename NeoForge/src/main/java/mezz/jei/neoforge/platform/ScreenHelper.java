@@ -45,12 +45,14 @@ public class ScreenHelper implements IPlatformScreenHelper {
 	}
 
 	@Override
-	public ImmutableRect2i getBookArea(AbstractRecipeBookScreen<?> screen) {
-		RecipeBookComponent<?> guiRecipeBook = getRecipeBookComponent(screen);
+	public ImmutableRect2i getBookArea(RecipeBookComponent<?> guiRecipeBook) {
 		if (guiRecipeBook.isVisible()) {
-			int i = (guiRecipeBook.width - 147) / 2 - guiRecipeBook.xOffset;
-			int j = (guiRecipeBook.height - 166) / 2;
-			return new ImmutableRect2i(i, j, 147, 166);
+			return new ImmutableRect2i(
+				guiRecipeBook.getXOrigin(),
+				guiRecipeBook.getYOrigin(),
+				RecipeBookComponent.IMAGE_WIDTH,
+				RecipeBookComponent.IMAGE_HEIGHT
+			);
 		}
 		return ImmutableRect2i.EMPTY;
 	}
