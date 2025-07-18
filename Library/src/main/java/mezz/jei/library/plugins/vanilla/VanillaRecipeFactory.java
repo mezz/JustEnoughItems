@@ -12,9 +12,11 @@ import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipe;
 import mezz.jei.library.plugins.vanilla.brewing.BrewingRecipeUtil;
 import mezz.jei.library.plugins.vanilla.brewing.JeiBrewingRecipe;
 import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipeBuilder;
+import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -62,6 +64,15 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 
 		return new AnvilRecipe(List.copyOf(leftInputs), List.copyOf(rightInputs), List.copyOf(outputs), null);
+	}
+
+	@Override
+	public GrindstoneRecipe createGrindstoneRecipe(List<ItemStack> topInputs, List<ItemStack> bottomInputs, List<ItemStack> outputs, int minXp, int maxXp, @Nullable ResourceLocation uid) {
+		ErrorUtil.checkNotEmpty(topInputs, "topInputs");
+		ErrorUtil.checkNotNull(bottomInputs, "bottomInputs");
+		ErrorUtil.checkNotEmpty(outputs, "outputs");
+
+		return new GrindstoneRecipe(List.copyOf(topInputs), List.copyOf(bottomInputs), List.copyOf(outputs), minXp, maxXp, uid);
 	}
 
 	@Override

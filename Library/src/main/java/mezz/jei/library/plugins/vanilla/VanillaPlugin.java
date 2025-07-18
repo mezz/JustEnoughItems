@@ -56,6 +56,8 @@ import mezz.jei.library.plugins.vanilla.crafting.replacers.ShieldDecorationRecip
 import mezz.jei.library.plugins.vanilla.crafting.replacers.ShulkerBoxColoringRecipeMaker;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.SuspiciousStewRecipeMaker;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
+import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipeCategory;
+import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipeMaker;
 import mezz.jei.library.plugins.vanilla.gui.InventoryEffectRendererGuiHandler;
 import mezz.jei.library.plugins.vanilla.gui.RecipeBookGuiHandler;
 import mezz.jei.library.plugins.vanilla.gui.ToastGuiHandler;
@@ -76,17 +78,7 @@ import mezz.jei.library.render.FluidTankRenderer;
 import mezz.jei.library.render.ItemStackRenderer;
 import mezz.jei.library.transfer.PlayerRecipeTransferHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
-import net.minecraft.client.gui.screens.inventory.AnvilScreen;
-import net.minecraft.client.gui.screens.inventory.BlastFurnaceScreen;
-import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
-import net.minecraft.client.gui.screens.inventory.CrafterScreen;
-import net.minecraft.client.gui.screens.inventory.CraftingScreen;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.FurnaceScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.gui.screens.inventory.SmithingScreen;
-import net.minecraft.client.gui.screens.inventory.SmokerScreen;
+import net.minecraft.client.gui.screens.inventory.*;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -224,7 +216,8 @@ public class VanillaPlugin implements IModPlugin {
 			new CompostableRecipeCategory(guiHelper),
 			new FurnaceFuelCategory(textures),
 			new BrewingRecipeCategory(guiHelper),
-			new AnvilRecipeCategory(guiHelper)
+			new AnvilRecipeCategory(guiHelper),
+			new GrindstoneRecipeCategory(guiHelper)
 		);
 	}
 
@@ -280,6 +273,7 @@ public class VanillaPlugin implements IModPlugin {
 		List<IJeiBrewingRecipe> brewingRecipes = recipeHelper.getBrewingRecipes(ingredientManager, vanillaRecipeFactory, potionBrewing);
 		brewingRecipes.sort(Comparator.comparingInt(IJeiBrewingRecipe::getBrewingSteps));
 		registration.addRecipes(RecipeTypes.BREWING, brewingRecipes);
+		registration.addRecipes(RecipeTypes.GRINDSTONE, GrindstoneRecipeMaker.getGrindstoneRecipes(ingredientManager, recipeHelper));
 	}
 
 	@Override
@@ -292,6 +286,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipeClickArea(SmokerScreen.class, 78, 32, 28, 23, RecipeTypes.SMOKING, RecipeTypes.FUELING);
 		registration.addRecipeClickArea(BlastFurnaceScreen.class, 78, 32, 28, 23, RecipeTypes.BLASTING, RecipeTypes.FUELING);
 		registration.addRecipeClickArea(AnvilScreen.class, 102, 48, 22, 15, RecipeTypes.ANVIL);
+		registration.addRecipeClickArea(GrindstoneScreen.class, 92, 31, 28, 21, RecipeTypes.GRINDSTONE);
 		registration.addRecipeClickArea(SmithingScreen.class, 68, 49, 22, 15, RecipeTypes.SMITHING);
 
 		registration.addGenericGuiContainerHandler(EffectRenderingInventoryScreen.class, new InventoryEffectRendererGuiHandler<>());
@@ -341,6 +336,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipeCatalyst(Blocks.BLAST_FURNACE, RecipeTypes.BLASTING);
 		registration.addRecipeCatalyst(Blocks.BREWING_STAND, RecipeTypes.BREWING);
 		registration.addRecipeCatalyst(Blocks.ANVIL, RecipeTypes.ANVIL);
+		registration.addRecipeCatalyst(Blocks.GRINDSTONE, RecipeTypes.GRINDSTONE);
 		registration.addRecipeCatalyst(Blocks.SMITHING_TABLE, RecipeTypes.SMITHING);
 		registration.addRecipeCatalyst(Blocks.COMPOSTER, RecipeTypes.COMPOSTING);
 	}
