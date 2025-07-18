@@ -1,5 +1,5 @@
 {
-  "_comment": "提示",
+  "_comment": "Tooltips",
   "jei.tooltip.config": "JEI 配置",
   "jei.tooltip.show.recipes": "显示配方",
   "jei.tooltip.show.all.recipes.hotkey": "按下 %s 以显示所有配方。",
@@ -35,7 +35,7 @@
   "jei.tooltip.recipe.sort.craftable.first.enabled": "优先显示可合成的配方（启用）。",
   "jei.tooltip.recipe.sort.craftable.first.disabled": "优先显示可合成的配方（禁用）。",
 
-  "_comment": "错误提示",
+  "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "缺少物品",
   "jei.tooltip.error.recipe.transfer.inventory.full": "物品栏已满。",
   "jei.tooltip.error.recipe.transfer.no.server": "服务器必须安装 JEI。",
@@ -43,7 +43,7 @@
   "jei.tooltip.error.crash": "获取提示时崩溃，请查看客户端了解详细日志。",
   "jei.tooltip.error.render.crash": "渲染时崩溃，请查看客户端了解详细日志。",
 
-  "_comment": "错误信息",
+  "_comment": "Error Messages",
   "jei.chat.error.no.cheat.permission.1": "你没有使用 JEI 作弊模式的权限。",
   "jei.chat.error.no.cheat.permission.disabled": "在该服务器，所有玩家都无法使用 JEI 的“作弊模式”。",
   "jei.chat.error.no.cheat.permission.enabled": "在该服务器，以下类型的玩家可以使用 JEI 的“作弊模式”：",
@@ -51,7 +51,7 @@
   "jei.chat.error.no.cheat.permission.op": "拥有管理员身份的玩家（/op）",
   "jei.chat.error.no.cheat.permission.give": "可以使用 /give 命令的玩家",
 
-  "_comment": "按键绑定",
+  "_comment": "Key Bindings",
   "jei.key.category.overlays": "JEI（悬浮界面）",
   "key.jei.toggleOverlay": "显示/隐藏 JEI 悬浮界面",
   "key.jei.focusSearch": "高亮搜索框",
@@ -99,7 +99,7 @@
   "jei.key.category.dev.tools": "JEI（开发者工具）",
   "key.jei.copy.recipe.id": "复制配方ID到剪贴板",
 
-  "_comment": " 配置",
+  "_comment": "Config",
   "jei.config": "JEI 配置",
   "jei.config.name": "名称：%s",
   "jei.config.description": "描述：%s",
@@ -115,7 +115,6 @@
   "jei.config.mode.cheatItemsEnabled.description": "直接获取物品而非显示配方。",
   "jei.config.mode.editEnabled": "隐藏物品模式",
   "jei.config.mode.editEnabled.description": "通过点击物品列表覆盖层中的物品来隐藏或显示它们。",
-
   "jei.config.interface": "界面",
   "jei.config.interface.description": "与用户界面相关的选项。",
   "jei.config.interface.overlayEnabled": "显示物品列表覆盖层",
@@ -277,12 +276,12 @@
   "jei.config.colors.colors.searchColors": "搜索颜色",
   "jei.config.colors.colors.searchColors.description": "要搜索的颜色值。",
 
-  "_comment": "隐藏材料模式",
+  "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI 隐藏材料模式：",
   "gui.jei.editMode.description.hide": "按下 %s 隐藏。",
   "gui.jei.editMode.description.hide.wild": "按下 %s 通过通配符隐藏。",
 
-  "_comment": "配方分类",
+  "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "合成",
   "gui.jei.category.stoneCutter": "切石",
   "gui.jei.category.smelting": "烧炼",
@@ -309,14 +308,14 @@
   "gui.jei.category.tagInformation.item": "物品标签",
   "gui.jei.category.recipe.crashed": "此配方已崩溃。请查看客户端日志了解详情。",
 
-  "_comment": "信息",
+  "_comment": "Messages",
   "jei.message.configured": "安装 Configured 模组以访问游戏内配置",
   "jei.message.config.folder": "或点击此处打开 JEI 配置文件夹",
   "jei.message.copy.recipe.id.success": "以下配方ID已复制到剪贴板：%s",
   "jei.message.copy.recipe.id.failure": "无法复制配方ID到剪贴板，因为ID未知",
   "jei.message.missing.recipes.from.server": "JEI 缺少配方。请在服务器上安装 JEI 以将配方同步到客户端。\n自 Minecraft 1.21.2 起，配方存储在服务器而非客户端。",
 
-  "_comment": "键名",
+  "_comment": "Key Names",
   "jei.key.combo.shift": "SHIFT + %s",
   "jei.key.combo.control": "CTRL + %s",
   "jei.key.combo.command": "CMD + %s",
