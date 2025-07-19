@@ -333,4 +333,7 @@
   "description.jei.debug.formatting.3": "%s nested",
   "jei.alias.panda.spawn.egg": "endangered",
   "jei.alias.villager.spawn.egg": "HMMM"
+
+  
+  "modmenu.descriptionTranslation.jei": "JEI — це мод для перегляду предметів і рецептів майстрування, створений з нуля для стабільности та продуктивности",
 }
