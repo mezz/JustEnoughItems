@@ -7,7 +7,7 @@
   "jei.tooltip.liquid.amount": "%s mB",
   "jei.tooltip.liquid.flowing": "%s (流动中)",
   "jei.tooltip.transfer": "转移物品",
-  "jei.tooltip.recipe.tag": "接受下列任何物品：%s",
+  "jei.tooltip.recipe.tag": "接受标签中的原料：%s",
   "jei.tooltip.item.colors": "颜色：%s",
   "jei.tooltip.item.search.aliases": "搜索别名:",
   "jei.tooltip.shapeless.recipe": "无序配方",
