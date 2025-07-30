@@ -5,6 +5,7 @@ import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
@@ -12,6 +13,7 @@ import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
 import net.minecraftforge.common.crafting.IShapedRecipe;
+import net.minecraft.world.item.enchantment.Enchantment;
 
 import java.util.List;
 import java.util.Optional;
@@ -76,5 +78,10 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 	@Override
 	public List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory) {
 		return BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory);
+	}
+
+	@Override
+	public boolean isItemEnchantable(ItemStack stack, Enchantment enchantment) {
+		return stack.getItem().isEnchantable(stack);
 	}
 }
