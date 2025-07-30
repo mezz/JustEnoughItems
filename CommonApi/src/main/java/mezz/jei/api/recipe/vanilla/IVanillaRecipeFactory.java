@@ -53,7 +53,7 @@ public interface IVanillaRecipeFactory {
 	 * @param maxXp        The maximum amount of XP that a player can receive.
 	 * @param uid		   The unique ID for this recipe.
 	 *
-	 * @since 19.22.1.0
+	 * @since 19.22.1
 	 */
 	IJeiGrindstoneRecipe createGrindstoneRecipe(List<ItemStack> topInputs, List<ItemStack> bottomInputs, List<ItemStack> outputs, int minXp, int maxXp, ResourceLocation uid);
 
