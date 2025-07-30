@@ -3,7 +3,9 @@ package mezz.jei.api.recipe.vanilla;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeRegistration;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
@@ -13,6 +15,7 @@ import java.util.List;
  *
  * Use {@link IRecipeRegistration#addRecipes(RecipeType, List)} to add the recipe.
  */
+@ApiStatus.NonExtendable
 public interface IVanillaRecipeFactory {
 	/**
 	 * Create an anvil recipe for the given inputs and output.
@@ -32,6 +35,21 @@ public interface IVanillaRecipeFactory {
 	 * @param outputs     The resulting itemStack(s).
 	 */
 	IJeiAnvilRecipe createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs);
+
+	/**
+	 * Create a grindstone recipe for the given inputs and output.
+	 * The number of inputs in the top and bottom must match.
+	 *
+	 * @param topInputs    The itemStack(s) placed on the top slot.
+	 * @param bottomInputs The itemStack(s) placed on the bottom slot.
+	 * @param outputs      The resulting itemStack(s).
+	 * @param minXp        The minimum amount of XP that a player can receive.
+	 * @param maxXp        The maximum amount of XP that a player can receive.
+	 * @param uid          The unique ID for this recipe.
+	 *
+	 * @since 11.18.0
+	 */
+	IJeiGrindstoneRecipe createGrindstoneRecipe(List<ItemStack> topInputs, List<ItemStack> bottomInputs, List<ItemStack> outputs, int minXp, int maxXp, ResourceLocation uid);
 
 	/**
 	 * Create a new brewing recipe.
