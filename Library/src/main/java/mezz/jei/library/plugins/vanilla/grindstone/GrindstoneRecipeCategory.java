@@ -20,71 +20,71 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class GrindstoneRecipeCategory extends AbstractRecipeCategory<IJeiGrindstoneRecipe> {
-    private static final String topSlotName = "topSlot";
-    private static final String bottomSlotName = "bottomSlot";
+	private static final String topSlotName = "topSlot";
+	private static final String bottomSlotName = "bottomSlot";
 
-    public GrindstoneRecipeCategory(IGuiHelper guiHelper) {
-        super(
-                RecipeTypes.GRINDSTONE,
-                Blocks.GRINDSTONE.getName(),
-                guiHelper.createDrawableItemLike(Blocks.GRINDSTONE),
-                125,
-                52
-        );
-    }
+	public GrindstoneRecipeCategory(IGuiHelper guiHelper) {
+		super(
+				RecipeTypes.GRINDSTONE,
+				Blocks.GRINDSTONE.getName(),
+				guiHelper.createDrawableItemLike(Blocks.GRINDSTONE),
+				125,
+				52
+		);
+	}
 
-    @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, IJeiGrindstoneRecipe recipe, @NotNull IFocusGroup focuses) {
-        List<ItemStack> topInputs = recipe.getTopInputs();
-        List<ItemStack> bottomInputs = recipe.getBottomInputs();
-        List<ItemStack> outputs = recipe.getOutputs();
+	@Override
+	public void setRecipe(IRecipeLayoutBuilder builder, IJeiGrindstoneRecipe recipe, @NotNull IFocusGroup focuses) {
+		List<ItemStack> topInputs = recipe.getTopInputs();
+		List<ItemStack> bottomInputs = recipe.getBottomInputs();
+		List<ItemStack> outputs = recipe.getOutputs();
 
-        IRecipeSlotBuilder topInputSlot = builder.addInputSlot(1, 1)
-                .addItemStacks(topInputs)
-                .setStandardSlotBackground()
-                .setSlotName(topSlotName);
+		IRecipeSlotBuilder topInputSlot = builder.addInputSlot(1, 1)
+				.addItemStacks(topInputs)
+				.setStandardSlotBackground()
+				.setSlotName(topSlotName);
 
-        IRecipeSlotBuilder bottomInputSlot = builder.addInputSlot(1, 24)
-                .addItemStacks(bottomInputs)
-                .setStandardSlotBackground()
-                .setSlotName(bottomSlotName);
+		IRecipeSlotBuilder bottomInputSlot = builder.addInputSlot(1, 24)
+				.addItemStacks(bottomInputs)
+				.setStandardSlotBackground()
+				.setSlotName(bottomSlotName);
 
-        int outputSlotXPosition = 52;
-        int outputSlotYPosition = 13;
-        IRecipeSlotBuilder outputSlot = recipe.isOutputRenderOnly() ?
-                builder.addSlot(RecipeIngredientRole.RENDER_ONLY, outputSlotXPosition, outputSlotYPosition) :
-                builder.addOutputSlot(outputSlotXPosition, outputSlotYPosition);
-        outputSlot.setOutputSlotBackground().addItemStacks(outputs);
+		int outputSlotXPosition = 52;
+		int outputSlotYPosition = 13;
+		IRecipeSlotBuilder outputSlot = recipe.isOutputRenderOnly() ?
+				builder.addSlot(RecipeIngredientRole.RENDER_ONLY, outputSlotXPosition, outputSlotYPosition) :
+				builder.addOutputSlot(outputSlotXPosition, outputSlotYPosition);
+		outputSlot.setOutputSlotBackground().addItemStacks(outputs);
 
-        if (topInputs.size() == bottomInputs.size()) {
-            if (topInputs.size() == outputs.size()) {
-                builder.createFocusLink(topInputSlot, bottomInputSlot, outputSlot);
-            }
-        } else if (topInputs.size() == outputs.size() && bottomInputs.size() == 1) {
-            builder.createFocusLink(topInputSlot, outputSlot);
-        } else if (bottomInputs.size() == outputs.size() && topInputs.size() == 1) {
-            builder.createFocusLink(bottomInputSlot, outputSlot);
-        }
-    }
+		if (topInputs.size() == bottomInputs.size()) {
+			if (topInputs.size() == outputs.size()) {
+				builder.createFocusLink(topInputSlot, bottomInputSlot, outputSlot);
+			}
+		} else if (topInputs.size() == outputs.size() && bottomInputs.size() == 1) {
+			builder.createFocusLink(topInputSlot, outputSlot);
+		} else if (bottomInputs.size() == outputs.size() && topInputs.size() == 1) {
+			builder.createFocusLink(bottomInputSlot, outputSlot);
+		}
+	}
 
-    @Override
-    public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiGrindstoneRecipe recipe, @NotNull IFocusGroup focuses) {
-        builder.addRecipeArrow().setPosition(20, 12);
+	@Override
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiGrindstoneRecipe recipe, @NotNull IFocusGroup focuses) {
+		builder.addRecipeArrow().setPosition(20, 12);
 
-        int maxXpReward = recipe.getMaxXpReward();
-        if (maxXpReward > 0) {
-            int minXpReward = recipe.getMinXpReward();
-            Component text = Component.translatable("gui.jei.category.grindstone.experience", minXpReward, maxXpReward);
-            builder.addText(text, getWidth(), 10)
-                    .setPosition(0, 43)
-                    .setColor(0xFF80FF20)
-                    .setShadow(true)
-                    .setTextAlignment(HorizontalAlignment.RIGHT);
-        }
-    }
+		int maxXpReward = recipe.getMaxXpReward();
+		if (maxXpReward > 0) {
+			int minXpReward = recipe.getMinXpReward();
+			Component text = Component.translatable("gui.jei.category.grindstone.experience", minXpReward, maxXpReward);
+			builder.addText(text, getWidth(), 10)
+					.setPosition(0, 43)
+					.setColor(0xFF80FF20)
+					.setShadow(true)
+					.setTextAlignment(HorizontalAlignment.RIGHT);
+		}
+	}
 
-    @Override
-    public @Nullable ResourceLocation getRegistryName(IJeiGrindstoneRecipe recipe) {
-        return recipe.getUid();
-    }
+	@Override
+	public @Nullable ResourceLocation getRegistryName(IJeiGrindstoneRecipe recipe) {
+		return recipe.getUid();
+	}
 }

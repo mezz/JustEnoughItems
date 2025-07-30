@@ -15,58 +15,57 @@ import java.util.List;
  * @since 19.22.1
  */
 public interface IJeiGrindstoneRecipe {
-    /**
-     * Get the inputs that go into the top slot of the Grindstone.
-     *
-     * @since 19.22.1
-     */
-    @Unmodifiable
-    List<ItemStack> getTopInputs();
+	/**
+	 * Get the inputs that go into the top slot of the Grindstone.
+	 *
+	 * @since 19.22.1
+	 */
+	@Unmodifiable
+	List<ItemStack> getTopInputs();
 
-    /**
-     * Get the inputs that go into the bottom slot of the Grindstone.
-     *
-     * @since 19.22.1
-     */
-    @Unmodifiable
-    List<ItemStack> getBottomInputs();
+	/**
+	 * Get the inputs that go into the bottom slot of the Grindstone.
+	 *
+	 * @since 19.22.1
+	 */
+	@Unmodifiable
+	List<ItemStack> getBottomInputs();
 
-    /**
-     * Get the outputs of the Grindstone recipe.
-     *
-     * @since 19.22.1
-     */
-    @Unmodifiable
-    List<ItemStack> getOutputs();
+	/**
+	 * Get the outputs of the Grindstone recipe.
+	 *
+	 * @since 19.22.1
+	 */
+	@Unmodifiable
+	List<ItemStack> getOutputs();
 
-    /**
-     * The minimum XP that a player can receive.
-     *
-     * @since 19.22.1
-     */
-    int getMinXpReward();
+	/**
+	 * The minimum XP that a player can receive.
+	 *
+	 * @since 19.22.1
+	 */
+	int getMinXpReward();
 
-    /**
-     * The maximum XP that a player can receive.
-     *
-     * @since 19.22.1
-     */
-    int getMaxXpReward();
+	/**
+	 * The maximum XP that a player can receive.
+	 *
+	 * @since 19.22.1
+	 */
+	int getMaxXpReward();
 
-    /**
-     * Unique ID for this recipe.
-     *
-     * @since 19.22.1
-     */
-    @Nullable
-    ResourceLocation getUid();
+	/**
+	 * Unique ID for this recipe.
+	 *
+	 * @since 19.22.1
+	 */
+	@Nullable
+	ResourceLocation getUid();
 
-    /**
-     * Make the output render only, to avoid displaying unnecessary crafting recipes when looking up outputs.
-     *
-     * @since 19.22.1
-     */
-    @Unmodifiable
-    boolean isOutputRenderOnly();
+	/**
+	 * Make the output render only, to avoid displaying unnecessary crafting recipes when looking up outputs.
+	 *
+	 * @since 19.22.1
+	 */
+	@Unmodifiable
+	boolean isOutputRenderOnly();
 }
-
