@@ -5,7 +5,6 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Optional;
