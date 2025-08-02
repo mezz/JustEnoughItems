@@ -69,6 +69,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i slotBackgroundArea = ImmutableRect2i.EMPTY;
 	private Set<ImmutableRect2i> guiExclusionAreas = Set.of();
+	private boolean active;
 
 	public IngredientGridWithNavigation(
 		String debugName,
@@ -98,9 +99,15 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.ingredientGrid, screenHelper, ingredientManager, toggleState);
 
 		this.ingredientSource.addSourceListChangedListener(() -> {
-			boolean resetToFirstPage = clientConfig.isAddingBookmarksToFrontEnabled();
-			updateLayout(resetToFirstPage);
+			if (isActive()) {
+				boolean resetToFirstPage = clientConfig.isAddingBookmarksToFrontEnabled();
+				updateLayout(resetToFirstPage);
+			}
 		});
+	}
+
+	private boolean isActive() {
+		return active;
 	}
 
 	public boolean hasRoom() {
@@ -186,6 +193,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
+		this.active = true;
 		this.guiExclusionAreas = guiExclusionAreas;
 
 		final boolean navigationEnabled =
@@ -201,6 +209,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			updateGridBounds(availableArea, mouseExclusionPoint, true);
 		}
 		if (!hasRoom()) {
+			this.active = false;
 			return;
 		}
 
@@ -302,6 +311,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	public void close() {
+		this.active = false;
 		this.ghostIngredientDragManager.stopDrag();
 	}
 
