@@ -34,6 +34,8 @@ public interface IClientConfig {
 
 	boolean isHistoryEnabled();
 
+	void setHistoryEnabled(boolean enabled);
+
 	int getMaxHistoryRows();
 
 	HistoryViewSide getHistoryViewSide();

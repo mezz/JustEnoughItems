@@ -28,6 +28,7 @@ import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListSlot;
 import mezz.jei.gui.overlay.ScreenPropertiesCache;
+import mezz.jei.gui.overlay.bookmarks.history.HistoryButton;
 import mezz.jei.gui.overlay.bookmarks.history.HistoryOverlay;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.Minecraft;
@@ -55,6 +56,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	private final IngredientGridWithNavigation contents;
 	private final HistoryOverlay historyOverlay;
 	private final GuiIconToggleButton bookmarkButton;
+	private final GuiIconToggleButton historyButton;
 
 	// data
 	private final BookmarkList bookmarkList;
@@ -74,6 +76,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		this.toggleState = toggleState;
 		this.clientConfig = clientConfig;
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, toggleState, keyBindings);
+		this.historyButton = HistoryButton.create(clientConfig);
 		this.contents = contents;
 		this.historyOverlay = historyOverlay;
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
@@ -139,12 +142,16 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				.keepBottom(BUTTON_SIZE)
 				.keepLeft(BUTTON_SIZE);
 			this.bookmarkButton.updateBounds(bookmarkButtonArea);
+			ImmutableRect2i historyButtonArea  = bookmarkButtonArea.moveRight(2 + BUTTON_SIZE);
+			this.historyButton.updateBounds(historyButtonArea);
 		} else {
 			ImmutableRect2i bookmarkButtonArea = displayArea
 				.insetBy(BORDER_MARGIN)
 				.keepBottom(BUTTON_SIZE)
 				.keepLeft(BUTTON_SIZE);
 			this.bookmarkButton.updateBounds(bookmarkButtonArea);
+			ImmutableRect2i historyButtonArea  = bookmarkButtonArea.moveRight(2 + BUTTON_SIZE);
+			this.historyButton.updateBounds(historyButtonArea);
 		}
 	}
 
@@ -167,6 +174,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
         }
 		if (this.screenPropertiesCache.hasValidScreen()) {
 			this.bookmarkButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
+			this.historyButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 	}
 
@@ -181,6 +189,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
 			bookmarkButton.drawTooltips(guiGraphics, mouseX, mouseY);
+			historyButton.drawTooltips(guiGraphics, mouseX, mouseY);
 		}
 	}
 
@@ -224,11 +233,13 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 	public IUserInputHandler createInputHandler() {
 		final IUserInputHandler bookmarkButtonInputHandler = this.bookmarkButton.createInputHandler();
+		final IUserInputHandler historyButtonInputHandler = this.historyButton.createInputHandler();
 
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
 			"BookmarkOverlay",
 			this.contents.createInputHandler(),
-			bookmarkButtonInputHandler
+			bookmarkButtonInputHandler,
+			historyButtonInputHandler
 		);
 
 		return new ProxyInputHandler(() -> {

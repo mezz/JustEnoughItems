@@ -34,7 +34,7 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> dragToRearrangeBookmarksEnabled;
 
 	// history
-	private final Supplier<Boolean> historyEnabled;
+	private final ConfigValue<Boolean> historyEnabled;
 	private final Supplier<Integer> maxHistoryRows;
 	private final Supplier<HistoryViewSide> historyViewSide;
 
@@ -284,6 +284,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isHistoryEnabled() {
 		return historyEnabled.get();
+	}
+
+	@Override
+	public void setHistoryEnabled(boolean enabled) {
+		this.historyEnabled.set(enabled);
 	}
 
 	@Override

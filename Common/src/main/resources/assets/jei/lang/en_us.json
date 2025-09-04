@@ -30,6 +30,7 @@
   "jei.tooltip.bookmarks.tooltips.usage": "[Press \"%s\" to show details]",
   "jei.tooltip.bookmarks.tooltips.transfer.usage": "[Press \"%s\" to craft one]",
   "jei.tooltip.bookmarks.tooltips.transfer.max.usage": "[Press \"%s\" to craft many]",
+  "jei.tooltip.history": "JEI View History",
   "jei.tooltip.recipe.sort.bookmarks.first.enabled": "Show bookmarked recipes first (enabled).",
   "jei.tooltip.recipe.sort.bookmarks.first.disabled": "Show bookmarked recipes first (disabled).",
   "jei.tooltip.recipe.sort.craftable.first.enabled": "Show craftable recipes first (enabled).",
