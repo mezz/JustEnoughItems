@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.core.Holder;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -31,12 +32,12 @@ public abstract class TypedItemStack implements ITypedIngredient<ItemStack> {
 		if (ingredient.getCount() == 1) {
 			return NormalizedTypedItemStack.create(
 				ingredient.getItemHolder(),
-				ingredient.getTag()
+				copyTag(ingredient.getTag())
 			);
 		}
 		return new FullTypedItemStack(
 			ingredient.getItemHolder(),
-			ingredient.getTag(),
+			copyTag(ingredient.getTag()),
 			ingredient.getCount()
 		);
 	}
@@ -53,7 +54,12 @@ public abstract class TypedItemStack implements ITypedIngredient<ItemStack> {
 			return typedItemStack.getNormalized();
 		}
 		ItemStack itemStack = typedIngredient.getIngredient();
-		return NormalizedTypedItemStack.create(itemStack.getItemHolder(), itemStack.getTag());
+		return NormalizedTypedItemStack.create(itemStack.getItemHolder(), copyTag(itemStack.getTag()));
+	}
+
+	@Nullable
+	private static CompoundTag copyTag(@Nullable CompoundTag tag) {
+		return tag == null ? null : tag.copy();
 	}
 
 	@Override

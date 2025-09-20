@@ -8,14 +8,14 @@ import org.jetbrains.annotations.Nullable;
 
 final class NormalizedTypedItemStack extends TypedItemStack {
 	private final Holder<Item> itemHolder;
-	private final CompoundTag tag;
+	private final @Nullable CompoundTag tag;
 
 	public NormalizedTypedItemStack(
 		Holder<Item> itemHolder,
 		CompoundTag tag
 	) {
 		this.itemHolder = itemHolder;
-		this.tag = tag;
+		this.tag = copyTag(tag);
 	}
 
 	static TypedItemStack create(Holder<Item> itemHolder, @Nullable CompoundTag tag) {
@@ -28,7 +28,7 @@ final class NormalizedTypedItemStack extends TypedItemStack {
 	@Override
 	public ItemStack createItemStackUncached() {
 		ItemStack itemStack = new ItemStack(itemHolder, 1);
-		itemStack.setTag(tag);
+		itemStack.setTag(copyTag(tag));
 		return itemStack;
 	}
 
@@ -48,5 +48,10 @@ final class NormalizedTypedItemStack extends TypedItemStack {
 			"itemHolder=" + itemHolder +
 			", tag=" + tag +
 			'}';
+	}
+
+	@Nullable
+	private static CompoundTag copyTag(@Nullable CompoundTag tag) {
+		return tag == null ? null : tag.copy();
 	}
 }

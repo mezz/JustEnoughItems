@@ -45,6 +45,19 @@ public interface IIngredientManager {
 	<V> Collection<V> getAllIngredients(IIngredientType<V> ingredientType);
 
 	/**
+	 * Returns an unmodifiable collection of all the ingredients known to JEI, of the specified type.
+	 *
+	 * @since 15.48.0
+	 */
+	@Unmodifiable
+	default <V> Collection<ITypedIngredient<V>> getAllTypedIngredients(IIngredientType<V> ingredientType) {
+		return getAllIngredients(ingredientType).stream()
+			.map(ingredient -> createTypedIngredient(ingredientType, ingredient))
+			.flatMap(Optional::stream)
+			.toList();
+	}
+
+	/**
 	 * Returns the appropriate ingredient helper for this ingredient.
 	 */
 	<V> IIngredientHelper<V> getIngredientHelper(V ingredient);
