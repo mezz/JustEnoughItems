@@ -35,7 +35,6 @@ import java.util.stream.Stream;
 public class LookupHistoryOverlay implements IRecipeFocusSource {
 
 	private static final int INGREDIENT_PADDING = 1;
-	public static final int SLOT_WIDTH = GuiIngredientProperties.getWidth(INGREDIENT_PADDING);
 	public static final int SLOT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
 
 	// display elements
@@ -84,7 +83,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 	}
 
 	public boolean isOnSide() {
-		return ownerSide.isSide(clientConfig.getLookupHistoryViewSide());
+		return ownerSide.equals(clientConfig.getLookupHistoryViewSide());
 	}
 
 	public IIngredientGridSource getLookupHistory() {
