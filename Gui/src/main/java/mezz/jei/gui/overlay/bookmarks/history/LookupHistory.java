@@ -16,9 +16,8 @@ public class LookupHistory implements IIngredientGridSource {
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
 
 	public void add(IBookmark element) {
-		if (elements.isEmpty() || !elements.getFirst().equals(element)) {
-			elements.addFirst(element);
-		}
+		elements.remove(element);
+		elements.addFirst(element);
 		if (elements.size() > MAX_ELEMENTS) {
 			elements.removeLast();
 		}
