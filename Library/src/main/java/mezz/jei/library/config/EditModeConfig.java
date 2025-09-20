@@ -64,18 +64,6 @@ public class EditModeConfig implements IEditModeConfig {
 		return false;
 	}
 
-	public <V> void removeIngredientFromConfigBlacklist(
-		ITypedIngredient<V> typedIngredient,
-		HideMode blacklistType,
-		IIngredientHelper<V> ingredientHelper
-	) {
-		final String uid = getIngredientUid(typedIngredient, blacklistType, ingredientHelper);
-		if (blacklist.remove(uid)) {
-			serializer.save(this);
-			notifyListenersOfVisibilityChange(typedIngredient, true);
-		}
-	}
-
 	public <V> boolean isIngredientOnConfigBlacklist(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
 		for (HideMode hideMode : HideMode.values()) {
 			if (isIngredientOnConfigBlacklist(typedIngredient, hideMode, ingredientHelper)) {
@@ -144,7 +132,11 @@ public class EditModeConfig implements IEditModeConfig {
 	public <V> void showIngredientUsingConfigFile(ITypedIngredient<V> ingredient, HideMode hideMode) {
 		IIngredientType<V> type = ingredient.getType();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(type);
-		removeIngredientFromConfigBlacklist(ingredient, hideMode, ingredientHelper);
+		final Object blacklistUid = getIngredientUid(ingredient, hideMode, ingredientHelper);
+		if (blacklist.remove(blacklistUid)) {
+			serializer.save(this);
+			notifyListenersOfVisibilityChange(ingredient, true);
+		}
 	}
 
 	public void registerListener(IngredientVisibility ingredientVisibility) {
