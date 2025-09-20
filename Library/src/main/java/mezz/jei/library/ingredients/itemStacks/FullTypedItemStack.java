@@ -16,14 +16,14 @@ final class FullTypedItemStack extends TypedItemStack {
 		int count
 	) {
 		this.item = item;
-		this.tag = tag;
+		this.tag = copyTag(tag);
 		this.count = count;
 	}
 
 	@Override
 	protected ItemStack createItemStackUncached() {
 		ItemStack itemStack = new ItemStack(item, count);
-		itemStack.setTag(tag);
+		itemStack.setTag(copyTag(tag));
 		return itemStack;
 	}
 
@@ -44,5 +44,13 @@ final class FullTypedItemStack extends TypedItemStack {
 			", tag=" + tag +
 			", count=" + count +
 			'}';
+	}
+
+	@Nullable
+	private static CompoundTag copyTag(@Nullable CompoundTag tag) {
+		if (tag == null) {
+			return null;
+		}
+		return tag.copy();
 	}
 }
