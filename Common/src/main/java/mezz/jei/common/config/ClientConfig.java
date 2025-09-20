@@ -127,7 +127,7 @@ public final class ClientConfig implements IClientConfig {
 		maxHistoryRows = history.addInteger(
 			"MaxHistoryRows",
 			2,
-			0,
+			1,
 			7,
 			"Max number of rows in the history overlay."
 		);
