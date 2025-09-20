@@ -79,6 +79,7 @@ public class HistoryOverlay implements IRecipeFocusSource {
     public boolean isListDisplayed() {
         return clientConfig.isHistoryEnabled() &&
                 isOnSide() &&
+                contents.hasVisibleContent() &&
                 contents.hasRoom();
     }
 
