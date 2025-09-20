@@ -170,8 +170,8 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (screenPropertiesCache.hasValidScreen()) {
-            this.historyOverlay.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
-        }
+			this.historyOverlay.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
 			this.bookmarkButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 			this.historyButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
@@ -184,8 +184,8 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 			}
 			if (screenPropertiesCache.hasValidScreen()) {
-                this.historyOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
-            }
+				this.historyOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+			}
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
 			bookmarkButton.drawTooltips(guiGraphics, mouseX, mouseY);

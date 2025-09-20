@@ -11,48 +11,48 @@ import java.util.List;
 
 public class HistoryList implements IIngredientGridSource {
 
-    private final List<IElement<?>> elements = new ArrayList<>();
-    private final List<SourceListChangedListener> listeners = new ArrayList<>();
-    private int leftMaxSize;
-    private int rightMaxSize;
+	private final List<IElement<?>> elements = new ArrayList<>();
+	private final List<SourceListChangedListener> listeners = new ArrayList<>();
+	private int leftMaxSize;
+	private int rightMaxSize;
 
-    public void setMaxSize(HistoryViewSide side,int maxSize) {
-        if (side == HistoryViewSide.LEFT) {
-            this.leftMaxSize = maxSize;
-        } else {
-            this.rightMaxSize = maxSize;
-        }
-    }
+	public void setMaxSize(HistoryViewSide side,int maxSize) {
+		if (side == HistoryViewSide.LEFT) {
+			this.leftMaxSize = maxSize;
+		} else {
+			this.rightMaxSize = maxSize;
+		}
+	}
 
-    public void add(IElement<?> element) {
-        if (elements.contains(element)) {
-            return;
-        }
-        elements.addFirst(element);
-        if (elements.size() > Math.max(leftMaxSize, rightMaxSize)) {
-            elements.removeLast();
-        }
-        notifyListeners();
-    }
+	public void add(IElement<?> element) {
+		if (elements.contains(element)) {
+			return;
+		}
+		elements.addFirst(element);
+		if (elements.size() > Math.max(leftMaxSize, rightMaxSize)) {
+			elements.removeLast();
+		}
+		notifyListeners();
+	}
 
-    public void remove(IElement<?> element) {
-        elements.remove(element);
-        notifyListeners();
-    }
+	public void remove(IElement<?> element) {
+		elements.remove(element);
+		notifyListeners();
+	}
 
-    @Override
-    public @Unmodifiable List<IElement<?>> getElements() {
-        return Collections.unmodifiableList(elements);
-    }
+	@Override
+	public @Unmodifiable List<IElement<?>> getElements() {
+		return Collections.unmodifiableList(elements);
+	}
 
-    @Override
-    public void addSourceListChangedListener(SourceListChangedListener listener) {
-        listeners.add(listener);
-    }
+	@Override
+	public void addSourceListChangedListener(SourceListChangedListener listener) {
+		listeners.add(listener);
+	}
 
-    private void notifyListeners() {
-        for (SourceListChangedListener listener : listeners) {
-            listener.onSourceListChanged();
-        }
-    }
+	private void notifyListeners() {
+		for (SourceListChangedListener listener : listeners) {
+			listener.onSourceListChanged();
+		}
+	}
 }
