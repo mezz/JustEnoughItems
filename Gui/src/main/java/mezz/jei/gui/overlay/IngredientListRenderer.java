@@ -18,8 +18,8 @@ import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.gui.GuiComponent;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -82,7 +82,7 @@ public class IngredientListRenderer {
 		renderElementsByType.clear();
 		renderOverlays.clear();
 
-		ListIterator<IElement<?>> elementIterator = ingredientList.listIterator(startIndex);
+		Iterator<IElement<?>> elementIterator = ingredientList.listIterator(startIndex);
 
 		for (IngredientListSlot ingredientListSlot : slots) {
 			if (ingredientListSlot.isBlocked()) {
