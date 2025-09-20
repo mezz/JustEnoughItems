@@ -16,12 +16,19 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.ingredients.IngredientInfo;
 import mezz.jei.library.ingredients.IngredientManager;
 import mezz.jei.library.ingredients.RegisteredIngredients;
+import mezz.jei.library.ingredients.TypedIngredient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.SequencedMap;
 
 public class IngredientManagerBuilder implements IModIngredientRegistration, IIngredientAliasRegistration, IExtraIngredientRegistration {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final SequencedMap<IIngredientType<?>, IngredientInfo<?>> ingredientInfos = new LinkedHashMap<>();
 	private final ISubtypeManager subtypeManager;
 	private final IColorHelper colorHelper;
@@ -57,7 +64,23 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 			throw new IllegalArgumentException("Ingredient type has already been registered: " + ingredientType.getIngredientClass());
 		}
 
-		ingredientInfos.put(ingredientType, new IngredientInfo<>(ingredientType, allIngredients, ingredientHelper, ingredientRenderer, ingredientCodec));
+		List<ITypedIngredient<V>> allTypedIngredients = new ArrayList<>(allIngredients.size());
+		for (V ingredient : allIngredients) {
+			if (!ingredientHelper.isIngredientOnServer(ingredient)) {
+				String errorInfo = ingredientHelper.getErrorInfo(ingredient);
+				LOGGER.warn("Attempted to add an Ingredient that is not on the server: {}", errorInfo);
+				continue;
+			}
+			ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, false);
+			if (typedIngredient == null) {
+				LOGGER.warn("Detected an invalid ingredient during ingredient registration: {}", ingredientHelper.getErrorInfo(ingredient));
+				continue;
+			}
+
+			allTypedIngredients.add(typedIngredient);
+		}
+
+		ingredientInfos.put(ingredientType, new IngredientInfo<>(ingredientType, allTypedIngredients, ingredientHelper, ingredientRenderer, ingredientCodec));
 	}
 
 	@Override
@@ -66,7 +89,25 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(extraIngredients, "extraIngredients");
 
 		IngredientInfo<V> castIngredientInfo = getIngredientInfo(ingredientType);
-		castIngredientInfo.addIngredients(extraIngredients);
+		IIngredientHelper<V> ingredientHelper = castIngredientInfo.getIngredientHelper();
+
+		List<ITypedIngredient<V>> extraTypedIngredients = new ArrayList<>(extraIngredients.size());
+		for (V ingredient : extraIngredients) {
+			if (!ingredientHelper.isIngredientOnServer(ingredient)) {
+				String errorInfo = ingredientHelper.getErrorInfo(ingredient);
+				LOGGER.warn("Attempted to add an extra Ingredient that is not on the server: {}", errorInfo);
+				continue;
+			}
+
+			ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, false);
+			if (typedIngredient == null) {
+				LOGGER.warn("Detected an invalid ingredient when adding extra ingredients: {}", ingredientHelper.getErrorInfo(ingredient));
+				continue;
+			}
+
+			extraTypedIngredients.add(typedIngredient);
+		}
+		castIngredientInfo.addIngredients(extraTypedIngredients);
 	}
 
 	@Override

@@ -22,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +46,16 @@ public class IngredientManager implements IIngredientManager {
 		return this.registeredIngredients
 			.getIngredientInfo(ingredientType)
 			.getAllIngredients();
+	}
+
+	@Override
+	@Unmodifiable
+	public <V> Collection<ITypedIngredient<V>> getAllTypedIngredients(IIngredientType<V> ingredientType) {
+		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
+
+		return this.registeredIngredients
+			.getIngredientInfo(ingredientType)
+			.getAllTypedIngredients();
 	}
 
 	@Override
@@ -112,30 +123,26 @@ public class IngredientManager implements IIngredientManager {
 			LOGGER.debug("Ingredients added at runtime: {}", ingredientStrings);
 		}
 
-		Collection<V> validIngredients = ingredients.stream()
-			.filter(i -> {
-				if (!ingredientHelper.isValidIngredient(i)) {
-					String errorInfo = ingredientHelper.getErrorInfo(i);
-					LOGGER.error("Attempted to add an invalid Ingredient: {}", errorInfo);
-					return false;
-				}
-				if (!ingredientHelper.isIngredientOnServer(i)) {
-					String errorInfo = ingredientHelper.getErrorInfo(i);
-					LOGGER.error("Attempted to add an Ingredient that is not on the server: {}", errorInfo);
-					return false;
-				}
-				return true;
-			})
-			.toList();
+		List<ITypedIngredient<V>> validTypedIngredients = new ArrayList<>(ingredients.size());
+		for (V ingredient : ingredients) {
+			if (!ingredientHelper.isIngredientOnServer(ingredient)) {
+				String errorInfo = ingredientHelper.getErrorInfo(ingredient);
+				LOGGER.warn("Attempted to add an Ingredient that is not on the server: {}", errorInfo);
+				continue;
+			}
+			ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, false);
+			if (typedIngredient == null) {
+				LOGGER.warn("Attempted to add an invalid ingredient at runtime: {}", ingredientHelper.getErrorInfo(ingredient));
+				continue;
+			}
 
-		ingredientInfo.addIngredients(validIngredients);
+			validTypedIngredients.add(typedIngredient);
+		}
+
+		ingredientInfo.addIngredients(validTypedIngredients);
 
 		if (!this.listeners.isEmpty()) {
-			List<ITypedIngredient<V>> typedIngredients = validIngredients.stream()
-				.map(i -> TypedIngredient.createUnvalidated(ingredientType, i))
-				.toList();
-
-			this.listeners.forEach(listener -> listener.onIngredientsAdded(ingredientHelper, typedIngredients));
+			this.listeners.forEach(listener -> listener.onIngredientsAdded(ingredientHelper, validTypedIngredients));
 		}
 	}
 
@@ -183,10 +190,11 @@ public class IngredientManager implements IIngredientManager {
 			LOGGER.debug("Ingredients removed at runtime: {}", ingredientStrings);
 		}
 
-		ingredientInfo.removeIngredients(ingredients);
+		List<ITypedIngredient<V>> typedIngredients = TypedIngredient.createAndFilterInvalidNonnullList(this, ingredientType, ingredients, false);
+
+		ingredientInfo.removeIngredients(typedIngredients);
 
 		if (!this.listeners.isEmpty()) {
-			List<ITypedIngredient<V>> typedIngredients = TypedIngredient.createAndFilterInvalidNonnullList(this, ingredientType, ingredients, false);
 			this.listeners.forEach(listener -> listener.onIngredientsRemoved(ingredientHelper, typedIngredients));
 		}
 	}

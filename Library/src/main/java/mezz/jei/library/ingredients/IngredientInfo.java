@@ -1,5 +1,6 @@
 package mezz.jei.library.ingredients;
 
+import com.google.common.collect.Collections2;
 import com.mojang.serialization.Codec;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -17,12 +18,12 @@ public class IngredientInfo<T> {
 	private final IIngredientHelper<T> ingredientHelper;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final Codec<T> ingredientCodec;
-	private final IngredientSet<T> ingredientSet;
+	private final TypedIngredientSet<T> ingredientSet;
 	private final ListMultiMap<Object, String> aliases;
 
 	public IngredientInfo(
 		IIngredientType<T> ingredientType,
-		Collection<T> ingredients,
+		Collection<ITypedIngredient<T>> ingredients,
 		IIngredientHelper<T> ingredientHelper,
 		IIngredientRenderer<T> ingredientRenderer,
 		Codec<T> ingredientCodec
@@ -32,7 +33,7 @@ public class IngredientInfo<T> {
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredientCodec = ingredientCodec;
 
-		this.ingredientSet = new IngredientSet<>(ingredientHelper, UidContext.Ingredient);
+		this.ingredientSet = new TypedIngredientSet<>(ingredientHelper, UidContext.Ingredient);
 		this.ingredientSet.addAll(ingredients);
 
 		this.aliases = new ListMultiMap<>();
@@ -55,15 +56,21 @@ public class IngredientInfo<T> {
 	}
 
 	@Unmodifiable
-	public Collection<T> getAllIngredients() {
+	public Collection<ITypedIngredient<T>> getAllTypedIngredients() {
 		return Collections.unmodifiableCollection(ingredientSet);
 	}
 
-	public void addIngredients(Collection<T> ingredients) {
+	@Unmodifiable
+	public Collection<T> getAllIngredients() {
+		Collection<T> transform = Collections2.transform(ingredientSet, ITypedIngredient::getIngredient);
+		return Collections.unmodifiableCollection(transform);
+	}
+
+	public void addIngredients(Collection<ITypedIngredient<T>> ingredients) {
 		this.ingredientSet.addAll(ingredients);
 	}
 
-	public void removeIngredients(Collection<T> ingredients) {
+	public void removeIngredients(Collection<ITypedIngredient<T>> ingredients) {
 		this.ingredientSet.removeAll(ingredients);
 	}
 

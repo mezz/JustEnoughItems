@@ -45,6 +45,14 @@ public interface IIngredientManager {
 	<V> Collection<V> getAllIngredients(IIngredientType<V> ingredientType);
 
 	/**
+	 * Returns an unmodifiable collection of all the ingredients known to JEI, of the specified type.
+	 *
+	 * @since 24.1.0
+	 */
+	@Unmodifiable
+	<V> Collection<ITypedIngredient<V>> getAllTypedIngredients(IIngredientType<V> ingredientType);
+
+	/**
 	 * Returns the appropriate ingredient helper for this ingredient.
 	 */
 	<V> IIngredientHelper<V> getIngredientHelper(V ingredient);

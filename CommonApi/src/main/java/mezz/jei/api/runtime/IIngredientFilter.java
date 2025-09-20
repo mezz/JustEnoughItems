@@ -27,7 +27,7 @@ public interface IIngredientFilter {
 	 *
 	 * @see #getFilteredIngredients(IIngredientType) to get a different type of ingredient, not just ItemStack.
 	 *
-	 * @see	IIngredientManager#getAllIngredients(IIngredientType)
+	 * @see	IIngredientManager#getAllTypedIngredients(IIngredientType)
 	 * to get all the ingredients known to JEI, not just ones currently shown by the filter.
 	 *
 	 * @since 11.1.1
@@ -41,7 +41,7 @@ public interface IIngredientFilter {
 	 *
 	 * @see #getFilteredItemStacks() to just get ItemStacks, not all types of ingredients.
 	 *
-	 * @see	IIngredientManager#getAllIngredients(IIngredientType)
+	 * @see	IIngredientManager#getAllTypedIngredients(IIngredientType)
 	 * to get all the ingredients known to JEI, not just ones currently shown by the filter
 	 */
 	<T> List<T> getFilteredIngredients(IIngredientType<T> ingredientType);
