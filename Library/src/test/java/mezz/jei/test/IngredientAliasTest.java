@@ -210,9 +210,7 @@ public class IngredientAliasTest {
 	private static IngredientInfo<TestIngredient> createIngredientInfo(ITypedIngredient<TestIngredient>... typedIngredients) {
 		return new IngredientInfo<>(
 			TEST_TYPE,
-			List.of(typedIngredients).stream()
-				.map(ITypedIngredient::getIngredient)
-				.toList(),
+			List.of(typedIngredients),
 			TEST_HELPER,
 			createTestRenderer()
 		);

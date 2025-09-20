@@ -1,5 +1,6 @@
 package mezz.jei.library.ingredients;
 
+import com.google.common.collect.Collections2;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -20,16 +21,21 @@ public class IngredientInfo<T> {
 	private final IIngredientType<T> ingredientType;
 	private final IIngredientHelper<T> ingredientHelper;
 	private final IIngredientRenderer<T> ingredientRenderer;
-	private final IngredientSet<T> ingredientSet;
+	private final TypedIngredientSet<T> ingredientSet;
 	private final ListMultiMap<String, String> aliases;
 	private final ListMultiMap<Object, String> baseAliases;
 
-	public IngredientInfo(IIngredientType<T> ingredientType, Collection<T> ingredients, IIngredientHelper<T> ingredientHelper, IIngredientRenderer<T> ingredientRenderer) {
+	public IngredientInfo(
+		IIngredientType<T> ingredientType,
+		Collection<ITypedIngredient<T>> ingredients,
+		IIngredientHelper<T> ingredientHelper,
+		IIngredientRenderer<T> ingredientRenderer
+	) {
 		this.ingredientType = ingredientType;
 		this.ingredientHelper = ingredientHelper;
 		this.ingredientRenderer = ingredientRenderer;
 
-		this.ingredientSet = new IngredientSet<>(ingredientHelper, UidContext.Ingredient);
+		this.ingredientSet = new TypedIngredientSet<>(ingredientHelper, UidContext.Ingredient);
 		this.ingredientSet.addAll(ingredients);
 
 		this.aliases = new ListMultiMap<>();
@@ -49,20 +55,27 @@ public class IngredientInfo<T> {
 	}
 
 	@Unmodifiable
-	public Collection<T> getAllIngredients() {
+	public Collection<ITypedIngredient<T>> getAllTypedIngredients() {
 		return Collections.unmodifiableCollection(ingredientSet);
 	}
 
-	public void addIngredients(Collection<T> ingredients) {
+	@Unmodifiable
+	public Collection<T> getAllIngredients() {
+		Collection<T> transform = Collections2.transform(ingredientSet, ITypedIngredient::getIngredient);
+		return Collections.unmodifiableCollection(transform);
+	}
+
+	public void addIngredients(Collection<ITypedIngredient<T>> ingredients) {
 		this.ingredientSet.addAll(ingredients);
 	}
 
-	public void removeIngredients(Collection<T> ingredients) {
+	public void removeIngredients(Collection<ITypedIngredient<T>> ingredients) {
 		this.ingredientSet.removeAll(ingredients);
 	}
 
 	public Optional<T> getIngredientByUid(String uid) {
-		return ingredientSet.getByUid(uid);
+		return ingredientSet.getByUid(uid)
+			.map(ITypedIngredient::getIngredient);
 	}
 
 	@Unmodifiable
