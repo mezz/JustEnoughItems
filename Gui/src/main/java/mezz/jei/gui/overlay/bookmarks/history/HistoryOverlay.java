@@ -103,8 +103,6 @@ public class HistoryOverlay implements IRecipeFocusSource {
 	}
 
 	private void drawLine(PoseStack poseStack, int x1, int x2, int y, int color) {
-		float offset = (System.currentTimeMillis() % 600) / 100.0F;
-		offset = 6 - offset;
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShader(GameRenderer::getPositionColorShader);
@@ -117,11 +115,11 @@ public class HistoryOverlay implements IRecipeFocusSource {
 		float b = (float) (color & 255) / 255.0F;
 		Matrix4f pose = poseStack.last().pose();
 
-		for (float x = x1 - offset; x < x2; x += 7) {
-			builder.addVertex(pose, Mth.clamp(x + 4, x1, x2), y, 0).setColor(r, g, b, a);
+		for (float x = x1; x < x2; x += 14) {
+			builder.addVertex(pose, Mth.clamp(x + 8, x1, x2), y, 0).setColor(r, g, b, a);
 			builder.addVertex(pose, Mth.clamp(x, x1, x2), y, 0).setColor(r, g, b, a);
 			builder.addVertex(pose, Mth.clamp(x, x1, x2), y + 1, 0).setColor(r, g, b, a);
-			builder.addVertex(pose, Mth.clamp(x + 4, x1, x2), y + 1, 0).setColor(r, g, b, a);
+			builder.addVertex(pose, Mth.clamp(x + 8, x1, x2), y + 1, 0).setColor(r, g, b, a);
 		}
 
 		BufferUploader.drawWithShader(builder.buildOrThrow());
