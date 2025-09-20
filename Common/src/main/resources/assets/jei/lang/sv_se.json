@@ -298,6 +298,8 @@
   "gui.jei.category.brewing": "Bryggning",
   "gui.jei.category.brewing.steps": "Steg: %s",
   "gui.jei.category.compostable": "Kompostering",
+  "gui.jei.category.grindstone": "Slipning",
+  "gui.jei.category.grindstone.experience": "%s till %s XP",
   "gui.jei.category.compostable.chance": "Chans: %s %%",
   "gui.jei.category.itemInformation": "Information",
   "gui.jei.category.tagInformation": "%s taggar",
