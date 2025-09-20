@@ -32,13 +32,13 @@ public interface IClientConfig {
 
 	boolean isDragToRearrangeBookmarksEnabled();
 
-	boolean isHistoryEnabled();
+	boolean isLookupHistoryEnabled();
 
-	void setHistoryEnabled(boolean enabled);
+	void setLookupHistoryEnabled(boolean enabled);
 
-	int getMaxHistoryRows();
+	int getMaxLookupHistoryRows();
 
-	HistoryViewSide getHistoryViewSide();
+	HistoryViewSide getLookupHistoryViewSide();
 
 	int getDragDelayMs();
 

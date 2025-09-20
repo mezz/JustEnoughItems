@@ -25,7 +25,7 @@ import mezz.jei.gui.input.handlers.NullDragHandler;
 import mezz.jei.gui.input.handlers.NullInputHandler;
 import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
-import mezz.jei.gui.overlay.bookmarks.history.HistoryOverlay;
+import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import org.apache.logging.log4j.LogManager;
@@ -48,7 +48,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	private final GuiIconToggleButton configButton;
 	private final IngredientGridWithNavigation contents;
-	private final HistoryOverlay historyOverlay;
+	private final LookupHistoryOverlay lookupHistoryOverlay;
 	private final IClientConfig clientConfig;
 	private final IClientToggleState toggleState;
 	private final GuiTextFieldFilter searchField;
@@ -61,14 +61,14 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IFilterTextSource filterTextSource,
 		IScreenHelper screenHelper,
 		IngredientGridWithNavigation contents,
-		HistoryOverlay historyOverlay,
+		LookupHistoryOverlay lookupHistoryOverlay,
 		IClientConfig clientConfig,
 		IClientToggleState toggleState,
 		IInternalKeyMappings keyBindings
 	) {
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
 		this.contents = contents;
-		this.historyOverlay = historyOverlay;
+		this.lookupHistoryOverlay = lookupHistoryOverlay;
 		this.clientConfig = clientConfig;
 		this.toggleState = toggleState;
 
@@ -130,15 +130,15 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		final boolean searchBarCentered = isSearchBarCentered(this.clientConfig, guiProperties);
 
 		ImmutableRect2i availableContentsArea = getAvailableContentsArea(displayArea, searchBarCentered);
-		if (clientConfig.isHistoryEnabled() && historyOverlay.isOnSide()) {
-			int historyRows = clientConfig.getMaxHistoryRows();
-			availableContentsArea  = availableContentsArea.cropBottom(historyRows * HistoryOverlay.SLOT_HEIGHT);
+		if (clientConfig.isLookupHistoryEnabled() && lookupHistoryOverlay.isOnSide()) {
+			int historyRows = clientConfig.getMaxLookupHistoryRows();
+			availableContentsArea  = availableContentsArea.cropBottom(historyRows * LookupHistoryOverlay.SLOT_HEIGHT);
 			ImmutableRect2i historyArea = displayArea
 					.insetBy(BORDER_MARGIN)
 					.moveUp(BUTTON_SIZE + INNER_PADDING)
-					.keepBottom(historyRows * HistoryOverlay.SLOT_HEIGHT);
-			this.historyOverlay.updateBounds(historyArea, guiExclusionAreas, null);
-			this.historyOverlay.updateLayout();
+					.keepBottom(historyRows * LookupHistoryOverlay.SLOT_HEIGHT);
+			this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, null);
+			this.lookupHistoryOverlay.updateLayout();
 		}
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas, null);
 		this.contents.updateLayout(false);
@@ -186,7 +186,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		if (isListDisplayed()) {
 			this.searchField.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
-			this.historyOverlay.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+			this.lookupHistoryOverlay.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
 			this.configButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
@@ -196,7 +196,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
-			this.historyOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+			this.lookupHistoryOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
 			this.configButton.drawTooltips(guiGraphics, mouseX, mouseY);
@@ -212,7 +212,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
-			return Stream.concat(this.contents.getIngredientUnderMouse(mouseX, mouseY), this.historyOverlay.getIngredientUnderMouse(mouseX, mouseY));
+			return Stream.concat(this.contents.getIngredientUnderMouse(mouseX, mouseY), this.lookupHistoryOverlay.getIngredientUnderMouse(mouseX, mouseY));
 		}
 		return Stream.empty();
 	}
@@ -220,7 +220,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
-			return Stream.concat(this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY),this.historyOverlay.getDraggableIngredientUnderMouse(mouseX, mouseY));
+			return Stream.concat(this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY),this.lookupHistoryOverlay.getDraggableIngredientUnderMouse(mouseX, mouseY));
 		}
 		return Stream.empty();
 	}

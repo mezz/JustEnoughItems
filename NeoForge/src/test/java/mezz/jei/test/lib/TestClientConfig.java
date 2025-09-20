@@ -73,17 +73,17 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isHistoryEnabled() {
+	public boolean isLookupHistoryEnabled() {
 		return false;
 	}
 
 	@Override
-	public int getMaxHistoryRows() {
+	public int getMaxLookupHistoryRows() {
 		return 0;
 	}
 
 	@Override
-	public HistoryViewSide getHistoryViewSide() {
+	public HistoryViewSide getLookupHistoryViewSide() {
 		return HistoryViewSide.LEFT;
 	}
 

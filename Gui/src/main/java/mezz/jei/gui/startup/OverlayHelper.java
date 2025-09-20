@@ -19,7 +19,7 @@ import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
-import mezz.jei.gui.overlay.bookmarks.history.HistoryOverlay;
+import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 
 public final class OverlayHelper {
 	private OverlayHelper() {}
@@ -99,7 +99,7 @@ public final class OverlayHelper {
 			true
 		);
 
-		HistoryOverlay historyOverlay = new HistoryOverlay(
+		LookupHistoryOverlay lookupHistoryOverlay = new LookupHistoryOverlay(
 			ingredientManager,
 			historyList,
 			keyMappings,
@@ -117,7 +117,7 @@ public final class OverlayHelper {
 			filterTextSource,
 			screenHelper,
 			ingredientListGridNavigation,
-			historyOverlay,
+			lookupHistoryOverlay,
 			clientConfig,
 			toggleState,
 			keyMappings
@@ -155,7 +155,7 @@ public final class OverlayHelper {
 			false
 		);
 
-		HistoryOverlay historyOverlay = new HistoryOverlay(
+		LookupHistoryOverlay lookupHistoryOverlay = new LookupHistoryOverlay(
 			ingredientManager,
 			lookupHistory,
 			keyMappings,
@@ -171,7 +171,7 @@ public final class OverlayHelper {
 		return new BookmarkOverlay(
 			bookmarkList,
 			bookmarkListGridNavigation,
-			historyOverlay,
+			lookupHistoryOverlay,
 			toggleState,
 			clientConfig,
 			screenHelper,

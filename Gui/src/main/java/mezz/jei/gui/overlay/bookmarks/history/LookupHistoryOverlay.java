@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class HistoryOverlay implements IRecipeFocusSource {
+public class LookupHistoryOverlay implements IRecipeFocusSource {
 
 	private static final int INGREDIENT_PADDING = 1;
 	public static final int SLOT_WIDTH = GuiIngredientProperties.getWidth(INGREDIENT_PADDING);
@@ -47,7 +47,7 @@ public class HistoryOverlay implements IRecipeFocusSource {
 	private final HistoryViewSide ownerSide;
 	private int rows;
 
-	public HistoryOverlay(
+	public LookupHistoryOverlay(
 			IIngredientManager ingredientManager,
 			IIngredientGridSource lookupHistory,
 			IInternalKeyMappings keyMappings,
@@ -77,14 +77,14 @@ public class HistoryOverlay implements IRecipeFocusSource {
 	}
 
 	public boolean isListDisplayed() {
-		return clientConfig.isHistoryEnabled() &&
+		return clientConfig.isLookupHistoryEnabled() &&
 				isOnSide() &&
 				contents.hasVisibleContent() &&
 				contents.hasRoom();
 	}
 
 	public boolean isOnSide() {
-		return ownerSide.isSide(clientConfig.getHistoryViewSide());
+		return ownerSide.isSide(clientConfig.getLookupHistoryViewSide());
 	}
 
 	public IIngredientGridSource getLookupHistory() {
@@ -94,7 +94,7 @@ public class HistoryOverlay implements IRecipeFocusSource {
 	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
 		this.contents.updateBounds(availableArea, guiExclusionAreas, mouseExclusionPoint);
 		int rows = this.contents.getArea().getHeight() / SLOT_HEIGHT;
-		this.rows = Math.min(rows, clientConfig.getMaxHistoryRows());
+		this.rows = Math.min(rows, clientConfig.getMaxLookupHistoryRows());
 	}
 
 	public void updateLayout() {

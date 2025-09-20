@@ -10,19 +10,19 @@ import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.network.chat.Component;
 
-public class HistoryButton extends GuiIconToggleButton {
+public class LookupHistoryButton extends GuiIconToggleButton {
 
-	public static HistoryButton create(IClientConfig clientConfig) {
+	public static LookupHistoryButton create(IClientConfig clientConfig) {
 		Textures textures = Internal.getTextures();
 		IDrawableStatic offIcon = textures.getHistoryButtonDisabledIcon();
 		IDrawableStatic onIcon = textures.getHistoryButtonEnabledICon();
-		return new HistoryButton(offIcon, onIcon, clientConfig);
+		return new LookupHistoryButton(offIcon, onIcon, clientConfig);
 	}
 
 
 	private final IClientConfig clientConfig;
 
-	private HistoryButton(IDrawable offIcon, IDrawable onIcon, IClientConfig clientConfig) {
+	private LookupHistoryButton(IDrawable offIcon, IDrawable onIcon, IClientConfig clientConfig) {
 		super(offIcon, onIcon);
 		this.clientConfig = clientConfig;
 	}
@@ -34,13 +34,13 @@ public class HistoryButton extends GuiIconToggleButton {
 
 	@Override
 	protected boolean isIconToggledOn() {
-		return clientConfig.isHistoryEnabled();
+		return clientConfig.isLookupHistoryEnabled();
 	}
 
 	@Override
 	protected boolean onMouseClicked(UserInput input) {
 		if (!input.isSimulate()) {
-			clientConfig.setHistoryEnabled(!clientConfig.isHistoryEnabled());
+			clientConfig.setLookupHistoryEnabled(!clientConfig.isLookupHistoryEnabled());
 		}
 		return true;
 	}

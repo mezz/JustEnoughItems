@@ -28,8 +28,8 @@ import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListSlot;
 import mezz.jei.gui.overlay.ScreenPropertiesCache;
-import mezz.jei.gui.overlay.bookmarks.history.HistoryButton;
-import mezz.jei.gui.overlay.bookmarks.history.HistoryOverlay;
+import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryButton;
+import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -54,7 +54,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 	// display elements
 	private final IngredientGridWithNavigation contents;
-	private final HistoryOverlay historyOverlay;
+	private final LookupHistoryOverlay lookupHistoryOverlay;
 	private final GuiIconToggleButton bookmarkButton;
 	private final GuiIconToggleButton historyButton;
 
@@ -66,7 +66,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	public BookmarkOverlay(
 		BookmarkList bookmarkList,
 		IngredientGridWithNavigation contents,
-		HistoryOverlay historyOverlay,
+		LookupHistoryOverlay lookupHistoryOverlay,
 		IClientToggleState toggleState,
 		IClientConfig clientConfig,
 		IScreenHelper screenHelper,
@@ -76,9 +76,9 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		this.toggleState = toggleState;
 		this.clientConfig = clientConfig;
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, toggleState, keyBindings);
-		this.historyButton = HistoryButton.create(clientConfig);
+		this.historyButton = LookupHistoryButton.create(clientConfig);
 		this.contents = contents;
-		this.historyOverlay = historyOverlay;
+		this.lookupHistoryOverlay = lookupHistoryOverlay;
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
 		this.bookmarkDragManager = new BookmarkDragManager(this);
 		bookmarkList.addSourceListChangedListener(() -> {
@@ -88,7 +88,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				.updateScreen(minecraft.screen)
 				.update();
 		});
-		historyOverlay.getLookupHistory().addSourceListChangedListener(() -> {
+		lookupHistoryOverlay.getLookupHistory().addSourceListChangedListener(() -> {
 				Minecraft minecraft = Minecraft.getInstance();
 				this.getScreenPropertiesUpdater()
 					.updateScreen(minecraft.screen)
@@ -121,15 +121,15 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		Set<ImmutableRect2i> guiExclusionAreas = this.screenPropertiesCache.getGuiExclusionAreas();
 		ImmutablePoint2i mouseExclusionArea = this.screenPropertiesCache.getMouseExclusionArea();
 		ImmutableRect2i availableContentsArea = displayArea.cropBottom(BUTTON_SIZE + INNER_PADDING);
-		if (clientConfig.isHistoryEnabled()  && historyOverlay.isOnSide()) {
-			int historyRows = clientConfig.getMaxHistoryRows();
-			availableContentsArea  = availableContentsArea.cropBottom(historyRows * HistoryOverlay.SLOT_HEIGHT);
+		if (clientConfig.isLookupHistoryEnabled()  && lookupHistoryOverlay.isOnSide()) {
+			int historyRows = clientConfig.getMaxLookupHistoryRows();
+			availableContentsArea  = availableContentsArea.cropBottom(historyRows * LookupHistoryOverlay.SLOT_HEIGHT);
 			ImmutableRect2i historyArea = displayArea
 				.insetBy(BORDER_MARGIN)
 				.moveUp(BUTTON_SIZE + INNER_PADDING)
-				.keepBottom(historyRows * HistoryOverlay.SLOT_HEIGHT);
-			this.historyOverlay.updateBounds(historyArea, guiExclusionAreas, mouseExclusionArea);
-			this.historyOverlay.updateLayout();
+				.keepBottom(historyRows * LookupHistoryOverlay.SLOT_HEIGHT);
+			this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, mouseExclusionArea);
+			this.lookupHistoryOverlay.updateLayout();
 		}
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas, mouseExclusionArea);
 		this.contents.updateLayout(false);
@@ -170,7 +170,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (screenPropertiesCache.hasValidScreen()) {
-			this.historyOverlay.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+			this.lookupHistoryOverlay.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
 			this.bookmarkButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
@@ -184,7 +184,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 			}
 			if (screenPropertiesCache.hasValidScreen()) {
-				this.historyOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+				this.lookupHistoryOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 			}
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
@@ -196,7 +196,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
-			return Stream.concat(this.contents.getIngredientUnderMouse(mouseX, mouseY),this.historyOverlay.getIngredientUnderMouse(mouseX, mouseY));
+			return Stream.concat(this.contents.getIngredientUnderMouse(mouseX, mouseY),this.lookupHistoryOverlay.getIngredientUnderMouse(mouseX, mouseY));
 		}
 		return Stream.empty();
 	}
@@ -204,7 +204,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
-			return Stream.concat(this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY),this.historyOverlay.getDraggableIngredientUnderMouse(mouseX, mouseY));
+			return Stream.concat(this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY),this.lookupHistoryOverlay.getDraggableIngredientUnderMouse(mouseX, mouseY));
 		}
 		return Stream.empty();
 	}

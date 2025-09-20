@@ -34,9 +34,9 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> dragToRearrangeBookmarksEnabled;
 
 	// history
-	private final ConfigValue<Boolean> historyEnabled;
-	private final Supplier<Integer> maxHistoryRows;
-	private final Supplier<HistoryViewSide> historyViewSide;
+	private final ConfigValue<Boolean> lookupHistoryEnabled;
+	private final Supplier<Integer> maxLookupHistoryRows;
+	private final Supplier<HistoryViewSide> lookupHistoryViewSide;
 
 	// advanced
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
@@ -117,24 +117,24 @@ public final class ClientConfig implements IClientConfig {
 			"Drag bookmarks to rearrange them in the list."
 		);
 
-		IConfigCategoryBuilder history = schema.addCategory("history");
+		IConfigCategoryBuilder lookupHistory = schema.addCategory("lookup_history");
 
-		historyEnabled = history.addBoolean(
-			"HistoryEnabled",
+		lookupHistoryEnabled = lookupHistory.addBoolean(
+			"LookupHistoryEnabled",
 			false,
-			"Enable the history overlay."
+			"Enable the lookup history overlay."
 		);
-		maxHistoryRows = history.addInteger(
-			"MaxHistoryRows",
+		maxLookupHistoryRows = lookupHistory.addInteger(
+			"MaxLookupHistoryRows",
 			2,
 			1,
 			7,
-			"Max number of rows in the history overlay."
+			"Max number of rows in the lookup history overlay."
 		);
-		historyViewSide = history.addEnum(
-				"HistoryViewSide",
+		lookupHistoryViewSide = lookupHistory.addEnum(
+				"LookupHistoryViewSide",
 				HistoryViewSide.LEFT,
-				"Side of the screen to show the history overlay on."
+				"Side of the screen to display the lookup history overlay."
 		);
 
 		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
@@ -282,23 +282,23 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isHistoryEnabled() {
-		return historyEnabled.get();
+	public boolean isLookupHistoryEnabled() {
+		return lookupHistoryEnabled.get();
 	}
 
 	@Override
-	public void setHistoryEnabled(boolean enabled) {
-		this.historyEnabled.set(enabled);
+	public void setLookupHistoryEnabled(boolean enabled) {
+		this.lookupHistoryEnabled.set(enabled);
 	}
 
 	@Override
-	public int getMaxHistoryRows() {
-		return maxHistoryRows.get();
+	public int getMaxLookupHistoryRows() {
+		return maxLookupHistoryRows.get();
 	}
 
 	@Override
-	public HistoryViewSide getHistoryViewSide() {
-		return historyViewSide.get();
+	public HistoryViewSide getLookupHistoryViewSide() {
+		return lookupHistoryViewSide.get();
 	}
 
 	@Override
