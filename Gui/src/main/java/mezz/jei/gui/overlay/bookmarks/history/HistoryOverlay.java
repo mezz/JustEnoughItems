@@ -18,6 +18,7 @@ import mezz.jei.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
+import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.Minecraft;
@@ -34,7 +35,6 @@ import java.util.stream.Stream;
 public class HistoryOverlay implements IRecipeFocusSource {
 
 	private static final int INGREDIENT_PADDING = 1;
-	public static final int ROWS = 2;
 	public static final int SLOT_WIDTH = GuiIngredientProperties.getWidth(INGREDIENT_PADDING);
 	public static final int SLOT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
 
@@ -42,14 +42,14 @@ public class HistoryOverlay implements IRecipeFocusSource {
 	private final IngredientGrid contents;
 
 	// data
-	private final HistoryList historyList;
+	private final IIngredientGridSource lookupHistory;
 	private final IClientConfig clientConfig;
 	private final HistoryViewSide ownerSide;
 	private int rows;
 
 	public HistoryOverlay(
 			IIngredientManager ingredientManager,
-			HistoryList historyList,
+			IIngredientGridSource lookupHistory,
 			IInternalKeyMappings keyMappings,
 			IIngredientGridConfig historyListConfig,
 			IIngredientFilterConfig ingredientFilterConfig,
@@ -60,7 +60,7 @@ public class HistoryOverlay implements IRecipeFocusSource {
 			IColorHelper colorHelper
 	) {
 		this.clientConfig = clientConfig;
-		this.historyList = historyList;
+		this.lookupHistory = lookupHistory;
 		this.contents = new IngredientGrid(
 				ingredientManager,
 				historyListConfig,
@@ -73,7 +73,7 @@ public class HistoryOverlay implements IRecipeFocusSource {
 				false
 		);
 		this.ownerSide = ownerSide;
-		historyList.addSourceListChangedListener(this::updateLayout);
+		lookupHistory.addSourceListChangedListener(this::updateLayout);
 	}
 
 	public boolean isListDisplayed() {
@@ -87,20 +87,18 @@ public class HistoryOverlay implements IRecipeFocusSource {
 		return ownerSide.isSide(clientConfig.getHistoryViewSide());
 	}
 
-	public HistoryList getHistoryList() {
-		return historyList;
+	public IIngredientGridSource getLookupHistory() {
+		return lookupHistory;
 	}
 
 	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
 		this.contents.updateBounds(availableArea, guiExclusionAreas, mouseExclusionPoint);
 		int rows = this.contents.getArea().getHeight() / SLOT_HEIGHT;
 		this.rows = Math.min(rows, clientConfig.getMaxHistoryRows());
-		int maxSize = this.contents.getArea().getWidth() / SLOT_WIDTH * this.rows;
-		this.historyList.setMaxSize(ownerSide, maxSize);
 	}
 
 	public void updateLayout() {
-		List<IElement<?>> ingredientList = historyList.getElements();
+		List<IElement<?>> ingredientList = lookupHistory.getElements();
 		this.contents.set(0, ingredientList);
 	}
 

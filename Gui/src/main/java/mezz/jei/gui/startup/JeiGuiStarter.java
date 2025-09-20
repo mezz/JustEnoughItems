@@ -51,8 +51,7 @@ import mezz.jei.gui.input.handlers.GuiAreaInputHandler;
 import mezz.jei.gui.input.handlers.UserInputRouter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
-import mezz.jei.gui.overlay.bookmarks.history.HistoryInputHandler;
-import mezz.jei.gui.overlay.bookmarks.history.HistoryList;
+import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.client.Minecraft;
@@ -141,13 +140,13 @@ public class JeiGuiStarter {
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
 		registration.setIngredientFilter(ingredientFilterApi);
 
-		HistoryList historyList = new HistoryList();
+		LookupHistory lookupHistory = new LookupHistory();
 
 		IngredientListOverlay ingredientListOverlay = OverlayHelper.createIngredientListOverlay(
 			ingredientManager,
 			screenHelper,
 			ingredientFilter,
-			historyList,
+			lookupHistory,
 			filterTextSource,
 			keyMappings,
 			ingredientListConfig,
@@ -167,7 +166,7 @@ public class JeiGuiStarter {
 			ingredientManager,
 			screenHelper,
 			bookmarkList,
-			historyList,
+			lookupHistory,
 			keyMappings,
 			bookmarkListConfig,
 			ingredientFilterConfig,
@@ -187,11 +186,12 @@ public class JeiGuiStarter {
 
 		RecipesGui recipesGui = new RecipesGui(
 			recipeManager,
+			ingredientManager,
 			recipeTransferManager,
 			keyMappings,
 			focusFactory,
 			bookmarkList,
-			historyList,
+			lookupHistory,
 			guiHelper
 		);
 		registration.setRecipesGui(recipesGui);
@@ -214,7 +214,7 @@ public class JeiGuiStarter {
 			new EditInputHandler(recipeFocusSource, toggleState, editModeConfig),
 			ingredientListOverlay.createInputHandler(),
 			bookmarkOverlay.createInputHandler(),
-			new HistoryInputHandler(historyList, recipeFocusSource, new FocusInputHandler(recipeFocusSource, recipesGui, focusUtil, clientConfig, ingredientManager, toggleState, serverConnection)),
+			new FocusInputHandler(recipeFocusSource, recipesGui, focusUtil, clientConfig, ingredientManager, toggleState, serverConnection),
 			new BookmarkInputHandler(recipeFocusSource, bookmarkList),
 			new GlobalInputHandler(toggleState),
 			new GuiAreaInputHandler(screenHelper, recipesGui, focusFactory)

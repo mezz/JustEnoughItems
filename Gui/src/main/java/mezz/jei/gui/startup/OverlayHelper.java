@@ -3,7 +3,11 @@ package mezz.jei.gui.startup;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.common.config.*;
+import mezz.jei.common.config.HistoryViewSide;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -15,7 +19,6 @@ import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
-import mezz.jei.gui.overlay.bookmarks.history.HistoryList;
 import mezz.jei.gui.overlay.bookmarks.history.HistoryOverlay;
 
 public final class OverlayHelper {
@@ -68,7 +71,7 @@ public final class OverlayHelper {
 		IIngredientManager ingredientManager,
 		IScreenHelper screenHelper,
 		IIngredientGridSource ingredientFilter,
-		HistoryList historyList,
+		IIngredientGridSource historyList,
 		IFilterTextSource filterTextSource,
 		IInternalKeyMappings keyMappings,
 		IIngredientGridConfig ingredientGridConfig,
@@ -125,7 +128,7 @@ public final class OverlayHelper {
 		IIngredientManager ingredientManager,
 		IScreenHelper screenHelper,
 		BookmarkList bookmarkList,
-		HistoryList historyList,
+		IIngredientGridSource lookupHistory,
 		IInternalKeyMappings keyMappings,
 		IIngredientGridConfig bookmarkListConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
@@ -154,7 +157,7 @@ public final class OverlayHelper {
 
 		HistoryOverlay historyOverlay = new HistoryOverlay(
 			ingredientManager,
-			historyList,
+			lookupHistory,
 			keyMappings,
 			bookmarkListConfig,
 			ingredientFilterConfig,

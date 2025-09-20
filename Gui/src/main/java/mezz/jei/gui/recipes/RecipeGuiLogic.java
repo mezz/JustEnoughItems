@@ -2,18 +2,22 @@ package mezz.jei.gui.recipes;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
+import mezz.jei.gui.bookmarks.IngredientBookmark;
+import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
 import mezz.jei.gui.recipes.layouts.IRecipeLayoutList;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import mezz.jei.gui.recipes.lookups.ILookupState;
@@ -31,12 +35,14 @@ import java.util.stream.Stream;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IRecipeManager recipeManager;
+	private final IIngredientManager ingredientManager;
 	private final IRecipeTransferManager recipeTransferManager;
 	private final IRecipeLogicStateListener stateListener;
 
 	private boolean initialState = true;
 	private ILookupState state;
-	private final Stack<ILookupState> history = new Stack<>();
+	private final Stack<ILookupState> stateHistory = new Stack<>();
+	private final LookupHistory lookupHistory;
 	private final IFocusFactory focusFactory;
 	private @Nullable IRecipeCategory<?> cachedRecipeCategory;
 	private @Nullable IRecipeLayoutList cachedRecipeLayoutsWithButtons;
@@ -45,11 +51,15 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	public RecipeGuiLogic(
 		IRecipeManager recipeManager,
+		IIngredientManager ingredientManager,
+		LookupHistory lookupHistory,
 		IRecipeTransferManager recipeTransferManager,
 		IRecipeLogicStateListener stateListener,
 		IFocusFactory focusFactory
 	) {
 		this.recipeManager = recipeManager;
+		this.ingredientManager = ingredientManager;
+		this.lookupHistory = lookupHistory;
 		this.recipeTransferManager = recipeTransferManager;
 		this.stateListener = stateListener;
 		List<IRecipeCategory<?>> recipeCategories = recipeManager.createRecipeCategoryLookup()
@@ -73,8 +83,9 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean showFocus(IFocusGroup focuses) {
+		List<IFocus<?>> allFocuses = focuses.getAllFocuses();
 		List<IRecipeCategory<?>> recipeCategories = recipeManager.createRecipeCategoryLookup()
-			.limitFocus(focuses.getAllFocuses())
+			.limitFocus(allFocuses)
 			.get()
 			.toList();
 		ILookupState state = IngredientLookupState.create(
@@ -83,6 +94,12 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			recipeCategories,
 			recipeTransferManager
 		);
+
+		for (IFocus<?> focus : allFocuses) {
+			IngredientBookmark<?> ingredientBookmark = IngredientBookmark.create(focus.getTypedValue(), ingredientManager);
+			this.lookupHistory.add(ingredientBookmark);
+		}
+
 		return setState(state, true);
 	}
 
@@ -94,18 +111,18 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean back() {
-		if (history.empty()) {
+		if (stateHistory.empty()) {
 			return false;
 		}
-		final ILookupState state = history.pop();
+		final ILookupState state = stateHistory.pop();
 		setState(state, false);
 		return true;
 	}
 
 	@Override
 	public void clearHistory() {
-		while (!history.empty()) {
-			history.pop();
+		while (!stateHistory.empty()) {
+			stateHistory.pop();
 		}
 	}
 
@@ -116,7 +133,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 
 		if (saveHistory && !initialState) {
-			history.push(this.state);
+			stateHistory.push(this.state);
 		}
 		this.state = state;
 		this.initialState = false;

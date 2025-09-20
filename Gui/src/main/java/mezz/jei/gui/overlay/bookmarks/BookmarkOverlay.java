@@ -88,7 +88,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				.updateScreen(minecraft.screen)
 				.update();
 		});
-		historyOverlay.getHistoryList().addSourceListChangedListener(() -> {
+		historyOverlay.getLookupHistory().addSourceListChangedListener(() -> {
 				Minecraft minecraft = Minecraft.getInstance();
 				this.getScreenPropertiesUpdater()
 					.updateScreen(minecraft.screen)
