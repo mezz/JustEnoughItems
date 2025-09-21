@@ -140,7 +140,7 @@ public class JeiGuiStarter {
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
 		registration.setIngredientFilter(ingredientFilterApi);
 
-		LookupHistory lookupHistory = new LookupHistory();
+		LookupHistory lookupHistory = new LookupHistory(clientConfig::getMaxLookupHistoryIngredients);
 
 		IngredientListOverlay ingredientListOverlay = OverlayHelper.createIngredientListOverlay(
 			ingredientManager,

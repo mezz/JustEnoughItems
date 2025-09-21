@@ -8,17 +8,21 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class LookupHistory implements IIngredientGridSource {
-	private static final int MAX_ELEMENTS = 100;
-
 	private final List<IBookmark> elements = new LinkedList<>();
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
+	private final Supplier<Integer> maxElements;
+
+	public LookupHistory(Supplier<Integer> maxElements) {
+		this.maxElements = maxElements;
+	}
 
 	public void add(IBookmark element) {
 		elements.remove(element);
 		elements.addFirst(element);
-		if (elements.size() > MAX_ELEMENTS) {
+		if (elements.size() > maxElements.get()) {
 			elements.removeLast();
 		}
 		notifyListeners();

@@ -34,9 +34,10 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled;
 	private final Supplier<Boolean> dragToRearrangeBookmarksEnabled;
 
-	// history
+	// lookup history
 	private final ConfigValue<Boolean> lookupHistoryEnabled;
 	private final ConfigValue<Integer> maxLookupHistoryRows;
+	private final ConfigValue<Integer> maxLookupHistoryIngredients;
 	private final ConfigValue<HistoryViewSide> lookupHistoryViewSide;
 
 	// advanced
@@ -131,6 +132,13 @@ public final class ClientConfig implements IClientConfig {
 			1,
 			7,
 			"Max number of rows in the lookup history overlay."
+		);
+		maxLookupHistoryIngredients = lookupHistory.addInteger(
+			"MaxLookupHistoryIngredients",
+			100,
+			10,
+			1_000,
+			"Max number of lookup history ingredients."
 		);
 		lookupHistoryViewSide = lookupHistory.addEnum(
 				"LookupHistoryViewSide",
@@ -300,6 +308,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public int getMaxLookupHistoryRows() {
 		return maxLookupHistoryRows.get();
+	}
+
+	@Override
+	public int getMaxLookupHistoryIngredients() {
+		return maxLookupHistoryIngredients.get();
 	}
 
 	@Override
