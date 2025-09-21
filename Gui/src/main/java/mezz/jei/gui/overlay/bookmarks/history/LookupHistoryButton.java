@@ -20,7 +20,6 @@ public class LookupHistoryButton extends GuiIconToggleButton {
 		return new LookupHistoryButton(offIcon, onIcon, clientConfig);
 	}
 
-
 	private final IClientConfig clientConfig;
 
 	private LookupHistoryButton(IDrawable offIcon, IDrawable onIcon, IClientConfig clientConfig) {
