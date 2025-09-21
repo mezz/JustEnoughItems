@@ -33,6 +33,7 @@
   "jei.tooltip.bookmarks.tooltips.transfer.max.usage": "[Press \"%s\" to craft many]",
   "jei.tooltip.lookup_history.enable": "Show JEI Lookup History",
   "jei.tooltip.lookup_history.disable": "Hide JEI Lookup History",
+  "jei.tooltip.lookup_history.usage": "Shows a list of the ingredients recently used for looking up recipes.",
   "jei.tooltip.recipe.sort.bookmarks.first.enabled": "Show bookmarked recipes first (enabled).",
   "jei.tooltip.recipe.sort.bookmarks.first.disabled": "Show bookmarked recipes first (disabled).",
   "jei.tooltip.recipe.sort.craftable.first.enabled": "Show craftable recipes first (enabled).",

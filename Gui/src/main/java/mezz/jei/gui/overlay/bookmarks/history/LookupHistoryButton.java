@@ -8,6 +8,7 @@ import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.input.UserInput;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
 public class LookupHistoryButton extends GuiIconToggleButton {
@@ -34,6 +35,11 @@ public class LookupHistoryButton extends GuiIconToggleButton {
 		} else {
 			tooltip.add(Component.translatable("jei.tooltip.lookup_history.enable"));
 		}
+		tooltip.add(
+			Component.translatable("jei.tooltip.lookup_history.usage")
+				.withStyle(ChatFormatting.ITALIC)
+				.withStyle(ChatFormatting.GRAY)
+		);
 	}
 
 	@Override
