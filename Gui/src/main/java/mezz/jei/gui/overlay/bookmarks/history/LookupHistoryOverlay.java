@@ -100,17 +100,17 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 		this.contents.set(0, ingredientList);
 	}
 
-	private void drawLine(PoseStack poseStack, int x1, int x2, int y, int color) {
+	private void drawLine(PoseStack poseStack, int x1, int x2, int y, int argbColor) {
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShader(GameRenderer::getPositionColorShader);
 		Tesselator tesselator = Tesselator.getInstance();
 		BufferBuilder builder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-		float a = (float) (color >> 24 & 255) / 255.0F;
-		float r = (float) (color >> 16 & 255) / 255.0F;
-		float g = (float) (color >> 8 & 255) / 255.0F;
-		float b = (float) (color & 255) / 255.0F;
+		float a = (float) (argbColor >> 24 & 255) / 255.0F;
+		float r = (float) (argbColor >> 16 & 255) / 255.0F;
+		float g = (float) (argbColor >> 8 & 255) / 255.0F;
+		float b = (float) (argbColor & 255) / 255.0F;
 		Matrix4f pose = poseStack.last().pose();
 
 		for (float x = x1; x < x2; x += 14) {
@@ -130,8 +130,8 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 			ImmutableRect2i area = this.contents.getArea();
 			int endX = area.getX() + area.getWidth();
 			int startY = area.getY() + area.getHeight() - rows * SLOT_HEIGHT - 3;
-			int colour = 0xFFFFFFFF;
-			drawLine(guiGraphics.pose(), area.getX(), endX, startY, colour);
+			int color = 0xFF959595;
+			drawLine(guiGraphics.pose(), area.getX(), endX, startY, color);
 		}
 	}
 
