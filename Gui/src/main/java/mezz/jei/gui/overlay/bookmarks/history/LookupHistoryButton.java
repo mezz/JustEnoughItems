@@ -29,7 +29,11 @@ public class LookupHistoryButton extends GuiIconToggleButton {
 
 	@Override
 	protected void getTooltips(JeiTooltip tooltip) {
-		tooltip.add(Component.translatable("jei.tooltip.history"));
+		if (clientConfig.isLookupHistoryEnabled()) {
+			tooltip.add(Component.translatable("jei.tooltip.lookup_history.disable"));
+		} else {
+			tooltip.add(Component.translatable("jei.tooltip.lookup_history.enable"));
+		}
 	}
 
 	@Override

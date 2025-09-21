@@ -38,19 +38,23 @@ public class BookmarkButton extends GuiIconToggleButton {
 
 	@Override
 	protected void getTooltips(JeiTooltip tooltip) {
-		tooltip.add(Component.translatable("jei.tooltip.bookmarks"));
-		IJeiKeyMapping bookmarkKey = keyBindings.getBookmark();
-		if (bookmarkKey.isUnbound()) {
-			MutableComponent noKey = Component.translatable("jei.tooltip.bookmarks.usage.nokey");
-			tooltip.add(noKey.withStyle(ChatFormatting.RED));
-		} else if (!bookmarkOverlay.hasRoom()) {
-			MutableComponent notEnoughSpace = Component.translatable("jei.tooltip.bookmarks.not.enough.space");
-			tooltip.add(notEnoughSpace.withStyle(ChatFormatting.GOLD));
+		if (toggleState.isBookmarkOverlayEnabled()) {
+			tooltip.add(Component.translatable("jei.tooltip.bookmarks.disable"));
+			IJeiKeyMapping bookmarkKey = keyBindings.getBookmark();
+			if (bookmarkKey.isUnbound()) {
+				MutableComponent noKey = Component.translatable("jei.tooltip.bookmarks.usage.nokey");
+				tooltip.add(noKey.withStyle(ChatFormatting.RED));
+			} else if (!bookmarkOverlay.hasRoom()) {
+				MutableComponent notEnoughSpace = Component.translatable("jei.tooltip.bookmarks.not.enough.space");
+				tooltip.add(notEnoughSpace.withStyle(ChatFormatting.GOLD));
+			} else {
+				tooltip.addKeyUsageComponent(
+					"jei.tooltip.bookmarks.usage.key",
+					bookmarkKey
+				);
+			}
 		} else {
-			tooltip.addKeyUsageComponent(
-				"jei.tooltip.bookmarks.usage.key",
-				bookmarkKey
-			);
+			tooltip.add(Component.translatable("jei.tooltip.bookmarks.enable"));
 		}
 	}
 
