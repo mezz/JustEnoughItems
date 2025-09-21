@@ -1,6 +1,12 @@
 package mezz.jei.test.lib;
 
-import mezz.jei.common.config.*;
+import mezz.jei.common.config.BookmarkTooltipFeature;
+import mezz.jei.common.config.GiveMode;
+import mezz.jei.common.config.HistoryViewSide;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IngredientSortStage;
+import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.common.config.file.IConfigListener;
 
 import java.util.List;
 import java.util.Set;
@@ -78,6 +84,16 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public void setLookupHistoryEnabled(boolean enabled) {
+
+	}
+
+	@Override
+	public void addLookupHistoryEnabledListener(IConfigListener<Boolean> listener) {
+
+	}
+
+	@Override
 	public int getMaxLookupHistoryRows() {
 		return 0;
 	}
@@ -85,6 +101,11 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public HistoryViewSide getLookupHistoryViewSide() {
 		return HistoryViewSide.LEFT;
+	}
+
+	@Override
+	public void addLookupHistoryViewSideListener(IConfigListener<HistoryViewSide> listener) {
+
 	}
 
 	@Override

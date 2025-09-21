@@ -5,8 +5,10 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.config.HistoryViewSide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.file.IConfigListener;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.GuiProperties;
@@ -56,6 +58,12 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final ScreenPropertiesCache screenPropertiesCache;
 	private final IFilterTextSource filterTextSource;
 
+	// these need to be stored as strong references here because listeners are weakly stored elsewhere
+	@SuppressWarnings("FieldCanBeLocal")
+	private final IConfigListener<Boolean> lookupHistoryEnabledListener;
+	@SuppressWarnings("FieldCanBeLocal")
+	private final IConfigListener<HistoryViewSide> lookupHistoryViewSideListener;
+
 	public IngredientListOverlay(
 		IIngredientGridSource ingredientGridSource,
 		IFilterTextSource filterTextSource,
@@ -88,6 +96,12 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		});
 
 		this.configButton = ConfigButton.create(this::isListDisplayed, toggleState, keyBindings);
+
+		this.lookupHistoryEnabledListener = v -> onScreenPropertiesChanged();
+		this.lookupHistoryViewSideListener = v -> onScreenPropertiesChanged();
+
+		clientConfig.addLookupHistoryEnabledListener(lookupHistoryEnabledListener);
+		clientConfig.addLookupHistoryViewSideListener(lookupHistoryViewSideListener);
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package mezz.jei.common.config;
 import com.google.common.base.Preconditions;
 import mezz.jei.common.config.file.ConfigValue;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
+import mezz.jei.common.config.file.IConfigListener;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.config.file.serializers.EnumSerializer;
 import mezz.jei.common.config.file.serializers.ListSerializer;
@@ -35,8 +36,8 @@ public final class ClientConfig implements IClientConfig {
 
 	// history
 	private final ConfigValue<Boolean> lookupHistoryEnabled;
-	private final Supplier<Integer> maxLookupHistoryRows;
-	private final Supplier<HistoryViewSide> lookupHistoryViewSide;
+	private final ConfigValue<Integer> maxLookupHistoryRows;
+	private final ConfigValue<HistoryViewSide> lookupHistoryViewSide;
 
 	// advanced
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
@@ -288,7 +289,12 @@ public final class ClientConfig implements IClientConfig {
 
 	@Override
 	public void setLookupHistoryEnabled(boolean enabled) {
-		this.lookupHistoryEnabled.set(enabled);
+		lookupHistoryEnabled.set(enabled);
+	}
+
+	@Override
+	public void addLookupHistoryEnabledListener(IConfigListener<Boolean> listener) {
+		lookupHistoryEnabled.addListener(listener);
 	}
 
 	@Override
@@ -299,6 +305,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public HistoryViewSide getLookupHistoryViewSide() {
 		return lookupHistoryViewSide.get();
+	}
+
+	@Override
+	public void addLookupHistoryViewSideListener(IConfigListener<HistoryViewSide> listener) {
+		lookupHistoryViewSide.addListener(listener);
 	}
 
 	@Override

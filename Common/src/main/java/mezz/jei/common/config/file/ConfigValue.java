@@ -2,6 +2,7 @@ package mezz.jei.common.config.file;
 
 import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
+import mezz.jei.core.util.WeakList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -16,6 +17,7 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 	private final String description;
 	private final T defaultValue;
 	private final IJeiConfigValueSerializer<T> serializer;
+	private final WeakList<IConfigListener<T>> listeners = new WeakList<>();
 	private volatile T currentValue;
 	@Nullable
 	private IConfigSchema schema;
@@ -68,7 +70,12 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 	public List<String> setFromSerializedValue(String value) {
 		IJeiConfigValueSerializer.IDeserializeResult<T> deserializeResult = serializer.deserialize(value);
 		deserializeResult.getResult()
-			.ifPresent(t -> currentValue = t);
+			.ifPresent(t -> {
+				if (currentValue != t) {
+					currentValue = t;
+					listeners.forEach(c -> c.onConfigValueChanged(currentValue));
+				}
+			});
 		return deserializeResult.getErrors();
 	}
 
@@ -80,11 +87,16 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 		}
 		if (!currentValue.equals(value)) {
 			currentValue = value;
+			listeners.forEach(c -> c.onConfigValueChanged(currentValue));
 			if (schema != null) {
 				schema.markDirty();
 			}
 			return true;
 		}
 		return false;
+	}
+
+	public void addListener(IConfigListener<T> listener) {
+		this.listeners.add(listener);
 	}
 }

@@ -1,5 +1,7 @@
 package mezz.jei.common.config;
 
+import mezz.jei.common.config.file.IConfigListener;
+
 import java.util.List;
 import java.util.Set;
 
@@ -36,9 +38,13 @@ public interface IClientConfig {
 
 	void setLookupHistoryEnabled(boolean enabled);
 
+	void addLookupHistoryEnabledListener(IConfigListener<Boolean> listener);
+
 	int getMaxLookupHistoryRows();
 
 	HistoryViewSide getLookupHistoryViewSide();
+
+	void addLookupHistoryViewSideListener(IConfigListener<HistoryViewSide> listener);
 
 	int getDragDelayMs();
 

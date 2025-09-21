@@ -5,8 +5,10 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.config.HistoryViewSide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.file.IConfigListener;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -63,6 +65,12 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	private final IClientToggleState toggleState;
 	private final IClientConfig clientConfig;
 
+	// these need to be stored as strong references here because listeners are weakly stored elsewhere
+	@SuppressWarnings("FieldCanBeLocal")
+	private final IConfigListener<Boolean> lookupHistoryEnabledListener;
+	@SuppressWarnings("FieldCanBeLocal")
+	private final IConfigListener<HistoryViewSide> lookupHistoryViewSideListener;
+
 	public BookmarkOverlay(
 		BookmarkList bookmarkList,
 		IngredientGridWithNavigation contents,
@@ -94,6 +102,12 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 					.updateScreen(minecraft.screen)
 					.update();
 		});
+
+		this.lookupHistoryEnabledListener = v -> onScreenPropertiesChanged();
+		this.lookupHistoryViewSideListener = v -> onScreenPropertiesChanged();
+
+		clientConfig.addLookupHistoryEnabledListener(lookupHistoryEnabledListener);
+		clientConfig.addLookupHistoryViewSideListener(lookupHistoryViewSideListener);
 	}
 
 	public boolean isListDisplayed() {
@@ -121,7 +135,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		Set<ImmutableRect2i> guiExclusionAreas = this.screenPropertiesCache.getGuiExclusionAreas();
 		ImmutablePoint2i mouseExclusionArea = this.screenPropertiesCache.getMouseExclusionArea();
 		ImmutableRect2i availableContentsArea = displayArea.cropBottom(BUTTON_SIZE + INNER_PADDING);
-		if (clientConfig.isLookupHistoryEnabled()  && lookupHistoryOverlay.isOnSide()) {
+		if (clientConfig.isLookupHistoryEnabled() && lookupHistoryOverlay.isOnSide()) {
 			int historyRows = clientConfig.getMaxLookupHistoryRows();
 			availableContentsArea  = availableContentsArea.cropBottom(historyRows * LookupHistoryOverlay.SLOT_HEIGHT);
 			ImmutableRect2i historyArea = displayArea
