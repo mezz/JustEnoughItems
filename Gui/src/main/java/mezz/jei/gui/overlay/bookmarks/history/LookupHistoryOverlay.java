@@ -113,11 +113,24 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 		float b = (float) (argbColor & 255) / 255.0F;
 		Matrix4f pose = poseStack.last().pose();
 
-		for (float x = x1; x < x2; x += 14) {
-			builder.addVertex(pose, Mth.clamp(x + 8, x1, x2), y, 0).setColor(r, g, b, a);
+		final int availableWidth = x2 - x1;
+		if (availableWidth <= 0) {
+			return;
+		}
+		final int dashWidth = 8;
+		final int dashHeight = 1;
+		final int spacing = 6;
+
+		// space out the dashes so that we always start and end with whole dashes
+		final int interval = dashWidth + spacing;
+		final int dashCount = availableWidth / interval;
+		final float floatInterval = (availableWidth - dashWidth) / (float) dashCount;
+
+		for (float x = x1; x < x2; x += floatInterval) {
+			builder.addVertex(pose, Mth.clamp(x + dashWidth, x1, x2), y, 0).setColor(r, g, b, a);
 			builder.addVertex(pose, Mth.clamp(x, x1, x2), y, 0).setColor(r, g, b, a);
-			builder.addVertex(pose, Mth.clamp(x, x1, x2), y + 1, 0).setColor(r, g, b, a);
-			builder.addVertex(pose, Mth.clamp(x + 8, x1, x2), y + 1, 0).setColor(r, g, b, a);
+			builder.addVertex(pose, Mth.clamp(x, x1, x2), y + dashHeight, 0).setColor(r, g, b, a);
+			builder.addVertex(pose, Mth.clamp(x + dashWidth, x1, x2), y + dashHeight, 0).setColor(r, g, b, a);
 		}
 
 		BufferUploader.drawWithShader(builder.buildOrThrow());
