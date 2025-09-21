@@ -78,7 +78,6 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 	public boolean isListDisplayed() {
 		return clientConfig.isLookupHistoryEnabled() &&
 				isOnSide() &&
-				contents.hasVisibleContent() &&
 				contents.hasRoom();
 	}
 

@@ -89,11 +89,6 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		return this.ingredientListRenderer.size();
 	}
 
-	public boolean hasVisibleContent() {
-		return this.ingredientListRenderer.getSlots()
-			.anyMatch(s -> s.getOptionalElement().isPresent());
-	}
-
 	public void updateBounds(ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
 		this.ingredientListRenderer.clear();
 
