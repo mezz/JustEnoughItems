@@ -34,7 +34,7 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 	private static final Duration SAVE_DELAY_TIME = Duration.ofSeconds(5);
 
 	private final Path jeiConfigurationDir;
-	private final DeduplicatingRunner delayedSave = new DeduplicatingRunner(SAVE_DELAY_TIME, "JEI Lookup History Save Delay");
+	private final DeduplicatingRunner delayedSave = new DeduplicatingRunner(SAVE_DELAY_TIME);
 
 	private static Optional<Path> getPath(Path jeiConfigurationDir) {
 		return ServerConfigPathUtil.getWorldPath(jeiConfigurationDir)

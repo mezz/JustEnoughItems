@@ -13,16 +13,19 @@ public class DeduplicatingRunnerTest {
 	 * Spamming runs should be ignored if they are within the given duration.
 	 */
 	@Test
-	public void testDeduplicatedRuns() throws InterruptedException {
+	public void testDeduplicatedRuns() {
 		AtomicInteger runs = new AtomicInteger();
 		Runnable testRunnable = runs::getAndIncrement;
-		Duration delay = Duration.ofMillis(10);
-		DeduplicatingRunner deduplicatingRunner = new DeduplicatingRunner(delay, "test");
-		for (int i = 0; i < 10; i++) {
+		Duration delay = Duration.ofMillis(1000);
+		TestDelayedExecutor executor = new TestDelayedExecutor();
+		DeduplicatingRunner deduplicatingRunner = new DeduplicatingRunner(delay, executor);
+		for (int i = 0; i < 100; i++) {
 			deduplicatingRunner.run(testRunnable);
+			executor.elapse(Duration.ofMillis(1));
+			Assertions.assertEquals(0, runs.get());
 		}
-		Assertions.assertEquals(0, runs.get());
-		Thread.sleep(2 * delay.toMillis());
+
+		executor.elapse(delay);
 		Assertions.assertEquals(1, runs.get());
 	}
 
@@ -31,14 +34,17 @@ public class DeduplicatingRunnerTest {
 	 * the given duration.
 	 */
 	@Test
-	public void testSpacedOutRuns() throws InterruptedException {
+	public void testSpacedOutRuns() {
 		AtomicInteger runs = new AtomicInteger();
 		Runnable testRunnable = runs::getAndIncrement;
 		Duration delay = Duration.ofMillis(10);
-		DeduplicatingRunner deduplicatingRunner = new DeduplicatingRunner(delay, "test");
+		TestDelayedExecutor executor = new TestDelayedExecutor();
+		DeduplicatingRunner deduplicatingRunner = new DeduplicatingRunner(delay, executor);
 		for (int i = 0; i < 5; i++) {
+			Assertions.assertEquals(i, runs.get());
 			deduplicatingRunner.run(testRunnable);
-			Thread.sleep(2 * delay.toMillis());
+			Assertions.assertEquals(i, runs.get());
+			executor.elapse(delay);
 			Assertions.assertEquals(i + 1, runs.get());
 		}
 	}
