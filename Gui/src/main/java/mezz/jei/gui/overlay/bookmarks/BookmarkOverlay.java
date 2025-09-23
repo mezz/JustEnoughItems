@@ -317,6 +317,10 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			.map(bookmark -> new DragTarget(ingredientListSlot.getArea(), bookmark, bookmarkList, 0));
 	}
 
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		return this.contents.isMouseOver(mouseX, mouseY);
+	}
+
 	public static class ActionDragTarget extends DragTarget {
 		private final Runnable action;
 
