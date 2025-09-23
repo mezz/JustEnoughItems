@@ -1,5 +1,7 @@
 package mezz.jei.common.config;
 
+import mezz.jei.common.config.file.IConfigListener;
+
 import java.util.List;
 import java.util.Set;
 
@@ -31,6 +33,20 @@ public interface IClientConfig {
 	boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled();
 
 	boolean isDragToRearrangeBookmarksEnabled();
+
+	boolean isLookupHistoryEnabled();
+
+	void setLookupHistoryEnabled(boolean enabled);
+
+	void addLookupHistoryEnabledListener(IConfigListener<Boolean> listener);
+
+	int getMaxLookupHistoryRows();
+
+	int getMaxLookupHistoryIngredients();
+
+	HistoryDisplaySide getLookupHistoryDisplaySide();
+
+	void addLookupHistoryDisplaySideListener(IConfigListener<HistoryDisplaySide> listener);
 
 	int getDragDelayMs();
 

@@ -6,6 +6,7 @@ import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.input.CombinedRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
+import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;
@@ -13,10 +14,12 @@ import java.util.Optional;
 public class BookmarkInputHandler implements IUserInputHandler {
 	private final CombinedRecipeFocusSource focusSource;
 	private final BookmarkList bookmarkList;
+	private final BookmarkOverlay bookmarkOverlay;
 
-	public BookmarkInputHandler(CombinedRecipeFocusSource focusSource, BookmarkList bookmarkList) {
+	public BookmarkInputHandler(CombinedRecipeFocusSource focusSource, BookmarkList bookmarkList, BookmarkOverlay bookmarkOverlay) {
 		this.focusSource = focusSource;
 		this.bookmarkList = bookmarkList;
+		this.bookmarkOverlay = bookmarkOverlay;
 	}
 
 	@Override
@@ -32,7 +35,7 @@ public class BookmarkInputHandler implements IUserInputHandler {
 			.findFirst()
 			.flatMap(clicked -> {
 				if (input.isSimulate() ||
-					bookmarkList.onElementBookmarked(clicked.getElement())
+					bookmarkList.onElementBookmarked(clicked.getElement(), input, bookmarkOverlay)
 				) {
 					IUserInputHandler handler = new SameElementInputHandler(this, clicked::isMouseOver);
 					return Optional.of(handler);

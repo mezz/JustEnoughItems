@@ -17,9 +17,9 @@ public class DeduplicatingRunnerTest {
 		AtomicInteger runs = new AtomicInteger();
 		Runnable testRunnable = runs::getAndIncrement;
 		Duration delay = Duration.ofMillis(10);
-		DeduplicatingRunner deduplicatingRunner = new DeduplicatingRunner(testRunnable, delay, "test");
+		DeduplicatingRunner deduplicatingRunner = new DeduplicatingRunner(delay, "test");
 		for (int i = 0; i < 10; i++) {
-			deduplicatingRunner.run();
+			deduplicatingRunner.run(testRunnable);
 		}
 		Assertions.assertEquals(0, runs.get());
 		Thread.sleep(2 * delay.toMillis());
@@ -35,9 +35,9 @@ public class DeduplicatingRunnerTest {
 		AtomicInteger runs = new AtomicInteger();
 		Runnable testRunnable = runs::getAndIncrement;
 		Duration delay = Duration.ofMillis(10);
-		DeduplicatingRunner deduplicatingRunner = new DeduplicatingRunner(testRunnable, delay, "test");
+		DeduplicatingRunner deduplicatingRunner = new DeduplicatingRunner(delay, "test");
 		for (int i = 0; i < 5; i++) {
-			deduplicatingRunner.run();
+			deduplicatingRunner.run(testRunnable);
 			Thread.sleep(2 * delay.toMillis());
 			Assertions.assertEquals(i + 1, runs.get());
 		}

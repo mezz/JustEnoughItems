@@ -2,9 +2,11 @@ package mezz.jei.test.lib;
 
 import mezz.jei.common.config.BookmarkTooltipFeature;
 import mezz.jei.common.config.GiveMode;
+import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IngredientSortStage;
 import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.common.config.file.IConfigListener;
 
 import java.util.List;
 import java.util.Set;
@@ -74,6 +76,41 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public boolean isDragToRearrangeBookmarksEnabled() {
 		return false;
+	}
+
+	@Override
+	public boolean isLookupHistoryEnabled() {
+		return false;
+	}
+
+	@Override
+	public void setLookupHistoryEnabled(boolean enabled) {
+
+	}
+
+	@Override
+	public void addLookupHistoryEnabledListener(IConfigListener<Boolean> listener) {
+
+	}
+
+	@Override
+	public int getMaxLookupHistoryRows() {
+		return 0;
+	}
+
+	@Override
+	public int getMaxLookupHistoryIngredients() {
+		return 0;
+	}
+
+	@Override
+	public HistoryDisplaySide getLookupHistoryDisplaySide() {
+		return HistoryDisplaySide.LEFT;
+	}
+
+	@Override
+	public void addLookupHistoryDisplaySideListener(IConfigListener<HistoryDisplaySide> listener) {
+
 	}
 
 	@Override
