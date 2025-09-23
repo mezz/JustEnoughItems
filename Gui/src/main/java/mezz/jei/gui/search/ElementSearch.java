@@ -1,5 +1,9 @@
 package mezz.jei.gui.search;
 
+import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.core.search.CombinedSearchables;
 import mezz.jei.core.search.ISearchStorage;
 import mezz.jei.core.search.ISearchable;
@@ -10,9 +14,11 @@ import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +28,7 @@ public class ElementSearch implements IElementSearch {
 
 	private final Map<PrefixInfo<IListElementInfo<?>, IListElement<?>>, PrefixedSearchable<IListElementInfo<?>, IListElement<?>>> prefixedSearchables = new IdentityHashMap<>();
 	private final CombinedSearchables<IListElement<?>> combinedSearchables = new CombinedSearchables<>();
+	private final Map<Object, IListElement<?>> allElements = new HashMap<>();
 
 	public ElementSearch(ElementPrefixParser elementPrefixParser) {
 		for (PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo : elementPrefixParser.allPrefixInfos()) {
@@ -56,21 +63,35 @@ public class ElementSearch implements IElementSearch {
 	}
 
 	@Override
-	public void add(IListElementInfo<?> info) {
+	public <T> void add(IListElementInfo<T> info, IIngredientManager ingredientManager) {
+		IListElement<T> element = info.getElement();
+		Object uid = getUid(element.getTypedIngredient(), ingredientManager);
+		this.allElements.put(uid, element);
+
 		for (PrefixedSearchable<IListElementInfo<?>, IListElement<?>> prefixedSearchable : this.prefixedSearchables.values()) {
 			SearchMode searchMode = prefixedSearchable.getMode();
 			if (searchMode != SearchMode.DISABLED) {
 				Collection<String> strings = prefixedSearchable.getStrings(info);
 				ISearchStorage<IListElement<?>> storage = prefixedSearchable.getSearchStorage();
 				for (String string : strings) {
-					storage.put(string, info.getElement());
+					storage.put(string, element);
 				}
 			}
 		}
 	}
 
+	private static <T> Object getUid(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
+		return ingredientHelper.getUid(typedIngredient.getIngredient(), UidContext.Ingredient);
+	}
+
 	@Override
-	public void addAll(Collection<IListElementInfo<?>> infos) {
+	public void addAll(Collection<IListElementInfo<?>> infos, IIngredientManager ingredientManager) {
+		for (IListElementInfo<?> info : infos) {
+			IListElement<?> element = info.getElement();
+			Object uid = getUid(info.getTypedIngredient(), ingredientManager);
+			this.allElements.put(uid, element);
+		}
 		for (PrefixedSearchable<IListElementInfo<?>, IListElement<?>> prefixedSearchable : this.prefixedSearchables.values()) {
 			SearchMode searchMode = prefixedSearchable.getMode();
 			if (searchMode != SearchMode.DISABLED) {
@@ -86,11 +107,20 @@ public class ElementSearch implements IElementSearch {
 	}
 
 	@Override
-	public Set<IListElement<?>> getAllIngredients() {
-		Set<IListElement<?>> results = Collections.newSetFromMap(new IdentityHashMap<>());
-		PrefixedSearchable<IListElementInfo<?>, IListElement<?>> noPrefixSearchables = this.prefixedSearchables.get(ElementPrefixParser.NO_PREFIX);
-		noPrefixSearchables.getAllElements(results::addAll);
-		return results;
+	public @Nullable <T> IListElement<T> findElement(ITypedIngredient<T> ingredient, IIngredientHelper<T> ingredientHelper) {
+		Object ingredientUid = ingredientHelper.getUid(ingredient.getIngredient(), UidContext.Ingredient);
+		IListElement<?> listElement = allElements.get(ingredientUid);
+		if (listElement != null && listElement.getTypedIngredient().getType().equals(ingredient.getType())) {
+			@SuppressWarnings("unchecked")
+			IListElement<T> cast = (IListElement<T>) listElement;
+			return cast;
+		}
+		return null;
+	}
+
+	@Override
+	public Collection<IListElement<?>> getAllIngredients() {
+		return Collections.unmodifiableCollection(allElements.values());
 	}
 
 	@Override

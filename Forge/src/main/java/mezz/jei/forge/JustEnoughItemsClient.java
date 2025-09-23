@@ -18,7 +18,6 @@ import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipe;
 import mezz.jei.library.recipes.RecipeSerializers;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -29,9 +28,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -46,14 +43,10 @@ public class JustEnoughItemsClient {
 
 		IConnectionToServer serverConnection = networkHandler.getConnectionToServer();
 
-		InternalKeyMappings keyMappings = createKeyMappings(subscriptions);
-		Internal.setKeyMappings(keyMappings);
-
 		List<IModPlugin> plugins = ForgePluginFinder.getModPlugins();
 		StartData startData = new StartData(
 			plugins,
-			serverConnection,
-			keyMappings
+			serverConnection
 		);
 
 		JeiStarter jeiStarter = new JeiStarter(startData);
@@ -65,6 +58,10 @@ public class JustEnoughItemsClient {
 	public void register() {
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 		subscriptions.register(RegisterClientTooltipComponentFactoriesEvent.class, this::onRegisterClientTooltipEvent);
+		subscriptions.register(RegisterKeyMappingsEvent.class, e -> {
+			InternalKeyMappings keyMappings = new InternalKeyMappings(e::register);
+			Internal.setKeyMappings(keyMappings);
+		});
 
 		IEventBus modEventBus = subscriptions.getModEventBus();
 		DeferredRegister<RecipeSerializer<?>> deferredRegister = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, ModIds.JEI_ID);
@@ -91,11 +88,5 @@ public class JustEnoughItemsClient {
 			ForgeGuiPlugin.getResourceReloadHandler()
 				.ifPresent(r -> r.onResourceManagerReload(resourceManager));
 		};
-	}
-
-	private static InternalKeyMappings createKeyMappings(PermanentEventSubscriptions subscriptions) {
-		Set<KeyMapping> keysToRegister = new HashSet<>();
-		subscriptions.register(RegisterKeyMappingsEvent.class, e -> keysToRegister.forEach(e::register));
-		return new InternalKeyMappings(keysToRegister::add);
 	}
 }

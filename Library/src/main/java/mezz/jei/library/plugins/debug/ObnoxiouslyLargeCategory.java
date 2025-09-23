@@ -1,7 +1,6 @@
 package mezz.jei.library.plugins.debug;
 
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -46,7 +45,7 @@ public class ObnoxiouslyLargeCategory extends AbstractRecipeCategory<Obnoxiously
 		int xOffset = (GRID_WIDTH - (xCount * slotWidth)) / 2;
 		int yOffset = (GRID_HEIGHT - (yCount * slotHeight)) / 2;
 
-		Collection<ItemStack> allItems = ingredientManager.getAllIngredients(VanillaTypes.ITEM_STACK);
+		Collection<ItemStack> allItems = ingredientManager.getAllItemStacks();
 		Iterator<ItemStack> iterator = allItems.iterator();
 
 		for (int x = 0; x < xCount; x++) {

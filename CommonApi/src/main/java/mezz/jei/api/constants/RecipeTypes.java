@@ -5,6 +5,7 @@ import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe;
 import mezz.jei.api.recipe.vanilla.IJeiFuelingRecipe;
+import mezz.jei.api.recipe.vanilla.IJeiGrindstoneRecipe;
 import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IRecipeRegistration;
@@ -116,6 +117,16 @@ public final class RecipeTypes {
 	 */
 	public static final RecipeType<IJeiAnvilRecipe> ANVIL =
 		RecipeType.create(ModIds.MINECRAFT_ID, "anvil", IJeiAnvilRecipe.class);
+
+	/**
+	 * The grindstone recipe type.
+	 *
+	 * @see IVanillaRecipeFactory#createGrindstoneRecipe to create new grindstone recipes in JEI.
+	 *
+	 * @since 19.22.1
+	 */
+	public static final RecipeType<IJeiGrindstoneRecipe> GRINDSTONE =
+			RecipeType.create(ModIds.MINECRAFT_ID, "grindstone", IJeiGrindstoneRecipe.class);
 
 	/**
 	 * The smithing recipe type.

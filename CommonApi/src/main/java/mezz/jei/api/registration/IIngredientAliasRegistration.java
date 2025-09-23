@@ -1,7 +1,9 @@
 package mezz.jei.api.registration;
 
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Collection;
 
@@ -12,6 +14,16 @@ import java.util.Collection;
  * @since 19.10.0
  */
 public interface IIngredientAliasRegistration {
+	/**
+	 * Register a search alias for an ingredient.
+	 * An alias may be a translation key.
+	 *
+	 * @since 19.23.0
+	 */
+	default void addAlias(ItemStack itemStack, String alias) {
+		addAlias(VanillaTypes.ITEM_STACK, itemStack, alias);
+	}
+
 	/**
 	 * Register a search alias for an ingredient.
 	 * An alias may be a translation key.

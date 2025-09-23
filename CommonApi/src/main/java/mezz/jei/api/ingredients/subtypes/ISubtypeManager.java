@@ -69,6 +69,19 @@ public interface ISubtypeManager {
 	<T> String getSubtypeInfo(IIngredientTypeWithSubtypes<?, T> ingredientType, T ingredient, UidContext context);
 
 	/**
+	 * Return true if the given ItemStack can have subtypes.
+	 * For example in the vanilla game an enchanted book may have subtypes, but an apple does not.
+	 *
+	 * @see ISubtypeRegistration#registerSubtypeInterpreter
+	 * @see ISubtypeManager#getSubtypeData
+	 *
+	 * @since 19.23.0
+	 */
+	default boolean hasSubtypes(ItemStack ingredient) {
+		return hasSubtypes(VanillaTypes.ITEM_STACK, ingredient);
+	}
+
+	/**
 	 * Return true if the given ingredient can have subtypes.
 	 * For example in the vanilla game an enchanted book may have subtypes, but an apple does not.
 	 *

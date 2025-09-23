@@ -10,6 +10,8 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.platform.IPlatformInputHelper;
+import mezz.jei.common.platform.Services;
 import net.minecraft.ChatFormatting;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
@@ -21,6 +23,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.TooltipFlag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.HashSet;
 import java.util.List;
@@ -35,19 +38,19 @@ public final class SafeIngredientUtil {
 	private SafeIngredientUtil() {
 	}
 
-	public static <T> void getTooltip(ITooltipBuilder tooltip, IIngredientManager ingredientManager, IIngredientRenderer<T> ingredientRenderer, ITypedIngredient<T> typedIngredient) {
+	public static <T> void getRichTooltip(ITooltipBuilder tooltip, IIngredientManager ingredientManager, IIngredientRenderer<T> ingredientRenderer, ITypedIngredient<T> typedIngredient) {
 		Minecraft minecraft = Minecraft.getInstance();
 		TooltipFlag.Default tooltipFlag = minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
 		tooltipFlag = tooltipFlag.asCreative();
-		getTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient, tooltipFlag);
+		getRichTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient, tooltipFlag);
 	}
 
-	public static <T> void getTooltip(
+	public static <T> void getRichTooltip(
 		ITooltipBuilder tooltip,
 		IIngredientManager ingredientManager,
 		IIngredientRenderer<T> ingredientRenderer,
 		ITypedIngredient<T> typedIngredient,
-		TooltipFlag.Default tooltipFlag
+		TooltipFlag tooltipFlag
 	) {
 		T ingredient = typedIngredient.getIngredient();
 
@@ -55,6 +58,9 @@ public final class SafeIngredientUtil {
 			getTooltipErrorTooltip(tooltip);
 			return;
 		}
+
+		IPlatformInputHelper inputHelper = Services.PLATFORM.getInputHelper();
+		tooltipFlag = inputHelper.getClientTooltipFlag(tooltipFlag);
 
 		tooltip.setIngredient(typedIngredient);
 		try {
@@ -66,6 +72,28 @@ public final class SafeIngredientUtil {
 			CRASHING_INGREDIENT_TOOLTIPS.add(ingredient);
 			ErrorUtil.logIngredientCrash(e, "Caught an error getting an Ingredient's tooltip", ingredientManager, typedIngredient.getType(), ingredient);
 			getTooltipErrorTooltip(tooltip);
+		}
+	}
+
+	@Unmodifiable
+	public static <T> List<Component> getPlainTooltipForSearch(
+		IIngredientManager ingredientManager,
+		IIngredientRenderer<T> ingredientRenderer,
+		ITypedIngredient<T> typedIngredient,
+		TooltipFlag.Default tooltipFlag
+	) {
+		T ingredient = typedIngredient.getIngredient();
+
+		if (CRASHING_INGREDIENT_TOOLTIPS.contains(ingredient)) {
+			return List.of();
+		}
+
+		try {
+			return ingredientRenderer.getTooltip(ingredient, tooltipFlag);
+		} catch (RuntimeException | LinkageError e) {
+			CRASHING_INGREDIENT_TOOLTIPS.add(ingredient);
+			ErrorUtil.logIngredientCrash(e, "Caught an error getting an Ingredient's tooltip", ingredientManager, typedIngredient.getType(), ingredient);
+			return List.of();
 		}
 	}
 

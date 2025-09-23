@@ -1,6 +1,7 @@
 package mezz.jei.library.ingredients;
 
 import com.mojang.serialization.Codec;
+import mezz.jei.api.gui.builder.IClickableIngredientFactory;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -9,6 +10,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.input.ClickableIngredient;
+import mezz.jei.common.input.ClickableIngredientFactory;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.Translator;
@@ -20,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +46,16 @@ public class IngredientManager implements IIngredientManager {
 		return this.registeredIngredients
 			.getIngredientInfo(ingredientType)
 			.getAllIngredients();
+	}
+
+	@Override
+	@Unmodifiable
+	public <V> Collection<ITypedIngredient<V>> getAllTypedIngredients(IIngredientType<V> ingredientType) {
+		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
+
+		return this.registeredIngredients
+			.getIngredientInfo(ingredientType)
+			.getAllTypedIngredients();
 	}
 
 	@Override
@@ -106,34 +119,30 @@ public class IngredientManager implements IIngredientManager {
 			String ingredientStrings = ingredients.stream()
 				.map(ingredientHelper::getResourceLocation)
 				.map(ResourceLocation::toString)
-				.collect(Collectors.joining("\n", "[","]"));
+				.collect(Collectors.joining(", ", "[","]"));
 			LOGGER.debug("Ingredients added at runtime: {}", ingredientStrings);
 		}
 
-		Collection<V> validIngredients = ingredients.stream()
-			.filter(i -> {
-				if (!ingredientHelper.isValidIngredient(i)) {
-					String errorInfo = ingredientHelper.getErrorInfo(i);
-					LOGGER.error("Attempted to add an invalid Ingredient: {}", errorInfo);
-					return false;
-				}
-				if (!ingredientHelper.isIngredientOnServer(i)) {
-					String errorInfo = ingredientHelper.getErrorInfo(i);
-					LOGGER.error("Attempted to add an Ingredient that is not on the server: {}", errorInfo);
-					return false;
-				}
-				return true;
-			})
-			.toList();
+		List<ITypedIngredient<V>> validTypedIngredients = new ArrayList<>(ingredients.size());
+		for (V ingredient : ingredients) {
+			if (!ingredientHelper.isIngredientOnServer(ingredient)) {
+				String errorInfo = ingredientHelper.getErrorInfo(ingredient);
+				LOGGER.warn("Attempted to add an Ingredient that is not on the server: {}", errorInfo);
+				continue;
+			}
+			ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, false);
+			if (typedIngredient == null) {
+				LOGGER.warn("Attempted to add an invalid ingredient at runtime: {}", ingredientHelper.getErrorInfo(ingredient));
+				continue;
+			}
 
-		ingredientInfo.addIngredients(validIngredients);
+			validTypedIngredients.add(typedIngredient);
+		}
+
+		ingredientInfo.addIngredients(validTypedIngredients);
 
 		if (!this.listeners.isEmpty()) {
-			List<ITypedIngredient<V>> typedIngredients = validIngredients.stream()
-				.map(i -> TypedIngredient.createUnvalidated(ingredientType, i))
-				.toList();
-
-			this.listeners.forEach(listener -> listener.onIngredientsAdded(ingredientHelper, typedIngredients));
+			this.listeners.forEach(listener -> listener.onIngredientsAdded(ingredientHelper, validTypedIngredients));
 		}
 	}
 
@@ -177,14 +186,15 @@ public class IngredientManager implements IIngredientManager {
 			String ingredientStrings = ingredients.stream()
 				.map(ingredientHelper::getResourceLocation)
 				.map(ResourceLocation::toString)
-				.collect(Collectors.joining("\n", "[","]"));
+				.collect(Collectors.joining(", ", "[","]"));
 			LOGGER.debug("Ingredients removed at runtime: {}", ingredientStrings);
 		}
 
-		ingredientInfo.removeIngredients(ingredients);
+		List<ITypedIngredient<V>> typedIngredients = TypedIngredient.createAndFilterInvalidNonnullList(this, ingredientType, ingredients, false);
+
+		ingredientInfo.removeIngredients(typedIngredients);
 
 		if (!this.listeners.isEmpty()) {
-			List<ITypedIngredient<V>> typedIngredients = TypedIngredient.createAndFilterInvalidNonnullList(this, ingredientType, ingredients, false);
 			this.listeners.forEach(listener -> listener.onIngredientsRemoved(ingredientHelper, typedIngredients));
 		}
 	}
@@ -196,8 +206,13 @@ public class IngredientManager implements IIngredientManager {
 	}
 
 	@Override
-	public <V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient) {
-		ITypedIngredient<V> result = TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient, false);
+	public IClickableIngredientFactory getClickableIngredientFactory() {
+		return new ClickableIngredientFactory(this);
+	}
+
+	@Override
+	public <V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient, boolean normalize) {
+		ITypedIngredient<V> result = TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient, normalize);
 		return Optional.ofNullable(result);
 	}
 
@@ -209,7 +224,9 @@ public class IngredientManager implements IIngredientManager {
 		return TypedIngredient.normalize(typedIngredient, ingredientHelper);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
+	@Deprecated
 	public <V> Optional<IClickableIngredient<V>> createClickableIngredient(IIngredientType<V> ingredientType, V ingredient, Rect2i area, boolean normalize) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotNull(ingredient, "ingredient");

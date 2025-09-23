@@ -29,12 +29,11 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 	private String cachedOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
 
 	public ModIdFormatConfig(IConfigSchemaBuilder builder) {
-		IConfigCategoryBuilder modName = builder.addCategory("modname");
+		IConfigCategoryBuilder modName = builder.addCategory("modName");
 		Supplier<List<ChatFormatting>> configValue = modName.addList(
-			"ModNameFormat",
+			"modNameFormat",
 			defaultModNameFormat,
-			ChatFormattingSerializer.INSTANCE,
-			"Formatting for the mod names in tooltips for JEI GUIs. Leave blank to disable."
+			ChatFormattingSerializer.INSTANCE
 		);
 		this.modNameFormat = new CachedSupplierTransformer<>(configValue, ModIdFormatConfig::toFormatString);
 	}

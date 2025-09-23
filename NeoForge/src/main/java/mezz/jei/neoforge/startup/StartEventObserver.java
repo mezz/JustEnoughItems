@@ -57,7 +57,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 
 		subscriptions.register(ClientPlayerNetworkEvent.LoggingOut.class, event -> {
 			if (event.getPlayer() != null) {
-				LOGGER.info("JEI StartEventObserver received {}", event.getClass());
+				logReceivedEvent(event);
 				transitionState(State.LISTENING);
 			}
 		});
@@ -79,7 +79,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 
 					LOGGER.error("""
 							A Screen is opening but JEI hasn't started yet.
-							Normally, JEI is started after {}.
+							Normally, JEI is started after these event have fired: {}.
 							Something has caused one or more of these events to fail, so JEI is starting very late.
 							Missing events: {}""",
 						requiredEventsString,
@@ -105,10 +105,10 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 		}
 		if (currentConnection == null) {
 			// No connection => Disregard, this probably an event being fired on the integrated server thread
-			LOGGER.info("JEI StartEventObserver received {} too early, ignoring", event.getClass());
+			LOGGER.debug("JEI StartEventObserver received {} too early, ignoring", event.getClass());
 			return;
 		}
-		LOGGER.info("JEI StartEventObserver received {}", event.getClass());
+		logReceivedEvent(event);
 		Class<? extends Event> eventClass = event.getClass();
 		if (requiredEvents.contains(eventClass) &&
 			observedEvents.add(eventClass) &&
@@ -120,6 +120,10 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 				transitionState(State.JEI_STARTED);
 			}
 		}
+	}
+
+	private static <T extends Event> void logReceivedEvent(T event) {
+		LOGGER.debug("JEI StartEventObserver received event: {}", event.getClass());
 	}
 
 	@Nullable
@@ -143,6 +147,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 
 	@Override
 	public void onResourceManagerReload(ResourceManager pResourceManager) {
+		LOGGER.debug("JEI StartEventObserver detected resource manager reload.");
 		restart();
 	}
 
@@ -155,7 +160,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 	}
 
 	private void transitionState(State newState) {
-		LOGGER.info("JEI StartEventObserver transitioning state from {} to {}", this.state, newState);
+		LOGGER.debug("JEI StartEventObserver transitioning state from {} to {}", this.state, newState);
 
 		switch (newState) {
 			case LISTENING -> {

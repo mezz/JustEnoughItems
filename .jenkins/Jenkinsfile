@@ -48,6 +48,13 @@ pipeline {
             }
         }
 
+        stage('Create Changelogs') {
+            steps {
+                sh "./gradlew :Changelog:makeChangelog"
+                sh "./gradlew :Changelog:makeMarkdownChangelog"
+            }
+        }
+
         stage('Publish CurseForge') {
             steps {
                 sh "./gradlew :Fabric:publishCurseforge"

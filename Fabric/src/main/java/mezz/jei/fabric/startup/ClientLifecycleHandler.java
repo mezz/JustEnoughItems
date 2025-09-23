@@ -35,8 +35,7 @@ public class ClientLifecycleHandler {
 		List<IModPlugin> plugins = FabricPluginFinder.getModPlugins();
 		StartData startData = new StartData(
 			plugins,
-			serverConnection,
-			keyMappings
+			serverConnection
 		);
 
 		this.jeiStarter = new JeiStarter(startData);

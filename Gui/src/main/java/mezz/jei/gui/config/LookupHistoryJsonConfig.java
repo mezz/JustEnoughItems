@@ -35,7 +35,7 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 	private static final Duration SAVE_DELAY_TIME = Duration.ofSeconds(5);
 	private static final int VERSION = 1;
 
-	private static final Codec<BookmarkType> TYPE_CODEC = EnumCodec.create(BookmarkType.class, BookmarkType::valueOf);
+	private static final Codec<BookmarkType> TYPE_CODEC = EnumCodec.create(BookmarkType.class);
 	private static @Nullable MapCodec<IBookmark> BOOKMARK_CODEC;
 
 	private final Path jeiConfigurationDir;

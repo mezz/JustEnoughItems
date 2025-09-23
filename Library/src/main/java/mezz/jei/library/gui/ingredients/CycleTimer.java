@@ -4,6 +4,7 @@ import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public class CycleTimer implements ICycler {
 	private static final CycleTimer ZERO_OFFSET = new CycleTimer(0);
@@ -38,16 +39,16 @@ public class CycleTimer implements ICycler {
 	}
 
 	@Override
-	@Nullable
-	public <T> T getCycled(List<@Nullable T> list) {
+	public <T> Optional<T> getCycled(List<@Nullable T> list) {
 		if (list.isEmpty()) {
-			return null;
+			return Optional.empty();
 		}
 		if (!Screen.hasShiftDown()) {
 			long now = System.currentTimeMillis();
 			index = calculateIndex(now, cycleOffset);
 		}
 		int index = this.index % list.size();
-		return list.get(index);
+		T value = list.get(index);
+		return Optional.ofNullable(value);
 	}
 }

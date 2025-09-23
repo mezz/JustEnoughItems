@@ -58,12 +58,12 @@ public class EditModeConfig implements IEditModeConfig {
 		}
 	}
 
-	private <V> boolean addIngredientToConfigBlacklistInternal(
+	private <V> void addIngredientToConfigBlacklistInternal(
 		ITypedIngredient<V> typedIngredient,
 		HideMode blacklistType
 	) {
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
-		return addIngredientToConfigBlacklistInternal(typedIngredient, blacklistType, ingredientHelper);
+		addIngredientToConfigBlacklistInternal(typedIngredient, blacklistType, ingredientHelper);
 	}
 
 	private <V> boolean addIngredientToConfigBlacklistInternal(
@@ -85,18 +85,6 @@ public class EditModeConfig implements IEditModeConfig {
 		}
 
 		return false;
-	}
-
-	public <V> void removeIngredientFromConfigBlacklist(
-		ITypedIngredient<V> typedIngredient,
-		HideMode blacklistType,
-		IIngredientHelper<V> ingredientHelper
-	) {
-		final Object uid = getIngredientUid(typedIngredient, blacklistType, ingredientHelper);
-		if (blacklist.remove(uid) != null) {
-			serializer.save(this);
-			notifyListenersOfVisibilityChange(typedIngredient, true);
-		}
 	}
 
 	public <V> boolean isIngredientOnConfigBlacklist(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
@@ -166,7 +154,11 @@ public class EditModeConfig implements IEditModeConfig {
 	public <V> void showIngredientUsingConfigFile(ITypedIngredient<V> ingredient, HideMode hideMode) {
 		IIngredientType<V> type = ingredient.getType();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(type);
-		removeIngredientFromConfigBlacklist(ingredient, hideMode, ingredientHelper);
+		final Object blacklistUid = getIngredientUid(ingredient, hideMode, ingredientHelper);
+		if (blacklist.remove(blacklistUid) != null) {
+			serializer.save(this);
+			notifyListenersOfVisibilityChange(ingredient, true);
+		}
 	}
 
 	public void registerListener(IngredientVisibility ingredientVisibility) {
@@ -188,7 +180,7 @@ public class EditModeConfig implements IEditModeConfig {
 			this.path = path;
 			this.codec = RecordCodecBuilder.create(builder -> {
 				return builder.group(
-					EnumCodec.create(HideMode.class, HideMode::valueOf)
+					EnumCodec.create(HideMode.class)
 						.fieldOf("hide_mode")
 						.forGetter(Pair::getFirst),
 					codecHelper.getTypedIngredientCodec().codec()

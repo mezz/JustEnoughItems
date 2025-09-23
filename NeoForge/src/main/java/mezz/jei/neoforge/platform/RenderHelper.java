@@ -72,4 +72,9 @@ public class RenderHelper implements IPlatformRenderHelper {
 		String tagTranslationKey = Tags.getTagTranslationKey(tagKey);
 		return Component.translatableWithFallback(tagTranslationKey, "#" + tagKey.location());
 	}
+
+	@Override
+	public BakedModel createLimitedQuadItemModel(BakedModel bakedModel) {
+		return NeoForgeLimitedQuadItemModel.wrap(bakedModel);
+	}
 }

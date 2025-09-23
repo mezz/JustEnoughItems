@@ -17,12 +17,12 @@ public class JeiClientConfigs implements IJeiClientConfigs {
 	private final IConfigSchema schema;
 
 	public JeiClientConfigs(Path configFile) {
-		IConfigSchemaBuilder builder = new ConfigSchemaBuilder(configFile);
+		IConfigSchemaBuilder builder = new ConfigSchemaBuilder(configFile, "jei.config.client");
 
 		clientConfig = new ClientConfig(builder);
 		ingredientFilterConfig = new IngredientFilterConfig(builder);
-		ingredientListConfig = new IngredientGridConfig("IngredientList", builder, HorizontalAlignment.RIGHT);
-		bookmarkListConfig = new IngredientGridConfig("BookmarkList", builder, HorizontalAlignment.LEFT);
+		ingredientListConfig = new IngredientGridConfig("ingredientList", builder, HorizontalAlignment.RIGHT);
+		bookmarkListConfig = new IngredientGridConfig("bookmarkList", builder, HorizontalAlignment.LEFT);
 
 		schema = builder.build();
 	}

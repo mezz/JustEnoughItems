@@ -3,6 +3,7 @@ package mezz.jei.api.runtime;
 import com.mojang.serialization.Codec;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.IClickableIngredientFactory;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -44,6 +45,14 @@ public interface IIngredientManager {
 	 */
 	@Unmodifiable
 	<V> Collection<V> getAllIngredients(IIngredientType<V> ingredientType);
+
+	/**
+	 * Returns an unmodifiable collection of all the ingredients known to JEI, of the specified type.
+	 *
+	 * @since 19.24.0
+	 */
+	@Unmodifiable
+	<V> Collection<ITypedIngredient<V>> getAllTypedIngredients(IIngredientType<V> ingredientType);
 
 	/**
 	 * Returns the appropriate ingredient helper for this ingredient.
@@ -142,9 +151,47 @@ public interface IIngredientManager {
 	 * cannot be used in {@link ITypedIngredient} and will instead be {@link Optional#empty()}.
 	 * This helps turn all special cases like {@link ItemStack#EMPTY} into {@link Optional#empty()} instead.
 	 *
-	 * @since 11.5.0
+	 * @param ingredientType the type of the ingredient
+	 * @param ingredient the ingredient
+	 * @param normalize set true to normalize the ingredient (see {@link IIngredientHelper#normalizeIngredient}
+	 *
+	 * @since 19.23.0
 	 */
-	<V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient);
+	<V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient, boolean normalize);
+
+	/**
+	 * Create a typed ingredient, if the given ingredient is valid and has a known type.
+	 *
+	 * Invalid ingredients (according to {@link IIngredientHelper#isValidIngredient}
+	 * cannot be created into {@link ITypedIngredient} and will instead be {@link Optional#empty()}.
+	 * This helps turn all special cases like {@link ItemStack#EMPTY} into {@link Optional#empty()} instead.
+	 *
+	 * @param ingredient the ingredient
+	 * @param normalize set true to normalize the ingredient (see {@link IIngredientHelper#normalizeIngredient}
+	 *
+	 * @return {@link Optional#empty()} if there is no known type for the given ingredient or the ingredient is invalid.
+	 *
+	 * @since 19.23.0
+	 */
+	default <T> Optional<ITypedIngredient<T>> createTypedIngredient(T ingredient, boolean normalize) {
+		return getIngredientTypeChecked(ingredient)
+			.flatMap(ingredientType -> createTypedIngredient(ingredientType, ingredient, normalize));
+	}
+
+	/**
+	 * Create a typed ingredient, if the given ingredient is valid.
+	 *
+	 * Invalid ingredients (according to {@link IIngredientHelper#isValidIngredient})
+	 * cannot be used in {@link ITypedIngredient} and will instead be {@link Optional#empty()}.
+	 * This helps turn all special cases like {@link ItemStack#EMPTY} into {@link Optional#empty()} instead.
+	 *
+	 * @since 11.5.0
+	 * @deprecated use {@link #createTypedIngredient(IIngredientType, Object, boolean)}
+	 */
+	@Deprecated(forRemoval = true, since = "19.23.0")
+	default <V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient) {
+		return createTypedIngredient(ingredientType, ingredient, false);
+	}
 
 	/**
 	 * Create a typed ingredient, if the given ingredient is valid and has a known type.
@@ -156,10 +203,11 @@ public interface IIngredientManager {
 	 * @return {@link Optional#empty()} if there is no known type for the given ingredient or the ingredient is invalid.
 	 *
 	 * @since 15.2.0
+	 * @deprecated use {@link #createTypedIngredient(Object, boolean)}
 	 */
+	@Deprecated(forRemoval = true, since = "19.23.0")
 	default <V> Optional<ITypedIngredient<V>> createTypedIngredient(V ingredient) {
-		return getIngredientTypeChecked(ingredient)
-			.flatMap(ingredientType -> createTypedIngredient(ingredientType, ingredient));
+		return createTypedIngredient(ingredient, false);
 	}
 
 	/**
@@ -170,6 +218,15 @@ public interface IIngredientManager {
 	 * @since 19.1.0
 	 */
 	<V> ITypedIngredient<V> normalizeTypedIngredient(ITypedIngredient<V> typedIngredient);
+
+	/**
+	 * Get the factory for creating clickable ingredients.
+	 *
+	 * @see IClickableIngredient
+	 *
+	 * @since 19.23.0
+	 */
+	IClickableIngredientFactory getClickableIngredientFactory();
 
 	/**
 	 * Create a clickable ingredient.
@@ -184,7 +241,10 @@ public interface IIngredientManager {
 	 * @return a clickable ingredient, or {@link Optional#empty()} if the ingredient is invalid (see {@link IIngredientHelper#isValidIngredient}
 	 *
 	 * @since 19.18.5
+	 *
+	 * @deprecated use {@link #getClickableIngredientFactory()}
 	 */
+	@Deprecated(forRemoval = true, since = "19.23.0")
 	<V> Optional<IClickableIngredient<V>> createClickableIngredient(IIngredientType<V> ingredientType, V ingredient, Rect2i area, boolean normalize);
 
 	/**
@@ -199,7 +259,10 @@ public interface IIngredientManager {
 	 * @return a clickable ingredient, or {@link Optional#empty()} if the ingredient is invalid (see {@link IIngredientHelper#isValidIngredient}
 	 *
 	 * @since 19.18.6
+	 *
+	 * @deprecated use {@link #getClickableIngredientFactory()}
 	 */
+	@Deprecated(forRemoval = true, since = "19.23.0")
 	default <V> Optional<IClickableIngredient<V>> createClickableIngredient(V ingredient, Rect2i area, boolean normalize) {
 		return getIngredientTypeChecked(ingredient)
 			.flatMap(type -> createClickableIngredient(type, ingredient, area, normalize));

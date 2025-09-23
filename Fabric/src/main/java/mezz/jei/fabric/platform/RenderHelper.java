@@ -81,4 +81,9 @@ public class RenderHelper implements IPlatformRenderHelper {
 		}
 		return ClientTooltipComponent.create(tooltipComponent);
 	}
+
+	@Override
+	public BakedModel createLimitedQuadItemModel(BakedModel bakedModel) {
+		return FabricLimitedQuadItemModel.wrap(bakedModel);
+	}
 }
