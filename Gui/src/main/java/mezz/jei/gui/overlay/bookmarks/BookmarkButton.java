@@ -38,7 +38,11 @@ public class BookmarkButton extends GuiIconToggleButton {
 
 	@Override
 	protected void getTooltips(JeiTooltip tooltip) {
-		tooltip.add(Component.translatable("jei.tooltip.bookmarks"));
+		if (toggleState.isBookmarkOverlayEnabled()) {
+			tooltip.add(Component.translatable("jei.tooltip.bookmarks.disable"));
+		} else {
+			tooltip.add(Component.translatable("jei.tooltip.bookmarks.enable"));
+		}
 		IJeiKeyMapping bookmarkKey = keyBindings.getBookmark();
 		if (bookmarkKey.isUnbound()) {
 			MutableComponent noKey = Component.translatable("jei.tooltip.bookmarks.usage.nokey");
@@ -56,7 +60,7 @@ public class BookmarkButton extends GuiIconToggleButton {
 
 	@Override
 	protected boolean isIconToggledOn() {
-		return bookmarkOverlay.isListDisplayed();
+		return toggleState.isBookmarkOverlayEnabled();
 	}
 
 	@Override

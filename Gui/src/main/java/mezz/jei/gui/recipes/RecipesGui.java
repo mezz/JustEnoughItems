@@ -16,6 +16,7 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
@@ -39,6 +40,7 @@ import mezz.jei.gui.input.InputType;
 import mezz.jei.gui.input.MouseUtil;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.handlers.UserInputRouter;
+import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import mezz.jei.gui.recipes.lookups.StaticFocusedRecipes;
 import net.minecraft.client.Minecraft;
@@ -108,10 +110,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	public RecipesGui(
 		IRecipeManager recipeManager,
+		IIngredientManager ingredientManager,
 		IRecipeTransferManager recipeTransferManager,
 		IInternalKeyMappings keyBindings,
 		IFocusFactory focusFactory,
 		BookmarkList bookmarks,
+		LookupHistory lookupHistory,
 		IGuiHelper guiHelper
 	) {
 		super(Component.literal("Recipes"));
@@ -119,6 +123,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.keyBindings = keyBindings;
 		this.logic = new RecipeGuiLogic(
 			recipeManager,
+			ingredientManager,
+			lookupHistory,
 			recipeTransferManager,
 			this::updateLayout,
 			focusFactory

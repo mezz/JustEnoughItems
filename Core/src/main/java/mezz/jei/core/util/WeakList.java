@@ -1,5 +1,6 @@
 package mezz.jei.core.util;
 
+import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -7,13 +8,20 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class WeakList<T> {
-	private final List<WeakReference<T>> list = new ArrayList<>();
+	@Nullable
+	private List<WeakReference<T>> list;
 
 	public void add(T item) {
+		if (list == null) {
+			list = new ArrayList<>();
+		}
 		list.add(new WeakReference<>(item));
 	}
 
 	public void forEach(Consumer<T> consumer) {
+		if (list == null) {
+			return;
+		}
 		Iterator<WeakReference<T>> iterator = list.iterator();
 		while (iterator.hasNext()) {
 			WeakReference<T> reference = iterator.next();
@@ -24,9 +32,15 @@ public class WeakList<T> {
 				consumer.accept(item);
 			}
 		}
+		if (list.isEmpty()) {
+			list = null;
+		}
 	}
 
 	public boolean isEmpty() {
+		if (list == null) {
+			return true;
+		}
 		Iterator<WeakReference<T>> iterator = list.iterator();
 		while (iterator.hasNext()) {
 			WeakReference<T> reference = iterator.next();
