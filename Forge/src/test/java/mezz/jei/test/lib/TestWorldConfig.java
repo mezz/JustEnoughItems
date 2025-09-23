@@ -57,4 +57,9 @@ public class TestWorldConfig implements IWorldConfig {
 	public void addEditModeToggleListener(IEditModeListener listener) {
 
 	}
+
+	@Override
+	public void clearListeners() {
+
+	}
 }

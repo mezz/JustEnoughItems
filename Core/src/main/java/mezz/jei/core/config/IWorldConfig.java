@@ -23,6 +23,8 @@ public interface IWorldConfig {
 
 	void addEditModeToggleListener(IEditModeListener listener);
 
+	void clearListeners();
+
 	interface IEditModeListener {
 		void onEditModeChanged();
 	}

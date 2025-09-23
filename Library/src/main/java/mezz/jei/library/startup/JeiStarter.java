@@ -6,8 +6,6 @@ import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
-import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.common.Internal;
@@ -28,6 +26,7 @@ import mezz.jei.library.config.EditModeConfig;
 import mezz.jei.library.config.ModIdFormatConfig;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.library.ingredients.IngredientBlacklistInternal;
+import mezz.jei.library.ingredients.IngredientManager;
 import mezz.jei.library.ingredients.IngredientVisibility;
 import mezz.jei.library.load.PluginCaller;
 import mezz.jei.library.load.PluginHelper;
@@ -45,6 +44,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class JeiStarter {
@@ -60,6 +60,7 @@ public final class JeiStarter {
 	private final FileWatcher fileWatcher = new FileWatcher("JEI Config File Watcher");
 	private final ConfigManager configManager;
 	private final JeiClientConfigs jeiClientConfigs;
+	private final List<IStopCallback> stopCallbacks = new ArrayList<>();
 
 	public JeiStarter(StartData data) {
 		ErrorUtil.checkNotEmpty(data.plugins(), "plugins");
@@ -116,7 +117,8 @@ public final class JeiStarter {
 		PluginLoader pluginLoader = new PluginLoader(data, modIdFormatConfig, ingredientFilterConfig, colorHelper);
 		JeiHelpers jeiHelpers = pluginLoader.getJeiHelpers();
 
-		IIngredientManager ingredientManager = pluginLoader.getIngredientManager();
+		IngredientManager ingredientManager = pluginLoader.getIngredientManager();
+		stopCallbacks.add(ingredientManager::onRuntimeStopped);
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 		ingredientManager.registerIngredientListener(blacklist);
@@ -124,12 +126,13 @@ public final class JeiStarter {
 		Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
 		EditModeConfig editModeConfig = new EditModeConfig(new EditModeConfig.FileSerializer(configDir.resolve("blacklist.cfg")), ingredientManager);
 
-		IIngredientVisibility ingredientVisibility = new IngredientVisibility(
+		IngredientVisibility ingredientVisibility = new IngredientVisibility(
 			blacklist,
 			worldConfig,
 			editModeConfig,
 			ingredientManager
 		);
+		stopCallbacks.add(ingredientVisibility::onRuntimeStopped);
 
 		RecipeManager recipeManager = pluginLoader.createRecipeManager(
 			plugins,
@@ -183,8 +186,15 @@ public final class JeiStarter {
 
 	public void stop() {
 		LOGGER.info("Stopping JEI");
+
 		List<IModPlugin> plugins = data.plugins();
 		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, IModPlugin::onRuntimeUnavailable);
-		Internal.setRuntime(null);
+
+		Internal.onRuntimeStopped();
+
+		for (IStopCallback stopCallback : stopCallbacks) {
+			stopCallback.onRuntimeStopped();
+		}
+		stopCallbacks.clear();
 	}
 }

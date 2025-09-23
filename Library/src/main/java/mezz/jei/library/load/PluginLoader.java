@@ -15,7 +15,6 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
@@ -31,6 +30,7 @@ import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.library.focus.FocusFactory;
 import mezz.jei.library.gui.GuiHelper;
 import mezz.jei.library.helpers.ModIdHelper;
+import mezz.jei.library.ingredients.IngredientManager;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.AdvancedRegistration;
@@ -60,7 +60,7 @@ import java.util.List;
 public class PluginLoader {
 	private final StartData data;
 	private final LoggedTimer timer;
-	private final IIngredientManager ingredientManager;
+	private final IngredientManager ingredientManager;
 	private final JeiHelpers jeiHelpers;
 
 	public PluginLoader(
@@ -175,7 +175,7 @@ public class PluginLoader {
 		return new RecipeManager(recipeManagerInternal, ingredientManager);
 	}
 
-	public IIngredientManager getIngredientManager() {
+	public IngredientManager getIngredientManager() {
 		return ingredientManager;
 	}
 

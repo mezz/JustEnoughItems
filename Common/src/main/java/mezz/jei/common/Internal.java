@@ -114,13 +114,19 @@ public final class Internal {
 	}
 
 	public static void onRuntimeStopped() {
+		if (jeiClientConfigs != null) {
+			jeiClientConfigs.onRuntimeStopped();
+		}
+		if (worldConfig != null) {
+			worldConfig.clearListeners();
+		}
 		if (jeiRuntime != null) {
 			jeiRuntime = null;
 		}
 	}
 
 	public static void onClientStopping() {
-		setRuntime(null);
+		onRuntimeStopped();
 		delayedExecutor.shutdown();
 	}
 }
