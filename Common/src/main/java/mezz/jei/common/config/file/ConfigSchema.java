@@ -79,6 +79,13 @@ public class ConfigSchema implements IConfigSchema {
 	}
 
 	@Override
+	public void clearListeners() {
+		for (ConfigCategory configCategory : categories) {
+			configCategory.clearListeners();
+		}
+	}
+
+	@Override
 	@Unmodifiable
 	public List<ConfigCategory> getCategories() {
 		return categories;

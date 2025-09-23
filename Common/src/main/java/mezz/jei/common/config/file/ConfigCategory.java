@@ -44,4 +44,10 @@ public class ConfigCategory implements IJeiConfigCategory {
 	public Set<String> getValueNames() {
 		return this.valueMap.keySet();
 	}
+
+	public void clearListeners() {
+		for (ConfigValue<?> configValue : this.valueMap.values()) {
+			configValue.clearListeners();
+		}
+	}
 }

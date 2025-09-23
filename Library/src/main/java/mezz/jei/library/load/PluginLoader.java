@@ -15,7 +15,6 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
@@ -34,6 +33,7 @@ import mezz.jei.library.gui.helpers.GuiHelper;
 import mezz.jei.library.helpers.CodecHelper;
 import mezz.jei.library.helpers.ModIdHelper;
 import mezz.jei.library.ingredients.IngredientBlacklistInternal;
+import mezz.jei.library.ingredients.IngredientManager;
 import mezz.jei.library.ingredients.IngredientVisibility;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
@@ -76,7 +76,7 @@ public final class PluginLoader {
 		return new SubtypeManager(subtypeInterpreters);
 	}
 
-	public static IIngredientManager registerIngredients(StartData data, SubtypeManager subtypeManager, IColorHelper colorHelper, IIngredientFilterConfig ingredientFilterConfig) {
+	public static IngredientManager registerIngredients(StartData data, SubtypeManager subtypeManager, IColorHelper colorHelper, IIngredientFilterConfig ingredientFilterConfig) {
 		List<IModPlugin> plugins = data.plugins();
 		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(ingredientManagerBuilder));
@@ -120,7 +120,7 @@ public final class PluginLoader {
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
 		ingredientManager.registerIngredientListener(blacklist);
 
-		IIngredientVisibility ingredientVisibility = new IngredientVisibility(
+		IngredientVisibility ingredientVisibility = new IngredientVisibility(
 			blacklist,
 			toggleState,
 			editModeConfig,

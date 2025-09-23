@@ -23,6 +23,8 @@ public interface IClientToggleState {
 
 	void addEditModeToggleListener(IEditModeListener listener);
 
+	void clearListeners();
+
 	interface IEditModeListener {
 		void onEditModeChanged();
 	}

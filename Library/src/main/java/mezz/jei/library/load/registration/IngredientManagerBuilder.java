@@ -11,7 +11,6 @@ import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.ingredients.IngredientInfo;
 import mezz.jei.library.ingredients.IngredientManager;
@@ -222,7 +221,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		return colorHelper;
 	}
 
-	public IIngredientManager build() {
+	public IngredientManager build() {
 		RegisteredIngredients registeredIngredients = new RegisteredIngredients(ingredientInfos);
 		return new IngredientManager(registeredIngredients);
 	}

@@ -5,10 +5,8 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
-import mezz.jei.common.config.file.IConfigListener;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -65,12 +63,6 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	private final IClientToggleState toggleState;
 	private final IClientConfig clientConfig;
 
-	// these need to be stored as strong references here because listeners are weakly stored elsewhere
-	@SuppressWarnings("FieldCanBeLocal")
-	private final IConfigListener<Boolean> lookupHistoryEnabledListener;
-	@SuppressWarnings("FieldCanBeLocal")
-	private final IConfigListener<HistoryDisplaySide> lookupHistoryViewSideListener;
-
 	public BookmarkOverlay(
 		BookmarkList bookmarkList,
 		IngredientGridWithNavigation contents,
@@ -103,11 +95,8 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 					.update();
 		});
 
-		this.lookupHistoryEnabledListener = v -> onScreenPropertiesChanged();
-		this.lookupHistoryViewSideListener = v -> onScreenPropertiesChanged();
-
-		clientConfig.addLookupHistoryEnabledListener(lookupHistoryEnabledListener);
-		clientConfig.addLookupHistoryDisplaySideListener(lookupHistoryViewSideListener);
+		clientConfig.addLookupHistoryEnabledListener(v -> onScreenPropertiesChanged());
+		clientConfig.addLookupHistoryDisplaySideListener(v -> onScreenPropertiesChanged());
 	}
 
 	public boolean isListDisplayed() {

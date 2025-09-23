@@ -14,7 +14,6 @@ import mezz.jei.common.input.ClickableIngredientFactory;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.Translator;
-import mezz.jei.core.util.WeakList;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
@@ -32,7 +31,7 @@ public class IngredientManager implements IIngredientManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final RegisteredIngredients registeredIngredients;
-	private final WeakList<IIngredientListener> listeners = new WeakList<>();
+	private final List<IIngredientListener> listeners = new ArrayList<>();
 
 	public IngredientManager(RegisteredIngredients registeredIngredients) {
 		this.registeredIngredients = registeredIngredients;
@@ -141,9 +140,7 @@ public class IngredientManager implements IIngredientManager {
 
 		ingredientInfo.addIngredients(validTypedIngredients);
 
-		if (!this.listeners.isEmpty()) {
-			this.listeners.forEach(listener -> listener.onIngredientsAdded(ingredientHelper, validTypedIngredients));
-		}
+		this.listeners.forEach(listener -> listener.onIngredientsAdded(ingredientHelper, validTypedIngredients));
 	}
 
 	@Override
@@ -194,15 +191,17 @@ public class IngredientManager implements IIngredientManager {
 
 		ingredientInfo.removeIngredients(typedIngredients);
 
-		if (!this.listeners.isEmpty()) {
-			this.listeners.forEach(listener -> listener.onIngredientsRemoved(ingredientHelper, typedIngredients));
-		}
+		this.listeners.forEach(listener -> listener.onIngredientsRemoved(ingredientHelper, typedIngredients));
 	}
 
 	@Override
 	public void registerIngredientListener(IIngredientListener listener) {
 		ErrorUtil.checkNotNull(listener, "listener");
 		this.listeners.add(listener);
+	}
+
+	public void onRuntimeStopped() {
+		this.listeners.clear();
 	}
 
 	@Override
