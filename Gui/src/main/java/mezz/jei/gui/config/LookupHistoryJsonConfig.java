@@ -39,7 +39,7 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 	private static @Nullable MapCodec<IBookmark> BOOKMARK_CODEC;
 
 	private final Path jeiConfigurationDir;
-	private final DeduplicatingRunner delayedSave = new DeduplicatingRunner(SAVE_DELAY_TIME, "JEI Lookup History Save Delay");
+	private final DeduplicatingRunner delayedSave = new DeduplicatingRunner(SAVE_DELAY_TIME);
 
 	private static MapCodec<IBookmark> getBookmarkCodec(ICodecHelper codecHelper, IIngredientManager ingredientManager, IRecipeManager recipeManager) {
 		if (BOOKMARK_CODEC == null) {

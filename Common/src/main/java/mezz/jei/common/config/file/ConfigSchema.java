@@ -22,7 +22,7 @@ public class ConfigSchema implements IConfigSchema {
 	@Unmodifiable
 	private final List<ConfigCategory> categories;
 	private final AtomicBoolean needsLoad = new AtomicBoolean(true);
-	private final DeduplicatingRunner delayedSave = new DeduplicatingRunner(SAVE_DELAY_TIME, "JEI Config Save Delay");
+	private final DeduplicatingRunner delayedSave = new DeduplicatingRunner(SAVE_DELAY_TIME);
 
 	public ConfigSchema(Path path, List<ConfigCategoryBuilder> categoryBuilders) {
 		this.path = path;
