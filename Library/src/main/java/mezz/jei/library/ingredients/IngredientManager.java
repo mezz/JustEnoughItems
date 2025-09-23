@@ -11,12 +11,12 @@ import mezz.jei.common.input.ClickableIngredient;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.Translator;
-import mezz.jei.core.util.WeakList;
 import net.minecraft.client.renderer.Rect2i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +25,7 @@ public class IngredientManager implements IIngredientManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final RegisteredIngredients registeredIngredients;
-	private final WeakList<IIngredientListener> listeners = new WeakList<>();
+	private final List<IIngredientListener> listeners = new ArrayList<>();
 
 	public IngredientManager(RegisteredIngredients registeredIngredients) {
 		this.registeredIngredients = registeredIngredients;
@@ -172,6 +172,10 @@ public class IngredientManager implements IIngredientManager {
 	public void registerIngredientListener(IIngredientListener listener) {
 		ErrorUtil.checkNotNull(listener, "listener");
 		this.listeners.add(listener);
+	}
+
+	public void onRuntimeStopped() {
+		this.listeners.clear();
 	}
 
 	@Override

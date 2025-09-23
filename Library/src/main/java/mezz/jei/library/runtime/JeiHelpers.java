@@ -14,9 +14,10 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.gui.helpers.GuiHelper;
+import mezz.jei.library.ingredients.IngredientVisibility;
 import net.minecraft.resources.ResourceLocation;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -30,7 +31,7 @@ public class JeiHelpers implements IJeiHelpers {
 	private final IColorHelper colorHelper;
 	private final IIngredientManager ingredientManager;
 	private final IVanillaRecipeFactory vanillaRecipeFactory;
-	private final IIngredientVisibility ingredientVisibility;
+	private final IngredientVisibility ingredientVisibility;
 	private final IPlatformFluidHelper<?> platformFluidHelper;
 	private @Nullable Collection<IRecipeCategory<?>> recipeCategories;
 
@@ -42,7 +43,7 @@ public class JeiHelpers implements IJeiHelpers {
 		IColorHelper colorHelper,
 		IIngredientManager ingredientManager,
 		IVanillaRecipeFactory vanillaRecipeFactory,
-		IIngredientVisibility ingredientVisibility
+		IngredientVisibility ingredientVisibility
 	) {
 		this.guiHelper = guiHelper;
 		this.stackHelper = stackHelper;
@@ -137,5 +138,9 @@ public class JeiHelpers implements IJeiHelpers {
 	@Override
 	public IIngredientVisibility getIngredientVisibility() {
 		return ingredientVisibility;
+	}
+
+	public void onRuntimeStopped() {
+		ingredientVisibility.onRuntimeStopped();
 	}
 }
