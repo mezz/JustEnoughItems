@@ -1,5 +1,5 @@
 package mezz.jei.common.config;
 
-public enum HistoryViewSide {
+public enum HistoryDisplaySide {
 	LEFT, RIGHT
 }

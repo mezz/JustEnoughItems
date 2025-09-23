@@ -3,7 +3,7 @@ package mezz.jei.gui.startup;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.common.config.HistoryViewSide;
+import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
@@ -106,7 +106,7 @@ public final class OverlayHelper {
 			ingredientGridConfig,
 			ingredientFilterConfig,
 			clientConfig,
-			HistoryViewSide.RIGHT,
+			HistoryDisplaySide.RIGHT,
 			toggleState,
 			serverConnection,
 			colorHelper
@@ -162,7 +162,7 @@ public final class OverlayHelper {
 			bookmarkListConfig,
 			ingredientFilterConfig,
 			clientConfig,
-			HistoryViewSide.LEFT,
+			HistoryDisplaySide.LEFT,
 			toggleState,
 			serverConnection,
 			colorHelper

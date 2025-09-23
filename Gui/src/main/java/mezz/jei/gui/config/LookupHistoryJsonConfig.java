@@ -61,7 +61,7 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 					LOGGER.error("Unable to create lookup history config folder: {}", configPath);
 					return Optional.empty();
 				}
-				Path path = configPath.resolve("lookup_history.json");
+				Path path = configPath.resolve("lookupHistory.json");
 				return Optional.of(path);
 			});
 	}

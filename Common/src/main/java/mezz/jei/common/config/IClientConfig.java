@@ -44,9 +44,9 @@ public interface IClientConfig {
 
 	int getMaxLookupHistoryIngredients();
 
-	HistoryViewSide getLookupHistoryViewSide();
+	HistoryDisplaySide getLookupHistoryDisplaySide();
 
-	void addLookupHistoryViewSideListener(IConfigListener<HistoryViewSide> listener);
+	void addLookupHistoryDisplaySideListener(IConfigListener<HistoryDisplaySide> listener);
 
 	int getDragDelayMs();
 

@@ -38,7 +38,7 @@ public final class ClientConfig implements IClientConfig {
 	private final ConfigValue<Boolean> lookupHistoryEnabled;
 	private final ConfigValue<Integer> maxLookupHistoryRows;
 	private final ConfigValue<Integer> maxLookupHistoryIngredients;
-	private final ConfigValue<HistoryViewSide> lookupHistoryViewSide;
+	private final ConfigValue<HistoryDisplaySide> lookupHistoryDisplaySide;
 
 	// advanced
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
@@ -102,31 +102,27 @@ public final class ClientConfig implements IClientConfig {
 		lookupFluidContentsEnabled = lookups.addBoolean("lookupFluidContentsEnabled", false);
 		lookupBlockTagsEnabled = lookups.addBoolean("lookupBlockTagsEnabled", true);
 
-		IConfigCategoryBuilder lookupHistory = schema.addCategory("lookup_history");
+		IConfigCategoryBuilder lookupHistory = schema.addCategory("lookupHistory");
 
 		lookupHistoryEnabled = lookupHistory.addBoolean(
-			"LookupHistoryEnabled",
-			false,
-			"Enable the lookup history overlay."
+			"enabled",
+			false
 		);
 		maxLookupHistoryRows = lookupHistory.addInteger(
-			"MaxLookupHistoryRows",
+			"maxRows",
 			2,
 			1,
-			7,
-			"Max number of rows in the lookup history overlay."
+			7
 		);
 		maxLookupHistoryIngredients = lookupHistory.addInteger(
-			"MaxLookupHistoryIngredients",
+			"maxIngredients",
 			100,
 			10,
-			1_000,
-			"Max number of lookup history ingredients."
+			1_000
 		);
-		lookupHistoryViewSide = lookupHistory.addEnum(
-				"LookupHistoryViewSide",
-				HistoryViewSide.LEFT,
-				"Side of the screen to display the lookup history overlay."
+		lookupHistoryDisplaySide = lookupHistory.addEnum(
+			"displaySide",
+			HistoryDisplaySide.LEFT
 		);
 
 		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
@@ -254,13 +250,13 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public HistoryViewSide getLookupHistoryViewSide() {
-		return lookupHistoryViewSide.get();
+	public HistoryDisplaySide getLookupHistoryDisplaySide() {
+		return lookupHistoryDisplaySide.get();
 	}
 
 	@Override
-	public void addLookupHistoryViewSideListener(IConfigListener<HistoryViewSide> listener) {
-		lookupHistoryViewSide.addListener(listener);
+	public void addLookupHistoryDisplaySideListener(IConfigListener<HistoryDisplaySide> listener) {
+		lookupHistoryDisplaySide.addListener(listener);
 	}
 
 	@Override

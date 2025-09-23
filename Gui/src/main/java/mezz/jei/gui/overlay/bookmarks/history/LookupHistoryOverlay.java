@@ -9,7 +9,7 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.config.HistoryViewSide;
+import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
@@ -47,7 +47,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 	// data
 	private final IIngredientGridSource lookupHistory;
 	private final IClientConfig clientConfig;
-	private final HistoryViewSide ownerSide;
+	private final HistoryDisplaySide ownerDisplaySide;
 	private int rows;
 
 	public LookupHistoryOverlay(
@@ -57,7 +57,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 			IIngredientGridConfig historyListConfig,
 			IIngredientFilterConfig ingredientFilterConfig,
 			IClientConfig clientConfig,
-			HistoryViewSide ownerSide,
+			HistoryDisplaySide ownerDisplaySide,
 			IClientToggleState toggleState,
 			IConnectionToServer serverConnection,
 			IColorHelper colorHelper
@@ -75,7 +75,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 				colorHelper,
 				false
 		);
-		this.ownerSide = ownerSide;
+		this.ownerDisplaySide = ownerDisplaySide;
 		lookupHistory.addSourceListChangedListener(this::updateLayout);
 	}
 
@@ -86,7 +86,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 	}
 
 	public boolean isOnSide() {
-		return ownerSide.equals(clientConfig.getLookupHistoryViewSide());
+		return ownerDisplaySide.equals(clientConfig.getLookupHistoryDisplaySide());
 	}
 
 	public IIngredientGridSource getLookupHistory() {
