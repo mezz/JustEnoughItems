@@ -99,6 +99,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public int getMaxLookupHistoryIngredients() {
+		return 0;
+	}
+
+	@Override
 	public HistoryDisplaySide getLookupHistoryDisplaySide() {
 		return HistoryDisplaySide.LEFT;
 	}
