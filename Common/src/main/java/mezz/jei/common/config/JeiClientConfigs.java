@@ -50,4 +50,9 @@ public class JeiClientConfigs implements IJeiClientConfigs {
 	public IIngredientGridConfig getBookmarkListConfig() {
 		return bookmarkListConfig;
 	}
+
+	@Override
+	public void onRuntimeStopped() {
+		schema.clearListeners();
+	}
 }

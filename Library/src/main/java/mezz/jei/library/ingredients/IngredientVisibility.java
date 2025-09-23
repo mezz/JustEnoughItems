@@ -6,16 +6,18 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.IClientToggleState;
-import mezz.jei.core.util.WeakList;
 import mezz.jei.library.config.EditModeConfig;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class IngredientVisibility implements IIngredientVisibility {
 	private final IngredientBlacklistInternal blacklist;
 	private final IClientToggleState toggleState;
 	private final EditModeConfig editModeConfig;
 	private final IIngredientManager ingredientManager;
-	private final WeakList<IListener> listeners = new WeakList<>();
+	private final List<IListener> listeners = new ArrayList<>();
 
 	public IngredientVisibility(
 		IngredientBlacklistInternal blacklist,
@@ -66,5 +68,9 @@ public class IngredientVisibility implements IIngredientVisibility {
 
 	public <V> void notifyListeners(ITypedIngredient<V> ingredient, boolean visible) {
 		listeners.forEach(listener -> listener.onIngredientVisibilityChanged(ingredient, visible));
+	}
+
+	public void onRuntimeStopped() {
+		listeners.clear();
 	}
 }

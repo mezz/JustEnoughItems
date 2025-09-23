@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSetMultimap;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.ConfigManager;
@@ -25,6 +24,7 @@ import mezz.jei.library.config.ModIdFormatConfig;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.library.focus.FocusFactory;
 import mezz.jei.library.helpers.CodecHelper;
+import mezz.jei.library.ingredients.IngredientManager;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.PluginCaller;
 import mezz.jei.library.load.PluginHelper;
@@ -41,6 +41,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class JeiStarter {
@@ -56,6 +57,7 @@ public final class JeiStarter {
 	private final FileWatcher fileWatcher = new FileWatcher("JEI Config File Watcher");
 	private final ConfigManager configManager;
 	private final JeiClientConfigs jeiClientConfigs;
+	private final List<IStopCallback> stopCallbacks = new ArrayList<>();
 
 	public JeiStarter(StartData data) {
 		ErrorUtil.checkNotEmpty(data.plugins(), "plugins");
@@ -110,7 +112,8 @@ public final class JeiStarter {
 		IColorHelper colorHelper = new ColorHelper(colorNameConfig);
 		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
 		SubtypeManager subtypeManager = PluginLoader.registerSubtypes(data);
-		IIngredientManager ingredientManager = PluginLoader.registerIngredients(data, subtypeManager, colorHelper, ingredientFilterConfig);
+		IngredientManager ingredientManager = PluginLoader.registerIngredients(data, subtypeManager, colorHelper, ingredientFilterConfig);
+		stopCallbacks.add(ingredientManager::onRuntimeStopped);
 
 		FocusFactory focusFactory = new FocusFactory(ingredientManager);
 		CodecHelper codecHelper = new CodecHelper(ingredientManager, focusFactory);
@@ -124,7 +127,17 @@ public final class JeiStarter {
 		EditModeConfig editModeConfig = new EditModeConfig(editModeSerializer, ingredientManager);
 
 		ImmutableSetMultimap<String, String> modAliases = PluginLoader.registerModAliases(data, ingredientFilterConfig);
-		JeiHelpers jeiHelpers = PluginLoader.createJeiHelpers(modAliases, modIdFormatConfig, colorHelper, editModeConfig, focusFactory, codecHelper, ingredientManager, subtypeManager);
+		JeiHelpers jeiHelpers = PluginLoader.createJeiHelpers(
+			modAliases,
+			modIdFormatConfig,
+			colorHelper,
+			editModeConfig,
+			focusFactory,
+			codecHelper,
+			ingredientManager,
+			subtypeManager
+		);
+		stopCallbacks.add(jeiHelpers::onRuntimeStopped);
 
 		RecipeManager recipeManager = PluginLoader.createRecipeManager(
 			plugins,
@@ -178,9 +191,17 @@ public final class JeiStarter {
 
 	public void stop() {
 		LOGGER.info("Stopping JEI");
+
 		List<IModPlugin> plugins = data.plugins();
 		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, IModPlugin::onRuntimeUnavailable);
-		Internal.setRuntime(null);
+
+		Internal.onRuntimeStopped();
+
+		for (IStopCallback stopCallback : stopCallbacks) {
+			stopCallback.onRuntimeStopped();
+		}
+		stopCallbacks.clear();
+
 		RegistryUtil.setRegistryAccess(null);
 	}
 }

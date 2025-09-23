@@ -89,7 +89,7 @@ public final class Internal {
 		return jeiFeatures;
 	}
 
-	public static void setRuntime(@Nullable IJeiRuntime jeiRuntime) {
+	public static void setRuntime(IJeiRuntime jeiRuntime) {
 		Internal.jeiRuntime = jeiRuntime;
 	}
 
@@ -97,5 +97,17 @@ public final class Internal {
 		Preconditions.checkState(jeiRuntime != null, "Jei Client Configs have not been created yet.");
 
 		return jeiRuntime;
+	}
+
+	public static void onRuntimeStopped() {
+		if (jeiClientConfigs != null) {
+			jeiClientConfigs.onRuntimeStopped();
+		}
+		if (toggleState != null) {
+			toggleState.clearListeners();
+		}
+		if (jeiRuntime != null) {
+			jeiRuntime = null;
+		}
 	}
 }
