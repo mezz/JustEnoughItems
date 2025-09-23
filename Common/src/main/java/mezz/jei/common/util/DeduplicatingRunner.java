@@ -3,49 +3,29 @@ package mezz.jei.common.util;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Future;
 
 /**
  * This will only run once `delay` has elapsed, without additional runs being called.
  */
 public class DeduplicatingRunner {
-	private final Runnable runnable;
+	private final IDelayedExecutor executor;
 	private final Duration delay;
-	private final String name;
-	private @Nullable Timer timer;
-	private @Nullable TimerTask task;
+	private @Nullable Future<?> future;
 
-	public DeduplicatingRunner(Runnable runnable, Duration delay, String name) {
-		this.runnable = runnable;
+	public DeduplicatingRunner(Duration delay) {
+		this(delay, DelayedExecutor.getInstance());
+	}
+
+	public DeduplicatingRunner(Duration delay, IDelayedExecutor executor) {
 		this.delay = delay;
-		this.name = name;
+		this.executor = executor;
 	}
 
-	public synchronized void run() {
-		if (task != null) {
-			task.cancel();
+	public synchronized void run(Runnable runnable) {
+		if (future != null) {
+			future.cancel(false);
 		}
-		task = new TimerTask() {
-			@Override
-			public void run() {
-				doRun(this);
-			}
-		};
-		if (timer == null) {
-			timer = new Timer(name);
-		}
-		timer.schedule(task, delay.toMillis());
-	}
-
-	private synchronized void doRun(TimerTask fromTask) {
-		if (task == fromTask) {
-			runnable.run();
-			task = null;
-			if (timer != null) {
-				timer.cancel();
-				timer = null;
-			}
-		}
+		future = executor.schedule(runnable, delay);
 	}
 }
