@@ -8,4 +8,6 @@ public interface IJeiClientConfigs {
 	IIngredientGridConfig getIngredientListConfig();
 
 	IIngredientGridConfig getBookmarkListConfig();
+
+	void onRuntimeStopped();
 }

@@ -109,4 +109,10 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 		}
 		this.listeners.add(listener);
 	}
+
+	public void clearListeners() {
+		if (this.listeners != null) {
+			this.listeners = null;
+		}
+	}
 }

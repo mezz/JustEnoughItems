@@ -40,7 +40,7 @@ public class ConfigSchema implements IConfigSchema {
 			try {
 				ConfigSerializer.load(path, categories);
 			} catch (IOException e) {
-				LOGGER.error("Failed to load config schema for: %s".formatted(path), e);
+				LOGGER.error("Failed to load config schema for: {}", path, e);
 			}
 		}
 	}
@@ -71,6 +71,13 @@ public class ConfigSchema implements IConfigSchema {
 	@Override
 	public void markDirty() {
 		delayedSave.run(this::save);
+	}
+
+	@Override
+	public void clearListeners() {
+		for (ConfigCategory configCategory : categories) {
+			configCategory.clearListeners();
+		}
 	}
 
 	@Override

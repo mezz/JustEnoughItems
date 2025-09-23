@@ -9,4 +9,6 @@ public interface IConfigSchema extends IJeiConfigFile {
 	void loadIfNeeded();
 
 	void markDirty();
+
+	void clearListeners();
 }
