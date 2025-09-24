@@ -15,8 +15,18 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.elements.GuiIconToggleButton;
-import mezz.jei.gui.input.*;
-import mezz.jei.gui.input.handlers.*;
+import mezz.jei.gui.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IDragHandler;
+import mezz.jei.gui.input.IDraggableIngredientInternal;
+import mezz.jei.gui.input.IPaged;
+import mezz.jei.gui.input.IRecipeFocusSource;
+import mezz.jei.gui.input.IUserInputHandler;
+import mezz.jei.gui.input.MouseUtil;
+import mezz.jei.gui.input.handlers.CombinedDragHandler;
+import mezz.jei.gui.input.handlers.CombinedInputHandler;
+import mezz.jei.gui.input.handlers.NullDragHandler;
+import mezz.jei.gui.input.handlers.ProxyDragHandler;
+import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListSlot;
 import mezz.jei.gui.overlay.ScreenPropertiesCache;
@@ -87,10 +97,10 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				.update();
 		});
 		lookupHistoryOverlay.getLookupHistory().addSourceListChangedListener(() -> {
-				Minecraft minecraft = Minecraft.getInstance();
-				this.getScreenPropertiesUpdater()
-					.updateScreen(minecraft.screen)
-					.update();
+			Minecraft minecraft = Minecraft.getInstance();
+			this.getScreenPropertiesUpdater()
+				.updateScreen(minecraft.screen)
+				.update();
 		});
 
 		this.lookupHistoryEnabledListener = v -> onScreenPropertiesChanged();
