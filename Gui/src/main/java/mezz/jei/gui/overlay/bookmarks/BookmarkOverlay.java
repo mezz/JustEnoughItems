@@ -15,18 +15,8 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.elements.GuiIconToggleButton;
-import mezz.jei.gui.input.IClickableIngredientInternal;
-import mezz.jei.gui.input.IDragHandler;
-import mezz.jei.gui.input.IDraggableIngredientInternal;
-import mezz.jei.gui.input.IPaged;
-import mezz.jei.gui.input.IRecipeFocusSource;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.MouseUtil;
-import mezz.jei.gui.input.handlers.CombinedDragHandler;
-import mezz.jei.gui.input.handlers.CombinedInputHandler;
-import mezz.jei.gui.input.handlers.NullDragHandler;
-import mezz.jei.gui.input.handlers.ProxyDragHandler;
-import mezz.jei.gui.input.handlers.ProxyInputHandler;
+import mezz.jei.gui.input.*;
+import mezz.jei.gui.input.handlers.*;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListSlot;
 import mezz.jei.gui.overlay.ScreenPropertiesCache;
@@ -137,7 +127,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		ImmutableRect2i availableContentsArea = displayArea.cropBottom(BUTTON_SIZE + INNER_PADDING);
 		if (clientConfig.isLookupHistoryEnabled() && lookupHistoryOverlay.isOnSide()) {
 			int historyRows = clientConfig.getMaxLookupHistoryRows();
-			availableContentsArea  = availableContentsArea.cropBottom(historyRows * LookupHistoryOverlay.SLOT_HEIGHT);
+			availableContentsArea = availableContentsArea.cropBottom(historyRows * LookupHistoryOverlay.SLOT_HEIGHT);
 			ImmutableRect2i historyArea = displayArea
 				.insetBy(BORDER_MARGIN)
 				.moveUp(BUTTON_SIZE + INNER_PADDING)
@@ -156,7 +146,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				.keepBottom(BUTTON_SIZE)
 				.keepLeft(BUTTON_SIZE);
 			this.bookmarkButton.updateBounds(bookmarkButtonArea);
-			ImmutableRect2i historyButtonArea  = bookmarkButtonArea.moveRight(2 + BUTTON_SIZE);
+			ImmutableRect2i historyButtonArea = bookmarkButtonArea.moveRight(2 + BUTTON_SIZE);
 			this.historyButton.updateBounds(historyButtonArea);
 		} else {
 			ImmutableRect2i bookmarkButtonArea = displayArea
@@ -164,7 +154,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				.keepBottom(BUTTON_SIZE)
 				.keepLeft(BUTTON_SIZE);
 			this.bookmarkButton.updateBounds(bookmarkButtonArea);
-			ImmutableRect2i historyButtonArea  = bookmarkButtonArea.moveRight(2 + BUTTON_SIZE);
+			ImmutableRect2i historyButtonArea = bookmarkButtonArea.moveRight(2 + BUTTON_SIZE);
 			this.historyButton.updateBounds(historyButtonArea);
 		}
 	}
@@ -210,7 +200,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
-			return Stream.concat(this.contents.getIngredientUnderMouse(mouseX, mouseY),this.lookupHistoryOverlay.getIngredientUnderMouse(mouseX, mouseY));
+			return Stream.concat(this.contents.getIngredientUnderMouse(mouseX, mouseY), this.lookupHistoryOverlay.getIngredientUnderMouse(mouseX, mouseY));
 		}
 		return Stream.empty();
 	}
@@ -218,7 +208,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
-			return Stream.concat(this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY),this.lookupHistoryOverlay.getDraggableIngredientUnderMouse(mouseX, mouseY));
+			return Stream.concat(this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY), this.lookupHistoryOverlay.getDraggableIngredientUnderMouse(mouseX, mouseY));
 		}
 		return Stream.empty();
 	}
@@ -249,18 +239,24 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		final IUserInputHandler bookmarkButtonInputHandler = this.bookmarkButton.createInputHandler();
 		final IUserInputHandler historyButtonInputHandler = this.historyButton.createInputHandler();
 
+		final IUserInputHandler buttonInputHandler = new CombinedInputHandler(
+			"BookmarkOverlayButton",
+			bookmarkButtonInputHandler,
+			historyButtonInputHandler
+		);
+
+
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
 			"BookmarkOverlay",
 			this.contents.createInputHandler(),
-			bookmarkButtonInputHandler,
-			historyButtonInputHandler
+			buttonInputHandler
 		);
 
 		return new ProxyInputHandler(() -> {
 			if (isListDisplayed()) {
 				return displayedInputHandler;
 			}
-			return bookmarkButtonInputHandler;
+			return buttonInputHandler;
 		});
 	}
 

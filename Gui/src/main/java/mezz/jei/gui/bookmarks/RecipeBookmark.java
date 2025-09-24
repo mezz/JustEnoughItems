@@ -4,6 +4,7 @@ import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -13,6 +14,8 @@ import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 
 public class RecipeBookmark<R, I> implements IBookmark {
@@ -54,6 +57,25 @@ public class RecipeBookmark<R, I> implements IBookmark {
 		}
 
 		return null;
+	}
+
+	@Nullable
+	public static <T> RecipeBookmark<T, ?> create(
+		IRecipeCategory<T> recipeCategory,
+		T recipe,
+		List<IFocus<?>> focuses
+	) {
+		ResourceLocation recipeUid = recipeCategory.getRegistryName(recipe);
+		if (recipeUid == null) {
+			return null;
+		}
+
+		return focuses.stream()
+			.max(Comparator.comparingInt(f -> f.getRole().ordinal()))
+			.map(focus -> {
+				boolean isOutput = focus.getRole() == RecipeIngredientRole.OUTPUT;
+				return new RecipeBookmark<>(recipeCategory, recipe, recipeUid, focus.getTypedValue(), isOutput);
+			}).orElse(null);
 	}
 
 	@Nullable
