@@ -122,7 +122,7 @@ public final class ClientConfig implements IClientConfig {
 		);
 		lookupHistoryDisplaySide = lookupHistory.addEnum(
 			"displaySide",
-			HistoryDisplaySide.RIGHT
+			HistoryDisplaySide.LEFT
 		);
 
 		IConfigCategoryBuilder advanced = schema.addCategory("advanced");

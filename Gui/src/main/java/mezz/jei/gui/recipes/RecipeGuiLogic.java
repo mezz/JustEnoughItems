@@ -17,7 +17,6 @@ import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IngredientBookmark;
-import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
 import mezz.jei.gui.recipes.layouts.IRecipeLayoutList;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
@@ -104,15 +103,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		return setState(state, true);
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
 	public boolean showRecipes(IFocusedRecipes<?> recipes, IFocusGroup focuses) {
-		IRecipeCategory recipeCategory = recipes.getRecipeCategory();
-		if (recipes.getRecipes().size() == 1 && focuses.getAllFocuses().size() == 1) {
-			RecipeBookmark<?, ?> recipeBookmark = RecipeBookmark.create(recipeCategory, recipes.getRecipes().getFirst(), focuses.getAllFocuses());
-			if (recipeBookmark != null) {
-				this.lookupHistory.add(recipeBookmark);
-			}
+		for (IFocus<?> focus : (focuses.getAllFocuses())) {
+			IngredientBookmark<?> ingredientBookmark = IngredientBookmark.create(focus.getTypedValue(), ingredientManager);
+			this.lookupHistory.add(ingredientBookmark);
 		}
 		ILookupState state = new SingleCategoryLookupState(recipes, focuses);
 		return setState(state, true);
