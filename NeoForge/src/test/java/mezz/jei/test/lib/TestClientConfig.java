@@ -114,6 +114,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isIngredientsSummaryEnabled() {
+		return true;
+	}
+
+	@Override
 	public int getDragDelayMs() {
 		return 0;
 	}
