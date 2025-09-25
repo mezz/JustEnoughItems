@@ -40,6 +40,9 @@ public final class ClientConfig implements IClientConfig {
 	private final ConfigValue<Integer> maxLookupHistoryIngredients;
 	private final ConfigValue<HistoryDisplaySide> lookupHistoryDisplaySide;
 
+	// recipes gui
+	private final ConfigValue<Boolean> ingredientsSummaryEnabled;
+
 	// advanced
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
 	private final Supplier<Boolean> catchRenderErrorsEnabled;
@@ -124,6 +127,9 @@ public final class ClientConfig implements IClientConfig {
 			"displaySide",
 			HistoryDisplaySide.LEFT
 		);
+
+		IConfigCategoryBuilder recipesGui = schema.addCategory("recipesGui");
+		ingredientsSummaryEnabled = recipesGui.addBoolean("ingredientsSummaryEnabled", true);
 
 		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
 		catchRenderErrorsEnabled = advanced.addBoolean("catchRenderErrorsEnabled", !isDev);
@@ -257,6 +263,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public void addLookupHistoryDisplaySideListener(IConfigListener<HistoryDisplaySide> listener) {
 		lookupHistoryDisplaySide.addListener(listener);
+	}
+
+	@Override
+	public boolean isIngredientsSummaryEnabled() {
+		return ingredientsSummaryEnabled.get();
 	}
 
 	@Override

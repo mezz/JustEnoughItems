@@ -4,6 +4,7 @@ import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
+import mezz.jei.common.Internal;
 import mezz.jei.common.gui.IngredientsTooltipComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -21,10 +22,12 @@ public class IngredientsTooltipCallback implements IRecipeSlotRichTooltipCallbac
 
 	@Override
 	public void onRichTooltip(IRecipeSlotView recipeSlotView, ITooltipBuilder tooltip) {
-		IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutSupplier.get();
-		if (recipeLayout != null) {
-			tooltip.add(Component.translatable("jei.tooltip.recipe.tooltips.craft.ingredients").withStyle(ChatFormatting.GRAY));
-			tooltip.add(new IngredientsTooltipComponent(recipeLayout));
+		if (Internal.getJeiClientConfigs().getClientConfig().isIngredientsSummaryEnabled()) {
+			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutSupplier.get();
+			if (recipeLayout != null) {
+				tooltip.add(Component.translatable("jei.tooltip.recipe.tooltips.craft.ingredients").withStyle(ChatFormatting.GRAY));
+				tooltip.add(new IngredientsTooltipComponent(recipeLayout));
+			}
 		}
 	}
 }

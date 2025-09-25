@@ -48,6 +48,8 @@ public interface IClientConfig {
 
 	void addLookupHistoryDisplaySideListener(IConfigListener<HistoryDisplaySide> listener);
 
+	boolean isIngredientsSummaryEnabled();
+
 	int getDragDelayMs();
 
 	int getSmoothScrollRate();
