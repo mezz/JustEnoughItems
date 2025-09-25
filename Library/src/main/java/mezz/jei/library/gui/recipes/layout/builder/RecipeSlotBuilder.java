@@ -260,6 +260,10 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 		return ingredients;
 	}
 
+	public RecipeIngredientRole getRole() {
+		return role;
+	}
+
 	private <T> void addRenderOverride(
 		IIngredientType<T> ingredientType,
 		IIngredientRenderer<T> ingredientRenderer
