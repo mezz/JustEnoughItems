@@ -34,6 +34,7 @@
   "jei.tooltip.lookupHistory.enable": "Show JEI Lookup History",
   "jei.tooltip.lookupHistory.disable": "Hide JEI Lookup History",
   "jei.tooltip.lookupHistory.usage": "Shows a list of the ingredients recently used for looking up recipes.",
+  "jei.tooltip.recipe.tooltips.craft.ingredients": "Ingredients to craft once:",
   "jei.tooltip.recipe.sort.bookmarks.first.enabled": "Show bookmarked recipes first (enabled).",
   "jei.tooltip.recipe.sort.bookmarks.first.disabled": "Show bookmarked recipes first (disabled).",
   "jei.tooltip.recipe.sort.craftable.first.enabled": "Show craftable recipes first (enabled).",

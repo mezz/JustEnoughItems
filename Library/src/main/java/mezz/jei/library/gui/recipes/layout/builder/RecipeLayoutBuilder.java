@@ -2,6 +2,7 @@ package mezz.jei.library.gui.recipes.layout.builder;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
@@ -19,6 +20,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.core.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTicker;
+import mezz.jei.library.gui.recipes.IngredientsTooltipCallback;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.library.gui.recipes.ShapelessIcon;
@@ -34,6 +36,7 @@ import java.util.HashSet;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	private final List<RecipeSlotBuilder> visibleSlots = new ArrayList<>();
@@ -162,6 +165,15 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			focusLinkedSlots.addAll(linkedSlots);
 		}
 
+		class LayoutSupplier implements Supplier<IRecipeLayoutDrawable<?>>{
+			private @Nullable IRecipeLayoutDrawable<?> drawable;
+			@Override
+			public @Nullable IRecipeLayoutDrawable<?> get() {
+				return drawable;
+			}
+		}
+		final LayoutSupplier layoutSupplier = new LayoutSupplier();
+
 		for (RecipeSlotBuilder slotBuilder : visibleSlots) {
 			if (!focusLinkedSlots.contains(slotBuilder)) {
 				Pair<Integer, IRecipeSlotDrawable> slotDrawable = slotBuilder.build(focuses, cycleTicker);
@@ -169,7 +181,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			}
 		}
 
-		return new RecipeLayout<>(
+		RecipeLayout<T> recipeLayout = new RecipeLayout<>(
 			recipeCategory,
 			decorators,
 			recipe,
@@ -181,6 +193,10 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			cycleTicker,
 			focuses
 		);
+
+		layoutSupplier.drawable = recipeLayout;
+
+		return recipeLayout;
 	}
 
 	private static List<IRecipeSlotDrawable> sortSlots(List<Pair<Integer, IRecipeSlotDrawable>> indexedSlots) {
