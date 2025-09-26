@@ -45,14 +45,14 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 		IElement<?> element = value.getElement();
 		ITypedIngredient<?> typedIngredient = element.getTypedIngredient();
 		String outputSerialized = ingredientSerializer.serialize(typedIngredient);
-		return recipeTypeUid + SEPARATOR + recipeUid + SEPARATOR + outputSerialized;
+		return recipeTypeUid + SEPARATOR + recipeUid + SEPARATOR + outputSerialized + SEPARATOR + value.isDisplayIsOutput();
 	}
 
 	@Override
 	public IDeserializeResult<RecipeBookmark<?, ?>> deserialize(String string) {
 		String[] parts = string.split(SEPARATOR);
-		if (parts.length != 3) {
-			String error = "string must be 3 parts";
+		if ((parts.length != 3) && (parts.length != 4)) {
+			String error = "string must be 3 or 4 parts";
 			return new DeserializeResult<>(null, error);
 		}
 		ResourceLocation recipeTypeUid;
@@ -80,15 +80,19 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 			String error = "could not find a recipe type matching the given uid: %s".formatted(recipeTypeUid);
 			return new DeserializeResult<>(null, error);
 		}
+		boolean displayIsOutput = true;
+		if (parts.length == 4) {
+			displayIsOutput = Boolean.parseBoolean(parts[3]);
+		}
 
 		ITypedIngredient<?> output = outputResult.get();
 		RecipeType<?> recipeType = recipeTypeResult.get();
 
 		IRecipeCategory<?> recipeCategory = recipeManager.getRecipeCategory(recipeType);
-		return createBookmark(string, recipeCategory, recipeUid, output);
+		return createBookmark(string, recipeCategory, recipeUid, output, displayIsOutput);
 	}
 
-	private <T> DeserializeResult<RecipeBookmark<?, ?>> createBookmark(String string, IRecipeCategory<T> recipeCategory, ResourceLocation recipeUid, ITypedIngredient<?> output) {
+	private <T> DeserializeResult<RecipeBookmark<?, ?>> createBookmark(String string, IRecipeCategory<T> recipeCategory, ResourceLocation recipeUid, ITypedIngredient<?> output, boolean displayIsOutput) {
 		IFocus<?> focus = focusFactory.createFocus(RecipeIngredientRole.OUTPUT, output);
 
 		Optional<T> recipeResult = findRecipe(recipeCategory, List.of(focus), recipeUid);
@@ -98,7 +102,7 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 		}
 
 		T recipe = recipeResult.get();
-		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output);
+		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, displayIsOutput);
 		return new DeserializeResult<>(recipeBookmark);
 	}
 

@@ -128,25 +128,27 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 
 		addBookmarkTooltipFeaturesIfEnabled(tooltip);
 
-		IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
-		IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
-		IModIdHelper modIdHelper = jeiRuntime.getJeiHelpers().getModIdHelper();
+		if (recipeBookmark.isDisplayIsOutput()) {
+			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
+			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
+			IModIdHelper modIdHelper = jeiRuntime.getJeiHelpers().getModIdHelper();
 
-		ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
-		if (recipeName != null) {
-			String recipeModId = recipeName.getNamespace();
-			ResourceLocation ingredientName = ingredientHelper.getResourceLocation(recipeOutput.getIngredient());
-			String ingredientModId = ingredientName.getNamespace();
-			if (!recipeModId.equals(ingredientModId)) {
-				String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
-				MutableComponent recipeBy = Component.translatable("jei.tooltip.recipe.by", modName);
-				tooltip.add(recipeBy.withStyle(ChatFormatting.GRAY));
+			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
+			if (recipeName != null) {
+				String recipeModId = recipeName.getNamespace();
+				ResourceLocation ingredientName = ingredientHelper.getResourceLocation(recipeOutput.getIngredient());
+				String ingredientModId = ingredientName.getNamespace();
+				if (!recipeModId.equals(ingredientModId)) {
+					String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
+					MutableComponent recipeBy = Component.translatable("jei.tooltip.recipe.by", modName);
+					tooltip.add(recipeBy.withStyle(ChatFormatting.GRAY));
+				}
 			}
+
+			tooltip.add(Component.empty());
+
+			SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, recipeOutput);
 		}
-
-		tooltip.add(Component.empty());
-
-		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, recipeOutput);
 	}
 
 	private void addBookmarkTooltipFeaturesIfEnabled(JeiTooltip tooltip) {
