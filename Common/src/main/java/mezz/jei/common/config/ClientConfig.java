@@ -97,6 +97,7 @@ public final class ClientConfig implements IClientConfig {
 		showCreativeTabNamesEnabled = tooltips.addBoolean("showCreativeTabNamesEnabled", false);
 		tagContentTooltipEnabled = tooltips.addBoolean("tagContentTooltipEnabled", true);
 		hideSingleTagContentTooltipEnabled = tooltips.addBoolean("hideSingleTagContentTooltipEnabled", true);
+		ingredientsSummaryEnabled = tooltips.addBoolean("enableRecipesGuiIngredientsSummary", false);
 
 		IConfigCategoryBuilder performance = schema.addCategory("performance");
 		lowMemorySlowSearchEnabled = performance.addBoolean("lowMemorySlowSearchEnabled", false);
@@ -127,9 +128,6 @@ public final class ClientConfig implements IClientConfig {
 			"displaySide",
 			HistoryDisplaySide.LEFT
 		);
-
-		IConfigCategoryBuilder recipesGui = schema.addCategory("recipesGui");
-		ingredientsSummaryEnabled = recipesGui.addBoolean("ingredientsSummaryEnabled", true);
 
 		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
 		catchRenderErrorsEnabled = advanced.addBoolean("catchRenderErrorsEnabled", !isDev);
