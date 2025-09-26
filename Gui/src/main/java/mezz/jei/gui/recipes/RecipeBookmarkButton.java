@@ -26,8 +26,7 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 		IIngredientManager ingredientManager,
 		BookmarkList bookmarks
 	) {
-		RecipeBookmark<?, ?> recipeBookmark = RecipeBookmark.create(recipeLayout, ingredientManager)
-			.orElse(null);
+		RecipeBookmark<?, ?> recipeBookmark = RecipeBookmark.create(recipeLayout, ingredientManager);
 
 		Textures textures = Internal.getTextures();
 		IDrawable icon = textures.getRecipeBookmark();

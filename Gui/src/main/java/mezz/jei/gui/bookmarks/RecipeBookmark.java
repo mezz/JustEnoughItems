@@ -10,8 +10,8 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Optional;
 
 public class RecipeBookmark<R, I> implements IBookmark {
@@ -20,9 +20,11 @@ public class RecipeBookmark<R, I> implements IBookmark {
 	private final R recipe;
 	private final ResourceLocation recipeUid;
 	private final ITypedIngredient<I> recipeOutput;
+	private final boolean displayIsOutput;
 	private boolean visible = true;
 
-	public static <T> Optional<RecipeBookmark<T, ?>> create(
+	@Nullable
+	public static <T> RecipeBookmark<T, ?> create(
 		IRecipeLayoutDrawable<T> recipeLayoutDrawable,
 		IIngredientManager ingredientManager
 	) {
@@ -30,34 +32,55 @@ public class RecipeBookmark<R, I> implements IBookmark {
 		IRecipeCategory<T> recipeCategory = recipeLayoutDrawable.getRecipeCategory();
 		ResourceLocation recipeUid = recipeCategory.getRegistryName(recipe);
 		if (recipeUid == null) {
-			return Optional.empty();
+			return null;
 		}
 
 		IRecipeSlotsView recipeSlotsView = recipeLayoutDrawable.getRecipeSlotsView();
-		List<IRecipeSlotView> outputSlots = recipeSlotsView.getSlotViews(RecipeIngredientRole.OUTPUT);
-		for (IRecipeSlotView slotView : outputSlots) {
-			Optional<ITypedIngredient<?>> outputOptional = slotView.getAllIngredients().findFirst();
-			if (outputOptional.isEmpty()) {
+		{
+			ITypedIngredient<?> output = findFirst(recipeSlotsView, RecipeIngredientRole.OUTPUT);
+			if (output != null) {
+				output = ingredientManager.normalizeTypedIngredient(output);
+				return new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, false);
+			}
+		}
+		{
+			ITypedIngredient<?> input = findFirst(recipeSlotsView, RecipeIngredientRole.INPUT);
+			if (input != null) {
+				input = ingredientManager.normalizeTypedIngredient(input);
+				return new RecipeBookmark<>(recipeCategory, recipe, recipeUid, input, false);
+			}
+		}
+
+		return null;
+	}
+
+	@Nullable
+	private static ITypedIngredient<?> findFirst(IRecipeSlotsView slotsView, RecipeIngredientRole role) {
+		for (IRecipeSlotView slotView : slotsView.getSlotViews()) {
+			if (slotView.getRole() != role) {
 				continue;
 			}
-			ITypedIngredient<?> output = outputOptional.get();
-			output = ingredientManager.normalizeTypedIngredient(output);
-			return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output));
+			Optional<ITypedIngredient<?>> outputOptional = slotView.getAllIngredients().findFirst();
+			if (outputOptional.isPresent()) {
+				return outputOptional.get();
+			}
 		}
-		return Optional.empty();
+		return null;
 	}
 
 	public RecipeBookmark(
 		IRecipeCategory<R> recipeCategory,
 		R recipe,
 		ResourceLocation recipeUid,
-		ITypedIngredient<I> recipeOutput
+		ITypedIngredient<I> recipeOutput,
+		boolean displayIsOutput
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipe = recipe;
 		this.recipeUid = recipeUid;
 		this.recipeOutput = recipeOutput;
 		this.element = new RecipeBookmarkElement<>(this);
+		this.displayIsOutput = displayIsOutput;
 	}
 
 	public IRecipeCategory<R> getRecipeCategory() {
@@ -89,6 +112,10 @@ public class RecipeBookmark<R, I> implements IBookmark {
 	@Override
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+	}
+
+	public boolean isDisplayIsOutput() {
+		return displayIsOutput;
 	}
 
 	@Override
