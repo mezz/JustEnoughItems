@@ -45,7 +45,11 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 		IElement<?> element = value.getElement();
 		ITypedIngredient<?> typedIngredient = element.getTypedIngredient();
 		String outputSerialized = ingredientSerializer.serialize(typedIngredient);
-		return recipeTypeUid + SEPARATOR + recipeUid + SEPARATOR + outputSerialized + SEPARATOR + value.isDisplayIsOutput();
+		boolean displayIsOutput = value.isDisplayIsOutput();
+		if (!displayIsOutput) {
+			return recipeTypeUid + SEPARATOR + recipeUid + SEPARATOR + outputSerialized + SEPARATOR + false;
+		}
+		return recipeTypeUid + SEPARATOR + recipeUid + SEPARATOR + outputSerialized;
 	}
 
 	@Override
