@@ -60,6 +60,8 @@ public interface IClientConfig {
 
 	void addMaxLookupHistoryIngredientsListener(IConfigListener<Integer> listener);
 
+	boolean isIngredientsSummaryEnabled();
+
 	int getDragDelayMs();
 
 	int getSmoothScrollRate();
