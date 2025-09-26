@@ -189,20 +189,25 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		if (isListDisplayed()) {
 			this.searchField.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
-			this.lookupHistoryOverlay.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
 			this.configButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
+
+		}
+		if (this.screenPropertiesCache.hasValidScreen() && toggleState.isOverlayEnabled()) {
+			this.lookupHistoryOverlay.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
 	}
 
 	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
-			this.lookupHistoryOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
 			this.configButton.drawTooltips(guiGraphics, mouseX, mouseY);
+		}
+		if (this.screenPropertiesCache.hasValidScreen() && toggleState.isOverlayEnabled()) {
+			this.lookupHistoryOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		}
 	}
 
