@@ -251,10 +251,10 @@
   "jei.config.client.search.description": "Config options related to how JEI searches recipes.",
   "jei.config.client.search.modNameSearchMode": "@Mod Name Search Mode",
   "jei.config.client.search.modNameSearchMode.description": "Search mode for mod names (prefix: @).",
-  "jei.config.client.search.tagSearchMode": "$Tag Search Mode",
-  "jei.config.client.search.tagSearchMode.description": "Search mode for tags (prefix: $).",
-  "jei.config.client.search.tooltipSearchMode": "#Tooltip Search Mode",
-  "jei.config.client.search.tooltipSearchMode.description": "Search mode for tooltips (prefix: #).",
+  "jei.config.client.search.tagSearchMode": "#Tag Search Mode",
+  "jei.config.client.search.tagSearchMode.description": "Search mode for tags (prefix: #).",
+  "jei.config.client.search.tooltipSearchMode": "$Tooltip Search Mode",
+  "jei.config.client.search.tooltipSearchMode.description": "Search mode for tooltips (prefix: $).",
   "jei.config.client.search.colorSearchMode": "^Color Search Mode",
   "jei.config.client.search.colorSearchMode.description": "Search mode for colors (prefix: ^).",
   "jei.config.client.search.resourceLocationSearchMode": "&Resource Location Search Mode",
@@ -352,5 +352,8 @@
   "jei.config.client.bookmarkList.navigationMode": "Navigation Mode",
   "jei.config.client.bookmarkList.navigationMode.description": "Choose PAGED for page buttons, SCROLLING for a row-stepped scroll bar, or SMOOTH_SCROLLING for a smooth scroll bar.",
   "jei.config.debug.debug.debugIngredientsEnabled": "Debug Ingredients",
-  "jei.config.debug.debug.debugIngredientsEnabled.description": "Log added and updated ingredients in JEI's ingredient filter."
+  "jei.config.debug.debug.debugIngredientsEnabled.description": "Log added and updated ingredients in JEI's ingredient filter.",
+  "jei.tooltip.bookmarks.enable": "Show JEI Bookmarks",
+  "jei.tooltip.bookmarks.disable": "Hide JEI Bookmarks",
+  "jei.tooltip.recipe.tooltips.craft.ingredients": "Ingredients summary:"
 }
