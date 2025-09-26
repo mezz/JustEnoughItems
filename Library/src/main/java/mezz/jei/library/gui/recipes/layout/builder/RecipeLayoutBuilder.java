@@ -2,6 +2,7 @@ package mezz.jei.library.gui.recipes.layout.builder;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
@@ -20,6 +21,7 @@ import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.core.collect.ListMultiMap;
 import mezz.jei.core.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTicker;
+import mezz.jei.library.gui.recipes.IngredientsTooltipCallback;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.library.gui.recipes.ShapelessIcon;
@@ -36,6 +38,7 @@ import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	private final List<RecipeSlotBuilder> visibleSlots = new ArrayList<>();
@@ -188,9 +191,21 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			focusLinkedSlots.addAll(linkedSlots);
 		}
 
+		class LayoutSupplier implements Supplier<IRecipeLayoutDrawable<?>>{
+			private @Nullable IRecipeLayoutDrawable<?> drawable;
+			@Override
+			public @Nullable IRecipeLayoutDrawable<?> get() {
+				return drawable;
+			}
+		}
+		final LayoutSupplier layoutSupplier = new LayoutSupplier();
+
 		for (RecipeSlotBuilder slotBuilder : visibleSlots) {
 			if (!focusLinkedSlots.contains(slotBuilder)) {
 				mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
+				if (slotBuilder.getRole() == RecipeIngredientRole.OUTPUT) {
+					slotBuilder.addRichTooltipCallback(new IngredientsTooltipCallback(layoutSupplier));
+				}
 				Pair<Integer, IRecipeSlotDrawable> slotDrawable = slotBuilder.build(focuses, cycleTicker);
 				if (assignedWidget == null) {
 					recipeCategorySlots.add(slotDrawable);
@@ -214,6 +229,8 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			cycleTicker,
 			focuses
 		);
+
+		layoutSupplier.drawable = recipeLayout;
 
 		for (Map.Entry<mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?>, List<Pair<Integer, IRecipeSlotDrawable>>> e : widgetSlots.entrySet()) {
 			@SuppressWarnings("unchecked")

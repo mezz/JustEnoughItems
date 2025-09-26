@@ -40,6 +40,9 @@ public final class ClientConfig implements IClientConfig {
 	private final ConfigValue<Integer> maxLookupHistoryIngredients;
 	private final ConfigValue<HistoryDisplaySide> lookupHistoryDisplaySide;
 
+	// recipes gui
+	private final ConfigValue<Boolean> ingredientsSummaryEnabled;
+
 	// advanced
 	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
 	private final Supplier<Boolean> catchRenderErrorsEnabled;
@@ -94,6 +97,7 @@ public final class ClientConfig implements IClientConfig {
 		showCreativeTabNamesEnabled = tooltips.addBoolean("showCreativeTabNamesEnabled", false);
 		tagContentTooltipEnabled = tooltips.addBoolean("tagContentTooltipEnabled", true);
 		hideSingleTagContentTooltipEnabled = tooltips.addBoolean("hideSingleTagContentTooltipEnabled", true);
+		ingredientsSummaryEnabled = tooltips.addBoolean("enableRecipesGuiIngredientsSummary", false);
 
 		IConfigCategoryBuilder performance = schema.addCategory("performance");
 		lowMemorySlowSearchEnabled = performance.addBoolean("lowMemorySlowSearchEnabled", false);
@@ -257,6 +261,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public void addLookupHistoryDisplaySideListener(IConfigListener<HistoryDisplaySide> listener) {
 		lookupHistoryDisplaySide.addListener(listener);
+	}
+
+	@Override
+	public boolean isIngredientsSummaryEnabled() {
+		return ingredientsSummaryEnabled.get();
 	}
 
 	@Override
