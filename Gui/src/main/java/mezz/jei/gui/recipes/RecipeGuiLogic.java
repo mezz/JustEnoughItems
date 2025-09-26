@@ -17,6 +17,7 @@ import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IngredientBookmark;
+import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
 import mezz.jei.gui.recipes.layouts.IRecipeLayoutList;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
@@ -104,9 +105,35 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public boolean showRecipes(IFocusedRecipes<?> recipes, IFocusGroup focuses) {
-		ILookupState state = new SingleCategoryLookupState(recipes, focuses);
+	public boolean showRecipes(IFocusedRecipes<?> focusedRecipes, IFocusGroup focuses) {
+		var recipeBookmark = createRecipeBookmark(recipeManager, ingredientManager, focusedRecipes, focuses);
+		if (recipeBookmark != null) {
+			this.lookupHistory.add(recipeBookmark);
+		} else {
+			for (IFocus<?> focus : focuses.getAllFocuses()) {
+				IngredientBookmark<?> ingredientBookmark = IngredientBookmark.create(focus.getTypedValue(), ingredientManager);
+				this.lookupHistory.add(ingredientBookmark);
+			}
+		}
+		ILookupState state = new SingleCategoryLookupState(focusedRecipes, focuses);
 		return setState(state, true);
+	}
+
+	private static <T> @Nullable RecipeBookmark<T, ?> createRecipeBookmark(
+		IRecipeManager recipeManager,
+		IIngredientManager ingredientManager,
+		IFocusedRecipes<T> focusedRecipes,
+		IFocusGroup focusGroup
+	) {
+		IRecipeCategory<T> recipeCategory = focusedRecipes.getRecipeCategory();
+		List<T> recipes = focusedRecipes.getRecipes();
+		if (recipes.size() != 1) {
+			return null;
+		}
+		T recipe = recipes.getFirst();
+		return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, focusGroup)
+			.map(drawable -> RecipeBookmark.create(drawable, ingredientManager))
+			.orElse(null);
 	}
 
 	@Override
