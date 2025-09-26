@@ -51,7 +51,7 @@ public class RecipeBookmark<R, I> implements IBookmark {
 			ITypedIngredient<?> output = findFirst(recipeSlotsView, RecipeIngredientRole.OUTPUT);
 			if (output != null) {
 				output = ingredientManager.normalizeTypedIngredient(output);
-				return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, icon, false));
+				return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, icon, true));
 			}
 		}
 		{
