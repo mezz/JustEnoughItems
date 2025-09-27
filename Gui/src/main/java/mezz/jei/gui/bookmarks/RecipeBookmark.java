@@ -24,7 +24,7 @@ public class RecipeBookmark<R, I> implements IBookmark {
 	private final R recipe;
 	private final ResourceLocation recipeUid;
 	private final ITypedIngredient<I> recipeOutput;
-	private final boolean displayIsOutput;
+	private final RecipeIngredientRole displayRole;
 	private boolean visible = true;
 
 	public static <T> Optional<RecipeBookmark<T, ?>> create(
@@ -51,14 +51,14 @@ public class RecipeBookmark<R, I> implements IBookmark {
 			ITypedIngredient<?> output = findFirst(recipeSlotsView, RecipeIngredientRole.OUTPUT);
 			if (output != null) {
 				output = ingredientManager.normalizeTypedIngredient(output);
-				return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, icon, true));
+				return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, icon, RecipeIngredientRole.OUTPUT));
 			}
 		}
 		{
 			ITypedIngredient<?> input = findFirst(recipeSlotsView, RecipeIngredientRole.INPUT);
 			if (input != null) {
 				input = ingredientManager.normalizeTypedIngredient(input);
-				return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, input, icon, false));
+				return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, input, icon, RecipeIngredientRole.INPUT));
 			}
 		}
 
@@ -85,14 +85,14 @@ public class RecipeBookmark<R, I> implements IBookmark {
 		ResourceLocation recipeUid,
 		ITypedIngredient<I> recipeOutput,
 		IDrawable icon,
-		boolean displayIsOutput
+		RecipeIngredientRole displayRole
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipe = recipe;
 		this.recipeUid = recipeUid;
 		this.recipeOutput = recipeOutput;
 		this.element = new RecipeBookmarkElement<>(this, icon);
-		this.displayIsOutput = displayIsOutput;
+		this.displayRole = displayRole;
 	}
 
 	public IRecipeCategory<R> getRecipeCategory() {
@@ -126,8 +126,8 @@ public class RecipeBookmark<R, I> implements IBookmark {
 		this.visible = visible;
 	}
 
-	public boolean isDisplayIsOutput() {
-		return displayIsOutput;
+	public RecipeIngredientRole getDisplayRole() {
+		return displayRole;
 	}
 
 	@Override
