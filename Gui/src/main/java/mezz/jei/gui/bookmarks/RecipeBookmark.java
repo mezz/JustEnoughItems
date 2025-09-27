@@ -20,7 +20,7 @@ public class RecipeBookmark<R, I> implements IBookmark {
 	private final R recipe;
 	private final ResourceLocation recipeUid;
 	private final ITypedIngredient<I> recipeOutput;
-	private final boolean displayIsOutput;
+	private final RecipeIngredientRole displayRole;
 	private boolean visible = true;
 
 	@Nullable
@@ -40,14 +40,14 @@ public class RecipeBookmark<R, I> implements IBookmark {
 			ITypedIngredient<?> output = findFirst(recipeSlotsView, RecipeIngredientRole.OUTPUT);
 			if (output != null) {
 				output = ingredientManager.normalizeTypedIngredient(output);
-				return new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, true);
+				return new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, RecipeIngredientRole.OUTPUT);
 			}
 		}
 		{
 			ITypedIngredient<?> input = findFirst(recipeSlotsView, RecipeIngredientRole.INPUT);
 			if (input != null) {
 				input = ingredientManager.normalizeTypedIngredient(input);
-				return new RecipeBookmark<>(recipeCategory, recipe, recipeUid, input, false);
+				return new RecipeBookmark<>(recipeCategory, recipe, recipeUid, input, RecipeIngredientRole.INPUT);
 			}
 		}
 
@@ -73,14 +73,14 @@ public class RecipeBookmark<R, I> implements IBookmark {
 		R recipe,
 		ResourceLocation recipeUid,
 		ITypedIngredient<I> recipeOutput,
-		boolean displayIsOutput
+		RecipeIngredientRole displayRole
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipe = recipe;
 		this.recipeUid = recipeUid;
 		this.recipeOutput = recipeOutput;
 		this.element = new RecipeBookmarkElement<>(this);
-		this.displayIsOutput = displayIsOutput;
+		this.displayRole = displayRole;
 	}
 
 	public IRecipeCategory<R> getRecipeCategory() {
@@ -114,8 +114,8 @@ public class RecipeBookmark<R, I> implements IBookmark {
 		this.visible = visible;
 	}
 
-	public boolean isDisplayIsOutput() {
-		return displayIsOutput;
+	public RecipeIngredientRole getDisplayRole() {
+		return displayRole;
 	}
 
 	@Override
