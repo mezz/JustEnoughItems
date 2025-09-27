@@ -126,7 +126,7 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 		tooltip.add(new TranslatableComponent("jei.tooltip.bookmarks.recipe", recipeCategory.getTitle()));
 		addBookmarkTooltipFeaturesIfEnabled(tooltip);
 
-		if (recipeBookmark.isDisplayIsOutput()) {
+		if (recipeBookmark.getDisplayRole() == RecipeIngredientRole.OUTPUT) {
 			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
 			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
 			IModIdHelper modIdHelper = jeiRuntime.getJeiHelpers().getModIdHelper();
