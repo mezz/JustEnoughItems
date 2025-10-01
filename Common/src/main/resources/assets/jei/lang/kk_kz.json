@@ -38,14 +38,14 @@
   "jei.chat.error.no.cheat.permission.give": "/give пәрменін қолдана алатын ойыншылар",
 
   "_comment": "Key Bindings",
-  "jei.key.category.overlays": "JEI (оверлейлер)",
+  "key.category.jei.overlays": "JEI (оверлейлер)",
   "key.jei.toggleOverlay": "JEI оверлейлерін көрсету/жасыру",
   "key.jei.focusSearch": "Іздеу жолағын таңдау",
   "key.jei.previousPage": "Алғы бет",
   "key.jei.nextPage": "Келесі бет",
   "key.jei.toggleBookmarkOverlay": "Бетбелгілі ингредиенттерді көрсету/жасыру",
 
-  "jei.key.category.recipe.gui": "JEI (рецептер)",
+  "key.category.jei.recipe.gui": "JEI (рецептер)",
   "key.jei.recipeBack": "Алғы рецепт",
   "key.jei.previousCategory": "Алғы рецепт санаты",
   "key.jei.nextCategory": "Келесі рецепт санаты",
@@ -53,34 +53,34 @@
   "key.jei.nextRecipePage": "Келесі рецепт беті",
   "key.jei.closeRecipeGui": "Рецепт интерфейсін жабу",
 
-  "jei.key.category.cheat.mode": "JEI (чит режимі)",
+  "key.category.jei.cheat.mode": "JEI (чит режимі)",
   "key.jei.toggleCheatMode": "Чит режімін қосу/өшіру",
   "key.jei.cheatOneItem": "1 зат алу",
   "key.jei.cheatOneItem2": "1 зат алу",
   "key.jei.cheatItemStack": "1 стак алу",
   "key.jei.cheatItemStack2": "1 стак алу",
 
-  "jei.key.category.hover.config.button": "JEI (конфиг батырмасының үстіне курсор апару)",
+  "key.category.jei.hover.config.button": "JEI (конфиг батырмасының үстіне курсор апару)",
   "key.jei.toggleCheatModeConfigButton": "Чит режимін қосу/өшіру",
 
-  "jei.key.category.edit.mode": "JEI (өңдеу режимі)",
+  "key.category.jei.edit.mode": "JEI (өңдеу режимі)",
   "key.jei.toggleEditMode": "Ингредиент жасыру режимін қосу/өшіру",
   "key.jei.toggleHideIngredient": "Ингредиент жасыру",
   "key.jei.toggleWildcardHideIngredient": "Ингредиент жасыру (қойылмалы таңба)",
 
-  "jei.key.category.mouse.hover": "JEI (курсор апару)",
+  "key.category.jei.mouse.hover": "JEI (курсор апару)",
   "key.jei.bookmark": "Бетбелгі қосу/жою",
   "key.jei.showRecipe": "Рецепт көрсету",
   "key.jei.showRecipe2": "Рецепт көрсету",
   "key.jei.showUses": "Қолдану жолдарын көрсету",
   "key.jei.showUses2": "Қолдану жолдарын көрсету",
 
-  "jei.key.category.search": "JEI (іздеу сүзгісі)",
+  "key.category.jei.search": "JEI (іздеу сүзгісі)",
   "key.jei.clearSearchBar": "Іздеу сүзгісін тазарту",
   "key.jei.previousSearch": "Алғы іздеу",
   "key.jei.nextSearch": "Келесі іздеу",
 
-  "jei.key.category.dev.tools": "JEI (әзірлеу құралдары)",
+  "key.category.jei.dev.tools": "JEI (әзірлеу құралдары)",
   "key.jei.copy.recipe.id": "Рецепт ID-ін аралық сақтағышқа көшіру",
 
   "_comment": "Config",

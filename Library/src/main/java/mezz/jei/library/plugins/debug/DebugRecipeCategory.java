@@ -34,6 +34,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -226,7 +228,10 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 			InputConstants.Key key = userInput.getKey();
 			Button button = recipe.getButton();
 			int mouseButton = key.getValue();
-			if (mouseButton == 0 && button.mouseClicked(mouseX, mouseY, mouseButton)) {
+			int modifiers = userInput.getModifiers();
+			MouseButtonInfo buttonInfo = new MouseButtonInfo(mouseButton, modifiers);
+			MouseButtonEvent mouseButtonEvent = new MouseButtonEvent(mouseX, mouseY, buttonInfo);
+			if (mouseButton == 0 && button.mouseClicked(mouseButtonEvent, false)) {
 				if (!userInput.isSimulate()) {
 					Minecraft minecraft = Minecraft.getInstance();
 					LocalPlayer player = minecraft.player;

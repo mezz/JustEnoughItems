@@ -8,6 +8,7 @@ import mezz.jei.neoforge.events.RuntimeEventSubscriptions;
 import mezz.jei.neoforge.input.ForgeUserInput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.CharacterEvent;
 import net.neoforged.neoforge.client.event.ContainerScreenEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 
@@ -40,17 +41,15 @@ public class EventRegistration {
 
 		subscriptions.register(ScreenEvent.CharacterTyped.Pre.class, event -> {
 			Screen screen = event.getScreen();
-			char codePoint = event.getCodePoint();
-			int modifiers = event.getModifiers();
-			if (handler.onKeyboardCharTypedPre(screen, codePoint, modifiers)) {
+			CharacterEvent characterEvent = event.getCharacterEvent();
+			if (handler.onKeyboardCharTypedPre(screen, characterEvent)) {
 				event.setCanceled(true);
 			}
 		});
 		subscriptions.register(ScreenEvent.CharacterTyped.Post.class, event -> {
 			Screen screen = event.getScreen();
-			char codePoint = event.getCodePoint();
-			int modifiers = event.getModifiers();
-			handler.onKeyboardCharTypedPost(screen, codePoint, modifiers);
+			CharacterEvent characterEvent = event.getCharacterEvent();
+			handler.onKeyboardCharTypedPost(screen, characterEvent);
 		});
 
 		subscriptions.register(ScreenEvent.MouseButtonPressed.Pre.class, event ->

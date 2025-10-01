@@ -2,11 +2,12 @@ package mezz.jei.fabric.input;
 
 import mezz.jei.common.input.keys.IJeiKeyMappingBuilder;
 import mezz.jei.common.input.keys.IJeiKeyMappingCategoryBuilder;
+import net.minecraft.client.KeyMapping;
 
 public class FabricJeiKeyMappingCategoryBuilder implements IJeiKeyMappingCategoryBuilder {
-	private final String category;
+	private final KeyMapping.Category category;
 
-	public FabricJeiKeyMappingCategoryBuilder(String category) {
+	public FabricJeiKeyMappingCategoryBuilder(KeyMapping.Category category) {
 		this.category = category;
 	}
 

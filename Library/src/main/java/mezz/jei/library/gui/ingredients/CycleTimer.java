@@ -1,6 +1,6 @@
 package mezz.jei.library.gui.ingredients;
 
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -43,7 +43,8 @@ public class CycleTimer implements ICycler {
 		if (list.isEmpty()) {
 			return Optional.empty();
 		}
-		if (!Screen.hasShiftDown()) {
+		Minecraft minecraft = Minecraft.getInstance();
+		if (!minecraft.hasShiftDown()) {
 			long now = System.currentTimeMillis();
 			index = calculateIndex(now, cycleOffset);
 		}

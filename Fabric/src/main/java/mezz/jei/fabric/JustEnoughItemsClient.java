@@ -1,17 +1,18 @@
 package mezz.jei.fabric;
 
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.textures.JeiGuiSpriteManager;
+import mezz.jei.common.gui.textures.JeiAtlasManager;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.MinecraftLocaleSupplier;
 import mezz.jei.common.util.Translator;
-import mezz.jei.fabric.events.JeiIdentifiableResourceReloadListener;
 import mezz.jei.fabric.events.JeiLifecycleEvents;
 import mezz.jei.fabric.plugins.fabric.FabricGuiPlugin;
 import mezz.jei.fabric.startup.ClientLifecycleHandler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 
@@ -24,17 +25,17 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 
 		JeiLifecycleEvents.REGISTER_RESOURCE_RELOAD_LISTENER.register((resourceManager, textureManager) -> {
 			Textures textures = Internal.getTextures();
-			JeiGuiSpriteManager guiSpriteManager = textures.getGuiSpriteManager();
-			resourceManager.registerReloadListener(new JeiIdentifiableResourceReloadListener("gui_sprite_manager", guiSpriteManager));
+			JeiAtlasManager atlasManager = textures.getAtlasManager();
+			resourceManager.registerReloadListener(atlasManager);
 
 			ClientLifecycleEvents.CLIENT_STARTED.register(event -> {
 				clientLifecycleHandler.registerEvents();
 
-				ResourceManagerHelper.get(PackType.SERVER_DATA)
-						.registerReloadListener(new JeiIdentifiableResourceReloadListener("lifecycle", clientLifecycleHandler.getReloadListener()));
+				ResourceLoader.get(PackType.SERVER_DATA)
+					.registerReloader(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "lifecycle"), clientLifecycleHandler.getReloadListener());
 
-				ResourceManagerHelper.get(PackType.CLIENT_RESOURCES)
-					.registerReloadListener(new JeiIdentifiableResourceReloadListener("resources_reload", createReloadListener()));
+				ResourceLoader.get(PackType.CLIENT_RESOURCES)
+					.registerReloader(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "resources_reload"), createReloadListener());
 			});
 		});
 	}

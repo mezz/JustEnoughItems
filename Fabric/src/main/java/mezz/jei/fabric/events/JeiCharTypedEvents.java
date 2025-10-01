@@ -4,12 +4,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.client.input.CharacterEvent;
 
 public class JeiCharTypedEvents {
 	public static final Event<BeforeCharTyped> BEFORE_CHAR_TYPED =
-		EventFactory.createArrayBacked(BeforeCharTyped.class, callbacks -> (guiEventListener, codepoint, modifiers) -> {
+		EventFactory.createArrayBacked(BeforeCharTyped.class, callbacks -> (windowHandle, event) -> {
 			for (BeforeCharTyped callback : callbacks) {
-				if (callback.beforeCharTyped(guiEventListener, codepoint, modifiers)) {
+				if (callback.beforeCharTyped(windowHandle, event)) {
 					return true;
 				}
 			}
@@ -17,9 +18,9 @@ public class JeiCharTypedEvents {
 		});
 
 	public static final Event<AfterCharTyped> AFTER_CHAR_TYPED =
-		EventFactory.createArrayBacked(AfterCharTyped.class, callbacks -> (guiEventListener, codepoint, modifiers) -> {
+		EventFactory.createArrayBacked(AfterCharTyped.class, callbacks -> (windowHandle, event) -> {
 			for (AfterCharTyped callback : callbacks) {
-				if (callback.afterCharTyped(guiEventListener, codepoint, modifiers)) {
+				if (callback.afterCharTyped(windowHandle, event)) {
 					return true;
 				}
 			}
@@ -29,12 +30,12 @@ public class JeiCharTypedEvents {
 	@Environment(EnvType.CLIENT)
 	@FunctionalInterface
 	public interface BeforeCharTyped {
-		boolean beforeCharTyped(long windowPointer, char codePoint, int modifiers);
+		boolean beforeCharTyped(long windowHandle, CharacterEvent event);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@FunctionalInterface
 	public interface AfterCharTyped {
-		boolean afterCharTyped(long windowPointer, char codePoint, int modifiers);
+		boolean afterCharTyped(long windowHandle, CharacterEvent event);
 	}
 }

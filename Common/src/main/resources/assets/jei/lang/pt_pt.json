@@ -34,14 +34,14 @@
   "jei.tooltip.recipe.sort.craftable.first.disabled": "Mostrar receitas que podem ser criadas primeiro (desativado)",
 
   "_comment": "Key Bindings",
-  "jei.key.category.overlays": "JEI (Sobreposições)",
+  "key.category.jei.overlays": "JEI (Sobreposições)",
   "key.jei.toggleOverlay": "Mostrar/Esconder JEI Sobreposições",
   "key.jei.focusSearch": "Selecionar Barra de Pesquisa",
   "key.jei.previousPage": "Página Anterior",
   "key.jei.nextPage": "Próxima Página",
   "key.jei.toggleBookmarkOverlay": "Mostrar/Esconder Ingredientes Marcados",
 
-  "jei.key.category.recipe.gui": "JEI (Receitas)",
+  "key.category.jei.recipe.gui": "JEI (Receitas)",
   "key.jei.recipeBack": "Receita Anterior",
   "key.jei.previousCategory": "Categoria da Receita Anterior",
   "key.jei.nextCategory": "Categoria da Próxima Receita",
@@ -49,7 +49,7 @@
   "key.jei.nextRecipePage": "Página da Próxima Receita",
   "key.jei.closeRecipeGui": "Fechar GUI das Receitas",
 
-  "jei.key.category.mouse.hover": "JEI (Passar com o Rato)",
+  "key.category.jei.mouse.hover": "JEI (Passar com o Rato)",
   "key.jei.bookmark": "Adicionar/Remover Marcador",
   "key.jei.showRecipe": "Mostrar Receita",
   "key.jei.showRecipe2": "Mostrar Receita",
@@ -58,7 +58,7 @@
   "key.jei.transferRecipeBookmark": "Criar Receita Marcada (1 vez)",
   "key.jei.maxTransferRecipeBookmark": "Criar Receita Marcada (valor máximo)",
 
-  "jei.key.category.search": "JEI (Filtro de Pesquisa)",
+  "key.category.jei.search": "JEI (Filtro de Pesquisa)",
   "key.jei.clearSearchBar": "Limpar Filtro de Pesquisa",
   "key.jei.previousSearch": "Pesquisa Anterior",
   "key.jei.nextSearch": "Próxima Pesquisa",

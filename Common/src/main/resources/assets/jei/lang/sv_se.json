@@ -52,14 +52,14 @@
   "jei.chat.error.no.cheat.permission.give": "spelare som kan använda kommandot \"/give\"",
 
   "_comment": "Key Bindings",
-  "jei.key.category.overlays": "JEI (överlägg)",
+  "key.category.jei.overlays": "JEI (överlägg)",
   "key.jei.toggleOverlay": "Visa/dölj JEI:s överlägg",
   "key.jei.focusSearch": "Markera sökfältet",
   "key.jei.previousPage": "Föregående sida",
   "key.jei.nextPage": "Nästa sida",
   "key.jei.toggleBookmarkOverlay": "Visa/dölj bokmärkta ingredienser",
 
-  "jei.key.category.recipe.gui": "JEI (recept)",
+  "key.category.jei.recipe.gui": "JEI (recept)",
   "key.jei.recipeBack": "Föregående recept",
   "key.jei.previousCategory": "Föregående receptkategori",
   "key.jei.nextCategory": "Nästa receptkategori",
@@ -67,22 +67,22 @@
   "key.jei.nextRecipePage": "Nästa receptsida",
   "key.jei.closeRecipeGui": "Stäng receptgränssnittet",
 
-  "jei.key.category.cheat.mode": "JEI (fuskläge)",
+  "key.category.jei.cheat.mode": "JEI (fuskläge)",
   "key.jei.toggleCheatMode": "Slå på/av fuskläge",
   "key.jei.cheatOneItem": "Fuska fram 1 föremål",
   "key.jei.cheatOneItem2": "Fuska fram 1 föremål",
   "key.jei.cheatItemStack": "Fuska fram 1 föremålsgrupp",
   "key.jei.cheatItemStack2": "Fuska fram 1 föremålsgrupp",
 
-  "jei.key.category.hover.config.button": "JEI (lägg musen över konfigurationsknappen)",
+  "key.category.jei.hover.config.button": "JEI (lägg musen över konfigurationsknappen)",
   "key.jei.toggleCheatModeConfigButton": "Slå på/av fuskläge",
 
-  "jei.key.category.edit.mode": "JEI (redigeringsläge)",
+  "key.category.jei.edit.mode": "JEI (redigeringsläge)",
   "key.jei.toggleEditMode": "Dölj/visa ingrediensläge",
   "key.jei.toggleHideIngredient": "Dölj ingrediens",
   "key.jei.toggleWildcardHideIngredient": "Dölj ingrediens (med jokertecken)",
 
-  "jei.key.category.mouse.hover": "JEI (lägg musen över föremål)",
+  "key.category.jei.mouse.hover": "JEI (lägg musen över föremål)",
   "key.jei.bookmark": "Lägg till/ta bort bokmärkt ingrediens",
   "key.jei.showRecipe": "Visa recept",
   "key.jei.showRecipe2": "Visa recept",
@@ -91,12 +91,12 @@
   "key.jei.transferRecipeBookmark": "Tillverka bokmärkt recept (en gång)",
   "key.jei.maxTransferRecipeBookmark": "Tillverka bokmärkt recept (många)",
 
-  "jei.key.category.search": "JEI (sökfilter)",
+  "key.category.jei.search": "JEI (sökfilter)",
   "key.jei.clearSearchBar": "Rensa sökfilter",
   "key.jei.previousSearch": "Föregående sökning",
   "key.jei.nextSearch": "Nästa sökning",
 
-  "jei.key.category.dev.tools": "JEI (utvecklingsverktyg)",
+  "key.category.jei.dev.tools": "JEI (utvecklingsverktyg)",
   "key.jei.copy.recipe.id": "Kopiera recept-ID till urklipp",
 
   "_comment": "Config",

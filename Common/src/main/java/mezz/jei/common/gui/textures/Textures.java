@@ -8,7 +8,7 @@ import mezz.jei.common.gui.elements.HighResolutionDrawable;
 import net.minecraft.resources.ResourceLocation;
 
 public class Textures {
-	private final JeiGuiSpriteManager guiSpriteManager;
+	private final JeiAtlasManager jeiAtlasManager;
 
 	private final IDrawableStatic slot;
 	private final IDrawableStatic outputSlot;
@@ -36,7 +36,7 @@ public class Textures {
 	private final IDrawableStatic bookmarkButtonDisabledIcon;
 	private final IDrawableStatic bookmarkButtonEnabledIcon;
 	private final IDrawableStatic historyButtonDisabledIcon;
-	private final IDrawableStatic historyButtonEnabledICon;
+	private final IDrawableStatic historyButtonEnabledIcon;
 	private final IDrawableStatic infoIcon;
 	private final ScalableDrawable catalystTab;
 	private final ScalableDrawable recipeOptionsTab;
@@ -53,8 +53,8 @@ public class Textures {
 	private final IDrawableStatic brewingStandBubbles;
 	private final IDrawableStatic brewingStandArrow;
 
-	public Textures(JeiGuiSpriteManager guiSpriteManager) {
-		this.guiSpriteManager = guiSpriteManager;
+	public Textures(JeiAtlasManager jeiAtlasManager) {
+		this.jeiAtlasManager = jeiAtlasManager;
 
 		this.slot = createGuiSprite("slot", 18, 18);
 		this.outputSlot = createGuiSprite("output_slot", 26, 26);
@@ -97,7 +97,7 @@ public class Textures {
 		this.bookmarkButtonDisabledIcon = createGuiSprite("icons/bookmark_button_disabled", 16, 16);
 		this.bookmarkButtonEnabledIcon = createGuiSprite("icons/bookmark_button_enabled", 16, 16);
 		this.historyButtonDisabledIcon = createGuiSprite("icons/history_button_disabled", 16, 16);
-		this.historyButtonEnabledICon = createGuiSprite("icons/history_button_enabled", 16, 16);
+		this.historyButtonEnabledIcon = createGuiSprite("icons/history_button_enabled", 16, 16);
 		this.infoIcon = createGuiSprite("icons/info", 16, 16);
 		this.flameIcon = createGuiSprite("icons/flame", 14, 14);
 		this.flameEmptyIcon = createGuiSprite("icons/flame_empty", 14, 14);
@@ -111,12 +111,12 @@ public class Textures {
 
 	private DrawableSprite createGuiSprite(String name, int width, int height) {
 		ResourceLocation location = createSprite(name);
-		return new DrawableSprite(guiSpriteManager, location, width, height);
+		return new DrawableSprite(jeiAtlasManager, location, width, height);
 	}
 
 	private ScalableDrawable createScalableGuiSprite(String name) {
 		ResourceLocation location = createSprite(name);
-		return new ScalableDrawable(guiSpriteManager, location);
+		return new ScalableDrawable(jeiAtlasManager, location);
 	}
 
 	public IDrawableStatic getSlot() {
@@ -179,8 +179,8 @@ public class Textures {
 		return historyButtonDisabledIcon;
 	}
 
-	public IDrawableStatic getHistoryButtonEnabledICon() {
-		return historyButtonEnabledICon;
+	public IDrawableStatic getHistoryButtonEnabledIcon() {
+		return historyButtonEnabledIcon;
 	}
 
 	public IDrawableStatic getBookmarkButtonEnabledIcon() {
@@ -279,7 +279,7 @@ public class Textures {
 		return brewingStandArrow;
 	}
 
-	public JeiGuiSpriteManager getGuiSpriteManager() {
-		return guiSpriteManager;
+	public JeiAtlasManager getAtlasManager() {
+		return jeiAtlasManager;
 	}
 }

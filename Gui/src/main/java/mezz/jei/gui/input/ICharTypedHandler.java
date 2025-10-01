@@ -1,7 +1,9 @@
 package mezz.jei.gui.input;
 
+import net.minecraft.client.input.CharacterEvent;
+
 public interface ICharTypedHandler {
 	boolean hasKeyboardFocus();
 
-	boolean onCharTyped(char codePoint, int modifiers);
+	boolean onCharTyped(CharacterEvent event);
 }

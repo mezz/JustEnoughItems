@@ -28,6 +28,7 @@ public class ModHelper implements IPlatformModHelper {
 
 	@Override
 	public boolean isInDev() {
-		return !FMLLoader.isProduction();
+		FMLLoader fmlLoader = FMLLoader.getCurrentOrNull();
+		return fmlLoader != null && !fmlLoader.isProduction();
 	}
 }

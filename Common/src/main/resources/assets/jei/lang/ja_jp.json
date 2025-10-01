@@ -52,14 +52,14 @@
   "jei.chat.error.no.cheat.permission.give": "「/give」コマンドを使用できるプレイヤー",
 
   "_comment": "Key Bindings",
-  "jei.key.category.overlays": "JEI（オーバーレイ）",
+  "key.category.jei.overlays": "JEI（オーバーレイ）",
   "key.jei.toggleOverlay": "JEIの表示／非表示",
   "key.jei.focusSearch": "検索バーの選択",
   "key.jei.previousPage": "前のページへ",
   "key.jei.nextPage": "次のページへ",
   "key.jei.toggleBookmarkOverlay": "ブックマークの表示／非表示",
 
-  "jei.key.category.recipe.gui": "JEI（レシピ）",
+  "key.category.jei.recipe.gui": "JEI（レシピ）",
   "key.jei.recipeBack": "前のレシピへ",
   "key.jei.previousCategory": "前のレシピカテゴリへ",
   "key.jei.nextCategory": "次のレシピカテゴリへ",
@@ -67,22 +67,22 @@
   "key.jei.nextRecipePage": "次のレシピページへ",
   "key.jei.closeRecipeGui": "レシピを閉じる",
 
-  "jei.key.category.cheat.mode": "JEI（チートモード）",
+  "key.category.jei.cheat.mode": "JEI（チートモード）",
   "key.jei.toggleCheatMode": "チートモードの切り替え",
   "key.jei.cheatOneItem": "アイテムを1個取得",
   "key.jei.cheatOneItem2": "アイテムを1個取得",
   "key.jei.cheatItemStack": "アイテムを1スタック取得",
   "key.jei.cheatItemStack2": "アイテムを1スタック取得",
 
-  "jei.key.category.hover.config.button": "JEI（設定ボタンにマウスを重ねたとき）",
+  "key.category.jei.hover.config.button": "JEI（設定ボタンにマウスを重ねたとき）",
   "key.jei.toggleCheatModeConfigButton": "チートモードの切り替え",
 
-  "jei.key.category.edit.mode": "JEI（アイテム隠蔽モード）",
+  "key.category.jei.edit.mode": "JEI（アイテム隠蔽モード）",
   "key.jei.toggleEditMode": "アイテム隠蔽モードの切り替え",
   "key.jei.toggleHideIngredient": "アイテムを隠す",
   "key.jei.toggleWildcardHideIngredient": "アイテムを隠す（ワイルドカード）",
 
-  "jei.key.category.mouse.hover": "JEI（マウスを重ねたとき）",
+  "key.category.jei.mouse.hover": "JEI（マウスを重ねたとき）",
   "key.jei.bookmark": "ブックマークの追加／削除",
   "key.jei.showRecipe": "レシピの表示",
   "key.jei.showRecipe2": "レシピの表示",
@@ -91,12 +91,12 @@
   "key.jei.transferRecipeBookmark": "ブックマークしたレシピでクラフト（一回分）",
   "key.jei.maxTransferRecipeBookmark": "ブックマークしたレシピでクラフト（作れるだけ）",
 
-  "jei.key.category.search": "JEI（検索フィルター）",
+  "key.category.jei.search": "JEI（検索フィルター）",
   "key.jei.clearSearchBar": "検索フィルターをクリア",
   "key.jei.previousSearch": "前の検索へ",
   "key.jei.nextSearch": "次の検索へ",
 
-  "jei.key.category.dev.tools": "JEI（開発者ツール）",
+  "key.category.jei.dev.tools": "JEI（開発者ツール）",
   "key.jei.copy.recipe.id": "レシピIDをクリップボードにコピー",
 
   "_comment": "Config",

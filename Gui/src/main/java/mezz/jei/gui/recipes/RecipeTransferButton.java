@@ -14,7 +14,6 @@ import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -79,8 +78,8 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 	protected boolean onMouseClicked(UserInput input) {
 		if (!input.isSimulate()) {
 			IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
-			boolean maxTransfer = Screen.hasShiftDown();
 			Minecraft minecraft = Minecraft.getInstance();
+			boolean maxTransfer = minecraft.hasShiftDown();
 			LocalPlayer player = minecraft.player;
 			if (parentContainer != null && player != null && RecipeTransferUtil.transferRecipe(recipeTransferManager, parentContainer, recipeLayout, player, maxTransfer)) {
 				onClose.run();

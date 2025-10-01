@@ -36,6 +36,7 @@ import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.InputType;
+import mezz.jei.gui.input.MouseUserInput;
 import mezz.jei.gui.input.MouseUtil;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.handlers.UserInputRouter;
@@ -46,6 +47,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
@@ -377,9 +380,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
-		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
-		return layouts.mouseDragged(mouseX, mouseY, input, dragX, dragY);
+	public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(event.button());
+		return layouts.mouseDragged(event.x(), event.y(), input, dragX, dragY);
 	}
 
 	@Override
@@ -392,32 +395,32 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-		boolean handled = UserInput.fromVanilla(mouseX, mouseY, mouseButton, InputType.SIMULATE)
+	public boolean mouseClicked(MouseButtonEvent mouseButtonEvent, boolean doubleClick) {
+		boolean handled = UserInput.fromVanilla(mouseButtonEvent, doubleClick, InputType.SIMULATE)
 			.map(this::handleInput)
 			.orElse(false);
 
 		if (handled) {
 			return true;
 		}
-		return super.mouseClicked(mouseX, mouseY, mouseButton);
+		return super.mouseClicked(mouseButtonEvent, doubleClick);
 	}
 
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
-		boolean handled = UserInput.fromVanilla(mouseX, mouseY, mouseButton, InputType.EXECUTE)
+	public boolean mouseReleased(MouseButtonEvent mouseButtonEvent) {
+		boolean handled = MouseUserInput.fromVanilla(mouseButtonEvent, false, InputType.EXECUTE)
 			.map(this::handleInput)
 			.orElse(false);
 
 		if (handled) {
 			return true;
 		}
-		return super.mouseClicked(mouseX, mouseY, mouseButton);
+		return super.mouseReleased(mouseButtonEvent);
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		UserInput input = UserInput.fromVanilla(keyCode, scanCode, modifiers, InputType.IMMEDIATE);
+	public boolean keyPressed(KeyEvent keyEvent) {
+		UserInput input = UserInput.fromVanilla(keyEvent, InputType.IMMEDIATE);
 		return handleInput(input);
 	}
 

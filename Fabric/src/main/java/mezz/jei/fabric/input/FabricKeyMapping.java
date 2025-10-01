@@ -4,6 +4,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 public class FabricKeyMapping extends KeyMapping {
@@ -14,7 +16,7 @@ public class FabricKeyMapping extends KeyMapping {
 		String description,
 		InputConstants.Type type,
 		int keyCode,
-		String category,
+		Category category,
 		JeiKeyConflictContext context
 	) {
 		// Ensure the default key is set correctly (it is final).
@@ -53,20 +55,21 @@ public class FabricKeyMapping extends KeyMapping {
 	}
 
 	@Override
-	public boolean matches(int keyCode, int scanCode) {
+	public boolean matches(KeyEvent keyEvent) {
+		int keyCode = keyEvent.key();
 		if (keyCode != InputConstants.UNKNOWN.getValue()) {
 			return this.realKey.getType() == InputConstants.Type.KEYSYM &&
 				this.realKey.getValue() == keyCode;
 		} else {
 			return this.realKey.getType() == InputConstants.Type.SCANCODE &&
-				this.realKey.getValue() == scanCode;
+				this.realKey.getValue() == keyEvent.scancode();
 		}
 	}
 
 	@Override
-	public boolean matchesMouse(int button) {
+	public boolean matchesMouse(MouseButtonEvent mouseButtonEvent) {
 		return this.realKey.getType() == InputConstants.Type.MOUSE &&
-			this.realKey.getValue() == button;
+			this.realKey.getValue() == mouseButtonEvent.button();
 	}
 
 	@Override

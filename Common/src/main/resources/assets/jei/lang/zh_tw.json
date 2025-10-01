@@ -49,14 +49,14 @@
   "jei.chat.error.no.cheat.permission.give": "可以使用 /give 的玩家",
 
   "_comment": "Key Bindings",
-  "jei.key.category.overlays": "JEI（疊層）",
+  "key.category.jei.overlays": "JEI（疊層）",
   "key.jei.toggleOverlay": "顯示／隱藏 JEI ",
   "key.jei.focusSearch": "選擇搜尋列",
   "key.jei.previousPage": "上一頁",
   "key.jei.nextPage": "下一頁",
   "key.jei.toggleBookmarkOverlay": "顯示／隱藏已加入書籤的物品",
 
-  "jei.key.category.recipe.gui": "JEI（配方）",
+  "key.category.jei.recipe.gui": "JEI（配方）",
   "key.jei.recipeBack": "上次查看的配方",
   "key.jei.previousCategory": "上一個配方分類",
   "key.jei.nextCategory": "下一個配方分類",
@@ -64,22 +64,22 @@
   "key.jei.nextRecipePage": "下一個配方頁",
   "key.jei.closeRecipeGui": "關閉配方介面",
 
-  "jei.key.category.cheat.mode": "JEI（作弊模式）",
+  "key.category.jei.cheat.mode": "JEI（作弊模式）",
   "key.jei.toggleCheatMode": "切換作弊模式",
   "key.jei.cheatOneItem": "作弊一個物品",
   "key.jei.cheatOneItem2": "作弊一個物品",
   "key.jei.cheatItemStack": "作弊一組物品",
   "key.jei.cheatItemStack2": "作弊一組物品",
 
-  "jei.key.category.hover.config.button": "JEI（將游標懸停在設定按鈕上）",
+  "key.category.jei.hover.config.button": "JEI（將游標懸停在設定按鈕上）",
   "key.jei.toggleCheatModeConfigButton": "切換作弊模式",
 
-  "jei.key.category.edit.mode": "JEI（編輯模式）",
+  "key.category.jei.edit.mode": "JEI（編輯模式）",
   "key.jei.toggleEditMode": "切換隱藏物品模式",
   "key.jei.toggleHideIngredient": "隱藏物品",
   "key.jei.toggleWildcardHideIngredient": "隱藏物品（萬用字元）",
 
-  "jei.key.category.mouse.hover": "JEI（將游標懸停）",
+  "key.category.jei.mouse.hover": "JEI（將游標懸停）",
   "key.jei.bookmark": "新增／移除書籤",
   "key.jei.showRecipe": "顯示配方",
   "key.jei.showRecipe2": "顯示配方",
@@ -88,12 +88,12 @@
   "key.jei.transferRecipeBookmark": "合成已加入書籤的配方（一次）",
   "key.jei.maxTransferRecipeBookmark": "合成已加入書籤的配方（最大數量）",
 
-  "jei.key.category.search": "JEI（搜尋篩選器）",
+  "key.category.jei.search": "JEI（搜尋篩選器）",
   "key.jei.clearSearchBar": "清空搜尋篩選器",
   "key.jei.previousSearch": "搜尋上一個",
   "key.jei.nextSearch": "搜尋下一個",
 
-  "jei.key.category.dev.tools": "JEI（開發工具）",
+  "key.category.jei.dev.tools": "JEI（開發工具）",
   "key.jei.copy.recipe.id": "複製配方 ID 到剪貼簿",
 
   "_comment": "Config",

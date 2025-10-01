@@ -1,6 +1,6 @@
 package mezz.jei.library.gui.ingredients;
 
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -33,7 +33,8 @@ public class CycleTicker implements ICycler {
 	}
 
 	public boolean tick() {
-		if (Screen.hasShiftDown()) {
+		Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft.hasShiftDown()) {
 			return false;
 		}
 		tick++;

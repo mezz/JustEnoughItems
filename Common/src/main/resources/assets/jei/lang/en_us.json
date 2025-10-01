@@ -56,14 +56,14 @@
   "jei.chat.error.no.cheat.permission.give": "players who can use the \"/give\" command",
 
   "_comment": "Key Bindings",
-  "jei.key.category.overlays": "JEI (Overlays)",
+  "key.category.jei.overlays": "JEI (Overlays)",
   "key.jei.toggleOverlay": "Show/Hide JEI Overlays",
   "key.jei.focusSearch": "Select Search Bar",
   "key.jei.previousPage": "Previous Page",
   "key.jei.nextPage": "Next Page",
   "key.jei.toggleBookmarkOverlay": "Show/Hide Bookmarked Ingredients",
 
-  "jei.key.category.recipe.gui": "JEI (Recipes)",
+  "key.category.jei.recipe.gui": "JEI (Recipes)",
   "key.jei.recipeBack": "Previous Recipe",
   "key.jei.previousCategory": "Previous Recipe Category",
   "key.jei.nextCategory": "Next Recipe Category",
@@ -71,22 +71,22 @@
   "key.jei.nextRecipePage": "Next Recipe Page",
   "key.jei.closeRecipeGui": "Close Recipes GUI",
 
-  "jei.key.category.cheat.mode": "JEI (Cheat Mode)",
+  "key.category.jei.cheat.mode": "JEI (Cheat Mode)",
   "key.jei.toggleCheatMode": "Toggle Cheat Mode",
   "key.jei.cheatOneItem": "Cheat 1 Item",
   "key.jei.cheatOneItem2": "Cheat 1 Item",
   "key.jei.cheatItemStack": "Cheat 1 Stack",
   "key.jei.cheatItemStack2": "Cheat 1 Stack",
 
-  "jei.key.category.hover.config.button": "JEI (Hovering With Mouse Over Config Button)",
+  "key.category.jei.hover.config.button": "JEI (Hovering With Mouse Over Config Button)",
   "key.jei.toggleCheatModeConfigButton": "Toggle Cheat Mode",
 
-  "jei.key.category.edit.mode": "JEI (Edit Mode)",
+  "key.category.jei.edit.mode": "JEI (Edit Mode)",
   "key.jei.toggleEditMode": "Toggle Hide Ingredients Mode",
   "key.jei.toggleHideIngredient": "Hide Ingredient",
   "key.jei.toggleWildcardHideIngredient": "Hide Ingredient (With Wildcard)",
 
-  "jei.key.category.mouse.hover": "JEI (Hovering With Mouse)",
+  "key.category.jei.mouse.hover": "JEI (Hovering With Mouse)",
   "key.jei.bookmark": "Add/Remove Bookmark",
   "key.jei.showRecipe": "Show Recipe",
   "key.jei.showRecipe2": "Show Recipe",
@@ -95,12 +95,12 @@
   "key.jei.transferRecipeBookmark": "Craft Bookmarked Recipe (One)",
   "key.jei.maxTransferRecipeBookmark": "Craft Bookmarked Recipe (Many)",
 
-  "jei.key.category.search": "JEI (Search Filter)",
+  "key.category.jei.search": "JEI (Search Filter)",
   "key.jei.clearSearchBar": "Clear Search Filter",
   "key.jei.previousSearch": "Previous Search",
   "key.jei.nextSearch": "Next Search",
 
-  "jei.key.category.dev.tools": "JEI (Dev Tools)",
+  "key.category.jei.dev.tools": "JEI (Dev Tools)",
   "key.jei.copy.recipe.id": "Copy Recipe ID to Clipboard",
 
   "_comment": "Config",

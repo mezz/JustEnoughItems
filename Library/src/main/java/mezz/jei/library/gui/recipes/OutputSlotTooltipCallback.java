@@ -14,7 +14,6 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -48,7 +47,7 @@ public class OutputSlotTooltipCallback implements IRecipeSlotRichTooltipCallback
 		addRecipeBy(tooltip, displayedIngredient.get());
 
 		Minecraft minecraft = Minecraft.getInstance();
-		boolean showAdvanced = minecraft.options.advancedItemTooltips || Screen.hasShiftDown();
+		boolean showAdvanced = minecraft.options.advancedItemTooltips || minecraft.hasShiftDown();
 		if (showAdvanced) {
 			MutableComponent recipeId = Component.translatable("jei.tooltip.recipe.id", Component.literal(recipeName.toString()));
 			tooltip.add(recipeId.withStyle(ChatFormatting.DARK_GRAY));

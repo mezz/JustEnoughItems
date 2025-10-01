@@ -1,18 +1,14 @@
 package mezz.jei.common.util;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
-import com.mojang.brigadier.tree.RootCommandNode;
 import mezz.jei.common.config.GiveMode;
 import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.packets.PacketCheatPermission;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -25,7 +21,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Server-side-safe utilities for commands.
@@ -44,17 +39,15 @@ public final class ServerCommandUtil {
 
 		CommandSourceStack commandSource = sender.createCommandSourceStack();
 		if (serverConfig.isCheatModeEnabledForOp()) {
-			MinecraftServer minecraftServer = sender.getServer();
-			if (minecraftServer != null) {
-				int opPermissionLevel = minecraftServer.getOperatorUserPermissionLevel();
-				return commandSource.hasPermission(opPermissionLevel);
-			}
+			int opPermissionLevel = sender.level()
+				.getServer()
+				.operatorUserPermissionLevel();
+			return commandSource.hasPermission(opPermissionLevel);
 		}
 
 		if (serverConfig.isCheatModeEnabledForGive()) {
 			return getGiveCommand(sender)
-				.map(giveCommand -> giveCommand.canUse(commandSource))
-				.orElse(false);
+				.canUse(commandSource);
 		}
 
 		return false;
@@ -192,9 +185,6 @@ public final class ServerCommandUtil {
 	}
 
 	private static void notifyGive(ServerPlayer player, ItemStack stack) {
-		if (player.getServer() == null) {
-			return;
-		}
 		CommandSourceStack commandSource = player.createCommandSourceStack();
 		int count = stack.getCount();
 		Component stackTextComponent = stack.getDisplayName();
@@ -203,13 +193,12 @@ public final class ServerCommandUtil {
 		commandSource.sendSuccess(() -> message, true);
 	}
 
-	private static Optional<CommandNode<CommandSourceStack>> getGiveCommand(Player sender) {
-		return Optional.ofNullable(sender.getServer())
-			.map(minecraftServer -> {
-				Commands commandManager = minecraftServer.getCommands();
-				CommandDispatcher<CommandSourceStack> dispatcher = commandManager.getDispatcher();
-				RootCommandNode<CommandSourceStack> root = dispatcher.getRoot();
-				return root.getChild("give");
-			});
+	private static CommandNode<CommandSourceStack> getGiveCommand(ServerPlayer sender) {
+		return sender.level()
+			.getServer()
+			.getCommands()
+			.getDispatcher()
+			.getRoot()
+			.getChild("give");
 	}
 }

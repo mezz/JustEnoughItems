@@ -9,6 +9,7 @@ import mezz.jei.gui.input.handlers.UserInputRouter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
 
 import java.util.List;
 
@@ -68,9 +69,9 @@ public class ClientInputHandler {
 	/**
 	 * When we have keyboard focus, use Pre
 	 */
-	public boolean onKeyboardCharTypedPre(Screen screen, char codePoint, int modifiers) {
+	public boolean onKeyboardCharTypedPre(Screen screen, CharacterEvent event) {
 		if (!isContainerTextFieldFocused(screen)) {
-			return handleCharTyped(codePoint, modifiers);
+			return handleCharTyped(event);
 		}
 		return false;
 	}
@@ -78,9 +79,9 @@ public class ClientInputHandler {
 	/**
 	 * Without keyboard focus, use Post
 	 */
-	public void onKeyboardCharTypedPost(Screen screen, char codePoint, int modifiers) {
+	public void onKeyboardCharTypedPost(Screen screen, CharacterEvent event) {
 		if (isContainerTextFieldFocused(screen)) {
-			handleCharTyped(codePoint, modifiers);
+			handleCharTyped(event);
 		}
 	}
 
@@ -116,10 +117,10 @@ public class ClientInputHandler {
 		return this.inputRouter.handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
 	}
 
-	private boolean handleCharTyped(char codePoint, int modifiers) {
+	private boolean handleCharTyped(CharacterEvent event) {
 		return this.charTypedHandlers.stream()
 			.filter(ICharTypedHandler::hasKeyboardFocus)
-			.anyMatch(handler -> handler.onCharTyped(codePoint, modifiers));
+			.anyMatch(handler -> handler.onCharTyped(event));
 	}
 
 	private boolean isContainerTextFieldFocused(Screen screen) {

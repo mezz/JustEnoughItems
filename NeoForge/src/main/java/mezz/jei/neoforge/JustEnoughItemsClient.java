@@ -77,7 +77,7 @@ public class JustEnoughItemsClient {
 
 	private void onRegisterReloadListenerEvent(AddClientReloadListenersEvent event) {
 		Textures textures = Internal.getTextures();
-		event.addListener(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "gui_sprite_manager"), textures.getGuiSpriteManager());
+		event.addListener(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "gui_sprite_manager"), textures.getAtlasManager());
 		event.addListener(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "jei_client"), createReloadListener());
 	}
 

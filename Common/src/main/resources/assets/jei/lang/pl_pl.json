@@ -52,14 +52,14 @@
   "jei.chat.error.no.cheat.permission.give": "gracze, którzy mogą używać polecenia „/give”",
 
   "_comment": "Key Bindings",
-  "jei.key.category.overlays": "JEI (nakładki)",
+  "key.category.jei.overlays": "JEI (nakładki)",
   "key.jei.toggleOverlay": "Pokaż/ukryj nakładki JEI",
   "key.jei.focusSearch": "Zaznacz pasek wyszukiwania",
   "key.jei.previousPage": "Poprzednia strona",
   "key.jei.nextPage": "Następna strona",
   "key.jei.toggleBookmarkOverlay": "Pokaż/ukryj składniki z zakładek",
 
-  "jei.key.category.recipe.gui": "JEI (receptury)",
+  "key.category.jei.recipe.gui": "JEI (receptury)",
   "key.jei.recipeBack": "Poprzednia receptura",
   "key.jei.previousCategory": "Poprzednia kategoria receptur",
   "key.jei.nextCategory": "Następna kategoria receptur",
@@ -67,22 +67,22 @@
   "key.jei.nextRecipePage": "Następna strona z recepturami",
   "key.jei.closeRecipeGui": "Zamknij interfejs z recepturami",
 
-  "jei.key.category.cheat.mode": "JEI (tryb cheatów)",
+  "key.category.jei.cheat.mode": "JEI (tryb cheatów)",
   "key.jei.toggleCheatMode": "Przełącz tryb cheatów",
   "key.jei.cheatOneItem": "Zcheatuj 1 przedmiot",
   "key.jei.cheatOneItem2": "Zcheatuj 1 przedmiot",
   "key.jei.cheatItemStack": "Zcheatuj 1 stack",
   "key.jei.cheatItemStack2": "Zcheatuj 1 stack",
 
-  "jei.key.category.hover.config.button": "JEI (najechanie kursorem na przycisk konfiguracji)",
+  "key.category.jei.hover.config.button": "JEI (najechanie kursorem na przycisk konfiguracji)",
   "key.jei.toggleCheatModeConfigButton": "Przełącz tryb cheatów",
 
-  "jei.key.category.edit.mode": "JEI (tryb edycji)",
+  "key.category.jei.edit.mode": "JEI (tryb edycji)",
   "key.jei.toggleEditMode": "Przełącz tryb ukrywania składników",
   "key.jei.toggleHideIngredient": "Ukryj składnik",
   "key.jei.toggleWildcardHideIngredient": "Ukryj składnik (z wieloznacznikiem)",
 
-  "jei.key.category.mouse.hover": "JEI (najechanie kursorem myszy)",
+  "key.category.jei.mouse.hover": "JEI (najechanie kursorem myszy)",
   "key.jei.bookmark": "Dodaj/usuń zakładkę",
   "key.jei.showRecipe": "Pokaż recepturę",
   "key.jei.showRecipe2": "Pokaż recepturę",
@@ -91,12 +91,12 @@
   "key.jei.transferRecipeBookmark": "Stwórz recepturę z zakładek (jedną)",
   "key.jei.maxTransferRecipeBookmark": "Stwórz recepturę z zakładek (wiele)",
 
-  "jei.key.category.search": "JEI (filtr wyszukiwania)",
+  "key.category.jei.search": "JEI (filtr wyszukiwania)",
   "key.jei.clearSearchBar": "Wyczyść filtr wyszukiwania",
   "key.jei.previousSearch": "Poprzednie wyszukiwanie",
   "key.jei.nextSearch": "Następne wyszukiwanie",
 
-  "jei.key.category.dev.tools": "JEI (narzędzia programistyczne)",
+  "key.category.jei.dev.tools": "JEI (narzędzia programistyczne)",
   "key.jei.copy.recipe.id": "Kopiuj ID receptury do schowka",
 
   "_comment": "Config",

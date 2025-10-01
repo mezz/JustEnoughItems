@@ -1,5 +1,6 @@
 package mezz.jei.gui.config;
 
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.keys.IJeiKeyMappingCategoryBuilder;
@@ -8,8 +9,8 @@ import mezz.jei.common.input.keys.JeiKeyModifier;
 import mezz.jei.common.input.keys.JeiMultiKeyMapping;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.Translator;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Consumer;
@@ -59,6 +60,16 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping rightClick;
 	private final IJeiKeyMapping enterKey;
 
+	private static KeyMapping.Category registerCategory(String name) {
+		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, name);
+		return KeyMapping.Category.register(id);
+	}
+
+	private static KeyMapping.Category createUnregisteredCategory(String name) {
+		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, name);
+		return new KeyMapping.Category(id);
+	}
+
 	public InternalKeyMappings(Consumer<KeyMapping> registerMethod) {
 		IPlatformInputHelper inputHelper = Services.PLATFORM.getInputHelper();
 
@@ -71,29 +82,29 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 		IJeiKeyMapping cheatItemStack1;
 		IJeiKeyMapping cheatItemStack2;
 
-		String overlaysCategoryName = Translator.translateToLocal("jei.key.category.overlays");
-		IJeiKeyMappingCategoryBuilder overlay = inputHelper.createKeyMappingCategoryBuilder(overlaysCategoryName);
+		var overlaysCategory = registerCategory("overlays");
+		IJeiKeyMappingCategoryBuilder overlay = inputHelper.createKeyMappingCategoryBuilder(overlaysCategory);
 
-		String mouseHoverCategoryName = Translator.translateToLocal("jei.key.category.mouse.hover");
-		IJeiKeyMappingCategoryBuilder mouseHover = inputHelper.createKeyMappingCategoryBuilder(mouseHoverCategoryName);
+		var mouseHoverCategory = registerCategory("mouse.hover");
+		IJeiKeyMappingCategoryBuilder mouseHover = inputHelper.createKeyMappingCategoryBuilder(mouseHoverCategory);
 
-		String searchCategoryName = Translator.translateToLocal("jei.key.category.search");
-		IJeiKeyMappingCategoryBuilder search = inputHelper.createKeyMappingCategoryBuilder(searchCategoryName);
+		var searchCategory = registerCategory("search");
+		IJeiKeyMappingCategoryBuilder search = inputHelper.createKeyMappingCategoryBuilder(searchCategory);
 
-		String cheatModeCategoryName = Translator.translateToLocal("jei.key.category.cheat.mode");
-		IJeiKeyMappingCategoryBuilder cheat = inputHelper.createKeyMappingCategoryBuilder(cheatModeCategoryName);
+		var cheatModeCategory = registerCategory("cheat.mode");
+		IJeiKeyMappingCategoryBuilder cheat = inputHelper.createKeyMappingCategoryBuilder(cheatModeCategory);
 
-		String hoverConfigButtonCategoryName = Translator.translateToLocal("jei.key.category.hover.config.button");
-		IJeiKeyMappingCategoryBuilder hoverConfig = inputHelper.createKeyMappingCategoryBuilder(hoverConfigButtonCategoryName);
+		var hoverConfigButtonCategory = registerCategory("hover.config.button");
+		IJeiKeyMappingCategoryBuilder hoverConfig = inputHelper.createKeyMappingCategoryBuilder(hoverConfigButtonCategory);
 
-		String editModeCategoryName = Translator.translateToLocal("jei.key.category.edit.mode");
-		IJeiKeyMappingCategoryBuilder editMode = inputHelper.createKeyMappingCategoryBuilder(editModeCategoryName);
+		var editModeCategory = registerCategory("edit.mode");
+		IJeiKeyMappingCategoryBuilder editMode = inputHelper.createKeyMappingCategoryBuilder(editModeCategory);
 
-		String recipeCategoryName = Translator.translateToLocal("jei.key.category.recipe.gui");
-		IJeiKeyMappingCategoryBuilder recipeCategory = inputHelper.createKeyMappingCategoryBuilder(recipeCategoryName);
+		var recipeCategory = registerCategory("recipe.gui");
+		IJeiKeyMappingCategoryBuilder recipeGui = inputHelper.createKeyMappingCategoryBuilder(recipeCategory);
 
-		String devToolsCategoryName = Translator.translateToLocal("jei.key.category.dev.tools");
-		IJeiKeyMappingCategoryBuilder devTools = inputHelper.createKeyMappingCategoryBuilder(devToolsCategoryName);
+		var devToolsCategory = registerCategory("dev.tools");
+		IJeiKeyMappingCategoryBuilder devTools = inputHelper.createKeyMappingCategoryBuilder(devToolsCategory);
 
 		// Overlay
 		toggleOverlay = overlay.createMapping("key.jei.toggleOverlay")
@@ -230,34 +241,34 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.register(registerMethod);
 
 		// Recipes
-		recipeBack = recipeCategory.createMapping("key.jei.recipeBack")
+		recipeBack = recipeGui.createMapping("key.jei.recipeBack")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildKeyboardKey(GLFW.GLFW_KEY_BACKSPACE)
 			.register(registerMethod);
 
-		previousRecipePage = recipeCategory.createMapping("key.jei.previousRecipePage")
+		previousRecipePage = recipeGui.createMapping("key.jei.previousRecipePage")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildKeyboardKey(GLFW.GLFW_KEY_PAGE_UP)
 			.register(registerMethod);
 
-		nextRecipePage = recipeCategory.createMapping("key.jei.nextRecipePage")
+		nextRecipePage = recipeGui.createMapping("key.jei.nextRecipePage")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildKeyboardKey(GLFW.GLFW_KEY_PAGE_DOWN)
 			.register(registerMethod);
 
-		previousCategory = recipeCategory.createMapping("key.jei.previousCategory")
+		previousCategory = recipeGui.createMapping("key.jei.previousCategory")
 			.setContext(JeiKeyConflictContext.GUI)
 			.setModifier(JeiKeyModifier.SHIFT)
 			.buildKeyboardKey(GLFW.GLFW_KEY_PAGE_UP)
 			.register(registerMethod);
 
-		nextCategory = recipeCategory.createMapping("key.jei.nextCategory")
+		nextCategory = recipeGui.createMapping("key.jei.nextCategory")
 			.setContext(JeiKeyConflictContext.GUI)
 			.setModifier(JeiKeyModifier.SHIFT)
 			.buildKeyboardKey(GLFW.GLFW_KEY_PAGE_DOWN)
 			.register(registerMethod);
 
-		closeRecipeGui = recipeCategory.createMapping("key.jei.closeRecipeGui")
+		closeRecipeGui = recipeGui.createMapping("key.jei.closeRecipeGui")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildKeyboardKey(GLFW.GLFW_KEY_ESCAPE)
 			.register(registerMethod);
@@ -273,8 +284,8 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 		cheatOneItem = new JeiMultiKeyMapping(cheatOneItem1, cheatOneItem2);
 		cheatItemStack = new JeiMultiKeyMapping(cheatItemStack1, cheatItemStack2);
 
-		String jeiHiddenInternalCategoryName = "jei.key.category.hidden.internal";
-		IJeiKeyMappingCategoryBuilder jeiHidden = inputHelper.createKeyMappingCategoryBuilder(jeiHiddenInternalCategoryName);
+		var jeiHiddenInternalCategory = createUnregisteredCategory("hidden.internal");
+		IJeiKeyMappingCategoryBuilder jeiHidden = inputHelper.createKeyMappingCategoryBuilder(jeiHiddenInternalCategory);
 
 		escapeKey = jeiHidden.createMapping("key.jei.internal.escape.key")
 			.setContext(JeiKeyConflictContext.GUI)

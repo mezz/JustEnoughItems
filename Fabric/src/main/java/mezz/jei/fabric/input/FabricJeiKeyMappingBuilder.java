@@ -6,13 +6,14 @@ import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.IJeiKeyMappingBuilder;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
+import net.minecraft.client.KeyMapping;
 
 public class FabricJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
-	protected final String category;
+	protected final KeyMapping.Category category;
 	protected final String description;
 	protected JeiKeyConflictContext context = JeiKeyConflictContext.UNIVERSAL;
 
-	public FabricJeiKeyMappingBuilder(String category, String description) {
+	public FabricJeiKeyMappingBuilder(KeyMapping.Category category, String description) {
 		this.category = category;
 		this.description = description;
 	}

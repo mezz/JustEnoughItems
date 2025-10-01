@@ -38,14 +38,14 @@
   "jei.chat.error.no.cheat.permission.give": "играчи, които могат да използват /give",
 
   "_comment": "Key Bindings",
-  "jei.key.category.overlays": "JEI (наслагвания)",
+  "key.category.jei.overlays": "JEI (наслагвания)",
   "key.jei.toggleOverlay": "Покажи/скрий наслагвания на JEI",
   "key.jei.focusSearch": "Изберете лента за търсене",
   "key.jei.previousPage": "Предишна страница",
   "key.jei.nextPage": "Следваща страница",
   "key.jei.toggleBookmarkOverlay": "Показване/скриване на отметнати съставки",
 
-  "jei.key.category.recipe.gui": "JEI (Рецепти)",
+  "key.category.jei.recipe.gui": "JEI (Рецепти)",
   "key.jei.recipeBack": "Предишна рецепта",
   "key.jei.previousCategory": "Предишна категория рецепти",
   "key.jei.nextCategory": "Следваща категория рецепти",
@@ -53,34 +53,34 @@
   "key.jei.nextRecipePage": "Следваща страница за рецепти",
   "key.jei.closeRecipeGui": "Затвори рецепти GUI",
 
-  "jei.key.category.cheat.mode": "JEI (Режим на измама)",
+  "key.category.jei.cheat.mode": "JEI (Режим на измама)",
   "key.jei.toggleCheatMode": "Превключете режим на измама",
   "key.jei.cheatOneItem": "Измама 1 артикул",
   "key.jei.cheatOneItem2": "Измама 1 артикул",
   "key.jei.cheatItemStack": "Измама 1 стек",
   "key.jei.cheatItemStack2": "Измама 1 стек",
 
-  "jei.key.category.hover.config.button": "JEI (Завъртане с бутон за мишка над конфигуриране)",
+  "key.category.jei.hover.config.button": "JEI (Завъртане с бутон за мишка над конфигуриране)",
   "key.jei.toggleCheatModeConfigButton": "Превключете режим на измама",
 
-  "jei.key.category.edit.mode": "JЕI (Режим на редактиране)",
+  "key.category.jei.edit.mode": "JЕI (Режим на редактиране)",
   "key.jei.toggleEditMode": "Превключете режим на скриване на съставки",
   "key.jei.toggleHideIngredient": "Скриване на съставката",
   "key.jei.toggleWildcardHideIngredient": "Скриване на съставката (wildcard)",
 
-  "jei.key.category.mouse.hover": "JEI (Висящ с мишка)",
+  "key.category.jei.mouse.hover": "JEI (Висящ с мишка)",
   "key.jei.bookmark": "Добавете/премахнете отметка",
   "key.jei.showRecipe": "Покажи рецепта",
   "key.jei.showRecipe2": "Покажи рецепта",
   "key.jei.showUses": "Показване на употреби",
   "key.jei.showUses2": "Показване на употреби",
 
-  "jei.key.category.search": "JEI (Филтър за търсене)",
+  "key.category.jei.search": "JEI (Филтър за търсене)",
   "key.jei.clearSearchBar": "Ясен филтър за търсене",
   "key.jei.previousSearch": "Предишно търсене",
   "key.jei.nextSearch": "Следващо търсене",
 
-  "jei.key.category.dev.tools": "JEI (devTools)",
+  "key.category.jei.dev.tools": "JEI (devTools)",
   "key.jei.copy.recipe.id": "Копирайте идентификатор на рецепта в клипборда",
 
   "_comment": "Config",

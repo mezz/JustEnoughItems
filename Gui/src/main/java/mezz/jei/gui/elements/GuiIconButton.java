@@ -23,7 +23,12 @@ import java.util.Optional;
  * A gui button that has an {@link IDrawable} instead of a string label.
  */
 public class GuiIconButton extends Button {
-	private static final WidgetSprites SPRITES = new WidgetSprites(ResourceLocation.withDefaultNamespace("widget/button"), ResourceLocation.withDefaultNamespace("widget/button_disabled"), ResourceLocation.withDefaultNamespace("widget/button_highlighted"));
+	// TODO re-implement the "clicked" state when something is held down
+	private static final WidgetSprites SPRITES = new WidgetSprites(
+		ResourceLocation.withDefaultNamespace("widget/button"),
+		ResourceLocation.withDefaultNamespace("widget/button_disabled"),
+		ResourceLocation.withDefaultNamespace("widget/button_highlighted")
+	);
 
 	private IDrawable icon;
 	private boolean pressed = false;
@@ -105,21 +110,28 @@ public class GuiIconButton extends Button {
 		public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
 			this.button.pressed = false;
 
-			double mouseX = input.getMouseX();
-			double mouseY = input.getMouseY();
-			if (!this.button.active || !this.button.visible || !isMouseOver(mouseX, mouseY)) {
-				return Optional.empty();
+			boolean handled = input.ifMouseEvent((event, doubleClicked) -> {
+				double mouseX = event.x();
+				double mouseY = event.y();
+				if (!this.button.active || !this.button.visible || !isMouseOver(mouseX, mouseY)) {
+					return false;
+				}
+				if (!this.button.isValidClickButton(event.buttonInfo())) {
+					return false;
+				}
+				if (!input.isSimulate()) {
+					this.button.playDownSound(Minecraft.getInstance().getSoundManager());
+					this.button.onClick(event, doubleClicked);
+				} else {
+					this.button.pressed = true;
+				}
+				return true;
+			});
+
+			if (handled) {
+				return Optional.of(this);
 			}
-			if (!this.button.isValidClickButton(input.getKey().getValue())) {
-				return Optional.empty();
-			}
-			if (!input.isSimulate()) {
-				this.button.playDownSound(Minecraft.getInstance().getSoundManager());
-				this.button.onClick(mouseX, mouseY);
-			} else {
-				this.button.pressed = true;
-			}
-			return Optional.of(this);
+			return Optional.empty();
 		}
 
 		@Override

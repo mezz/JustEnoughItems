@@ -15,6 +15,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class EventRegistration {
@@ -54,29 +57,29 @@ public class EventRegistration {
 		ScreenMouseEvents.allowMouseScroll(screen).register(this::allowMouseScroll);
 	}
 
-	private boolean allowMouseClick(Screen screen, double mouseX, double mouseY, int button) {
+	private boolean allowMouseClick(Screen screen, MouseButtonEvent event) {
 		if (clientInputHandler == null) {
 			return true;
 		}
-		return UserInput.fromVanilla(mouseX, mouseY, button, InputType.SIMULATE)
+		return UserInput.fromVanilla(event, false, InputType.SIMULATE)
 			.map(input -> !clientInputHandler.onGuiMouseClicked(screen, input))
 			.orElse(true);
 	}
 
-	private boolean allowMouseRelease(Screen screen, double mouseX, double mouseY, int button) {
+	private boolean allowMouseRelease(Screen screen, MouseButtonEvent event) {
 		if (clientInputHandler == null) {
 			return true;
 		}
-		return UserInput.fromVanilla(mouseX, mouseY, button, InputType.EXECUTE)
+		return UserInput.fromVanilla(event, false, InputType.EXECUTE)
 			.map(input -> !clientInputHandler.onGuiMouseReleased(screen, input))
 			.orElse(true);
 	}
 
-	private boolean allowKeyPress(Screen screen, int key, int scancode, int modifiers) {
+	private boolean allowKeyPress(Screen screen, KeyEvent keyEvent) {
 		if (clientInputHandler == null) {
 			return true;
 		}
-		UserInput userInput = UserInput.fromVanilla(key, scancode, modifiers, InputType.IMMEDIATE);
+		UserInput userInput = UserInput.fromVanilla(keyEvent, InputType.IMMEDIATE);
 		return !clientInputHandler.onKeyboardKeyPressedPre(screen, userInput);
 	}
 
@@ -87,15 +90,15 @@ public class EventRegistration {
 		return !clientInputHandler.onGuiMouseScroll(mouseX, mouseY, horizontalAmount, verticalAmount);
 	}
 
-	private boolean beforeCharTyped(long windowPointer, char codePoint, int modifiers) {
+	private boolean beforeCharTyped(long windowHandle, CharacterEvent event) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Window window = minecraft.getWindow();
-		if (window.getWindow() == windowPointer &&
+		if (window.handle() == windowHandle &&
 			clientInputHandler != null &&
 			minecraft.screen instanceof Screen screen &&
 			minecraft.getOverlay() == null
 		) {
-			return clientInputHandler.onKeyboardCharTypedPre(screen, codePoint, modifiers);
+			return clientInputHandler.onKeyboardCharTypedPre(screen, event);
 		}
 		return false;
 	}

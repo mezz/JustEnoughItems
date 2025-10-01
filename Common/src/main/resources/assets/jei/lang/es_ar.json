@@ -52,14 +52,14 @@
   "jei.chat.error.no.cheat.permission.give": "jugadores que pueden usar el comando \"/give\"",
 
   "_comment": "Key Bindings",
-  "jei.key.category.overlays": "JEI (Overlays)",
+  "key.category.jei.overlays": "JEI (Overlays)",
   "key.jei.toggleOverlay": "Mostrar/Ocultar Overlays de JEI",
   "key.jei.focusSearch": "Seleccionar barra de búsqueda",
   "key.jei.previousPage": "Página anterior",
   "key.jei.nextPage": "Página siguiente",
   "key.jei.toggleBookmarkOverlay": "Mostrar/Ocultar ingredientes favoritos",
 
-  "jei.key.category.recipe.gui": "JEI (Recetas)",
+  "key.category.jei.recipe.gui": "JEI (Recetas)",
   "key.jei.recipeBack": "Receta anterior",
   "key.jei.previousCategory": "Categoría anterior",
   "key.jei.nextCategory": "Categoría siguiente",
@@ -67,22 +67,22 @@
   "key.jei.nextRecipePage": "Página de receta siguiente",
   "key.jei.closeRecipeGui": "Cerrar interfaz de recetas",
 
-  "jei.key.category.cheat.mode": "JEI (Modo Trampa)",
+  "key.category.jei.cheat.mode": "JEI (Modo Trampa)",
   "key.jei.toggleCheatMode": "Alternar modo trampa",
   "key.jei.cheatOneItem": "Obtener 1 ítem",
   "key.jei.cheatOneItem2": "Obtener 1 ítem",
   "key.jei.cheatItemStack": "Obtener 1 stack",
   "key.jei.cheatItemStack2": "Obtener 1 stack",
 
-  "jei.key.category.hover.config.button": "JEI (Cursor sobre botón de configuración)",
+  "key.category.jei.hover.config.button": "JEI (Cursor sobre botón de configuración)",
   "key.jei.toggleCheatModeConfigButton": "Alternar modo trampa",
 
-  "jei.key.category.edit.mode": "JEI (Modo Edición)",
+  "key.category.jei.edit.mode": "JEI (Modo Edición)",
   "key.jei.toggleEditMode": "Alternar modo ocultar ingredientes",
   "key.jei.toggleHideIngredient": "Ocultar ingrediente",
   "key.jei.toggleWildcardHideIngredient": "Ocultar ingrediente (comodín)",
 
-  "jei.key.category.mouse.hover": "JEI (Cursor del mouse)",
+  "key.category.jei.mouse.hover": "JEI (Cursor del mouse)",
   "key.jei.bookmark": "Agregar/Quitar favorito",
   "key.jei.showRecipe": "Mostrar receta",
   "key.jei.showRecipe2": "Mostrar receta",
@@ -91,12 +91,12 @@
   "key.jei.transferRecipeBookmark": "Fabricar receta favorita (una vez)",
   "key.jei.maxTransferRecipeBookmark": "Fabricar receta favorita (muchas veces)",
 
-  "jei.key.category.search": "JEI (Filtro de búsqueda)",
+  "key.category.jei.search": "JEI (Filtro de búsqueda)",
   "key.jei.clearSearchBar": "Limpiar búsqueda",
   "key.jei.previousSearch": "Búsqueda anterior",
   "key.jei.nextSearch": "Búsqueda siguiente",
 
-  "jei.key.category.dev.tools": "JEI (Herramientas de desarrollo)",
+  "key.category.jei.dev.tools": "JEI (Herramientas de desarrollo)",
   "key.jei.copy.recipe.id": "Copiar ID de receta al portapapeles",
 
   "_comment": "Configuración",

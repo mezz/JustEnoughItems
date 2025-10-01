@@ -12,12 +12,12 @@ import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 
 public class ForgeJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
-	private final String category;
+	private final KeyMapping.Category category;
 	private final String description;
 	private IKeyConflictContext keyConflictContext = KeyConflictContext.UNIVERSAL;
 	private KeyModifier keyModifier = KeyModifier.NONE;
 
-	public ForgeJeiKeyMappingBuilder(String category, String description) {
+	public ForgeJeiKeyMappingBuilder(KeyMapping.Category category, String description) {
 		this.category = category;
 		this.description = description;
 	}

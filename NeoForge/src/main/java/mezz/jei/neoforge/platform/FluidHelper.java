@@ -11,7 +11,6 @@ import mezz.jei.library.render.FluidTankRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -24,11 +23,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 
 import java.util.List;
 import java.util.Optional;
@@ -100,14 +99,12 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 		Fluid fluid = fluidStack.getFluid();
 		IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
 		ResourceLocation fluidStill = renderProperties.getStillTexture(fluidStack);
-		Minecraft minecraft = Minecraft.getInstance();
-		@SuppressWarnings("deprecation")
-		ResourceLocation atlasLocation = TextureAtlas.LOCATION_BLOCKS;
 		// noinspection OptionalOfNullableMisuse
 		return Optional.ofNullable(fluidStill)
-			.map(f -> minecraft
-				.getTextureAtlas(atlasLocation)
-				.apply(f)
+			.map(ClientHooks::getBlockMaterial)
+			.map(material -> Minecraft.getInstance()
+				.getAtlasManager()
+				.get(material)
 			)
 			.filter(s -> s.atlasLocation() != MissingTextureAtlasSprite.getLocation());
 	}
@@ -151,8 +148,8 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	@Override
 	public Optional<FluidStack> getContainedFluid(ITypedIngredient<?> ingredient) {
 		return ingredient.getItemStack()
-			.flatMap(i -> Optional.ofNullable(i.getCapability(Capabilities.FluidHandler.ITEM)))
-			.map(c -> c.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE));
+			.map(FluidUtil::getFirstStackContained)
+			.filter(i -> !i.isEmpty());
 	}
 
 	@Override

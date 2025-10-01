@@ -16,7 +16,7 @@ public class LookupHistoryButton extends GuiIconToggleButton {
 	public static LookupHistoryButton create(IClientConfig clientConfig) {
 		Textures textures = Internal.getTextures();
 		IDrawableStatic offIcon = textures.getHistoryButtonDisabledIcon();
-		IDrawableStatic onIcon = textures.getHistoryButtonEnabledICon();
+		IDrawableStatic onIcon = textures.getHistoryButtonEnabledIcon();
 		return new LookupHistoryButton(offIcon, onIcon, clientConfig);
 	}
 

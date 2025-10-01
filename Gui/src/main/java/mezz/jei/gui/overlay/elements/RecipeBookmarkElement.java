@@ -159,7 +159,8 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 		}
 
 		if (clientConfig.isHoldShiftToShowBookmarkTooltipFeaturesEnabled()) {
-			if (Screen.hasShiftDown()) {
+			Minecraft minecraft = Minecraft.getInstance();
+			if (minecraft.hasShiftDown()) {
 				addBookmarkTooltipFeatures(tooltip);
 				tooltip.addAll(transferComponents);
 			} else {

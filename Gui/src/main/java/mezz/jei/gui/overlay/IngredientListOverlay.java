@@ -28,6 +28,7 @@ import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.CharacterEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -271,8 +272,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	@Override
-	public boolean onCharTyped(char codePoint, int modifiers) {
-		return searchField.charTyped(codePoint, modifiers);
+	public boolean onCharTyped(CharacterEvent event) {
+		return searchField.charTyped(event);
 	}
 
 	@Override

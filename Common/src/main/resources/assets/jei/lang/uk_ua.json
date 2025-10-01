@@ -52,14 +52,14 @@
   "jei.chat.error.no.cheat.permission.give": "гравці з дозволом на команду /give.",
 
   "_comment": "Прив'язі клавіш",
-  "jei.key.category.overlays": "JEI (Накладання)",
+  "key.category.jei.overlays": "JEI (Накладання)",
   "key.jei.toggleOverlay": "Показати/приховати накладання JEI",
   "key.jei.focusSearch": "Сфокусуватися на полі пошуку",
   "key.jei.previousPage": "Попередня сторінка",
   "key.jei.nextPage": "Наступна сторінка",
   "key.jei.toggleBookmarkOverlay": "Показати/приховати інгредієнти із закладками",
 
-  "jei.key.category.recipe.gui": "JEI (Рецепти)",
+  "key.category.jei.recipe.gui": "JEI (Рецепти)",
   "key.jei.recipeBack": "Попередній рецепт",
   "key.jei.previousCategory": "Попередня категорія рецептів",
   "key.jei.nextCategory": "Наступна категорія рецептів",
@@ -67,22 +67,22 @@
   "key.jei.nextRecipePage": "Наступна сторінка рецептів",
   "key.jei.closeRecipeGui": "Закрити інтерфейс рецептів",
 
-  "jei.key.category.cheat.mode": "JEI (Режим шахрайства)",
+  "key.category.jei.cheat.mode": "JEI (Режим шахрайства)",
   "key.jei.toggleCheatMode": "Перемкнути режим шахрайства",
   "key.jei.cheatOneItem": "Взяти 1 предмет",
   "key.jei.cheatOneItem2": "Взяти 1 предмет",
   "key.jei.cheatItemStack": "Взяти 1 стіс",
   "key.jei.cheatItemStack2": "Взяти 1 стіс",
 
-  "jei.key.category.hover.config.button": "JEI (Наведення курсора на кнопку налаштувань)",
+  "key.category.jei.hover.config.button": "JEI (Наведення курсора на кнопку налаштувань)",
   "key.jei.toggleCheatModeConfigButton": "Перемкнути режим шахрайства",
 
-  "jei.key.category.edit.mode": "JEI (Режим редагування)",
+  "key.category.jei.edit.mode": "JEI (Режим редагування)",
   "key.jei.toggleEditMode": "Перемкнути режим приховування предметів",
   "key.jei.toggleHideIngredient": "Приховати предмет",
   "key.jei.toggleWildcardHideIngredient": "Приховати предмет (Символ)",
 
-  "jei.key.category.mouse.hover": "JEI (Наведення курсору)",
+  "key.category.jei.mouse.hover": "JEI (Наведення курсору)",
   "key.jei.bookmark": "Додати/видалити закладку",
   "key.jei.showRecipe": "Показати рецепт",
   "key.jei.showRecipe2": "Показати рецепт",
@@ -91,12 +91,12 @@
   "key.jei.transferRecipeBookmark": "Створити рецепт із закладкою (один)",
   "key.jei.maxTransferRecipeBookmark": "Створити рецепт із закладкою (багато)",
 
-  "jei.key.category.search": "JEI (Фільтр пошуку)",
+  "key.category.jei.search": "JEI (Фільтр пошуку)",
   "key.jei.clearSearchBar": "Очистити фільтр пошуку",
   "key.jei.previousSearch": "Попередній пошук",
   "key.jei.nextSearch": "Наступний пошук",
 
-  "jei.key.category.dev.tools": "JEI (Інструменти для розробників)",
+  "key.category.jei.dev.tools": "JEI (Інструменти для розробників)",
   "key.jei.copy.recipe.id": "Копіювати ID рецепту в буфер обміну",
 
   "_comment": "Налаштування",

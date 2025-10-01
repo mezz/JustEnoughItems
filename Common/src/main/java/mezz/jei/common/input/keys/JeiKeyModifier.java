@@ -3,19 +3,20 @@ package mezz.jei.common.input.keys;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.KeyNameUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.InputQuirks;
 import net.minecraft.network.chat.Component;
 
 public enum JeiKeyModifier {
 	CONTROL_OR_COMMAND {
 		@Override
 		public boolean isActive(JeiKeyConflictContext context) {
-			return Screen.hasControlDown();
+			Minecraft minecraft = Minecraft.getInstance();
+			return minecraft.hasControlDown();
 		}
 
 		@Override
 		public Component getCombinedName(InputConstants.Key key) {
-			if (Minecraft.ON_OSX) {
+			if (InputQuirks.REPLACE_CTRL_KEY_WITH_CMD_KEY) {
 				return Component.translatable("jei.key.combo.command", KeyNameUtil.getKeyDisplayName(key));
 			} else {
 				return Component.translatable("jei.key.combo.control", KeyNameUtil.getKeyDisplayName(key));
@@ -25,7 +26,8 @@ public enum JeiKeyModifier {
 	SHIFT {
 		@Override
 		public boolean isActive(JeiKeyConflictContext context) {
-			return Screen.hasShiftDown();
+			Minecraft minecraft = Minecraft.getInstance();
+			return minecraft.hasShiftDown();
 		}
 
 		@Override
@@ -36,7 +38,8 @@ public enum JeiKeyModifier {
 	ALT {
 		@Override
 		public boolean isActive(JeiKeyConflictContext context) {
-			return Screen.hasAltDown();
+			Minecraft minecraft = Minecraft.getInstance();
+			return minecraft.hasAltDown();
 		}
 
 		@Override

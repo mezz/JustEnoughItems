@@ -5,16 +5,19 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.config.ClientToggleState;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IJeiClientConfigs;
-import mezz.jei.common.gui.textures.JeiGuiSpriteManager;
+import mezz.jei.common.gui.textures.JeiAtlasManager;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
+import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
 import net.minecraft.world.item.crafting.RecipeMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * For JEI internal use only, these are normally accessed from the API.
@@ -43,8 +46,14 @@ public final class Internal {
 		if (textures == null) {
 			Minecraft minecraft = Minecraft.getInstance();
 			TextureManager textureManager = minecraft.getTextureManager();
-			JeiGuiSpriteManager spriteUploader = new JeiGuiSpriteManager(textureManager);
-			textures = new Textures(spriteUploader);
+			JeiAtlasManager jeiAtlasManager = new JeiAtlasManager(textureManager,
+				new JeiAtlasManager.Config(
+					Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS,
+					Constants.JEI_GUI_TEXTURE_ATLAS_ID,
+					Set.of(AnimationMetadataSection.TYPE, GuiMetadataSection.TYPE)
+				)
+			);
+			textures = new Textures(jeiAtlasManager);
 		}
 		return textures;
 	}

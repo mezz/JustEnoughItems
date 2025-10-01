@@ -40,11 +40,10 @@ public class TextFieldInputHandler implements IUserInputHandler {
 			return handleHoveredClearSearchBar(input);
 		}
 
-		if (input.callVanilla(
-			textFieldFilter::isMouseOver,
-			textFieldFilter::mouseClicked,
-			textFieldFilter::keyPressed
-		)) {
+		boolean handledMouseEvent = input.ifMouseEvent((event, doubleClicked) ->
+			textFieldFilter.isMouseOver(event.x(), event.y()) && textFieldFilter.mouseClicked(event, doubleClicked)
+		);
+		if (handledMouseEvent) {
 			handleSetFocused(input, true);
 			return true;
 		}

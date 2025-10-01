@@ -38,14 +38,14 @@
   "jei.chat.error.no.cheat.permission.give": "người chơi có thể sử dụng /give",
 
   "_comment": "Key Bindings",
-  "jei.key.category.overlays": "JEI (Lớp phủ)",
+  "key.category.jei.overlays": "JEI (Lớp phủ)",
   "key.jei.toggleOverlay": "Hiển thị/Ẩn Lớp phủ JEI",
   "key.jei.focusSearch": "Chọn thanh tìm kiếm",
   "key.jei.previousPage": "Trang trước",
   "key.jei.nextPage": "Trang tiếp",
   "key.jei.toggleBookmarkOverlay": "Hiển thị/Ẩn Thành phần được Đánh dấu",
 
-  "jei.key.category.recipe.gui": "JEI (Công thức)",
+  "key.category.jei.recipe.gui": "JEI (Công thức)",
   "key.jei.recipeBack": "Công thức trước đó",
   "key.jei.previousCategory": "Danh mục công thức trước",
   "key.jei.nextCategory": "Danh mục công thức tiếp theo",
@@ -53,34 +53,34 @@
   "key.jei.nextRecipePage": "Trang công thức tiếp theo",
   "key.jei.closeRecipeGui": "Đóng GUI công thức",
 
-  "jei.key.category.cheat.mode": "JEI (Chế độ gian lận)",
+  "key.category.jei.cheat.mode": "JEI (Chế độ gian lận)",
   "key.jei.toggleCheatMode": "Chuyển đổi chế độ gian lận",
   "key.jei.cheatOneItem": "Gian lận 1 vật phẩm",
   "key.jei.cheatOneItem2": "Gian lận 1 vật phẩm",
   "key.jei.cheatItemStack": "Gian lận 1 Stack",
   "key.jei.cheatItemStack2": "Gian lận 1 Stack",
 
-  "jei.key.category.hover.config.button": "JEI (Di chuột bằng nút cấu hình)",
+  "key.category.jei.hover.config.button": "JEI (Di chuột bằng nút cấu hình)",
   "key.jei.toggleCheatModeConfigButton": "Chuyển đổi chế độ gian lận",
 
-  "jei.key.category.edit.mode": "JEI (Chế độ chỉnh sửa)",
+  "key.category.jei.edit.mode": "JEI (Chế độ chỉnh sửa)",
   "key.jei.toggleEditMode": "Chuyển sang Chế độ Ẩn Thành phần",
   "key.jei.toggleHideIngredient": "Ẩn thành phần",
   "key.jei.toggleWildcardHideIngredient": "Ẩn thành phần (ký tự đại diện)",
 
-  "jei.key.category.mouse.hover": "JEI (Di chuột)",
+  "key.category.jei.mouse.hover": "JEI (Di chuột)",
   "key.jei.bookmark": "Thêm/Xóa Dấu trang",
   "key.jei.showRecipe": "Hiển thị công thức",
   "key.jei.showRecipe2": "Hiển thị công thức",
   "key.jei.showUses": "Hiển thị công dụng",
   "key.jei.showUses2": "Hiển thị công dụng",
 
-  "jei.key.category.search": "JEI (Bộ lọc tìm kiếm)",
+  "key.category.jei.search": "JEI (Bộ lọc tìm kiếm)",
   "key.jei.clearSearchBar": "Xóa bộ lọc tìm kiếm",
   "key.jei.previousSearch": "Tìm kiếm trước đó",
   "key.jei.nextSearch": "Tìm tiếp",
 
-  "jei.key.category.dev.tools": "JEI (Công cụ dành cho nhà phát triển)",
+  "key.category.jei.dev.tools": "JEI (Công cụ dành cho nhà phát triển)",
   "key.jei.copy.recipe.id": "Sao chép ID công thức vào khay nhớ tạm",
 
   "_comment": "Config",

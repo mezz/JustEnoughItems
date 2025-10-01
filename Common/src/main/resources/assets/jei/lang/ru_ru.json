@@ -49,14 +49,14 @@
   "jei.chat.error.no.cheat.permission.give": "игроки, кто может использовать /give",
 
   "_comment": "Key Bindings",
-  "jei.key.category.overlays": "JEI (наложения)",
+  "key.category.jei.overlays": "JEI (наложения)",
   "key.jei.toggleOverlay": "Отобразить/скрыть наложения JEI",
   "key.jei.focusSearch": "Выбрать поле поиска",
   "key.jei.previousPage": "Предыдущая страница",
   "key.jei.nextPage": "Следующая страница",
   "key.jei.toggleBookmarkOverlay": "Отобразить/скрыть ингредиенты отмеченные закладкой",
 
-  "jei.key.category.recipe.gui": "JEI (рецепты)",
+  "key.category.jei.recipe.gui": "JEI (рецепты)",
   "key.jei.recipeBack": "Предыдущий рецепт",
   "key.jei.previousCategory": "Предыдущая категория рецепта",
   "key.jei.nextCategory": "Следующая категория рецепта",
@@ -64,22 +64,22 @@
   "key.jei.nextRecipePage": "Следующая страница рецепта",
   "key.jei.closeRecipeGui": "Закрыть интерфейс рецепта",
 
-  "jei.key.category.cheat.mode": "JEI (режим жульничества)",
+  "key.category.jei.cheat.mode": "JEI (режим жульничества)",
   "key.jei.toggleCheatMode": "Вкл/выкл режим жульничества",
   "key.jei.cheatOneItem": "Сжульничать 1 предмет",
   "key.jei.cheatOneItem2": "Сжульничать 1 предмет",
   "key.jei.cheatItemStack": "Сжульничать 1 стэк",
   "key.jei.cheatItemStack2": "Сжульничать 1 стэк",
 
-  "jei.key.category.hover.config.button": "JEI (Наведение мышью на кнопку конфигурации)",
+  "key.category.jei.hover.config.button": "JEI (Наведение мышью на кнопку конфигурации)",
   "key.jei.toggleCheatModeConfigButton": "Вкл/выкл режим жульничества",
 
-  "jei.key.category.edit.mode": "JEI (режим правки)",
+  "key.category.jei.edit.mode": "JEI (режим правки)",
   "key.jei.toggleEditMode": "Вкл/выкл режим скрытия ингредиента",
   "key.jei.toggleHideIngredient": "Скрыть ингредиент",
   "key.jei.toggleWildcardHideIngredient": "Скрыть ингредиент (специальный символ)",
 
-  "jei.key.category.mouse.hover": "JEI (Наведение мышью)",
+  "key.category.jei.mouse.hover": "JEI (Наведение мышью)",
   "key.jei.bookmark": "Добавить/убрать закладку",
   "key.jei.showRecipe": "Отобразить рецепт",
   "key.jei.showRecipe2": "Отобразить рецепт",
@@ -88,12 +88,12 @@
   "key.jei.transferRecipeBookmark": "Создать рецепт в закладке (один раз)",
   "key.jei.maxTransferRecipeBookmark": "Создать рецепт в закладке (макс. кол-во)",
 
-  "jei.key.category.search": "JEI (фильтр поиска)",
+  "key.category.jei.search": "JEI (фильтр поиска)",
   "key.jei.clearSearchBar": "Очистить фильтр поиска",
   "key.jei.previousSearch": "Предыдущий поиск",
   "key.jei.nextSearch": "Следующий поиск",
 
-  "jei.key.category.dev.tools": "JEI (инструменты разработки)",
+  "key.category.jei.dev.tools": "JEI (инструменты разработки)",
   "key.jei.copy.recipe.id": "Скопировать ID рецепта в буфер обмена",
 
   "_comment": "Config",

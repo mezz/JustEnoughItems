@@ -38,44 +38,44 @@
   "jei.chat.error.no.cheat.permission.give": "jugadoras que pueden usar /give",
 
   "_comment": "Key Bindings",
-  "jei.key.category.overlays": "JEI (Overlays)",
+  "key.category.jei.overlays": "JEI (Overlays)",
   "key.jei.toggleOverlay": "Alternar superposiciones de JEI",
   "key.jei.focusSearch": "Selecionar barra de búsqueda",
   "key.jei.previousPage": "Página anterior",
   "key.jei.nextPage": "Página siguiente",
   "key.jei.toggleBookmarkOverlay": "Alternar ingredientes marcados",
 
-  "jei.key.category.recipe.gui": "JEI (Recetas)",
+  "key.category.jei.recipe.gui": "JEI (Recetas)",
   "key.jei.recipeBack": "Receta anterior",
   "key.jei.previousCategory": "Categoría de recetas anterior",
   "key.jei.nextCategory": "Categoría de recetas siguiente",
   "key.jei.previousRecipePage": "Página de recetas anterior",
   "key.jei.nextRecipePage": "Página de recetas siguiente",
 
-  "jei.key.category.cheat.mode": "JEI (Modo trampa)",
+  "key.category.jei.cheat.mode": "JEI (Modo trampa)",
   "key.jei.toggleCheatMode": "Alternar modo trampa",
 
-  "jei.key.category.hover.config.button": "JEI (Colocar cursor sobre el botón de configuración)",
+  "key.category.jei.hover.config.button": "JEI (Colocar cursor sobre el botón de configuración)",
   "key.jei.toggleCheatModeConfigButton": "Alternar modo trampa",
 
-  "jei.key.category.edit.mode": "JEI (Modo edición)",
+  "key.category.jei.edit.mode": "JEI (Modo edición)",
   "key.jei.toggleEditMode": "Alternar el modo de ocultar ingredientes",
   "key.jei.toggleHideIngredient": "Ocultar ingrediente",
   "key.jei.toggleWildcardHideIngredient": "Ocultar ingrediente (comodín)",
 
-  "jei.key.category.mouse.hover": "JEI (Colocar cursor encima)",
+  "key.category.jei.mouse.hover": "JEI (Colocar cursor encima)",
   "key.jei.bookmark": "Alternar marcador",
   "key.jei.showRecipe": "Mostrar receta",
   "key.jei.showRecipe2": "Mostrar receta",
   "key.jei.showUses": "Mostrar usos",
   "key.jei.showUses2": "Mostrar usos",
 
-  "jei.key.category.search": "JEI (Filtro de búsqueda)",
+  "key.category.jei.search": "JEI (Filtro de búsqueda)",
   "key.jei.clearSearchBar": "Limpiar filtro de búsqueda",
   "key.jei.previousSearch": "Búsqueda anterior",
   "key.jei.nextSearch": "Búsqueda siguiente",
 
-  "jei.key.category.dev.tools": "JEI (Herramientas de desarrollo)",
+  "key.category.jei.dev.tools": "JEI (Herramientas de desarrollo)",
   "key.jei.copy.recipe.id": "Copiar ID de la receta en portapapeles",
 
   "_comment": "Config",
