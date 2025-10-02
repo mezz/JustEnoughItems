@@ -68,7 +68,6 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(allIngredients, "allIngredients");
 		ErrorUtil.checkNotNull(ingredientHelper, "ingredientHelper");
 		ErrorUtil.checkNotNull(ingredientRenderer, "ingredientRenderer");
-		ErrorUtil.checkNotNull(ingredientCodec, "ingredientCodec");
 		Preconditions.checkArgument(ingredientRenderer.getWidth() == 16,
 			"the default ingredient renderer registered here will be used for drawing " +
 				"ingredients in the ingredient list, and it must have a width of 16"
