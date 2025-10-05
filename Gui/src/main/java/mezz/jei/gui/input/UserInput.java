@@ -9,8 +9,10 @@ import mezz.jei.common.platform.Services;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import org.apache.commons.lang3.function.ToBooleanBiFunction;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 public abstract class UserInput implements IJeiUserInput {
 	@FunctionalInterface
@@ -54,6 +56,27 @@ public abstract class UserInput implements IJeiUserInput {
 
 	public final boolean ifMouseEvent(MouseClickable mouseClickable) {
 		return getEvent().map(eventData -> mouseClickable.mouseClicked(eventData.event(), eventData.doubleClicked()), keyEvent -> false);
+	}
+
+	public final boolean callVanilla(
+		ToBooleanBiFunction<Double, Double> isMouseOver,
+		MouseClickable mouseClicked,
+		Function<KeyEvent, Boolean> keyPressed
+	) {
+		return getEvent()
+			.map(eventData -> {
+				MouseButtonEvent event = eventData.event();
+				boolean doubleClicked = eventData.doubleClicked();
+				return isMouseOver.applyAsBoolean(event.x(), event.y()) &&
+					mouseClicked.mouseClicked(event, doubleClicked);
+			}, keyEvent -> {
+				if (isSimulate()) {
+					// key press simulate happens on key up, which we ignore
+					return false;
+				} else {
+					return keyPressed.apply(keyEvent);
+				}
+			});
 	}
 
 }
