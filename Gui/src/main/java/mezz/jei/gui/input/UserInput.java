@@ -3,6 +3,7 @@ package mezz.jei.gui.input;
 import com.mojang.datafixers.util.Either;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.runtime.IJeiKeyMapping;
+import mezz.jei.common.input.MouseButtonEventData;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.client.KeyMapping;
@@ -49,7 +50,10 @@ public abstract class UserInput implements IJeiUserInput {
 		return inputHelper.isActiveAndMatches(keyMapping, this.getKey(), this.getEvent());
 	}
 
-	public abstract Either<MouseButtonEvent, KeyEvent> getEvent();
+	public abstract Either<MouseButtonEventData, KeyEvent> getEvent();
 
-	public abstract boolean ifMouseEvent(MouseClickable mouseClickable);
+	public final boolean ifMouseEvent(MouseClickable mouseClickable) {
+		return getEvent().map(eventData -> mouseClickable.mouseClicked(eventData.event(), eventData.doubleClicked()), keyEvent -> false);
+	}
+
 }

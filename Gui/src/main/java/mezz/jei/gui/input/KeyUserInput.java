@@ -4,8 +4,8 @@ import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Either;
 import mezz.jei.common.input.KeyNameUtil;
+import mezz.jei.common.input.MouseButtonEventData;
 import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.util.StringUtil;
 
 public class KeyUserInput extends UserInput {
@@ -59,13 +59,8 @@ public class KeyUserInput extends UserInput {
 	}
 
 	@Override
-	public Either<MouseButtonEvent, KeyEvent> getEvent() {
+	public Either<MouseButtonEventData, KeyEvent> getEvent() {
 		return Either.right(event);
-	}
-
-	@Override
-	public boolean ifMouseEvent(MouseClickable mouseClickable) {
-		return false;
 	}
 
 	@Override

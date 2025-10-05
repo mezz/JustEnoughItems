@@ -4,18 +4,17 @@ import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Either;
 import mezz.jei.common.input.KeyNameUtil;
+import mezz.jei.common.input.MouseButtonEventData;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 
 public class MouseUserInput extends UserInput {
-	private final MouseButtonEvent event;
-	private final boolean doubleClick;
+	private final MouseButtonEventData eventData;
 	private final InputConstants.Key key;
 	private final InputType inputType;
 
 	public MouseUserInput(MouseButtonEvent event, boolean doubleClick, InputType inputType) {
-		this.event = event;
-		this.doubleClick = doubleClick;
+		this.eventData = new MouseButtonEventData(event, doubleClick);
 		this.inputType = inputType;
 		this.key = InputConstants.Type.MOUSE.getOrCreate(event.input());
 	}
@@ -27,12 +26,12 @@ public class MouseUserInput extends UserInput {
 
 	@Override
 	public double getMouseX() {
-		return event.x();
+		return eventData.event().x();
 	}
 
 	@Override
 	public double getMouseY() {
-		return event.y();
+		return eventData.event().y();
 	}
 
 	@Override
@@ -42,7 +41,7 @@ public class MouseUserInput extends UserInput {
 
 	@Override
 	public int getModifiers() {
-		return event.modifiers();
+		return eventData.event().modifiers();
 	}
 
 	@Override
@@ -56,13 +55,8 @@ public class MouseUserInput extends UserInput {
 	}
 
 	@Override
-	public Either<MouseButtonEvent, KeyEvent> getEvent() {
-		return Either.left(event);
-	}
-
-	@Override
-	public boolean ifMouseEvent(MouseClickable mouseClickable) {
-		return mouseClickable.mouseClicked(event, doubleClick);
+	public Either<MouseButtonEventData, KeyEvent> getEvent() {
+		return Either.left(eventData);
 	}
 
 	@Override
@@ -70,7 +64,7 @@ public class MouseUserInput extends UserInput {
 		return MoreObjects.toStringHelper(this)
 			.add("inputType", inputType)
 			.add("key", KeyNameUtil.getKeyDisplayName(key).getString())
-			.add("event", event)
+			.add("eventData", eventData)
 			.toString();
 	}
 }
