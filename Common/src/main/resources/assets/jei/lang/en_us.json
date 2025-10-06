@@ -111,6 +111,9 @@
   "jei.config.valueValues": "Valid Values: %s",
   "jei.config.defaultValue": "Default Value: %s",
 
+  "jei.config.value.boolean.true": "Enabled",
+  "jei.config.value.boolean.false": "Disabled",
+
   "jei.config.title": "%MODNAME Config",
   "jei.config.default": "Default",
   "jei.config.valid": "Valid",

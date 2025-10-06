@@ -53,6 +53,6 @@ public class ConfigCategoryBuilder implements IConfigCategoryBuilder {
 		for (ConfigValue<?> value : values) {
 			value.setSchema(schema);
 		}
-		return new ConfigCategory(name, values);
+		return new ConfigCategory(localizationPath, name, values);
 	}
 }

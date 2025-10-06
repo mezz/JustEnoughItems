@@ -149,12 +149,12 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 
 	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
-			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY);
 			ImmutableRect2i area = this.contents.getArea();
 			int endX = area.getX() + area.getWidth();
 			int startY = area.getY() + area.getHeight() - rows * SLOT_HEIGHT - 3;
 			int color = 0xFF959595;
 			drawLine(guiGraphics.pose(), area.getX(), endX, startY, color);
+			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY);
 		}
 	}
 

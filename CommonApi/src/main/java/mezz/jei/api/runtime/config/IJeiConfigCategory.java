@@ -1,5 +1,6 @@
 package mezz.jei.api.runtime.config;
 
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
@@ -17,6 +18,10 @@ public interface IJeiConfigCategory {
 	 * @since 12.1.0
 	 */
 	String getName();
+
+	Component getLocalizedName();
+
+	Component getDescription();
 
 	/**
 	 * The config values in the category.

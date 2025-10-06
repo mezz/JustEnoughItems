@@ -12,7 +12,8 @@ import mezz.jei.common.config.file.IConfigListener;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.GuiProperties;
-import mezz.jei.gui.elements.IconButton;
+import mezz.jei.gui.elements.GuiIconToggleButton;
+import mezz.jei.gui.elements.config.ConfigContextMenu;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.input.ICharTypedHandler;
@@ -49,7 +50,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private static final int BUTTON_SIZE = 20;
 	private static final int SEARCH_HEIGHT = BUTTON_SIZE;
 
-	private final IconButton configButton;
+	private final GuiIconToggleButton configButton;
+	private final ConfigContextMenu contextMenu;
 	private final IngredientGridWithNavigation contents;
 	private final LookupHistoryOverlay lookupHistoryOverlay;
 	private final IClientConfig clientConfig;
@@ -96,7 +98,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 				.update();
 		});
 
-		this.configButton = new IconButton(new ConfigButtonController(this::isListDisplayed, toggleState, keyBindings));
+		this.configButton = ConfigButton.create(this::isListDisplayed, toggleState, keyBindings);
+		this.contextMenu = ConfigContextMenu.create();
 
 		this.lookupHistoryEnabledListener = v -> onScreenPropertiesChanged();
 		this.lookupHistoryViewSideListener = v -> onScreenPropertiesChanged();
@@ -169,6 +172,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.searchField.updateBounds(searchArea);
 
 		this.configButton.updateBounds(configButtonArea);
+		this.contextMenu.setClickArea(configButtonArea);
 	}
 
 	private static boolean isSearchBarCentered(IClientConfig clientConfig, IGuiProperties guiProperties) {
@@ -212,10 +216,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		if (this.screenPropertiesCache.hasValidScreen() && toggleState.isOverlayEnabled()) {
 			this.lookupHistoryOverlay.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
+		contextMenu.draw(guiGraphics, mouseX, mouseY);
 	}
 
 	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
-		if (isListDisplayed()) {
+		if (isListDisplayed() && !contextMenu.isDisplay()) {
 			this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
@@ -247,7 +252,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
-			return Stream.concat(this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY),this.lookupHistoryOverlay.getDraggableIngredientUnderMouse(mouseX, mouseY));
+			return Stream.concat(this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY), this.lookupHistoryOverlay.getDraggableIngredientUnderMouse(mouseX, mouseY));
 		}
 		if (this.lookupHistoryOverlay.isListDisplayed()) {
 			return this.lookupHistoryOverlay.getDraggableIngredientUnderMouse(mouseX, mouseY);
@@ -259,6 +264,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
 			"IngredientListOverlay",
 			this.searchField.createInputHandler(),
+			this.contextMenu.createInputHandler(),
 			this.configButton.createInputHandler(),
 			this.contents.createInputHandler()
 		);

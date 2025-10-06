@@ -5,6 +5,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.ClientToggleState;
+import mezz.jei.common.config.file.IConfigSchema;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -31,6 +32,8 @@ public final class Internal {
 	private static IJeiClientConfigs jeiClientConfigs;
 	@Nullable
 	private static IJeiRuntime jeiRuntime;
+	@Nullable
+	private static IConfigSchema clientConfigSchema;
 	private static final JeiFeatures jeiFeatures = new JeiFeatures();
 
 	private Internal() {
@@ -83,6 +86,15 @@ public final class Internal {
 
 	public static void setJeiClientConfigs(IJeiClientConfigs jeiClientConfigs) {
 		Internal.jeiClientConfigs = jeiClientConfigs;
+	}
+
+	public static IConfigSchema getClientConfigSchema() {
+		Preconditions.checkState(clientConfigSchema != null, "Client Config Schemas have not been created yet.");
+		return clientConfigSchema;
+	}
+
+	public static void setClientConfigSchema(IConfigSchema configSchema) {
+		Internal.clientConfigSchema = configSchema;
 	}
 
 	public static JeiFeatures getJeiFeatures() {

@@ -1,12 +1,11 @@
 package mezz.jei.common.gui.textures;
 
-import mezz.jei.common.gui.elements.HighResolutionDrawable;
-import net.minecraft.resources.ResourceLocation;
-
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.elements.DrawableSprite;
+import mezz.jei.common.gui.elements.HighResolutionDrawable;
+import net.minecraft.resources.ResourceLocation;
 
 public class Textures {
 	private final JeiSpriteUploader spriteUploader;
@@ -16,6 +15,7 @@ public class Textures {
 	private final DrawableNineSliceTexture recipeCatalystSlotBackground;
 	private final DrawableNineSliceTexture ingredientListSlotBackground;
 	private final DrawableNineSliceTexture bookmarkListSlotBackground;
+	private final DrawableNineSliceTexture configWidgetBackground;
 	private final IDrawableStatic tabSelected;
 	private final IDrawableStatic tabUnselected;
 	private final DrawableNineSliceTexture buttonDisabled;
@@ -31,10 +31,13 @@ public class Textures {
 	private final DrawableNineSliceTexture searchBackground;
 	private final DrawableNineSliceTexture scrollbarBackground;
 	private final DrawableNineSliceTexture scrollbarMarker;
+	private final DrawableNineSliceTexture configScrollBar;
 
 	private final HighResolutionDrawable shapelessIcon;
 	private final IDrawableStatic arrowPrevious;
 	private final IDrawableStatic arrowNext;
+	private final IDrawableStatic arrowUp;
+	private final IDrawableStatic arrowDown;
 	private final IDrawableStatic recipeTransfer;
 	private final IDrawableStatic recipeBookmark;
 	private final IDrawableStatic configButtonIcon;
@@ -67,6 +70,7 @@ public class Textures {
 		this.recipeCatalystSlotBackground = createNineSliceGuiSprite("recipe_catalyst_slot_background", 18, 18, 4, 4, 4, 4);
 		this.ingredientListSlotBackground = createNineSliceGuiSprite("ingredient_list_slot_background", 18, 18, 4, 4, 4, 4);
 		this.bookmarkListSlotBackground = createNineSliceGuiSprite("bookmark_list_slot_background", 18, 18, 4, 4, 4, 4);
+		this.configWidgetBackground = createNineSliceGuiSprite("config_widget_background", 64, 64, 16, 16, 16, 16);
 		this.tabSelected = createGuiSprite("tab_selected", 24, 24);
 		this.tabUnselected = createGuiSprite("tab_unselected", 24, 24);
 		this.buttonDisabled = createNineSliceGuiSprite("button_disabled", 20, 20, 6, 6, 6, 6);
@@ -82,6 +86,7 @@ public class Textures {
 		this.searchBackground = createNineSliceGuiSprite("search_background", 20, 20, 6, 6, 6, 6);
 		this.scrollbarBackground = createNineSliceGuiSprite("scrollbar_background", 14, 50, 6, 6, 6, 6);
 		this.scrollbarMarker = createNineSliceGuiSprite("scrollbar_marker", 12, 15, 2, 2, 2, 1);
+		this.configScrollBar = createNineSliceGuiSprite("config_widget_scrollbar", 8, 14, 2, 2, 2, 2);
 		this.catalystTab = createNineSliceGuiSprite("catalyst_tab", 28, 28, 8, 9, 8, 8);
 		this.recipeOptionsTab = createNineSliceGuiSprite("recipe_options_tab", 28, 28, 8, 9, 8, 8);
 		this.recipeArrow = createGuiSprite("recipe_arrow", 22, 16);
@@ -100,6 +105,10 @@ public class Textures {
 		this.arrowPrevious = createGuiSprite("icons/arrow_previous", 9, 9)
 			.trim(0, 0, 1, 1);
 		this.arrowNext = createGuiSprite("icons/arrow_next", 9, 9)
+			.trim(0, 0, 1, 1);
+		this.arrowUp = createGuiSprite("icons/arrow_up", 9, 9)
+			.trim(0, 0, 1, 1);
+		this.arrowDown = createGuiSprite("icons/arrow_down", 9, 9)
 			.trim(0, 0, 1, 1);
 		this.recipeTransfer = createGuiSprite("icons/recipe_transfer", 7, 7);
 		this.recipeBookmark = createGuiSprite("icons/recipe_bookmark", 9, 9);
@@ -156,6 +165,14 @@ public class Textures {
 
 	public IDrawableStatic getArrowNext() {
 		return arrowNext;
+	}
+
+	public IDrawableStatic getArrowDown() {
+		return arrowDown;
+	}
+
+	public IDrawableStatic getArrowUp() {
+		return arrowUp;
 	}
 
 	public IDrawableStatic getRecipeTransfer() {
@@ -270,6 +287,10 @@ public class Textures {
 		return bookmarkListSlotBackground;
 	}
 
+	public DrawableNineSliceTexture getConfigWidgetBackground() {
+		return configWidgetBackground;
+	}
+
 	public IDrawableStatic getFlameIcon() {
 		return flameIcon;
 	}
@@ -284,6 +305,10 @@ public class Textures {
 
 	public DrawableNineSliceTexture getScrollbarBackground() {
 		return scrollbarBackground;
+	}
+
+	public DrawableNineSliceTexture getConfigScrollBar() {
+		return configScrollBar;
 	}
 
 	public IDrawableStatic getBrewingStandBackground() {
