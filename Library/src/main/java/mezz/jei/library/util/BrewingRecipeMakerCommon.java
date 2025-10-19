@@ -38,6 +38,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class BrewingRecipeMakerCommon {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -122,7 +123,8 @@ public class BrewingRecipeMakerCommon {
 			String inputPathId = PotionSubtypeInterpreter.INSTANCE.getStringName(potionInput);
 
 			for (ItemStack potionReagent : potionReagents) {
-				ItemStack potionOutput = getOutput(potionBrewing, potionInput.copy(), potionReagent);
+				ItemStack potionInputCopy = potionInput.copy();
+				ItemStack potionOutput = getOutput(potionBrewing, potionInputCopy, potionReagent);
 				if (potionOutput.isEmpty()) {
 					continue;
 				}
@@ -143,15 +145,35 @@ public class BrewingRecipeMakerCommon {
 				String outputPathId = PotionSubtypeInterpreter.INSTANCE.getStringName(potionOutput);
 				String outputModId = outputResourceLocation.getNamespace();
 				String uidPath = ResourceLocationUtil.sanitizePath(inputPathId + ".to." + outputPathId);
+				ResourceLocation fullUid = ResourceLocation.fromNamespaceAndPath(outputModId, uidPath);
 				IJeiBrewingRecipe recipe = recipeFactory.createBrewingRecipe(
 					List.of(potionReagent),
-					potionInput.copy(),
+					potionInputCopy,
 					potionOutput,
-					ResourceLocation.fromNamespaceAndPath(outputModId, uidPath)
+				fullUid
 				);
 				if (!recipes.contains(recipe)) {
 					recipes.add(recipe);
 					newPotions.add(potionOutput);
+				} else {
+					IJeiBrewingRecipe existingRecipe = recipes.stream().filter(r -> r.equals(recipe)).findFirst().orElse(null);
+		if (existingRecipe == null) {
+			LOGGER.error("The 'existing' brewing recipe with the uid {} could not be found to merge additional reagent {}.", fullUid, itemStackHelper.getResourceLocation(potionReagent));
+			continue;
+		}
+		if (existingRecipe.getIngredients().stream().noneMatch(reagent -> ItemStack.isSameItemSameComponents(reagent, potionReagent))) {
+						IJeiBrewingRecipe replacementRecipe = recipeFactory.createBrewingRecipe(
+						Stream.concat(
+				existingRecipe.getIngredients().stream(),
+				Stream.of(potionReagent)
+			).toList(),
+						potionInputCopy,
+							potionOutput,
+							fullUid
+						);
+						recipes.remove(recipe);
+						recipes.add(replacementRecipe);
+					}
 				}
 			}
 		}
