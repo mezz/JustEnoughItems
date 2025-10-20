@@ -22,9 +22,12 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.Internal;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
+import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.config.Config;
 import mezz.jei.util.ErrorUtil;
+import mezz.jei.util.IngredientSet;
 import mezz.jei.util.Log;
 
 public class BrewingRecipeMaker {
@@ -77,9 +80,12 @@ public class BrewingRecipeMaker {
 
 	private List<ItemStack> getNewPotions(List<ItemStack> knownPotions, List<ItemStack> potionIngredients, Collection<BrewingRecipeWrapper> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
 		List<ItemStack> newPotions = new ArrayList<>();
+		IIngredientHelper<ItemStack> itemStackHelper = ingredientRegistry.getIngredientHelper(VanillaTypes.ITEM);
 		for (ItemStack potionInput : knownPotions) {
+			String inputId = itemStackHelper.getUniqueId(potionInput);
 			for (ItemStack potionIngredient : potionIngredients) {
-				ItemStack potionOutput = getPotionOutput(vanillaBrewingRecipe, potionInput.copy(), potionIngredient);
+				ItemStack potionInputCopy = potionInput.copy();
+				ItemStack potionOutput = getPotionOutput(vanillaBrewingRecipe, potionInputCopy, potionIngredient);
 				if (potionOutput.isEmpty()) {
 					continue;
 				}
@@ -91,25 +97,62 @@ public class BrewingRecipeMaker {
 					}
 
 					PotionType potionInputType = PotionUtils.getPotionFromItem(potionInput);
-					ResourceLocation inputId = ForgeRegistries.POTION_TYPES.getKey(potionInputType);
-					ResourceLocation outputId = ForgeRegistries.POTION_TYPES.getKey(potionOutputType);
-					if (Objects.equals(inputId, outputId)) {
+					ResourceLocation inputPotionTypeId = ForgeRegistries.POTION_TYPES.getKey(potionInputType);
+					ResourceLocation outputPotionTypeId = ForgeRegistries.POTION_TYPES.getKey(potionOutputType);
+					if (Objects.equals(inputPotionTypeId, outputPotionTypeId)) {
 						continue;
 					}
 				}
 
-				BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(Collections.singletonList(potionIngredient), potionInput.copy(), potionOutput);
-				if (!recipes.contains(recipe) && !disabledRecipes.contains(recipe)) {
-					if (BrewingRecipeRegistry.hasOutput(potionInput, potionIngredient)) {
-						recipes.add(recipe);
-					} else {
-						disabledRecipes.add(recipe);
+				String outputId = itemStackHelper.getUniqueId(potionOutput);
+				if (Objects.equals(inputId, outputId)) {
+					continue;
+				}
+
+				BrewingRecipeWrapper recipe = new BrewingRecipeWrapper(Collections.singletonList(potionIngredient), potionInputCopy, potionOutput);
+				if (!BrewingRecipeRegistry.hasOutput(potionInput, potionIngredient)) {
+					disabledRecipes.add(recipe);
+					continue;
+				}
+
+				BrewingRecipeWrapper existingRecipe = getMatchingRecipe(recipes, itemStackHelper, inputId, outputId);
+				if (existingRecipe == null) {
+					if (recipes.add(recipe)) {
+						newPotions.add(potionOutput);
 					}
-					newPotions.add(potionOutput);
+				} else {
+					Collection<ItemStack> reagents = IngredientSet.create(VanillaTypes.ITEM, itemStackHelper);
+					reagents.addAll(existingRecipe.getIngredients());
+					reagents.add(potionIngredient);
+					if (reagents.size() != existingRecipe.getIngredients().size()) {
+						BrewingRecipeWrapper replacementRecipe = new BrewingRecipeWrapper(
+							new ArrayList<>(reagents),
+							existingRecipe.getPotionInput(),
+							existingRecipe.getPotionOutput()
+						);
+						recipes.remove(existingRecipe);
+						recipes.add(replacementRecipe);
+					}
 				}
 			}
 		}
 		return newPotions;
+	}
+
+	private static BrewingRecipeWrapper getMatchingRecipe(
+		Collection<BrewingRecipeWrapper> recipes,
+		IIngredientHelper<ItemStack> itemStackHelper,
+		String inputId,
+		String outputId
+	) {
+		for (BrewingRecipeWrapper recipe : recipes) {
+			String recipeInputId = itemStackHelper.getUniqueId(recipe.getPotionInput());
+			String recipeOutputId = itemStackHelper.getUniqueId(recipe.getPotionOutput());
+			if (Objects.equals(inputId, recipeInputId) && Objects.equals(outputId, recipeOutputId)) {
+				return recipe;
+			}
+		}
+		return null;
 	}
 
 	private static ItemStack getPotionOutput(VanillaBrewingRecipe vanillaBrewingRecipe, ItemStack potion, ItemStack reagent) {
