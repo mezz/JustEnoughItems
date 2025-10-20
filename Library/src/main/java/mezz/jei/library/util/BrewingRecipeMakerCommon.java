@@ -110,7 +110,8 @@ public class BrewingRecipeMakerCommon {
 			String inputPathId = ResourceLocationUtil.sanitizePath(inputId);
 
 			for (ItemStack potionReagent : potionReagents) {
-				ItemStack potionOutput = getOutput(potionInput.copy(), potionReagent);
+				ItemStack potionInputCopy = potionInput.copy();
+				ItemStack potionOutput = getOutput(potionInputCopy, potionReagent);
 				if (potionOutput.isEmpty()) {
 					continue;
 				}
@@ -131,13 +132,34 @@ public class BrewingRecipeMakerCommon {
 				String uidPath = inputPathId + ".to." + ResourceLocationUtil.sanitizePath(outputId);
 				IJeiBrewingRecipe recipe = recipeFactory.createBrewingRecipe(
 					List.of(potionReagent),
-					potionInput.copy(),
+					potionInputCopy,
 					potionOutput,
 					new ResourceLocation(outputModId, uidPath)
 				);
-				if (!recipes.contains(recipe)) {
+				IJeiBrewingRecipe existingRecipe = recipes.stream()
+					.filter(recipe::equals)
+					.findFirst()
+					.orElse(null);
+				if (existingRecipe == null) {
 					recipes.add(recipe);
 					newPotions.add(potionOutput);
+				} else {
+					// This is a recipe with the same uid and output as an existing recipe,
+					// but it has a different reagent.
+					// Create a recipe that combines the two.
+					IngredientSet<ItemStack> reagents = new IngredientSet<>(itemStackHelper, UidContext.Recipe);
+					reagents.addAll(existingRecipe.getIngredients());
+					reagents.add(potionReagent);
+					if (reagents.size() != existingRecipe.getIngredients().size()) {
+						IJeiBrewingRecipe replacementRecipe = recipeFactory.createBrewingRecipe(
+							List.copyOf(reagents),
+							existingRecipe.getPotionInputs(),
+							existingRecipe.getPotionOutput(),
+							existingRecipe.getUid()
+						);
+						recipes.remove(existingRecipe);
+						recipes.add(replacementRecipe);
+					}
 				}
 			}
 		}
