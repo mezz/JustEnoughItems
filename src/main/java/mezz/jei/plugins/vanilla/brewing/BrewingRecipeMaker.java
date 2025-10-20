@@ -113,9 +113,12 @@ public class BrewingRecipeMaker {
 
 	private List<ItemStack> getNewPotions(Collection<ItemStack> knownPotions, List<ItemStack> potionReagents, Collection<IJeiBrewingRecipe> recipes, VanillaBrewingRecipe vanillaBrewingRecipe) {
 		List<ItemStack> newPotions = new ArrayList<>();
+		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM);
 		for (ItemStack potionInput : knownPotions) {
+			String inputId = itemStackHelper.getUniqueId(potionInput, UidContext.Recipe);
 			for (ItemStack potionReagent : potionReagents) {
-				ItemStack potionOutput = getPotionOutput(vanillaBrewingRecipe, potionInput.copy(), potionReagent);
+				ItemStack potionInputCopy = potionInput.copy();
+				ItemStack potionOutput = getPotionOutput(vanillaBrewingRecipe, potionInputCopy, potionReagent);
 				if (potionOutput.isEmpty()) {
 					continue;
 				}
@@ -127,25 +130,68 @@ public class BrewingRecipeMaker {
 					}
 
 					Potion potionInputType = PotionUtils.getPotion(potionInput);
-					ResourceLocation inputId = ForgeRegistries.POTION_TYPES.getKey(potionInputType);
-					ResourceLocation outputId = ForgeRegistries.POTION_TYPES.getKey(potionOutputType);
-					if (Objects.equals(inputId, outputId)) {
+					ResourceLocation registryInputId = ForgeRegistries.POTION_TYPES.getKey(potionInputType);
+					ResourceLocation registryOutputId = ForgeRegistries.POTION_TYPES.getKey(potionOutputType);
+					if (Objects.equals(registryInputId, registryOutputId)) {
 						continue;
 					}
 				}
 
-				IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(Collections.singletonList(potionReagent), potionInput.copy(), potionOutput);
-				if (!recipes.contains(recipe) && !disabledRecipes.contains(recipe)) {
-					if (BrewingRecipeRegistry.hasOutput(potionInput, potionReagent)) {
-						recipes.add(recipe);
-					} else {
-						disabledRecipes.add(recipe);
+				String outputId = itemStackHelper.getUniqueId(potionOutput, UidContext.Recipe);
+				if (Objects.equals(inputId, outputId)) {
+					continue;
+				}
+
+				IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(Collections.singletonList(potionReagent), potionInputCopy, potionOutput);
+				if (!BrewingRecipeRegistry.hasOutput(potionInput, potionReagent)) {
+					disabledRecipes.add(recipe);
+					continue;
+				}
+
+				JeiBrewingRecipe existingRecipe = recipes.stream()
+					.filter(JeiBrewingRecipe.class::isInstance)
+					.map(JeiBrewingRecipe.class::cast)
+					.filter(existing -> hasSameInputAndOutput(itemStackHelper, existing, inputId, outputId))
+					.findFirst()
+					.orElse(null);
+				if (existingRecipe == null) {
+					if (recipes.add(recipe)) {
+						newPotions.add(potionOutput);
 					}
-					newPotions.add(potionOutput);
+				} else {
+					Collection<ItemStack> reagents = IngredientSet.create(itemStackHelper, UidContext.Recipe);
+					reagents.addAll(existingRecipe.getIngredients());
+					reagents.add(potionReagent);
+					if (reagents.size() != existingRecipe.getIngredients().size()) {
+						IJeiBrewingRecipe replacementRecipe = vanillaRecipeFactory.createBrewingRecipe(
+							new ArrayList<>(reagents),
+							existingRecipe.getPotionInputs(),
+							existingRecipe.getPotionOutput()
+						);
+						recipes.remove(existingRecipe);
+						recipes.add(replacementRecipe);
+					}
 				}
 			}
 		}
 		return newPotions;
+	}
+
+	private static boolean hasSameInputAndOutput(
+		IIngredientHelper<ItemStack> itemStackHelper,
+		JeiBrewingRecipe recipe,
+		String inputId,
+		String outputId
+	) {
+		boolean hasInput = recipe.getPotionInputs().stream()
+			.map(input -> itemStackHelper.getUniqueId(input, UidContext.Recipe))
+			.anyMatch(inputId::equals);
+		if (!hasInput) {
+			return false;
+		}
+
+		String recipeOutputId = itemStackHelper.getUniqueId(recipe.getPotionOutput(), UidContext.Recipe);
+		return Objects.equals(recipeOutputId, outputId);
 	}
 
 	private static ItemStack getPotionOutput(VanillaBrewingRecipe vanillaBrewingRecipe, ItemStack potion, ItemStack reagent) {

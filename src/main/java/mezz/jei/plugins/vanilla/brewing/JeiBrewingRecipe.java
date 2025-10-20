@@ -48,6 +48,14 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 		return inputs;
 	}
 
+	public List<ItemStack> getIngredients() {
+		return ingredients;
+	}
+
+	public List<ItemStack> getPotionInputs() {
+		return potionInputs;
+	}
+
 	public ItemStack getPotionOutput() {
 		return potionOutput;
 	}
