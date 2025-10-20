@@ -40,6 +40,7 @@ public class BrewingRecipeMakerCommon {
 		Set<IJeiBrewingRecipe> recipes = new HashSet<>();
 		IPlatformRegistry<Potion> potionRegistry = Services.PLATFORM.getRegistry(Registry.POTION_REGISTRY);
 		IngredientSet<ItemStack> knownPotions = getBaseKnownPotions(ingredientManager, potionRegistry);
+		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 
 		List<ItemStack> potionReagents = ingredientManager.getAllItemStacks().stream()
 			.filter(BrewingRecipeMakerCommon::isIngredient)
@@ -49,6 +50,7 @@ public class BrewingRecipeMakerCommon {
 		do {
 			List<ItemStack> newPotions = getNewPotions(
 				recipeFactory,
+				itemStackHelper,
 				potionRegistry,
 				knownPotions,
 				potionReagents,
@@ -94,6 +96,7 @@ public class BrewingRecipeMakerCommon {
 
 	private static List<ItemStack> getNewPotions(
 		IVanillaRecipeFactory recipeFactory,
+		IIngredientHelper<ItemStack> itemStackHelper,
 		IPlatformRegistry<Potion> potionRegistry,
 		Collection<ItemStack> knownPotions,
 		List<ItemStack> potionReagents,
@@ -102,8 +105,10 @@ public class BrewingRecipeMakerCommon {
 	) {
 		List<ItemStack> newPotions = new ArrayList<>();
 		for (ItemStack potionInput : knownPotions) {
+			String inputId = itemStackHelper.getUniqueId(potionInput, UidContext.Recipe);
 			for (ItemStack potionReagent : potionReagents) {
-				ItemStack potionOutput = getOutput(vanillaOutputSupplier, potionInput.copy(), potionReagent);
+				ItemStack potionInputCopy = potionInput.copy();
+				ItemStack potionOutput = getOutput(vanillaOutputSupplier, potionInputCopy, potionReagent);
 				if (potionOutput.isEmpty()) {
 					continue;
 				}
@@ -115,21 +120,68 @@ public class BrewingRecipeMakerCommon {
 					}
 
 					Potion potionInputType = PotionUtils.getPotion(potionInput);
-					ResourceLocation inputId = potionRegistry.getRegistryName(potionInputType).orElse(null);
-					ResourceLocation outputId = potionRegistry.getRegistryName(potionOutputType).orElse(null);
-					if (Objects.equals(inputId, outputId)) {
+					ResourceLocation registryInputId = potionRegistry.getRegistryName(potionInputType).orElse(null);
+					ResourceLocation registryOutputId = potionRegistry.getRegistryName(potionOutputType).orElse(null);
+					if (Objects.equals(registryInputId, registryOutputId)) {
 						continue;
 					}
 				}
 
-				IJeiBrewingRecipe recipe = recipeFactory.createBrewingRecipe(List.of(potionReagent), potionInput.copy(), potionOutput);
-				if (!recipes.contains(recipe)) {
+				String outputId = itemStackHelper.getUniqueId(potionOutput, UidContext.Recipe);
+				if (Objects.equals(inputId, outputId)) {
+					continue;
+				}
+
+				IJeiBrewingRecipe recipe = recipeFactory.createBrewingRecipe(
+					List.of(potionReagent),
+					potionInputCopy,
+					potionOutput
+				);
+				IJeiBrewingRecipe existingRecipe = recipes.stream()
+					.filter(existing -> hasSameInputAndOutput(itemStackHelper, existing, inputId, outputId))
+					.findFirst()
+					.orElse(null);
+				if (existingRecipe == null) {
 					recipes.add(recipe);
 					newPotions.add(potionOutput);
+				} else {
+					// This is a recipe with the same uid and output as an existing recipe,
+					// but it has a different reagent.
+					// Create a recipe that combines the two.
+					IngredientSet<ItemStack> reagents = IngredientSet.create(itemStackHelper, UidContext.Recipe);
+					reagents.addAll(existingRecipe.getIngredients());
+					reagents.add(potionReagent);
+					if (reagents.size() != existingRecipe.getIngredients().size()) {
+						IJeiBrewingRecipe replacementRecipe = recipeFactory.createBrewingRecipe(
+							List.copyOf(reagents),
+							existingRecipe.getPotionInputs(),
+							existingRecipe.getPotionOutput()
+						);
+						recipes.remove(existingRecipe);
+						recipes.add(replacementRecipe);
+					}
 				}
 			}
 		}
 		return newPotions;
+	}
+
+	private static boolean hasSameInputAndOutput(
+		IIngredientHelper<ItemStack> itemStackHelper,
+		IJeiBrewingRecipe recipe,
+		String inputId,
+		String outputId
+	) {
+		boolean hasInput = recipe.getPotionInputs()
+			.stream()
+			.map(input -> itemStackHelper.getUniqueId(input, UidContext.Recipe))
+			.anyMatch(inputId::equals);
+		if (!hasInput) {
+			return false;
+		}
+
+		String recipeOutputId = itemStackHelper.getUniqueId(recipe.getPotionOutput(), UidContext.Recipe);
+		return Objects.equals(recipeOutputId, outputId);
 	}
 
 	@FunctionalInterface
