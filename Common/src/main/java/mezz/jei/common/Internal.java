@@ -9,10 +9,14 @@ import mezz.jei.common.gui.textures.JeiAtlasManager;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.core.util.Pair;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
+import net.minecraft.network.Connection;
 import net.minecraft.world.item.crafting.RecipeMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +39,8 @@ public final class Internal {
 	private static IJeiClientConfigs jeiClientConfigs;
 	@Nullable
 	private static IJeiRuntime jeiRuntime;
-	private static RecipeMap clientSyncedRecipes = RecipeMap.EMPTY;
+	@Nullable
+	private static Pair<RecipeMap, String> clientSyncedRecipes = null;
 	private static final JeiFeatures jeiFeatures = new JeiFeatures();
 
 	private Internal() {
@@ -110,16 +115,41 @@ public final class Internal {
 		return jeiRuntime;
 	}
 
+	@Nullable
+	private static String getRemoteConnectionId() {
+		ClientPacketListener clientPacketListener = Minecraft.getInstance().getConnection();
+		if (clientPacketListener != null) {
+			Connection connection = clientPacketListener.getConnection();
+			if (connection.isConnected()) {
+				return connection.getLoggableAddress(true);
+			}
+		}
+		return null;
+	}
+
 	public static void setClientSyncedRecipes(RecipeMap clientSyncedRecipes) {
-		Internal.clientSyncedRecipes = clientSyncedRecipes;
+		var connectionId = getRemoteConnectionId();
+		ErrorUtil.checkNotNull(connectionId, "connectionId");
+		Internal.clientSyncedRecipes = new Pair<>(clientSyncedRecipes, connectionId);
 	}
 
 	public static RecipeMap getClientSyncedRecipes() {
-		return clientSyncedRecipes;
+		if (clientSyncedRecipes != null) {
+			var connectionId = getRemoteConnectionId();
+			if (clientSyncedRecipes.second().equals(connectionId)) {
+				return clientSyncedRecipes.first();
+			}
+		}
+		return RecipeMap.EMPTY;
 	}
 
 	public static void onRuntimeStopped() {
-		clientSyncedRecipes = RecipeMap.EMPTY;
+		if (clientSyncedRecipes != null) {
+			var connectionId = getRemoteConnectionId();
+			if (!clientSyncedRecipes.second().equals(connectionId)) {
+				clientSyncedRecipes = null;
+			}
+		}
 		if (jeiClientConfigs != null) {
 			jeiClientConfigs.onRuntimeStopped();
 		}
