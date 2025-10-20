@@ -150,24 +150,24 @@ public class BrewingRecipeMakerCommon {
 					List.of(potionReagent),
 					potionInputCopy,
 					potionOutput,
-				fullUid
+					fullUid
 				);
 				if (!recipes.contains(recipe)) {
 					recipes.add(recipe);
 					newPotions.add(potionOutput);
 				} else {
 					IJeiBrewingRecipe existingRecipe = recipes.stream().filter(r -> r.equals(recipe)).findFirst().orElse(null);
-		if (existingRecipe == null) {
-			LOGGER.error("The 'existing' brewing recipe with the uid {} could not be found to merge additional reagent {}.", fullUid, itemStackHelper.getResourceLocation(potionReagent));
-			continue;
-		}
-		if (existingRecipe.getIngredients().stream().noneMatch(reagent -> ItemStack.isSameItemSameComponents(reagent, potionReagent))) {
+					if (existingRecipe == null) {
+						LOGGER.error("The 'existing' brewing recipe with the uid {} could not be found to merge additional reagent {}.", fullUid, itemStackHelper.getResourceLocation(potionReagent));
+						continue;
+					}
+					if (existingRecipe.getIngredients().stream().noneMatch(reagent -> ItemStack.isSameItemSameComponents(reagent, potionReagent))) {
 						IJeiBrewingRecipe replacementRecipe = recipeFactory.createBrewingRecipe(
-						Stream.concat(
-				existingRecipe.getIngredients().stream(),
-				Stream.of(potionReagent)
-			).toList(),
-						potionInputCopy,
+							Stream.concat(
+								existingRecipe.getIngredients().stream(),
+								Stream.of(potionReagent)
+							).toList(),
+							potionInputCopy,
 							potionOutput,
 							fullUid
 						);
