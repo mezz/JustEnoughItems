@@ -26,6 +26,7 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.config.IBookmarkConfig;
+import mezz.jei.gui.config.ILookupHistoryConfig;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.config.ModNameSortingConfig;
 import mezz.jei.gui.events.GuiEventHandler;
@@ -50,6 +51,7 @@ import mezz.jei.gui.input.handlers.GuiAreaInputHandler;
 import mezz.jei.gui.input.handlers.UserInputRouter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
+import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.client.Minecraft;
@@ -103,6 +105,7 @@ public class JeiGuiStarter {
 		IngredientTypeSortingConfig ingredientTypeSortingConfig = configData.ingredientTypeSortingConfig();
 		IClientToggleState toggleState = Internal.getClientToggleState();
 		IBookmarkConfig bookmarkConfig = configData.bookmarkConfig();
+		ILookupHistoryConfig lookupHistoryConfig = configData.lookupHistoryConfig();
 
 		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
@@ -137,10 +140,19 @@ public class JeiGuiStarter {
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
 		registration.setIngredientFilter(ingredientFilterApi);
 
+		LookupHistory lookupHistory = new LookupHistory(
+			recipeManager,
+			ingredientManager,
+			focusFactory,
+			clientConfig::getMaxLookupHistoryIngredients,
+			lookupHistoryConfig
+		);
+
 		IngredientListOverlay ingredientListOverlay = OverlayHelper.createIngredientListOverlay(
 			ingredientManager,
 			screenHelper,
 			ingredientFilter,
+			lookupHistory,
 			filterTextSource,
 			keyMappings,
 			ingredientListConfig,
@@ -160,6 +172,7 @@ public class JeiGuiStarter {
 			ingredientManager,
 			screenHelper,
 			bookmarkList,
+			lookupHistory,
 			keyMappings,
 			bookmarkListConfig,
 			ingredientFilterConfig,
@@ -184,6 +197,7 @@ public class JeiGuiStarter {
 			keyMappings,
 			focusFactory,
 			bookmarkList,
+			lookupHistory,
 			guiHelper
 		);
 		registration.setRecipesGui(recipesGui);
@@ -207,7 +221,7 @@ public class JeiGuiStarter {
 			ingredientListOverlay.createInputHandler(),
 			bookmarkOverlay.createInputHandler(),
 			new FocusInputHandler(recipeFocusSource, recipesGui, focusUtil, clientConfig, ingredientManager, toggleState, serverConnection),
-			new BookmarkInputHandler(recipeFocusSource, bookmarkList),
+			new BookmarkInputHandler(recipeFocusSource, bookmarkList, bookmarkOverlay),
 			new GlobalInputHandler(toggleState),
 			new GuiAreaInputHandler(screenHelper, recipesGui, focusFactory)
 		);
