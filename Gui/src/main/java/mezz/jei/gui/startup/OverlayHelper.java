@@ -109,6 +109,7 @@ public final class OverlayHelper {
 			clientConfig,
 			HistoryDisplaySide.RIGHT,
 			toggleState,
+			screenHelper,
 			serverConnection,
 			colorHelper
 		);
@@ -165,6 +166,7 @@ public final class OverlayHelper {
 			clientConfig,
 			HistoryDisplaySide.LEFT,
 			toggleState,
+			screenHelper,
 			serverConnection,
 			colorHelper
 		);

@@ -22,6 +22,7 @@ import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.MouseUtil;
+import mezz.jei.gui.input.handlers.CombinedDragHandler;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import mezz.jei.gui.input.handlers.NullDragHandler;
 import mezz.jei.gui.input.handlers.NullInputHandler;
@@ -127,6 +128,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 				updateBounds(guiProperties, displayArea, guiExclusionAreas);
 			}, () -> {
 				this.contents.close();
+				this.lookupHistoryOverlay.close();
 				this.searchField.setFocused(false);
 			});
 	}
@@ -216,6 +218,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			this.contents.drawOnForeground(guiGraphics, mouseX, mouseY);
+			this.lookupHistoryOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
 		}
 	}
 
@@ -264,10 +267,16 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	public IDragHandler createDragHandler() {
 		final IDragHandler displayedDragHandler = this.contents.createDragHandler();
+		final IDragHandler historyDragHandler = this.lookupHistoryOverlay.createDragHandler();
+
+		CombinedDragHandler combinedDragHandler = new CombinedDragHandler(
+			displayedDragHandler,
+			historyDragHandler
+		);
 
 		return new ProxyDragHandler(() -> {
 			if (isListDisplayed()) {
-				return displayedDragHandler;
+				return combinedDragHandler;
 			}
 			return NullDragHandler.INSTANCE;
 		});
