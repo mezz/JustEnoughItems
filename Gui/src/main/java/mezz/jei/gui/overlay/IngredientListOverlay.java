@@ -218,8 +218,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			this.contents.drawOnForeground(guiGraphics, mouseX, mouseY);
-			this.lookupHistoryOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
 		}
+		this.lookupHistoryOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
 	}
 
 	public void handleTick() {
@@ -266,12 +266,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	public IDragHandler createDragHandler() {
-		final IDragHandler displayedDragHandler = this.contents.createDragHandler();
-		final IDragHandler historyDragHandler = this.lookupHistoryOverlay.createDragHandler();
 
-		CombinedDragHandler combinedDragHandler = new CombinedDragHandler(
-			displayedDragHandler,
-			historyDragHandler
+		final IDragHandler combinedDragHandler = new CombinedDragHandler(
+			this.contents.createDragHandler(),
+			this.lookupHistoryOverlay.createDragHandler()
 		);
 
 		return new ProxyDragHandler(() -> {

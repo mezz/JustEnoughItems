@@ -276,15 +276,19 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	public IDragHandler createDragHandler() {
+		final IDragHandler historyDragHandler = this.lookupHistoryOverlay.createDragHandler();
 		final IDragHandler combinedDragHandlers = new CombinedDragHandler(
 			this.contents.createDragHandler(),
-			this.lookupHistoryOverlay.createDragHandler(),
+			historyDragHandler,
 			this.bookmarkDragManager.createDragHandler()
 		);
 
 		return new ProxyDragHandler(() -> {
 			if (isListDisplayed()) {
 				return combinedDragHandlers;
+			}
+			if (lookupHistoryOverlay.isListDisplayed()){
+				return historyDragHandler;
 			}
 			return NullDragHandler.INSTANCE;
 		});
@@ -293,8 +297,8 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			this.contents.drawOnForeground(guiGraphics, mouseX, mouseY);
-			this.lookupHistoryOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
 		}
+		this.lookupHistoryOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
 	}
 
 	public List<IBookmarkDragTarget> createBookmarkDragTargets() {

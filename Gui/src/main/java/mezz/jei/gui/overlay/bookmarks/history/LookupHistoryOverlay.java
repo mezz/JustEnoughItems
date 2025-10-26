@@ -174,7 +174,9 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 	}
 
 	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-		this.ghostIngredientDragManager.drawOnForeground(guiGraphics, mouseX, mouseY);
+		if (isListDisplayed()) {
+			this.ghostIngredientDragManager.drawOnForeground(guiGraphics, mouseX, mouseY);
+		}
 	}
 
 	@Override
