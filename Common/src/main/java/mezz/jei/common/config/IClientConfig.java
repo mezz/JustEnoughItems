@@ -1,5 +1,7 @@
 package mezz.jei.common.config;
 
+import mezz.jei.common.config.file.IConfigListener;
+
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -28,6 +30,20 @@ public interface IClientConfig {
 	boolean isShowHiddenItemsEnabled();
 
 	boolean isDragToRearrangeBookmarksEnabled();
+
+	boolean isLookupHistoryEnabled();
+
+	void setLookupHistoryEnabled(boolean enabled);
+
+	void addLookupHistoryEnabledListener(IConfigListener<Boolean> listener);
+
+	int getMaxLookupHistoryRows();
+
+	int getMaxLookupHistoryIngredients();
+
+	HistoryDisplaySide getLookupHistoryDisplaySide();
+
+	void addLookupHistoryDisplaySideListener(IConfigListener<HistoryDisplaySide> listener);
 
 	int getDragDelayMs();
 

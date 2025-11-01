@@ -3,6 +3,7 @@ package mezz.jei.common.config;
 import com.google.common.base.Preconditions;
 import mezz.jei.common.config.file.ConfigValue;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
+import mezz.jei.common.config.file.IConfigListener;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.config.file.serializers.EnumSerializer;
 import mezz.jei.common.config.file.serializers.ListSerializer;
@@ -33,6 +34,12 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> dragToRearrangeBookmarksEnabled;
 	private final Supplier<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures;
 	private final Supplier<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled;
+
+	// lookup history
+	private final ConfigValue<Boolean> lookupHistoryEnabled;
+	private final ConfigValue<Integer> maxLookupHistoryRows;
+	private final ConfigValue<Integer> maxLookupHistoryIngredients;
+	private final ConfigValue<HistoryDisplaySide> lookupHistoryDisplaySide;
 
 	// advanced
 	private final ConfigValue<Boolean> lowMemorySlowSearchEnabled;
@@ -112,6 +119,33 @@ public final class ClientConfig implements IClientConfig {
 			"HoldShiftToShowBookmarkTooltipFeatures",
 			true,
 			"Hold Shift to show bookmark tooltip features."
+		);
+
+		IConfigCategoryBuilder lookupHistory = schema.addCategory("lookupHistory");
+
+		lookupHistoryEnabled = lookupHistory.addBoolean(
+			"Enabled",
+			false,
+			"Display or hide the lookup history overlay."
+		);
+		maxLookupHistoryRows = lookupHistory.addInteger(
+			"MaxRows",
+			2,
+			1,
+			7,
+			"Max number of rows to display in the lookup history overlay."
+		);
+		maxLookupHistoryIngredients = lookupHistory.addInteger(
+			"MaxIngredients",
+			100,
+			10,
+			1_000,
+			"Max number of lookup history ingredients to save."
+		);
+		lookupHistoryDisplaySide = lookupHistory.addEnum(
+			"DisplaySide",
+			HistoryDisplaySide.LEFT,
+			"Side of the screen to display the lookup history overlay."
 		);
 
 		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
@@ -251,6 +285,41 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isDragToRearrangeBookmarksEnabled() {
 		return dragToRearrangeBookmarksEnabled.get();
+	}
+
+	@Override
+	public boolean isLookupHistoryEnabled() {
+		return lookupHistoryEnabled.get();
+	}
+
+	@Override
+	public void setLookupHistoryEnabled(boolean enabled) {
+		lookupHistoryEnabled.set(enabled);
+	}
+
+	@Override
+	public void addLookupHistoryEnabledListener(IConfigListener<Boolean> listener) {
+		lookupHistoryEnabled.addConfigListener(listener);
+	}
+
+	@Override
+	public int getMaxLookupHistoryRows() {
+		return maxLookupHistoryRows.get();
+	}
+
+	@Override
+	public int getMaxLookupHistoryIngredients() {
+		return maxLookupHistoryIngredients.get();
+	}
+
+	@Override
+	public HistoryDisplaySide getLookupHistoryDisplaySide() {
+		return lookupHistoryDisplaySide.get();
+	}
+
+	@Override
+	public void addLookupHistoryDisplaySideListener(IConfigListener<HistoryDisplaySide> listener) {
+		lookupHistoryDisplaySide.addConfigListener(listener);
 	}
 
 	@Override

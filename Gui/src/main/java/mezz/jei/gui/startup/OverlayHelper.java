@@ -3,24 +3,27 @@ package mezz.jei.gui.startup;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.config.HistoryDisplaySide;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.bookmarks.BookmarkList;
-import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
+import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
+import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.ingredients.IngredientGrid;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
-import mezz.jei.gui.overlay.IngredientListOverlay;
-import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 
 public final class OverlayHelper {
-	private OverlayHelper() {}
+	private OverlayHelper() {
+	}
 
 	public static IngredientGridWithNavigation createIngredientGridWithNavigation(
 		String debugName,
@@ -69,6 +72,7 @@ public final class OverlayHelper {
 		IIngredientManager ingredientManager,
 		IScreenHelper screenHelper,
 		IIngredientGridSource ingredientFilter,
+		IIngredientGridSource historyList,
 		IFilterTextSource filterTextSource,
 		IInternalKeyMappings keyMappings,
 		IIngredientGridConfig ingredientGridConfig,
@@ -96,11 +100,26 @@ public final class OverlayHelper {
 			true
 		);
 
+		LookupHistoryOverlay lookupHistoryOverlay = new LookupHistoryOverlay(
+			ingredientManager,
+			historyList,
+			keyMappings,
+			ingredientGridConfig,
+			ingredientFilterConfig,
+			clientConfig,
+			HistoryDisplaySide.RIGHT,
+			worldConfig,
+			screenHelper,
+			serverConnection,
+			colorHelper
+		);
+
 		return new IngredientListOverlay(
 			ingredientFilter,
 			filterTextSource,
 			screenHelper,
 			ingredientListGridNavigation,
+			lookupHistoryOverlay,
 			ingredientGridConfig,
 			clientConfig,
 			worldConfig,
@@ -112,6 +131,7 @@ public final class OverlayHelper {
 		IIngredientManager ingredientManager,
 		IScreenHelper screenHelper,
 		BookmarkList bookmarkList,
+		IIngredientGridSource lookupHistory,
 		IInternalKeyMappings keyMappings,
 		IIngredientGridConfig bookmarkListConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
@@ -138,11 +158,27 @@ public final class OverlayHelper {
 			false
 		);
 
+		LookupHistoryOverlay lookupHistoryOverlay = new LookupHistoryOverlay(
+			ingredientManager,
+			lookupHistory,
+			keyMappings,
+			bookmarkListConfig,
+			ingredientFilterConfig,
+			clientConfig,
+			HistoryDisplaySide.LEFT,
+			worldConfig,
+			screenHelper,
+			serverConnection,
+			colorHelper
+		);
+
 		return new BookmarkOverlay(
 			bookmarkList,
 			bookmarkListGridNavigation,
+			lookupHistoryOverlay,
 			worldConfig,
 			bookmarkListConfig,
+			clientConfig,
 			screenHelper,
 			keyMappings
 		);

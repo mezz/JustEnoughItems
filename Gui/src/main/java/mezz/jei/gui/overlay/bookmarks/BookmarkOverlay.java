@@ -6,7 +6,10 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.config.HistoryDisplaySide;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.file.IConfigListener;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -26,10 +29,12 @@ import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import mezz.jei.gui.input.handlers.NullDragHandler;
 import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
+import mezz.jei.gui.overlay.ScreenPropertiesCache;
+import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryButton;
+import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
+import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.ingredients.IngredientListSlot;
-import mezz.jei.gui.overlay.ScreenPropertiesCache;
-import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,24 +57,38 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 	// display elements
 	private final IngredientGridWithNavigation contents;
+	private final LookupHistoryOverlay lookupHistoryOverlay;
 	private final GuiIconToggleButton bookmarkButton;
+	private final GuiIconToggleButton historyButton;
 
 	// data
 	private final BookmarkList bookmarkList;
 	private final IWorldConfig worldConfig;
+	private final IClientConfig clientConfig;
+
+	// these need to be stored as strong references here because listeners are weakly stored elsewhere
+	@SuppressWarnings("FieldCanBeLocal")
+	private final IConfigListener<Boolean> lookupHistoryEnabledListener;
+	@SuppressWarnings("FieldCanBeLocal")
+	private final IConfigListener<HistoryDisplaySide> lookupHistoryViewSideListener;
 
 	public BookmarkOverlay(
 		BookmarkList bookmarkList,
 		IngredientGridWithNavigation contents,
+		LookupHistoryOverlay lookupHistoryOverlay,
 		IWorldConfig worldConfig,
 		IIngredientGridConfig bookmarkListConfig,
+		IClientConfig clientConfig,
 		IScreenHelper screenHelper,
 		IInternalKeyMappings keyBindings
 	) {
 		this.bookmarkList = bookmarkList;
 		this.worldConfig = worldConfig;
+		this.clientConfig = clientConfig;
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, worldConfig, keyBindings);
+		this.historyButton = LookupHistoryButton.create(clientConfig);
 		this.contents = contents;
+		this.lookupHistoryOverlay = lookupHistoryOverlay;
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
 		this.bookmarkDragManager = new BookmarkDragManager(this);
 		bookmarkList.addSourceListChangedListener(() -> {
@@ -79,7 +98,21 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				.updateScreen(minecraft.screen)
 				.update();
 		});
+
+		lookupHistoryOverlay.getLookupHistory().addSourceListChangedListener(() -> {
+			Minecraft minecraft = Minecraft.getInstance();
+			this.getScreenPropertiesUpdater()
+				.updateScreen(minecraft.screen)
+				.update();
+		});
+
 		bookmarkListConfig.addLayoutListener(this::onScreenPropertiesChanged);
+
+		this.lookupHistoryEnabledListener = v -> onScreenPropertiesChanged();
+		this.lookupHistoryViewSideListener = v -> onScreenPropertiesChanged();
+
+		clientConfig.addLookupHistoryEnabledListener(lookupHistoryEnabledListener);
+		clientConfig.addLookupHistoryDisplaySideListener(lookupHistoryViewSideListener);
 	}
 
 	public boolean isListDisplayed() {
@@ -99,7 +132,10 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 	private void onScreenPropertiesChanged() {
 		this.screenPropertiesCache.getGuiProperties()
-			.ifPresentOrElse(this::updateBounds, this.contents::close);
+			.ifPresentOrElse(this::updateBounds, () -> {
+				this.contents.close();
+				this.lookupHistoryOverlay.close();
+			});
 	}
 
 	private void updateBounds(IGuiProperties guiProperties) {
@@ -109,6 +145,16 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 		ImmutableRect2i availableContentsArea = displayArea.cropBottom(BUTTON_SIZE + INNER_PADDING);
 		IElement<?> pageAnchorElement = this.contents.getPageAnchorElement();
+		if (clientConfig.isLookupHistoryEnabled() && lookupHistoryOverlay.isOnSide()) {
+			int historyRows = clientConfig.getMaxLookupHistoryRows();
+			availableContentsArea = availableContentsArea.cropBottom(historyRows * LookupHistoryOverlay.SLOT_HEIGHT);
+			ImmutableRect2i historyArea = displayArea
+				.insetBy(BORDER_MARGIN)
+				.moveUp(BUTTON_SIZE + INNER_PADDING)
+				.keepBottom(historyRows * LookupHistoryOverlay.SLOT_HEIGHT);
+			this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, mouseExclusionArea);
+			this.lookupHistoryOverlay.updateLayout();
+		}
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas, mouseExclusionArea);
 		this.contents.updateLayoutKeepingPageAnchorVisible(pageAnchorElement);
 
@@ -120,12 +166,16 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				.keepBottom(BUTTON_SIZE)
 				.keepLeft(BUTTON_SIZE);
 			this.bookmarkButton.updateBounds(bookmarkButtonArea);
+			ImmutableRect2i historyButtonArea = bookmarkButtonArea.moveRight(2 + BUTTON_SIZE);
+			this.historyButton.updateBounds(historyButtonArea);
 		} else {
 			ImmutableRect2i bookmarkButtonArea = displayArea
 				.insetBy(BORDER_MARGIN)
 				.keepBottom(BUTTON_SIZE)
 				.keepLeft(BUTTON_SIZE);
 			this.bookmarkButton.updateBounds(bookmarkButtonArea);
+			ImmutableRect2i historyButtonArea = bookmarkButtonArea.moveRight(2 + BUTTON_SIZE);
+			this.historyButton.updateBounds(historyButtonArea);
 		}
 	}
 
@@ -143,36 +193,52 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			this.bookmarkDragManager.updateDrag(mouseX, mouseY);
 			this.contents.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
 		}
+		if (screenPropertiesCache.hasValidScreen() && worldConfig.isOverlayEnabled()) {
+			this.lookupHistoryOverlay.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
+		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
 			this.bookmarkButton.draw(poseStack, mouseX, mouseY, partialTicks);
+			this.historyButton.draw(poseStack, mouseX, mouseY, partialTicks);
 		}
 	}
 
 	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
-		if (isListDisplayed()) {
-			if (!this.bookmarkDragManager.drawDraggedItem(poseStack, mouseX, mouseY)) {
+		if (!this.bookmarkDragManager.drawDraggedItem(poseStack, mouseX, mouseY)) {
+			if (isListDisplayed()) {
 				this.contents.drawTooltips(minecraft, poseStack, mouseX, mouseY);
+			}
+			if (screenPropertiesCache.hasValidScreen() && worldConfig.isOverlayEnabled()) {
+				this.lookupHistoryOverlay.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 			}
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
 			bookmarkButton.drawTooltips(poseStack, mouseX, mouseY);
+			historyButton.drawTooltips(poseStack, mouseX, mouseY);
 		}
 	}
 
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		Stream<IClickableIngredientInternal<?>> ingredients = Stream.empty();
 		if (isListDisplayed()) {
-			return this.contents.getIngredientUnderMouse(mouseX, mouseY);
+			ingredients = this.contents.getIngredientUnderMouse(mouseX, mouseY);
 		}
-		return Stream.empty();
+		if (lookupHistoryOverlay.isListDisplayed()) {
+			ingredients = Stream.concat(ingredients, this.lookupHistoryOverlay.getIngredientUnderMouse(mouseX, mouseY));
+		}
+		return ingredients;
 	}
 
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		Stream<IDraggableIngredientInternal<?>> ingredients = Stream.empty();
 		if (isListDisplayed()) {
-			return this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY);
+			ingredients = this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY);
 		}
-		return Stream.empty();
+		if (lookupHistoryOverlay.isListDisplayed()) {
+			ingredients = Stream.concat(ingredients, this.lookupHistoryOverlay.getDraggableIngredientUnderMouse(mouseX, mouseY));
+		}
+		return ingredients;
 	}
 
 	@Override
@@ -199,30 +265,42 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 	public IUserInputHandler createInputHandler() {
 		final IUserInputHandler bookmarkButtonInputHandler = this.bookmarkButton.createInputHandler();
+		final IUserInputHandler historyButtonInputHandler = this.historyButton.createInputHandler();
+
+		final IUserInputHandler buttonInputHandler = new CombinedInputHandler(
+			"BookmarkOverlayButton",
+			bookmarkButtonInputHandler,
+			historyButtonInputHandler
+		);
 
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
 			"BookmarkOverlay",
 			this.contents.createInputHandler(),
-			bookmarkButtonInputHandler
+			buttonInputHandler
 		);
 
 		return new ProxyInputHandler(() -> {
 			if (isListDisplayed()) {
 				return displayedInputHandler;
 			}
-			return bookmarkButtonInputHandler;
+			return buttonInputHandler;
 		});
 	}
 
 	public IDragHandler createDragHandler() {
+		final IDragHandler historyDragHandler = this.lookupHistoryOverlay.createDragHandler();
 		final IDragHandler combinedDragHandlers = new CombinedDragHandler(
 			this.contents.createDragHandler(),
+			historyDragHandler,
 			this.bookmarkDragManager.createDragHandler()
 		);
 
 		return new ProxyDragHandler(() -> {
 			if (isListDisplayed()) {
 				return combinedDragHandlers;
+			}
+			if (lookupHistoryOverlay.isListDisplayed()) {
+				return historyDragHandler;
 			}
 			return NullDragHandler.INSTANCE;
 		});
@@ -232,6 +310,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		if (isListDisplayed()) {
 			this.contents.drawOnForeground(poseStack, mouseX, mouseY);
 		}
+		this.lookupHistoryOverlay.drawOnForeground(poseStack, mouseX, mouseY);
 	}
 
 	public List<IBookmarkDragTarget> createBookmarkDragTargets() {
@@ -265,6 +344,10 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		return ingredientListSlot.getOptionalElement()
 			.flatMap(IElement::getBookmark)
 			.map(bookmark -> new DragTarget(ingredientListSlot.getArea(), bookmark, bookmarkList, 0));
+	}
+
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		return this.contents.isMouseOver(mouseX, mouseY);
 	}
 
 	public static class ActionDragTarget extends DragTarget {
