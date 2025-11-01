@@ -9,6 +9,7 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
@@ -18,8 +19,10 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.gui.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.overlay.IIngredientGridSource;
@@ -48,6 +51,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 	private final IIngredientGridSource lookupHistory;
 	private final IClientConfig clientConfig;
 	private final HistoryDisplaySide ownerDisplaySide;
+	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private int rows;
 
 	public LookupHistoryOverlay(
@@ -59,6 +63,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 			IClientConfig clientConfig,
 			HistoryDisplaySide ownerDisplaySide,
 			IClientToggleState toggleState,
+			IScreenHelper screenHelper,
 			IConnectionToServer serverConnection,
 			IColorHelper colorHelper
 	) {
@@ -75,6 +80,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 				colorHelper,
 				false
 		);
+		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, screenHelper, ingredientManager, toggleState);
 		this.ownerDisplaySide = ownerDisplaySide;
 		lookupHistory.addSourceListChangedListener(this::updateLayout);
 	}
@@ -154,12 +160,23 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 
 	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
+			this.ghostIngredientDragManager.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 			this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		}
 	}
 
 	public ImmutableRect2i getArea() {
 		return this.contents.getArea();
+	}
+
+	public void close() {
+		this.ghostIngredientDragManager.stopDrag();
+	}
+
+	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		if (isListDisplayed()) {
+			this.ghostIngredientDragManager.drawOnForeground(guiGraphics, mouseX, mouseY);
+		}
 	}
 
 	@Override
@@ -176,5 +193,9 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 			return contents.getDraggableIngredientUnderMouse(mouseX, mouseY);
 		}
 		return Stream.empty();
+	}
+
+	public IDragHandler createDragHandler() {
+		return this.ghostIngredientDragManager.createDragHandler();
 	}
 }
