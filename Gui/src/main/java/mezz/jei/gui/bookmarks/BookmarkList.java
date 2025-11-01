@@ -7,8 +7,10 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.config.IBookmarkConfig;
-import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
+import mezz.jei.gui.input.UserInput;
+import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.elements.IElement;
+import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import net.minecraft.core.RegistryAccess;
 
 import java.util.ArrayList;
@@ -86,6 +88,18 @@ public class BookmarkList implements IIngredientGridSource {
 
 	public <T> boolean onElementBookmarked(IElement<T> element) {
 		return toggleBookmark(element);
+	}
+
+	public <T> boolean onElementBookmarked(IElement<T> element, UserInput input, BookmarkOverlay bookmarkOverlay) {
+		if (bookmarkOverlay.isMouseOver(input.getMouseX(), input.getMouseY())) {
+			return element.getBookmark()
+				.map(this::remove)
+				.orElse(false);
+		}
+
+		ITypedIngredient<T> ingredient = element.getTypedIngredient();
+		IBookmark bookmark = IngredientBookmark.create(ingredient, ingredientManager);
+		return add(bookmark);
 	}
 
 	public <T> boolean toggleBookmark(IElement<T> element) {
