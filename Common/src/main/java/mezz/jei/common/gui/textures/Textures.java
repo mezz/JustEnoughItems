@@ -41,6 +41,8 @@ public class Textures {
 	private final IDrawableStatic configButtonCheatIcon;
 	private final IDrawableStatic bookmarkButtonDisabledIcon;
 	private final IDrawableStatic bookmarkButtonEnabledIcon;
+	private final IDrawableStatic historyButtonDisabledIcon;
+	private final IDrawableStatic historyButtonEnabledICon;
 	private final IDrawableStatic infoIcon;
 	private final DrawableNineSliceTexture catalystTab;
 	private final DrawableNineSliceTexture recipeOptionsTab;
@@ -105,6 +107,8 @@ public class Textures {
 		this.configButtonCheatIcon = createGuiSprite("icons/config_button_cheat", 16, 16);
 		this.bookmarkButtonDisabledIcon = createGuiSprite("icons/bookmark_button_disabled", 16, 16);
 		this.bookmarkButtonEnabledIcon = createGuiSprite("icons/bookmark_button_enabled", 16, 16);
+		this.historyButtonDisabledIcon = createGuiSprite("icons/history_button_disabled", 16, 16);
+		this.historyButtonEnabledICon = createGuiSprite("icons/history_button_enabled", 16, 16);
 		this.infoIcon = createGuiSprite("icons/info", 16, 16);
 		this.flameIcon = createGuiSprite("icons/flame", 14, 14);
 		this.flameEmptyIcon = createGuiSprite("icons/flame_empty", 14, 14);
@@ -180,6 +184,14 @@ public class Textures {
 
 	public IDrawableStatic getBookmarkButtonEnabledIcon() {
 		return bookmarkButtonEnabledIcon;
+	}
+
+	public IDrawableStatic getHistoryButtonDisabledIcon() {
+		return historyButtonDisabledIcon;
+	}
+
+	public IDrawableStatic getHistoryButtonEnabledICon() {
+		return historyButtonEnabledICon;
 	}
 
 	public DrawableNineSliceTexture getButtonForState(boolean pressed, boolean enabled, boolean hovered) {

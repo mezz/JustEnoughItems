@@ -3,6 +3,7 @@ package mezz.jei.gui.startup;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
@@ -18,9 +19,11 @@ import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
+import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 
 public final class OverlayHelper {
-	private OverlayHelper() {}
+	private OverlayHelper() {
+	}
 
 	public static IngredientGridWithNavigation createIngredientGridWithNavigation(
 		String debugName,
@@ -69,6 +72,7 @@ public final class OverlayHelper {
 		IIngredientManager ingredientManager,
 		IScreenHelper screenHelper,
 		IIngredientGridSource ingredientFilter,
+		IIngredientGridSource historyList,
 		IFilterTextSource filterTextSource,
 		IInternalKeyMappings keyMappings,
 		IIngredientGridConfig ingredientGridConfig,
@@ -96,11 +100,26 @@ public final class OverlayHelper {
 			true
 		);
 
+		LookupHistoryOverlay lookupHistoryOverlay = new LookupHistoryOverlay(
+			ingredientManager,
+			historyList,
+			keyMappings,
+			ingredientGridConfig,
+			ingredientFilterConfig,
+			clientConfig,
+			HistoryDisplaySide.RIGHT,
+			toggleState,
+			screenHelper,
+			serverConnection,
+			colorHelper
+		);
+
 		return new IngredientListOverlay(
 			ingredientFilter,
 			filterTextSource,
 			screenHelper,
 			ingredientListGridNavigation,
+			lookupHistoryOverlay,
 			clientConfig,
 			toggleState,
 			keyMappings
@@ -111,6 +130,7 @@ public final class OverlayHelper {
 		IIngredientManager ingredientManager,
 		IScreenHelper screenHelper,
 		BookmarkList bookmarkList,
+		IIngredientGridSource lookupHistory,
 		IInternalKeyMappings keyMappings,
 		IIngredientGridConfig bookmarkListConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
@@ -137,10 +157,26 @@ public final class OverlayHelper {
 			false
 		);
 
+		LookupHistoryOverlay lookupHistoryOverlay = new LookupHistoryOverlay(
+			ingredientManager,
+			lookupHistory,
+			keyMappings,
+			bookmarkListConfig,
+			ingredientFilterConfig,
+			clientConfig,
+			HistoryDisplaySide.LEFT,
+			toggleState,
+			screenHelper,
+			serverConnection,
+			colorHelper
+		);
+
 		return new BookmarkOverlay(
 			bookmarkList,
 			bookmarkListGridNavigation,
+			lookupHistoryOverlay,
 			toggleState,
+			clientConfig,
 			screenHelper,
 			keyMappings
 		);
