@@ -11,10 +11,12 @@ import mezz.jei.fabric.plugins.fabric.FabricGuiPlugin;
 import mezz.jei.fabric.startup.ClientLifecycleHandler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.client.recipe.v1.sync.ClientRecipeSynchronizedEvent;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.world.item.crafting.RecipeMap;
 
 @SuppressWarnings("unused")
 public class JustEnoughItemsClient implements ClientModInitializer {
@@ -22,6 +24,11 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		Translator.setLocaleSupplier(new MinecraftLocaleSupplier());
 		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler();
+
+		ClientRecipeSynchronizedEvent.EVENT.register((minecraft, synchronizedRecipes) -> {
+            Internal.setClientSyncedRecipes(RecipeMap.create(synchronizedRecipes.recipes()));
+			JeiLifecycleEvents.AFTER_RECIPE_SYNC.invoker().run();
+		});
 
 		JeiLifecycleEvents.REGISTER_RESOURCE_RELOAD_LISTENER.register((resourceManager, textureManager) -> {
 			Textures textures = Internal.getTextures();
