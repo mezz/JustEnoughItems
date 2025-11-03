@@ -10,7 +10,7 @@
   "jei.tooltip.transfer": "Перемістити предмети",
   "jei.tooltip.recipe.tag": "Приймає теґи: %s",
   "jei.tooltip.item.colors": "Кольори: %s",
-  "jei.tooltip.item.search.aliases": "Пошук імен:",
+  "jei.tooltip.item.search.aliases": "Пошук псевдонімів:",
   "jei.tooltip.shapeless.recipe": "Безформний рецепт",
   "jei.tooltip.cheat.mode.button.enabled": "Режим шахрайства ввімкнено",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Натисніть «%s», щоб перемкнути",
