@@ -176,6 +176,9 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 
 		for (RecipeSlotBuilder slotBuilder : visibleSlots) {
 			if (!focusLinkedSlots.contains(slotBuilder)) {
+				if (slotBuilder.getRole() == RecipeIngredientRole.OUTPUT) {
+					slotBuilder.addRichTooltipCallback(new IngredientsTooltipCallback(layoutSupplier));
+				}
 				Pair<Integer, IRecipeSlotDrawable> slotDrawable = slotBuilder.build(focuses, cycleTicker);
 				slots.add(slotDrawable);
 			}
