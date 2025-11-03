@@ -14,7 +14,7 @@
   "jei.tooltip.shapeless.recipe": "Пішінсіз рецепт",
   "jei.tooltip.cheat.mode.button.enabled": "Чит режимі қосулы",
   "jei.tooltip.cheat.mode.how.to.disable.hotkey": "Ауыстыру үшін \"%s\" бас.",
-  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "Ауыстыру үшін %s.",
+  "jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey": "Ауыстыру үшін %s бас.",
   "jei.tooltip.recipe.by": "Рецепт: %s",
   "jei.tooltip.recipe.id": "Рецепт ID-і: %s",
   "jei.tooltip.not.enough.space": "JEI ингредиент оверлейін көрсетуге орын жетпейді.",
@@ -22,8 +22,8 @@
   "jei.tooltip.ingredient.list.disabled.how.to.fix": "Қосу үшін \"%s\" бас.",
   "jei.tooltip.bookmarks.enable": "JEI бетбелгілерін көрсету",
   "jei.tooltip.bookmarks.disable": "JEI бетбелгілерін жасыру",
-  "jei.tooltip.bookmarks.usage.nokey": "Басқару баптауларында, JEI бетбелгілер пернесін орнат .",
-  "jei.tooltip.bookmarks.usage.key": "Ингредиентке бетбелгі қосу үшін оның үстіне курсорды апарып, \"%s\" басыңыз.",
+  "jei.tooltip.bookmarks.usage.nokey": "Басқару баптауларында JEI бетбелгілер пернесін орнат.",
+  "jei.tooltip.bookmarks.usage.key": "Ингредиентке бетбелгі қосу үшін оның үстіне курсорды апарып, \"%s\" бас.",
   "jei.tooltip.bookmarks.not.enough.space": "JEI бетбелгі тізімі оверлейін көрсетуге орын жетпейді.",
   "jei.tooltip.bookmarks.recipe": "%s рецепт бетбелгісі",
   "jei.tooltip.bookmarks.recipe.add": "Бұл рецептке бетбелгі қой.",
@@ -45,7 +45,7 @@
   "jei.tooltip.error.recipe.transfer.no.server": "Серверде JEI орнатылған болуы керек",
   "jei.tooltip.error.recipe.transfer.too.large.player.inventory": "Рецепт ойыншының 2x2 жасау торында жасалуға тым үлкен.",
   "jei.tooltip.error.crash": "Түсіндірме қатесі, журналды тексер",
-  "jei.tooltip.error.render.crash": "Бұл ингредиентті бейнелеу барысында қателік пайда болды. Толық ақпарат үшін клиент журналын қараңыз.",
+  "jei.tooltip.error.render.crash": "Бұл ингредиентті бейнелеу барысында қателік пайда болды. Толық ақпарат үшін клиент журналын қара.",
 
   "_comment": "Error Messages",
   "jei.chat.error.no.cheat.permission.1": "JEI чит режимін қолдануға рұқсат жоқ.",
@@ -79,7 +79,7 @@
   "key.jei.cheatItemStack2": "1 стак алу",
 
   "key.category.jei.hover.config.button": "JEI (конфиг батырмасының үстіне курсор апару)",
-  "key.jei.toggleCheatModeConfigButton": "Чит режимін қосу/өшіру",
+  "key.jei.toggleCheatModeConfigButton": "Чит режімін қосу/өшіру",
 
   "key.category.jei.edit.mode": "JEI (өңдеу режимі)",
   "key.jei.toggleEditMode": "Ингредиент жасыру режимін қосу/өшіру",
@@ -95,8 +95,8 @@
   "key.jei.transferRecipeBookmark": "Бетбелгілі рецептті жасау (бір дана)",
   "key.jei.maxTransferRecipeBookmark": "Бетбелгілі рецептті жасау (бірнеше)",
 
-  "key.category.jei.search": "JEI (іріктеу)",
-  "key.jei.clearSearchBar": "Іріктеуді тазарту",
+  "key.category.jei.search": "JEI (іздеу)",
+  "key.jei.clearSearchBar": "Іздеуді тазарту",
   "key.jei.previousSearch": "Алдыңғы іздеу",
   "key.jei.nextSearch": "Келесі іздеу",
 
@@ -112,9 +112,9 @@
 
   "jei.config.title": "%MODNAME баптауы",
   "jei.config.default": "Әдепкі",
-  "jei.config.valid": "Дүрыс",
+  "jei.config.valid": "Дұрыс",
   "jei.config.mode": "Режим",
-  "jei.config.mode.description": "JEI жұмыс істеп жатқан модты ауыстыру.",
+  "jei.config.mode.description": "JEI жұмыс істеп жатқан модын ауыстыру.",
   "jei.config.mode.cheatItemsEnabled": "Чит режимі",
   "jei.config.mode.cheatItemsEnabled.description": "Рецепт көрсеткеннен гөрі затты беру.",
   "jei.config.mode.editEnabled": "Ингредиент жасыру режимі",
@@ -131,7 +131,7 @@
   "jei.config.client.appearance.centerSearch": "Ортадағы іздеу жолағы",
   "jei.config.client.appearance.centerSearch.description": "JEI іздеу жолағын экранның астыңғы ортасына орналастыру.",
   "jei.config.client.appearance.recipeGuiHeight": "Макс. рецепт интерфейсінің биіктігі",
-  "jei.config.client.appearance.recipeGuiHeight.description": "Рецепт ингрефейсінің максималды биіктігі.",
+  "jei.config.client.appearance.recipeGuiHeight.description": "Рецепт интерфейсінің максималды биіктігі.",
 
   "jei.config.client.cheating": "Чит",
   "jei.config.client.cheating.description": "Читке байланысты баптаулар.",
@@ -197,7 +197,7 @@
   "jei.config.client.advanced": "Кеңейтілген",
   "jei.config.client.advanced.description": "JEI жұмысын өзгерту үшін кеңейтілген баптаулар.",
   "jei.config.client.advanced.catchRenderErrorsEnabled": "Бейнелеу қателерін тіркеу",
-  "jei.config.client.advanced.catchRenderErrorsEnabled.description": "Модталған ингредиенттердің бейнелеу тіркей отыра, құлаудан гөрі қалпына келтіруге тырысу.",
+  "jei.config.client.advanced.catchRenderErrorsEnabled.description": "Модталған ингредиенттердің бейнелеуін тіркей отыра, құлаудан гөрі қалпына келтіруге тырысу.",
 
   "jei.config.client.sorting": "Сұрыптау",
   "jei.config.client.sorting.description": "JEI рецептер мен ингредиенттерді қалай сұрыптайтынына байланысты баптаулар.",
@@ -269,7 +269,7 @@
   "jei.config.modIdFormat.modName": "Мод атауы",
   "jei.config.modIdFormat.modName.description": "Мод атауларын көрсетуге байланысты баптаулар",
   "jei.config.modIdFormat.modName.modNameFormat": "Мод атауының пішімі",
-  "jei.config.modIdFormat.modName.modNameFormat.description": "JEI интерфейсінде мод атауының пішімі. Өшіру үшін бос қалдырыңыз.",
+  "jei.config.modIdFormat.modName.modNameFormat.description": "JEI интерфейсінде мод атауының пішімі. Өшіру үшін бос қалдыр.",
 
   "jei.config.debug.debug": "Түзеу",
   "jei.config.debug.debug.description": "JEI-дегі мәселелерді түзеуге әзірлеушілерге көмектесетін баптаулар",
@@ -294,7 +294,7 @@
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI ингредиент жасыру режимі:",
   "gui.jei.editMode.description.hide": "Жасыру үшін %s",
-  "gui.jei.editMode.description.hide.wild": "Айырмалы таңба бойынша жасыру үшін%s",
+  "gui.jei.editMode.description.hide.wild": "Айырмалы таңба бойынша жасыру үшін %s",
 
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Жасау",
@@ -304,7 +304,7 @@
   "gui.jei.category.blasting": "Балқыту",
   "gui.jei.category.campfire": "Алауға пісіру",
   "gui.jei.category.smelting.experience": "%s тәжірибе",
-  "gui.jei.category.smelting.time.seconds": "%сек",
+  "gui.jei.category.smelting.time.seconds": "%s сек",
   "gui.jei.category.smelting_fuel": "Балқыту отыны",
   "gui.jei.category.smoking_fuel": "Ыстау отыны",
   "gui.jei.category.blasting_fuel": "Балқыту отыны",
