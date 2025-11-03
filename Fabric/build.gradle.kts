@@ -1,4 +1,3 @@
-import me.modmuss50.mpp.PublishModTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
@@ -56,7 +55,6 @@ val dependencyProjects: List<ProjectDependency> = listOf(
 dependencyProjects.forEach {
     project.evaluationDependsOn(it.dependencyProject.path)
 }
-project.evaluationDependsOn(":Changelog")
 
 java {
     toolchain {
@@ -64,6 +62,31 @@ java {
     }
     withSourcesJar()
 }
+
+val changelogHtml = configurations.create("changelogHtml") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    isVisible = false
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogHtml"))
+    }
+}
+
+val changelogMarkdown = configurations.create("changelogMarkdown") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    isVisible = false
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogMarkdown"))
+    }
+}
+
+fun Configuration.singleFileContents(): Provider<String> =
+    incoming
+        .files
+        .elements
+        .map { elements -> elements.single() }
+        .map { it.asFile.readText() }
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
@@ -102,6 +125,8 @@ dependencies {
     dependencyProjects.forEach {
         implementation(it)
     }
+    changelogHtml(project(":Changelog"))
+    changelogMarkdown(project(":Changelog"))
 }
 
 loom {
@@ -206,26 +231,26 @@ publishMods {
     curseforge {
         projectId = curseProjectId
         accessToken.set(curseforgeApikey ?: "0")
-        changelog.set(provider { file("../Changelog/changelog.html").readText() })
+        changelog.set(changelogHtml.singleFileContents())
         changelogType = "html"
         minecraftVersionRange {
             start = minecraftVersionRangeStart
             end = minecraftVersion
         }
         javaVersions.add(JavaVersion.toVersion(modJavaVersion))
+        dryRun = curseforgeApikey == null
     }
 
     modrinth {
         projectId = modrinthId
         accessToken = modrinthToken
+        changelog.set(changelogMarkdown.singleFileContents())
         minecraftVersionRange {
             start = minecraftVersionRangeStart
             end = minecraftVersion
         }
+        dryRun = modrinthToken == null
     }
-}
-tasks.withType<PublishModTask> {
-    dependsOn(tasks.jar, ":Changelog:makeChangelog", ":Changelog:makeMarkdownChangelog")
 }
 
 tasks.named<Test>("test") {
