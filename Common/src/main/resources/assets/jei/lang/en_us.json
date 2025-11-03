@@ -34,6 +34,7 @@
   "jei.tooltip.lookupHistory.enable": "Show JEI Lookup History",
   "jei.tooltip.lookupHistory.disable": "Hide JEI Lookup History",
   "jei.tooltip.lookupHistory.usage": "Shows a list of the ingredients recently used for looking up recipes.",
+  "jei.tooltip.recipe.tooltips.craft.ingredients": "Ingredients summary:",
   "jei.tooltip.recipe.sort.bookmarks.first.enabled": "Show bookmarked recipes first (enabled).",
   "jei.tooltip.recipe.sort.bookmarks.first.disabled": "Show bookmarked recipes first (disabled).",
   "jei.tooltip.recipe.sort.craftable.first.enabled": "Show craftable recipes first (enabled).",
@@ -163,6 +164,8 @@
   "jei.config.client.tooltips.tagContentTooltipEnabled.description": "Show tag content in tooltips when browsing recipe ingredients.",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled": "Hide Single-Ingredient Tag Contents",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled.description": "Hide tag content in tooltips when there is only one ingredient in the tag.",
+  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary": "Recipe Ingredient Summary",
+  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary.description": "Show a summary of ingredients needed for a recipe, on its output ingredient's tooltip.",
 
   "jei.config.client.lookups": "Lookups",
   "jei.config.client.lookups.description": "Config options related to looking up uses and recipes for ingredients in JEI.",

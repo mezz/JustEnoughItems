@@ -324,6 +324,10 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		return this.ghostIngredientDragManager.createDragHandler();
 	}
 
+	public int size() {
+		return this.ingredientGrid.size();
+	}
+
 	public Stream<IngredientListSlot> getSlots() {
 		return this.ingredientGrid.getSlots();
 	}

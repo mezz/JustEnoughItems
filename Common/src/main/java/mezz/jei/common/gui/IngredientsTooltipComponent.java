@@ -1,4 +1,4 @@
-package mezz.jei.gui.overlay.bookmarks;
+package mezz.jei.common.gui;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
