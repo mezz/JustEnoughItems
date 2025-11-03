@@ -21,13 +21,11 @@ repositories {
 }
 
 // gradle.properties
-val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
 val fabricApiVersion: String by extra
 val fabricLoaderVersion: String by extra
 val minecraftVersionRangeStart: String by extra
 val minecraftVersion: String by extra
-val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 val parchmentMinecraftVersion: String by extra
@@ -43,17 +41,21 @@ val baseArchivesName = "${modId}-${minecraftVersion}-fabric"
 base {
     archivesName.set(baseArchivesName)
 }
-val dependencyProjects: List<ProjectDependency> = listOf(
-    project.dependencies.project(":Core"),
-    project.dependencies.project(":Common"),
-    project.dependencies.project(":CommonApi"),
-    project.dependencies.project(":Library"),
-    project.dependencies.project(":Gui"),
-    project.dependencies.project(":FabricApi", configuration = "namedElements")
+
+val vanillaDependencyProjects: List<Project> = listOf(
+    project(":Core"),
+    project(":Common"),
+    project(":CommonApi"),
+    project(":Library"),
+    project(":Gui"),
 )
+val loomDependencyProjects: List<Project> = listOf(
+    project(":FabricApi"),
+)
+val dependencyProjects = vanillaDependencyProjects + loomDependencyProjects
 
 dependencyProjects.forEach {
-    project.evaluationDependsOn(it.dependencyProject.path)
+    project.evaluationDependsOn(it.path)
 }
 
 java {
@@ -122,29 +124,27 @@ dependencies {
         name = "jsr305",
         version = "3.0.1"
     )
-    dependencyProjects.forEach {
+    vanillaDependencyProjects.forEach {
         implementation(it)
+    }
+    loomDependencyProjects.forEach {
+        implementation(project(mapOf("path" to it.path, "configuration" to "namedElements")))
     }
     changelogHtml(project(":Changelog"))
     changelogMarkdown(project(":Changelog"))
 }
 
 loom {
-    runs {
-        val dependencyJarPaths = dependencyProjects.map {
-            it.dependencyProject.tasks.jar.get().archiveFile.get().asFile
-        }
-        val classPaths = sourceSets.main.get().output.classesDirs
-        val resourcesPaths = listOfNotNull(
-            sourceSets.main.get().output.resourcesDir
-        )
-        val classPathGroups = listOf(dependencyJarPaths, classPaths, resourcesPaths).flatten()
-        val classPathGroupsString = classPathGroups
-            .filterNotNull()
-            .joinToString(separator = File.pathSeparator) {
-                it.absoluteFile.toString()
+    mods {
+        create("jei") {
+            sourceSet(sourceSets.main.get())
+            for (dependencyProject in dependencyProjects) {
+                sourceSet(dependencyProject.sourceSets.main.get())
             }
+        }
+    }
 
+    runs {
         // loom 1.11 runDir takes a directory relative to the root directory
         val loomRunDir = File("run")
 
@@ -154,7 +154,6 @@ loom {
             ideConfigGenerated(true)
             runDir(loomRunDir.resolve("client").toString())
             vmArgs(
-                "-Dfabric.classPathGroups=${classPathGroupsString}",
                 "-Dfabric.log.level=info"
             )
         }
@@ -164,7 +163,6 @@ loom {
             ideConfigGenerated(true)
             runDir(loomRunDir.resolve("server").toString())
             vmArgs(
-                "-Dfabric.classPathGroups=${classPathGroupsString}",
                 "-Dfabric.log.level=info"
             )
         }
@@ -174,7 +172,6 @@ loom {
             ideConfigGenerated(true)
             runDir(loomRunDir.resolve("client").toString())
             vmArgs(
-                "-Dfabric.classPathGroups=${classPathGroupsString}",
                 "-Dfabric.log.level=debug"
             )
         }
@@ -184,7 +181,6 @@ loom {
             ideConfigGenerated(true)
             runDir(loomRunDir.resolve("server").toString())
             vmArgs(
-                "-Dfabric.classPathGroups=${classPathGroupsString}",
                 "-Dfabric.log.level=debug"
             )
         }
@@ -197,7 +193,7 @@ sourceSets {
     named("main") {
         resources {
             for (p in dependencyProjects) {
-                srcDir(p.dependencyProject.sourceSets.main.get().resources)
+                srcDir(p.sourceSets.main.get().resources)
             }
         }
     }
@@ -206,7 +202,7 @@ sourceSets {
 tasks.jar {
     from(sourceSets.main.get().output)
     for (p in dependencyProjects) {
-        from(p.dependencyProject.sourceSets.main.get().output)
+        from(p.sourceSets.main.get().output)
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
@@ -214,7 +210,7 @@ tasks.jar {
 tasks.named<Jar>("sourcesJar") {
     from(sourceSets.main.get().allJava)
     for (p in dependencyProjects) {
-        from(p.dependencyProject.sourceSets.main.get().allJava)
+        from(p.sourceSets.main.get().allJava)
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveClassifier.set("sources")
@@ -281,7 +277,7 @@ publishing {
             val dependencyInfos = dependencyProjects.map {
                 mapOf(
                     "groupId" to it.group,
-                    "artifactId" to it.dependencyProject.base.archivesName.get(),
+                    "artifactId" to it.base.archivesName.get(),
                     "version" to it.version
                 )
             }

@@ -8,6 +8,10 @@ plugins {
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
     id("fabric-loom") version("1.11.8") apply(false)
 
+    // https://maven.fabricmc.net/net/fabricmc/fabric-loom-companion/net.fabricmc.fabric-loom-companion.gradle.plugin/maven-metadata.xml
+    // applying this to all projects allows loom projects to access the required data in a manner that follows Gradle's best practices.
+    id("net.fabricmc.fabric-loom-companion") version("1.13.1")
+
     // https://projects.neoforged.net/neoforged/moddevgradle
     id("net.neoforged.moddev") version("2.0.113") apply(false)
 
