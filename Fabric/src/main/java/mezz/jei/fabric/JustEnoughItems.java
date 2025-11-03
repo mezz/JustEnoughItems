@@ -12,11 +12,15 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.Objects;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class JustEnoughItems implements ModInitializer {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	@Override
 	public void onInitialize() {
 		IServerConfig serverConfig = ServerConfig.getInstance();
@@ -28,10 +32,16 @@ public class JustEnoughItems implements ModInitializer {
 		var registered = Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, resourceLocation, recipeSerializer);
 		RecipeSerializers.register(() -> registered);
 
-		// Run through vanilla recipe serializaers and sync them
-		for (var serializer : BuiltInRegistries.RECIPE_SERIALIZER.keySet()) {
-			if (serializer.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE)) {
-				RecipeSynchronization.synchronizeRecipeSerializer(Objects.requireNonNull(BuiltInRegistries.RECIPE_SERIALIZER.getValue(serializer)));
+		// Run through vanilla recipe serializers and sync them
+		for (var entry : BuiltInRegistries.RECIPE_SERIALIZER.entrySet()) {
+			ResourceKey<RecipeSerializer<?>> resourceKey = entry.getKey();
+			if (resourceKey.location().getNamespace().equals(ModIds.MINECRAFT_ID)) {
+				RecipeSerializer<?> serializer = entry.getValue();
+				try {
+					RecipeSynchronization.synchronizeRecipeSerializer(serializer);
+				} catch (RuntimeException e) {
+					LOGGER.warn("Failed to synchronize recipe serializer {}", resourceKey, e);
+				}
 			}
 		}
 	}
