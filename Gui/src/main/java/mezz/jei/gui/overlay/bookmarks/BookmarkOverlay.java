@@ -134,8 +134,10 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, mouseExclusionArea);
 			this.lookupHistoryOverlay.updateLayout();
 		}
+		int legacySize = contents.size();
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas, mouseExclusionArea);
-		this.contents.updateLayout(false);
+		boolean resetToFirstPage = legacySize != contents.size();
+		this.contents.updateLayout(resetToFirstPage);
 
 		if (contents.hasRoom()) {
 			ImmutableRect2i contentsArea = this.contents.getBackgroundArea();
