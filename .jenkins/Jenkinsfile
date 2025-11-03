@@ -46,14 +46,14 @@ pipeline {
 
         stage('Publish CurseForge') {
             steps {
-//                 sh "./gradlew :Fabric:publishCurseforge"
+                sh "./gradlew :Fabric:publishCurseforge"
                 sh "./gradlew :NeoForge:publishCurseforge"
             }
         }
 
         stage('Publish Modrinth') {
             steps {
-//                 sh "./gradlew :Fabric:publishModrinth"
+                sh "./gradlew :Fabric:publishModrinth"
                 sh "./gradlew :NeoForge:publishModrinth"
             }
         }
