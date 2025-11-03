@@ -130,7 +130,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 		Rectangle2d availableContentsArea = new Rectangle2dBuilder(this.displayArea)
 			.subtractHeight(searchBarCentered ? 0 : SEARCH_HEIGHT + BORDER_PADDING)
 			.build();
+		int previousSize = this.contents.size();
 		this.hasRoom = this.contents.updateBounds(availableContentsArea, guiExclusionAreas);
+		boolean resetToFirstPage = previousSize != this.contents.size();
 
 		// update area to match contents size
 		Rectangle2d contentsArea = this.contents.getArea();
@@ -149,7 +151,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 		this.searchField.updateBounds(searchArea);
 		this.configButton.updateBounds(configButtonArea);
 
-		updateLayout(false);
+		updateLayout(resetToFirstPage);
 	}
 
 	private static boolean isSearchBarCentered(IClientConfig clientConfig, IGuiProperties guiProperties) {
