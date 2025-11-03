@@ -147,8 +147,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, null);
 			this.lookupHistoryOverlay.updateLayout();
 		}
+		int legacySize = contents.size();
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas, null);
-		this.contents.updateLayout(false);
+		boolean resetToFirstPage = legacySize != contents.size();
+		this.contents.updateLayout(resetToFirstPage);
 
 		final ImmutableRect2i searchAndConfigArea = getSearchAndConfigArea(displayArea, searchBarCentered, guiProperties);
 		final ImmutableRect2i searchArea = searchAndConfigArea.cropRight(BUTTON_SIZE);
