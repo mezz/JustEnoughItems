@@ -26,7 +26,7 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler();
 
 		ClientRecipeSynchronizedEvent.EVENT.register((minecraft, synchronizedRecipes) -> {
-            Internal.setClientSyncedRecipes(RecipeMap.create(synchronizedRecipes.recipes()));
+			Internal.setClientSyncedRecipes(RecipeMap.create(synchronizedRecipes.recipes()));
 			JeiLifecycleEvents.AFTER_RECIPE_SYNC.invoker().run();
 		});
 
