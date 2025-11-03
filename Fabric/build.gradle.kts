@@ -128,7 +128,7 @@ dependencies {
         implementation(it)
     }
     loomDependencyProjects.forEach {
-        implementation(project(mapOf("path" to it.path, "configuration" to "namedElements")))
+        implementation(project(it.path, "namedElements"))
     }
     changelogHtml(project(":Changelog"))
     changelogMarkdown(project(":Changelog"))
