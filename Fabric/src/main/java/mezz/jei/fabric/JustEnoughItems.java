@@ -27,7 +27,6 @@ public class JustEnoughItems implements ModInitializer {
 		var recipeSerializer = new JeiShapedRecipe.Serializer();
 		var registered = Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, resourceLocation, recipeSerializer);
 		RecipeSerializers.register(() -> registered);
-		RecipeSynchronization.synchronizeRecipeSerializer(recipeSerializer);
 
 		// Run through vanilla recipe serializaers and sync them
 		for (var serializer : BuiltInRegistries.RECIPE_SERIALIZER.keySet()) {
