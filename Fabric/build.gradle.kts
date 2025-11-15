@@ -105,6 +105,7 @@ dependencies {
         name = "minecraft",
         version = minecraftVersion,
     )
+    @Suppress("UnstableApiUsage")
     mappings(loom.layered {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-${parchmentMinecraftVersion}:${parchmentVersionFabric}@zip")
