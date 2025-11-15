@@ -34,7 +34,7 @@ base {
     archivesName.set(baseArchivesName)
 }
 
-val commonApi = project(":CommonApi")
+val commonApi: Project = project(":CommonApi")
 
 project.evaluationDependsOn(commonApi.path)
 
