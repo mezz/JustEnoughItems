@@ -11,8 +11,8 @@ import java.util.List;
 
 /**
  * The {@link IVanillaRecipeFactory} allows creation of vanilla recipes.
- * Get the instance from {@link IJeiHelpers#getStackHelper()}.
- *
+ * Get the instance from {@link IJeiHelpers#getStackHelper()} or {@link IRecipeRegistration#getVanillaRecipeFactory()}.
+ * <p>
  * Use {@link IRecipeRegistration#addRecipes(RecipeType, List)} to add the recipe.
  */
 @ApiStatus.NonExtendable
