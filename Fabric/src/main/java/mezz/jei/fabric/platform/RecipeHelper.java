@@ -5,6 +5,7 @@ import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -73,6 +74,14 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 	public Optional<ResourceLocation> getRegistryNameForRecipe(Recipe<?> recipe) {
 		ResourceLocation id = recipe.getId();
 		return Optional.ofNullable(id);
+	}
+
+	@Override
+	public ItemStack getGrindstoneResult(GrindstoneMenu grindstoneMenu, ItemStack input1, ItemStack input2) {
+		grindstoneMenu.slots.get(0).set(input1.copy());
+		grindstoneMenu.slots.get(1).set(input2.copy());
+		grindstoneMenu.createResult();
+		return grindstoneMenu.slots.get(2).getItem().copy();
 	}
 
 	@Override
