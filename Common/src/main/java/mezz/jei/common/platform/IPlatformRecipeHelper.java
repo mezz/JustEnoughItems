@@ -4,6 +4,7 @@ import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.core.Holder;
+import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -16,6 +17,8 @@ public interface IPlatformRecipeHelper {
 	Ingredient getBase(SmithingRecipe recipe);
 	Ingredient getAddition(SmithingRecipe recipe);
 	Ingredient getTemplate(SmithingRecipe recipe);
+
+	ItemStack getGrindstoneResult(GrindstoneMenu grindstoneMenu, ItemStack input1, ItemStack input2);
 
 	List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory, PotionBrewing potionBrewing);
 

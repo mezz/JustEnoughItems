@@ -3,7 +3,6 @@ package mezz.jei.gui.config;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IBookmark;
 import net.minecraft.core.RegistryAccess;
 
