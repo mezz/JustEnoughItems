@@ -14,7 +14,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -34,7 +33,7 @@ public class GrindstoneRecipeCategory extends AbstractRecipeCategory<IJeiGrindst
 	}
 
 	@Override
-	public void setRecipe(IRecipeLayoutBuilder builder, IJeiGrindstoneRecipe recipe, @NotNull IFocusGroup focuses) {
+	public void setRecipe(IRecipeLayoutBuilder builder, IJeiGrindstoneRecipe recipe, IFocusGroup focuses) {
 		List<ItemStack> topInputs = recipe.getTopInputs();
 		List<ItemStack> bottomInputs = recipe.getBottomInputs();
 		List<ItemStack> outputs = recipe.getOutputs();
@@ -68,7 +67,7 @@ public class GrindstoneRecipeCategory extends AbstractRecipeCategory<IJeiGrindst
 	}
 
 	@Override
-	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiGrindstoneRecipe recipe, @NotNull IFocusGroup focuses) {
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiGrindstoneRecipe recipe, IFocusGroup focuses) {
 		builder.addRecipeArrow().setPosition(20, 12);
 
 		int maxXpReward = recipe.getMaxXpReward();

@@ -36,6 +36,8 @@ accessible method net/minecraft/client/gui/GuiGraphics blitSprite (Lcom/mojang/b
 accessible method net/minecraft/client/gui/GuiGraphics blitNineSlicedSprite (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;Lnet/minecraft/client/resources/metadata/gui/GuiSpriteScaling$NineSlice;IIIII)V
 accessible method net/minecraft/client/gui/GuiGraphics blitTiledSprite (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;IIIIIIIIIII)V
 
+accessible method net/minecraft/world/inventory/GrindstoneMenu computeResult (Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/ItemStack;
+
 accessible field net/minecraft/client/gui/components/toasts/ToastManager visibleToasts Ljava/util/List;
 accessible class net/minecraft/client/gui/components/toasts/ToastManager$ToastInstance
 

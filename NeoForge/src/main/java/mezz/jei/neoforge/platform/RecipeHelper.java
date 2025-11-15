@@ -5,6 +5,7 @@ import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import net.minecraft.core.Holder;
+import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -49,6 +50,11 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 			return Optional.of(trimRecipe.template);
 		}
 		throw new IllegalArgumentException("Unknown recipe type: " + recipe.getClass());
+	}
+
+	@Override
+	public ItemStack getGrindstoneResult(GrindstoneMenu grindstoneMenu, ItemStack input1, ItemStack input2) {
+		return grindstoneMenu.computeResult(input1, input2);
 	}
 
 	@Override
