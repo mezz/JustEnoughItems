@@ -10,6 +10,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 
+import java.util.Arrays;
+import java.util.List;
+
 public abstract class SmithingCategoryExtension<R extends SmithingRecipe> implements ISmithingCategoryExtension<R> {
 	private final IPlatformRecipeHelper recipeHelper;
 
@@ -41,14 +44,23 @@ public abstract class SmithingCategoryExtension<R extends SmithingRecipe> implem
 		Ingredient baseIngredient = recipeHelper.getBase(recipe);
 		Ingredient additionIngredient = recipeHelper.getAddition(recipe);
 
-		ItemStack[] additions = additionIngredient.getItems();
-		if (additions.length == 0) {
-			return;
+		List<ItemStack> templateStacks = Arrays.asList(templateIngredient.getItems());
+		if (templateStacks.isEmpty()) {
+			templateStacks = List.of(ItemStack.EMPTY);
 		}
-		ItemStack addition = additions[0];
+		List<ItemStack> baseStacks = Arrays.asList(baseIngredient.getItems());
+		if (baseStacks.isEmpty()) {
+			baseStacks = List.of(ItemStack.EMPTY);
+		}
+		ItemStack addition = ItemStack.EMPTY;
 
-		for (ItemStack template : templateIngredient.getItems()) {
-			for (ItemStack base : baseIngredient.getItems()) {
+		ItemStack[] additions = additionIngredient.getItems();
+		if (additions.length > 0) {
+			addition = additions[0];
+		}
+
+		for (ItemStack template : templateStacks) {
+			for (ItemStack base : baseStacks) {
 				Container recipeInput = createInput(template, base, addition);
 				ItemStack output = RecipeUtil.assembleResultItem(recipeInput, recipe);
 				ingredientAcceptor.addItemStack(output);
