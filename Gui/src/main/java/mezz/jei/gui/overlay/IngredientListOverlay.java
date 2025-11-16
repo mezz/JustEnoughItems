@@ -235,6 +235,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		if (isListDisplayed()) {
 			return Stream.concat(this.contents.getIngredientUnderMouse(mouseX, mouseY), this.lookupHistoryOverlay.getIngredientUnderMouse(mouseX, mouseY));
 		}
+		if (this.lookupHistoryOverlay.isListDisplayed()) {
+			return this.lookupHistoryOverlay.getIngredientUnderMouse(mouseX, mouseY);
+		}
 		return Stream.empty();
 	}
 
@@ -242,6 +245,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
 			return Stream.concat(this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY), this.lookupHistoryOverlay.getDraggableIngredientUnderMouse(mouseX, mouseY));
+		}
+		if (this.lookupHistoryOverlay.isListDisplayed()) {
+			return this.lookupHistoryOverlay.getDraggableIngredientUnderMouse(mouseX, mouseY);
 		}
 		return Stream.empty();
 	}
