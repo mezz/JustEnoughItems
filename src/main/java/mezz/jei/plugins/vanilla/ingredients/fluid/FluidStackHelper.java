@@ -14,6 +14,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -153,6 +154,9 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	public FluidStack normalizeIngredient(FluidStack ingredient) {
+		if (ingredient.getRawFluid() == Fluids.EMPTY) {
+			return FluidStack.EMPTY;
+		}
 		FluidStack copy = this.copyIngredient(ingredient);
 		copy.setAmount(FluidAttributes.BUCKET_VOLUME);
 		return copy;
