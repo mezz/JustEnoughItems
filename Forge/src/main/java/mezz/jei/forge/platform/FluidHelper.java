@@ -57,6 +57,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 		return Optional.ofNullable(ingredient.getTag());
 	}
 
+	@Override
 	public FluidStack copyWithAmount(FluidStack ingredient, long amount) {
 		FluidStack copy = ingredient.copy();
 		int intAmount = Math.toIntExact(amount);
@@ -150,6 +151,9 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	public FluidStack normalize(FluidStack ingredient) {
 		if (ingredient.getAmount() == FluidType.BUCKET_VOLUME) {
 			return ingredient;
+		}
+		if (ingredient.getRawFluid() == Fluids.EMPTY) {
+			return FluidStack.EMPTY;
 		}
 		FluidStack copy = this.copy(ingredient);
 		copy.setAmount(FluidType.BUCKET_VOLUME);
