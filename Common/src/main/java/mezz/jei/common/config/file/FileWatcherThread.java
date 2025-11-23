@@ -74,7 +74,7 @@ public class FileWatcherThread extends Thread {
 			while (!Thread.currentThread().isInterrupted()) {
 				runIteration();
 			}
-		} catch (InterruptedException consumed) {
+		} catch (InterruptedException ignored) {
 			LOGGER.info("FileWatcher was interrupted, stopping.");
 		} catch (IOException e) {
 			LOGGER.error("FileWatcher encountered an unhandled IOException, stopping.", e);

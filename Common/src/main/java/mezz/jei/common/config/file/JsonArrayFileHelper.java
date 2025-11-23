@@ -70,7 +70,7 @@ public class JsonArrayFileHelper {
 		if (versionElement.isJsonPrimitive()) {
 			try {
 				return versionElement.getAsInt();
-			} catch (NumberFormatException | UnsupportedOperationException e) {
+			} catch (NumberFormatException | UnsupportedOperationException ignored) {
 				return null;
 			}
 		}
