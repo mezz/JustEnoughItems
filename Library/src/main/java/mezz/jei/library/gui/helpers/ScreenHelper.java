@@ -123,7 +123,6 @@ public class ScreenHelper implements IScreenHelper {
 
 	private Optional<IClickableIngredient<ItemStack>> getClickedIngredient(ClickableIngredientFactory factory, Slot slot, AbstractContainerScreen<?> guiContainer) {
 		ItemStack stack = slot.getItem();
-		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 		return getGuiProperties(guiContainer)
 			.flatMap(guiProperties -> {
 				return factory.createBuilder(stack)
