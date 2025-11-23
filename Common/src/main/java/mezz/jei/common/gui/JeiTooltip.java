@@ -164,7 +164,7 @@ public class JeiTooltip implements ITooltipBuilder {
 		try {
 			renderHelper.renderTooltip(guiGraphics, lines, x, y, font, ItemStack.EMPTY);
 		} catch (RuntimeException e) {
-			throw new RuntimeException("Crashed when rendering tooltip:\n" + this);
+			throw new RuntimeException("Crashed when rendering tooltip:\n" + this, e);
 		}
 	}
 
