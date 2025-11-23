@@ -51,7 +51,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 				try {
 					Files.createDirectories(configPath);
 				} catch (IOException e) {
-					LOGGER.error("Unable to create bookmark config folder: {}", configPath);
+					LOGGER.error("Unable to create bookmark config folder: {}", configPath, e);
 					return Optional.empty();
 				}
 				Path path = configPath.resolve("bookmarks.ini");
