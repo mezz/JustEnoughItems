@@ -5,6 +5,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -57,7 +58,10 @@ public final class GrindstoneRecipeMaker {
 					ItemStack enchantedStack = stack.copy();
 					enchantedStack.enchant(enchantment, level);
 					String itemId = stack.getItem().getDescriptionId();
-					ResourceLocation uid = enchantmentPath != null ? new ResourceLocation("minecraft", "grindstone.disenchantment.%s.%s.%d".formatted(itemId, enchantmentPath, level)) : null;
+					String asciiLevel = Integer.toString(level);
+					String rawPath = "grindstone.disenchantment.%s.%s.%s".formatted(itemId, enchantmentPath, asciiLevel);
+					String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
+					ResourceLocation uid = new ResourceLocation("minecraft", uidPath);
 					IJeiGrindstoneRecipe grindstoneRecipe = getGrindstoneRecipe(platformHelper, enchantedStack, ItemStack.EMPTY, uid);
 					if (grindstoneRecipe != null) {
 						grindstoneRecipes.add(grindstoneRecipe);
@@ -78,7 +82,9 @@ public final class GrindstoneRecipeMaker {
 					ItemStack topInput = stack.copy();
 					ItemStack bottomInput = stack.copy();
 					String itemId = stack.getItem().getDescriptionId();
-					return getGrindstoneRecipe(platformHelper, topInput, bottomInput, new ResourceLocation("minecraft", "grindstone.self_repair." + itemId));
+					String rawPath = "grindstone.self_repair." + itemId;
+					String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
+					return getGrindstoneRecipe(platformHelper, topInput, bottomInput, new ResourceLocation("minecraft", uidPath));
 				})
 				.filter(Objects::nonNull);
 	}
