@@ -11,7 +11,7 @@ import mezz.jei.gui.input.CombinedRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
-import mezz.jei.gui.recipes.RecipeLayoutWithButtons;
+import mezz.jei.gui.recipes.IRecipeLayoutWithButtons;
 import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -53,18 +53,18 @@ public class BookmarkInputHandler implements IUserInputHandler {
 	private Optional<IUserInputHandler> handleRecipeBookmark(UserInput input) {
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
-		Optional<RecipeLayoutWithButtons<?>> layoutWithButtons = recipesGui.getRecipeLayoutUnderMouse(mouseX, mouseY);
+		Optional<IRecipeLayoutWithButtons<?>> layoutWithButtons = recipesGui.getRecipeLayoutUnderMouse(mouseX, mouseY);
 		if (layoutWithButtons.isEmpty()) {
 			return Optional.empty();
 		}
 
-		RecipeLayoutWithButtons<?> recipeLayoutWithButtons = layoutWithButtons.get();
+		IRecipeLayoutWithButtons<?> recipeLayoutWithButtons = layoutWithButtons.get();
 		RecipeBookmark<?, ?> recipeBookmark = recipeLayoutWithButtons.getRecipeBookmark();
 		if (recipeBookmark == null) {
 			return Optional.empty();
 		}
 
-		IRecipeLayoutDrawable<?> layout = recipeLayoutWithButtons.recipeLayout();
+		IRecipeLayoutDrawable<?> layout = recipeLayoutWithButtons.getRecipeLayout();
 		Optional<RecipeSlotUnderMouse> slotUnderMouse = layout.getSlotUnderMouse(mouseX, mouseY);
 		if (!shouldBookmarkRecipe(slotUnderMouse, clientConfig.isBookmarkOutputAsRecipeEnabled())) {
 			return Optional.empty();

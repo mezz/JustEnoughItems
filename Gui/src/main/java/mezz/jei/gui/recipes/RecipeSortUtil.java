@@ -13,7 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class RecipeSortUtil {
-	private static final Comparator<RecipeLayoutWithButtons<?>> CRAFTABLE_COMPARATOR = createCraftableComparator();
+	private static final Comparator<IRecipeLayoutWithButtons<?>> CRAFTABLE_COMPARATOR = createCraftableComparator();
 
 	public static List<IRecipeCategory<?>> sortRecipeCategories(
 		List<IRecipeCategory<?>> recipeCategories,
@@ -41,18 +41,17 @@ public class RecipeSortUtil {
 			.toList();
 	}
 
-	public static Comparator<RecipeLayoutWithButtons<?>> getCraftableComparator() {
+	public static Comparator<IRecipeLayoutWithButtons<?>> getCraftableComparator() {
 		return CRAFTABLE_COMPARATOR;
 	}
 
-	private static Comparator<RecipeLayoutWithButtons<?>> createCraftableComparator() {
+	private static Comparator<IRecipeLayoutWithButtons<?>> createCraftableComparator() {
 		return Comparator.comparingInt(r -> {
-			IRecipeLayoutDrawable<?> recipeLayout = r.recipeLayout();
+			IRecipeLayoutDrawable<?> recipeLayout = r.getRecipeLayout();
 			List<IRecipeSlotView> inputSlotViews = recipeLayout.getRecipeSlotsView()
 				.getSlotViews(RecipeIngredientRole.INPUT);
 
-			RecipeTransferButton transferButton = r.transferButton();
-			int missingCount = transferButton.getMissingCountHint();
+			int missingCount = r.getMissingCountHint();
 			if (missingCount == -1) {
 				return 0;
 			}

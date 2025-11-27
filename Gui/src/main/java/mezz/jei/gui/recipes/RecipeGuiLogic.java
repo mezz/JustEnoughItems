@@ -241,7 +241,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public List<RecipeLayoutWithButtons<?>> getVisibleRecipeLayoutsWithButtons(
+	public List<IRecipeLayoutWithButtons<?>> getVisibleRecipeLayoutsWithButtons(
 		int availableHeight,
 		int minRecipePadding,
 		@Nullable AbstractContainerMenu container
@@ -268,7 +268,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		final int recipeHeight =
 			this.cachedRecipeLayoutsWithButtons.findFirst(container)
-				.map(RecipeLayoutWithButtons::recipeLayout)
+				.map(IRecipeLayoutWithButtons::getRecipeLayout)
 				.map(IRecipeLayoutDrawable::getRectWithBorder)
 				.map(Rect2i::getHeight)
 				.orElseGet(recipeCategory::getHeight);
@@ -293,7 +293,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		List<T> recipes = selectedRecipes.getRecipes();
 		List<T> brokenRecipes = new ArrayList<>();
 
-		List<RecipeLayoutWithButtons<T>> results = recipes.stream()
+		List<IRecipeLayoutWithButtons<T>> results = recipes.stream()
 			.map(recipe -> {
 				DrawableNineSliceTexture recipeBackground = Internal.getTextures().getRecipeBackground();
 				return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses(), recipeBackground, 4)

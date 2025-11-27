@@ -1,9 +1,8 @@
 package mezz.jei.gui.recipes.layouts;
 
 import mezz.jei.common.config.RecipeSorterStage;
-import mezz.jei.gui.recipes.RecipeLayoutWithButtons;
+import mezz.jei.gui.recipes.IRecipeLayoutWithButtons;
 import mezz.jei.gui.recipes.RecipeSortUtil;
-import mezz.jei.gui.recipes.RecipeTransferButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -17,16 +16,16 @@ import java.util.Optional;
 import java.util.Set;
 
 public class LazySortedRecipeLayoutList implements IRecipeLayoutList {
-	private final List<RecipeLayoutWithButtons<?>> results;
-	private final List<RecipeLayoutWithButtons<?>> craftMissing;
-	private final Iterator<? extends RecipeLayoutWithButtons<?>> unsortedIterator;
+	private final List<IRecipeLayoutWithButtons<?>> results;
+	private final List<IRecipeLayoutWithButtons<?>> craftMissing;
+	private final Iterator<? extends IRecipeLayoutWithButtons<?>> unsortedIterator;
 	private final int size;
 
 	private final boolean matchingCraftable;
 
 	LazySortedRecipeLayoutList(
 		Set<RecipeSorterStage> recipeSorterStages,
-		List<? extends RecipeLayoutWithButtons<?>> unsortedList
+		List<? extends IRecipeLayoutWithButtons<?>> unsortedList
 	) {
 		boolean matchingBookmarks = recipeSorterStages.contains(RecipeSorterStage.BOOKMARKED);
 		this.matchingCraftable = recipeSorterStages.contains(RecipeSorterStage.CRAFTABLE);
@@ -37,10 +36,10 @@ public class LazySortedRecipeLayoutList implements IRecipeLayoutList {
 		if (matchingBookmarks) {
 			// if bookmarks go first, start by grabbing all the bookmarked elements, it's relatively cheap
 			unsortedList = new ArrayList<>(unsortedList);
-			Iterator<? extends RecipeLayoutWithButtons<?>> iterator = unsortedList.iterator();
+			Iterator<? extends IRecipeLayoutWithButtons<?>> iterator = unsortedList.iterator();
 			while (iterator.hasNext()) {
-				RecipeLayoutWithButtons<?> layoutWithButtons = iterator.next();
-				if (layoutWithButtons.bookmarkButton().isBookmarked()) {
+				IRecipeLayoutWithButtons<?> layoutWithButtons = iterator.next();
+				if (layoutWithButtons.isBookmarked()) {
 					this.results.add(layoutWithButtons);
 					iterator.remove();
 				}
@@ -60,7 +59,7 @@ public class LazySortedRecipeLayoutList implements IRecipeLayoutList {
 	}
 
 	@Override
-	public List<RecipeLayoutWithButtons<?>> subList(int from, int to, @Nullable AbstractContainerMenu container) {
+	public List<IRecipeLayoutWithButtons<?>> subList(int from, int to, @Nullable AbstractContainerMenu container) {
 		ensureResults(to - 1, container);
 		return results.subList(from, to);
 	}
@@ -74,7 +73,7 @@ public class LazySortedRecipeLayoutList implements IRecipeLayoutList {
 	}
 
 	@Override
-	public Optional<RecipeLayoutWithButtons<?>> findFirst(@Nullable AbstractContainerMenu container) {
+	public Optional<IRecipeLayoutWithButtons<?>> findFirst(@Nullable AbstractContainerMenu container) {
 		ensureResults(0, container);
 		if (results.isEmpty()) {
 			return Optional.empty();
@@ -91,13 +90,10 @@ public class LazySortedRecipeLayoutList implements IRecipeLayoutList {
 		if (matchingCraftable) {
 			// if craftables go first, look for a 100% craftable element
 			while (unsortedIterator.hasNext()) {
-				RecipeLayoutWithButtons<?> next = unsortedIterator.next();
-				RecipeTransferButton transferButton = next.transferButton();
-				if (!transferButton.isInitialized()) {
-					Player player = Minecraft.getInstance().player;
-					transferButton.update(container, player);
-				}
-				int missingCountHint = transferButton.getMissingCountHint();
+				IRecipeLayoutWithButtons<?> next = unsortedIterator.next();
+				Player player = Minecraft.getInstance().player;
+				next.updateTransferButton(container, player);
+				int missingCountHint = next.getMissingCountHint();
 				if (missingCountHint == 0) {
 					results.add(next);
 					return true;
