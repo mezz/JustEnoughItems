@@ -33,17 +33,23 @@ public final class FabricPluginFinder {
 					T entrypoint = entrypointContainer.getEntrypoint();
 					consumer.accept(entrypoint);
 				} catch (EntrypointException e) {
-					String modName;
-					try {
-						ModContainer provider = entrypointContainer.getProvider();
-						ModMetadata metadata = provider.getMetadata();
-						modName = metadata.getName();
-					} catch (RuntimeException ignored) {
-						modName = "unknown";
-					}
+					String modName = getModName(entrypointContainer);
 					LOGGER.error("{} specified an invalid entrypoint for its JEI plugin", modName, e);
+				} catch (RuntimeException | LinkageError e) {
+					String modName = getModName(entrypointContainer);
+					LOGGER.error("{} specified a broken entrypoint for its JEI plugin", modName, e);
 				}
 			})
 			.collect(Collectors.toList());
+	}
+
+	private static String getModName(EntrypointContainer<?> entrypointContainer) {
+		try {
+			ModContainer provider = entrypointContainer.getProvider();
+			ModMetadata metadata = provider.getMetadata();
+			return metadata.getName();
+		} catch (RuntimeException | LinkageError ignored) {
+			return "unknown";
+		}
 	}
 }
