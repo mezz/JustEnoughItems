@@ -48,6 +48,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -136,7 +137,8 @@ public class JeiDebugPlugin implements IModPlugin {
 			this.debugRecipeCategory = new DebugRecipeCategory<>(guiHelper, platformFluidHelper, ingredientManager);
 			registration.addRecipeCategories(
 				debugRecipeCategory,
-				new DebugFocusRecipeCategory<>(guiHelper, platformFluidHelper)
+				new DebugFocusRecipeCategory<>(guiHelper, platformFluidHelper),
+				new ErrorRecipeCategory(guiHelper)
 			);
 		}
 	}
@@ -197,6 +199,10 @@ public class JeiDebugPlugin implements IModPlugin {
 			registration.addRecipes(DebugFocusRecipeCategory.TYPE, List.of(
 				new DebugRecipe()
 			));
+
+			if (DebugConfig.isCrashingTestRecipesEnabled()) {
+				registration.addRecipes(ErrorRecipeCategory.TYPE, Arrays.stream(ErrorRecipe.CrashType.values()).map(ErrorRecipe::new).toList());
+			}
 		}
 	}
 

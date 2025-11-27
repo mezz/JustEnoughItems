@@ -19,14 +19,17 @@ import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.core.util.LimitedLogger;
 import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +37,7 @@ import java.util.Optional;
 
 public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final LimitedLogger LIMITED_LOGGER = new LimitedLogger(LOGGER, Duration.ofSeconds(10));
 	private static final int DEFAULT_RECIPE_BORDER_PADDING = 4;
 	public static final int RECIPE_BUTTON_SIZE = 13;
 	public static final int RECIPE_BUTTON_SPACING = 2;
@@ -218,14 +222,18 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			tooltip.draw(poseStack, mouseX, mouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {
 			JeiTooltip tooltip = new JeiTooltip();
-			tooltip.addAll(recipeCategory.getTooltipStrings(recipe, recipeCategorySlotsView, recipeMouseX, recipeMouseY));
-			for (IRecipeCategoryDecorator<R> decorator : recipeCategoryDecorators) {
-				List<Component> components = tooltip.getLegacyComponents();
-				var results = decorator.decorateExistingTooltips(components, recipe, recipeCategory, recipeCategorySlotsView, recipeMouseX, recipeMouseY);
-				if (results != components) {
-					tooltip = new JeiTooltip();
-					tooltip.addAll(results);
+			try {
+				tooltip.addAll(recipeCategory.getTooltipStrings(recipe, recipeCategorySlotsView, recipeMouseX, recipeMouseY));
+				for (IRecipeCategoryDecorator<R> decorator : recipeCategoryDecorators) {
+					List<Component> components = tooltip.getLegacyComponents();
+					var results = decorator.decorateExistingTooltips(components, recipe, recipeCategory, recipeCategorySlotsView, recipeMouseX, recipeMouseY);
+					if (results != components) {
+						tooltip = new JeiTooltip();
+						tooltip.addAll(results);
+					}
 				}
+			} catch (RuntimeException e) {
+				LIMITED_LOGGER.log(Level.ERROR, "recipe.category.tooltip.crash", "Error while getting tooltip from recipe category '{}'", recipeCategory.getRecipeType(), e);
 			}
 
 			if (tooltip.isEmpty() && shapelessIcon != null) {

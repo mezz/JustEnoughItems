@@ -7,14 +7,19 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.common.Internal;
+import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.recipes.layouts.IRecipeLayoutList;
+import mezz.jei.gui.recipes.layouts.RecipeLayoutDrawableErrored;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import mezz.jei.gui.recipes.lookups.ILookupState;
 import mezz.jei.gui.recipes.lookups.IngredientLookupState;
 import mezz.jei.gui.recipes.lookups.SingleCategoryLookupState;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -24,6 +29,8 @@ import java.util.Stack;
 import java.util.stream.Stream;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private final IRecipeManager recipeManager;
 	private final IRecipeLogicStateListener stateListener;
 
@@ -182,7 +189,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public List<RecipeLayoutWithButtons<?>> getVisibleRecipeLayoutsWithButtons(
+	public List<IRecipeLayoutWithButtons<?>> getVisibleRecipeLayoutsWithButtons(
 		int availableHeight,
 		int minRecipePadding,
 		@Nullable AbstractContainerMenu container
@@ -203,7 +210,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		final int recipeHeight =
 			this.cachedRecipeLayoutsWithButtons.findFirst(container)
-				.map(RecipeLayoutWithButtons::recipeLayout)
+				.map(IRecipeLayoutWithButtons::getRecipeLayout)
 				.map(IRecipeLayoutDrawable::getRectWithBorder)
 				.map(Rect2i::getHeight)
 				.orElseGet(recipeCategory::getHeight);
@@ -227,11 +234,21 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		List<T> recipes = selectedRecipes.getRecipes();
 		List<T> brokenRecipes = new ArrayList<>();
 
-		List<RecipeLayoutWithButtons<T>> results = recipes.stream()
-			.<IRecipeLayoutDrawable<T>>mapMulti((recipe, acceptor) ->
-				recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses())
-					.ifPresentOrElse(acceptor, () -> brokenRecipes.add(recipe))
-			)
+		List<IRecipeLayoutWithButtons<T>> results = recipes.stream()
+			.map(recipe -> {
+				DrawableNineSliceTexture recipeBackground = Internal.getTextures().getRecipeBackground();
+				try {
+					return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses())
+						.orElseGet(() -> {
+							brokenRecipes.add(recipe);
+							return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, 4);
+						});
+				} catch (RuntimeException e) {
+					LOGGER.error("Recipe layout crashed while being created", e);
+					brokenRecipes.add(recipe);
+					return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, 4);
+				}
+			})
 			.map(recipeLayoutFactory::create)
 			.toList();
 

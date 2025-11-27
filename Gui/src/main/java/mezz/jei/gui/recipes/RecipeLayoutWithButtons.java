@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
@@ -24,7 +25,30 @@ import java.util.Optional;
 public record RecipeLayoutWithButtons<R>(
 	IRecipeLayoutDrawable<R> recipeLayout,
 	RecipeTransferButton transferButton
-) {
+) implements IRecipeLayoutWithButtons<R> {
+	@Override
+	public void draw(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+		recipeLayout.drawRecipe(poseStack, mouseX, mouseY);
+		transferButton.draw(poseStack, mouseX, mouseY, partialTicks);
+	}
+
+	@Override
+	public void updateBounds(int recipeXOffset, int recipeYOffset) {
+		Rect2i rectWithBorder = recipeLayout.getRectWithBorder();
+		Rect2i rect = recipeLayout.getRect();
+		recipeLayout.setPosition(
+			recipeXOffset - rectWithBorder.getX() + rect.getX(),
+			recipeYOffset - rectWithBorder.getY() + rect.getY()
+		);
+
+		Rect2i layoutArea = recipeLayout.getRect();
+		Rect2i buttonArea = recipeLayout.getRecipeTransferButtonArea();
+		buttonArea.setX(buttonArea.getX() + layoutArea.getX());
+		buttonArea.setY(buttonArea.getY() + layoutArea.getY());
+		transferButton.updateBounds(buttonArea);
+	}
+
+	@Override
 	public int totalWidth() {
 		Rect2i area = recipeLayout.getRect();
 		Rect2i areaWithBorder = recipeLayout.getRectWithBorder();
@@ -40,6 +64,7 @@ public record RecipeLayoutWithButtons<R>(
 		return leftBorderWidth + rightAreaWidth;
 	}
 
+	@Override
 	public IUserInputHandler createUserInputHandler() {
 		return new CombinedInputHandler(
 			"RecipeLayoutWithButtons",
@@ -48,9 +73,30 @@ public record RecipeLayoutWithButtons<R>(
 		);
 	}
 
+	@Override
 	public void tick(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player) {
 		recipeLayout.tick();
+		updateTransferButton(parentContainer, player);
+	}
+
+	@Override
+	public void updateTransferButton(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player) {
 		transferButton.update(parentContainer, player);
+	}
+
+	@Override
+	public IRecipeLayoutDrawable<R> getRecipeLayout() {
+		return recipeLayout;
+	}
+
+	@Override
+	public void drawTooltips(PoseStack poseStack, int mouseX, int mouseY) {
+		transferButton.drawTooltips(poseStack, mouseX, mouseY);
+	}
+
+	@Override
+	public int getMissingCountHint() {
+		return -1;
 	}
 
 	private record RecipeLayoutUserInputHandler<R>(IRecipeLayoutDrawable<R> recipeLayout) implements IUserInputHandler {
