@@ -59,7 +59,7 @@ public interface IRecipeGuiLogic {
 	Stream<ITypedIngredient<?>> getRecipeCatalysts();
 	Stream<ITypedIngredient<?>> getRecipeCatalysts(IRecipeCategory<?> recipeCategory);
 
-	List<RecipeLayoutWithButtons<?>> getVisibleRecipeLayoutsWithButtons(
+	List<IRecipeLayoutWithButtons<?>> getVisibleRecipeLayoutsWithButtons(
 		int availableHeight,
 		int minRecipePadding,
 		@Nullable AbstractContainerMenu container,

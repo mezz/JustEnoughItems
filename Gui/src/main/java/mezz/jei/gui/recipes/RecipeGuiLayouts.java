@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.ClickableIngredientInternal;
 import mezz.jei.gui.input.IClickableIngredientInternal;
@@ -16,18 +17,22 @@ import mezz.jei.gui.overlay.elements.IngredientElement;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class RecipeGuiLayouts {
-	private final List<RecipeLayoutWithButtons<?>> recipeLayoutsWithButtons = new ArrayList<>();
+	private static final Logger LOGGER = LogManager.getLogger();
+
+	private final List<IRecipeLayoutWithButtons<?>> recipeLayoutsWithButtons = new ArrayList<>();
 	@Nullable
 	private IUserInputHandler cachedInputHandler;
 
@@ -39,8 +44,8 @@ public class RecipeGuiLayouts {
 		if (this.recipeLayoutsWithButtons.isEmpty()) {
 			return;
 		}
-		RecipeLayoutWithButtons<?> firstLayout = this.recipeLayoutsWithButtons.getFirst();
-		ImmutableRect2i layoutAreaWithBorder = new ImmutableRect2i(firstLayout.recipeLayout().getRectWithBorder());
+		IRecipeLayoutWithButtons<?> firstLayout = this.recipeLayoutsWithButtons.getFirst();
+		ImmutableRect2i layoutAreaWithBorder = new ImmutableRect2i(firstLayout.getRecipeLayout().getRectWithBorder());
 		final int recipeXOffset = getRecipeXOffset(layoutAreaWithBorder, recipeLayoutsArea);
 
 		final int recipeHeight = layoutAreaWithBorder.getHeight();
@@ -50,39 +55,9 @@ public class RecipeGuiLayouts {
 
 		final int spacingY = recipeHeight + recipeSpacing;
 		int recipeYOffset = recipeLayoutsArea.getY() + recipeSpacing;
-		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.recipeLayout();
-			Rect2i rectWithBorder = recipeLayout.getRectWithBorder();
-			Rect2i rect = recipeLayout.getRect();
-			recipeLayout.setPosition(
-				recipeXOffset - rectWithBorder.getX() + rect.getX(),
-				recipeYOffset - rectWithBorder.getY() + rect.getY()
-			);
+		for (IRecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
+			recipeLayoutWithButtons.updateBounds(recipeXOffset, recipeYOffset);
 			recipeYOffset += spacingY;
-		}
-
-		updateRecipeButtonPositions();
-	}
-
-	private void updateRecipeButtonPositions() {
-		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.recipeLayout();
-			Rect2i layoutArea = recipeLayout.getRect();
-
-			{
-				RecipeTransferButton button = recipeLayoutWithButtons.transferButton();
-				Rect2i buttonArea = recipeLayout.getRecipeTransferButtonArea();
-				buttonArea.setX(buttonArea.getX() + layoutArea.getX());
-				buttonArea.setY(buttonArea.getY() + layoutArea.getY());
-				button.updateBounds(buttonArea);
-			}
-			{
-				RecipeBookmarkButton button = recipeLayoutWithButtons.bookmarkButton();
-				Rect2i buttonArea = recipeLayout.getRecipeBookmarkButtonArea();
-				buttonArea.setX(buttonArea.getX() + layoutArea.getX());
-				buttonArea.setY(buttonArea.getY() + layoutArea.getY());
-				button.updateBounds(buttonArea);
-			}
 		}
 	}
 
@@ -109,7 +84,7 @@ public class RecipeGuiLayouts {
 		return new ProxyInputHandler(() -> {
 			if (cachedInputHandler == null) {
 				List<IUserInputHandler> handlers = this.recipeLayoutsWithButtons.stream()
-					.map(RecipeLayoutWithButtons::createUserInputHandler)
+					.map(IRecipeLayoutWithButtons::createUserInputHandler)
 					.toList();
 				cachedInputHandler = new CombinedInputHandler("RecipeGuiLayouts", handlers);
 			}
@@ -119,12 +94,10 @@ public class RecipeGuiLayouts {
 
 	public void tick(@Nullable AbstractContainerMenu parentContainer) {
 		Player player = Minecraft.getInstance().player;
-		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : this.recipeLayoutsWithButtons) {
-			recipeLayoutWithButtons.tick(parentContainer, player);
-		}
+		safeCallOnRecipeLayouts(r -> r.tick(parentContainer, player));
 	}
 
-	public void setRecipeLayoutsWithButtons(List<RecipeLayoutWithButtons<?>> recipeLayoutsWithButtons) {
+	public void setRecipeLayoutsWithButtons(List<IRecipeLayoutWithButtons<?>> recipeLayoutsWithButtons) {
 		this.recipeLayoutsWithButtons.clear();
 		this.recipeLayoutsWithButtons.addAll(recipeLayoutsWithButtons);
 		this.cachedInputHandler = null;
@@ -132,7 +105,7 @@ public class RecipeGuiLayouts {
 
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return this.recipeLayoutsWithButtons.stream()
-			.map(RecipeLayoutWithButtons::recipeLayout)
+			.map(IRecipeLayoutWithButtons::getRecipeLayout)
 			.map(recipeLayout -> recipeLayout.getSlotUnderMouse(mouseX, mouseY))
 			.flatMap(Optional::stream)
 			.map(RecipeGuiLayouts::getClickedIngredient)
@@ -148,8 +121,8 @@ public class RecipeGuiLayouts {
 	}
 
 	public boolean mouseDragged(double mouseX, double mouseY, InputConstants.Key input, double dragX, double dragY) {
-		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.recipeLayout();
+		for (IRecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
+			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.getRecipeLayout();
 			if (mouseDragged(recipeLayout, mouseX, mouseY, input, dragX, dragY)) {
 				return true;
 			}
@@ -166,8 +139,8 @@ public class RecipeGuiLayouts {
 	}
 
 	public void mouseMoved(double mouseX, double mouseY) {
-		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.recipeLayout();
+		for (IRecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
+			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.getRecipeLayout();
 			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
 				IJeiInputHandler inputHandler = recipeLayout.getInputHandler();
 				inputHandler.handleMouseMoved(mouseX, mouseY);
@@ -182,34 +155,41 @@ public class RecipeGuiLayouts {
 		DeltaTracker deltaTracker = minecraft.getDeltaTracker();
 		float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
 
-		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.recipeLayout();
+		safeCallOnRecipeLayouts(r -> r.draw(guiGraphics, mouseX, mouseY, partialTicks));
+
+		for (IRecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
+			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.getRecipeLayout();
 			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
 				hoveredLayout = recipeLayout;
+				break;
 			}
-			recipeLayout.drawRecipe(guiGraphics, mouseX, mouseY);
-
-			RecipeTransferButton transferButton = recipeLayoutWithButtons.transferButton();
-			transferButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
-
-			RecipeBookmarkButton bookmarkButton = recipeLayoutWithButtons.bookmarkButton();
-			bookmarkButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		return Optional.ofNullable(hoveredLayout);
 	}
 
-	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			recipeLayoutWithButtons.transferButton().drawTooltips(guiGraphics, mouseX, mouseY);
-			recipeLayoutWithButtons.bookmarkButton().drawTooltips(guiGraphics, mouseX, mouseY);
+	private void safeCallOnRecipeLayouts(Consumer<IRecipeLayoutWithButtons<?>> consumer) {
+		for (int i = 0; i < recipeLayoutsWithButtons.size(); i++) {
+			IRecipeLayoutWithButtons<?> recipeLayoutWithButtons = recipeLayoutsWithButtons.get(i);
+			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.getRecipeLayout();
+			try {
+				consumer.accept(recipeLayoutWithButtons);
+			} catch (RuntimeException e) {
+				String recipeInfo = ErrorUtil.getRecipeInfo(recipeLayout);
+				LOGGER.error("Recipe crashed:\n{}", recipeInfo, e);
+				recipeLayoutsWithButtons.set(i, new RecipeLayoutWithButtonsErrored<>(recipeLayout));
+			}
 		}
+	}
+
+	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		safeCallOnRecipeLayouts(r -> r.drawTooltips(guiGraphics, mouseX, mouseY));
 	}
 
 	public int getWidth() {
 		if (recipeLayoutsWithButtons.isEmpty()) {
 			return 0;
 		}
-		RecipeLayoutWithButtons<?> first = this.recipeLayoutsWithButtons.getFirst();
+		IRecipeLayoutWithButtons<?> first = this.recipeLayoutsWithButtons.getFirst();
 		return first.totalWidth();
 	}
 }

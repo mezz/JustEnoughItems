@@ -52,25 +52,25 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<CraftingRecipe> recipeHolder, IFocusGroup focuses) {
-		var recipeExtension = this.extendableHelper.getRecipeExtension(recipeHolder);
+		var recipeExtension = this.extendableHelper.getRecipeExtension(this, recipeHolder);
 		recipeExtension.setRecipe(recipeHolder, builder, craftingGridHelper, focuses);
 	}
 
 	@Override
 	public void onDisplayedIngredientsUpdate(RecipeHolder<CraftingRecipe> recipeHolder, List<IRecipeSlotDrawable> recipeSlots, IFocusGroup focuses) {
-		var recipeExtension = this.extendableHelper.getRecipeExtension(recipeHolder);
+		var recipeExtension = this.extendableHelper.getRecipeExtension(this, recipeHolder);
 		recipeExtension.onDisplayedIngredientsUpdate(recipeHolder, recipeSlots, focuses);
 	}
 
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, RecipeHolder<CraftingRecipe> recipeHolder, IFocusGroup focuses) {
-		var recipeExtension = this.extendableHelper.getRecipeExtension(recipeHolder);
+		var recipeExtension = this.extendableHelper.getRecipeExtension(this, recipeHolder);
 		recipeExtension.createRecipeExtras(recipeHolder, builder, craftingGridHelper, focuses);
 	}
 
 	@Override
 	public void draw(RecipeHolder<CraftingRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		var extension = this.extendableHelper.getRecipeExtension(recipeHolder);
+		var extension = this.extendableHelper.getRecipeExtension(this, recipeHolder);
 		int recipeWidth = this.getWidth();
 		int recipeHeight = this.getHeight();
 		extension.drawInfo(recipeHolder, recipeWidth, recipeHeight, guiGraphics, mouseX, mouseY);
@@ -81,14 +81,14 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 
 	@Override
 	public void getTooltip(ITooltipBuilder tooltip, RecipeHolder<CraftingRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-		var extension = this.extendableHelper.getRecipeExtension(recipeHolder);
+		var extension = this.extendableHelper.getRecipeExtension(this, recipeHolder);
 		extension.getTooltip(tooltip, recipeHolder, mouseX, mouseY);
 	}
 
 	@SuppressWarnings("removal")
 	@Override
 	public boolean handleInput(RecipeHolder<CraftingRecipe> recipeHolder, double mouseX, double mouseY, InputConstants.Key input) {
-		var extension = this.extendableHelper.getRecipeExtension(recipeHolder);
+		var extension = this.extendableHelper.getRecipeExtension(this, recipeHolder);
 		return extension.handleInput(recipeHolder, mouseX, mouseY, input);
 	}
 

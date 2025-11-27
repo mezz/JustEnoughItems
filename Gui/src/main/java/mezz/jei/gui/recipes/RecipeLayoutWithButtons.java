@@ -6,10 +6,13 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.gui.bookmarks.BookmarkList;
+import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
@@ -22,11 +25,68 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public record RecipeLayoutWithButtons<R>(
-	IRecipeLayoutDrawable<R> recipeLayout,
-	RecipeTransferButton transferButton,
-	RecipeBookmarkButton bookmarkButton
-) {
+public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButtons<R> {
+
+	public static <T> IRecipeLayoutWithButtons<T> create(
+		IRecipeLayoutDrawable<T> recipeLayoutDrawable,
+		@Nullable RecipeBookmark<?, ?> recipeBookmark,
+		BookmarkList bookmarks,
+		RecipesGui recipesGui,
+		@Nullable AbstractContainerMenu container
+	) {
+		Minecraft minecraft = Minecraft.getInstance();
+		Player player = minecraft.player;
+		RecipeTransferButton transferButton = RecipeTransferButton.create(recipeLayoutDrawable, recipesGui::onClose, container, player);
+		RecipeBookmarkButton bookmarkButton = RecipeBookmarkButton.create(recipeLayoutDrawable, bookmarks, recipeBookmark);
+		return new RecipeLayoutWithButtons<>(recipeLayoutDrawable, transferButton, bookmarkButton);
+	}
+
+	private final IRecipeLayoutDrawable<R> recipeLayout;
+	private final RecipeTransferButton transferButton;
+	private final RecipeBookmarkButton bookmarkButton;
+
+	private RecipeLayoutWithButtons(
+		IRecipeLayoutDrawable<R> recipeLayout,
+		RecipeTransferButton transferButton,
+		RecipeBookmarkButton bookmarkButton
+	) {
+		this.recipeLayout = recipeLayout;
+		this.transferButton = transferButton;
+		this.bookmarkButton = bookmarkButton;
+	}
+
+	@Override
+	public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		recipeLayout.drawRecipe(guiGraphics, mouseX, mouseY);
+		transferButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
+		bookmarkButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
+	}
+
+	@Override
+	public void updateBounds(int recipeXOffset, int recipeYOffset) {
+		Rect2i rectWithBorder = recipeLayout.getRectWithBorder();
+		Rect2i rect = recipeLayout.getRect();
+		recipeLayout.setPosition(
+			recipeXOffset - rectWithBorder.getX() + rect.getX(),
+			recipeYOffset - rectWithBorder.getY() + rect.getY()
+		);
+
+		Rect2i layoutArea = recipeLayout.getRect();
+		{
+			Rect2i buttonArea = recipeLayout.getRecipeTransferButtonArea();
+			buttonArea.setX(buttonArea.getX() + layoutArea.getX());
+			buttonArea.setY(buttonArea.getY() + layoutArea.getY());
+			transferButton.updateBounds(buttonArea);
+		}
+		{
+			Rect2i buttonArea = recipeLayout.getRecipeBookmarkButtonArea();
+			buttonArea.setX(buttonArea.getX() + layoutArea.getX());
+			buttonArea.setY(buttonArea.getY() + layoutArea.getY());
+			bookmarkButton.updateBounds(buttonArea);
+		}
+	}
+
+	@Override
 	public int totalWidth() {
 		Rect2i area = recipeLayout.getRect();
 		Rect2i areaWithBorder = recipeLayout.getRectWithBorder();
@@ -48,6 +108,7 @@ public record RecipeLayoutWithButtons<R>(
 		return leftBorderWidth + rightAreaWidth;
 	}
 
+	@Override
 	public IUserInputHandler createUserInputHandler() {
 		return new CombinedInputHandler(
 			"RecipeLayoutWithButtons",
@@ -57,10 +118,27 @@ public record RecipeLayoutWithButtons<R>(
 		);
 	}
 
+	@Override
 	public void tick(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player) {
 		recipeLayout.tick();
 		transferButton.update(parentContainer, player);
 		bookmarkButton.tick();
+	}
+
+	@Override
+	public IRecipeLayoutDrawable<R> getRecipeLayout() {
+		return recipeLayout;
+	}
+
+	@Override
+	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		transferButton.drawTooltips(guiGraphics, mouseX, mouseY);
+		bookmarkButton.drawTooltips(guiGraphics, mouseX, mouseY);
+	}
+
+	@Override
+	public int getMissingCountHint() {
+		return transferButton.getMissingCountHint();
 	}
 
 	private record RecipeLayoutUserInputHandler<R>(IRecipeLayoutDrawable<R> recipeLayout) implements IUserInputHandler {

@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class LimitedLogger {
 	private final Map<String, Long> logTimes = new HashMap<>();
@@ -24,6 +25,17 @@ public class LimitedLogger {
 			if (lastTime == null || (now - lastTime > timeBetweenLoggingMs)) {
 				this.logTimes.put(key, now);
 				this.logger.log(level, message, params);
+			}
+		}
+	}
+
+	public void log(Level level, String key, Consumer<Logger> loggerConsumer) {
+		if (this.logger.isEnabled(level)) {
+			long now = System.currentTimeMillis();
+			Long lastTime = logTimes.get(key);
+			if (lastTime == null || (now - lastTime > timeBetweenLoggingMs)) {
+				this.logTimes.put(key, now);
+				loggerConsumer.accept(this.logger);
 			}
 		}
 	}

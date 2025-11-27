@@ -14,7 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class RecipeSortUtil {
-	private static final Comparator<RecipeLayoutWithButtons<?>> CRAFTABLE_COMPARATOR = createCraftableComparator();
+	private static final Comparator<IRecipeLayoutWithButtons<?>> COMPARATOR = createComparator();
 
 	public static List<IRecipeCategory<?>> sortRecipeCategories(
 		List<IRecipeCategory<?>> recipeCategories,
@@ -42,22 +42,21 @@ public class RecipeSortUtil {
 			.toList();
 	}
 
-	public static Comparator<RecipeLayoutWithButtons<?>> getCraftableComparator() {
-		return CRAFTABLE_COMPARATOR;
+	public static Comparator<IRecipeLayoutWithButtons<?>> getComparator() {
+		return COMPARATOR;
 	}
 
-	private static Comparator<RecipeLayoutWithButtons<?>> createCraftableComparator() {
+	private static Comparator<IRecipeLayoutWithButtons<?>> createComparator() {
 		return Comparator.comparingInt(r -> {
-			IRecipeLayoutDrawable<?> recipeLayout = r.recipeLayout();
+			IRecipeLayoutDrawable<?> recipeLayout = r.getRecipeLayout();
 
-			RecipeTransferButton transferButton = r.transferButton();
-			int missingCount = transferButton.getMissingCountHint();
+			int missingCount = r.getMissingCountHint();
 			if (missingCount == -1) {
 				return 0;
 			}
 
 			IRecipeSlotsView recipeSlotsView = recipeLayout.getRecipeSlotsView();
-			int ingredientCount = ingredientCount(recipeSlotsView);
+			int ingredientCount = inputCount(recipeSlotsView);
 			if (ingredientCount == 0) {
 				return 0;
 			}
@@ -68,7 +67,7 @@ public class RecipeSortUtil {
 		});
 	}
 
-	private static int ingredientCount(IRecipeSlotsView recipeSlotsView) {
+	private static int inputCount(IRecipeSlotsView recipeSlotsView) {
 		int count = 0;
 		for (IRecipeSlotView i : recipeSlotsView.getSlotViews()) {
 			if (i.getRole() == RecipeIngredientRole.INPUT && !i.isEmpty()) {

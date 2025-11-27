@@ -1,9 +1,5 @@
-package mezz.jei.library.gui.recipes.layout;
+package mezz.jei.common.gui;
 
-import com.google.gson.JsonElement;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
@@ -11,27 +7,20 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
-import mezz.jei.api.helpers.ICodecHelper;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.library.gui.OffsetJeiInputHandler;
-import mezz.jei.library.gui.widgets.AbstractScrollWidget;
-import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenPosition;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,34 +44,17 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 
 		List<FormattedText> lines = new ArrayList<>();
 		lines.add(Component.translatable("gui.jei.category.recipe.crashed").withStyle(ChatFormatting.RED));
+		ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
+		if (registryName != null) {
+			lines.add(Component.literal(registryName.toString()).withStyle(ChatFormatting.GRAY));
+		}
 		lines.add(Component.empty());
 		lines.add(Component.literal(recipeCategory.getRecipeType().getUid().toString()).withStyle(ChatFormatting.GRAY));
+
 		IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
 		IJeiHelpers jeiHelpers = jeiRuntime.getJeiHelpers();
-		ICodecHelper codecHelper = jeiHelpers.getCodecHelper();
-		IRecipeManager recipeManager = jeiRuntime.getRecipeManager();
-
-		Codec<? super R> codec = recipeCategory.getCodec(codecHelper, recipeManager);
-		Minecraft minecraft = Minecraft.getInstance();
-		ClientLevel level = minecraft.level;
-		assert level != null;
-		RegistryAccess registryAccess = level.registryAccess();
-		RegistryOps<JsonElement> registryOps = registryAccess.createSerializationContext(JsonOps.INSTANCE);
-
-		DataResult<JsonElement> dataResult = codec.encodeStart(registryOps, recipe);
-		Optional<JsonElement> result = dataResult.result();
-		if (result.isPresent()) {
-			String encoded = result.get().toString();
-			lines.add(Component.empty());
-			lines.add(Component.literal(encoded).withStyle(ChatFormatting.GRAY));
-		}
-
-		this.scrollBoxWidget = new ScrollBoxRecipeWidget(
-				area.width() + AbstractScrollWidget.getScrollBoxScrollbarExtraWidth(),
-				area.height(),
-				0,
-				0
-			)
+		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+		this.scrollBoxWidget = guiHelper.createScrollBoxWidget(area.width(), area.getHeight(), 0, 0)
 			.setContents(lines);
 
 		this.inputHandler = new OffsetJeiInputHandler(this.scrollBoxWidget, this::getScreenPosition);
@@ -113,6 +85,7 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 				poseStack.translate(position.x(), position.y());
 				scrollBoxWidget.drawWidget(guiGraphics, recipeMouseX - position.x(), recipeMouseY - position.y());
 			}
+			poseStack.popMatrix();
 		}
 		poseStack.popMatrix();
 	}

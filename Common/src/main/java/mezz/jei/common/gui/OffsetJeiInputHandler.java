@@ -1,4 +1,4 @@
-package mezz.jei.library.gui;
+package mezz.jei.common.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;

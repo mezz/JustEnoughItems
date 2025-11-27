@@ -6,6 +6,7 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -20,6 +21,7 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.TickTimer;
 import mezz.jei.library.gui.elements.DrawableBuilder;
+import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
 import net.minecraft.resources.ResourceLocation;
 
 public class GuiHelper implements IGuiHelper {
@@ -132,6 +134,11 @@ public class GuiHelper implements IGuiHelper {
 	@Override
 	public ICraftingGridHelper createCraftingGridHelper() {
 		return CraftingGridHelper.INSTANCE;
+	}
+
+	@Override
+	public IScrollBoxWidget createScrollBoxWidget(int width, int height, int xPos, int yPos) {
+		return new ScrollBoxRecipeWidget(width, height, xPos, yPos);
 	}
 
 	@Override

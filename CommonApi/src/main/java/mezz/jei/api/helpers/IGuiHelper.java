@@ -7,6 +7,7 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.resources.ResourceLocation;
@@ -164,6 +165,14 @@ public interface IGuiHelper {
 	 * Helps set crafting-grid-style GuiItemStackGroup.
 	 */
 	ICraftingGridHelper createCraftingGridHelper();
+
+	/**
+	 * Create a scroll box widget.
+	 * Handles displaying drawable contents in a scrolling area.
+	 *
+	 * @since 26.2.0
+	 */
+	IScrollBoxWidget createScrollBoxWidget(int width, int height, int xPos, int yPos);
 
 	/**
 	 * Create a timer to help with rendering things that normally depend on ticks.
