@@ -4,7 +4,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.gui.bookmarks.BookmarkList;
-import mezz.jei.gui.recipes.RecipeLayoutWithButtons;
+import mezz.jei.gui.recipes.IRecipeLayoutWithButtons;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -37,9 +37,9 @@ public interface IRecipeLayoutList {
 
 	int size();
 
-	List<RecipeLayoutWithButtons<?>> subList(int from, int to);
+	List<IRecipeLayoutWithButtons<?>> subList(int from, int to);
 
-	Optional<RecipeLayoutWithButtons<?>> findFirst();
+	Optional<IRecipeLayoutWithButtons<?>> findFirst();
 
 	void tick(@Nullable AbstractContainerMenu container);
 }

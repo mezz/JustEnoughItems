@@ -19,6 +19,7 @@ public final class DebugConfig {
 	private final Supplier<Boolean> debugInputsEnabled;
 	private final Supplier<Boolean> debugInfoTooltipsEnabled;
 	private final Supplier<Boolean> crashingTestIngredientsEnabled;
+	private final Supplier<Boolean> crashingTestRecipesEnabled;
 	private final Supplier<Boolean> logSuffixTreeStats;
 
 	private DebugConfig(IConfigSchemaBuilder schema) {
@@ -28,6 +29,7 @@ public final class DebugConfig {
 		debugInputsEnabled = advanced.addBoolean("debugInputs", false);
 		debugInfoTooltipsEnabled = advanced.addBoolean("debugInfoTooltipsEnabled", false);
 		crashingTestIngredientsEnabled = advanced.addBoolean("crashingTestItemsEnabled", false);
+		crashingTestRecipesEnabled =  advanced.addBoolean("crashingTestRecipesEnabled", false);
 		logSuffixTreeStats = advanced.addBoolean("logSuffixTreeStats", false);
 	}
 
@@ -64,6 +66,13 @@ public final class DebugConfig {
 			return false;
 		}
 		return instance.crashingTestIngredientsEnabled.get();
+	}
+
+	public static boolean isCrashingTestRecipesEnabled() {
+		if (instance == null) {
+			return false;
+		}
+		return instance.crashingTestRecipesEnabled.get();
 	}
 
 	public static boolean isLogSuffixTreeStatsEnabled() {

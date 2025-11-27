@@ -237,7 +237,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public List<RecipeLayoutWithButtons<?>> getVisibleRecipeLayoutsWithButtons(
+	public List<IRecipeLayoutWithButtons<?>> getVisibleRecipeLayoutsWithButtons(
 		int availableHeight,
 		int minRecipePadding,
 		@Nullable AbstractContainerMenu container,
@@ -274,7 +274,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		final int recipeHeight =
 			this.cachedRecipeLayoutsWithButtons.findFirst()
-				.map(RecipeLayoutWithButtons::recipeLayout)
+				.map(IRecipeLayoutWithButtons::getRecipeLayout)
 				.map(IRecipeLayoutDrawable::getRectWithBorder)
 				.map(Rect2i::getHeight)
 				.orElseGet(recipeCategory::getHeight);

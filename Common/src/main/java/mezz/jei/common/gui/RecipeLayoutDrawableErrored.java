@@ -1,4 +1,4 @@
-package mezz.jei.library.gui.recipes.layout;
+package mezz.jei.common.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
@@ -14,7 +14,6 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
-import mezz.jei.library.gui.OffsetJeiInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -88,6 +87,7 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 				poseStack.translate(position.x(), position.y(), 0);
 				scrollBoxWidget.drawWidget(guiGraphics, recipeMouseX - position.x(), recipeMouseY - position.y());
 			}
+			poseStack.popPose();
 		}
 		poseStack.popPose();
 	}

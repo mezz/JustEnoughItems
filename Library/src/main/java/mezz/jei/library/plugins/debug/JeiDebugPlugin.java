@@ -62,6 +62,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -160,7 +161,8 @@ public class JeiDebugPlugin implements IModPlugin {
 			registration.addRecipeCategories(
 				debugRecipeCategory,
 				new DebugFocusRecipeCategory<>(platformFluidHelper),
-				new ObnoxiouslyLargeCategory(guiHelper, textures, ingredientManager)
+				new ObnoxiouslyLargeCategory(guiHelper, textures, ingredientManager),
+				new ErrorRecipeCategory()
 			);
 		}
 	}
@@ -231,6 +233,10 @@ public class JeiDebugPlugin implements IModPlugin {
 			));
 
 			registration.addRecipes(ObnoxiouslyLargeCategory.TYPE, List.of(new ObnoxiouslyLargeRecipe()));
+
+			if (DebugConfig.isCrashingTestRecipesEnabled()) {
+				registration.addRecipes(ErrorRecipeCategory.TYPE, Arrays.stream(ErrorRecipe.CrashType.values()).map(ErrorRecipe::new).toList());
+			}
 		}
 	}
 
