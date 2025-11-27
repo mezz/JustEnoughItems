@@ -18,6 +18,7 @@ public final class DebugConfig {
 	private final Supplier<Boolean> debugGuisEnabled;
 	private final Supplier<Boolean> debugInputsEnabled;
 	private final Supplier<Boolean> debugInfoTooltipsEnabled;
+	private final Supplier<Boolean> crashingTestRecipesEnabled;
 	private final Supplier<Boolean> logSuffixTreeStats;
 
 	private DebugConfig(IConfigSchemaBuilder schema) {
@@ -41,6 +42,11 @@ public final class DebugConfig {
 			"debugInfoTooltipsEnabled",
 			false,
 			"Add debug information to ingredient tooltips when advanced tooltips are enabled."
+		);
+		crashingTestRecipesEnabled = advanced.addBoolean(
+			"CrashingTestRecipesEnabled",
+			false,
+			"Adds recipes to JEI that intentionally crash, to help debug JEI."
 		);
 		logSuffixTreeStats = advanced.addBoolean(
 			"logSuffixTreeStats",
@@ -75,6 +81,13 @@ public final class DebugConfig {
 			return false;
 		}
 		return instance.debugInfoTooltipsEnabled.get();
+	}
+
+	public static boolean isCrashingTestRecipesEnabled() {
+		if (instance == null) {
+			return false;
+		}
+		return instance.crashingTestRecipesEnabled.get();
 	}
 
 	public static boolean isLogSuffixTreeStatsEnabled() {
