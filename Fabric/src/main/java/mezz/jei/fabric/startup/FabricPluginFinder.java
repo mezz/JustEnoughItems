@@ -1,13 +1,20 @@
 package mezz.jei.fabric.startup;
 
 import mezz.jei.api.IModPlugin;
+import net.fabricmc.loader.api.EntrypointException;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
+import net.fabricmc.loader.api.metadata.ModMetadata;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public final class FabricPluginFinder {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private FabricPluginFinder() {
 
 	}
@@ -21,7 +28,28 @@ public final class FabricPluginFinder {
 		FabricLoader fabricLoader = FabricLoader.getInstance();
 		List<EntrypointContainer<T>> pluginContainers = fabricLoader.getEntrypointContainers(entrypointContainerKey, instanceClass);
 		return pluginContainers.stream()
-			.map(EntrypointContainer::getEntrypoint)
+			.<T>mapMulti((entrypointContainer, consumer) -> {
+				try {
+					T entrypoint = entrypointContainer.getEntrypoint();
+					consumer.accept(entrypoint);
+				} catch (EntrypointException e) {
+					String modName = getModName(entrypointContainer);
+					LOGGER.error("{} specified an invalid entrypoint for its JEI plugin", modName, e);
+				} catch (RuntimeException | LinkageError e) {
+					String modName = getModName(entrypointContainer);
+					LOGGER.error("{} specified a broken entrypoint for its JEI plugin", modName, e);
+				}
+			})
 			.collect(Collectors.toList());
+	}
+
+	private static String getModName(EntrypointContainer<?> entrypointContainer) {
+		try {
+			ModContainer provider = entrypointContainer.getProvider();
+			ModMetadata metadata = provider.getMetadata();
+			return metadata.getName();
+		} catch (RuntimeException | LinkageError e) {
+			return "unknown";
+		}
 	}
 }
