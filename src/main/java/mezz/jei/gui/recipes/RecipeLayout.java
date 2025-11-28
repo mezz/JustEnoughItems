@@ -77,7 +77,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			recipeLayout.addRecipeIdTooltip();
 			return recipeLayout;
 		} catch (RuntimeException | LinkageError e) {
-			Log.get().error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
+			String recipeInfo = ErrorUtil.getNameForRecipe(recipeWrapper);
+			Log.get().error("Error caught from Recipe Category: {} for recipe: {}", recipeCategory.getClass().getCanonicalName(), recipeInfo, e);
 		}
 		return null;
 	}
