@@ -159,6 +159,16 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 		}
 
 		{
+			long capacity = 10 * bucketVolume;
+			// empty fluid stack
+			builder.addOutputSlot(110, 0)
+				.setFluidRenderer(capacity, false, 16, 58)
+				.setOverlay(tankOverlay, -1, -1)
+				.setBackground(tankBackground, -1, -1)
+				.addFluidStack(Fluids.LAVA, 0);
+		}
+
+		{
 			long capacity = 2 * bucketVolume;
 			// random amount between half capacity and full
 			long amount = (capacity / 2) + (int) ((Math.random() * capacity) / 2);
