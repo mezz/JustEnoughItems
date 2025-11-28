@@ -149,7 +149,7 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 
 	@Override
 	public FluidStack copyIngredient(FluidStack ingredient) {
-		return ingredient.copy();
+		return new FluidStack(ingredient.getRawFluid(), ingredient.getAmount(), ingredient.getTag());
 	}
 
 	@Override
