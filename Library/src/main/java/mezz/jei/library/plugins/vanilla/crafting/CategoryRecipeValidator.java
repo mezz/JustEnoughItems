@@ -2,7 +2,7 @@ package mezz.jei.library.plugins.vanilla.crafting;
 
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.library.util.RecipeErrorUtil;
+import mezz.jei.library.util.RecipeDebugUtil;
 import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
@@ -43,7 +43,7 @@ public final class CategoryRecipeValidator<T extends Recipe<?>> {
 		ItemStack recipeOutput = RecipeUtil.getResultItem(recipe);
 		if (recipeOutput == null || recipeOutput.isEmpty()) {
 			if (LOGGER.isDebugEnabled()) {
-				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipeHolder, recipeCategory, ingredientManager);
+				String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipeHolder, recipeCategory, ingredientManager);
 				LOGGER.debug("Skipping Recipe because it has no output. {}", recipeInfo);
 			}
 			return false;
@@ -51,7 +51,7 @@ public final class CategoryRecipeValidator<T extends Recipe<?>> {
 		List<Ingredient> ingredients = recipe.getIngredients();
 		if (ingredients == null) {
 			if (LOGGER.isDebugEnabled()) {
-				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipeHolder, recipeCategory, ingredientManager);
+				String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipeHolder, recipeCategory, ingredientManager);
 				LOGGER.debug("Skipping Recipe because it has no input Ingredients. {}", recipeInfo);
 			}
 			return false;
@@ -59,19 +59,19 @@ public final class CategoryRecipeValidator<T extends Recipe<?>> {
 		int inputCount = getInputCount(ingredients);
 		if (inputCount == INVALID_COUNT) {
 			if (LOGGER.isDebugEnabled()) {
-				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipeHolder, recipeCategory, ingredientManager);
+				String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipeHolder, recipeCategory, ingredientManager);
 				LOGGER.debug("Skipping Recipe because it contains invalid inputs. {}", recipeInfo);
 			}
 			return false;
 		} else if (inputCount > maxInputs) {
 			if (LOGGER.isDebugEnabled()) {
-				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipeHolder, recipeCategory, ingredientManager);
+				String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipeHolder, recipeCategory, ingredientManager);
 				LOGGER.debug("Skipping Recipe because it has too many inputs. {}", recipeInfo);
 			}
 			return false;
 		} else if (inputCount == 0 && maxInputs > 0) {
 			if (LOGGER.isDebugEnabled()) {
-				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipeHolder, recipeCategory, ingredientManager);
+				String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipeHolder, recipeCategory, ingredientManager);
 				LOGGER.debug("Skipping Recipe because it has no inputs. {}", recipeInfo);
 			}
 			return false;

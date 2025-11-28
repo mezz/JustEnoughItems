@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.ClickableIngredientInternal;
 import mezz.jei.gui.input.IClickableIngredientInternal;
@@ -175,7 +176,8 @@ public class RecipeGuiLayouts {
 			try {
 				consumer.accept(recipeLayoutWithButtons);
 			} catch (RuntimeException e) {
-				LOGGER.error("Recipe layout crashed while drawing", e);
+				String recipeInfo = ErrorUtil.getRecipeInfo(recipeLayout);
+				LOGGER.error("Recipe crashed:\n{}", recipeInfo, e);
 				recipeLayoutsWithButtons.set(i, new RecipeLayoutWithButtonsErrored<>(recipeLayout));
 			}
 		}

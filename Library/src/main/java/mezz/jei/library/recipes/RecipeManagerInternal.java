@@ -19,7 +19,7 @@ import mezz.jei.library.recipes.collect.RecipeMap;
 import mezz.jei.library.recipes.collect.RecipeTypeData;
 import mezz.jei.library.recipes.collect.RecipeTypeDataMap;
 import mezz.jei.library.util.IngredientSupplierHelper;
-import mezz.jei.library.util.RecipeErrorUtil;
+import mezz.jei.library.util.RecipeDebugUtil;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -133,14 +133,14 @@ public class RecipeManagerInternal {
 		RecipeType<T> recipeType = recipeCategory.getRecipeType();
 		if (hiddenRecipes.contains(recipe)) {
 			if (LOGGER.isDebugEnabled()) {
-				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory, ingredientManager);
+				String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipe, recipeCategory, ingredientManager);
 				LOGGER.debug("Recipe not added because it is hidden: {}", recipeInfo);
 			}
 			return false;
 		}
 		if (!recipeCategory.isHandled(recipe)) {
 			if (LOGGER.isDebugEnabled()) {
-				String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory, ingredientManager);
+				String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipe, recipeCategory, ingredientManager);
 				LOGGER.debug("Recipe not added because the recipe category cannot handle it: {}", recipeInfo);
 			}
 			return false;
@@ -153,7 +153,7 @@ public class RecipeManagerInternal {
 			}
 			return true;
 		} catch (RuntimeException | LinkageError e) {
-			String recipeInfo = RecipeErrorUtil.getInfoFromRecipe(recipe, recipeCategory, ingredientManager);
+			String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipe, recipeCategory, ingredientManager);
 			LOGGER.error("Found a broken recipe, failed to addRecipe: {}\n", recipeInfo, e);
 			return false;
 		}

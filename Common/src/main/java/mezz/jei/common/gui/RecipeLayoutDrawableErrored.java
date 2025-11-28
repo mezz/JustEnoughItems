@@ -45,13 +45,12 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 
 		List<FormattedText> lines = new ArrayList<>();
 		lines.add(Component.translatable("gui.jei.category.recipe.crashed").withStyle(ChatFormatting.RED));
-		lines.add(Component.empty());
-		lines.add(Component.literal(recipeCategory.getRecipeType().getUid().toString()).withStyle(ChatFormatting.GRAY));
 		ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
 		if (registryName != null) {
-			lines.add(Component.empty());
 			lines.add(Component.literal(registryName.toString()).withStyle(ChatFormatting.GRAY));
 		}
+		lines.add(Component.empty());
+		lines.add(Component.literal(recipeCategory.getRecipeType().getUid().toString()).withStyle(ChatFormatting.GRAY));
 
 		IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
 		IJeiHelpers jeiHelpers = jeiRuntime.getJeiHelpers();

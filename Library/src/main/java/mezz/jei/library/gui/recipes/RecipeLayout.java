@@ -32,6 +32,7 @@ import mezz.jei.common.gui.elements.DrawableCombined;
 import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.common.gui.elements.TextWidget;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
@@ -109,7 +110,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 			);
 			return Optional.of(recipeLayout);
 		} catch (RuntimeException | LinkageError e) {
-			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getRecipeType(), e);
+			String recipeInfo = ErrorUtil.getRecipeInfo(recipeCategory, recipe);
+			LOGGER.error("Recipe crashed during Recipe Layout creation:\n{}", recipeInfo, e);
 		}
 		return Optional.empty();
 	}
@@ -283,7 +285,17 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 					decorator.decorateTooltips(tooltip, recipe, recipeCategory, recipeCategorySlotsView, recipeMouseX, recipeMouseY);
 				}
 			} catch (RuntimeException e) {
-				LIMITED_LOGGER.log(Level.ERROR, "recipe.category.tooltip.crash", "Error while getting tooltip from recipe category '{}'", recipeCategory.getRecipeType(), e);
+				LIMITED_LOGGER.log(
+					Level.ERROR,
+					"recipe.category.tooltip.crash",
+					logger -> {
+						logger.error(
+							"Error while getting tooltip from recipe:\n{}",
+							ErrorUtil.getRecipeInfo(recipeCategory, recipe),
+							e
+						);
+					}
+				);
 			}
 
 			for (IRecipeWidget widget : allWidgets) {

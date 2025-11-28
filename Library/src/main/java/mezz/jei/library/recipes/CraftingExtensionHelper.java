@@ -1,7 +1,8 @@
 package mezz.jei.library.recipes;
 
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
-import mezz.jei.library.util.RecipeErrorUtil;
+import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -36,10 +37,10 @@ public class CraftingExtensionHelper {
 		this.handlers.add(new Handler<>(recipeClass, recipeExtension));
 	}
 
-	public <R extends CraftingRecipe> ICraftingCategoryExtension<R> getRecipeExtension(RecipeHolder<R> recipeHolder) {
+	public <R extends CraftingRecipe> ICraftingCategoryExtension<R> getRecipeExtension(IRecipeCategory<RecipeHolder<R>> recipeCategory, RecipeHolder<R> recipeHolder) {
 		return getOptionalRecipeExtension(recipeHolder)
 			.orElseThrow(() -> {
-				String recipeName = RecipeErrorUtil.getNameForRecipe(recipeHolder);
+				String recipeName = ErrorUtil.getRecipeInfo(recipeCategory, recipeHolder);
 				return new RuntimeException("Failed to create recipe extension for recipe: " + recipeName);
 			});
 	}

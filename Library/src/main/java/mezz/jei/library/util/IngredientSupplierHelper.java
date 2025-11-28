@@ -3,6 +3,7 @@ package mezz.jei.library.util;
 import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.focus.FocusGroup;
 import mezz.jei.library.gui.recipes.supplier.builder.IngredientSupplierBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -22,8 +23,8 @@ public final class IngredientSupplierHelper {
 		try {
 			recipeCategory.setRecipe(builder, recipe, FocusGroup.EMPTY);
 		} catch (RuntimeException | LinkageError e) {
-			String recipeName = RecipeErrorUtil.getNameForRecipe(recipe);
-			LOGGER.error("Found a broken recipe, failed to setRecipe with RecipeLayoutBuilder: {}\n", recipeName, e);
+			String recipeInfo = ErrorUtil.getRecipeInfo(recipeCategory, recipe);
+			LOGGER.error("Found a broken recipe, failed to setRecipe with RecipeLayoutBuilder:\n{}", recipeInfo, e);
 		}
 
 		return builder.buildIngredientSupplier();
