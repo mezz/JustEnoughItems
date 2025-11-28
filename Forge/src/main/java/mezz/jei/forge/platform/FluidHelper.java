@@ -151,7 +151,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 
 	@Override
 	public FluidStack copy(FluidStack ingredient) {
-		return ingredient.copy();
+		return new FluidStack(ingredient.getRawFluid(), ingredient.getAmount(), ingredient.getTag());
 	}
 
 	@Override
