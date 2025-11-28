@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.ClickableIngredientInternal;
 import mezz.jei.gui.input.IClickableIngredientInternal;
@@ -189,7 +190,8 @@ public class RecipeGuiLayouts {
 	}
 
 	private void replaceCrashedRecipeLayout(int index, IRecipeLayoutDrawable<?> recipeLayout, RuntimeException e) {
-		LOGGER.error("Recipe layout crashed", e);
+		String recipeInfo = ErrorUtil.getRecipeInfo(recipeLayout);
+		LOGGER.error("Recipe crashed:\n{}", recipeInfo, e);
 		recipeLayoutsWithButtons.set(index, new RecipeLayoutWithButtonsErrored<>(recipeLayout));
 		this.cachedInputHandler = null;
 	}

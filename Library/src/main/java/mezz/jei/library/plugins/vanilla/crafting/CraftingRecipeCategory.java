@@ -50,25 +50,25 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<CraftingRecip
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, CraftingRecipe recipe, IFocusGroup focuses) {
-		var recipeExtension = this.extendableHelper.getRecipeExtension(recipe);
+		var recipeExtension = this.extendableHelper.getRecipeExtension(this, recipe);
 		recipeExtension.setRecipe(builder, craftingGridHelper, focuses);
 	}
 
 	@Override
 	public void onDisplayedIngredientsUpdate(CraftingRecipe recipe, List<IRecipeSlotDrawable> recipeSlots, IFocusGroup focuses) {
-		var recipeExtension = this.extendableHelper.getRecipeExtension(recipe);
+		var recipeExtension = this.extendableHelper.getRecipeExtension(this, recipe);
 		recipeExtension.onDisplayedIngredientsUpdate(recipeSlots, focuses);
 	}
 
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, CraftingRecipe recipe, IFocusGroup focuses) {
-		var recipeExtension = this.extendableHelper.getRecipeExtension(recipe);
+		var recipeExtension = this.extendableHelper.getRecipeExtension(this, recipe);
 		recipeExtension.createRecipeExtras(builder, craftingGridHelper, focuses);
 	}
 
 	@Override
 	public void draw(CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
-		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
+		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(this, recipe);
 		int recipeWidth = this.getWidth();
 		int recipeHeight = this.getHeight();
 		extension.drawInfo(recipeWidth, recipeHeight, poseStack, mouseX, mouseY);
@@ -79,21 +79,21 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<CraftingRecip
 
 	@Override
 	public void getTooltip(ITooltipBuilder tooltip, CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
+		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(this, recipe);
 		extension.getTooltip(tooltip, mouseX, mouseY);
 	}
 
 	@SuppressWarnings({"removal"})
 	@Override
 	public List<Component> getTooltipStrings(CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
+		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(this, recipe);
 		return extension.getTooltipStrings(mouseX, mouseY);
 	}
 
 	@SuppressWarnings({"removal"})
 	@Override
 	public boolean handleInput(CraftingRecipe recipe, double mouseX, double mouseY, InputConstants.Key input) {
-		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(recipe);
+		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(this, recipe);
 		return extension.handleInput(mouseX, mouseY, input);
 	}
 
