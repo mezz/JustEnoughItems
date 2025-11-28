@@ -1,7 +1,8 @@
 package mezz.jei.library.recipes;
 
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
-import mezz.jei.library.util.RecipeErrorUtil;
+import mezz.jei.common.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -43,10 +44,10 @@ public class ExtendableRecipeCategoryHelper<T, W extends IRecipeCategoryExtensio
 		this.recipeHandlers.add(new RecipeHandler<>(recipeClass, extensionFilter, recipeExtensionFactory));
 	}
 
-	public <R extends T> W getRecipeExtension(R recipe) {
+	public <R extends T> W getRecipeExtension(IRecipeCategory<R> recipeCategory, R recipe) {
 		return getOptionalRecipeExtension(recipe)
 			.orElseThrow(() -> {
-				String recipeName = RecipeErrorUtil.getNameForRecipe(recipe);
+				String recipeName = ErrorUtil.getRecipeInfo(recipeCategory, recipe);
 				return new RuntimeException("Failed to create recipe extension for recipe: " + recipeName);
 			});
 	}

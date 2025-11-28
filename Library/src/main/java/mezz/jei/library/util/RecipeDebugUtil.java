@@ -18,13 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public final class RecipeErrorUtil {
+public final class RecipeDebugUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private RecipeErrorUtil() {
+	private RecipeDebugUtil() {
 	}
 
-	public static <T> String getInfoFromRecipe(T recipe, IRecipeCategory<T> recipeCategory, IIngredientManager ingredientManager) {
+	public static <T> String getDebugInfoFromRecipe(T recipe, IRecipeCategory<T> recipeCategory, IIngredientManager ingredientManager) {
 		StringBuilder recipeInfoBuilder = new StringBuilder();
 		String recipeName = getNameForRecipe(recipe);
 		recipeInfoBuilder.append(recipeName);
@@ -83,7 +83,7 @@ public final class RecipeErrorUtil {
 			.toString();
 	}
 
-	public static String getNameForRecipe(Object recipe) {
+	private static String getNameForRecipe(Object recipe) {
 		if (recipe instanceof Recipe<?> minecraftRecipe) {
 			ResourceLocation registryName = minecraftRecipe.getId();
 			if (registryName != null) {
