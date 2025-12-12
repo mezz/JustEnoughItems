@@ -1,7 +1,7 @@
 @ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
+@NullMarked
 package mezz.jei.library.runtime;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 
 import javax.annotation.ParametersAreNonnullByDefault;

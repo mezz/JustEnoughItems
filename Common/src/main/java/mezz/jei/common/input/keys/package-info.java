@@ -1,7 +1,7 @@
 @ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
+@NullMarked
 package mezz.jei.common.input.keys;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 
 import javax.annotation.ParametersAreNonnullByDefault;

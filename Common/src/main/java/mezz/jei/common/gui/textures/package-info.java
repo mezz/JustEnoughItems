@@ -1,7 +1,7 @@
 @ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
+@NullMarked
 package mezz.jei.common.gui.textures;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 
 import javax.annotation.ParametersAreNonnullByDefault;
