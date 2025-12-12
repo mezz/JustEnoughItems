@@ -14,6 +14,7 @@ import net.minecraft.util.FormattedCharSequence;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public final class StringUtil {
@@ -35,16 +36,26 @@ public final class StringUtil {
 
 	public static FormattedText truncateStringToWidth(FormattedText text, int width, Font font) {
 		int ellipsisWidth = font.width("...");
-		StringSplitter splitter = font.getSplitter();
 
 		FormattedText truncatedText = font.substrByWidth(text, width - ellipsisWidth);
 
-		Style style = splitter.componentStyleAtWidth(text, width - ellipsisWidth);
-		if (style == null) {
-			style = Style.EMPTY;
-		}
+		Style style = getStyleAtEnd(truncatedText);
 
 		return FormattedText.composite(truncatedText, Component.literal("...").setStyle(style));
+	}
+
+	public static Style getStyleAtEnd(FormattedText text) {
+		final Style[] endStyle = {Style.EMPTY};
+
+		text.visit(
+			(style, s) -> {
+				endStyle[0] = style;
+				return Optional.empty();
+			},
+			Style.EMPTY
+		);
+
+		return endStyle[0];
 	}
 
 	/**

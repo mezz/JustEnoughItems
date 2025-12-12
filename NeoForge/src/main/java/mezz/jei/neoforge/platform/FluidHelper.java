@@ -19,7 +19,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -80,7 +80,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 
 		if (tooltipFlag.isAdvanced()) {
 			Registry<Fluid> fluidRegistry = RegistryUtil.getRegistry(Registries.FLUID);
-			ResourceLocation resourceLocation = fluidRegistry.getKey(fluid);
+			Identifier resourceLocation = fluidRegistry.getKey(fluid);
 			if (resourceLocation != null &&  resourceLocation != BuiltInRegistries.FLUID.getDefaultKey()) {
 				MutableComponent advancedId = Component.literal(resourceLocation.toString())
 					.withStyle(ChatFormatting.DARK_GRAY);
@@ -98,7 +98,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	public Optional<TextureAtlasSprite> getStillFluidSprite(FluidStack fluidStack) {
 		Fluid fluid = fluidStack.getFluid();
 		IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
-		ResourceLocation fluidStill = renderProperties.getStillTexture(fluidStack);
+		Identifier fluidStill = renderProperties.getStillTexture(fluidStack);
 		// noinspection OptionalOfNullableMisuse
 		return Optional.ofNullable(fluidStill)
 			.map(ClientHooks::getBlockMaterial)

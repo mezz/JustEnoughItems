@@ -2,11 +2,11 @@ package mezz.jei.api.gui.drawable;
 
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.helpers.IGuiHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Builder for creating drawables from a resource location.
- * Create an instance with {@link IGuiHelper#drawableBuilder(ResourceLocation, int, int, int, int)}
+ * Create an instance with {@link IGuiHelper#drawableBuilder(Identifier, int, int, int, int)}
  */
 public interface IDrawableBuilder {
 	/**

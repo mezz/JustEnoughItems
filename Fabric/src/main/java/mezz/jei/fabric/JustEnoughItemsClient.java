@@ -13,7 +13,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.recipe.v1.sync.ClientRecipeSynchronizedEvent;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.item.crafting.RecipeMap;
@@ -39,10 +39,10 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 				clientLifecycleHandler.registerEvents();
 
 				ResourceLoader.get(PackType.SERVER_DATA)
-					.registerReloader(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "lifecycle"), clientLifecycleHandler.getReloadListener());
+					.registerReloader(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "lifecycle"), clientLifecycleHandler.getReloadListener());
 
 				ResourceLoader.get(PackType.CLIENT_RESOURCES)
-					.registerReloader(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "resources_reload"), createReloadListener());
+					.registerReloader(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "resources_reload"), createReloadListener());
 			});
 		});
 	}

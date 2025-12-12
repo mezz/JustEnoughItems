@@ -9,7 +9,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IJeiRuntime;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Collection;
 import java.util.List;
@@ -240,7 +240,7 @@ public interface IRecipeManager {
 	 * @see IRecipeType#getUid()
 	 * @since 19.11.0
 	 */
-	<T> Optional<IRecipeType<T>> getRecipeType(ResourceLocation recipeUid, Class<? extends T> recipeClass);
+	<T> Optional<IRecipeType<T>> getRecipeType(Identifier recipeUid, Class<? extends T> recipeClass);
 
 	/**
 	 * Get the registered recipe type for the given unique id.
@@ -251,5 +251,5 @@ public interface IRecipeManager {
 	 * @see IRecipeType#getUid()
 	 * @since 11.2.3
 	 */
-	Optional<IRecipeType<?>> getRecipeType(ResourceLocation recipeUid);
+	Optional<IRecipeType<?>> getRecipeType(Identifier recipeUid);
 }

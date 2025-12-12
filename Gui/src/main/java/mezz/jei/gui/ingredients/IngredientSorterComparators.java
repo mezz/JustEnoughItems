@@ -12,9 +12,10 @@ import mezz.jei.gui.config.ModNameSortingConfig;
 import net.minecraft.core.HolderSet.ListBacked;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
@@ -134,7 +135,7 @@ public class IngredientSorterComparators {
 	private static double getArmorDamageReduce(ItemStack itemStack) {
 		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
 		ItemAttributeModifiers itemAttributeModifiers = itemStackHelper.getItemAttributeModifiers(itemStack);
-		return itemAttributeModifiers.compute(1.0, EquipmentSlot.CHEST);
+		return itemAttributeModifiers.compute(Attributes.ARMOR, 1.0, EquipmentSlot.CHEST);
 	}
 
 	private static int getArmorDurability(ItemStack itemStack) {
@@ -148,11 +149,11 @@ public class IngredientSorterComparators {
 		// Choose the most popular tag it has.
 		return elementInfo.getTagIds(ingredientManager)
 			.max(Comparator.comparing(IngredientSorterComparators::tagCount))
-			.map(ResourceLocation::getPath)
+			.map(Identifier::getPath)
 			.orElse("");
 	}
 
-	private static int tagCount(ResourceLocation tagId) {
+	private static int tagCount(Identifier tagId) {
 		//TODO: make a tag blacklist.
 		if (tagId.toString().equals("itemfilters:check_nbt")) {
 			return 0;

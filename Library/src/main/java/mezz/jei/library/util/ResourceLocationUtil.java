@@ -1,6 +1,6 @@
 package mezz.jei.library.util;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class ResourceLocationUtil {
 	public static String sanitizePath(String path) {
@@ -8,7 +8,7 @@ public class ResourceLocationUtil {
 		boolean valid = true;
 		for (int i = 0; i < charArray.length; i++) {
 			char c = charArray[i];
-			if (!ResourceLocation.validPathChar(c)) {
+			if (!Identifier.validPathChar(c)) {
 				charArray[i] = '.';
 				valid = false;
 			}

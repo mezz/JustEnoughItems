@@ -15,7 +15,7 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.Translator;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -116,8 +116,8 @@ public class IngredientManager implements IIngredientManager {
 		LOGGER.info("Ingredients are being added at runtime: {} {}", ingredients.size(), ingredientType.getIngredientClass().getName());
 		if (LOGGER.isDebugEnabled()) {
 			String ingredientStrings = ingredients.stream()
-				.map(ingredientHelper::getResourceLocation)
-				.map(ResourceLocation::toString)
+				.map(ingredientHelper::getIdentifier)
+				.map(Identifier::toString)
 				.collect(Collectors.joining(", ", "[","]"));
 			LOGGER.debug("Ingredients added at runtime: {}", ingredientStrings);
 		}
@@ -181,8 +181,8 @@ public class IngredientManager implements IIngredientManager {
 		LOGGER.info("Ingredients are being removed at runtime: {} {}", ingredients.size(), ingredientType.getIngredientClass().getName());
 		if (LOGGER.isDebugEnabled()) {
 			String ingredientStrings = ingredients.stream()
-				.map(ingredientHelper::getResourceLocation)
-				.map(ResourceLocation::toString)
+				.map(ingredientHelper::getIdentifier)
+				.map(Identifier::toString)
 				.collect(Collectors.joining(", ", "[","]"));
 			LOGGER.debug("Ingredients removed at runtime: {}", ingredientStrings);
 		}

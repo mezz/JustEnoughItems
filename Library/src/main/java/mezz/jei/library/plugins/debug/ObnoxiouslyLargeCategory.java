@@ -12,7 +12,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.textures.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Collection;
@@ -67,7 +67,7 @@ public class ObnoxiouslyLargeCategory extends AbstractRecipeCategory<Obnoxiously
 	}
 
 	@Override
-	public ResourceLocation getRegistryName(ObnoxiouslyLargeRecipe recipe) {
+	public Identifier getIdentifier(ObnoxiouslyLargeRecipe recipe) {
 		return recipe.getRecipeId();
 	}
 }

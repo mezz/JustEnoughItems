@@ -7,7 +7,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.runtime.JeiHelpers;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
 	private final List<IRecipeCategory<?>> recipeCategories = new ArrayList<>();
-	private final Map<ResourceLocation, IRecipeType<?>> recipeTypes = new HashMap<>();
+	private final Map<Identifier, IRecipeType<?>> recipeTypes = new HashMap<>();
 	private final JeiHelpers jeiHelpers;
 
 	public RecipeCategoryRegistration(JeiHelpers jeiHelpers) {
@@ -32,7 +32,7 @@ public class RecipeCategoryRegistration implements IRecipeCategoryRegistration {
 		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
 			IRecipeType<?> recipeType = recipeCategory.getRecipeType();
 			Preconditions.checkNotNull(recipeType, "Recipe type cannot be null %s", recipeCategory);
-			ResourceLocation recipeTypeUid = recipeType.getUid();
+			Identifier recipeTypeUid = recipeType.getUid();
 			if (recipeTypes.containsKey(recipeTypeUid)) {
 				IRecipeType<?> existing = recipeTypes.get(recipeTypeUid);
 				throw new IllegalArgumentException("Tried to register a recipe type \"" + recipeType + "\" but there is already one registered with the same UID: " + existing);

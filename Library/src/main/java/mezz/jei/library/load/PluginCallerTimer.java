@@ -1,6 +1,6 @@
 package mezz.jei.library.load;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.Executors;
@@ -22,7 +22,7 @@ public class PluginCallerTimer implements AutoCloseable {
 		}
 	}
 
-	public synchronized void begin(String title, ResourceLocation pluginUid) {
+	public synchronized void begin(String title, Identifier pluginUid) {
 		this.runnable = new PluginCallerTimerRunnable(title, pluginUid);
 	}
 

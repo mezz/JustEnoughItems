@@ -17,7 +17,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PotionItem;
@@ -140,7 +140,7 @@ public class BrewingRecipeMakerCommon {
 					continue;
 				}
 
-				ResourceLocation outputResourceLocation = itemStackHelper.getResourceLocation(potionOutput);
+				Identifier outputResourceLocation = itemStackHelper.getIdentifier(potionOutput);
 				String outputPathId = PotionSubtypeInterpreter.INSTANCE.getStringName(potionOutput);
 				String outputModId = outputResourceLocation.getNamespace();
 				String uidPath = ResourceLocationUtil.sanitizePath(inputPathId + ".to." + outputPathId);
@@ -148,7 +148,7 @@ public class BrewingRecipeMakerCommon {
 					List.of(potionReagent),
 					potionInputCopy,
 					potionOutput,
-					ResourceLocation.fromNamespaceAndPath(outputModId, uidPath)
+					Identifier.fromNamespaceAndPath(outputModId, uidPath)
 				);
 
 				IJeiBrewingRecipe existingRecipe = recipes.stream()

@@ -1,7 +1,7 @@
 package mezz.jei.library.plugins.vanilla.anvil;
 
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,7 +11,7 @@ public record AnvilRecipe(
 	List<ItemStack> leftInputs,
 	List<ItemStack> rightInputs,
 	List<ItemStack> outputs,
-	@Nullable ResourceLocation uid
+	@Nullable Identifier uid
 ) implements IJeiAnvilRecipe {
 
 	@Override
@@ -31,7 +31,7 @@ public record AnvilRecipe(
 
 	@Override
 	@Nullable
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return uid;
 	}
 }

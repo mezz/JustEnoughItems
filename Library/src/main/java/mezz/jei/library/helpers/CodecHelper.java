@@ -23,7 +23,7 @@ import mezz.jei.common.codecs.TupleCodec;
 import mezz.jei.common.codecs.TypedIngredientCodecs;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeMap;
@@ -124,8 +124,8 @@ public class CodecHelper implements ICodecHelper {
 	private <T> Codec<T> createDefaultRecipeCategoryCodec(IRecipeManager recipeManager, IRecipeCategory<T> recipeCategory) {
 		Codec<Data> dataCodec = RecordCodecBuilder.create((builder) -> {
 			return builder.group(
-				ResourceLocation.CODEC.fieldOf("registryName")
-					.forGetter(Data::registryName),
+				Identifier.CODEC.fieldOf("registryId")
+					.forGetter(Data::registryId),
 				getTypedIngredientCodec().codec().fieldOf("ingredient")
 					.forGetter(Data::ingredient),
 				EnumCodec.create(RecipeIngredientRole.class).fieldOf("ingredient_role")
@@ -134,7 +134,7 @@ public class CodecHelper implements ICodecHelper {
 		});
 		return dataCodec.flatXmap(
 			data -> {
-				ResourceLocation registryName = data.registryName();
+				Identifier registryName = data.registryId();
 				ITypedIngredient<?> ingredient = data.ingredient();
 				IFocus<?> focus = focusFactory.createFocus(data.ingredientRole(), ingredient);
 
@@ -143,25 +143,25 @@ public class CodecHelper implements ICodecHelper {
 				return recipeManager.createRecipeLookup(recipeType)
 					.limitFocus(List.of(focus))
 					.get()
-					.filter(recipe -> registryName.equals(recipeCategory.getRegistryName(recipe)))
+					.filter(recipe -> registryName.equals(recipeCategory.getIdentifier(recipe)))
 					.findFirst()
 					.map(DataResult::success)
-					.orElseGet(() -> DataResult.error(() -> "No recipe found for registry name: " + registryName));
+					.orElseGet(() -> DataResult.error(() -> "No recipe found for registry id: " + registryName));
 			},
 			recipe -> {
-				ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
-				if (registryName == null) {
-					return DataResult.error(() -> "No registry name for recipe");
+				Identifier registryId = recipeCategory.getIdentifier(recipe);
+				if (registryId == null) {
+					return DataResult.error(() -> "No registry id for recipe");
 				}
 				IIngredientSupplier ingredients = recipeManager.getRecipeIngredients(recipeCategory, recipe);
 				List<ITypedIngredient<?>> outputs = ingredients.getIngredients(RecipeIngredientRole.OUTPUT);
 				if (!outputs.isEmpty()) {
-					Data result = new Data(registryName, outputs.getFirst(), RecipeIngredientRole.OUTPUT);
+					Data result = new Data(registryId, outputs.getFirst(), RecipeIngredientRole.OUTPUT);
 					return DataResult.success(result);
 				}
 				List<ITypedIngredient<?>> inputs = ingredients.getIngredients(RecipeIngredientRole.INPUT);
 				if (!inputs.isEmpty()) {
-					Data result = new Data(registryName, inputs.getFirst(), RecipeIngredientRole.INPUT);
+					Data result = new Data(registryId, inputs.getFirst(), RecipeIngredientRole.INPUT);
 					return DataResult.success(result);
 				}
 				return DataResult.error(() -> "No inputs or outputs for recipe");
@@ -169,19 +169,19 @@ public class CodecHelper implements ICodecHelper {
 		);
 	}
 
-	private record Data(ResourceLocation registryName, ITypedIngredient<?> ingredient, RecipeIngredientRole ingredientRole) {}
+	private record Data(Identifier registryId, ITypedIngredient<?> ingredient, RecipeIngredientRole ingredientRole) {}
 
 	@Override
 	public Codec<IRecipeType<?>> getRecipeTypeCodec(IRecipeManager recipeManager) {
 		if (recipeTypeCodec == null) {
-			recipeTypeCodec = ResourceLocation.CODEC.flatXmap(
-				resourceLocation -> {
-					return recipeManager.getRecipeType(resourceLocation)
+			recipeTypeCodec = Identifier.CODEC.flatXmap(
+				uid -> {
+					return recipeManager.getRecipeType(uid)
 						.map(DataResult::success)
-						.orElseGet(() -> DataResult.error(() -> "Failed to find recipe type " + resourceLocation));
+						.orElseGet(() -> DataResult.error(() -> "Failed to find recipe type " + uid));
 				},
 				recipeType -> {
-					ResourceLocation uid = recipeType.getUid();
+					Identifier uid = recipeType.getUid();
 					return DataResult.success(uid);
 				}
 			);

@@ -3,7 +3,7 @@ package mezz.jei.gui.ingredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IIngredientFilterConfig;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
@@ -26,14 +26,14 @@ public interface IListElementInfo<V> {
 
 	Collection<String> getTagStrings(IIngredientManager ingredientManager);
 
-	Stream<ResourceLocation> getTagIds(IIngredientManager ingredientManager);
+	Stream<Identifier> getTagIds(IIngredientManager ingredientManager);
 
 	Iterable<Integer> getColors(IIngredientManager ingredientManager);
 
 	@Unmodifiable
 	Collection<String> getCreativeTabsStrings(IIngredientManager ingredientManager);
 
-	ResourceLocation getResourceLocation();
+	Identifier getIdentifier();
 
 	IListElement<V> getElement();
 

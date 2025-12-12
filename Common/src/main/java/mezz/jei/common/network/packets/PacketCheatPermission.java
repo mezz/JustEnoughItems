@@ -7,14 +7,13 @@ import mezz.jei.common.network.packets.handlers.ClientCheatPermissionHandler;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PacketCheatPermission extends PlayToClientPacket<PacketCheatPermission> {
-	public static final Type<PacketCheatPermission> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "cheat_permission"));
+	public static final Type<PacketCheatPermission> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "cheat_permission"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, PacketCheatPermission> STREAM_CODEC = StreamCodec.composite(
 		ByteBufCodecs.BOOL,
 		p -> p.hasPermission,
@@ -50,7 +49,6 @@ public class PacketCheatPermission extends PlayToClientPacket<PacketCheatPermiss
 		ClientCheatPermissionHandler.handleHasCheatPermission(context, hasPermission, allowedCheatingMethods);
 	}
 
-	@NotNull
 	private static List<String> getAllowedCheatingMethods(IServerConfig serverConfig) {
 		List<String> allowedCheatingMethods = new ArrayList<>();
 		if (serverConfig.isCheatModeEnabledForOp()) {

@@ -3,7 +3,7 @@ package mezz.jei.test.lib;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -35,8 +35,8 @@ public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 	}
 
 	@Override
-	public ResourceLocation getResourceLocation(TestIngredient ingredient) {
-		return ResourceLocation.fromNamespaceAndPath("jei_test_mod", "test_ingredient_" + ingredient.number());
+	public Identifier getIdentifier(TestIngredient ingredient) {
+		return Identifier.fromNamespaceAndPath("jei_test_mod", "test_ingredient_" + ingredient.number());
 	}
 
 	@Override

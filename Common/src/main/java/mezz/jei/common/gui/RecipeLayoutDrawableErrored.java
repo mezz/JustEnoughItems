@@ -20,7 +20,7 @@ import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +44,9 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 
 		List<FormattedText> lines = new ArrayList<>();
 		lines.add(Component.translatable("gui.jei.category.recipe.crashed").withStyle(ChatFormatting.RED));
-		ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
-		if (registryName != null) {
-			lines.add(Component.literal(registryName.toString()).withStyle(ChatFormatting.GRAY));
+		Identifier id = recipeCategory.getIdentifier(recipe);
+		if (id != null) {
+			lines.add(Component.literal(id.toString()).withStyle(ChatFormatting.GRAY));
 		}
 		lines.add(Component.empty());
 		lines.add(Component.literal(recipeCategory.getRecipeType().getUid().toString()).withStyle(ChatFormatting.GRAY));

@@ -11,7 +11,7 @@ import mezz.jei.common.util.StringUtil;
 import mezz.jei.common.util.Translator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
@@ -38,7 +38,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	private final List<String> names;
 	private final List<String> modIds;
 	private final List<String> modNames;
-	private final ResourceLocation resourceLocation;
+	private final Identifier id;
 
 	@Nullable
 	public static <V> IListElementInfo<V> create(ITypedIngredient<V> value, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
@@ -69,9 +69,9 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		V ingredient = value.getIngredient();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
-		this.resourceLocation = ingredientHelper.getResourceLocation(ingredient);
+		this.id = ingredientHelper.getIdentifier(ingredient);
 		String displayModId = ingredientHelper.getDisplayModId(ingredient);
-		String modId = this.resourceLocation.getNamespace();
+		String modId = this.id.getNamespace();
 		if (modId.equals(displayModId)) {
 			this.modIds = List.of(modId);
 			this.modNames = List.of(modIdHelper.getModNameForModId(modId));
@@ -131,7 +131,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		strings.remove(this.names.getFirst());
 		strings.remove(this.modNames.getFirst().toLowerCase(Locale.ENGLISH));
 		strings.remove(this.modIds.getFirst());
-		strings.remove(resourceLocation.getPath());
+		strings.remove(id.getPath());
 
 		return strings;
 	}
@@ -155,12 +155,12 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		return ingredientHelper.getTagStream(value.getIngredient())
-			.map(ResourceLocation::getPath)
+			.map(Identifier::getPath)
 			.toList();
 	}
 
 	@Override
-	public Stream<ResourceLocation> getTagIds(IIngredientManager ingredientManager) {
+	public Stream<Identifier> getTagIds(IIngredientManager ingredientManager) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		return ingredientHelper.getTagStream(value.getIngredient());
@@ -196,8 +196,8 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	public ResourceLocation getResourceLocation() {
-		return resourceLocation;
+	public Identifier getIdentifier() {
+		return id;
 	}
 
 	@Override

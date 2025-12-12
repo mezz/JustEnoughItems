@@ -6,7 +6,8 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeHolderType;
 import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
@@ -32,7 +33,7 @@ public final class RecipeType<T> implements IRecipeType<T> {
 	 */
 	@Deprecated(since = "20.0.0", forRemoval = true)
 	public static <T> RecipeType<T> create(String nameSpace, String path, Class<? extends T> recipeClass) {
-		ResourceLocation uid = ResourceLocation.fromNamespaceAndPath(nameSpace, path);
+		Identifier uid = Identifier.fromNamespaceAndPath(nameSpace, path);
 		return new RecipeType<>(uid, recipeClass);
 	}
 
@@ -44,7 +45,7 @@ public final class RecipeType<T> implements IRecipeType<T> {
 	 */
 	@Deprecated(since = "20.0.0", forRemoval = true)
 	public static <R extends Recipe<?>> RecipeType<RecipeHolder<R>> createFromVanilla(net.minecraft.world.item.crafting.RecipeType<R> vanillaRecipeType) {
-		ResourceLocation uid = BuiltInRegistries.RECIPE_TYPE.getKey(vanillaRecipeType);
+		Identifier uid = BuiltInRegistries.RECIPE_TYPE.getKey(vanillaRecipeType);
 		if (uid == null) {
 			throw new IllegalArgumentException("Vanilla Recipe Type must be registered before using it here. %s".formatted(vanillaRecipeType));
 		}
@@ -58,7 +59,7 @@ public final class RecipeType<T> implements IRecipeType<T> {
 	 * @deprecated use {@link IRecipeHolderType#create} or {@link #create}.
 	 */
 	@Deprecated(since = "20.0.0", forRemoval = true)
-	public static <R extends Recipe<?>> RecipeType<RecipeHolder<R>> createRecipeHolderType(ResourceLocation uid) {
+	public static <R extends Recipe<?>> RecipeType<RecipeHolder<R>> createRecipeHolderType(Identifier uid) {
 		@SuppressWarnings({"unchecked", "RedundantCast"})
 		Class<? extends RecipeHolder<R>> holderClass = (Class<? extends RecipeHolder<R>>) (Object) RecipeHolder.class;
 		return new RecipeType<>(uid, holderClass);
@@ -79,11 +80,11 @@ public final class RecipeType<T> implements IRecipeType<T> {
 		return Suppliers.memoize(() -> createFromVanilla(deferredVanillaRecipeType.get()));
 	}
 
-	final ResourceLocation uid;
+	final Identifier uid;
 	final Class<? extends T> recipeClass;
 
 	@SuppressWarnings("ConstantValue")
-	public RecipeType(ResourceLocation uid, Class<? extends T> recipeClass) {
+	public RecipeType(Identifier uid, Class<? extends T> recipeClass) {
 		if (uid == null) {
 			throw new NullPointerException("uid must not be null.");
 		}
@@ -98,7 +99,7 @@ public final class RecipeType<T> implements IRecipeType<T> {
 	 * The unique id of this recipe type.
 	 */
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return uid;
 	}
 

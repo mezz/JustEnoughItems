@@ -4,7 +4,7 @@ import com.google.common.base.Stopwatch;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.core.util.TimeUtil;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,7 +21,7 @@ public class PluginCaller {
 		try (PluginCallerTimer timer = new PluginCallerTimer()) {
 			for (IModPlugin plugin : plugins) {
 				try {
-					ResourceLocation pluginUid = plugin.getPluginUid();
+					Identifier pluginUid = plugin.getPluginUid();
 					timer.begin(title, pluginUid);
 					func.accept(plugin);
 					timer.end();

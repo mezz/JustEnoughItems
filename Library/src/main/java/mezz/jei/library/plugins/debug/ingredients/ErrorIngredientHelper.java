@@ -4,7 +4,7 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
@@ -31,8 +31,8 @@ public class ErrorIngredientHelper implements IIngredientHelper<ErrorIngredient>
 	}
 
 	@Override
-	public ResourceLocation getResourceLocation(ErrorIngredient ingredient) {
-		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "error_" + ingredient.crashType().toString().toLowerCase(Locale.ROOT));
+	public Identifier getIdentifier(ErrorIngredient ingredient) {
+		return Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "error_" + ingredient.crashType().toString().toLowerCase(Locale.ROOT));
 	}
 
 	@Override

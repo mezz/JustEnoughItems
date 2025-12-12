@@ -7,7 +7,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -63,7 +63,7 @@ public interface IJeiHelpers {
 	 * @see IRecipeType#getUid()
 	 * @since 19.11.0
 	 */
-	<T> Optional<IRecipeType<T>> getRecipeType(ResourceLocation uid, Class<? extends T> recipeClass);
+	<T> Optional<IRecipeType<T>> getRecipeType(Identifier uid, Class<? extends T> recipeClass);
 
 	/**
 	 * Get the registered recipe type for the given unique id.
@@ -74,7 +74,7 @@ public interface IJeiHelpers {
 	 * @see IRecipeType#getUid()
 	 * @since 11.4.0
 	 */
-	Optional<IRecipeType<?>> getRecipeType(ResourceLocation uid);
+	Optional<IRecipeType<?>> getRecipeType(Identifier uid);
 
 	/**
 	 * Get all registered recipe types.

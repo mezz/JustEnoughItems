@@ -20,7 +20,7 @@ import mezz.jei.library.recipes.collect.RecipeTypeData;
 import mezz.jei.library.recipes.collect.RecipeTypeDataMap;
 import mezz.jei.library.util.IngredientSupplierHelper;
 import mezz.jei.library.util.RecipeDebugUtil;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -274,11 +274,11 @@ public class RecipeManagerInternal {
 		recipeCategoriesVisibleCache = null;
 	}
 
-	public <T> Optional<IRecipeType<T>> getRecipeType(ResourceLocation recipeUid, Class<? extends T> recipeClass) {
+	public <T> Optional<IRecipeType<T>> getRecipeType(Identifier recipeUid, Class<? extends T> recipeClass) {
 		return recipeTypeDataMap.getType(recipeUid, recipeClass);
 	}
 
-	public Optional<IRecipeType<?>> getRecipeType(ResourceLocation recipeUid) {
+	public Optional<IRecipeType<?>> getRecipeType(Identifier recipeUid) {
 		return recipeTypeDataMap.getType(recipeUid);
 	}
 

@@ -10,7 +10,7 @@ import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
@@ -23,11 +23,11 @@ public interface IGuiHelper {
 	 * Create a drawable from part of a standard 256x256 gui texture.
 	 *
 	 * If your texture is not exactly 256x256, you will need to create a `{@link IDrawableBuilder} instead
-	 * with {@link #drawableBuilder(ResourceLocation, int, int, int, int)}
+	 * with {@link #drawableBuilder(Identifier, int, int, int, int)}
 	 * and then specify the texture size with {@link IDrawableBuilder#setTextureSize(int, int)}
 	 */
-	default IDrawableStatic createDrawable(ResourceLocation resourceLocation, int u, int v, int width, int height) {
-		return drawableBuilder(resourceLocation, u, v, width, height).build();
+	default IDrawableStatic createDrawable(Identifier id, int u, int v, int width, int height) {
+		return drawableBuilder(id, u, v, width, height).build();
 	}
 
 	/**
@@ -35,7 +35,7 @@ public interface IGuiHelper {
 	 *
 	 * @return a new {@link IDrawableBuilder} with the given resource location
 	 */
-	IDrawableBuilder drawableBuilder(ResourceLocation resourceLocation, int u, int v, int width, int height);
+	IDrawableBuilder drawableBuilder(Identifier id, int u, int v, int width, int height);
 
 	/**
 	 * Creates an animated texture for a gui, revealing the texture over time.

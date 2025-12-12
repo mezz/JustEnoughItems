@@ -134,7 +134,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, recipeManager, guiHelper);
 		this.optionButtons = new RecipeOptionButtons(this.logic::goToFirstPage);
 		this.focusFactory = focusFactory;
-		this.minecraft = Minecraft.getInstance();
 		this.layouts = new RecipeGuiLayouts();
 
 		Textures textures = Internal.getTextures();

@@ -10,27 +10,22 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(EffectsInInventory.class)
 public abstract class EffectsInInventoryMixin {
-//	public EffectsInInventoryMixin(AbstractContainerScreen<?> screen) {
-//		super(screen);
-//	}
-
 	@ModifyVariable(
-		method = "renderEffects(Lnet/minecraft/client/gui/GuiGraphics;II)V",
+		method = "render(Lnet/minecraft/client/gui/GuiGraphics;II)V",
 		index = 7,
-		name = "bl",
+		name = "m",
 		at = @At("STORE")
 	)
-	public boolean modifyHasRoom(boolean bl) {
+	public int modifyEffectWidth(int m) {
 		boolean ingredientListDisplayed = FabricGuiPlugin.getRuntime()
 			.map(IJeiRuntime::getIngredientListOverlay)
 			.map(IIngredientListOverlay::isListDisplayed)
 			.orElse(false);
 
 		if (ingredientListDisplayed) {
-			// make the potion effects think that there is not enough room,
-			// so they render in compact mode.
-			return false;
+			// make the potion effects render in compact mode.
+			return 32;
 		}
-		return bl;
+		return m;
 	}
 }

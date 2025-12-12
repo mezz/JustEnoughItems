@@ -11,7 +11,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiGrindstoneRecipe;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
@@ -83,7 +83,7 @@ public class GrindstoneRecipeCategory extends AbstractRecipeCategory<IJeiGrindst
 	}
 
 	@Override
-	public @Nullable ResourceLocation getRegistryName(IJeiGrindstoneRecipe recipe) {
+	public @Nullable Identifier getIdentifier(IJeiGrindstoneRecipe recipe) {
 		return recipe.getUid();
 	}
 }

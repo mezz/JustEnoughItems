@@ -10,6 +10,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -39,10 +40,8 @@ public final class ServerCommandUtil {
 
 		CommandSourceStack commandSource = sender.createCommandSourceStack();
 		if (serverConfig.isCheatModeEnabledForOp()) {
-			int opPermissionLevel = sender.level()
-				.getServer()
-				.operatorUserPermissionLevel();
-			return commandSource.hasPermission(opPermissionLevel);
+			return sender.permissions()
+				.hasPermission(Permissions.COMMANDS_GAMEMASTER);
 		}
 
 		if (serverConfig.isCheatModeEnabledForGive()) {

@@ -7,11 +7,11 @@ import mezz.jei.common.platform.Services;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class DrawableSprite implements IDrawableStatic {
 	private final JeiAtlasManager atlasManager;
-	private final ResourceLocation location;
+	private final Identifier spriteId;
 	private final int width;
 	private final int height;
 	private int trimLeft;
@@ -19,9 +19,9 @@ public class DrawableSprite implements IDrawableStatic {
 	private int trimTop;
 	private int trimBottom;
 
-	public DrawableSprite(JeiAtlasManager atlasManager, ResourceLocation location, int width, int height) {
+	public DrawableSprite(JeiAtlasManager atlasManager, Identifier spriteId, int width, int height) {
 		this.atlasManager = atlasManager;
-		this.location = location;
+		this.spriteId = spriteId;
 		this.width = width;
 		this.height = height;
 	}
@@ -52,7 +52,7 @@ public class DrawableSprite implements IDrawableStatic {
 	@Override
 	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
 		TextureAtlasSprite sprite = atlasManager.getAtlas()
-			.getSprite(location);
+			.getSprite(spriteId);
 
 		maskTop += trimTop;
 		maskBottom += trimBottom;

@@ -12,8 +12,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.Internal;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
@@ -66,8 +65,8 @@ public class ErrorRecipeCategory extends AbstractRecipeCategory<ErrorRecipe> {
 	}
 
 	@Override
-	public @Nullable ResourceLocation getRegistryName(ErrorRecipe recipe) {
+	public Identifier getIdentifier(ErrorRecipe recipe) {
 		ErrorRecipe.CrashType type = recipe.getType();
-		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "error." + type.name().toLowerCase());
+		return Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "error." + type.name().toLowerCase());
 	}
 }

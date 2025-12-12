@@ -1,6 +1,6 @@
 package mezz.jei.api.recipe.vanilla;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -43,5 +43,5 @@ public interface IJeiAnvilRecipe {
 	 * @since 19.1.0
 	 */
 	@Nullable
-	ResourceLocation getUid();
+	Identifier getUid();
 }

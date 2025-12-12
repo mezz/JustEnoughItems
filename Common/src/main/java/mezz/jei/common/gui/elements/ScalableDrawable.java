@@ -10,15 +10,15 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class ScalableDrawable implements IScalableDrawable {
 	private final JeiAtlasManager atlasManager;
-	private final ResourceLocation location;
+	private final Identifier spriteId;
 
-	public ScalableDrawable(JeiAtlasManager atlasManager, ResourceLocation location) {
+	public ScalableDrawable(JeiAtlasManager atlasManager, Identifier spriteId) {
 		this.atlasManager = atlasManager;
-		this.location = location;
+		this.spriteId = spriteId;
 	}
 
 	public void draw(GuiGraphics guiGraphics, ImmutableRect2i area) {
@@ -28,7 +28,7 @@ public class ScalableDrawable implements IScalableDrawable {
 	@Override
 	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, int width, int height) {
 		TextureAtlasSprite sprite = atlasManager.getAtlas()
-			.getSprite(location);
+			.getSprite(spriteId);
 		GuiSpriteScaling scaling = sprite.contents()
 			.getAdditionalMetadata(GuiMetadataSection.TYPE)
 			.orElse(GuiMetadataSection.DEFAULT)

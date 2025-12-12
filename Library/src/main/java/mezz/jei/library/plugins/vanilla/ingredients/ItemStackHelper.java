@@ -21,7 +21,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -103,11 +103,11 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	private static Optional<String> getNamespace(ItemStack ingredient) {
-		ResourceLocation key = RegistryUtil
+		Identifier key = RegistryUtil
 			.getRegistry(Registries.ITEM)
 			.getKey(ingredient.getItem());
 		return Optional.ofNullable(key)
-			.map(ResourceLocation::getNamespace);
+			.map(Identifier::getNamespace);
 	}
 
 	@Override
@@ -129,11 +129,11 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
-	public ResourceLocation getResourceLocation(ItemStack ingredient) {
+	public Identifier getIdentifier(ItemStack ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
 		Item item = ingredient.getItem();
-		ResourceLocation key = RegistryUtil
+		Identifier key = RegistryUtil
 			.getRegistry(Registries.ITEM)
 			.getKey(item);
 
@@ -181,15 +181,15 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
-	public Stream<ResourceLocation> getTagStream(ItemStack ingredient) {
-		Stream<ResourceLocation> itemTagStream = ingredient.getTags()
+	public Stream<Identifier> getTagStream(ItemStack ingredient) {
+		Stream<Identifier> itemTagStream = ingredient.getTags()
 			.map(TagKey::location);
 
 		if (ingredient.getItem() instanceof BlockItem blockItem) {
 			IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
 			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 			if (clientConfig.isLookupBlockTagsEnabled()) {
-				Stream<ResourceLocation> blockTagStream = blockItem.getBlock()
+				Stream<Identifier> blockTagStream = blockItem.getBlock()
 					.defaultBlockState()
 					.getTags()
 					.map(TagKey::location);

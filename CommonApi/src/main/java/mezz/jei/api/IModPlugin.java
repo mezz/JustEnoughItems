@@ -16,7 +16,7 @@ import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.config.IJeiConfigManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * The main class to implement to create a JEI plugin.
@@ -27,9 +27,9 @@ public interface IModPlugin {
 
 	/**
 	 * The unique ID for this mod plugin.
-	 * The namespace should be your mod's modId.
+	 * The namespace of the ID should be your mod's modId.
 	 */
-	ResourceLocation getPluginUid();
+	Identifier getPluginUid();
 
 	/**
 	 * If your item has subtypes that depend on NBT or capabilities, use this to help JEI identify those subtypes correctly.

@@ -10,7 +10,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
@@ -58,8 +58,8 @@ public class StoneCuttingRecipeCategory extends AbstractRecipeCategory<RecipeHol
 	}
 
 	@Override
-	public ResourceLocation getRegistryName(RecipeHolder<StonecutterRecipe> recipe) {
-		return recipe.id().location();
+	public Identifier getIdentifier(RecipeHolder<StonecutterRecipe> recipe) {
+		return recipe.id().identifier();
 	}
 
 	@Override

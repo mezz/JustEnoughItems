@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import mezz.jei.api.recipe.vanilla.IJeiGrindstoneRecipe;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -21,7 +21,7 @@ public final class GrindstoneRecipe implements IJeiGrindstoneRecipe {
 	private final List<ItemStack> outputs;
 	private int minXpReward;
 	private final int maxXpReward;
-	private final @Nullable ResourceLocation uid;
+	private final @Nullable Identifier uid;
 
 	public GrindstoneRecipe(
 		List<ItemStack> topInputs,
@@ -29,7 +29,7 @@ public final class GrindstoneRecipe implements IJeiGrindstoneRecipe {
 		List<ItemStack> outputs,
 		int minXpReward,
 		int maxXpReward,
-		@Nullable ResourceLocation uid
+		@Nullable Identifier uid
 	) {
 		this.topInputs = topInputs;
 		this.bottomInputs = bottomInputs;
@@ -75,7 +75,7 @@ public final class GrindstoneRecipe implements IJeiGrindstoneRecipe {
 
 	@Override
 	@Nullable
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return uid;
 	}
 

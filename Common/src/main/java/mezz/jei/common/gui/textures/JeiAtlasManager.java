@@ -3,7 +3,7 @@ package mezz.jei.common.gui.textures;
 import net.minecraft.client.renderer.texture.SpriteLoader;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -65,8 +65,8 @@ public class JeiAtlasManager implements PreparableReloadListener, AutoCloseable 
 	}
 
 	public record Config(
-		ResourceLocation textureId,
-		ResourceLocation definitionLocation,
+		Identifier textureId,
+		Identifier definitionLocation,
 		Set<MetadataSectionType<?>> additionalMetadata
 	) {}
 

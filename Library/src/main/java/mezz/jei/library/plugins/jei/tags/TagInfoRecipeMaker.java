@@ -52,7 +52,7 @@ public record TagInfoRecipeMaker<B, I>(
 				} else {
 					IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 					Component tagName = renderHelper.getName(tagKey);
-					LOGGER.debug("No valid ingredients found for {} tag: {} ({})", registryKey.location(), tagName.getString(), tagKey.location());
+					LOGGER.debug("No valid ingredients found for {} tag: {} ({})", registryKey.identifier(), tagName.getString(), tagKey.location());
 				}
 			})
 			.toList();

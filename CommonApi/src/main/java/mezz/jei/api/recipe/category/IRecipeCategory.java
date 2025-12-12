@@ -22,7 +22,7 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.Nullable;
 
@@ -236,34 +236,52 @@ public interface IRecipeCategory<T> {
 	}
 
 	/**
-	 * Return the registry name of the recipe here.
+	 * Return the registry identifier of the recipe here.
 	 * With advanced tooltips on, this will show on the output item's tooltip.
-	 *
+	 * <p>
 	 * This will also show the modId when the recipe modId and output item modId do not match.
 	 * This lets the player know where the recipe came from.
-	 *
+	 * <p>
 	 * Since 19.1.0, this is also used for bookmarking recipes.
 	 *
-	 * @return the registry name of the recipe, or null if there is none
-	 *
-	 * @since 9.3.0
+	 * @return the registry identifier of the recipe, or null if there is none
+	 * @since 27.0.0
 	 */
 	@Nullable
-	default ResourceLocation getRegistryName(T recipe) {
+	default Identifier getIdentifier(T recipe) {
 		if (recipe instanceof RecipeHolder<?> recipeHolder) {
-			return recipeHolder.id().location();
+			return recipeHolder.id().identifier();
 		}
 		return null;
 	}
 
 	/**
+	 * Return the registry identifier of the recipe here.
+	 * With advanced tooltips on, this will show on the output item's tooltip.
+	 * <p>
+	 * This will also show the modId when the recipe modId and output item modId do not match.
+	 * This lets the player know where the recipe came from.
+	 * <p>
+	 * Since 19.1.0, this is also used for bookmarking recipes.
+	 *
+	 * @return the registry identifier of the recipe, or null if there is none
+	 * @since 9.3.0
+	 * @deprecated use {@link #getIdentifier(Object)}
+	 */
+	@Deprecated(since = "27.0.0", forRemoval = true)
+	@Nullable
+	default Identifier getRegistryName(T recipe) {
+		return getIdentifier(recipe);
+	}
+
+	/**
 	 * Get a codec for this type of recipe.
 	 *
-	 * The default implementation uses a {@link RecipeHolder} codec or falls back on {@link #getRegistryName}
+	 * The default implementation uses a {@link RecipeHolder} codec or falls back on {@link #getIdentifier}
 	 * to look up the recipes in an inefficient way.
 	 *
 	 * Override this method to provide a more efficient implementation,
-	 * or an implementation that doesn't depend on {@link #getRegistryName}
+	 * or an implementation that doesn't depend on {@link #getIdentifier}
 	 *
 	 * @since 19.9.0
 	 */

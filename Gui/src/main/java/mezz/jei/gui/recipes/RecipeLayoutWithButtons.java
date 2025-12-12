@@ -18,7 +18,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
@@ -173,8 +173,8 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 			LocalPlayer player = minecraft.player;
 			IRecipeCategory<R> recipeCategory = recipeLayout.getRecipeCategory();
 			R recipe = recipeLayout.getRecipe();
-			ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
-			if (registryName == null) {
+			Identifier registryId = recipeCategory.getIdentifier(recipe);
+			if (registryId == null) {
 				MutableComponent message = Component.translatable("jei.message.copy.recipe.id.failure");
 				if (player != null) {
 					player.displayClientMessage(message, false);
@@ -182,7 +182,7 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 				return false;
 			}
 
-			String recipeId = registryName.toString();
+			String recipeId = registryId.toString();
 			minecraft.keyboardHandler.setClipboard(recipeId);
 			MutableComponent message = Component.translatable("jei.message.copy.recipe.id.success", Component.literal(recipeId));
 			if (player != null) {

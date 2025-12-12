@@ -10,7 +10,7 @@ import mezz.jei.common.input.keys.JeiMultiKeyMapping;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Consumer;
@@ -61,12 +61,12 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping enterKey;
 
 	private static KeyMapping.Category registerCategory(String name) {
-		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, name);
+		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, name);
 		return KeyMapping.Category.register(id);
 	}
 
 	private static KeyMapping.Category createUnregisteredCategory(String name) {
-		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, name);
+		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, name);
 		return new KeyMapping.Category(id);
 	}
 

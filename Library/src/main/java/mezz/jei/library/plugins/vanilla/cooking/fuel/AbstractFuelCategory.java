@@ -14,7 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.NumberFormat;
@@ -85,7 +85,7 @@ public abstract class AbstractFuelCategory extends AbstractRecipeCategory<IJeiFu
 	}
 
 	@Override
-	public @Nullable ResourceLocation getRegistryName(IJeiFuelingRecipe recipe) {
+	public @Nullable Identifier getIdentifier(IJeiFuelingRecipe recipe) {
 		return null;
 	}
 

@@ -14,7 +14,7 @@ import mezz.jei.library.config.ModIdFormatConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +91,7 @@ public final class ModIdHelper implements IModIdHelper {
 		String modNameFormat = modIdFormattingConfig.getModNameFormat();
 		if (!modNameFormat.isEmpty()) {
 			if (modNameFormat.contains(ModIdFormatConfig.MOD_NAME_FORMAT_CODE)) {
-				return StringUtils.replaceOnce(modNameFormat, ModIdFormatConfig.MOD_NAME_FORMAT_CODE, modName);
+				return Strings.CS.replaceOnce(modNameFormat, ModIdFormatConfig.MOD_NAME_FORMAT_CODE, modName);
 			}
 			return modNameFormat + modName;
 		}

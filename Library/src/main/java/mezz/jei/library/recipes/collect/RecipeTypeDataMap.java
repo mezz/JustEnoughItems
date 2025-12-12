@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
@@ -51,14 +51,14 @@ public class RecipeTypeDataMap {
 		}
 	}
 
-	public Optional<IRecipeType<?>> getType(ResourceLocation recipeTypeUid) {
+	public Optional<IRecipeType<?>> getType(Identifier recipeTypeUid) {
 		return uidMap.keySet()
 			.stream()
 			.filter(recipeType -> recipeType.getUid().equals(recipeTypeUid))
 			.findFirst();
 	}
 
-	public <T> Optional<IRecipeType<T>> getType(ResourceLocation recipeTypeUid, Class<? extends T> recipeClass) {
+	public <T> Optional<IRecipeType<T>> getType(Identifier recipeTypeUid, Class<? extends T> recipeClass) {
 		return uidMap.keySet()
 			.stream()
 			.filter(recipeType -> recipeType.getUid().equals(recipeTypeUid) && recipeType.getRecipeClass().equals(recipeClass))

@@ -6,13 +6,13 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 @JeiPlugin
 public class JeiGuiPlugin implements IModPlugin {
 	@Override
-	public ResourceLocation getPluginUid() {
-		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "gui");
+	public Identifier getPluginUid() {
+		return Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "gui");
 	}
 
 	@Override

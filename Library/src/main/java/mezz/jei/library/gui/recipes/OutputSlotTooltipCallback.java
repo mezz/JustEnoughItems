@@ -16,7 +16,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -26,12 +26,12 @@ import java.util.Optional;
 public class OutputSlotTooltipCallback implements IRecipeSlotRichTooltipCallback {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final ResourceLocation recipeName;
+	private final Identifier recipeId;
 	private final boolean recipeFromSameModAsCategory;
 
-	public OutputSlotTooltipCallback(ResourceLocation recipeName, IRecipeType<?> recipeType) {
-		this.recipeName = recipeName;
-		this.recipeFromSameModAsCategory = recipeName.getNamespace().equals(recipeType.getUid().getNamespace());
+	public OutputSlotTooltipCallback(Identifier recipeId, IRecipeType<?> recipeType) {
+		this.recipeId = recipeId;
+		this.recipeFromSameModAsCategory = recipeId.getNamespace().equals(recipeType.getUid().getNamespace());
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class OutputSlotTooltipCallback implements IRecipeSlotRichTooltipCallback
 		Minecraft minecraft = Minecraft.getInstance();
 		boolean showAdvanced = minecraft.options.advancedItemTooltips || minecraft.hasShiftDown();
 		if (showAdvanced) {
-			MutableComponent recipeId = Component.translatable("jei.tooltip.recipe.id", Component.literal(recipeName.toString()));
+			MutableComponent recipeId = Component.translatable("jei.tooltip.recipe.id", Component.literal(this.recipeId.toString()));
 			tooltip.add(recipeId.withStyle(ChatFormatting.DARK_GRAY));
 		}
 	}
@@ -66,7 +66,7 @@ public class OutputSlotTooltipCallback implements IRecipeSlotRichTooltipCallback
 		if (ingredientModId == null) {
 			return;
 		}
-		String recipeModId = recipeName.getNamespace();
+		String recipeModId = recipeId.getNamespace();
 		if (recipeModId.equals(ingredientModId)) {
 			return;
 		}

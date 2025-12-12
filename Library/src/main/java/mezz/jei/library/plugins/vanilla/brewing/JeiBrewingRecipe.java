@@ -2,7 +2,7 @@ package mezz.jei.library.plugins.vanilla.brewing;
 
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PotionSubtypeInterpreter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -11,14 +11,14 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 	private final List<ItemStack> ingredients;
 	private final List<ItemStack> potionInputs;
 	private final ItemStack potionOutput;
-	private final ResourceLocation uid;
+	private final Identifier uid;
 	private final BrewingRecipeUtil brewingRecipeUtil;
 
 	public JeiBrewingRecipe(
 		List<ItemStack> ingredients,
 		List<ItemStack> potionInputs,
 		ItemStack potionOutput,
-		ResourceLocation uid,
+		Identifier uid,
 		BrewingRecipeUtil brewingRecipeUtil
 	) {
 		this.ingredients = List.copyOf(ingredients);
@@ -46,7 +46,7 @@ public class JeiBrewingRecipe implements IJeiBrewingRecipe {
 	}
 
 	@Override
-	public ResourceLocation getUid() {
+	public Identifier getUid() {
 		return uid;
 	}
 

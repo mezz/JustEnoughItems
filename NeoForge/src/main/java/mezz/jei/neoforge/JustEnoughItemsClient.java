@@ -19,7 +19,7 @@ import mezz.jei.neoforge.plugins.neoforge.NeoForgeGuiPlugin;
 import mezz.jei.neoforge.startup.ForgePluginFinder;
 import mezz.jei.neoforge.startup.StartEventObserver;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -77,8 +77,8 @@ public class JustEnoughItemsClient {
 
 	private void onRegisterReloadListenerEvent(AddClientReloadListenersEvent event) {
 		Textures textures = Internal.getTextures();
-		event.addListener(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "gui_sprite_manager"), textures.getAtlasManager());
-		event.addListener(ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "jei_client"), createReloadListener());
+		event.addListener(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "gui_sprite_manager"), textures.getAtlasManager());
+		event.addListener(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "jei_client"), createReloadListener());
 	}
 
 	private void onRegisterClientTooltipEvent(RegisterClientTooltipComponentFactoriesEvent event) {

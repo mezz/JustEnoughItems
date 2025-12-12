@@ -25,7 +25,7 @@ import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.library.gui.recipes.ShapelessIcon;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -72,10 +72,10 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	}
 
 	private void addOutputSlotTooltipCallback(RecipeSlotBuilder slot) {
-		ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
-		if (recipeName != null) {
+		Identifier recipeId = recipeCategory.getIdentifier(recipe);
+		if (recipeId != null) {
 			IRecipeType<T> recipeType = recipeCategory.getRecipeType();
-			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeName, recipeType);
+			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeId, recipeType);
 			slot.addRichTooltipCallback(callback);
 		}
 	}

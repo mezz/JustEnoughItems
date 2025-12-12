@@ -9,7 +9,7 @@ import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PotionSubtypeInterp
 import mezz.jei.library.util.BrewingRecipeMakerCommon;
 import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
@@ -81,14 +81,14 @@ public class BrewingRecipeMaker {
 						.filter(i -> !i.isEmpty())
 						.toList();
 					if (!output.isEmpty() && !inputs.isEmpty()) {
-						String outputModId = itemStackHelper.getResourceLocation(output).getNamespace();
+						String outputModId = itemStackHelper.getIdentifier(output).getNamespace();
 						String outputUid = PotionSubtypeInterpreter.INSTANCE.getStringName(output);
 						String uidPath = ResourceLocationUtil.sanitizePath(outputUid);
 						IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(
 							ingredients,
 							inputs,
 							output,
-							ResourceLocation.fromNamespaceAndPath(outputModId, uidPath)
+							Identifier.fromNamespaceAndPath(outputModId, uidPath)
 						);
 						recipes.add(recipe);
 					}

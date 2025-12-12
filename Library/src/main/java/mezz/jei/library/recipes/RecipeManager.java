@@ -24,7 +24,7 @@ import mezz.jei.library.gui.ingredients.CycleTimer;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
 import mezz.jei.library.util.IngredientSupplierHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Collection;
 import java.util.List;
@@ -213,12 +213,12 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
-	public <T> Optional<IRecipeType<T>> getRecipeType(ResourceLocation recipeUid, Class<? extends T> recipeClass) {
+	public <T> Optional<IRecipeType<T>> getRecipeType(Identifier recipeUid, Class<? extends T> recipeClass) {
 		return internal.getRecipeType(recipeUid, recipeClass);
 	}
 
 	@Override
-	public Optional<IRecipeType<?>> getRecipeType(ResourceLocation recipeUid) {
+	public Optional<IRecipeType<?>> getRecipeType(Identifier recipeUid) {
 		return internal.getRecipeType(recipeUid);
 	}
 }

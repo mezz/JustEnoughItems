@@ -10,7 +10,7 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public enum BookmarkType {
 			return recipeCategory.getCodec(codecHelper, recipeManager)
 				.flatXmap(
 					recipe -> {
-						ResourceLocation recipeUid = recipeCategory.getRegistryName(recipe);
+						Identifier recipeUid = recipeCategory.getIdentifier(recipe);
 						if (recipeUid == null) {
 							return DataResult.error(() -> "Recipe has no registry name");
 						}

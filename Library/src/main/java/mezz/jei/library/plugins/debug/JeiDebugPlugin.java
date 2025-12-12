@@ -43,7 +43,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -69,8 +69,8 @@ public class JeiDebugPlugin implements IModPlugin {
 	private @Nullable DebugRecipeCategory<?> debugRecipeCategory;
 
 	@Override
-	public ResourceLocation getPluginUid() {
-		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "debug");
+	public Identifier getPluginUid() {
+		return Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "debug");
 	}
 
 	@Override
@@ -220,7 +220,7 @@ public class JeiDebugPlugin implements IModPlugin {
 				new DebugRecipe()
 			));
 
-			ResourceLocation testRecipeWithoutTemplateId = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "test_recipe_without_template");
+			Identifier testRecipeWithoutTemplateId = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "test_recipe_without_template");
 			RecipeHolder<SmithingRecipe> testRecipeWithoutTemplate = new RecipeHolder<>(
 				ResourceKey.create(Registries.RECIPE, testRecipeWithoutTemplateId),
 				new SmithingTransformRecipe(

@@ -9,7 +9,7 @@ import mezz.jei.fabric.startup.EventRegistration;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.gui.startup.JeiGuiStarter;
 import mezz.jei.gui.startup.ResourceReloadHandler;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -25,8 +25,8 @@ public class FabricGuiPlugin implements IModPlugin {
 	private final EventRegistration eventRegistration = new EventRegistration();
 
 	@Override
-	public ResourceLocation getPluginUid() {
-		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "fabric_gui");
+	public Identifier getPluginUid() {
+		return Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "fabric_gui");
 	}
 
 	@Override

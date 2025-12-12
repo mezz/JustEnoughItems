@@ -22,7 +22,7 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.TickTimer;
 import mezz.jei.library.gui.elements.DrawableBuilder;
 import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class GuiHelper implements IGuiHelper {
 	private final IIngredientManager ingredientManager;
@@ -32,8 +32,8 @@ public class GuiHelper implements IGuiHelper {
 	}
 
 	@Override
-	public IDrawableBuilder drawableBuilder(ResourceLocation resourceLocation, int u, int v, int width, int height) {
-		return new DrawableBuilder(resourceLocation, u, v, width, height);
+	public IDrawableBuilder drawableBuilder(Identifier id, int u, int v, int width, int height) {
+		return new DrawableBuilder(id, u, v, width, height);
 	}
 
 	@Override

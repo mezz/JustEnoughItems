@@ -20,7 +20,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Items;
 import org.apache.commons.lang3.StringUtils;
@@ -31,18 +31,18 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends IRecipeTy
 	private static final int WIDTH = 142;
 	private static final int HEIGHT = 110;
 
-	public TagInfoRecipeCategory(IGuiHelper guiHelper, T recipeType, ResourceLocation registryLocation) {
+	public TagInfoRecipeCategory(IGuiHelper guiHelper, T recipeType, Identifier id) {
 		super(
 			recipeType,
-			createTitle(registryLocation),
+			createTitle(id),
 			guiHelper.createDrawableItemLike(Items.NAME_TAG),
 			WIDTH,
 			HEIGHT
 		);
 	}
 
-	private static Component createTitle(ResourceLocation registryLocation) {
-		String registryName = ResourceLocationUtil.sanitizePath(registryLocation.getPath());
+	private static Component createTitle(Identifier id) {
+		String registryName = ResourceLocationUtil.sanitizePath(id.getPath());
 		String registryNameTranslationKey = "gui.jei.category.tagInformation." + registryName;
 
 		Language language = Language.getInstance();
@@ -50,7 +50,7 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends IRecipeTy
 			return Component.translatable(registryNameTranslationKey);
 		}
 
-		return Component.translatable("gui.jei.category.tagInformation", StringUtils.capitalize(registryLocation.getPath()));
+		return Component.translatable("gui.jei.category.tagInformation", StringUtils.capitalize(id.getPath()));
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends IRecipeTy
 	}
 
 	@Override
-	public ResourceLocation getRegistryName(R recipe) {
+	public Identifier getIdentifier(R recipe) {
 		return recipe.getTag().location();
 	}
 }

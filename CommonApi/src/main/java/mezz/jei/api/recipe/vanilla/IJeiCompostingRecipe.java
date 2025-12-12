@@ -1,6 +1,6 @@
 package mezz.jei.api.recipe.vanilla;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ComposterBlock;
 import org.jetbrains.annotations.Unmodifiable;
@@ -35,5 +35,5 @@ public interface IJeiCompostingRecipe {
 	 * Unique ID for this recipe.
 	 * @since 19.1.0
 	 */
-	ResourceLocation getUid();
+	Identifier getUid();
 }

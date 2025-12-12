@@ -10,7 +10,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Blocks;
 
 public class CompostableRecipeCategory extends AbstractRecipeCategory<IJeiCompostingRecipe> {
@@ -44,7 +44,7 @@ public class CompostableRecipeCategory extends AbstractRecipeCategory<IJeiCompos
 	}
 
 	@Override
-	public ResourceLocation getRegistryName(IJeiCompostingRecipe recipe) {
+	public Identifier getIdentifier(IJeiCompostingRecipe recipe) {
 		return recipe.getUid();
 	}
 }

@@ -89,7 +89,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.BlastFurnaceMenu;
 import net.minecraft.world.inventory.BrewingStandMenu;
@@ -149,8 +149,8 @@ public class VanillaPlugin implements IModPlugin {
 	private SmithingRecipeCategory smithingCategory;
 
 	@Override
-	public ResourceLocation getPluginUid() {
-		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "minecraft");
+	public Identifier getPluginUid() {
+		return Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "minecraft");
 	}
 
 	@Override

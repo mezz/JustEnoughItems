@@ -5,7 +5,7 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.elements.DrawableSprite;
 import mezz.jei.common.gui.elements.HighResolutionDrawable;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class Textures {
 	private final JeiAtlasManager jeiAtlasManager;
@@ -105,18 +105,18 @@ public class Textures {
 		this.craftableFirst = createGuiSprite("icons/craftable_first", 16, 16);
 	}
 
-	private ResourceLocation createSprite(String name) {
-		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, name);
+	private Identifier createSpriteId(String name) {
+		return Identifier.fromNamespaceAndPath(ModIds.JEI_ID, name);
 	}
 
 	private DrawableSprite createGuiSprite(String name, int width, int height) {
-		ResourceLocation location = createSprite(name);
-		return new DrawableSprite(jeiAtlasManager, location, width, height);
+		Identifier id = createSpriteId(name);
+		return new DrawableSprite(jeiAtlasManager, id, width, height);
 	}
 
 	private ScalableDrawable createScalableGuiSprite(String name) {
-		ResourceLocation location = createSprite(name);
-		return new ScalableDrawable(jeiAtlasManager, location);
+		Identifier id = createSpriteId(name);
+		return new ScalableDrawable(jeiAtlasManager, id);
 	}
 
 	public IDrawableStatic getSlot() {

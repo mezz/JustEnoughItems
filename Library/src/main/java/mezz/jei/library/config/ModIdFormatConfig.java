@@ -13,7 +13,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -80,7 +80,7 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 			if (lineString.contains(ModIds.MINECRAFT_NAME)) {
 				String withoutFormatting = ChatFormatting.stripFormatting(lineString);
 				if (withoutFormatting.contains(ModIds.MINECRAFT_NAME)) {
-					return StringUtils.replaceOnce(lineString, ModIds.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
+					return Strings.CS.replaceOnce(lineString, ModIds.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
 				}
 			}
 		}

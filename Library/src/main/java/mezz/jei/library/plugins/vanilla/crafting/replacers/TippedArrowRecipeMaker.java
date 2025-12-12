@@ -7,7 +7,7 @@ import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
@@ -37,9 +37,9 @@ public final class TippedArrowRecipeMaker {
 				output.setCount(8);
 
 				Ingredient potionIngredient = Ingredient.of(input.getItem());
-				ResourceLocation potionLocation = potion.key().location();
-				ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + potionLocation.getNamespace() + "." + potionLocation.getPath());
-				ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, id);
+				Identifier potionId = potion.key().identifier();
+				Identifier recipeId = Identifier.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + potionId.getNamespace() + "." + potionId.getPath());
+				ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, recipeId);
 				SlotDisplay slotDisplay = new SlotDisplay.ItemStackSlotDisplay(output);
 				CraftingRecipe recipe = vanillaRecipeFactory.createShapedRecipeBuilder(CraftingBookCategory.MISC, slotDisplay)
 					.group(group)

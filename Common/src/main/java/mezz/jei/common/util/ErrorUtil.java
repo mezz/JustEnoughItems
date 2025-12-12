@@ -22,7 +22,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -58,7 +58,7 @@ public final class ErrorUtil {
 
 	private static String getItemName(Item item) {
 		Registry<Item> itemRegistry = RegistryUtil.getRegistry(Registries.ITEM);
-		ResourceLocation key = itemRegistry.getKey(item);
+		Identifier key = itemRegistry.getKey(item);
 
 		if (key != null) {
 			return key.toString();
@@ -76,7 +76,7 @@ public final class ErrorUtil {
 			return "null";
 		}
 		Registry<Block> blockRegistry = RegistryUtil.getRegistry(Registries.BLOCK);
-		ResourceLocation key = blockRegistry.getKey(block);
+		Identifier key = blockRegistry.getKey(block);
 		if (key != null) {
 			return key.toString();
 		}
@@ -191,7 +191,7 @@ public final class ErrorUtil {
 			String modId = ingredientHelper.getDisplayModId(ingredient);
 			return modHelper.getModNameForModId(modId);
 		});
-		category.setDetail("Registry Name", () -> ingredientHelper.getResourceLocation(ingredient).toString());
+		category.setDetail("Registry Name", () -> ingredientHelper.getIdentifier(ingredient).toString());
 		category.setDetail("Class Name", () -> ingredient.getClass().toString());
 		category.setDetail("toString Name", ingredient::toString);
 		category.setDetail("JSON", () -> {
@@ -230,10 +230,6 @@ public final class ErrorUtil {
 	}
 
 	public static <T> String getRecipeInfo(IRecipeCategory<T> recipeCategory, T recipe) {
-		ResourceLocation recipeType = recipeCategory.getRecipeType().getUid();
-
-		ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
-
 		String recipeClass;
 		if (recipe instanceof RecipeHolder<?> recipeHolder) {
 			recipeClass = "RecipeHolder(%s)".formatted(recipeHolder.value().getClass());
@@ -242,15 +238,16 @@ public final class ErrorUtil {
 		}
 
 		String modName = "<unknown>";
-		if (registryName != null) {
-			String modId = registryName.getNamespace();
+		Identifier registryId = recipeCategory.getIdentifier(recipe);
+		if (registryId != null) {
+			String modId = registryId.getNamespace();
 			IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
 			modName = "%s (%s)".formatted(modHelper.getModNameForModId(modId), modId);
 		}
 
 		return "Recipe is from Mod: " + modName +
-			"\nRecipe Name: " + registryName +
+			"\nRecipe Id: " + registryId +
 			"\nRecipe Class: " + recipeClass +
-			"\nRecipe Type: " + recipeType;
+			"\nRecipe Type: " + recipeCategory.getRecipeType().getUid();
 	}
 }

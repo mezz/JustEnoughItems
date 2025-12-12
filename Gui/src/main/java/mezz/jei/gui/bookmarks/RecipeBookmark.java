@@ -10,7 +10,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -19,7 +19,7 @@ public class RecipeBookmark<R, I> implements IBookmark {
 	private final IElement<I> element;
 	private final IRecipeCategory<R> recipeCategory;
 	private final R recipe;
-	private final ResourceLocation recipeUid;
+	private final Identifier recipeUid;
 	private final ITypedIngredient<I> displayIngredient;
 	private final boolean displayIsOutput;
 	private boolean visible = true;
@@ -31,7 +31,7 @@ public class RecipeBookmark<R, I> implements IBookmark {
 	) {
 		T recipe = recipeLayoutDrawable.getRecipe();
 		IRecipeCategory<T> recipeCategory = recipeLayoutDrawable.getRecipeCategory();
-		ResourceLocation recipeUid = recipeCategory.getRegistryName(recipe);
+		Identifier recipeUid = recipeCategory.getIdentifier(recipe);
 		if (recipeUid == null) {
 			return null;
 		}
@@ -74,7 +74,7 @@ public class RecipeBookmark<R, I> implements IBookmark {
 	public RecipeBookmark(
 		IRecipeCategory<R> recipeCategory,
 		R recipe,
-		ResourceLocation recipeUid,
+		Identifier recipeUid,
 		ITypedIngredient<I> displayIngredient,
 		boolean displayIsOutput
 	) {
@@ -153,7 +153,7 @@ public class RecipeBookmark<R, I> implements IBookmark {
 			Class<? extends R> recipeClass = recipeType.getRecipeClass();
 			if (recipeClass.isInstance(otherRecipe)) {
 				R castRecipe = recipeClass.cast(otherRecipe);
-				ResourceLocation otherUid = recipeCategory.getRegistryName(castRecipe);
+				Identifier otherUid = recipeCategory.getIdentifier(castRecipe);
 				return recipeUid.equals(otherUid);
 			}
 		}

@@ -19,7 +19,7 @@ class DebugCategoryDecorator<T> implements IRecipeCategoryDecorator<T> {
 		T recipe, IRecipeCategory<T> recipeCategory, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics,
 		double mouseX, double mouseY
 	) {
-		var id = recipeCategory.getRegistryName(recipe);
+		var id = recipeCategory.getIdentifier(recipe);
 		if (id == null) {
 			return;
 		}

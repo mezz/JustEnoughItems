@@ -1,19 +1,19 @@
 package mezz.jei.library.plugins.debug;
 
 import mezz.jei.api.constants.ModIds;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class ObnoxiouslyLargeRecipe {
 	private static int count = 0;
 
-	private final ResourceLocation recipeId;
+	private final Identifier recipeId;
 
 	public ObnoxiouslyLargeRecipe() {
-		recipeId = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "number_" + count);
+		recipeId = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "number_" + count);
 		count++;
 	}
 
-	public ResourceLocation getRecipeId() {
+	public Identifier getRecipeId() {
 		return recipeId;
 	}
 }

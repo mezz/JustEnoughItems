@@ -86,7 +86,7 @@ public final class RecipeDebugUtil {
 			.map(RecipeHolder::id)
 			.map(registryName -> {
 				IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
-				String modId = registryName.location().getNamespace();
+				String modId = registryName.identifier().getNamespace();
 				String modName = modHelper.getModNameForModId(modId);
 				return modName + " " + registryName + " " + recipe.getClass();
 			})

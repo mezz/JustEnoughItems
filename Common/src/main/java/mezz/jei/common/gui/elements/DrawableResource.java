@@ -3,11 +3,11 @@ package mezz.jei.common.gui.elements;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class DrawableResource implements IDrawableStatic {
 
-	private final ResourceLocation resourceLocation;
+	private final Identifier id;
 	private final int textureWidth;
 	private final int textureHeight;
 
@@ -20,8 +20,8 @@ public class DrawableResource implements IDrawableStatic {
 	private final int paddingLeft;
 	private final int paddingRight;
 
-	public DrawableResource(ResourceLocation resourceLocation, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight, int textureWidth, int textureHeight) {
-		this.resourceLocation = resourceLocation;
+	public DrawableResource(Identifier id, int u, int v, int width, int height, int paddingTop, int paddingBottom, int paddingLeft, int paddingRight, int textureWidth, int textureHeight) {
+		this.id = id;
 		this.textureWidth = textureWidth;
 		this.textureHeight = textureHeight;
 
@@ -58,7 +58,7 @@ public class DrawableResource implements IDrawableStatic {
 
 		guiGraphics.blit(
 			RenderPipelines.GUI_TEXTURED,
-			this.resourceLocation,
+			this.id,
 			xOffset + maskLeft,
 			yOffset + maskTop,
 			u + maskLeft,

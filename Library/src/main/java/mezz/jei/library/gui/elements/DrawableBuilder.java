@@ -7,10 +7,10 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.common.gui.elements.DrawableAnimated;
 import mezz.jei.common.gui.elements.DrawableResource;
 import mezz.jei.common.util.ErrorUtil;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class DrawableBuilder implements IDrawableBuilder {
-	private final ResourceLocation resourceLocation;
+	private final Identifier id;
 	private int u;
 	private int v;
 	private int width;
@@ -22,13 +22,13 @@ public class DrawableBuilder implements IDrawableBuilder {
 	private int paddingLeft = 0;
 	private int paddingRight = 0;
 
-	public DrawableBuilder(ResourceLocation resourceLocation, int u, int v, int width, int height) {
-		ErrorUtil.checkNotNull(resourceLocation, "resourceLocation");
+	public DrawableBuilder(Identifier id, int u, int v, int width, int height) {
+		ErrorUtil.checkNotNull(id, "id");
 		this.u = u;
 		this.v = v;
 		this.width = width;
 		this.height = height;
-		this.resourceLocation = resourceLocation;
+		this.id = id;
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class DrawableBuilder implements IDrawableBuilder {
 
 	@Override
 	public IDrawableStatic build() {
-		return new DrawableResource(resourceLocation, u, v, width, height, paddingTop, paddingBottom, paddingLeft, paddingRight, textureWidth, textureHeight);
+		return new DrawableResource(id, u, v, width, height, paddingTop, paddingBottom, paddingLeft, paddingRight, textureWidth, textureHeight);
 	}
 
 	@Override

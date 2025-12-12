@@ -37,7 +37,7 @@ public class EnchantedBookSubtypeInterpreter implements ISubtypeInterpreter<Item
 		for (Holder<Enchantment> e : enchantments.keySet()) {
 			Optional<ResourceKey<Enchantment>> enchantmentResourceKey = e.unwrapKey();
 			if (enchantmentResourceKey.isPresent()) {
-				String s = enchantmentResourceKey.orElseThrow().location() + ".lvl" + enchantments.getLevel(e);
+				String s = enchantmentResourceKey.orElseThrow().identifier() + ".lvl" + enchantments.getLevel(e);
 				strings.add(s);
 			}
 		}

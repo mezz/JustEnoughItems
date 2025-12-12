@@ -1,7 +1,7 @@
 package mezz.jei.library.load;
 
 import mezz.jei.core.util.TimeUtil;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,12 +14,12 @@ public class PluginCallerTimerRunnable {
 	private static final long longReportDurationInterval = Duration.ofSeconds(5).toMillis();
 
 	private final String title;
-	private final ResourceLocation pluginUid;
+	private final Identifier pluginUid;
 	private final long startTime;
 
 	private long nextLongReportDurationMs = longReportDurationInterval;
 
-	public PluginCallerTimerRunnable(String title, ResourceLocation pluginUid) {
+	public PluginCallerTimerRunnable(String title, Identifier pluginUid) {
 		this.title = title;
 		this.pluginUid = pluginUid;
 		this.startTime = System.nanoTime();

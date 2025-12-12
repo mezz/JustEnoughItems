@@ -14,7 +14,7 @@ import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
@@ -105,7 +105,7 @@ public class AnvilRecipeCategory extends AbstractRecipeCategory<IJeiAnvilRecipe>
 	}
 
 	@Override
-	public @Nullable ResourceLocation getRegistryName(IJeiAnvilRecipe recipe) {
+	public @Nullable Identifier getIdentifier(IJeiAnvilRecipe recipe) {
 		return recipe.getUid();
 	}
 

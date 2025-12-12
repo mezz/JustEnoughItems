@@ -12,7 +12,7 @@ import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.common.gui.textures.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public class IngredientInfoRecipeCategory extends AbstractRecipeCategory<IJeiIngredientInfoRecipe> {
@@ -58,7 +58,7 @@ public class IngredientInfoRecipeCategory extends AbstractRecipeCategory<IJeiIng
 	}
 
 	@Override
-	public @Nullable ResourceLocation getRegistryName(IJeiIngredientInfoRecipe recipe) {
+	public @Nullable Identifier getIdentifier(IJeiIngredientInfoRecipe recipe) {
 		return null;
 	}
 

@@ -4,7 +4,7 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient> {
@@ -29,8 +29,8 @@ public class DebugIngredientHelper implements IIngredientHelper<DebugIngredient>
 	}
 
 	@Override
-	public ResourceLocation getResourceLocation(DebugIngredient ingredient) {
-		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "debug_" + ingredient.number());
+	public Identifier getIdentifier(DebugIngredient ingredient) {
+		return Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "debug_" + ingredient.number());
 	}
 
 	@Override

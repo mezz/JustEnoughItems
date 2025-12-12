@@ -42,7 +42,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -133,11 +133,11 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
 			IModIdHelper modIdHelper = jeiRuntime.getJeiHelpers().getModIdHelper();
 
-			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
+			Identifier recipeName = recipeCategory.getIdentifier(recipe);
 			if (recipeName != null) {
 				String recipeModId = recipeName.getNamespace();
-				ResourceLocation ingredientName = ingredientHelper.getResourceLocation(displayIngredient.getIngredient());
-				String ingredientModId = ingredientName.getNamespace();
+				Identifier ingredientId = ingredientHelper.getIdentifier(displayIngredient.getIngredient());
+				String ingredientModId = ingredientId.getNamespace();
 				if (!recipeModId.equals(ingredientModId)) {
 					String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
 					MutableComponent recipeBy = Component.translatable("jei.tooltip.recipe.by", modName);

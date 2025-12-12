@@ -104,8 +104,8 @@ public class ElementPrefixParser {
 		));
 		addPrefix(new PrefixInfo<>(
 			'&',
-			config::getResourceLocationSearchMode,
-			element -> List.of(element.getResourceLocation().toString()),
+			config::getIdentifierSearchMode,
+			element -> List.of(element.getIdentifier().toString()),
 			GeneralizedSuffixTree::new
 		));
 	}
@@ -128,6 +128,7 @@ public class ElementPrefixParser {
 		}
 		char firstChar = token.charAt(0);
 		PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo = map.get(firstChar);
+		//noinspection ConstantValue
 		if (prefixInfo == null || prefixInfo.getMode() == SearchMode.DISABLED) {
 			return Optional.of(new TokenInfo(token, NO_PREFIX));
 		}

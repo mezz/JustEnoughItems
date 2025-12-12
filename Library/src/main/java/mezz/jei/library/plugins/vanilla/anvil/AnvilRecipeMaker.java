@@ -15,7 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.context.ContextMap;
@@ -289,7 +289,7 @@ public final class AnvilRecipeMaker {
 			.mapMulti((itemStack, consumer) -> {
 				String uid = EnchantedBookSubtypeInterpreter.INSTANCE.getStringName(itemStack);
 				String ingredientIdPath = ResourceLocationUtil.sanitizePath(uid);
-				String itemModId = ingredientHelper.getResourceLocation(itemStack).getNamespace();
+				String itemModId = ingredientHelper.getIdentifier(itemStack).getNamespace();
 
 				ItemStack damagedThreeQuarters = itemStack.copy();
 				damagedThreeQuarters.setDamageValue(damagedThreeQuarters.getMaxDamage() * 3 / 4);
@@ -302,7 +302,7 @@ public final class AnvilRecipeMaker {
 					damagedThreeQuartersSingletonList,
 					damagedThreeQuartersSingletonList,
 					List.of(damagedHalf),
-					ResourceLocation.fromNamespaceAndPath(itemModId, "anvil.self_repair." + ingredientIdPath)
+					Identifier.fromNamespaceAndPath(itemModId, "anvil.self_repair." + ingredientIdPath)
 				);
 				consumer.accept(repairWithSame);
 
@@ -313,7 +313,7 @@ public final class AnvilRecipeMaker {
 						List.of(damagedFully),
 						repairMaterials,
 						damagedThreeQuartersSingletonList,
-						ResourceLocation.fromNamespaceAndPath(itemModId, "anvil.materials_repair." + ingredientIdPath)
+						Identifier.fromNamespaceAndPath(itemModId, "anvil.materials_repair." + ingredientIdPath)
 					);
 					consumer.accept(repairWithMaterial);
 				}

@@ -4,7 +4,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -29,7 +29,7 @@ public interface IVanillaRecipeFactory {
 	 *
 	 * @since 19.1.0
 	 */
-	IJeiAnvilRecipe createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs, @Nullable ResourceLocation uid);
+	IJeiAnvilRecipe createAnvilRecipe(ItemStack leftInput, List<ItemStack> rightInputs, List<ItemStack> outputs, @Nullable Identifier uid);
 
 	/**
 	 * Create an anvil recipe for the given inputs and output.
@@ -42,7 +42,7 @@ public interface IVanillaRecipeFactory {
 	 *
 	 * @since 19.1.0
 	 */
-	IJeiAnvilRecipe createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs, ResourceLocation uid);
+	IJeiAnvilRecipe createAnvilRecipe(List<ItemStack> leftInputs, List<ItemStack> rightInputs, List<ItemStack> outputs, Identifier uid);
 
 	/**
 	 * Create a grindstone recipe for the given inputs and output.
@@ -57,7 +57,7 @@ public interface IVanillaRecipeFactory {
 	 *
 	 * @since 23.1.0
 	 */
-	IJeiGrindstoneRecipe createGrindstoneRecipe(List<ItemStack> topInputs, List<ItemStack> bottomInputs, List<ItemStack> outputs, int minXp, int maxXp, ResourceLocation uid);
+	IJeiGrindstoneRecipe createGrindstoneRecipe(List<ItemStack> topInputs, List<ItemStack> bottomInputs, List<ItemStack> outputs, int minXp, int maxXp, Identifier uid);
 
 	/**
 	 * Create a new brewing recipe.
@@ -71,7 +71,7 @@ public interface IVanillaRecipeFactory {
 	 *
 	 * @since 19.1.0
 	 */
-	IJeiBrewingRecipe createBrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput, ResourceLocation uid);
+	IJeiBrewingRecipe createBrewingRecipe(List<ItemStack> ingredients, ItemStack potionInput, ItemStack potionOutput, Identifier uid);
 
 	/**
 	 * Create a new brewing recipe.
@@ -85,7 +85,7 @@ public interface IVanillaRecipeFactory {
 	 *
 	 * @since 19.1.0
 	 */
-	IJeiBrewingRecipe createBrewingRecipe(List<ItemStack> ingredients, List<ItemStack> potionInputs, ItemStack potionOutput, ResourceLocation uid);
+	IJeiBrewingRecipe createBrewingRecipe(List<ItemStack> ingredients, List<ItemStack> potionInputs, ItemStack potionOutput, Identifier uid);
 
 	/**
 	 * Builds a serializable ShapedRecipe that isn't registered with the vanilla game.

@@ -3,7 +3,7 @@ package mezz.jei.api.ingredients;
 import mezz.jei.api.constants.Tags;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.IModIngredientRegistration;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -90,7 +90,7 @@ public interface IIngredientHelper<V> {
 	 * This mod id can be different from the one in the resource location.
 	 */
 	default String getDisplayModId(V ingredient) {
-		return getResourceLocation(ingredient).getNamespace();
+		return getIdentifier(ingredient).getNamespace();
 	}
 
 	/**
@@ -128,10 +128,20 @@ public interface IIngredientHelper<V> {
 	}
 
 	/**
-	 * Return the registry name of the given ingredient.
-	 * @since 9.2.2
+	 * Return the registry identifier for the given ingredient.
+	 * @since 27.0.0
 	 */
-	ResourceLocation getResourceLocation(V ingredient);
+	Identifier getIdentifier(V ingredient);
+
+	/**
+	 * Return the registry identifier for the given ingredient.
+	 * @since 9.2.2
+	 * @deprecated use {@link #getIdentifier(Object)}
+	 */
+	@Deprecated(since = "27.0.0", forRemoval = true)
+	default Identifier getResourceLocation(V ingredient) {
+		return getIdentifier(ingredient);
+	}
 
 	/**
 	 * Called when a player is in cheat mode and clicks an ingredient in the list.
@@ -191,7 +201,7 @@ public interface IIngredientHelper<V> {
 	 *
 	 * @since 12.0.1
 	 */
-	default Stream<ResourceLocation> getTagStream(V ingredient) {
+	default Stream<Identifier> getTagStream(V ingredient) {
 		return Stream.empty();
 	}
 
@@ -241,7 +251,7 @@ public interface IIngredientHelper<V> {
 	 * @deprecated use {@link #getTagKeyEquivalent}
 	 */
 	@Deprecated(since = "19.5.5", forRemoval = true)
-	default Optional<ResourceLocation> getTagEquivalent(Collection<V> ingredients) {
+	default Optional<Identifier> getTagEquivalent(Collection<V> ingredients) {
 		return getTagKeyEquivalent(ingredients)
 			.map(TagKey::location);
 	}

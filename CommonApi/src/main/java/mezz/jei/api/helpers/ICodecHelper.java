@@ -56,7 +56,7 @@ public interface ICodecHelper {
 	/**
 	 * @return a codec for recipes in a given {@link IRecipeCategory}.
 	 *
-	 * This is generally inefficient, and requires searching JEI for the recipe based on {@link IRecipeCategory#getRegistryName}.
+	 * This is generally inefficient, and requires searching JEI for the recipe based on {@link IRecipeCategory#getIdentifier}.
 	 * You should prefer using a codec that relies on a fast registry or other methods of finding the recipes efficiently.
 	 *
 	 * @since 19.9.0

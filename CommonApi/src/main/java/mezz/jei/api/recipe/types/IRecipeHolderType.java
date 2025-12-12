@@ -2,7 +2,8 @@ package mezz.jei.api.recipe.types;
 
 import com.google.common.base.Suppliers;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -27,11 +28,11 @@ public interface IRecipeHolderType<T extends Recipe<?>> extends IRecipeType<Reci
 	}
 
 	/**
-	 * Create a JEI RecipeType from a ResourceLocation.
+	 * Create a JEI RecipeType from a Identifier.
 	 * Returns a RecipeType that uses {@link RecipeHolder} to hold recipes.
 	 * @since 20.0.0
 	 */
-	static <R extends Recipe<?>> IRecipeHolderType<R> create(ResourceLocation recipeId) {
+	static <R extends Recipe<?>> IRecipeHolderType<R> create(Identifier recipeId) {
 		return new JeiRecipeHolderType<>(recipeId);
 	}
 
@@ -44,9 +45,9 @@ public interface IRecipeHolderType<T extends Recipe<?>> extends IRecipeType<Reci
 		return Suppliers.memoize(() -> create(vanillaRecipeType.get()));
 	}
 
-	record JeiRecipeHolderType<T extends Recipe<?>>(ResourceLocation uid) implements IRecipeHolderType<T> {
-		private static ResourceLocation getUid(RecipeType<?> recipeType) {
-			ResourceLocation uid = BuiltInRegistries.RECIPE_TYPE.getKey(recipeType);
+	record JeiRecipeHolderType<T extends Recipe<?>>(Identifier uid) implements IRecipeHolderType<T> {
+		private static Identifier getUid(RecipeType<?> recipeType) {
+			Identifier uid = BuiltInRegistries.RECIPE_TYPE.getKey(recipeType);
 			if (uid == null) {
 				throw new IllegalArgumentException("Vanilla Recipe Type must be registered before using it here. %s".formatted(recipeType));
 			}
@@ -58,7 +59,7 @@ public interface IRecipeHolderType<T extends Recipe<?>> extends IRecipeType<Reci
 		}
 
 		@Override
-		public ResourceLocation getUid() {
+		public Identifier getUid() {
 			return uid;
 		}
 

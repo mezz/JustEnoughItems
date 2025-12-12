@@ -23,7 +23,7 @@ import mezz.jei.library.plugins.jei.tags.TagInfoRecipeCategory;
 import mezz.jei.library.plugins.jei.tags.TagInfoRecipeMaker;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.ItemLike;
 
 import java.util.ArrayList;
@@ -35,8 +35,8 @@ public class JeiInternalPlugin implements IModPlugin {
 	private final List<TagInfoRecipeMaker<?, ?>> tagInfoRecipeMakers = new ArrayList<>();
 
 	@Override
-	public ResourceLocation getPluginUid() {
-		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "internal");
+	public Identifier getPluginUid() {
+		return Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "internal");
 	}
 
 	@Override
@@ -87,10 +87,10 @@ public class JeiInternalPlugin implements IModPlugin {
 
 				IIngredientType<B> type = ingredientManager.getIngredientTypeChecked(ingredient).orElse(null);
 				if (type != null) {
-					ResourceLocation registryLocation = registry.key().location();
-					IRecipeType<ITagInfoRecipe> recipeType = createTagInfoRecipeType(registryLocation);
+					Identifier id = registry.key().identifier();
+					IRecipeType<ITagInfoRecipe> recipeType = createTagInfoRecipeType(id);
 					registration.addRecipeCategories(
-						new TagInfoRecipeCategory<>(guiHelper, recipeType, registryLocation)
+						new TagInfoRecipeCategory<>(guiHelper, recipeType, id)
 					);
 					tagInfoRecipeMakers.add(new TagInfoRecipeMaker<>(type, recipeType, Function.identity(), registry.key()));
 					return;
@@ -113,8 +113,8 @@ public class JeiInternalPlugin implements IModPlugin {
 		});
 	}
 
-	private static IRecipeType<ITagInfoRecipe> createTagInfoRecipeType(ResourceLocation registryLocation) {
-		return IRecipeType.create(registryLocation.getNamespace(), "tag_recipes/" + registryLocation.getPath(), ITagInfoRecipe.class);
+	private static IRecipeType<ITagInfoRecipe> createTagInfoRecipeType(Identifier id) {
+		return IRecipeType.create(id.getNamespace(), "tag_recipes/" + id.getPath(), ITagInfoRecipe.class);
 	}
 
 	private static <B, I> boolean createAndRegisterTagCategory(
@@ -132,12 +132,12 @@ public class JeiInternalPlugin implements IModPlugin {
 			// this method is optional and may not be supported
 			return false;
 		}
-		ResourceLocation registryLocation = registry.key().location();
+		Identifier id = registry.key().identifier();
 
-		IRecipeType<ITagInfoRecipe> recipeType = createTagInfoRecipeType(registryLocation);
+		IRecipeType<ITagInfoRecipe> recipeType = createTagInfoRecipeType(id);
 
 		registration.addRecipeCategories(
-			new TagInfoRecipeCategory<>(guiHelper, recipeType, registryLocation)
+			new TagInfoRecipeCategory<>(guiHelper, recipeType, id)
 		);
 		tagInfoRecipeMakers.add(new TagInfoRecipeMaker<>(knownType, recipeType, knownType::getDefaultIngredient, registry.key()));
 		return true;
@@ -152,10 +152,10 @@ public class JeiInternalPlugin implements IModPlugin {
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
 
 		ResourceKey<? extends Registry<B>> registryKey = registry.key();
-		ResourceLocation registryLocation = registryKey.location();
-		IRecipeType<ITagInfoRecipe> recipeType = createTagInfoRecipeType(registryLocation);
+		Identifier id = registryKey.identifier();
+		IRecipeType<ITagInfoRecipe> recipeType = createTagInfoRecipeType(id);
 		registration.addRecipeCategories(
-			new TagInfoRecipeCategory<>(guiHelper, recipeType, registryLocation)
+			new TagInfoRecipeCategory<>(guiHelper, recipeType, id)
 		);
 		tagInfoRecipeMakers.add(new TagInfoRecipeMaker<>(
 			VanillaTypes.ITEM_STACK,

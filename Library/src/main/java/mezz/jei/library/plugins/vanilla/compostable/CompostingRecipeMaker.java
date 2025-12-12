@@ -7,7 +7,7 @@ import mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
 import mezz.jei.common.platform.Services;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Collection;
@@ -24,9 +24,9 @@ public class CompostingRecipeMaker {
 			.<IJeiCompostingRecipe>mapMulti((itemStack, consumer) -> {
 				float compostValue = platformIngredientHelper.getCompostValue(itemStack);
 				if (compostValue > 0) {
-					ResourceLocation resourceLocation = ingredientHelper.getResourceLocation(itemStack);
-					String ingredientUidPath = resourceLocation.getPath();
-					ResourceLocation recipeUid = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, ingredientUidPath);
+					Identifier ingredientUid = ingredientHelper.getIdentifier(itemStack);
+					String ingredientUidPath = ingredientUid.getPath();
+					Identifier recipeUid = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, ingredientUidPath);
 					CompostingRecipe recipe = new CompostingRecipe(itemStack, compostValue, recipeUid);
 					consumer.accept(recipe);
 				}

@@ -15,7 +15,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -91,13 +91,13 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	}
 
 	@Override
-	public ResourceLocation getResourceLocation(T ingredient) {
+	public Identifier getIdentifier(T ingredient) {
 		Fluid fluid = fluidType.getBase(ingredient);
 		return getRegistryName(ingredient, fluid);
 	}
 
-	private ResourceLocation getRegistryName(T ingredient, Fluid fluid) {
-		ResourceLocation key = registry.getKey(fluid);
+	private Identifier getRegistryName(T ingredient, Fluid fluid) {
+		Identifier key = registry.getKey(fluid);
 		if (key == null) {
 			String ingredientInfo = getErrorInfo(ingredient);
 			throw new IllegalStateException("null registry name for: " + ingredientInfo);
@@ -123,7 +123,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	}
 
 	@Override
-	public Stream<ResourceLocation> getTagStream(T ingredient) {
+	public Stream<Identifier> getTagStream(T ingredient) {
 		Fluid fluid = fluidType.getBase(ingredient);
 
 		return registry.wrapAsHolder(fluid)

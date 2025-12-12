@@ -91,7 +91,6 @@ public final class ColorGetter {
 	}
 
 	private static Optional<NativeImage> getNativeImage(TextureAtlasSprite textureAtlasSprite) {
-		@SuppressWarnings("resource")
 		SpriteContents contents = textureAtlasSprite.contents();
 		int iconWidth = contents.width();
 		int iconHeight = contents.height();

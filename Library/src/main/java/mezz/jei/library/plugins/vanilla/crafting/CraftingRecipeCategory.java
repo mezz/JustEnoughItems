@@ -22,7 +22,7 @@ import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.library.recipes.CraftingExtensionHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -106,9 +106,9 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 	}
 
 	@Override
-	public ResourceLocation getRegistryName(RecipeHolder<CraftingRecipe> recipeHolder) {
+	public Identifier getIdentifier(RecipeHolder<CraftingRecipe> recipeHolder) {
 		ErrorUtil.checkNotNull(recipeHolder, "recipeHolder");
-		return recipeHolder.id().location();
+		return recipeHolder.id().identifier();
 	}
 
 	@Override

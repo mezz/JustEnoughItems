@@ -13,7 +13,7 @@ import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,15 +27,15 @@ public class JustEnoughItems implements ModInitializer {
 		IConnectionToClient connection = new ConnectionToClient();
 		ServerNetworkHandler.registerServerPacketHandlers(connection, serverConfig);
 
-		ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "jei_shaped");
+		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "jei_shaped");
 		var recipeSerializer = new JeiShapedRecipe.Serializer();
-		var registered = Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, resourceLocation, recipeSerializer);
+		var registered = Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, id, recipeSerializer);
 		RecipeSerializers.register(() -> registered);
 
 		// Run through vanilla recipe serializers and sync them
 		for (var entry : BuiltInRegistries.RECIPE_SERIALIZER.entrySet()) {
 			ResourceKey<RecipeSerializer<?>> resourceKey = entry.getKey();
-			if (resourceKey.location().getNamespace().equals(ModIds.MINECRAFT_ID)) {
+			if (resourceKey.identifier().getNamespace().equals(ModIds.MINECRAFT_ID)) {
 				RecipeSerializer<?> serializer = entry.getValue();
 				try {
 					RecipeSynchronization.synchronizeRecipeSerializer(serializer);

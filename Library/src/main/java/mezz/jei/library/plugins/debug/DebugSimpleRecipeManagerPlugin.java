@@ -7,7 +7,7 @@ import mezz.jei.api.recipe.advanced.ISimpleRecipeManagerPlugin;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -60,8 +60,8 @@ public class DebugSimpleRecipeManagerPlugin implements ISimpleRecipeManagerPlugi
 			.pattern("lll")
 			.define('l', Ingredient.of(Items.LIGHT))
 			.build();
-		ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "debug_simple_recipe");
-		ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, resourceLocation);
+		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "debug_simple_recipe");
+		ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, id);
 		return new RecipeHolder<>(resourceKey, recipe);
 	}
 }

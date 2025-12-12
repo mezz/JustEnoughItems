@@ -16,10 +16,9 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -89,7 +88,7 @@ public class BrewingRecipeCategory extends AbstractRecipeCategory<IJeiBrewingRec
 	}
 
 	@Override
-	public @Nullable ResourceLocation getRegistryName(IJeiBrewingRecipe recipe) {
+	public Identifier getIdentifier(IJeiBrewingRecipe recipe) {
 		return recipe.getUid();
 	}
 

@@ -39,7 +39,7 @@ import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
@@ -67,7 +67,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 		this.ingredientManager = ingredientManager;
 		this.localizedName = Component.literal("debug");
 
-		ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "textures/jei/gui/debug.png");
+		Identifier backgroundTexture = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "textures/jei/gui/debug.png");
 		this.tankBackground = guiHelper.createDrawable(backgroundTexture, 220, 196, 18, 60);
 		this.tankOverlay = guiHelper.createDrawable(backgroundTexture, 238, 196, 18, 60);
 		this.item = guiHelper.createDrawableItemStack(new ItemStack(Items.ACACIA_LEAVES));
@@ -128,7 +128,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 
 	private <T> void drawIngredientName(Minecraft minecraft, GuiGraphics guiGraphics, ITypedIngredient<T> ingredient) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient.getType());
-		String serialized = ingredientHelper.getResourceLocation(ingredient.getIngredient()).toString();
+		String serialized = ingredientHelper.getIdentifier(ingredient.getIngredient()).toString();
 		guiGraphics.drawString(minecraft.font, serialized, 50, 52, 0, false);
 	}
 
@@ -261,8 +261,8 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public @Nullable ResourceLocation getRegistryName(DebugRecipe recipe) {
-		return recipe.getRegistryName();
+	public Identifier getIdentifier(DebugRecipe recipe) {
+		return recipe.getId();
 	}
 
 	@Override

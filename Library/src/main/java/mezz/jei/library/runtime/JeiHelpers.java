@@ -16,7 +16,8 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.gui.helpers.GuiHelper;
 import mezz.jei.library.ingredients.IngredientVisibility;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -95,7 +96,7 @@ public class JeiHelpers implements IJeiHelpers {
 	}
 
 	@Override
-	public <T> Optional<IRecipeType<T>> getRecipeType(ResourceLocation uid, Class<? extends T> recipeClass) {
+	public <T> Optional<IRecipeType<T>> getRecipeType(Identifier uid, Class<? extends T> recipeClass) {
 		return getRecipeType(uid)
 			.filter(t -> t.getRecipeClass().equals(recipeClass))
 			.map(t -> {
@@ -106,7 +107,7 @@ public class JeiHelpers implements IJeiHelpers {
 	}
 
 	@Override
-	public Optional<IRecipeType<?>> getRecipeType(ResourceLocation uid) {
+	public Optional<IRecipeType<?>> getRecipeType(Identifier uid) {
 		return Optional.ofNullable(this.recipeCategories)
 			.flatMap(r -> r.stream()
 				.map(IRecipeCategory::getRecipeType)
