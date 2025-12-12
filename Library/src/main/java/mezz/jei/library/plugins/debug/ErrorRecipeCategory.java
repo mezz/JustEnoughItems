@@ -7,8 +7,8 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.Internal;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class ErrorRecipeCategory extends AbstractRecipeCategory<ErrorRecipe> {
-	public static final RecipeType<ErrorRecipe> TYPE = RecipeType.create(ModIds.JEI_ID, "error", ErrorRecipe.class);
+	public static final IRecipeType<ErrorRecipe> TYPE = IRecipeType.create(ModIds.JEI_ID, "error", ErrorRecipe.class);
 
 	public ErrorRecipeCategory() {
 		super(
