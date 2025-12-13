@@ -13,11 +13,8 @@ import mezz.jei.library.config.IModIdFormatConfig;
 import mezz.jei.library.config.ModIdFormatConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.Strings;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -38,23 +35,6 @@ public final class ModIdHelper implements IModIdHelper {
 		return !modNameFormat.isEmpty();
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
-		if (!isDisplayingModNameEnabled()) {
-			return tooltip;
-		}
-		if (modIdFormattingConfig.isModNameFormatOverrideActive() && (ingredient instanceof ItemStack)) {
-			// we detected that another mod is adding the mod name already
-			return tooltip;
-		}
-		String modId = ingredientHelper.getDisplayModId(ingredient);
-		String modName = getFormattedModNameForModId(modId);
-		List<Component> tooltipCopy = new ArrayList<>(tooltip);
-		tooltipCopy.add(Component.literal(modName));
-		return tooltipCopy;
-	}
-
 	@Override
 	public <T> Optional<Component> getModNameForTooltip(ITypedIngredient<T> typedIngredient) {
 		if (!isDisplayingModNameEnabled()) {
@@ -73,15 +53,6 @@ public final class ModIdHelper implements IModIdHelper {
 		String modId = ingredientHelper.getDisplayModId(ingredient);
 		String modName = getFormattedModNameForModId(modId);
 		return Optional.of(Component.literal(modName));
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, ITypedIngredient<T> typedIngredient) {
-		IIngredientType<T> type = typedIngredient.getType();
-		T ingredient = typedIngredient.getIngredient();
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(type);
-		return addModNameToIngredientTooltip(tooltip, ingredient, ingredientHelper);
 	}
 
 	@Override

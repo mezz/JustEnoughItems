@@ -153,12 +153,6 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 		return this;
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public IRecipeSlotBuilder addTooltipCallback(mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback tooltipCallback) {
-		return this;
-	}
-
 	@Override
 	public IRecipeSlotBuilder addRichTooltipCallback(IRecipeSlotRichTooltipCallback tooltipCallback) {
 		return this;

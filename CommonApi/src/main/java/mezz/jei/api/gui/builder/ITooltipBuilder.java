@@ -78,16 +78,4 @@ public interface ITooltipBuilder {
 	 * @since 21.1.0
 	 */
 	List<Either<FormattedText, TooltipComponent>> getLines();
-
-	/**
-	 * @deprecated this is only for legacy tooltip support and will be removed
-	 */
-	@Deprecated(since = "19.8.4", forRemoval = true)
-	List<Component> toLegacyToComponents();
-
-	/**
-	 * @deprecated this is only for legacy tooltip support and will be removed
-	 */
-	@Deprecated(since = "19.8.4", forRemoval = true)
-	void removeAll(List<Component> components);
 }

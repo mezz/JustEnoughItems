@@ -5,10 +5,8 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IRecipesGui;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.chat.Component;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public interface IGuiClickableArea {
@@ -33,25 +31,13 @@ public interface IGuiClickableArea {
 	}
 
 	/**
-	 * Returns the strings to be shown on the tooltip when this area is hovered over.
-	 * Return an empty list to display the default "Show Recipes" message.
-	 *
-	 * @deprecated use {@link #getTooltip(ITooltipBuilder)}
-	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
-	@Deprecated(since = "19.5.4", forRemoval = true)
-	default List<Component> getTooltipStrings() {
-		return Collections.emptyList();
-	}
-
-	/**
 	 * Add the tooltip elements to be shown on the tooltip when this area is hovered over.
 	 * Leave it empty to display the default "Show Recipes" message.
 	 *
 	 * @since 19.5.4
 	 */
 	default void getTooltip(ITooltipBuilder tooltip) {
-		tooltip.addAll(getTooltipStrings());
+
 	}
 
 	/**

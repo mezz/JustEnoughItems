@@ -24,18 +24,6 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.NonExtendable
 public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuilder>, IPlaceable<IRecipeSlotBuilder> {
 	/**
-	 * Add a callback to alter the tooltip for these ingredients.
-	 *
-	 * @see mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback
-	 *
-	 * @since 9.3.0
-	 * @deprecated use {@link #addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
-	 */
-	@SuppressWarnings("removal")
-	@Deprecated(since = "19.8.5", forRemoval = true)
-	IRecipeSlotBuilder addTooltipCallback(mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback tooltipCallback);
-
-	/**
 	 * Add a callback to alter the rich tooltip for these ingredients.
 	 *
 	 * @see IRecipeSlotRichTooltipCallback

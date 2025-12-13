@@ -8,9 +8,6 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IAdvancedRegistration;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-
-import java.util.List;
 
 /**
  * The {@link IRecipeCategoryDecorator} allows further customization of recipe categories.
@@ -41,28 +38,6 @@ public interface IRecipeCategoryDecorator<T> {
 	 */
 	default void draw(T recipe, IRecipeCategory<T> recipeCategory, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
 
-	}
-
-	/**
-	 * Allows modifying of and adding to existing tooltips added by the {@link IRecipeCategory} that
-	 * this decorator is registered to.
-	 * To avoid removing tooltips from the category itself, make sure to return original list with your
-	 * edits and additions.
-	 *
-	 * @param tooltips        the existing tooltip strings.
-	 * @param recipe          the current recipe being drawn.
-	 * @param recipeCategory  the recipe category of the recipe.
-	 * @param recipeSlotsView a view of the current recipe slots being drawn.
-	 * @param mouseX          the X position of the mouse, relative to the recipe.
-	 * @param mouseY          the Y position of the mouse, relative to the recipe.
-	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
-	 *
-	 * @since 15.1.0
-	 * @deprecated use {@link #decorateTooltips(ITooltipBuilder, Object, IRecipeCategory, IRecipeSlotsView, double, double)}
-	 */
-	@Deprecated(since = "19.5.4", forRemoval = true)
-	default List<Component> decorateExistingTooltips(List<Component> tooltips, T recipe, IRecipeCategory<T> recipeCategory, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-		return tooltips;
 	}
 
 	/**

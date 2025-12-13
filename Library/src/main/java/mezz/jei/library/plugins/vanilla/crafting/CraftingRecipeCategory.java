@@ -1,6 +1,5 @@
 package mezz.jei.library.plugins.vanilla.crafting;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.serialization.Codec;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -83,13 +82,6 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 	public void getTooltip(ITooltipBuilder tooltip, RecipeHolder<CraftingRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
 		var extension = this.extendableHelper.getRecipeExtension(this, recipeHolder);
 		extension.getTooltip(tooltip, recipeHolder, mouseX, mouseY);
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public boolean handleInput(RecipeHolder<CraftingRecipe> recipeHolder, double mouseX, double mouseY, InputConstants.Key input) {
-		var extension = this.extendableHelper.getRecipeExtension(this, recipeHolder);
-		return extension.handleInput(recipeHolder, mouseX, mouseY, input);
 	}
 
 	@Override

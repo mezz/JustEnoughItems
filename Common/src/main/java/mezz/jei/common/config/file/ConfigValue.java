@@ -45,12 +45,6 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 		return name;
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public String getDescription() {
-		return description.getString();
-	}
-
 	@Override
 	public Component getLocalizedDescription() {
 		return description;

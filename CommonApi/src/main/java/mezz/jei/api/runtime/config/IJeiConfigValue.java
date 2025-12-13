@@ -21,15 +21,6 @@ public interface IJeiConfigValue<T> {
 	String getName();
 
 	/**
-	 * Get the description of this config value.
-	 *
-	 * @since 12.1.0
-	 * @deprecated use {@link #getLocalizedDescription()}
-	 */
-	@Deprecated(since = "19.21.0", forRemoval = true)
-	String getDescription();
-
-	/**
 	 * Get the translated name component of this config value.
 	 *
 	 * @since 19.21.0

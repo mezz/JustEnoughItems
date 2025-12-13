@@ -6,7 +6,6 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IIngredientVisibility;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -28,18 +27,6 @@ public interface IRecipeRegistration {
 	 * The {@link IVanillaRecipeFactory} allows creation of vanilla recipes.
 	 */
 	IVanillaRecipeFactory getVanillaRecipeFactory();
-
-	/**
-	 * The {@link IIngredientVisibility} allows mod plugins to do advanced filtering of
-	 * ingredients based on what is visible in JEI.
-	 *
-	 * @since 9.3.1
-	 * @deprecated use {@link IJeiHelpers#getIngredientVisibility()}
-	 */
-	@Deprecated(since = "19.18.4", forRemoval = true)
-	default IIngredientVisibility getIngredientVisibility() {
-		return getJeiHelpers().getIngredientVisibility();
-	}
 
 	/**
 	 * Add the recipes provided by your plugin.

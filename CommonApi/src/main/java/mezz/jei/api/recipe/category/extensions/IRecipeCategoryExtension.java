@@ -1,22 +1,15 @@
 package mezz.jei.api.recipe.category.extensions;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
-import mezz.jei.api.gui.inputs.IJeiInputHandler;
-import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * An extension to a recipe category with methods that allow JEI to make sense of it.
@@ -53,27 +46,7 @@ public interface IRecipeCategoryExtension<T> {
 	 * @since 19.5.4
 	 */
 	default void getTooltip(ITooltipBuilder tooltip, T recipe, double mouseX, double mouseY) {
-		List<Component> tooltipStrings = getTooltipStrings(recipe, mouseX, mouseY);
-		tooltip.addAll(tooltipStrings);
-	}
 
-	/**
-	 * Get the tooltip for whatever is under the mouse.
-	 * ItemStack and fluid tooltips are already handled by JEI, this is for anything else.
-	 *
-	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
-	 * To add tooltips for a recipe category, see {@link IRecipeCategory#getTooltip}
-	 *
-	 * @param mouseX the X position of the mouse, relative to the recipe.
-	 * @param mouseY the Y position of the mouse, relative to the recipe.
-	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
-	 * @since 16.0.0
-	 * @deprecated use {@link #getTooltip}
-	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
-	@Deprecated(since = "19.5.4", forRemoval = true)
-	default List<Component> getTooltipStrings(T recipe, double mouseX, double mouseY) {
-		return Collections.emptyList();
 	}
 
 	/**
@@ -87,25 +60,6 @@ public interface IRecipeCategoryExtension<T> {
 	 */
 	default void createRecipeExtras(T recipe, IRecipeExtrasBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
 
-	}
-
-	/**
-	 * Called when a player inputs while hovering over the recipe.
-	 * Useful for implementing buttons, hyperlinks, and other interactions to your recipe.
-	 *
-	 * @param mouseX the X position of the mouse, relative to the recipe.
-	 * @param mouseY the Y position of the mouse, relative to the recipe.
-	 * @param input  the current input from the player.
-	 * @return true if the input was handled, false otherwise
-	 * @since 16.0.0
-	 *
-	 * @deprecated create a {@link IJeiInputHandler} to handle inputs using {@link IRecipeExtrasBuilder#addInputHandler}, then
-	 * use {@link IJeiInputHandler#handleInput(double, double, IJeiUserInput)}
-	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
-	@Deprecated(since = "19.6.0", forRemoval = true)
-	default boolean handleInput(T recipe, double mouseX, double mouseY, InputConstants.Key input) {
-		return false;
 	}
 
 	/**

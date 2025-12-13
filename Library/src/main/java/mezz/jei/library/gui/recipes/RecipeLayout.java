@@ -175,8 +175,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	@Override
 	public void drawRecipe(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		ensureRecipeExtrasAreCreated();
-		@SuppressWarnings("removal")
-		IDrawable background = recipeCategory.getBackground();
 
 		recipeBackground.draw(guiGraphics, getRectWithBorder());
 
@@ -189,9 +187,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		poseStack.pushMatrix();
 		{
 			poseStack.translate(area.getX(), area.getY());
-			if (background != null) {
-				background.draw(guiGraphics);
-			}
 
 			// defensive push/pop to protect against recipe categories changing the last pose
 			poseStack.pushMatrix();
@@ -315,14 +310,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		return getSlotUnderMouse(mouseX, mouseY)
 			.map(RecipeSlotUnderMouse::slot)
 			.flatMap(slot -> slot.getDisplayedIngredient(ingredientType));
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated
-	public Optional<IRecipeSlotDrawable> getRecipeSlotUnderMouse(double mouseX, double mouseY) {
-		return getSlotUnderMouse(mouseX, mouseY)
-			.map(RecipeSlotUnderMouse::slot);
 	}
 
 	@Override

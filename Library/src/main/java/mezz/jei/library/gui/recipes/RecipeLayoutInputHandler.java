@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -65,14 +64,7 @@ public class RecipeLayoutInputHandler<T> implements IJeiInputHandler {
 			}
 		}
 
-		if (userInput.isSimulate()) {
-			return true;
-		}
-		IRecipeCategory<T> recipeCategory = recipeLayout.getRecipeCategory();
-		T recipe = recipeLayout.getRecipe();
-		@SuppressWarnings("removal")
-		boolean legacyResult = recipeCategory.handleInput(recipe, recipeMouseX, recipeMouseY, userInput.getKey());
-		return legacyResult;
+		return false;
 	}
 
 	private static boolean handleInput(IJeiGuiEventListener guiEventListener, double relativeMouseX, double relativeMouseY, IJeiUserInput userInput) {

@@ -23,14 +23,13 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.SafeIngredientUtil;
-import mezz.jei.library.gui.recipes.layout.builder.LegacyTooltipCallbackAdapter;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -135,7 +134,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		// if an invisible ingredient is found, start building the list of visible ingredients
 		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getJeiHelpers().getIngredientVisibility();
 		for (int i = 0; i < allIngredients.size() && visibleIngredients.size() < MAX_DISPLAYED_INGREDIENTS; i++) {
-			@Nullable ITypedIngredient<?> ingredient = allIngredients.get(i);
+			ITypedIngredient<?> ingredient = allIngredients.get(i);
 			boolean visible = ingredient == null || ingredientVisibility.isIngredientVisible(ingredient);
 			if (visible) {
 				if (hasInvisibleIngredients) {
@@ -264,12 +263,6 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		}
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	public void addTooltipCallback(mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback tooltipCallback) {
-		this.tooltipCallbacks.add(new LegacyTooltipCallbackAdapter(tooltipCallback));
-	}
-
 	private <T> IIngredientRenderer<T> getIngredientRenderer(IIngredientType<T> ingredientType) {
 		return Optional.ofNullable(rendererOverrides)
 			.flatMap(r -> r.getIngredientRenderer(ingredientType))
@@ -357,12 +350,6 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			displayOverrides = new DisplayIngredientAcceptor(ingredientManager);
 		}
 		return displayOverrides;
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public Rect2i getRect() {
-		return rect.toMutable();
 	}
 
 	@Override

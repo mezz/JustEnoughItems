@@ -99,27 +99,6 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	void clearDisplayOverrides();
 
 	/**
-	 * Get the position and size of the recipe slot drawable relative to its parent element.
-	 *
-	 * @since 11.5.0
-	 * @deprecated use {@link #isMouseOver(double, double)} to check if the mouse is over the slot
-	 */
-	@Deprecated(since = "19.6.0", forRemoval = true)
-	Rect2i getRect();
-
-	/**
-	 * Add a tooltip callback to be called when the mouse is hovering over this recipe slot.
-	 *
-	 * @since 11.5.0
-	 * @deprecated use {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)} instead, when creating the slot
-	 */
-	@SuppressWarnings("removal")
-	@Deprecated(since = "19.5.4", forRemoval = true)
-	default void addTooltipCallback(IRecipeSlotTooltipCallback tooltipCallback) {
-
-	}
-
-	/**
 	 * Get the area that this recipe slot draws on, including the area covered by its background texture.
 	 * Useful for laying out other recipe elements relative to the slot.
 	 *

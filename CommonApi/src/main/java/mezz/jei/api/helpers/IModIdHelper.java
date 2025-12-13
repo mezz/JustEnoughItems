@@ -1,10 +1,8 @@
 package mezz.jei.api.helpers;
 
-import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.network.chat.Component;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -33,30 +31,6 @@ public interface IModIdHelper {
 	 * @since 17.1.0
 	 */
 	Set<String> getModAliases(String modId);
-
-	/**
-	 * Adds the mod name to the tooltip with color formatting.
-	 *
-	 * If {@link #isDisplayingModNameEnabled()} is false,
-	 * this will just return the tooltip without adding the mod name.
-	 *
-	 * @deprecated use {@link #getModNameForTooltip(ITypedIngredient)}
-	 */
-	@Deprecated(since = "19.5.4", forRemoval = true)
-	<T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper);
-
-	/**
-	 * Adds the mod name to the tooltip with color formatting.
-	 *
-	 * If {@link #isDisplayingModNameEnabled()} is false,
-	 * this will just return the tooltip without adding the mod name.
-	 *
-	 * @since 11.5.0
-	 *
-	 * @deprecated use {@link #getModNameForTooltip(ITypedIngredient)}
-	 */
-	@Deprecated(since = "19.5.4", forRemoval = true)
-	<T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, ITypedIngredient<T> typedIngredient);
 
 	/**
 	 * Gets the mod name for the tooltip with color formatting.

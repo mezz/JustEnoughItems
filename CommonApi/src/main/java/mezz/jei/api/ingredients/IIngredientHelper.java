@@ -242,17 +242,4 @@ public interface IIngredientHelper<V> {
 	default Optional<TagKey<?>> getTagKeyEquivalent(Collection<V> ingredients) {
 		return Optional.empty();
 	}
-
-	/**
-	 * If these ingredients represent everything from a single tag,
-	 * returns that tag's resource location.
-	 *
-	 * @since 9.3.0
-	 * @deprecated use {@link #getTagKeyEquivalent}
-	 */
-	@Deprecated(since = "19.5.5", forRemoval = true)
-	default Optional<Identifier> getTagEquivalent(Collection<V> ingredients) {
-		return getTagKeyEquivalent(ingredients)
-			.map(TagKey::location);
-	}
 }

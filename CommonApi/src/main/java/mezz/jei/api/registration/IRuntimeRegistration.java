@@ -8,7 +8,6 @@ import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 
@@ -64,16 +63,6 @@ public interface IRuntimeRegistration {
 	 * The {@link IIngredientManager} has some useful functions related to recipe ingredients.
 	 */
 	IIngredientManager getIngredientManager();
-
-	/**
-	 * The {@link IIngredientVisibility} allows mod plugins to do advanced filtering of
-	 * ingredients based on what is visible in JEI.
-	 * @deprecated use {@link IJeiHelpers#getIngredientVisibility()}
-	 */
-	@Deprecated(since = "19.18.4", forRemoval = true)
-	default IIngredientVisibility getIngredientVisibility() {
-		return getJeiHelpers().getIngredientVisibility();
-	}
 
 	/**
 	 * Get a helper for all runtime Screen functions.

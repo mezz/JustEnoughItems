@@ -73,21 +73,4 @@ public interface IScreenHelper {
 	 * @since 19.8.2
 	 */
 	<T extends Screen> List<IGhostIngredientHandler<T>> getGhostIngredientHandlers(T guiScreen);
-
-	/**
-	 * Get the ghost ingredient handler for the given screen, if there is one.
-	 *
-	 * This uses information from plugins that have registered
-	 * ghost ingredient handlers via {@link IGuiHandlerRegistration#addGhostIngredientHandler}
-	 *
-	 * @since 11.5.0
-	 */
-	@Deprecated(since = "19.8.2", forRemoval = true)
-	default <T extends Screen> Optional<IGhostIngredientHandler<T>> getGhostIngredientHandler(T guiScreen) {
-		List<IGhostIngredientHandler<T>> handlers = getGhostIngredientHandlers(guiScreen);
-		if (handlers.isEmpty()) {
-			return Optional.empty();
-		}
-		return Optional.of(handlers.getFirst());
-	}
 }

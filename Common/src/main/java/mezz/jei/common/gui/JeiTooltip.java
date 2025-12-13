@@ -124,22 +124,6 @@ public class JeiTooltip implements ITooltipBuilder {
 			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated
-	public List<Component> toLegacyToComponents() {
-		return getLegacyComponents();
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	@Deprecated
-	public void removeAll(List<Component> components) {
-		for (Component component : components) {
-			lines.remove(Either.left(component));
-		}
-	}
-
 	@Override
 	public String toString() {
 		return lines.stream()

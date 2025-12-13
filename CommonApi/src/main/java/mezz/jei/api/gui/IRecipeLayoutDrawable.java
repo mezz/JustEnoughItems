@@ -1,7 +1,6 @@
 package mezz.jei.api.gui;
 
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
@@ -71,15 +70,6 @@ public interface IRecipeLayoutDrawable<R> {
 	 * @since 11.0.0
 	 */
 	<T> Optional<T> getIngredientUnderMouse(int mouseX, int mouseY, IIngredientType<T> ingredientType);
-
-	/**
-	 * Get the recipe slot currently under the mouse, if there is one.
-	 * @since 11.5.0
-	 *
-	 * @deprecated use {@link #getSlotUnderMouse(double, double)}
-	 */
-	@Deprecated(since = "19.6.0", forRemoval = true)
-	Optional<IRecipeSlotDrawable> getRecipeSlotUnderMouse(double mouseX, double mouseY);
 
 	/**
 	 * Get the recipe slot currently under the mouse, if there is one.

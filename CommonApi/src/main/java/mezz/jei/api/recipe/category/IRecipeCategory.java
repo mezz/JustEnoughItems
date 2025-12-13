@@ -1,6 +1,5 @@
 package mezz.jei.api.recipe.category;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.serialization.Codec;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
@@ -20,7 +19,6 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -51,45 +49,22 @@ public interface IRecipeCategory<T> {
 	Component getTitle();
 
 	/**
-	 * Returns the drawable background for a single recipe in this category.
-	 *
-	 * @apiNote this became nullable in 19.19.0.
-	 * If the background is null, getWidth() and getHeight() must be overridden
-	 *
-	 * @deprecated you can optionally draw a background image in {@link #draw}, and specify the width and height with {@link #getWidth()} and {@link #getHeight()}
-	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
-	@Deprecated(since = "19.19.0", forRemoval = true)
-	@Nullable
-	default IDrawable getBackground() {
-		return null;
-	}
-
-	/**
 	 * Returns the width of recipe layouts that are drawn for this recipe category.
 	 *
 	 * @since 11.5.0
+	 *
+	 * @apiNote in 27.0.0 getBackground was removed, and implementing this method became mandatory.
 	 */
-	default int getWidth() {
-		IDrawable background = getBackground();
-		if (background == null) {
-			throw new IllegalStateException("getWidth() and getHeight() must be overridden if background is null");
-		}
-		return background.getWidth();
-	}
+	int getWidth();
 
 	/**
 	 * Returns the height of recipe layouts that are drawn for this recipe category.
 	 *
 	 * @since 11.5.0
+	 *
+	 * @apiNote in 27.0.0 getBackground was removed, and implementing this method became mandatory.
 	 */
-	default int getHeight() {
-		IDrawable background = getBackground();
-		if (background == null) {
-			throw new IllegalStateException("getWidth() and getHeight() must be overridden if background is null");
-		}
-		return background.getHeight();
-	}
+	int getHeight();
 
 	/**
 	 * Icon for the category tab.
@@ -173,27 +148,6 @@ public interface IRecipeCategory<T> {
 	 *
 	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
 	 *
-	 * @param recipe          the current recipe being drawn.
-	 * @param recipeSlotsView a view of the current recipe slots being drawn.
-	 * @param mouseX          the X position of the mouse, relative to the recipe.
-	 * @param mouseY          the Y position of the mouse, relative to the recipe.
-	 * @return tooltip strings. If there is no tooltip at this position, return an empty list.
-	 *
-	 * @since 9.3.0
-	 * @deprecated use {@link #getTooltip(ITooltipBuilder, Object, IRecipeSlotsView, double, double)}
-	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
-	@Deprecated(since = "19.5.4", forRemoval = true)
-	default List<Component> getTooltipStrings(T recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-		return List.of();
-	}
-
-	/**
-	 * Get the tooltip for whatever is under the mouse.
-	 * Ingredient tooltips from recipe slots are already handled by JEI, this is for anything else.
-	 *
-	 * To add to ingredient tooltips, see {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
-	 *
 	 * @param tooltip         a tooltip builder to add tooltip lines to
 	 * @param recipe          the current recipe being drawn.
 	 * @param recipeSlotsView a view of the current recipe slots being drawn.
@@ -203,28 +157,7 @@ public interface IRecipeCategory<T> {
 	 * @since 19.5.4
 	 */
 	default void getTooltip(ITooltipBuilder tooltip, T recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-		List<Component> tooltipStrings = getTooltipStrings(recipe, recipeSlotsView, mouseX, mouseY);
-		tooltip.addAll(tooltipStrings);
-	}
 
-	/**
-	 * Called when a player clicks the recipe.
-	 * Useful for implementing buttons, hyperlinks, and other interactions to your recipe.
-	 *
-	 * @param recipe the currently hovered recipe
-	 * @param mouseX the X position of the mouse, relative to the recipe.
-	 * @param mouseY the Y position of the mouse, relative to the recipe.
-	 * @param input  the current input
-	 * @return true if the input was handled, false otherwise
-	 * @since 8.3.0
-	 *
-	 * @deprecated create an {@link IJeiInputHandler} or {@link GuiEventListener} and add it with
-	 * {@link IRecipeExtrasBuilder#addInputHandler} or {@link IRecipeExtrasBuilder#addGuiEventListener}
-	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
-	@Deprecated(since = "19.6.0", forRemoval = true)
-	default boolean handleInput(T recipe, double mouseX, double mouseY, InputConstants.Key input) {
-		return false;
 	}
 
 	/**

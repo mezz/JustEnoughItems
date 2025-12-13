@@ -42,28 +42,6 @@ public interface IRecipeWidget {
 	 * @since 19.19.0
 	 */
 	default void drawWidget(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		ScreenPosition position = getPosition();
-		draw(guiGraphics, mouseX + position.x(),  mouseY + position.y());
-	}
-
-	/**
-	 * Draw extras or additional info about the recipe, relative to its {@link #getPosition()}.
-	 * Use the mouse position for things like button highlights.
-	 *
-	 * @param guiGraphics     the current {@link GuiGraphics} for rendering.
-	 * @param mouseX          the X position of the mouse, relative to its parent element.
-	 * @param mouseY          the Y position of the mouse, relative to its parent element.
-	 *
-	 * @see IDrawable for a simple class for drawing things.
-	 * @see IGuiHelper for useful functions.
-	 * @see IRecipeSlotsView for information about the ingredients that are currently being drawn.
-	 * @see IRecipeCategory#draw for a similar method that doesn't require a widget.
-	 *
-	 * @since 19.7.0
-	 * @deprecated use {@link #drawWidget} which uses mouse coordinates relative to the widget's position instead of the parent's position.
-	 */
-	@Deprecated(since = "19.19.0", forRemoval = true)
-	default void draw(GuiGraphics guiGraphics, double mouseX, double mouseY) {
 
 	}
 
