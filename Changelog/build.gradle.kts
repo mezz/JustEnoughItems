@@ -41,10 +41,9 @@ tasks.withType<GitChangelogTask> {
 	outputs.upToDateWhen { false } // Always run
 }
 
-val changelogHtml = configurations.create("changelogHtml") {
+val changelogHtml: Configuration by configurations.creating {
 	isCanBeConsumed = true
 	isCanBeResolved = false
-	isVisible = false
 	attributes {
 		attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogHtml"))
 	}
@@ -53,10 +52,9 @@ val changelogHtml = configurations.create("changelogHtml") {
 	}
 }
 
-val changelogMarkdown = configurations.create("changelogMarkdown") {
+val changelogMarkdown: Configuration by configurations.creating {
 	isCanBeConsumed = true
 	isCanBeResolved = false
-	isVisible = false
 	attributes {
 		attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogMarkdown"))
 	}
