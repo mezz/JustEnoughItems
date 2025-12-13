@@ -12,6 +12,7 @@ import mezz.jei.api.recipe.IRecipeLookup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -34,10 +35,16 @@ import java.util.Set;
 public class RecipeManager implements IRecipeManager {
 	private final RecipeManagerInternal internal;
 	private final IIngredientManager ingredientManager;
+	private final List<IRecipeButtonControllerFactory> recipeButtonControllerFactories;
 
-	public RecipeManager(RecipeManagerInternal internal, IIngredientManager ingredientManager) {
+	public RecipeManager(
+		RecipeManagerInternal internal,
+		IIngredientManager ingredientManager,
+		List<IRecipeButtonControllerFactory> recipeButtonControllerFactories
+	) {
 		this.internal = internal;
 		this.ingredientManager = ingredientManager;
+		this.recipeButtonControllerFactories = List.copyOf(recipeButtonControllerFactories);
 	}
 
 	@Override
@@ -227,5 +234,10 @@ public class RecipeManager implements IRecipeManager {
 	@Override
 	public Optional<RecipeType<?>> getRecipeType(ResourceLocation recipeUid) {
 		return internal.getRecipeType(recipeUid);
+	}
+
+	@Override
+	public List<IRecipeButtonControllerFactory> getRecipeButtonControllerFactories() {
+		return recipeButtonControllerFactories;
 	}
 }

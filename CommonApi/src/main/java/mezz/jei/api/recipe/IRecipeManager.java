@@ -2,10 +2,13 @@ package mezz.jei.api.recipe;
 
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.buttons.IIconButtonController;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
@@ -248,4 +251,21 @@ public interface IRecipeManager {
 	@Deprecated(forRemoval = true, since = "11.5.0")
 	@SuppressWarnings("rawtypes")
 	<T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus);
+
+	/**
+	 * Returns the registered {@link IRecipeButtonControllerFactory} instances.
+	 *
+	 * <p>
+	 * This list contains the factories that were previously registered via
+	 * {@link IAdvancedRegistration#addRecipeButtonFactory(IRecipeButtonControllerFactory)}.
+	 * </p>
+	 *
+	 * <p>
+	 * The returned factories are used to create additional
+	 * {@link IIconButtonController} instances for buttons next to recipe layouts.
+	 * </p>
+	 *
+	 * @since 11.45.0
+	 */
+	List<IRecipeButtonControllerFactory> getRecipeButtonControllerFactories();
 }
