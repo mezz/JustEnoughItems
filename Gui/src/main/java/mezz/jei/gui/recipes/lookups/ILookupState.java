@@ -22,15 +22,15 @@ public interface ILookupState {
 
 	IFocusedRecipes<?> getFocusedRecipes();
 
-	void nextRecipeCategory();
+	boolean nextRecipeCategory();
 
-	void previousRecipeCategory();
+	boolean previousRecipeCategory();
 
 	void goToFirstPage();
 
-	void nextPage();
+	boolean nextPage();
 
-	void previousPage();
+	boolean previousPage();
 
 	int pageCount();
 

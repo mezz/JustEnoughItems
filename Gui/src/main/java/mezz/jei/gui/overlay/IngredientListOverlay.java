@@ -10,7 +10,7 @@ import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.GuiProperties;
-import mezz.jei.gui.elements.GuiIconToggleButton;
+import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.input.ICharTypedHandler;
@@ -48,7 +48,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private static final int BUTTON_SIZE = 20;
 	private static final int SEARCH_HEIGHT = BUTTON_SIZE;
 
-	private final GuiIconToggleButton configButton;
+	private final IconButton configButton;
 	private final IngredientGridWithNavigation contents;
 	private final LookupHistoryOverlay lookupHistoryOverlay;
 	private final IClientConfig clientConfig;
@@ -89,7 +89,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 				.update();
 		});
 
-		this.configButton = ConfigButton.create(this::isListDisplayed, toggleState, keyBindings);
+		this.configButton = new IconButton(new ConfigButton(this::isListDisplayed, toggleState, keyBindings));
 
 		clientConfig.addLookupHistoryEnabledListener(v -> onScreenPropertiesChanged());
 		clientConfig.addLookupHistoryDisplaySideListener(v -> onScreenPropertiesChanged());

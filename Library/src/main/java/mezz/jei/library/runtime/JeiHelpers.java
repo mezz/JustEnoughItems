@@ -17,7 +17,6 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.library.gui.helpers.GuiHelper;
 import mezz.jei.library.ingredients.IngredientVisibility;
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;

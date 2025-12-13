@@ -5,6 +5,7 @@ import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.api.runtime.IJeiKeyMappings;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.input.InputWithModifiers;
 
 /**
  * Represents a click or key press.
@@ -24,7 +25,15 @@ public interface IJeiUserInput {
 	 *
 	 * @since 19.6.0
 	 */
+	@InputWithModifiers.Modifiers
 	int getModifiers();
+
+	/**
+	 * Get the backing {@link InputWithModifiers} that this {@link IJeiUserInput} was created from.
+	 *
+	 * @since 27.1.0
+	 */
+	InputWithModifiers getInputWithModifiers();
 
 	/**
 	 * True on mouse down, used to check if a click could be handled.

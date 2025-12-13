@@ -5,7 +5,7 @@ import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.elements.GuiIconToggleButton;
+import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import net.minecraft.client.gui.GuiGraphics;
@@ -20,36 +20,36 @@ public class RecipeOptionButtons {
 	private static final int borderSize = 5;
 	private static final int overlapSize = 6;
 
-	private final List<GuiIconToggleButton> buttons;
+	private final List<IconButton> buttons;
 
 	private final ScalableDrawable backgroundTab;
-	private ImmutableRect2i area;
+	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
 	public RecipeOptionButtons(Runnable onValueChanged) {
 		Textures textures = Internal.getTextures();
-		GuiIconToggleButton bookmarksFirstButton = new RecipeSortStateButton(
+		IconButton bookmarksFirstButton = new IconButton(new RecipeSortStateButton(
 			RecipeSorterStage.BOOKMARKED,
 			textures.getBookmarksFirst(),
 			textures.getBookmarksFirst(),
 			Component.translatable("jei.tooltip.recipe.sort.bookmarks.first.disabled"),
 			Component.translatable("jei.tooltip.recipe.sort.bookmarks.first.enabled"),
 			onValueChanged
-		);
-		GuiIconToggleButton craftableFirstButton = new RecipeSortStateButton(
+		));
+		IconButton craftableFirstButton = new IconButton(new RecipeSortStateButton(
 			RecipeSorterStage.CRAFTABLE,
 			textures.getCraftableFirst(),
 			textures.getCraftableFirst(),
 			Component.translatable("jei.tooltip.recipe.sort.craftable.first.disabled"),
 			Component.translatable("jei.tooltip.recipe.sort.craftable.first.enabled"),
 			onValueChanged
-		);
+		));
 
 		buttons = List.of(bookmarksFirstButton, craftableFirstButton);
 		backgroundTab = textures.getRecipeOptionsTab();
 	}
 
 	public void tick() {
-		for (GuiIconToggleButton button : buttons) {
+		for (IconButton button : buttons) {
 			button.tick();
 		}
 	}
@@ -69,7 +69,7 @@ public class RecipeOptionButtons {
 
 		final int buttonX = x + borderSize + buttonBorderSize;
 		for (int i = 0; i < buttons.size(); i++) {
-			GuiIconToggleButton button = buttons.get(i);
+			IconButton button = buttons.get(i);
 			int buttonY = y + borderSize + (i * buttonSize) + buttonBorderSize;
 			button.updateBounds(new ImmutableRect2i(buttonX, buttonY, buttonSize, buttonSize));
 		}
@@ -82,7 +82,7 @@ public class RecipeOptionButtons {
 	public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		backgroundTab.draw(guiGraphics, this.area);
 
-		for (GuiIconToggleButton button : buttons) {
+		for (IconButton button : buttons) {
 			button.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 	}
@@ -94,13 +94,13 @@ public class RecipeOptionButtons {
 
 	public IUserInputHandler createInputHandler() {
 		List<IUserInputHandler> handlers = buttons.stream()
-			.map(GuiIconToggleButton::createInputHandler)
+			.map(IconButton::createInputHandler)
 			.toList();
 		return new CombinedInputHandler("RecipeOptionButtons", handlers);
 	}
 
 	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-		for (GuiIconToggleButton button : buttons) {
+		for (IconButton button : buttons) {
 			button.drawTooltips(guiGraphics, mouseX, mouseY);
 		}
 	}

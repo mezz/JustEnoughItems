@@ -21,11 +21,11 @@ public interface IRecipeGuiLogic {
 
 	boolean hasAllCategories();
 
-	void previousRecipeCategory();
+	boolean previousRecipeCategory();
 
 	int getRecipesPerPage();
 
-	void nextRecipeCategory();
+	boolean nextRecipeCategory();
 
 	void setRecipeCategory(IRecipeCategory<?> category);
 
@@ -33,11 +33,11 @@ public interface IRecipeGuiLogic {
 
 	void goToFirstPage();
 
-	void previousPage();
+	boolean previousPage();
 
-	void nextPage();
+	boolean nextPage();
 
-	void tick(@Nullable AbstractContainerMenu container);
+	void tick();
 
 	boolean showFocus(IFocusGroup focuses);
 

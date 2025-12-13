@@ -8,7 +8,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -160,7 +159,6 @@ public final class BasicRecipeTransferHandlerServer {
 		return recipeSlotToRequired;
 	}
 
-	@Nonnull
 	private static Map<Slot, ItemStack> takeItemsFromInventory(
 		Player player,
 		Map<Slot, ItemStackWithSlotHint> recipeSlotToRequiredItemStack,

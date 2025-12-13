@@ -66,23 +66,27 @@ public class IngredientLookupState implements ILookupState {
 		return false;
 	}
 
-	private void moveToRecipeCategoryIndex(int recipeCategoryIndex) {
+	private boolean moveToRecipeCategoryIndex(int recipeCategoryIndex) {
 		Preconditions.checkArgument(recipeCategoryIndex >= 0, "Recipe category index cannot be negative.");
-		this.recipeCategoryIndex = recipeCategoryIndex;
-		this.recipeIndex = 0;
-		this.focusedRecipes = null;
+		if (this.recipeCategoryIndex != recipeCategoryIndex) {
+			this.recipeCategoryIndex = recipeCategoryIndex;
+			this.recipeIndex = 0;
+			this.focusedRecipes = null;
+			return true;
+		}
+		return false;
 	}
 
 	@Override
-	public void nextRecipeCategory() {
+	public boolean nextRecipeCategory() {
 		final int recipesTypesCount = getRecipeCategories().size();
-		moveToRecipeCategoryIndex((getRecipeCategoryIndex() + 1) % recipesTypesCount);
+		return moveToRecipeCategoryIndex((getRecipeCategoryIndex() + 1) % recipesTypesCount);
 	}
 
 	@Override
-	public void previousRecipeCategory() {
+	public boolean previousRecipeCategory() {
 		final int recipesTypesCount = getRecipeCategories().size();
-		moveToRecipeCategoryIndex((recipesTypesCount + getRecipeCategoryIndex() - 1) % recipesTypesCount);
+		return moveToRecipeCategoryIndex((recipesTypesCount + getRecipeCategoryIndex() - 1) % recipesTypesCount);
 	}
 
 	@Override
@@ -91,21 +95,25 @@ public class IngredientLookupState implements ILookupState {
 	}
 
 	@Override
-	public void nextPage() {
+	public boolean nextPage() {
+		int originalIndex = this.recipeIndex;
 		int recipeCount = recipeCount();
 		this.recipeIndex = recipeIndex + recipesPerPage;
 		if (recipeIndex >= recipeCount) {
 			this.recipeIndex = 0;
 		}
+		return this.recipeIndex != originalIndex;
 	}
 
 	@Override
-	public void previousPage() {
+	public boolean previousPage() {
+		int originalIndex = this.recipeIndex;
 		this.recipeIndex = recipeIndex - recipesPerPage;
 		if (recipeIndex < 0) {
 			final int pageCount = pageCount();
 			this.recipeIndex = (pageCount - 1) * recipesPerPage;
 		}
+		return this.recipeIndex != originalIndex;
 	}
 
 	public int recipeCount() {

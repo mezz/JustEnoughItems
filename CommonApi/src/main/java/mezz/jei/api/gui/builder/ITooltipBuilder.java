@@ -2,6 +2,7 @@ package mezz.jei.api.gui.builder;
 
 import com.mojang.datafixers.util.Either;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IJeiKeyMapping;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -42,6 +43,17 @@ public interface ITooltipBuilder {
 	 * @since 19.5.4
 	 */
 	void add(TooltipComponent component);
+
+	/**
+	 * Add text describing the given keyMapping.
+	 * The translationKey must take a string formatting key (%s) to accept the translated key mapping string.
+	 *
+	 * For example, a translation key could be defined this way:
+	 * "jei.tooltip.bookmarks.tooltips.usage": "[Press \"%s\" to show details]"
+	 *
+	 * @since 27.1.0
+	 */
+	void addKeyUsageComponent(String translationKey, IJeiKeyMapping keyMapping);
 
 	/**
 	 * Add an ingredient that is associated with this tooltip.

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Either;
 import mezz.jei.common.input.KeyNameUtil;
 import mezz.jei.common.input.MouseButtonEventData;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 
@@ -42,6 +43,11 @@ public class MouseUserInput extends UserInput {
 	@Override
 	public int getModifiers() {
 		return eventData.event().modifiers();
+	}
+
+	@Override
+	public InputWithModifiers getInputWithModifiers() {
+		return eventData.event();
 	}
 
 	@Override

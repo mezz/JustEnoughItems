@@ -17,8 +17,6 @@ import mezz.jei.gui.overlay.elements.IngredientElement;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -92,9 +90,8 @@ public class RecipeGuiLayouts {
 		});
 	}
 
-	public void tick(@Nullable AbstractContainerMenu parentContainer) {
-		Player player = Minecraft.getInstance().player;
-		safeCallOnRecipeLayouts(r -> r.tick(parentContainer, player));
+	public void tick() {
+		safeCallOnRecipeLayouts(IRecipeLayoutWithButtons::tick);
 	}
 
 	public void setRecipeLayoutsWithButtons(List<IRecipeLayoutWithButtons<?>> recipeLayoutsWithButtons) {
