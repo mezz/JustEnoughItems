@@ -1,35 +1,31 @@
 package mezz.jei.gui.overlay.bookmarks;
 
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientToggleState;
-import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.bookmarks.BookmarkList;
-import mezz.jei.gui.elements.GuiIconToggleButton;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.gui.elements.IIconButtonDescriptor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
-public class BookmarkButton extends GuiIconToggleButton {
-	public static BookmarkButton create(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, IClientToggleState toggleState, IInternalKeyMappings keyBindings) {
-		Textures textures = Internal.getTextures();
-		IDrawableStatic offIcon = textures.getBookmarkButtonDisabledIcon();
-		IDrawableStatic onIcon = textures.getBookmarkButtonEnabledIcon();
-		return new BookmarkButton(offIcon, onIcon, bookmarkOverlay, bookmarkList, toggleState, keyBindings);
-	}
-
+public class BookmarkButtonDescriptor implements IIconButtonDescriptor {
+	private final IDrawable offIcon;
+	private final IDrawable onIcon;
 	private final BookmarkOverlay bookmarkOverlay;
 	private final BookmarkList bookmarkList;
 	private final IClientToggleState toggleState;
 	private final IInternalKeyMappings keyBindings;
 
-	private BookmarkButton(IDrawable offIcon, IDrawable onIcon, BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, IClientToggleState toggleState, IInternalKeyMappings keyBindings) {
-		super(offIcon, onIcon);
+	public BookmarkButtonDescriptor(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, IClientToggleState toggleState, IInternalKeyMappings keyBindings) {
+		Textures textures = Internal.getTextures();
+		this.offIcon = textures.getBookmarkButtonDisabledIcon();
+		this.onIcon = textures.getBookmarkButtonEnabledIcon();
 		this.bookmarkOverlay = bookmarkOverlay;
 		this.bookmarkList = bookmarkList;
 		this.toggleState = toggleState;
@@ -37,7 +33,25 @@ public class BookmarkButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	protected void getTooltips(JeiTooltip tooltip) {
+	public boolean isActive() {
+		return true;
+	}
+
+	@Override
+	public boolean isVisible() {
+		return true;
+	}
+
+	@Override
+	public IDrawable getIcon() {
+		if (toggleState.isBookmarkOverlayEnabled()) {
+			return onIcon;
+		}
+		return offIcon;
+	}
+
+	@Override
+	public void getTooltips(ITooltipBuilder tooltip) {
 		if (toggleState.isBookmarkOverlayEnabled()) {
 			tooltip.add(Component.translatable("jei.tooltip.bookmarks.disable"));
 		} else {
@@ -59,12 +73,12 @@ public class BookmarkButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	protected boolean isIconToggledOn() {
+	public boolean isForcePressed() {
 		return toggleState.isBookmarkOverlayEnabled();
 	}
 
 	@Override
-	protected boolean onMouseClicked(UserInput input) {
+	public boolean onPress(IJeiUserInput input) {
 		if (!bookmarkList.isEmpty() && bookmarkOverlay.hasRoom()) {
 			if (!input.isSimulate()) {
 				toggleState.toggleBookmarkEnabled();

@@ -31,7 +31,8 @@ import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.bookmarks.BookmarkList;
-import mezz.jei.gui.elements.GuiIconButton;
+import mezz.jei.gui.elements.BasicButtonDescriptor;
+import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
@@ -85,10 +86,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final RecipeOptionButtons optionButtons;
 	private final UserInputRouter inputHandler;
 
-	private final GuiIconButton nextRecipeCategory;
-	private final GuiIconButton previousRecipeCategory;
-	private final GuiIconButton nextPage;
-	private final GuiIconButton previousPage;
+	private final IconButton nextRecipeCategory;
+	private final IconButton previousRecipeCategory;
+	private final IconButton nextPage;
+	private final IconButton previousPage;
 
 	@Nullable
 	private Screen parentScreen;
@@ -140,10 +141,44 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		IDrawableStatic arrowNext = textures.getArrowNext();
 		IDrawableStatic arrowPrevious = textures.getArrowPrevious();
 
-		nextRecipeCategory = new GuiIconButton(0, 0, smallButtonWidth, smallButtonHeight, arrowNext, b -> logic.nextRecipeCategory());
-		previousRecipeCategory = new GuiIconButton(0, 0, smallButtonWidth, smallButtonHeight, arrowPrevious, b -> logic.previousRecipeCategory());
-		nextPage = new GuiIconButton(0, 0, smallButtonWidth, smallButtonHeight, arrowNext, b -> logic.nextPage());
-		previousPage = new GuiIconButton(0, 0, smallButtonWidth, smallButtonHeight, arrowPrevious, b -> logic.previousPage());
+		ImmutableRect2i buttonSize = new ImmutableRect2i(0, 0, smallButtonWidth, smallButtonHeight);
+
+		nextRecipeCategory = new IconButton(
+			new BasicButtonDescriptor(arrowNext, b -> b.isSimulate() || logic.nextRecipeCategory()) {
+				@Override
+				public boolean isActive() {
+					return logic.hasMultipleCategories();
+				}
+			},
+			buttonSize
+		);
+		previousRecipeCategory = new IconButton(
+			new BasicButtonDescriptor(arrowPrevious, b -> b.isSimulate() || logic.previousRecipeCategory()) {
+				@Override
+				public boolean isActive() {
+					return logic.hasMultipleCategories();
+				}
+			},
+			buttonSize
+		);
+		nextPage = new IconButton(
+			new BasicButtonDescriptor(arrowNext, b -> b.isSimulate() || logic.nextPage()) {
+				@Override
+				public boolean isActive() {
+					return logic.hasMultiplePages();
+				}
+			},
+			buttonSize
+		);
+		previousPage = new IconButton(
+			new BasicButtonDescriptor(arrowPrevious, b -> b.isSimulate() || logic.previousPage()) {
+				@Override
+				public boolean isActive() {
+					return logic.hasMultiplePages();
+				}
+			},
+			buttonSize
+		);
 
 		background = textures.getRecipeGuiBackground();
 
@@ -206,16 +241,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		int titleHeight = font.lineHeight + borderPadding;
 		int recipeClassButtonTop = guiTop + titleHeight - smallButtonHeight + navBarPadding;
-		nextRecipeCategory.setX(rightButtonX);
-		nextRecipeCategory.setY(recipeClassButtonTop);
-		previousRecipeCategory.setX(leftButtonX);
-		previousRecipeCategory.setY(recipeClassButtonTop);
+		nextRecipeCategory.updateBounds(nextRecipeCategory.getArea().setPosition(rightButtonX, recipeClassButtonTop));
+		previousRecipeCategory.updateBounds(previousRecipeCategory.getArea().setPosition(leftButtonX, recipeClassButtonTop));
 
 		int pageButtonTop = recipeClassButtonTop + smallButtonHeight + navBarPadding;
-		nextPage.setX(rightButtonX);
-		nextPage.setY(pageButtonTop);
-		previousPage.setX(leftButtonX);
-		previousPage.setY(pageButtonTop);
+		nextPage.updateBounds(nextPage.getArea().setPosition(rightButtonX, pageButtonTop));
+		previousPage.updateBounds(previousPage.getArea().setPosition(leftButtonX, pageButtonTop));
 
 		this.headerHeight = (pageButtonTop + smallButtonHeight) - guiTop;
 
@@ -258,10 +289,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		ImmutableRect2i pageArea = MathUtil.union(previousPage.getArea(), nextPage.getArea());
 		StringUtil.drawCenteredStringWithShadow(guiGraphics, font, pageString, pageArea);
 
-		nextRecipeCategory.render(guiGraphics, mouseX, mouseY, partialTicks);
-		previousRecipeCategory.render(guiGraphics, mouseX, mouseY, partialTicks);
-		nextPage.render(guiGraphics, mouseX, mouseY, partialTicks);
-		previousPage.render(guiGraphics, mouseX, mouseY, partialTicks);
+		nextRecipeCategory.draw(guiGraphics, mouseX, mouseY, partialTicks);
+		previousRecipeCategory.draw(guiGraphics, mouseX, mouseY, partialTicks);
+		nextPage.draw(guiGraphics, mouseX, mouseY, partialTicks);
+		previousPage.draw(guiGraphics, mouseX, mouseY, partialTicks);
 
 		Optional<IRecipeLayoutDrawable<?>> hoveredRecipeLayout = this.layouts.draw(guiGraphics, mouseX, mouseY);
 		optionButtons.draw(guiGraphics, mouseX, mouseY, partialTicks);
@@ -346,12 +377,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public void tick() {
 		super.tick();
 
-		AbstractContainerMenu container = getParentContainerMenu();
-		this.layouts.tick(container);
-
+		this.layouts.tick();
 		this.optionButtons.tick();
-
-		this.logic.tick(container);
+		this.logic.tick();
 	}
 
 	@Override
@@ -526,14 +554,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		int recipesPerPage = this.logic.getRecipesPerPage();
 
 		this.layouts.setRecipeLayoutsWithButtons(recipeLayoutsWithButtons);
-		this.layouts.tick(containerMenu);
+		this.layouts.tick();
 		this.area = calculateAreaToFitLayouts(this.idealArea, this.width, this.layouts.getWidth());
 		recipeLayoutsArea = getRecipeLayoutsArea();
 
 		this.layouts.updateLayout(recipeLayoutsArea, recipesPerPage);
-
-		nextPage.active = previousPage.active = logic.hasMultiplePages();
-		nextRecipeCategory.active = previousRecipeCategory.active = logic.hasMultipleCategories();
 
 		pageString = logic.getPageString();
 

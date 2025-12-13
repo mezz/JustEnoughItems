@@ -76,9 +76,9 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public void tick(@Nullable AbstractContainerMenu container) {
+	public void tick() {
 		if (cachedRecipeLayoutsWithButtons != null) {
-			cachedRecipeLayoutsWithButtons.tick(container);
+			cachedRecipeLayoutsWithButtons.tick();
 		}
 	}
 
@@ -291,9 +291,12 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public void nextRecipeCategory() {
-		state.nextRecipeCategory();
-		stateListener.onStateChange();
+	public boolean nextRecipeCategory() {
+		if (state.nextRecipeCategory()) {
+			stateListener.onStateChange();
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -310,9 +313,12 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public void previousRecipeCategory() {
-		state.previousRecipeCategory();
-		stateListener.onStateChange();
+	public boolean previousRecipeCategory() {
+		if (state.previousRecipeCategory()) {
+			stateListener.onStateChange();
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -322,15 +328,21 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public void nextPage() {
-		state.nextPage();
-		stateListener.onStateChange();
+	public boolean nextPage() {
+		if (state.nextPage()) {
+			stateListener.onStateChange();
+			return true;
+		}
+		return false;
 	}
 
 	@Override
-	public void previousPage() {
-		state.previousPage();
-		stateListener.onStateChange();
+	public boolean previousPage() {
+		if (state.previousPage()) {
+			stateListener.onStateChange();
+			return true;
+		}
+		return false;
 	}
 
 	@Override

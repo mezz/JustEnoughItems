@@ -127,12 +127,7 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 	}
 
 	@Override
-	public Rect2i getRecipeTransferButtonArea() {
-		return new Rect2i(0, 0, 0, 0);
-	}
-
-	@Override
-	public Rect2i getRecipeBookmarkButtonArea() {
+	public Rect2i getSideButtonArea(int buttonIndex) {
 		return new Rect2i(0, 0, 0, 0);
 	}
 

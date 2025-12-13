@@ -14,7 +14,7 @@ import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IBookmark;
-import mezz.jei.gui.elements.GuiIconToggleButton;
+import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
@@ -57,8 +57,8 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	// display elements
 	private final IngredientGridWithNavigation contents;
 	private final LookupHistoryOverlay lookupHistoryOverlay;
-	private final GuiIconToggleButton bookmarkButton;
-	private final GuiIconToggleButton historyButton;
+	private final IconButton bookmarkButton;
+	private final IconButton historyButton;
 
 	// data
 	private final BookmarkList bookmarkList;
@@ -83,8 +83,8 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		this.bookmarkList = bookmarkList;
 		this.toggleState = toggleState;
 		this.clientConfig = clientConfig;
-		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, toggleState, keyBindings);
-		this.historyButton = LookupHistoryButton.create(clientConfig);
+		this.bookmarkButton = new IconButton(new BookmarkButtonDescriptor(this, bookmarkList, toggleState, keyBindings));
+		this.historyButton = new IconButton(new LookupHistoryButton(clientConfig));
 		this.contents = contents;
 		this.lookupHistoryOverlay = lookupHistoryOverlay;
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);

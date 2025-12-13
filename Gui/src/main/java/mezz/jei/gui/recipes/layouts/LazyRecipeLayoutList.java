@@ -79,7 +79,7 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 				RecipeBookmark<T, ?> recipeBookmark = bookmarkList.getMatchingBookmark(recipeType, recipe);
 				if (recipeBookmark != null) {
 					IRecipeLayoutDrawable<T> recipeLayout = recipeManager.createRecipeLayoutDrawableOrShowError(recipeCategory, recipe, focusGroup);
-					IRecipeLayoutWithButtons<T> recipeLayoutWithButtons = RecipeLayoutWithButtons.create(recipeLayout, recipeBookmark, bookmarkList, recipesGui, container);
+					IRecipeLayoutWithButtons<T> recipeLayoutWithButtons = RecipeLayoutWithButtons.create(recipeLayout, recipeBookmark, bookmarkList, recipesGui);
 					results.add(recipeLayoutWithButtons);
 					iterator.remove();
 				}
@@ -95,11 +95,10 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 
 	private IRecipeLayoutWithButtons<T> createRecipeLayoutWithButtons(
 		IRecipeLayoutDrawable<T> recipeLayoutDrawable,
-		IIngredientManager ingredientManager,
-		@Nullable AbstractContainerMenu container
+		IIngredientManager ingredientManager
 	) {
 		RecipeBookmark<T, ?> recipeBookmark = RecipeBookmark.create(recipeLayoutDrawable, ingredientManager);
-		return RecipeLayoutWithButtons.create(recipeLayoutDrawable, recipeBookmark, bookmarkList, recipesGui, container);
+		return RecipeLayoutWithButtons.create(recipeLayoutDrawable, recipeBookmark, bookmarkList, recipesGui);
 	}
 
 	@Override
@@ -116,7 +115,7 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 	private void ensureResults(int index) {
 		AbstractContainerMenu container = recipesGui.getParentContainerMenu();
 		while (index >= results.size()) {
-			if (!calculateNextResult(container)) {
+			if (!calculateNextResult()) {
 				return;
 			}
 		}
@@ -132,18 +131,18 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 	}
 
 	@Override
-	public void tick(@Nullable AbstractContainerMenu container) {
-		calculateNextResult(container);
+	public void tick() {
+		calculateNextResult();
 	}
 
-	private boolean calculateNextResult(@Nullable AbstractContainerMenu container) {
+	private boolean calculateNextResult() {
 		IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
 		IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
 
 		while (unsortedIterator.hasNext()) {
 			T recipe = unsortedIterator.next();
 			IRecipeLayoutDrawable<T> recipeLayout = createRecipeLayout(recipe);
-			IRecipeLayoutWithButtons<T> recipeLayoutWithButtons = createRecipeLayoutWithButtons(recipeLayout, ingredientManager, container);
+			IRecipeLayoutWithButtons<T> recipeLayoutWithButtons = createRecipeLayoutWithButtons(recipeLayout, ingredientManager);
 
 			if (matchingCraftable) {
 				// if craftables go first, look for a 100% craftable element

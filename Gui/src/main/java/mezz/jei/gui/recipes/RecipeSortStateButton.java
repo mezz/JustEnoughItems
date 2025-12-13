@@ -1,18 +1,20 @@
 package mezz.jei.gui.recipes;
 
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
-import mezz.jei.common.gui.JeiTooltip;
-import mezz.jei.gui.elements.GuiIconToggleButton;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.gui.elements.IIconButtonDescriptor;
 import net.minecraft.network.chat.Component;
 
 import java.util.Set;
 
-public class RecipeSortStateButton extends GuiIconToggleButton {
+public class RecipeSortStateButton implements IIconButtonDescriptor {
+	private final IDrawable offIcon;
+	private final IDrawable onIcon;
 	private final RecipeSorterStage recipeSorterStage;
 	private final Component disabledTooltip;
 	private final Component enabledTooltip;
@@ -27,7 +29,8 @@ public class RecipeSortStateButton extends GuiIconToggleButton {
 		Component enabledTooltip,
 		Runnable onValueChanged
 	) {
-		super(offIcon, onIcon);
+		this.offIcon = offIcon;
+		this.onIcon = onIcon;
 		this.recipeSorterStage = recipeSorterStage;
 		this.disabledTooltip = disabledTooltip;
 		this.enabledTooltip = enabledTooltip;
@@ -37,7 +40,15 @@ public class RecipeSortStateButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	protected void getTooltips(JeiTooltip tooltip) {
+	public IDrawable getIcon() {
+		if (toggledOn) {
+			return onIcon;
+		}
+		return offIcon;
+	}
+
+	@Override
+	public void getTooltips(ITooltipBuilder tooltip) {
 		if (toggledOn) {
 			tooltip.add(enabledTooltip);
 		} else {
@@ -58,12 +69,12 @@ public class RecipeSortStateButton extends GuiIconToggleButton {
 	}
 
 	@Override
-	protected boolean isIconToggledOn() {
+	public boolean isForcePressed() {
 		return toggledOn;
 	}
 
 	@Override
-	protected boolean onMouseClicked(UserInput input) {
+	public boolean onPress(IJeiUserInput input) {
 		if (!input.isSimulate()) {
 			IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
 			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();

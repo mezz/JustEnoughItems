@@ -11,9 +11,6 @@ import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -60,7 +57,7 @@ public final class RecipeLayoutWithButtonsErrored<R> implements IRecipeLayoutWit
 	}
 
 	@Override
-	public void tick(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player) {
+	public void tick() {
 		errorLayout.tick();
 	}
 
