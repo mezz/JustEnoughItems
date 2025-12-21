@@ -186,12 +186,12 @@ public final class RecipeTransferUtil {
 
 		for (Map.Entry<Slot, ItemStack> slotTuple : availableItemStacks.entrySet()) {
 			ItemStack slotItemStack = slotTuple.getValue();
-			String slotItemStackUid = stackhelper.getUniqueIdentifierForStack(slotItemStack, UidContext.Ingredient);
+			String slotItemStackUid = stackhelper.getUniqueIdentifierForStack(slotItemStack, UidContext.Recipe);
 
 			for (IRecipeSlotView ingredient : nonEmptyRequiredStacks) {
 				Set<String> ingredientUids = slotUidCache.computeIfAbsent(ingredient, s ->
 					s.getItemStacks()
-					.map(i -> stackhelper.getUniqueIdentifierForStack(i, UidContext.Ingredient))
+					.map(i -> stackhelper.getUniqueIdentifierForStack(i, UidContext.Recipe))
 					.collect(Collectors.toSet())
 				);
 
@@ -205,7 +205,7 @@ public final class RecipeTransferUtil {
 
 							@Override
 							public boolean equals(ItemStack a, ItemStack b) {
-								return stackhelper.isEquivalent(a, b, UidContext.Ingredient);
+								return stackhelper.isEquivalent(a, b, UidContext.Recipe);
 							}
 						}))
 						.computeIfAbsent(slotItemStack, it -> new ArrayList<>())
