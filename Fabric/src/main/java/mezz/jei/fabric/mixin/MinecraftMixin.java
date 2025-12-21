@@ -37,7 +37,7 @@ public class MinecraftMixin {
 	}
 
 	@Inject(
-		method = "clearClientLevel(Lnet/minecraft/client/gui/screens/Screen;)V",
+		method = "disconnect(Lnet/minecraft/client/gui/screens/Screen;ZZ)V",
 		at = @At(
 			value = "INVOKE",
 			target = "Lnet/minecraft/client/renderer/GameRenderer;resetData()V",
@@ -45,7 +45,7 @@ public class MinecraftMixin {
 			shift = At.Shift.AFTER
 		)
 	)
-	public void clearLevel(Screen screen, CallbackInfo ci) {
+	public void disconnect(Screen screen, boolean bl, boolean bl2, CallbackInfo ci) {
 		JeiLifecycleEvents.GAME_STOP.invoker().run();
 	}
 }
