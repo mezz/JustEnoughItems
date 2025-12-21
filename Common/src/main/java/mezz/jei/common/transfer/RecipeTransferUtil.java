@@ -189,7 +189,7 @@ public final class RecipeTransferUtil {
 
 		for (Map.Entry<Slot, ItemStack> slotTuple : availableItemStacks.entrySet()) {
 			ItemStack slotItemStack = slotTuple.getValue();
-			Object slotItemStackUid = stackhelper.getUidForStack(slotItemStack, UidContext.Ingredient);
+			Object slotItemStackUid = stackhelper.getUidForStack(slotItemStack, UidContext.Recipe);
 
 			for (IRecipeSlotView ingredient : nonEmptyRequiredStacks) {
 				Set<Object> ingredientUids = slotUidCache.computeIfAbsent(ingredient, s -> calculateUids(s, stackhelper));
@@ -297,7 +297,7 @@ public final class RecipeTransferUtil {
 			}
 			ITypedIngredient<ItemStack> typedItemStack = typedIngredient.castToItemStackType();
 			if (typedItemStack != null) {
-				Object uid = stackhelper.getUidForStack(typedItemStack, UidContext.Ingredient);
+				Object uid = stackhelper.getUidForStack(typedItemStack, UidContext.Recipe);
 				uids.add(uid);
 			}
 		}
@@ -336,7 +336,7 @@ public final class RecipeTransferUtil {
 
 		@Override
 		public boolean equals(ItemStack a, ItemStack b) {
-			return stackhelper.isEquivalent(a, b, UidContext.Ingredient);
+			return stackhelper.isEquivalent(a, b, UidContext.Recipe);
 		}
 	}
 }
