@@ -1,6 +1,5 @@
 package mezz.jei.library.recipes;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -9,7 +8,6 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
@@ -48,7 +46,6 @@ public class RecipeManagerInternal {
 	private final PluginManager pluginManager;
 	private final Set<IRecipeType<?>> hiddenRecipeTypes = new HashSet<>();
 	private final IIngredientVisibility ingredientVisibility;
-	private ImmutableListMultimap<IRecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators;
 
 	@Nullable
 	@Unmodifiable
@@ -63,7 +60,6 @@ public class RecipeManagerInternal {
 	) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
-		this.recipeCategoryDecorators = ImmutableListMultimap.of();
 		this.ingredientManager = ingredientManager;
 		this.ingredientVisibility = ingredientVisibility;
 
@@ -104,10 +100,6 @@ public class RecipeManagerInternal {
 
 	public void addPlugins(List<IRecipeManagerPlugin> plugins) {
 		this.pluginManager.addAll(plugins);
-	}
-
-	public void addDecorators(ImmutableListMultimap<IRecipeType<?>, IRecipeCategoryDecorator<?>> decorators) {
-		this.recipeCategoryDecorators = decorators;
 	}
 
 	public <T> void addRecipes(IRecipeType<T> recipeType, List<T> recipes) {
@@ -280,13 +272,6 @@ public class RecipeManagerInternal {
 
 	public Optional<IRecipeType<?>> getRecipeType(Identifier recipeUid) {
 		return recipeTypeDataMap.getType(recipeUid);
-	}
-
-	@Unmodifiable
-	@SuppressWarnings("unchecked")
-	public <T> List<IRecipeCategoryDecorator<T>> getRecipeCategoryDecorators(IRecipeType<T> recipeType) {
-		ImmutableList<IRecipeCategoryDecorator<?>> decorators = recipeCategoryDecorators.get(recipeType);
-		return (List<IRecipeCategoryDecorator<T>>) (Object) decorators;
 	}
 
 	public void compact() {

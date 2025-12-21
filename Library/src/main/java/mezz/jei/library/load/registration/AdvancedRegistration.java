@@ -2,6 +2,7 @@ package mezz.jei.library.load.registration;
 
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPluginHelper;
 import mezz.jei.api.recipe.advanced.ISimpleRecipeManagerPlugin;
@@ -23,6 +24,7 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 
 	private final List<IRecipeManagerPlugin> recipeManagerPlugins = new ArrayList<>();
 	private final ListMultiMap<IRecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators = new ListMultiMap<>();
+	private final List<IRecipeButtonControllerFactory> recipeButtonControllerFactories = new ArrayList<>();
 	private final IJeiHelpers jeiHelpers;
 	private final IJeiFeatures jeiFeatures;
 	private final IRecipeManagerPluginHelper pluginHelper;
@@ -61,6 +63,11 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	}
 
 	@Override
+	public void addRecipeButtonFactory(IRecipeButtonControllerFactory recipeButtonControllerFactory) {
+		this.recipeButtonControllerFactories.add(recipeButtonControllerFactory);
+	}
+
+	@Override
 	public IJeiHelpers getJeiHelpers() {
 		return jeiHelpers;
 	}
@@ -78,6 +85,11 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	@Unmodifiable
 	public List<IRecipeManagerPlugin> getRecipeManagerPlugins() {
 		return List.copyOf(recipeManagerPlugins);
+	}
+
+	@Unmodifiable
+	public List<IRecipeButtonControllerFactory> getRecipeButtonControllerFactories() {
+		return List.copyOf(recipeButtonControllerFactories);
 	}
 
 	@Unmodifiable

@@ -1,4 +1,4 @@
-package mezz.jei.common.gui;
+package mezz.jei.api.gui.buttons;
 
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
@@ -17,6 +17,8 @@ import net.minecraft.client.renderer.Rect2i;
  * This interface is designed to separate button behavior from rendering
  * and layout concerns.
  * </p>
+ *
+ * @since 27.2.0
  */
 public interface IIconButtonController {
 	/**
@@ -24,6 +26,8 @@ public interface IIconButtonController {
 	 *
 	 * @param input the user input that triggered the press
 	 * @return true if the input was handled and should not propagate further
+	 *
+	 * @since 27.2.0
 	 */
 	boolean onPress(IJeiUserInput input);
 
@@ -36,6 +40,8 @@ public interface IIconButtonController {
 	 * </p>
 	 *
 	 * @param tooltip the tooltip builder to add lines to
+	 *
+	 * @since 27.2.0
 	 */
 	default void getTooltips(ITooltipBuilder tooltip) {
 
@@ -55,6 +61,8 @@ public interface IIconButtonController {
 	 * </p>
 	 *
 	 * @param state the mutable button state
+	 *
+	 * @since 27.2.0
 	 */
 	default void initState(IButtonState state) {
 		updateState(state);
@@ -69,6 +77,8 @@ public interface IIconButtonController {
 	 * </p>
 	 *
 	 * @param state the mutable button state
+	 *
+	 * @since 27.2.0
 	 */
 	default void updateState(IButtonState state) {
 
@@ -87,6 +97,8 @@ public interface IIconButtonController {
 	 * @param mouseX the mouse x position
 	 * @param mouseY the mouse y position
 	 * @param partialTicks the partial tick time
+	 *
+	 * @since 27.2.0
 	 */
 	default void drawExtras(GuiGraphics guiGraphics, Rect2i buttonArea, int mouseX, int mouseY, float partialTicks) {
 

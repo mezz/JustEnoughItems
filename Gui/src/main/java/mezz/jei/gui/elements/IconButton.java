@@ -1,7 +1,7 @@
 package mezz.jei.gui.elements;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
-import mezz.jei.common.gui.IIconButtonController;
+import mezz.jei.api.gui.buttons.IIconButtonController;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;

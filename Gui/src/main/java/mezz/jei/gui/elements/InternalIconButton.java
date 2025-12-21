@@ -1,5 +1,6 @@
 package mezz.jei.gui.elements;
 
+import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -14,7 +15,7 @@ import net.minecraft.util.ARGB;
  * This internal class is used for re-using vanilla render code and to override behavior.
  * See {@link IconButton} for the class that uses this.
  */
-class InternalIconButton extends Button implements mezz.jei.common.gui.IButtonState {
+class InternalIconButton extends Button implements IButtonState {
 	private static final ButtonSprites SPRITES = new ButtonSprites();
 
 	private IDrawable icon = DrawableBlank.EMPTY;
