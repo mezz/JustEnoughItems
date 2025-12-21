@@ -17,7 +17,7 @@ import net.minecraft.network.chat.CommonComponents;
  * This internal class is used for re-using vanilla render code and to override behavior.
  * See {@link IconButton} for the class that uses this.
  */
-class InternalIconButton extends Button {
+class InternalIconButton extends Button implements mezz.jei.common.gui.IButtonState {
 	private IDrawable icon = DrawableBlank.EMPTY;
 	private boolean pressed = false;
 	private boolean forcePressed = false;
@@ -93,6 +93,7 @@ class InternalIconButton extends Button {
 		this.pressed = pressed;
 	}
 
+	@Override
 	public void setForcePressed(boolean forcePressed) {
 		this.forcePressed = forcePressed;
 	}
@@ -107,7 +108,18 @@ class InternalIconButton extends Button {
 		return super.isValidClickButton(mouseButton);
 	}
 
+	@Override
 	public void setIcon(IDrawable icon) {
 		this.icon = icon;
+	}
+
+	@Override
+	public void setActive(boolean value) {
+		this.active = value;
+	}
+
+	@Override
+	public void setVisible(boolean value) {
+		this.visible = value;
 	}
 }

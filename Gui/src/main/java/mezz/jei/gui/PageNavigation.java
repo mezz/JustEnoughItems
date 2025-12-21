@@ -1,9 +1,11 @@
 package mezz.jei.gui;
 
+import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.common.gui.IButtonState;
+import mezz.jei.common.gui.IIconButtonController;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -23,9 +25,28 @@ public class PageNavigation {
 
 	public PageNavigation(IPaged paged, boolean hideOnSinglePage) {
 		this.paged = paged;
-		Textures textures = Internal.getTextures();
-		this.nextButton = new IconButton(textures.getArrowNext(), b -> b.isSimulate() || paged.nextPage());
-		this.backButton = new IconButton(textures.getArrowPrevious(), b -> b.isSimulate() || paged.previousPage());
+		this.nextButton = new IconButton(new IIconButtonController() {
+			@Override
+			public boolean onPress(IJeiUserInput b) {
+				return b.isSimulate() || paged.nextPage();
+			}
+
+			@Override
+			public void initState(IButtonState state) {
+				state.setIcon(Internal.getTextures().getArrowNext());
+			}
+		});
+		this.backButton = new IconButton(new IIconButtonController() {
+			@Override
+			public boolean onPress(IJeiUserInput b) {
+				return b.isSimulate() || paged.previousPage();
+			}
+
+			@Override
+			public void initState(IButtonState state) {
+				state.setIcon(Internal.getTextures().getArrowPrevious());
+			}
+		});
 		this.hideOnSinglePage = hideOnSinglePage;
 	}
 

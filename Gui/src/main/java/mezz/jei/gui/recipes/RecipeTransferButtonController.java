@@ -2,16 +2,16 @@ package mezz.jei.gui.recipes;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
+import mezz.jei.common.gui.IButtonState;
+import mezz.jei.common.gui.IIconButtonController;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.RecipeTransferUtil;
-import mezz.jei.gui.elements.IIconButtonDescriptor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -23,30 +23,25 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 
-public class RecipeTransferButton implements IIconButtonDescriptor {
-	private final IDrawable icon;
+public class RecipeTransferButtonController implements IIconButtonController {
 	private final IRecipeLayoutDrawable<?> recipeLayout;
 	private final RecipesGui recipesGui;
 	private @Nullable IRecipeTransferError recipeTransferError;
-	private boolean active = true;
-	private boolean visible = true;
 
-	public RecipeTransferButton(IRecipeLayoutDrawable<?> recipeLayout, RecipesGui recipesGui) {
-		Textures textures = Internal.getTextures();
-		this.icon = textures.getRecipeTransfer();
+	public RecipeTransferButtonController(IRecipeLayoutDrawable<?> recipeLayout, RecipesGui recipesGui) {
 		this.recipeLayout = recipeLayout;
 		this.recipesGui = recipesGui;
-
-		tick();
 	}
 
 	@Override
-	public IDrawable getIcon() {
-		return icon;
+	public void initState(IButtonState state) {
+		Textures textures = Internal.getTextures();
+		state.setIcon(textures.getRecipeTransfer());
+		updateState(state);
 	}
 
 	@Override
-	public void tick() {
+	public void updateState(IButtonState state) {
 		Player player = Minecraft.getInstance().player;
 		AbstractContainerMenu parentContainer = recipesGui.getParentContainerMenu();
 		if (parentContainer != null && player != null) {
@@ -59,23 +54,13 @@ public class RecipeTransferButton implements IIconButtonDescriptor {
 
 		if (recipeTransferError == null ||
 			recipeTransferError.getType().allowsTransfer) {
-			this.active = true;
-			this.visible = true;
+			state.setActive(true);
+			state.setVisible(true);
 		} else {
-			this.active = false;
+			state.setActive(false);
 			IRecipeTransferError.Type type = this.recipeTransferError.getType();
-			this.visible = (type == IRecipeTransferError.Type.USER_FACING);
+			state.setVisible(type == IRecipeTransferError.Type.USER_FACING);
 		}
-	}
-
-	@Override
-	public boolean isActive() {
-		return active;
-	}
-
-	@Override
-	public boolean isVisible() {
-		return visible;
 	}
 
 	@Override

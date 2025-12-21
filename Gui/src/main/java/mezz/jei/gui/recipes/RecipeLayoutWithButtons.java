@@ -34,29 +34,29 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 		BookmarkList bookmarks,
 		RecipesGui recipesGui
 	) {
-		RecipeTransferButton transferButton = new RecipeTransferButton(recipeLayoutDrawable, recipesGui);
-		RecipeBookmarkButton bookmarkButton = new RecipeBookmarkButton(bookmarks, recipeBookmark);
-		return new RecipeLayoutWithButtons<>(recipeLayoutDrawable, transferButton, bookmarkButton);
+		RecipeTransferButtonController transferButton = new RecipeTransferButtonController(recipeLayoutDrawable, recipesGui);
+		RecipeBookmarkButtonController bookmarkButton = new RecipeBookmarkButtonController(bookmarks, recipeBookmark);
+
+		List<IconButton> buttons = List.of(
+			new IconButton(transferButton),
+			new IconButton(bookmarkButton)
+		);
+
+		return new RecipeLayoutWithButtons<>(recipeLayoutDrawable, transferButton, buttons);
 	}
 
 	private final IRecipeLayoutDrawable<R> recipeLayout;
-	private final RecipeTransferButton transferButton;
+	private final RecipeTransferButtonController transferButton;
 	private final List<IconButton> buttons;
 
 	private RecipeLayoutWithButtons(
 		IRecipeLayoutDrawable<R> recipeLayout,
-		RecipeTransferButton transferButton,
-		RecipeBookmarkButton bookmarkButton
+		RecipeTransferButtonController transferButton,
+		List<IconButton> buttons
 	) {
 		this.recipeLayout = recipeLayout;
 		this.transferButton = transferButton;
-		this.buttons = List.of(
-			new IconButton(transferButton),
-			new IconButton(bookmarkButton)
-		);
-		for (IconButton button : buttons) {
-			button.tick();
-		}
+		this.buttons = buttons;
 	}
 
 	@Override

@@ -11,7 +11,8 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.platform.IPlatformConfigHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.gui.elements.IIconButtonDescriptor;
+import mezz.jei.common.gui.IButtonState;
+import mezz.jei.common.gui.IIconButtonController;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -22,14 +23,14 @@ import net.minecraft.network.chat.Style;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
-public class ConfigButton implements IIconButtonDescriptor {
+public class ConfigButtonController implements IIconButtonController {
 	private final IDrawable normalIcon;
 	private final IDrawable cheatIcon;
 	private final BooleanSupplier isListDisplayed;
 	private final IClientToggleState toggleState;
 	private final IInternalKeyMappings keyBindings;
 
-	public ConfigButton(BooleanSupplier isListDisplayed, IClientToggleState toggleState, IInternalKeyMappings keyBindings) {
+	public ConfigButtonController(BooleanSupplier isListDisplayed, IClientToggleState toggleState, IInternalKeyMappings keyBindings) {
 		Textures textures = Internal.getTextures();
 		this.normalIcon = textures.getConfigButtonIcon();
 		this.cheatIcon = textures.getConfigButtonCheatIcon();
@@ -39,11 +40,12 @@ public class ConfigButton implements IIconButtonDescriptor {
 	}
 
 	@Override
-	public IDrawable getIcon() {
+	public void updateState(IButtonState state) {
 		if (toggleState.isCheatItemsEnabled()) {
-			return cheatIcon;
+			state.setIcon(cheatIcon);
+		} else {
+			state.setIcon(normalIcon);
 		}
-		return normalIcon;
 	}
 
 	@Override

@@ -27,7 +27,7 @@ public class RecipeOptionButtons {
 
 	public RecipeOptionButtons(Runnable onValueChanged) {
 		Textures textures = Internal.getTextures();
-		IconButton bookmarksFirstButton = new IconButton(new RecipeSortStateButton(
+		IconButton bookmarksFirstButton = new IconButton(new RecipeSortStateButtonController(
 			RecipeSorterStage.BOOKMARKED,
 			textures.getBookmarksFirst(),
 			textures.getBookmarksFirst(),
@@ -35,7 +35,7 @@ public class RecipeOptionButtons {
 			Component.translatable("jei.tooltip.recipe.sort.bookmarks.first.enabled"),
 			onValueChanged
 		));
-		IconButton craftableFirstButton = new IconButton(new RecipeSortStateButton(
+		IconButton craftableFirstButton = new IconButton(new RecipeSortStateButtonController(
 			RecipeSorterStage.CRAFTABLE,
 			textures.getCraftableFirst(),
 			textures.getCraftableFirst(),

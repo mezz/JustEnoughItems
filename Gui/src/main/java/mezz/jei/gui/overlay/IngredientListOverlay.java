@@ -96,7 +96,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 				.update();
 		});
 
-		this.configButton = new IconButton(new ConfigButton(this::isListDisplayed, toggleState, keyBindings));
+		this.configButton = new IconButton(new ConfigButtonController(this::isListDisplayed, toggleState, keyBindings));
 
 		this.lookupHistoryEnabledListener = v -> onScreenPropertiesChanged();
 		this.lookupHistoryViewSideListener = v -> onScreenPropertiesChanged();

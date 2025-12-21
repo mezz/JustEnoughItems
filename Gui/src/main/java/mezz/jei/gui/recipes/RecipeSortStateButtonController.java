@@ -7,12 +7,13 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
-import mezz.jei.gui.elements.IIconButtonDescriptor;
+import mezz.jei.common.gui.IButtonState;
+import mezz.jei.common.gui.IIconButtonController;
 import net.minecraft.network.chat.Component;
 
 import java.util.Set;
 
-public class RecipeSortStateButton implements IIconButtonDescriptor {
+public class RecipeSortStateButtonController implements IIconButtonController {
 	private final IDrawable offIcon;
 	private final IDrawable onIcon;
 	private final RecipeSorterStage recipeSorterStage;
@@ -21,7 +22,7 @@ public class RecipeSortStateButton implements IIconButtonDescriptor {
 	private final Runnable onValueChanged;
 	private boolean toggledOn;
 
-	public RecipeSortStateButton(
+	public RecipeSortStateButtonController(
 		RecipeSorterStage recipeSorterStage,
 		IDrawable offIcon,
 		IDrawable onIcon,
@@ -35,16 +36,6 @@ public class RecipeSortStateButton implements IIconButtonDescriptor {
 		this.disabledTooltip = disabledTooltip;
 		this.enabledTooltip = enabledTooltip;
 		this.onValueChanged = onValueChanged;
-
-		tick();
-	}
-
-	@Override
-	public IDrawable getIcon() {
-		if (toggledOn) {
-			return onIcon;
-		}
-		return offIcon;
 	}
 
 	@Override
@@ -57,7 +48,7 @@ public class RecipeSortStateButton implements IIconButtonDescriptor {
 	}
 
 	@Override
-	public void tick() {
+	public void updateState(IButtonState state) {
 		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 		Set<RecipeSorterStage> recipeSorterStages = clientConfig.getRecipeSorterStages();
@@ -66,11 +57,13 @@ public class RecipeSortStateButton implements IIconButtonDescriptor {
 			this.toggledOn = toggledOn;
 			this.onValueChanged.run();
 		}
-	}
-
-	@Override
-	public boolean isForcePressed() {
-		return toggledOn;
+		if (toggledOn) {
+			state.setForcePressed(true);
+			state.setIcon(onIcon);
+		} else {
+			state.setForcePressed(false);
+			state.setIcon(offIcon);
+		}
 	}
 
 	@Override
