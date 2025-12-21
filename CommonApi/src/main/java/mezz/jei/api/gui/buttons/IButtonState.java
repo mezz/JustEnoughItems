@@ -1,4 +1,4 @@
-package mezz.jei.common.gui;
+package mezz.jei.api.gui.buttons;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
@@ -10,6 +10,8 @@ import mezz.jei.api.gui.inputs.IJeiUserInput;
  * Implementations are provided by JEI and are only valid during the
  * {@link IIconButtonController} callback in which they are received.
  * </p>
+ *
+ * @since 19.27.0
  */
 public interface IButtonState {
 	/**
@@ -21,6 +23,8 @@ public interface IButtonState {
 	 * </p>
 	 *
 	 * @param icon the drawable icon
+	 *
+	 * @since 19.27.0
 	 */
 	void setIcon(IDrawable icon);
 
@@ -36,6 +40,8 @@ public interface IButtonState {
 	 * </p>
 	 *
 	 * @param value true to make the button active
+	 *
+	 * @since 19.27.0
 	 */
 	void setActive(boolean value);
 
@@ -51,6 +57,8 @@ public interface IButtonState {
 	 * </p>
 	 *
 	 * @param value true to make the button visible
+	 *
+	 * @since 19.27.0
 	 */
 	void setVisible(boolean value);
 
@@ -71,6 +79,8 @@ public interface IButtonState {
 	 * </p>
 	 *
 	 * @param value true to force the pressed visual state
+	 *
+	 * @since 19.27.0
 	 */
 	void setForcePressed(boolean value);
 }

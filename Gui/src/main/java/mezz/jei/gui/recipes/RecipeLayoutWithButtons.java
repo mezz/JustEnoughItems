@@ -2,6 +2,8 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.buttons.IIconButtonController;
+import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -32,15 +34,21 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 		IRecipeLayoutDrawable<T> recipeLayoutDrawable,
 		@Nullable RecipeBookmark<?, ?> recipeBookmark,
 		BookmarkList bookmarks,
-		RecipesGui recipesGui
+		RecipesGui recipesGui,
+		List<IRecipeButtonControllerFactory> extraButtonControllerFactories
 	) {
 		RecipeTransferButtonController transferButton = new RecipeTransferButtonController(recipeLayoutDrawable, recipesGui);
 		RecipeBookmarkButtonController bookmarkButton = new RecipeBookmarkButtonController(bookmarks, recipeBookmark);
 
-		List<IconButton> buttons = List.of(
-			new IconButton(transferButton),
-			new IconButton(bookmarkButton)
-		);
+		List<IconButton> buttons = new ArrayList<>();
+		buttons.add(new IconButton(transferButton));
+		buttons.add(new IconButton(bookmarkButton));
+		for (IRecipeButtonControllerFactory buttonControllerFactory : extraButtonControllerFactories) {
+			IIconButtonController buttonController = buttonControllerFactory.createButtonController(recipeLayoutDrawable);
+			if (buttonController != null) {
+				buttons.add(new IconButton(buttonController));
+			}
+		}
 
 		return new RecipeLayoutWithButtons<>(recipeLayoutDrawable, transferButton, buttons);
 	}

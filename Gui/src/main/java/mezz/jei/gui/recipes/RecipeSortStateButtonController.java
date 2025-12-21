@@ -7,8 +7,8 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
-import mezz.jei.common.gui.IButtonState;
-import mezz.jei.common.gui.IIconButtonController;
+import mezz.jei.api.gui.buttons.IButtonState;
+import mezz.jei.api.gui.buttons.IIconButtonController;
 import net.minecraft.network.chat.Component;
 
 import java.util.Set;

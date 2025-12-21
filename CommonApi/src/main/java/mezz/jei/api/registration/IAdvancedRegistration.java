@@ -1,6 +1,9 @@
 package mezz.jei.api.registration;
 
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.buttons.IIconButtonController;
+import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
@@ -43,6 +46,19 @@ public interface IAdvancedRegistration {
 	 * @since 15.1.0
 	 */
 	<T> void addRecipeCategoryDecorator(RecipeType<T> recipeType, IRecipeCategoryDecorator<T> decorator);
+
+	/**
+	 * Register a {@link IRecipeButtonControllerFactory} to add custom buttons
+	 * to recipe layouts.
+	 *
+	 * <p>
+	 * The factory is used to create {@link IIconButtonController} instances
+	 * for individual {@link IRecipeLayoutDrawable} objects as they are created.
+	 * </p>
+	 *
+	 * @since 19.27.0
+	 */
+	void addRecipeButtonFactory(IRecipeButtonControllerFactory recipeButtonControllerFactory);
 
 	/**
 	 * Get access to disable various JEI features.
