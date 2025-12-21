@@ -180,7 +180,7 @@ public final class RecipeTransferUtil {
 
 		for (Map.Entry<Slot, ItemStack> slotTuple : availableItemStacks.entrySet()) {
 			for (IRecipeSlotView ingredient : requiredItemStacks) {
-				if (!ingredient.isEmpty() && ingredient.getItemStacks().anyMatch(it -> stackhelper.isEquivalent(it, slotTuple.getValue(), UidContext.Ingredient))) {
+				if (!ingredient.isEmpty() && ingredient.getItemStacks().anyMatch(it -> stackhelper.isEquivalent(it, slotTuple.getValue(), UidContext.Recipe))) {
 					relevantSlots
 						.computeIfAbsent(ingredient, it -> new Object2ObjectOpenCustomHashMap<>(new Hash.Strategy<>() {
 							@Override
@@ -190,7 +190,7 @@ public final class RecipeTransferUtil {
 
 							@Override
 							public boolean equals(ItemStack a, ItemStack b) {
-								return stackhelper.isEquivalent(a, b, UidContext.Ingredient);
+								return stackhelper.isEquivalent(a, b, UidContext.Recipe);
 							}
 						}))
 						.computeIfAbsent(slotTuple.getValue(), it -> new ArrayList<>())
