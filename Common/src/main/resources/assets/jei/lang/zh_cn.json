@@ -1,5 +1,5 @@
 {
-  "_comment": "Debug (for a debug mode, do not need translation)",
+  "_comment": "Tooltips",
   "jei.tooltip.config": "JEI配置",
   "jei.tooltip.show.recipes": "显示配方",
   "jei.tooltip.show.all.recipes.hotkey": "按“%s”以显示所有配方。",
