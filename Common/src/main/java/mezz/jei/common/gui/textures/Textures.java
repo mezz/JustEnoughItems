@@ -2,6 +2,7 @@ package mezz.jei.common.gui.textures;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.elements.DrawableSprite;
 import mezz.jei.common.gui.elements.HighResolutionDrawable;
@@ -53,6 +54,9 @@ public class Textures {
 	private final IDrawableStatic brewingStandBubbles;
 	private final IDrawableStatic brewingStandArrow;
 
+	private final IScalableDrawable buttonPressed;
+	private final IScalableDrawable buttonPressedHighlight;
+
 	public Textures(JeiAtlasManager jeiAtlasManager) {
 		this.jeiAtlasManager = jeiAtlasManager;
 
@@ -81,6 +85,9 @@ public class Textures {
 		this.brewingStandBlazeHeat = createGuiSprite("brewing_stand_blaze_heat", 18, 4);
 		this.brewingStandBubbles = createGuiSprite("brewing_stand_bubbles", 11, 28);
 		this.brewingStandArrow = createGuiSprite("brewing_stand_arrow", 7, 27);
+
+		this.buttonPressed = createScalableGuiSprite("button_pressed");
+		this.buttonPressedHighlight = createScalableGuiSprite("button_pressed_highlighted");
 
 		DrawableSprite rawShapelessIcon = createGuiSprite("icons/shapeless_icon", 36, 36)
 			.trim(1, 2, 1, 1);
@@ -277,6 +284,14 @@ public class Textures {
 
 	public IDrawableStatic getBrewingStandArrow() {
 		return brewingStandArrow;
+	}
+
+	public IScalableDrawable getButtonPressed() {
+		return buttonPressed;
+	}
+
+	public IScalableDrawable getButtonPressedHighlight() {
+		return buttonPressedHighlight;
 	}
 
 	public JeiAtlasManager getAtlasManager() {

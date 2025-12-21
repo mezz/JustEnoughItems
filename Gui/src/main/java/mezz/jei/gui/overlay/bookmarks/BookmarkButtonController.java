@@ -9,12 +9,13 @@ import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.bookmarks.BookmarkList;
-import mezz.jei.gui.elements.IIconButtonDescriptor;
+import mezz.jei.common.gui.IButtonState;
+import mezz.jei.common.gui.IIconButtonController;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
-public class BookmarkButtonDescriptor implements IIconButtonDescriptor {
+public class BookmarkButtonController implements IIconButtonController {
 	private final IDrawable offIcon;
 	private final IDrawable onIcon;
 	private final BookmarkOverlay bookmarkOverlay;
@@ -22,7 +23,7 @@ public class BookmarkButtonDescriptor implements IIconButtonDescriptor {
 	private final IClientToggleState toggleState;
 	private final IInternalKeyMappings keyBindings;
 
-	public BookmarkButtonDescriptor(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, IClientToggleState toggleState, IInternalKeyMappings keyBindings) {
+	public BookmarkButtonController(BookmarkOverlay bookmarkOverlay, BookmarkList bookmarkList, IClientToggleState toggleState, IInternalKeyMappings keyBindings) {
 		Textures textures = Internal.getTextures();
 		this.offIcon = textures.getBookmarkButtonDisabledIcon();
 		this.onIcon = textures.getBookmarkButtonEnabledIcon();
@@ -30,24 +31,6 @@ public class BookmarkButtonDescriptor implements IIconButtonDescriptor {
 		this.bookmarkList = bookmarkList;
 		this.toggleState = toggleState;
 		this.keyBindings = keyBindings;
-	}
-
-	@Override
-	public boolean isActive() {
-		return true;
-	}
-
-	@Override
-	public boolean isVisible() {
-		return true;
-	}
-
-	@Override
-	public IDrawable getIcon() {
-		if (toggleState.isBookmarkOverlayEnabled()) {
-			return onIcon;
-		}
-		return offIcon;
 	}
 
 	@Override
@@ -73,8 +56,14 @@ public class BookmarkButtonDescriptor implements IIconButtonDescriptor {
 	}
 
 	@Override
-	public boolean isForcePressed() {
-		return toggleState.isBookmarkOverlayEnabled();
+	public void updateState(IButtonState state) {
+		if (toggleState.isBookmarkOverlayEnabled()) {
+			state.setIcon(onIcon);
+			state.setForcePressed(true);
+		} else {
+			state.setIcon(offIcon);
+			state.setForcePressed(false);
+		}
 	}
 
 	@Override

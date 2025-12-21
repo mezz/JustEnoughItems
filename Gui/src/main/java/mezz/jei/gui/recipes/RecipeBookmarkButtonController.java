@@ -1,43 +1,26 @@
 package mezz.jei.gui.recipes;
 
 import mezz.jei.api.gui.builder.ITooltipBuilder;
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IBookmark;
-import mezz.jei.gui.elements.IIconButtonDescriptor;
+import mezz.jei.common.gui.IButtonState;
+import mezz.jei.common.gui.IIconButtonController;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
-public class RecipeBookmarkButton implements IIconButtonDescriptor {
+public class RecipeBookmarkButtonController implements IIconButtonController {
 	private final BookmarkList bookmarks;
 	private final @Nullable IBookmark recipeBookmark;
-	private final IDrawable icon;
 	private boolean bookmarked;
-	private boolean active = true;
-	private boolean visible = true;
 
-	public RecipeBookmarkButton(BookmarkList bookmarks, @Nullable IBookmark recipeBookmark) {
-		Textures textures = Internal.getTextures();
-		this.icon = textures.getRecipeBookmark();
+	public RecipeBookmarkButtonController(BookmarkList bookmarks, @Nullable IBookmark recipeBookmark) {
 		this.bookmarks = bookmarks;
 		this.recipeBookmark = recipeBookmark;
-
-		if (recipeBookmark == null) {
-			this.active = false;
-			this.visible = false;
-		}
-
-		tick();
-	}
-
-	@Override
-	public IDrawable getIcon() {
-		return icon;
 	}
 
 	@Override
@@ -52,23 +35,20 @@ public class RecipeBookmarkButton implements IIconButtonDescriptor {
 	}
 
 	@Override
-	public void tick() {
+	public void initState(IButtonState state) {
+		Textures textures = Internal.getTextures();
+		state.setIcon(textures.getRecipeBookmark());
+		if (recipeBookmark == null) {
+			state.setActive(false);
+			state.setVisible(false);
+		}
+		updateState(state);
+	}
+
+	@Override
+	public void updateState(IButtonState state) {
 		bookmarked = recipeBookmark != null && bookmarks.contains(recipeBookmark);
-	}
-
-	@Override
-	public boolean isForcePressed() {
-		return bookmarked;
-	}
-
-	@Override
-	public boolean isActive() {
-		return active;
-	}
-
-	@Override
-	public boolean isVisible() {
-		return visible;
+		state.setForcePressed(bookmarked);
 	}
 
 	@Override

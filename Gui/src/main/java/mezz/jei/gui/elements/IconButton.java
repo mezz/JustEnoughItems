@@ -1,8 +1,7 @@
 package mezz.jei.gui.elements;
 
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.handlers.IGuiProperties;
-import mezz.jei.api.gui.inputs.IJeiUserInput;
+import mezz.jei.common.gui.IIconButtonController;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -13,25 +12,21 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;
-import java.util.function.Function;
 
 public final class IconButton {
 	private final InternalIconButton button;
-	private final IIconButtonDescriptor descriptor;
+	private final IIconButtonController controller;
 	private ImmutableRect2i area;
 
-	public IconButton(IIconButtonDescriptor descriptor) {
-		this(descriptor, ImmutableRect2i.EMPTY);
+	public IconButton(IIconButtonController controller) {
+		this(controller, ImmutableRect2i.EMPTY);
 	}
 
-	public IconButton(IDrawable icon, Function<IJeiUserInput, Boolean> onPress) {
-		this(new BasicButtonDescriptor(icon, onPress));
-	}
-
-	public IconButton(IIconButtonDescriptor descriptor, ImmutableRect2i area) {
-		this.descriptor = descriptor;
+	public IconButton(IIconButtonController controller, ImmutableRect2i area) {
+		this.controller = controller;
 		this.button = new InternalIconButton();
 		this.area = area;
+		this.controller.initState(this.button);
 	}
 
 	public void updateBounds(ImmutableRect2i area) {
@@ -48,12 +43,8 @@ public final class IconButton {
 			return;
 		}
 
-		this.button.active = descriptor.isActive();
-		this.button.visible = descriptor.isVisible();
-		this.button.setForcePressed(descriptor.isForcePressed());
-		this.button.setIcon(descriptor.getIcon());
 		this.button.render(guiGraphics, mouseX, mouseY, partialTicks);
-		this.descriptor.drawExtras(guiGraphics, area.toMutable(), mouseX, mouseY, partialTicks);
+		this.controller.drawExtras(guiGraphics, area.toMutable(), mouseX, mouseY, partialTicks);
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
@@ -61,21 +52,17 @@ public final class IconButton {
 	}
 
 	public IUserInputHandler createInputHandler() {
-		return new UserInputHandler(button, descriptor);
+		return new UserInputHandler(button, controller);
 	}
 
 	public void tick() {
-		descriptor.tick();
-		this.button.active = descriptor.isActive();
-		this.button.visible = descriptor.isVisible();
-		this.button.setForcePressed(descriptor.isForcePressed());
-		this.button.setIcon(descriptor.getIcon());
+		this.controller.updateState(this.button);
 	}
 
 	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
 			JeiTooltip tooltip = new JeiTooltip();
-			descriptor.getTooltips(tooltip);
+			controller.getTooltips(tooltip);
 			tooltip.draw(guiGraphics, mouseX, mouseY);
 		}
 	}
@@ -102,11 +89,11 @@ public final class IconButton {
 
 	private static class UserInputHandler implements IUserInputHandler {
 		private final InternalIconButton button;
-		private final IIconButtonDescriptor descriptor;
+		private final IIconButtonController controller;
 
-		public UserInputHandler(InternalIconButton button, IIconButtonDescriptor descriptor) {
+		public UserInputHandler(InternalIconButton button, IIconButtonController controller) {
 			this.button = button;
-			this.descriptor = descriptor;
+			this.controller = controller;
 		}
 
 		@Override
@@ -131,7 +118,9 @@ public final class IconButton {
 			});
 
 			if (handled) {
-				this.descriptor.onPress(input);
+				if (this.controller.onPress(input) && !input.isSimulate()) {
+					this.controller.updateState(this.button);
+				}
 				return Optional.of(this);
 			}
 			return Optional.empty();

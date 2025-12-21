@@ -5,11 +5,8 @@ import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.input.MouseButtonInfo;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 
 /**
@@ -17,13 +14,8 @@ import net.minecraft.util.ARGB;
  * This internal class is used for re-using vanilla render code and to override behavior.
  * See {@link IconButton} for the class that uses this.
  */
-class InternalIconButton extends Button {
-	// TODO re-implement the "clicked" state when something is held down
-	private static final WidgetSprites SPRITES = new WidgetSprites(
-		Identifier.withDefaultNamespace("widget/button"),
-		Identifier.withDefaultNamespace("widget/button_disabled"),
-		Identifier.withDefaultNamespace("widget/button_highlighted")
-	);
+class InternalIconButton extends Button implements mezz.jei.common.gui.IButtonState {
+	private static final ButtonSprites SPRITES = new ButtonSprites();
 
 	private IDrawable icon = DrawableBlank.EMPTY;
 	private boolean pressed = false;
@@ -47,8 +39,17 @@ class InternalIconButton extends Button {
 
 	@Override
 	protected void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		Identifier spriteLocation = SPRITES.get(this.active, this.isHoveredOrFocused());
-		guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, spriteLocation, this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
+		SPRITES.render(
+			guiGraphics,
+			this.active,
+			this.isHoveredOrFocused(),
+			this.pressed || this.forcePressed,
+			this.getX(),
+			this.getY(),
+			this.getWidth(),
+			this.getHeight(),
+			ARGB.white(this.alpha)
+		);
 
 		float xOffset = getX() + (width - icon.getWidth()) / 2.0f;
 		float yOffset = getY() + (height - icon.getHeight()) / 2.0f;
@@ -69,6 +70,7 @@ class InternalIconButton extends Button {
 		this.pressed = pressed;
 	}
 
+	@Override
 	public void setForcePressed(boolean forcePressed) {
 		this.forcePressed = forcePressed;
 	}
@@ -78,7 +80,18 @@ class InternalIconButton extends Button {
 		return super.isValidClickButton(p_447020_);
 	}
 
+	@Override
 	public void setIcon(IDrawable icon) {
 		this.icon = icon;
+	}
+
+	@Override
+	public void setActive(boolean value) {
+		this.active = value;
+	}
+
+	@Override
+	public void setVisible(boolean value) {
+		this.visible = value;
 	}
 }

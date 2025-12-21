@@ -5,6 +5,7 @@ import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -30,7 +31,8 @@ import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.bookmarks.BookmarkList;
-import mezz.jei.gui.elements.BasicButtonDescriptor;
+import mezz.jei.common.gui.IButtonState;
+import mezz.jei.common.gui.IIconButtonController;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
@@ -143,37 +145,61 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		ImmutableRect2i buttonSize = new ImmutableRect2i(0, 0, smallButtonWidth, smallButtonHeight);
 
 		nextRecipeCategory = new IconButton(
-			new BasicButtonDescriptor(arrowNext, b -> b.isSimulate() || logic.nextRecipeCategory()) {
+			new IIconButtonController() {
 				@Override
-				public boolean isActive() {
-					return logic.hasMultipleCategories();
+				public boolean onPress(IJeiUserInput input) {
+					return input.isSimulate() || logic.nextRecipeCategory();
+				}
+
+				@Override
+				public void initState(IButtonState state) {
+					state.setIcon(arrowNext);
+					state.setActive(logic.hasMultipleCategories());
 				}
 			},
 			buttonSize
 		);
 		previousRecipeCategory = new IconButton(
-			new BasicButtonDescriptor(arrowPrevious, b -> b.isSimulate() || logic.previousRecipeCategory()) {
+			new IIconButtonController() {
 				@Override
-				public boolean isActive() {
-					return logic.hasMultipleCategories();
+				public boolean onPress(IJeiUserInput input) {
+					return input.isSimulate() || logic.previousRecipeCategory();
+				}
+
+				@Override
+				public void initState(IButtonState state) {
+					state.setIcon(arrowPrevious);
+					state.setActive(logic.hasMultipleCategories());
 				}
 			},
 			buttonSize
 		);
 		nextPage = new IconButton(
-			new BasicButtonDescriptor(arrowNext, b -> b.isSimulate() || logic.nextPage()) {
+			new IIconButtonController() {
 				@Override
-				public boolean isActive() {
-					return logic.hasMultiplePages();
+				public boolean onPress(IJeiUserInput input) {
+					return input.isSimulate() || logic.nextPage();
+				}
+
+				@Override
+				public void initState(IButtonState state) {
+					state.setIcon(arrowNext);
+					state.setActive(logic.hasMultiplePages());
 				}
 			},
 			buttonSize
 		);
 		previousPage = new IconButton(
-			new BasicButtonDescriptor(arrowPrevious, b -> b.isSimulate() || logic.previousPage()) {
+			new IIconButtonController() {
 				@Override
-				public boolean isActive() {
-					return logic.hasMultiplePages();
+				public boolean onPress(IJeiUserInput input) {
+					return input.isSimulate() || logic.previousPage();
+				}
+
+				@Override
+				public void initState(IButtonState state) {
+					state.setIcon(arrowPrevious);
+					state.setActive(logic.hasMultiplePages());
 				}
 			},
 			buttonSize
