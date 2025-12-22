@@ -154,6 +154,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 				@Override
 				public void initState(IButtonState state) {
 					state.setIcon(arrowNext);
+					updateState(state);
+				}
+
+				@Override
+				public void updateState(IButtonState state) {
 					state.setActive(logic.hasMultipleCategories());
 				}
 			},
@@ -169,6 +174,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 				@Override
 				public void initState(IButtonState state) {
 					state.setIcon(arrowPrevious);
+					updateState(state);
+				}
+
+				@Override
+				public void updateState(IButtonState state) {
 					state.setActive(logic.hasMultipleCategories());
 				}
 			},
@@ -184,6 +194,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 				@Override
 				public void initState(IButtonState state) {
 					state.setIcon(arrowNext);
+					updateState(state);
+				}
+
+				@Override
+				public void updateState(IButtonState state) {
 					state.setActive(logic.hasMultiplePages());
 				}
 			},
@@ -199,6 +214,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 				@Override
 				public void initState(IButtonState state) {
 					state.setIcon(arrowPrevious);
+					updateState(state);
+				}
+
+				@Override
+				public void updateState(IButtonState state) {
 					state.setActive(logic.hasMultiplePages());
 				}
 			},
@@ -574,6 +594,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		recipeLayoutsArea = getRecipeLayoutsArea();
 
 		this.layouts.updateLayout(recipeLayoutsArea, recipesPerPage);
+
+		this.nextRecipeCategory.tick();
+		this.previousRecipeCategory.tick();
+		this.nextPage.tick();
+		this.previousPage.tick();
 
 		pageString = logic.getPageString();
 
