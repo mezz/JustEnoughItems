@@ -5,13 +5,10 @@ pluginManagement {
 				forRepository { maven(url) }
 				filter(filter)
 			}
-		exclusiveMaven("https://maven.parchmentmc.org") {
-			includeGroupByRegex("org\\.parchmentmc.*")
-		}
 		exclusiveMaven("https://maven.fabricmc.net/") {
 			includeGroup("net.fabricmc")
 			includeGroupByRegex("net\\.fabricmc\\..*")
-			includeGroup("fabric-loom")
+			includeGroup("net.fabricmc.fabric-loom")
 		}
 		exclusiveMaven("https://maven.neoforged.net/releases") {
 			includeGroupByRegex("net\\.neoforged.*")

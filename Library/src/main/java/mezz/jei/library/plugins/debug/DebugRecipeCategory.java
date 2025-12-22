@@ -162,7 +162,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 			long amount = (capacity / 2) + (int) ((Math.random() * capacity) / 2);
 			builder.addInputSlot(24, 0)
 				.setFluidRenderer(capacity, true, 12, 47)
-				.add(fluidType, platformFluidHelper.create(Fluids.LAVA.defaultFluidState().holder(), amount));
+				.add(fluidType, platformFluidHelper.create(Fluids.LAVA.defaultFluidState().typeHolder(), amount));
 		}
 
 		// DEBUG type
@@ -176,7 +176,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 		builder.addInputSlot(40, 32)
 			.add(DebugIngredient.TYPE, new DebugIngredient(3))
 			.addIngredientsUnsafe(List.of(
-				platformFluidHelper.create(Fluids.LAVA.defaultFluidState().holder(), (int) ((1.0 + Math.random()) * bucketVolume)),
+				platformFluidHelper.create(Fluids.LAVA.defaultFluidState().typeHolder(), (int) ((1.0 + Math.random()) * bucketVolume)),
 				new ItemStack(Items.ACACIA_LEAVES)
 			))
 			.addRichTooltipCallback((recipeSlotView, tooltip) -> {

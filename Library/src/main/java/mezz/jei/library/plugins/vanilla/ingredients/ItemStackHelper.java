@@ -182,7 +182,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public Stream<Identifier> getTagStream(ItemStack ingredient) {
-		Stream<Identifier> itemTagStream = ingredient.getTags()
+		Stream<Identifier> itemTagStream = ingredient.typeHolder().tags()
 			.map(TagKey::location);
 
 		if (ingredient.getItem() instanceof BlockItem blockItem) {
@@ -191,7 +191,8 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			if (clientConfig.isLookupBlockTagsEnabled()) {
 				Stream<Identifier> blockTagStream = blockItem.getBlock()
 					.defaultBlockState()
-					.getTags()
+					.typeHolder()
+					.tags()
 					.map(TagKey::location);
 				return Streams.concat(itemTagStream, blockTagStream);
 			}
@@ -201,7 +202,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 
 	@Override
 	public boolean isHiddenFromRecipeViewersByTags(ItemStack ingredient) {
-		return isHiddenFromRecipeViewersByTags(ingredient.getItemHolder());
+		return isHiddenFromRecipeViewersByTags(ingredient.typeHolder());
 	}
 
 	@Override

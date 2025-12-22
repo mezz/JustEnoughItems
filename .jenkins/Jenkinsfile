@@ -44,19 +44,20 @@ pipeline {
             }
         }
 
-        stage('Publish CurseForge') {
-            steps {
-                sh "./gradlew :Fabric:publishCurseforge"
-                sh "./gradlew :NeoForge:publishCurseforge"
-            }
-        }
-
-        stage('Publish Modrinth') {
-            steps {
-                sh "./gradlew :Fabric:publishModrinth"
-                sh "./gradlew :NeoForge:publishModrinth"
-            }
-        }
+// temporarily disable publishing while this version is under development
+//         stage('Publish CurseForge') {
+//             steps {
+//                 sh "./gradlew :Fabric:publishCurseforge"
+//                 sh "./gradlew :NeoForge:publishCurseforge"
+//             }
+//         }
+//
+//         stage('Publish Modrinth') {
+//             steps {
+//                 sh "./gradlew :Fabric:publishModrinth"
+//                 sh "./gradlew :NeoForge:publishModrinth"
+//             }
+//         }
 
         stage('Archive') {
             steps {

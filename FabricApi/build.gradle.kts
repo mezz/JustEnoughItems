@@ -1,29 +1,13 @@
-import net.fabricmc.loom.task.RemapJarTask
-import net.fabricmc.loom.task.RemapSourcesJarTask
-
 plugins {
     java
     idea
     `maven-publish`
-    id("fabric-loom")
-}
-
-repositories {
-    fun exclusiveMaven(url: String, filter: Action<InclusiveRepositoryContentDescriptor>) =
-        exclusiveContent {
-            forRepository { maven(url) }
-            filter(filter)
-        }
-    exclusiveMaven("https://maven.parchmentmc.org") {
-        includeGroupByRegex("org\\.parchmentmc.*")
-    }
+    id("net.fabricmc.fabric-loom")
 }
 
 // gradle.properties
 val fabricApiVersion: String by extra
 val fabricLoaderVersion: String by extra
-val parchmentVersionFabric: String by extra
-val parchmentMinecraftVersion: String by extra
 val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
@@ -43,31 +27,6 @@ java {
         languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
     }
     withSourcesJar()
-}
-
-val commonApiIntermediaryJar = tasks.create<RemapJarTask>("commonApiIntermediaryJar") {
-    val commonApiJarTask = commonApi.tasks.jar.get()
-    commonApiJarTask.manifest {
-        attributes["Fabric-Loom-Remap"] = true
-    }
-    val commonApiJar = commonApiJarTask.archiveFile
-    val commonApiBaseArchivesName = commonApi.base.archivesName
-    inputFile.set(commonApiJar)
-    archiveBaseName.set(provider { commonApiBaseArchivesName.get() + "-intermediary" })
-    group = modGroup
-}
-
-val commonApiIntermediarySourcesJar = tasks.create<RemapSourcesJarTask>("commonApiIntermediarySourcesJar") {
-    val commonApiSourcesJarTask = commonApi.tasks.named<Jar>("sourcesJar").get()
-    commonApiSourcesJarTask.manifest {
-        attributes["Fabric-Loom-Remap"] = true
-    }
-    val commonSourcesJar = commonApiSourcesJarTask.archiveFile
-    val commonApiBaseArchivesName = commonApi.base.archivesName
-    inputFile.set(commonSourcesJar)
-    archiveBaseName.set(provider { commonApiBaseArchivesName.get() + "-intermediary" })
-    archiveClassifier.set("sources")
-    group = modGroup
 }
 
 tasks.withType<JavaCompile> {
@@ -91,17 +50,12 @@ dependencies {
         name = "minecraft",
         version = minecraftVersion,
     )
-    @Suppress("UnstableApiUsage")
-    mappings(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${parchmentMinecraftVersion}:${parchmentVersionFabric}@zip")
-    })
-    modImplementation(
+    implementation(
         group = "net.fabricmc",
         name = "fabric-loader",
         version = fabricLoaderVersion,
     )
-    modImplementation(
+    implementation(
         group = "net.fabricmc.fabric-api",
         name = "fabric-api",
         version = fabricApiVersion,
@@ -126,29 +80,22 @@ sourceSets {
 }
 
 artifacts {
-    archives(tasks.remapJar)
-    archives(tasks.remapSourcesJar)
-    archives(commonApiIntermediaryJar)
-    archives(commonApiIntermediarySourcesJar)
+    archives(tasks.jar)
+    archives(tasks.named("sourcesJar"))
 }
 
 publishing {
     publications {
-        register<MavenPublication>("commonApiIntermediary") {
-            artifactId = commonApiIntermediaryJar.archiveBaseName.get()
-            artifact(commonApiIntermediaryJar)
-            artifact(commonApiIntermediarySourcesJar)
-        }
         register<MavenPublication>("fabricApi") {
             artifactId = baseArchivesName
             @Suppress("UnstableApiUsage")
             loom.disableDeprecatedPomGeneration(this)
-            artifact(tasks.remapJar)
-            artifact(tasks.remapSourcesJar)
+            artifact(tasks.jar)
+            artifact(tasks.named("sourcesJar"))
 
             val dependencyInfo = mapOf(
-                "groupId" to commonApiIntermediaryJar.group,
-                "artifactId" to commonApiIntermediaryJar.archiveBaseName.get(),
+                "groupId" to commonApi.tasks.jar.get().group,
+                "artifactId" to commonApi.tasks.jar.get().archiveBaseName.get(),
                 "version" to commonApi.version
             )
 

@@ -250,10 +250,10 @@ public class JeiDebugPlugin implements IModPlugin {
 
 	private <T> void registerFluidRecipes(IRecipeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
 		long bucketVolume = platformFluidHelper.bucketVolume();
-		T fluidIngredient = platformFluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume);
+		T fluidIngredient = platformFluidHelper.create(Fluids.WATER.defaultFluidState().typeHolder(), bucketVolume);
 		registration.addIngredientInfo(fluidIngredient, platformFluidHelper.getFluidIngredientType(), Component.literal("water"));
 
-		fluidIngredient = platformFluidHelper.create(Fluids.LAVA.defaultFluidState().holder(), 1);
+		fluidIngredient = platformFluidHelper.create(Fluids.LAVA.defaultFluidState().typeHolder(), 1);
 		registration.addIngredientInfo(fluidIngredient, platformFluidHelper.getFluidIngredientType(), Component.literal("small amount of lava that should still show as 1 bucket"));
 	}
 
@@ -290,7 +290,7 @@ public class JeiDebugPlugin implements IModPlugin {
 		long bucketVolume = fluidHelper.bucketVolume();
 
 		registration.addCraftingStation(DebugRecipeCategory.TYPE, DebugIngredient.TYPE, new DebugIngredient(7));
-		registration.addCraftingStation(DebugRecipeCategory.TYPE, fluidHelper.getFluidIngredientType(), fluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume));
+		registration.addCraftingStation(DebugRecipeCategory.TYPE, fluidHelper.getFluidIngredientType(), fluidHelper.create(Fluids.WATER.defaultFluidState().typeHolder(), bucketVolume));
 		registration.addCraftingStation(DebugRecipeCategory.TYPE, Items.STICK);
 
 		RegistryUtil.getRegistry(Registries.ITEM)

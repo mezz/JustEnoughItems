@@ -27,12 +27,12 @@ public abstract class TypedItemStack implements ITypedIngredient<ItemStack> {
 	public static ITypedIngredient<ItemStack> create(ItemStack ingredient) {
 		if (ingredient.getCount() == 1) {
 			return NormalizedTypedItemStack.create(
-				ingredient.getItemHolder(),
+				ingredient.typeHolder(),
 				ingredient.getComponentsPatch()
 			);
 		}
 		return new FullTypedItemStack(
-			ingredient.getItemHolder(),
+			ingredient.typeHolder(),
 			ingredient.getComponentsPatch(),
 			ingredient.getCount()
 		);
@@ -43,7 +43,7 @@ public abstract class TypedItemStack implements ITypedIngredient<ItemStack> {
 			return typedItemStack.getNormalized();
 		}
 		ItemStack itemStack = typedIngredient.getIngredient();
-		return NormalizedTypedItemStack.create(itemStack.getItemHolder(), itemStack.getComponentsPatch());
+		return NormalizedTypedItemStack.create(itemStack.typeHolder(), itemStack.getComponentsPatch());
 	}
 
 	@Override

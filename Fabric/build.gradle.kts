@@ -5,19 +5,8 @@ plugins {
     java
     idea
     `maven-publish`
-    id("fabric-loom")
+    id("net.fabricmc.fabric-loom")
     id("me.modmuss50.mod-publish-plugin")
-}
-
-repositories {
-    fun exclusiveMaven(url: String, filter: Action<InclusiveRepositoryContentDescriptor>) =
-        exclusiveContent {
-            forRepository { maven(url) }
-            filter(filter)
-        }
-    exclusiveMaven("https://maven.parchmentmc.org") {
-        includeGroupByRegex("org\\.parchmentmc.*")
-    }
 }
 
 // gradle.properties
@@ -28,8 +17,6 @@ val minecraftVersionRangeStart: String by extra
 val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
-val parchmentMinecraftVersion: String by extra
-val parchmentVersionFabric: String by extra
 val modrinthId: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
@@ -103,17 +90,12 @@ dependencies {
         name = "minecraft",
         version = minecraftVersion,
     )
-    @Suppress("UnstableApiUsage")
-    mappings(loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${parchmentMinecraftVersion}:${parchmentVersionFabric}@zip")
-    })
-    modImplementation(
+    implementation(
         group = "net.fabricmc",
         name = "fabric-loader",
         version = fabricLoaderVersion,
     )
-    modImplementation(
+    implementation(
         group = "net.fabricmc.fabric-api",
         name = "fabric-api",
         version = fabricApiVersion,
@@ -123,11 +105,8 @@ dependencies {
         name = "jsr305",
         version = "3.0.1"
     )
-    vanillaDependencyProjects.forEach {
+    dependencyProjects.forEach {
         implementation(it)
-    }
-    loomDependencyProjects.forEach {
-        implementation(project(it.path, "namedElements"))
     }
     changelogHtml(project(":Changelog"))
     changelogMarkdown(project(":Changelog"))
@@ -137,7 +116,7 @@ loom {
     mods {
         create("jei") {
             sourceSet(sourceSets.main.get())
-            for (dependencyProject in dependencyProjects) {
+            for (dependencyProject in loomDependencyProjects) {
                 sourceSet(dependencyProject.sourceSets.main.get())
             }
         }
@@ -216,7 +195,7 @@ tasks.named<Jar>("sourcesJar") {
 }
 
 publishMods {
-    file.set(tasks.remapJar.get().archiveFile)
+    file.set(tasks.jar.get().archiveFile)
     changelog.set(provider { file("../Changelog/changelog.md").readText() })
     type = BETA
     modLoaders.add("fabric")
@@ -260,36 +239,16 @@ tasks.named<Test>("test") {
 }
 
 artifacts {
-    archives(tasks.remapJar)
-    archives(tasks.remapSourcesJar)
+    archives(tasks.jar)
+    archives(tasks.named("sourcesJar"))
 }
 
 publishing {
     publications {
         register<MavenPublication>("fabricJar") {
-            @Suppress("UnstableApiUsage")
-            loom.disableDeprecatedPomGeneration(this)
             artifactId = baseArchivesName
-            artifact(tasks.remapJar)
-            artifact(tasks.remapSourcesJar)
-
-            val dependencyInfos = dependencyProjects.map {
-                mapOf(
-                    "groupId" to it.group,
-                    "artifactId" to it.base.archivesName.get(),
-                    "version" to it.version
-                )
-            }
-
-            pom.withXml {
-                val dependenciesNode = asNode().appendNode("dependencies")
-                dependencyInfos.forEach {
-                    val dependencyNode = dependenciesNode.appendNode("dependency")
-                    it.forEach { (key, value) ->
-                        dependencyNode.appendNode(key, value)
-                    }
-                }
-            }
+            artifact(tasks.jar)
+            artifact(tasks.named("sourcesJar"))
         }
     }
     repositories {
