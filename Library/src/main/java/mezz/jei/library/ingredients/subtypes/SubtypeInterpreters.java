@@ -2,7 +2,7 @@ package mezz.jei.library.ingredients.subtypes;
 
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.IdentityHashMap;
 import java.util.Map;

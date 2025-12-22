@@ -18,35 +18,12 @@ val modId: String by extra
 val modJavaVersion: String by extra
 
 dependencies {
-    implementation(
-        group = "com.google.guava",
-        name = "guava",
-        version = "32.0.1-jre"
-    )
-    implementation(
-        group = "org.jetbrains",
-        name = "annotations",
-        version = "23.0.0"
-    )
-    implementation(
-        group = "it.unimi.dsi",
-        name = "fastutil",
-        version = "8.5.6"
-    )
-    implementation(
-        group = "org.apache.logging.log4j",
-        name = "log4j-api",
-        version = "2.17.0"
-    )
-    testImplementation(
-        group = "org.junit.jupiter",
-        name = "junit-jupiter",
-        version = jUnitVersion
-    )
-    testRuntimeOnly(
-        group = "org.junit.platform",
-        name = "junit-platform-launcher"
-    )
+    implementation("org.jetbrains:annotations:26.0.2")
+    implementation("com.google.guava:guava:33.5.0-jre")
+    implementation("it.unimi.dsi:fastutil:8.5.18")
+    implementation("org.apache.logging.log4j:log4j-api:2.25.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 sourceSets {

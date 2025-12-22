@@ -10,6 +10,7 @@ plugins {
 
 // gradle.properties
 val jUnitVersion: String by extra
+val mixinVersion: String by extra
 val minecraftVersion: String by extra
 val neoformVersionAndTimestamp: String by extra
 val modId: String by extra
@@ -42,23 +43,12 @@ sourceSets {
 }
 
 dependencies {
-    compileOnly(
-        group = "org.spongepowered",
-        name = "mixin",
-        version = "0.8.5"
-    )
+    compileOnly("org.spongepowered:mixin:${mixinVersion}")
     dependencyProjects.forEach {
         implementation(it)
     }
-    testImplementation(
-        group = "org.junit.jupiter",
-        name = "junit-jupiter",
-        version = jUnitVersion
-    )
-    testRuntimeOnly(
-        group = "org.junit.platform",
-        name = "junit-platform-launcher"
-    )
+    testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.test {

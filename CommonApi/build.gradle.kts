@@ -7,6 +7,7 @@ plugins {
 
 
 // gradle.properties
+val mixinVersion: String by extra
 val minecraftVersion: String by extra
 val neoformVersionAndTimestamp: String by extra
 val modId: String by extra
@@ -33,11 +34,7 @@ sourceSets {
 }
 
 dependencies {
-    compileOnly(
-        group = "org.spongepowered",
-        name = "mixin",
-        version = "0.8.5"
-    )
+    compileOnly("org.spongepowered:mixin:${mixinVersion}")
 }
 
 java {

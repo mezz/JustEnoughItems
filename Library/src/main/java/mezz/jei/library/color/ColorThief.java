@@ -20,7 +20,7 @@ package mezz.jei.library.color;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.util.ARGB;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -57,8 +57,7 @@ public class ColorThief {
 	 * @param ignoreWhite if <code>true</code>, white pixels are ignored
 	 * @return the color map
 	 */
-	@Nullable
-	public static MMCQ.CMap getColorMap(NativeImage sourceImage, int colorCount, int quality, boolean ignoreWhite) {
+	public static MMCQ.@Nullable CMap getColorMap(NativeImage sourceImage, int colorCount, int quality, boolean ignoreWhite) {
 		if (sourceImage.format() == NativeImage.Format.RGBA) {
 			int[][] pixelArray = getPixels(sourceImage, quality, ignoreWhite);
 			// Send array to quantize function which clusters values using median

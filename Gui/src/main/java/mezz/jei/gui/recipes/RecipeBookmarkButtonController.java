@@ -11,7 +11,7 @@ import mezz.jei.api.gui.buttons.IIconButtonController;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class RecipeBookmarkButtonController implements IIconButtonController {
 	private final BookmarkList bookmarks;

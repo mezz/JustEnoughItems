@@ -1,7 +1,7 @@
 package mezz.jei.common.util;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.concurrent.Future;

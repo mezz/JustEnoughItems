@@ -26,7 +26,7 @@ import mezz.jei.gui.recipes.lookups.IngredientLookupState;
 import mezz.jei.gui.recipes.lookups.SingleCategoryLookupState;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;

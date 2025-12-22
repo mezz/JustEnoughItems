@@ -1,7 +1,7 @@
 package mezz.jei.api.ingredients.subtypes;
 
 import mezz.jei.api.registration.ISubtypeRegistration;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A subtype interpreter tells JEI how to create unique ids for ingredients.

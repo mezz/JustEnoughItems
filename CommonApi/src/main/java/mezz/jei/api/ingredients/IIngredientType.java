@@ -3,7 +3,7 @@ package mezz.jei.api.ingredients;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.registration.IModIngredientRegistration;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 

@@ -4,7 +4,7 @@ import mezz.jei.core.util.ReflectionUtil;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class ScreenFocusHandler implements IFocusHandler {
 	private static final ReflectionUtil reflectionUtil = new ReflectionUtil();
@@ -15,8 +15,8 @@ public class ScreenFocusHandler implements IFocusHandler {
 
 	public static @Nullable ScreenFocusHandler create(Screen screen) {
 		GuiEventListener focused = screen.getFocused();
-		final @Nullable IFocusHandler focusedElement;
-		final @Nullable GuiEventListener storedInScreenFocus;
+		final IFocusHandler focusedElement;
+		final GuiEventListener storedInScreenFocus;
 		if (focused != null) {
 			focusedElement = GuiEventListenerFocusHandler.create(focused);
 			storedInScreenFocus = focused;

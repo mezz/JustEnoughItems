@@ -18,7 +18,7 @@ package mezz.jei.library.color;
  * available at http://lokeshdhakar.com/projects/color-thief/
  */
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -7,7 +7,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.gui.GuiProperties;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class AbstractContainerScreenHandler<T extends AbstractContainerMenu> implements IScreenHandler<AbstractContainerScreen<T>> {
 	@Override

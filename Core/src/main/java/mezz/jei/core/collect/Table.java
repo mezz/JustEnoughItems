@@ -1,7 +1,7 @@
 package mezz.jei.core.collect;
 
 import com.google.common.collect.ImmutableTable;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.IdentityHashMap;

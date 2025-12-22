@@ -1,7 +1,7 @@
 package mezz.jei.common.config.file.serializers;
 
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;

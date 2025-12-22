@@ -45,26 +45,9 @@ tasks.withType<Jar> {
 }
 
 dependencies {
-    minecraft(
-        group = "com.mojang",
-        name = "minecraft",
-        version = minecraftVersion,
-    )
-    implementation(
-        group = "net.fabricmc",
-        name = "fabric-loader",
-        version = fabricLoaderVersion,
-    )
-    implementation(
-        group = "net.fabricmc.fabric-api",
-        name = "fabric-api",
-        version = fabricApiVersion,
-    )
-    implementation(
-        group = "com.google.code.findbugs",
-        name = "jsr305",
-        version = "3.0.1"
-    )
+    minecraft("com.mojang:minecraft:${minecraftVersion}")
+    implementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
+    implementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
     implementation(commonApi)
 }
 

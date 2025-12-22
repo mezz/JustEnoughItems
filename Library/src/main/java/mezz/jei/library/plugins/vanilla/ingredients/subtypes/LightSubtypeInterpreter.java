@@ -6,7 +6,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.BlockItemStateProperties;
 import net.minecraft.world.level.block.LightBlock;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class LightSubtypeInterpreter implements ISubtypeInterpreter<ItemStack> {
 	public static final LightSubtypeInterpreter INSTANCE = new LightSubtypeInterpreter();

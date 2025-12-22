@@ -1,7 +1,7 @@
 package mezz.jei.fabric.config;
 
 import mezz.jei.common.config.IServerConfig;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 // TODO: Fabric server configs
 public final class ServerConfig implements IServerConfig {

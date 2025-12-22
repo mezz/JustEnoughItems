@@ -3,7 +3,7 @@ package mezz.jei.library.plugins.vanilla.anvil;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 

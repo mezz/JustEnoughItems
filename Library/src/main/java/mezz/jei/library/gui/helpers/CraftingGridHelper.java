@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplayContext;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -94,7 +94,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 			int index = getCraftingIndex(i, width, height);
 			IRecipeSlotBuilder slot = slotBuilders.get(index);
 
-			@Nullable List<@Nullable T> ingredients = inputs.get(i);
+			List<@Nullable T> ingredients = inputs.get(i);
 			if (ingredients != null) {
 				slot.addIngredients(ingredientType, ingredients);
 			}

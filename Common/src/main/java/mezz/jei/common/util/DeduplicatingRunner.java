@@ -1,6 +1,6 @@
 package mezz.jei.common.util;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.concurrent.Future;

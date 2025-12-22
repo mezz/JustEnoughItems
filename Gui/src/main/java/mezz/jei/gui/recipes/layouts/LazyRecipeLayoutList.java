@@ -19,7 +19,7 @@ import mezz.jei.gui.recipes.RecipeSortUtil;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Iterator;

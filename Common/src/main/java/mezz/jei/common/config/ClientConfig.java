@@ -8,7 +8,7 @@ import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.config.file.serializers.EnumSerializer;
 import mezz.jei.common.config.file.serializers.ListSerializer;
 import mezz.jei.common.platform.Services;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;

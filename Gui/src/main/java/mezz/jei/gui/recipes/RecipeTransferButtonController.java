@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class RecipeTransferButtonController implements IIconButtonController {
 	private final IRecipeLayoutDrawable<?> recipeLayout;

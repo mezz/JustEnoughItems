@@ -1,5 +1,4 @@
-@ParametersAreNonnullByDefault
-@FieldsAndMethodsAreNonnullByDefault
+@NullMarked
 package mezz.jei.core;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;

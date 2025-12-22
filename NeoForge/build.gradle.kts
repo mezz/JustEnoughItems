@@ -101,15 +101,8 @@ dependencies {
 	dependencyProjects.forEach {
 		implementation(it)
 	}
-	testImplementation(
-		group = "org.junit.jupiter",
-		name = "junit-jupiter",
-		version = jUnitVersion
-	)
-	testRuntimeOnly(
-		group = "org.junit.platform",
-		name = "junit-platform-launcher"
-	)
+	testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	changelogHtml(project(":Changelog"))
 	changelogMarkdown(project(":Changelog"))
 }

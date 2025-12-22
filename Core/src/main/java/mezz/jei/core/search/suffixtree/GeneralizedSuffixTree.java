@@ -18,7 +18,7 @@ package mezz.jei.core.search.suffixtree;
 import mezz.jei.core.search.ISearchStorage;
 import mezz.jei.core.util.Pair;
 import mezz.jei.core.util.SubString;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.PrintWriter;
 import java.util.Collection;
