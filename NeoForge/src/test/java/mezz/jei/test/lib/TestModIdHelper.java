@@ -1,11 +1,9 @@
 package mezz.jei.test.lib;
 
 import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.network.chat.Component;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,18 +16,6 @@ public class TestModIdHelper implements IModIdHelper {
 	@Override
 	public String getFormattedModNameForModId(String modId) {
 		return getModNameForModId(modId);
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
-		return tooltip;
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, ITypedIngredient<T> typedIngredient) {
-		return tooltip;
 	}
 
 	@Override
