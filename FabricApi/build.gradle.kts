@@ -86,31 +86,14 @@ tasks.withType<Jar> {
 }
 
 dependencies {
-    minecraft(
-        group = "com.mojang",
-        name = "minecraft",
-        version = minecraftVersion,
-    )
+    minecraft("com.mojang:minecraft:${minecraftVersion}")
     @Suppress("UnstableApiUsage")
     mappings(loom.layered {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-${parchmentMinecraftVersion}:${parchmentVersionFabric}@zip")
     })
-    modImplementation(
-        group = "net.fabricmc",
-        name = "fabric-loader",
-        version = fabricLoaderVersion,
-    )
-    modImplementation(
-        group = "net.fabricmc.fabric-api",
-        name = "fabric-api",
-        version = fabricApiVersion,
-    )
-    implementation(
-        group = "com.google.code.findbugs",
-        name = "jsr305",
-        version = "3.0.1"
-    )
+    modImplementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
     implementation(commonApi)
 }
 

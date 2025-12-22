@@ -1,6 +1,6 @@
 package mezz.jei.core.util.function;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Supplier;
 

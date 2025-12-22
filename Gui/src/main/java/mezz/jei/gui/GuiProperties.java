@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.screens.Screen;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public record GuiProperties(
 	Class<? extends Screen> screenClass,

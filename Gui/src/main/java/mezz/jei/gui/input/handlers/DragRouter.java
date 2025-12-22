@@ -3,7 +3,7 @@ package mezz.jei.gui.input.handlers;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;

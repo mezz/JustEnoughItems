@@ -1,7 +1,4 @@
-@ParametersAreNonnullByDefault
 @NullMarked
 package mezz.jei.api.constants;
 
 import org.jspecify.annotations.NullMarked;
-
-import javax.annotation.ParametersAreNonnullByDefault;

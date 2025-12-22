@@ -18,7 +18,7 @@ import net.minecraft.client.resources.metadata.animation.AnimationMetadataSectio
 import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
 import net.minecraft.network.Connection;
 import net.minecraft.world.item.crafting.RecipeMap;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.Set;

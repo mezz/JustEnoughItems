@@ -27,7 +27,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeMap;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -67,7 +67,7 @@ public class CodecHelper implements ICodecHelper {
 			},
 			recipeHolder -> {
 				ResourceKey<Recipe<?>> recipeKey = recipeHolder.id();
-				@Nullable RecipeHolder<?> found = recipes.byKey(recipeKey);
+				RecipeHolder<?> found = recipes.byKey(recipeKey);
 				if (recipeHolder.equals(found)) {
 					return DataResult.success(Either.left(recipeKey));
 				}

@@ -7,7 +7,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;

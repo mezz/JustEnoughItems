@@ -2,7 +2,7 @@ package mezz.jei.api.recipe.advanced;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.buttons.IIconButtonController;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Factory for creating {@link IIconButtonController} instances for recipe layouts.

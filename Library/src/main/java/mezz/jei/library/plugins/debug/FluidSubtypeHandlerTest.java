@@ -4,7 +4,7 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.world.level.material.Fluid;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class FluidSubtypeHandlerTest<T> implements ISubtypeInterpreter<T> {
 	private final IIngredientTypeWithSubtypes<Fluid, T> fluidType;

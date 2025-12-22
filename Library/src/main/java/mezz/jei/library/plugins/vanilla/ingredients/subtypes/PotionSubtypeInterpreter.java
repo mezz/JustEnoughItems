@@ -6,7 +6,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class PotionSubtypeInterpreter implements ISubtypeInterpreter<ItemStack> {
 	public static final PotionSubtypeInterpreter INSTANCE = new PotionSubtypeInterpreter();

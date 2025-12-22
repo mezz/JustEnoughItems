@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplayContext;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,7 +101,7 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		List<ITypedIngredient<T>> results = new ArrayList<>(ingredients.size());
 		for (T ingredient : ingredients) {
-			@Nullable ITypedIngredient<T> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
+			ITypedIngredient<T> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
 			if (result != null) {
 				results.add(result);
 			}
@@ -118,7 +118,7 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		List<@Nullable ITypedIngredient<T>> results = new ArrayList<>(ingredients.size());
 		for (@Nullable T ingredient : ingredients) {
-			@Nullable ITypedIngredient<T> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
+			ITypedIngredient<T> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
 			results.add(result);
 		}
 		return results;
