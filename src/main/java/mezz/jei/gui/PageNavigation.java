@@ -52,6 +52,8 @@ public class PageNavigation {
 		Minecraft minecraft = Minecraft.getInstance();
 		FontRenderer fontRenderer = minecraft.font;
 		this.pageNumDisplayString = (pageNum + 1) + "/" + pageCount;
+		this.nextButton.active = pageCount > 1;
+		this.backButton.active = pageCount > 1;
 		Rectangle2d centerArea = MathUtil.centerTextArea(this.area, fontRenderer, this.pageNumDisplayString);
 		this.pageNumDisplayX = centerArea.getX();
 		this.pageNumDisplayY = centerArea.getY();
