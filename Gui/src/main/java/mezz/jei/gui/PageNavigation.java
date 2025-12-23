@@ -33,6 +33,12 @@ public class PageNavigation {
 			@Override
 			public void initState(IButtonState state) {
 				state.setIcon(Internal.getTextures().getArrowNext());
+				updateState(state);
+			}
+
+			@Override
+			public void updateState(IButtonState state) {
+				state.setActive(paged.getPageCount() > 1);
 			}
 		});
 		this.backButton = new IconButton(new IIconButtonController() {
@@ -44,6 +50,12 @@ public class PageNavigation {
 			@Override
 			public void initState(IButtonState state) {
 				state.setIcon(Internal.getTextures().getArrowPrevious());
+				updateState(state);
+			}
+
+			@Override
+			public void updateState(IButtonState state) {
+				state.setActive(paged.getPageCount() > 1);
 			}
 		});
 		this.hideOnSinglePage = hideOnSinglePage;
@@ -71,6 +83,9 @@ public class PageNavigation {
 		int pageNum = this.paged.getPageNumber();
 		int pageCount = this.paged.getPageCount();
 		this.pageNumDisplayString = String.format("%d/%d", pageNum + 1, pageCount);
+
+		this.nextButton.tick();
+		this.backButton.tick();
 	}
 
 	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
