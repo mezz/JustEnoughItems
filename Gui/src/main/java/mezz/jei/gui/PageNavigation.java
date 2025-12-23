@@ -52,6 +52,8 @@ public class PageNavigation {
 		int pageNum = this.paged.getPageNumber();
 		int pageCount = this.paged.getPageCount();
 		this.pageNumDisplayString = String.format("%d/%d", pageNum + 1, pageCount);
+		this.nextButton.active = pageCount > 1;
+		this.backButton.active = pageCount > 1;
 	}
 
 	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
