@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientBookmarkElement;
+import net.minecraft.world.item.ItemStack;
 
 public class IngredientBookmark<T> implements IBookmark {
 	private final IElement<T> element;
@@ -56,6 +57,9 @@ public class IngredientBookmark<T> implements IBookmark {
 			return true;
 		}
 		if (obj instanceof IngredientBookmark<?> ingredientBookmark) {
+			if (typedIngredient.getIngredient() instanceof ItemStack stackA && ingredientBookmark.typedIngredient.getIngredient() instanceof ItemStack stackB) {
+				return ItemStack.matches(stackA, stackB);
+			}
 			return ingredientBookmark.uid.equals(uid);
 		}
 		return false;
