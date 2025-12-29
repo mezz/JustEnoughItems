@@ -12,6 +12,7 @@ import mezz.jei.api.runtime.config.IJeiConfigValueSerializer.IDeserializeResult;
 import mezz.jei.common.config.file.serializers.LegacyTypedIngredientSerializer;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.core.util.LoggedTimer;
+import mezz.jei.gui.bookmarks.BookmarkFactory;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.bookmarks.IngredientBookmark;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
@@ -69,7 +70,8 @@ public class LegacyBookmarkConfig {
 		IRecipeManager recipeManager,
 		IFocusFactory focusFactory,
 		IIngredientManager ingredientManager,
-		RegistryAccess registryAccess
+		RegistryAccess registryAccess,
+		BookmarkFactory bookmarkFactory
 	) {
 		return getPath(jeiConfigurationDir)
 			.<List<IBookmark>>map(path -> {
@@ -104,13 +106,13 @@ public class LegacyBookmarkConfig {
 				for (String line : lines) {
 					if (line.startsWith(MARKER_STACK)) {
 						String itemStackAsJson = line.substring(MARKER_STACK.length());
-						loadItemStackBookmark(registryAccess, itemStackHelper, ingredientManager, itemStackAsJson, bookmarkList);
+						loadItemStackBookmark(registryAccess, ingredientManager, itemStackAsJson, bookmarkList, bookmarkFactory);
 					} else if (line.startsWith(MARKER_INGREDIENT)) {
 						String serializedIngredient = line.substring(MARKER_INGREDIENT.length());
-						loadIngredientBookmark(ingredientSerializer, ingredientManager, serializedIngredient, bookmarkList);
+						loadIngredientBookmark(ingredientSerializer, serializedIngredient, bookmarkList, bookmarkFactory);
 					} else if (line.startsWith(LEGACY_MARKER_OTHER)) {
 						String uid = line.substring(LEGACY_MARKER_OTHER.length());
-						loadLegacyIngredientBookmark(otherIngredientTypes, ingredientManager, uid, bookmarkList);
+						loadLegacyIngredientBookmark(otherIngredientTypes, ingredientManager, uid, bookmarkList, bookmarkFactory);
 					} else if (line.startsWith(MARKER_RECIPE)) {
 						String serializedRecipe = line.substring(MARKER_RECIPE.length());
 						loadRecipeBookmark(legacyRecipeBookmarkSerializer, serializedRecipe, bookmarkList);
@@ -128,21 +130,20 @@ public class LegacyBookmarkConfig {
 
 	private static void loadItemStackBookmark(
 		RegistryAccess registryAccess,
-		IIngredientHelper<ItemStack> itemStackHelper,
 		IIngredientManager ingredientManager,
 		String itemStackAsJson,
-		List<IBookmark> bookmarkList
+		List<IBookmark> bookmarkList,
+		BookmarkFactory bookmarkFactory
 	) {
 		try {
 			CompoundTag itemStackAsNbt = TagParser.parseTag(itemStackAsJson);
 			ItemStack itemStack = ItemStack.parseOptional(registryAccess, itemStackAsNbt);
 			if (!itemStack.isEmpty()) {
-				ItemStack normalized = itemStackHelper.normalizeIngredient(itemStack);
-				Optional<ITypedIngredient<ItemStack>> typedIngredient = ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, normalized);
+				Optional<ITypedIngredient<ItemStack>> typedIngredient = ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, itemStack, true);
 				if (typedIngredient.isEmpty()) {
 					LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
 				} else {
-					IngredientBookmark<ItemStack> bookmark = IngredientBookmark.create(typedIngredient.get(), ingredientManager);
+					IngredientBookmark<ItemStack> bookmark = bookmarkFactory.create(typedIngredient.get());
 					bookmarkList.add(bookmark);
 				}
 			} else {
@@ -155,9 +156,9 @@ public class LegacyBookmarkConfig {
 
 	private static void loadIngredientBookmark(
 		LegacyTypedIngredientSerializer ingredientSerializer,
-		IIngredientManager ingredientManager,
 		String serializedIngredient,
-		List<IBookmark> bookmarkList
+		List<IBookmark> bookmarkList,
+		BookmarkFactory bookmarkFactory
 	) {
 		IDeserializeResult<ITypedIngredient<?>> deserialized = ingredientSerializer.deserialize(serializedIngredient);
 		Optional<ITypedIngredient<?>> result = deserialized.getResult();
@@ -165,7 +166,7 @@ public class LegacyBookmarkConfig {
 			List<String> errors = deserialized.getErrors();
 			LOGGER.warn("Failed to load bookmarked ingredient from string: \n{}\n{}", serializedIngredient, String.join(", ", errors));
 		} else {
-			IngredientBookmark<?> bookmark = IngredientBookmark.create(result.get(), ingredientManager);
+			IngredientBookmark<?> bookmark = bookmarkFactory.create(result.get());
 			bookmarkList.add(bookmark);
 		}
 	}
@@ -174,13 +175,14 @@ public class LegacyBookmarkConfig {
 		Collection<IIngredientType<?>> otherIngredientTypes,
 		IIngredientManager ingredientManager,
 		String uid,
-		List<IBookmark> bookmarkList
+		List<IBookmark> bookmarkList,
+		BookmarkFactory bookmarkFactory
 	) {
 		Optional<ITypedIngredient<?>> typedIngredient = getLegacyNormalizedIngredientByUid(ingredientManager, otherIngredientTypes, uid);
 		if (typedIngredient.isEmpty()) {
 			LOGGER.error("Failed to load unknown bookmarked ingredient with uid:\n{}", uid);
 		} else {
-			IngredientBookmark<?> bookmark = IngredientBookmark.create(typedIngredient.get(), ingredientManager);
+			IngredientBookmark<?> bookmark = bookmarkFactory.create(typedIngredient.get());
 			bookmarkList.add(bookmark);
 		}
 	}

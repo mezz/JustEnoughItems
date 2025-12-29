@@ -3,21 +3,17 @@ package mezz.jei.gui.config;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
-import com.mojang.serialization.MapCodec;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.codecs.EnumCodec;
 import mezz.jei.common.config.file.JsonArrayFileHelper;
 import mezz.jei.common.util.DeduplicatingRunner;
 import mezz.jei.common.util.ServerConfigPathUtil;
-import mezz.jei.gui.bookmarks.BookmarkType;
 import mezz.jei.gui.bookmarks.IBookmark;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.BufferedReader;
@@ -35,22 +31,8 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 	private static final Duration SAVE_DELAY_TIME = Duration.ofSeconds(5);
 	private static final int VERSION = 1;
 
-	private static final Codec<BookmarkType> TYPE_CODEC = EnumCodec.create(BookmarkType.class);
-	private static @Nullable MapCodec<IBookmark> BOOKMARK_CODEC;
-
 	private final Path jeiConfigurationDir;
 	private final DeduplicatingRunner delayedSave = new DeduplicatingRunner(SAVE_DELAY_TIME);
-
-	private static MapCodec<IBookmark> getBookmarkCodec(ICodecHelper codecHelper, IIngredientManager ingredientManager, IRecipeManager recipeManager) {
-		if (BOOKMARK_CODEC == null) {
-			BOOKMARK_CODEC = TYPE_CODEC.dispatchMap(
-				"bookmarkType",
-				IBookmark::getType,
-				type -> type.getCodec(codecHelper, ingredientManager, recipeManager)
-			);
-		}
-		return BOOKMARK_CODEC;
-	}
 
 	private static Optional<Path> getPath(Path jeiConfigurationDir) {
 		return ServerConfigPathUtil.getWorldPath(jeiConfigurationDir)
@@ -80,11 +62,11 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 		IIngredientManager ingredientManager,
 		RegistryAccess registryAccess,
 		ICodecHelper codecHelper,
-		List<IBookmark> bookmarks
+		List<IBookmark> bookmarks,
+		Codec<IBookmark> bookmarkCodec
 	) {
 		getPath(jeiConfigurationDir)
 			.ifPresent(path -> {
-				Codec<IBookmark> bookmarkCodec = getBookmarkCodec(codecHelper, ingredientManager, recipeManager).codec();
 				delayedSave.run(() -> {
 					save(path, bookmarkCodec, registryAccess, bookmarks);
 				});
@@ -119,10 +101,11 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 		IRecipeManager recipeManager,
 		IIngredientManager ingredientManager,
 		RegistryAccess registryAccess,
-		ICodecHelper codecHelper
+		ICodecHelper codecHelper,
+		Codec<IBookmark> bookmarkCodec
 	) {
 		RegistryOps<JsonElement> registryOps = getRegistryOps(registryAccess);
-		return loadJsonBookmarks(ingredientManager, recipeManager, registryOps, codecHelper);
+		return loadJsonBookmarks(ingredientManager, recipeManager, registryOps, codecHelper, bookmarkCodec);
 	}
 
 	@Unmodifiable
@@ -130,7 +113,8 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 		IIngredientManager ingredientManager,
 		IRecipeManager recipeManager,
 		RegistryOps<JsonElement> registryOps,
-		ICodecHelper codecHelper
+		ICodecHelper codecHelper,
+		Codec<IBookmark> bookmarkCodec
 	) {
 		return getPath(jeiConfigurationDir)
 			.<List<IBookmark>>map(path -> {
@@ -139,7 +123,6 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 				}
 
 				List<IBookmark> bookmarks;
-				Codec<IBookmark> bookmarkCodec = getBookmarkCodec(codecHelper, ingredientManager, recipeManager).codec();
 
 				try (BufferedReader reader = Files.newBufferedReader(path)) {
 					bookmarks = JsonArrayFileHelper.read(

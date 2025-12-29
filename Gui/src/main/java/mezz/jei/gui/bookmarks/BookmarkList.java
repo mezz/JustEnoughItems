@@ -1,5 +1,6 @@
 package mezz.jei.gui.bookmarks;
 
+import com.mojang.serialization.Codec;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -35,6 +36,8 @@ public class BookmarkList implements IIngredientGridSource {
 	private final IGuiHelper guiHelper;
 	private final ICodecHelper codecHelper;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
+	private final BookmarkFactory bookmarkFactory;
+	private final Codec<IBookmark> bookmarkCodec;
 
 	public BookmarkList(
 		IRecipeManager recipeManager,
@@ -44,7 +47,9 @@ public class BookmarkList implements IIngredientGridSource {
 		IBookmarkConfig bookmarkConfig,
 		IClientConfig clientConfig,
 		IGuiHelper guiHelper,
-		ICodecHelper codecHelper
+		ICodecHelper codecHelper,
+		BookmarkFactory bookmarkFactory,
+		Codec<IBookmark> bookmarkCodec
 	) {
 		this.recipeManager = recipeManager;
 		this.focusFactory = focusFactory;
@@ -54,6 +59,8 @@ public class BookmarkList implements IIngredientGridSource {
 		this.clientConfig = clientConfig;
 		this.guiHelper = guiHelper;
 		this.codecHelper = codecHelper;
+		this.bookmarkFactory = bookmarkFactory;
+		this.bookmarkCodec = bookmarkCodec;
 	}
 
 	public boolean add(IBookmark value) {
@@ -61,7 +68,7 @@ public class BookmarkList implements IIngredientGridSource {
 			return false;
 		}
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, codecHelper, bookmarksList);
+		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, codecHelper, bookmarksList, bookmarkCodec);
 		return true;
 	}
 
@@ -85,7 +92,7 @@ public class BookmarkList implements IIngredientGridSource {
 		bookmarksList.add(newIndex, newBookmark);
 
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, codecHelper, bookmarksList);
+		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, codecHelper, bookmarksList, bookmarkCodec);
 	}
 
 	public boolean contains(IBookmark value) {
@@ -100,7 +107,7 @@ public class BookmarkList implements IIngredientGridSource {
 		}
 
 		ITypedIngredient<T> ingredient = element.getTypedIngredient();
-		IBookmark bookmark = IngredientBookmark.create(ingredient, ingredientManager);
+		IBookmark bookmark = bookmarkFactory.create(ingredient);
 		return add(bookmark);
 	}
 
@@ -118,7 +125,7 @@ public class BookmarkList implements IIngredientGridSource {
 		bookmarksList.remove(ingredient);
 
 		notifyListenersOfChange();
-		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, codecHelper, bookmarksList);
+		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, codecHelper, bookmarksList, bookmarkCodec);
 		return true;
 	}
 
