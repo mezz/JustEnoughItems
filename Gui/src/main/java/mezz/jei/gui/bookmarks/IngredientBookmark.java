@@ -1,10 +1,6 @@
 package mezz.jei.gui.bookmarks;
 
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientBookmarkElement;
 
@@ -16,15 +12,7 @@ public class IngredientBookmark<T> implements IBookmark {
 	private final ITypedIngredient<T> typedIngredient;
 	private boolean visible = true;
 
-	public static <T> IngredientBookmark<T> create(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
-		IIngredientType<T> type = typedIngredient.getType();
-		typedIngredient = ingredientManager.normalizeTypedIngredient(typedIngredient);
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(type);
-		Object uniqueId = ingredientHelper.getUid(typedIngredient, UidContext.Ingredient);
-		return new IngredientBookmark<>(typedIngredient, uniqueId);
-	}
-
-	private IngredientBookmark(ITypedIngredient<T> typedIngredient, Object uid) {
+	IngredientBookmark(ITypedIngredient<T> typedIngredient, Object uid) {
 		this.typedIngredient = typedIngredient;
 		this.uid = uid;
 		this.element = new IngredientBookmarkElement<>(this);
