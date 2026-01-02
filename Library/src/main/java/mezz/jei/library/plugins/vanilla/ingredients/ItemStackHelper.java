@@ -26,6 +26,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.block.Block;
 import org.jspecify.annotations.Nullable;
 
@@ -238,5 +240,10 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	public Optional<TagKey<?>> getTagKeyEquivalent(Collection<ItemStack> ingredients) {
 		Registry<Item> itemRegistry = RegistryUtil.getRegistry(Registries.ITEM);
 		return TagUtil.getTagEquivalent(ingredients, ItemStack::getItem, itemRegistry::getTags);
+	}
+
+	@Override
+	public Optional<DisplayContentsFactory<ItemStack>> getDisplayContentsFactory() {
+		return Optional.of(SlotDisplay.ItemStackContentsFactory.INSTANCE);
 	}
 }

@@ -11,7 +11,6 @@ import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import org.jspecify.annotations.Nullable;
@@ -20,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public final class TypedIngredient<T> implements ITypedIngredient<T> {
 	private static <T> void checkParameters(IIngredientType<T> ingredientType, T ingredient) {
@@ -124,23 +124,27 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		return results;
 	}
 
-	public static List<@Nullable ITypedIngredient<ItemStack>> createAndFilterInvalidList(IIngredientManager ingredientManager, Ingredient ingredient, boolean normalize) {
-		SlotDisplay display = ingredient.display();
-		return createAndFilterInvalidList(ingredientManager, display, normalize);
+	public static Stream<@Nullable ITypedIngredient<?>> createAndFilterInvalidList(IIngredientManager ingredientManager, SlotDisplay slotDisplay, boolean normalize) {
+		Minecraft minecraft = Minecraft.getInstance();
+		ContextMap contextMap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
+		return ingredientManager.getRegisteredIngredientTypes()
+			.stream()
+			.flatMap(ingredientType -> createAndFilterInvalidList(ingredientManager, ingredientType, contextMap, slotDisplay, normalize));
 	}
 
-	public static List<@Nullable ITypedIngredient<ItemStack>> createAndFilterInvalidList(IIngredientManager ingredientManager, SlotDisplay slotDisplay, boolean normalize) {
+	public static <T> Stream<@Nullable ITypedIngredient<T>> createAndFilterInvalidList(IIngredientManager ingredientManager, IIngredientType<T> ingredientType, SlotDisplay slotDisplay, boolean normalize) {
 		Minecraft minecraft = Minecraft.getInstance();
-		ContextMap contextmap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
-		List<ItemStack> itemStacks = slotDisplay.resolveForStacks(contextmap);
-		IIngredientHelper<ItemStack> ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
+		ContextMap contextMap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
+		return createAndFilterInvalidList(ingredientManager, ingredientType, contextMap, slotDisplay, normalize);
+	}
 
-		List<@Nullable ITypedIngredient<ItemStack>> results = new ArrayList<>(itemStacks.size());
-		for (ItemStack itemStack : itemStacks) {
-			ITypedIngredient<ItemStack> result = createAndFilterInvalid(ingredientHelper, VanillaTypes.ITEM_STACK, itemStack, normalize);
-			results.add(result);
-		}
-		return results;
+	private static <T> Stream<@Nullable ITypedIngredient<T>> createAndFilterInvalidList(IIngredientManager ingredientManager, IIngredientType<T> ingredientType, ContextMap contextMap, SlotDisplay slotDisplay, boolean normalize) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+
+		return ingredientHelper.getDisplayContentsFactory()
+			.stream()
+			.flatMap(displayContentsFactory -> slotDisplay.resolve(contextMap, displayContentsFactory))
+			.map(display -> createAndFilterInvalid(ingredientHelper, ingredientType, display, normalize));
 	}
 
 	@Nullable

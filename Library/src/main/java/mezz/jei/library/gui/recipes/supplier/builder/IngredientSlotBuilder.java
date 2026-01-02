@@ -40,6 +40,12 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 	}
 
 	@Override
+	public <I> IRecipeSlotBuilder add(IIngredientType<I> ingredientType, SlotDisplay slotDisplay) {
+		this.ingredients.add(ingredientType, slotDisplay);
+		return this;
+	}
+
+	@Override
 	public IRecipeSlotBuilder add(ItemStack itemStack) {
 		this.ingredients.add(itemStack);
 		return this;
@@ -72,6 +78,12 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 	@Override
 	public IRecipeSlotBuilder add(Ingredient ingredient) {
 		this.ingredients.add(ingredient);
+		return this;
+	}
+
+	@Override
+	public <I> IRecipeSlotBuilder add(IIngredientType<I> ingredientType, Ingredient ingredient) {
+		this.ingredients.add(ingredientType, ingredient);
 		return this;
 	}
 

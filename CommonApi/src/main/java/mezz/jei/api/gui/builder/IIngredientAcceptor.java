@@ -27,11 +27,20 @@ import java.util.Optional;
 @ApiStatus.NonExtendable
 public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	/**
-	 * Add a slot display.
+	 * Add a slot display that contains {@link ItemStack}s.
 	 *
 	 * @since 20.0.0
 	 */
-	THIS add(SlotDisplay slotDisplay);
+	default THIS add(SlotDisplay slotDisplay) {
+		return add(VanillaTypes.ITEM_STACK, slotDisplay);
+	}
+
+	/**
+	 * Add a slot display that contains the specified type of ingredients.
+	 *
+	 * @since 27.5.0
+	 */
+	<I> THIS add(IIngredientType<I> ingredientType, SlotDisplay slotDisplay);
 
 	/**
 	 * Add one {@link ItemStack}.
@@ -85,11 +94,18 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	THIS add(Fluid fluid, long amount, DataComponentPatch component);
 
 	/**
-	 * Convenience function to add an ordered list of {@link ItemStack} from an {@link Ingredient}.
+	 * Convenience function to add an ordered list of ingredients from an {@link Ingredient}.
 	 *
 	 * @since 20.0.0
 	 */
 	THIS add(Ingredient ingredient);
+
+	/**
+	 * Add an Ingredient that contains the specified type of ingredients.
+	 *
+	 * @since 27.5.0
+	 */
+	<I> THIS add(IIngredientType<I> ingredientType, Ingredient ingredient);
 
 	/**
 	 * Add one typed ingredient.
@@ -163,7 +179,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	}
 
 	/**
-	 * Convenience function to add an ordered list of {@link ItemStack} from an {@link Ingredient}.
+	 * Convenience function to add an ordered list of ingredients from an {@link Ingredient}.
 	 *
 	 * @since 9.3.0
 	 * @deprecated use {@link #add(Ingredient)}

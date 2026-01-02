@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import org.jetbrains.annotations.Unmodifiable;
 import org.jspecify.annotations.Nullable;
 
@@ -42,4 +43,6 @@ public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T>
 	Optional<T> getContainedFluid(ITypedIngredient<?> ingredient);
 
 	Codec<T> getCodec();
+
+	Optional<DisplayContentsFactory<T>> getDisplayContentsFactoryForStacks();
 }

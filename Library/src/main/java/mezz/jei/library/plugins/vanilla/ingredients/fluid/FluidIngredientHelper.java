@@ -19,6 +19,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.minecraft.world.level.material.Fluid;
 import org.jspecify.annotations.Nullable;
 
@@ -174,5 +175,10 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 		Fluid fluid = fluidType.getBase(ingredient);
 		Registry<Fluid> registry = RegistryUtil.getRegistry(Registries.FLUID);
 		return registry.getKey(fluid) != null;
+	}
+
+	@Override
+	public Optional<DisplayContentsFactory<T>> getDisplayContentsFactory() {
+		return platformFluidHelper.getDisplayContentsFactoryForStacks();
 	}
 }

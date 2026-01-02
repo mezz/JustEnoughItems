@@ -5,7 +5,10 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
@@ -240,6 +243,27 @@ public interface IIngredientHelper<V> {
 	 * @since 19.5.4
 	 */
 	default Optional<TagKey<?>> getTagKeyEquivalent(Collection<V> ingredients) {
+		return Optional.empty();
+	}
+
+	/**
+	 * Optionally provides a {@link DisplayContentsFactory} that JEI can use when resolving Minecraft
+	 * {@link SlotDisplay} instances into displayable contents.
+	 * <p>
+	 * Minecraft resolves a {@code SlotDisplay} by calling
+	 * {@link SlotDisplay#resolve(ContextMap, DisplayContentsFactory)}.
+	 * If this ingredient type can be represented as stack-like contents, it may provide a
+	 * {@link DisplayContentsFactory.ForStacks} implementation here.
+	 * <p>
+	 * JEI will use this factory when it needs to expand a {@code SlotDisplay} into concrete stacks,
+	 * via {@link SlotDisplay#resolve(ContextMap, DisplayContentsFactory)}.
+	 *
+	 * @return an {@link Optional} containing a {@link DisplayContentsFactory.ForStacks} for this ingredient
+	 * type, or {@link Optional#empty()} if not supported
+	 *
+	 * @since 27.5.0
+	 */
+	default Optional<DisplayContentsFactory<V>> getDisplayContentsFactory() {
 		return Optional.empty();
 	}
 }

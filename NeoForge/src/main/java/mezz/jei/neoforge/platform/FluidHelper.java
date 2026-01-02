@@ -17,12 +17,14 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.crafting.display.FluidStackContentsFactory;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -141,5 +143,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	@Override
 	public Codec<FluidStack> getCodec() {
 		return FluidStack.fixedAmountCodec(FluidType.BUCKET_VOLUME);
+	}
+
+	@Override
+	public Optional<DisplayContentsFactory<FluidStack>> getDisplayContentsFactoryForStacks() {
+		return Optional.of(FluidStackContentsFactory.INSTANCE);
 	}
 }

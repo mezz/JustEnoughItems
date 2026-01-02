@@ -18,12 +18,11 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.material.Fluid;
-import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,8 +57,19 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	public DisplayIngredientAcceptor add(SlotDisplay slotDisplay) {
 		Preconditions.checkNotNull(slotDisplay, "slotDisplay");
 
-		List<@Nullable ITypedIngredient<ItemStack>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, slotDisplay, false);
-		this.ingredients.addAll(typedIngredients);
+		TypedIngredient.createAndFilterInvalidList(ingredientManager, slotDisplay, false)
+			.forEach(this.ingredients::add);
+
+		return this;
+	}
+
+	@Override
+	public <I> DisplayIngredientAcceptor add(IIngredientType<I> ingredientType, SlotDisplay slotDisplay) {
+		Preconditions.checkNotNull(ingredientType, "ingredientType");
+		Preconditions.checkNotNull(slotDisplay, "slotDisplay");
+
+		TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredientType, slotDisplay, false)
+			.forEach(this.ingredients::add);
 
 		return this;
 	}
@@ -78,11 +88,13 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	@Override
 	public DisplayIngredientAcceptor add(Ingredient ingredient) {
 		Preconditions.checkNotNull(ingredient, "ingredient");
+		return add(ingredient.display());
+	}
 
-		List<@Nullable ITypedIngredient<ItemStack>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredient, false);
-		this.ingredients.addAll(typedIngredients);
-
-		return this;
+	@Override
+	public <I> DisplayIngredientAcceptor add(IIngredientType<I> ingredientType, Ingredient ingredient) {
+		Preconditions.checkNotNull(ingredient, "ingredient");
+		return add(ingredientType, ingredient.display());
 	}
 
 	@Override

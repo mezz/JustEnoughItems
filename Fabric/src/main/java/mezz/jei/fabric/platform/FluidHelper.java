@@ -25,6 +25,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
@@ -169,5 +170,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 			NORMALIZED_CODEC,
 			CODEC // TODO: remove this fallback codec in the next major version of JEI
 		);
+	}
+
+	@Override
+	public Optional<DisplayContentsFactory<IJeiFluidIngredient>> getDisplayContentsFactoryForStacks() {
+		return Optional.empty();
 	}
 }
