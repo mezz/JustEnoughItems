@@ -11,12 +11,11 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.material.Fluid;
-import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,9 +54,8 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
-		List<@Nullable  ITypedIngredient<T>> typedIngredients = TypedIngredient.createAndFilterInvalidList(this.ingredientManager, ingredientType, ingredients, false);
-
-		for (@Nullable  ITypedIngredient<T> typedIngredientOptional : typedIngredients) {
+		List<@Nullable ITypedIngredient<T>> typedIngredients = TypedIngredient.createAndFilterInvalidList(this.ingredientManager, ingredientType, ingredients, false);
+		for (@Nullable ITypedIngredient<T> typedIngredientOptional : typedIngredients) {
 			if (typedIngredientOptional != null) {
 				this.ingredients.add(typedIngredientOptional);
 			}
@@ -70,12 +68,27 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 	public SimpleIngredientAcceptor add(SlotDisplay slotDisplay) {
 		ErrorUtil.checkNotNull(slotDisplay, "slotDisplay");
 
-		List<@Nullable ITypedIngredient<ItemStack>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, slotDisplay, false);
-		for (@Nullable ITypedIngredient<ItemStack> typedIngredient : typedIngredients) {
-			if (typedIngredient != null) {
-				this.add(typedIngredient);
-			}
-		}
+		TypedIngredient.createAndFilterInvalidList(ingredientManager, slotDisplay, false)
+			.forEach(typedIngredient -> {
+				if (typedIngredient != null) {
+					this.add(typedIngredient);
+				}
+			});
+
+		return this;
+	}
+
+	@Override
+	public <I> SimpleIngredientAcceptor add(IIngredientType<I> ingredientType, SlotDisplay slotDisplay) {
+		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
+		ErrorUtil.checkNotNull(slotDisplay, "slotDisplay");
+
+		TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredientType, slotDisplay, false)
+			.forEach(typedIngredient -> {
+				if (typedIngredient != null) {
+					this.add(typedIngredient);
+				}
+			});
 
 		return this;
 	}
@@ -125,16 +138,13 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 	@Override
 	public SimpleIngredientAcceptor add(Ingredient ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		return this.add(ingredient.display());
+	}
 
-		List<@Nullable ITypedIngredient<ItemStack>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredient, false);
-
-		for (@Nullable ITypedIngredient<ItemStack> typedIngredientOptional : typedIngredients) {
-			if (typedIngredientOptional != null) {
-				this.ingredients.add(typedIngredientOptional);
-			}
-		}
-
-		return this;
+	@Override
+	public <I> SimpleIngredientAcceptor add(IIngredientType<I> ingredientType, Ingredient ingredient) {
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		return this.add(ingredientType, ingredient.display());
 	}
 
 	private <T> SimpleIngredientAcceptor addFluidInternal(IPlatformFluidHelperInternal<T> fluidHelper, Holder<Fluid> fluidHolder, long amount, DataComponentPatch component) {

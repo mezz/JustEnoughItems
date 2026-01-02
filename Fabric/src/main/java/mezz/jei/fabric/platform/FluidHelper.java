@@ -21,6 +21,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.minecraft.world.level.material.Fluid;
 
 import java.util.Iterator;
@@ -143,5 +144,10 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	@Override
 	public Codec<IJeiFluidIngredient> getCodec() {
 		return NORMALIZED_CODEC;
+	}
+
+	@Override
+	public Optional<DisplayContentsFactory<IJeiFluidIngredient>> getDisplayContentsFactoryForStacks() {
+		return Optional.empty();
 	}
 }
