@@ -1,8 +1,6 @@
 package mezz.jei.fabric.platform;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mezz.jei.api.fabric.constants.FabricTypes;
 import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -30,25 +28,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngredient> {
-	private static final Codec<Long> POSITIVE_LONG = Codec.LONG.validate((integer) -> {
-		if (integer.compareTo((long) 1) >= 0 && integer.compareTo(Long.MAX_VALUE) <= 0) {
-			return DataResult.success(integer);
-		}
-		return DataResult.error(() -> "Value must be positive: " + integer);
-	});
-
-	private static final Codec<IJeiFluidIngredient> CODEC = Codec.lazyInitialized(() -> {
-		return RecordCodecBuilder.create((builder) -> {
-			return builder.group(
-					FluidVariant.CODEC.fieldOf("variant")
-						.forGetter(IJeiFluidIngredient::getFluidVariant),
-					POSITIVE_LONG.fieldOf("amount")
-						.forGetter(IJeiFluidIngredient::getAmount)
-				)
-				.apply(builder, JeiFluidIngredient::new);
-		});
-	});
-
 	private static final Codec<IJeiFluidIngredient> NORMALIZED_CODEC = Codec.lazyInitialized(() -> {
 		return FluidVariant.CODEC.xmap(
 			fluidVariant -> {
@@ -163,9 +142,6 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 
 	@Override
 	public Codec<IJeiFluidIngredient> getCodec() {
-		return Codec.withAlternative(
-			NORMALIZED_CODEC,
-			CODEC // TODO: remove this fallback codec in the next major version of JEI
-		);
+		return NORMALIZED_CODEC;
 	}
 }
