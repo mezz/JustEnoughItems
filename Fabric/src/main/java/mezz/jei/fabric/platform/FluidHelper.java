@@ -89,7 +89,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	@Override
 	public DataComponentPatch getComponentsPatch(IJeiFluidIngredient ingredient) {
 		FluidVariant fluid = ingredient.getFluidVariant();
-		return fluid.getComponents();
+		return fluid.getComponentsPatch();
 	}
 
 	@Override

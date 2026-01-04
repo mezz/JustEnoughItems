@@ -9,7 +9,7 @@ import mezz.jei.fabric.network.ConnectionToServer;
 import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -29,7 +29,7 @@ public class ClientLifecycleHandler {
 		IConnectionToServer serverConnection = new ConnectionToServer();
 		Internal.setServerConnection(serverConnection);
 
-		InternalKeyMappings keyMappings = new InternalKeyMappings(KeyBindingHelper::registerKeyBinding);
+		InternalKeyMappings keyMappings = new InternalKeyMappings(KeyMappingHelper::registerKeyMapping);
 		Internal.setKeyMappings(keyMappings);
 
 		ClientNetworkHandler.registerClientPacketHandler(serverConnection);

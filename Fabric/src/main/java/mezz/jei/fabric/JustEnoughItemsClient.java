@@ -39,10 +39,10 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 				clientLifecycleHandler.registerEvents();
 
 				ResourceLoader.get(PackType.SERVER_DATA)
-					.registerReloader(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "lifecycle"), clientLifecycleHandler.getReloadListener());
+					.registerReloadListener(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "lifecycle"), clientLifecycleHandler.getReloadListener());
 
 				ResourceLoader.get(PackType.CLIENT_RESOURCES)
-					.registerReloader(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "resources_reload"), createReloadListener());
+					.registerReloadListener(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "resources_reload"), createReloadListener());
 			});
 		});
 	}

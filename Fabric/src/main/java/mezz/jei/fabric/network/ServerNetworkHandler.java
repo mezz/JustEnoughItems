@@ -20,19 +20,19 @@ public final class ServerNetworkHandler {
 	private ServerNetworkHandler() {}
 
 	public static void registerServerPacketHandlers(IConnectionToClient connection, IServerConfig serverConfig) {
-		PayloadTypeRegistry.playS2C().register(PacketDeletePlayerItem.TYPE, PacketDeletePlayerItem.STREAM_CODEC);
-		PayloadTypeRegistry.playS2C().register(PacketGiveItemStack.TYPE, PacketGiveItemStack.STREAM_CODEC);
-		PayloadTypeRegistry.playS2C().register(PacketRecipeTransfer.TYPE, PacketRecipeTransfer.STREAM_CODEC);
-		PayloadTypeRegistry.playS2C().register(PacketSetHotbarItemStack.TYPE, PacketSetHotbarItemStack.STREAM_CODEC);
-		PayloadTypeRegistry.playS2C().register(PacketRequestCheatPermission.TYPE, PacketRequestCheatPermission.STREAM_CODEC);
-		PayloadTypeRegistry.playS2C().register(PacketCheatPermission.TYPE, PacketCheatPermission.STREAM_CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(PacketDeletePlayerItem.TYPE, PacketDeletePlayerItem.STREAM_CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(PacketGiveItemStack.TYPE, PacketGiveItemStack.STREAM_CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(PacketRecipeTransfer.TYPE, PacketRecipeTransfer.STREAM_CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(PacketSetHotbarItemStack.TYPE, PacketSetHotbarItemStack.STREAM_CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(PacketRequestCheatPermission.TYPE, PacketRequestCheatPermission.STREAM_CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(PacketCheatPermission.TYPE, PacketCheatPermission.STREAM_CODEC);
 
-		PayloadTypeRegistry.playC2S().register(PacketDeletePlayerItem.TYPE, PacketDeletePlayerItem.STREAM_CODEC);
-		PayloadTypeRegistry.playC2S().register(PacketGiveItemStack.TYPE, PacketGiveItemStack.STREAM_CODEC);
-		PayloadTypeRegistry.playC2S().register(PacketRecipeTransfer.TYPE, PacketRecipeTransfer.STREAM_CODEC);
-		PayloadTypeRegistry.playC2S().register(PacketSetHotbarItemStack.TYPE, PacketSetHotbarItemStack.STREAM_CODEC);
-		PayloadTypeRegistry.playC2S().register(PacketRequestCheatPermission.TYPE, PacketRequestCheatPermission.STREAM_CODEC);
-		PayloadTypeRegistry.playC2S().register(PacketCheatPermission.TYPE, PacketCheatPermission.STREAM_CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(PacketDeletePlayerItem.TYPE, PacketDeletePlayerItem.STREAM_CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(PacketGiveItemStack.TYPE, PacketGiveItemStack.STREAM_CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(PacketRecipeTransfer.TYPE, PacketRecipeTransfer.STREAM_CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(PacketSetHotbarItemStack.TYPE, PacketSetHotbarItemStack.STREAM_CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(PacketRequestCheatPermission.TYPE, PacketRequestCheatPermission.STREAM_CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(PacketCheatPermission.TYPE, PacketCheatPermission.STREAM_CODEC);
 
 		ServerPlayNetworking.registerGlobalReceiver(PacketDeletePlayerItem.TYPE, wrapServerHandler(connection, serverConfig, PacketDeletePlayerItem::process));
 		ServerPlayNetworking.registerGlobalReceiver(PacketGiveItemStack.TYPE, wrapServerHandler(connection, serverConfig, PacketGiveItemStack::process));

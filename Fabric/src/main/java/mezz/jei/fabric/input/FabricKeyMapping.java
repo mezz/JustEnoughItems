@@ -2,7 +2,7 @@ package mezz.jei.fabric.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -21,7 +21,7 @@ public class FabricKeyMapping extends KeyMapping {
 	) {
 		// Ensure the default key is set correctly (it is final).
 		super(description, type, keyCode, category);
-		this.realKey = KeyBindingHelper.getBoundKeyOf(this);
+		this.realKey = KeyMappingHelper.getBoundKeyOf(this);
 		this.context = context;
 		// Overwrite the parent's key variable so it doesn't block other keybinds.
 		super.setKey(InputConstants.UNKNOWN);
@@ -40,7 +40,7 @@ public class FabricKeyMapping extends KeyMapping {
 	public boolean same(KeyMapping binding) {
 		// Special implementation which is aware of the key conflict context.
 		if (binding instanceof FabricKeyMapping other) {
-			return realKey.equals(KeyBindingHelper.getBoundKeyOf(other)) &&
+			return realKey.equals(KeyMappingHelper.getBoundKeyOf(other)) &&
 				(context.conflicts(other.context) || other.context.conflicts(context));
 		} else {
 			// This ensures symmetry between conflicts, as regular keybinds see this one as
