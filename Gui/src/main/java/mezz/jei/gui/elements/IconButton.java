@@ -116,7 +116,9 @@ public final class IconButton {
 			} else {
 				this.button.setPressed(true);
 			}
-			this.controller.onPress(input);
+			if (this.controller.onPress(input) && !input.isSimulate()) {
+				this.controller.updateState(this.button);
+			}
 			return Optional.of(this);
 		}
 
