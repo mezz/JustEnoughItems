@@ -68,7 +68,7 @@ public class PacketDeletePlayerItem extends PacketJei {
 			ItemStack playerItem = player.containerMenu.getCarried();
 			if (playerItem.getItem() == item) {
 				player.containerMenu.setCarried(ItemStack.EMPTY);
-			} else {
+			} else if (!playerItem.isEmpty()) {
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Player '{} ({})' tried to delete Item '{}' but is currently holding a different ItemStack '{}'.", player.getName(), player.getUUID(), item, playerItem.getDisplayName());
 				}
