@@ -269,19 +269,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		super.init();
 
 		final int xSize = minGuiWidth;
-		int ySize;
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		if (clientConfig.isCenterSearchBarEnabled()) {
-			ySize = this.height - 76;
-		} else {
-			ySize = this.height - 58;
-		}
-		int extraSpace = 0;
-		final int maxHeight = clientConfig.getMaxRecipeGuiHeight();
-		if (ySize > maxHeight) {
-			extraSpace = ySize - maxHeight;
-			ySize = maxHeight;
-		}
+		RecipeGuiSizing.Size recipeGuiSize = RecipeGuiSizing.calculateInitialSize(
+			this.height,
+			clientConfig.isCenterSearchBarEnabled(),
+			clientConfig.getMaxRecipeGuiHeight()
+		);
+		int ySize = recipeGuiSize.ySize();
+		int extraSpace = recipeGuiSize.extraSpace();
 
 		final int guiLeft = (this.width - xSize) / 2;
 		final int guiTop = RecipeGuiTab.TAB_HEIGHT + 21 + (extraSpace / 2);
