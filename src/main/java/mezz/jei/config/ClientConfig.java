@@ -33,7 +33,6 @@ public final class ClientConfig implements IJEIConfig, IClientConfig {
 	private static final int defaultNumColumns = 9;
 	private static final int largestNumColumns = 100;
 
-	private static final int minRecipeGuiHeight = 175;
 	private static final int defaultRecipeGuiHeight = 350;
 
 	private static final GiveMode defaultGiveMode = GiveMode.MOUSE_PICKUP;

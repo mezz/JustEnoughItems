@@ -147,6 +147,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 
 		final int xSize = 198;
 		int ySize = this.height - 68;
+		if (ySize < IClientConfig.minRecipeGuiHeight) {
+			ySize = IClientConfig.minRecipeGuiHeight;
+		}
 		int extraSpace = 0;
 		final int maxHeight = this.clientConfig.getMaxRecipeGuiHeight();
 		if (ySize > maxHeight) {

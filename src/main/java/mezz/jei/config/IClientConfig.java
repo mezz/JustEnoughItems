@@ -6,6 +6,8 @@ import mezz.jei.util.GiveMode;
 import java.util.List;
 
 public interface IClientConfig {
+	int minRecipeGuiHeight = 175;
+
 	boolean isDebugModeEnabled();
 
 	boolean isCenterSearchBarEnabled();
