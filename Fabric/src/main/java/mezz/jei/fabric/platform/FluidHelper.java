@@ -22,8 +22,11 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
@@ -95,10 +98,9 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	}
 
 	@Override
-	public void getTooltip(List<Component> tooltip, IJeiFluidIngredient ingredient, TooltipFlag tooltipFlag) {
+	public List<Component> getTooltip(IJeiFluidIngredient ingredient, @Nullable Player player, Item.TooltipContext tooltipContext, TooltipFlag tooltipFlag) {
 		FluidVariant fluidVariant = ingredient.getFluidVariant();
-		List<Component> components = FluidVariantRendering.getTooltip(fluidVariant, tooltipFlag);
-		tooltip.addAll(components);
+		return FluidVariantRendering.getTooltip(fluidVariant, tooltipFlag);
 	}
 
 	@Override

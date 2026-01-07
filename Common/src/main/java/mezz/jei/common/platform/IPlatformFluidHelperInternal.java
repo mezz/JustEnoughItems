@@ -7,7 +7,11 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
+import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +30,8 @@ public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T>
 
 	DataComponentPatch getComponentsPatch(T ingredient);
 
-	void getTooltip(List<Component> tooltip, T ingredient, TooltipFlag tooltipFlag);
+	@Unmodifiable
+	List<Component> getTooltip(T ingredient, @Nullable Player player, Item.TooltipContext tooltipContext, TooltipFlag tooltipFlag);
 
 	T copy(T ingredient);
 
