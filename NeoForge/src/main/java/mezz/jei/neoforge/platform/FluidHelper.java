@@ -6,20 +6,16 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
-import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.render.FluidTankRenderer;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.minecraft.world.level.material.Fluid;
@@ -30,6 +26,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.display.FluidStackContentsFactory;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -71,24 +68,13 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	}
 
 	@Override
-	public void getTooltip(List<Component> tooltip, FluidStack ingredient, TooltipFlag tooltipFlag) {
+	public List<Component> getTooltip(FluidStack ingredient, @Nullable Player player, Item.TooltipContext tooltipContext, TooltipFlag tooltipFlag) {
 		Fluid fluid = ingredient.getFluid();
 		if (fluid.isSame(Fluids.EMPTY)) {
-			return;
+			return List.of();
 		}
 
-		Component displayName = getDisplayName(ingredient);
-		tooltip.add(displayName);
-
-		if (tooltipFlag.isAdvanced()) {
-			Registry<Fluid> fluidRegistry = RegistryUtil.getRegistry(Registries.FLUID);
-			Identifier resourceLocation = fluidRegistry.getKey(fluid);
-			if (resourceLocation != null &&  resourceLocation != BuiltInRegistries.FLUID.getDefaultKey()) {
-				MutableComponent advancedId = Component.literal(resourceLocation.toString())
-					.withStyle(ChatFormatting.DARK_GRAY);
-				tooltip.add(advancedId);
-			}
-		}
+		return ingredient.getTooltipLines(tooltipContext, player, tooltipFlag);
 	}
 
 	@Override

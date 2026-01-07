@@ -7,6 +7,7 @@ import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.SpriteContents;
@@ -14,6 +15,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -109,15 +112,16 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 
 	@Override
 	public List<Component> getTooltip(T fluidStack, TooltipFlag tooltipFlag) {
-		List<Component> tooltip = new ArrayList<>();
-
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
 		Fluid fluidType = type.getBase(fluidStack);
 		if (fluidType.isSame(Fluids.EMPTY)) {
-			return tooltip;
+			return new ArrayList<>();
 		}
 
-		fluidHelper.getTooltip(tooltip, fluidStack, tooltipFlag);
+		Minecraft minecraft = Minecraft.getInstance();
+		Player player = minecraft.player;
+		Item.TooltipContext tooltipContext = Item.TooltipContext.of(minecraft.level);
+		List<Component> tooltip = new ArrayList<>(fluidHelper.getTooltip(fluidStack, player, tooltipContext, tooltipFlag));
 
 		long amount = fluidHelper.getAmount(fluidStack);
 		long milliBuckets = (amount * 1000) / fluidHelper.bucketVolume();
