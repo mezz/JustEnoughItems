@@ -334,10 +334,10 @@
   "jei.message.missing.recipes.from.server": "Відсутні рецепти JEI. Будь ласка, установіть JEI на сервер, щоб синхронізувати рецепти з клієнтом.\nПочинаючи з Minecraft 1.21.2, рецепти зберігаються на сервері, а не на клієнті.",
 
   "_comment": "Назви призначень",
-  "jei.key.combo.shift": "SHIFT + %s",
-  "jei.key.combo.control": "CTRL + %s",
+  "jei.key.combo.shift": "Shift + %s",
+  "jei.key.combo.control": "Ctrl + %s",
   "jei.key.combo.command": "CMD + %s",
-  "jei.key.combo.alt": "ALT + %s",
+  "jei.key.combo.alt": "Alt + %s",
   "jei.key.shift": "Shift",
   "jei.key.mouse.left": "ЛКМ",
   "jei.key.mouse.right": "ПКМ",
@@ -352,5 +352,5 @@
   "jei.alias.panda.spawn.egg": "endangered",
   "jei.alias.villager.spawn.egg": "HMMM",
 
-  "modmenu.descriptionTranslation.jei": "JEI — це мод для перегляду предметів і рецептів майстрування, створений з нуля для стабільности та продуктивности"
+  "modmenu.descriptionTranslation.jei": "JEI — це мод для перегляду предметів і рецептів майстрування, створений з нуля для стабільности та продуктивности."
 }
