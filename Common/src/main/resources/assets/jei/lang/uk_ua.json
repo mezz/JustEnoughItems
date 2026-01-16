@@ -62,7 +62,7 @@
   "key.jei.focusSearch": "Сфокусуватися на полі пошуку",
   "key.jei.previousPage": "Попередня сторінка",
   "key.jei.nextPage": "Наступна сторінка",
-  "key.jei.toggleBookmarkOverlay": "Показати/приховати інгредієнти із закладками",
+  "key.jei.toggleBookmarkOverlay": "Показ./прихов. інгредієнти із закладкою",
 
   "key.category.jei.recipe.gui": "JEI — Рецепти",
   "key.jei.recipeBack": "Попередній рецепт",
@@ -79,7 +79,7 @@
   "key.jei.cheatItemStack": "Узяти 1 стіс",
   "key.jei.cheatItemStack2": "Узяти 1 стіс",
 
-  "key.category.jei.hover.config.button": "JEI (Наведення курсора на кнопку налаштувань)",
+  "key.category.jei.hover.config.button": "JEI — Наведення курсора на кнопку налаштувань",
   "key.jei.toggleCheatModeConfigButton": "Перемкнути режим шахрайства",
 
   "key.category.jei.edit.mode": "JEI — Режим редагування",
@@ -93,8 +93,8 @@
   "key.jei.showRecipe2": "Показати рецепт",
   "key.jei.showUses": "Показати використання",
   "key.jei.showUses2": "Показати використання",
-  "key.jei.transferRecipeBookmark": "Змайстр. рецепт із закладкою один раз",
-  "key.jei.maxTransferRecipeBookmark": "Змайстр. рецепт із закладкою багато разів",
+  "key.jei.transferRecipeBookmark": "Змайстр. із закладкою один раз",
+  "key.jei.maxTransferRecipeBookmark": "Змайстр. із закладкою багато разів",
 
   "key.category.jei.search": "JEI — Фільтр пошуку",
   "key.jei.clearSearchBar": "Очистити фільтр пошуку",
