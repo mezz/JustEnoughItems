@@ -6,7 +6,6 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
-import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
@@ -34,7 +33,7 @@ public class SmithingTrimCategoryExtension extends SmithingCategoryExtension<Smi
 			ItemStack addition = additionSlot.getDisplayedItemStack().orElse(ItemStack.EMPTY);
 
 			SmithingRecipeInput recipeInput = new SmithingRecipeInput(template, base, addition);
-			ItemStack output = RecipeUtil.assembleResultItem(recipeInput, recipe);
+			ItemStack output = recipe.assemble(recipeInput);
 			IIngredientAcceptor<?> iIngredientAcceptor = outputSlot.createDisplayOverrides();
 			iIngredientAcceptor.add(output);
 		} else {
@@ -47,7 +46,7 @@ public class SmithingTrimCategoryExtension extends SmithingCategoryExtension<Smi
 			iIngredientAcceptor1.add(base);
 
 			SmithingRecipeInput recipeInput = new SmithingRecipeInput(template, base, addition);
-			output = RecipeUtil.assembleResultItem(recipeInput, recipe);
+			output = recipe.assemble(recipeInput);
 			IIngredientAcceptor<?> iIngredientAcceptor = outputSlot.createDisplayOverrides();
 			iIngredientAcceptor.add(output);
 		}

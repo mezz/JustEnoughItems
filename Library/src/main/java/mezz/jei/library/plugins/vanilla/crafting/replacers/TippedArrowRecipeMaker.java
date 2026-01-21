@@ -9,6 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
@@ -40,11 +41,11 @@ public final class TippedArrowRecipeMaker {
 				Identifier potionId = potion.key().identifier();
 				Identifier recipeId = Identifier.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + potionId.getNamespace() + "." + potionId.getPath());
 				ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, recipeId);
-				SlotDisplay slotDisplay = new SlotDisplay.ItemStackSlotDisplay(output);
+				SlotDisplay slotDisplay = new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(output));
 				CraftingRecipe recipe = vanillaRecipeFactory.createShapedRecipeBuilder(CraftingBookCategory.MISC, slotDisplay)
 					.group(group)
 					.define('a', arrowIngredient)
-					.define('p', potionIngredient, new SlotDisplay.ItemStackSlotDisplay(input))
+					.define('p', potionIngredient, new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(input)))
 					.pattern("aaa")
 					.pattern("apa")
 					.pattern("aaa")

@@ -3,7 +3,6 @@ package mezz.jei.library.plugins.vanilla.anvil;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.ISmithingCategoryExtension;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
-import mezz.jei.library.util.RecipeUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
@@ -65,7 +64,7 @@ public abstract class SmithingCategoryExtension<R extends SmithingRecipe> implem
 		for (ItemStack template : templateStacks) {
 			for (ItemStack base : baseStacks) {
 				SmithingRecipeInput recipeInput = new SmithingRecipeInput(template, base, addition);
-				ItemStack output = RecipeUtil.assembleResultItem(recipeInput, recipe);
+				ItemStack output = recipe.assemble(recipeInput);
 				ingredientAcceptor.add(output);
 			}
 		}

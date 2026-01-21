@@ -51,12 +51,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
-import net.minecraft.world.item.crafting.TransmuteResult;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Blocks;
@@ -233,7 +233,7 @@ public class JeiDebugPlugin implements IModPlugin {
 					Optional.empty(),
 					Ingredient.of(Items.APPLE),
 					Optional.of(Ingredient.of(Items.BAKED_POTATO)),
-					new TransmuteResult(Items.ACACIA_BOAT)
+					new ItemStackTemplate(Items.ACACIA_BOAT)
 				)
 			);
 			registration.addRecipes(RecipeTypes.SMITHING, List.of(
