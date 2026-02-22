@@ -6,14 +6,14 @@ plugins {
     id("com.dorongold.task-tree") version("4.0.1")
 
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
-    id("net.fabricmc.fabric-loom") version("1.14.10") apply(false)
+    id("net.fabricmc.fabric-loom") version("1.15.3") apply(false)
 
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom-companion/net.fabricmc.fabric-loom-companion.gradle.plugin/maven-metadata.xml
     // applying this to all projects allows loom projects to access the required data in a manner that follows Gradle's best practices.
-    id("net.fabricmc.fabric-loom-companion") version("1.14.10")
+    id("net.fabricmc.fabric-loom-companion") version("1.15.3")
 
     // https://projects.neoforged.net/neoforged/moddevgradle
-    id("net.neoforged.moddev") version("2.0.137") apply(false)
+    id("net.neoforged.moddev") version("2.0.140") apply(false)
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
     id("me.modmuss50.mod-publish-plugin") version("1.1.0") apply(false)

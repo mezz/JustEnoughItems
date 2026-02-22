@@ -20,26 +20,44 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
 
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.StreamSupport;
+import java.util.function.Consumer;
 
-public final class ShieldDecorationRecipeMaker {
-	public static List<RecipeHolder<CraftingRecipe>> createRecipes() {
+public final class ShieldDecorationRecipeMaker implements IRecipeReplacer {
+
+	public ShieldDecorationRecipeMaker() {
+
+	}
+
+	@Override
+	public boolean replace(RecipeHolder<CraftingRecipe> recipe, Consumer<RecipeHolder<CraftingRecipe>> replacements) {
+		if (recipe.value() instanceof ShieldDecorationRecipe) {
+			createRecipes(replacements);
+			return true;
+		}
+		return false;
+	}
+
+	private static void createRecipes(Consumer<RecipeHolder<CraftingRecipe>> recipes) {
 		Iterable<Holder<Item>> banners = RegistryUtil.getRegistry(Registries.ITEM).getTagOrEmpty(ItemTags.BANNERS);
 
 		Set<DyeColor> colors = EnumSet.noneOf(DyeColor.class);
 
-		return StreamSupport.stream(banners.spliterator(), false)
-			.filter(Holder::isBound)
-			.map(Holder::value)
-			.filter(BannerItem.class::isInstance)
-			.map(BannerItem.class::cast)
-			.filter(item -> colors.add(item.getColor()))
-			.map(ShieldDecorationRecipeMaker::createRecipe)
-			.toList();
+		for (Holder<Item> banner : banners) {
+			if (banner.isBound()) {
+				Item value = banner.value();
+				if (value instanceof BannerItem item) {
+					if (colors.add(item.getColor())) {
+						RecipeHolder<CraftingRecipe> recipe = createRecipe(item);
+						recipes.accept(recipe);
+					}
+				}
+			}
+		}
 	}
 
 	private static RecipeHolder<CraftingRecipe> createRecipe(BannerItem banner) {
@@ -48,8 +66,11 @@ public final class ShieldDecorationRecipeMaker {
 		Identifier id = Identifier.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "jei.shield.decoration." + banner.getDescriptionId());
 		ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, id);
 		CraftingRecipe recipe = new ShapelessRecipe(
-			"jei.shield.decoration",
-			CraftingBookCategory.MISC,
+			new Recipe.CommonInfo(false),
+			new CraftingRecipe.CraftingBookInfo(
+				CraftingBookCategory.MISC,
+				"jei.shield.decoration"
+			),
 			output,
 			List.of(
 				Ingredient.of(Items.SHIELD),
@@ -65,9 +86,5 @@ public final class ShieldDecorationRecipeMaker {
 			.set(DataComponents.BASE_COLOR, color)
 			.build();
 		return new ItemStackTemplate(Items.SHIELD, components);
-	}
-
-	private ShieldDecorationRecipeMaker() {
-
 	}
 }

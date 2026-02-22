@@ -71,7 +71,7 @@ public class JustEnoughItemsClient {
 		DeferredRegister<RecipeSerializer<?>> deferredRegister = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, ModIds.JEI_ID);
 		deferredRegister.register(modEventBus);
 
-		Supplier<RecipeSerializer<? extends CraftingRecipe>> jeiShaped = deferredRegister.register("jei_shaped", JeiShapedRecipe.Serializer::new);
+		Supplier<RecipeSerializer<? extends CraftingRecipe>> jeiShaped = deferredRegister.register("jei_shaped", () -> JeiShapedRecipe.SERIALIZER);
 		RecipeSerializers.register(jeiShaped);
 	}
 

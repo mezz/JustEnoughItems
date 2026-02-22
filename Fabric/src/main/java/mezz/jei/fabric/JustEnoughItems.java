@@ -12,8 +12,8 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,8 +28,7 @@ public class JustEnoughItems implements ModInitializer {
 		ServerNetworkHandler.registerServerPacketHandlers(connection, serverConfig);
 
 		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "jei_shaped");
-		var recipeSerializer = new JeiShapedRecipe.Serializer();
-		var registered = Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, id, recipeSerializer);
+		var registered = Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, id, JeiShapedRecipe.SERIALIZER);
 		RecipeSerializers.register(() -> registered);
 
 		// Run through vanilla recipe serializers and sync them

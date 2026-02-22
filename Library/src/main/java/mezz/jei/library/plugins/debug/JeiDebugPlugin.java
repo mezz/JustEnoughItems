@@ -54,6 +54,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
@@ -230,6 +231,7 @@ public class JeiDebugPlugin implements IModPlugin {
 			RecipeHolder<SmithingRecipe> testRecipeWithoutTemplate = new RecipeHolder<>(
 				ResourceKey.create(Registries.RECIPE, testRecipeWithoutTemplateId),
 				new SmithingTransformRecipe(
+					new Recipe.CommonInfo(false),
 					Optional.empty(),
 					Ingredient.of(Items.APPLE),
 					Optional.of(Ingredient.of(Items.BAKED_POTATO)),

@@ -17,4 +17,9 @@ public final class ConnectionToServer implements IConnectionToServer {
 			ClientPlayNetworking.send(packet);
 		}
 	}
+
+	@Override
+	public void onRuntimeStopped() {
+
+	}
 }

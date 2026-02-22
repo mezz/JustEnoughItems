@@ -156,6 +156,9 @@ public final class Internal {
 		if (toggleState != null) {
 			toggleState.clearListeners();
 		}
+		if (serverConnection != null) {
+			serverConnection.onRuntimeStopped();
+		}
 		if (jeiRuntime != null) {
 			jeiRuntime = null;
 		}

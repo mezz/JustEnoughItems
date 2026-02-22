@@ -99,67 +99,52 @@ public class JeiShapedRecipe implements CraftingRecipe {
 		return this.pattern.height();
 	}
 
-	public static class Serializer implements RecipeSerializer<JeiShapedRecipe> {
-		public static final MapCodec<JeiShapedRecipe> CODEC = RecordCodecBuilder.mapCodec((instance) -> {
-			return instance.group(Codec.STRING.optionalFieldOf("group", "").forGetter((shapedRecipe) -> {
-				return shapedRecipe.group;
-			}), CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter((shapedRecipe) -> {
-				return shapedRecipe.category;
-			}), ShapedRecipePattern.MAP_CODEC.forGetter((shapedRecipe) -> {
-				return shapedRecipe.pattern;
-			}), Codec.list(SlotDisplay.CODEC).fieldOf("display").forGetter((shapedRecipe) -> {
-				return shapedRecipe.displays;
-			}), SlotDisplay.CODEC.fieldOf("result").forGetter((shapedRecipe) -> {
-				return shapedRecipe.results;
-			})).apply(instance, JeiShapedRecipe::new);
-		});
-		public static final StreamCodec<RegistryFriendlyByteBuf, JeiShapedRecipe> STREAM_CODEC = StreamCodec.of(Serializer::toNetwork, Serializer::fromNetwork);
+	public static final MapCodec<JeiShapedRecipe> CODEC = RecordCodecBuilder.mapCodec((instance) -> {
+		return instance.group(Codec.STRING.optionalFieldOf("group", "").forGetter((shapedRecipe) -> {
+			return shapedRecipe.group;
+		}), CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter((shapedRecipe) -> {
+			return shapedRecipe.category;
+		}), ShapedRecipePattern.MAP_CODEC.forGetter((shapedRecipe) -> {
+			return shapedRecipe.pattern;
+		}), Codec.list(SlotDisplay.CODEC).fieldOf("display").forGetter((shapedRecipe) -> {
+			return shapedRecipe.displays;
+		}), SlotDisplay.CODEC.fieldOf("result").forGetter((shapedRecipe) -> {
+			return shapedRecipe.results;
+		})).apply(instance, JeiShapedRecipe::new);
+	});
+	public static final StreamCodec<RegistryFriendlyByteBuf, JeiShapedRecipe> STREAM_CODEC = StreamCodec.of(JeiShapedRecipe::toNetwork, JeiShapedRecipe::fromNetwork);
+	public static final RecipeSerializer<JeiShapedRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
 
-		public Serializer() {
+	private static JeiShapedRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
+		String string = buffer.readUtf();
+		CraftingBookCategory craftingBookCategory = buffer.readEnum(CraftingBookCategory.class);
+		ShapedRecipePattern shapedRecipePattern = ShapedRecipePattern.STREAM_CODEC.decode(buffer);
+
+		int displayCount = buffer.readVarInt();
+		if (displayCount < 9) {
+			throw new IllegalArgumentException("Display count must be 9 or fewer");
+		}
+		List<SlotDisplay> displays = new ArrayList<>(displayCount);
+		for (int i = 0; i < displayCount; i++) {
+			SlotDisplay display = SlotDisplay.STREAM_CODEC.decode(buffer);
+			displays.add(display);
 		}
 
-		@Override
-		public MapCodec<JeiShapedRecipe> codec() {
-			return CODEC;
+		SlotDisplay results = SlotDisplay.STREAM_CODEC.decode(buffer);
+		return new JeiShapedRecipe(string, craftingBookCategory, shapedRecipePattern, displays, results);
+	}
+
+	private static void toNetwork(RegistryFriendlyByteBuf buffer, JeiShapedRecipe recipe) {
+		buffer.writeUtf(recipe.group);
+		buffer.writeEnum(recipe.category);
+		ShapedRecipePattern.STREAM_CODEC.encode(buffer, recipe.pattern);
+
+		List<SlotDisplay> displays = recipe.displays;
+		buffer.writeVarInt(displays.size());
+		for (SlotDisplay display : displays) {
+			SlotDisplay.STREAM_CODEC.encode(buffer, display);
 		}
 
-		@Override
-		@Deprecated
-		public StreamCodec<RegistryFriendlyByteBuf, JeiShapedRecipe> streamCodec() {
-			return STREAM_CODEC;
-		}
-
-		private static JeiShapedRecipe fromNetwork(RegistryFriendlyByteBuf buffer) {
-			String string = buffer.readUtf();
-			CraftingBookCategory craftingBookCategory = buffer.readEnum(CraftingBookCategory.class);
-			ShapedRecipePattern shapedRecipePattern = ShapedRecipePattern.STREAM_CODEC.decode(buffer);
-
-			int displayCount = buffer.readVarInt();
-			if (displayCount < 9) {
-				throw new IllegalArgumentException("Display count must be 9 or fewer");
-			}
-			List<SlotDisplay> displays = new ArrayList<>(displayCount);
-			for (int i = 0; i < displayCount; i++) {
-				SlotDisplay display = SlotDisplay.STREAM_CODEC.decode(buffer);
-				displays.add(display);
-			}
-
-			SlotDisplay results = SlotDisplay.STREAM_CODEC.decode(buffer);
-			return new JeiShapedRecipe(string, craftingBookCategory, shapedRecipePattern, displays, results);
-		}
-
-		private static void toNetwork(RegistryFriendlyByteBuf buffer, JeiShapedRecipe recipe) {
-			buffer.writeUtf(recipe.group);
-			buffer.writeEnum(recipe.category);
-			ShapedRecipePattern.STREAM_CODEC.encode(buffer, recipe.pattern);
-
-			List<SlotDisplay> displays = recipe.displays;
-			buffer.writeVarInt(displays.size());
-			for (SlotDisplay display : displays) {
-				SlotDisplay.STREAM_CODEC.encode(buffer, display);
-			}
-
-			SlotDisplay.STREAM_CODEC.encode(buffer, recipe.results);
-		}
+		SlotDisplay.STREAM_CODEC.encode(buffer, recipe.results);
 	}
 }

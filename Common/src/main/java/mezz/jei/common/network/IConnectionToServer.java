@@ -6,4 +6,6 @@ public interface IConnectionToServer {
 	boolean isJeiOnServer();
 
 	<T extends PlayToServerPacket<T>> void sendPacketToServer(T packet);
+
+	void onRuntimeStopped();
 }
