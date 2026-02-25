@@ -42,6 +42,11 @@ public interface IGhostIngredientHandler<T extends Screen> {
 		return true;
 	}
 
+	/**
+	 * Called when a quick-move (e.g. shift-click) is performed to move a ghost item.
+	 */
+	default <I> void quickMove(T gui, ITypedIngredient<I> ingredient) {}
+
 	interface Target<I> extends Consumer<I> {
 		/**
 		 * @return the area (in screen coordinates) where the ingredient can be dropped.
