@@ -8,7 +8,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
 
@@ -35,14 +35,14 @@ public interface IRecipeLayoutDrawable<R> {
 	 *
 	 * @since 3.13.2
 	 */
-	void drawRecipe(GuiGraphics guiGraphics, int mouseX, int mouseY);
+	void drawRecipe(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
 
 	/**
 	 * Draw the recipe overlays such as item tool tips.
 	 *
 	 * @since 4.7.4
 	 */
-	void drawOverlays(GuiGraphics guiGraphics, int mouseX, int mouseY);
+	void drawOverlays(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
 
 	/**
 	 * Returns true if the mouse is hovering over the recipe.

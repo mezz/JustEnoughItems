@@ -1,7 +1,7 @@
 package mezz.jei.test.lib;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
 
@@ -9,7 +9,7 @@ import java.util.List;
 
 class TestIngredientRenderer implements IIngredientRenderer<TestIngredient> {
 	@Override
-	public void render(GuiGraphics guiGraphics, TestIngredient ingredient) {
+	public void render(GuiGraphicsExtractor guiGraphics, TestIngredient ingredient) {
 
 	}
 

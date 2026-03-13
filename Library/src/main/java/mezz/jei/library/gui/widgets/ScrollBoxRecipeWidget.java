@@ -9,7 +9,7 @@ import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.DrawableWrappedText;
 import mezz.jei.common.util.ImmutableRect2i;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.FormattedText;
 
 import java.util.List;
@@ -54,7 +54,7 @@ public class ScrollBoxRecipeWidget extends AbstractScrollWidget implements IScro
 	}
 
 	@Override
-	protected void drawContents(GuiGraphics guiGraphics, double mouseX, double mouseY, float scrollOffsetY) {
+	protected void drawContents(GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY, float scrollOffsetY) {
 		var poseStack = guiGraphics.pose();
 
 		guiGraphics.enableScissor(

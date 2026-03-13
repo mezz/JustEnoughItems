@@ -16,7 +16,7 @@ import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import javax.annotation.Nonnegative;
 import java.util.ArrayList;
@@ -99,7 +99,7 @@ public class CraftingStations implements IRecipeFocusSource {
 		return recipeSlotDrawable;
 	}
 
-	public Optional<IRecipeSlotDrawable> draw(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public Optional<IRecipeSlotDrawable> draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		int ingredientCount = recipeSlots.size();
 		if (ingredientCount > 0) {
 			int slotWidth = width - (2 * borderSize);

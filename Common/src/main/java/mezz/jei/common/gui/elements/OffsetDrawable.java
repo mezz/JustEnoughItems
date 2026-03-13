@@ -3,7 +3,7 @@ package mezz.jei.common.gui.elements;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.placement.IPlaceable;
 import mezz.jei.common.util.ImmutableRect2i;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /**
  * Draws with a built-in offset.
@@ -37,7 +37,7 @@ public class OffsetDrawable implements IDrawable, IPlaceable<OffsetDrawable> {
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+	public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset) {
 		this.drawable.draw(
 			guiGraphics,
 			this.xOffset + xOffset,
@@ -46,7 +46,7 @@ public class OffsetDrawable implements IDrawable, IPlaceable<OffsetDrawable> {
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics) {
+	public void draw(GuiGraphicsExtractor guiGraphics) {
 		this.drawable.draw(guiGraphics, this.xOffset, this.yOffset);
 	}
 

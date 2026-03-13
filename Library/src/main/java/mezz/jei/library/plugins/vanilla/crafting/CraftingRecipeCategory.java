@@ -19,7 +19,7 @@ import mezz.jei.api.recipe.category.extensions.vanilla.crafting.IExtendableCraft
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.library.recipes.CraftingExtensionHelper;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -68,7 +68,7 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 	}
 
 	@Override
-	public void draw(RecipeHolder<CraftingRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+	public void draw(RecipeHolder<CraftingRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
 		var extension = this.extendableHelper.getRecipeExtension(this, recipeHolder);
 		int recipeWidth = this.getWidth();
 		int recipeHeight = this.getHeight();

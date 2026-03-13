@@ -3,7 +3,7 @@ package mezz.jei.library.gui.ingredients;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
@@ -25,7 +25,7 @@ public class TagContentTooltipComponent<T> implements ClientTooltipComponent, To
 	}
 
 	@Override
-	public void renderImage(Font font, int x, int y, int p_368529_, int p_368584_, GuiGraphics guiGraphics) {
+	public void extractImage(Font font, int x, int y, int w, int h, GuiGraphicsExtractor guiGraphics) {
 		if (ingredients.size() <= MAX_INGREDIENTS) {
 			drawIngredients(guiGraphics, x, y, ingredients.size());
 		} else {
@@ -38,12 +38,12 @@ public class TagContentTooltipComponent<T> implements ClientTooltipComponent, To
 				final int textWidth = font.width(countString);
 				final int textCenterX = x + (MAX_PER_LINE - 1) * INGREDIENT_SIZE  + ((INGREDIENT_SIZE - textWidth) / 2);
 				final int textCenterY = y + (MAX_LINES - 1) * INGREDIENT_SIZE + ((INGREDIENT_SIZE - textHeight) / 2);
-				guiGraphics.drawString(font, countString, textCenterX, textCenterY, 0xAAAAAA);
+				guiGraphics.text(font, countString, textCenterX, textCenterY, 0xAAAAAA);
 			}
 		}
 	}
 
-	private void drawIngredients(GuiGraphics guiGraphics, int x, int y, int maxIngredients) {
+	private void drawIngredients(GuiGraphicsExtractor guiGraphics, int x, int y, int maxIngredients) {
 		final int maxPerLine = MathUtil.divideCeil(maxIngredients, getLineCount());
 
 		for (int i = 0; i < ingredients.size() && i < maxIngredients; i++) {

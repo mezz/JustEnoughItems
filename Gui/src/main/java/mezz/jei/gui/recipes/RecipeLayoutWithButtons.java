@@ -16,7 +16,7 @@ import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
@@ -69,7 +69,7 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		recipeLayout.drawRecipe(guiGraphics, mouseX, mouseY);
 
 		for (IconButton button : buttons) {
@@ -156,7 +156,7 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 	}
 
 	@Override
-	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		for (IconButton button : buttons) {
 			if (button.isVisible() && button.isMouseOver(mouseX, mouseY)) {
 				button.drawTooltips(guiGraphics, mouseX, mouseY);
@@ -206,7 +206,7 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 			if (registryId == null) {
 				MutableComponent message = Component.translatable("jei.message.copy.recipe.id.failure");
 				if (player != null) {
-					player.displayClientMessage(message, false);
+					player.sendSystemMessage(message);
 				}
 				return false;
 			}
@@ -215,7 +215,7 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 			minecraft.keyboardHandler.setClipboard(recipeId);
 			MutableComponent message = Component.translatable("jei.message.copy.recipe.id.success", Component.literal(recipeId));
 			if (player != null) {
-				player.displayClientMessage(message, false);
+				player.sendSystemMessage(message);
 			}
 			return true;
 		}

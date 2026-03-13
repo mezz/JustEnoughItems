@@ -9,7 +9,7 @@ import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /**
  * An extension to a recipe category with methods that allow JEI to make sense of it.
@@ -30,7 +30,7 @@ public interface IRecipeCategoryExtension<T> {
 	 * @see IGuiHelper for useful functions.
 	 * @since 16.0.0
 	 */
-	default void drawInfo(T recipe, int recipeWidth, int recipeHeight, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+	default void drawInfo(T recipe, int recipeWidth, int recipeHeight, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
 
 	}
 

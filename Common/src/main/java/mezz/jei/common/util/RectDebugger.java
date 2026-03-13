@@ -1,6 +1,6 @@
 package mezz.jei.common.util;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +22,7 @@ public final class RectDebugger {
 		this.rects.put(id, new Rect(rect, color));
 	}
 
-	public void draw(GuiGraphics guiGraphics) {
+	public void draw(GuiGraphicsExtractor guiGraphics) {
 		for (Rect rect : rects.values()) {
 			ImmutableRect2i rect1 = rect.rect;
 			guiGraphics.fill(

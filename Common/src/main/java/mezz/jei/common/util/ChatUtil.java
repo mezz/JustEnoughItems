@@ -17,6 +17,6 @@ public final class ChatUtil {
 		MutableComponent component = Component.translatable(translationKey);
 		Style redStyle = component.getStyle().applyFormat(color);
 		component.setStyle(redStyle);
-		player.displayClientMessage(component, false);
+		player.sendSystemMessage(component);
 	}
 }

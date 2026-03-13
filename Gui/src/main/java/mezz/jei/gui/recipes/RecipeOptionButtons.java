@@ -8,7 +8,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nonnegative;
@@ -79,7 +79,7 @@ public class RecipeOptionButtons {
 		return area;
 	}
 
-	public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		backgroundTab.draw(guiGraphics, this.area);
 
 		for (IconButton button : buttons) {
@@ -99,7 +99,7 @@ public class RecipeOptionButtons {
 		return new CombinedInputHandler("RecipeOptionButtons", handlers);
 	}
 
-	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		for (IconButton button : buttons) {
 			button.drawTooltips(guiGraphics, mouseX, mouseY);
 		}

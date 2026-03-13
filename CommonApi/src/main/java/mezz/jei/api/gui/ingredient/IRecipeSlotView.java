@@ -7,7 +7,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -75,7 +75,7 @@ public interface IRecipeSlotView {
 	 *
 	 * @since 9.3.0
 	 */
-	void drawHighlight(GuiGraphics guiGraphics, int color);
+	void drawHighlight(GuiGraphicsExtractor guiGraphics, int color);
 
 	/**
 	 * All ingredient variations of the given type that can be shown.

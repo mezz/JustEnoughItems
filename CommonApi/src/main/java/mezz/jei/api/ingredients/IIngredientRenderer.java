@@ -5,7 +5,7 @@ import mezz.jei.api.ingredients.rendering.BatchRenderElement;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
 
@@ -22,24 +22,24 @@ public interface IIngredientRenderer<T> {
 	/**
 	 * Renders an ingredient.
 	 *
-	 * @param guiGraphics The current {@link GuiGraphics} for rendering the ingredient.
+	 * @param guiGraphics The current {@link GuiGraphicsExtractor} for rendering the ingredient.
 	 * @param ingredient the ingredient to render.
 	 *
 	 * @since 9.3.0
 	 */
-	void render(GuiGraphics guiGraphics, T ingredient);
+	void render(GuiGraphicsExtractor guiGraphics, T ingredient);
 
 	/**
 	 * Renders an ingredient at a specific location.
 	 *
-	 * @param guiGraphics The current {@link GuiGraphics} for rendering the ingredient.
+	 * @param guiGraphics The current {@link GuiGraphicsExtractor} for rendering the ingredient.
 	 * @param ingredient the ingredient to render.
 	 * @param posX       the x offset for rendering this ingredient
 	 * @param posY       the y offset for rendering this ingredient
 	 *
 	 * @since 19.5.5
 	 */
-	default void render(GuiGraphics guiGraphics, T ingredient, int posX, int posY) {
+	default void render(GuiGraphicsExtractor guiGraphics, T ingredient, int posX, int posY) {
 		var poseStack = guiGraphics.pose();
 		poseStack.pushMatrix();
 		{
@@ -55,7 +55,7 @@ public interface IIngredientRenderer<T> {
 	 *
 	 * @since 19.14.0
 	 */
-	default void renderBatch(GuiGraphics guiGraphics, List<BatchRenderElement<T>> elements) {
+	default void renderBatch(GuiGraphicsExtractor guiGraphics, List<BatchRenderElement<T>> elements) {
 		for (BatchRenderElement<T> element : elements) {
 			render(guiGraphics, element.ingredient(), element.x(), element.y());
 		}

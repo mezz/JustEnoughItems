@@ -8,19 +8,21 @@ import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.library.render.FluidTankRenderer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.block.FluidStateModelSet;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.ModelManager;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -85,15 +87,14 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	@Override
 	public Optional<TextureAtlasSprite> getStillFluidSprite(FluidStack fluidStack) {
 		Fluid fluid = fluidStack.getFluid();
-		IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
-		Identifier fluidStill = renderProperties.getStillTexture(fluidStack);
+		Minecraft minecraft = Minecraft.getInstance();
+		ModelManager modelManager = minecraft.getModelManager();
+		FluidStateModelSet fluidStateModelSet = modelManager.getFluidStateModelSet();
+		FluidModel fluidModel = fluidStateModelSet.get(fluid.defaultFluidState());
+		Material.Baked stillMaterial = fluidModel.stillMaterial();
+		TextureAtlasSprite sprite = stillMaterial.sprite();
 		// noinspection OptionalOfNullableMisuse
-		return Optional.ofNullable(fluidStill)
-			.map(ClientHooks::getBlockMaterial)
-			.map(material -> Minecraft.getInstance()
-				.getAtlasManager()
-				.get(material)
-			)
+		return Optional.ofNullable(sprite)
 			.filter(s -> s.atlasLocation() != MissingTextureAtlasSprite.getLocation());
 	}
 

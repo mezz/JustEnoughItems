@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
@@ -19,7 +19,7 @@ public class JeiScreenEvents {
 	@Environment(EnvType.CLIENT)
 	@FunctionalInterface
 	public interface DrawForeground {
-		void drawForeground(AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int mouseX, int mouseY);
+		void drawForeground(AbstractContainerScreen<?> screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
 	}
 
 	public static final Event<DrawBackground> DRAW_BACKGROUND =
@@ -32,6 +32,6 @@ public class JeiScreenEvents {
 	@Environment(EnvType.CLIENT)
 	@FunctionalInterface
 	public interface DrawBackground {
-		void drawBackground(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks);
+		void drawBackground(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks);
 	}
 }

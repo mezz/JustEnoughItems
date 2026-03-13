@@ -6,7 +6,7 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;
@@ -30,14 +30,14 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 *
 	 * @since 11.5.0
 	 */
-	void draw(GuiGraphics guiGraphics);
+	void draw(GuiGraphicsExtractor guiGraphics);
 
 	/**
 	 * Draws the recipe slot overlays, called when the mouse is hovering over this recipe slot.
 	 *
 	 * @since 11.5.0
 	 */
-	void drawHoverOverlays(GuiGraphics guiGraphics);
+	void drawHoverOverlays(GuiGraphicsExtractor guiGraphics);
 
 	/**
 	 * Get the plain tooltip for this recipe slot.
@@ -62,7 +62,7 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 *
 	 * @since 21.1.0
 	 */
-	void drawTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY);
+	void drawTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
 
 	/**
 	 * Return true if the mouse is over the slot.

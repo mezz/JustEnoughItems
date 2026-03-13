@@ -2,7 +2,7 @@ package mezz.jei.common.gui.elements;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.gui.drawable.IDrawable;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /**
  * Draws an icon at a higher resolution than normal (determined by the scale parameter).
@@ -38,7 +38,7 @@ public class HighResolutionDrawable implements IDrawable {
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+	public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset) {
 		var poseStack = guiGraphics.pose();
 		poseStack.pushMatrix();
 		{
@@ -50,7 +50,7 @@ public class HighResolutionDrawable implements IDrawable {
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics) {
+	public void draw(GuiGraphicsExtractor guiGraphics) {
 		var poseStack = guiGraphics.pose();
 		poseStack.pushMatrix();
 		{

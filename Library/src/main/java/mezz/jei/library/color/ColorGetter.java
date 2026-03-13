@@ -6,6 +6,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Mth;
@@ -54,7 +55,8 @@ public final class ColorGetter {
 	private List<Integer> getBlockColors(Block block, int colorCount) {
 		BlockState blockState = block.defaultBlockState();
 		final BlockColors blockColors = Minecraft.getInstance().getBlockColors();
-		final int renderColor = blockColors.getColor(blockState, null, null, 0);
+		BlockTintSource tintSource = blockColors.getTintSource(blockState, 0);
+		final int renderColor = tintSource != null ? tintSource.color(blockState) : -1;
 
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 		final TextureAtlasSprite textureAtlasSprite = renderHelper.getTextureAtlasSprite(blockState);

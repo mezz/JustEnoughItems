@@ -12,7 +12,7 @@ import mezz.jei.api.recipe.vanilla.IJeiFuelingRecipe;
 import mezz.jei.common.gui.textures.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
@@ -109,7 +109,7 @@ public abstract class AbstractFuelCategory extends AbstractRecipeCategory<IJeiFu
 		}
 
 		@Override
-		public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+		public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset) {
 			icon.draw(guiGraphics, xOffset, yOffset);
 
 			var poseStack = guiGraphics.pose();

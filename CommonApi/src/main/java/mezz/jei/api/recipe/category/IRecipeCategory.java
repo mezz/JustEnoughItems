@@ -18,7 +18,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -106,7 +106,7 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @param recipe          the current recipe being drawn.
 	 * @param recipeSlotsView a view of the current recipe slots being drawn.
-	 * @param guiGraphics     the current {@link GuiGraphics} for rendering.
+	 * @param guiGraphics     the current {@link GuiGraphicsExtractor} for rendering.
 	 * @param mouseX          the X position of the mouse, relative to the recipe.
 	 * @param mouseY          the Y position of the mouse, relative to the recipe.
 	 *
@@ -116,7 +116,7 @@ public interface IRecipeCategory<T> {
 	 *
 	 * @since 9.3.0
 	 */
-	default void draw(T recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+	default void draw(T recipe, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
 
 	}
 

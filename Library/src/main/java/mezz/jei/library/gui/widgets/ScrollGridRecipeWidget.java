@@ -10,7 +10,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.MathUtil;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 
 import java.util.List;
@@ -80,7 +80,7 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 	}
 
 	@Override
-	protected void drawContents(GuiGraphics guiGraphics, double mouseX, double mouseY, float scrollOffsetY) {
+	protected void drawContents(GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY, float scrollOffsetY) {
 		final int totalSlots = slots.size();
 		final int firstRow = getRowIndexForScroll(hiddenRows, getScrollOffsetY());
 		final int firstIndex = columns * firstRow;

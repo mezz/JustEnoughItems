@@ -4,7 +4,7 @@ import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
@@ -17,7 +17,7 @@ import java.util.List;
 
 public class RecipeBookGuiHandler<C extends RecipeBookMenu, T extends AbstractRecipeBookScreen<C>> implements IGuiContainerHandler<T> {
 	/**
-	 * Modeled after {@link RecipeBookComponent#render(GuiGraphics, int, int, float)}
+	 * Modeled after {@link RecipeBookComponent#render(GuiGraphicsExtractor, int, int, float)}
 	 */
 	@Override
 	public List<Rect2i> getGuiExtraAreas(T containerScreen) {

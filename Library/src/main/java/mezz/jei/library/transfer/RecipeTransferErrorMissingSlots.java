@@ -2,7 +2,7 @@ package mezz.jei.library.transfer;
 
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 import java.util.Collection;
@@ -18,7 +18,7 @@ public class RecipeTransferErrorMissingSlots extends RecipeTransferErrorTooltip 
 	}
 
 	@Override
-	public void showError(GuiGraphics guiGraphics, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
+	public void showError(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
 		var poseStack = guiGraphics.pose();
 		poseStack.pushMatrix();
 		{

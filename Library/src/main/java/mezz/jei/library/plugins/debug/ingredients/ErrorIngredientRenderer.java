@@ -5,7 +5,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.TooltipFlag;
@@ -21,12 +21,12 @@ public class ErrorIngredientRenderer implements IIngredientRenderer<ErrorIngredi
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, ErrorIngredient ingredient) {
+	public void render(GuiGraphicsExtractor guiGraphics, ErrorIngredient ingredient) {
 		Minecraft minecraft = Minecraft.getInstance();
 		if (ingredient.crashType() == ErrorIngredient.CrashType.TooltipCrash) {
 			Font font = getFontRenderer(minecraft, ingredient);
-			guiGraphics.drawString(font, "JEI", 0, 0, 0xFFFF0000, false);
-			guiGraphics.drawString(font, "TEST", 0, 8, 0xFFFF0000, false);
+			guiGraphics.text(font, "JEI", 0, 0, 0xFFFF0000, false);
+			guiGraphics.text(font, "TEST", 0, 8, 0xFFFF0000, false);
 		}
 	}
 

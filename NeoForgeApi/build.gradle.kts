@@ -53,6 +53,17 @@ dependencies {
 	}
 }
 
+repositories {
+	maven {
+		name = "Maven for PR #2993" // https://github.com/neoforged/NeoForge/pull/2993
+		url = uri("https://prmaven.neoforged.net/NeoForge/pr2993")
+		content {
+			includeModule("net.neoforged", "neoforge")
+			includeModule("net.neoforged", "testframework")
+		}
+	}
+}
+
 neoForge {
 	version = neoforgeVersion
 	// We don't need the AT, but this allows MDG to share the recompiled Minecraft artifacts with the NeoForge project.

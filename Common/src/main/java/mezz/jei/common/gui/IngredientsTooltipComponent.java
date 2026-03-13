@@ -13,7 +13,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
@@ -87,7 +87,7 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 	}
 
 	@Override
-	public void renderImage(Font font, int x, int y, int p_368529_, int p_368584_, GuiGraphics guiGraphics) {
+	public void extractImage(Font font, int x, int y, int w, int h, GuiGraphicsExtractor guiGraphics) {
 		for (int i = 0; i < ingredients.size(); i++) {
 			int elementX = INGREDIENT_PADDING + x + ((i % MAX_INGREDIENTS_PER_ROW) * INGREDIENT_SIZE);
 			int elementY = INGREDIENT_PADDING + y + ((i / MAX_INGREDIENTS_PER_ROW) * INGREDIENT_SIZE);
@@ -141,7 +141,7 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 			return new RenderElement<>(renderer, ingredient);
 		}
 
-		public void render(GuiGraphics guiGraphics) {
+		public void render(GuiGraphicsExtractor guiGraphics) {
 			renderer.render(guiGraphics, ingredient);
 		}
 	}
