@@ -23,7 +23,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.fluid.FluidTintSource;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.display.FluidStackContentsFactory;
@@ -47,8 +47,15 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	@Override
 	public int getColorTint(FluidStack ingredient) {
 		Fluid fluid = ingredient.getFluid();
-		IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
-		return renderProperties.getTintColor(ingredient);
+		Minecraft minecraft = Minecraft.getInstance();
+		ModelManager modelManager = minecraft.getModelManager();
+		FluidStateModelSet fluidStateModelSet = modelManager.getFluidStateModelSet();
+		FluidModel fluidModel = fluidStateModelSet.get(fluid.defaultFluidState());
+		FluidTintSource tintSource = fluidModel.fluidTintSource();
+		if (tintSource == null) {
+			return 0xFFFFFFFF;
+		}
+		return tintSource.colorAsStack(ingredient);
 	}
 
 	@Override
