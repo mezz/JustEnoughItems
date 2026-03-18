@@ -90,10 +90,15 @@ public class IngredientManager implements IIngredientManager {
 
 	@Override
 	public <V> void addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
-		ErrorUtil.assertMainThread();
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 
+		ErrorUtil.runOnMainThreadIfRequired(() -> {
+			_addIngredientsAtRuntime(ingredientType, ingredients);
+		});
+	}
+
+	private <V> void _addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
 		IngredientInfo<V> ingredientInfo = this.registeredIngredients.getIngredientInfo(ingredientType);
 
 		LOGGER.info("Ingredients are being added at runtime: {} {}", ingredients.size(), ingredientType.getIngredientClass().getName());
@@ -147,10 +152,15 @@ public class IngredientManager implements IIngredientManager {
 
 	@Override
 	public <V> void removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
-		ErrorUtil.assertMainThread();
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotEmpty(ingredients, "ingredients");
 
+		ErrorUtil.runOnMainThreadIfRequired(() -> {
+			_removeIngredientsAtRuntime(ingredientType, ingredients);
+		});
+	}
+
+	private <V> void _removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
 		IngredientInfo<V> ingredientInfo = this.registeredIngredients.getIngredientInfo(ingredientType);
 
 		LOGGER.info("Ingredients are being removed at runtime: {} {}", ingredients.size(), ingredientType.getIngredientClass().getName());

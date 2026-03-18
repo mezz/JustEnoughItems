@@ -20,6 +20,7 @@ public final class DebugConfig {
 	private final Supplier<Boolean> debugInfoTooltipsEnabled;
 	private final Supplier<Boolean> crashingTestIngredientsEnabled;
 	private final Supplier<Boolean> logSuffixTreeStats;
+	private final Supplier<Boolean> enableAsyncLoading;
 
 	private DebugConfig(IConfigSchemaBuilder schema) {
 		IConfigCategoryBuilder advanced = schema.addCategory("debug");
@@ -52,6 +53,11 @@ public final class DebugConfig {
 			"logSuffixTreeStats",
 			false,
 			"Log information about the suffix trees used for searching, to help debug JEI."
+		);
+		enableAsyncLoading = advanced.addBoolean(
+			"enableAsyncLoading",
+			true,
+			"Enable asynchronous loading features for improved performance. Set to false if you experience compatibility issues with mods."
 		);
 	}
 
@@ -95,5 +101,12 @@ public final class DebugConfig {
 			return false;
 		}
 		return instance.logSuffixTreeStats.get();
+	}
+
+	public static boolean isAsyncLoadingEnabled() {
+		if (instance == null) {
+			return true; // Default to enabled
+		}
+		return instance.enableAsyncLoading.get();
 	}
 }

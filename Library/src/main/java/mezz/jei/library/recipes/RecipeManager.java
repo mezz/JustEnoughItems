@@ -61,9 +61,10 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.checkNotNull(recipes, "recipes");
 		ErrorUtil.validateRecipes(recipeType, recipes);
-		ErrorUtil.assertMainThread();
 
-		internal.addRecipes(recipeType, recipes);
+		ErrorUtil.runOnMainThreadIfRequired(() -> {
+			internal.addRecipes(recipeType, recipes);
+		});
 	}
 
 	@Override
@@ -123,8 +124,10 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.checkNotNull(recipes, "recipe");
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.validateRecipes(recipeType, recipes);
-		ErrorUtil.assertMainThread();
-		internal.hideRecipes(recipeType, recipes);
+
+		ErrorUtil.runOnMainThreadIfRequired(() -> {
+			internal.hideRecipes(recipeType, recipes);
+		});
 	}
 
 	@Override
@@ -132,22 +135,28 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.checkNotNull(recipes, "recipe");
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.validateRecipes(recipeType, recipes);
-		ErrorUtil.assertMainThread();
-		internal.unhideRecipes(recipeType, recipes);
+
+		ErrorUtil.runOnMainThreadIfRequired(() -> {
+			internal.unhideRecipes(recipeType, recipes);
+		});
 	}
 
 	@Override
 	public void hideRecipeCategory(RecipeType<?> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		ErrorUtil.assertMainThread();
-		internal.hideRecipeCategory(recipeType);
+
+		ErrorUtil.runOnMainThreadIfRequired(() -> {
+			internal.hideRecipeCategory(recipeType);
+		});
 	}
 
 	@Override
 	public void unhideRecipeCategory(RecipeType<?> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		ErrorUtil.assertMainThread();
-		internal.unhideRecipeCategory(recipeType);
+
+		ErrorUtil.runOnMainThreadIfRequired(() -> {
+			internal.unhideRecipeCategory(recipeType);
+		});
 	}
 
 	@Override

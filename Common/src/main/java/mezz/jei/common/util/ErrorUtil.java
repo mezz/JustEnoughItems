@@ -161,6 +161,30 @@ public final class ErrorUtil {
 		}
 	}
 
+	/**
+	 * Runs the given runnable on the main thread if currently on a different thread.
+	 * If already on the main thread, runs the runnable immediately.
+	 * This provides backward compatibility for mods that may call JEI APIs from background threads.
+	 *
+	 * @param runnable the task to run on the main thread
+	 */
+	public static void runOnMainThreadIfRequired(Runnable runnable) {
+		Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft != null && !minecraft.isSameThread()) {
+			// Schedule on main thread instead of crashing - maintains backward compatibility
+			minecraft.execute(runnable);
+		} else {
+			runnable.run();
+		}
+	}
+
+	/**
+	 * @return true if async loading features are enabled in the config
+	 */
+	public static boolean isAsyncLoadingEnabled() {
+		return mezz.jei.common.config.DebugConfig.isAsyncLoadingEnabled();
+	}
+
 	public static <T> void validateRecipes(RecipeType<T> recipeType, Iterable<? extends T> recipes) {
 		Class<?> recipeClass = recipeType.getRecipeClass();
 		for (T recipe : recipes) {

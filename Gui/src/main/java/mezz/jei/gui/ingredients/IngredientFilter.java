@@ -198,8 +198,12 @@ public class IngredientFilter implements
 
 		Stream<IListElement<?>> elementStream;
 		if (searchTokens.isEmpty()) {
-			elementStream = this.elementSearch.getAllIngredients()
-				.parallelStream();
+			// Use sequential stream instead of parallelStream to ensure deterministic ordering
+			// and prevent race conditions during search. Parallel streams can cause:
+			// 1. Non-deterministic ordering even with sorted()
+			// 2. Race conditions if ingredient list is modified during processing
+			// 3. Thread-local state violations in mod-added ingredients
+			elementStream = this.elementSearch.getAllIngredients().stream();
 		} else {
 			elementStream = searchTokens.stream()
 				.map(this::getSearchResults)

@@ -84,6 +84,10 @@ public class ClientLifecycleHandler {
 
 		this.jeiStarter.start();
 		running = true;
+
+		// Fire initialization event for mods that depend on JEI being ready
+		JeiLifecycleEvents.INITIALIZED.invoker().run();
+		LOGGER.info("JEI has finished initializing. Mods can now access the JEI runtime via IModPlugin.onRuntimeAvailable().");
 	}
 
 	private void stopJei() {
