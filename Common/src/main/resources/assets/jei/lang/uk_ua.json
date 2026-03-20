@@ -280,10 +280,10 @@
   "jei.config.debug.debug.debugMode.description": "Увімкнути режим налагодження",
   "jei.config.debug.debug.debugGuis": "Налагодження інтерфейсу",
   "jei.config.debug.debug.debugGuis.description": "Умикає режим налагодження інтерфейсу",
-  "jei.config.debug.debug.debugInputs": "Введення налагодження",
-  "jei.config.debug.debug.debugInputs.description": "Умикає режим вводу налагодження",
+  "jei.config.debug.debug.debugInputs": "Уведення налагодження",
+  "jei.config.debug.debug.debugInputs.description": "Умикає режим уведення налагодження",
   "jei.config.debug.debug.debugInfoTooltipsEnabled": "Спливні підказки інформації про налагодження",
-  "jei.config.debug.debug.debugInfoTooltipsEnabled.description": "Додає інформацію про налагодження до підказок інгредієнтів, якщо увімкнено розширені підказки.",
+  "jei.config.debug.debug.debugInfoTooltipsEnabled.description": "Додає інформацію про налагодження до підказок інгредієнтів, якщо ввімкнено розширені підказки.",
   "jei.config.debug.debug.crashingTestItemsEnabled": "Увімкнути предмети тесту на збій",
   "jei.config.debug.debug.crashingTestItemsEnabled.description": "Додає інгредієнти до JEI, які навмисно аварійно завершують роботу, щоби допомогти налагодити JEI.",
   "jei.config.debug.debug.logSuffixTreeStats": "Статистика дерева пошуку журналу",
@@ -296,7 +296,7 @@
 
   "_comment": "Режим приховування інгредієнтів",
   "gui.jei.editMode.description": "Режим приховування інгредієнтів JEI:",
-  "gui.jei.editMode.description.hide": "Натисніть «%s», щщобиоб приховати",
+  "gui.jei.editMode.description.hide": "Натисніть «%s», щоби приховати",
   "gui.jei.editMode.description.hide.wild": "Натисніть «%s», щоби приховати символ підстановки",
 
   "_comment": "Категорії рецептів",
