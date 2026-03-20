@@ -56,7 +56,7 @@ public final class ColorGetter {
 		BlockState blockState = block.defaultBlockState();
 		final BlockColors blockColors = Minecraft.getInstance().getBlockColors();
 		BlockTintSource tintSource = blockColors.getTintSource(blockState, 0);
-		final int renderColor = tintSource != null ? tintSource.color(blockState) : -1;
+		final int renderColor = tintSource == null ? 0xFFFFFFFF : tintSource.color(blockState);
 
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 		final TextureAtlasSprite textureAtlasSprite = renderHelper.getTextureAtlasSprite(blockState);
