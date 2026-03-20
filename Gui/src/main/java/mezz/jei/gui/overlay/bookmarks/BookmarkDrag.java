@@ -10,7 +10,7 @@ import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.input.UserInput;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.phys.Vec2;
 
 import java.util.List;
@@ -83,7 +83,7 @@ public class BookmarkDrag<T> {
 			.update();
 	}
 
-	public boolean drawItem(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public boolean drawItem(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (bookmark.isVisible()) {
 			return false;
 		}

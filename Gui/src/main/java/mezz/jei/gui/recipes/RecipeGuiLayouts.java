@@ -16,7 +16,7 @@ import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
@@ -145,7 +145,7 @@ public class RecipeGuiLayouts {
 		}
 	}
 
-	public Optional<IRecipeLayoutDrawable<?>> draw(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public Optional<IRecipeLayoutDrawable<?>> draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		IRecipeLayoutDrawable<?> hoveredLayout = null;
 
 		Minecraft minecraft = Minecraft.getInstance();
@@ -178,7 +178,7 @@ public class RecipeGuiLayouts {
 		}
 	}
 
-	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		safeCallOnRecipeLayouts(r -> r.drawTooltips(guiGraphics, mouseX, mouseY));
 	}
 

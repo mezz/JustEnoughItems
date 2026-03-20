@@ -32,7 +32,7 @@ import mezz.jei.gui.util.MaximalRectangle;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
@@ -263,7 +263,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		return pageDelegate;
 	}
 
-	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (gridConfig.drawBackground()) {
 			background.draw(guiGraphics, this.backgroundArea);
 			slotBackground.draw(guiGraphics, this.slotBackgroundArea);
@@ -273,7 +273,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.navigation.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 	}
 
-	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		this.ghostIngredientDragManager.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		this.ingredientGrid.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 	}
@@ -316,7 +316,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.ghostIngredientDragManager.stopDrag();
 	}
 
-	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		this.ghostIngredientDragManager.drawOnForeground(guiGraphics, mouseX, mouseY);
 	}
 

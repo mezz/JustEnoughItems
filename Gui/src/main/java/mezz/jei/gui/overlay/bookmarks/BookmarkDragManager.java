@@ -12,7 +12,7 @@ import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -35,7 +35,7 @@ public class BookmarkDragManager {
 		}
 	}
 
-	public boolean drawDraggedItem(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public boolean drawDraggedItem(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (bookmarkDrag != null) {
 			return bookmarkDrag.drawItem(guiGraphics, mouseX, mouseY);
 		}

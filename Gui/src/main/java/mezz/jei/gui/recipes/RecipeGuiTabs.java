@@ -12,7 +12,7 @@ import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,7 +113,7 @@ public class RecipeGuiTabs implements IPaged {
 		pageNavigation.updatePageNumber();
 	}
 
-	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		IRecipeCategory<?> selectedCategory = recipeGuiLogic.getSelectedRecipeCategory();
 
 		RecipeGuiTab hovered = null;

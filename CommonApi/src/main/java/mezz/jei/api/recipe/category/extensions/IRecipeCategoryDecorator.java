@@ -7,7 +7,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IAdvancedRegistration;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /**
  * The {@link IRecipeCategoryDecorator} allows further customization of recipe categories.
@@ -26,7 +26,7 @@ public interface IRecipeCategoryDecorator<T> {
 	 * @param recipe          the current recipe being drawn.
 	 * @param recipeCategory  the recipe category of the recipe.
 	 * @param recipeSlotsView a view of the current recipe slots being drawn.
-	 * @param guiGraphics     the current {@link GuiGraphics} for rendering.
+	 * @param guiGraphics     the current {@link GuiGraphicsExtractor} for rendering.
 	 * @param mouseX          the X position of the mouse, relative to the recipe.
 	 * @param mouseY          the Y position of the mouse, relative to the recipe.
 	 *
@@ -36,7 +36,7 @@ public interface IRecipeCategoryDecorator<T> {
 	 *
 	 * @since 15.1.0
 	 */
-	default void draw(T recipe, IRecipeCategory<T> recipeCategory, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+	default void draw(T recipe, IRecipeCategory<T> recipeCategory, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
 
 	}
 

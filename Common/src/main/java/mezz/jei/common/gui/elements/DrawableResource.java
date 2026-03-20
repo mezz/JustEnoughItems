@@ -1,7 +1,7 @@
 package mezz.jei.common.gui.elements;
 
 import mezz.jei.api.gui.drawable.IDrawableStatic;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 
@@ -47,12 +47,12 @@ public class DrawableResource implements IDrawableStatic {
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+	public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset) {
 		draw(guiGraphics, xOffset, yOffset, 0, 0, 0, 0);
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
+	public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
 		int uWidth = this.width - (maskRight + maskLeft);
 		int vHeight = this.height - (maskBottom + maskTop);
 

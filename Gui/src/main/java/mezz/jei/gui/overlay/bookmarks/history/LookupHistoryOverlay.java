@@ -22,7 +22,7 @@ import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.gui.overlay.IngredientGrid;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Mth;
 import org.jspecify.annotations.Nullable;
 
@@ -101,7 +101,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 		this.contents.set(0, ingredientList);
 	}
 
-	private void drawLine(GuiGraphics guiGraphics, int x1, int x2, int y, int argbColor) {
+	private void drawLine(GuiGraphicsExtractor guiGraphics, int x1, int x2, int y, int argbColor) {
 		final int availableWidth = x2 - x1;
 		if (availableWidth <= 0) {
 			return;
@@ -126,7 +126,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 		}
 	}
 
-	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY);
 			ImmutableRect2i area = this.contents.getArea();
@@ -137,7 +137,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 		}
 	}
 
-	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			this.ghostIngredientDragManager.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 			this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
@@ -152,7 +152,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 		this.ghostIngredientDragManager.stopDrag();
 	}
 
-	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			this.ghostIngredientDragManager.drawOnForeground(guiGraphics, mouseX, mouseY);
 		}

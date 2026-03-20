@@ -14,7 +14,7 @@ import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.overlay.IIngredientGrid;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
@@ -78,7 +78,7 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 	}
 
 	@SuppressWarnings("MethodMayBeStatic")
-	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		JeiTooltip tooltip = new JeiTooltip();
 		tooltip.add(Component.translatable("jei.tooltip.delete.item"));
 		tooltip.draw(guiGraphics, mouseX, mouseY);

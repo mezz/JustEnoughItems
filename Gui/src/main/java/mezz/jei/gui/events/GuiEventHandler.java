@@ -11,7 +11,7 @@ import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
@@ -62,7 +62,7 @@ public class GuiEventHandler {
 	/**
 	 * Draws above most ContainerScreen elements, but below the tooltips.
 	 */
-	public void drawForContainerScreen(AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawForContainerScreen(AbstractContainerScreen<?> screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		var poseStack = guiGraphics.pose();
 		poseStack.pushMatrix();
 		{
@@ -78,7 +78,7 @@ public class GuiEventHandler {
 		poseStack.popMatrix();
 	}
 
-	public void drawForScreen(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawForScreen(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (screen instanceof AbstractContainerScreen<?>) {
 			// for container screens, drawing the main contents is handled in drawForContainerScreen
 			return;
@@ -87,7 +87,7 @@ public class GuiEventHandler {
 		drawMainContents(screen, guiProperties, guiGraphics, mouseX, mouseY);
 	}
 
-	private void drawMainContents(Screen screen, @Nullable IGuiProperties guiProperties, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	private void drawMainContents(Screen screen, @Nullable IGuiProperties guiProperties, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getInstance();
 
 		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
@@ -135,7 +135,7 @@ public class GuiEventHandler {
 		return ingredientListOverlay.isListDisplayed();
 	}
 
-	private void drawDebugInfoForScreen(Screen screen, @Nullable IGuiProperties guiProperties, GuiGraphics guiGraphics) {
+	private void drawDebugInfoForScreen(Screen screen, @Nullable IGuiProperties guiProperties, GuiGraphicsExtractor guiGraphics) {
 		RectDebugger.INSTANCE.draw(guiGraphics);
 
 		if (guiProperties != null) {

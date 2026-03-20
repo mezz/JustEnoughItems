@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(EffectsInInventory.class)
 public abstract class EffectsInInventoryMixin {
 	@ModifyVariable(
-		method = "render(Lnet/minecraft/client/gui/GuiGraphics;II)V",
+		method = "render(Lnet/minecraft/client/gui/GuiGraphicsExtractor;II)V",
 		index = 7,
 		name = "m",
 		at = @At("STORE")

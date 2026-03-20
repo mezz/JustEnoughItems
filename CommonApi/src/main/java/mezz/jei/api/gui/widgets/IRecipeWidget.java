@@ -5,7 +5,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 
 /**
@@ -30,7 +30,7 @@ public interface IRecipeWidget {
 	 * Draw extras or additional info about the recipe, relative to its {@link #getPosition()}.
 	 * Use the mouse position for things like button highlights.
 	 *
-	 * @param guiGraphics     the current {@link GuiGraphics} for rendering.
+	 * @param guiGraphics     the current {@link GuiGraphicsExtractor} for rendering.
 	 * @param mouseX          the X position of the mouse, relative to its position.
 	 * @param mouseY          the Y position of the mouse, relative to its position.
 	 *
@@ -41,7 +41,7 @@ public interface IRecipeWidget {
 	 *
 	 * @since 19.19.0
 	 */
-	default void drawWidget(GuiGraphics guiGraphics, double mouseX, double mouseY) {
+	default void drawWidget(GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
 
 	}
 

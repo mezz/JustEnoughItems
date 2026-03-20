@@ -16,7 +16,12 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.block.FluidStateModelSet;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.ModelManager;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.network.chat.Component;
@@ -54,8 +59,14 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	@Override
 	public Optional<TextureAtlasSprite> getStillFluidSprite(IJeiFluidIngredient ingredient) {
 		FluidVariant fluidVariant = ingredient.getFluidVariant();
-		TextureAtlasSprite sprite = FluidVariantRendering.getSprite(fluidVariant);
-		return Optional.ofNullable(sprite);
+		Fluid fluid = fluidVariant.getFluid();
+		Minecraft minecraft = Minecraft.getInstance();
+		ModelManager modelManager = minecraft.getModelManager();
+		FluidStateModelSet fluidStateModelSet = modelManager.getFluidStateModelSet();
+		FluidModel fluidModel = fluidStateModelSet.get(fluid.defaultFluidState());
+		Material.Baked stillMaterial = fluidModel.stillMaterial();
+		TextureAtlasSprite sprite = stillMaterial.sprite();
+		return Optional.of(sprite);
 	}
 
 	@Override

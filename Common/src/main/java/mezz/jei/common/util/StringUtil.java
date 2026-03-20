@@ -4,7 +4,7 @@ import mezz.jei.core.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
@@ -117,13 +117,13 @@ public final class StringUtil {
 			.collect(Collectors.joining(", "));
 	}
 
-	public static void drawCenteredStringWithShadow(GuiGraphics guiGraphics, Font font, String string, ImmutableRect2i area) {
+	public static void drawCenteredStringWithShadow(GuiGraphicsExtractor guiGraphics, Font font, String string, ImmutableRect2i area) {
 		ImmutableRect2i textArea = MathUtil.centerTextArea(area, font, string);
-		guiGraphics.drawString(font, string, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
+		guiGraphics.text(font, string, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
 	}
 
-	public static void drawCenteredStringWithShadow(GuiGraphics guiGraphics, Font font, FormattedCharSequence text, ImmutableRect2i area) {
+	public static void drawCenteredStringWithShadow(GuiGraphicsExtractor guiGraphics, Font font, FormattedCharSequence text, ImmutableRect2i area) {
 		ImmutableRect2i textArea = MathUtil.centerTextArea(area, font, text);
-		guiGraphics.drawString(font, text, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
+		guiGraphics.text(font, text, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
 	}
 }

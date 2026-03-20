@@ -5,13 +5,13 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /**
  * Represents something to be drawn on screen.
  *
  * Useful for drawing miscellaneous things like in
- * {@link IRecipeCategory#draw(Object, IRecipeSlotsView, GuiGraphics, double, double)}.
+ * {@link IRecipeCategory#draw(Object, IRecipeSlotsView, GuiGraphicsExtractor, double, double)}.
  * {@link IRecipeSlotBuilder#setBackground(IDrawable, int, int)}
  * {@link IRecipeSlotBuilder#setOverlay(IDrawable, int, int)}]
  * and anywhere else things are drawn on the screen.
@@ -27,10 +27,10 @@ public interface IDrawable {
 
 	int getHeight();
 
-	default void draw(GuiGraphics guiGraphics) {
+	default void draw(GuiGraphicsExtractor guiGraphics) {
 		draw(guiGraphics, 0, 0);
 	}
 
-	void draw(GuiGraphics guiGraphics, int xOffset, int yOffset);
+	void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset);
 
 }

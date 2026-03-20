@@ -40,7 +40,7 @@ import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
 import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
 import mezz.jei.library.gui.widgets.ScrollGridRecipeWidget;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.FormattedText;
@@ -173,7 +173,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	}
 
 	@Override
-	public void drawRecipe(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawRecipe(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		ensureRecipeExtrasAreCreated();
 
 		recipeBackground.draw(guiGraphics, getRectWithBorder());
@@ -233,7 +233,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	}
 
 	@Override
-	public void drawOverlays(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawOverlays(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		ensureRecipeExtrasAreCreated();
 
 		final int recipeMouseX = mouseX - area.getX();

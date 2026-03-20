@@ -4,7 +4,7 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.common.gui.textures.JeiAtlasManager;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.Identifier;
@@ -45,12 +45,12 @@ public class DrawableSprite implements IDrawableStatic {
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+	public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset) {
 		draw(guiGraphics, xOffset, yOffset, 0, 0, 0, 0);
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
+	public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
 		TextureAtlasSprite sprite = atlasManager.getAtlas()
 			.getSprite(spriteId);
 

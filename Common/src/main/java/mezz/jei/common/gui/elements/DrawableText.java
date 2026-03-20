@@ -3,7 +3,7 @@ package mezz.jei.common.gui.elements;
 import mezz.jei.api.gui.drawable.IDrawable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class DrawableText implements IDrawable {
 	private final String text;
@@ -29,12 +29,12 @@ public class DrawableText implements IDrawable {
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+	public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Font fontRenderer = minecraft.font;
 		int textCenterX = xOffset + (width / 2);
 		int textCenterY = yOffset + (height / 2) - 3;
 		int stringCenter = fontRenderer.width(text) / 2;
-		guiGraphics.drawString(fontRenderer, text, textCenterX - stringCenter, textCenterY, color);
+		guiGraphics.text(fontRenderer, text, textCenterX - stringCenter, textCenterY, color);
 	}
 }

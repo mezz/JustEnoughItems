@@ -2,7 +2,7 @@ package mezz.jei.common.gui.elements;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.List;
 
@@ -39,14 +39,14 @@ public class DrawableCombined implements IDrawableAnimated {
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics) {
+	public void draw(GuiGraphicsExtractor guiGraphics) {
 		for (IDrawable drawable : drawables) {
 			drawable.draw(guiGraphics);
 		}
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+	public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset) {
 		for (IDrawable drawable : drawables) {
 			drawable.draw(guiGraphics, xOffset, yOffset);
 		}

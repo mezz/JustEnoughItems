@@ -7,7 +7,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.transfer.RecipeTransferUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -39,7 +39,7 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 	}
 
 	@Override
-	public void renderImage(Font font, int x, int y, int p_368529_, int p_368584_, GuiGraphics guiGraphics) {
+	public void extractImage(Font font, int x, int y, int w, int h, GuiGraphicsExtractor guiGraphics) {
 		var pose = guiGraphics.pose();
 		pose.pushMatrix();
 		{

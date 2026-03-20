@@ -47,7 +47,7 @@ import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import mezz.jei.gui.recipes.lookups.StaticFocusedRecipes;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
@@ -300,13 +300,13 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
-	protected void renderMenuBackground(GuiGraphics guiGraphics, int x, int y, int width, int height) {
-		this.renderTransparentBackground(guiGraphics);
+	protected void extractMenuBackground(GuiGraphicsExtractor guiGraphics, int x, int y, int width, int height) {
+		this.extractTransparentBackground(guiGraphics);
 		this.background.draw(guiGraphics, area);
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		guiGraphics.fill(
 			previousRecipeCategory.getX() + previousRecipeCategory.getWidth(),
 			previousRecipeCategory.getY(),

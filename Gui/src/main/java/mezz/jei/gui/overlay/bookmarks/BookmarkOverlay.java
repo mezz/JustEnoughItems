@@ -32,7 +32,7 @@ import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryButtonController;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -172,7 +172,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		return new ImmutableRect2i(0, 0, width, screenHeight);
 	}
 
-	public void drawScreen(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void drawScreen(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
 			this.bookmarkDragManager.updateDrag(mouseX, mouseY);
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
@@ -186,7 +186,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		}
 	}
 
-	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (!this.bookmarkDragManager.drawDraggedItem(guiGraphics, mouseX, mouseY)) {
 			if (isListDisplayed()) {
 				this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
@@ -289,7 +289,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		});
 	}
 
-	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			this.contents.drawOnForeground(guiGraphics, mouseX, mouseY);
 		}

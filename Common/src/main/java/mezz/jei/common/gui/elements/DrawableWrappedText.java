@@ -5,7 +5,7 @@ import mezz.jei.common.util.StringUtil;
 import mezz.jei.core.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.FormattedCharSequence;
@@ -41,7 +41,7 @@ public class DrawableWrappedText implements IDrawable {
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
+	public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset) {
 		Language language = Language.getInstance();
 		Minecraft minecraft = Minecraft.getInstance();
 		Font font = minecraft.font;
@@ -49,7 +49,7 @@ public class DrawableWrappedText implements IDrawable {
 		int yPos = 0;
 		for (FormattedText descriptionLine : descriptionLines) {
 			FormattedCharSequence charSequence = language.getVisualOrder(descriptionLine);
-			guiGraphics.drawString(font, charSequence, xOffset, yPos + yOffset, 0xFF000000, false);
+			guiGraphics.text(font, charSequence, xOffset, yPos + yOffset, 0xFF000000, false);
 			yPos += lineHeight;
 		}
 	}

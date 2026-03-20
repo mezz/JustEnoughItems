@@ -6,7 +6,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -58,7 +58,7 @@ public class RecipeCategoryTitle {
 		}
 	}
 
-	public void draw(GuiGraphics guiGraphics, Font font) {
+	public void draw(GuiGraphicsExtractor guiGraphics, Font font) {
 		StringUtil.drawCenteredStringWithShadow(guiGraphics, font, visibleString, area);
 	}
 }

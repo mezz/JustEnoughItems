@@ -8,7 +8,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;
@@ -38,12 +38,12 @@ public final class IconButton {
 		return area;
 	}
 
-	public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (this.area.isEmpty()) {
 			return;
 		}
 
-		this.button.render(guiGraphics, mouseX, mouseY, partialTicks);
+		this.button.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 		this.controller.drawExtras(guiGraphics, area.toMutable(), mouseX, mouseY, partialTicks);
 	}
 
@@ -59,7 +59,7 @@ public final class IconButton {
 		this.controller.updateState(this.button);
 	}
 
-	public void drawTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
 			JeiTooltip tooltip = new JeiTooltip();
 			controller.getTooltips(tooltip);

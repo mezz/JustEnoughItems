@@ -119,7 +119,7 @@ public class ConfigButtonController implements IIconButtonController {
 			mc.setScreen(configScreen.get());
 		} else {
 			Component message = getMissingConfigScreenMessage(configHelper);
-			mc.player.displayClientMessage(message, false);
+			mc.player.sendSystemMessage(message);
 		}
 	}
 

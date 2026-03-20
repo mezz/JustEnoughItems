@@ -12,7 +12,7 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
@@ -60,7 +60,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	}
 
 	@Override
-	public void draw(boolean selected, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void draw(boolean selected, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		super.draw(selected, guiGraphics, mouseX, mouseY);
 
 		IDrawable icon = RecipeCategoryIconUtil.create(category, recipeManager, guiHelper);

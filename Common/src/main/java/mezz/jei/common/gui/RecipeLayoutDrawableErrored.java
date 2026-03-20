@@ -14,7 +14,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -69,7 +69,7 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 	}
 
 	@Override
-	public void drawRecipe(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawRecipe(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		background.draw(guiGraphics, getRectWithBorder());
 
 		var poseStack = guiGraphics.pose();
@@ -90,7 +90,7 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 	}
 
 	@Override
-	public void drawOverlays(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawOverlays(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 
 	}
 

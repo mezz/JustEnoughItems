@@ -13,7 +13,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.core.collect.ListMultiMap;
 import mezz.jei.gui.overlay.elements.IElement;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -103,7 +103,7 @@ public class IngredientListRenderer {
 		}
 	}
 
-	public void render(GuiGraphics guiGraphics) {
+	public void render(GuiGraphicsExtractor guiGraphics) {
 		if (searchable && Internal.getClientToggleState().isEditModeEnabled()) {
 			renderEditMode(guiGraphics);
 		}
@@ -117,7 +117,7 @@ public class IngredientListRenderer {
 		}
 	}
 
-	private <T> void renderBatch(GuiGraphics guiGraphics, Map.Entry<IIngredientType<?>, List<BatchRenderElement<?>>> entry) {
+	private <T> void renderBatch(GuiGraphicsExtractor guiGraphics, Map.Entry<IIngredientType<?>, List<BatchRenderElement<?>>> entry) {
 		@SuppressWarnings("unchecked")
 		IIngredientType<T> type = (IIngredientType<T>) entry.getKey();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
@@ -126,7 +126,7 @@ public class IngredientListRenderer {
 		SafeIngredientUtil.renderBatch(guiGraphics, type, ingredientRenderer, elements);
 	}
 
-	private void renderEditMode(GuiGraphics guiGraphics) {
+	private void renderEditMode(GuiGraphicsExtractor guiGraphics) {
 		IEditModeConfig editModeConfig = Internal.getJeiRuntime().getEditModeConfig();
 
 		for (IngredientListSlot slot : slots) {
@@ -137,7 +137,7 @@ public class IngredientListRenderer {
 		}
 	}
 
-	private static <T> void renderEditMode(GuiGraphics guiGraphics, ImmutableRect2i area, int padding, ITypedIngredient<T> typedIngredient, IEditModeConfig config) {
+	private static <T> void renderEditMode(GuiGraphicsExtractor guiGraphics, ImmutableRect2i area, int padding, ITypedIngredient<T> typedIngredient, IEditModeConfig config) {
 		Set<IEditModeConfig.HideMode> hideModes = config.getIngredientHiddenUsingConfigFile(typedIngredient);
 		if (!hideModes.isEmpty()) {
 			boolean wildcard = hideModes.contains(IEditModeConfig.HideMode.WILDCARD);

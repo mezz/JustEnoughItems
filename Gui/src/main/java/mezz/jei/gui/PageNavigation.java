@@ -12,7 +12,7 @@ import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class PageNavigation {
 	private final IPaged paged;
@@ -88,7 +88,7 @@ public class PageNavigation {
 		this.backButton.tick();
 	}
 
-	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (isVisible()) {
 			guiGraphics.fill(
 				backButton.getX() + backButton.getWidth(),
@@ -102,7 +102,7 @@ public class PageNavigation {
 			Font font = minecraft.font;
 			ImmutableRect2i centerArea = MathUtil.centerTextArea(this.area, font, this.pageNumDisplayString);
 			if (centerArea.width() <= availableWidth) {
-				guiGraphics.drawString(font, pageNumDisplayString, centerArea.getX(), centerArea.getY(), 0xFFFFFFFF);
+				guiGraphics.text(font, pageNumDisplayString, centerArea.getX(), centerArea.getY(), 0xFFFFFFFF);
 			}
 			nextButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 			backButton.draw(guiGraphics, mouseX, mouseY, partialTicks);

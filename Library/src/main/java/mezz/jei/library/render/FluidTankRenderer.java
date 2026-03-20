@@ -8,7 +8,7 @@ import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -61,12 +61,12 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, T fluidStack) {
+	public void render(GuiGraphicsExtractor guiGraphics, T fluidStack) {
 		render(guiGraphics, fluidStack, 0, 0);
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, T ingredient, int posX, int posY) {
+	public void render(GuiGraphicsExtractor guiGraphics, T ingredient, int posX, int posY) {
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
 		Fluid fluid = type.getBase(ingredient);
 		if (fluid.isSame(Fluids.EMPTY)) {
@@ -86,7 +86,7 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 			});
 	}
 
-	private static void drawTiledSprite(GuiGraphics guiGraphics, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite, int posX, int posY) {
+	private static void drawTiledSprite(GuiGraphicsExtractor guiGraphics, final int tiledWidth, final int tiledHeight, int color, int scaledAmount, TextureAtlasSprite sprite, int posX, int posY) {
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 		SpriteContents spriteContents = sprite.contents();
 		GuiSpriteScaling.Tile tileScaling = new GuiSpriteScaling.Tile(spriteContents.width(), spriteContents.height());

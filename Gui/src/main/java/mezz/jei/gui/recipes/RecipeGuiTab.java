@@ -7,7 +7,7 @@ import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IUserInputHandler;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public abstract class RecipeGuiTab implements IUserInputHandler {
 	public static final int TAB_HEIGHT = 24;
@@ -25,7 +25,7 @@ public abstract class RecipeGuiTab implements IUserInputHandler {
 
 	public abstract boolean isSelected(IRecipeCategory<?> selectedCategory);
 
-	public void draw(boolean selected, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void draw(boolean selected, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		Textures textures = Internal.getTextures();
 		IDrawable tab = selected ? textures.getTabSelected() : textures.getTabUnselected();
 

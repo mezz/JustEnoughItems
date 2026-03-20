@@ -4,7 +4,7 @@ import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.util.ImmutableRect2i;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.CommonComponents;
@@ -39,7 +39,7 @@ class InternalIconButton extends Button implements IButtonState {
 	}
 
 	@Override
-	protected void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	protected void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		SPRITES.render(
 			guiGraphics,
 			this.active,
