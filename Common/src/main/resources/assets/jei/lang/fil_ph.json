@@ -152,7 +152,7 @@
   "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled": "Ihatak Upang Ayusin ang mga Bookmark",
   "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled.description": "Paganahin ang paghahatak ng mga bookmark upang muling ayusin ang mga ito sa listahan.",
 
-  "jei.config.client.tooltips": "Tooltips",
+  "jei.config.client.tooltips": "Mga Tooltip",
   "jei.config.client.tooltips.description": "Mga opsyon sa konpigurasyon na may kaugnayan sa Tooltips sa JEI.",
   "jei.config.client.tooltips.bookmarkTooltipFeatures": "Mga Tampok ng Tooltip ng Bookmark",
   "jei.config.client.tooltips.bookmarkTooltipFeatures.description": "Mga karagdagang tampok para sa mga tooltip ng bookmark.",
@@ -289,7 +289,7 @@
   "jei.config.debug.debug.logSuffixTreeStats": "Itala ang Mga Istatistika ng Datos na Paghahanap",
   "jei.config.debug.debug.logSuffixTreeStats.description": "Magtala ng impormasyon tungkol sa mga suffix tree na ginagamit para sa paghahanap, upang makatulong sa pag-debug ng JEI.",
 
-  "jei.config.colors.colors": "Colors",
+  "jei.config.colors.colors": "Mga Kulay",
   "jei.config.colors.colors.description": "Mga opsyon sa konpigurasyon na may kaugnayan sa paghahanap ng mga kulay ng mga item sa JEI",
   "jei.config.colors.colors.searchColors": "Maghanap ng Mga Kulay",
   "jei.config.colors.colors.searchColors.description": "Mga halaga ng kulay na hahanapin.",
