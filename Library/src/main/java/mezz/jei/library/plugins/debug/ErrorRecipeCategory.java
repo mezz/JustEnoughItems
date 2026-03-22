@@ -10,7 +10,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.Internal;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
@@ -37,7 +37,7 @@ public class ErrorRecipeCategory extends AbstractRecipeCategory<ErrorRecipe> {
 	}
 
 	@Override
-	public void draw(ErrorRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+	public void draw(ErrorRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
 		if (recipe.getType().equals(ErrorRecipe.CrashType.Draw)) {
 			throw new RuntimeException("JEI ErrorRecipe is intentionally crashing for testing purposes");
 		}

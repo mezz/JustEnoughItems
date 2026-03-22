@@ -29,7 +29,7 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.library.plugins.debug.ingredients.DebugIngredient;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
@@ -104,13 +104,13 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	}
 
 	@Override
-	public void draw(DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+	public void draw(DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
 		if (runtime != null) {
 			this.item.draw(guiGraphics, 50, 20);
 
 			IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
 			Minecraft minecraft = Minecraft.getInstance();
-			guiGraphics.drawString(minecraft.font, ingredientFilter.getFilterText(), 20, 52, 0, false);
+			guiGraphics.text(minecraft.font, ingredientFilter.getFilterText(), 20, 52, 0, false);
 
 			IIngredientListOverlay ingredientListOverlay = runtime.getIngredientListOverlay();
 			Optional<ITypedIngredient<?>> ingredientUnderMouse = getIngredientUnderMouse(ingredientListOverlay, runtime.getBookmarkOverlay());
@@ -118,7 +118,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 		}
 
 		Button button = recipe.getButton();
-		button.render(guiGraphics, (int) mouseX, (int) mouseY, 0);
+		button.extractRenderState(guiGraphics, (int) mouseX, (int) mouseY, 0);
 	}
 
 	private static Optional<ITypedIngredient<?>> getIngredientUnderMouse(IIngredientListOverlay ingredientListOverlay, IBookmarkOverlay bookmarkOverlay) {
@@ -126,10 +126,10 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 			.or(bookmarkOverlay::getIngredientUnderMouse);
 	}
 
-	private <T> void drawIngredientName(Minecraft minecraft, GuiGraphics guiGraphics, ITypedIngredient<T> ingredient) {
+	private <T> void drawIngredientName(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, ITypedIngredient<T> ingredient) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredient.getType());
 		String serialized = ingredientHelper.getIdentifier(ingredient.getIngredient()).toString();
-		guiGraphics.drawString(minecraft.font, serialized, 50, 52, 0, false);
+		guiGraphics.text(minecraft.font, serialized, 50, 52, 0, false);
 	}
 
 	@Override

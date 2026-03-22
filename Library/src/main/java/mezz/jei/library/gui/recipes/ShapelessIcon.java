@@ -3,7 +3,7 @@ package mezz.jei.library.gui.recipes;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.util.ImmutableRect2i;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public class ShapelessIcon {
@@ -15,7 +15,7 @@ public class ShapelessIcon {
 		this.area = new ImmutableRect2i(x, y, icon.getWidth(), icon.getHeight());
 	}
 
-	public void draw(GuiGraphics guiGraphics) {
+	public void draw(GuiGraphicsExtractor guiGraphics) {
 		icon.draw(guiGraphics, area.getX(), area.getY());
 	}
 

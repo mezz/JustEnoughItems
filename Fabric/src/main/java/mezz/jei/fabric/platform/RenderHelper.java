@@ -6,15 +6,16 @@ import com.mojang.datafixers.util.Either;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
-import net.minecraft.client.renderer.block.BlockModelShaper;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.block.BlockStateModelSet;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
+import net.minecraft.client.resources.model.ModelManager;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.tags.TagKey;
@@ -45,9 +46,10 @@ public class RenderHelper implements IPlatformRenderHelper {
 	@Nullable
 	public TextureAtlasSprite getTextureAtlasSprite(BlockState blockState) {
 		Minecraft minecraft = Minecraft.getInstance();
-		BlockRenderDispatcher blockRendererDispatcher = minecraft.getBlockRenderer();
-		BlockModelShaper blockModelShapes = blockRendererDispatcher.getBlockModelShaper();
-		TextureAtlasSprite textureAtlasSprite = blockModelShapes.getParticleIcon(blockState);
+		ModelManager modelManager = minecraft.getModelManager();
+		BlockStateModelSet blockStateModelSet = modelManager.getBlockStateModelSet();
+		Material.Baked material = blockStateModelSet.getParticleMaterial(blockState);
+		TextureAtlasSprite textureAtlasSprite = material.sprite();
 		if (textureAtlasSprite.atlasLocation().equals(MissingTextureAtlasSprite.getLocation())) {
 			return null;
 		}
@@ -55,17 +57,17 @@ public class RenderHelper implements IPlatformRenderHelper {
 	}
 
 	@Override
-	public void blitSprite(GuiGraphics guiGraphics, RenderPipeline renderPipeline, TextureAtlasSprite sprite, int textureWidth, int textureHeight, int uPosition, int vPosition, int x, int y, int uWidth, int vHeight) {
+	public void blitSprite(GuiGraphicsExtractor guiGraphics, RenderPipeline renderPipeline, TextureAtlasSprite sprite, int textureWidth, int textureHeight, int uPosition, int vPosition, int x, int y, int uWidth, int vHeight) {
 		guiGraphics.blitSprite(renderPipeline, sprite, textureWidth, textureHeight, uPosition, vPosition, x, y, uWidth, vHeight, -1);
 	}
 
 	@Override
-	public void blitNineSlicedSprite(GuiGraphics guiGraphics, RenderPipeline renderPipeline, TextureAtlasSprite sprite, GuiSpriteScaling.NineSlice scaling, int xOffset, int yOffset, int width, int height) {
+	public void blitNineSlicedSprite(GuiGraphicsExtractor guiGraphics, RenderPipeline renderPipeline, TextureAtlasSprite sprite, GuiSpriteScaling.NineSlice scaling, int xOffset, int yOffset, int width, int height) {
 		guiGraphics.blitNineSlicedSprite(renderPipeline, sprite, scaling, xOffset, yOffset, width, height, -1);
 	}
 
 	@Override
-	public void blitTiledSprite(GuiGraphics guiGraphics, RenderPipeline renderPipeline, TextureAtlasSprite sprite, GuiSpriteScaling.Tile scaling, int xOffset, int yOffset, int width, int height, int color) {
+	public void blitTiledSprite(GuiGraphicsExtractor guiGraphics, RenderPipeline renderPipeline, TextureAtlasSprite sprite, GuiSpriteScaling.Tile scaling, int xOffset, int yOffset, int width, int height, int color) {
 		guiGraphics.blitTiledSprite(
 			renderPipeline,
 			sprite,
@@ -95,7 +97,7 @@ public class RenderHelper implements IPlatformRenderHelper {
 	}
 
 	@Override
-	public void renderTooltip(GuiGraphics guiGraphics, List<Either<FormattedText, TooltipComponent>> elements, int x, int y, Font font, ItemStack stack) {
+	public void renderTooltip(GuiGraphicsExtractor guiGraphics, List<Either<FormattedText, TooltipComponent>> elements, int x, int y, Font font, ItemStack stack) {
 		List<ClientTooltipComponent> components = elements.stream()
 			.flatMap(e -> e.map(
 				text -> font.split(text, 400).stream().map(ClientTooltipComponent::create),

@@ -10,7 +10,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.input.UserInput;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.phys.Vec2;
 
@@ -46,7 +46,7 @@ public class GhostIngredientDrag<T> {
 		this.dragCanStartTime = System.currentTimeMillis() + clientConfig.getDragDelayMs();
 	}
 
-	public void drawTargets(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawTargets(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		for (HandlerData<T> data : handlersData) {
 			IGhostIngredientHandler<?> handler = data.handler;
 			if (handler.shouldHighlightTargets()) {
@@ -79,7 +79,7 @@ public class GhostIngredientDrag<T> {
 		return mouseDistSq > 64.0;
 	}
 
-	public void drawItem(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawItem(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (!canStart(this, mouseX, mouseY)) {
 			return;
 		}
@@ -87,7 +87,7 @@ public class GhostIngredientDrag<T> {
 		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, ingredient, mouseX - 8, mouseY - 8);
 	}
 
-	public static void drawTargets(GuiGraphics guiGraphics, int mouseX, int mouseY, List<Rect2i> targetAreas) {
+	public static void drawTargets(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, List<Rect2i> targetAreas) {
 		for (Rect2i area : targetAreas) {
 			int color;
 			if (MathUtil.contains(area, mouseX, mouseY)) {

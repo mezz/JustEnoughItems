@@ -8,7 +8,7 @@ import mezz.jei.library.render.batch.IItemStackBatchRenderer;
 import mezz.jei.library.render.batch.SimpleItemStackBatchRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -22,22 +22,22 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	private final IItemStackBatchRenderer batchRenderer = new SimpleItemStackBatchRenderer();
 
 	@Override
-	public void render(GuiGraphics guiGraphics, @Nullable ItemStack ingredient) {
+	public void render(GuiGraphicsExtractor guiGraphics, @Nullable ItemStack ingredient) {
 		render(guiGraphics, ingredient, 0, 0);
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, @Nullable ItemStack ingredient, int posX, int posY) {
+	public void render(GuiGraphicsExtractor guiGraphics, @Nullable ItemStack ingredient, int posX, int posY) {
 		if (ingredient != null) {
 			Minecraft minecraft = Minecraft.getInstance();
 			Font font = getFontRenderer(minecraft, ingredient);
-			guiGraphics.renderFakeItem(ingredient, posX, posY);
-			guiGraphics.renderItemDecorations(font, ingredient, posX, posY);
+			guiGraphics.fakeItem(ingredient, posX, posY);
+			guiGraphics.itemDecorations(font, ingredient, posX, posY);
 		}
 	}
 
 	@Override
-	public void renderBatch(GuiGraphics guiGraphics, List<BatchRenderElement<ItemStack>> batchRenderElements) {
+	public void renderBatch(GuiGraphicsExtractor guiGraphics, List<BatchRenderElement<ItemStack>> batchRenderElements) {
 		batchRenderer.renderBatch(guiGraphics, this, batchRenderElements);
 	}
 

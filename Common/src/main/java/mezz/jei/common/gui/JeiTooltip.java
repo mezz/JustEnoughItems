@@ -25,7 +25,7 @@ import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
@@ -135,7 +135,7 @@ public class JeiTooltip implements ITooltipBuilder {
 			.collect(Collectors.joining("\n", "[\n", "\n]"));
 	}
 
-	public void draw(GuiGraphics guiGraphics, int x, int y) {
+	public void draw(GuiGraphicsExtractor guiGraphics, int x, int y) {
 		if (typedIngredient != null) {
 			draw(guiGraphics, x, y, typedIngredient);
 			return;
@@ -153,7 +153,7 @@ public class JeiTooltip implements ITooltipBuilder {
 		}
 	}
 
-	private <T> void draw(GuiGraphics guiGraphics, int x, int y, ITypedIngredient<T> typedIngredient) {
+	private <T> void draw(GuiGraphicsExtractor guiGraphics, int x, int y, ITypedIngredient<T> typedIngredient) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
@@ -161,7 +161,7 @@ public class JeiTooltip implements ITooltipBuilder {
 	}
 
 	public <T> void draw(
-		GuiGraphics guiGraphics,
+		GuiGraphicsExtractor guiGraphics,
 		int x,
 		int y,
 		ITypedIngredient<T> typedIngredient,

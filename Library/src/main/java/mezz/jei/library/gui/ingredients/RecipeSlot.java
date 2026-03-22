@@ -25,7 +25,7 @@ import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Unmodifiable;
@@ -173,7 +173,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	}
 
 	@Override
-	public void drawHighlight(GuiGraphics guiGraphics, int color) {
+	public void drawHighlight(GuiGraphicsExtractor guiGraphics, int color) {
 		int x = this.rect.getX();
 		int y = this.rect.getY();
 		int width = this.rect.getWidth();
@@ -273,7 +273,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics) {
+	public void draw(GuiGraphicsExtractor guiGraphics) {
 		final int x = this.rect.getX();
 		final int y = this.rect.getY();
 
@@ -289,7 +289,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		}
 	}
 
-	private <T> void drawIngredient(GuiGraphics guiGraphics, ITypedIngredient<T> typedIngredient, int xPos, int yPos) {
+	private <T> void drawIngredient(GuiGraphicsExtractor guiGraphics, ITypedIngredient<T> typedIngredient, int xPos, int yPos) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
 
@@ -297,7 +297,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	}
 
 	@Override
-	public void drawHoverOverlays(GuiGraphics guiGraphics) {
+	public void drawHoverOverlays(GuiGraphicsExtractor guiGraphics) {
 		drawHighlight(guiGraphics, 0x80FFFFFF);
 	}
 
@@ -319,7 +319,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	}
 
 	@Override
-	public void drawTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		getDisplayedIngredient()
 			.ifPresent(ingredient -> {
 				JeiTooltip tooltip = new JeiTooltip();

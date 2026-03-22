@@ -8,7 +8,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.util.Mth;
@@ -76,7 +76,7 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 
 	protected abstract int getVisibleAmount();
 	protected abstract int getHiddenAmount();
-	protected abstract void drawContents(GuiGraphics guiGraphics, double mouseX, double mouseY, float scrollOffsetY);
+	protected abstract void drawContents(GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY, float scrollOffsetY);
 
 	protected float getScrollOffsetY() {
 		return scrollOffsetY;
@@ -93,7 +93,7 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 	}
 
 	@Override
-	public final void drawWidget(GuiGraphics guiGraphics, double mouseX, double mouseY) {
+	public final void drawWidget(GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
 		scrollbarBackground.draw(guiGraphics, scrollArea);
 
 		ImmutableRect2i scrollbarMarkerArea = calculateScrollbarMarkerArea();

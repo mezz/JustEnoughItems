@@ -3,7 +3,7 @@ package mezz.jei.gui.elements;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
@@ -25,7 +25,7 @@ public final class ButtonSprites {
 		this.pressedFocused = textures.getButtonPressedHighlight();
 	}
 
-	public void render(GuiGraphics guiGraphics, boolean enabled, boolean focused, boolean pressed, int x, int y, int width, int height, int alpha) {
+	public void render(GuiGraphicsExtractor guiGraphics, boolean enabled, boolean focused, boolean pressed, int x, int y, int width, int height, int alpha) {
 		if (pressed) {
 			if (focused) {
 				this.pressedFocused.draw(guiGraphics, x, y, width, height);

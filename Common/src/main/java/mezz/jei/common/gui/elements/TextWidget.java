@@ -11,7 +11,7 @@ import mezz.jei.common.util.StringUtil;
 import mezz.jei.core.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.FormattedText;
@@ -140,7 +140,7 @@ public class TextWidget implements ITextWidget, IRecipeWidget {
 	}
 
 	@Override
-	public void drawWidget(GuiGraphics guiGraphics, double mouseX, double mouseY) {
+	public void drawWidget(GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
 		Language language = Language.getInstance();
 
 		final int lineHeight = getLineHeight();
@@ -149,7 +149,7 @@ public class TextWidget implements ITextWidget, IRecipeWidget {
 		for (FormattedText line : lines) {
 			FormattedCharSequence charSequence = language.getVisualOrder(line);
 			int xPos = getXPos(charSequence);
-			guiGraphics.drawString(font, charSequence, xPos, yPos, color, shadow);
+			guiGraphics.text(font, charSequence, xPos, yPos, color, shadow);
 			yPos += lineHeight;
 		}
 

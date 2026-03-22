@@ -29,7 +29,7 @@ import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.util.AlignmentUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -150,7 +150,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		return area;
 	}
 
-	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		ingredientListRenderer.render(guiGraphics);
 
 		if (isMouseOver(mouseX, mouseY)) {
@@ -166,10 +166,10 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 
 	// TODO use the proper slot highlight sprite and also draw slot highlight back sprite
 	/**
-	 * Matches the highlight code in {@link AbstractContainerScreen#renderSlotHighlightFront(GuiGraphics)}
+	 * Matches the highlight code in {@link AbstractContainerScreen#renderSlotHighlightFront(GuiGraphicsExtractor)}
 	 * but with a custom area width and height
 	 */
-	public static void drawHighlight(GuiGraphics guiGraphics, ImmutableRect2i area) {
+	public static void drawHighlight(GuiGraphicsExtractor guiGraphics, ImmutableRect2i area) {
 		guiGraphics.fillGradient(
 			area.getX(),
 			area.getY(),
@@ -180,7 +180,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		);
 	}
 
-	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
 			if (this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				this.deleteItemHandler.drawTooltips(guiGraphics, mouseX, mouseY);
@@ -197,7 +197,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		}
 	}
 
-	private <T> void drawTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY, IElement<T> element) {
+	private <T> void drawTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, IElement<T> element) {
 		ITypedIngredient<T> typedIngredient = element.getTypedIngredient();
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);

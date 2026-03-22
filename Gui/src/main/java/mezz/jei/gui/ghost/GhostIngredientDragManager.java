@@ -14,7 +14,7 @@ import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
@@ -50,7 +50,7 @@ public class GhostIngredientDragManager {
 		this.toggleState = toggleState;
 	}
 
-	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (!(minecraft.screen instanceof AbstractContainerScreen)) { // guiContainer uses drawOnForeground
 			drawGhostIngredientHighlights(guiGraphics, mouseX, mouseY);
 		}
@@ -61,11 +61,11 @@ public class GhostIngredientDragManager {
 		ghostIngredientsReturning.removeIf(GhostIngredientReturning::isComplete);
 	}
 
-	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		drawGhostIngredientHighlights(guiGraphics, mouseX, mouseY);
 	}
 
-	private void drawGhostIngredientHighlights(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	private void drawGhostIngredientHighlights(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (this.ghostIngredientDrag != null) {
 			this.ghostIngredientDrag.drawTargets(guiGraphics, mouseX, mouseY);
 		} else {

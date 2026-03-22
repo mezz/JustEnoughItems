@@ -6,7 +6,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.SafeIngredientUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.phys.Vec2;
 
@@ -55,7 +55,7 @@ public class GhostIngredientReturning<T> {
 		}
 	}
 
-	public void drawItem(GuiGraphics guiGraphics) {
+	public void drawItem(GuiGraphicsExtractor guiGraphics) {
 		long time = System.currentTimeMillis();
 		long elapsed = time - startTime;
 		double percent = Math.min(elapsed / (double) this.duration, 1);

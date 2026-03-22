@@ -16,7 +16,7 @@ import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.TooltipFlag;
@@ -107,7 +107,7 @@ public final class SafeIngredientUtil {
 	}
 
 	public static <T> void renderBatch(
-		GuiGraphics guiGraphics,
+		GuiGraphicsExtractor guiGraphics,
 		IIngredientType<T> ingredientType,
 		IIngredientRenderer<T> ingredientRenderer,
 		List<BatchRenderElement<T>> elements
@@ -132,7 +132,7 @@ public final class SafeIngredientUtil {
 	}
 
 	public static <T> void render(
-		GuiGraphics guiGraphics,
+		GuiGraphicsExtractor guiGraphics,
 		IIngredientRenderer<T> ingredientRenderer,
 		ITypedIngredient<T> typedIngredient,
 		int x,
@@ -142,7 +142,7 @@ public final class SafeIngredientUtil {
 	}
 
 	public static <T> void render(
-		GuiGraphics guiGraphics,
+		GuiGraphicsExtractor guiGraphics,
 		IIngredientRenderer<T> ingredientRenderer,
 		IIngredientType<T> ingredientType,
 		BatchRenderElement<T> element
@@ -151,7 +151,7 @@ public final class SafeIngredientUtil {
 	}
 
 	public static <T> void render(
-		GuiGraphics guiGraphics,
+		GuiGraphicsExtractor guiGraphics,
 		IIngredientRenderer<T> ingredientRenderer,
 		IIngredientType<T> ingredientType,
 		T ingredient,
@@ -186,11 +186,11 @@ public final class SafeIngredientUtil {
 			.orElse(false);
 	}
 
-	private static void renderError(GuiGraphics guiGraphics) {
+	private static void renderError(GuiGraphicsExtractor guiGraphics) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Font font = minecraft.font;
-		guiGraphics.drawString(font, "ERR", 0, 0, 0xFFFF0000, false);
-		guiGraphics.drawString(font, "OR", 0, 8, 0xFFFF0000, false);
+		guiGraphics.text(font, "ERR", 0, 0, 0xFFFF0000, false);
+		guiGraphics.text(font, "OR", 0, 8, 0xFFFF0000, false);
 	}
 
 }

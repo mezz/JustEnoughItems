@@ -28,7 +28,7 @@ import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.CharacterEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -190,9 +190,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		}
 	}
 
-	public void drawScreen(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void drawScreen(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
-			this.searchField.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
+			this.searchField.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (this.screenPropertiesCache.hasValidScreen()) {
@@ -204,7 +204,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		}
 	}
 
-	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		}
@@ -216,7 +216,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		}
 	}
 
-	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	public void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (isListDisplayed()) {
 			this.contents.drawOnForeground(guiGraphics, mouseX, mouseY);
 		}

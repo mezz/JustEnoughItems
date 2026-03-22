@@ -13,7 +13,7 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.RecipeTransferUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -87,7 +87,7 @@ public class RecipeTransferButtonController implements IIconButtonController {
 	}
 
 	@Override
-	public void drawExtras(GuiGraphics guiGraphics, Rect2i buttonArea, int mouseX, int mouseY, float partialTicks) {
+	public void drawExtras(GuiGraphicsExtractor guiGraphics, Rect2i buttonArea, int mouseX, int mouseY, float partialTicks) {
 		IRecipeTransferError recipeTransferError = this.recipeTransferError;
 		if (recipeTransferError != null) {
 			if (recipeTransferError.getType() == IRecipeTransferError.Type.COSMETIC) {

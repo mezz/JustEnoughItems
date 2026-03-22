@@ -8,7 +8,7 @@ import mezz.jei.core.util.TextHistory;
 import mezz.jei.gui.input.focus.ScreenFocusHandler;
 import mezz.jei.gui.input.handlers.TextFieldInputHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
@@ -101,10 +101,10 @@ public class GuiTextFieldFilter extends EditBox {
 	}
 
 	@Override
-	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (this.isVisible()) {
 			background.draw(guiGraphics, this.backgroundBounds);
 		}
-		super.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
+		super.extractWidgetRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 	}
 }
