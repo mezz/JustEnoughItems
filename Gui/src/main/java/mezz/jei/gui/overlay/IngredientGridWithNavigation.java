@@ -15,6 +15,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
+import mezz.jei.gui.ghost.GhostIngredientQuickMoveManager;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
@@ -66,6 +67,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private final ScalableDrawable slotBackground;
 	private final CommandUtil commandUtil;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
+	private final GhostIngredientQuickMoveManager ghostIngredientQuickMoveManager;
 
 	private ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i slotBackgroundArea = ImmutableRect2i.EMPTY;
@@ -98,6 +100,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.slotBackground = slotBackground;
 		this.commandUtil = new CommandUtil(clientConfig, serverConnection);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.ingredientGrid, screenHelper, ingredientManager, toggleState);
+		this.ghostIngredientQuickMoveManager = new GhostIngredientQuickMoveManager(this.ingredientGrid, screenHelper);
 
 		this.ingredientSource.addSourceListChangedListener(() -> {
 			if (isActive()) {
@@ -287,7 +290,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	public IUserInputHandler createInputHandler() {
 		return new CombinedInputHandler(
 			this.debugName,
-			new UserInputHandler(this.pageDelegate, this.ingredientGrid, this.toggleState, this.clientConfig, this.commandUtil, this.ingredientManager, this::isMouseOver),
+			new UserInputHandler(this.pageDelegate, this.ingredientGrid, this.toggleState, this.clientConfig, this.commandUtil, this.ingredientManager, this::isMouseOver, this.ghostIngredientQuickMoveManager),
 			this.ingredientGrid.getInputHandler(),
 			this.navigation.createInputHandler()
 		);
@@ -425,6 +428,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		private final IMouseOverable mouseOverable;
 		private final CommandUtil commandUtil;
 		private final IIngredientManager ingredientManager;
+		private final GhostIngredientQuickMoveManager ghostIngredientQuickMoveManager;
 
 		private UserInputHandler(
 			IngredientGridPaged paged,
@@ -433,7 +437,8 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			IClientConfig clientConfig,
 			CommandUtil commandUtil,
 			IIngredientManager ingredientManager,
-			IMouseOverable mouseOverable
+			IMouseOverable mouseOverable,
+			GhostIngredientQuickMoveManager ghostIngredientQuickMoveManager
 		) {
 			this.paged = paged;
 			this.focusSource = focusSource;
@@ -442,6 +447,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			this.mouseOverable = mouseOverable;
 			this.commandUtil = commandUtil;
 			this.ingredientManager = ingredientManager;
+			this.ghostIngredientQuickMoveManager = ghostIngredientQuickMoveManager;
 		}
 
 		@Override
@@ -471,6 +477,12 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			if (input.is(keyBindings.getPreviousPage())) {
 				this.paged.previousPage();
 				return Optional.of(this);
+			}
+
+			if (input.is(keyBindings.getQuickMove())) {
+				if (this.ghostIngredientQuickMoveManager.quickMove(screen, input)) {
+					return Optional.of(this);
+				}
 			}
 
 			return checkHotbarKeys(screen, input);
