@@ -34,6 +34,7 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping toggleBookmarkOverlay;
 	private final IJeiKeyMapping transferRecipeBookmark;
 	private final IJeiKeyMapping maxTransferRecipeBookmark;
+	private final IJeiKeyMapping quickMove;
 	private final IJeiKeyMapping shareToChat;
 
 	private final IJeiKeyMapping showRecipe;
@@ -152,6 +153,12 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
 			.buildMouseLeft()
 			.register(registerMethod);
+
+		quickMove = mouseHover.createMapping("key.jei.quickMove")
+				.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
+				.setModifier(JeiKeyModifier.SHIFT)
+				.buildMouseLeft()
+				.register(registerMethod);
 
 		shareToChat = mouseHover.createMapping("key.jei.shareToChat")
 				.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
@@ -389,6 +396,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	@Override
 	public IJeiKeyMapping getMaxTransferRecipeBookmark() {
 		return maxTransferRecipeBookmark;
+	}
+
+	@Override
+	public IJeiKeyMapping getQuickMove() {
+		return quickMove;
 	}
 
 	@Override
