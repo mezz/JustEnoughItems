@@ -153,7 +153,7 @@
   "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled.description": "Paganahin ang paghahatak ng mga bookmark upang muling ayusin ang mga ito sa listahan.",
 
   "jei.config.client.tooltips": "Mga Tooltip",
-  "jei.config.client.tooltips.description": "Mga opsyon sa konpigurasyon na may kaugnayan sa Tooltips sa JEI.",
+  "jei.config.client.tooltips.description": "Mga opsyon sa konpigurasyon na may kaugnayan sa Mga Tooltip sa JEI.",
   "jei.config.client.tooltips.bookmarkTooltipFeatures": "Mga Tampok ng Tooltip ng Bookmark",
   "jei.config.client.tooltips.bookmarkTooltipFeatures.description": "Mga karagdagang tampok para sa mga tooltip ng bookmark.",
   "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures": "Mag-Shift para sa mga tooltip ng bookmark",
