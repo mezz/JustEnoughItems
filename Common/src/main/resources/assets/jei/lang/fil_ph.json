@@ -331,7 +331,7 @@
   "jei.message.config.folder": "O pindutin dito upang buksan ang folder ng konpigurasyon ng JEI sa halip",
   "jei.message.copy.recipe.id.success": "Ang sumusunod na ID ng resipi ay kinopya sa clipboard: %s",
   "jei.message.copy.recipe.id.failure": "Nabigong makopya ang ID ng resipi sa clipboard dahil hindi kilala ang kanyang ID",
-  "jei.message.missing.recipes.from.server": "Nawawala ang mga resipi ng JEI. Mangyaring i-install ang JEI sa server upang mai-sync ang mga resipi sa kliyente.\nSimula sa Minecraft 1.21.2, ang mga resipi ay iniimbak sa server at hindi sa client.",
+  "jei.message.missing.recipes.from.server": "Nawawala ang mga resipi ng JEI. Mangyaring i-install ang JEI sa server upang mai-sync ang mga resipi sa kliyente.\nSimula sa Minecraft 1.21.2, ang mga resipi ay iniimbak sa server at hindi sa kliyente.",
 
   "_comment": "Key Names",
   "jei.key.combo.shift": "SHIFT + %s",
