@@ -86,6 +86,14 @@ public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> i
 		LOGGER.info("Ghost Ingredient Handling Complete");
 	}
 
+	@Override
+	public <I> boolean quickMove(T gui, ITypedIngredient<I> typedIngredient) {
+		IIngredientType<I> ingredientType = typedIngredient.getType();
+		IIngredientHelper<I> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		LOGGER.info("Ghost Ingredient Quick Moved with {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
+		return true;
+	}
+
 	private static class DebugInfoTarget<I> implements IGhostIngredientHandler.Target<I> {
 		private final String message;
 		private final Rect2i rectangle;

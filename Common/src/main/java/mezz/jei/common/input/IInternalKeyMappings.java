@@ -32,6 +32,7 @@ public interface IInternalKeyMappings extends IJeiKeyMappings {
 	@Override
 	IJeiKeyMapping getShowUses();
 
+	IJeiKeyMapping getQuickMove();
 	IJeiKeyMapping getShareToChat();
 	IJeiKeyMapping getCheatOneItem();
 	IJeiKeyMapping getCheatItemStack();
