@@ -47,7 +47,7 @@ public interface IGhostIngredientHandler<T extends Screen> {
 	 *
 	 * @return true if quick-move was handled, false if the next handler should be tried.
 	 *
-	 * @since TODO - needs to bump the minor version
+	 * @since 29.1.0
 	 */
 	default <I> boolean quickMove(T gui, ITypedIngredient<I> ingredient) { return false; }
 
