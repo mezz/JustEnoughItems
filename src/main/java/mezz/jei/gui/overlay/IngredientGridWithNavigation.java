@@ -25,6 +25,7 @@ import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.GuiScreenHelper;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
+import mezz.jei.gui.ghost.GhostIngredientQuickMoveHandler;
 import mezz.jei.gui.ghost.IGhostIngredientDragSource;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.gui.recipes.RecipesGui;
@@ -79,7 +80,8 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IGhost
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this, guiScreenHelper, ingredientManager, worldConfig);
 		this.pageDelegate = new IngredientGridPaged();
 		this.navigation = new PageNavigation(this.pageDelegate, false);
-		this.mouseHandler = new CombinedMouseHandler(this.pageDelegate, this.ingredientGrid.getMouseHandler(), this.navigation.getMouseHandler());
+		GhostIngredientQuickMoveHandler quickMoveHandler = new GhostIngredientQuickMoveHandler(this, guiScreenHelper);
+		this.mouseHandler = new CombinedMouseHandler(quickMoveHandler, this.pageDelegate, this.ingredientGrid.getMouseHandler(), this.navigation.getMouseHandler());
 	}
 
 	public void updateLayout(boolean resetToFirstPage) {
