@@ -97,7 +97,7 @@ public class FurnaceFuelCategory extends FurnaceVariantCategory<IJeiFuelingRecip
 		flame.draw(poseStack, 1, 0);
 		Minecraft minecraft = Minecraft.getInstance();
 		Font font = minecraft.font;
-		Component smeltCountText = createSmeltCountText(burnTime);
+		Component smeltCountText = createSmeltCountText(recipe.getBurnTime());
 		ImmutableRect2i centerArea = MathUtil.centerTextArea(this.textArea, font, smeltCountText);
 		font.draw(poseStack, smeltCountText, centerArea.getX(), centerArea.getY(), 0xFF808080);
 	}
