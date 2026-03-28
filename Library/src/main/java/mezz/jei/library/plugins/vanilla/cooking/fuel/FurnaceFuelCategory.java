@@ -51,7 +51,7 @@ public class FurnaceFuelCategory extends AbstractRecipeCategory<IJeiFuelingRecip
 		builder.addAnimatedRecipeFlame(burnTime)
 			.setPosition(1, 0);
 
-		Component smeltCountText = createSmeltCountText(burnTime);
+		Component smeltCountText = createSmeltCountText(recipe.getBurnTime());
 		builder.addText(smeltCountText, getWidth() - 20, getHeight())
 			.setPosition(20, 0)
 			.setTextAlignment(HorizontalAlignment.CENTER)
