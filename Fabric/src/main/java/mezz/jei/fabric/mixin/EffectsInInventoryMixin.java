@@ -11,9 +11,8 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(EffectsInInventory.class)
 public abstract class EffectsInInventoryMixin {
 	@ModifyVariable(
-		method = "render(Lnet/minecraft/client/gui/GuiGraphicsExtractor;II)V",
-		index = 7,
-		name = "m",
+		method = "extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;II)V",
+		name = "maxWidth",
 		at = @At("STORE")
 	)
 	public int modifyEffectWidth(int m) {

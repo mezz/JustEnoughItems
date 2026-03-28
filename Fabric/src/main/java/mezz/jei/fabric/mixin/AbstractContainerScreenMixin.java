@@ -11,10 +11,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractContainerScreen.class)
 public class AbstractContainerScreenMixin {
 	@Inject(
-		method = "renderContents",
+		method = "extractContents",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;renderSlotHighlightFront(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V",
+			target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;extractSlotHighlightFront(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V",
 			ordinal = 0,
 			shift = At.Shift.AFTER
 		)
