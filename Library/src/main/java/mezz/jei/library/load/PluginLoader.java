@@ -49,6 +49,7 @@ import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.library.plugins.vanilla.anvil.SmithingRecipeCategory;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
+import mezz.jei.library.recipes.ParallelRecipeRegistrar;
 import mezz.jei.library.recipes.RecipeManager;
 import mezz.jei.library.recipes.RecipeManagerInternal;
 import mezz.jei.library.runtime.JeiHelpers;
@@ -59,6 +60,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.List;
 
 public final class PluginLoader {
+	private static final org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger();
 	private PluginLoader() {}
 
 	public static SubtypeManager registerSubtypes(StartData data) {
@@ -159,6 +161,7 @@ public final class PluginLoader {
 
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building recipe registry");
+
 		RecipeManagerInternal recipeManagerInternal = new RecipeManagerInternal(
 			recipeCategories,
 			recipeCatalysts,
@@ -166,7 +169,6 @@ public final class PluginLoader {
 			recipeCategorySortingConfig,
 			jeiHelpers.getIngredientVisibility()
 		);
-		timer.stop();
 
 		IJeiFeatures jeiFeatures = Internal.getJeiFeatures();
 		RecipeManagerPluginHelper recipeManagerPluginHelper = new RecipeManagerPluginHelper(recipeManagerInternal);
@@ -179,10 +181,17 @@ public final class PluginLoader {
 		recipeManagerInternal.addDecorators(recipeCategoryDecorators);
 
 		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, ingredientManager, recipeManagerInternal);
-		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
+
+		// Use parallel recipe registration if async loading is enabled
+		if (mezz.jei.common.config.DebugConfig.isAsyncLoadingEnabled()) {
+			ParallelRecipeRegistrar.registerRecipesParallel(plugins, recipeRegistration);
+		} else {
+			PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
+		}
 
 		recipeManagerInternal.compact();
 
+		timer.stop();
 		return new RecipeManager(recipeManagerInternal, ingredientManager);
 	}
 }

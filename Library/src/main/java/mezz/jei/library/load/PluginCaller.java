@@ -4,6 +4,7 @@ import com.google.common.base.Stopwatch;
 import mezz.jei.api.IAsyncCompatiblePlugin;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.common.config.DebugConfig;
+import mezz.jei.common.util.JeiThreadFactory;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
@@ -13,20 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 public class PluginCaller {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(r -> {
-		Thread thread = new Thread(r);
-		thread.setName("JEI Plugin Loader");
-		thread.setDaemon(true);
-		return thread;
-	});
 
 	public static void callOnPlugins(String title, List<IModPlugin> plugins, Consumer<IModPlugin> func) {
 		LOGGER.info("{}...", title);
@@ -66,18 +59,33 @@ public class PluginCaller {
 			}
 		}
 
-		// Execute async-safe plugins on background thread (opt-in)
+		// Execute async-safe plugins on background thread pool with optimized parallelism
 		if (!asyncPlugins.isEmpty()) {
 			CompletableFuture<Void> asyncTask = CompletableFuture.runAsync(() -> {
-				for (IModPlugin plugin : asyncPlugins) {
-					try {
-						func.accept(plugin);
-					} catch (RuntimeException | LinkageError e) {
-						LOGGER.error("Caught an error from async mod plugin: {} {}",
-							plugin.getClass(), plugin.getPluginUid(), e);
+				// Use parallel execution for large plugin counts
+				if (asyncPlugins.size() >= 4) {
+					// Execute plugins in parallel using parallel streams
+					asyncPlugins.parallelStream()
+						.forEach(plugin -> {
+							try {
+								func.accept(plugin);
+							} catch (RuntimeException | LinkageError e) {
+								LOGGER.error("Caught an error from async mod plugin: {} {}",
+									plugin.getClass(), plugin.getPluginUid(), e);
+							}
+						});
+				} else {
+					// Sequential execution for small plugin counts (less overhead)
+					for (IModPlugin plugin : asyncPlugins) {
+						try {
+							func.accept(plugin);
+						} catch (RuntimeException | LinkageError e) {
+							LOGGER.error("Caught an error from async mod plugin: {} {}",
+								plugin.getClass(), plugin.getPluginUid(), e);
+						}
 					}
 				}
-			}, EXECUTOR);
+			}, JeiThreadFactory.getPluginLoaderExecutor());
 
 			// Wait for async plugins to complete (with timeout to prevent hangs)
 			try {

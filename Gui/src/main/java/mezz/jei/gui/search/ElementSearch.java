@@ -4,6 +4,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.config.DebugConfig;
 import mezz.jei.core.search.CombinedSearchables;
 import mezz.jei.core.search.ISearchStorage;
 import mezz.jei.core.search.ISearchable;
@@ -17,18 +18,20 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ElementSearch implements IElementSearch {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final Map<PrefixInfo<IListElementInfo<?>, IListElement<?>>, PrefixedSearchable<IListElementInfo<?>, IListElement<?>>> prefixedSearchables = new IdentityHashMap<>();
 	private final CombinedSearchables<IListElement<?>> combinedSearchables = new CombinedSearchables<>();
-	private final Map<Object, IListElement<?>> allElements = new HashMap<>();
+	// Use ConcurrentHashMap for thread-safe access during async operations
+	private final Map<Object, IListElement<?>> allElements = new ConcurrentHashMap<>();
 
 	public ElementSearch(ElementPrefixParser elementPrefixParser) {
 		for (PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo : elementPrefixParser.allPrefixInfos()) {
@@ -86,11 +89,26 @@ public class ElementSearch implements IElementSearch {
 
 	@Override
 	public void addAll(Collection<IListElementInfo<?>> infos, IIngredientManager ingredientManager) {
+		// Use parallel processing for large ingredient lists
+		if (DebugConfig.isParallelSearchEnabled() && infos.size() >= 100) {
+			addAllParallel(infos, ingredientManager);
+		} else {
+			addAllSequential(infos, ingredientManager);
+		}
+	}
+
+	/**
+	 * Sequential addAll for small lists (less overhead).
+	 */
+	private void addAllSequential(Collection<IListElementInfo<?>> infos, IIngredientManager ingredientManager) {
+		// First pass: populate allElements map
 		for (IListElementInfo<?> info : infos) {
 			IListElement<?> element = info.getElement();
 			Object uid = getUid(info.getTypedIngredient(), ingredientManager);
 			this.allElements.put(uid, element);
 		}
+
+		// Second pass: populate search indexes
 		for (PrefixedSearchable<IListElementInfo<?>, IListElement<?>> prefixedSearchable : this.prefixedSearchables.values()) {
 			SearchMode searchMode = prefixedSearchable.getMode();
 			if (searchMode != SearchMode.DISABLED) {
@@ -103,6 +121,40 @@ public class ElementSearch implements IElementSearch {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Parallel addAll for large lists (better performance with many ingredients).
+	 */
+	private void addAllParallel(Collection<IListElementInfo<?>> infos, IIngredientManager ingredientManager) {
+		LOGGER.info("Adding {} ingredients using parallel processing", infos.size());
+
+		// First pass: populate allElements map (thread-safe with ConcurrentHashMap)
+		infos.parallelStream()
+			.forEach(info -> {
+				IListElement<?> element = info.getElement();
+				Object uid = getUid(info.getTypedIngredient(), ingredientManager);
+				this.allElements.put(uid, element);
+			});
+
+		// Second pass: populate search indexes in parallel per prefix
+		List<PrefixedSearchable<IListElementInfo<?>, IListElement<?>>> activeSearchables =
+			this.prefixedSearchables.values().stream()
+				.filter(p -> p.getMode() != SearchMode.DISABLED)
+				.toList();
+
+		activeSearchables.parallelStream()
+			.forEach(prefixedSearchable -> {
+				ISearchStorage<IListElement<?>> storage = prefixedSearchable.getSearchStorage();
+				for (IListElementInfo<?> info : infos) {
+					Collection<String> strings = prefixedSearchable.getStrings(info);
+					for (String string : strings) {
+						storage.put(string, info.getElement());
+					}
+				}
+			});
+
+		LOGGER.info("Parallel ingredient addition complete");
 	}
 
 	@Override

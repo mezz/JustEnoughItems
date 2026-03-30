@@ -21,6 +21,8 @@ public final class DebugConfig {
 	private final Supplier<Boolean> crashingTestIngredientsEnabled;
 	private final Supplier<Boolean> logSuffixTreeStats;
 	private final Supplier<Boolean> enableAsyncLoading;
+	private final Supplier<Boolean> enableTooltipCache;
+	private final Supplier<Boolean> enableParallelSearch;
 
 	private DebugConfig(IConfigSchemaBuilder schema) {
 		IConfigCategoryBuilder advanced = schema.addCategory("debug");
@@ -57,7 +59,17 @@ public final class DebugConfig {
 		enableAsyncLoading = advanced.addBoolean(
 			"enableAsyncLoading",
 			true,
-			"Enable asynchronous loading features for improved performance. Set to false if you experience compatibility issues with mods."
+			"Enable asynchronous loading features for improved performance. Set to false ONLY if you experience compatibility issues with specific mods."
+		);
+		enableTooltipCache = advanced.addBoolean(
+			"enableTooltipCache",
+			true,
+			"Enable tooltip caching for improved performance. Set to false ONLY if you experience tooltip-related crashes or issues."
+		);
+		enableParallelSearch = advanced.addBoolean(
+			"enableParallelSearch",
+			true,
+			"Enable parallel search processing for improved performance. Set to false ONLY if you experience search-related crashes or issues."
 		);
 	}
 
@@ -108,5 +120,19 @@ public final class DebugConfig {
 			return true; // Default to enabled
 		}
 		return instance.enableAsyncLoading.get();
+	}
+
+	public static boolean isTooltipCacheEnabled() {
+		if (instance == null) {
+			return true; // Default to enabled
+		}
+		return instance.enableTooltipCache.get();
+	}
+
+	public static boolean isParallelSearchEnabled() {
+		if (instance == null) {
+			return true; // Default to enabled
+		}
+		return instance.enableParallelSearch.get();
 	}
 }
