@@ -8,6 +8,7 @@ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.Event;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,19 +24,24 @@ import java.util.Set;
  *
  * Depending on the configuration (Integrated server, vanilla server, modded server),
  * these events might come in any order.
+ *
+ * Additionally, JEI waits for the world to finish loading before completing initialization.
+ * This ensures that the world is fully loaded before JEI finishes, preventing issues with
+ * world-dependent operations during JEI startup.
  */
 public class StartEventObserver {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Set<Class<? extends Event>> requiredEvents = Set.of(TagsUpdatedEvent.class, RecipesUpdatedEvent.class);
 
 	private enum State {
-		DISABLED, ENABLED, JEI_STARTED
+		DISABLED, ENABLED, EVENTS_RECEIVED, JEI_STARTED
 	}
 
 	private final Set<Class<? extends Event>> observedEvents = new HashSet<>();
 	private final Runnable startRunnable;
 	private final Runnable stopRunnable;
 	private State state = State.DISABLED;
+	private boolean worldLoaded = false;
 
 	public StartEventObserver(Runnable startRunnable, Runnable stopRunnable) {
 		this.startRunnable = startRunnable;
@@ -62,6 +68,19 @@ public class StartEventObserver {
 			}
 		});
 
+		// Listen for client ticks to detect when the world is fully loaded
+		subscriptions.register(TickEvent.ClientTickEvent.class, event -> {
+			if (event.phase == TickEvent.Phase.START && this.state == State.EVENTS_RECEIVED) {
+				Minecraft minecraft = Minecraft.getInstance();
+				if (minecraft.level != null && minecraft.player != null) {
+					// World is loaded and player is ready
+					worldLoaded = true;
+					LOGGER.info("JEI StartEventObserver: World is fully loaded");
+					transitionState(State.JEI_STARTED);
+				}
+			}
+		});
+
 		subscriptions.register(ScreenEvent.Init.Pre.class, event -> {
 			if (this.state != State.JEI_STARTED) {
 				Screen screen = event.getScreen();
@@ -81,6 +100,7 @@ public class StartEventObserver {
 
 	/**
 	 * Observe an event and start JEI if we have observed all the required events.
+	 * JEI will wait for the world to finish loading before completing initialization.
 	 */
 	private <T extends Event> void onEvent(T event) {
 		if (this.state == State.DISABLED) {
@@ -95,7 +115,16 @@ public class StartEventObserver {
 			if (this.state == State.JEI_STARTED) {
 				restart();
 			} else {
-				transitionState(State.JEI_STARTED);
+				// All required events received, but wait for world load
+				transitionState(State.EVENTS_RECEIVED);
+				LOGGER.info("JEI StartEventObserver: All required events received, waiting for world load...");
+
+				// Check if world is already loaded (edge case)
+				Minecraft minecraft = Minecraft.getInstance();
+				if (minecraft.level != null && minecraft.player != null) {
+					worldLoaded = true;
+					transitionState(State.JEI_STARTED);
+				}
 			}
 		}
 	}
@@ -117,15 +146,26 @@ public class StartEventObserver {
 				if (this.state == State.JEI_STARTED) {
 					this.stopRunnable.run();
 				}
+				this.worldLoaded = false;
 			}
 			case ENABLED -> {
 				if (this.state != State.DISABLED) {
 					throw new IllegalStateException("Attempted Illegal state transition from " + this.state + " to " + newState);
 				}
 			}
-			case JEI_STARTED -> {
+			case EVENTS_RECEIVED -> {
 				if (this.state != State.ENABLED) {
 					throw new IllegalStateException("Attempted Illegal state transition from " + this.state + " to " + newState);
+				}
+				// Wait for world load before starting JEI
+			}
+			case JEI_STARTED -> {
+				if (this.state != State.ENABLED && this.state != State.EVENTS_RECEIVED) {
+					throw new IllegalStateException("Attempted Illegal state transition from " + this.state + " to " + newState);
+				}
+				if (this.state == State.EVENTS_RECEIVED && !worldLoaded) {
+					// Not ready yet, wait for client tick
+					return;
 				}
 				this.startRunnable.run();
 				LOGGER.info("JEI has finished initializing. Mods can now access the JEI runtime via IModPlugin.onRuntimeAvailable().");

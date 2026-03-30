@@ -33,3 +33,4 @@ changelog.html
 /**/runs/
 Changelog/changelog.md
 .qwen/settings.json
+/.qwen

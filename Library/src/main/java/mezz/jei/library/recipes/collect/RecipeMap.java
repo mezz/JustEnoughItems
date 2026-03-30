@@ -125,9 +125,11 @@ public class RecipeMap {
 			.collect(Collectors.toCollection(ConcurrentHashMap::newKeySet));
 
 		if (!ingredientUids.isEmpty()) {
-			// Update category map in parallel
-			ingredientUids.parallelStream()
-				.forEach(uid -> ingredientUidToCategoryMap.put(uid, recipeType));
+			// Update category map sequentially (not thread-safe for parallel modification)
+			// The parallel stream here was causing contention/deadlock on the underlying map
+			for (Object uid : ingredientUids) {
+				ingredientUidToCategoryMap.put(uid, recipeType);
+			}
 
 			// Add to recipe table
 			recipeTable.add(recipe, recipeType, ingredientUids);

@@ -11,6 +11,7 @@ import mezz.jei.fabric.network.ConnectionToServer;
 import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -24,6 +25,7 @@ public class ClientLifecycleHandler {
 
 	private final JeiStarter jeiStarter;
 	private boolean running;
+	private boolean waitingForWorldLoad = false;
 
 	public ClientLifecycleHandler(IServerConfig serverConfig) {
 		IConnectionToServer serverConnection = new ConnectionToServer();
@@ -51,10 +53,23 @@ public class ClientLifecycleHandler {
 				if (running) {
 					stopJei();
 				}
-				startJei();
+				// Wait for world to load before starting JEI
+				waitingForWorldLoad = true;
+				LOGGER.info("JEI: Recipe sync complete, waiting for world load...");
 			})
 		);
 		JeiLifecycleEvents.GAME_STOP.register(this::stopJei);
+
+		// Listen for client ticks to detect when the world is fully loaded
+		ClientTickEvents.START_CLIENT_TICK.register(client -> {
+			if (waitingForWorldLoad) {
+				if (client.level != null && client.player != null) {
+					LOGGER.info("JEI: World is fully loaded, starting JEI...");
+					waitingForWorldLoad = false;
+					startJei();
+				}
+			}
+		});
 	}
 
 	public ResourceManagerReloadListener getReloadListener() {
