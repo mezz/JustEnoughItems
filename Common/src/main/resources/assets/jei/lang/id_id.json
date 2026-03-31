@@ -27,8 +27,8 @@
   "jei.tooltip.bookmarks.recipe.add": "Bookmark Resep ini.",
   "jei.tooltip.bookmarks.recipe.remove": "Hapus Bookmark untuk Resep ini.",
   "jei.tooltip.bookmarks.tooltips.usage": "[Tekan \"%s\" Untuk Menampilkan secara Detail]",
-  "jei.tooltip.bookmarks.tooltips.transfer.usage": "[Tekan \"%s\" Untuk membuat satu]"
-  "jei.tooltip.bookmarks.tooltips.transfer.max.usage": "[Tekan \"%s\" Untuk membuat beberapa]",
+  "jei.tooltip.bookmarks.tooltips.transfer.usage": "[Tekan \"%s\" Untuk buat satu]",
+  "jei.tooltip.bookmarks.tooltips.transfer.max.usage": "[Tekan \"%s\" Untuk buat beberapa]",
   "jei.tooltip.lookupHistory.enable": "Tampilkan Lookup Histori JEI",
   "jei.tooltip.lookupHistory.disable": "Sembunyikan Lookup Histori JEI",
   "jei.tooltip.lookupHistory.usage": "Menampilkan daftar bahan-bahan yang baru-baru ini digunakan untuk mencari resep.",
