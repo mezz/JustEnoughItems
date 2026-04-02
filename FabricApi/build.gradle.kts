@@ -18,9 +18,13 @@ base {
     archivesName.set(baseArchivesName)
 }
 
-val commonApi: Project = project(":CommonApi")
+val dependencyProjects: List<Project> = listOf(
+    project(":CommonApi"),
+)
 
-project.evaluationDependsOn(commonApi.path)
+dependencyProjects.forEach {
+    project.evaluationDependsOn(it.path)
+}
 
 java {
     toolchain {
@@ -48,7 +52,9 @@ dependencies {
     minecraft("com.mojang:minecraft:${minecraftVersion}")
     implementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
     implementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
-    implementation(commonApi)
+    dependencyProjects.forEach {
+        implementation(it)
+    }
 }
 
 sourceSets {
@@ -76,17 +82,21 @@ publishing {
             artifact(tasks.jar)
             artifact(tasks.named("sourcesJar"))
 
-            val dependencyInfo = mapOf(
-                "groupId" to commonApi.tasks.jar.get().group,
-                "artifactId" to commonApi.tasks.jar.get().archiveBaseName.get(),
-                "version" to commonApi.version
-            )
+            val dependencyInfos = dependencyProjects.map {
+                mapOf(
+                    "groupId" to it.group,
+                    "artifactId" to it.base.archivesName.get(),
+                    "version" to it.version
+                )
+            }
 
             pom.withXml {
                 val dependenciesNode = asNode().appendNode("dependencies")
-                val dependencyNode = dependenciesNode.appendNode("dependency")
-                dependencyInfo.forEach { (key, value) ->
-                    dependencyNode.appendNode(key, value)
+                dependencyInfos.forEach {
+                    val dependencyNode = dependenciesNode.appendNode("dependency")
+                    it.forEach { (key, value) ->
+                        dependencyNode.appendNode(key, value)
+                    }
                 }
             }
         }
