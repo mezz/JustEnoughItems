@@ -12,6 +12,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
 import mezz.jei.library.ingredients.SimpleIngredientAcceptor;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,6 +75,12 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 	@Override
 	public IRecipeSlotBuilder addOptionalTypedIngredients(List<Optional<ITypedIngredient<?>>> ingredients) {
 		this.ingredients.addOptionalTypedIngredients(ingredients);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder addItemStacks(List<ItemStack> itemStacks) {
+		this.ingredients.addItemStacks(itemStacks);
 		return this;
 	}
 
