@@ -13,6 +13,7 @@ import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
 import mezz.jei.library.ingredients.SimpleIngredientAcceptor;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.ItemLike;
@@ -54,6 +55,12 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 	@Override
 	public IRecipeSlotBuilder add(ItemLike itemLike) {
 		this.ingredients.add(itemLike);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder add(ItemStackTemplate itemStackTemplate) {
+		this.ingredients.add(itemStackTemplate);
 		return this;
 	}
 
@@ -132,7 +139,8 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 
 	@Override
 	public IRecipeSlotBuilder addItemStacks(List<ItemStack> itemStacks) {
-		return IRecipeSlotBuilder.super.addItemStacks(itemStacks);
+		this.ingredients.addItemStacks(itemStacks);
+		return this;
 	}
 
 	@Override

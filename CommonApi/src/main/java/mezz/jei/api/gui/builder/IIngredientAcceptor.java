@@ -1,10 +1,10 @@
 package mezz.jei.api.gui.builder;
 
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.ItemLike;
@@ -31,9 +31,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	 *
 	 * @since 20.0.0
 	 */
-	default THIS add(SlotDisplay slotDisplay) {
-		return add(VanillaTypes.ITEM_STACK, slotDisplay);
-	}
+	THIS add(SlotDisplay slotDisplay);
 
 	/**
 	 * Add a slot display that contains the specified type of ingredients.
@@ -47,18 +45,21 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	 *
 	 * @since 20.0.0
 	 */
-	default THIS add(ItemStack itemStack) {
-		return add(VanillaTypes.ITEM_STACK, itemStack);
-	}
+	THIS add(ItemStack itemStack);
 
 	/**
 	 * Add one {@link ItemLike}.
 	 *
 	 * @since 20.0.0
 	 */
-	default THIS add(ItemLike itemLike) {
-		return add(VanillaTypes.ITEM_STACK, itemLike.asItem().getDefaultInstance());
-	}
+	THIS add(ItemLike itemLike);
+
+	/**
+	 * Add one {@link ItemStackTemplate}.
+	 *
+	 * @since 29.4.0
+	 */
+	THIS add(ItemStackTemplate itemStackTemplate);
 
 	/**
 	 * Convenience helper to add one Fluid ingredient with the default amount (one bucket).
@@ -112,9 +113,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	 *
 	 * @since 20.0.0
 	 */
-	default <I> THIS add(ITypedIngredient<I> typedIngredient) {
-		return add(typedIngredient.getType(), typedIngredient.getIngredient());
-	}
+	<I> THIS add(ITypedIngredient<I> typedIngredient);
 
 	/**
 	 * Add one ingredient with a custom {@link IIngredientType}.
@@ -163,9 +162,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	 *
 	 * @since 9.3.0
 	 */
-	default THIS addItemStacks(List<ItemStack> itemStacks) {
-		return addIngredients(VanillaTypes.ITEM_STACK, itemStacks);
-	}
+	THIS addItemStacks(List<ItemStack> itemStacks);
 
 	/**
 	 * Add one ingredient.

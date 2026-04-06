@@ -28,7 +28,7 @@ final class NormalizedTypedItem extends TypedItemStack {
 
 	@Override
 	public String toString() {
-		return "SimpleItemStack{" +
+		return "NormalizedTypedItem{" +
 			"itemHolder=" + itemHolder +
 			'}';
 	}
