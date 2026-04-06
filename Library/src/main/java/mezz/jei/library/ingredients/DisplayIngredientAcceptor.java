@@ -3,6 +3,7 @@ package mezz.jei.library.ingredients;
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -16,10 +17,13 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.jspecify.annotations.Nullable;
@@ -75,6 +79,19 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	}
 
 	@Override
+	public DisplayIngredientAcceptor add(ItemStack itemStack) {
+		ErrorUtil.checkNotNull(itemStack, "itemStack");
+
+		addIngredientInternal(VanillaTypes.ITEM_STACK, itemStack);
+		return this;
+	}
+
+	@Override
+	public DisplayIngredientAcceptor addItemStacks(List<ItemStack> itemStacks) {
+		return addIngredients(VanillaTypes.ITEM_STACK, itemStacks);
+	}
+
+	@Override
 	public <T> DisplayIngredientAcceptor addIngredients(IIngredientType<T> ingredientType, List<@Nullable T> ingredients) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(ingredients, "ingredients");
@@ -112,6 +129,16 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 
 		ITypedIngredient<I> copy = TypedIngredient.defensivelyCopyTypedIngredientFromApi(ingredientManager, typedIngredient);
 		this.ingredients.add(copy);
+
+		return this;
+	}
+
+	@Override
+	public DisplayIngredientAcceptor add(ItemLike itemLike) {
+		Preconditions.checkNotNull(itemLike, "itemLike");
+
+		ITypedIngredient<ItemStack> ingredient = TypedItemStack.create(itemLike);
+		this.ingredients.add(ingredient);
 
 		return this;
 	}

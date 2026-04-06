@@ -132,7 +132,8 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 
 	@Override
 	public IRecipeSlotBuilder addItemStacks(List<ItemStack> itemStacks) {
-		return IRecipeSlotBuilder.super.addItemStacks(itemStacks);
+		this.ingredients.addItemStacks(itemStacks);
+		return this;
 	}
 
 	@Override

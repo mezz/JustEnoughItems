@@ -1,6 +1,7 @@
 package mezz.jei.library.ingredients;
 
 import com.google.common.base.Preconditions;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
@@ -9,10 +10,13 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.jspecify.annotations.Nullable;
@@ -33,6 +37,16 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 
 	public SimpleIngredientAcceptor(IIngredientManager ingredientManager) {
 		this.ingredientManager = ingredientManager;
+	}
+
+	@Override
+	public SimpleIngredientAcceptor add(ItemLike itemLike) {
+		Preconditions.checkNotNull(itemLike, "itemLike");
+
+		ITypedIngredient<ItemStack> ingredient = TypedItemStack.create(itemLike);
+		this.ingredients.add(ingredient);
+
+		return this;
 	}
 
 	@Override
@@ -90,6 +104,14 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 				}
 			});
 
+		return this;
+	}
+
+	@Override
+	public SimpleIngredientAcceptor add(ItemStack itemStack) {
+		ErrorUtil.checkNotNull(itemStack, "itemStack");
+
+		addIngredientInternal(VanillaTypes.ITEM_STACK, itemStack);
 		return this;
 	}
 
@@ -174,6 +196,11 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 			}
 		}
 		return this;
+	}
+
+	@Override
+	public SimpleIngredientAcceptor addItemStacks(List<ItemStack> itemStacks) {
+		return addIngredients(VanillaTypes.ITEM_STACK, itemStacks);
 	}
 
 	private <T> void addIngredientInternal(IIngredientType<T> ingredientType, @Nullable T ingredient) {
