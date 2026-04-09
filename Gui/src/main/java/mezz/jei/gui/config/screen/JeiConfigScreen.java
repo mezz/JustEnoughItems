@@ -1,123 +1,133 @@
 package mezz.jei.gui.config.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.runtime.config.IJeiConfigCategory;
-import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.file.IConfigSchema;
-import mezz.jei.common.config.file.serializers.BooleanSerializer;
-import mezz.jei.common.config.file.serializers.EnumSerializer;
-import mezz.jei.common.config.file.serializers.IntegerSerializer;
-import mezz.jei.common.config.file.serializers.ListSerializer;
-import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.StringUtil;
 import mezz.jei.gui.GuiProperties;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.InputType;
 import mezz.jei.gui.input.UserInput;
-import mezz.jei.gui.input.handlers.CombinedInputHandler;
-import mezz.jei.gui.input.handlers.SameElementInputHandler;
 import mezz.jei.gui.input.handlers.UserInputRouter;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class JeiConfigScreen extends Screen {
 
+    private static final int MIN_GUI_WIDTH = 200;
+    private static final int MIN_HEIGHT = 210;
+    private static final int NAV_WIDTH = 56;
+    private static final int ENTRY_HEIGHT = 20;
+    private static final int NAV_ITEM_HEIGHT = 14;
+    private static final int NAV_ITEM_GAP = 2;
+    private static final int SEARCH_HEIGHT = 18;
+    private static final double SCROLL_SPEED = 10.0;
+    private static final double SCROLL_LERP = 0.35;
+    private static final int RESET_BTN_W = 40;
 
 	public static Screen create() {
 		return new JeiConfigScreen(Internal.getClientConfigSchema());
 	}
 
-	private static final Component expandComponent = Component.literal("+");
-	private static final Component unexpandComponent = Component.literal("-");
-
-	private static final int minGuiWidth = 245;
-	private static final int minHeight = 196;
-	private static final int scrollFactor = 20;
-
-	//config data
-	private final IConfigSchema clientSchema;
-
-	//ui
 	private final DrawableNineSliceTexture background;
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
-	private ImmutableRect2i displayArea = ImmutableRect2i.EMPTY;
+    private ImmutableRect2i navArea = ImmutableRect2i.EMPTY;
+    private ImmutableRect2i contentArea = ImmutableRect2i.EMPTY;
+    private ImmutableRect2i resetCategoryBtn = ImmutableRect2i.EMPTY;
 
 	private final UserInputRouter inputHandler;
 	private final IInternalKeyMappings keyBindings;
 
-	//scroll
+    private final EditBox searchBox;
+    private String searchText = "";
 	private ImmutableRect2i scrollBarArea = ImmutableRect2i.EMPTY;
 	private final DrawableNineSliceTexture scrollbarMarker;
 	private final DrawableNineSliceTexture scrollbarBackground;
-	/**
-	 * from 0 to 1
-	 **/
-	private int scrollOffset = 0;
-	private int maxElementDisplay = 0;
+    private double targetScrollY = 0;
+    private double currentScrollY = 0;
+    private int totalContentHeight = 0;
 
-	//config category
-	private final List<CategoryWidget> categoryWidgets = new ArrayList<>();
-	private int totalElements = 0;
+    private int totalNavHeight = 0;
+    private double navTargetScrollY = 0;
+    private double navCurrentScrollY = 0;
+
+    private final List<NavItem> navItems = new ArrayList<>();
+    private int activeNavIndex = 0;
+    private final List<ConfigCategoryWidget> categoryWidgets = new ArrayList<>();
 
 	@Nullable
-	private ValueSelector<?> valueSelector;
+    private ConfigValueSelector<?> valueSelector;
 
 	private JeiConfigScreen(IConfigSchema clientSchema) {
-		super(Component.literal("Jei Configs"));
-		this.clientSchema = clientSchema;
+        super(Component.literal("JEI Configuration"));
 
 		Textures textures = Internal.getTextures();
-		this.background = textures.getConfigWidgetBackground();
-		this.scrollbarMarker = textures.getConfigScrollBar();
+        this.background = textures.getRecipeGuiBackground();
+        this.scrollbarMarker = textures.getScrollbarMarker();
 		this.scrollbarBackground = textures.getScrollbarBackground();
-
-		List<IUserInputHandler> inputHandlers = clientSchema.getCategories().stream()
-			.map(category -> {
-				CategoryWidget widget = new CategoryWidget(category);
-				categoryWidgets.add(widget);
-				return widget.createInputHandler();
-
-			}).collect(Collectors.toList());
-		inputHandlers.addFirst(new InputHandler());
-		this.inputHandler = new UserInputRouter("JeiConfigScreen", inputHandlers);
 		this.keyBindings = Internal.getKeyMappings();
+
+        List<? extends IJeiConfigCategory> allCategories = clientSchema.getCategories();
+
+        List<IUserInputHandler> allInputHandlers = new ArrayList<>();
+        for (int i = 0; i < allCategories.size(); i++) {
+            IJeiConfigCategory category = allCategories.get(i);
+            ConfigCategoryWidget widget = new ConfigCategoryWidget(
+                    category,
+                    this::getContentArea,
+                    this::updateLayout,
+                    this::openValueSelector
+            );
+            categoryWidgets.add(widget);
+            allInputHandlers.add(widget.createInputHandler());
+            navItems.add(new NavItem(category.getLocalizedName(), i));
+        }
+
+        allInputHandlers.addAll(navItems);
+
+        allInputHandlers.addFirst(new ValueSelectorInputHandler());
+        this.inputHandler = new UserInputRouter("JeiConfigScreen", allInputHandlers);
+
+        Font font = Minecraft.getInstance().font;
+        this.searchBox = new EditBox(font, 0, 0, 0, SEARCH_HEIGHT, Component.literal("Search..."));
+        this.searchBox.setMaxLength(64);
+        this.searchBox.setBordered(false);
+        this.searchBox.setTextColor(0xFFFFFFFF);
+        this.searchBox.setResponder(text -> {
+            this.searchText = text.toLowerCase();
+            targetScrollY = 0;
+            currentScrollY = 0;
+            updateLayout();
+        });
+    }
+
+    private void openValueSelector(ConfigValueSelector<?> selector) {
+        this.valueSelector = selector;
+    }
+
+    private ImmutableRect2i getContentArea() {
+        return contentArea;
 	}
 
 	@Nullable
@@ -143,8 +153,11 @@ public class JeiConfigScreen extends Screen {
 				Minecraft minecraft = Minecraft.getInstance();
 				if (minecraft.screen instanceof JeiConfigScreen screen) {
 					if (screen.valueSelector != null) {
-						ImmutableRect2i area = screen.valueSelector.area;
-						return Collections.singleton(new Rect2i(area.getX(), area.getY(), area.getWidth(), area.getHeight()));
+                        ImmutableRect2i selectorArea = screen.valueSelector.area;
+                        return Collections.singleton(new Rect2i(
+                                selectorArea.getX(), selectorArea.getY(),
+                                selectorArea.getWidth(), selectorArea.getHeight()
+                        ));
 					}
 				}
 				return Collections.emptyList();
@@ -155,36 +168,214 @@ public class JeiConfigScreen extends Screen {
 	@Override
 	protected void init() {
 		super.init();
-		int guiLeft = (width - minGuiWidth) / 2;
-		int guiTop = (height - minHeight) / 2;
-		area = new ImmutableRect2i(guiLeft, guiTop, minGuiWidth, minHeight);
-		displayArea = new ImmutableRect2i(area.getX() + 7, area.getY() + 8, area.getWidth() - 24, area.getHeight() - 16);
-		scrollBarArea = new ImmutableRect2i(area.getX() + area.getWidth() - 9 - 4, area.getY() + 5, 8, area.getHeight() - 8);
-		maxElementDisplay = (area.getHeight() - 8) / 20;
+        int guiWidth = Math.max(MIN_GUI_WIDTH, Math.min(width - 40, 280));
+        int guiHeight = Math.max(MIN_HEIGHT, Math.min(height - 40, 300));
+        int guiLeft = (width - guiWidth) / 2;
+        int guiTop = (height - guiHeight) / 2;
+        area = new ImmutableRect2i(guiLeft, guiTop, guiWidth, guiHeight);
+
+        int innerTop = area.getY() + 6;
+        int innerBottom = area.getY() + area.getHeight() - 6;
+        int innerHeight = innerBottom - innerTop;
+
+        navArea = new ImmutableRect2i(
+                area.getX() + 4,
+                innerTop,
+                NAV_WIDTH,
+                innerHeight
+        );
+
+        int contentLeft = navArea.getX() + navArea.getWidth() + 4;
+        int contentWidth = area.getWidth() - NAV_WIDTH - 20;
+
+        resetCategoryBtn = new ImmutableRect2i(
+                contentLeft + contentWidth - RESET_BTN_W + 1,
+                innerTop,
+                RESET_BTN_W - 3,
+                SEARCH_HEIGHT
+        );
+        searchBox.setX(contentLeft + 2);
+        searchBox.setY(innerTop + 5);
+        searchBox.setWidth(contentWidth - RESET_BTN_W - 4);
+        searchBox.setHeight(SEARCH_HEIGHT);
+        addWidget(searchBox);
+
+        int contentTop = innerTop + SEARCH_HEIGHT + 2;
+        contentArea = new ImmutableRect2i(
+                contentLeft,
+                contentTop,
+                contentWidth,
+                innerBottom - contentTop
+        );
+
+        scrollBarArea = new ImmutableRect2i(
+                area.getX() + area.getWidth() - 14,
+                contentArea.getY(),
+                10,
+                contentArea.getHeight()
+        );
+
+        for (NavItem navItem : navItems) {
+            navItem.calculateHeight(navArea.getWidth());
+        }
+        navCurrentScrollY = 0;
+        navTargetScrollY = 0;
+        updateNavLayout();
+
+        setActiveCategory(activeNavIndex);
+    }
+
+    private void setActiveCategory(int index) {
+        if (index < 0 || index >= categoryWidgets.size()) {
+            return;
+        }
+        activeNavIndex = index;
+        targetScrollY = 0;
+        currentScrollY = 0;
+
+        for (int i = 0; i < categoryWidgets.size(); i++) {
+            ConfigCategoryWidget w = categoryWidgets.get(i);
+            if (i == index) {
+                w.expanded = true;
+            } else {
+                w.expanded = false;
+                w.resetBounds();
+            }
+        }
+
+        searchBox.setValue("");
+        searchText = "";
 		updateLayout();
 	}
 
+    private boolean matchesSearch(ConfigEntryWidget<?> entry) {
+        if (searchText.isEmpty()) {
+            return true;
+        }
+        String name = entry.fullName.getString().toLowerCase();
+        return name.contains(searchText);
+    }
+
+    private boolean isSearching() {
+        return !searchText.isEmpty();
+    }
+
 	private void updateLayout() {
-		totalElements = categoryWidgets.stream()
-			.mapToInt(cat -> cat.expand ? cat.entryWidgets.size() + 1 : 1)
-			.sum();
-		scrollOffset = Mth.clamp(scrollOffset, 0, totalElements - maxElementDisplay);
-		int currentY = area.getY() + 8 - scrollOffset * scrollFactor;
-		for (CategoryWidget categoryWidget : categoryWidgets) {
-			categoryWidget.updateBounds(new ImmutableRect2i(area.getX() + 7, currentY, area.getWidth() - 24, 20));
-			currentY += 20;
-			if (categoryWidget.expand) {
-				for (EntryWidget<?> entryWidget : categoryWidget.entryWidgets) {
-					entryWidget.updateBounds(new ImmutableRect2i(area.getX() + 13, currentY, area.getWidth() - 36, 20));
-					entryWidget.afterBoundUpdated();
-					currentY += entryWidget.getHeight();
-				}
-			}
+        int currentY = contentArea.getY() - (int) currentScrollY;
+        totalContentHeight = 0;
+
+        if (isSearching()) {
+            for (ConfigCategoryWidget widget : categoryWidgets) {
+                widget.area = ImmutableRect2i.EMPTY;
+                for (ConfigEntryWidget<?> entryWidget : widget.getEntryWidgets()) {
+                    if (!matchesSearch(entryWidget)) {
+                        entryWidget.area = ImmutableRect2i.EMPTY;
+                        entryWidget.nameArea = ImmutableRect2i.EMPTY;
+                        continue;
+                    }
+                    int ew = contentArea.getWidth() - 4;
+                    entryWidget.updateBounds(new ImmutableRect2i(contentArea.getX() + 2, currentY, ew, ENTRY_HEIGHT));
+                    int h = entryWidget.getHeight();
+                    entryWidget.updateBounds(new ImmutableRect2i(contentArea.getX() + 2, currentY, ew, h));
+                    currentY += h;
+                    totalContentHeight += h;
+                }
+            }
+        } else {
+            ConfigCategoryWidget activeWidget = categoryWidgets.get(activeNavIndex);
+            activeWidget.area = ImmutableRect2i.EMPTY;
+
+            for (ConfigEntryWidget<?> entryWidget : activeWidget.getEntryWidgets()) {
+                int ew = contentArea.getWidth() - 4;
+                entryWidget.updateBounds(new ImmutableRect2i(contentArea.getX() + 2, currentY, ew, ENTRY_HEIGHT));
+                int h = entryWidget.getHeight();
+                entryWidget.updateBounds(new ImmutableRect2i(contentArea.getX() + 2, currentY, ew, h));
+                currentY += h;
+                totalContentHeight += h;
+            }
+        }
+    }
+
+    private void updateNavLayout() {
+        int navY = navArea.getY() - (int) navCurrentScrollY;
+        totalNavHeight = 0;
+        for (NavItem navItem : navItems) {
+            navItem.updateBounds(new ImmutableRect2i(
+                    navArea.getX(), navY, navArea.getWidth(), navItem.cachedHeight
+            ));
+            navY += navItem.cachedHeight + NAV_ITEM_GAP;
+            totalNavHeight += navItem.cachedHeight + NAV_ITEM_GAP;
 		}
+        if (!navItems.isEmpty()) totalNavHeight -= NAV_ITEM_GAP;
+    }
+
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (forwardCharTypedToEntries(codePoint, modifiers)) {
+            return true;
+        }
+        if (searchBox.isFocused() && searchBox.charTyped(codePoint, modifiers)) {
+            return true;
+        }
+        return super.charTyped(codePoint, modifiers);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (forwardKeyPressedToEntries(keyCode, scanCode, modifiers)) {
+            return true;
+        }
+        if (searchBox.isFocused() && searchBox.keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    private boolean forwardCharTypedToEntries(char codePoint, int modifiers) {
+        for (ConfigCategoryWidget widget : categoryWidgets) {
+            for (ConfigEntryWidget<?> entry : widget.getEntryWidgets()) {
+                if (entry.charTyped(codePoint, modifiers)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean forwardKeyPressedToEntries(int keyCode, int scanCode, int modifiers) {
+        for (ConfigCategoryWidget widget : categoryWidgets) {
+            for (ConfigEntryWidget<?> entry : widget.getEntryWidgets()) {
+                if (entry.keyPressed(keyCode, scanCode, modifiers)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isCategoryModified() {
+        ConfigCategoryWidget activeWidget = categoryWidgets.get(activeNavIndex);
+        return activeWidget.getEntryWidgets().stream().anyMatch(ConfigEntryWidget::isModified);
+    }
+
+    private void resetCurrentCategory() {
+        ConfigCategoryWidget activeWidget = categoryWidgets.get(activeNavIndex);
+        for (ConfigEntryWidget<?> entry : activeWidget.getEntryWidgets()) {
+            entry.resetToDefault();
+        }
+        updateLayout();
 	}
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0 && resetCategoryBtn.contains(mouseX, mouseY)) {
+            if (!isCategoryModified()) {
+                return true;
+            }
+        }
+        if (searchBox.isFocused() && !searchBox.isMouseOver(mouseX, mouseY)) {
+            searchBox.setFocused(false);
+        }
 		boolean ret = UserInput.fromVanilla(mouseX, mouseY, button, InputType.SIMULATE)
 			.map(this::handleInput)
 			.orElse(false);
@@ -193,13 +384,18 @@ public class JeiConfigScreen extends Screen {
 
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == 0 && resetCategoryBtn.contains(mouseX, mouseY) && isCategoryModified()) {
+            resetCurrentCategory();
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+            return true;
+        }
 		boolean ret = UserInput.fromVanilla(mouseX, mouseY, button, InputType.EXECUTE)
 			.map(this::handleInput)
 			.orElse(false);
 		if (ret) {
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 		}
-		return ret || super.mouseClicked(mouseX, mouseY, button);
+        return ret || super.mouseReleased(mouseX, mouseY, button);
 	}
 
 	private boolean handleInput(UserInput input) {
@@ -208,28 +404,14 @@ public class JeiConfigScreen extends Screen {
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-		if (mouseY >= area.getY() && mouseY <= area.getY() + area.getHeight()) {
-			scrollOffset = Math.max(0, Math.min(totalElements - maxElementDisplay, scrollOffset - Mth.ceil(scrollY)));
-			updateLayout();
+        if (navArea.contains(mouseX, mouseY)) {
+            int maxNavScroll = Math.max(0, totalNavHeight - navArea.getHeight());
+            navTargetScrollY = Mth.clamp(navTargetScrollY - scrollY * SCROLL_SPEED, 0, maxNavScroll);
+        } else if (contentArea.contains(mouseX, mouseY)) {
+            int maxScroll = Math.max(0, totalContentHeight - contentArea.getHeight());
+            targetScrollY = Mth.clamp(targetScrollY - scrollY * SCROLL_SPEED, 0, maxScroll);
 		}
 		return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
-	}
-
-	private class InputHandler implements IUserInputHandler {
-
-		@Override
-		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-			if (valueSelector != null) {
-				if (valueSelector.isMouseOver(input.getMouseX(), input.getMouseY()) && input.is(keyBindings.getLeftClick())) {
-					if (valueSelector.onMouseClicked(input)) {
-						return Optional.of(this);
-					}
-				} else {
-					valueSelector = null;
-				}
-			}
-			return Optional.empty();
-		}
 	}
 
 	@Override
@@ -239,22 +421,83 @@ public class JeiConfigScreen extends Screen {
 		}
 		renderTransparentBackground(guiGraphics);
 
-		CategoryWidget hoveredCategoryWidget = null;
-		EntryWidget<?> hoveredEntryWidget = null;
+        if (Math.abs(targetScrollY - currentScrollY) > 0.5) {
+            currentScrollY += (targetScrollY - currentScrollY) * SCROLL_LERP;
+            updateLayout();
+        } else if (currentScrollY != targetScrollY) {
+            currentScrollY = targetScrollY;
+            updateLayout();
+        }
+        if (Math.abs(navTargetScrollY - navCurrentScrollY) > 0.5) {
+            navCurrentScrollY += (navTargetScrollY - navCurrentScrollY) * SCROLL_LERP;
+            updateNavLayout();
+        } else if (navCurrentScrollY != navTargetScrollY) {
+            navCurrentScrollY = navTargetScrollY;
+            updateNavLayout();
+        }
+
+        ConfigEntryWidget<?> hoveredEntryWidget = null;
+        NavItem hoveredNavItem = null;
+
 		guiGraphics.pose().pushPose();
 		background.draw(guiGraphics, area);
-		guiGraphics.enableScissor(displayArea.getX(), displayArea.getY(), displayArea.getX() + displayArea.getWidth(), displayArea.getY() + displayArea.getHeight());
-		for (CategoryWidget categoryWidget : categoryWidgets) {
-			categoryWidget.draw(guiGraphics, mouseX, mouseY);
-			if (displayArea.contains(mouseX, mouseY) && categoryWidget.nameArea.contains(mouseX, mouseY)) {
-				hoveredCategoryWidget = categoryWidget;
-			}
-			if (categoryWidget.expand) {
-				for (EntryWidget<?> entryWidget : categoryWidget.entryWidgets) {
+        Font font = minecraft.font;
+
+        Textures textures = Internal.getTextures();
+        guiGraphics.fill(navArea.getX(), navArea.getY(), navArea.getX() + navArea.getWidth(), navArea.getY() + navArea.getHeight(), 0x18000000);
+
+        guiGraphics.enableScissor(
+                navArea.getX(), navArea.getY(),
+                navArea.getX() + navArea.getWidth(),
+                navArea.getY() + navArea.getHeight()
+        );
+        for (int i = 0; i < navItems.size(); i++) {
+            NavItem navItem = navItems.get(i);
+            navItem.draw(guiGraphics, mouseX, mouseY, !isSearching() && i == activeNavIndex);
+            if (navArea.contains(mouseX, mouseY) && navItem.isMouseOver(mouseX, mouseY)) {
+                hoveredNavItem = navItem;
+            }
+        }
+        guiGraphics.disableScissor();
+
+        int searchY = navArea.getY();
+        int searchBgX = contentArea.getX();
+        int searchBgW = contentArea.getWidth() - resetCategoryBtn.getWidth() - 3;
+        textures.getSearchBackground().draw(guiGraphics, new ImmutableRect2i(searchBgX, searchY, searchBgW, SEARCH_HEIGHT));
+        searchBox.render(guiGraphics, mouseX, mouseY, partialTick);
+
+        boolean categoryModified = isCategoryModified();
+        boolean resetHov = categoryModified && resetCategoryBtn.contains(mouseX, mouseY);
+        textures.getButtonForState(false, categoryModified, resetHov).draw(guiGraphics, resetCategoryBtn);
+        String resetLbl = "Reset";
+        int rtx = resetCategoryBtn.getX() + (resetCategoryBtn.getWidth() - font.width(resetLbl)) / 2;
+        int rty = resetCategoryBtn.getY() + (resetCategoryBtn.getHeight() - font.lineHeight) / 2;
+        guiGraphics.drawString(font, resetLbl, rtx, rty, resetHov ? 0xFFFFFF55 : 0xFFFFFFFF, false);
+
+        guiGraphics.enableScissor(
+                contentArea.getX(), contentArea.getY(),
+                contentArea.getX() + contentArea.getWidth(),
+                contentArea.getY() + contentArea.getHeight()
+        );
+
+        if (isSearching()) {
+            for (ConfigCategoryWidget widget : categoryWidgets) {
+                for (ConfigEntryWidget<?> entryWidget : widget.getEntryWidgets()) {
+                    if (!matchesSearch(entryWidget)) {
+                        continue;
+                    }
 					entryWidget.draw(guiGraphics, mouseX, mouseY);
-					if (displayArea.contains(mouseX, mouseY) && entryWidget.nameArea.contains(mouseX, mouseY)) {
-						hoveredEntryWidget = entryWidget;
-					}
+                    if (contentArea.contains(mouseX, mouseY) && entryWidget.nameArea.contains(mouseX, mouseY)) {
+                        hoveredEntryWidget = entryWidget;
+                    }
+                }
+            }
+        } else {
+            ConfigCategoryWidget activeWidget = categoryWidgets.get(activeNavIndex);
+            for (ConfigEntryWidget<?> entryWidget : activeWidget.getEntryWidgets()) {
+                entryWidget.draw(guiGraphics, mouseX, mouseY);
+                if (contentArea.contains(mouseX, mouseY) && entryWidget.nameArea.contains(mouseX, mouseY)) {
+                    hoveredEntryWidget = entryWidget;
 				}
 			}
 		}
@@ -270,8 +513,8 @@ public class JeiConfigScreen extends Screen {
 			guiGraphics.pose().popPose();
 		}
 
-		if (hoveredCategoryWidget != null) {
-			hoveredCategoryWidget.drawTooltip(guiGraphics, mouseX, mouseY);
+        if (hoveredNavItem != null) {
+            hoveredNavItem.drawTooltip(guiGraphics, mouseX, mouseY);
 		}
 		if (hoveredEntryWidget != null) {
 			hoveredEntryWidget.drawTooltip(guiGraphics, mouseX, mouseY);
@@ -279,616 +522,114 @@ public class JeiConfigScreen extends Screen {
 	}
 
 	private void renderScrollBar(GuiGraphics guiGraphics) {
+        int maxScroll = Math.max(0, totalContentHeight - contentArea.getHeight());
+        if (maxScroll <= 0) {
+            return;
+        }
 		scrollbarBackground.draw(guiGraphics, scrollBarArea);
-		scrollbarMarker.draw(guiGraphics, new ImmutableRect2i(scrollBarArea.getX() + 1, scrollBarArea.getY() + scrollBarArea.getHeight() * scrollOffset / totalElements, scrollBarArea.getWidth() - 2, scrollBarArea.getHeight() * maxElementDisplay / totalElements));
+        int trackHeight = scrollBarArea.getHeight();
+        int markerHeight = Math.max(10, trackHeight * contentArea.getHeight() / totalContentHeight);
+        int markerY = scrollBarArea.getY() + (int) ((trackHeight - markerHeight) * currentScrollY / maxScroll);
+        scrollbarMarker.draw(guiGraphics, new ImmutableRect2i(
+                scrollBarArea.getX() + 1,
+                markerY,
+                scrollBarArea.getWidth() - 2,
+                markerHeight
+        ));
 	}
 
-	private class CategoryWidget {
-		final IJeiConfigCategory category;
-		final List<EntryWidget<?>> entryWidgets = new ArrayList<>();
-		boolean expand;
-		ImmutableRect2i area = ImmutableRect2i.EMPTY;
-		ImmutableRect2i clickArea;
-		ImmutableRect2i nameArea;
+    private class NavItem implements IUserInputHandler {
+        private final Component displayName;
+        private final int categoryIndex;
+        private ImmutableRect2i area = ImmutableRect2i.EMPTY;
+        private List<FormattedCharSequence> wrappedLines = List.of();
+        private int cachedHeight = NAV_ITEM_HEIGHT;
 
-		@SuppressWarnings({"rawtypes", "unchecked"})
-		CategoryWidget(IJeiConfigCategory category) {
-			this.category = category;
-			for (IJeiConfigValue<?> value : category.getConfigValues()) {
-				switch (value.getSerializer()) {
-					case BooleanSerializer ignored ->
-						entryWidgets.add(new BooleanEntryWidget((IJeiConfigValue<Boolean>) value));
-					case IntegerSerializer ignored ->
-						entryWidgets.add(new IntegerEntryWidget((IJeiConfigValue<Integer>) value));
-					case EnumSerializer ignored -> entryWidgets.add(new EnumEntryWidget(value));
-					case ListSerializer ignored -> entryWidgets.add(new ListEntryWidget(value));
-					default ->
-						throw new UnsupportedOperationException("Unsupported serializer: " + value.getSerializer());
-				}
-			}
+        NavItem(Component displayName, int categoryIndex) {
+            this.displayName = displayName;
+            this.categoryIndex = categoryIndex;
+        }
+
+        int calculateHeight(int availableWidth) {
+            Font font = Minecraft.getInstance().font;
+            int textWidth = (int) ((availableWidth - 6) / ConfigEntryWidget.TEXT_SCALE);
+            wrappedLines = font.split(displayName, textWidth);
+            int scaledLineHeight = (int) (font.lineHeight * ConfigEntryWidget.TEXT_SCALE);
+            int textHeight = wrappedLines.size() * scaledLineHeight;
+            cachedHeight = Math.max(NAV_ITEM_HEIGHT, textHeight + 4);
+            return cachedHeight;
 		}
 
 		void updateBounds(ImmutableRect2i area) {
 			this.area = area;
-			clickArea = new ImmutableRect2i(area.getX() + 6, area.getY() + 6, 16, 16);
-			int nameWidth = font.width(category.getLocalizedName());
-			nameWidth = Math.min(nameWidth, area.getWidth() - 20);
-			nameArea = new ImmutableRect2i(area.getX() + 20, area.getY() + 7, nameWidth, 16);
 		}
 
 		boolean isMouseOver(double mouseX, double mouseY) {
 			return area.contains(mouseX, mouseY);
 		}
 
-		IUserInputHandler createInputHandler() {
-			List<IUserInputHandler> entryHandlers = entryWidgets.stream()
-				.map(entry -> {
-					final IUserInputHandler entryInputHandler = entry.createInputHandler();
-					return new IUserInputHandler() {
-						@Override
-						public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-							if (expand && displayArea.contains(input.getMouseX(), input.getMouseY())) {
-								return entryInputHandler.handleUserInput(screen, input, keyBindings);
-							}
-							return Optional.empty();
-						}
+        void draw(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean active) {
+            Font font = Minecraft.getInstance().font;
+            boolean hovered = isMouseOver(mouseX, mouseY) && navArea.contains(mouseX, mouseY);
 
-						@Override
-						public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
-							if (expand) {
-								return entryInputHandler.handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
-							}
-							return Optional.empty();
-						}
-					};
-				}).collect(Collectors.toList());
+            Textures textures = Internal.getTextures();
+            textures.getConfigCategoryButton().draw(guiGraphics, area);
+            if (active || hovered) {
+                textures.getConfigCategoryHighlight().draw(guiGraphics, area);
+            }
+            if (active) {
+                guiGraphics.fill(area.getX(), area.getY(), area.getX() + 2, area.getY() + area.getHeight(), 0xCCFFFFFF);
+            }
 
-			entryHandlers.addFirst(new CategoryWidgetInputHandler());
-			return new CombinedInputHandler("ConfigCategory:" + category.getName(), entryHandlers);
-		}
+            int textColor = 0xFFFFFFFF;
+            int textX = area.getX() + (active ? 8 : 6);
+            int scaledLineHeight = (int) (font.lineHeight * ConfigEntryWidget.TEXT_SCALE);
+            int totalTextHeight = wrappedLines.size() * scaledLineHeight;
+            int textY = area.getY() + (area.getHeight() - totalTextHeight) / 2 + 2;
+            for (FormattedCharSequence line : wrappedLines) {
+                ConfigEntryWidget.drawScaledString(guiGraphics, font, line, textX, textY, textColor, false);
+                textY += scaledLineHeight;
+            }
+        }
 
-		private class CategoryWidgetInputHandler implements IUserInputHandler {
-			@Override
-			public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-				if (displayArea.contains(input.getMouseX(), input.getMouseY()) && area.contains(input.getMouseX(), input.getMouseY())) {
-					if (input.is(keyBindings.getLeftClick())) {
+        void drawTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+            categoryWidgets.get(categoryIndex).drawTooltip(guiGraphics, mouseX, mouseY);
+        }
+
+        @Override
+        public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+            if (navArea.contains(input.getMouseX(), input.getMouseY())
+                    && area.contains(input.getMouseX(), input.getMouseY())
+                    && input.is(keyBindings.getLeftClick())) {
+                if (!input.isSimulate()) {
+                    setActiveCategory(categoryIndex);
+                }
+                return Optional.of(this);
+            }
+            return Optional.empty();
+        }
+    }
+
+    private class ValueSelectorInputHandler implements IUserInputHandler {
+        @Override
+        public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+            if (valueSelector != null) {
+                if (valueSelector.isMouseOver(input.getMouseX(), input.getMouseY()) && input.is(keyBindings.getLeftClick())) {
+                    if (valueSelector.onMouseClicked(input)) {
 						if (!input.isSimulate()) {
-							expand = !expand;
-							JeiConfigScreen.this.updateLayout();
+                            valueSelector = null;
+                            updateLayout();
 						}
 						return Optional.of(this);
 					}
-				}
-				return Optional.empty();
-			}
-		}
-
-		void drawTooltip(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-			JeiTooltip tooltip = new JeiTooltip();
-			tooltip.add(category.getLocalizedName().copy().withStyle(ChatFormatting.YELLOW));
-			tooltip.add(category.getDescription().copy().withStyle(ChatFormatting.GREEN));
-			tooltip.draw(guiGraphics, (int) mouseX, (int) mouseY);
-		}
-
-		void draw(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-			Internal.getTextures().getRecipeBackground().draw(guiGraphics, area);
-			guiGraphics.drawString(font, expand ? unexpandComponent : expandComponent, clickArea.getX(), clickArea.getY(), 0xFFFFFF);
-			guiGraphics.drawString(font, category.getLocalizedName(), nameArea.getX(), nameArea.getY(), 0xFFFFFF);
-		}
-	}
-
-	private abstract class EntryWidget<T> {
-
-		static final int maxNameWidth = 145;
-
-		final IJeiConfigValue<T> configValue;
-		final Component fullName;
-
-		FormattedCharSequence visibleString;
-
-		ImmutableRect2i area = ImmutableRect2i.EMPTY;
-		ImmutableRect2i nameArea = ImmutableRect2i.EMPTY;
-
-		Undo undo;
-
-		private EntryWidget(IJeiConfigValue<T> configValue) {
-			this.configValue = configValue;
-			this.fullName = StringUtil.stripStyling(configValue.getLocalizedName());
-
-			this.undo = new Undo() {
-				final T origin = configValue.getValue();
-
-				@Override
-				public void undo() {
-					configValue.set(origin);
-				}
-			};
-		}
-
-		int getHeight() {
-			return 20;
-		}
-
-		void updateBounds(ImmutableRect2i area) {
-			this.area = area;
-			this.nameArea = area.keepLeft(Math.min(maxNameWidth, font.width(fullName)))
-				.addOffset(5, 6);
-		}
-
-		void afterBoundUpdated() {
-			if (font.width(fullName) > nameArea.getWidth()) {
-				FormattedText formattedText = StringUtil.truncateStringToWidth(fullName, nameArea.getWidth(), font);
-				visibleString = Language.getInstance().getVisualOrder(formattedText);
-			} else {
-				visibleString = fullName.getVisualOrderText();
-			}
-		}
-
-		boolean isMouseOver(double mouseX, double mouseY) {
-			return area.contains(mouseX, mouseY);
-		}
-
-		IUserInputHandler createInputHandler() {
-			return new EntryWidgetInputHandler();
-		}
-
-		private class EntryWidgetInputHandler implements IUserInputHandler {
-			@Override
-			public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-				if (onMouseClicked(input)) {
-					return Optional.of(new SameElementInputHandler(this, area::contains));
-				}
-				return Optional.empty();
-			}
-		}
-
-		boolean onMouseClicked(UserInput input) {
-			return false;
-		}
-
-		void draw(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-			Internal.getTextures().getRecipeBackground().draw(guiGraphics, area);
-			drawContent(guiGraphics, mouseX, mouseY);
-		}
-
-		void drawTooltip(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-			JeiTooltip tooltip = new JeiTooltip();
-			getTooltip(tooltip);
-			if (!tooltip.isEmpty()) {
-				tooltip.draw(guiGraphics, (int) mouseX, (int) mouseY);
-			}
-		}
-
-		void getTooltip(JeiTooltip tooltip) {
-			tooltip.add(configValue.getLocalizedName().copy().withStyle(ChatFormatting.YELLOW));
-			tooltip.add(configValue.getLocalizedDescription().copy().withStyle(ChatFormatting.GREEN));
-		}
-
-		final void drawName(GuiGraphics guiGraphics) {
-			guiGraphics.drawString(font, visibleString, nameArea.getX(), nameArea.getY(), 0xFFFFFFFF);
-		}
-
-		abstract void drawContent(GuiGraphics guiGraphics, double mouseX, double mouseY);
-	}
-
-	private class BooleanEntryWidget extends EntryWidget<Boolean> {
-
-		ImmutableRect2i clickableValue = ImmutableRect2i.EMPTY;
-		Component displayValue;
-
-		BooleanEntryWidget(IJeiConfigValue<Boolean> value) {
-			super(value);
-			displayValue = getDisplayValue();
-		}
-
-		Component getDisplayValue() {
-			return configValue.getValue() ? Component.translatable("jei.config.value.boolean.true") : Component.translatable("jei.config.value.boolean.false");
-		}
-
-		@Override
-		void updateBounds(ImmutableRect2i area) {
-			super.updateBounds(area);
-			int valueWidth = font.width(displayValue);
-			clickableValue = area.keepRight(valueWidth)
-				.addOffset(-5, 5)
-				.keepTop(font.lineHeight);
-		}
-
-		@Override
-		void drawContent(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-			//name
-			drawName(guiGraphics);
-			//clickable
-			Component toDisplay = clickableValue.contains(mouseX, mouseY) ?
-				displayValue.copy().withStyle(ChatFormatting.UNDERLINE) :
-				displayValue;
-			guiGraphics.drawString(font, toDisplay, clickableValue.getX(), clickableValue.getY(), 0xFFFFFFFF);
-		}
-
-		@Override
-		boolean onMouseClicked(UserInput input) {
-			if (clickableValue.contains(input.getMouseX(), input.getMouseY())) {
-				if (!input.isSimulate()) {
-					configValue.set(!configValue.getValue());
-					displayValue = getDisplayValue();
-				}
-				return true;
-			}
-			return false;
-		}
-	}
-
-	private class IntegerEntryWidget extends EntryWidget<Integer> {
-
-		final ValueButton upButton;
-		final ValueButton downButton;
-		final IntegerSerializer serializer;
-		ImmutableRect2i valueArea = ImmutableRect2i.EMPTY;
-
-		IntegerEntryWidget(IJeiConfigValue<Integer> value) {
-			super(value);
-			this.serializer = (IntegerSerializer) value.getSerializer();
-			Textures textures = Internal.getTextures();
-			this.upButton = new ValueButton(
-				() -> {
-					IntegerSerializer serializer = (IntegerSerializer) value.getSerializer();
-					return configValue.getValue() < serializer.getMax();
-				},
-				textures.getArrowUp(),
-				() -> configValue.set(Math.min(getMax(), configValue.getValue() + 1)));
-
-			this.downButton = new ValueButton(
-				() -> {
-					IntegerSerializer serializer = (IntegerSerializer) value.getSerializer();
-					return configValue.getValue() > serializer.getMin();
-				},
-				textures.getArrowDown(),
-				() -> configValue.set(Math.max(getMin(), configValue.getValue() - 1)));
-		}
-
-		int getMax() {
-			return serializer.getMax();
-		}
-
-		Integer getMin() {
-			return serializer.getMin();
-		}
-
-		@Override
-		void updateBounds(ImmutableRect2i area) {
-			super.updateBounds(area);
-			valueArea = area.keepRight(50)
-				.addOffset(-15, 3)
-				.cropBottom(5);
-			ImmutableRect2i upArea = new ImmutableRect2i(
-				valueArea.getX() + valueArea.getWidth() + 1,
-				valueArea.getY() - 2,
-				10,
-				10
-			);
-			upButton.updateBounds(upArea);
-			ImmutableRect2i downArea = new ImmutableRect2i(
-				valueArea.getX() + valueArea.getWidth() + 1,
-				valueArea.getY() + 8,
-				10,
-				9
-			);
-			downButton.updateBounds(downArea);
-		}
-
-		@Override
-		void drawContent(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-			//name
-			drawName(guiGraphics);
-			//value
-			Internal.getTextures().getBookmarkListSlotBackground().draw(guiGraphics, valueArea);
-			guiGraphics.drawString(font, Component.literal(configValue.getValue().toString()), valueArea.getX() + 4, valueArea.getY() + 4, 0xFFFFFF);
-			upButton.drawButton(guiGraphics, mouseX, mouseY);
-			downButton.drawButton(guiGraphics, mouseX, mouseY);
-		}
-
-		@Override
-		boolean onMouseClicked(UserInput input) {
-			if (upButton.active.getAsBoolean() && upButton.area.contains(input.getMouseX(), input.getMouseY())) {
-				if (!input.isSimulate()) {
-					upButton.onClick.run();
-				}
-				return true;
-
-			}
-			if (downButton.active.getAsBoolean() && downButton.area.contains(input.getMouseX(), input.getMouseY())) {
-				if (!input.isSimulate()) {
-					downButton.onClick.run();
-				}
-				return true;
-			}
-			return false;
-		}
-
-		private static class ValueButton {
-			final BooleanSupplier active;
-			final IDrawableStatic buttonIcon;
-			final Runnable onClick;
-			ImmutableRect2i area = ImmutableRect2i.EMPTY;
-			boolean pressed;
-
-			private ValueButton(BooleanSupplier active, IDrawableStatic buttonIcon, Runnable onClick) {
-				this.active = active;
-				this.buttonIcon = buttonIcon;
-				this.onClick = onClick;
-			}
-
-			void updateBounds(ImmutableRect2i area) {
-				this.area = area;
-			}
-
-			void drawButton(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-				Textures textures = Internal.getTextures();
-				DrawableNineSliceTexture button = textures.getButtonForState(pressed, active.getAsBoolean(), area.contains(mouseX, mouseY));
-				button.draw(guiGraphics, area);
-				buttonIcon.draw(guiGraphics, area.getX(), area.getY());
-			}
-
-		}
-	}
-
-	private class EnumEntryWidget<T extends Enum<T>> extends EntryWidget<T> {
-
-		final List<T> validValues;
-		ImmutableRect2i valueArea = ImmutableRect2i.EMPTY;
-
-		EnumEntryWidget(IJeiConfigValue<T> value) {
-			super(value);
-			this.validValues = value.getSerializer()
-				.getAllValidValues()
-				.stream()
-				.flatMap(Collection::stream)
-				.toList();
-		}
-
-		@Override
-		void updateBounds(ImmutableRect2i area) {
-			super.updateBounds(area);
-			int valueWidth = font.width(configValue.getValue().toString());
-			valueArea = area.keepRight(valueWidth)
-				.addOffset(-5, 2)
-				.keepTop(font.lineHeight);
-		}
-
-		@Override
-		void drawContent(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-			drawName(guiGraphics);
-			String valueString = configValue.getValue().toString();
-			MutableComponent displayValue = Component.literal(valueString);
-			if (valueArea.contains(mouseX, mouseY)) {
-				displayValue.withStyle(ChatFormatting.UNDERLINE);
-			}
-			guiGraphics.drawString(font, displayValue, valueArea.getX() + 4, valueArea.getY() + 4, 0xFFFFFF);
-		}
-
-		@Override
-		boolean onMouseClicked(UserInput input) {
-			if (valueArea.contains(input.getMouseX(), input.getMouseY())) {
-				if (!input.isSimulate()) {
-					valueSelector = new ValueSelector<>(validValues, configValue.getValue(), value -> {
-						configValue.set(value);
-						this.updateBounds(this.area);
-					});
-					valueSelector.updateBounds((int) input.getMouseX(), valueArea.getY() + valueArea.getHeight() + 2);
-				}
-				return true;
-			}
-			return false;
-		}
-	}
-
-	private class ListEntryWidget<T> extends EntryWidget<List<T>> {
-
-		private final List<ListValueEntry> listValueEntries = new ArrayList<>();
-
-		ListEntryWidget(IJeiConfigValue<List<T>> listValue) {
-			super(listValue);
-			for (T value : listValue.getValue()) {
-				ListValueEntry entry = new ListValueEntry(value);
-				listValueEntries.add(entry);
-			}
-		}
-
-		@Override
-		int getHeight() {
-			return (configValue.getValue().size() + 1) * 20;
-		}
-
-		@Override
-		void updateBounds(ImmutableRect2i area) {
-			super.updateBounds(area);
-			for (int i = 0; i < listValueEntries.size(); i++) {
-				ListValueEntry entry = listValueEntries.get(i);
-				ImmutableRect2i entryArea = new ImmutableRect2i(
-					area.getX() + 10,
-					area.getY() + (i + 1) * 20,
-					area.getWidth() - 30,
-					20
-				);
-				entry.updateBounds(entryArea);
-			}
-		}
-
-		@Override
-		void drawContent(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-			drawName(guiGraphics);
-			for (ListValueEntry entry : listValueEntries) {
-				entry.draw(guiGraphics, mouseX, mouseY);
-			}
-		}
-
-		private class DeleteButton {
-			ImmutableRect2i area;
-			boolean pressed;
-
-
-			void updateBounds(ImmutableRect2i area) {
-				this.area = area;
-			}
-
-			void draw(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-				Textures textures = Internal.getTextures();
-				boolean hovered = area.contains(mouseX, mouseY);
-				var button = textures.getButtonForState(pressed, true, hovered);
-				button.draw(guiGraphics, area);
-				//TODO:button icon
-			}
-		}
-
-		private class ListValueEntry {
-			//null when unset
-			@Nullable T value;
-
-			ImmutableRect2i area;
-
-			ListValueEntry(T value) {
-				this.value = value;
-			}
-
-			void updateBounds(ImmutableRect2i area) {
-				this.area = area;
-			}
-
-			void draw(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-				Internal.getTextures().getRecipeBackground().draw(guiGraphics, area);
-				if (value != null) {
-					guiGraphics.drawString(font, Component.literal(value.toString()), area.getX() + 4, area.getY() + 4, 0xFFFFFF);
-				}
-			}
-
-		}
-
-	}
-
-	private class ValueSelector<T> {
-		final List<ValueEntry> valueEntries;
-		final T currentValue;
-		final Consumer<T> setter;
-
-		ImmutableRect2i area = ImmutableRect2i.EMPTY;
-
-		public ValueSelector(List<T> allValues, T currentValue, Consumer<T> setter) {
-			this.valueEntries = allValues.stream()
-				.map(ValueEntry::new)
-				.toList();
-			this.currentValue = currentValue;
-			this.setter = setter;
-		}
-
-		boolean isMouseOver(double mouseX, double mouseY) {
-			return area.contains(mouseX, mouseY);
-		}
-
-		void updateBounds(int x, int y) {
-			int counts = valueEntries.size();
-			int height = counts * 12;
-			int width = valueEntries.stream()
-				.mapToInt(entry -> font.width(entry.value.toString()))
-				.max().orElse(50);
-			area = new ImmutableRect2i(x, y, width + 14, height + 12);
-			for (int i = 0; i < valueEntries.size(); i++) {
-				ValueEntry entry = valueEntries.get(i);
-				entry.area = new ImmutableRect2i(
-					area.getX() + 5,
-					area.getY() + 5 + i * 14,
-					area.getWidth() - 10,
-					14
-				);
-			}
-		}
-
-		void draw(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-			Internal.getTextures().getRecipePreviewBackground().draw(guiGraphics, area);
-			for (int i = 0, valueEntriesSize = valueEntries.size(); i < valueEntriesSize; i++) {
-				ValueEntry entry = valueEntries.get(i);
-				ImmutableRect2i valueArea = entry.area;
-				guiGraphics.drawString(font, entry.value.toString(), valueArea.getX() + 2, valueArea.getY() + 2, 0xFFFFFFFF);
-				if (i > 0) {
-					drawLine(
-						guiGraphics.pose(),
-						area.getX() + 4,
-						area.getX() + area.getWidth() - 4,
-						valueArea.getY() - 2,
-						0xFF959595
-					);
-				}
-			}
-		}
-
-		boolean onMouseClicked(UserInput input) {
-			for (ValueEntry entry : valueEntries) {
-				if (entry.isMouseOver(input.getMouseX(), input.getMouseY())) {
-					if (!input.isSimulate()) {
-						setter.accept(entry.value);
+                } else if (input.is(keyBindings.getLeftClick())) {
+                    if (!input.isSimulate()) {
 						valueSelector = null;
 					}
-					return true;
-				}
+                    return Optional.of(this);
+                }
 			}
-			return false;
+            return Optional.empty();
 		}
-
-		private void drawLine(PoseStack poseStack, int x1, int x2, int y, int argbColor) {
-			RenderSystem.enableBlend();
-			RenderSystem.defaultBlendFunc();
-			RenderSystem.setShader(GameRenderer::getPositionColorShader);
-			Tesselator tesselator = Tesselator.getInstance();
-			BufferBuilder builder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-
-			float a = (float) (argbColor >> 24 & 255) / 255.0F;
-			float r = (float) (argbColor >> 16 & 255) / 255.0F;
-			float g = (float) (argbColor >> 8 & 255) / 255.0F;
-			float b = (float) (argbColor & 255) / 255.0F;
-			Matrix4f pose = poseStack.last().pose();
-
-			final int availableWidth = x2 - x1;
-			if (availableWidth <= 0) {
-				return;
-			}
-			final int dashWidth = 8;
-			final int dashHeight = 1;
-			final int spacing = 6;
-
-			// space out the dashes so that we always start and end with whole dashes
-			final int interval = dashWidth + spacing;
-			final int dashCount = availableWidth / interval;
-			final float floatInterval = (availableWidth - dashWidth) / (float) dashCount;
-
-			for (float x = x1; x < x2; x += floatInterval) {
-				builder.addVertex(pose, Mth.clamp(x + dashWidth, x1, x2), y, 0).setColor(r, g, b, a);
-				builder.addVertex(pose, Mth.clamp(x, x1, x2), y, 0).setColor(r, g, b, a);
-				builder.addVertex(pose, Mth.clamp(x, x1, x2), y + dashHeight, 0).setColor(r, g, b, a);
-				builder.addVertex(pose, Mth.clamp(x + dashWidth, x1, x2), y + dashHeight, 0).setColor(r, g, b, a);
-			}
-
-			BufferUploader.drawWithShader(builder.buildOrThrow());
-			RenderSystem.disableBlend();
-		}
-
-
-		class ValueEntry {
-			final T value;
-			ImmutableRect2i area = ImmutableRect2i.EMPTY;
-
-			public ValueEntry(T value) {
-				this.value = value;
-			}
-
-			boolean isMouseOver(double mouseX, double mouseY) {
-				return area.contains(mouseX, mouseY);
-			}
-
-		}
-
 	}
-
-	interface Undo {
-		void undo();
-	}
-
 }

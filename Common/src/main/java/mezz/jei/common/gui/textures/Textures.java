@@ -15,7 +15,7 @@ public class Textures {
 	private final DrawableNineSliceTexture recipeCatalystSlotBackground;
 	private final DrawableNineSliceTexture ingredientListSlotBackground;
 	private final DrawableNineSliceTexture bookmarkListSlotBackground;
-	private final DrawableNineSliceTexture configWidgetBackground;
+    private final DrawableNineSliceTexture configValueSlot;
 	private final IDrawableStatic tabSelected;
 	private final IDrawableStatic tabUnselected;
 	private final DrawableNineSliceTexture buttonDisabled;
@@ -31,7 +31,8 @@ public class Textures {
 	private final DrawableNineSliceTexture searchBackground;
 	private final DrawableNineSliceTexture scrollbarBackground;
 	private final DrawableNineSliceTexture scrollbarMarker;
-	private final DrawableNineSliceTexture configScrollBar;
+    protected final DrawableNineSliceTexture configCategoryButton;
+    protected final DrawableNineSliceTexture configCategoryHighlight;
 
 	private final HighResolutionDrawable shapelessIcon;
 	private final IDrawableStatic arrowPrevious;
@@ -70,7 +71,7 @@ public class Textures {
 		this.recipeCatalystSlotBackground = createNineSliceGuiSprite("recipe_catalyst_slot_background", 18, 18, 4, 4, 4, 4);
 		this.ingredientListSlotBackground = createNineSliceGuiSprite("ingredient_list_slot_background", 18, 18, 4, 4, 4, 4);
 		this.bookmarkListSlotBackground = createNineSliceGuiSprite("bookmark_list_slot_background", 18, 18, 4, 4, 4, 4);
-		this.configWidgetBackground = createNineSliceGuiSprite("config_widget_background", 64, 64, 16, 16, 16, 16);
+        this.configValueSlot = createNineSliceGuiSprite("config_value_slot", 64, 64, 2, 2, 2, 2);
 		this.tabSelected = createGuiSprite("tab_selected", 24, 24);
 		this.tabUnselected = createGuiSprite("tab_unselected", 24, 24);
 		this.buttonDisabled = createNineSliceGuiSprite("button_disabled", 20, 20, 6, 6, 6, 6);
@@ -86,7 +87,8 @@ public class Textures {
 		this.searchBackground = createNineSliceGuiSprite("search_background", 20, 20, 6, 6, 6, 6);
 		this.scrollbarBackground = createNineSliceGuiSprite("scrollbar_background", 14, 50, 6, 6, 6, 6);
 		this.scrollbarMarker = createNineSliceGuiSprite("scrollbar_marker", 12, 15, 2, 2, 2, 1);
-		this.configScrollBar = createNineSliceGuiSprite("config_widget_scrollbar", 8, 14, 2, 2, 2, 2);
+        this.configCategoryButton = createNineSliceGuiSprite("config_category", 11, 11, 2, 2, 2, 2);
+        this.configCategoryHighlight = createNineSliceGuiSprite("config_category_highlight", 11, 11, 2, 2, 2, 2);
 		this.catalystTab = createNineSliceGuiSprite("catalyst_tab", 28, 28, 8, 9, 8, 8);
 		this.recipeOptionsTab = createNineSliceGuiSprite("recipe_options_tab", 28, 28, 8, 9, 8, 8);
 		this.recipeArrow = createGuiSprite("recipe_arrow", 22, 16);
@@ -287,8 +289,16 @@ public class Textures {
 		return bookmarkListSlotBackground;
 	}
 
-	public DrawableNineSliceTexture getConfigWidgetBackground() {
-		return configWidgetBackground;
+    public DrawableNineSliceTexture getConfigValueSlot() {
+        return configValueSlot;
+    }
+
+    public DrawableNineSliceTexture getConfigCategoryButton() {
+        return configCategoryButton;
+    }
+
+    public DrawableNineSliceTexture getConfigCategoryHighlight() {
+        return configCategoryHighlight;
 	}
 
 	public IDrawableStatic getFlameIcon() {
@@ -305,10 +315,6 @@ public class Textures {
 
 	public DrawableNineSliceTexture getScrollbarBackground() {
 		return scrollbarBackground;
-	}
-
-	public DrawableNineSliceTexture getConfigScrollBar() {
-		return configScrollBar;
 	}
 
 	public IDrawableStatic getBrewingStandBackground() {

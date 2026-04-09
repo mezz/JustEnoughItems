@@ -13,7 +13,6 @@ import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.JeiClientConfigs;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
 import mezz.jei.common.config.file.FileWatcher;
-import mezz.jei.common.config.file.IConfigSchema;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
