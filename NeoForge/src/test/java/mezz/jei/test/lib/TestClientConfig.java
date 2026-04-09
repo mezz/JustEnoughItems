@@ -98,6 +98,11 @@ public class TestClientConfig implements IClientConfig {
 		return 0;
 	}
 
+    @Override
+    public void addMaxLookupHistoryRowsListener(IConfigListener<Integer> listener) {
+
+    }
+
 	@Override
 	public int getMaxLookupHistoryIngredients() {
 		return 0;

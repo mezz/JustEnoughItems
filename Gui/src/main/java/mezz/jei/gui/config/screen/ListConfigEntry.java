@@ -69,12 +69,8 @@ public class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
 
     @Override
     public void updateBounds(ImmutableRect2i area) {
-        // Let super center nameArea/resetArea only within the 20px header strip
         super.updateBounds(new ImmutableRect2i(area.getX(), area.getY(), area.getWidth(), 20));
-        // Restore full area for hit-testing
         this.area = area;
-
-        // + button lives in the header strip, just left of Reset (Reset = 32px wide + 2px margin)
         if (canAddMore()) {
             addButtonArea = new ImmutableRect2i(
                     area.getX() + area.getWidth() - 32 - 2 - BUTTON_SIZE - 2,
@@ -97,7 +93,6 @@ public class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
     void drawContent(GuiGraphics guiGraphics, double mouseX, double mouseY) {
         drawName(guiGraphics);
 
-        // + button in header (left of Reset)
         if (!addButtonArea.equals(ImmutableRect2i.EMPTY)) {
             Textures textures = Internal.getTextures();
             boolean hovered = addButtonArea.contains(mouseX, mouseY);
@@ -153,7 +148,6 @@ public class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
                 return Optional.empty();
             }
 
-            // check reset button (inherited from ConfigEntryWidget)
             if (onMouseClicked(input)) {
                 return Optional.of(this);
             }
@@ -212,7 +206,6 @@ public class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
             Font font = Minecraft.getInstance().font;
             Textures textures = Internal.getTextures();
 
-            // row background (subtle fill, no nine-slice artifact)
             guiGraphics.fill(area.getX(), area.getY(),
                     area.getX() + area.getWidth(), area.getY() + area.getHeight(),
                     0x30000000);

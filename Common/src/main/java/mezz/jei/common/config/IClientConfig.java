@@ -42,6 +42,8 @@ public interface IClientConfig {
 
 	int getMaxLookupHistoryRows();
 
+    void addMaxLookupHistoryRowsListener(IConfigListener<Integer> listener);
+
 	int getMaxLookupHistoryIngredients();
 
 	HistoryDisplaySide getLookupHistoryDisplaySide();

@@ -64,6 +64,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IConfigListener<Boolean> lookupHistoryEnabledListener;
 	@SuppressWarnings("FieldCanBeLocal")
 	private final IConfigListener<HistoryDisplaySide> lookupHistoryViewSideListener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final IConfigListener<Integer> maxLookupHistoryRowsListener;
 
 	public IngredientListOverlay(
 		IIngredientGridSource ingredientGridSource,
@@ -100,9 +102,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 		this.lookupHistoryEnabledListener = v -> onScreenPropertiesChanged();
 		this.lookupHistoryViewSideListener = v -> onScreenPropertiesChanged();
+        this.maxLookupHistoryRowsListener = v -> onScreenPropertiesChanged();
 
 		clientConfig.addLookupHistoryEnabledListener(lookupHistoryEnabledListener);
 		clientConfig.addLookupHistoryDisplaySideListener(lookupHistoryViewSideListener);
+        clientConfig.addMaxLookupHistoryRowsListener(maxLookupHistoryRowsListener);
 	}
 
 	@Override

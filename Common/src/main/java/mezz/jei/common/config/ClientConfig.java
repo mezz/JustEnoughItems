@@ -248,6 +248,11 @@ public final class ClientConfig implements IClientConfig {
 		return maxLookupHistoryRows.get();
 	}
 
+    @Override
+    public void addMaxLookupHistoryRowsListener(IConfigListener<Integer> listener) {
+        maxLookupHistoryRows.addListener(listener);
+    }
+
 	@Override
 	public int getMaxLookupHistoryIngredients() {
 		return maxLookupHistoryIngredients.get();
