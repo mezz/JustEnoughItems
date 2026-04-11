@@ -164,7 +164,11 @@ public class JeiTooltip implements ITooltipBuilder {
 
 		itemStack.getTooltipImage()
 			.ifPresent((c) -> {
-				lines.add(1, Either.right(c));
+				if (lines.size() > 1) {
+					lines.add(1, Either.right(c));
+				} else {
+					lines.add(Either.right(c));
+				}
 			});
 
 		addDebugInfo(ingredientManager, typedIngredient);
