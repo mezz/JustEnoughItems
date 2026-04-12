@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay;
 
 import mezz.jei.api.helpers.IColorHelper;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -25,19 +26,23 @@ public final class IngredientGridTooltipHelper {
 	private final IClientToggleState toggleState;
 	private final IInternalKeyMappings keyBindings;
 	private final IColorHelper colorHelper;
+	private final IModIdHelper modIdHelper;
+
 
 	public IngredientGridTooltipHelper(
 		IIngredientManager ingredientManager,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IClientToggleState toggleState,
 		IInternalKeyMappings keyBindings,
-		IColorHelper colorHelper
+		IColorHelper colorHelper,
+		IModIdHelper modIdHelper
 	) {
 		this.ingredientManager = ingredientManager;
 		this.ingredientFilterConfig = ingredientFilterConfig;
 		this.toggleState = toggleState;
 		this.keyBindings = keyBindings;
 		this.colorHelper = colorHelper;
+		this.modIdHelper = modIdHelper;
 	}
 
 	public <T> void getIngredientTooltip(
@@ -59,6 +64,24 @@ public final class IngredientGridTooltipHelper {
 		if (toggleState.isEditModeEnabled()) {
 			addEditModeInfoToTooltip(tooltip, keyBindings);
 		}
+	}
+
+	public void getIngredientTooltip(JeiTooltip tooltip, ITypedIngredient<?> typedIngredient) {
+		resolveAndGetTooltip(tooltip, typedIngredient);
+	}
+
+	private <T> void resolveAndGetTooltip(JeiTooltip tooltip, ITypedIngredient<T> typedIngredient) {
+		IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(typedIngredient.getType());
+		IIngredientHelper<T> helper = ingredientManager.getIngredientHelper(typedIngredient.getType());
+		getIngredientTooltip(tooltip, typedIngredient, renderer, helper);
+	}
+
+	public IIngredientManager getIngredientManager() {
+		return ingredientManager;
+	}
+
+	public IModIdHelper getModIdHelper() {
+		return modIdHelper;
 	}
 
 	private <T> void addIngredientAliasesToTooltip(JeiTooltip tooltip, ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {

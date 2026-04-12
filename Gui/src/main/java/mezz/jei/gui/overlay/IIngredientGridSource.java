@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IIngredientGridSource {
 	@Unmodifiable
-	List<IElement<?>> getElements();
+	List<IElement> getElements();
 
 	void addSourceListChangedListener(SourceListChangedListener listener);
 

@@ -5,11 +5,11 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.overlay.elements.IElement;
 
-public class DraggableIngredientInternal<V> implements IDraggableIngredientInternal<V> {
-	private final IElement<V> element;
+public class DraggableIngredientInternal implements IDraggableIngredientInternal {
+	private final IElement element;
 	private final ImmutableRect2i area;
 
-	public DraggableIngredientInternal(IElement<V> element, ImmutableRect2i area) {
+	public DraggableIngredientInternal(IElement element, ImmutableRect2i area) {
 		ErrorUtil.checkNotNull(element, "element");
 		ErrorUtil.checkNotNull(area, "area");
 		this.element = element;
@@ -17,12 +17,12 @@ public class DraggableIngredientInternal<V> implements IDraggableIngredientInter
 	}
 
 	@Override
-	public ITypedIngredient<V> getTypedIngredient() {
+	public ITypedIngredient<?> getTypedIngredient() {
 		return element.getTypedIngredient();
 	}
 
 	@Override
-	public IElement<V> getElement() {
+	public IElement getElement() {
 		return element;
 	}
 

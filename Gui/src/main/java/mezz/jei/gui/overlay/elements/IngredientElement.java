@@ -1,8 +1,5 @@
 package mezz.jei.gui.overlay.elements;
 
-import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -16,7 +13,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public class IngredientElement<T> implements IElement<T> {
+public class IngredientElement<T> implements IElement {
 	private final ITypedIngredient<T> ingredient;
 
 	public IngredientElement(ITypedIngredient<T> ingredient) {
@@ -34,7 +31,7 @@ public class IngredientElement<T> implements IElement<T> {
 	}
 
 	@Override
-	public @Nullable IDrawable createRenderOverlay() {
+	public @Nullable IElementOverlay createRenderOverlay() {
 		return null;
 	}
 
@@ -46,8 +43,8 @@ public class IngredientElement<T> implements IElement<T> {
 	}
 
 	@Override
-	public void getTooltip(JeiTooltip tooltip, IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper) {
-		tooltipHelper.getIngredientTooltip(tooltip, ingredient, ingredientRenderer, ingredientHelper);
+	public void getTooltip(JeiTooltip tooltip, IngredientGridTooltipHelper tooltipHelper) {
+		tooltipHelper.getIngredientTooltip(tooltip, ingredient);
 	}
 
 	@Override

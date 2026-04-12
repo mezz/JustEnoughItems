@@ -9,6 +9,8 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.IngredientGroupConfig;
+import mezz.jei.gui.config.GroupExpandStateConfig;
 import mezz.jei.gui.filter.FilterTextSource;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.ingredients.IListElementInfo;
@@ -16,6 +18,8 @@ import mezz.jei.gui.ingredients.IngredientFilter;
 import mezz.jei.gui.ingredients.IngredientListElementFactory;
 import mezz.jei.gui.ingredients.ListElementInfo;
 import mezz.jei.library.config.EditModeConfig;
+import mezz.jei.library.focus.FocusFactory;
+import mezz.jei.library.helpers.CodecHelper;
 import mezz.jei.library.ingredients.IngredientBlacklistInternal;
 import mezz.jei.library.ingredients.IngredientVisibility;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
@@ -36,6 +40,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -51,7 +56,11 @@ public class IngredientFilterTest {
 	@Nullable
 	private IIngredientVisibility ingredientVisibility;
 	@Nullable
-	private List<IListElementInfo<?>> baseList;
+	private IngredientGroupConfig ingredientGroupConfig;
+    @Nullable
+    private GroupExpandStateConfig groupExpandStateConfig;
+	@Nullable
+	private List<IListElementInfo> baseList;
 	@Nullable
 	private EditModeConfig editModeConfig;
 	@Nullable
@@ -77,6 +86,8 @@ public class IngredientFilterTest {
 
 		this.baseList = IngredientListElementFactory.createBaseList(ingredientManager, modIdHelper);
 
+		this.ingredientGroupConfig = new IngredientGroupConfig(new CodecHelper(ingredientManager,new FocusFactory(ingredientManager)), ingredientManager, Paths.get(""));
+        this.groupExpandStateConfig = new GroupExpandStateConfig(Paths.get(""));
 		this.editModeConfig = new EditModeConfig(new NullSerializer(), ingredientManager);
 
 		IClientToggleState toggleState = new TestClientToggleState();
@@ -91,6 +102,8 @@ public class IngredientFilterTest {
 			ingredientManager,
 			Comparator.comparingInt(Object::hashCode),
 			baseList,
+			ingredientGroupConfig,
+            groupExpandStateConfig,
 			modIdHelper,
 			ingredientVisibility,
 			colorHelper,
@@ -167,7 +180,7 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(baseList);
 		Assertions.assertNotNull(editModeConfig);
 
-		IListElementInfo<?> elementInfo = baseList.getFirst();
+		IListElementInfo elementInfo = baseList.getFirst();
 		ITypedIngredient<?> typedIngredient = elementInfo.getTypedIngredient();
 		@SuppressWarnings("unchecked")
 		ITypedIngredient<TestIngredient> blacklistedIngredient = (ITypedIngredient<TestIngredient>) typedIngredient;
@@ -202,7 +215,7 @@ public class IngredientFilterTest {
 		IModIdHelper modIdHelper,
 		List<TestIngredient> ingredientsToAdd
 	) {
-		List<IListElementInfo<TestIngredient>> listToAdd = IngredientListElementFactory.createTestList(ingredientManager, TestIngredient.TYPE, ingredientsToAdd, modIdHelper);
+		List<IListElementInfo> listToAdd = IngredientListElementFactory.createTestList(ingredientManager, TestIngredient.TYPE, ingredientsToAdd, modIdHelper);
 		Assertions.assertEquals(EXTRA_INGREDIENT_COUNT, listToAdd.size());
 
 		ingredientManager.addIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToAdd);
@@ -233,7 +246,7 @@ public class IngredientFilterTest {
 		IModIdHelper modIdHelper,
 		List<TestIngredient> ingredientsToRemove
 	) {
-		List<IListElementInfo<TestIngredient>> listToRemove = IngredientListElementFactory.createTestList(ingredientManager, TestIngredient.TYPE, ingredientsToRemove, modIdHelper);
+		List<IListElementInfo> listToRemove = IngredientListElementFactory.createTestList(ingredientManager, TestIngredient.TYPE, ingredientsToRemove, modIdHelper);
 		Assertions.assertEquals(EXTRA_INGREDIENT_COUNT, listToRemove.size());
 
 		ingredientManager.removeIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToRemove);

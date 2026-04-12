@@ -55,9 +55,9 @@ public class LookupHistory implements IIngredientGridSource {
 	}
 
 	@Override
-	public @Unmodifiable List<IElement<?>> getElements() {
+	public @Unmodifiable List<IElement> getElements() {
 		return elements.stream()
-			.<IElement<?>>map(IBookmark::getElement)
+			.<IElement>map(IBookmark::getElement)
 			.toList();
 	}
 

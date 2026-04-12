@@ -4,7 +4,7 @@ import mezz.jei.gui.overlay.elements.IElement;
 
 public interface IBookmark {
 	BookmarkType getType();
-	IElement<?> getElement();
+	IElement getElement();
 	boolean isVisible();
 	void setVisible(boolean visible);
 }

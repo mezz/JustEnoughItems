@@ -37,6 +37,7 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping transferRecipeBookmark;
 	private final IJeiKeyMapping maxTransferRecipeBookmark;
 	private final IJeiKeyMapping quickMove;
+	private final IJeiKeyMapping groupAction;
 
 	private final IJeiKeyMapping showRecipe;
 	private final IJeiKeyMapping showUses;
@@ -176,6 +177,12 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 		quickMove = mouseHover.createMapping("key.jei.quickMove")
 				.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
 				.setModifier(JeiKeyModifier.SHIFT)
+				.buildMouseLeft()
+				.register(registerMethod);
+
+		groupAction = mouseHover.createMapping("key.jei.group.action")
+				.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
+				.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
 				.buildMouseLeft()
 				.register(registerMethod);
 
@@ -415,6 +422,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	@Override
 	public IJeiKeyMapping getQuickMove() {
 		return quickMove;
+	}
+
+	@Override
+	public IJeiKeyMapping getGroupAction() {
+		return groupAction;
 	}
 
 	@Override

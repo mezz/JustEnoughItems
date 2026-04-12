@@ -30,25 +30,25 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class ListElementInfo<V> implements IListElementInfo<V> {
+public final class ListElementInfo<V> implements IListElementInfo {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static int elementCount = 0;
+	static int elementCount = 0;
 
-	private final IListElement<V> element;
+	private final ListElement<V> element;
 	private final List<String> names;
 	private final List<String> modIds;
 	private final List<String> modNames;
 	private final Identifier id;
 
 	@Nullable
-	public static <V> IListElementInfo<V> create(ITypedIngredient<V> value, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	public static <V> IListElementInfo create(ITypedIngredient<V> value, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		int createdIndex = elementCount++;
 		ListElement<V> element = new ListElement<>(value, createdIndex);
 		return createFromElement(element, ingredientManager, modIdHelper);
 	}
 
 	@Nullable
-	public static <V> IListElementInfo<V> createFromElement(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	public static <V> IListElementInfo createFromElement(ListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		try {
 			return new ListElementInfo<>(element, ingredientManager, modIdHelper);
 		} catch (RuntimeException e) {
@@ -64,7 +64,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		}
 	}
 
-	protected ListElementInfo(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	protected ListElementInfo(ListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		this.element = element;
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		V ingredient = value.getIngredient();
@@ -95,6 +95,11 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 				this.names.add(lowercaseAlias);
 			}
 		}
+	}
+
+	@Override
+	public boolean isGroup() {
+		return false;
 	}
 
 	@Override
@@ -201,7 +206,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	public IListElement<V> getElement() {
+	public IListElement getElement() {
 		return element;
 	}
 

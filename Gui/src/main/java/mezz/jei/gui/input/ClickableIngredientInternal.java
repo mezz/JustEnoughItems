@@ -7,13 +7,13 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.world.item.ItemStack;
 
-public class ClickableIngredientInternal<V> implements IClickableIngredientInternal<V> {
-	private final IElement<V> element;
+public class ClickableIngredientInternal implements IClickableIngredientInternal {
+	private final IElement element;
 	private final IMouseOverable mouseOverable;
 	private final boolean canClickToFocus;
 	private final boolean allowsCheating;
 
-	public ClickableIngredientInternal(IElement<V> element, IMouseOverable mouseOverable, boolean allowsCheating, boolean canClickToFocus) {
+	public ClickableIngredientInternal(IElement element, IMouseOverable mouseOverable, boolean allowsCheating, boolean canClickToFocus) {
 		ErrorUtil.checkNotNull(element, "element");
 		this.element = element;
 		this.mouseOverable = mouseOverable;
@@ -22,12 +22,12 @@ public class ClickableIngredientInternal<V> implements IClickableIngredientInter
 	}
 
 	@Override
-	public ITypedIngredient<V> getTypedIngredient() {
+	public ITypedIngredient<?> getTypedIngredient() {
 		return element.getTypedIngredient();
 	}
 
 	@Override
-	public IElement<V> getElement() {
+	public IElement getElement() {
 		return element;
 	}
 
@@ -44,10 +44,13 @@ public class ClickableIngredientInternal<V> implements IClickableIngredientInter
 	@Override
 	public ItemStack getCheatItemStack(IIngredientManager ingredientManager) {
 		if (allowsCheating) {
-			ITypedIngredient<V> value = element.getTypedIngredient();
-			IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
-			return ingredientHelper.getCheatItemStack(value.getIngredient());
+			return doGetCheatItemStack(element.getTypedIngredient(), ingredientManager);
 		}
 		return ItemStack.EMPTY;
+	}
+
+	private static <T> ItemStack doGetCheatItemStack(ITypedIngredient<T> value, IIngredientManager ingredientManager) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
+		return ingredientHelper.getCheatItemStack(value.getIngredient());
 	}
 }

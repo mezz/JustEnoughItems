@@ -1,6 +1,7 @@
 package mezz.jei.gui.startup;
 
 import mezz.jei.api.helpers.IColorHelper;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.HistoryDisplaySide;
@@ -37,6 +38,7 @@ public final class OverlayHelper {
 		IClientToggleState toggleState,
 		IConnectionToServer serverConnection,
 		IColorHelper colorHelper,
+		IModIdHelper modIdHelper,
 		IScreenHelper screenHelper,
 		boolean supportsEditMode
 	) {
@@ -49,6 +51,7 @@ public final class OverlayHelper {
 			serverConnection,
 			keyMappings,
 			colorHelper,
+			modIdHelper,
 			supportsEditMode
 		);
 
@@ -80,7 +83,8 @@ public final class OverlayHelper {
 		IConnectionToServer serverConnection,
 		IIngredientFilterConfig ingredientFilterConfig,
 		Textures textures,
-		IColorHelper colorHelper
+		IColorHelper colorHelper,
+		IModIdHelper modIdHelper
 	) {
 		IngredientGridWithNavigation ingredientListGridNavigation = createIngredientGridWithNavigation(
 			"IngredientListOverlay",
@@ -95,6 +99,7 @@ public final class OverlayHelper {
 			toggleState,
 			serverConnection,
 			colorHelper,
+			modIdHelper,
 			screenHelper,
 			true
 		);
@@ -110,7 +115,8 @@ public final class OverlayHelper {
 			toggleState,
 			screenHelper,
 			serverConnection,
-			colorHelper
+			colorHelper,
+			modIdHelper
 		);
 
 		return new IngredientListOverlay(
@@ -137,7 +143,8 @@ public final class OverlayHelper {
 		IClientToggleState toggleState,
 		IConnectionToServer serverConnection,
 		Textures textures,
-		IColorHelper colorHelper
+		IColorHelper colorHelper,
+		IModIdHelper modIdHelper
 	) {
 		IngredientGridWithNavigation bookmarkListGridNavigation = createIngredientGridWithNavigation(
 			"BookmarkOverlay",
@@ -152,6 +159,7 @@ public final class OverlayHelper {
 			toggleState,
 			serverConnection,
 			colorHelper,
+			modIdHelper,
 			screenHelper,
 			false
 		);
@@ -167,7 +175,8 @@ public final class OverlayHelper {
 			toggleState,
 			screenHelper,
 			serverConnection,
-			colorHelper
+			colorHelper,
+			modIdHelper
 		);
 
 		return new BookmarkOverlay(

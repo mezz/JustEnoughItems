@@ -10,12 +10,15 @@ import mezz.jei.gui.ingredients.IListElementInfo;
 import java.nio.file.Path;
 import java.util.Comparator;
 
-public class IngredientTypeSortingConfig extends MappedSortingConfig<IListElementInfo<?>, String> {
+public class IngredientTypeSortingConfig extends MappedSortingConfig<IListElementInfo, String> {
 	public IngredientTypeSortingConfig(Path path) {
 		super(path, SortingSerializers.STRING, IngredientTypeSortingConfig::getIngredientTypeString);
 	}
 
-	public static String getIngredientTypeString(IListElementInfo<?> info) {
+	public static String getIngredientTypeString(IListElementInfo info) {
+		if (info.isGroup()) {
+			return "group";
+		}
 		ITypedIngredient<?> typedIngredient = info.getTypedIngredient();
 		return getIngredientTypeString(typedIngredient.getType());
 	}

@@ -1,5 +1,6 @@
 package mezz.jei.library.startup;
 
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableSetMultimap;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
@@ -9,10 +10,12 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.config.IngredientGroupConfig;
 import mezz.jei.common.config.JeiClientConfigs;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
 import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
+import mezz.jei.common.ingredients.group.IIngredientGroupSelector;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ChatUtil;
 import mezz.jei.common.util.ErrorUtil;
@@ -20,10 +23,7 @@ import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.common.util.Translator;
 import mezz.jei.core.util.LoggedTimer;
 import mezz.jei.library.color.ColorHelper;
-import mezz.jei.library.config.ColorNameConfig;
-import mezz.jei.library.config.EditModeConfig;
-import mezz.jei.library.config.ModIdFormatConfig;
-import mezz.jei.library.config.RecipeCategorySortingConfig;
+import mezz.jei.library.config.*;
 import mezz.jei.library.focus.FocusFactory;
 import mezz.jei.library.helpers.CodecHelper;
 import mezz.jei.library.ingredients.IngredientManager;
@@ -31,6 +31,7 @@ import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.PluginCaller;
 import mezz.jei.library.load.PluginHelper;
 import mezz.jei.library.load.PluginLoader;
+import mezz.jei.library.load.registration.IngredientGroupRegistration;
 import mezz.jei.library.load.registration.RuntimeRegistration;
 import mezz.jei.library.plugins.jei.JeiInternalPlugin;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
@@ -41,6 +42,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,6 +50,7 @@ import org.apache.logging.log4j.Logger;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public final class JeiStarter {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -130,6 +133,14 @@ public final class JeiStarter {
 			codecHelper
 		);
 		EditModeConfig editModeConfig = new EditModeConfig(editModeSerializer, ingredientManager);
+
+
+		IngredientGroupRegistration ingredientGroupRegistration = new IngredientGroupRegistration();
+		PluginCaller.callOnPlugins("Registering Ingredient Groups", plugins, p -> p.registerIngredientGroups(ingredientGroupRegistration));
+		IngredientGroupConfig ingredientGroupConfig = new IngredientGroupConfig(codecHelper, ingredientManager, configDir.resolve("groups"));
+		ingredientGroupRegistration.getIngredientGroups().forEach(ingredientGroupConfig::add);
+		ingredientGroupConfig.load(registryAccess);
+		Internal.setIngredientGroupConfig(ingredientGroupConfig);
 
 		ImmutableSetMultimap<String, String> modAliases = PluginLoader.registerModAliases(data, ingredientFilterConfig);
 

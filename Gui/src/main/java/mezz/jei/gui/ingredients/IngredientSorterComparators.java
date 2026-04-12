@@ -45,14 +45,14 @@ public class IngredientSorterComparators {
 		this.modNames = modNames;
 	}
 
-	public Comparator<IListElementInfo<?>> getComparator(List<IngredientSortStage> ingredientSorterStages) {
+	public Comparator<IListElementInfo> getComparator(List<IngredientSortStage> ingredientSorterStages) {
 		return ingredientSorterStages.stream()
 			.map(this::getComparator)
 			.reduce(Comparator::thenComparing)
 			.orElseGet(this::getDefault);
 	}
 
-	public Comparator<IListElementInfo<?>> getComparator(IngredientSortStage ingredientSortStage) {
+	public Comparator<IListElementInfo> getComparator(IngredientSortStage ingredientSortStage) {
 		return switch (ingredientSortStage) {
 			case ALPHABETICAL -> getAlphabeticalComparator();
 			case CREATIVE_MENU -> getCreativeMenuComparator();
@@ -64,25 +64,25 @@ public class IngredientSorterComparators {
 		};
 	}
 
-	public Comparator<IListElementInfo<?>> getDefault() {
+	public Comparator<IListElementInfo> getDefault() {
 		return getModNameComparator()
 			.thenComparing(getIngredientTypeComparator())
 			.thenComparing(getCreativeMenuComparator());
 	}
 
-	private static Comparator<IListElementInfo<?>> getCreativeMenuComparator() {
+	private static Comparator<IListElementInfo> getCreativeMenuComparator() {
 		return Comparator.comparingInt(IListElementInfo::getCreatedIndex);
 	}
 
-	private static Comparator<IListElementInfo<?>> getAlphabeticalComparator() {
+	private static Comparator<IListElementInfo> getAlphabeticalComparator() {
 		return Comparator.comparing(i -> i.getNames().getFirst());
 	}
 
-	private Comparator<IListElementInfo<?>> getModNameComparator() {
+	private Comparator<IListElementInfo> getModNameComparator() {
 		return this.modNameSortingConfig.getComparatorFromMappedValues(modNames);
 	}
 
-	private Comparator<IListElementInfo<?>> getIngredientTypeComparator() {
+	private Comparator<IListElementInfo> getIngredientTypeComparator() {
 		Collection<IIngredientType<?>> ingredientTypes = this.ingredientManager.getRegisteredIngredientTypes();
 		Set<String> ingredientTypeStrings = ingredientTypes.stream()
 			.map(IngredientTypeSortingConfig::getIngredientTypeString)
@@ -90,28 +90,28 @@ public class IngredientSorterComparators {
 		return this.ingredientTypeSortingConfig.getComparatorFromMappedValues(ingredientTypeStrings);
 	}
 
-	private static Comparator<IListElementInfo<?>> getMaxDurabilityComparator() {
-		Comparator<IListElementInfo<?>> maxDamage =
+	private static Comparator<IListElementInfo> getMaxDurabilityComparator() {
+		Comparator<IListElementInfo> maxDamage =
 			Comparator.comparing(o -> getItemStack(o).getMaxDamage());
 		return maxDamage.reversed();
 	}
 
-	private Comparator<IListElementInfo<?>> getTagComparator() {
-		Comparator<IListElementInfo<?>> isTagged =
+	private Comparator<IListElementInfo> getTagComparator() {
+		Comparator<IListElementInfo> isTagged =
 			Comparator.comparing(this::hasTag);
-		Comparator<IListElementInfo<?>> tag =
+		Comparator<IListElementInfo> tag =
 			Comparator.comparing(this::getTagForSorting);
 		return isTagged.reversed().thenComparing(tag);
 	}
 
-	private static Comparator<IListElementInfo<?>> getArmorComparator() {
-		Comparator<IListElementInfo<?>> isArmorComp =
+	private static Comparator<IListElementInfo> getArmorComparator() {
+		Comparator<IListElementInfo> isArmorComp =
 			Comparator.comparing(o -> isArmor(getItemStack(o)));
-		Comparator<IListElementInfo<?>> armorSlot =
+		Comparator<IListElementInfo> armorSlot =
 			Comparator.comparing(o -> getArmorSlotIndex(getItemStack(o)));
-		Comparator<IListElementInfo<?>> armorDamage =
+		Comparator<IListElementInfo> armorDamage =
 			Comparator.comparing(o -> getArmorDamageReduce(getItemStack(o)));
-		Comparator<IListElementInfo<?>> maxDamage =
+		Comparator<IListElementInfo> maxDamage =
 			Comparator.comparing(o -> getArmorDurability(getItemStack(o)));
 		return isArmorComp.reversed()
 			.thenComparing(armorSlot.reversed())
@@ -145,7 +145,7 @@ public class IngredientSorterComparators {
 		return 0;
 	}
 
-	private String getTagForSorting(IListElementInfo<?> elementInfo) {
+	private String getTagForSorting(IListElementInfo elementInfo) {
 		// Choose the most popular tag it has.
 		return elementInfo.getTagIds(ingredientManager)
 			.max(Comparator.comparing(IngredientSorterComparators::tagCount))
@@ -165,12 +165,15 @@ public class IngredientSorterComparators {
 			.orElse(0);
 	}
 
-	private boolean hasTag(IListElementInfo<?> elementInfo) {
+	private boolean hasTag(IListElementInfo elementInfo) {
 		return !getTagForSorting(elementInfo).isEmpty();
 	}
 
-	public static <V> ItemStack getItemStack(IListElementInfo<V> ingredientInfo) {
-		ITypedIngredient<V> ingredient = ingredientInfo.getTypedIngredient();
+	public static ItemStack getItemStack(IListElementInfo ingredientInfo) {
+		if (ingredientInfo.isGroup()) {
+			return ItemStack.EMPTY;
+		}
+		ITypedIngredient<?> ingredient = ingredientInfo.getTypedIngredient();
 		if (ingredient.getIngredient() instanceof ItemStack itemStack) {
 			return itemStack;
 		}

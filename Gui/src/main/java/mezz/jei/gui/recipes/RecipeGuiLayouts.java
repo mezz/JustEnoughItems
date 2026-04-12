@@ -100,7 +100,7 @@ public class RecipeGuiLayouts {
 		this.cachedInputHandler = null;
 	}
 
-	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickableIngredientInternal> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return this.recipeLayoutsWithButtons.stream()
 			.map(IRecipeLayoutWithButtons::getRecipeLayout)
 			.map(recipeLayout -> recipeLayout.getSlotUnderMouse(mouseX, mouseY))
@@ -109,11 +109,11 @@ public class RecipeGuiLayouts {
 			.flatMap(Optional::stream);
 	}
 
-	private static Optional<IClickableIngredientInternal<?>> getClickedIngredient(RecipeSlotUnderMouse slotUnderMouse) {
+	private static Optional<IClickableIngredientInternal> getClickedIngredient(RecipeSlotUnderMouse slotUnderMouse) {
 		return slotUnderMouse.slot().getDisplayedIngredient()
 			.map(displayedIngredient -> {
-				IElement<?> element = new IngredientElement<>(displayedIngredient);
-				return new ClickableIngredientInternal<>(element, slotUnderMouse::isMouseOver, false, true);
+				IElement element = new IngredientElement<>(displayedIngredient);
+				return new ClickableIngredientInternal(element, slotUnderMouse::isMouseOver, false, true);
 			});
 	}
 

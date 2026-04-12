@@ -16,7 +16,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.Objects;
 
 public class RecipeBookmark<R, I> implements IBookmark {
-	private final IElement<I> element;
+	private final IElement element;
 	private final IRecipeCategory<R> recipeCategory;
 	private final R recipe;
 	private final Identifier recipeUid;
@@ -108,7 +108,7 @@ public class RecipeBookmark<R, I> implements IBookmark {
 	}
 
 	@Override
-	public IElement<?> getElement() {
+	public IElement getElement() {
 		return element;
 	}
 

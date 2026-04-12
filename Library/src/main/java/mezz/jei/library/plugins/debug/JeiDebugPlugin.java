@@ -15,16 +15,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
-import mezz.jei.api.registration.IAdvancedRegistration;
-import mezz.jei.api.registration.IExtraIngredientRegistration;
-import mezz.jei.api.registration.IGuiHandlerRegistration;
-import mezz.jei.api.registration.IIngredientAliasRegistration;
-import mezz.jei.api.registration.IModInfoRegistration;
-import mezz.jei.api.registration.IModIngredientRegistration;
-import mezz.jei.api.registration.IRecipeCatalystRegistration;
-import mezz.jei.api.registration.IRecipeCategoryRegistration;
-import mezz.jei.api.registration.IRecipeRegistration;
-import mezz.jei.api.registration.ISubtypeRegistration;
+import mezz.jei.api.registration.*;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
@@ -50,6 +41,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
@@ -144,6 +136,27 @@ public class JeiDebugPlugin implements IModPlugin {
 			fluidHelper.getFluidIngredientType(),
 			fluidHelper.create(water, fluidHelper.bucketVolume()),
 			List.of("wet", "aqua", "sea", "ocean")
+		);
+	}
+
+	@Override
+	public void registerIngredientGroups(IIngredientGroupRegistration registration) {
+		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+		registration.addGroupSelector(
+				Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "debug_fluid"),
+				fluidHelper.getFluidIngredientType(),
+				_ -> true
+		);
+		registration.addGroupSelector(
+				Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "debug_fluid_and_bucket"),
+				fluidHelper.getFluidIngredientType(),
+				_ -> true
+		);
+
+		registration.addGroupSelector(
+				Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "debug_fluid_and_bucket"),
+				VanillaTypes.ITEM_STACK,
+				itemStack -> itemStack.getItem() instanceof BucketItem
 		);
 	}
 

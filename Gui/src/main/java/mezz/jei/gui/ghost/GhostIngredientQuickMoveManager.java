@@ -25,9 +25,12 @@ public class GhostIngredientQuickMoveManager {
 		this.screenHelper = screenHelper;
 	}
 
-	private <T extends Screen, V> boolean quickMoveInternal(T currentScreen, IDraggableIngredientInternal<V> clicked) {
+	private <T extends Screen> boolean quickMoveInternal(T currentScreen, IDraggableIngredientInternal clicked) {
+		return doQuickMoveInternal(currentScreen, clicked.getTypedIngredient());
+	}
+
+	private <T extends Screen, V> boolean doQuickMoveInternal(T currentScreen, ITypedIngredient<V> ingredient) {
 		for (IGhostIngredientHandler<T> handler : screenHelper.getGhostIngredientHandlers(currentScreen)) {
-			ITypedIngredient<V> ingredient = clicked.getTypedIngredient();
 			if (handler.quickMove(currentScreen, ingredient))
 				return true;
 		}
@@ -47,7 +50,8 @@ public class GhostIngredientQuickMoveManager {
 				.flatMap(clicked -> {
 					ItemStack mouseItem = player.containerMenu.getCarried();
 					if (mouseItem.isEmpty()) {
-						if (input.isSimulate() || quickMoveInternal(screen, clicked)) {
+						if (!screenHelper.getGhostIngredientHandlers(screen).isEmpty() &&
+								(input.isSimulate() || quickMoveInternal(screen, clicked))) {
 							return Optional.of(true);
 						}
 					}

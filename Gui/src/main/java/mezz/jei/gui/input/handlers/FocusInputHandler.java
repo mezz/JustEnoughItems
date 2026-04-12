@@ -85,11 +85,11 @@ public class FocusInputHandler implements IUserInputHandler {
 	}
 
 	private Optional<IUserInputHandler> handleClick(UserInput input, IInternalKeyMappings keyBindings) {
-		List<IClickableIngredientInternal<?>> ingredientUnderMouse = focusSource.getIngredientUnderMouse(input, keyBindings)
+		List<IClickableIngredientInternal> ingredientUnderMouse = focusSource.getIngredientUnderMouse(input, keyBindings)
 			.toList();
 
-		for (IClickableIngredientInternal<?> clicked : ingredientUnderMouse) {
-			IElement<?> element = clicked.getElement();
+		for (IClickableIngredientInternal clicked : ingredientUnderMouse) {
+			IElement element = clicked.getElement();
 			if (element.handleClick(input, keyBindings)) {
 				IUserInputHandler result = new SameElementInputHandler(this, clicked::isMouseOver);
 				return Optional.of(result);
@@ -104,7 +104,7 @@ public class FocusInputHandler implements IUserInputHandler {
 			.findFirst()
 			.map(clicked -> {
 				if (!input.isSimulate()) {
-					IElement<?> element = clicked.getElement();
+					IElement element = clicked.getElement();
 					element.show(recipesGui, focusUtil, roles);
 				}
 				return new SameElementInputHandler(this, clicked::isMouseOver);

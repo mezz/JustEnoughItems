@@ -18,15 +18,7 @@ import mezz.jei.api.recipe.category.extensions.vanilla.smithing.IExtendableSmith
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
-import mezz.jei.api.registration.IGuiHandlerRegistration;
-import mezz.jei.api.registration.IModInfoRegistration;
-import mezz.jei.api.registration.IModIngredientRegistration;
-import mezz.jei.api.registration.IRecipeCatalystRegistration;
-import mezz.jei.api.registration.IRecipeCategoryRegistration;
-import mezz.jei.api.registration.IRecipeRegistration;
-import mezz.jei.api.registration.IRecipeTransferRegistration;
-import mezz.jei.api.registration.ISubtypeRegistration;
-import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
+import mezz.jei.api.registration.*;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
@@ -202,6 +194,14 @@ public class VanillaPlugin implements IModPlugin {
 				.apply(i, (item, components) -> new ItemStack(item, 1, components))
 			)
 			.validate(ItemStack::validateStrict);
+	}
+
+	@Override
+	public void registerIngredientGroups(IIngredientGroupRegistration registration) {
+		registration.addGroupSelector(
+				Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "enchanted_book"),
+				VanillaTypes.ITEM_STACK,
+				(stack) -> stack.is(Items.ENCHANTED_BOOK));
 	}
 
 	@Override

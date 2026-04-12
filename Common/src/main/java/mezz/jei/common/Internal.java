@@ -5,6 +5,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.config.ClientToggleState;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.config.IngredientGroupConfig;
 import mezz.jei.common.gui.textures.JeiAtlasManager;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -39,6 +40,8 @@ public final class Internal {
 	private static IJeiClientConfigs jeiClientConfigs;
 	@Nullable
 	private static IJeiRuntime jeiRuntime;
+	@Nullable
+	private static IngredientGroupConfig ingredientGroupConfig;
 	@Nullable
 	private static Pair<RecipeMap, String> clientSyncedRecipes = null;
 	private static final JeiFeatures jeiFeatures = new JeiFeatures();
@@ -113,6 +116,15 @@ public final class Internal {
 		Preconditions.checkState(jeiRuntime != null, "Jei Client Configs have not been created yet.");
 
 		return jeiRuntime;
+	}
+
+	public static void setIngredientGroupConfig(IngredientGroupConfig ingredientGroupConfig) {
+		Internal.ingredientGroupConfig = ingredientGroupConfig;
+	}
+
+	public static IngredientGroupConfig getIngredientGroupConfig() {
+		Preconditions.checkState(ingredientGroupConfig != null, "Ingredient Group Config has not been created yet.");
+		return ingredientGroupConfig;
 	}
 
 	@Nullable

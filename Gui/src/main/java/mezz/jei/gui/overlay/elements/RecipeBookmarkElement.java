@@ -26,6 +26,7 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.transfer.RecipeTransferUtil;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
@@ -52,7 +53,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
 
-public class RecipeBookmarkElement<R, I> implements IElement<I> {
+public class RecipeBookmarkElement<R, I> implements IElement {
 	private final RecipeBookmark<R, I> recipeBookmark;
 	private final IClientConfig clientConfig;
 	private final EnumMap<BookmarkTooltipFeature, TooltipComponent> cache = new EnumMap<>(BookmarkTooltipFeature.class);
@@ -75,7 +76,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	}
 
 	@Override
-	public IDrawable createRenderOverlay() {
+	public IElementOverlay createRenderOverlay() {
 		IRecipeCategory<R> recipeCategory = recipeBookmark.getRecipeCategory();
 		return new RecipeBookmarkIcon(recipeCategory);
 	}
@@ -119,7 +120,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	}
 
 	@Override
-	public void getTooltip(JeiTooltip tooltip, IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<I> ingredientRenderer, IIngredientHelper<I> ingredientHelper) {
+	public void getTooltip(JeiTooltip tooltip, IngredientGridTooltipHelper tooltipHelper) {
 		ITypedIngredient<I> displayIngredient = recipeBookmark.getDisplayIngredient();
 		R recipe = recipeBookmark.getRecipe();
 
@@ -132,6 +133,8 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
 			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
 			IModIdHelper modIdHelper = jeiRuntime.getJeiHelpers().getModIdHelper();
+			IIngredientHelper<I> ingredientHelper = ingredientManager.getIngredientHelper(displayIngredient.getType());
+			IIngredientRenderer<I> ingredientRenderer = ingredientManager.getIngredientRenderer(displayIngredient.getType());
 
 			Identifier recipeName = recipeCategory.getIdentifier(recipe);
 			if (recipeName != null) {
@@ -256,7 +259,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 		return recipeBookmark.isVisible();
 	}
 
-	private static class RecipeBookmarkIcon implements IDrawable {
+	private static class RecipeBookmarkIcon implements IElementOverlay {
 		private final IDrawable icon;
 
 		public RecipeBookmarkIcon(IRecipeCategory<?> recipeCategory) {
@@ -272,21 +275,12 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 		}
 
 		@Override
-		public int getWidth() {
-			return 16;
-		}
-
-		@Override
-		public int getHeight() {
-			return 16;
-		}
-
-		@Override
-		public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset) {
+		public void draw(GuiGraphicsExtractor guiGraphics, List<ImmutableRect2i> slots) {
+			ImmutableRect2i area = slots.getFirst();
 			var poseStack = guiGraphics.pose();
 			poseStack.pushMatrix();
 			{
-				poseStack.translate(8 + xOffset, 8 + yOffset);
+				poseStack.translate(area.getX() + 8, area.getY() + 8);
 				poseStack.scale(0.5f, 0.5f);
 				icon.draw(guiGraphics);
 			}

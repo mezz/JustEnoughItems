@@ -11,7 +11,7 @@ import mezz.jei.gui.overlay.elements.IngredientBookmarkElement;
 import java.util.Objects;
 
 public class IngredientBookmark<T> implements IBookmark {
-	private final IElement<T> element;
+	private final IElement element;
 	private final Object uid;
 	private final ITypedIngredient<T> typedIngredient;
 	private boolean visible = true;
@@ -40,7 +40,7 @@ public class IngredientBookmark<T> implements IBookmark {
 	}
 
 	@Override
-	public IElement<?> getElement() {
+	public IElement getElement() {
 		return element;
 	}
 

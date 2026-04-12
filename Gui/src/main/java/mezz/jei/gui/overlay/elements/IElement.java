@@ -1,8 +1,5 @@
 package mezz.jei.gui.overlay.elements;
 
-import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IRecipesGui;
@@ -17,8 +14,8 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public interface IElement<T> {
-	ITypedIngredient<T> getTypedIngredient();
+public interface IElement {
+	ITypedIngredient<?> getTypedIngredient();
 
 	/**
 	 * @return the bookmark if this element represents an existing bookmark.
@@ -26,11 +23,11 @@ public interface IElement<T> {
 	Optional<IBookmark> getBookmark();
 
 	@Nullable
-	IDrawable createRenderOverlay();
+	IElementOverlay createRenderOverlay();
 
 	void show(IRecipesGui recipesGui, FocusUtil focusUtil, List<RecipeIngredientRole> roles);
 
-	void getTooltip(JeiTooltip tooltip, IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<T> ingredientRenderer, IIngredientHelper<T> ingredientHelper);
+	void getTooltip(JeiTooltip tooltip, IngredientGridTooltipHelper tooltipHelper);
 
 	boolean isVisible();
 

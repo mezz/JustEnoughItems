@@ -5,10 +5,10 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.overlay.elements.IElement;
 
 
-public interface IDraggableIngredientInternal<T> {
-	ITypedIngredient<T> getTypedIngredient();
+public interface IDraggableIngredientInternal {
+	ITypedIngredient<?> getTypedIngredient();
 
-	IElement<T> getElement();
+	IElement getElement();
 
 	ImmutableRect2i getArea();
 }

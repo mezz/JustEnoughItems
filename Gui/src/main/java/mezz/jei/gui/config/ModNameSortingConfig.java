@@ -8,7 +8,7 @@ import mezz.jei.gui.ingredients.IListElementInfo;
 import java.nio.file.Path;
 import java.util.Comparator;
 
-public class ModNameSortingConfig extends MappedSortingConfig<IListElementInfo<?>, String> {
+public class ModNameSortingConfig extends MappedSortingConfig<IListElementInfo, String> {
 	public ModNameSortingConfig(Path path) {
 		super(path, SortingSerializers.STRING, IListElementInfo::getModNameForSorting);
 	}

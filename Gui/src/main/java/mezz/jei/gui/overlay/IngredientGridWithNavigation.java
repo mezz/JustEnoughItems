@@ -122,7 +122,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		if (resetToFirstPage) {
 			firstItemIndex = 0;
 		}
-		List<IElement<?>> ingredientList = ingredientSource.getElements();
+		List<IElement> ingredientList = ingredientSource.getElements();
 		if (firstItemIndex >= ingredientList.size()) {
 			firstItemIndex = 0;
 		}
@@ -297,12 +297,12 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	@Override
-	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickableIngredientInternal> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY);
 	}
 
 	@Override
-	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IDraggableIngredientInternal> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		return this.ingredientGrid.getDraggableIngredientUnderMouse(mouseX, mouseY);
 	}
 
