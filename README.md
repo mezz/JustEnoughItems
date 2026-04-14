@@ -12,6 +12,10 @@ This means:
 
 # Latest Versions:
 
+## 26.1.2
+* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-26.1.2-neoforge%2Fmaven-metadata.xml&label=NeoForge%2026.1.2)](https://maven.blamejared.com/mezz/jei/jei-26.1.2-neoforge/maven-metadata.xml)
+* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-26.1.2-fabric%2Fmaven-metadata.xml&label=Fabric%2026.1.2)](https://maven.blamejared.com/mezz/jei/jei-26.1.2-fabric/maven-metadata.xml)
+
 ## 1.21.11
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.21.11-neoforge%2Fmaven-metadata.xml&label=NeoForge%201.21.11)](https://maven.blamejared.com/mezz/jei/jei-1.21.11-neoforge/maven-metadata.xml)
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.21.11-fabric%2Fmaven-metadata.xml&label=Fabric%201.21.11)](https://maven.blamejared.com/mezz/jei/jei-1.21.11-fabric/maven-metadata.xml)
