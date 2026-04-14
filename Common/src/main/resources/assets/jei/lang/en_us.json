@@ -346,7 +346,7 @@
   "_comment": "Ingredient Groups",
   "jei.group.expand": "[Press %s to expand group]",
   "jei.group.collapse": "[Press %s to collapse group]",
-  "jei.group.added_by": "Group added by %s",
+  "jei.group.added_by": "Group added by: %s",
 
   "_comment": "Debug (for a debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden doors allow you to block monsters from entering your building.\\nTesting sentences.",
