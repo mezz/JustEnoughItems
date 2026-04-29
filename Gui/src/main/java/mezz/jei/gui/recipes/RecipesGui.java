@@ -257,6 +257,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
+	public boolean isInGameUi() {
+		return true;
+	}
+
+	@Override
 	public void init() {
 		super.init();
 
@@ -300,9 +305,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
-	protected void extractMenuBackground(GuiGraphicsExtractor guiGraphics, int x, int y, int width, int height) {
-		this.extractTransparentBackground(guiGraphics);
-		this.background.draw(guiGraphics, area);
+	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+		super.extractBackground(graphics, mouseX, mouseY, a);
+		this.background.draw(graphics, area);
 	}
 
 	@Override
