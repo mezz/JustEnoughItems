@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 /**
  * This class observes events and determines when it's the right time to start JEI.
  *
- * JEI needs to see both the {@link TagsUpdatedEvent} and {@link RecipesReceivedEvent}
+ * JEI needs to see both the {@link TagsUpdatedEvent.ClientPacketReceived} and {@link RecipesReceivedEvent}
  * before it is ready to start.
  *
  * Depending on the configuration (Integrated server, vanilla server, modded server),
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  */
 public class StartEventObserver implements ResourceManagerReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Set<Class<? extends Event>> requiredEvents = Set.of(TagsUpdatedEvent.class, RecipesReceivedEvent.class);
+	private static final Set<Class<? extends Event>> requiredEvents = Set.of(TagsUpdatedEvent.ClientPacketReceived.class, RecipesReceivedEvent.class);
 
 	private enum State {
 		LISTENING, JEI_STARTED
