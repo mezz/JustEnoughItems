@@ -5,6 +5,8 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.Collection;
+
 /**
  * The {@link IIngredientVisibility} allows mod plugins to do advanced filtering of
  * ingredients based on what is visible in JEI.
@@ -53,5 +55,15 @@ public interface IIngredientVisibility {
 		 * @since 11.5.0
 		 */
 		<V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible);
+
+		/**
+		 * Called when multiple ingredients are made visible or invisible.
+		 * @since 27.7.0
+		 */
+		default <V> void onIngredientsVisibilityChanged(Collection<ITypedIngredient<V>> ingredients, boolean visible) {
+			for (ITypedIngredient<V> ingredient : ingredients) {
+				onIngredientVisibilityChanged(ingredient, visible);
+			}
+		}
 	}
 }
