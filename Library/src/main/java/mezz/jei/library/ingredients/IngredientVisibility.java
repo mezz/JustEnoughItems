@@ -9,6 +9,7 @@ import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.library.config.EditModeConfig;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class IngredientVisibility implements IIngredientVisibility {
@@ -65,8 +66,8 @@ public class IngredientVisibility implements IIngredientVisibility {
 		this.listeners.add(listener);
 	}
 
-	public <V> void notifyListeners(ITypedIngredient<V> ingredient, boolean visible) {
-		listeners.forEach(listener -> listener.onIngredientVisibilityChanged(ingredient, visible));
+	public <V> void notifyListeners(Collection<ITypedIngredient<V>> ingredients, boolean visible) {
+		listeners.forEach(listener -> listener.onIngredientsVisibilityChanged(ingredients, visible));
 	}
 
 	public void onRuntimeStopped() {
