@@ -93,16 +93,16 @@ public class ScreenHelper implements IScreenHelper {
 		ClickableIngredientFactory factory = new ClickableIngredientFactory(ingredientManager);
 		return Stream.concat(
 			getPluginsIngredientUnderMouse(factory, screen, mouseX, mouseY),
-			getSlotIngredientUnderMouse(factory, screen).stream()
+			getHoveredSlotIngredient(factory, screen).stream()
 		);
 	}
 
-	private Optional<IClickableIngredient<?>> getSlotIngredientUnderMouse(ClickableIngredientFactory factory, Screen guiScreen) {
+	private Optional<IClickableIngredient<?>> getHoveredSlotIngredient(ClickableIngredientFactory factory, Screen guiScreen) {
 		if (!(guiScreen instanceof AbstractContainerScreen<?> guiContainer)) {
 			return Optional.empty();
 		}
 		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-		return screenHelper.getSlotUnderMouse(guiContainer)
+		return screenHelper.getHoveredSlot(guiContainer)
 			.flatMap(slot -> getClickedIngredient(factory, slot, guiContainer));
 	}
 

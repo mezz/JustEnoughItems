@@ -13,15 +13,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IPlatformScreenHelper {
-	Optional<Slot> getSlotUnderMouse(AbstractContainerScreen<?> containerScreen);
+	Optional<Slot> getHoveredSlot(AbstractContainerScreen<?> containerScreen);
 
-	int getGuiLeft(AbstractContainerScreen<?> containerScreen);
+	int getLeftPos(AbstractContainerScreen<?> containerScreen);
 
-	int getGuiTop(AbstractContainerScreen<?> containerScreen);
+	int getTopPos(AbstractContainerScreen<?> containerScreen);
 
-	int getXSize(AbstractContainerScreen<?> containerScreen);
+	int getImageWidth(AbstractContainerScreen<?> containerScreen);
 
-	int getYSize(AbstractContainerScreen<?> containerScreen);
+	int getImageHeight(AbstractContainerScreen<?> containerScreen);
 
 	ImmutableRect2i getToastsArea();
 

@@ -19,29 +19,29 @@ import java.util.Optional;
 
 public class ScreenHelper implements IPlatformScreenHelper {
 	@Override
-	public Optional<Slot> getSlotUnderMouse(AbstractContainerScreen<?> containerScreen) {
-		Slot slot = containerScreen.getSlotUnderMouse();
+	public Optional<Slot> getHoveredSlot(AbstractContainerScreen<?> containerScreen) {
+		Slot slot = containerScreen.getHoveredSlot();
 		return Optional.ofNullable(slot);
 	}
 
 	@Override
-	public int getGuiLeft(AbstractContainerScreen<?> containerScreen) {
-		return containerScreen.getGuiLeft();
+	public int getLeftPos(AbstractContainerScreen<?> containerScreen) {
+		return containerScreen.getLeftPos();
 	}
 
 	@Override
-	public int getGuiTop(AbstractContainerScreen<?> containerScreen) {
-		return containerScreen.getGuiTop();
+	public int getTopPos(AbstractContainerScreen<?> containerScreen) {
+		return containerScreen.getTopPos();
 	}
 
 	@Override
-	public int getXSize(AbstractContainerScreen<?> containerScreen) {
-		return containerScreen.getXSize();
+	public int getImageWidth(AbstractContainerScreen<?> containerScreen) {
+		return containerScreen.getImageWidth();
 	}
 
 	@Override
-	public int getYSize(AbstractContainerScreen<?> containerScreen) {
-		return containerScreen.getYSize();
+	public int getImageHeight(AbstractContainerScreen<?> containerScreen) {
+		return containerScreen.getImageHeight();
 	}
 
 	@Override
