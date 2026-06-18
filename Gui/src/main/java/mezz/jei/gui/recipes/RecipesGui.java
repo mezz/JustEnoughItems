@@ -422,7 +422,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		if (minecraft.screen == this) {
+		if (minecraft.gui.screen() == this) {
 			return area.contains(mouseX, mouseY) ||
 				optionButtons.getArea().contains(mouseX, mouseY);
 		}
@@ -504,20 +504,20 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	public boolean isOpen() {
-		return minecraft.screen == this;
+		return minecraft.gui.screen() == this;
 	}
 
 	private void open() {
 		if (!isOpen()) {
-			parentScreen = minecraft.screen;
+			parentScreen = minecraft.gui.screen();
 		}
-		minecraft.setScreen(this);
+		minecraft.gui.setScreen(this);
 	}
 
 	@Override
 	public void onClose() {
 		if (isOpen()) {
-			minecraft.setScreen(parentScreen);
+			minecraft.gui.setScreen(parentScreen);
 			parentScreen = null;
 			logic.clearHistory();
 			return;
@@ -627,7 +627,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public AbstractContainerMenu getParentContainerMenu() {
 		Screen screen;
 		if (parentScreen == null) {
-			screen = Minecraft.getInstance().screen;
+			screen = Minecraft.getInstance().gui.screen();
 		} else {
 			screen = parentScreen;
 		}

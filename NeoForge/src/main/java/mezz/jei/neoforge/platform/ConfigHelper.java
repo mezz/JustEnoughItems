@@ -23,13 +23,13 @@ public class ConfigHelper implements IPlatformConfigHelper {
 	@Override
 	public Optional<Screen> getConfigScreen() {
 		Minecraft minecraft = Minecraft.getInstance();
-		ErrorUtil.checkNotNull(minecraft.screen, "minecraft.screen");
+		ErrorUtil.checkNotNull(minecraft.gui.screen(), "minecraft.screen");
 		return ModList.get()
 			.getModContainerById(ModIds.JEI_ID)
 			.flatMap(m -> {
 				IModInfo modInfo = m.getModInfo();
 				return IConfigScreenFactory.getForMod(modInfo)
-					.map(f -> f.createScreen(m, minecraft.screen));
+					.map(f -> f.createScreen(m, minecraft.gui.screen()));
 			});
 	}
 }

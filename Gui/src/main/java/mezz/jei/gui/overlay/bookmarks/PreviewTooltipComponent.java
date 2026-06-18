@@ -67,7 +67,7 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 			transferError = null;
 			return;
 		}
-		Screen screen = Minecraft.getInstance().screen;
+		Screen screen = Minecraft.getInstance().gui.screen();
 		if (screen instanceof AbstractContainerScreen<?> containerScreen) {
 			AbstractContainerMenu container = containerScreen.getMenu();
 			IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();

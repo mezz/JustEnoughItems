@@ -138,7 +138,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 			// so packetListener is not yet initialized.
 			// Instead, we grab it from pendingConnection (singleplayer) or...
 			return minecraft.pendingConnection;
-		} else if (minecraft.screen instanceof ConnectScreen connectScreen) {
+		} else if (minecraft.gui.screen() instanceof ConnectScreen connectScreen) {
 			//...the connect screen (multiplayer)
 			return connectScreen.connection;
 		} else {

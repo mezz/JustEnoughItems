@@ -40,7 +40,7 @@ public final class CommandUtil {
 			return;
 		}
 		final int amount = giveAmount.getAmountForStack(itemStack);
-		if (minecraft.screen instanceof CreativeModeInventoryScreen && giveMode == GiveMode.MOUSE_PICKUP) {
+		if (minecraft.gui.screen() instanceof CreativeModeInventoryScreen && giveMode == GiveMode.MOUSE_PICKUP) {
 			ItemStack sendStack = copyWithSize(itemStack, amount);
 			ServerCommandUtil.mousePickupItemStack(player, sendStack);
 		} else if (serverConnection.isJeiOnServer()) {

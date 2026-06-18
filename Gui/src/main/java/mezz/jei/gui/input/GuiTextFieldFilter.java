@@ -81,7 +81,7 @@ public class GuiTextFieldFilter extends EditBox {
 		if (previousFocus != keyboardFocus) {
 			Minecraft minecraft = Minecraft.getInstance();
 			if (keyboardFocus) {
-				Screen screen = minecraft.screen;
+				Screen screen = minecraft.gui.screen();
 				if (screen != null) {
 					screenUnfocusHandler = ScreenFocusHandler.create(screen);
 					if (screenUnfocusHandler != null) {
