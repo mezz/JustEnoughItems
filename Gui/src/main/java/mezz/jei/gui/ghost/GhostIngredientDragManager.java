@@ -51,7 +51,7 @@ public class GhostIngredientDragManager {
 	}
 
 	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		if (!(minecraft.screen instanceof AbstractContainerScreen)) { // guiContainer uses drawOnForeground
+		if (!(minecraft.gui.screen() instanceof AbstractContainerScreen)) { // guiContainer uses drawOnForeground
 			drawGhostIngredientHighlights(guiGraphics, mouseX, mouseY);
 		}
 		if (ghostIngredientDrag != null) {
@@ -88,7 +88,7 @@ public class GhostIngredientDragManager {
 			return List.of();
 		}
 		Minecraft minecraft = Minecraft.getInstance();
-		Screen currentScreen = minecraft.screen;
+		Screen currentScreen = minecraft.gui.screen();
 		if (currentScreen == null) {
 			return List.of();
 		}

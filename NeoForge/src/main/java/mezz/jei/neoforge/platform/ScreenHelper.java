@@ -60,7 +60,7 @@ public class ScreenHelper implements IPlatformScreenHelper {
 	@Override
 	public ImmutableRect2i getToastsArea() {
 		Minecraft minecraft = Minecraft.getInstance();
-		ToastManager toastManager = minecraft.getToastManager();
+		ToastManager toastManager = minecraft.gui.toastManager();
 		List<ToastManager.ToastInstance<?>> visible = toastManager.visibleToasts;
 		if (visible.isEmpty()) {
 			return ImmutableRect2i.EMPTY;

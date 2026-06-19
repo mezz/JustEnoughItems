@@ -93,7 +93,7 @@ public class ClientInputHandler {
 
 		boolean handled = this.inputRouter.handleUserInput(screen, guiProperties, input, keybindings);
 
-		if (Minecraft.getInstance().screen == screen && input.is(keybindings.getLeftClick())) {
+		if (Minecraft.getInstance().gui.screen() == screen && input.is(keybindings.getLeftClick())) {
 			handled |= this.dragRouter.startDrag(screen, input);
 		}
 		return handled;

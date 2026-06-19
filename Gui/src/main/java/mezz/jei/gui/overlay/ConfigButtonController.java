@@ -116,7 +116,7 @@ public class ConfigButtonController implements IIconButtonController {
 		Optional<Screen> configScreen = configHelper.getConfigScreen();
 
 		if (configScreen.isPresent()) {
-			mc.setScreen(configScreen.get());
+			mc.gui.setScreen(configScreen.get());
 		} else {
 			Component message = getMissingConfigScreenMessage(configHelper);
 			mc.player.sendSystemMessage(message);
