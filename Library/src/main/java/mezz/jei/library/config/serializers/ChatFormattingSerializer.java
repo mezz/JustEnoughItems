@@ -91,13 +91,15 @@ public class ChatFormattingSerializer implements IJeiConfigListValueSerializer<C
 	private static class ChatFormattingValueSerializer implements IJeiConfigValueSerializer<ChatFormatting> {
 		@Override
 		public String serialize(ChatFormatting value) {
-			return value.toString();
+			return value.name();
 		}
 
 		@Override
 		public IDeserializeResult<ChatFormatting> deserialize(String string) {
-			ChatFormatting chatFormatting = ChatFormatting.getByCode(string.charAt(0));
-			if (chatFormatting == null) {
+			ChatFormatting chatFormatting;
+			try {
+				chatFormatting = Enum.valueOf(ChatFormatting.class, string);
+			} catch (IllegalArgumentException ignored) {
 				return new DeserializeResult<>(null, "No Chat Formatting found for name: '%s'".formatted(string));
 			}
 			if (INVALID_VALUES.contains(chatFormatting)) {
