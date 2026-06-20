@@ -46,6 +46,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -100,7 +101,15 @@ public class JeiDebugPlugin implements IModPlugin {
 	public void registerExtraIngredients(IExtraIngredientRegistration registration) {
 		if (DebugConfig.isDebugModeEnabled()) {
 			registration.addExtraIngredients(DebugIngredient.TYPE, DebugIngredientListFactory.create(0, 10));
+			registration.addExtraIngredients(VanillaTypes.ITEM_STACK, List.of(createTooltipStyleTestItem()));
 		}
+	}
+
+	private static ItemStack createTooltipStyleTestItem() {
+		ItemStack itemStack = new ItemStack(Items.STICK);
+		itemStack.set(DataComponents.ITEM_NAME, Component.literal("Tooltip Style Test Stick"));
+		itemStack.set(DataComponents.TOOLTIP_STYLE, Identifier.fromNamespaceAndPath("example", "style"));
+		return itemStack;
 	}
 
 	@Override
