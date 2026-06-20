@@ -11,6 +11,7 @@ import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -29,7 +30,7 @@ public class ClientLifecycleHandler {
 		IConnectionToServer serverConnection = new ConnectionToServer();
 		Internal.setServerConnection(serverConnection);
 
-		InternalKeyMappings keyMappings = new InternalKeyMappings(KeyBindingHelper::registerKeyBinding);
+		InternalKeyMappings keyMappings = new InternalKeyMappings(KeyBindingHelper::registerKeyBinding, KeyMapping.Category::register);
 		Internal.setKeyMappings(keyMappings);
 
 		ClientNetworkHandler.registerClientPacketHandler(serverConnection);
