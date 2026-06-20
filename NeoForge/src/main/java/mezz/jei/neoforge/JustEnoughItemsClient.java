@@ -29,6 +29,7 @@ import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.lifecycle.ClientStoppingEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
@@ -62,6 +63,7 @@ public class JustEnoughItemsClient {
 		subscriptions.register(AddClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 		subscriptions.register(RegisterClientTooltipComponentFactoriesEvent.class, this::onRegisterClientTooltipEvent);
 		subscriptions.register(RecipesReceivedEvent.class, e -> Internal.setClientSyncedRecipes(e.getRecipeMap()));
+		subscriptions.register(ClientStoppingEvent.class, e -> Internal.onClientStopping());
 		subscriptions.register(RegisterKeyMappingsEvent.class, e -> {
 			InternalKeyMappings keyMappings = new InternalKeyMappings(e::register);
 			Internal.setKeyMappings(keyMappings);

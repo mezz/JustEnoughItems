@@ -9,7 +9,9 @@ import mezz.jei.common.gui.textures.JeiAtlasManager;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.util.DelayedExecutor;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.IDelayedExecutor;
 import mezz.jei.core.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -20,6 +22,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.world.item.crafting.RecipeMap;
 import org.jspecify.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.Optional;
 import java.util.Set;
 
@@ -42,6 +45,7 @@ public final class Internal {
 	@Nullable
 	private static Pair<RecipeMap, String> clientSyncedRecipes = null;
 	private static final JeiFeatures jeiFeatures = new JeiFeatures();
+	private static final DelayedExecutor delayedExecutor = new DelayedExecutor(Duration.ofSeconds(10));
 
 	private Internal() {
 
@@ -105,6 +109,10 @@ public final class Internal {
 		return jeiFeatures;
 	}
 
+	public static IDelayedExecutor getDelayedExecutor() {
+		return delayedExecutor;
+	}
+
 	public static void setRuntime(IJeiRuntime jeiRuntime) {
 		Internal.jeiRuntime = jeiRuntime;
 	}
@@ -162,5 +170,10 @@ public final class Internal {
 		if (jeiRuntime != null) {
 			jeiRuntime = null;
 		}
+	}
+
+	public static void onClientStopping() {
+		onRuntimeStopped();
+		delayedExecutor.shutdown();
 	}
 }
