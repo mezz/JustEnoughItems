@@ -1,5 +1,6 @@
 package mezz.jei.common.util;
 
+import mezz.jei.common.Internal;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
@@ -14,7 +15,7 @@ public class DeduplicatingRunner {
 	private @Nullable Future<?> future;
 
 	public DeduplicatingRunner(Duration delay) {
-		this(delay, DelayedExecutor.getInstance());
+		this(delay, Internal.getDelayedExecutor());
 	}
 
 	public DeduplicatingRunner(Duration delay, IDelayedExecutor executor) {
