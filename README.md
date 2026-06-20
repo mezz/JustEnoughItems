@@ -12,6 +12,10 @@ This means:
 
 # Latest Versions:
 
+## 26.2
+* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-26.2-neoforge%2Fmaven-metadata.xml&label=NeoForge%2026.2)](https://maven.blamejared.com/mezz/jei/jei-26.2-neoforge/maven-metadata.xml)
+* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-26.2-fabric%2Fmaven-metadata.xml&label=Fabric%2026.2)](https://maven.blamejared.com/mezz/jei/jei-26.2-fabric/maven-metadata.xml)
+
 ## 26.1.2
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-26.1.2-neoforge%2Fmaven-metadata.xml&label=NeoForge%2026.1.2)](https://maven.blamejared.com/mezz/jei/jei-26.1.2-neoforge/maven-metadata.xml)
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-26.1.2-fabric%2Fmaven-metadata.xml&label=Fabric%2026.1.2)](https://maven.blamejared.com/mezz/jei/jei-26.1.2-fabric/maven-metadata.xml)
@@ -20,19 +24,21 @@ This means:
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.21.11-neoforge%2Fmaven-metadata.xml&label=NeoForge%201.21.11)](https://maven.blamejared.com/mezz/jei/jei-1.21.11-neoforge/maven-metadata.xml)
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.21.11-fabric%2Fmaven-metadata.xml&label=Fabric%201.21.11)](https://maven.blamejared.com/mezz/jei/jei-1.21.11-fabric/maven-metadata.xml)
 
+# Supported Versions:
+
 ## 1.21.1
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.21.1-neoforge%2Fmaven-metadata.xml&label=NeoForge%201.21.1)](https://maven.blamejared.com/mezz/jei/jei-1.21.1-neoforge/maven-metadata.xml)
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.21.1-fabric%2Fmaven-metadata.xml&label=Fabric%201.21.1)](https://maven.blamejared.com/mezz/jei/jei-1.21.1-fabric/maven-metadata.xml)
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.21.1-forge%2Fmaven-metadata.xml&label=Forge%201.21.1)](https://maven.blamejared.com/mezz/jei/jei-1.21.1-forge/maven-metadata.xml)
 
+## 1.20.1
+* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.20.1-fabric%2Fmaven-metadata.xml&label=Fabric%201.20.1)](https://maven.blamejared.com/mezz/jei/jei-1.20.1-fabric/maven-metadata.xml)
+* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.20.1-forge%2Fmaven-metadata.xml&label=Forge%201.20.1)](https://maven.blamejared.com/mezz/jei/jei-1.20.1-forge/maven-metadata.xml)
+
 ## 1.21
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.21-neoforge%2Fmaven-metadata.xml&label=NeoForge%201.21)](https://maven.blamejared.com/mezz/jei/jei-1.21-neoforge/maven-metadata.xml)
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.21-fabric%2Fmaven-metadata.xml&label=Fabric%201.21)](https://maven.blamejared.com/mezz/jei/jei-1.21-fabric/maven-metadata.xml)
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.21-forge%2Fmaven-metadata.xml&label=Forge%201.21)](https://maven.blamejared.com/mezz/jei/jei-1.21-forge/maven-metadata.xml)
-
-## 1.20.1
-* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.20.1-fabric%2Fmaven-metadata.xml&label=Fabric%201.20.1)](https://maven.blamejared.com/mezz/jei/jei-1.20.1-fabric/maven-metadata.xml)
-* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.20.1-forge%2Fmaven-metadata.xml&label=Forge%201.20.1)](https://maven.blamejared.com/mezz/jei/jei-1.20.1-forge/maven-metadata.xml)
 
 ## 1.19.2
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.19.2-fabric%2Fmaven-metadata.xml&label=Fabric%201.19.2)](https://maven.blamejared.com/mezz/jei/jei-1.19.2-fabric/maven-metadata.xml)
