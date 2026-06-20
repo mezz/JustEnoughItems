@@ -11,6 +11,7 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer.IDeserializeResult;
 import mezz.jei.common.config.file.serializers.TypedIngredientSerializer;
+import mezz.jei.common.util.DeduplicatingRunner;
 import mezz.jei.common.util.PathUtil;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
@@ -29,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,6 +38,7 @@ import java.util.Optional;
 
 public class BookmarkConfig implements IBookmarkConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Duration SAVE_DELAY_TIME = Duration.ofSeconds(5);
 
 	static final String MARKER_STACK = "T:";
 	static final String MARKER_INGREDIENT = "I:";
@@ -43,6 +46,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 	static final String MARKER_RECIPE = "R:";
 
 	private final Path jeiConfigurationDir;
+	private final DeduplicatingRunner delayedSave = new DeduplicatingRunner(SAVE_DELAY_TIME);
 
 	private static Optional<Path> getPath(Path jeiConfigurationDir) {
 		return ServerConfigPathUtil.getWorldPath(jeiConfigurationDir)
@@ -74,32 +78,45 @@ public class BookmarkConfig implements IBookmarkConfig {
 		List<IBookmark> bookmarksSnapshot = List.copyOf(bookmarks);
 		getPath(jeiConfigurationDir)
 			.ifPresent(path -> {
-				TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
-				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper);
-
-				List<String> strings = new ArrayList<>();
-				for (IBookmark bookmark : bookmarksSnapshot) {
-					if (bookmark instanceof IngredientBookmark<?> ingredientBookmark) {
-						ITypedIngredient<?> typedIngredient = ingredientBookmark.getIngredient();
-						if (typedIngredient.getIngredient() instanceof ItemStack stack) {
-							strings.add(MARKER_STACK + stack.save(new CompoundTag()));
-						} else {
-							strings.add(MARKER_INGREDIENT + ingredientSerializer.serialize(typedIngredient));
-						}
-					} else if (bookmark instanceof RecipeBookmark<?, ?> recipeBookmark) {
-						strings.add(MARKER_RECIPE + recipeBookmarkSerializer.serialize(recipeBookmark));
-					} else {
-						LOGGER.error("Unknown IBookmark type, unable to save it: {}", bookmark.getClass());
-					}
-				}
-
-				try {
-					PathUtil.writeUsingTempFile(path, strings);
-					LOGGER.debug("Saved bookmarks list to file {}", path);
-				} catch (RuntimeException | IOException e) {
-					LOGGER.error("Failed to save bookmarks list to file {}", path, e);
-				}
+				delayedSave.run(() -> {
+					save(path, recipeManager, focusFactory, guiHelper, ingredientManager, bookmarksSnapshot);
+				});
 			});
+	}
+
+	private static void save(
+		Path path,
+		IRecipeManager recipeManager,
+		IFocusFactory focusFactory,
+		IGuiHelper guiHelper,
+		IIngredientManager ingredientManager,
+		Collection<IBookmark> bookmarks
+	) {
+		TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
+		RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper);
+
+		List<String> strings = new ArrayList<>();
+		for (IBookmark bookmark : bookmarks) {
+			if (bookmark instanceof IngredientBookmark<?> ingredientBookmark) {
+				ITypedIngredient<?> typedIngredient = ingredientBookmark.getIngredient();
+				if (typedIngredient.getIngredient() instanceof ItemStack stack) {
+					strings.add(MARKER_STACK + stack.save(new CompoundTag()));
+				} else {
+					strings.add(MARKER_INGREDIENT + ingredientSerializer.serialize(typedIngredient));
+				}
+			} else if (bookmark instanceof RecipeBookmark<?, ?> recipeBookmark) {
+				strings.add(MARKER_RECIPE + recipeBookmarkSerializer.serialize(recipeBookmark));
+			} else {
+				LOGGER.error("Unknown IBookmark type, unable to save it: {}", bookmark.getClass());
+			}
+		}
+
+		try {
+			PathUtil.writeUsingTempFile(path, strings);
+			LOGGER.debug("Saved bookmarks list to file {}", path);
+		} catch (RuntimeException | IOException e) {
+			LOGGER.error("Failed to save bookmarks list to file {}", path, e);
+		}
 	}
 
 	@Override
