@@ -35,6 +35,7 @@ public class JustEnoughItemsClient {
 
 	public void register() {
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
+		Runtime.getRuntime().addShutdownHook(new Thread(Internal::onClientStopping, "JEI Client Shutdown"));
 	}
 
 	private void onRegisterReloadListenerEvent(RegisterClientReloadListenersEvent event) {
