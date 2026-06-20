@@ -1,7 +1,11 @@
 package mezz.jei.common.platform;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
@@ -13,4 +17,6 @@ public interface IPlatformIngredientHelper {
 	Stream<Ingredient> getPotionIngredients(PotionBrewing potionBrewing);
 
 	float getCompostValue(ItemStack itemStack);
+
+	HolderSet<Item> getSupportedItems(Holder<Enchantment> enchantment);
 }
