@@ -24,6 +24,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.event.GameShuttingDownEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -58,6 +59,7 @@ public class JustEnoughItemsClient {
 	public void register() {
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 		subscriptions.register(RegisterClientTooltipComponentFactoriesEvent.class, this::onRegisterClientTooltipEvent);
+		subscriptions.register(GameShuttingDownEvent.class, e -> Internal.onClientStopping());
 		subscriptions.register(RegisterKeyMappingsEvent.class, e -> {
 			InternalKeyMappings keyMappings = new InternalKeyMappings(e::register);
 			Internal.setKeyMappings(keyMappings);

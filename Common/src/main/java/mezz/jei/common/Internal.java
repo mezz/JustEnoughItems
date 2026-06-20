@@ -9,10 +9,13 @@ import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.util.DelayedExecutor;
+import mezz.jei.common.util.IDelayedExecutor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.Optional;
 
 /**
@@ -32,6 +35,7 @@ public final class Internal {
 	@Nullable
 	private static IJeiRuntime jeiRuntime;
 	private static final JeiFeatures jeiFeatures = new JeiFeatures();
+	private static final DelayedExecutor delayedExecutor = new DelayedExecutor(Duration.ofSeconds(10));
 
 	private Internal() {
 
@@ -89,6 +93,10 @@ public final class Internal {
 		return jeiFeatures;
 	}
 
+	public static IDelayedExecutor getDelayedExecutor() {
+		return delayedExecutor;
+	}
+
 	public static void setRuntime(IJeiRuntime jeiRuntime) {
 		Internal.jeiRuntime = jeiRuntime;
 	}
@@ -109,5 +117,10 @@ public final class Internal {
 		if (jeiRuntime != null) {
 			jeiRuntime = null;
 		}
+	}
+
+	public static void onClientStopping() {
+		onRuntimeStopped();
+		delayedExecutor.shutdown();
 	}
 }
