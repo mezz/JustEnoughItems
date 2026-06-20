@@ -1,9 +1,12 @@
 package mezz.jei.fabric.platform;
 
 import mezz.jei.common.platform.IPlatformIngredientHelper;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.ComposterBlock;
 
@@ -29,5 +32,11 @@ public class IngredientHelper implements IPlatformIngredientHelper {
 	public float getCompostValue(ItemStack itemStack) {
 		Item item = itemStack.getItem();
 		return ComposterBlock.COMPOSTABLES.getOrDefault(item, 0f);
+	}
+
+	@Override
+	public HolderSet<Item> getSupportedItems(Holder<Enchantment> enchantment) {
+		return enchantment.value()
+			.getSupportedItems();
 	}
 }

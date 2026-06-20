@@ -2,7 +2,9 @@ package mezz.jei.library.plugins.vanilla.grindstone;
 
 import mezz.jei.api.recipe.vanilla.IJeiGrindstoneRecipe;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.platform.IPlatformIngredientHelper;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.client.Minecraft;
@@ -39,6 +41,7 @@ public final class GrindstoneRecipeMaker {
 
 	private static Stream<IJeiGrindstoneRecipe> getDisenchantRecipes(IPlatformRecipeHelper platformHelper) {
 		Registry<Enchantment> registry = RegistryUtil.getRegistry(Registries.ENCHANTMENT);
+		IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
 		List<Holder.Reference<Enchantment>> enchantments = registry.listElements().toList();
 		List<IJeiGrindstoneRecipe> grindstoneRecipes = new ArrayList<>();
 		for (Holder.Reference<Enchantment> enchantmentHolder : enchantments) {
@@ -46,15 +49,15 @@ public final class GrindstoneRecipeMaker {
 				continue;
 			}
 			Enchantment enchantment = enchantmentHolder.value();
-			for (Holder<Item> itemHolder : enchantment.getSupportedItems()) {
+			Optional<ResourceKey<Enchantment>> enchantmentResourceLocation = registry.getResourceKey(enchantment);
+			String enchantmentPath = enchantmentResourceLocation.map(enchantmentResourceKey -> enchantmentResourceKey.identifier().getPath()).orElse(null);
+			for (Holder<Item> itemHolder : ingredientHelper.getSupportedItems(enchantmentHolder)) {
 				ItemStack stack = itemHolder.value().getDefaultInstance();
 				if (!stack.isEnchantable() ||
 					!platformHelper.isItemEnchantable(stack, enchantmentHolder)
 				) {
 					continue;
 				}
-				Optional<ResourceKey<Enchantment>> enchantmentResourceLocation = registry.getResourceKey(enchantment);
-				String enchantmentPath = enchantmentResourceLocation.map(enchantmentResourceKey -> enchantmentResourceKey.identifier().getPath()).orElse(null);
 				for (int level = 1; level <= Math.min(enchantment.getMaxLevel(), 10); level++) {
 					ItemStack enchantedStack = stack.copy();
 					enchantedStack.enchant(enchantmentHolder, level);
