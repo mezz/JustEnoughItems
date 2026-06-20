@@ -8,9 +8,12 @@ import mezz.jei.common.config.WorldConfig;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.util.DelayedExecutor;
+import mezz.jei.common.util.IDelayedExecutor;
 import mezz.jei.core.config.IWorldConfig;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.Optional;
 
 /**
@@ -31,6 +34,7 @@ public final class Internal {
 	private static IJeiRuntime jeiRuntime;
 	@Nullable
 	private static IJeiClientConfigs jeiClientConfigs;
+	private static final DelayedExecutor delayedExecutor = new DelayedExecutor(Duration.ofSeconds(10));
 
 	private Internal() {
 
@@ -83,6 +87,10 @@ public final class Internal {
 		Internal.jeiRuntime = jeiRuntime;
 	}
 
+	public static IDelayedExecutor getDelayedExecutor() {
+		return delayedExecutor;
+	}
+
 	public static IJeiRuntime getJeiRuntime() {
 		Preconditions.checkState(jeiRuntime != null, "JEI Runtime has not been created yet.");
 		return jeiRuntime;
@@ -99,5 +107,10 @@ public final class Internal {
 
 	public static Optional<IJeiClientConfigs> getOptionalJeiClientConfigs() {
 		return Optional.ofNullable(jeiClientConfigs);
+	}
+
+	public static void onClientStopping() {
+		setRuntime(null);
+		delayedExecutor.shutdown();
 	}
 }
