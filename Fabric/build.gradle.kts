@@ -9,6 +9,15 @@ plugins {
     id("me.modmuss50.mod-publish-plugin")
 }
 
+repositories {
+    maven("https://maven.siphalor.de/") {
+        // for optional AMECS integration
+        content {
+            includeGroupAndSubgroups("de.siphalor")
+        }
+    }
+}
+
 // gradle.properties
 val curseProjectId: String by extra
 val fabricApiVersion: String by extra
@@ -18,6 +27,8 @@ val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 val modrinthId: String by extra
+val amecsVersionFabric: String by extra
+val amecsMinecraftVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -91,6 +102,7 @@ dependencies {
     dependencyProjects.forEach {
         implementation(it)
     }
+    implementation("de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric")
     changelogHtml(project(":Changelog"))
     changelogMarkdown(project(":Changelog"))
 }
