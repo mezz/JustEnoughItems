@@ -724,12 +724,23 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		@Override
 		public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
 			if (recipesGui.isMouseOver(mouseX, mouseY)) {
-				if (scrollDeltaY < 0) {
-					recipesGui.logic.nextPage();
-					return Optional.of(this);
-				} else if (scrollDeltaY > 0) {
-					recipesGui.logic.previousPage();
-					return Optional.of(this);
+				Minecraft minecraft = Minecraft.getInstance();
+				if (minecraft.hasShiftDown()) {
+					if (scrollDeltaY < 0) {
+						recipesGui.logic.nextRecipeCategory();
+						return Optional.of(this);
+					} else if (scrollDeltaY > 0) {
+						recipesGui.logic.previousRecipeCategory();
+						return Optional.of(this);
+					}
+				} else {
+					if (scrollDeltaY < 0) {
+						recipesGui.logic.nextPage();
+						return Optional.of(this);
+					} else if (scrollDeltaY > 0) {
+						recipesGui.logic.previousPage();
+						return Optional.of(this);
+					}
 				}
 			}
 
