@@ -71,9 +71,8 @@ base {
     archivesName.set(baseArchivesName)
 }
 
-artifacts {
-    archives(tasks.jar.get())
-    archives(sourcesJarTask.get())
+tasks.assemble {
+    dependsOn(sourcesJarTask)
 }
 
 publishing {
@@ -99,4 +98,3 @@ idea {
         }
     }
 }
-

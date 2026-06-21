@@ -61,9 +61,8 @@ neoForge {
 
 val sourcesJar = tasks.named<Jar>("sourcesJar")
 
-artifacts {
-	archives(tasks.jar.get())
-	archives(sourcesJar.get())
+tasks.assemble {
+	dependsOn(sourcesJar)
 }
 
 publishing {
