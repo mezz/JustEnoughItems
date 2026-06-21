@@ -664,7 +664,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		@Override
 		public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
 			if (recipesGui.isMouseOver(mouseX, mouseY)) {
-				if(hasShiftDown()) {
+				if (hasShiftDown()) {
 					if (scrollDelta < 0) {
 						recipesGui.logic.nextRecipeCategory();
 						return Optional.of(this);
