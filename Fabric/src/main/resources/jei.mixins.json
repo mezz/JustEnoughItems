@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "mezz.jei.fabric.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "mixins": [
   ],
   "client": [
