@@ -7,6 +7,8 @@ accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScr
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen topPos I
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageWidth I
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageHeight I
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen SLOT_HIGHLIGHT_BACK_SPRITE Lnet/minecraft/resources/Identifier;
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen SLOT_HIGHLIGHT_FRONT_SPRITE Lnet/minecraft/resources/Identifier;
 
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent width I
 accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent height I
