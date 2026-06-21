@@ -1,6 +1,6 @@
 plugins {
     // https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-	id("com.diffplug.spotless") version("8.6.0")
+	id("com.diffplug.spotless") version("8.1.0")
 
     // https://plugins.gradle.org/plugin/com.dorongold.task-tree
     id("com.dorongold.task-tree") version("4.0.1")
@@ -18,7 +18,6 @@ plugins {
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
     id("me.modmuss50.mod-publish-plugin") version("1.1.0") apply(false)
 }
-
 repositories {
     mavenCentral()
 }
