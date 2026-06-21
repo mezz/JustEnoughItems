@@ -35,7 +35,8 @@ public class ConfigHelper implements IPlatformConfigHelper {
 	private static Optional<Screen> getConfiguredConfigScreen(ModContainer jeiModContainer) {
 		try {
 			Class<?> configFactoryClass = Class.forName("com.mrcrayfish.configured.integration.CatalogueConfigFactory");
-			Method createConfigScreen = configFactoryClass.getDeclaredMethod("createConfigScreen", Screen.class, ModContainer.class);
+			Method createConfigScreen = configFactoryClass.getDeclaredMethod("newConfigScreen", Screen.class, ModContainer.class);
+			createConfigScreen.setAccessible(true);
 			Object screen = createConfigScreen.invoke(configFactoryClass, null, jeiModContainer);
 			if (screen instanceof Screen configScreen) {
 				return Optional.of(configScreen);
