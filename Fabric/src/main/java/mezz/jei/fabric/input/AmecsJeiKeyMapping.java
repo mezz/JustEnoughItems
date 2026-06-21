@@ -7,6 +7,7 @@ import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -43,5 +44,12 @@ public class AmecsJeiKeyMapping extends AbstractJeiKeyMapping {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public Component getTranslatedKeyMessage() {
+		InputConstants.Key key = KeyMappingHelper.getBoundKeyOf(this.amecsMapping);
+		AmecsKeyModifierCombination combination = AmecsKeyModifiersApi.getBoundModifiers(this.amecsMapping);
+		return AmecsHelper.getCombinedName(combination, key);
 	}
 }
