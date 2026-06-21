@@ -1,28 +1,24 @@
 package mezz.jei.fabric.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import de.siphalor.amecs.key_modifiers.api.AmecsKeyMappingWithKeyModifiers;
+import de.siphalor.amecs.key_modifiers.api.AmecsKeyModifierCombination;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 
-public class FabricKeyMapping extends KeyMapping {
-	protected final JeiKeyConflictContext context;
+public class AmecsKeyMappingWithContext extends AmecsKeyMappingWithKeyModifiers {
+	private final JeiKeyConflictContext context;
 
-	public FabricKeyMapping(
-		String description,
-		InputConstants.Type type,
-		int keyCode,
-		Category category,
-		JeiKeyConflictContext context
-	) {
-		super(description, type, keyCode, category);
+	public AmecsKeyMappingWithContext(String id, InputConstants.Type type, int code, Category category, AmecsKeyModifierCombination defaultModifiers, JeiKeyConflictContext context) {
+		super(id, type, code, category, defaultModifiers);
 		this.context = context;
 	}
 
 	@Override
 	public boolean same(KeyMapping binding) {
 		// Special implementation which is aware of the key conflict context.
-		if (binding instanceof FabricKeyMapping other) {
+		if (binding instanceof AmecsKeyMappingWithContext other) {
 			return key.equals(KeyMappingHelper.getBoundKeyOf(other)) &&
 				(context.conflicts(other.context) || other.context.conflicts(context));
 		} else {
@@ -30,5 +26,9 @@ public class FabricKeyMapping extends KeyMapping {
 			// being unbound and not conflicting.
 			return false;
 		}
+	}
+
+	public boolean isContextActive() {
+		return context.isActive();
 	}
 }
