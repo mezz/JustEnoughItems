@@ -15,6 +15,8 @@ import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.platform.IPlatformScreenHelper;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
@@ -30,8 +32,9 @@ import mezz.jei.gui.util.AlignmentUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
@@ -151,32 +154,35 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	}
 
 	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+		Optional<IngredientListSlot> highlightedSlot = getHighlightedSlot(minecraft, mouseX, mouseY);
+		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+		highlightedSlot.ifPresent(s -> drawHighlight(guiGraphics, s.getArea(), screenHelper.getSlotHighlightBackSprite()));
+
 		ingredientListRenderer.render(guiGraphics);
 
-		if (isMouseOver(mouseX, mouseY)) {
-			if (!this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
-				ingredientListRenderer.getSlots()
-					.filter(s -> s.getArea().contains(mouseX, mouseY))
-					.filter(s -> s.getOptionalElement().isPresent())
-					.findFirst()
-					.ifPresent(s -> drawHighlight(guiGraphics, s.getArea()));
-			}
-		}
+		highlightedSlot.ifPresent(s -> drawHighlight(guiGraphics, s.getArea(), screenHelper.getSlotHighlightFrontSprite()));
 	}
 
-	// TODO use the proper slot highlight sprite and also draw slot highlight back sprite
-	/**
-	 * Matches the highlight code in {@link AbstractContainerScreen#renderSlotHighlightFront(GuiGraphicsExtractor)}
-	 * but with a custom area width and height
-	 */
-	public static void drawHighlight(GuiGraphicsExtractor guiGraphics, ImmutableRect2i area) {
-		guiGraphics.fillGradient(
-			area.getX(),
-			area.getY(),
-			area.getX() + area.getWidth(),
-			area.getY() + area.getHeight(),
-			0x80FFFFFF,
-			0x80FFFFFF
+	private Optional<IngredientListSlot> getHighlightedSlot(Minecraft minecraft, int mouseX, int mouseY) {
+		if (isMouseOver(mouseX, mouseY)) {
+			if (!this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
+				return ingredientListRenderer.getSlots()
+					.filter(s -> s.getArea().contains(mouseX, mouseY))
+					.filter(s -> s.getOptionalElement().isPresent())
+					.findFirst();
+			}
+		}
+		return Optional.empty();
+	}
+
+	private static void drawHighlight(GuiGraphicsExtractor guiGraphics, ImmutableRect2i area, Identifier sprite) {
+		guiGraphics.blitSprite(
+			RenderPipelines.GUI_TEXTURED,
+			sprite,
+			area.getX() - 4,
+			area.getY() - 4,
+			area.getWidth() + 8,
+			area.getHeight() + 8
 		);
 	}
 

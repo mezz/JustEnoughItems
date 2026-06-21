@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.inventory.Slot;
 
@@ -42,6 +43,16 @@ public class ScreenHelper implements IPlatformScreenHelper {
 	@Override
 	public int getImageHeight(AbstractContainerScreen<?> containerScreen) {
 		return containerScreen.getImageHeight();
+	}
+
+	@Override
+	public Identifier getSlotHighlightBackSprite() {
+		return AbstractContainerScreen.SLOT_HIGHLIGHT_BACK_SPRITE;
+	}
+
+	@Override
+	public Identifier getSlotHighlightFrontSprite() {
+		return AbstractContainerScreen.SLOT_HIGHLIGHT_FRONT_SPRITE;
 	}
 
 	@Override
