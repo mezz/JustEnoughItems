@@ -15,8 +15,13 @@ import java.util.List;
 
 public class AmecsHelper {
 	public static AmecsKeyModifier COMMAND = new AmecsJeiKeyModifier("jei.key.combo.command", null, GLFW.GLFW_KEY_LEFT_SUPER, GLFW.GLFW_KEY_RIGHT_SUPER);
+	private static boolean initialized = false;
 
 	public static void init() {
+		if (initialized) {
+			return;
+		}
+		initialized = true;
 		AmecsKeyModifiers.register(COMMAND);
 	}
 
