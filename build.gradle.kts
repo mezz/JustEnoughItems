@@ -16,7 +16,7 @@ plugins {
     id("net.neoforged.moddev") version("2.0.124") apply(false)
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
-    id("me.modmuss50.mod-publish-plugin") version("1.1.0") apply(false)
+    id("me.modmuss50.mod-publish-plugin") version("2.0.1") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
