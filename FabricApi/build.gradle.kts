@@ -68,9 +68,8 @@ sourceSets {
     }
 }
 
-artifacts {
-    archives(tasks.jar)
-    archives(tasks.named("sourcesJar"))
+tasks.assemble {
+    dependsOn(tasks.named("sourcesJar"))
 }
 
 publishing {

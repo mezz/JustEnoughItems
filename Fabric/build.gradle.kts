@@ -134,37 +134,37 @@ loom {
 
         named("client") {
             client()
-            configName = "Fabric Client"
-            ideConfigGenerated(true)
-            runDir(loomRunDir.resolve("client").toString())
-            vmArgs(
+            displayName.set("Fabric Client")
+            generateRunConfig.set(true)
+            runDirectory.set(loomRunDir.resolve("client"))
+            jvmArguments.addAll(
                 "-Dfabric.log.level=info"
             )
         }
         named("server") {
             server()
-            configName = "Fabric Server"
-            ideConfigGenerated(true)
-            runDir(loomRunDir.resolve("server").toString())
-            vmArgs(
+            displayName.set("Fabric Server")
+            generateRunConfig.set(true)
+            runDirectory.set(loomRunDir.resolve("server"))
+            jvmArguments.addAll(
                 "-Dfabric.log.level=info"
             )
         }
         create("client debug") {
             client()
-            configName = "Fabric Client Debug"
-            ideConfigGenerated(true)
-            runDir(loomRunDir.resolve("client").toString())
-            vmArgs(
+            displayName.set("Fabric Client Debug")
+            generateRunConfig.set(true)
+            runDirectory.set(loomRunDir.resolve("client"))
+            jvmArguments.addAll(
                 "-Dfabric.log.level=debug"
             )
         }
         create("server debug") {
             server()
-            configName = "Fabric Server Debug"
-            ideConfigGenerated(true)
-            runDir(loomRunDir.resolve("server").toString())
-            vmArgs(
+            displayName.set("Fabric Server Debug")
+            generateRunConfig.set(true)
+            runDirectory.set(loomRunDir.resolve("server"))
+            jvmArguments.addAll(
                 "-Dfabric.log.level=debug"
             )
         }
@@ -248,9 +248,8 @@ tasks.named<Test>("test") {
     }
 }
 
-artifacts {
-    archives(tasks.jar)
-    archives(tasks.named("sourcesJar"))
+tasks.assemble {
+    dependsOn(tasks.named("sourcesJar"))
 }
 
 publishing {
