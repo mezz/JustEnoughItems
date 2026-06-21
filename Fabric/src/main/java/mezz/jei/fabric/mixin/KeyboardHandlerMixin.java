@@ -17,8 +17,8 @@ public class KeyboardHandlerMixin {
 		at = @At("HEAD"),
 		cancellable = true
 	)
-	private void beforeCharTypedEvent(long windowHandle, CharacterEvent event, CallbackInfo ci) {
-		beforeCharTypedEventInternal(windowHandle, event, ci);
+	private void beforeCharTypedEvent(long handle, CharacterEvent event, CallbackInfo ci) {
+		beforeCharTypedEventInternal(handle, event, ci);
 	}
 
 	@Inject(
@@ -26,8 +26,8 @@ public class KeyboardHandlerMixin {
 		at = @At("TAIL"),
 		cancellable = true
 	)
-	private void afterCharTypedEvent(long windowHandle, CharacterEvent event, CallbackInfo ci) {
-		afterCharTypedEventInternal(windowHandle, event, ci);
+	private void afterCharTypedEvent(long handle, CharacterEvent event, CallbackInfo ci) {
+		afterCharTypedEventInternal(handle, event, ci);
 	}
 
 	@Unique
