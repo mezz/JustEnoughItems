@@ -327,12 +327,22 @@ public class RecipesGui extends Screen implements IRecipesGui, IShowsRecipeFocus
 		final double x = MouseUtil.getX();
 		final double y = MouseUtil.getY();
 		if (isMouseOver(x, y)) {
-			if (scrollDelta < 0) {
-				logic.nextPage();
-				return true;
-			} else if (scrollDelta > 0) {
-				logic.previousPage();
-				return true;
+			if (hasShiftDown()) {
+				if (scrollDelta < 0) {
+					logic.nextRecipeCategory();
+					return true;
+				} else if (scrollDelta > 0) {
+					logic.previousRecipeCategory();
+					return true;
+				}
+			} else {
+				if (scrollDelta < 0) {
+					logic.nextPage();
+					return true;
+				} else if (scrollDelta > 0) {
+					logic.previousPage();
+					return true;
+				}
 			}
 		}
 		return super.mouseScrolled(scrollX, scrollY, scrollDelta);
