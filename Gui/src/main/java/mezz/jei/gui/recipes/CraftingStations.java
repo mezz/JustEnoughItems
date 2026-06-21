@@ -112,7 +112,7 @@ public class CraftingStations implements IRecipeFocusSource {
 				if (recipeSlot.isMouseOver(mouseX, mouseY)) {
 					hovered = recipeSlot;
 				}
-				recipeSlot.draw(guiGraphics);
+				recipeSlot.draw(guiGraphics, recipeSlot.isMouseOver(mouseX, mouseY));
 			}
 			return Optional.ofNullable(hovered);
 		}

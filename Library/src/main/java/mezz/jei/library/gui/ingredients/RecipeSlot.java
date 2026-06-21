@@ -19,6 +19,7 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.common.platform.IPlatformRenderHelper;
+import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
@@ -27,7 +28,9 @@ import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Unmodifiable;
 import org.jspecify.annotations.Nullable;
 
@@ -273,12 +276,23 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	}
 
 	@Override
+	@SuppressWarnings("removal")
 	public void draw(GuiGraphicsExtractor guiGraphics) {
+		draw(guiGraphics, false);
+	}
+
+	@Override
+	public void draw(GuiGraphicsExtractor guiGraphics, boolean hovered) {
 		final int x = this.rect.getX();
 		final int y = this.rect.getY();
 
 		if (background != null) {
 			background.draw(guiGraphics, x, y);
+		}
+
+		if (hovered) {
+			IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+			drawHighlight(guiGraphics, screenHelper.getSlotHighlightBackSprite());
 		}
 
 		getDisplayedIngredient()
@@ -287,6 +301,34 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		if (overlay != null) {
 			overlay.draw(guiGraphics, x, y);
 		}
+
+		if (hovered) {
+			IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+			drawHighlight(guiGraphics, screenHelper.getSlotHighlightFrontSprite());
+		}
+	}
+
+	@Override
+	@SuppressWarnings("removal")
+	public void drawHoverOverlays(GuiGraphicsExtractor guiGraphics) {
+		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+		drawHighlight(guiGraphics, screenHelper.getSlotHighlightFrontSprite());
+	}
+
+	private void drawHighlight(GuiGraphicsExtractor guiGraphics, Identifier sprite) {
+		int x = this.rect.getX();
+		int y = this.rect.getY();
+		int width = this.rect.getWidth();
+		int height = this.rect.getHeight();
+
+		guiGraphics.blitSprite(
+			RenderPipelines.GUI_TEXTURED,
+			sprite,
+			x - 4,
+			y - 4,
+			width + 8,
+			height + 8
+		);
 	}
 
 	private <T> void drawIngredient(GuiGraphicsExtractor guiGraphics, ITypedIngredient<T> typedIngredient, int xPos, int yPos) {
@@ -294,11 +336,6 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
 
 		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, typedIngredient, xPos, yPos);
-	}
-
-	@Override
-	public void drawHoverOverlays(GuiGraphicsExtractor guiGraphics) {
-		drawHighlight(guiGraphics, 0x80FFFFFF);
 	}
 
 	@SuppressWarnings("removal")
