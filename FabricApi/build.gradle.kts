@@ -35,6 +35,9 @@ base {
 }
 
 val commonApi: Project = project(":CommonApi")
+val commonApiIntermediaryBaseArchivesName = provider {
+    commonApi.base.archivesName.get() + "-intermediary"
+}
 
 project.evaluationDependsOn(commonApi.path)
 
@@ -45,27 +48,25 @@ java {
     withSourcesJar()
 }
 
-val commonApiIntermediaryJar = tasks.create<RemapJarTask>("commonApiIntermediaryJar") {
+val commonApiIntermediaryJar = tasks.register<RemapJarTask>("commonApiIntermediaryJar") {
     val commonApiJarTask = commonApi.tasks.jar.get()
     commonApiJarTask.manifest {
         attributes["Fabric-Loom-Remap"] = true
     }
     val commonApiJar = commonApiJarTask.archiveFile
-    val commonApiBaseArchivesName = commonApi.base.archivesName
     inputFile.set(commonApiJar)
-    archiveBaseName.set(provider { commonApiBaseArchivesName.get() + "-intermediary" })
+    archiveBaseName.set(commonApiIntermediaryBaseArchivesName)
     group = modGroup
 }
 
-val commonApiIntermediarySourcesJar = tasks.create<RemapSourcesJarTask>("commonApiIntermediarySourcesJar") {
+val commonApiIntermediarySourcesJar = tasks.register<RemapSourcesJarTask>("commonApiIntermediarySourcesJar") {
     val commonApiSourcesJarTask = commonApi.tasks.named<Jar>("sourcesJar").get()
     commonApiSourcesJarTask.manifest {
         attributes["Fabric-Loom-Remap"] = true
     }
     val commonSourcesJar = commonApiSourcesJarTask.archiveFile
-    val commonApiBaseArchivesName = commonApi.base.archivesName
     inputFile.set(commonSourcesJar)
-    archiveBaseName.set(provider { commonApiBaseArchivesName.get() + "-intermediary" })
+    archiveBaseName.set(commonApiIntermediaryBaseArchivesName)
     archiveClassifier.set("sources")
     group = modGroup
 }
@@ -125,17 +126,19 @@ sourceSets {
     }
 }
 
-artifacts {
-    archives(tasks.remapJar)
-    archives(tasks.remapSourcesJar)
-    archives(commonApiIntermediaryJar)
-    archives(commonApiIntermediarySourcesJar)
+tasks.assemble {
+    dependsOn(
+        tasks.remapJar,
+        tasks.remapSourcesJar,
+        commonApiIntermediaryJar,
+        commonApiIntermediarySourcesJar
+    )
 }
 
 publishing {
     publications {
         register<MavenPublication>("commonApiIntermediary") {
-            artifactId = commonApiIntermediaryJar.archiveBaseName.get()
+            artifactId = commonApiIntermediaryBaseArchivesName.get()
             artifact(commonApiIntermediaryJar)
             artifact(commonApiIntermediarySourcesJar)
         }
@@ -147,8 +150,8 @@ publishing {
             artifact(tasks.remapSourcesJar)
 
             val dependencyInfo = mapOf(
-                "groupId" to commonApiIntermediaryJar.group,
-                "artifactId" to commonApiIntermediaryJar.archiveBaseName.get(),
+                "groupId" to modGroup,
+                "artifactId" to commonApiIntermediaryBaseArchivesName.get(),
                 "version" to commonApi.version
             )
 

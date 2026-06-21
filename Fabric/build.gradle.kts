@@ -53,13 +53,16 @@ val baseArchivesName = "${modId}-${minecraftVersion}-fabric"
 base {
     archivesName.set(baseArchivesName)
 }
-val dependencyProjects: List<ProjectDependency> = listOf(
-    project.dependencies.project(":Common"),
-    project.dependencies.project(":CommonApi"),
-    project.dependencies.project(":Library"),
-    project.dependencies.project(":Gui"),
-    project.dependencies.project(":FabricApi", configuration = "namedElements")
+val vanillaDependencyProjects: List<Project> = listOf(
+    project(":Common"),
+    project(":CommonApi"),
+    project(":Library"),
+    project(":Gui"),
 )
+val loomDependencyProjects: List<Project> = listOf(
+    project(":FabricApi"),
+)
+val dependencyProjects: List<Project> = vanillaDependencyProjects + loomDependencyProjects
 
 val embeddedLibraries: Configuration by configurations.creating {
     isCanBeConsumed = false
@@ -71,7 +74,7 @@ configurations.implementation {
 val keyMappingGametestModId = "${modId}-key-mapping-test"
 
 dependencyProjects.forEach {
-    project.evaluationDependsOn(it.dependencyProject.path)
+    project.evaluationDependsOn(it.path)
 }
 
 java {
@@ -144,8 +147,11 @@ dependencies {
         name = "amecsapi-${amecsMinecraftVersion}",
         version = amecsVersionFabric
     )
-    dependencyProjects.forEach {
+    vanillaDependencyProjects.forEach {
         implementation(it)
+    }
+    loomDependencyProjects.forEach {
+        implementation(project(it.path, "namedElements"))
     }
     embeddedLibraries("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
@@ -186,7 +192,7 @@ loom {
         create("jei") {
             sourceSet(sourceSets.main.get())
             for (dependencyProject in dependencyProjects) {
-                sourceSet(dependencyProject.dependencyProject.sourceSets.main.get())
+                sourceSet(dependencyProject.sourceSets.main.get())
             }
         }
         create(keyMappingGametestModId) {
@@ -195,7 +201,7 @@ loom {
     }
     runs {
         val dependencyJarPaths = dependencyProjects.map {
-            it.dependencyProject.tasks.jar.get().archiveFile.get().asFile
+            it.tasks.jar.get().archiveFile.get().asFile
         }
         val classPaths = sourceSets.main.get().output.classesDirs
         val resourcesPaths = listOfNotNull(
@@ -266,7 +272,7 @@ sourceSets {
     named("main") {
         resources {
             for (p in dependencyProjects) {
-                srcDir(p.dependencyProject.sourceSets.main.get().resources)
+                srcDir(p.sourceSets.main.get().resources)
             }
         }
     }
@@ -287,7 +293,7 @@ tasks.jar {
     dependsOn(embeddedLibraries)
     from(sourceSets.main.get().output)
     for (p in dependencyProjects) {
-        from(p.dependencyProject.sourceSets.main.get().output)
+        from(p.sourceSets.main.get().output)
     }
     from(embeddedLibraries.map(::zipTree))
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -296,7 +302,7 @@ tasks.jar {
 tasks.named<Jar>("sourcesJar") {
     from(sourceSets.main.get().allJava)
     for (p in dependencyProjects) {
-        from(p.dependencyProject.sourceSets.main.get().allJava)
+        from(p.sourceSets.main.get().allJava)
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveClassifier.set("sources")
@@ -347,9 +353,8 @@ tasks.named<Test>("test") {
     }
 }
 
-artifacts {
-    archives(tasks.remapJar)
-    archives(tasks.remapSourcesJar)
+tasks.assemble {
+    dependsOn(tasks.remapJar, tasks.remapSourcesJar)
 }
 
 publishing {
@@ -364,7 +369,7 @@ publishing {
             val dependencyInfos = dependencyProjects.map {
                 mapOf(
                     "groupId" to it.group,
-                    "artifactId" to it.dependencyProject.base.archivesName.get(),
+                    "artifactId" to it.base.archivesName.get(),
                     "version" to it.version
                 )
             }

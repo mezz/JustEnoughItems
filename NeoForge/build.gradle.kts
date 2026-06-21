@@ -190,6 +190,7 @@ neoForge {
 		val jeiClientTestsMod = mods.named("jeiclienttests")
 
 		configureEach {
+			getAdditionalRuntimeClasspathConfiguration().extendsFrom(embeddedLibraries)
 			getMods().set(setOf(jeiMod.get()))
 		}
 		create("client") {
@@ -384,9 +385,8 @@ tasks.test {
 	}
 }
 
-artifacts {
-	archives(tasks.jar.get())
-	archives(sourcesJarTask.get())
+tasks.assemble {
+	dependsOn(sourcesJarTask)
 }
 
 publishing {
