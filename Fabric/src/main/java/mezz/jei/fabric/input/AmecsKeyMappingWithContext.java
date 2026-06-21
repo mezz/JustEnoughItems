@@ -27,4 +27,8 @@ public class AmecsKeyMappingWithContext extends AmecsKeyMappingWithKeyModifiers 
 			return false;
 		}
 	}
+
+	public boolean isContextActive() {
+		return context.isActive();
+	}
 }

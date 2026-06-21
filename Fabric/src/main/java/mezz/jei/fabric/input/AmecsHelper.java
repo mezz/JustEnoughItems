@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import de.siphalor.amecs.key_modifiers.api.AmecsKeyModifier;
 import de.siphalor.amecs.key_modifiers.api.AmecsKeyModifierCombination;
 import de.siphalor.amecs.key_modifiers.api.AmecsKeyModifiers;
+import de.siphalor.amecs.key_modifiers.impl.AmecsKeyMappingManager;
 import mezz.jei.common.input.KeyNameUtil;
 import mezz.jei.common.input.keys.JeiKeyModifier;
 import net.minecraft.client.input.InputQuirks;
@@ -22,6 +23,7 @@ public class AmecsHelper {
 			return;
 		}
 		initialized = true;
+		AmecsKeyMappingManager.prependLayer(new AmecsJeiKeyMappingManagerLayer());
 		AmecsKeyModifiers.register(COMMAND);
 	}
 
