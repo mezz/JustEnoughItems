@@ -45,7 +45,7 @@ public class MinecraftMixin {
 			shift = At.Shift.AFTER
 		)
 	)
-	public void disconnect(Screen screen, boolean bl, boolean bl2, CallbackInfo ci) {
+	public void disconnect(Screen screen, boolean keepResourcePacks, boolean stopSound, CallbackInfo ci) {
 		JeiLifecycleEvents.GAME_STOP.invoker().run();
 	}
 }

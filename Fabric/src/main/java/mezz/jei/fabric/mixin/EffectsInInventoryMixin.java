@@ -16,7 +16,7 @@ public abstract class EffectsInInventoryMixin {
 		name = "m",
 		at = @At("STORE")
 	)
-	public int modifyEffectWidth(int m) {
+	public int modifyEffectWidth(int maxWidth) {
 		boolean ingredientListDisplayed = FabricGuiPlugin.getRuntime()
 			.map(IJeiRuntime::getIngredientListOverlay)
 			.map(IIngredientListOverlay::isListDisplayed)
@@ -26,6 +26,6 @@ public abstract class EffectsInInventoryMixin {
 			// make the potion effects render in compact mode.
 			return 32;
 		}
-		return m;
+		return maxWidth;
 	}
 }

@@ -19,9 +19,9 @@ public class AbstractContainerScreenMixin {
 			shift = At.Shift.AFTER
 		)
 	)
-	private void drawForeground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+	private void drawForeground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
 		@SuppressWarnings("DataFlowIssue")
 		AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
-		JeiScreenEvents.DRAW_FOREGROUND.invoker().drawForeground(screen, guiGraphics, mouseX, mouseY);
+		JeiScreenEvents.DRAW_FOREGROUND.invoker().drawForeground(screen, graphics, mouseX, mouseY);
 	}
 }
