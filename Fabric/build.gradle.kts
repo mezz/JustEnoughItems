@@ -207,6 +207,8 @@ publishMods {
             end = minecraftVersion
         }
         javaVersions.add(JavaVersion.toVersion(modJavaVersion))
+        client = true
+        server = true
         dryRun = curseforgeApikey == null
     }
 
