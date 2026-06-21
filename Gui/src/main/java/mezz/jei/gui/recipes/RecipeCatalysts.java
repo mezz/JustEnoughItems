@@ -138,7 +138,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 				if (recipeSlot.isMouseOver(mouseX, mouseY)) {
 					hovered = recipeSlot;
 				}
-				recipeSlot.draw(poseStack);
+				recipeSlot.draw(poseStack, hovered == recipeSlot);
 			}
 			return Optional.ofNullable(hovered);
 		}
