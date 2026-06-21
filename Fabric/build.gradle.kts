@@ -18,8 +18,13 @@ repositories {
     exclusiveMaven("https://maven.parchmentmc.org") {
         includeGroupByRegex("org\\.parchmentmc.*")
     }
+    maven("https://maven.siphalor.de/") {
+        // for optional AMECS integration
+        content {
+            includeGroupAndSubgroups("de.siphalor")
+        }
+    }
 }
-
 // gradle.properties
 val curseProjectId: String by extra
 val fabricApiVersion: String by extra
@@ -31,6 +36,8 @@ val modJavaVersion: String by extra
 val parchmentMinecraftVersion: String by extra
 val parchmentVersionFabric: String by extra
 val modrinthId: String by extra
+val amecsVersionFabric: String by extra
+val amecsMinecraftVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -112,6 +119,7 @@ dependencies {
     loomDependencyProjects.forEach {
         implementation(project(it.path, "namedElements"))
     }
+    modImplementation("de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric")
     changelogHtml(project(":Changelog"))
     changelogMarkdown(project(":Changelog"))
 }

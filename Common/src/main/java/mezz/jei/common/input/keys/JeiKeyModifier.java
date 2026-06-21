@@ -2,7 +2,6 @@ package mezz.jei.common.input.keys;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
-import mezz.jei.common.input.KeyNameUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.network.chat.Component;
@@ -17,8 +16,8 @@ public enum JeiKeyModifier {
 		}
 
 		@Override
-		public Component getCombinedName(InputConstants.Key key) {
-			return Component.translatable("jei.key.combo.control", KeyNameUtil.getKeyDisplayName(key));
+		public Component getCombinedName(Component component) {
+			return Component.translatable("jei.key.combo.control", component);
 		}
 	},
 	CONTROL_OR_COMMAND {
@@ -33,11 +32,11 @@ public enum JeiKeyModifier {
 		}
 
 		@Override
-		public Component getCombinedName(InputConstants.Key key) {
+		public Component getCombinedName(Component component) {
 			if (InputQuirks.REPLACE_CTRL_KEY_WITH_CMD_KEY) {
-				return Component.translatable("jei.key.combo.command", KeyNameUtil.getKeyDisplayName(key));
+				return Component.translatable("jei.key.combo.command", component);
 			}
-			return CONTROL.getCombinedName(key);
+			return CONTROL.getCombinedName(component);
 		}
 	},
 	SHIFT {
@@ -48,8 +47,8 @@ public enum JeiKeyModifier {
 		}
 
 		@Override
-		public Component getCombinedName(InputConstants.Key key) {
-			return Component.translatable("jei.key.combo.shift", KeyNameUtil.getKeyDisplayName(key));
+		public Component getCombinedName(Component component) {
+			return Component.translatable("jei.key.combo.shift", component);
 		}
 	},
 	ALT {
@@ -60,8 +59,8 @@ public enum JeiKeyModifier {
 		}
 
 		@Override
-		public Component getCombinedName(InputConstants.Key key) {
-			return Component.translatable("jei.key.combo.alt", KeyNameUtil.getKeyDisplayName(key));
+		public Component getCombinedName(Component component) {
+			return Component.translatable("jei.key.combo.alt", component);
 		}
 	},
 	NONE {
@@ -77,12 +76,12 @@ public enum JeiKeyModifier {
 		}
 
 		@Override
-		public Component getCombinedName(InputConstants.Key key) {
-			return KeyNameUtil.getKeyDisplayName(key);
+		public Component getCombinedName(Component component) {
+			return component;
 		}
 	};
 
 	public abstract boolean isActive(JeiKeyConflictContext context);
 
-	public abstract Component getCombinedName(InputConstants.Key key);
+	public abstract Component getCombinedName(Component component);
 }

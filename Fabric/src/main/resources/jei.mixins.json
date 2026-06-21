@@ -4,6 +4,7 @@
   "package": "mezz.jei.fabric.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "AmecsKeyModifiersEarlyInitMixin"
   ],
   "client": [
     "AbstractContainerScreenMixin",
