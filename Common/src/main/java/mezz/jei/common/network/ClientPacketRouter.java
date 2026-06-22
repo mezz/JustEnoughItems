@@ -2,8 +2,8 @@ package mezz.jei.common.network;
 
 import mezz.jei.common.network.packets.IClientPacketHandler;
 import mezz.jei.common.network.packets.PacketCheatPermission;
-import mezz.jei.core.config.IServerConfig;
-import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.common.config.IServerConfig;
+import mezz.jei.common.config.IWorldConfig;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import org.apache.logging.log4j.LogManager;

@@ -118,10 +118,9 @@ pipeline {
                 expression { env.SHOULD_PUBLISH != 'false' }
             }
             steps {
-                sh '''
-                    ./gradlew \
-                        :Core:publish \
-                        :Gui:publish \
+				sh '''
+					./gradlew \
+						:Gui:publish \
                         :Library:publish \
                         :Forge:publish \
                         :Fabric:publish \
@@ -129,8 +128,8 @@ pipeline {
                         :CommonApi:publish \
                         :ForgeApi:publish \
                         :FabricApi:publish \
-                        -PDEPLOY_DIR="$MAVEN_DEPLOY_DIR"
-                '''
+						-PDEPLOY_DIR="$MAVEN_DEPLOY_DIR"
+				'''
             }
         }
 

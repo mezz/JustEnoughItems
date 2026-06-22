@@ -1,6 +1,6 @@
 package mezz.jei.forge.tests.lib;
 
-import mezz.jei.core.config.IServerConfig;
+import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.ServerPacketRouter;

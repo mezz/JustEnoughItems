@@ -3,7 +3,7 @@ package mezz.jei.common.gui.elements;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.util.StringUtil;
-import mezz.jei.core.util.Pair;
+import mezz.jei.common.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.locale.Language;

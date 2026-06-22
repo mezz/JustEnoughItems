@@ -40,7 +40,7 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.core.util.LimitedLogger;
+import mezz.jei.common.util.LimitedLogger;
 import mezz.jei.library.deprecated.gui.recipes.layout.RecipeLayoutLegacyAdapter;
 import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.ingredients.RecipeSlot;

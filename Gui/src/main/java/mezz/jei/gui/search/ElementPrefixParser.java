@@ -8,9 +8,9 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.util.Translator;
-import mezz.jei.core.search.LimitedStringStorageBuilder;
-import mezz.jei.core.search.PrefixInfo;
-import mezz.jei.core.search.SearchMode;
+import mezz.jei.common.search.LimitedStringStorageBuilder;
+import mezz.jei.common.search.PrefixInfo;
+import mezz.jei.common.search.SearchMode;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
 
