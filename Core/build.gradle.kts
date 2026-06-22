@@ -16,6 +16,7 @@ val jUnitVersion: String by extra
 val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val suffixtreeVersion: String by extra
 
 dependencies {
     implementation(
@@ -38,6 +39,13 @@ dependencies {
         name = "log4j-api",
         version = "2.17.0"
     )
+    implementation(
+        group = "net.mezzdev",
+        name = "suffixtree",
+        version = suffixtreeVersion
+    ) {
+        isTransitive = false
+    }
     testImplementation(
         group = "org.junit.jupiter",
         name = "junit-jupiter",
@@ -122,4 +130,3 @@ idea {
         }
     }
 }
-

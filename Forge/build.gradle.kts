@@ -25,6 +25,7 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val parchmentVersionForge: String by extra
 val modrinthId: String by extra
+val suffixtreeVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -56,6 +57,12 @@ val dependencyProjects: List<Project> = listOf(
 
 dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
+}
+
+val embeddedLibraries: Configuration = project(":Core").configurations.detachedConfiguration(
+	project(":Core").dependencies.create("net.mezzdev:suffixtree:${suffixtreeVersion}")
+).apply {
+	isTransitive = false
 }
 
 java {
@@ -104,6 +111,8 @@ dependencies {
 	dependencyProjects.forEach {
 		compileOnly(it)
 	}
+	compileOnly(files(embeddedLibraries))
+	testCompileOnly(files(embeddedLibraries))
 	testImplementation(
 		group = "org.junit.jupiter",
 		name = "junit-jupiter",
@@ -183,7 +192,9 @@ tasks.withType<ProcessResources> {
 }
 
 tasks.jar {
+	dependsOn(embeddedLibraries)
 	from(sourceSets.main.get().output)
+	from(embeddedLibraries.map(::zipTree))
 
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
