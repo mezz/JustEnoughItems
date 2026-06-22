@@ -9,7 +9,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.core.collect.ListMultiMap;
+import mezz.jei.common.collect.ListMultiMap;
 import mezz.jei.library.ingredients.TypedIngredient;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;

@@ -18,7 +18,7 @@ import mezz.jei.common.util.ChatUtil;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.common.util.Translator;
-import mezz.jei.core.util.LoggedTimer;
+import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.library.color.ColorHelper;
 import mezz.jei.library.config.ColorNameConfig;
 import mezz.jei.library.config.EditModeConfig;

@@ -12,7 +12,7 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.DelayedExecutor;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.IDelayedExecutor;
-import mezz.jei.core.util.Pair;
+import mezz.jei.common.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.texture.TextureManager;

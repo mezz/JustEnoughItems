@@ -11,7 +11,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.core.collect.Table;
+import mezz.jei.common.collect.Table;
 import mezz.jei.library.recipes.RecipeTransferManager;
 import mezz.jei.library.recipes.UniversalRecipeTransferHandlerAdapter;
 import mezz.jei.library.transfer.BasicRecipeTransferHandler;

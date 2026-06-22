@@ -11,7 +11,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.core.collect.ListMultiMap;
+import mezz.jei.common.collect.ListMultiMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Unmodifiable;

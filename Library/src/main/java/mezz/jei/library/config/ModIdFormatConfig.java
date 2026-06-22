@@ -5,7 +5,7 @@ import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.core.util.function.CachedSupplierTransformer;
+import mezz.jei.common.util.function.CachedSupplierTransformer;
 import mezz.jei.library.config.serializers.ChatFormattingSerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
