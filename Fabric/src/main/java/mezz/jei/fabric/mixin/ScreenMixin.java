@@ -19,9 +19,9 @@ public class ScreenMixin {
 			shift = At.Shift.AFTER
 		)
 	)
-	private void drawBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+	private void drawBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
 		@SuppressWarnings("DataFlowIssue")
 		Screen screen = (Screen) (Object) this;
-		JeiScreenEvents.DRAW_BACKGROUND.invoker().drawBackground(screen, guiGraphics, mouseX, mouseY, partialTicks);
+		JeiScreenEvents.DRAW_BACKGROUND.invoker().drawBackground(screen, graphics, mouseX, mouseY, a);
 	}
 }

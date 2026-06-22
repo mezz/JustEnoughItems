@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,20 +14,6 @@ import java.util.Set;
 public class IngredientBlacklistInternal implements IIngredientManager.IIngredientListener {
 	private final Set<Object> uidBlacklist = new HashSet<>();
 	private WeakReference<IngredientVisibility> ingredientVisibilityRef = new WeakReference<>(null);
-
-	public <V> void addIngredientToBlacklist(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
-		Object uid = ingredientHelper.getUid(typedIngredient, UidContext.Ingredient);
-		if (uidBlacklist.add(uid)) {
-			notifyListenersOfVisibilityChange(typedIngredient, false);
-		}
-	}
-
-	public <V> void removeIngredientFromBlacklist(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
-		Object uid = ingredientHelper.getUid(typedIngredient, UidContext.Ingredient);
-		if (uidBlacklist.remove(uid)) {
-			notifyListenersOfVisibilityChange(typedIngredient, true);
-		}
-	}
 
 	public <V> boolean isIngredientBlacklistedByApi(ITypedIngredient<V> typedIngredient, IIngredientHelper<V> ingredientHelper) {
 		Object uid = ingredientHelper.getUid(typedIngredient, UidContext.Ingredient);
@@ -44,22 +31,32 @@ public class IngredientBlacklistInternal implements IIngredientManager.IIngredie
 
 	@Override
 	public <V> void onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
+		Collection<ITypedIngredient<V>> changedIngredients = new ArrayList<>();
 		for (ITypedIngredient<V> ingredient : ingredients) {
-			removeIngredientFromBlacklist(ingredient, ingredientHelper);
+			Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
+			if (uidBlacklist.remove(uid)) {
+				changedIngredients.add(ingredient);
+			}
 		}
+		notifyListenersOfVisibilityChange(changedIngredients, true);
 	}
 
 	@Override
 	public <V> void onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
+		Collection<ITypedIngredient<V>> changedIngredients = new ArrayList<>();
 		for (ITypedIngredient<V> ingredient : ingredients) {
-			addIngredientToBlacklist(ingredient, ingredientHelper);
+			Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
+			if (uidBlacklist.add(uid)) {
+				changedIngredients.add(ingredient);
+			}
 		}
+		notifyListenersOfVisibilityChange(changedIngredients, false);
 	}
 
-	private <T> void notifyListenersOfVisibilityChange(ITypedIngredient<T> ingredient, boolean visible) {
+	private <T> void notifyListenersOfVisibilityChange(Collection<ITypedIngredient<T>> ingredients, boolean visible) {
 		IngredientVisibility ingredientVisibility = ingredientVisibilityRef.get();
 		if (ingredientVisibility != null) {
-			ingredientVisibility.notifyListeners(ingredient, visible);
+			ingredientVisibility.notifyListeners(ingredients, visible);
 		}
 	}
 }

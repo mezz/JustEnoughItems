@@ -16,10 +16,10 @@ public class AbstractContainerScreenHandler<T extends AbstractContainerMenu> imp
 			return null;
 		}
 		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-		int x = screenHelper.getGuiLeft(containerScreen);
-		int y = screenHelper.getGuiTop(containerScreen);
-		int width = screenHelper.getXSize(containerScreen);
-		int height = screenHelper.getYSize(containerScreen);
+		int x = screenHelper.getLeftPos(containerScreen);
+		int y = screenHelper.getTopPos(containerScreen);
+		int width = screenHelper.getImageWidth(containerScreen);
+		int height = screenHelper.getImageHeight(containerScreen);
 		if (x < 0) {
 			width -= x;
 			x = 0;

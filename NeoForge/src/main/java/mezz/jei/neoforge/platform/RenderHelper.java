@@ -16,6 +16,7 @@ import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.tags.TagKey;
@@ -61,7 +62,7 @@ public class RenderHelper implements IPlatformRenderHelper {
 
 	@Override
 	public void renderTooltip(GuiGraphicsExtractor guiGraphics, List<Either<FormattedText, TooltipComponent>> elements, int x, int y, Font font, ItemStack stack) {
-		guiGraphics.setComponentTooltipFromElementsForNextFrame(font, elements, x, y, stack);
+		guiGraphics.setComponentTooltipFromElementsForNextFrame(font, elements, x, y, stack, stack.get(DataComponents.TOOLTIP_STYLE));
 	}
 
 	@Override

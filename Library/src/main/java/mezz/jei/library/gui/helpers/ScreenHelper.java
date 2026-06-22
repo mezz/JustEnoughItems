@@ -12,7 +12,7 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.input.ClickableIngredientFactory;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.core.collect.ListMultiMap;
+import mezz.jei.common.collect.ListMultiMap;
 import mezz.jei.library.gui.GuiContainerHandlers;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -93,16 +93,16 @@ public class ScreenHelper implements IScreenHelper {
 		ClickableIngredientFactory factory = new ClickableIngredientFactory(ingredientManager);
 		return Stream.concat(
 			getPluginsIngredientUnderMouse(factory, screen, mouseX, mouseY),
-			getSlotIngredientUnderMouse(factory, screen).stream()
+			getHoveredSlotIngredient(factory, screen).stream()
 		);
 	}
 
-	private Optional<IClickableIngredient<?>> getSlotIngredientUnderMouse(ClickableIngredientFactory factory, Screen guiScreen) {
+	private Optional<IClickableIngredient<?>> getHoveredSlotIngredient(ClickableIngredientFactory factory, Screen guiScreen) {
 		if (!(guiScreen instanceof AbstractContainerScreen<?> guiContainer)) {
 			return Optional.empty();
 		}
 		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-		return screenHelper.getSlotUnderMouse(guiContainer)
+		return screenHelper.getHoveredSlot(guiContainer)
 			.flatMap(slot -> getClickedIngredient(factory, slot, guiContainer));
 	}
 

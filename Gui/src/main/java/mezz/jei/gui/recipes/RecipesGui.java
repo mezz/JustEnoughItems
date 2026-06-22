@@ -257,6 +257,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
+	public boolean isInGameUi() {
+		return true;
+	}
+
+	@Override
 	public void init() {
 		super.init();
 
@@ -300,9 +305,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
-	protected void extractMenuBackground(GuiGraphicsExtractor guiGraphics, int x, int y, int width, int height) {
-		this.extractTransparentBackground(guiGraphics);
-		this.background.draw(guiGraphics, area);
+	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+		super.extractBackground(graphics, mouseX, mouseY, a);
+		this.background.draw(graphics, area);
 	}
 
 	@Override
@@ -343,7 +348,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		optionButtons.drawTooltips(guiGraphics, mouseX, mouseY);
 
 		hoveredRecipeLayout.ifPresent(l -> l.drawOverlays(guiGraphics, mouseX, mouseY));
-		hoveredRecipeCatalyst.ifPresent(h -> h.drawHoverOverlays(guiGraphics));
 
 		hoveredRecipeCatalyst.ifPresent(h -> {
 			h.drawTooltip(guiGraphics, mouseX, mouseY);
@@ -417,7 +421,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		if (minecraft.screen == this) {
+		if (minecraft.gui.screen() == this) {
 			return area.contains(mouseX, mouseY) ||
 				optionButtons.getArea().contains(mouseX, mouseY);
 		}
@@ -499,20 +503,20 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	public boolean isOpen() {
-		return minecraft.screen == this;
+		return minecraft.gui.screen() == this;
 	}
 
 	private void open() {
 		if (!isOpen()) {
-			parentScreen = minecraft.screen;
+			parentScreen = minecraft.gui.screen();
 		}
-		minecraft.setScreen(this);
+		minecraft.gui.setScreen(this);
 	}
 
 	@Override
 	public void onClose() {
 		if (isOpen()) {
-			minecraft.setScreen(parentScreen);
+			minecraft.gui.setScreen(parentScreen);
 			parentScreen = null;
 			logic.clearHistory();
 			return;
@@ -622,7 +626,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public AbstractContainerMenu getParentContainerMenu() {
 		Screen screen;
 		if (parentScreen == null) {
-			screen = Minecraft.getInstance().screen;
+			screen = Minecraft.getInstance().gui.screen();
 		} else {
 			screen = parentScreen;
 		}
@@ -719,12 +723,23 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		@Override
 		public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
 			if (recipesGui.isMouseOver(mouseX, mouseY)) {
-				if (scrollDeltaY < 0) {
-					recipesGui.logic.nextPage();
-					return Optional.of(this);
-				} else if (scrollDeltaY > 0) {
-					recipesGui.logic.previousPage();
-					return Optional.of(this);
+				Minecraft minecraft = Minecraft.getInstance();
+				if (minecraft.hasShiftDown()) {
+					if (scrollDeltaY < 0) {
+						recipesGui.logic.nextRecipeCategory();
+						return Optional.of(this);
+					} else if (scrollDeltaY > 0) {
+						recipesGui.logic.previousRecipeCategory();
+						return Optional.of(this);
+					}
+				} else {
+					if (scrollDeltaY < 0) {
+						recipesGui.logic.nextPage();
+						return Optional.of(this);
+					} else if (scrollDeltaY > 0) {
+						recipesGui.logic.previousPage();
+						return Optional.of(this);
+					}
 				}
 			}
 

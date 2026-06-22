@@ -1,6 +1,6 @@
 package mezz.jei.gui.startup;
 
-import mezz.jei.core.util.LoggedTimer;
+import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.gui.ingredients.IngredientFilter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import net.minecraft.client.Minecraft;
@@ -25,7 +25,7 @@ public class ResourceReloadHandler implements ResourceManagerReloadListener {
 
 		Minecraft minecraft = Minecraft.getInstance();
 		ingredientListOverlay.getScreenPropertiesUpdater()
-			.updateScreen(minecraft.screen)
+			.updateScreen(minecraft.gui.screen())
 			.update();
 	}
 }

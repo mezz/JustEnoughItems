@@ -85,7 +85,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		ingredientGridSource.addSourceListChangedListener(() -> {
 			Minecraft minecraft = Minecraft.getInstance();
 			getScreenPropertiesUpdater()
-				.updateScreen(minecraft.screen)
+				.updateScreen(minecraft.gui.screen())
 				.update();
 		});
 

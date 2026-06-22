@@ -22,6 +22,7 @@ val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 val modrinthId: String by extra
+val suffixtreeVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -43,7 +44,6 @@ sourceSets {
 }
 
 val dependencyProjects: List<Project> = listOf(
-	project(":Core"),
 	project(":Common"),
 	project(":CommonApi"),
 	project(":Library"),
@@ -53,6 +53,14 @@ val dependencyProjects: List<Project> = listOf(
 
 dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
+}
+
+val embeddedLibraries: Configuration by configurations.creating {
+	isCanBeConsumed = false
+	isCanBeResolved = true
+}
+configurations.implementation {
+	extendsFrom(embeddedLibraries)
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -101,6 +109,9 @@ dependencies {
 	dependencyProjects.forEach {
 		implementation(it)
 	}
+	embeddedLibraries("net.mezzdev:suffixtree:${suffixtreeVersion}") {
+		isTransitive = false
+	}
 	testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	changelogHtml(project(":Changelog"))
@@ -147,10 +158,12 @@ neoForge {
 }
 
 tasks.jar {
+	dependsOn(embeddedLibraries)
 	from(sourceSets.main.get().output)
 	for (p in dependencyProjects) {
 		from(p.sourceSets.main.get().output)
 	}
+	from(embeddedLibraries.map(::zipTree))
 
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
@@ -181,6 +194,9 @@ publishMods {
 			end = minecraftVersion
 		}
 		javaVersions.add(JavaVersion.toVersion(modJavaVersion))
+		client = true
+		server = true
+		dryRun = curseforgeApikey == null
 	}
 
 	modrinth {
@@ -191,6 +207,7 @@ publishMods {
 			start = minecraftVersionRangeStart
 			end = minecraftVersion
 		}
+		dryRun = modrinthToken == null
 	}
 }
 
@@ -205,9 +222,8 @@ tasks.test {
 	}
 }
 
-artifacts {
-	archives(tasks.jar.get())
-	archives(sourcesJarTask.get())
+tasks.assemble {
+	dependsOn(sourcesJarTask)
 }
 
 publishing {

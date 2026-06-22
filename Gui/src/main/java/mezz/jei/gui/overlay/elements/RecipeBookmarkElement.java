@@ -87,7 +87,7 @@ public class RecipeBookmarkElement<R, I> implements IElement {
 		boolean transferMax = input.is(keyBindings.getMaxTransferRecipeBookmark());
 		if (transferOnce || transferMax) {
 			Minecraft minecraft = Minecraft.getInstance();
-			Screen screen = minecraft.screen;
+			Screen screen = minecraft.gui.screen();
 			Player player = minecraft.player;
 			if (player != null && screen instanceof AbstractContainerScreen<?> containerScreen) {
 				IRecipeLayoutDrawable<R> recipeLayout = getRecipeLayoutDrawable().orElse(null);
@@ -201,7 +201,7 @@ public class RecipeBookmarkElement<R, I> implements IElement {
 		JeiTooltip results = new JeiTooltip();
 
 		Minecraft minecraft = Minecraft.getInstance();
-		Screen screen = minecraft.screen;
+		Screen screen = minecraft.gui.screen();
 		Player player = minecraft.player;
 		if (player != null && screen instanceof AbstractContainerScreen<?> containerScreen) {
 			IRecipeTransferError recipeTransferError = getRecipeLayoutDrawable()

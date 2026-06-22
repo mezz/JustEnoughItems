@@ -187,6 +187,24 @@ public class IngredientFilter implements
 	}
 
 	@Override
+	public <V> void onIngredientsVisibilityChanged(Collection<ITypedIngredient<V>> ingredients, boolean visible) {
+		boolean changed = false;
+		for (ITypedIngredient<V> ingredient : ingredients) {
+			IIngredientType<V> ingredientType = ingredient.getType();
+			IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+			IListElement match = this.elementSearch.findElement(ingredient, ingredientHelper);
+			if (match != null && match.isVisible() != visible) {
+				match.setVisible(visible);
+				changed = true;
+			}
+		}
+		if (changed) {
+			invalidateCache();
+			notifyListenersOfChange();
+		}
+	}
+
+	@Override
 	public List<IElement> getElements() {
 		if (searchResultCached == null) {
 			String filterText = this.filterTextSource.getFilterText().toLowerCase();

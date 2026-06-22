@@ -20,9 +20,9 @@ public class DebugBrewingStandScreenHandler implements IGuiContainerHandler<Brew
 		int widthMovement = (int) ((System.currentTimeMillis() / 100) % 100);
 		int size = 25 + widthMovement;
 		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-		int guiLeft = screenHelper.getGuiLeft(containerScreen);
-		int xSize = screenHelper.getXSize(containerScreen);
-		int guiTop = screenHelper.getGuiTop(containerScreen);
+		int guiLeft = screenHelper.getLeftPos(containerScreen);
+		int xSize = screenHelper.getImageWidth(containerScreen);
+		int guiTop = screenHelper.getTopPos(containerScreen);
 		return List.of(
 			new Rect2i(guiLeft + xSize, guiTop + 40, size, size)
 		);

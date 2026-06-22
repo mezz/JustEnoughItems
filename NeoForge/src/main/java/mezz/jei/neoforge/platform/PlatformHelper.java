@@ -2,7 +2,7 @@ package mezz.jei.neoforge.platform;
 
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformHelper;
-import mezz.jei.core.util.function.LazySupplier;
+import mezz.jei.common.util.function.LazySupplier;
 
 import java.util.function.Supplier;
 

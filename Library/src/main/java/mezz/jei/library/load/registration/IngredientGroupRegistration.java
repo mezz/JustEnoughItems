@@ -8,7 +8,7 @@ import mezz.jei.common.ingredients.group.DynamicSelector;
 import mezz.jei.common.ingredients.group.IIngredientGroupSelector;
 import mezz.jei.common.ingredients.group.IngredientsSelector;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.core.collect.ListMultiMap;
+import mezz.jei.common.collect.ListMultiMap;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Unmodifiable;
 

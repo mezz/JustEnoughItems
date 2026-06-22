@@ -1,7 +1,6 @@
 package mezz.jei.gui.overlay.elements;
 
 import mezz.jei.common.util.ImmutableRect2i;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.HashSet;
@@ -10,22 +9,22 @@ import java.util.Set;
 
 public class GroupElementOverlay implements IElementOverlay {
 
-	private static final ChatFormatting[] GROUP_COLORS = {
-			ChatFormatting.GOLD,
-			ChatFormatting.AQUA,
-			ChatFormatting.LIGHT_PURPLE,
-			ChatFormatting.YELLOW,
-			ChatFormatting.GREEN,
-//			ChatFormatting.RED, red was used by edit mode
-			ChatFormatting.BLUE,
-			ChatFormatting.WHITE,
-			ChatFormatting.DARK_AQUA,
-			ChatFormatting.DARK_PURPLE,
-			ChatFormatting.DARK_GREEN,
-			ChatFormatting.DARK_RED,
-			ChatFormatting.DARK_BLUE,
-			ChatFormatting.GRAY,
-			ChatFormatting.DARK_GRAY,
+	private static final int[] GROUP_COLORS = {
+			0xFFAA00, // gold
+			0x55FFFF, // aqua
+			0xFF55FF, // light purple
+			0xFFFF55, // yellow
+			0x55FF55, // green
+//			0xFF5555, red was used by edit mode
+			0x5555FF, // blue
+			0xFFFFFF, // white
+			0x00AAAA, // dark aqua
+			0xAA00AA, // dark purple
+			0x00AA00, // dark green
+			0xAA0000, // dark red
+			0x0000AA, // dark blue
+			0xAAAAAA, // gray
+			0x555555, // dark gray
 			//Dark colors don't look obvious in the UI
 	};
 
@@ -33,8 +32,7 @@ public class GroupElementOverlay implements IElementOverlay {
 	private final int fillColor;
 
 	public GroupElementOverlay(int colorIndex) {
-		Integer rgb = GROUP_COLORS[colorIndex % GROUP_COLORS.length].getColor();
-		int color = rgb != null ? rgb : 0xFFFFFF;
+		int color = GROUP_COLORS[colorIndex % GROUP_COLORS.length];
 		this.borderColor = (0xCC << 24) | color;
 		this.fillColor = (0x30 << 24) | color;
 	}

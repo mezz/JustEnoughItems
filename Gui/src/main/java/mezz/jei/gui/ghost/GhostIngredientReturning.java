@@ -44,7 +44,7 @@ public class GhostIngredientReturning<T> {
 		this.start = start;
 		this.end = end;
 		this.startTime = System.currentTimeMillis();
-		Screen currentScreen = Minecraft.getInstance().screen;
+		Screen currentScreen = Minecraft.getInstance().gui.screen();
 		if (currentScreen != null) {
 			int width = currentScreen.width;
 			float durationPerPixel = DURATION_PER_SCREEN_WIDTH / (float) width;

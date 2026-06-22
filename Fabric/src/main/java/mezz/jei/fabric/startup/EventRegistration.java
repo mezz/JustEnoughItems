@@ -95,8 +95,8 @@ public class EventRegistration {
 		Window window = minecraft.getWindow();
 		if (window.handle() == windowHandle &&
 			clientInputHandler != null &&
-			minecraft.screen instanceof Screen screen &&
-			minecraft.getOverlay() == null
+			minecraft.gui.screen() instanceof Screen screen &&
+			minecraft.gui.overlay() == null
 		) {
 			return clientInputHandler.onKeyboardCharTypedPre(screen, event);
 		}

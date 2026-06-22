@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.inventory.Slot;
 
@@ -19,29 +20,39 @@ import java.util.Optional;
 
 public class ScreenHelper implements IPlatformScreenHelper {
 	@Override
-	public Optional<Slot> getSlotUnderMouse(AbstractContainerScreen<?> containerScreen) {
-		Slot slot = containerScreen.getSlotUnderMouse();
+	public Optional<Slot> getHoveredSlot(AbstractContainerScreen<?> containerScreen) {
+		Slot slot = containerScreen.getHoveredSlot();
 		return Optional.ofNullable(slot);
 	}
 
 	@Override
-	public int getGuiLeft(AbstractContainerScreen<?> containerScreen) {
-		return containerScreen.getGuiLeft();
+	public int getLeftPos(AbstractContainerScreen<?> containerScreen) {
+		return containerScreen.getLeftPos();
 	}
 
 	@Override
-	public int getGuiTop(AbstractContainerScreen<?> containerScreen) {
-		return containerScreen.getGuiTop();
+	public int getTopPos(AbstractContainerScreen<?> containerScreen) {
+		return containerScreen.getTopPos();
 	}
 
 	@Override
-	public int getXSize(AbstractContainerScreen<?> containerScreen) {
-		return containerScreen.getXSize();
+	public int getImageWidth(AbstractContainerScreen<?> containerScreen) {
+		return containerScreen.getImageWidth();
 	}
 
 	@Override
-	public int getYSize(AbstractContainerScreen<?> containerScreen) {
-		return containerScreen.getYSize();
+	public int getImageHeight(AbstractContainerScreen<?> containerScreen) {
+		return containerScreen.getImageHeight();
+	}
+
+	@Override
+	public Identifier getSlotHighlightBackSprite() {
+		return AbstractContainerScreen.SLOT_HIGHLIGHT_BACK_SPRITE;
+	}
+
+	@Override
+	public Identifier getSlotHighlightFrontSprite() {
+		return AbstractContainerScreen.SLOT_HIGHLIGHT_FRONT_SPRITE;
 	}
 
 	@Override
@@ -60,7 +71,7 @@ public class ScreenHelper implements IPlatformScreenHelper {
 	@Override
 	public ImmutableRect2i getToastsArea() {
 		Minecraft minecraft = Minecraft.getInstance();
-		ToastManager toastManager = minecraft.getToastManager();
+		ToastManager toastManager = minecraft.gui.toastManager();
 		List<ToastManager.ToastInstance<?>> visible = toastManager.visibleToasts;
 		if (visible.isEmpty()) {
 			return ImmutableRect2i.EMPTY;

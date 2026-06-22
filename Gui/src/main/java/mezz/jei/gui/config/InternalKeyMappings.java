@@ -14,6 +14,7 @@ import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping toggleOverlay;
@@ -62,18 +63,25 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping rightClick;
 	private final IJeiKeyMapping enterKey;
 
-	private static KeyMapping.Category registerCategory(String name) {
-		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, name);
-		return KeyMapping.Category.register(id);
-	}
-
 	private static KeyMapping.Category createUnregisteredCategory(String name) {
 		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, name);
 		return new KeyMapping.Category(id);
 	}
 
-	public InternalKeyMappings(Consumer<KeyMapping> registerMethod) {
+	private record CategoryBuilderFactory(
+		IPlatformInputHelper inputHelper,
+		Function<Identifier, KeyMapping.Category> createCategoryMethod
+	) {
+		public IJeiKeyMappingCategoryBuilder create(String name) {
+			Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, name);
+			KeyMapping.Category category = createCategoryMethod.apply(id);
+			return inputHelper.createKeyMappingCategoryBuilder(category);
+		}
+	}
+
+	public InternalKeyMappings(Consumer<KeyMapping> registerMethod, Function<Identifier, KeyMapping.Category> createCategoryMethod) {
 		IPlatformInputHelper inputHelper = Services.PLATFORM.getInputHelper();
+		CategoryBuilderFactory categoryBuilderFactory = new CategoryBuilderFactory(inputHelper, createCategoryMethod);
 
 		IJeiKeyMapping showRecipe1;
 		IJeiKeyMapping showRecipe2;
@@ -84,29 +92,21 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 		IJeiKeyMapping cheatItemStack1;
 		IJeiKeyMapping cheatItemStack2;
 
-		var overlaysCategory = registerCategory("overlays");
-		IJeiKeyMappingCategoryBuilder overlay = inputHelper.createKeyMappingCategoryBuilder(overlaysCategory);
+		IJeiKeyMappingCategoryBuilder overlay = categoryBuilderFactory.create("overlays");
 
-		var mouseHoverCategory = registerCategory("mouse.hover");
-		IJeiKeyMappingCategoryBuilder mouseHover = inputHelper.createKeyMappingCategoryBuilder(mouseHoverCategory);
+		IJeiKeyMappingCategoryBuilder mouseHover = categoryBuilderFactory.create("mouse.hover");
 
-		var searchCategory = registerCategory("search");
-		IJeiKeyMappingCategoryBuilder search = inputHelper.createKeyMappingCategoryBuilder(searchCategory);
+		IJeiKeyMappingCategoryBuilder search = categoryBuilderFactory.create("search");
 
-		var cheatModeCategory = registerCategory("cheat.mode");
-		IJeiKeyMappingCategoryBuilder cheat = inputHelper.createKeyMappingCategoryBuilder(cheatModeCategory);
+		IJeiKeyMappingCategoryBuilder cheat = categoryBuilderFactory.create("cheat.mode");
 
-		var hoverConfigButtonCategory = registerCategory("hover.config.button");
-		IJeiKeyMappingCategoryBuilder hoverConfig = inputHelper.createKeyMappingCategoryBuilder(hoverConfigButtonCategory);
+		IJeiKeyMappingCategoryBuilder hoverConfig = categoryBuilderFactory.create("hover.config.button");
 
-		var editModeCategory = registerCategory("edit.mode");
-		IJeiKeyMappingCategoryBuilder editMode = inputHelper.createKeyMappingCategoryBuilder(editModeCategory);
+		IJeiKeyMappingCategoryBuilder editMode = categoryBuilderFactory.create("edit.mode");
 
-		var recipeCategory = registerCategory("recipe.gui");
-		IJeiKeyMappingCategoryBuilder recipeGui = inputHelper.createKeyMappingCategoryBuilder(recipeCategory);
+		IJeiKeyMappingCategoryBuilder recipeGui = categoryBuilderFactory.create("recipe.gui");
 
-		var devToolsCategory = registerCategory("dev.tools");
-		IJeiKeyMappingCategoryBuilder devTools = inputHelper.createKeyMappingCategoryBuilder(devToolsCategory);
+		IJeiKeyMappingCategoryBuilder devTools = categoryBuilderFactory.create("dev.tools");
 
 		// Overlay
 		toggleOverlay = overlay.createMapping("key.jei.toggleOverlay")

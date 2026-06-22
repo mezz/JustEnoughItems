@@ -9,6 +9,15 @@ plugins {
     id("me.modmuss50.mod-publish-plugin")
 }
 
+repositories {
+    maven("https://maven.siphalor.de/") {
+        // for optional AMECS integration
+        content {
+            includeGroupAndSubgroups("de.siphalor")
+        }
+    }
+}
+
 // gradle.properties
 val curseProjectId: String by extra
 val fabricApiVersion: String by extra
@@ -18,6 +27,9 @@ val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 val modrinthId: String by extra
+val amecsVersionFabric: String by extra
+val amecsMinecraftVersion: String by extra
+val suffixtreeVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -30,7 +42,6 @@ base {
 }
 
 val vanillaDependencyProjects: List<Project> = listOf(
-    project(":Core"),
     project(":Common"),
     project(":CommonApi"),
     project(":Library"),
@@ -40,6 +51,14 @@ val loomDependencyProjects: List<Project> = listOf(
     project(":FabricApi"),
 )
 val dependencyProjects = vanillaDependencyProjects + loomDependencyProjects
+
+val embeddedLibraries: Configuration by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+configurations.implementation {
+    extendsFrom(embeddedLibraries)
+}
 
 dependencyProjects.forEach {
     project.evaluationDependsOn(it.path)
@@ -91,6 +110,10 @@ dependencies {
     dependencyProjects.forEach {
         implementation(it)
     }
+    embeddedLibraries("net.mezzdev:suffixtree:${suffixtreeVersion}") {
+        isTransitive = false
+    }
+    implementation("de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric")
     changelogHtml(project(":Changelog"))
     changelogMarkdown(project(":Changelog"))
 }
@@ -111,37 +134,37 @@ loom {
 
         named("client") {
             client()
-            configName = "Fabric Client"
-            ideConfigGenerated(true)
-            runDir(loomRunDir.resolve("client").toString())
-            vmArgs(
+            displayName.set("Fabric Client")
+            generateRunConfig.set(true)
+            runDirectory.set(loomRunDir.resolve("client"))
+            jvmArguments.addAll(
                 "-Dfabric.log.level=info"
             )
         }
         named("server") {
             server()
-            configName = "Fabric Server"
-            ideConfigGenerated(true)
-            runDir(loomRunDir.resolve("server").toString())
-            vmArgs(
+            displayName.set("Fabric Server")
+            generateRunConfig.set(true)
+            runDirectory.set(loomRunDir.resolve("server"))
+            jvmArguments.addAll(
                 "-Dfabric.log.level=info"
             )
         }
         create("client debug") {
             client()
-            configName = "Fabric Client Debug"
-            ideConfigGenerated(true)
-            runDir(loomRunDir.resolve("client").toString())
-            vmArgs(
+            displayName.set("Fabric Client Debug")
+            generateRunConfig.set(true)
+            runDirectory.set(loomRunDir.resolve("client"))
+            jvmArguments.addAll(
                 "-Dfabric.log.level=debug"
             )
         }
         create("server debug") {
             server()
-            configName = "Fabric Server Debug"
-            ideConfigGenerated(true)
-            runDir(loomRunDir.resolve("server").toString())
-            vmArgs(
+            displayName.set("Fabric Server Debug")
+            generateRunConfig.set(true)
+            runDirectory.set(loomRunDir.resolve("server"))
+            jvmArguments.addAll(
                 "-Dfabric.log.level=debug"
             )
         }
@@ -161,10 +184,12 @@ sourceSets {
 }
 
 tasks.jar {
+    dependsOn(embeddedLibraries)
     from(sourceSets.main.get().output)
     for (p in dependencyProjects) {
         from(p.sourceSets.main.get().output)
     }
+    from(embeddedLibraries.map(::zipTree))
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
@@ -195,6 +220,8 @@ publishMods {
             end = minecraftVersion
         }
         javaVersions.add(JavaVersion.toVersion(modJavaVersion))
+        client = true
+        server = true
         dryRun = curseforgeApikey == null
     }
 
@@ -221,9 +248,8 @@ tasks.named<Test>("test") {
     }
 }
 
-artifacts {
-    archives(tasks.jar)
-    archives(tasks.named("sourcesJar"))
+tasks.assemble {
+    dependsOn(tasks.named("sourcesJar"))
 }
 
 publishing {

@@ -19,7 +19,7 @@ public class GuiContainerWrapper implements IRecipeFocusSource {
 
 	@Override
 	public Stream<IClickableIngredientInternal> getIngredientUnderMouse(double mouseX, double mouseY) {
-		Screen guiScreen = Minecraft.getInstance().screen;
+		Screen guiScreen = Minecraft.getInstance().gui.screen();
 		if (guiScreen == null) {
 			return Stream.empty();
 		}

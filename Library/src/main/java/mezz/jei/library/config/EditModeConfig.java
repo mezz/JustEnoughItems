@@ -253,7 +253,7 @@ public class EditModeConfig implements IEditModeConfig {
 	private <T> void notifyListenersOfVisibilityChange(ITypedIngredient<T> ingredient, boolean visible) {
 		IngredientVisibility ingredientVisibility = this.ingredientVisibilityRef.get();
 		if (ingredientVisibility != null) {
-			ingredientVisibility.notifyListeners(ingredient, visible);
+			ingredientVisibility.notifyListeners(List.of(ingredient), visible);
 		}
 	}
 }

@@ -11,6 +11,7 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.codecs.EnumCodec;
 import mezz.jei.common.config.file.JsonArrayFileHelper;
+import mezz.jei.common.util.DeduplicatingRunner;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.BookmarkType;
@@ -27,18 +28,22 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 public class BookmarkJsonConfig implements IBookmarkConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Duration SAVE_DELAY_TIME = Duration.ofSeconds(5);
 	private static final int VERSION = 3;
 
 	private static final Codec<BookmarkType> TYPE_CODEC = EnumCodec.create(BookmarkType.class);
 	private static @Nullable MapCodec<IBookmark> BOOKMARK_CODEC;
 
 	private final Path jeiConfigurationDir;
+	private final DeduplicatingRunner delayedSave = new DeduplicatingRunner(SAVE_DELAY_TIME);
 
 	private static MapCodec<IBookmark> getBookmarkCodec(ICodecHelper codecHelper, IIngredientManager ingredientManager, IRecipeManager recipeManager) {
 		if (BOOKMARK_CODEC == null) {
@@ -74,7 +79,7 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 	}
 
 	@Override
-	public boolean saveBookmarks(
+	public void saveBookmarks(
 		IRecipeManager recipeManager,
 		IFocusFactory focusFactory,
 		IGuiHelper guiHelper,
@@ -83,33 +88,36 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 		ICodecHelper codecHelper,
 		List<IBookmark> bookmarks
 	) {
-		return getPath(jeiConfigurationDir)
-			.map(path -> {
+		getPath(jeiConfigurationDir)
+			.ifPresent(path -> {
 				Codec<IBookmark> bookmarkCodec = getBookmarkCodec(codecHelper, ingredientManager, recipeManager).codec();
-				RegistryOps<JsonElement> registryOps = getRegistryOps(registryAccess);
+				delayedSave.run(() -> {
+					save(path, registryAccess, bookmarks, bookmarkCodec);
+				});
+			});
+	}
 
-				try (BufferedWriter out = Files.newBufferedWriter(path)) {
-					JsonArrayFileHelper.write(
-						out,
-						VERSION,
-						bookmarks,
-						bookmarkCodec,
-						registryOps,
-						error -> {
-							LOGGER.error("Encountered an error when saving the bookmarks config to file {}\n{}", path, error);
-						},
-						(element, exception) -> {
-							LOGGER.error("Encountered an exception when saving the bookmarks config to file {}\n{}", path, element, exception);
-						}
-					);
-					LOGGER.debug("Saved bookmarks config to file: {}", path);
-					return true;
-				} catch (IOException e) {
-					LOGGER.error("Failed to save bookmarks config to file {}", path, e);
-					return false;
+	private void save(Path path, RegistryAccess registryAccess, Collection<IBookmark> bookmarks, Codec<IBookmark> bookmarkCodec) {
+		RegistryOps<JsonElement> registryOps = getRegistryOps(registryAccess);
+
+		try (BufferedWriter out = Files.newBufferedWriter(path)) {
+			JsonArrayFileHelper.write(
+				out,
+				VERSION,
+				bookmarks,
+				bookmarkCodec,
+				registryOps,
+				error -> {
+					LOGGER.error("Encountered an error when saving the bookmarks config to file {}\n{}", path, error);
+				},
+				(element, exception) -> {
+					LOGGER.error("Encountered an exception when saving the bookmarks config to file {}\n{}", path, element, exception);
 				}
-			})
-			.orElse(false);
+			);
+			LOGGER.debug("Saved bookmarks config to file: {}", path);
+		} catch (IOException e) {
+			LOGGER.error("Failed to save bookmarks config to file {}", path, e);
+		}
 	}
 
 	@Override

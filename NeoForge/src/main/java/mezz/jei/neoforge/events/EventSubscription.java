@@ -1,6 +1,6 @@
 package mezz.jei.neoforge.events;
 
-import mezz.jei.core.util.WeakConsumer;
+import mezz.jei.common.util.WeakConsumer;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;

@@ -4,6 +4,7 @@ import mezz.jei.api.runtime.config.IJeiConfigListValueSerializer;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import mezz.jei.common.config.file.serializers.DeserializeResult;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TextColor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,9 +57,9 @@ public class ChatFormattingSerializer implements IJeiConfigListValueSerializer<C
 		List<ChatFormatting> validFormats = new ArrayList<>();
 
 		for (ChatFormatting chatFormatting : VALID_VALUES) {
-			if (chatFormatting.isColor()) {
+			if (TextColor.fromLegacyFormat(chatFormatting) != null) {
 				validColors.add(chatFormatting);
-			} else if (chatFormatting.isFormat()) {
+			} else if (chatFormatting != ChatFormatting.RESET) {
 				validFormats.add(chatFormatting);
 			}
 		}
@@ -90,13 +91,15 @@ public class ChatFormattingSerializer implements IJeiConfigListValueSerializer<C
 	private static class ChatFormattingValueSerializer implements IJeiConfigValueSerializer<ChatFormatting> {
 		@Override
 		public String serialize(ChatFormatting value) {
-			return value.getName();
+			return value.name();
 		}
 
 		@Override
 		public IDeserializeResult<ChatFormatting> deserialize(String string) {
-			ChatFormatting chatFormatting = ChatFormatting.getByName(string);
-			if (chatFormatting == null) {
+			ChatFormatting chatFormatting;
+			try {
+				chatFormatting = Enum.valueOf(ChatFormatting.class, string);
+			} catch (IllegalArgumentException ignored) {
 				return new DeserializeResult<>(null, "No Chat Formatting found for name: '%s'".formatted(string));
 			}
 			if (INVALID_VALUES.contains(chatFormatting)) {

@@ -237,7 +237,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 					LocalPlayer player = minecraft.player;
 					if (player != null) {
 						Screen screen = new InventoryScreen(player);
-						minecraft.setScreen(screen);
+						minecraft.gui.setScreen(screen);
 					}
 					if (runtime != null) {
 						IIngredientFilter ingredientFilter = runtime.getIngredientFilter();

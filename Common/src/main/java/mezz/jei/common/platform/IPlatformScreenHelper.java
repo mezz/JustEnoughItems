@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.inventory.Slot;
 
@@ -13,15 +14,19 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IPlatformScreenHelper {
-	Optional<Slot> getSlotUnderMouse(AbstractContainerScreen<?> containerScreen);
+	Optional<Slot> getHoveredSlot(AbstractContainerScreen<?> containerScreen);
 
-	int getGuiLeft(AbstractContainerScreen<?> containerScreen);
+	int getLeftPos(AbstractContainerScreen<?> containerScreen);
 
-	int getGuiTop(AbstractContainerScreen<?> containerScreen);
+	int getTopPos(AbstractContainerScreen<?> containerScreen);
 
-	int getXSize(AbstractContainerScreen<?> containerScreen);
+	int getImageWidth(AbstractContainerScreen<?> containerScreen);
 
-	int getYSize(AbstractContainerScreen<?> containerScreen);
+	int getImageHeight(AbstractContainerScreen<?> containerScreen);
+
+	Identifier getSlotHighlightBackSprite();
+
+	Identifier getSlotHighlightFrontSprite();
 
 	ImmutableRect2i getToastsArea();
 

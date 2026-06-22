@@ -85,13 +85,13 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			toggleState.setBookmarkEnabled(!bookmarkList.isEmpty());
 			Minecraft minecraft = Minecraft.getInstance();
 			this.getScreenPropertiesUpdater()
-				.updateScreen(minecraft.screen)
+				.updateScreen(minecraft.gui.screen())
 				.update();
 		});
 		lookupHistoryOverlay.getLookupHistory().addSourceListChangedListener(() -> {
 			Minecraft minecraft = Minecraft.getInstance();
 			this.getScreenPropertiesUpdater()
-				.updateScreen(minecraft.screen)
+				.updateScreen(minecraft.gui.screen())
 				.update();
 		});
 

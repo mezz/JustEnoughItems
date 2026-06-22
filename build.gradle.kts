@@ -1,22 +1,22 @@
 plugins {
     // https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-	id("com.diffplug.spotless") version("8.1.0")
+	id("com.diffplug.spotless") version("8.7.0")
 
     // https://plugins.gradle.org/plugin/com.dorongold.task-tree
     id("com.dorongold.task-tree") version("4.0.1")
 
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
-    id("net.fabricmc.fabric-loom") version("1.15.5") apply(false)
+    id("net.fabricmc.fabric-loom") version("1.17.12") apply(false)
 
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom-companion/net.fabricmc.fabric-loom-companion.gradle.plugin/maven-metadata.xml
     // applying this to all projects allows loom projects to access the required data in a manner that follows Gradle's best practices.
-    id("net.fabricmc.fabric-loom-companion") version("1.15.5")
+    id("net.fabricmc.fabric-loom-companion") version("1.17.12")
 
     // https://projects.neoforged.net/neoforged/moddevgradle
     id("net.neoforged.moddev") version("2.0.141") apply(false)
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
-    id("me.modmuss50.mod-publish-plugin") version("1.1.0") apply(false)
+    id("me.modmuss50.mod-publish-plugin") version("2.0.1") apply(false)
 }
 repositories {
     mavenCentral()

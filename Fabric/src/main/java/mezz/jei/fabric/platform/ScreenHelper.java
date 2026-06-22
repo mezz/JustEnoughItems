@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.inventory.Slot;
 
@@ -19,29 +20,39 @@ import java.util.Optional;
 
 public class ScreenHelper implements IPlatformScreenHelper {
 	@Override
-	public Optional<Slot> getSlotUnderMouse(AbstractContainerScreen<?> containerScreen) {
+	public Optional<Slot> getHoveredSlot(AbstractContainerScreen<?> containerScreen) {
 		Slot slot = containerScreen.hoveredSlot;
 		return Optional.ofNullable(slot);
 	}
 
 	@Override
-	public int getGuiLeft(AbstractContainerScreen<?> containerScreen) {
+	public int getLeftPos(AbstractContainerScreen<?> containerScreen) {
 		return containerScreen.leftPos;
 	}
 
 	@Override
-	public int getGuiTop(AbstractContainerScreen<?> containerScreen) {
+	public int getTopPos(AbstractContainerScreen<?> containerScreen) {
 		return containerScreen.topPos;
 	}
 
 	@Override
-	public int getXSize(AbstractContainerScreen<?> containerScreen) {
+	public int getImageWidth(AbstractContainerScreen<?> containerScreen) {
 		return containerScreen.imageWidth;
 	}
 
 	@Override
-	public int getYSize(AbstractContainerScreen<?> containerScreen) {
+	public int getImageHeight(AbstractContainerScreen<?> containerScreen) {
 		return containerScreen.imageHeight;
+	}
+
+	@Override
+	public Identifier getSlotHighlightBackSprite() {
+		return AbstractContainerScreen.SLOT_HIGHLIGHT_BACK_SPRITE;
+	}
+
+	@Override
+	public Identifier getSlotHighlightFrontSprite() {
+		return AbstractContainerScreen.SLOT_HIGHLIGHT_FRONT_SPRITE;
 	}
 
 	@Override
@@ -60,7 +71,7 @@ public class ScreenHelper implements IPlatformScreenHelper {
 	@Override
 	public ImmutableRect2i getToastsArea() {
 		Minecraft minecraft = Minecraft.getInstance();
-		ToastManager toastManager = minecraft.getToastManager();
+		ToastManager toastManager = minecraft.gui.toastManager();
 		List<ToastManager.ToastInstance<?>> visible = toastManager.visibleToasts;
 		if (visible.isEmpty()) {
 			return ImmutableRect2i.EMPTY;

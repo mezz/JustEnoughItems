@@ -41,8 +41,8 @@ public final class InventoryEffectRendererGuiHandler implements IGuiContainerHan
 
 		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 		List<Rect2i> areas = new ArrayList<>();
-		int x = screenHelper.getGuiLeft(containerScreen) + screenHelper.getXSize(containerScreen) + 2;
-		int y = screenHelper.getGuiTop(containerScreen);
+		int x = screenHelper.getLeftPos(containerScreen) + screenHelper.getImageWidth(containerScreen) + 2;
+		int y = screenHelper.getTopPos(containerScreen);
 		// JEI always forces the potion effect renderer to "compact" width mode when JEI is open.
 		int width = 32;
 
