@@ -7,10 +7,10 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.util.Translator;
-import mezz.jei.core.search.GeneralizedSuffixTreeSearchStorage;
-import mezz.jei.core.search.LimitedStringStorage;
-import mezz.jei.core.search.PrefixInfo;
-import mezz.jei.core.search.SearchMode;
+import mezz.jei.common.search.GeneralizedSuffixTreeSearchStorage;
+import mezz.jei.common.search.LimitedStringStorage;
+import mezz.jei.common.search.PrefixInfo;
+import mezz.jei.common.search.SearchMode;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
 

@@ -11,7 +11,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer.IDeserializeResult;
 import mezz.jei.common.config.file.serializers.LegacyTypedIngredientSerializer;
 import mezz.jei.common.util.ServerConfigPathUtil;
-import mezz.jei.core.util.LoggedTimer;
+import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.gui.bookmarks.BookmarkFactory;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.bookmarks.IngredientBookmark;

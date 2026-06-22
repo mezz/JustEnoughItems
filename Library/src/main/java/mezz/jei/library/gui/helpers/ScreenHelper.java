@@ -12,7 +12,7 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.input.ClickableIngredientFactory;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.core.collect.ListMultiMap;
+import mezz.jei.common.collect.ListMultiMap;
 import mezz.jei.library.gui.GuiContainerHandlers;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

@@ -11,6 +11,7 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.DelayedExecutor;
 import mezz.jei.common.util.IDelayedExecutor;
+import mezz.jei.common.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import org.jetbrains.annotations.Nullable;

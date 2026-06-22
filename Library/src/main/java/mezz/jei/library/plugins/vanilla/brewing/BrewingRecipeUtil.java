@@ -2,7 +2,7 @@ package mezz.jei.library.plugins.vanilla.brewing;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.core.collect.SetMultiMap;
+import mezz.jei.common.collect.SetMultiMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;

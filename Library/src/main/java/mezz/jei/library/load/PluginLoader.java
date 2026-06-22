@@ -25,7 +25,7 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.StackHelper;
-import mezz.jei.core.util.LoggedTimer;
+import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.library.config.EditModeConfig;
 import mezz.jei.library.config.IModIdFormatConfig;
 import mezz.jei.library.config.RecipeCategorySortingConfig;

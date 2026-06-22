@@ -47,7 +47,6 @@ sourceSets {
 }
 
 val dependencyProjects: List<Project> = listOf(
-	project(":Core"),
 	project(":Common"),
 	project(":CommonApi"),
 	project(":Library"),
@@ -59,8 +58,8 @@ dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
 }
 
-val embeddedLibraries: Configuration = project(":Core").configurations.detachedConfiguration(
-	project(":Core").dependencies.create("net.mezzdev:suffixtree:${suffixtreeVersion}")
+val embeddedLibraries: Configuration = project(":Common").configurations.detachedConfiguration(
+	project(":Common").dependencies.create("net.mezzdev:suffixtree:${suffixtreeVersion}")
 ).apply {
 	isTransitive = false
 }
