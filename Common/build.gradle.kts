@@ -14,6 +14,7 @@ val minecraftVersion: String by extra
 val neoformVersionAndTimestamp: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val suffixtreeVersion: String by extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
 base {
@@ -49,6 +50,13 @@ dependencies {
     )
     dependencyProjects.forEach {
         implementation(it)
+    }
+    implementation(
+        group = "net.mezzdev",
+        name = "suffixtree",
+        version = suffixtreeVersion
+    ) {
+        isTransitive = false
     }
     testImplementation(
         group = "org.junit.jupiter",

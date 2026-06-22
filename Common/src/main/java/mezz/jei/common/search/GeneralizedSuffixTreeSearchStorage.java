@@ -1,7 +1,7 @@
 package mezz.jei.common.search;
 
 import mezz.jei.api.search.ISearchStorage;
-import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
+import net.mezzdev.suffixtree.GeneralizedSuffixTree;
 
 import java.util.Collection;
 import java.util.function.Consumer;
