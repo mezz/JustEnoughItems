@@ -1,7 +1,7 @@
 package mezz.jei.test;
 
 import mezz.jei.common.util.IDelayedExecutor;
-import mezz.jei.core.util.Pair;
+import mezz.jei.common.util.Pair;
 
 import java.time.Duration;
 import java.util.Iterator;

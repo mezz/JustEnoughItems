@@ -1,7 +1,5 @@
 package mezz.jei.common.util;
 
-import mezz.jei.core.util.PathUtil;
-import mezz.jei.core.util.ReflectionUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 import net.minecraft.world.level.storage.LevelStorageSource;

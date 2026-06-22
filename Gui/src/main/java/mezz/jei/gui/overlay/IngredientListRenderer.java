@@ -11,7 +11,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
-import mezz.jei.core.collect.ListMultiMap;
+import mezz.jei.common.collect.ListMultiMap;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 

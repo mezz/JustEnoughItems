@@ -18,7 +18,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.ImmutablePoint2i;
-import mezz.jei.core.util.Pair;
+import mezz.jei.common.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.recipes.IngredientsTooltipCallback;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
