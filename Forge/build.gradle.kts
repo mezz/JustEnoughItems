@@ -20,6 +20,7 @@ val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 val bakedSubstringIndexVersion: String by extra
+val suffixtreeVersion: String by extra
 val parchmentVersionForge: String by extra
 val modrinthId: String by extra
 val parchmentMinecraftVersion: String by extra
@@ -107,6 +108,9 @@ dependencies {
 		testImplementation(it)
 	}
 	modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
+		isTransitive = false
+	}
+	modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
 		isTransitive = false
 	}
 	changelogHtml(project(":Changelog"))

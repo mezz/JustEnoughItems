@@ -14,6 +14,7 @@ val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 val bakedSubstringIndexVersion: String by extra
+val suffixtreeVersion: String by extra
 
 val dependencyProjects: List<Project> = listOf(
     project(":CommonApi"),
@@ -51,6 +52,13 @@ dependencies {
         group = "net.mezzdev",
         name = "baked-substring-index",
         version = bakedSubstringIndexVersion
+    ) {
+        isTransitive = false
+    }
+    implementation(
+        group = "net.mezzdev",
+        name = "suffixtree",
+        version = suffixtreeVersion
     ) {
         isTransitive = false
     }
