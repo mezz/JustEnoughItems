@@ -21,6 +21,7 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val lwjglVersionMacArm64: String by extra
 val bakedSubstringIndexVersion: String by extra
+val suffixtreeVersion: String by extra
 val parchmentVersionForge: String by extra
 
 val isAppleSilicon = System.getProperty("os.name").startsWith("Mac") &&
@@ -123,6 +124,9 @@ dependencies {
 	}
 	changelogHtml(project(":Changelog"))
 	modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
+		isTransitive = false
+	}
+	modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
 		isTransitive = false
 	}
 	testImplementation(
