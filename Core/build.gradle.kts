@@ -16,12 +16,16 @@ val jUnitVersion: String by extra
 val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val suffixtreeVersion: String by extra
 
 dependencies {
     implementation("org.jetbrains:annotations:26.0.2")
     implementation("com.google.guava:guava:33.5.0-jre")
     implementation("it.unimi.dsi:fastutil:8.5.18")
     implementation("org.apache.logging.log4j:log4j-api:2.25.2")
+    implementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
+        isTransitive = false
+    }
     testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
