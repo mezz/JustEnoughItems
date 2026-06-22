@@ -7,10 +7,10 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.util.Translator;
+import mezz.jei.core.search.GeneralizedSuffixTreeSearchStorage;
 import mezz.jei.core.search.LimitedStringStorage;
 import mezz.jei.core.search.PrefixInfo;
 import mezz.jei.core.search.SearchMode;
-import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
 
@@ -28,7 +28,7 @@ public class ElementPrefixParser {
 			'\0',
 			() -> SearchMode.ENABLED,
 			IListElementInfo::getNames,
-			GeneralizedSuffixTree::new
+			GeneralizedSuffixTreeSearchStorage::new
 	);
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
 	private static final Pattern MOD_NAME_SEPARATOR_PATTERN = Pattern.compile("(?=[A-Z_-])|\\s+");
@@ -81,8 +81,8 @@ public class ElementPrefixParser {
 			'$',
 			config::getTooltipSearchMode,
 			e -> e.getTooltipStrings(config, ingredientManager),
-			GeneralizedSuffixTree::new
-		));
+			GeneralizedSuffixTreeSearchStorage::new
+	));
 		addPrefix(new PrefixInfo<>(
 			'%',
 			config::getCreativeTabSearchMode,
@@ -106,8 +106,8 @@ public class ElementPrefixParser {
 			'&',
 			config::getIdentifierSearchMode,
 			element -> List.of(element.getIdentifier().toString()),
-			GeneralizedSuffixTree::new
-		));
+			GeneralizedSuffixTreeSearchStorage::new
+	));
 	}
 
 	private void addPrefix(PrefixInfo<IListElementInfo<?>, IListElement<?>> info) {
