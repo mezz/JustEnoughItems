@@ -3,7 +3,7 @@ package mezz.jei.gui.input;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.core.util.ReflectionUtil;
+import mezz.jei.common.util.ReflectionUtil;
 import mezz.jei.gui.input.handlers.DragRouter;
 import mezz.jei.gui.input.handlers.UserInputRouter;
 import net.minecraft.client.Minecraft;

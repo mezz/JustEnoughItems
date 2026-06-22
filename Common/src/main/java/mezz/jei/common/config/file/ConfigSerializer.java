@@ -1,7 +1,7 @@
 package mezz.jei.common.config.file;
 
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
-import mezz.jei.core.util.PathUtil;
+import mezz.jei.common.util.PathUtil;
 import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

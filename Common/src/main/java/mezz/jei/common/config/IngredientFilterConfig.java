@@ -2,7 +2,7 @@ package mezz.jei.common.config;
 
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
-import mezz.jei.core.search.SearchMode;
+import mezz.jei.common.search.SearchMode;
 
 import java.util.function.Supplier;
 

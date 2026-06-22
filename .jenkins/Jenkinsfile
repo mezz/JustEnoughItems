@@ -20,7 +20,6 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "./gradlew :Core:build"
                 sh "./gradlew :Fabric:build"
                 sh "./gradlew :NeoForge:build"
                 sh "./gradlew :Common:build"
@@ -32,7 +31,6 @@ pipeline {
 
         stage('Publish Maven') {
             steps {
-                sh "./gradlew :Core:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :Gui:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :Library:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :Fabric:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"

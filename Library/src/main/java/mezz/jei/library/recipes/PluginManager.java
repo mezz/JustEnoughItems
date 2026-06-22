@@ -5,7 +5,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.types.IRecipeType;
-import mezz.jei.core.util.TimeUtil;
+import mezz.jei.common.util.TimeUtil;
 import mezz.jei.library.recipes.collect.RecipeTypeData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

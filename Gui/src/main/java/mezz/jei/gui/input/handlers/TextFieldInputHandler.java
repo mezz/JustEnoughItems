@@ -2,7 +2,7 @@ package mezz.jei.gui.input.handlers;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.core.util.TextHistory;
+import mezz.jei.common.util.TextHistory;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;

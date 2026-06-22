@@ -1,6 +1,6 @@
 package mezz.jei.library.load;
 
-import mezz.jei.core.util.TimeUtil;
+import mezz.jei.common.util.TimeUtil;
 import net.minecraft.resources.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

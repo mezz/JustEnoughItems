@@ -28,7 +28,6 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          ./gradlew :Core:build --no-daemon
           ./gradlew :Fabric:build --no-daemon
           ./gradlew :NeoForge:build --no-daemon
           ./gradlew :Common:build --no-daemon
@@ -42,7 +41,6 @@ jobs:
           mkdir dist
           cp Common/build/libs/*.jar dist
           cp CommonApi/build/libs/*.jar dist
-          cp Core/build/libs/*.jar dist
           cp Fabric/build/libs/*.jar dist
           cp FabricApi/build/libs/*.jar dist
           cp NeoForge/build/libs/*.jar dist

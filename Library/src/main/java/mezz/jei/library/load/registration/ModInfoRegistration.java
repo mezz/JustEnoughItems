@@ -2,7 +2,7 @@ package mezz.jei.library.load.registration;
 
 import com.google.common.collect.ImmutableSetMultimap;
 import mezz.jei.api.registration.IModInfoRegistration;
-import mezz.jei.core.collect.SetMultiMap;
+import mezz.jei.common.collect.SetMultiMap;
 
 import java.util.Collection;
 
