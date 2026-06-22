@@ -150,7 +150,6 @@ pipeline {
                 expression { env.SHOULD_PUBLISH != 'false' }
             }
             steps {
-                sh "./gradlew :Core:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :Gui:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :Library:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :Forge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"

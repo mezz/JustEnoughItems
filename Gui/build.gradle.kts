@@ -22,7 +22,6 @@ base {
 }
 
 val dependencyProjects: List<Project> = listOf(
-    project(":Core"),
     project(":Common"),
     project(":CommonApi"),
 )

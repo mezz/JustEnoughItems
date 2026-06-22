@@ -7,7 +7,7 @@ import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.packets.PacketCheatPermission;
 import mezz.jei.common.config.GiveMode;
-import mezz.jei.core.config.IServerConfig;
+import mezz.jei.common.config.IServerConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.item.ItemInput;

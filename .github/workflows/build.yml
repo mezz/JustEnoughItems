@@ -62,7 +62,6 @@ jobs:
           mkdir dist
           cp Common/build/libs/*.jar dist
           cp CommonApi/build/libs/*.jar dist
-          cp Core/build/libs/*.jar dist
           cp Fabric/build/libs/*.jar dist
           cp FabricApi/build/libs/*.jar dist
           cp Forge/build/libs/*.jar dist

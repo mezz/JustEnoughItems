@@ -16,7 +16,7 @@ import mezz.jei.library.recipes.UniversalRecipeTransferHandlerAdapter;
 import mezz.jei.library.transfer.BasicRecipeTransferHandler;
 import mezz.jei.library.transfer.BasicRecipeTransferInfo;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.core.collect.Table;
+import mezz.jei.common.collect.Table;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.Nullable;

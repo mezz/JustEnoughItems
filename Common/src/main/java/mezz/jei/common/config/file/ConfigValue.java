@@ -2,7 +2,7 @@ package mezz.jei.common.config.file;
 
 import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
-import mezz.jei.core.util.WeakList;
+import mezz.jei.common.util.WeakList;
 import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

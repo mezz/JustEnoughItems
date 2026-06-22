@@ -1,6 +1,6 @@
 package mezz.jei.forge.tests.lib;
 
-import mezz.jei.core.config.IServerConfig;
+import mezz.jei.common.config.IServerConfig;
 
 final class TestServerConfig implements IServerConfig {
 	@Override

@@ -1,7 +1,7 @@
 @ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
+@FieldsAndMethodsAreNonnullByDefault
 package mezz.jei.common.config;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
+import mezz.jei.common.FieldsAndMethodsAreNonnullByDefault;
 
 import javax.annotation.ParametersAreNonnullByDefault;

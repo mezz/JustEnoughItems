@@ -15,6 +15,8 @@ val jUnitVersion: String by extra
 val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val bakedSubstringIndexVersion: String by extra
+val suffixtreeVersion: String by extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
 base {
@@ -22,7 +24,6 @@ base {
 }
 
 val dependencyProjects: List<Project> = listOf(
-    project(":Core"),
     project(":CommonApi"),
 )
 
@@ -48,6 +49,40 @@ dependencies {
         name = "mixin",
         version = "0.8.5"
     )
+    implementation(
+        group = "com.google.guava",
+        name = "guava",
+        version = "31.1-jre"
+    )
+    implementation(
+        group = "org.jetbrains",
+        name = "annotations",
+        version = "23.0.0"
+    )
+    implementation(
+        group = "it.unimi.dsi",
+        name = "fastutil",
+        version = "8.5.6"
+    )
+    implementation(
+        group = "org.apache.logging.log4j",
+        name = "log4j-api",
+        version = "2.17.0"
+    )
+    implementation(
+        group = "net.mezzdev",
+        name = "baked-substring-index",
+        version = bakedSubstringIndexVersion
+    ) {
+        isTransitive = false
+    }
+    implementation(
+        group = "net.mezzdev",
+        name = "suffixtree",
+        version = suffixtreeVersion
+    ) {
+        isTransitive = false
+    }
     dependencyProjects.forEach {
         implementation(it)
     }

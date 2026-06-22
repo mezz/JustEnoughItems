@@ -2,7 +2,7 @@ package mezz.jei.forge;
 
 import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.common.network.ServerPacketRouter;
-import mezz.jei.core.config.IServerConfig;
+import mezz.jei.common.config.IServerConfig;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.network.ConnectionToClient;
 import mezz.jei.forge.network.NetworkHandler;
