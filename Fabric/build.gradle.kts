@@ -29,6 +29,7 @@ val modJavaVersion: String by extra
 val modrinthId: String by extra
 val amecsVersionFabric: String by extra
 val amecsMinecraftVersion: String by extra
+val suffixtreeVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -51,6 +52,14 @@ val loomDependencyProjects: List<Project> = listOf(
     project(":FabricApi"),
 )
 val dependencyProjects = vanillaDependencyProjects + loomDependencyProjects
+
+val embeddedLibraries: Configuration by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+configurations.implementation {
+    extendsFrom(embeddedLibraries)
+}
 
 dependencyProjects.forEach {
     project.evaluationDependsOn(it.path)
@@ -101,6 +110,9 @@ dependencies {
     implementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
     dependencyProjects.forEach {
         implementation(it)
+    }
+    embeddedLibraries("net.mezzdev:suffixtree:${suffixtreeVersion}") {
+        isTransitive = false
     }
     implementation("de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric")
     changelogHtml(project(":Changelog"))
@@ -173,10 +185,12 @@ sourceSets {
 }
 
 tasks.jar {
+    dependsOn(embeddedLibraries)
     from(sourceSets.main.get().output)
     for (p in dependencyProjects) {
         from(p.sourceSets.main.get().output)
     }
+    from(embeddedLibraries.map(::zipTree))
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
