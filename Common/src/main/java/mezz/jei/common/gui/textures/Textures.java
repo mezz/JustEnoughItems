@@ -3,9 +3,9 @@ package mezz.jei.common.gui.textures;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
-import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.elements.DrawableSprite;
 import mezz.jei.common.gui.elements.HighResolutionDrawable;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import net.minecraft.resources.Identifier;
 
 public class Textures {
@@ -60,13 +60,13 @@ public class Textures {
 	public Textures(JeiAtlasManager jeiAtlasManager) {
 		this.jeiAtlasManager = jeiAtlasManager;
 
-		this.slot = createGuiSprite("slot", 18, 18);
-		this.outputSlot = createGuiSprite("output_slot", 26, 26);
+		this.slot = createGuiSprite("slot");
+		this.outputSlot = createGuiSprite("output_slot");
 		this.recipeCatalystSlotBackground = createScalableGuiSprite("recipe_catalyst_slot_background");
 		this.ingredientListSlotBackground = createScalableGuiSprite("ingredient_list_slot_background");
 		this.bookmarkListSlotBackground = createScalableGuiSprite("bookmark_list_slot_background");
-		this.tabSelected = createGuiSprite("tab_selected", 24, 24);
-		this.tabUnselected = createGuiSprite("tab_unselected", 24, 24);
+		this.tabSelected = createGuiSprite("tab_selected");
+		this.tabUnselected = createGuiSprite("tab_unselected");
 		this.recipeGuiBackground = createScalableGuiSprite("gui_background");
 		this.ingredientListBackground = createScalableGuiSprite("ingredient_list_background");
 		this.bookmarkListBackground = createScalableGuiSprite("bookmark_list_background");
@@ -77,53 +77,50 @@ public class Textures {
 		this.scrollbarMarker = createScalableGuiSprite("scrollbar_marker");
 		this.catalystTab = createScalableGuiSprite("catalyst_tab");
 		this.recipeOptionsTab = createScalableGuiSprite("recipe_options_tab");
-		this.recipeArrow = createGuiSprite("recipe_arrow", 22, 16);
-		this.recipeArrowFilled = createGuiSprite("recipe_arrow_filled", 22, 16);
-		this.recipePlusSign = createGuiSprite("recipe_plus_sign", 13, 13);
+		this.recipeArrow = createGuiSprite("recipe_arrow");
+		this.recipeArrowFilled = createGuiSprite("recipe_arrow_filled");
+		this.recipePlusSign = createGuiSprite("recipe_plus_sign");
 
-		this.brewingStandBackground = createGuiSprite("brewing_stand_background", 64, 60);
-		this.brewingStandBlazeHeat = createGuiSprite("brewing_stand_blaze_heat", 18, 4);
-		this.brewingStandBubbles = createGuiSprite("brewing_stand_bubbles", 11, 28);
-		this.brewingStandArrow = createGuiSprite("brewing_stand_arrow", 7, 27);
+		this.brewingStandBackground = createGuiSprite("brewing_stand_background");
+		this.brewingStandBlazeHeat = createGuiSprite("brewing_stand_blaze_heat");
+		this.brewingStandBubbles = createGuiSprite("brewing_stand_bubbles");
+		this.brewingStandArrow = createGuiSprite("brewing_stand_arrow");
 
 		this.buttonPressed = createScalableGuiSprite("button_pressed");
 		this.buttonPressedHighlight = createScalableGuiSprite("button_pressed_highlighted");
 
-		DrawableSprite rawShapelessIcon = createGuiSprite("icons/shapeless_icon", 36, 36)
-			.trim(1, 2, 1, 1);
+		IDrawableStatic rawShapelessIcon = createGuiSprite("icons/shapeless_icon");
 		this.shapelessIcon = new HighResolutionDrawable(rawShapelessIcon, 4);
 
-		this.arrowPrevious = createGuiSprite("icons/arrow_previous", 9, 9)
-			.trim(0, 0, 1, 1);
-		this.arrowNext = createGuiSprite("icons/arrow_next", 9, 9)
-			.trim(0, 0, 1, 1);
-		this.recipeTransfer = createGuiSprite("icons/recipe_transfer", 7, 7);
-		this.recipeBookmark = createGuiSprite("icons/recipe_bookmark", 9, 9);
-		this.configButtonIcon = createGuiSprite("icons/config_button", 16, 16);
-		this.configButtonCheatIcon = createGuiSprite("icons/config_button_cheat", 16, 16);
-		this.bookmarkButtonDisabledIcon = createGuiSprite("icons/bookmark_button_disabled", 16, 16);
-		this.bookmarkButtonEnabledIcon = createGuiSprite("icons/bookmark_button_enabled", 16, 16);
-		this.historyButtonDisabledIcon = createGuiSprite("icons/history_button_disabled", 16, 16);
-		this.historyButtonEnabledIcon = createGuiSprite("icons/history_button_enabled", 16, 16);
-		this.infoIcon = createGuiSprite("icons/info", 16, 16);
-		this.flameIcon = createGuiSprite("icons/flame", 14, 14);
-		this.flameEmptyIcon = createGuiSprite("icons/flame_empty", 14, 14);
-		this.bookmarksFirst = createGuiSprite("icons/bookmarks_first", 16, 16);
-		this.craftableFirst = createGuiSprite("icons/craftable_first", 16, 16);
+		this.arrowPrevious = createGuiSprite("icons/arrow_previous");
+		this.arrowNext = createGuiSprite("icons/arrow_next");
+		this.recipeTransfer = createGuiSprite("icons/recipe_transfer");
+		this.recipeBookmark = createGuiSprite("icons/recipe_bookmark");
+		this.configButtonIcon = createGuiSprite("icons/config_button");
+		this.configButtonCheatIcon = createGuiSprite("icons/config_button_cheat");
+		this.bookmarkButtonDisabledIcon = createGuiSprite("icons/bookmark_button_disabled");
+		this.bookmarkButtonEnabledIcon = createGuiSprite("icons/bookmark_button_enabled");
+		this.historyButtonDisabledIcon = createGuiSprite("icons/history_button_disabled");
+		this.historyButtonEnabledIcon = createGuiSprite("icons/history_button_enabled");
+		this.infoIcon = createGuiSprite("icons/info");
+		this.flameIcon = createGuiSprite("icons/flame");
+		this.flameEmptyIcon = createGuiSprite("icons/flame_empty");
+		this.bookmarksFirst = createGuiSprite("icons/bookmarks_first");
+		this.craftableFirst = createGuiSprite("icons/craftable_first");
 	}
 
 	private Identifier createSpriteId(String name) {
 		return Identifier.fromNamespaceAndPath(ModIds.JEI_ID, name);
 	}
 
-	private DrawableSprite createGuiSprite(String name, int width, int height) {
+	private IDrawableStatic createGuiSprite(String name) {
 		Identifier id = createSpriteId(name);
-		return new DrawableSprite(jeiAtlasManager, id, width, height);
+		return new DrawableSprite(jeiAtlasManager.getAtlas(), id);
 	}
 
 	private ScalableDrawable createScalableGuiSprite(String name) {
 		Identifier id = createSpriteId(name);
-		return new ScalableDrawable(jeiAtlasManager, id);
+		return new ScalableDrawable(jeiAtlasManager.getAtlas(), id);
 	}
 
 	public IDrawableStatic getSlot() {
