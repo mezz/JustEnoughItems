@@ -7,6 +7,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
@@ -14,6 +15,7 @@ import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -42,6 +44,24 @@ public interface IGuiHelper {
 	 * @return a new {@link IDrawableBuilder} with the given resource location
 	 */
 	IDrawableBuilder drawableBuilder(ResourceLocation resourceLocation, int u, int v, int width, int height);
+
+	/**
+	 * Create a drawable from a gui sprite.
+	 *
+	 * @return a new {@link IDrawableStatic} with the given texture atlas and sprite location
+	 *
+	 * @since 15.31.0
+	 */
+	IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId);
+
+	/**
+	 * Create a scalable drawable from a gui sprite.
+	 *
+	 * @return a new {@link IScalableDrawable} with the given texture atlas and sprite location
+	 *
+	 * @since 15.31.0
+	 */
+	IScalableDrawable createScalableDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId);
 
 	/**
 	 * Creates an animated texture for a gui, revealing the texture over time.
