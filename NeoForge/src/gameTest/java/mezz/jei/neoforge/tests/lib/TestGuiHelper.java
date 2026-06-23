@@ -5,6 +5,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
@@ -14,6 +15,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.library.gui.helpers.CraftingGridHelper;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 
 public final class TestGuiHelper implements IGuiHelper {
@@ -27,6 +29,16 @@ public final class TestGuiHelper implements IGuiHelper {
 	@Override
 	public IDrawableBuilder drawableBuilder(ResourceLocation id, int u, int v, int width, int height) {
 		return new TestDrawableBuilder(width, height);
+	}
+
+	@Override
+	public IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId) {
+		return DRAWABLE;
+	}
+
+	@Override
+	public IScalableDrawable createScalableDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId) {
+		return DRAWABLE;
 	}
 
 	@Override
@@ -137,7 +149,7 @@ public final class TestGuiHelper implements IGuiHelper {
 		throw new UnsupportedOperationException();
 	}
 
-	private record TestDrawable(int width, int height) implements IDrawableStatic, IDrawableAnimated {
+	private record TestDrawable(int width, int height) implements IDrawableStatic, IDrawableAnimated, IScalableDrawable {
 		@Override
 		public int getWidth() {
 			return width;
@@ -154,6 +166,10 @@ public final class TestGuiHelper implements IGuiHelper {
 
 		@Override
 		public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
+		}
+
+		@Override
+		public void draw(GuiGraphics guiGraphics, int x, int y, int width, int height) {
 		}
 	}
 
