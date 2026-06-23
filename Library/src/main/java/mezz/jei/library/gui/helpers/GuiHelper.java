@@ -5,6 +5,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -17,11 +18,14 @@ import mezz.jei.common.gui.elements.DrawableAnimated;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.DrawableCombined;
 import mezz.jei.common.gui.elements.DrawableIngredient;
+import mezz.jei.common.gui.elements.DrawableSprite;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.TickTimer;
 import mezz.jei.library.gui.elements.DrawableBuilder;
 import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.Identifier;
 
 public class GuiHelper implements IGuiHelper {
@@ -34,6 +38,20 @@ public class GuiHelper implements IGuiHelper {
 	@Override
 	public IDrawableBuilder drawableBuilder(Identifier id, int u, int v, int width, int height) {
 		return new DrawableBuilder(id, u, v, width, height);
+	}
+
+	@Override
+	public IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, Identifier spriteId) {
+		ErrorUtil.checkNotNull(textureAtlas, "textureAtlas");
+		ErrorUtil.checkNotNull(spriteId, "spriteId");
+		return new DrawableSprite(textureAtlas, spriteId);
+	}
+
+	@Override
+	public IScalableDrawable createScalableDrawableSprite(TextureAtlas textureAtlas, Identifier spriteId) {
+		ErrorUtil.checkNotNull(textureAtlas, "textureAtlas");
+		ErrorUtil.checkNotNull(spriteId, "spriteId");
+		return new ScalableDrawable(textureAtlas, spriteId);
 	}
 
 	@Override
