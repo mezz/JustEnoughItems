@@ -7,17 +7,22 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.resources.Identifier;
 
 public class ScalableDrawable implements IScalableDrawable {
-	private final JeiAtlasManager atlasManager;
+	private final TextureAtlas textureAtlas;
 	private final Identifier spriteId;
 
 	public ScalableDrawable(JeiAtlasManager atlasManager, Identifier spriteId) {
-		this.atlasManager = atlasManager;
+		this(atlasManager.getAtlas(), spriteId);
+	}
+
+	public ScalableDrawable(TextureAtlas textureAtlas, Identifier spriteId) {
+		this.textureAtlas = textureAtlas;
 		this.spriteId = spriteId;
 	}
 
@@ -27,8 +32,7 @@ public class ScalableDrawable implements IScalableDrawable {
 
 	@Override
 	public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset, int width, int height) {
-		TextureAtlasSprite sprite = atlasManager.getAtlas()
-			.getSprite(spriteId);
+		TextureAtlasSprite sprite = textureAtlas.getSprite(spriteId);
 		GuiSpriteScaling scaling = sprite.contents()
 			.getAdditionalMetadata(GuiMetadataSection.TYPE)
 			.orElse(GuiMetadataSection.DEFAULT)
