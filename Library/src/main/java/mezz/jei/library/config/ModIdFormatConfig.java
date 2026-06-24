@@ -11,6 +11,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.apache.commons.lang3.StringUtils;
@@ -51,6 +52,47 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 		return cachedOverride;
 	}
 
+	/*
+	 * Converts styles added directly to a Component back into legacy formatting codes.
+	 * Component#getString() does not preserve these styles, so this is needed when another
+	 * mod adds a styled mod-name line without legacy formatting codes.
+	 */
+	private static String getLegacyFormattingFromStyle(Style style) {
+		StringBuilder formatting = new StringBuilder();
+
+		if (style.getColor() != null) {
+			Integer color = style.getColor().getValue();
+			for (ChatFormatting chatFormatting : ChatFormatting.values()) {
+				if (
+					chatFormatting.isColor() &&
+					chatFormatting.getColor() != null &&
+					chatFormatting.getColor().equals(color)
+				) {
+					formatting.append(chatFormatting);
+					break;
+				}
+			}
+		}
+
+		if (style.isBold()) {
+			formatting.append(ChatFormatting.BOLD);
+		}
+		if (style.isItalic()) {
+			formatting.append(ChatFormatting.ITALIC);
+		}
+		if (style.isUnderlined()) {
+			formatting.append(ChatFormatting.UNDERLINE);
+		}
+		if (style.isStrikethrough()) {
+			formatting.append(ChatFormatting.STRIKETHROUGH);
+		}
+		if (style.isObfuscated()) {
+			formatting.append(ChatFormatting.OBFUSCATED);
+		}
+
+		return formatting.toString();
+	}
+
 	@Override
 	public final String getModNameFormat() {
 		String override = getOverride();
@@ -80,7 +122,15 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 			if (lineString.contains(ModIds.MINECRAFT_NAME)) {
 				String withoutFormatting = ChatFormatting.stripFormatting(lineString);
 				if (withoutFormatting.contains(ModIds.MINECRAFT_NAME)) {
-					return StringUtils.replaceOnce(lineString, ModIds.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
+					String detectedFormat = StringUtils.replaceOnce(lineString, ModIds.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
+					if (detectedFormat.equals(MOD_NAME_FORMAT_CODE)) {
+						String legacyFormat = getLegacyFormattingFromStyle(line.getStyle());
+						if (!legacyFormat.isEmpty()) {
+							return legacyFormat + MOD_NAME_FORMAT_CODE;
+						}
+					}
+
+					return detectedFormat;
 				}
 			}
 		}
