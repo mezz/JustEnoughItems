@@ -189,6 +189,7 @@ public final class AnvilRecipeMaker {
 				.resolveForStacks(contextMap);
 		}
 	}
+
 	private Stream<IJeiAnvilRecipe> getRepairRecipes() {
 		return getRepairableItems()
 			.mapMulti((repairData, consumer) -> {
