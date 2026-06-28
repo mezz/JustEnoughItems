@@ -158,7 +158,6 @@ public final class AnvilRecipeMaker {
 			return repairables;
 		}
 	}
-
 	private static Stream<RepairData> getRepairData() {
 		return Stream.of(
 			new RepairData(Tiers.WOOD.getRepairIngredient(),
