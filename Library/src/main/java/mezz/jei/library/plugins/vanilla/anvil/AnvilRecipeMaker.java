@@ -1,6 +1,5 @@
 package mezz.jei.library.plugins.vanilla.anvil;
 
-import java.util.Collections;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
@@ -10,9 +9,9 @@ import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
-import mezz.jei.library.plugins.vanilla.ingredients.subtypes.EnchantedBookSubtypeInterpreter;
 import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -36,8 +35,8 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.item.enchantment.Repairable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
@@ -151,55 +150,73 @@ public final class AnvilRecipeMaker {
 			.toList();
 	}
 
+	private static final class RepairData {
+		private final Holder.Reference<Item> item;
+		private final boolean selfRepair;
+		private final HolderSet<Item> repairItems;
+
+		private RepairData(Holder.Reference<Item> item, boolean selfRepair, HolderSet<Item> repairItems) {
+			this.item = item;
+			this.selfRepair = selfRepair;
+			this.repairItems = repairItems;
+		}
+
+		public ItemStack getDefaultItemStack() {
+			return item.value().getDefaultInstance();
+		}
+
+		public boolean isSelfRepair() {
+			return selfRepair;
+		}
+
+		public List<ItemStack> getRepairMaterials(ContextMap contextmap) {
+			if (repairItems.size() == 0) {
+				return List.of();
+			}
+			return Ingredient.of(repairItems)
+				.display()
+				.resolveForStacks(contextmap);
+		}
+	}
 	private static Stream<IJeiAnvilRecipe> getRepairRecipes(
 		IVanillaRecipeFactory vanillaRecipeFactory,
 		IIngredientHelper<ItemStack> ingredientHelper
 	) {
 		Minecraft minecraft = Minecraft.getInstance();
-		ContextMap contextmap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
-		record RepairData(Holder.Reference<Item> item, List<ItemStack> repairMaterials) {
-		}
-		return RegistryUtil.getRegistry(Registries.ITEM).listElements()
-			.map(item -> {
-				Repairable repairable = item.components().get(DataComponents.REPAIRABLE);
-				if (repairable == null) {
-					return null;
-				}
-				HolderSet<Item> items = repairable.items();
-				if (items.size() == 0) {//Is unlikely to be the case, but better safe than sorry
-					return new RepairData(item, Collections.emptyList());
-				}
-				return new RepairData(item, Ingredient.of(items).display().resolveForStacks(contextmap));
-			}).filter(Objects::nonNull)
+		ClientLevel level = Objects.requireNonNull(minecraft.level);
+		ContextMap contextmap = SlotDisplayContext.fromLevel(level);
+
+		return getRepairableItems()
 			.mapMulti((repairData, consumer) -> {
-				ItemStack itemStack = new ItemStack(repairData.item());
+				ItemStack itemStack = repairData.getDefaultItemStack();
 				String uid = ingredientHelper.getIdentifier(itemStack).toString();
 				String ingredientIdPath = ResourceLocationUtil.sanitizePath(uid);
 				String itemModId = ingredientHelper.getIdentifier(itemStack).getNamespace();
 
-				ItemStack damagedThreeQuarters = itemStack.copy();
-				damagedThreeQuarters.setDamageValue(damagedThreeQuarters.getMaxDamage() * 3 / 4);
-				ItemStack damagedHalf = itemStack.copy();
-				damagedHalf.setDamageValue(damagedHalf.getMaxDamage() / 2);
+				ItemStack damaged = itemStack.copy();
+				damaged.setDamageValue(damaged.getMaxDamage() * 3 / 4);
 
-				var damagedThreeQuartersSingletonList = List.of(damagedThreeQuarters);
+				var damagedList = List.of(damaged);
 
-				IJeiAnvilRecipe repairWithSame = vanillaRecipeFactory.createAnvilRecipe(
-					damagedThreeQuartersSingletonList,
-					damagedThreeQuartersSingletonList,
-					List.of(damagedHalf),
-					Identifier.fromNamespaceAndPath(itemModId, "anvil.self_repair." + ingredientIdPath)
-				);
-				consumer.accept(repairWithSame);
+				if (repairData.isSelfRepair()) {
+					ItemStack sameItemRepairOutput = getSameItemRepairOutput(damaged, damaged);
+					IJeiAnvilRecipe repairWithSame = vanillaRecipeFactory.createAnvilRecipe(
+						damagedList,
+						damagedList,
+						List.of(sameItemRepairOutput),
+						Identifier.fromNamespaceAndPath(itemModId, "anvil.self_repair." + ingredientIdPath)
+					);
+					consumer.accept(repairWithSame);
+				}
 
-				List<ItemStack> repairMaterials = repairData.repairMaterials();
+				List<ItemStack> repairMaterials = repairData.getRepairMaterials(contextmap);
 				if (!repairMaterials.isEmpty()) {
 					ItemStack damagedFully = itemStack.copy();
 					damagedFully.setDamageValue(damagedFully.getMaxDamage());
 					IJeiAnvilRecipe repairWithMaterial = vanillaRecipeFactory.createAnvilRecipe(
 						List.of(damagedFully),
 						repairMaterials,
-						damagedThreeQuartersSingletonList,
+						damagedList,
 						Identifier.fromNamespaceAndPath(itemModId, "anvil.materials_repair." + ingredientIdPath)
 					);
 					consumer.accept(repairWithMaterial);
@@ -207,6 +224,31 @@ public final class AnvilRecipeMaker {
 			});
 	}
 
+	private static Stream<RepairData> getRepairableItems() {
+		return RegistryUtil.getRegistry(Registries.ITEM)
+			.listElements()
+			.mapMulti((item, consumer) -> {
+				ItemStack itemStack = item.value().getDefaultInstance();
+				boolean selfRepair = itemStack.isDamageableItem() && EnchantmentHelper.canStoreEnchantments(itemStack);
+				Repairable repairable = item.components().get(DataComponents.REPAIRABLE);
+				HolderSet<Item> repairItems = repairable == null ? HolderSet.empty() : repairable.items();
+				if (selfRepair || repairItems.size() > 0) {
+					RepairData repairData = new RepairData(item, selfRepair, repairItems);
+					consumer.accept(repairData);
+				}
+			});
+	}
+
+	private static ItemStack getSameItemRepairOutput(ItemStack input, ItemStack addition) {
+		ItemStack result = input.copy();
+		int remaining1 = input.getMaxDamage() - input.getDamageValue();
+		int remaining2 = addition.getMaxDamage() - addition.getDamageValue();
+		int additional = remaining2 + result.getMaxDamage() * 12 / 100;
+		int remaining = remaining1 + additional;
+		int resultDamage = Math.max(0, result.getMaxDamage() - remaining);
+		result.setDamageValue(resultDamage);
+		return result;
+	}
 	public static int findLevelsCost(ItemStack leftStack, ItemStack rightStack) {
 		AnvilMenu anvilMenu = getFakeAnvilMenu();
 		if (anvilMenu == null) {
