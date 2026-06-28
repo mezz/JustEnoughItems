@@ -8,7 +8,6 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.api.recipe.types.IRecipeType;
-import mezz.jei.common.Internal;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.util.ErrorUtil;
@@ -30,10 +29,12 @@ import java.util.Map;
 public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper {
 	private final IStackHelper stackHelper;
 	private final CraftingRecipeCategory craftingRecipeCategory;
+	private final IConnectionToServer serverConnection;
 
-	public RecipeTransferHandlerHelper(IStackHelper stackHelper, CraftingRecipeCategory craftingRecipeCategory) {
+	public RecipeTransferHandlerHelper(IStackHelper stackHelper, CraftingRecipeCategory craftingRecipeCategory, IConnectionToServer serverConnection) {
 		this.stackHelper = stackHelper;
 		this.craftingRecipeCategory = craftingRecipeCategory;
+		this.serverConnection = serverConnection;
 	}
 
 	@Override
@@ -66,7 +67,6 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 	@Override
 	public <C extends AbstractContainerMenu, R> IRecipeTransferHandler<C, R> createUnregisteredRecipeTransferHandler(IRecipeTransferInfo<C, R> recipeTransferInfo) {
 		ErrorUtil.checkNotNull(recipeTransferInfo, "recipeTransferInfo");
-		IConnectionToServer serverConnection = Internal.getServerConnection();
 		return new BasicRecipeTransferHandler<>(serverConnection, stackHelper, this, recipeTransferInfo);
 
 	}
@@ -86,7 +86,6 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 
 	@Override
 	public boolean recipeTransferHasServerSupport() {
-		IConnectionToServer serverConnection = Internal.getServerConnection();
 		return serverConnection.isJeiOnServer();
 	}
 

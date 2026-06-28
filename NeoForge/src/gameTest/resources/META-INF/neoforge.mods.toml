@@ -1,0 +1,6 @@
+license="MIT"
+
+[[mods]]
+modId="jeitests"
+displayName="Just Enough Items: Tests"
+description='''Tests for Just Enough Items.'''
