@@ -189,6 +189,7 @@ public final class AnvilRecipeMaker {
 				.resolveForStacks(contextMap);
 		}
 	}
+
 	private Stream<IJeiAnvilRecipe> getRepairRecipes() {
 		return getRepairableItems()
 			.mapMulti((repairData, consumer) -> {
@@ -256,6 +257,7 @@ public final class AnvilRecipeMaker {
 		result.setDamageValue(resultDamage);
 		return result;
 	}
+
 	private static ItemStack getMaterialRepairOutput(ItemStack input) {
 		ItemStack result = input.copy();
 		int repairAmount = Math.min(result.getDamageValue(), result.getMaxDamage() / 4);
