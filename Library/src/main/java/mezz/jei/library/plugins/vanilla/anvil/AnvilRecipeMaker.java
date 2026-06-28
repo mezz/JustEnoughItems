@@ -1,8 +1,8 @@
 package mezz.jei.library.plugins.vanilla.anvil;
 
-import java.util.Collections;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -13,6 +13,7 @@ import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.EnchantedBookSubtypeInterpreter;
 import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -151,28 +152,37 @@ public final class AnvilRecipeMaker {
 			.toList();
 	}
 
+	private static final class RepairData {
+		private final Holder.Reference<Item> item;
+		private final HolderSet<Item> repairItems;
+
+		private RepairData(Holder.Reference<Item> item, HolderSet<Item> repairItems) {
+			this.item = item;
+			this.repairItems = repairItems;
+		}
+
+		public ItemStack getDefaultItemStack() {
+			return item.value().getDefaultInstance();
+		}
+
+		public List<ItemStack> getRepairMaterials(ContextMap contextmap) {
+			return Ingredient.of(repairItems)
+				.display()
+				.resolveForStacks(contextmap);
+		}
+	}
+
 	private static Stream<IJeiAnvilRecipe> getRepairRecipes(
 		IVanillaRecipeFactory vanillaRecipeFactory,
 		IIngredientHelper<ItemStack> ingredientHelper
 	) {
 		Minecraft minecraft = Minecraft.getInstance();
-		ContextMap contextmap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
-		record RepairData(Holder.Reference<Item> item, List<ItemStack> repairMaterials) {
-		}
-		return RegistryUtil.getRegistry(Registries.ITEM).listElements()
-			.map(item -> {
-				Repairable repairable = item.components().get(DataComponents.REPAIRABLE);
-				if (repairable == null) {
-					return null;
-				}
-				HolderSet<Item> items = repairable.items();
-				if (items.size() == 0) {//Is unlikely to be the case, but better safe than sorry
-					return new RepairData(item, Collections.emptyList());
-				}
-				return new RepairData(item, Ingredient.of(items).display().resolveForStacks(contextmap));
-			}).filter(Objects::nonNull)
+		ClientLevel level = Objects.requireNonNull(minecraft.level);
+		ContextMap contextmap = SlotDisplayContext.fromLevel(level);
+
+		return getRepairableItems()
 			.mapMulti((repairData, consumer) -> {
-				ItemStack itemStack = new ItemStack(repairData.item());
+				ItemStack itemStack = repairData.getDefaultItemStack();
 				String uid = EnchantedBookSubtypeInterpreter.INSTANCE.getStringName(itemStack);
 				String ingredientIdPath = ResourceLocationUtil.sanitizePath(uid);
 				String itemModId = ingredientHelper.getIdentifier(itemStack).getNamespace();
@@ -192,7 +202,7 @@ public final class AnvilRecipeMaker {
 				);
 				consumer.accept(repairWithSame);
 
-				List<ItemStack> repairMaterials = repairData.repairMaterials();
+				List<ItemStack> repairMaterials = repairData.getRepairMaterials(contextmap);
 				if (!repairMaterials.isEmpty()) {
 					ItemStack damagedFully = itemStack.copy();
 					damagedFully.setDamageValue(damagedFully.getMaxDamage());
@@ -204,6 +214,24 @@ public final class AnvilRecipeMaker {
 					);
 					consumer.accept(repairWithMaterial);
 				}
+			});
+	}
+
+	private static Stream<RepairData> getRepairableItems() {
+		return RegistryUtil.getRegistry(Registries.ITEM)
+			.listElements()
+			.mapMulti((item, consumer) -> {
+				Repairable repairable = item.components().get(DataComponents.REPAIRABLE);
+				if (repairable == null) {
+					return;
+				}
+				HolderSet<Item> repairItems = repairable.items();
+				if (repairItems.size() == 0) {
+					LOGGER.warn("Item has a REPAIRABLE data component but no repair items have been set: {}", item.value().getDescriptionId());
+					return;
+				}
+				RepairData repairData = new RepairData(item, repairItems);
+				consumer.accept(repairData);
 			});
 	}
 
