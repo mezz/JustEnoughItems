@@ -36,6 +36,9 @@ jobs:
           ./gradlew :FabricApi:build --no-daemon
           ./gradlew :NeoForgeApi:build --no-daemon
 
+      - name: Run NeoForge GameTests
+        run: ./gradlew :NeoForge:runGameTestServer --no-daemon
+
       - name: Copy together artifacts
         shell: bash
         run: |

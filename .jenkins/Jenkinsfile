@@ -29,6 +29,12 @@ pipeline {
             }
         }
 
+        stage('NeoForge GameTests') {
+            steps {
+                sh "./gradlew :NeoForge:runGameTestServer"
+            }
+        }
+
         stage('Publish Maven') {
             steps {
                 sh "./gradlew :Gui:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"

@@ -41,6 +41,7 @@ sourceSets {
 			setSrcDirs(emptyList<String>())
 		}
 	}
+	create("gameTest")
 }
 
 val dependencyProjects: List<Project> = listOf(
@@ -62,14 +63,17 @@ val embeddedLibraries: Configuration by configurations.creating {
 configurations.implementation {
 	extendsFrom(embeddedLibraries)
 }
+configurations.named("gameTestImplementation") {
+	extendsFrom(configurations.implementation.get())
+}
 
-tasks.withType<JavaCompile>().configureEach {
+tasks.named<JavaCompile>(sourceSets.main.get().compileJavaTaskName) {
     dependencyProjects.forEach {
         source(it.sourceSets.main.get().allSource)
     }
 }
 
-tasks.withType<ProcessResources> {
+tasks.named<ProcessResources>(sourceSets.main.get().processResourcesTaskName) {
     dependencyProjects.forEach {
         from(it.sourceSets.main.get().resources)
     }
@@ -112,6 +116,9 @@ dependencies {
 	embeddedLibraries("net.mezzdev:suffixtree:${suffixtreeVersion}") {
 		isTransitive = false
 	}
+	"gameTestImplementation"("net.neoforged:testframework:${neoforgeVersion}") {
+		isTransitive = false
+	}
 	testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	changelogHtml(project(":Changelog"))
@@ -124,6 +131,7 @@ neoForge {
 	setAccessTransformers("src/main/resources/META-INF/accesstransformer.cfg")
 
 	addModdingDependenciesTo(sourceSets.test.get())
+	addModdingDependenciesTo(sourceSets.named("gameTest").get())
 
 	mods {
 		create("jei") {
@@ -132,9 +140,15 @@ neoForge {
 				sourceSet(dependencyProject.sourceSets.main.get())
 			}
 		}
+		create("jeitests") {
+			sourceSet(sourceSets.named("gameTest").get())
+		}
 	}
 
 	runs {
+		configureEach {
+			loadedMods.set(setOf(mods.named("jei").get()))
+		}
 		create("client") {
 			client()
 			systemProperty("forge.logging.console.level", "debug")
@@ -153,6 +167,14 @@ neoForge {
 			gameDirectory = file("run/server")
 			programArguments.addAll("nogui")
 			logLevel = Level.DEBUG
+		}
+		create("gameTestServer") {
+			getType().set("gameTestServer")
+			gameDirectory = file("run/gameTestServer")
+			sourceSet = sourceSets.named("gameTest")
+			loadedMods.add(mods.named("jeitests"))
+			programArguments.addAll("--tests", "jeitests:*")
+			logLevel = Level.INFO
 		}
 	}
 }
