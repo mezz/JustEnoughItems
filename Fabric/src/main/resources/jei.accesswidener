@@ -35,3 +35,5 @@ accessible field net/minecraft/client/gui/components/toasts/ToastComponent visib
 accessible class net/minecraft/client/gui/components/toasts/ToastComponent$ToastInstance
 
 accessible field net/minecraft/client/gui/components/EditBox canLoseFocus Z
+
+accessible method net/minecraft/world/item/crafting/ShapedRecipePattern shrink (Ljava/util/List;)[Ljava/lang/String;
