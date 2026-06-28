@@ -183,7 +183,7 @@ public final class AnvilRecipeMaker {
 		return getRepairableItems()
 			.mapMulti((repairData, consumer) -> {
 				ItemStack itemStack = repairData.getDefaultItemStack();
-				String uid = EnchantedBookSubtypeInterpreter.INSTANCE.getStringName(itemStack);
+				String uid = ingredientHelper.getIdentifier(itemStack).toString();
 				String ingredientIdPath = ResourceLocationUtil.sanitizePath(uid);
 				String itemModId = ingredientHelper.getIdentifier(itemStack).getNamespace();
 
