@@ -7,6 +7,7 @@ import mezz.jei.common.network.packets.PacketCheatPermission;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PacketGiveItemStack;
 import mezz.jei.common.network.packets.PacketRecipeTransfer;
+import mezz.jei.common.network.packets.PacketRecipeTransferCounted;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.network.packets.PacketSetHotbarItemStack;
 import mezz.jei.common.network.packets.PlayToServerPacket;
@@ -23,6 +24,7 @@ public final class ServerNetworkHandler {
 		PayloadTypeRegistry.clientboundPlay().register(PacketDeletePlayerItem.TYPE, PacketDeletePlayerItem.STREAM_CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(PacketGiveItemStack.TYPE, PacketGiveItemStack.STREAM_CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(PacketRecipeTransfer.TYPE, PacketRecipeTransfer.STREAM_CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(PacketRecipeTransferCounted.TYPE, PacketRecipeTransferCounted.STREAM_CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(PacketSetHotbarItemStack.TYPE, PacketSetHotbarItemStack.STREAM_CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(PacketRequestCheatPermission.TYPE, PacketRequestCheatPermission.STREAM_CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(PacketCheatPermission.TYPE, PacketCheatPermission.STREAM_CODEC);
@@ -30,6 +32,7 @@ public final class ServerNetworkHandler {
 		PayloadTypeRegistry.serverboundPlay().register(PacketDeletePlayerItem.TYPE, PacketDeletePlayerItem.STREAM_CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(PacketGiveItemStack.TYPE, PacketGiveItemStack.STREAM_CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(PacketRecipeTransfer.TYPE, PacketRecipeTransfer.STREAM_CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(PacketRecipeTransferCounted.TYPE, PacketRecipeTransferCounted.STREAM_CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(PacketSetHotbarItemStack.TYPE, PacketSetHotbarItemStack.STREAM_CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(PacketRequestCheatPermission.TYPE, PacketRequestCheatPermission.STREAM_CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(PacketCheatPermission.TYPE, PacketCheatPermission.STREAM_CODEC);
@@ -37,6 +40,7 @@ public final class ServerNetworkHandler {
 		ServerPlayNetworking.registerGlobalReceiver(PacketDeletePlayerItem.TYPE, wrapServerHandler(connection, serverConfig, PacketDeletePlayerItem::process));
 		ServerPlayNetworking.registerGlobalReceiver(PacketGiveItemStack.TYPE, wrapServerHandler(connection, serverConfig, PacketGiveItemStack::process));
 		ServerPlayNetworking.registerGlobalReceiver(PacketRecipeTransfer.TYPE, wrapServerHandler(connection, serverConfig, PacketRecipeTransfer::process));
+		ServerPlayNetworking.registerGlobalReceiver(PacketRecipeTransferCounted.TYPE, wrapServerHandler(connection, serverConfig, PacketRecipeTransferCounted::process));
 		ServerPlayNetworking.registerGlobalReceiver(PacketSetHotbarItemStack.TYPE, wrapServerHandler(connection, serverConfig, PacketSetHotbarItemStack::process));
 		ServerPlayNetworking.registerGlobalReceiver(PacketRequestCheatPermission.TYPE, wrapServerHandler(connection, serverConfig, PacketRequestCheatPermission::process));
 	}

@@ -15,6 +15,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
+import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
@@ -54,11 +55,14 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Blocks;
@@ -236,6 +240,10 @@ public class JeiDebugPlugin implements IModPlugin {
 				new DebugRecipe()
 			));
 
+			registration.addRecipes(RecipeTypes.CRAFTING, List.of(
+				createCountedIngredientTransferRecipe(registration.getVanillaRecipeFactory())
+			));
+
 			Identifier testRecipeWithoutTemplateId = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "test_recipe_without_template");
 			RecipeHolder<SmithingRecipe> testRecipeWithoutTemplate = new RecipeHolder<>(
 				ResourceKey.create(Registries.RECIPE, testRecipeWithoutTemplateId),
@@ -257,6 +265,32 @@ public class JeiDebugPlugin implements IModPlugin {
 				registration.addRecipes(ErrorRecipeCategory.TYPE, Arrays.stream(ErrorRecipe.CrashType.values()).map(ErrorRecipe::new).toList());
 			}
 		}
+	}
+
+	/**
+	 * Adds a debug-only crafting recipe that requires multiple items in one slot,
+	 * so counted recipe transfer can be tested in-game without conflicting with vanilla recipes.
+	 */
+	private static RecipeHolder<CraftingRecipe> createCountedIngredientTransferRecipe(IVanillaRecipeFactory vanillaRecipeFactory) {
+		ItemStack output = new ItemStack(Items.STICK);
+		output.set(DataComponents.ITEM_NAME, Component.literal("Counted Ingredient Transfer Test"));
+
+		ItemStack ingredientDisplay = new ItemStack(Items.POISONOUS_POTATO, 3);
+		CraftingRecipe recipe = vanillaRecipeFactory.createShapedRecipeBuilder(
+				CraftingBookCategory.MISC,
+				new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(output))
+			)
+			.pattern("p")
+			.define(
+				'p',
+				Ingredient.of(Items.POISONOUS_POTATO),
+				new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(ingredientDisplay))
+			)
+			.build();
+
+		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "counted_ingredient_transfer_test");
+		ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, id);
+		return new RecipeHolder<>(resourceKey, recipe);
 	}
 
 	private <T> void registerFluidRecipes(IRecipeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
