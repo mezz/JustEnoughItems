@@ -4,12 +4,11 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.BannerItem;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -19,7 +18,6 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -59,9 +57,7 @@ public final class ShieldDecorationRecipeMaker {
 	private static ItemStack createOutput(BannerItem banner) {
 		DyeColor color = banner.getColor();
 		ItemStack output = new ItemStack(Items.SHIELD);
-		CompoundTag tag = new CompoundTag();
-		tag.putInt("Base", color.getId());
-		BlockItem.setBlockEntityData(output, BlockEntityType.BANNER, tag);
+		output.set(DataComponents.BASE_COLOR, color);
 		return output;
 	}
 

@@ -1,6 +1,7 @@
 package mezz.jei.neoforge.tests.lib;
 
 import mezz.jei.common.network.packets.PlayToServerPacket;
+import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -11,6 +12,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AbstractFurnaceMenu;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.BrewingStandMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.CrafterMenu;
 import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.inventory.Slot;
@@ -22,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class JeiGameTestHelper extends ExtendedGameTestHelper {
@@ -30,6 +34,7 @@ public class JeiGameTestHelper extends ExtendedGameTestHelper {
 
 	public JeiGameTestHelper(GameTestInfo info) {
 		super(info);
+		RegistryUtil.setRegistryAccess(getLevel().registryAccess());
 	}
 
 	@SuppressWarnings("removal")
@@ -42,6 +47,26 @@ public class JeiGameTestHelper extends ExtendedGameTestHelper {
 
 	public GameTestAssertException createFailException(String message) {
 		return new GameTestAssertException(message);
+	}
+
+	public void assertTrue(boolean condition, String message) {
+		if (!condition) {
+			throw createFailException(message);
+		}
+	}
+
+	public void assertEquals(Object expected, Object actual, String message) {
+		if (!Objects.equals(expected, actual)) {
+			throw createFailException("%s expected <%s> but was <%s>".formatted(message, expected, actual));
+		}
+	}
+
+	public void assertSameStack(ItemStack expected, ItemStack actual, String message) {
+		assertTrue(isSameStack(expected, actual), "%s expected <%s> but was <%s>".formatted(message, expected, actual));
+	}
+
+	public static boolean isSameStack(ItemStack expected, ItemStack actual) {
+		return expected.getCount() == actual.getCount() && ItemStack.isSameItemSameComponents(expected, actual);
 	}
 
 	public <M extends AbstractContainerMenu> MenuChecker<M> createMenuChecker(M menu) {
@@ -194,6 +219,23 @@ public class JeiGameTestHelper extends ExtendedGameTestHelper {
 				stack.getCount()
 			));
 		}
+	}
+
+	public ItemStack craftInCraftingTable(List<ItemStack> inputs) {
+		CraftingMenu menu = createCraftingMenu();
+		List<Slot> inputSlots = getCraftingGridSlots(menu, getPlayer());
+		for (int i = 0; i < inputSlots.size(); i++) {
+			ItemStack input = i < inputs.size() ? inputs.get(i).copy() : ItemStack.EMPTY;
+			inputSlots.get(i).set(input);
+		}
+		menu.slotsChanged(inputSlots.getFirst().container);
+		return menu.getSlot(menu.getResultSlotIndex()).getItem().copy();
+	}
+
+	public CraftingMenu createCraftingMenu() {
+		ServerPlayer player = getPlayer();
+		ContainerLevelAccess access = ContainerLevelAccess.create(player.level(), player.blockPosition());
+		return new CraftingMenu(0, player.getInventory(), access);
 	}
 
 	public static List<ItemStack> getExpectedStacks(int size, List<StackPlacement> placements) {
