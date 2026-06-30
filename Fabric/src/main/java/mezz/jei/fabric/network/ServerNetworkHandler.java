@@ -7,6 +7,7 @@ import mezz.jei.common.network.packets.PacketCheatPermission;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PacketGiveItemStack;
 import mezz.jei.common.network.packets.PacketRecipeTransfer;
+import mezz.jei.common.network.packets.PacketRecipeTransferCounted;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.network.packets.PacketSetHotbarItemStack;
 import mezz.jei.common.network.packets.PlayToServerPacket;
@@ -23,6 +24,7 @@ public final class ServerNetworkHandler {
 		PayloadTypeRegistry.playS2C().register(PacketDeletePlayerItem.TYPE, PacketDeletePlayerItem.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(PacketGiveItemStack.TYPE, PacketGiveItemStack.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(PacketRecipeTransfer.TYPE, PacketRecipeTransfer.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(PacketRecipeTransferCounted.TYPE, PacketRecipeTransferCounted.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(PacketSetHotbarItemStack.TYPE, PacketSetHotbarItemStack.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(PacketRequestCheatPermission.TYPE, PacketRequestCheatPermission.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(PacketCheatPermission.TYPE, PacketCheatPermission.STREAM_CODEC);
@@ -30,6 +32,7 @@ public final class ServerNetworkHandler {
 		PayloadTypeRegistry.playC2S().register(PacketDeletePlayerItem.TYPE, PacketDeletePlayerItem.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(PacketGiveItemStack.TYPE, PacketGiveItemStack.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(PacketRecipeTransfer.TYPE, PacketRecipeTransfer.STREAM_CODEC);
+		PayloadTypeRegistry.playC2S().register(PacketRecipeTransferCounted.TYPE, PacketRecipeTransferCounted.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(PacketSetHotbarItemStack.TYPE, PacketSetHotbarItemStack.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(PacketRequestCheatPermission.TYPE, PacketRequestCheatPermission.STREAM_CODEC);
 		PayloadTypeRegistry.playC2S().register(PacketCheatPermission.TYPE, PacketCheatPermission.STREAM_CODEC);
@@ -37,6 +40,7 @@ public final class ServerNetworkHandler {
 		ServerPlayNetworking.registerGlobalReceiver(PacketDeletePlayerItem.TYPE, wrapServerHandler(connection, serverConfig, PacketDeletePlayerItem::process));
 		ServerPlayNetworking.registerGlobalReceiver(PacketGiveItemStack.TYPE, wrapServerHandler(connection, serverConfig, PacketGiveItemStack::process));
 		ServerPlayNetworking.registerGlobalReceiver(PacketRecipeTransfer.TYPE, wrapServerHandler(connection, serverConfig, PacketRecipeTransfer::process));
+		ServerPlayNetworking.registerGlobalReceiver(PacketRecipeTransferCounted.TYPE, wrapServerHandler(connection, serverConfig, PacketRecipeTransferCounted::process));
 		ServerPlayNetworking.registerGlobalReceiver(PacketSetHotbarItemStack.TYPE, wrapServerHandler(connection, serverConfig, PacketSetHotbarItemStack::process));
 		ServerPlayNetworking.registerGlobalReceiver(PacketRequestCheatPermission.TYPE, wrapServerHandler(connection, serverConfig, PacketRequestCheatPermission::process));
 	}
