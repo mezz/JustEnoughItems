@@ -1,5 +1,6 @@
 package mezz.jei.library.transfer;
 
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.network.chat.TranslatableComponent;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -11,8 +12,10 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketRecipeTransfer;
+import mezz.jei.common.network.packets.PacketRecipeTransferCounted;
 import mezz.jei.common.transfer.RecipeTransferOperationsResult;
 import mezz.jei.common.transfer.RecipeTransferUtil;
+import mezz.jei.common.transfer.TransferOperation;
 import mezz.jei.common.util.StringUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -101,7 +104,9 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		}
 
 		// check if we have enough inventory space to shuffle items around to their final locations
-		int inputCount = inputItemSlotViews.size();
+		int inputCount = (int) inputItemSlotViews.stream()
+			.filter(slot -> !slot.isEmpty())
+			.count();
 		if (!inventoryState.hasRoom(inputCount)) {
 			Component message = new TranslatableComponent("jei.tooltip.error.recipe.transfer.inventory.full");
 			return handlerHelper.createUserErrorWithTooltip(message);
@@ -123,19 +128,53 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 			return handlerHelper.createInternalError();
 		}
 
+		boolean requiresCountedTransferPacket = requiresCountedTransferPacket(transferOperations.results);
+		boolean useCountedTransferPacket = requiresCountedTransferPacket && serverConnection.isSameModLoader();
+
 		if (doTransfer) {
 			boolean requireCompleteSets = transferInfo.requireCompleteSets(container, recipe);
-			PacketRecipeTransfer packet = new PacketRecipeTransfer(
-				transferOperations.results,
-				craftingSlots,
-				inventorySlots,
-				maxTransfer,
-				requireCompleteSets
-			);
-			serverConnection.sendPacketToServer(packet);
+			if (useCountedTransferPacket) {
+				PacketRecipeTransferCounted packet = new PacketRecipeTransferCounted(
+					transferOperations.results,
+					craftingSlots,
+					inventorySlots,
+					maxTransfer,
+					requireCompleteSets
+				);
+				serverConnection.sendPacketToServer(packet);
+			} else {
+				PacketRecipeTransfer packet = new PacketRecipeTransfer(
+					expandTransferOperationCounts(transferOperations.results),
+					craftingSlots,
+					inventorySlots,
+					maxTransfer,
+					requireCompleteSets
+				);
+				serverConnection.sendPacketToServer(packet);
+			}
 		}
 
 		return null;
+	}
+
+	private static List<TransferOperation> expandTransferOperationCounts(List<TransferOperation> transferOperations) {
+		return transferOperations.stream()
+			.<TransferOperation>mapMulti((operation, consumer) -> {
+				for (int i = 0; i < operation.count(); i++) {
+					consumer.accept(new TransferOperation(operation.inventorySlotId(), operation.craftingSlotId()));
+				}
+			})
+			.toList();
+	}
+
+	private static boolean requiresCountedTransferPacket(List<TransferOperation> transferOperations) {
+		Set<Integer> craftingSlotIds = new IntOpenHashSet();
+		for (TransferOperation transferOperation : transferOperations) {
+			if (transferOperation.count() > 1 || !craftingSlotIds.add(transferOperation.craftingSlotId())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static <C extends AbstractContainerMenu, R> boolean validateTransferInfo(
@@ -146,21 +185,25 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		Player player
 	) {
 		for (Slot slot : craftingSlots) {
-			if (!slot.mayPickup(player)) {
-				LOGGER.error("Recipe Transfer helper {} does not work for container {}. " +
-						"The Recipe Transfer Helper references crafting slot index [{}] but the player cannot pickup from it.",
-					transferInfo.getClass(), container.getClass(), slot.index
-				);
-				return false;
+			if (!slot.getItem().isEmpty()) {
+				if (!slot.mayPickup(player)) {
+					LOGGER.error("Recipe Transfer helper {} does not work for container {}. " +
+							"The Recipe Transfer Helper references crafting slot index [{}] but the player cannot pickup from it.",
+						transferInfo.getClass(), container.getClass(), slot.index
+					);
+					return false;
+				}
 			}
 		}
 		for (Slot slot : inventorySlots) {
-			if (!slot.mayPickup(player)) {
-				LOGGER.error("Recipe Transfer helper {} does not work for container {}. " +
-						"The Recipe Transfer Helper references inventory slot index [{}] but the player cannot pickup from it.",
-					transferInfo.getClass(), container.getClass(), slot.index
-				);
-				return false;
+			if (!slot.getItem().isEmpty()) {
+				if (!slot.mayPickup(player)) {
+					LOGGER.error("Recipe Transfer helper {} does not work for container {}. " +
+							"The Recipe Transfer Helper references inventory slot index [{}] but the player cannot pickup from it.",
+						transferInfo.getClass(), container.getClass(), slot.index
+					);
+					return false;
+				}
 			}
 		}
 		Collection<Integer> craftingSlotIndexes = slotIndexes(craftingSlots);

@@ -4,6 +4,7 @@ import mezz.jei.common.network.packets.IServerPacketHandler;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PacketGiveItemStack;
 import mezz.jei.common.network.packets.PacketRecipeTransfer;
+import mezz.jei.common.network.packets.PacketRecipeTransferCounted;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.network.packets.PacketSetHotbarItemStack;
 import mezz.jei.core.config.IServerConfig;
@@ -30,6 +31,7 @@ public class ServerPacketRouter {
 		handlers.put(PacketIdServer.GIVE_ITEM, PacketGiveItemStack::readPacketData);
 		handlers.put(PacketIdServer.SET_HOTBAR_ITEM, PacketSetHotbarItemStack::readPacketData);
 		handlers.put(PacketIdServer.CHEAT_PERMISSION_REQUEST, PacketRequestCheatPermission::readPacketData);
+		handlers.put(PacketIdServer.RECIPE_TRANSFER_COUNTED, PacketRecipeTransferCounted::readPacketData);
 	}
 
 	public void onPacket(FriendlyByteBuf packetBuffer, ServerPlayer player) {

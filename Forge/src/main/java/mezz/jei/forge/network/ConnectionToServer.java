@@ -1,6 +1,7 @@
 package mezz.jei.forge.network;
 
 import com.google.common.collect.ImmutableMap;
+import mezz.jei.common.network.ClientConnectionHelper;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketJei;
 import net.minecraft.client.Minecraft;
@@ -18,6 +19,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public final class ConnectionToServer implements IConnectionToServer {
+	private static final String FORGE_SERVER_BRAND = "forge";
+
 	@Nullable
 	private static UUID jeiOnServerCacheUuid = null;
 	private static boolean jeiOnServerCacheValue = false;
@@ -25,6 +28,11 @@ public final class ConnectionToServer implements IConnectionToServer {
 
 	public ConnectionToServer(NetworkHandler networkHandler) {
 		this.networkHandler = networkHandler;
+	}
+
+	@Override
+	public boolean isSameModLoader() {
+		return ClientConnectionHelper.hasServerBrand(FORGE_SERVER_BRAND);
 	}
 
 	@Override
