@@ -7,11 +7,8 @@ import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.ItemStack;
@@ -32,13 +29,36 @@ public final class AnvilRecipeMaker {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ItemStack ENCHANTED_BOOK = new ItemStack(Items.ENCHANTED_BOOK);
 
-	private AnvilRecipeMaker() {
-	}
+	private final IVanillaRecipeFactory vanillaRecipeFactory;
+	private final IIngredientManager ingredientManager;
+	private final IPlatformItemStackHelper itemStackHelper;
+	private final AnvilMenu anvilMenu;
 
 	public static List<IJeiAnvilRecipe> getAnvilRecipes(IVanillaRecipeFactory vanillaRecipeFactory, IIngredientManager ingredientManager) {
+		AnvilMenu fakeAnvilMenu = AnvilHelper.getFakeAnvilMenu();
+		return getAnvilRecipes(vanillaRecipeFactory, ingredientManager, fakeAnvilMenu);
+	}
+
+	public static List<IJeiAnvilRecipe> getAnvilRecipes(IVanillaRecipeFactory vanillaRecipeFactory, IIngredientManager ingredientManager, AnvilMenu anvilMenu) {
+		AnvilRecipeMaker anvilRecipeMaker = new AnvilRecipeMaker(vanillaRecipeFactory, ingredientManager, anvilMenu);
+		return anvilRecipeMaker.getAnvilRecipes();
+	}
+
+	private AnvilRecipeMaker(
+		IVanillaRecipeFactory vanillaRecipeFactory,
+		IIngredientManager ingredientManager,
+		AnvilMenu anvilMenu
+	) {
+		this.vanillaRecipeFactory = vanillaRecipeFactory;
+		this.ingredientManager = ingredientManager;
+		this.itemStackHelper = Services.PLATFORM.getItemStackHelper();
+		this.anvilMenu = anvilMenu;
+	}
+
+	public List<IJeiAnvilRecipe> getAnvilRecipes() {
 		return Stream.concat(
-				getRepairRecipes(vanillaRecipeFactory),
-				getBookEnchantmentRecipes(vanillaRecipeFactory, ingredientManager)
+				getRepairRecipes(),
+				getBookEnchantmentRecipes()
 			)
 			.toList();
 	}
@@ -52,8 +72,7 @@ public final class AnvilRecipeMaker {
 			this.enchantedBooks = getEnchantedBooks(enchantment);
 		}
 
-		public List<ItemStack> getEnchantedBooks(ItemStack ingredient) {
-			IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
+		public List<ItemStack> getEnchantedBooks(IPlatformItemStackHelper itemStackHelper, ItemStack ingredient) {
 			return enchantedBooks.stream()
 				.filter(enchantedBook -> itemStackHelper.isBookEnchantable(ingredient, enchantedBook))
 				.toList();
@@ -80,10 +99,7 @@ public final class AnvilRecipeMaker {
 		}
 	}
 
-	private static Stream<IJeiAnvilRecipe> getBookEnchantmentRecipes(
-		IVanillaRecipeFactory vanillaRecipeFactory,
-		IIngredientManager ingredientManager
-	) {
+	private Stream<IJeiAnvilRecipe> getBookEnchantmentRecipes() {
 		IPlatformRegistry<Enchantment> registry = Services.PLATFORM.getRegistry(Registry.ENCHANTMENT_REGISTRY);
 		List<EnchantmentData> enchantmentDatas = registry.getValues()
 			.map(EnchantmentData::new)
@@ -92,35 +108,32 @@ public final class AnvilRecipeMaker {
 		return ingredientManager.getAllItemStacks()
 			.stream()
 			.filter(ItemStack::isEnchantable)
-			.flatMap(ingredient -> getBookEnchantmentRecipes(vanillaRecipeFactory, enchantmentDatas, ingredient));
+			.flatMap(ingredient -> getBookEnchantmentRecipes(enchantmentDatas, ingredient));
 	}
 
-	private static Stream<IJeiAnvilRecipe> getBookEnchantmentRecipes(
-		IVanillaRecipeFactory vanillaRecipeFactory,
+	private Stream<IJeiAnvilRecipe> getBookEnchantmentRecipes(
 		List<EnchantmentData> enchantmentDatas,
 		ItemStack ingredient
 	) {
 		return enchantmentDatas.stream()
 			.filter(data -> data.canEnchant(ingredient))
-			.map(data -> data.getEnchantedBooks(ingredient))
+			.map(data -> data.getEnchantedBooks(itemStackHelper, ingredient))
 			.filter(enchantedBooks -> !enchantedBooks.isEmpty())
-			.map(enchantedBooks -> {
+			.flatMap(enchantedBooks -> {
 				List<ItemStack> outputs = getEnchantedIngredients(ingredient, enchantedBooks);
-				return vanillaRecipeFactory.createAnvilRecipe(ingredient, enchantedBooks, outputs);
+				if (outputs.isEmpty()) {
+					return Stream.empty();
+				}
+				IJeiAnvilRecipe recipe = vanillaRecipeFactory.createAnvilRecipe(ingredient, enchantedBooks, outputs);
+				return Stream.of(recipe);
 			});
 	}
 
-	private static List<ItemStack> getEnchantedIngredients(ItemStack ingredient, List<ItemStack> enchantedBooks) {
+	private List<ItemStack> getEnchantedIngredients(ItemStack ingredient, List<ItemStack> enchantedBooks) {
 		return enchantedBooks.stream()
-			.map(enchantedBook -> getEnchantedIngredient(ingredient, enchantedBook))
+			.map(enchantedBook -> getAnvilOutput(ingredient, enchantedBook))
+			.filter(i -> !i.isEmpty())
 			.toList();
-	}
-
-	private static ItemStack getEnchantedIngredient(ItemStack ingredient, ItemStack enchantedBook) {
-		ItemStack enchantedIngredient = ingredient.copy();
-		Map<Enchantment, Integer> bookEnchantments = EnchantmentHelper.getEnchantments(enchantedBook);
-		EnchantmentHelper.setEnchantments(bookEnchantments, enchantedIngredient);
-		return enchantedIngredient;
 	}
 
 	private static class RepairData {
@@ -140,6 +153,7 @@ public final class AnvilRecipeMaker {
 			return repairables;
 		}
 	}
+
 	private static Stream<RepairData> getRepairData() {
 		return Stream.of(
 			new RepairData(Tiers.WOOD.getRepairIngredient(),
@@ -232,12 +246,12 @@ public final class AnvilRecipeMaker {
 		);
 	}
 
-	private static Stream<IJeiAnvilRecipe> getRepairRecipes(IVanillaRecipeFactory vanillaRecipeFactory) {
+	private Stream<IJeiAnvilRecipe> getRepairRecipes() {
 		return getRepairData()
-			.flatMap(repairData -> getRepairRecipes(repairData, vanillaRecipeFactory));
+			.flatMap(this::getRepairRecipes);
 	}
 
-	private static Stream<IJeiAnvilRecipe> getRepairRecipes(RepairData repairData, IVanillaRecipeFactory vanillaRecipeFactory) {
+	private Stream<IJeiAnvilRecipe> getRepairRecipes(RepairData repairData) {
 		Ingredient repairIngredient = repairData.getRepairIngredient();
 		List<ItemStack> repairables = repairData.getRepairables();
 
@@ -247,37 +261,44 @@ public final class AnvilRecipeMaker {
 			.mapMulti((itemStack, consumer) -> {
 				ItemStack damagedThreeQuarters = itemStack.copy();
 				damagedThreeQuarters.setDamageValue(damagedThreeQuarters.getMaxDamage() * 3 / 4);
-				ItemStack damagedHalf = itemStack.copy();
-				damagedHalf.setDamageValue(damagedHalf.getMaxDamage() / 2);
+				ItemStack sameItemOutput = getAnvilOutput(damagedThreeQuarters, damagedThreeQuarters);
 
-				IJeiAnvilRecipe repairWithSame = vanillaRecipeFactory.createAnvilRecipe(List.of(damagedThreeQuarters), List.of(damagedThreeQuarters), List.of(damagedHalf));
-				consumer.accept(repairWithSame);
+				List<ItemStack> damagedThreeQuartersSingletonList = List.of(damagedThreeQuarters);
+
+				if (!sameItemOutput.isEmpty()) {
+					IJeiAnvilRecipe repairWithSame = vanillaRecipeFactory.createAnvilRecipe(
+						damagedThreeQuartersSingletonList,
+						damagedThreeQuartersSingletonList,
+						List.of(sameItemOutput)
+					);
+					consumer.accept(repairWithSame);
+				}
 
 				if (!repairMaterials.isEmpty()) {
 					ItemStack damagedFully = itemStack.copy();
 					damagedFully.setDamageValue(damagedFully.getMaxDamage());
-					IJeiAnvilRecipe repairWithMaterial = vanillaRecipeFactory.createAnvilRecipe(List.of(damagedFully), repairMaterials, List.of(damagedThreeQuarters));
-					consumer.accept(repairWithMaterial);
+					ItemStack materialOutput = getAnvilOutput(damagedFully, repairMaterials.get(0));
+					if (!materialOutput.isEmpty()) {
+						IJeiAnvilRecipe repairWithMaterial = vanillaRecipeFactory.createAnvilRecipe(
+							List.of(damagedFully),
+							repairMaterials,
+							List.of(materialOutput)
+						);
+						consumer.accept(repairWithMaterial);
+					}
 				}
 			});
 	}
 
 	public static int findLevelsCost(ItemStack leftStack, ItemStack rightStack) {
-		Player player = Minecraft.getInstance().player;
-		if (player == null) {
-			return -1;
+		return AnvilHelper.findLevelsCost(leftStack, rightStack);
+	}
+
+	private ItemStack getAnvilOutput(ItemStack leftStack, ItemStack rightStack) {
+		AnvilMenu result = AnvilHelper.setAnvilMenu(anvilMenu, leftStack, rightStack);
+		if (result == null) {
+			return ItemStack.EMPTY;
 		}
-		Inventory fakeInventory = new Inventory(player);
-		try {
-			AnvilMenu repair = new AnvilMenu(0, fakeInventory);
-			repair.slots.get(0).set(leftStack);
-			repair.slots.get(1).set(rightStack);
-			return repair.getCost();
-		} catch (RuntimeException e) {
-			String left = ErrorUtil.getItemStackInfo(leftStack);
-			String right = ErrorUtil.getItemStackInfo(rightStack);
-			LOGGER.error("Could not get anvil level cost for: ({} and {}).", left, right, e);
-			return -1;
-		}
+		return result.slots.get(2).getItem().copy();
 	}
 }
