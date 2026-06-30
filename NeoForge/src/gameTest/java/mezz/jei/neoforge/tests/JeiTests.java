@@ -8,6 +8,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.testframework.conf.FrameworkConfiguration;
 import net.neoforged.testframework.impl.MutableTestFramework;
+import net.neoforged.testframework.summary.GitHubActionsStepSummaryDumper;
 import net.neoforged.testframework.summary.JUnitSummaryDumper;
 
 @Mod(JeiTests.MOD_ID)
@@ -17,9 +18,12 @@ public final class JeiTests {
 
 	public JeiTests(IEventBus modEventBus, ModContainer modContainer) {
 		MutableTestFramework framework = FrameworkConfiguration.builder(Identifier.fromNamespaceAndPath(MOD_ID, "tests"))
-			.dumpers(new JUnitSummaryDumper(Path.of(
-				System.getProperty(JUNIT_OUTPUT_DIR_PROPERTY, "../../build/test-results/gameTest")
-			)))
+			.dumpers(
+				new JUnitSummaryDumper(Path.of(
+					System.getProperty(JUNIT_OUTPUT_DIR_PROPERTY, "../../build/test-results/gameTest")
+				)),
+				new GitHubActionsStepSummaryDumper()
+			)
 			.build()
 			.create();
 		framework.init(modEventBus, modContainer);
