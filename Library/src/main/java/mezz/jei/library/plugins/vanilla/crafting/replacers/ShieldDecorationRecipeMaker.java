@@ -42,7 +42,7 @@ public final class ShieldDecorationRecipeMaker implements IRecipeReplacer {
 		return false;
 	}
 
-	private static void createRecipes(Consumer<RecipeHolder<CraftingRecipe>> recipes) {
+	public static void createRecipes(Consumer<RecipeHolder<CraftingRecipe>> recipes) {
 		Iterable<Holder<Item>> banners = RegistryUtil.getRegistry(Registries.ITEM).getTagOrEmpty(ItemTags.BANNERS);
 
 		Set<DyeColor> colors = EnumSet.noneOf(DyeColor.class);
