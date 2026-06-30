@@ -34,6 +34,8 @@ base {
 	archivesName.set(baseArchivesName)
 }
 
+val gameTestJunitResultsDir = layout.buildDirectory.dir("test-results/gameTest")
+
 sourceSets {
 	named("test") {
 		resources {
@@ -174,9 +176,18 @@ neoForge {
 			sourceSet = sourceSets.named("gameTest")
 			loadedMods.add(mods.named("jeitests"))
 			programArguments.addAll("--tests", "jeitests:*")
+			systemProperty("jei.gameTest.junitDir", gameTestJunitResultsDir.get().asFile.absolutePath)
 			logLevel = Level.INFO
 		}
 	}
+}
+
+val cleanGameTestJunitResults = tasks.register<Delete>("cleanGameTestJunitResults") {
+	delete(gameTestJunitResultsDir)
+}
+
+tasks.named("runGameTestServer") {
+	dependsOn(cleanGameTestJunitResults)
 }
 
 tasks.jar {
