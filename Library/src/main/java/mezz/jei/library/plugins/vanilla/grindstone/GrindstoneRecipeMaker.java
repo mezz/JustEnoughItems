@@ -6,11 +6,8 @@ import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.util.ResourceLocationUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -23,17 +20,30 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 public final class GrindstoneRecipeMaker {
-	private static GrindstoneMenu GRINDSTONE_MENU;
-
 	public static List<IJeiGrindstoneRecipe> getGrindstoneRecipes(IIngredientManager ingredientManager, IPlatformRecipeHelper platformHelper) {
+		GrindstoneMenu grindstoneMenu = GrindstoneHelper.getFakeGrindstoneMenu();
+		if (grindstoneMenu == null) {
+			return List.of();
+		}
+		return getGrindstoneRecipes(ingredientManager, platformHelper, grindstoneMenu);
+	}
+
+	public static List<IJeiGrindstoneRecipe> getGrindstoneRecipes(
+		IIngredientManager ingredientManager,
+		IPlatformRecipeHelper platformHelper,
+		GrindstoneMenu grindstoneMenu
+	) {
 		return Stream.concat(
-						getRepairRecipes(platformHelper, ingredientManager),
-						getDisenchantRecipes(platformHelper)
+						getRepairRecipes(platformHelper, ingredientManager, grindstoneMenu),
+						getDisenchantRecipes(platformHelper, grindstoneMenu)
 				)
 				.toList();
 	}
 
-	private static Stream<IJeiGrindstoneRecipe> getDisenchantRecipes(IPlatformRecipeHelper platformHelper) {
+	private static Stream<IJeiGrindstoneRecipe> getDisenchantRecipes(
+		IPlatformRecipeHelper platformHelper,
+		GrindstoneMenu grindstoneMenu
+	) {
 		IPlatformRegistry<Enchantment> enchantmentRegistry = Services.PLATFORM.getRegistry(Registry.ENCHANTMENT_REGISTRY);
 		IPlatformRegistry<Item> itemRegistry = Services.PLATFORM.getRegistry(Registry.ITEM_REGISTRY);
 		List<Enchantment> enchantments = enchantmentRegistry.getValues().toList();
@@ -43,6 +53,8 @@ public final class GrindstoneRecipeMaker {
 			if (enchantment.isCurse()) {
 				continue;
 			}
+			ResourceLocation enchantmentResourceLocation = enchantmentRegistry.getRegistryName(enchantment).orElse(null);
+			String enchantmentPath = enchantmentResourceLocation == null ? null : enchantmentResourceLocation.getPath();
 			for (Item item : items) {
 				ItemStack stack = new ItemStack(item);
 				if (!stack.isEnchantable() ||
@@ -52,8 +64,6 @@ public final class GrindstoneRecipeMaker {
 					continue;
 				}
 
-				ResourceLocation enchantmentResourceLocation = enchantmentRegistry.getRegistryName(enchantment).orElse(null);
-				String enchantmentPath = enchantmentResourceLocation == null ? null : enchantmentResourceLocation.getPath();
 				for (int level = 1; level <= Math.min(enchantment.getMaxLevel(), 10); level++) {
 					ItemStack enchantedStack = stack.copy();
 					enchantedStack.enchant(enchantment, level);
@@ -62,7 +72,7 @@ public final class GrindstoneRecipeMaker {
 					String rawPath = "grindstone.disenchantment.%s.%s.%s".formatted(itemId, enchantmentPath, asciiLevel);
 					String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
 					ResourceLocation uid = new ResourceLocation("minecraft", uidPath);
-					IJeiGrindstoneRecipe grindstoneRecipe = getGrindstoneRecipe(platformHelper, enchantedStack, ItemStack.EMPTY, uid);
+					IJeiGrindstoneRecipe grindstoneRecipe = getGrindstoneRecipe(platformHelper, grindstoneMenu, enchantedStack, ItemStack.EMPTY, uid);
 					if (grindstoneRecipe != null) {
 						grindstoneRecipes.add(grindstoneRecipe);
 					}
@@ -73,7 +83,7 @@ public final class GrindstoneRecipeMaker {
 		return grindstoneRecipes.stream();
 	}
 
-	private static Stream<IJeiGrindstoneRecipe> getRepairRecipes(IPlatformRecipeHelper platformHelper, IIngredientManager ingredientManager) {
+	private static Stream<IJeiGrindstoneRecipe> getRepairRecipes(IPlatformRecipeHelper platformHelper, IIngredientManager ingredientManager, GrindstoneMenu grindstoneMenu) {
 		return ingredientManager.getAllItemStacks()
 				.stream()
 				.filter(ItemStack::isDamageableItem)
@@ -84,35 +94,17 @@ public final class GrindstoneRecipeMaker {
 					String itemId = stack.getItem().getDescriptionId();
 					String rawPath = "grindstone.self_repair." + itemId;
 					String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
-					return getGrindstoneRecipe(platformHelper, topInput, bottomInput, new ResourceLocation("minecraft", uidPath));
+					return getGrindstoneRecipe(platformHelper, grindstoneMenu, topInput, bottomInput, new ResourceLocation("minecraft", uidPath));
 				})
 				.filter(Objects::nonNull);
 	}
 
 	@Nullable
-	private static IJeiGrindstoneRecipe getGrindstoneRecipe(IPlatformRecipeHelper platformHelper, ItemStack topInput, ItemStack bottomInput, @Nullable ResourceLocation uid) {
-		GrindstoneMenu grindstoneMenu = getFakeGrindstoneMenu();
-		if (grindstoneMenu == null) {
-			return null;
-		}
+	private static IJeiGrindstoneRecipe getGrindstoneRecipe(IPlatformRecipeHelper platformHelper, GrindstoneMenu grindstoneMenu, ItemStack topInput, ItemStack bottomInput, @Nullable ResourceLocation uid) {
 		ItemStack output = platformHelper.getGrindstoneResult(grindstoneMenu, topInput, bottomInput);
 		if (output.isEmpty()) {
 			return null;
 		}
 		return new GrindstoneRecipe(List.of(topInput), List.of(bottomInput), List.of(output), -1, -1, uid);
-	}
-
-	@Nullable
-	private static GrindstoneMenu getFakeGrindstoneMenu() {
-		if (GRINDSTONE_MENU == null) {
-			Player player = Minecraft.getInstance().player;
-			if (player == null) {
-				return null;
-			}
-			Inventory fakeInventory = new Inventory(player);
-			GRINDSTONE_MENU = new GrindstoneMenu(0, fakeInventory);
-			return GRINDSTONE_MENU;
-		}
-		return GRINDSTONE_MENU;
 	}
 }

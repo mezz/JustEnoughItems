@@ -98,7 +98,7 @@ public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
 			return;
 		}
 
-		int cost = AnvilRecipeMaker.findLevelsCost(leftStack.get(), rightStack.get());
+		int cost = AnvilHelper.findLevelsCost(leftStack.get(), rightStack.get());
 		String costText = cost < 0 ? "err" : Integer.toString(cost);
 		String text = I18n.get("container.repair.cost", costText);
 
