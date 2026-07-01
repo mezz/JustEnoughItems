@@ -14,8 +14,15 @@ public class TestModIdHelper implements IModIdHelper {
 	}
 
 	@Override
+	@Deprecated(since = "29.10.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public String getFormattedModNameForModId(String modId) {
 		return getModNameForModId(modId);
+	}
+
+	@Override
+	public Component getFormattedModNameComponentForModId(String modId) {
+		return Component.literal(getModNameForModId(modId));
 	}
 
 	@Override

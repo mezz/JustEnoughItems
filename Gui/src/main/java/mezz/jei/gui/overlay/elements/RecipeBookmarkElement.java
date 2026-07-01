@@ -139,7 +139,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 				Identifier ingredientId = ingredientHelper.getIdentifier(displayIngredient.getIngredient());
 				String ingredientModId = ingredientId.getNamespace();
 				if (!recipeModId.equals(ingredientModId)) {
-					String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
+					Component modName = modIdHelper.getFormattedModNameComponentForModId(recipeModId);
 					MutableComponent recipeBy = Component.translatable("jei.tooltip.recipe.by", modName);
 					tooltip.add(recipeBy.withStyle(ChatFormatting.GRAY));
 				}
