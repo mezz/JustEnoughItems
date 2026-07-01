@@ -111,7 +111,11 @@ public final class PluginLoader {
 		ModInfoRegistration modInfoRegistration = new ModInfoRegistration();
 		PluginCaller.callOnPlugins("Registering Mod Info", plugins, p -> p.registerModInfo(modInfoRegistration));
 		ImmutableSetMultimap<String, String> modAliases = modInfoRegistration.getModAliases();
-		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, ingredientManager, modAliases);
+		IModIdHelper modIdHelper = new ModIdHelper(
+			modIdFormatConfig,
+			typedIngredient -> getDisplayModId(ingredientManager, typedIngredient),
+			modAliases
+		);
 
 		IClientToggleState toggleState = Internal.getClientToggleState();
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
@@ -125,6 +129,11 @@ public final class PluginLoader {
 		);
 
 		return new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory, colorHelper, ingredientManager, vanillaRecipeFactory, ingredientVisibility);
+	}
+
+	private static <T> String getDisplayModId(IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
+		return ingredientHelper.getDisplayModId(typedIngredient.getIngredient());
 	}
 
 	@Unmodifiable
