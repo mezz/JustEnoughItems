@@ -1,12 +1,17 @@
 package mezz.jei.neoforge.tests.plugins.vanilla;
 
+import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
+import mezz.jei.api.recipe.vanilla.IJeiGrindstoneRecipe;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.gui.helpers.CraftingGridHelper;
+import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingCategoryExtension;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.ShieldDecorationRecipeMaker;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
+import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipeMaker;
 import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
 import mezz.jei.neoforge.tests.lib.TestGuiHelper;
 import mezz.jei.neoforge.tests.lib.TestIngredientManagers;
@@ -16,6 +21,9 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.context.ContextMap;
+import net.minecraft.world.inventory.AnvilMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -68,6 +76,36 @@ public final class SyntheticRecipeMakerGameTests {
 		helper.succeed();
 	}
 
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Generated JEI anvil recipes produce their displayed outputs in a real anvil menu.")
+	public static void anvilRecipesProduceDisplayedOutputs(JeiGameTestHelper helper) {
+		prepareRegistries(helper);
+		List<IJeiAnvilRecipe> recipes = createAnvilRecipes(helper);
+
+		helper.assertTrue(!recipes.isEmpty(), "Generated JEI anvil recipes should not be empty");
+		for (IJeiAnvilRecipe recipe : recipes) {
+			assertAnvilRecipeProducesDisplayedOutput(helper, recipe);
+		}
+
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Generated JEI grindstone recipes produce their displayed outputs in a real grindstone menu.")
+	public static void grindstoneRecipesProduceDisplayedOutputs(JeiGameTestHelper helper) {
+		prepareRegistries(helper);
+		List<IJeiGrindstoneRecipe> recipes = createGrindstoneRecipes(helper);
+
+		helper.assertTrue(!recipes.isEmpty(), "Generated JEI grindstone recipes should not be empty");
+		for (IJeiGrindstoneRecipe recipe : recipes) {
+			assertGrindstoneRecipeProducesDisplayedOutput(helper, recipe);
+		}
+
+		helper.succeed();
+	}
+
 	private static void prepareRegistries(JeiGameTestHelper helper) {
 		RegistryUtil.setRegistryAccess(helper.getLevel().registryAccess());
 	}
@@ -112,6 +150,135 @@ public final class SyntheticRecipeMakerGameTests {
 		ItemStack stack = new ItemStack(Items.SHIELD);
 		stack.set(DataComponents.BASE_COLOR, banner.getColor());
 		return stack;
+	}
+
+	private static List<IJeiAnvilRecipe> createAnvilRecipes(JeiGameTestHelper helper) {
+		ContextMap displayContext = SlotDisplayContext.fromLevel(helper.getLevel());
+		AnvilMenu anvilMenu = createAnvilMenu(helper);
+		return AnvilRecipeMaker.getAnvilRecipes(
+			TestIngredientManagers.createVanillaRecipeFactory(),
+			TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel()),
+			displayContext,
+			anvilMenu
+		);
+	}
+
+	private static List<IJeiGrindstoneRecipe> createGrindstoneRecipes(JeiGameTestHelper helper) {
+		GrindstoneMenu grindstoneMenu = createGrindstoneMenu(helper);
+		return GrindstoneRecipeMaker.getGrindstoneRecipes(
+			TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel()),
+			Services.PLATFORM.getRecipeHelper(),
+			grindstoneMenu
+		);
+	}
+
+	private static void assertAnvilRecipeProducesDisplayedOutput(JeiGameTestHelper helper, IJeiAnvilRecipe recipe) {
+		forEachRecipeVariation(
+			helper,
+			recipe.getLeftInputs(),
+			recipe.getRightInputs(),
+			recipe.getOutputs(),
+			(leftInput, rightInput, output) -> {
+				AnvilResult actual = getAnvilResult(helper, leftInput, rightInput);
+				String description = describeAnvilRecipe(recipe, leftInput, rightInput);
+				helper.assertTrue(!actual.output().isEmpty(), "Anvil recipe produced an empty output: " + description);
+				helper.assertTrue(actual.levelCost() > 0, "Anvil recipe should have a positive level cost: " + description);
+				helper.assertSameStack(output, actual.output(), "Anvil recipe should craft its displayed output: " + description);
+			},
+			"Anvil recipe has unsupported input/output counts: " + describeAnvilRecipe(recipe)
+		);
+	}
+
+	private static void assertGrindstoneRecipeProducesDisplayedOutput(JeiGameTestHelper helper, IJeiGrindstoneRecipe recipe) {
+		forEachRecipeVariation(
+			helper,
+			recipe.getTopInputs(),
+			recipe.getBottomInputs(),
+			recipe.getOutputs(),
+			(topInput, bottomInput, output) -> {
+				ItemStack actualOutput = getGrindstoneResult(helper, topInput, bottomInput);
+				String description = describeGrindstoneRecipe(recipe, topInput, bottomInput);
+				helper.assertTrue(!actualOutput.isEmpty(), "Grindstone recipe produced an empty output: " + description);
+				helper.assertSameStack(output, actualOutput, "Grindstone recipe should craft its displayed output: " + description);
+			},
+			"Grindstone recipe has unsupported input/output counts: " + describeGrindstoneRecipe(recipe)
+		);
+	}
+
+	private static void forEachRecipeVariation(
+		JeiGameTestHelper helper,
+		List<ItemStack> leftInputs,
+		List<ItemStack> rightInputs,
+		List<ItemStack> outputs,
+		RecipeVariationConsumer consumer,
+		String unsupportedCountsMessage
+	) {
+		helper.assertTrue(!leftInputs.isEmpty(), "Recipe should have at least one left input");
+		helper.assertTrue(!rightInputs.isEmpty(), "Recipe should have at least one right input");
+		helper.assertTrue(!outputs.isEmpty(), "Recipe should have at least one output");
+
+		if (leftInputs.size() == rightInputs.size() && leftInputs.size() == outputs.size()) {
+			for (int i = 0; i < outputs.size(); i++) {
+				consumer.accept(leftInputs.get(i), rightInputs.get(i), outputs.get(i));
+			}
+			return;
+		}
+		if (leftInputs.size() == 1 && rightInputs.size() == outputs.size()) {
+			ItemStack leftInput = leftInputs.getFirst();
+			for (int i = 0; i < outputs.size(); i++) {
+				consumer.accept(leftInput, rightInputs.get(i), outputs.get(i));
+			}
+			return;
+		}
+		if (rightInputs.size() == 1 && leftInputs.size() == outputs.size()) {
+			ItemStack rightInput = rightInputs.getFirst();
+			for (int i = 0; i < outputs.size(); i++) {
+				consumer.accept(leftInputs.get(i), rightInput, outputs.get(i));
+			}
+			return;
+		}
+		if (leftInputs.size() == 1 && outputs.size() == 1) {
+			ItemStack leftInput = leftInputs.getFirst();
+			ItemStack output = outputs.getFirst();
+			for (ItemStack rightInput : rightInputs) {
+				consumer.accept(leftInput, rightInput, output);
+			}
+			return;
+		}
+		if (rightInputs.size() == 1 && outputs.size() == 1) {
+			ItemStack rightInput = rightInputs.getFirst();
+			ItemStack output = outputs.getFirst();
+			for (ItemStack leftInput : leftInputs) {
+				consumer.accept(leftInput, rightInput, output);
+			}
+			return;
+		}
+
+		throw helper.createFailException(unsupportedCountsMessage);
+	}
+
+	private static AnvilResult getAnvilResult(JeiGameTestHelper helper, ItemStack leftInput, ItemStack rightInput) {
+		AnvilMenu menu = createAnvilMenu(helper);
+		menu.getSlot(AnvilMenu.INPUT_SLOT).set(leftInput.copy());
+		menu.getSlot(AnvilMenu.ADDITIONAL_SLOT).set(rightInput.copy());
+		return new AnvilResult(menu.getSlot(AnvilMenu.RESULT_SLOT).getItem().copy(), menu.getCost());
+	}
+
+	private static ItemStack getGrindstoneResult(JeiGameTestHelper helper, ItemStack topInput, ItemStack bottomInput) {
+		GrindstoneMenu menu = createGrindstoneMenu(helper);
+		menu.getSlot(GrindstoneMenu.INPUT_SLOT).set(topInput.copy());
+		menu.getSlot(GrindstoneMenu.ADDITIONAL_SLOT).set(bottomInput.copy());
+		return menu.getSlot(GrindstoneMenu.RESULT_SLOT).getItem().copy();
+	}
+
+	private static AnvilMenu createAnvilMenu(JeiGameTestHelper helper) {
+		ContainerLevelAccess access = ContainerLevelAccess.create(helper.getLevel(), helper.getPlayer().blockPosition());
+		return new AnvilMenu(0, helper.getPlayer().getInventory(), access);
+	}
+
+	private static GrindstoneMenu createGrindstoneMenu(JeiGameTestHelper helper) {
+		ContainerLevelAccess access = ContainerLevelAccess.create(helper.getLevel(), helper.getPlayer().blockPosition());
+		return new GrindstoneMenu(0, helper.getPlayer().getInventory(), access);
 	}
 
 	private static void assertJeiRecipesCraftExpectedOutputs(
@@ -223,6 +390,50 @@ public final class SyntheticRecipeMakerGameTests {
 			.collect(Collectors.joining(", ", "[", "]"));
 	}
 
+	private static String describeAnvilRecipe(IJeiAnvilRecipe recipe) {
+		return "uid=%s left=%s right=%s outputs=%s".formatted(
+			recipe.getUid(),
+			describeStacks(recipe.getLeftInputs()),
+			describeStacks(recipe.getRightInputs()),
+			describeStacks(recipe.getOutputs())
+		);
+	}
+
+	private static String describeAnvilRecipe(IJeiAnvilRecipe recipe, ItemStack leftInput, ItemStack rightInput) {
+		return "uid=%s left=%s right=%s outputs=%s".formatted(
+			recipe.getUid(),
+			leftInput,
+			rightInput,
+			describeStacks(recipe.getOutputs())
+		);
+	}
+
+	private static String describeGrindstoneRecipe(IJeiGrindstoneRecipe recipe) {
+		return "uid=%s top=%s bottom=%s outputs=%s".formatted(
+			recipe.getUid(),
+			describeStacks(recipe.getTopInputs()),
+			describeStacks(recipe.getBottomInputs()),
+			describeStacks(recipe.getOutputs())
+		);
+	}
+
+	private static String describeGrindstoneRecipe(IJeiGrindstoneRecipe recipe, ItemStack topInput, ItemStack bottomInput) {
+		return "uid=%s top=%s bottom=%s outputs=%s".formatted(
+			recipe.getUid(),
+			topInput,
+			bottomInput,
+			describeStacks(recipe.getOutputs())
+		);
+	}
+
 	private record JeiCraftingRecipeIngredients(List<ItemStack> inputs, ItemStack output) {
+	}
+
+	private record AnvilResult(ItemStack output, int levelCost) {
+	}
+
+	@FunctionalInterface
+	private interface RecipeVariationConsumer {
+		void accept(ItemStack leftInput, ItemStack rightInput, ItemStack output);
 	}
 }
