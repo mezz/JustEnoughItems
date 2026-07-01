@@ -11,9 +11,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -46,7 +46,10 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 
 	private String getOverride() {
 		if (cachedOverride == null) {
-			cachedOverride = detectModNameTooltipFormatting();
+			IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
+			Minecraft minecraft = Minecraft.getInstance();
+			LocalPlayer player = minecraft.player;
+			cachedOverride = detectModNameTooltipFormatting(itemStackHelper, player);
 		}
 		return cachedOverride;
 	}
@@ -65,10 +68,11 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 		return !getOverride().isEmpty();
 	}
 
-	private String detectModNameTooltipFormatting() {
-		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
-		Minecraft minecraft = Minecraft.getInstance();
-		LocalPlayer player = minecraft.player;
+	public static String detectModNameTooltipFormatting(IPlatformItemStackHelper itemStackHelper) {
+		return detectModNameTooltipFormatting(itemStackHelper, null);
+	}
+
+	public static String detectModNameTooltipFormatting(IPlatformItemStackHelper itemStackHelper, @Nullable Player player) {
 		List<Component> tooltip = itemStackHelper.getTestTooltip(player, new ItemStack(Items.APPLE));
 		if (tooltip.size() <= 1) {
 			return "";
@@ -80,7 +84,7 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 			if (lineString.contains(ModIds.MINECRAFT_NAME)) {
 				String withoutFormatting = ChatFormatting.stripFormatting(lineString);
 				if (withoutFormatting.contains(ModIds.MINECRAFT_NAME)) {
-					return StringUtils.replaceOnce(lineString, ModIds.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
+					return StyledTextHelper.replaceFirst(line, ModIds.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
 				}
 			}
 		}
