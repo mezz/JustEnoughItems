@@ -32,14 +32,26 @@ public final class GrindstoneRecipeMaker {
 	private static @Nullable GrindstoneMenu GRINDSTONE_MENU;
 
 	public static List<IJeiGrindstoneRecipe> getGrindstoneRecipes(IIngredientManager ingredientManager, IPlatformRecipeHelper platformHelper) {
+		GrindstoneMenu grindstoneMenu = getFakeGrindstoneMenu();
+		if (grindstoneMenu == null) {
+			return List.of();
+		}
+		return getGrindstoneRecipes(ingredientManager, platformHelper, grindstoneMenu);
+	}
+
+	public static List<IJeiGrindstoneRecipe> getGrindstoneRecipes(
+		IIngredientManager ingredientManager,
+		IPlatformRecipeHelper platformHelper,
+		GrindstoneMenu grindstoneMenu
+	) {
 		return Stream.concat(
-						getRepairRecipes(platformHelper, ingredientManager),
-						getDisenchantRecipes(platformHelper)
+						getRepairRecipes(platformHelper, ingredientManager, grindstoneMenu),
+						getDisenchantRecipes(platformHelper, grindstoneMenu)
 				)
 				.toList();
 	}
 
-	private static Stream<IJeiGrindstoneRecipe> getDisenchantRecipes(IPlatformRecipeHelper platformHelper) {
+	private static Stream<IJeiGrindstoneRecipe> getDisenchantRecipes(IPlatformRecipeHelper platformHelper, GrindstoneMenu grindstoneMenu) {
 		Registry<Enchantment> registry = RegistryUtil.getRegistry(Registries.ENCHANTMENT);
 		IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
 		List<Holder.Reference<Enchantment>> enchantments = registry.listElements().toList();
@@ -66,7 +78,7 @@ public final class GrindstoneRecipeMaker {
 					String rawPath = "grindstone.disenchantment.%s.%s.%s".formatted(itemId, enchantmentPath, asciiLevel);
 					String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
 					Identifier uid = Identifier.withDefaultNamespace(uidPath);
-					IJeiGrindstoneRecipe grindstoneRecipe = getGrindstoneRecipe(platformHelper, enchantedStack, ItemStack.EMPTY, uid);
+					IJeiGrindstoneRecipe grindstoneRecipe = getGrindstoneRecipe(platformHelper, grindstoneMenu, enchantedStack, ItemStack.EMPTY, uid);
 					if (grindstoneRecipe != null) {
 						grindstoneRecipes.add(grindstoneRecipe);
 					}
@@ -77,7 +89,7 @@ public final class GrindstoneRecipeMaker {
 		return grindstoneRecipes.stream();
 	}
 
-	private static Stream<IJeiGrindstoneRecipe> getRepairRecipes(IPlatformRecipeHelper platformHelper, IIngredientManager ingredientManager) {
+	private static Stream<IJeiGrindstoneRecipe> getRepairRecipes(IPlatformRecipeHelper platformHelper, IIngredientManager ingredientManager, GrindstoneMenu grindstoneMenu) {
 		return ingredientManager.getAllItemStacks()
 				.stream()
 				.filter(ItemStack::isDamageableItem)
@@ -88,7 +100,7 @@ public final class GrindstoneRecipeMaker {
 					String itemId = stack.getItem().getDescriptionId();
 					String rawPath = "grindstone.self_repair." + itemId;
 					String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
-					IJeiGrindstoneRecipe recipe = getGrindstoneRecipe(platformHelper, topInput, bottomInput, Identifier.withDefaultNamespace(uidPath));
+					IJeiGrindstoneRecipe recipe = getGrindstoneRecipe(platformHelper, grindstoneMenu, topInput, bottomInput, Identifier.withDefaultNamespace(uidPath));
 					if (recipe != null) {
 						consumer.accept(recipe);
 					}
@@ -96,11 +108,7 @@ public final class GrindstoneRecipeMaker {
 	}
 
 	@Nullable
-	private static IJeiGrindstoneRecipe getGrindstoneRecipe(IPlatformRecipeHelper platformHelper, ItemStack topInput, ItemStack bottomInput, @Nullable Identifier uid) {
-		GrindstoneMenu grindstoneMenu = getFakeGrindstoneMenu();
-		if (grindstoneMenu == null) {
-			return null;
-		}
+	private static IJeiGrindstoneRecipe getGrindstoneRecipe(IPlatformRecipeHelper platformHelper, GrindstoneMenu grindstoneMenu, ItemStack topInput, ItemStack bottomInput, @Nullable Identifier uid) {
 		ItemStack output = platformHelper.getGrindstoneResult(grindstoneMenu, topInput, bottomInput);
 		if (output.isEmpty()) {
 			return null;
