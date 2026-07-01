@@ -33,6 +33,7 @@ dependencyProjects.forEach {
 
 neoForge {
     neoFormVersion = neoformVersionAndTimestamp
+    addModdingDependenciesTo(sourceSets.test.get())
 }
 
 sourceSets {
