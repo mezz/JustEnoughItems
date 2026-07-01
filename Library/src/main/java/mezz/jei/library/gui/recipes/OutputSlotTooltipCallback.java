@@ -70,7 +70,7 @@ public class OutputSlotTooltipCallback implements IRecipeSlotRichTooltipCallback
 		if (recipeModId.equals(ingredientModId)) {
 			return;
 		}
-		String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
+		Component modName = modIdHelper.getFormattedModNameComponentForModId(recipeModId);
 		MutableComponent recipeBy = Component.translatable("jei.tooltip.recipe.by", modName);
 		tooltip.add(recipeBy.withStyle(ChatFormatting.GRAY));
 	}

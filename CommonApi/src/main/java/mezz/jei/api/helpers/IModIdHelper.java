@@ -23,8 +23,21 @@ public interface IModIdHelper {
 
 	/**
 	 * Returns the mod name with color formatting, as specified in JEI's config. (default is blue italic)
+	 *
+	 * @deprecated use {@link #getFormattedModNameComponentForModId(String)}
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "30.4.0", forRemoval = true)
 	String getFormattedModNameForModId(String modId);
+
+	/**
+	 * Returns the mod name with color formatting, as specified in JEI's config. (default is blue italic)
+	 *
+	 * @since 30.4.0
+	 */
+	default Component getFormattedModNameComponentForModId(String modId) {
+		return Component.literal(getFormattedModNameForModId(modId));
+	}
 
 	/**
 	 * Returns alternative mod names, used for searching for a mod by a different name.

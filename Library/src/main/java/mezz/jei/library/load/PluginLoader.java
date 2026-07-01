@@ -119,7 +119,11 @@ public final class PluginLoader {
 		VanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory(ingredientHelper);
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		GuiHelper guiHelper = new GuiHelper(ingredientManager);
-		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, ingredientManager, modAliases);
+		IModIdHelper modIdHelper = new ModIdHelper(
+			modIdFormatConfig,
+			typedIngredient -> getDisplayModId(ingredientManager, typedIngredient),
+			modAliases
+		);
 
 		IClientToggleState toggleState = Internal.getClientToggleState();
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
@@ -143,6 +147,11 @@ public final class PluginLoader {
 			codecHelper,
 			ingredientVisibility
 		);
+	}
+
+	private static <T> String getDisplayModId(IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
+		return ingredientHelper.getDisplayModId(typedIngredient.getIngredient());
 	}
 
 	@Unmodifiable

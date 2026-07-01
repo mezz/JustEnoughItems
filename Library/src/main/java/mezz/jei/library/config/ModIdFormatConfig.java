@@ -11,22 +11,21 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.apache.commons.lang3.Strings;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class ModIdFormatConfig implements IModIdFormatConfig {
 	protected static final List<ChatFormatting> defaultModNameFormat = List.of(ChatFormatting.BLUE, ChatFormatting.ITALIC);
 	public static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";
 
-	private final Supplier<String> modNameFormat;
+	private final Supplier<Component> modNameFormat;
 	@Nullable
-	private String cachedOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
+	private Component cachedOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
 
 	public ModIdFormatConfig(IConfigSchemaBuilder builder) {
 		IConfigCategoryBuilder modName = builder.addCategory("modName");
@@ -38,13 +37,15 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 		this.modNameFormat = new CachedSupplierTransformer<>(configValue, ModIdFormatConfig::toFormatString);
 	}
 
-	private static String toFormatString(List<ChatFormatting> values) {
-		return values.stream()
-			.map(ChatFormatting::toString)
-			.collect(Collectors.joining());
+	private static Component toFormatString(List<ChatFormatting> values) {
+		if (values.isEmpty()) {
+			return Component.empty();
+		}
+		return Component.literal(MOD_NAME_FORMAT_CODE)
+			.withStyle(values.toArray(ChatFormatting[]::new));
 	}
 
-	private String getOverride() {
+	private Component getOverride() {
 		if (cachedOverride == null) {
 			cachedOverride = detectModNameTooltipFormatting();
 		}
@@ -52,9 +53,9 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 	}
 
 	@Override
-	public final String getModNameFormat() {
-		String override = getOverride();
-		if (!override.isEmpty()) {
+	public final Component getModNameFormat() {
+		Component override = getOverride();
+		if (!override.getString().isEmpty()) {
 			return override;
 		}
 		return modNameFormat.get();
@@ -62,28 +63,39 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 
 	@Override
 	public final boolean isModNameFormatOverrideActive() {
-		return !getOverride().isEmpty();
+		return !getOverride().getString().isEmpty();
 	}
 
-	private String detectModNameTooltipFormatting() {
+	private static Component detectModNameTooltipFormatting() {
 		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
 		Minecraft minecraft = Minecraft.getInstance();
 		LocalPlayer player = minecraft.player;
+		return detectModNameTooltipFormatting(itemStackHelper, player);
+	}
+
+	public static Component detectModNameTooltipFormatting(IPlatformItemStackHelper itemStackHelper, @Nullable Player player) {
 		List<Component> tooltip = itemStackHelper.getTestTooltip(player, new ItemStack(Items.APPLE));
 		if (tooltip.size() <= 1) {
-			return "";
+			return Component.empty();
 		}
 
 		for (int lineNum = 1; lineNum < tooltip.size(); lineNum++) {
 			Component line = tooltip.get(lineNum);
-			String lineString = line.getString();
-			if (lineString.contains(ModIds.MINECRAFT_NAME)) {
-				String withoutFormatting = ChatFormatting.stripFormatting(lineString);
-				if (withoutFormatting.contains(ModIds.MINECRAFT_NAME)) {
-					return Strings.CS.replaceOnce(lineString, ModIds.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
-				}
+			Component result = detectModNameTooltipFormatting(line);
+			if (!result.getString().isEmpty()) {
+				return result;
 			}
 		}
-		return "";
+		return Component.empty();
+	}
+
+	private static Component detectModNameTooltipFormatting(Component line) {
+		return StyledTextHelper.replaceFirst(line, ModIds.MINECRAFT_NAME, Component.literal(MOD_NAME_FORMAT_CODE))
+			.orElseGet(Component::empty);
+	}
+
+	public static Component replaceModNameFormatCode(Component format, String modName) {
+		return StyledTextHelper.replaceFirst(format, MOD_NAME_FORMAT_CODE, Component.literal(modName))
+			.orElseGet(() -> format.copy().append(Component.literal(modName)));
 	}
 }
