@@ -3,6 +3,7 @@ package mezz.jei.test;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.library.config.ModIdFormatConfig;
+import mezz.jei.library.config.StyledTextHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.Holder;
@@ -220,7 +221,7 @@ public class ModIdFormatConfigTest {
 		);
 
 		// Operation: detect formatting through ModIdFormatConfig's platform-helper entry point.
-		String result = ModIdFormatConfig.detectModNameTooltipFormatting(new TestItemStackHelper(tooltip));
+		String result = toLegacyString(ModIdFormatConfig.detectModNameTooltipFormatting(new TestItemStackHelper(tooltip)));
 
 		// Assertions: the platform tooltip is delegated to the formatting detector.
 		String expected = ChatFormatting.BLUE + ModIdFormatConfig.MOD_NAME_FORMAT_CODE;
@@ -228,7 +229,11 @@ public class ModIdFormatConfigTest {
 	}
 
 	private static String detectModNameTooltipFormatting(List<Component> tooltip) {
-		return ModIdFormatConfig.detectModNameTooltipFormatting(new TestItemStackHelper(tooltip));
+		return toLegacyString(ModIdFormatConfig.detectModNameTooltipFormatting(new TestItemStackHelper(tooltip)));
+	}
+
+	private static String toLegacyString(Component component) {
+		return StyledTextHelper.toLegacyString(component);
 	}
 
 	private record TestItemStackHelper(List<Component> tooltip) implements IPlatformItemStackHelper {
