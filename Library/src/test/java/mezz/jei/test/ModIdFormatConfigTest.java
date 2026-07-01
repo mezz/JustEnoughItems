@@ -1,16 +1,24 @@
 package mezz.jei.test;
 
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.library.config.ModIdFormatConfig;
+import mezz.jei.library.config.StyledTextHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.Bootstrap;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public class ModIdFormatConfigTest {
 	@BeforeAll
@@ -27,7 +35,7 @@ public class ModIdFormatConfigTest {
 		);
 
 		// Operation: try to detect mod-name formatting even though there is no mod name.
-		String result = ModIdFormatConfig.detectModNameTooltipFormatting(tooltip);
+		String result = detectModNameTooltipFormatting(tooltip);
 
 		// Assertions: no override is detected when the mod name is absent.
 		Assertions.assertEquals("", result);
@@ -41,7 +49,7 @@ public class ModIdFormatConfigTest {
 		);
 
 		// Operation: try to detect formatting from a tooltip whose first line contains the mod name.
-		String result = ModIdFormatConfig.detectModNameTooltipFormatting(tooltip);
+		String result = detectModNameTooltipFormatting(tooltip);
 
 		// Assertions: the detector ignores the first tooltip line.
 		Assertions.assertEquals("", result);
@@ -57,7 +65,7 @@ public class ModIdFormatConfigTest {
 		);
 
 		// Operation: detect formatting after skipping unrelated tooltip lines.
-		String result = ModIdFormatConfig.detectModNameTooltipFormatting(tooltip);
+		String result = detectModNameTooltipFormatting(tooltip);
 
 		// Assertions: the later mod-name line is used.
 		String expected = ChatFormatting.BLUE + ModIdFormatConfig.MOD_NAME_FORMAT_CODE;
@@ -73,7 +81,7 @@ public class ModIdFormatConfigTest {
 		);
 
 		// Operation: detect formatting when the mod name is styled with legacy codes.
-		String result = ModIdFormatConfig.detectModNameTooltipFormatting(tooltip);
+		String result = detectModNameTooltipFormatting(tooltip);
 
 		// Assertions: the legacy color code is preserved before the mod-name placeholder.
 		String expected = ChatFormatting.BLUE + ModIdFormatConfig.MOD_NAME_FORMAT_CODE;
@@ -90,7 +98,7 @@ public class ModIdFormatConfigTest {
 		);
 
 		// Operation: detect formatting when the mod name is styled through the component.
-		String result = ModIdFormatConfig.detectModNameTooltipFormatting(tooltip);
+		String result = detectModNameTooltipFormatting(tooltip);
 
 		// Assertions: the component style is converted to legacy codes before the placeholder.
 		String expected = ChatFormatting.BLUE.toString() + ChatFormatting.ITALIC + ModIdFormatConfig.MOD_NAME_FORMAT_CODE;
@@ -107,7 +115,7 @@ public class ModIdFormatConfigTest {
 		);
 
 		// Operation: detect formatting when legacy codes and component style both apply.
-		String result = ModIdFormatConfig.detectModNameTooltipFormatting(tooltip);
+		String result = detectModNameTooltipFormatting(tooltip);
 
 		// Assertions: both legacy and component styles are preserved before the placeholder.
 		String expected = ChatFormatting.BLUE.toString() + ChatFormatting.ITALIC + ModIdFormatConfig.MOD_NAME_FORMAT_CODE;
@@ -125,7 +133,7 @@ public class ModIdFormatConfigTest {
 		);
 
 		// Operation: detect formatting when non-mod-name text has its own style.
-		String result = ModIdFormatConfig.detectModNameTooltipFormatting(tooltip);
+		String result = detectModNameTooltipFormatting(tooltip);
 
 		// Assertions: the prefix and mod-name styles are preserved.
 		String expected = ChatFormatting.RED.toString() + "Mod: " + ChatFormatting.BLUE + ModIdFormatConfig.MOD_NAME_FORMAT_CODE;
@@ -143,7 +151,7 @@ public class ModIdFormatConfigTest {
 		);
 
 		// Operation: detect formatting when prefix text shares a component with the mod name.
-		String result = ModIdFormatConfig.detectModNameTooltipFormatting(tooltip);
+		String result = detectModNameTooltipFormatting(tooltip);
 
 		// Assertions: the prefix and mod-name segment styles are preserved.
 		String expected = ChatFormatting.RED.toString() + "Mod" + ChatFormatting.BLUE + "name: " + ModIdFormatConfig.MOD_NAME_FORMAT_CODE;
@@ -161,7 +169,7 @@ public class ModIdFormatConfigTest {
 		);
 
 		// Operation: detect formatting when the split mod-name components have matching color.
-		String result = ModIdFormatConfig.detectModNameTooltipFormatting(tooltip);
+		String result = detectModNameTooltipFormatting(tooltip);
 
 		// Assertions: the shared blue style is applied to the placeholder.
 		String expected = ChatFormatting.BLUE + ModIdFormatConfig.MOD_NAME_FORMAT_CODE;
@@ -179,7 +187,7 @@ public class ModIdFormatConfigTest {
 		);
 
 		// Operation: detect formatting when the mod name spans multiple styled components.
-		String result = ModIdFormatConfig.detectModNameTooltipFormatting(tooltip);
+		String result = detectModNameTooltipFormatting(tooltip);
 
 		// Assertions: matching styles across all mod-name parts are applied to the placeholder.
 		String expected = ChatFormatting.BLUE.toString() + ChatFormatting.ITALIC + ModIdFormatConfig.MOD_NAME_FORMAT_CODE;
@@ -197,9 +205,61 @@ public class ModIdFormatConfigTest {
 		);
 
 		// Operation: detect formatting when different styles apply to parts of the mod name.
-		String result = ModIdFormatConfig.detectModNameTooltipFormatting(tooltip);
+		String result = detectModNameTooltipFormatting(tooltip);
 
 		// Assertions: inconsistent mod-name styling is not collapsed into one override style.
 		Assertions.assertEquals(ModIdFormatConfig.MOD_NAME_FORMAT_CODE, result);
+	}
+
+	@Test
+	public void testDetectModNameTooltipFormattingUsesPlatformTooltip() {
+		// Setup: the platform item stack helper returns a tooltip with a styled mod-name line.
+		List<Component> tooltip = List.of(
+			Component.literal("Apple"),
+			Component.literal(ModIds.MINECRAFT_NAME)
+				.withStyle(ChatFormatting.BLUE)
+		);
+
+		// Operation: detect formatting through ModIdFormatConfig's platform-helper entry point.
+		String result = toLegacyString(ModIdFormatConfig.detectModNameTooltipFormatting(new TestItemStackHelper(tooltip)));
+
+		// Assertions: the platform tooltip is delegated to the formatting detector.
+		String expected = ChatFormatting.BLUE + ModIdFormatConfig.MOD_NAME_FORMAT_CODE;
+		Assertions.assertEquals(expected, result);
+	}
+
+	private static String detectModNameTooltipFormatting(List<Component> tooltip) {
+		return toLegacyString(ModIdFormatConfig.detectModNameTooltipFormatting(new TestItemStackHelper(tooltip)));
+	}
+
+	private static String toLegacyString(Component component) {
+		return StyledTextHelper.toLegacyString(component);
+	}
+
+	private record TestItemStackHelper(List<Component> tooltip) implements IPlatformItemStackHelper {
+		@Override
+		public int getBurnTime(ItemStack itemStack) {
+			return 0;
+		}
+
+		@Override
+		public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+			return false;
+		}
+
+		@Override
+		public Optional<String> getCreatorModId(ItemStack stack) {
+			return Optional.empty();
+		}
+
+		@Override
+		public Collection<CreativeModeTab> getCreativeTabs(ItemStack itemStack) {
+			return List.of();
+		}
+
+		@Override
+		public List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack) {
+			return tooltip;
+		}
 	}
 }

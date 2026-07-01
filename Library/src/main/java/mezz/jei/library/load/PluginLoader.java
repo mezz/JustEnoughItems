@@ -119,7 +119,11 @@ public final class PluginLoader {
 		ModInfoRegistration modInfoRegistration = new ModInfoRegistration();
 		PluginCaller.callOnPlugins("Registering Mod Info", plugins, p -> p.registerModInfo(modInfoRegistration));
 		ImmutableSetMultimap<String, String> modAliases = modInfoRegistration.getModAliases();
-		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, ingredientManager, modAliases);
+		IModIdHelper modIdHelper = new ModIdHelper(
+			modIdFormatConfig,
+			typedIngredient -> getDisplayModId(ingredientManager, typedIngredient),
+			modAliases
+		);
 
 		return new JeiHelpers(
 			guiHelper,
@@ -131,6 +135,11 @@ public final class PluginLoader {
 			vanillaRecipeFactory,
 			ingredientVisibility
 		);
+	}
+
+	private static <T> String getDisplayModId(IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
+		return ingredientHelper.getDisplayModId(typedIngredient.getIngredient());
 	}
 
 	@Unmodifiable

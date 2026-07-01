@@ -16,6 +16,8 @@ public class TestModIdHelper implements IModIdHelper {
 	}
 
 	@Override
+	@Deprecated(since = "11.52.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public String getFormattedModNameForModId(String modId) {
 		return getModNameForModId(modId);
 	}
@@ -36,6 +38,11 @@ public class TestModIdHelper implements IModIdHelper {
 	@Override
 	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, ITypedIngredient<T> typedIngredient) {
 		return tooltip;
+	}
+
+	@Override
+	public Component getFormattedModNameComponentForModId(String modId) {
+		return Component.literal(getModNameForModId(modId));
 	}
 
 	@Override

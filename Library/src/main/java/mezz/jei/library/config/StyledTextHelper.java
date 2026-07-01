@@ -2,248 +2,162 @@ package mezz.jei.library.config;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public final class StyledTextHelper {
 	private StyledTextHelper() {
-
 	}
 
-	public static String replaceFirst(Component text, String target, String replacement) {
-		List<StyledTextSegment> segments = getStyledTextSegments(text);
-		return getTextRange(segments, target)
-			.map(textRange -> replaceFirst(segments, textRange, replacement))
-			.orElse("");
-	}
-
-	/*
-	 * Converts styles added directly to a Component back into legacy formatting codes.
-	 * Component#getString() does not preserve these styles, so this is needed when another
-	 * mod adds styled text without legacy formatting codes.
-	 */
-	public static String getLegacyFormattingFromStyle(Style style) {
-		StringBuilder formatting = new StringBuilder();
-
-		TextColor color = style.getColor();
-		if (color != null) {
-			ChatFormatting colorFormatting = getChatFormattingFromTextColor(color);
-			if (colorFormatting != null) {
-				formatting.append(colorFormatting);
-			}
-		}
-
-		if (style.isBold()) {
-			formatting.append(ChatFormatting.BOLD);
-		}
-		if (style.isItalic()) {
-			formatting.append(ChatFormatting.ITALIC);
-		}
-		if (style.isUnderlined()) {
-			formatting.append(ChatFormatting.UNDERLINE);
-		}
-		if (style.isStrikethrough()) {
-			formatting.append(ChatFormatting.STRIKETHROUGH);
-		}
-		if (style.isObfuscated()) {
-			formatting.append(ChatFormatting.OBFUSCATED);
-		}
-
-		return formatting.toString();
-	}
-
-	public static @Nullable ChatFormatting getChatFormattingFromTextColor(TextColor color) {
-		for (ChatFormatting chatFormatting : ChatFormatting.values()) {
-			if (chatFormatting.isColor()) {
-				TextColor textColor = TextColor.fromLegacyFormat(chatFormatting);
-				if (textColor != null && textColor.equals(color)) {
-					return chatFormatting;
-				}
-			}
-		}
-		return null;
-	}
-
-	public static List<StyledTextSegment> getStyledTextSegments(Component text) {
-		List<StyledTextSegment> segments = new ArrayList<>();
-		int[] textLength = {0};
-		text.visit((style, rawText) -> {
-			String plainText = ChatFormatting.stripFormatting(rawText);
-			if (!plainText.isEmpty()) {
-				int start = textLength[0];
-				textLength[0] += plainText.length();
-				segments.add(new StyledTextSegment(start, textLength[0], rawText, plainText, style));
-			}
-			return Optional.empty();
-		}, Style.EMPTY);
-		return segments;
-	}
-
-	public static Optional<TextRange> getTextRange(List<StyledTextSegment> segments, String target) {
-		String text = segments.stream()
-			.map(StyledTextSegment::plainText)
-			.collect(Collectors.joining());
-		int targetStart = text.indexOf(target);
+	public static Optional<Component> replaceFirst(Component text, String target, Component replacement) {
+		List<StyledText> styledTexts = getStyledTexts(text);
+		String lineString = getString(styledTexts);
+		int targetStart = lineString.indexOf(target);
 		if (targetStart < 0) {
 			return Optional.empty();
 		}
-		return Optional.of(new TextRange(targetStart, targetStart + target.length()));
+
+		int targetEnd = targetStart + target.length();
+		MutableComponent result = Component.empty();
+		appendRange(result, styledTexts, 0, targetStart);
+		Style targetStyle = getCommonStyle(styledTexts, targetStart, targetEnd);
+		result.append(replacement.copy().withStyle(targetStyle));
+		appendRange(result, styledTexts, targetEnd, lineString.length());
+		return Optional.of(result);
 	}
 
-	public static String replaceFirst(List<StyledTextSegment> segments, TextRange targetRange, String replacement) {
-		boolean targetStyleConsistent = isTargetStyleConsistent(segments, targetRange);
-
-		StringBuilder formattedText = new StringBuilder();
-		boolean addedReplacement = false;
-		for (StyledTextSegment segment : segments) {
-			addedReplacement = appendSegmentWithReplacement(
-				formattedText,
-				segment,
-				targetRange,
-				replacement,
-				targetStyleConsistent,
-				addedReplacement
-			);
-		}
-		return formattedText.toString();
-	}
-
-	public static boolean appendSegmentWithReplacement(
-		StringBuilder formattedText,
-		StyledTextSegment segment,
-		TextRange targetRange,
-		String replacement,
-		boolean targetStyleConsistent,
-		boolean addedReplacement
-	) {
-		if (!segment.intersects(targetRange)) {
-			formattedText.append(formatSegmentText(segment, segment.start(), segment.end()));
-			return addedReplacement;
-		}
-
-		if (segment.start() < targetRange.start()) {
-			formattedText.append(formatSegmentText(segment, segment.start(), targetRange.start()));
-		}
-
-		if (!addedReplacement) {
-			formattedText.append(formatReplacement(segment, targetRange, replacement, targetStyleConsistent));
-			addedReplacement = true;
-		}
-
-		if (segment.end() > targetRange.end()) {
-			formattedText.append(formatSegmentText(segment, targetRange.end(), segment.end()));
-		}
-
-		return addedReplacement;
-	}
-
-	public static String formatReplacement(StyledTextSegment segment, TextRange targetRange, String replacement, boolean targetStyleConsistent) {
-		if (!targetStyleConsistent) {
-			return replacement;
-		}
-
-		int overlapStart = Math.max(segment.start(), targetRange.start());
-		int overlapEnd = Math.min(segment.end(), targetRange.end());
-		boolean includeStyle = segment.start() >= targetRange.start();
-		return formatSegmentReplacement(segment, overlapStart, overlapEnd, replacement, includeStyle);
-	}
-
-	public static boolean isTargetStyleConsistent(List<StyledTextSegment> segments, TextRange targetRange) {
-		@Nullable
-		Style targetStyle = null;
-		for (StyledTextSegment segment : segments) {
-			if (!segment.intersects(targetRange)) {
-				continue;
-			}
-
-			Style segmentStyle = segment.style();
-			if (targetStyle == null) {
-				targetStyle = segmentStyle;
-			} else if (!targetStyle.equals(segmentStyle)) {
-				return false;
+	public static String toLegacyString(Component component) {
+		StringBuilder result = new StringBuilder();
+		Style previousStyle = Style.EMPTY;
+		for (StyledText styledText : getStyledTexts(component)) {
+			if (!styledText.text().isEmpty()) {
+				Style style = styledText.style();
+				if (!Objects.equals(previousStyle, style)) {
+					if (!previousStyle.isEmpty() && style.isEmpty()) {
+						result.append(ChatFormatting.RESET);
+					} else {
+						result.append(toLegacyFormattingString(style));
+					}
+				}
+				result.append(styledText.text());
+				previousStyle = style;
 			}
 		}
-		return targetStyle != null;
+		return result.toString();
 	}
 
-	public static String formatSegmentText(StyledTextSegment segment, int start, int end) {
-		String rawText = getRawTextRange(segment.rawText(), start - segment.start(), end - segment.start());
-		return applyStyleToText(segment.style(), rawText);
+	private static List<StyledText> getStyledTexts(Component component) {
+		List<StyledText> styledTexts = new ArrayList<>();
+		component.visit((style, text) -> {
+			appendLegacyFormattedText(styledTexts, text, style);
+			return Optional.empty();
+		}, Style.EMPTY);
+		return styledTexts;
 	}
 
-	public static String formatSegmentReplacement(StyledTextSegment segment, int start, int end, String replacement, boolean includeStyle) {
-		String rawText = getRawTextRange(segment.rawText(), start - segment.start(), end - segment.start());
-		if (includeStyle) {
-			rawText = applyStyleToText(segment.style(), rawText);
+	private static void appendLegacyFormattedText(List<StyledText> styledTexts, String text, Style baseStyle) {
+		Style style = baseStyle;
+		StringBuilder currentText = new StringBuilder();
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (c == ChatFormatting.PREFIX_CODE && i + 1 < text.length()) {
+				ChatFormatting formatting = ChatFormatting.getByCode(text.charAt(i + 1));
+				if (formatting != null) {
+					append(styledTexts, currentText.toString(), style);
+					currentText.setLength(0);
+					style = formatting == ChatFormatting.RESET ? Style.EMPTY : style.applyFormat(formatting);
+					i++;
+					continue;
+				}
+			}
+			currentText.append(c);
 		}
-		String plainText = ChatFormatting.stripFormatting(rawText);
-		if (plainText.isEmpty()) {
-			return replacement;
-		}
-		return StringUtils.replaceOnce(rawText, plainText, replacement);
+		append(styledTexts, currentText.toString(), style);
 	}
 
-	public static String applyStyleToText(Style style, String text) {
-		String formatting = getLegacyFormattingFromStyle(style);
-		if (formatting.isEmpty() || text.isEmpty()) {
-			return text;
+	private static void append(List<StyledText> styledTexts, String text, Style style) {
+		if (!text.isEmpty()) {
+			styledTexts.add(new StyledText(text, style));
 		}
+	}
 
+	private static String getString(List<StyledText> styledTexts) {
+		StringBuilder result = new StringBuilder();
+		for (StyledText styledText : styledTexts) {
+			result.append(styledText.text());
+		}
+		return result.toString();
+	}
+
+	private static void appendRange(MutableComponent result, List<StyledText> styledTexts, int start, int end) {
 		int index = 0;
-		while (index + 1 < text.length() && text.charAt(index) == ChatFormatting.PREFIX_CODE) {
-			index += 2;
-		}
-		return text.substring(0, index) + formatting + text.substring(index);
-	}
-
-	public static String getRawTextRange(String rawText, int start, int end) {
-		StringBuilder rawTextRange = new StringBuilder();
-		StringBuilder activeFormatting = new StringBuilder();
-		boolean addedActiveFormatting = false;
-		int plainIndex = 0;
-
-		for (int i = 0; i < rawText.length(); i++) {
-			char c = rawText.charAt(i);
-			if (c == ChatFormatting.PREFIX_CODE && i + 1 < rawText.length()) {
-				String formatting = rawText.substring(i, i + 2);
-				if (plainIndex < start) {
-					activeFormatting.append(formatting);
-				} else if (plainIndex < end) {
-					rawTextRange.append(formatting);
-				}
-				i++;
-				continue;
+		for (StyledText styledText : styledTexts) {
+			int styledTextStart = index;
+			int styledTextEnd = index + styledText.text().length();
+			int overlapStart = Math.max(start, styledTextStart);
+			int overlapEnd = Math.min(end, styledTextEnd);
+			if (overlapStart < overlapEnd) {
+				String text = styledText.text().substring(overlapStart - styledTextStart, overlapEnd - styledTextStart);
+				result.append(Component.literal(text).setStyle(styledText.style()));
 			}
+			index = styledTextEnd;
+		}
+	}
 
-			if (plainIndex >= start && plainIndex < end) {
-				if (!addedActiveFormatting) {
-					rawTextRange.insert(0, activeFormatting);
-					addedActiveFormatting = true;
+	private static Style getCommonStyle(List<StyledText> styledTexts, int start, int end) {
+		Style commonStyle = null;
+		int index = 0;
+		for (StyledText styledText : styledTexts) {
+			int styledTextStart = index;
+			int styledTextEnd = index + styledText.text().length();
+			if (Math.max(start, styledTextStart) < Math.min(end, styledTextEnd)) {
+				Style style = styledText.style();
+				if (commonStyle == null) {
+					commonStyle = style;
+				} else if (!Objects.equals(commonStyle, style)) {
+					return Style.EMPTY;
 				}
-				rawTextRange.append(c);
 			}
-			plainIndex++;
+			index = styledTextEnd;
 		}
-
-		return rawTextRange.toString();
+		return commonStyle == null ? Style.EMPTY : commonStyle;
 	}
 
-	public record StyledTextSegment(int start, int end, String rawText, String plainText, Style style) {
-		public boolean intersects(TextRange range) {
-			return range.intersects(this.start, this.end);
+	private static String toLegacyFormattingString(Style style) {
+		StringBuilder result = new StringBuilder();
+		TextColor color = style.getColor();
+		if (color != null) {
+			for (ChatFormatting chatFormatting : ChatFormatting.values()) {
+				if (Objects.equals(TextColor.fromLegacyFormat(chatFormatting), color)) {
+					result.append(chatFormatting);
+					break;
+				}
+			}
 		}
+		if (style.isObfuscated()) {
+			result.append(ChatFormatting.OBFUSCATED);
+		}
+		if (style.isBold()) {
+			result.append(ChatFormatting.BOLD);
+		}
+		if (style.isStrikethrough()) {
+			result.append(ChatFormatting.STRIKETHROUGH);
+		}
+		if (style.isUnderlined()) {
+			result.append(ChatFormatting.UNDERLINE);
+		}
+		if (style.isItalic()) {
+			result.append(ChatFormatting.ITALIC);
+		}
+		return result.toString();
 	}
 
-	public record TextRange(int start, int end) {
-		public boolean intersects(int start, int end) {
-			return this.start < end && this.end > start;
-		}
+	private record StyledText(String text, Style style) {
 	}
 }

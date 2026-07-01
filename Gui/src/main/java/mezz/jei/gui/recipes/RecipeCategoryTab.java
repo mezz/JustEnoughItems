@@ -86,8 +86,8 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		String modId = uid.getNamespace();
 		IModIdHelper modIdHelper = Internal.getJeiRuntime().getJeiHelpers().getModIdHelper();
 		if (modIdHelper.isDisplayingModNameEnabled()) {
-			String modName = modIdHelper.getFormattedModNameForModId(modId);
-			tooltip.add(Component.literal(modName));
+			Component modName = modIdHelper.getFormattedModNameComponentForModId(modId);
+			tooltip.add(modName);
 		}
 		return tooltip;
 	}
