@@ -4,6 +4,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,8 @@ public class TestModIdHelper implements IModIdHelper {
 	}
 
 	@Override
+	@Deprecated(since = "10.8.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public String getFormattedModNameForModId(String modId) {
 		return getModNameForModId(modId);
 	}
@@ -36,6 +39,11 @@ public class TestModIdHelper implements IModIdHelper {
 	@Override
 	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, ITypedIngredient<T> typedIngredient) {
 		return tooltip;
+	}
+
+	@Override
+	public Component getFormattedModNameComponentForModId(String modId) {
+		return new TextComponent(getModNameForModId(modId));
 	}
 
 	@Override

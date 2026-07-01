@@ -162,7 +162,7 @@ public final class IngredientGridTooltipHelper {
 			ResourceLocation ingredientName = ingredientHelper.getResourceLocation(recipeOutput.getIngredient());
 			String ingredientModId = ingredientName.getNamespace();
 			if (!recipeModId.equals(ingredientModId)) {
-				String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
+				Component modName = modIdHelper.getFormattedModNameComponentForModId(recipeModId);
 				tooltip.add(
 					new TranslatableComponent("jei.tooltip.recipe.by", modName)
 						.withStyle(ChatFormatting.GRAY)

@@ -3,6 +3,7 @@ package mezz.jei.api.helpers;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
@@ -27,8 +28,21 @@ public interface IModIdHelper {
 
 	/**
 	 * Returns the mod name with color formatting, as specified in JEI's config. (default is blue italic)
+	 *
+	 * @deprecated use {@link #getFormattedModNameComponentForModId(String)}
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "10.68.0", forRemoval = true)
 	String getFormattedModNameForModId(String modId);
+
+	/**
+	 * Returns the mod name with color formatting, as specified in JEI's config. (default is blue italic)
+	 *
+	 * @since 10.68.0
+	 */
+	default Component getFormattedModNameComponentForModId(String modId) {
+		return new TextComponent(getFormattedModNameForModId(modId));
+	}
 
 	/**
 	 * Returns alternative mod names, used for searching for a mod by a different name.

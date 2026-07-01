@@ -15,6 +15,7 @@ import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -72,7 +73,7 @@ public class OutputSlotTooltipCallback implements IRecipeSlotRichTooltipCallback
 		if (recipeModId.equals(ingredientModId)) {
 			return;
 		}
-		String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
+		Component modName = modIdHelper.getFormattedModNameComponentForModId(recipeModId);
 		MutableComponent recipeBy = new TranslatableComponent("jei.tooltip.recipe.by", modName);
 		tooltip.add(recipeBy.withStyle(ChatFormatting.GRAY));
 	}

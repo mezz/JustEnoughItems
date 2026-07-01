@@ -1,5 +1,6 @@
 package mezz.jei.test;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.builder.IClickableIngredientFactory;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IGuiProperties;
@@ -11,7 +12,6 @@ import mezz.jei.common.ingredients.ITypedIngredientFactory;
 import mezz.jei.core.collect.ListMultiMap;
 import mezz.jei.library.gui.GuiContainerHandlers;
 import mezz.jei.library.gui.helpers.ScreenHelper;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;

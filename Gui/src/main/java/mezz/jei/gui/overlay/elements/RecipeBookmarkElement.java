@@ -37,6 +37,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.KeybindComponent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
@@ -137,7 +138,7 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 				ResourceLocation ingredientName = ingredientHelper.getResourceLocation(recipeOutput.getIngredient());
 				String ingredientModId = ingredientName.getNamespace();
 				if (!recipeModId.equals(ingredientModId)) {
-					String modName = modIdHelper.getFormattedModNameForModId(recipeModId);
+					Component modName = modIdHelper.getFormattedModNameComponentForModId(recipeModId);
 					MutableComponent recipeBy = new TranslatableComponent("jei.tooltip.recipe.by", modName);
 					tooltip.add(recipeBy.withStyle(ChatFormatting.GRAY));
 				}
