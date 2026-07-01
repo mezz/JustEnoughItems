@@ -21,7 +21,6 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import mezz.jei.api.constants.ModIds;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -132,7 +131,7 @@ public class ModIdFormattingConfig implements IJEIConfig {
 							if (lineString.equals(withoutFormatting)) {
 								return "";
 							} else if (lineString.contains(withoutFormatting)) {
-								return StringUtils.replaceOnce(lineString, ModIds.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
+								return StyledTextHelper.replaceFirst(line, ModIds.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
 							}
 						}
 					}
