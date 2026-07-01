@@ -8,7 +8,6 @@ import mezz.jei.core.util.function.CachedSupplierTransformer;
 import mezz.jei.library.config.serializers.ChatFormattingSerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -72,7 +71,7 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 			if (lineString.contains(ModIds.MINECRAFT_NAME)) {
 				String withoutFormatting = StringUtil.removeChatFormatting(lineString);
 				if (withoutFormatting.contains(ModIds.MINECRAFT_NAME)) {
-					return StringUtils.replaceOnce(lineString, ModIds.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
+					return StyledTextHelper.replaceFirst(line, ModIds.MINECRAFT_NAME, MOD_NAME_FORMAT_CODE);
 				}
 			}
 		}
