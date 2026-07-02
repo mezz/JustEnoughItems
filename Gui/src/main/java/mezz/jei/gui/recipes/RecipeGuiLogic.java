@@ -308,6 +308,12 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean hasMultiplePages() {
+		// Client-side recipe patch: when no recipes are available (e.g. connected to a
+		// server that does not sync recipes to JEI), there are no recipe categories.
+		// Avoid indexing into the empty category list, which crashes JEI GUI startup.
+		if (state.getRecipeCategories().isEmpty()) {
+			return false;
+		}
 		List<?> recipes = state.getFocusedRecipes().getRecipes();
 		return recipes.size() > state.getRecipesPerPage();
 	}

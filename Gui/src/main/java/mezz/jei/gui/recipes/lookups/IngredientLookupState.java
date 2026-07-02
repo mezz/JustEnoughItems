@@ -117,6 +117,10 @@ public class IngredientLookupState implements ILookupState {
 	}
 
 	public int recipeCount() {
+		// Client-side recipe patch: guard against an empty category list (no synced recipes).
+		if (recipeCategories.isEmpty()) {
+			return 0;
+		}
 		return getFocusedRecipes().getRecipes().size();
 	}
 
