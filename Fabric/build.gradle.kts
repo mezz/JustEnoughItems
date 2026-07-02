@@ -286,7 +286,8 @@ loom {
             configName = "Fabric Client Game Tests"
             ideConfigGenerated(false)
             runDir(loomRunDir.resolve("clientGameTest").toString())
-            property("jei.fabric.clientTest", "all")
+            property("jei.fabric.clientTest", providers.gradleProperty("jeiFabricClientTestSuite").orElse("all").get())
+            property("jei.clientRecipeSyncTest", providers.gradleProperty("jeiClientRecipeSyncTest").orElse("singleplayer").get())
             vmArgs(
                 "-Dfabric.log.level=info",
                 "-Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient",
@@ -341,6 +342,7 @@ val writeClientGameTestWithoutAmecsOptions = registerWriteClientTestOptionsTask(
 val cleanClientGameTestResults = tasks.register<Delete>("cleanClientGameTestResults") {
     delete(
         layout.buildDirectory.dir("test-results/fabric-client-config-screen"),
+        layout.buildDirectory.dir("test-results/fabric-client-recipe-sync"),
         layout.buildDirectory.dir("test-results/fabric-client-creative-inventory"),
         layout.buildDirectory.dir("test-results/fabric-client-key-mapping"),
         layout.buildDirectory.dir("test-results/fabric-client-gametest")

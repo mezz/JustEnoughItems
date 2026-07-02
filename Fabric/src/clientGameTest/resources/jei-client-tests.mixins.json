@@ -5,6 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "InputConstantsMixin",
+    "IndigoChunkRenderInfoMixin",
+    "IndigoBlockRenderInfoMixin",
     "KeyboardHandlerAccessor",
     "MouseHandlerAccessor"
   ],
