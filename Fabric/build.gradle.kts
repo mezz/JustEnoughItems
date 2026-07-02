@@ -135,6 +135,16 @@ dependencies {
     changelogMarkdown(project(":Changelog"))
 }
 
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = "${modId}-test"
+        enableGameTests = true
+        enableClientGameTests = true
+        eula = true
+    }
+}
+
 loom {
     mods {
         create("jei") {

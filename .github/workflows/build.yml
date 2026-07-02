@@ -38,6 +38,9 @@ jobs:
       - name: Run NeoForge GameTests
         run: ./gradlew :NeoForge:runGameTestServer --no-daemon
 
+      - name: Run Fabric Client GameTests
+        run: ./gradlew :Fabric:runClientGameTest --no-daemon
+
       - name: Copy together artifacts
         shell: bash
         run: |
