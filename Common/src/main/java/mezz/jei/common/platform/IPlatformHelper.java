@@ -19,5 +19,7 @@ public interface IPlatformHelper {
 
 	IPlatformModHelper getModHelper();
 
+	IPlatformWorldHelper getWorldHelper();
+
 	ITestHelper getTestHelper();
 }

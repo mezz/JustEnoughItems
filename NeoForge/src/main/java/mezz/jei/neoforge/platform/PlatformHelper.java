@@ -16,6 +16,7 @@ public class PlatformHelper implements IPlatformHelper {
 	private final Supplier<ScreenHelper> screenHelper = new LazySupplier<>(ScreenHelper::new);
 	private final Supplier<IngredientHelper> ingredientHelper = new LazySupplier<>(IngredientHelper::new);
 	private final Supplier<ModHelper> modHelper = new LazySupplier<>(ModHelper::new);
+	private final Supplier<WorldHelper> worldHelper = new LazySupplier<>(WorldHelper::new);
 	private final Supplier<TestHelper> testHelper = new LazySupplier<>(TestHelper::new);
 
 	@Override
@@ -61,6 +62,11 @@ public class PlatformHelper implements IPlatformHelper {
 	@Override
 	public ModHelper getModHelper() {
 		return modHelper.get();
+	}
+
+	@Override
+	public WorldHelper getWorldHelper() {
+		return worldHelper.get();
 	}
 
 	@Override
