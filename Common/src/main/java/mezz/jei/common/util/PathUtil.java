@@ -1,4 +1,6 @@
-package mezz.jei.core.util;
+package mezz.jei.common.util;
+
+import net.minecraft.FileUtil;
 
 import java.io.IOException;
 import java.nio.file.AtomicMoveNotSupportedException;
@@ -7,11 +9,22 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 public class PathUtil {
-	private static final String unsafeFileChars = "[^\\w-]";
+	private static final String legacyUnsafeFileChars = "[^\\w-]";
 	private static boolean atomicMoveSupported = true;
 
 	public static String sanitizePathName(String filename) {
-		return String.join("_", filename.split(unsafeFileChars));
+		String sanitized = FileUtil.sanitizeName(filename).trim();
+		if (sanitized.isEmpty()) {
+			return "_";
+		}
+		if (!FileUtil.isPathPortable(Path.of(sanitized))) {
+			return "_%s_".formatted(sanitized);
+		}
+		return sanitized;
+	}
+
+	public static String sanitizePathNameLegacy(String filename) {
+		return String.join("_", filename.split(legacyUnsafeFileChars));
 	}
 
 	public static void writeUsingTempFile(Path path, Iterable<? extends CharSequence> lines) throws IOException {
