@@ -7,7 +7,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.core.util.PathUtil;
+import mezz.jei.common.util.PathUtil;
 import mezz.jei.library.ingredients.IngredientVisibility;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
