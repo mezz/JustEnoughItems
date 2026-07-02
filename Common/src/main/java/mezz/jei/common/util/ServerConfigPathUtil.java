@@ -2,10 +2,10 @@ package mezz.jei.common.util;
 
 import com.google.common.net.HostAndPort;
 import com.google.common.net.InetAddresses;
+import mezz.jei.common.platform.Services;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
-import net.minecraft.world.level.storage.LevelStorageSource;
 
 import java.net.IDN;
 import java.nio.file.Files;
@@ -16,7 +16,6 @@ import java.util.Optional;
 public final class ServerConfigPathUtil {
 	private static final Path worldDirPath = Path.of("world");
 	private static final Path serverDirPath = worldDirPath.resolve("server");
-	private static final ReflectionUtil reflectionUtil = new ReflectionUtil();
 
 	private ServerConfigPathUtil() {
 
@@ -30,9 +29,7 @@ public final class ServerConfigPathUtil {
 				if (connection.isMemoryConnection()) {
 					return Optional.ofNullable(minecraft.getSingleplayerServer())
 						.flatMap(minecraftServer ->
-							reflectionUtil.getFieldWithClass(minecraftServer, LevelStorageSource.LevelStorageAccess.class)
-								.findFirst()
-								.map(LevelStorageSource.LevelStorageAccess::getLevelId)
+							Services.PLATFORM.getWorldHelper().getLevelId(minecraftServer)
 								.map(PathUtil::sanitizePathName)
 								.map(name -> worldDirPath.resolve("local").resolve(name))
 						);

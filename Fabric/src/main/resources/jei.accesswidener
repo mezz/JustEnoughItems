@@ -15,6 +15,8 @@ accessible field net/minecraft/client/gui/screens/recipebook/RecipeBookComponent
 
 accessible field net/minecraft/client/renderer/texture/SpriteContents byMipLevel [Lcom/mojang/blaze3d/platform/NativeImage;
 
+accessible field net/minecraft/server/MinecraftServer storageSource Lnet/minecraft/world/level/storage/LevelStorageSource$LevelStorageAccess;
+
 accessible field net/minecraft/world/item/crafting/SmithingTransformRecipe base Lnet/minecraft/world/item/crafting/Ingredient;
 accessible field net/minecraft/world/item/crafting/SmithingTransformRecipe addition Lnet/minecraft/world/item/crafting/Ingredient;
 accessible field net/minecraft/world/item/crafting/SmithingTransformRecipe template Lnet/minecraft/world/item/crafting/Ingredient;
