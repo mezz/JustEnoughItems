@@ -68,6 +68,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private static final int smallButtonWidth = 13;
 	private static final int smallButtonHeight = 13;
 	private static final int minGuiWidth = 198;
+	private static final int minGuiHeight = 198;
 
 	private final IInternalKeyMappings keyBindings;
 	private final BookmarkList bookmarks;
@@ -265,12 +266,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		super.init();
 
 		final int xSize = minGuiWidth;
-		int ySize;
+		int ySize = Math.max(this.height, minGuiHeight);
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
 		if (clientConfig.isCenterSearchBarEnabled()) {
-			ySize = this.height - 76;
+			ySize -= 76;
 		} else {
-			ySize = this.height - 58;
+			ySize -= 58;
 		}
 		if (ySize < IClientConfig.minRecipeGuiHeight) {
 			ySize = IClientConfig.minRecipeGuiHeight;
