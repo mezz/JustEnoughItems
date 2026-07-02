@@ -12,6 +12,7 @@ import mezz.jei.library.startup.StartData;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import org.apache.logging.log4j.LogManager;
@@ -54,8 +55,17 @@ public class ClientLifecycleHandler {
 			ScreenEvents.AFTER_INIT.register((minecraft, screen, scaledWidth, scaledHeight) -> {
 				if (!running) {
 					if (screen instanceof AbstractContainerScreen && minecraft.player != null) {
-						LOGGER.error("A Screen is opening but JEI hasn't started yet because the recipe sync event didn't happen.");
+						// Client-side recipe patch: the server never synced recipes to JEI
+						// (e.g. an older server reached through ViaVersion). Load the client's
+						// own vanilla recipes so recipes can still be browsed, then start JEI.
+						LOGGER.info("JEI: recipe sync event did not happen; loading recipes from client-side data.");
+						loadClientSideRecipesIfMissing();
 						startJei();
+						// JEI's per-screen input handlers register on screen BEFORE_INIT, which
+						// already fired for this screen before JEI started. Re-initialize the
+						// current screen (deferred, to avoid reentrancy) so those handlers attach
+						// and mouse/keyboard input works on the already-open screen.
+						reinitScreenForInput(minecraft, screen);
 					}
 				}
 			});
@@ -75,6 +85,21 @@ public class ClientLifecycleHandler {
 				startJei();
 			}
 		};
+	}
+
+	private void loadClientSideRecipesIfMissing() {
+		if (Internal.getClientSyncedRecipes().values().isEmpty()) {
+			ClientRecipeLoader.loadClientSideRecipes()
+				.ifPresent(Internal::setClientSyncedRecipes);
+		}
+	}
+
+	private void reinitScreenForInput(Minecraft minecraft, Screen screen) {
+		minecraft.execute(() -> {
+			if (minecraft.screen == screen) {
+				screen.init(minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight());
+			}
+		});
 	}
 
 	private void startJei() {
