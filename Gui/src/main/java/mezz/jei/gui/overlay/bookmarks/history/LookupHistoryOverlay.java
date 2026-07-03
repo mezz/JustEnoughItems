@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class LookupHistoryOverlay implements IRecipeFocusSource {
+public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryOverlay {
 
 	private static final int INGREDIENT_PADDING = 1;
 	public static final int SLOT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
@@ -78,11 +78,12 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 
 	public boolean isListDisplayed() {
 		return clientConfig.isLookupHistoryEnabled() &&
-				isOnSide() &&
+				isDisplayedOnThisSide() &&
 				contents.hasRoom();
 	}
 
-	public boolean isOnSide() {
+	@Override
+	public boolean isDisplayedOnThisSide() {
 		return ownerDisplaySide.equals(clientConfig.getLookupHistoryDisplaySide());
 	}
 
@@ -90,12 +91,14 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 		return lookupHistory;
 	}
 
+	@Override
 	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
 		this.contents.updateBounds(availableArea, guiExclusionAreas, mouseExclusionPoint);
 		int rows = this.contents.getArea().getHeight() / SLOT_HEIGHT;
 		this.rows = Math.min(rows, clientConfig.getMaxLookupHistoryRows());
 	}
 
+	@Override
 	public void updateLayout() {
 		List<IElement<?>> ingredientList = lookupHistory.getElements();
 		this.contents.set(0, ingredientList);
@@ -148,6 +151,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 		return this.contents.getArea();
 	}
 
+	@Override
 	public void close() {
 		this.ghostIngredientDragManager.stopDrag();
 	}

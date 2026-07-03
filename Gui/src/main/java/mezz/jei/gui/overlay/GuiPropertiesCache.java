@@ -1,7 +1,6 @@
 package mezz.jei.gui.overlay;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
-import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.GuiProperties;
@@ -13,43 +12,51 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
-public class ScreenPropertiesCache {
-	private final IScreenHelper screenHelper;
+public class GuiPropertiesCache<T> implements IGuiPropertiesCache {
+	private final GuiPropertiesGetter<T> guiPropertiesGetter;
 	private @Nullable IGuiProperties previousGuiProperties;
 	private boolean guiPropertiesAreValid = false;
 	private Set<ImmutableRect2i> previousGuiExclusionAreas = Set.of();
 	private @Nullable ImmutablePoint2i mouseExclusionArea;
 
-	public ScreenPropertiesCache(IScreenHelper screenHelper) {
-		this.screenHelper = screenHelper;
+	public GuiPropertiesCache(GuiPropertiesGetter<T> guiPropertiesGetter) {
+		this.guiPropertiesGetter = guiPropertiesGetter;
 	}
 
-	public static class Updater {
+	@FunctionalInterface
+	public interface GuiPropertiesGetter<T> {
+		@Nullable
+		IGuiProperties getGuiProperties(T screen);
+	}
+
+	private static class Updater<T> implements IScreenPropertiesUpdater {
 		private static final Logger LOGGER = LogManager.getLogger();
 		private static final int MIN_GUI_DIMENSION = -1_000_000_000;
 		private static final int MAX_GUI_DIMENSION = 1_000_000_000;
 
-		private final ScreenPropertiesCache cache;
+		private final GuiPropertiesCache<T> cache;
 		private final Runnable onChange;
 		private boolean changed = false;
 
-		public Updater(ScreenPropertiesCache cache, Runnable onChange) {
+		public Updater(GuiPropertiesCache<T> cache, Runnable onChange) {
 			this.cache = cache;
 			this.onChange = onChange;
 		}
 
-		public Updater updateScreen(@Nullable Screen guiScreen) {
-			IGuiProperties currentGuiProperties = Optional.ofNullable(guiScreen)
-				.flatMap(cache.screenHelper::getGuiProperties)
-				.orElse(null);
-
-			return updateScreen(currentGuiProperties);
+		@Override
+		@SuppressWarnings("unchecked")
+		public Updater<T> updateScreen(@Nullable Screen guiScreen) {
+			if (guiScreen == null) {
+				return updateGuiProperties(null);
+			}
+			T typedScreen = (T) guiScreen;
+			return updateGuiProperties(cache.guiPropertiesGetter.getGuiProperties(typedScreen));
 		}
 
-		public Updater updateScreen(@Nullable IGuiProperties currentGuiProperties) {
+		@Override
+		public Updater<T> updateGuiProperties(@Nullable IGuiProperties currentGuiProperties) {
 			if (!GuiProperties.areEqual(cache.previousGuiProperties, currentGuiProperties)) {
 				boolean previouslyValid = cache.guiPropertiesAreValid;
 				cache.guiPropertiesAreValid = validateGuiProperties(currentGuiProperties);
@@ -62,7 +69,8 @@ public class ScreenPropertiesCache {
 			return this;
 		}
 
-		public Updater updateExclusionAreas(Set<ImmutableRect2i> updatedGuiExclusionAreas) {
+		@Override
+		public Updater<T> updateExclusionAreas(Set<ImmutableRect2i> updatedGuiExclusionAreas) {
 			if (!cache.previousGuiExclusionAreas.equals(updatedGuiExclusionAreas)) {
 				cache.previousGuiExclusionAreas = updatedGuiExclusionAreas;
 				changed = true;
@@ -70,7 +78,8 @@ public class ScreenPropertiesCache {
 			return this;
 		}
 
-		public Updater updateMouseExclusionArea(@Nullable ImmutablePoint2i mouseExclusionArea) {
+		@Override
+		public Updater<T> updateMouseExclusionArea(@Nullable ImmutablePoint2i mouseExclusionArea) {
 			if (!Objects.equals(cache.mouseExclusionArea, mouseExclusionArea)) {
 				cache.mouseExclusionArea = mouseExclusionArea;
 				changed = true;
@@ -78,10 +87,20 @@ public class ScreenPropertiesCache {
 			return this;
 		}
 
+		@Override
 		public void update() {
 			if (changed) {
-				onChange.run();
+				notifyChange();
 			}
+		}
+
+		@Override
+		public void forceUpdate() {
+			notifyChange();
+		}
+
+		private void notifyChange() {
+			onChange.run();
 		}
 
 		private static void validate(List<String> errors, String property, int min, int max, int value) {
@@ -99,8 +118,8 @@ public class ScreenPropertiesCache {
 			validate(errors, "guiYSize", 1, MAX_GUI_DIMENSION, guiProperties.guiYSize());
 			validate(errors, "screenWidth", 1, MAX_GUI_DIMENSION, guiProperties.screenWidth());
 			validate(errors, "screenHeight", 1, MAX_GUI_DIMENSION, guiProperties.screenHeight());
-			validate(errors,"guiLeft", MIN_GUI_DIMENSION, MAX_GUI_DIMENSION, guiProperties.guiLeft());
-			validate(errors,"guiTop", MIN_GUI_DIMENSION, MAX_GUI_DIMENSION, guiProperties.guiTop());
+			validate(errors, "guiLeft", MIN_GUI_DIMENSION, MAX_GUI_DIMENSION, guiProperties.guiLeft());
+			validate(errors, "guiTop", MIN_GUI_DIMENSION, MAX_GUI_DIMENSION, guiProperties.guiTop());
 			if (!errors.isEmpty()) {
 				LOGGER.error(
 					"Received invalid gui properties for screen: {}\n{}",
@@ -113,21 +132,24 @@ public class ScreenPropertiesCache {
 		}
 	}
 
-	public Updater getUpdater(Runnable onChange) {
-		return new Updater(this, onChange);
+	@Override
+	public IScreenPropertiesUpdater createUpdater(Runnable onChange) {
+		return new Updater<>(this, onChange);
 	}
 
 	public boolean hasValidScreen() {
 		return guiPropertiesAreValid;
 	}
 
-	public Optional<IGuiProperties> getGuiProperties() {
+	@Override
+	public @Nullable IGuiProperties getGuiProperties() {
 		if (!guiPropertiesAreValid) {
-			return Optional.empty();
+			return null;
 		}
-		return Optional.ofNullable(previousGuiProperties);
+		return previousGuiProperties;
 	}
 
+	@Override
 	public Set<ImmutableRect2i> getGuiExclusionAreas() {
 		return previousGuiExclusionAreas;
 	}

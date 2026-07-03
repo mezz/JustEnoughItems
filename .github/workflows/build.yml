@@ -39,7 +39,7 @@ jobs:
         run: ./gradlew :NeoForge:runGameTestServer --no-daemon
 
       - name: Run Fabric Client GameTests
-        run: ./gradlew :Fabric:runClientGameTest --no-daemon
+        run: xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest --no-daemon
 
       - name: Copy together artifacts
         shell: bash

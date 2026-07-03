@@ -9,6 +9,6 @@ public interface IFilterTextSource {
 
 	@FunctionalInterface
 	interface Listener {
-		void onChange(String filterText);
+		void onChange(String oldFilterText, String newFilterText);
 	}
 }
