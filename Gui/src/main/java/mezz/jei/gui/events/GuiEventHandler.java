@@ -94,11 +94,11 @@ public class GuiEventHandler {
 			.map(ImmutableRect2i::new)
 			.collect(Collectors.toUnmodifiableSet());
 		ingredientListOverlay.getScreenPropertiesUpdater()
-			.updateScreen(guiProperties)
+			.updateGuiProperties(guiProperties)
 			.updateExclusionAreas(guiExclusionAreas)
 			.update();
 		bookmarkOverlay.getScreenPropertiesUpdater()
-			.updateScreen(guiProperties)
+			.updateGuiProperties(guiProperties)
 			.updateExclusionAreas(guiExclusionAreas)
 			.update();
 
@@ -161,8 +161,6 @@ public class GuiEventHandler {
 				guiProperties.guiTop() + guiProperties.guiYSize(),
 				0x22CCCC00
 			);
-		} else {
-			return;
 		}
 
 	}

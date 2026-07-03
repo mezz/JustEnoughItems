@@ -171,7 +171,7 @@ neoForge {
 			logLevel = Level.DEBUG
 		}
 		create("gameTestServer") {
-			getType().set("gameTestServer")
+			type.set("gameTestServer")
 			gameDirectory = file("run/gameTestServer")
 			sourceSet = sourceSets.named("gameTest")
 			loadedMods.add(mods.named("jeitests"))
@@ -183,6 +183,7 @@ neoForge {
 }
 
 val cleanGameTestJunitResults = tasks.register<Delete>("cleanGameTestJunitResults") {
+	description = "Deletes NeoForge game test JUnit result files before running game tests."
 	delete(gameTestJunitResultsDir)
 }
 
