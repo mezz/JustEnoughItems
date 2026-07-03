@@ -10,6 +10,7 @@ import mezz.jei.common.network.packets.PacketCheatPermission;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PacketGiveItemStack;
 import mezz.jei.common.network.packets.PacketRecipeTransfer;
+import mezz.jei.common.network.packets.PacketRecipeTransferCounted;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.network.packets.PacketSetHotbarItemStack;
 import mezz.jei.common.network.packets.PlayToClientPacket;
@@ -51,6 +52,7 @@ public class NetworkHandler {
 				.add(PacketDeletePlayerItem.TYPE, PacketDeletePlayerItem.STREAM_CODEC, wrapServerHandler(PacketDeletePlayerItem::process))
 				.add(PacketGiveItemStack.TYPE, PacketGiveItemStack.STREAM_CODEC, wrapServerHandler(PacketGiveItemStack::process))
 				.add(PacketRecipeTransfer.TYPE, PacketRecipeTransfer.STREAM_CODEC, wrapServerHandler(PacketRecipeTransfer::process))
+				.add(PacketRecipeTransferCounted.TYPE, PacketRecipeTransferCounted.STREAM_CODEC, wrapServerHandler(PacketRecipeTransferCounted::process))
 				.add(PacketSetHotbarItemStack.TYPE, PacketSetHotbarItemStack.STREAM_CODEC, wrapServerHandler(PacketSetHotbarItemStack::process))
 				.add(PacketRequestCheatPermission.TYPE, PacketRequestCheatPermission.STREAM_CODEC, wrapServerHandler(PacketRequestCheatPermission::process))
 			.clientbound()

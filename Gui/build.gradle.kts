@@ -49,6 +49,11 @@ dependencies {
     dependencyProjects.forEach {
         implementation(it)
     }
+    testCompileOnly(
+        group = "org.jetbrains",
+        name = "annotations",
+        version = "23.0.0"
+    )
     testImplementation(
         group = "org.junit.jupiter",
         name = "junit-jupiter",
@@ -63,6 +68,7 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
     include("mezz/jei/test/gui/**")
+    include("mezz/jei/gui/**")
     exclude("mezz/jei/test/gui/lib/**")
     outputs.upToDateWhen { false }
     testLogging {

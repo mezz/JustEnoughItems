@@ -1,6 +1,7 @@
 package mezz.jei.forge.network;
 
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PlayToServerPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -25,6 +26,11 @@ public final class ConnectionToServer implements IConnectionToServer {
 
 	@Override
 	public boolean isJeiOnServer() {
+		return canSendPacket(PacketDeletePlayerItem.TYPE);
+	}
+
+	@Override
+	public boolean canSendPacket(CustomPacketPayload.Type<?> packetType) {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientPacketListener clientPacketListener = minecraft.getConnection();
 		if (clientPacketListener == null) {
@@ -44,7 +50,7 @@ public final class ConnectionToServer implements IConnectionToServer {
 	public <T extends PlayToServerPacket<T>> void sendPacketToServer(T packet) {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientPacketListener netHandler = minecraft.getConnection();
-		if (netHandler != null && isJeiOnServer()) {
+		if (netHandler != null && canSendPacket(packet.type())) {
 			Channel<CustomPacketPayload> channel = networkHandler.getChannel();
 			Packet<?> payload = NetworkDirection.PLAY_TO_SERVER.buildPacket(channel, packet);
 			netHandler.send(payload);
