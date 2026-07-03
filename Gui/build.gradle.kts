@@ -46,6 +46,7 @@ dependencies {
     dependencyProjects.forEach {
         implementation(it)
     }
+    testCompileOnly("org.jspecify:jspecify:1.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
@@ -53,6 +54,7 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
     include("mezz/jei/test/gui/**")
+    include("mezz/jei/gui/**")
     exclude("mezz/jei/test/gui/lib/**")
     outputs.upToDateWhen { false }
     testLogging {

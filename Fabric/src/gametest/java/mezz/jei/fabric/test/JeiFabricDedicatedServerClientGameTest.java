@@ -10,7 +10,8 @@ public class JeiFabricDedicatedServerClientGameTest implements FabricClientGameT
 	@Override
 	public void runTest(ClientGameTestContext context) {
 		try (TestDedicatedServerContext server = context.worldBuilder().createServer();
-			 TestServerConnection connection = server.connect()) {
+			TestServerConnection connection = server.connect()
+		) {
 			connection.getClientLevel().waitForChunksRender();
 
 			JeiFabricClientGameTestAssertions.assertJeiStartedWithSyncedRecipes(context);

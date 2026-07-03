@@ -17,9 +17,10 @@ public class FilterTextSource implements IFilterTextSource {
 		if (this.filterText.equals(filterText)) {
 			return false;
 		}
+		String oldFilterText = this.filterText;
 		this.filterText = filterText;
 		for (Listener listener : this.listeners) {
-			listener.onChange(filterText);
+			listener.onChange(oldFilterText, filterText);
 		}
 		return true;
 	}

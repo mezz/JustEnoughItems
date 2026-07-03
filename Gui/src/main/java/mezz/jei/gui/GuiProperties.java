@@ -2,7 +2,6 @@ package mezz.jei.gui;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.gui.handlers.IGuiProperties;
-import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.screens.Screen;
 import org.jspecify.annotations.Nullable;
 
@@ -27,22 +26,6 @@ public record GuiProperties(
 			a.guiXSize() == b.guiXSize() &&
 			a.screenWidth() == b.screenWidth() &&
 			a.screenHeight() == b.screenHeight();
-	}
-
-	public static ImmutableRect2i getScreenRectangle(IGuiProperties guiProperties) {
-		return new ImmutableRect2i(0, 0, guiProperties.screenWidth(), guiProperties.screenHeight());
-	}
-
-	public static ImmutableRect2i getGuiRectangle(IGuiProperties guiProperties) {
-		return new ImmutableRect2i(guiProperties.guiLeft(), guiProperties.guiTop(), guiProperties.guiXSize(), guiProperties.guiYSize());
-	}
-
-	public static int getGuiRight(IGuiProperties guiProperties) {
-		return guiProperties.guiLeft() + guiProperties.guiXSize();
-	}
-
-	public static int getGuiBottom(IGuiProperties guiProperties) {
-		return guiProperties.guiTop() + guiProperties.guiYSize();
 	}
 
 	public GuiProperties {

@@ -91,7 +91,7 @@ public class IngredientFilter implements
 			this.elementSearch.logStatistics();
 		}
 
-		this.filterTextSource.addListener(filterText -> {
+		this.filterTextSource.addListener((oldFilterText, newFilterText) -> {
 			invalidateCache();
 			notifyListenersOfChange();
 		});

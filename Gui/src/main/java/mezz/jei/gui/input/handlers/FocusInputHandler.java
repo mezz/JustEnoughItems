@@ -104,8 +104,7 @@ public class FocusInputHandler implements IUserInputHandler {
 			.findFirst()
 			.map(clicked -> {
 				if (!input.isSimulate()) {
-					IElement<?> element = clicked.getElement();
-					element.show(recipesGui, focusUtil, roles);
+					clicked.show(recipesGui, focusUtil, roles);
 				}
 				return new SameElementInputHandler(this, clicked::isMouseOver);
 			});
