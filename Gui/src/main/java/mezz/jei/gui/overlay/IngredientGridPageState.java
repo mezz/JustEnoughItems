@@ -62,6 +62,11 @@ final class IngredientGridPageState {
 		return -1;
 	}
 
+	/**
+	 * Page anchors only need to find the same in-memory element after filtering or relayout.
+	 * A full UID comparison would call ingredient helpers and subtype interpreters for every candidate here,
+	 * which is slower and unnecessary for keeping the user's visible page stable.
+	 */
 	static boolean isSameIngredientElement(IElement<?> first, IElement<?> second) {
 		if (first == second) {
 			return true;
