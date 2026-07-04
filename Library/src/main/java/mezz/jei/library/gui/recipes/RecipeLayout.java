@@ -44,6 +44,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.util.context.ContextMap;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -96,9 +97,10 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		IFocusGroup focuses,
 		IIngredientManager ingredientManager,
 		IScalableDrawable recipeBackground,
-		int recipeBorderPadding
+		int recipeBorderPadding,
+		ContextMap contextMap
 	) {
-		RecipeLayoutBuilder<T> builder = new RecipeLayoutBuilder<>(recipeCategory, recipe, ingredientManager);
+		RecipeLayoutBuilder<T> builder = new RecipeLayoutBuilder<>(recipeCategory, recipe, ingredientManager, contextMap);
 		try {
 			recipeCategory.setRecipe(builder, recipe, focuses);
 			RecipeLayout<T> recipeLayout = builder.buildRecipeLayout(

@@ -4,6 +4,7 @@ import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.util.BrewingRecipeMakerCommon;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 
 import java.util.ArrayList;
@@ -15,12 +16,14 @@ public class BrewingRecipeMaker {
 	public static List<IJeiBrewingRecipe> getBrewingRecipes(
 		IIngredientManager ingredientManager,
 		IVanillaRecipeFactory vanillaRecipeFactory,
-		PotionBrewing potionBrewing
+		PotionBrewing potionBrewing,
+		ContextMap contextMap
 	) {
 		Set<IJeiBrewingRecipe> recipes = BrewingRecipeMakerCommon.getVanillaBrewingRecipes(
 			vanillaRecipeFactory,
 			ingredientManager,
-			potionBrewing
+			potionBrewing,
+			contextMap
 		);
 
 		List<IJeiBrewingRecipe> recipeList = new ArrayList<>(recipes);

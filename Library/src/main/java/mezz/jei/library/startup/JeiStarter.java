@@ -39,9 +39,12 @@ import mezz.jei.library.runtime.JeiHelpers;
 import mezz.jei.library.runtime.JeiRuntime;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.crafting.RecipeMap;
+import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -103,12 +106,14 @@ public final class JeiStarter {
 
 	public void start() {
 		Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft.level == null) {
+		ClientLevel level = minecraft.level;
+		if (level == null) {
 			LOGGER.error("Failed to start JEI, there is no Minecraft client level.");
 			return;
 		}
-		RegistryAccess registryAccess = minecraft.level.registryAccess();
+		RegistryAccess registryAccess = level.registryAccess();
 		RegistryUtil.setRegistryAccess(registryAccess);
+		ContextMap contextMap = SlotDisplayContext.fromLevel(level);
 
 		LoggedTimer totalTime = new LoggedTimer();
 		totalTime.start("Starting JEI");
@@ -141,7 +146,8 @@ public final class JeiStarter {
 			focusFactory,
 			codecHelper,
 			ingredientManager,
-			subtypeManager
+			subtypeManager,
+			contextMap
 		);
 		stopCallbacks.add(jeiHelpers::onRuntimeStopped);
 
@@ -150,7 +156,8 @@ public final class JeiStarter {
 			vanillaPlugin,
 			recipeCategorySortingConfig,
 			jeiHelpers,
-			ingredientManager
+			ingredientManager,
+			contextMap
 		);
 		IRecipeTransferManager recipeTransferManager = PluginLoader.createRecipeTransferManager(
 			vanillaPlugin,

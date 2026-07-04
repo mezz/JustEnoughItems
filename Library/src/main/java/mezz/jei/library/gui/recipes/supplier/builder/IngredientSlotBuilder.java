@@ -12,6 +12,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
 import mezz.jei.library.ingredients.SimpleIngredientAcceptor;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -30,8 +31,13 @@ import java.util.Optional;
 public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 	private final SimpleIngredientAcceptor ingredients;
 
-	public IngredientSlotBuilder(IIngredientManager ingredientManager) {
-		this.ingredients = new SimpleIngredientAcceptor(ingredientManager);
+	public IngredientSlotBuilder(IIngredientManager ingredientManager, ContextMap contextMap) {
+		this.ingredients = new SimpleIngredientAcceptor(ingredientManager, contextMap);
+	}
+
+	@Override
+	public ContextMap getContextMap() {
+		return ingredients.getContextMap();
 	}
 
 	@Override

@@ -31,6 +31,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextMap;
 import org.jetbrains.annotations.Unmodifiable;
 import org.jspecify.annotations.Nullable;
 
@@ -51,6 +52,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private final @Nullable OffsetDrawable background;
 	private final @Nullable IDrawable overlay;
 	private final @Nullable String slotName;
+	private final ContextMap contextMap;
 	private ImmutableRect2i rect;
 
 	/**
@@ -81,12 +83,14 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		@Nullable OffsetDrawable background,
 		@Nullable IDrawable overlay,
 		@Nullable String slotName,
-		@Nullable RendererOverrides rendererOverrides
+		@Nullable RendererOverrides rendererOverrides,
+		ContextMap contextMap
 	) {
 		this.allIngredients = Collections.unmodifiableList(allIngredients);
 		this.background = background;
 		this.overlay = overlay;
 		this.slotName = slotName;
+		this.contextMap = contextMap;
 		this.rendererOverrides = rendererOverrides;
 		this.role = role;
 		this.rect = rect;
@@ -384,7 +388,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	public IIngredientAcceptor<?> createDisplayOverrides() {
 		if (displayOverrides == null) {
 			IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
-			displayOverrides = new DisplayIngredientAcceptor(ingredientManager);
+			displayOverrides = new DisplayIngredientAcceptor(ingredientManager, contextMap);
 		}
 		return displayOverrides;
 	}

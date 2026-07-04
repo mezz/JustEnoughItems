@@ -6,6 +6,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.focus.FocusGroup;
 import mezz.jei.library.gui.recipes.supplier.builder.IngredientSupplierBuilder;
+import net.minecraft.util.context.ContextMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,8 +16,8 @@ public final class IngredientSupplierHelper {
 	private IngredientSupplierHelper() {
 	}
 
-	public static <T> IIngredientSupplier getIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory, IIngredientManager ingredientManager) {
-		IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager);
+	public static <T> IIngredientSupplier getIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory, IIngredientManager ingredientManager, ContextMap contextMap) {
+		IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager, contextMap);
 		if (!recipeCategory.isHandled(recipe)) {
 			return builder.buildIngredientSupplier();
 		}

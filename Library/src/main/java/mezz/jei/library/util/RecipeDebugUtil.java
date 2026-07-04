@@ -9,6 +9,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.Services;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,12 +25,12 @@ public final class RecipeDebugUtil {
 	private RecipeDebugUtil() {
 	}
 
-	public static <T> String getDebugInfoFromRecipe(T recipe, IRecipeCategory<T> recipeCategory, IIngredientManager ingredientManager) {
+	public static <T> String getDebugInfoFromRecipe(T recipe, IRecipeCategory<T> recipeCategory, IIngredientManager ingredientManager, ContextMap contextMap) {
 		StringBuilder recipeInfoBuilder = new StringBuilder();
 		String recipeName = getNameForRecipe(recipe);
 		recipeInfoBuilder.append(recipeName);
 
-		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
+		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager, contextMap);
 
 		recipeInfoBuilder.append(" {");
 		recipeInfoBuilder.append("\n  Outputs:");

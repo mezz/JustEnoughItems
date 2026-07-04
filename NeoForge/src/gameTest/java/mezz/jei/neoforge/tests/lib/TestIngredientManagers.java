@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
@@ -27,8 +28,8 @@ public final class TestIngredientManagers {
 	private TestIngredientManagers() {
 	}
 
-	public static VanillaRecipeFactory createVanillaRecipeFactory() {
-		return new VanillaRecipeFactory(createVanillaItemStackHelper());
+	public static VanillaRecipeFactory createVanillaRecipeFactory(ContextMap contextMap) {
+		return new VanillaRecipeFactory(createVanillaItemStackHelper(), contextMap);
 	}
 
 	public static IIngredientManager createVanillaItemStackIngredientManager(ServerLevel level) {

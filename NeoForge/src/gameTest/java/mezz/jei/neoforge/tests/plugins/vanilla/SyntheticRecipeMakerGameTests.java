@@ -53,10 +53,11 @@ public final class SyntheticRecipeMakerGameTests {
 	@TestHolder(description = "Every registry-backed tipped arrow has a JEI recipe that crafts in a real crafting table.")
 	public static void tippedArrowRecipesCraftExpectedRegistryOutputs(JeiGameTestHelper helper) {
 		prepareRegistries(helper);
+		ContextMap displayContext = createDisplayContext(helper);
 		List<ItemStack> expectedOutputs = createExpectedTippedArrowOutputs();
-		List<RecipeHolder<CraftingRecipe>> jeiRecipes = createTippedArrowRecipes();
+		List<RecipeHolder<CraftingRecipe>> jeiRecipes = createTippedArrowRecipes(displayContext);
 
-		assertJeiRecipesCraftExpectedOutputs(helper, expectedOutputs, jeiRecipes);
+		assertJeiRecipesCraftExpectedOutputs(helper, displayContext, expectedOutputs, jeiRecipes);
 
 		helper.succeed();
 	}
@@ -66,10 +67,11 @@ public final class SyntheticRecipeMakerGameTests {
 	@TestHolder(description = "Every banner color has a shield-decoration JEI recipe that crafts in a real crafting table.")
 	public static void shieldDecorationRecipesCraftExpectedRegistryOutputs(JeiGameTestHelper helper) {
 		prepareRegistries(helper);
+		ContextMap displayContext = createDisplayContext(helper);
 		List<ItemStack> expectedOutputs = createExpectedShieldDecorationOutputs();
 		List<RecipeHolder<CraftingRecipe>> jeiRecipes = createShieldDecorationRecipes();
 
-		assertJeiRecipesCraftExpectedOutputs(helper, expectedOutputs, jeiRecipes);
+		assertJeiRecipesCraftExpectedOutputs(helper, displayContext, expectedOutputs, jeiRecipes);
 
 		helper.succeed();
 	}
@@ -79,7 +81,8 @@ public final class SyntheticRecipeMakerGameTests {
 	@TestHolder(description = "Generated JEI anvil recipes produce their displayed outputs in a real anvil menu.")
 	public static void anvilRecipesProduceDisplayedOutputs(JeiGameTestHelper helper) {
 		prepareRegistries(helper);
-		List<IJeiAnvilRecipe> recipes = createAnvilRecipes(helper);
+		ContextMap displayContext = createDisplayContext(helper);
+		List<IJeiAnvilRecipe> recipes = createAnvilRecipes(helper, displayContext);
 
 		helper.assertTrue(!recipes.isEmpty(), "Generated JEI anvil recipes should not be empty");
 		for (IJeiAnvilRecipe recipe : recipes) {
@@ -108,9 +111,13 @@ public final class SyntheticRecipeMakerGameTests {
 		RegistryUtil.setRegistryAccess(helper.getLevel().registryAccess());
 	}
 
-	private static List<RecipeHolder<CraftingRecipe>> createTippedArrowRecipes() {
+	private static ContextMap createDisplayContext(JeiGameTestHelper helper) {
+		return SlotDisplayContext.fromLevel(helper.getLevel());
+	}
+
+	private static List<RecipeHolder<CraftingRecipe>> createTippedArrowRecipes(ContextMap displayContext) {
 		List<RecipeHolder<CraftingRecipe>> recipes = new ArrayList<>();
-		TippedArrowRecipeMaker recipeMaker = new TippedArrowRecipeMaker(TestIngredientManagers.createVanillaRecipeFactory());
+		TippedArrowRecipeMaker recipeMaker = new TippedArrowRecipeMaker(TestIngredientManagers.createVanillaRecipeFactory(displayContext));
 		recipeMaker.createRecipes(recipes::add);
 		return recipes;
 	}
@@ -148,11 +155,10 @@ public final class SyntheticRecipeMakerGameTests {
 		return stack;
 	}
 
-	private static List<IJeiAnvilRecipe> createAnvilRecipes(JeiGameTestHelper helper) {
-		ContextMap displayContext = SlotDisplayContext.fromLevel(helper.getLevel());
+	private static List<IJeiAnvilRecipe> createAnvilRecipes(JeiGameTestHelper helper, ContextMap displayContext) {
 		AnvilMenu anvilMenu = createAnvilMenu(helper);
 		return AnvilRecipeMaker.getAnvilRecipes(
-			TestIngredientManagers.createVanillaRecipeFactory(),
+			TestIngredientManagers.createVanillaRecipeFactory(displayContext),
 			TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel()),
 			displayContext,
 			anvilMenu
@@ -279,6 +285,7 @@ public final class SyntheticRecipeMakerGameTests {
 
 	private static void assertJeiRecipesCraftExpectedOutputs(
 		JeiGameTestHelper helper,
+		ContextMap displayContext,
 		List<ItemStack> expectedOutputs,
 		List<RecipeHolder<CraftingRecipe>> jeiRecipes
 	) {
@@ -290,7 +297,7 @@ public final class SyntheticRecipeMakerGameTests {
 		helper.assertEquals(expectedOutputs.size(), jeiRecipes.size(), "Generated JEI recipe count");
 
 		for (RecipeHolder<CraftingRecipe> jeiRecipe : jeiRecipes) {
-			JeiCraftingRecipeIngredients recipeIngredients = getJeiCraftingRecipeIngredients(helper, craftingCategory, jeiRecipe);
+			JeiCraftingRecipeIngredients recipeIngredients = getJeiCraftingRecipeIngredients(helper, displayContext, craftingCategory, jeiRecipe);
 			ItemStack actualOutput = helper.craftInCraftingTable(recipeIngredients.inputs());
 
 			helper.assertSameStack(recipeIngredients.output(), actualOutput, "JEI recipe should craft its displayed output");
@@ -308,11 +315,11 @@ public final class SyntheticRecipeMakerGameTests {
 
 	private static JeiCraftingRecipeIngredients getJeiCraftingRecipeIngredients(
 		JeiGameTestHelper helper,
+		ContextMap displayContext,
 		CraftingRecipeCategory craftingCategory,
 		RecipeHolder<CraftingRecipe> recipeHolder
 	) {
 		helper.assertTrue(craftingCategory.isHandled(recipeHolder), "Generated JEI recipe should be handled by the crafting category: " + recipeHolder.id().identifier());
-		ContextMap displayContext = SlotDisplayContext.fromLevel(helper.getLevel());
 		List<ItemStack> inputs = getCraftingInputGrid(helper, displayContext, craftingCategory, recipeHolder);
 		ItemStack output = getJeiCraftingRecipeOutput(helper, displayContext, recipeHolder);
 		return new JeiCraftingRecipeIngredients(inputs, output);

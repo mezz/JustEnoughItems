@@ -10,8 +10,6 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.util.ResourceLocationUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -25,7 +23,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -35,7 +32,6 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -47,33 +43,30 @@ public final class AnvilRecipeMaker {
 	private final IIngredientManager ingredientManager;
 	private final IIngredientHelper<ItemStack> ingredientHelper;
 	private final IPlatformItemStackHelper itemStackHelper;
-	private final ContextMap contextmap;
+	private final ContextMap contextMap;
 	private final AnvilMenu anvilMenu;
 
-	public static List<IJeiAnvilRecipe> getAnvilRecipes(IVanillaRecipeFactory vanillaRecipeFactory, IIngredientManager ingredientManager) {
-		Minecraft minecraft = Minecraft.getInstance();
-		ClientLevel level = Objects.requireNonNull(minecraft.level);
-		ContextMap clientContextMap = SlotDisplayContext.fromLevel(level);
+	public static List<IJeiAnvilRecipe> getAnvilRecipes(IVanillaRecipeFactory vanillaRecipeFactory, IIngredientManager ingredientManager, ContextMap contextMap) {
 		AnvilMenu fakeAnvilMenu = AnvilHelper.getFakeAnvilMenu();
-		return getAnvilRecipes(vanillaRecipeFactory, ingredientManager, clientContextMap, fakeAnvilMenu);
+		return getAnvilRecipes(vanillaRecipeFactory, ingredientManager, contextMap, fakeAnvilMenu);
 	}
 
-	public static List<IJeiAnvilRecipe> getAnvilRecipes(IVanillaRecipeFactory vanillaRecipeFactory, IIngredientManager ingredientManager, ContextMap displayContext, AnvilMenu anvilMenu) {
-		AnvilRecipeMaker anvilRecipeMaker = new AnvilRecipeMaker(vanillaRecipeFactory, ingredientManager, displayContext, anvilMenu);
+	public static List<IJeiAnvilRecipe> getAnvilRecipes(IVanillaRecipeFactory vanillaRecipeFactory, IIngredientManager ingredientManager, ContextMap contextMap, AnvilMenu anvilMenu) {
+		AnvilRecipeMaker anvilRecipeMaker = new AnvilRecipeMaker(vanillaRecipeFactory, ingredientManager, contextMap, anvilMenu);
 		return anvilRecipeMaker.getAnvilRecipes();
 	}
 
 	private AnvilRecipeMaker(
 		IVanillaRecipeFactory vanillaRecipeFactory,
 		IIngredientManager ingredientManager,
-		ContextMap contextmap,
+		ContextMap contextMap,
 		AnvilMenu anvilMenu
 	) {
 		this.vanillaRecipeFactory = vanillaRecipeFactory;
 		this.ingredientManager = ingredientManager;
 		this.ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 		this.itemStackHelper = Services.PLATFORM.getItemStackHelper();
-		this.contextmap = contextmap;
+		this.contextMap = contextMap;
 		this.anvilMenu = anvilMenu;
 	}
 
@@ -187,13 +180,13 @@ public final class AnvilRecipeMaker {
 			return selfRepair;
 		}
 
-		public List<ItemStack> getRepairMaterials(ContextMap contextmap) {
+		public List<ItemStack> getRepairMaterials(ContextMap contextMap) {
 			if (repairItems.size() == 0) {
 				return List.of();
 			}
 			return Ingredient.of(repairItems)
 				.display()
-				.resolveForStacks(contextmap);
+				.resolveForStacks(contextMap);
 		}
 	}
 
@@ -222,7 +215,7 @@ public final class AnvilRecipeMaker {
 					consumer.accept(repairWithSame);
 				}
 
-				List<ItemStack> repairMaterials = repairData.getRepairMaterials(contextmap);
+				List<ItemStack> repairMaterials = repairData.getRepairMaterials(contextMap);
 				if (!repairMaterials.isEmpty()) {
 					ItemStack damagedFully = itemStack.copy();
 					damagedFully.setDamageValue(damagedFully.getMaxDamage());

@@ -5,19 +5,14 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.context.ContextMap;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
-import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class CraftingGridHelper implements ICraftingGridHelper {
 	public static final CraftingGridHelper INSTANCE = new CraftingGridHelper();
@@ -46,13 +41,8 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 
 	@Override
 	public void createAndSetIngredientsFromDisplays(IRecipeLayoutBuilder builder, List<SlotDisplay> displays, int width, int height) {
-		Minecraft minecraft = Minecraft.getInstance();
-		ContextMap contextmap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
-
-		List<List<ItemStack>> ingredients = displays.stream()
-			.map(d -> d.resolveForStacks(contextmap))
-			.toList();
-		createAndSetInputs(builder, ingredients, width, height);
+		List<IRecipeSlotBuilder> inputSlots = createInputSlots(builder, width, height);
+		setDisplays(inputSlots, displays, width, height);
 	}
 
 	@Override
@@ -101,12 +91,30 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		}
 	}
 
+	private static void setDisplays(List<IRecipeSlotBuilder> slotBuilders, List<SlotDisplay> displays, int width, int height) {
+		if (width <= 0 || height <= 0) {
+			width = height = getShapelessSize(displays.size());
+		}
+		if (slotBuilders.size() < width * height) {
+			throw new IllegalArgumentException(String.format("There are not enough slots (%s) to hold a recipe of this size. (%sx%s)", slotBuilders.size(), width, height));
+		}
+
+		for (int i = 0; i < displays.size(); i++) {
+			int index = getCraftingIndex(i, width, height);
+			IRecipeSlotBuilder slot = slotBuilders.get(index);
+
+			SlotDisplay display = displays.get(i);
+			if (display != null) {
+				slot.add(display);
+			}
+		}
+	}
+
 	@Override
 	public IRecipeSlotBuilder createAndSetOutputs(IRecipeLayoutBuilder builder, SlotDisplay outputs) {
-		Minecraft minecraft = Minecraft.getInstance();
-		ContextMap contextmap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
-		List<ItemStack> outputStacks = outputs.resolveForStacks(contextmap);
-		return createAndSetOutputs(builder, outputStacks);
+		return builder.addOutputSlot(95, 19)
+			.setOutputSlotBackground()
+			.add(outputs);
 	}
 
 	@Override

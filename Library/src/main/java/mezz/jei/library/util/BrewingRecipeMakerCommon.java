@@ -12,7 +12,6 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.ingredients.IngredientSet;
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PotionSubtypeInterpreter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
@@ -26,7 +25,6 @@ import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
-import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,21 +43,19 @@ public class BrewingRecipeMakerCommon {
 	public static Set<IJeiBrewingRecipe> getVanillaBrewingRecipes(
 		IVanillaRecipeFactory recipeFactory,
 		IIngredientManager ingredientManager,
-		PotionBrewing potionBrewing
+		PotionBrewing potionBrewing,
+		ContextMap contextMap
 	) {
 		Set<IJeiBrewingRecipe> recipes = new HashSet<>();
 		Registry<Potion> potionRegistry = RegistryUtil.getRegistry(Registries.POTION);
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 
-		Minecraft minecraft = Minecraft.getInstance();
-		ContextMap contextmap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
-
-		IngredientSet<ItemStack> knownPotions = getBaseKnownPotions(ingredientManager, potionRegistry, potionBrewing, contextmap);
+		IngredientSet<ItemStack> knownPotions = getBaseKnownPotions(ingredientManager, potionRegistry, potionBrewing, contextMap);
 
 		IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
 		IngredientSet<ItemStack> potionReagents = ingredientHelper.getPotionIngredients(potionBrewing)
 			.map(Ingredient::display)
-			.flatMap(display -> display.resolve(contextmap, SlotDisplay.ItemStackContentsFactory.INSTANCE))
+			.flatMap(display -> display.resolve(contextMap, SlotDisplay.ItemStackContentsFactory.INSTANCE))
 			.collect(Collectors.toCollection(() -> new IngredientSet<>(itemStackHelper, UidContext.Ingredient)));
 
 		boolean foundNewPotions;
@@ -83,7 +79,7 @@ public class BrewingRecipeMakerCommon {
 		IIngredientManager ingredientManager,
 		Registry<Potion> potionRegistry,
 		PotionBrewing potionBrewing,
-		ContextMap contextmap
+		ContextMap contextMap
 	) {
 		IPlatformIngredientHelper ingredientHelper = Services.PLATFORM.getIngredientHelper();
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
@@ -92,7 +88,7 @@ public class BrewingRecipeMakerCommon {
 			.getPotionContainers(potionBrewing)
 			.stream()
 			.map(Ingredient::display)
-			.flatMap(display -> display.resolve(contextmap, SlotDisplay.ItemStackContentsFactory.INSTANCE))
+			.flatMap(display -> display.resolve(contextMap, SlotDisplay.ItemStackContentsFactory.INSTANCE))
 			.collect(Collectors.toCollection(() -> new IngredientSet<>(itemStackHelper, UidContext.Ingredient)));
 
 		IngredientSet<ItemStack> knownPotions = new IngredientSet<>(itemStackHelper, UidContext.Ingredient);

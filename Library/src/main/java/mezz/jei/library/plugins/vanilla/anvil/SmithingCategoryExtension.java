@@ -3,16 +3,13 @@ package mezz.jei.library.plugins.vanilla.anvil;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.ISmithingCategoryExtension;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingRecipeInput;
-import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public abstract class SmithingCategoryExtension<R extends SmithingRecipe> implements ISmithingCategoryExtension<R> {
@@ -42,24 +39,22 @@ public abstract class SmithingCategoryExtension<R extends SmithingRecipe> implem
 
 	@Override
 	public <T extends IIngredientAcceptor<T>> void setOutput(R recipe, T ingredientAcceptor) {
+		ContextMap contextMap = ingredientAcceptor.getContextMap();
 		Optional<Ingredient> templateIngredient = recipeHelper.getTemplate(recipe);
 		Ingredient baseIngredient = recipeHelper.getBase(recipe);
 		Optional<Ingredient> additionIngredient = recipeHelper.getAddition(recipe);
 
-		Minecraft minecraft = Minecraft.getInstance();
-		ContextMap contextmap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
-
-		List<ItemStack> templateStacks = templateIngredient.map(i -> i.display().resolveForStacks(contextmap)).orElse(List.of(ItemStack.EMPTY));
+		List<ItemStack> templateStacks = templateIngredient.map(i -> i.display().resolveForStacks(contextMap)).orElse(List.of(ItemStack.EMPTY));
 		if (templateStacks.isEmpty()) {
 			templateStacks = List.of(ItemStack.EMPTY);
 		}
 
-		List<ItemStack> baseStacks = baseIngredient.display().resolveForStacks(contextmap);
+		List<ItemStack> baseStacks = baseIngredient.display().resolveForStacks(contextMap);
 		if (baseStacks.isEmpty()) {
 			baseStacks = List.of(ItemStack.EMPTY);
 		}
 
-		ItemStack addition = additionIngredient.map(i -> i.display().resolveForFirstStack(contextmap)).orElse(ItemStack.EMPTY);
+		ItemStack addition = additionIngredient.map(i -> i.display().resolveForFirstStack(contextMap)).orElse(ItemStack.EMPTY);
 
 		for (ItemStack template : templateStacks) {
 			for (ItemStack base : baseStacks) {
