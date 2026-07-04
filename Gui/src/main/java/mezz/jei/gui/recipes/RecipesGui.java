@@ -30,6 +30,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.gui.GuiProperties;
+import mezz.jei.gui.bookmarks.BookmarkFactory;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.buttons.IIconButtonController;
@@ -119,7 +120,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		IFocusFactory focusFactory,
 		BookmarkList bookmarks,
 		LookupHistory lookupHistory,
-		IGuiHelper guiHelper
+		IGuiHelper guiHelper,
+		BookmarkFactory bookmarkFactory
 	) {
 		super(Component.literal("Recipes"));
 		this.bookmarks = bookmarks;
@@ -130,7 +132,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			lookupHistory,
 			recipeTransferManager,
 			this::updateLayout,
-			focusFactory
+			focusFactory,
+			bookmarkFactory
 		);
 		this.craftingStations = new CraftingStations(recipeManager);
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, recipeManager, guiHelper);
