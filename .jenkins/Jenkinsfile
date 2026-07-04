@@ -62,10 +62,10 @@ pipeline {
             }
         }
 
-        stage('Archive') {
-            steps {
-                junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
-            }
+    }
+    post {
+        always {
+            junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
         }
     }
 }
