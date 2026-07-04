@@ -10,6 +10,7 @@ import net.neoforged.testframework.conf.FrameworkConfiguration;
 import net.neoforged.testframework.impl.MutableTestFramework;
 import net.neoforged.testframework.summary.GitHubActionsStepSummaryDumper;
 import net.neoforged.testframework.summary.JUnitSummaryDumper;
+import mezz.jei.neoforge.tests.lib.FailedTestExceptionSummaryDumper;
 
 @Mod(JeiTests.MOD_ID)
 public final class JeiTests {
@@ -19,6 +20,7 @@ public final class JeiTests {
 	public JeiTests(IEventBus modEventBus, ModContainer modContainer) {
 		MutableTestFramework framework = FrameworkConfiguration.builder(Identifier.fromNamespaceAndPath(MOD_ID, "tests"))
 			.dumpers(
+				new FailedTestExceptionSummaryDumper(),
 				new JUnitSummaryDumper(Path.of(
 					System.getProperty(JUNIT_OUTPUT_DIR_PROPERTY, "../../build/test-results/gameTest")
 				)),

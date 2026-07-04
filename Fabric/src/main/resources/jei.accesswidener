@@ -46,3 +46,5 @@ accessible field net/minecraft/client/gui/components/toasts/ToastManager visible
 accessible class net/minecraft/client/gui/components/toasts/ToastManager$ToastInstance
 
 accessible method net/minecraft/world/item/crafting/ShapedRecipePattern shrink (Ljava/util/List;)[Ljava/lang/String;
+
+accessible field net/minecraft/gametest/framework/UnknownGameTestException reason Ljava/lang/Throwable;
