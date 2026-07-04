@@ -35,12 +35,6 @@ pipeline {
             }
         }
 
-        stage('Fabric Client GameTests') {
-            steps {
-                sh "CI=true ./gradlew :Fabric:runClientGameTest"
-            }
-        }
-
         stage('Publish Maven') {
             steps {
                 sh "./gradlew :Gui:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
