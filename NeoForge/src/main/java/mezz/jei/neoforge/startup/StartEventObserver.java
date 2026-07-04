@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 /**
  * This class observes events and determines when it's the right time to start JEI.
  *
- * JEI needs to see both the {@link TagsUpdatedEvent} and {@link RecipesReceivedEvent}
+ * JEI needs to see both the client packet {@link TagsUpdatedEvent} and {@link RecipesReceivedEvent}
  * before it is ready to start.
  *
  * Depending on the configuration (Integrated server, vanilla server, modded server),
@@ -107,6 +107,11 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 		if (currentConnection == null) {
 			// No connection => Disregard, this probably an event being fired on the integrated server thread
 			LOGGER.debug("JEI StartEventObserver received {} too early, ignoring", event.getClass());
+			return;
+		}
+		if (event instanceof TagsUpdatedEvent tagsUpdatedEvent &&
+			tagsUpdatedEvent.getUpdateCause() != TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED) {
+			LOGGER.debug("JEI StartEventObserver received {} for {}, ignoring", event.getClass(), tagsUpdatedEvent.getUpdateCause());
 			return;
 		}
 		logReceivedEvent(event);
