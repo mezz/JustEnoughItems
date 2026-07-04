@@ -1,6 +1,7 @@
 package mezz.jei.neoforge.tests.lib;
 
 import mezz.jei.common.network.packets.PlayToServerPacket;
+import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.gametest.framework.GameTestException;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.network.chat.Component;
@@ -34,6 +35,7 @@ public class JeiGameTestHelper extends ExtendedGameTestHelper {
 
 	public JeiGameTestHelper(GameTestInfo info) {
 		super(info);
+		RegistryUtil.setRegistryAccess(getLevel().registryAccess());
 	}
 
 	@SuppressWarnings("removal")

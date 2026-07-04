@@ -52,7 +52,6 @@ public final class SyntheticRecipeMakerGameTests {
 	@EmptyTemplate
 	@TestHolder(description = "Every registry-backed tipped arrow has a JEI recipe that crafts in a real crafting table.")
 	public static void tippedArrowRecipesCraftExpectedRegistryOutputs(JeiGameTestHelper helper) {
-		prepareRegistries(helper);
 		ContextMap displayContext = createDisplayContext(helper);
 		List<ItemStack> expectedOutputs = createExpectedTippedArrowOutputs();
 		List<RecipeHolder<CraftingRecipe>> jeiRecipes = createTippedArrowRecipes(displayContext);
@@ -66,7 +65,6 @@ public final class SyntheticRecipeMakerGameTests {
 	@EmptyTemplate
 	@TestHolder(description = "Every banner color has a shield-decoration JEI recipe that crafts in a real crafting table.")
 	public static void shieldDecorationRecipesCraftExpectedRegistryOutputs(JeiGameTestHelper helper) {
-		prepareRegistries(helper);
 		ContextMap displayContext = createDisplayContext(helper);
 		List<ItemStack> expectedOutputs = createExpectedShieldDecorationOutputs();
 		List<RecipeHolder<CraftingRecipe>> jeiRecipes = createShieldDecorationRecipes();
@@ -80,7 +78,6 @@ public final class SyntheticRecipeMakerGameTests {
 	@EmptyTemplate
 	@TestHolder(description = "Generated JEI anvil recipes produce their displayed outputs in a real anvil menu.")
 	public static void anvilRecipesProduceDisplayedOutputs(JeiGameTestHelper helper) {
-		prepareRegistries(helper);
 		ContextMap displayContext = createDisplayContext(helper);
 		List<IJeiAnvilRecipe> recipes = createAnvilRecipes(helper, displayContext);
 
@@ -96,7 +93,6 @@ public final class SyntheticRecipeMakerGameTests {
 	@EmptyTemplate
 	@TestHolder(description = "Generated JEI grindstone recipes produce their displayed outputs in a real grindstone menu.")
 	public static void grindstoneRecipesProduceDisplayedOutputs(JeiGameTestHelper helper) {
-		prepareRegistries(helper);
 		List<IJeiGrindstoneRecipe> recipes = createGrindstoneRecipes(helper);
 
 		helper.assertTrue(!recipes.isEmpty(), "Generated JEI grindstone recipes should not be empty");
@@ -105,10 +101,6 @@ public final class SyntheticRecipeMakerGameTests {
 		}
 
 		helper.succeed();
-	}
-
-	private static void prepareRegistries(JeiGameTestHelper helper) {
-		RegistryUtil.setRegistryAccess(helper.getLevel().registryAccess());
 	}
 
 	private static ContextMap createDisplayContext(JeiGameTestHelper helper) {
