@@ -90,6 +90,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.BlastFurnaceMenu;
 import net.minecraft.world.inventory.BrewingStandMenu;
@@ -262,6 +263,7 @@ public class VanillaPlugin implements IModPlugin {
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+		ContextMap contextMap = registration.getContextMap();
 
 		VanillaRecipes vanillaRecipes = new VanillaRecipes(clientSyncedRecipes);
 
@@ -281,7 +283,7 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipes(RecipeTypes.SMELTING_FUEL, FuelRecipeMaker.getFuelRecipes(ingredientManager, RecipeType.SMELTING));
 		registration.addRecipes(RecipeTypes.SMOKING_FUEL, FuelRecipeMaker.getFuelRecipes(ingredientManager, RecipeType.SMOKING));
 		registration.addRecipes(RecipeTypes.BLASTING_FUEL, FuelRecipeMaker.getFuelRecipes(ingredientManager, RecipeType.BLASTING));
-		registration.addRecipes(RecipeTypes.ANVIL, AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientManager));
+		registration.addRecipes(RecipeTypes.ANVIL, AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientManager, contextMap));
 		registration.addRecipes(RecipeTypes.SMITHING, vanillaRecipes.getSmithingRecipes(smithingCategory));
 		registration.addRecipes(RecipeTypes.COMPOSTING, CompostingRecipeMaker.getRecipes(ingredientManager));
 
@@ -290,7 +292,7 @@ public class VanillaPlugin implements IModPlugin {
 		ErrorUtil.checkNotNull(level, "minecraft.level");
 		PotionBrewing potionBrewing = level.potionBrewing();
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
-		List<IJeiBrewingRecipe> brewingRecipes = recipeHelper.getBrewingRecipes(ingredientManager, vanillaRecipeFactory, potionBrewing);
+		List<IJeiBrewingRecipe> brewingRecipes = recipeHelper.getBrewingRecipes(ingredientManager, vanillaRecipeFactory, potionBrewing, contextMap);
 		brewingRecipes.sort(Comparator.comparingInt(IJeiBrewingRecipe::getBrewingSteps));
 		registration.addRecipes(RecipeTypes.BREWING, brewingRecipes);
 		registration.addRecipes(RecipeTypes.GRINDSTONE, GrindstoneRecipeMaker.getGrindstoneRecipes(ingredientManager, recipeHelper));

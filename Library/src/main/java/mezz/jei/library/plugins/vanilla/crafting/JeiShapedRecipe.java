@@ -4,11 +4,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mezz.jei.library.recipes.RecipeSerializers;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -20,26 +18,24 @@ import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
 import net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
-import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class JeiShapedRecipe implements CraftingRecipe {
 	private final ShapedRecipePattern pattern;
 	private final List<SlotDisplay> displays;
-	private final SlotDisplay results;
+	private final ItemStack result;
 	private final String group;
 	private final CraftingBookCategory category;
 
-	public JeiShapedRecipe(String group, CraftingBookCategory category, ShapedRecipePattern pattern, List<SlotDisplay> displays, SlotDisplay results) {
+	public JeiShapedRecipe(String group, CraftingBookCategory category, ShapedRecipePattern pattern, List<SlotDisplay> displays, ItemStack result) {
 		this.group = group;
 		this.category = category;
 		this.pattern = pattern;
 		this.displays = displays;
-		this.results = results;
+		this.result = result;
 	}
 
 	@Override
@@ -69,7 +65,7 @@ public class JeiShapedRecipe implements CraftingRecipe {
 				this.pattern.width(),
 				this.pattern.height(),
 				displays,
-				results,
+				new SlotDisplay.ItemStackSlotDisplay(this.result),
 				new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
 			)
 		);
@@ -87,9 +83,7 @@ public class JeiShapedRecipe implements CraftingRecipe {
 
 	@Override
 	public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
-		Minecraft minecraft = Minecraft.getInstance();
-		ContextMap contextmap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
-		return this.results.resolveForFirstStack(contextmap).copy();
+		return this.result.copy();
 	}
 
 	public int getWidth() {
@@ -110,8 +104,8 @@ public class JeiShapedRecipe implements CraftingRecipe {
 				return shapedRecipe.pattern;
 			}), Codec.list(SlotDisplay.CODEC).fieldOf("display").forGetter((shapedRecipe) -> {
 				return shapedRecipe.displays;
-			}), SlotDisplay.CODEC.fieldOf("result").forGetter((shapedRecipe) -> {
-				return shapedRecipe.results;
+			}), ItemStack.CODEC.fieldOf("result").forGetter((shapedRecipe) -> {
+				return shapedRecipe.result;
 			})).apply(instance, JeiShapedRecipe::new);
 		});
 		public static final StreamCodec<RegistryFriendlyByteBuf, JeiShapedRecipe> STREAM_CODEC = StreamCodec.of(Serializer::toNetwork, Serializer::fromNetwork);
@@ -136,8 +130,8 @@ public class JeiShapedRecipe implements CraftingRecipe {
 			ShapedRecipePattern shapedRecipePattern = ShapedRecipePattern.STREAM_CODEC.decode(buffer);
 
 			int displayCount = buffer.readVarInt();
-			if (displayCount < 9) {
-				throw new IllegalArgumentException("Display count must be 9 or fewer");
+			if (displayCount < 0 || displayCount > 9) {
+				throw new IllegalArgumentException("Display count must be between 0 and 9");
 			}
 			List<SlotDisplay> displays = new ArrayList<>(displayCount);
 			for (int i = 0; i < displayCount; i++) {
@@ -145,8 +139,8 @@ public class JeiShapedRecipe implements CraftingRecipe {
 				displays.add(display);
 			}
 
-			SlotDisplay results = SlotDisplay.STREAM_CODEC.decode(buffer);
-			return new JeiShapedRecipe(string, craftingBookCategory, shapedRecipePattern, displays, results);
+			ItemStack result = ItemStack.STREAM_CODEC.decode(buffer);
+			return new JeiShapedRecipe(string, craftingBookCategory, shapedRecipePattern, displays, result);
 		}
 
 		private static void toNetwork(RegistryFriendlyByteBuf buffer, JeiShapedRecipe recipe) {
@@ -160,7 +154,7 @@ public class JeiShapedRecipe implements CraftingRecipe {
 				SlotDisplay.STREAM_CODEC.encode(buffer, display);
 			}
 
-			SlotDisplay.STREAM_CODEC.encode(buffer, recipe.results);
+			ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
 		}
 	}
 }

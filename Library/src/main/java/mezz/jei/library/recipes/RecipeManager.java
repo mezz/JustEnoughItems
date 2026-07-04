@@ -28,6 +28,7 @@ import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
 import mezz.jei.library.util.IngredientSupplierHelper;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextMap;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
@@ -40,18 +41,21 @@ public class RecipeManager implements IRecipeManager {
 	private final IIngredientManager ingredientManager;
 	private final ImmutableListMultimap<IRecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators;
 	private final List<IRecipeButtonControllerFactory> recipeButtonControllerFactories;
+	private final ContextMap contextMap;
 
 	public RecipeManager(
 		RecipeManagerInternal internal,
 		IIngredientManager ingredientManager,
 		ImmutableListMultimap<IRecipeType<?>,
 		IRecipeCategoryDecorator<?>> recipeCategoryDecorators,
-		List<IRecipeButtonControllerFactory> recipeButtonControllerFactories
+		List<IRecipeButtonControllerFactory> recipeButtonControllerFactories,
+		ContextMap contextMap
 	) {
 		this.internal = internal;
 		this.ingredientManager = ingredientManager;
 		this.recipeCategoryDecorators = recipeCategoryDecorators;
 		this.recipeButtonControllerFactories = recipeButtonControllerFactories;
+		this.contextMap = contextMap;
 	}
 
 	@Override
@@ -88,7 +92,7 @@ public class RecipeManager implements IRecipeManager {
 		ErrorUtil.validateRecipes(recipeType, recipes);
 		ErrorUtil.assertMainThread();
 
-		internal.addRecipes(recipeType, recipes);
+		internal.addRecipes(recipeType, recipes, contextMap);
 	}
 
 	@Unmodifiable
@@ -124,7 +128,8 @@ public class RecipeManager implements IRecipeManager {
 			focusGroup,
 			ingredientManager,
 			recipeBackground,
-			borderPadding
+			borderPadding,
+			contextMap
 		)
 		.orElseGet(() -> {
 			return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, borderPadding);
@@ -157,7 +162,8 @@ public class RecipeManager implements IRecipeManager {
 			focusGroup,
 			ingredientManager,
 			recipeBackground,
-			borderPadding
+			borderPadding,
+			contextMap
 		);
 	}
 
@@ -183,13 +189,14 @@ public class RecipeManager implements IRecipeManager {
 			focusGroup,
 			ingredientManager,
 			background,
-			borderSize
+			borderSize,
+			contextMap
 		);
 	}
 
 	@Override
 	public IRecipeSlotDrawable createRecipeSlotDrawable(RecipeIngredientRole role, List<Optional<ITypedIngredient<?>>> ingredients, Set<Integer> focusedIngredients, int ingredientCycleOffset) {
-		RecipeSlotBuilder builder = new RecipeSlotBuilder(ingredientManager, 0, role);
+		RecipeSlotBuilder builder = new RecipeSlotBuilder(ingredientManager, contextMap, 0, role);
 		builder.addOptionalTypedIngredients(ingredients);
 		CycleTimer cycleTimer = CycleTimer.create(ingredientCycleOffset);
 		Pair<Integer, IRecipeSlotDrawable> result = builder.build(focusedIngredients, cycleTimer);
@@ -198,7 +205,7 @@ public class RecipeManager implements IRecipeManager {
 
 	@Override
 	public <T> IIngredientSupplier getRecipeIngredients(IRecipeCategory<T> recipeCategory, T recipe) {
-		return IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
+		return IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager, contextMap);
 	}
 
 	@Override

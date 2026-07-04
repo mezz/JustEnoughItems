@@ -5,6 +5,7 @@ import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import net.minecraft.core.Holder;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
@@ -58,8 +59,8 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 	}
 
 	@Override
-	public List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory, PotionBrewing potionBrewing) {
-		return BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory, potionBrewing);
+	public List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory, PotionBrewing potionBrewing, ContextMap contextMap) {
+		return BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory, potionBrewing, contextMap);
 	}
 
 	@Override

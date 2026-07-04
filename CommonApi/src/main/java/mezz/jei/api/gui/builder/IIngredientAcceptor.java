@@ -4,6 +4,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -165,6 +166,17 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	 */
 	default THIS addItemStacks(List<ItemStack> itemStacks) {
 		return addIngredients(VanillaTypes.ITEM_STACK, itemStacks);
+	}
+
+	/**
+	 * @return the current context for resolving recipe displays.
+	 *
+	 * @since 27.13.0
+	 * @apiNote Use this when resolving {@link SlotDisplay}s directly.
+	 * If you add {@link SlotDisplay}s to this acceptor, JEI will resolve them with this context.
+	 */
+	default ContextMap getContextMap() {
+		throw new UnsupportedOperationException("This ingredient acceptor does not provide a ContextMap");
 	}
 
 	/**

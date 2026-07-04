@@ -12,6 +12,7 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.plugins.jei.info.IngredientInfoRecipe;
 import mezz.jei.library.recipes.RecipeManagerInternal;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.context.ContextMap;
 
 import java.util.List;
 
@@ -19,15 +20,18 @@ public class RecipeRegistration implements IRecipeRegistration {
 	private final IJeiHelpers jeiHelpers;
 	private final IIngredientManager ingredientManager;
 	private final RecipeManagerInternal recipeManager;
+	private final ContextMap contextMap;
 
 	public RecipeRegistration(
 		IJeiHelpers jeiHelpers,
 		IIngredientManager ingredientManager,
-		RecipeManagerInternal recipeManager
+		RecipeManagerInternal recipeManager,
+		ContextMap contextMap
 	) {
 		this.jeiHelpers = jeiHelpers;
 		this.ingredientManager = ingredientManager;
 		this.recipeManager = recipeManager;
+		this.contextMap = contextMap;
 	}
 
 	@Override
@@ -46,10 +50,15 @@ public class RecipeRegistration implements IRecipeRegistration {
 	}
 
 	@Override
+	public ContextMap getContextMap() {
+		return contextMap;
+	}
+
+	@Override
 	public <T> void addRecipes(IRecipeType<T> recipeType, List<T> recipes) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.checkNotNull(recipes, "recipes");
-		this.recipeManager.addRecipes(recipeType, recipes);
+		this.recipeManager.addRecipes(recipeType, recipes, contextMap);
 	}
 
 	@Override

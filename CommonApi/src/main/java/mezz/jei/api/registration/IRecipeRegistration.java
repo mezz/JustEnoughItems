@@ -7,6 +7,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
@@ -27,6 +28,15 @@ public interface IRecipeRegistration {
 	 * The {@link IVanillaRecipeFactory} allows creation of vanilla recipes.
 	 */
 	IVanillaRecipeFactory getVanillaRecipeFactory();
+
+	/**
+	 * @return the current context for resolving recipe displays.
+	 *
+	 * @since 27.13.0
+	 */
+	default ContextMap getContextMap() {
+		throw new UnsupportedOperationException("This recipe registration does not provide a ContextMap");
+	}
 
 	/**
 	 * Add the recipes provided by your plugin.

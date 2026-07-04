@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
@@ -29,8 +30,8 @@ public final class TestIngredientManagers {
 	private TestIngredientManagers() {
 	}
 
-	public static VanillaRecipeFactory createVanillaRecipeFactory() {
-		return new VanillaRecipeFactory(createVanillaItemStackHelper());
+	public static VanillaRecipeFactory createVanillaRecipeFactory(ContextMap contextMap) {
+		return new VanillaRecipeFactory(createVanillaItemStackHelper(), contextMap);
 	}
 
 	public static IIngredientManager createVanillaItemStackIngredientManager(ServerLevel level) {
@@ -44,14 +45,14 @@ public final class TestIngredientManagers {
 		return createVanillaItemStackIngredientManager(itemStacks);
 	}
 
-	public static IJeiHelpers createJeiHelpers() {
-		VanillaRecipeFactory vanillaRecipeFactory = createVanillaRecipeFactory();
+	public static IJeiHelpers createJeiHelpers(ContextMap contextMap) {
+		VanillaRecipeFactory vanillaRecipeFactory = createVanillaRecipeFactory(contextMap);
 		return (IJeiHelpers) Proxy.newProxyInstance(
 			IJeiHelpers.class.getClassLoader(),
 			new Class<?>[] { IJeiHelpers.class },
 			(proxy, method, args) -> switch (method.getName()) {
 				case "getVanillaRecipeFactory" -> vanillaRecipeFactory;
-				case "toString" -> "TestIngredientManagers.createJeiHelpers()";
+				case "toString" -> "TestIngredientManagers.createJeiHelpers(ContextMap)";
 				case "hashCode" -> System.identityHashCode(proxy);
 				case "equals" -> proxy == args[0];
 				default -> throw new UnsupportedOperationException(method.getName());
