@@ -12,6 +12,7 @@ import mezz.jei.library.plugins.vanilla.brewing.JeiBrewingRecipe;
 import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipeBuilder;
 import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipe;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -21,9 +22,11 @@ import java.util.List;
 
 public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	private final BrewingRecipeUtil brewingRecipeUtil;
+	private final ContextMap contextMap;
 
-	public VanillaRecipeFactory(IIngredientHelper<ItemStack> ingredientHelper) {
+	public VanillaRecipeFactory(IIngredientHelper<ItemStack> ingredientHelper, ContextMap contextMap) {
 		this.brewingRecipeUtil = new BrewingRecipeUtil(ingredientHelper);
+		this.contextMap = contextMap;
 	}
 
 	@Override
@@ -76,7 +79,7 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 	}
 
 	@Override
-	public IJeiShapedRecipeBuilder createShapedRecipeBuilder(CraftingBookCategory category, SlotDisplay results) {
-		return new JeiShapedRecipeBuilder(category, results);
+	public IJeiShapedRecipeBuilder createShapedRecipeBuilder(CraftingBookCategory category, SlotDisplay resultDisplay) {
+		return new JeiShapedRecipeBuilder(category, resultDisplay, contextMap);
 	}
 }

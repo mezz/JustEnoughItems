@@ -60,6 +60,7 @@ import mezz.jei.library.recipes.RecipeManagerInternal;
 import mezz.jei.library.runtime.JeiHelpers;
 import mezz.jei.library.startup.StartData;
 import mezz.jei.library.transfer.RecipeTransferHandlerHelper;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -113,10 +114,11 @@ public final class PluginLoader {
 		FocusFactory focusFactory,
 		CodecHelper codecHelper,
 		IIngredientManager ingredientManager,
-		SubtypeManager subtypeManager
+		SubtypeManager subtypeManager,
+		ContextMap contextMap
 	) {
 		IIngredientHelper<ItemStack> ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
-		VanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory(ingredientHelper);
+		VanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory(ingredientHelper, contextMap);
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		GuiHelper guiHelper = new GuiHelper(ingredientManager);
 		IModIdHelper modIdHelper = new ModIdHelper(
@@ -193,7 +195,8 @@ public final class PluginLoader {
 		VanillaPlugin vanillaPlugin,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
 		JeiHelpers jeiHelpers,
-		IIngredientManager ingredientManager
+		IIngredientManager ingredientManager,
+		ContextMap contextMap
 	) {
 		List<IRecipeCategory<?>> recipeCategories = createRecipeCategories(plugins, vanillaPlugin, jeiHelpers);
 
@@ -222,11 +225,11 @@ public final class PluginLoader {
 		ImmutableListMultimap<IRecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators = advancedRegistration.getRecipeCategoryDecorators();
 		recipeManagerInternal.addPlugins(recipeManagerPlugins);
 
-		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, ingredientManager, recipeManagerInternal);
+		RecipeRegistration recipeRegistration = new RecipeRegistration(jeiHelpers, ingredientManager, recipeManagerInternal, contextMap);
 		PluginCaller.callOnPlugins("Registering recipes", plugins, p -> p.registerRecipes(recipeRegistration));
 
 		recipeManagerInternal.compact();
 
-		return new RecipeManager(recipeManagerInternal, ingredientManager, recipeCategoryDecorators, recipeButtonControllerFactories);
+		return new RecipeManager(recipeManagerInternal, ingredientManager, recipeCategoryDecorators, recipeButtonControllerFactories, contextMap);
 	}
 }

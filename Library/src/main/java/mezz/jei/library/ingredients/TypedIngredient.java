@@ -8,17 +8,14 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
-import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 public final class TypedIngredient<T> implements ITypedIngredient<T> {
@@ -124,21 +121,13 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		return results;
 	}
 
-	public static Stream<@Nullable ITypedIngredient<?>> createAndFilterInvalidList(IIngredientManager ingredientManager, SlotDisplay slotDisplay, boolean normalize) {
-		Minecraft minecraft = Minecraft.getInstance();
-		ContextMap contextMap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
+	public static Stream<@Nullable ITypedIngredient<?>> createAndFilterInvalidList(IIngredientManager ingredientManager, ContextMap contextMap, SlotDisplay slotDisplay, boolean normalize) {
 		return ingredientManager.getRegisteredIngredientTypes()
 			.stream()
 			.flatMap(ingredientType -> createAndFilterInvalidList(ingredientManager, ingredientType, contextMap, slotDisplay, normalize));
 	}
 
-	public static <T> Stream<@Nullable ITypedIngredient<T>> createAndFilterInvalidList(IIngredientManager ingredientManager, IIngredientType<T> ingredientType, SlotDisplay slotDisplay, boolean normalize) {
-		Minecraft minecraft = Minecraft.getInstance();
-		ContextMap contextMap = SlotDisplayContext.fromLevel(Objects.requireNonNull(minecraft.level));
-		return createAndFilterInvalidList(ingredientManager, ingredientType, contextMap, slotDisplay, normalize);
-	}
-
-	private static <T> Stream<@Nullable ITypedIngredient<T>> createAndFilterInvalidList(IIngredientManager ingredientManager, IIngredientType<T> ingredientType, ContextMap contextMap, SlotDisplay slotDisplay, boolean normalize) {
+	public static <T> Stream<@Nullable ITypedIngredient<T>> createAndFilterInvalidList(IIngredientManager ingredientManager, IIngredientType<T> ingredientType, ContextMap contextMap, SlotDisplay slotDisplay, boolean normalize) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
 		return ingredientHelper.getDisplayContentsFactory()

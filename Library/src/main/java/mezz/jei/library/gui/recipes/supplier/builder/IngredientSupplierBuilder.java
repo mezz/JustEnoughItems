@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.gui.recipes.RecipeLayoutIngredientSupplier;
+import net.minecraft.util.context.ContextMap;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -17,10 +18,12 @@ import java.util.Map;
  */
 public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 	private final IIngredientManager ingredientManager;
+	private final ContextMap contextMap;
 	private final Map<RecipeIngredientRole, IngredientSlotBuilder> ingredientSlotBuilders;
 
-	public IngredientSupplierBuilder(IIngredientManager ingredientManager) {
+	public IngredientSupplierBuilder(IIngredientManager ingredientManager, ContextMap contextMap) {
 		this.ingredientManager = ingredientManager;
+		this.contextMap = contextMap;
 		this.ingredientSlotBuilders = new EnumMap<>(RecipeIngredientRole.class);
 	}
 
@@ -33,7 +36,7 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role) {
 		IngredientSlotBuilder slot = ingredientSlotBuilders.get(role);
 		if (slot == null) {
-			slot = new IngredientSlotBuilder(ingredientManager);
+			slot = new IngredientSlotBuilder(ingredientManager, contextMap);
 			ingredientSlotBuilders.put(role, slot);
 		}
 		return slot;

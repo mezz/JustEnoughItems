@@ -27,6 +27,7 @@ import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RendererOverrides;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -51,11 +52,16 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	private @Nullable IDrawable overlay;
 	private @Nullable String slotName;
 
-	public RecipeSlotBuilder(IIngredientManager ingredientManager, int slotIndex, RecipeIngredientRole role) {
-		this.ingredients = new DisplayIngredientAcceptor(ingredientManager);
+	public RecipeSlotBuilder(IIngredientManager ingredientManager, ContextMap contextMap, int slotIndex, RecipeIngredientRole role) {
+		this.ingredients = new DisplayIngredientAcceptor(ingredientManager, contextMap);
 		this.rect = new ImmutableRect2i(0, 0, 16, 16);
 		this.role = role;
 		this.slotIndex = slotIndex;
+	}
+
+	@Override
+	public ContextMap getContextMap() {
+		return ingredients.getContextMap();
 	}
 
 	@Override
@@ -281,7 +287,8 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 			background,
 			overlay,
 			slotName,
-			rendererOverrides
+			rendererOverrides,
+			getContextMap()
 		);
 		return new Pair<>(slotIndex, recipeSlot);
 	}

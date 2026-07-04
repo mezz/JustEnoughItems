@@ -26,6 +26,7 @@ import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.library.gui.recipes.ShapelessIcon;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextMap;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	private final List<List<RecipeSlotBuilder>> focusLinkedSlots = new ArrayList<>();
 
 	private final IIngredientManager ingredientManager;
+	private final ContextMap contextMap;
 	private final IRecipeCategory<T> recipeCategory;
 	private final T recipe;
 
@@ -53,15 +55,16 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	private int recipeTransferY = -1;
 	private int nextSlotIndex = 0;
 
-	public RecipeLayoutBuilder(IRecipeCategory<T> recipeCategory, T recipe, IIngredientManager ingredientManager) {
+	public RecipeLayoutBuilder(IRecipeCategory<T> recipeCategory, T recipe, IIngredientManager ingredientManager, ContextMap contextMap) {
 		this.recipeCategory = recipeCategory;
 		this.recipe = recipe;
 		this.ingredientManager = ingredientManager;
+		this.contextMap = contextMap;
 	}
 
 	@Override
 	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role) {
-		RecipeSlotBuilder slot = new RecipeSlotBuilder(ingredientManager, nextSlotIndex++, role);
+		RecipeSlotBuilder slot = new RecipeSlotBuilder(ingredientManager, contextMap, nextSlotIndex++, role);
 
 		if (role == RecipeIngredientRole.OUTPUT) {
 			addOutputSlotTooltipCallback(slot);
@@ -82,7 +85,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 
 	@Override
 	public IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole role) {
-		return new RecipeSlotBuilder(ingredientManager, nextSlotIndex++, role);
+		return new RecipeSlotBuilder(ingredientManager, contextMap, nextSlotIndex++, role);
 	}
 
 	@Override
