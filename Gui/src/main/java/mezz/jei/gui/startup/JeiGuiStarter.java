@@ -1,5 +1,6 @@
 package mezz.jei.gui.startup;
 
+import com.mojang.serialization.Codec;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -25,7 +26,10 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.LoggedTimer;
+import mezz.jei.gui.bookmarks.BookmarkCodec;
+import mezz.jei.gui.bookmarks.BookmarkFactory;
 import mezz.jei.gui.bookmarks.BookmarkList;
+import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.gui.config.ILookupHistoryConfig;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
@@ -142,13 +146,17 @@ public class JeiGuiStarter {
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
 		registration.setIngredientFilter(ingredientFilterApi);
 
+		BookmarkFactory bookmarkFactory = new BookmarkFactory(codecHelper, registryAccess, ingredientManager);
+		Codec<IBookmark> bookmarkCodec = BookmarkCodec.create(codecHelper, ingredientManager, recipeManager, bookmarkFactory).codec();
+
 		LookupHistory lookupHistory = new LookupHistory(
 			recipeManager,
 			ingredientManager,
 			registryAccess,
 			codecHelper,
 			clientConfig::getMaxLookupHistoryIngredients,
-			lookupHistoryConfig
+			lookupHistoryConfig,
+			bookmarkCodec
 		);
 
 		IngredientListOverlay ingredientListOverlay = OverlayHelper.createIngredientListOverlay(
@@ -168,8 +176,8 @@ public class JeiGuiStarter {
 		);
 		registration.setIngredientListOverlay(ingredientListOverlay);
 
-		BookmarkList bookmarkList = new BookmarkList(recipeManager, focusFactory, ingredientManager, registryAccess, bookmarkConfig, clientConfig, guiHelper, codecHelper);
-		bookmarkConfig.loadBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarkList, codecHelper);
+		BookmarkList bookmarkList = new BookmarkList(recipeManager, focusFactory, ingredientManager, registryAccess, bookmarkConfig, clientConfig, guiHelper, codecHelper, bookmarkFactory, bookmarkCodec);
+		bookmarkConfig.loadBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarkList, codecHelper, bookmarkCodec);
 
 		BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
 			ingredientManager,
@@ -201,7 +209,8 @@ public class JeiGuiStarter {
 			focusFactory,
 			bookmarkList,
 			lookupHistory,
-			guiHelper
+			guiHelper,
+			bookmarkFactory
 		);
 		registration.setRecipesGui(recipesGui);
 
