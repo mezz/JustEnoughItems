@@ -6,16 +6,20 @@ import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.common.platform.IPlatformFluidHelperInternal;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.ingredients.IngredientInfo;
 import mezz.jei.library.ingredients.IngredientManager;
 import mezz.jei.library.ingredients.RegisteredIngredients;
 import mezz.jei.library.ingredients.TypedIngredient;
+import net.minecraft.world.level.material.Fluid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -131,9 +135,31 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(type, "type");
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		ErrorUtil.checkNotNull(alias, "alias");
+		checkIngredientType(type, ingredient);
 
 		IngredientInfo<I> ingredientInfo = getIngredientInfo(type);
 		ingredientInfo.addIngredientAlias(ingredient, alias);
+	}
+
+	@Override
+	public <B, I> void addAlias(IIngredientTypeWithSubtypes<B, I> type, B baseIngredient, String alias) {
+		ErrorUtil.checkNotNull(type, "type");
+		ErrorUtil.checkNotNull(baseIngredient, "baseIngredient");
+		ErrorUtil.checkNotNull(alias, "alias");
+		checkBaseIngredientType(type, baseIngredient);
+
+		IngredientInfo<I> ingredientInfo = getIngredientInfo(type);
+		ingredientInfo.addBaseIngredientAlias(baseIngredient, alias);
+	}
+
+	@Override
+	public void addAlias(Fluid fluid, String alias) {
+		ErrorUtil.checkNotNull(fluid, "fluid");
+		ErrorUtil.checkNotNull(alias, "alias");
+
+		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+		IIngredientTypeWithSubtypes<Fluid, ?> fluidIngredientType = fluidHelper.getFluidIngredientType();
+		addAlias(fluidIngredientType, fluid, alias);
 	}
 
 	@Override
@@ -150,9 +176,31 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(type, "type");
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		ErrorUtil.checkNotNull(aliases, "aliases");
+		checkIngredientType(type, ingredient);
 
 		IngredientInfo<I> ingredientInfo = getIngredientInfo(type);
 		ingredientInfo.addIngredientAliases(ingredient, aliases);
+	}
+
+	@Override
+	public <B, I> void addAliases(IIngredientTypeWithSubtypes<B, I> type, B baseIngredient, Collection<String> aliases) {
+		ErrorUtil.checkNotNull(type, "type");
+		ErrorUtil.checkNotNull(baseIngredient, "baseIngredient");
+		ErrorUtil.checkNotNull(aliases, "aliases");
+		checkBaseIngredientType(type, baseIngredient);
+
+		IngredientInfo<I> ingredientInfo = getIngredientInfo(type);
+		ingredientInfo.addBaseIngredientAliases(baseIngredient, aliases);
+	}
+
+	@Override
+	public void addAliases(Fluid fluid, Collection<String> aliases) {
+		ErrorUtil.checkNotNull(fluid, "fluid");
+		ErrorUtil.checkNotNull(aliases, "aliases");
+
+		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+		IIngredientTypeWithSubtypes<Fluid, ?> fluidIngredientType = fluidHelper.getFluidIngredientType();
+		addAliases(fluidIngredientType, fluid, aliases);
 	}
 
 	@Override
@@ -215,6 +263,20 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 				ingredientInfo = getIngredientInfo(ingredientType);
 			}
 			ingredientInfo.addIngredientAliases(typedIngredient, aliases);
+		}
+	}
+
+	private static <I> void checkIngredientType(IIngredientType<I> type, I ingredient) {
+		Class<? extends I> ingredientClass = type.getIngredientClass();
+		if (!ingredientClass.isInstance(ingredient)) {
+			throw new IllegalArgumentException(String.format("ingredient (%s) must be an instance of %s", ingredient.getClass(), ingredientClass));
+		}
+	}
+
+	private static <B, I> void checkBaseIngredientType(IIngredientTypeWithSubtypes<B, I> type, B baseIngredient) {
+		Class<? extends B> ingredientBaseClass = type.getIngredientBaseClass();
+		if (!ingredientBaseClass.isInstance(baseIngredient)) {
+			throw new IllegalArgumentException(String.format("baseIngredient (%s) must be an instance of %s", baseIngredient.getClass(), ingredientBaseClass));
 		}
 	}
 
