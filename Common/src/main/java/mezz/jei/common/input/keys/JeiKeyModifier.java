@@ -1,6 +1,5 @@
 package mezz.jei.common.input.keys;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -13,11 +12,11 @@ public enum JeiKeyModifier {
 		}
 
 		@Override
-		public Component getCombinedName(InputConstants.Key key) {
+		public Component getCombinedName(Component component) {
 			if (Minecraft.ON_OSX) {
-				return Component.translatable("jei.key.combo.command", key.getDisplayName());
+				return Component.translatable("jei.key.combo.command", component);
 			} else {
-				return Component.translatable("jei.key.combo.control", key.getDisplayName());
+				return Component.translatable("jei.key.combo.control", component);
 			}
 		}
 	},
@@ -28,8 +27,8 @@ public enum JeiKeyModifier {
 		}
 
 		@Override
-		public Component getCombinedName(InputConstants.Key key) {
-			return Component.translatable("jei.key.combo.shift", key.getDisplayName());
+		public Component getCombinedName(Component component) {
+			return Component.translatable("jei.key.combo.shift", component);
 		}
 	},
 	ALT {
@@ -39,8 +38,8 @@ public enum JeiKeyModifier {
 		}
 
 		@Override
-		public Component getCombinedName(InputConstants.Key key) {
-			return Component.translatable("jei.key.combo.alt", key.getDisplayName());
+		public Component getCombinedName(Component component) {
+			return Component.translatable("jei.key.combo.alt", component);
 		}
 	},
 	NONE {
@@ -55,12 +54,12 @@ public enum JeiKeyModifier {
 		}
 
 		@Override
-		public Component getCombinedName(InputConstants.Key key) {
-			return key.getDisplayName();
+		public Component getCombinedName(Component component) {
+			return component;
 		}
 	};
 
 	public abstract boolean isActive(JeiKeyConflictContext context);
 
-	public abstract Component getCombinedName(InputConstants.Key key);
+	public abstract Component getCombinedName(Component component);
 }

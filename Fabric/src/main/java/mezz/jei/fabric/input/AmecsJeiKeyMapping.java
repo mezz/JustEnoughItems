@@ -7,6 +7,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.minecraft.network.chat.Component;
 
 public class AmecsJeiKeyMapping extends AbstractJeiKeyMapping {
 	protected final AmecsKeyBinding amecsMapping;
@@ -50,5 +51,12 @@ public class AmecsJeiKeyMapping extends AbstractJeiKeyMapping {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public Component getTranslatedKeyMessage() {
+		InputConstants.Key key = KeyBindingHelper.getBoundKeyOf(this.amecsMapping);
+		KeyModifiers modifiers = KeyBindingUtils.getBoundModifiers(this.amecsMapping);
+		return AmecsHelper.getCombinedName(modifiers, key);
 	}
 }
