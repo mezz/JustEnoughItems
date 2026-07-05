@@ -22,7 +22,6 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,9 +55,9 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 			});
 	}
 
+	@SuppressWarnings("deprecation")
 	public BookmarkJsonConfig(Path jeiConfigurationDir) {
 		this.jeiConfigurationDir = jeiConfigurationDir;
-		//noinspection deprecation
 		this.legacyBookmarkConfig = new LegacyBookmarkConfig(jeiConfigurationDir);
 	}
 
@@ -77,10 +76,11 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 		List<IBookmark> bookmarks,
 		Codec<IBookmark> bookmarkCodec
 	) {
+		List<IBookmark> bookmarksSnapshot = List.copyOf(bookmarks);
 		return getPath(jeiConfigurationDir)
 			.map(path -> {
 				delayedSave.run(() -> {
-					save(path, registryAccess, bookmarks, bookmarkCodec);
+					save(path, registryAccess, bookmarksSnapshot, bookmarkCodec);
 				});
 				return true;
 			})
@@ -90,9 +90,9 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 	private boolean save(Path path, RegistryAccess registryAccess, Collection<IBookmark> bookmarks, Codec<IBookmark> bookmarkCodec) {
 		RegistryOps<JsonElement> registryOps = getRegistryOps(registryAccess);
 
-		try (BufferedWriter out = Files.newBufferedWriter(path)) {
+		try {
 			JsonArrayFileHelper.write(
-				out,
+				path,
 				VERSION,
 				bookmarks,
 				bookmarkCodec,
@@ -106,12 +106,13 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 			);
 			LOGGER.debug("Saved bookmarks config to file: {}", path);
 			return true;
-		} catch (IOException e) {
+		} catch (RuntimeException | IOException e) {
 			LOGGER.error("Failed to save bookmarks config to file {}", path, e);
 			return false;
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void loadBookmarks(
 		IRecipeManager recipeManager,
@@ -158,7 +159,6 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 			}
 
 			if (savedBookmarks) {
-				//noinspection deprecation
 				LegacyBookmarkConfig.getPath(jeiConfigurationDir)
 					.ifPresent(legacyPath -> {
 						if (Files.exists(legacyPath)) {
