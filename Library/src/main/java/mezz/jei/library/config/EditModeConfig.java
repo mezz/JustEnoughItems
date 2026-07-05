@@ -23,7 +23,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.file.Files;
@@ -200,9 +199,9 @@ public class EditModeConfig implements IEditModeConfig {
 
 		@Override
 		public void save(EditModeConfig config) {
-			try (BufferedWriter out = Files.newBufferedWriter(path)) {
+			try {
 				JsonArrayFileHelper.write(
-					out,
+					path,
 					VERSION,
 					config.blacklist.values(),
 					codec,
@@ -215,7 +214,7 @@ public class EditModeConfig implements IEditModeConfig {
 					}
 				);
 				LOGGER.debug("Saved blacklist config to file: {}", path);
-			} catch (IOException e) {
+			} catch (RuntimeException | IOException e) {
 				LOGGER.error("Failed to save blacklist config to file {}", path, e);
 			}
 		}
