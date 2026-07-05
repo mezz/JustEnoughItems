@@ -3,7 +3,6 @@ package mezz.jei.bookmarks;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +26,7 @@ import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.startup.ForgeModIdHelper;
 import mezz.jei.util.LegacyUtil;
 import mezz.jei.util.Log;
+import mezz.jei.util.PathUtil;
 import org.apache.commons.io.IOUtils;
 
 public class BookmarkList implements IIngredientGridSource {
@@ -116,8 +116,9 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	public void saveBookmarks() {
+		List<IIngredientListElement> ingredientListElementsSnapshot = new ArrayList<>(ingredientListElements);
 		List<String> strings = new ArrayList<>();
-		for (IIngredientListElement<?> element : ingredientListElements) {
+		for (IIngredientListElement<?> element : ingredientListElementsSnapshot) {
 			Object object = element.getIngredient();
 			if (object instanceof ItemStack) {
 				strings.add(MARKER_STACK + ((ItemStack) object).writeToNBT(new NBTTagCompound()).toString());
@@ -127,8 +128,9 @@ public class BookmarkList implements IIngredientGridSource {
 		}
 		File file = Config.getBookmarkFile();
 		if (file != null) {
-			try (FileWriter writer = new FileWriter(file)) {
-				IOUtils.writeLines(strings, "\n", writer);
+			try {
+				PathUtil.writeUsingTempFile(file.toPath(), strings);
+				Log.get().debug("Saved bookmarks list to file {}", file);
 			} catch (IOException e) {
 				Log.get().error("Failed to save bookmarks list to file {}", file, e);
 			}
