@@ -1,4 +1,3 @@
-import me.modmuss50.mpp.PublishModTask
 import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
 import net.minecraftforge.gradle.common.tasks.JarExec
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -58,7 +57,6 @@ val dependencyProjects: List<Project> = listOf(
 dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
 }
-project.evaluationDependsOn(":Changelog")
 
 java {
 	toolchain {
@@ -66,6 +64,31 @@ java {
 	}
 	withSourcesJar()
 }
+
+val changelogHtml = configurations.create("changelogHtml") {
+	isCanBeConsumed = false
+	isCanBeResolved = true
+	isVisible = false
+	attributes {
+		attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogHtml"))
+	}
+}
+
+val changelogMarkdown = configurations.create("changelogMarkdown") {
+	isCanBeConsumed = false
+	isCanBeResolved = true
+	isVisible = false
+	attributes {
+		attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogMarkdown"))
+	}
+}
+
+fun Configuration.singleFileContents(): Provider<String> =
+	incoming
+		.files
+		.elements
+		.map { elements -> elements.single() }
+		.map { it.asFile.readText() }
 
 // Hack fix: FG can't resolve deps like lwjgl-freetype-3.3.3-natives-macos-patch.jar without this
 repositories {
@@ -98,6 +121,8 @@ dependencies {
 			strictly("5.0.4")
 		}
 	}
+	changelogHtml(project(":Changelog"))
+	changelogMarkdown(project(":Changelog"))
 }
 
 minecraft {
@@ -175,7 +200,7 @@ val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 
 publishMods {
 	file.set(tasks.jar.get().archiveFile)
-	changelog.set(provider { file("../Changelog/changelog.md").readText() })
+	changelog.set(changelogMarkdown.singleFileContents())
 	type = BETA
 	modLoaders.add("forge")
 	displayName.set("${project.version} for Forge $minecraftVersion")
@@ -184,7 +209,7 @@ publishMods {
 	curseforge {
 		projectId = curseProjectId
 		accessToken.set(curseforgeApikey ?: "0")
-		changelog.set(provider { file("../Changelog/changelog.html").readText() })
+		changelog.set(changelogHtml.singleFileContents())
 		changelogType = "html"
 		minecraftVersionRange {
 			start = minecraftVersionRangeStart
@@ -201,9 +226,6 @@ publishMods {
 			end = minecraftVersion
 		}
 	}
-}
-tasks.withType<PublishModTask> {
-	dependsOn(tasks.jar, ":Changelog:makeChangelog", ":Changelog:makeMarkdownChangelog")
 }
 
 tasks.named<Test>("test") {

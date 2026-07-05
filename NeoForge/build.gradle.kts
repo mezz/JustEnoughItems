@@ -1,4 +1,3 @@
-import me.modmuss50.mpp.PublishModTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.slf4j.event.Level
@@ -55,7 +54,6 @@ val dependencyProjects: List<Project> = listOf(
 dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
 }
-project.evaluationDependsOn(":Changelog")
 
 tasks.withType<JavaCompile>().configureEach {
     dependencyProjects.forEach {
@@ -76,6 +74,31 @@ java {
 	withSourcesJar()
 }
 
+val changelogHtml = configurations.create("changelogHtml") {
+	isCanBeConsumed = false
+	isCanBeResolved = true
+	isVisible = false
+	attributes {
+		attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogHtml"))
+	}
+}
+
+val changelogMarkdown = configurations.create("changelogMarkdown") {
+	isCanBeConsumed = false
+	isCanBeResolved = true
+	isVisible = false
+	attributes {
+		attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogMarkdown"))
+	}
+}
+
+fun Configuration.singleFileContents(): Provider<String> =
+	incoming
+		.files
+		.elements
+		.map { elements -> elements.single() }
+		.map { it.asFile.readText() }
+
 dependencies {
 	dependencyProjects.forEach {
 		implementation(it)
@@ -90,6 +113,8 @@ dependencies {
 		name = "junit-jupiter-engine",
 		version = jUnitVersion
 	)
+	changelogHtml(project(":Changelog"))
+	changelogMarkdown(project(":Changelog"))
 }
 
 neoForge {
@@ -159,7 +184,7 @@ publishMods {
 	curseforge {
 		projectId = curseProjectId
 		accessToken.set(curseforgeApikey ?: "0")
-		changelog.set(provider { file("../Changelog/changelog.html").readText() })
+		changelog.set(changelogHtml.singleFileContents())
 		changelogType = "html"
 		minecraftVersionRange {
 			start = minecraftVersionRangeStart
@@ -171,15 +196,12 @@ publishMods {
 	modrinth {
 		projectId = modrinthId
 		accessToken = modrinthToken
-		changelog.set(provider { file("../Changelog/changelog.md").readText() })
+		changelog.set(changelogMarkdown.singleFileContents())
 		minecraftVersionRange {
 			start = minecraftVersionRangeStart
 			end = minecraftVersion
 		}
 	}
-}
-tasks.withType<PublishModTask> {
-	dependsOn(tasks.jar, ":Changelog:makeChangelog", ":Changelog:makeMarkdownChangelog")
 }
 
 tasks.named<Test>("test") {
