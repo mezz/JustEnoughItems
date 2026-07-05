@@ -108,12 +108,6 @@ public final class Internal {
 	}
 
 	public static void onRuntimeStopped() {
-		if (jeiClientConfigs != null) {
-			jeiClientConfigs.onRuntimeStopped();
-		}
-		if (toggleState != null) {
-			toggleState.clearListeners();
-		}
 		if (jeiRuntime != null) {
 			jeiRuntime = null;
 		}

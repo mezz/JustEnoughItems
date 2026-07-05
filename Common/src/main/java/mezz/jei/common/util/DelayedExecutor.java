@@ -11,17 +11,27 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public final class DelayedExecutor implements IDelayedExecutor {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final ScheduledThreadPoolExecutor service;
+	private final ScheduledExecutorService service;
 	private final Duration shutdownTimeout;
 	private final Set<ScheduledTask> scheduledTasks = ConcurrentHashMap.newKeySet();
 
 	public DelayedExecutor(Duration shutdownTimeout) {
+		this(shutdownTimeout, createDefaultService());
+	}
+
+	public DelayedExecutor(Duration shutdownTimeout, ScheduledExecutorService service) {
+		this.service = service;
+		this.shutdownTimeout = shutdownTimeout;
+	}
+
+	static ScheduledThreadPoolExecutor createDefaultService() {
 		var threadFactory = new ThreadFactoryBuilder()
 			.setNameFormat("JEI Delayed Executor %d")
 			.build();
@@ -30,18 +40,22 @@ public final class DelayedExecutor implements IDelayedExecutor {
 			threadFactory
 		);
 		service.setRemoveOnCancelPolicy(true);
-		service.setExecuteExistingDelayedTasksAfterShutdownPolicy(true);
-		this.service = service;
-		this.shutdownTimeout = shutdownTimeout;
+		service.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+		return service;
 	}
 
 	@Override
 	public Future<?> schedule(Runnable command, Duration delay) {
 		ScheduledTask scheduledTask = new ScheduledTask(command);
-		Future<?> future = service.schedule(scheduledTask, delay.toMillis(), TimeUnit.MILLISECONDS);
-		scheduledTask.setFuture(future);
 		scheduledTasks.add(scheduledTask);
-		return new TrackedFuture<>(future, scheduledTask);
+		try {
+			Future<?> future = service.schedule(scheduledTask, delay.toMillis(), TimeUnit.MILLISECONDS);
+			scheduledTask.setFuture(future);
+			return new TrackedFuture<>(future, scheduledTask);
+		} catch (RuntimeException e) {
+			scheduledTasks.remove(scheduledTask);
+			throw e;
+		}
 	}
 
 	public void shutdown() {
@@ -62,11 +76,20 @@ public final class DelayedExecutor implements IDelayedExecutor {
 			scheduledTasks.remove(scheduledTask);
 			if (scheduledTask.cancel()) {
 				try {
-					service.execute(scheduledTask.command());
+					service.execute(() -> runScheduledTaskDuringShutdown(scheduledTask));
 				} catch (RejectedExecutionException e) {
 					LOGGER.error("Failed to execute delayed task during shutdown.", e);
 				}
 			}
+		}
+	}
+
+	private void runScheduledTaskDuringShutdown(ScheduledTask scheduledTask) {
+		try {
+			scheduledTask.command().run();
+		} catch (RuntimeException | LinkageError e) {
+			// Shutdown should keep flushing remaining delayed tasks when one task fails.
+			LOGGER.error("Failed to execute delayed task during shutdown.", e);
 		}
 	}
 
