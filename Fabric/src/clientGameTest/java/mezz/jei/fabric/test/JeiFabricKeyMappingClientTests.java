@@ -49,6 +49,10 @@ final class JeiFabricKeyMappingClientTests {
 			assertFabricJeiKeyMappingMatches("key.jei.test.fabricKeyMapping.keyboardU", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_U);
 			assertFabricJeiKeyMappingMatches("key.jei.test.fabricKeyMapping.mouseLeft", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT);
 			assertFabricJeiKeyMappingMatches("key.jei.test.fabricKeyMapping.mouseRight", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT);
+			assertCategoryBuilderJeiKeyMappingMatches(keyboardMapping("key.jei.test.categoryBuilder.keyboardR", GLFW.GLFW_KEY_R));
+			assertCategoryBuilderJeiKeyMappingMatches(keyboardMapping("key.jei.test.categoryBuilder.keyboardU", GLFW.GLFW_KEY_U));
+			assertCategoryBuilderJeiKeyMappingMatches(mouseLeftMapping("key.jei.test.categoryBuilder.mouseLeft"));
+			assertCategoryBuilderJeiKeyMappingMatches(mouseRightMapping("key.jei.test.categoryBuilder.mouseRight"));
 		});
 		assertModifiedJeiKeyMappings();
 		assertJeiMouseMappingsDoNotHideVanillaMouseClicks();
@@ -92,6 +96,27 @@ final class JeiFabricKeyMappingClientTests {
 		}
 		if (matchesUnknownKey) {
 			throw new AssertionError("Expected FabricJeiKeyMapping to reject the unbound UNKNOWN key.");
+		}
+	}
+
+	private static void assertCategoryBuilderJeiKeyMappingMatches(ModifiedMapping mapping) {
+		IJeiKeyMappingBuilder builder = new FabricJeiKeyMappingCategoryBuilder(CATEGORY)
+			.createMapping(mapping.description())
+			.setContext(JeiKeyConflictContext.UNIVERSAL);
+		IJeiKeyMappingInternal jeiMapping = mapping.mappingFactory().build(builder);
+
+		boolean isUnbound = jeiMapping.isUnbound();
+		boolean matchesBoundKey = jeiMapping.isActiveAndMatches(mapping.boundKey());
+		boolean matchesUnknownKey = jeiMapping.isActiveAndMatches(InputConstants.UNKNOWN);
+
+		if (isUnbound) {
+			throw new AssertionError("Expected category-builder JEI key mapping to stay bound: " + mapping.boundKey().getName());
+		}
+		if (!matchesBoundKey) {
+			throw new AssertionError("Expected category-builder JEI key mapping to match its real key: " + mapping.boundKey().getName());
+		}
+		if (matchesUnknownKey) {
+			throw new AssertionError("Expected category-builder JEI key mapping to reject the UNKNOWN key.");
 		}
 	}
 

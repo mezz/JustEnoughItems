@@ -5,7 +5,6 @@ import de.siphalor.amecs.api.KeyModifier;
 import de.siphalor.amecs.api.KeyModifiers;
 import mezz.jei.common.input.KeyNameUtil;
 import mezz.jei.common.input.keys.JeiKeyModifier;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -43,23 +42,8 @@ public class AmecsHelper {
 	public static Component getCombinedName(KeyModifiers modifiers, InputConstants.Key key) {
 		Component component = KeyNameUtil.getKeyDisplayName(key);
 		for (JeiKeyModifier modifier : getJeiModifiers(modifiers)) {
-			component = getCombinedName(modifier, component);
+			component = modifier.getCombinedName(component);
 		}
 		return component;
-	}
-
-	private static Component getCombinedName(JeiKeyModifier modifier, Component component) {
-		return switch (modifier) {
-			case CONTROL_OR_COMMAND -> {
-				if (Minecraft.ON_OSX) {
-					yield Component.translatable("jei.key.combo.command", component);
-				} else {
-					yield Component.translatable("jei.key.combo.control", component);
-				}
-			}
-			case SHIFT -> Component.translatable("jei.key.combo.shift", component);
-			case ALT -> Component.translatable("jei.key.combo.alt", component);
-			case NONE -> component;
-		};
 	}
 }

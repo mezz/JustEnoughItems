@@ -47,7 +47,8 @@ public class AmecsJeiKeyMapping extends AbstractJeiKeyMapping {
 
 	@Override
 	public Component getTranslatedKeyMessage() {
+		InputConstants.Key key = this.amecsMapping.getRealKey();
 		KeyModifiers modifiers = KeyBindingUtils.getBoundModifiers(this.amecsMapping);
-		return AmecsHelper.getCombinedName(modifiers, this.amecsMapping.getRealKey());
+		return AmecsHelper.getCombinedName(modifiers, key);
 	}
 }
