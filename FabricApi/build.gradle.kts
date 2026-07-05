@@ -34,7 +34,7 @@ base {
     archivesName.set(baseArchivesName)
 }
 
-val commonApi = project(":CommonApi")
+val commonApi: Project = project(":CommonApi")
 
 project.evaluationDependsOn(commonApi.path)
 
@@ -51,7 +51,7 @@ val commonApiIntermediaryJar = tasks.create<RemapJarTask>("commonApiIntermediary
         attributes["Fabric-Loom-Remap"] = true
     }
     val commonApiJar = commonApiJarTask.archiveFile
-    val commonApiBaseArchivesName = commonApi.base.archivesName;
+    val commonApiBaseArchivesName = commonApi.base.archivesName
     inputFile.set(commonApiJar)
     archiveBaseName.set(provider { commonApiBaseArchivesName.get() + "-intermediary" })
     group = modGroup
@@ -62,8 +62,8 @@ val commonApiIntermediarySourcesJar = tasks.create<RemapSourcesJarTask>("commonA
     commonApiSourcesJarTask.manifest {
         attributes["Fabric-Loom-Remap"] = true
     }
-    val commonSourcesJar = commonApiSourcesJarTask.archiveFile;
-    val commonApiBaseArchivesName = commonApi.base.archivesName;
+    val commonSourcesJar = commonApiSourcesJarTask.archiveFile
+    val commonApiBaseArchivesName = commonApi.base.archivesName
     inputFile.set(commonSourcesJar)
     archiveBaseName.set(provider { commonApiBaseArchivesName.get() + "-intermediary" })
     archiveClassifier.set("sources")

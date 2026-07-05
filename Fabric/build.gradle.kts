@@ -71,19 +71,17 @@ java {
     withSourcesJar()
 }
 
-val changelogHtml = configurations.create("changelogHtml") {
+val changelogHtml: Configuration by configurations.creating {
     isCanBeConsumed = false
     isCanBeResolved = true
-    isVisible = false
     attributes {
         attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogHtml"))
     }
 }
 
-val changelogMarkdown = configurations.create("changelogMarkdown") {
+val changelogMarkdown: Configuration by configurations.creating {
     isCanBeConsumed = false
     isCanBeResolved = true
-    isVisible = false
     attributes {
         attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogMarkdown"))
     }
@@ -111,6 +109,7 @@ dependencies {
         name = "minecraft",
         version = minecraftVersion,
     )
+    @Suppress("UnstableApiUsage")
     mappings(loom.layered {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-${parchmentMinecraftVersion}:${parchmentVersionFabric}@zip")
