@@ -46,6 +46,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 	private final ImmutableMap<IIngredientType, IIngredientHelper> ingredientHelperMap;
 	private final ImmutableMap<IIngredientType, IIngredientRenderer> ingredientRendererMap;
 	private final ImmutableMap<IIngredientType, ListMultimap<String, String>> ingredientAliasesMap;
+	private final ImmutableMap<IIngredientType, ListMultimap<String, String>> ingredientSubtypeAliasesMap;
 	private final ImmutableMap<Class, IIngredientType> ingredientTypeMap;
 
 	private final NonNullList<ItemStack> fuels = NonNullList.create();
@@ -57,7 +58,8 @@ public class IngredientRegistry implements IIngredientRegistry {
 		Map<IIngredientType, IngredientSet> ingredientsMap,
 		ImmutableMap<IIngredientType, IIngredientHelper> ingredientHelperMap,
 		ImmutableMap<IIngredientType, IIngredientRenderer> ingredientRendererMap,
-		ImmutableMap<IIngredientType, ListMultimap<String, String>> ingredientAliasesMap
+		ImmutableMap<IIngredientType, ListMultimap<String, String>> ingredientAliasesMap,
+		ImmutableMap<IIngredientType, ListMultimap<String, String>> ingredientSubtypeAliasesMap
 	) {
 		this.modIdHelper = modIdHelper;
 		this.blacklist = blacklist;
@@ -65,6 +67,7 @@ public class IngredientRegistry implements IIngredientRegistry {
 		this.ingredientHelperMap = ingredientHelperMap;
 		this.ingredientRendererMap = ingredientRendererMap;
 		this.ingredientAliasesMap = ingredientAliasesMap;
+		this.ingredientSubtypeAliasesMap = ingredientSubtypeAliasesMap;
 		ImmutableMap.Builder<Class, IIngredientType> ingredientTypeBuilder = ImmutableMap.builder();
 		for (IIngredientType ingredientType : ingredientsMap.keySet()) {
 			ingredientTypeBuilder.put(ingredientType.getIngredientClass(), ingredientType);
@@ -339,11 +342,15 @@ public class IngredientRegistry implements IIngredientRegistry {
 		IIngredientType<V> ingredientType = getIngredientType(ingredient);
 		IIngredientHelper<V> ingredientHelper = getIngredientHelper(ingredientType);
 		ListMultimap<String, String> aliases = ingredientAliasesMap.get(ingredientType);
-		if (aliases == null) {
+		ListMultimap<String, String> subtypeAliases = ingredientSubtypeAliasesMap.get(ingredientType);
+		if (aliases == null || subtypeAliases == null) {
 			return Collections.emptyList();
 		}
 		String uid = ingredientHelper.getUniqueId(ingredient);
-		return aliases.get(uid).stream()
+		String wildcardId = ingredientHelper.getWildcardId(ingredient);
+		List<String> allAliases = new ArrayList<>(aliases.get(uid));
+		allAliases.addAll(subtypeAliases.get(wildcardId));
+		return allAliases.stream()
 			.map(Translator::translateToLocal)
 			.sorted(String::compareToIgnoreCase)
 			.collect(Collectors.toList());

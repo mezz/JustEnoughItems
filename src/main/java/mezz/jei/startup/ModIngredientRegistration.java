@@ -23,6 +23,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration, II
 	private final Map<IIngredientType, IIngredientHelper> ingredientHelperMap = new IdentityHashMap<>();
 	private final Map<IIngredientType, IIngredientRenderer> ingredientRendererMap = new IdentityHashMap<>();
 	private final Map<IIngredientType, ListMultimap<String, String>> ingredientAliasesMap = new IdentityHashMap<>();
+	private final Map<IIngredientType, ListMultimap<String, String>> ingredientSubtypeAliasesMap = new IdentityHashMap<>();
 
 	@Override
 	public <V> void register(IIngredientType<V> ingredientType, Collection<V> allIngredients, IIngredientHelper<V> ingredientHelper, IIngredientRenderer<V> ingredientRenderer) {
@@ -35,6 +36,7 @@ public class ModIngredientRegistration implements IModIngredientRegistration, II
 		ingredientHelperMap.put(ingredientType, ingredientHelper);
 		ingredientRendererMap.put(ingredientType, ingredientRenderer);
 		ingredientAliasesMap.put(ingredientType, ArrayListMultimap.create());
+		ingredientSubtypeAliasesMap.put(ingredientType, ArrayListMultimap.create());
 	}
 
 	@Override
@@ -47,6 +49,22 @@ public class ModIngredientRegistration implements IModIngredientRegistration, II
 	@Override
 	public <I> void addAlias(IIngredientType<I> type, I ingredient, String alias) {
 		addAliases(type, ingredient, Collections.singleton(alias));
+	}
+
+	@Override
+	public <I> void addAliasToAllSubtypes(IIngredientType<I> type, I ingredient, String alias) {
+		addAliasesToAllSubtypes(type, ingredient, Collections.singleton(alias));
+	}
+
+	@Override
+	public <I> void addAliasesToAllSubtypes(IIngredientType<I> type, I ingredient, Collection<String> aliases) {
+		ErrorUtil.checkNotNull(type, "type");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		ErrorUtil.checkNotNull(aliases, "aliases");
+
+		IIngredientHelper<I> ingredientHelper = getIngredientHelper(type);
+		String wildcardId = ingredientHelper.getWildcardId(ingredient);
+		ingredientSubtypeAliasesMap.get(type).putAll(wildcardId, aliases);
 	}
 
 	@Override
@@ -88,7 +106,8 @@ public class ModIngredientRegistration implements IModIngredientRegistration, II
 			ingredientsMap,
 			ImmutableMap.copyOf(ingredientHelperMap),
 			ImmutableMap.copyOf(ingredientRendererMap),
-			ImmutableMap.copyOf(ingredientAliasesMap)
+			ImmutableMap.copyOf(ingredientAliasesMap),
+			ImmutableMap.copyOf(ingredientSubtypeAliasesMap)
 		);
 	}
 

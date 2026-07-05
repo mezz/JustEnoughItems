@@ -12,6 +12,26 @@ import mezz.jei.api.recipe.IIngredientType;
  */
 public interface IIngredientAliasRegistration {
 	/**
+	 * Register one search alias for all subtypes of an ingredient.
+	 * The ingredient is used to identify the group through
+	 * {@link mezz.jei.api.ingredients.IIngredientHelper#getWildcardId(Object)}.
+	 * An alias may be a translation key.
+	 *
+	 * @since JEI 4.22.0
+	 */
+	<I> void addAliasToAllSubtypes(IIngredientType<I> type, I ingredient, String alias);
+
+	/**
+	 * Register multiple search aliases for all subtypes of an ingredient.
+	 * The ingredient is used to identify the group through
+	 * {@link mezz.jei.api.ingredients.IIngredientHelper#getWildcardId(Object)}.
+	 * An alias may be a translation key.
+	 *
+	 * @since JEI 4.22.0
+	 */
+	<I> void addAliasesToAllSubtypes(IIngredientType<I> type, I ingredient, Collection<String> aliases);
+
+	/**
 	 * Register one search alias for an ingredient. An alias may be a translation key.
 	 *
 	 * @since JEI 4.20.0
