@@ -10,11 +10,14 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import mezz.jei.common.util.PathUtil;
 
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,6 +33,40 @@ public class JsonArrayFileHelper {
 	 * Writes lines to a json array in a file, with newlines for each element.
 	 */
 	public static <T> void write(
+		Path path,
+		int version,
+		Collection<T> elements,
+		Codec<T> codec,
+		DynamicOps<JsonElement> registryOps,
+		Consumer<? super DataResult.Error<JsonElement>> ifElementError,
+		BiConsumer<T, RuntimeException> ifElementException
+	) throws IOException {
+		Path parent = path.getParent();
+		if (parent != null) {
+			Files.createDirectories(parent);
+		}
+		Path tempFile = parent == null ?
+			Files.createTempFile(null, null) :
+			Files.createTempFile(parent, null, null);
+		try {
+			try (BufferedWriter out = Files.newBufferedWriter(tempFile)) {
+				writeToWriter(
+					out,
+					version,
+					elements,
+					codec,
+					registryOps,
+					ifElementError,
+					ifElementException
+				);
+			}
+			PathUtil.moveAtomicReplace(tempFile, path);
+		} finally {
+			Files.deleteIfExists(tempFile);
+		}
+	}
+
+	private static <T> void writeToWriter(
 		BufferedWriter out,
 		int version,
 		Collection<T> elements,
