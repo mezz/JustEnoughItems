@@ -58,7 +58,7 @@ pipeline {
 
         stage('Create Changelogs') {
             steps {
-                sh "./gradlew :Changelog:makeChangelog"
+                sh "./gradlew :Changelog:makeHtmlChangelog"
                 sh "./gradlew :Changelog:makeMarkdownChangelog"
             }
         }
