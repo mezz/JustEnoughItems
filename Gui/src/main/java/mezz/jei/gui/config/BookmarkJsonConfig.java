@@ -20,7 +20,6 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -71,10 +70,11 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 		List<IBookmark> bookmarks,
 		Codec<IBookmark> bookmarkCodec
 	) {
+		List<IBookmark> bookmarksSnapshot = List.copyOf(bookmarks);
 		getPath(jeiConfigurationDir)
 			.ifPresent(path -> {
 				delayedSave.run(() -> {
-					save(path, registryAccess, bookmarks, bookmarkCodec);
+					save(path, registryAccess, bookmarksSnapshot, bookmarkCodec);
 				});
 			});
 	}
@@ -82,9 +82,9 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 	private void save(Path path, RegistryAccess registryAccess, Collection<IBookmark> bookmarks, Codec<IBookmark> bookmarkCodec) {
 		RegistryOps<JsonElement> registryOps = getRegistryOps(registryAccess);
 
-		try (BufferedWriter out = Files.newBufferedWriter(path)) {
+		try {
 			JsonArrayFileHelper.write(
-				out,
+				path,
 				VERSION,
 				bookmarks,
 				bookmarkCodec,
@@ -97,7 +97,7 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 				}
 			);
 			LOGGER.debug("Saved bookmarks config to file: {}", path);
-		} catch (IOException e) {
+		} catch (RuntimeException | IOException e) {
 			LOGGER.error("Failed to save bookmarks config to file {}", path, e);
 		}
 	}

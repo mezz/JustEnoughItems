@@ -17,12 +17,12 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,20 +65,21 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 		List<IBookmark> bookmarks,
 		Codec<IBookmark> bookmarkCodec
 	) {
+		List<IBookmark> bookmarksSnapshot = List.copyOf(bookmarks);
 		getPath(jeiConfigurationDir)
 			.ifPresent(path -> {
 				delayedSave.run(() -> {
-					save(path, bookmarkCodec, registryAccess, bookmarks);
+					save(path, bookmarkCodec, registryAccess, bookmarksSnapshot);
 				});
 			});
 	}
 
-	private void save(Path path, Codec<IBookmark> bookmarkCodec, RegistryAccess registryAccess, List<IBookmark> bookmarks) {
+	private void save(Path path, Codec<IBookmark> bookmarkCodec, RegistryAccess registryAccess, Collection<IBookmark> bookmarks) {
 		RegistryOps<JsonElement> registryOps = getRegistryOps(registryAccess);
 
-		try (BufferedWriter out = Files.newBufferedWriter(path)) {
+		try {
 			JsonArrayFileHelper.write(
-				out,
+				path,
 				VERSION,
 				bookmarks,
 				bookmarkCodec,
@@ -91,7 +92,7 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 				}
 			);
 			LOGGER.debug("Saved lookup history config to file: {}", path);
-		} catch (IOException e) {
+		} catch (RuntimeException | IOException e) {
 			LOGGER.error("Failed to save lookup history config to file {}", path, e);
 		}
 	}
