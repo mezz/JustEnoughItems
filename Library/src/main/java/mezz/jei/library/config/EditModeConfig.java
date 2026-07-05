@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.core.util.PathUtil;
 import mezz.jei.library.ingredients.IngredientVisibility;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -164,9 +165,9 @@ public class EditModeConfig implements IEditModeConfig {
 		@Override
 		public void save(EditModeConfig config) {
 			try {
-				Files.write(path, config.blacklist);
+				PathUtil.writeUsingTempFile(path, List.copyOf(config.blacklist));
 				LOGGER.debug("Saved blacklist config to file: {}", path);
-			} catch (IOException e) {
+			} catch (RuntimeException | IOException e) {
 				LOGGER.error("Failed to save blacklist config to file {}", path, e);
 			}
 		}
