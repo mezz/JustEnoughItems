@@ -9,12 +9,14 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import mezz.jei.util.PathUtil;
 
 public class EditModeConfig implements IEditModeConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -50,12 +52,8 @@ public class EditModeConfig implements IEditModeConfig {
 	private void saveBlacklist() {
 		if (blacklistConfigFile != null) {
 			try {
-				if (blacklistConfigFile.createNewFile()) {
-					LOGGER.debug("Created blacklist config file: {}", blacklistConfigFile);
-				}
-				try (FileWriter writer = new FileWriter(blacklistConfigFile)) {
-					IOUtils.writeLines(blacklist, "\n", writer);
-				}
+				PathUtil.writeUsingTempFile(blacklistConfigFile.toPath(), new ArrayList<>(blacklist));
+				LOGGER.debug("Saved blacklist config to file: {}", blacklistConfigFile);
 			} catch (IOException e) {
 				LOGGER.error("Failed to save blacklist to file {}", blacklistConfigFile, e);
 			}

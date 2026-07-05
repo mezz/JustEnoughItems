@@ -3,7 +3,6 @@ package mezz.jei.config;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,6 +26,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.bookmarks.BookmarkList;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.ingredients.IngredientManager;
+import mezz.jei.util.PathUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,8 +65,9 @@ public class BookmarkConfig {
 			return;
 		}
 
+		List<IIngredientListElement<?>> ingredientListElementsSnapshot = new ArrayList<>(ingredientListElements);
 		List<String> strings = new ArrayList<>();
-		for (IIngredientListElement<?> element : ingredientListElements) {
+		for (IIngredientListElement<?> element : ingredientListElementsSnapshot) {
 			Object object = element.getIngredient();
 			if (object instanceof ItemStack) {
 				strings.add(MARKER_STACK + ((ItemStack) object).save(new CompoundNBT()).toString());
@@ -75,8 +76,9 @@ public class BookmarkConfig {
 			}
 		}
 
-		try (FileWriter writer = new FileWriter(file)) {
-			IOUtils.writeLines(strings, "\n", writer);
+		try {
+			PathUtil.writeUsingTempFile(file.toPath(), strings);
+			LOGGER.debug("Saved bookmarks list to file {}", file);
 		} catch (IOException e) {
 			LOGGER.error("Failed to save bookmarks list to file {}", file, e);
 		}
