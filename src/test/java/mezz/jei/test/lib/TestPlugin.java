@@ -33,6 +33,7 @@ public class TestPlugin implements IModPlugin {
 	@Override
 	public void registerIngredientAliases(IIngredientAliasRegistration registration) {
 		registration.addAlias(TestIngredient.TYPE, new TestIngredient(0), "First Test Ingredient");
+		registration.addAliasToAllSubtypes(TestIngredient.TYPE, new TestIngredient(0), "All Test Ingredients");
 	}
 
 }

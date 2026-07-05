@@ -166,6 +166,16 @@ public class ElementSearchIngredientsTest {
 	}
 
 	@Test
+	public void subtypeIngredientAliasSearchFindsAllSubtypes() {
+		SearchFixture fixture = createFixture();
+		addAll(fixture.search, fixture.createBaseInfos());
+
+		Set<Integer> results = fixture.searchIngredientNumbers("all test ingredients");
+
+		Assertions.assertEquals(numbers(0, 1), results);
+	}
+
+	@Test
 	public void modAliasSearchFindsIngredient() {
 		SearchFixture fixture = createFixture();
 		addAll(fixture.search, fixture.createBaseInfos());

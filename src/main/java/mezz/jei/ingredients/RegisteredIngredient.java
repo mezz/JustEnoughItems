@@ -17,6 +17,7 @@ public class RegisteredIngredient<T> {
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final IngredientSet<T> ingredientSet;
 	private final ListMultimap<String, String> aliases = ArrayListMultimap.create();
+	private final ListMultimap<String, String> subtypeAliases = ArrayListMultimap.create();
 
 	public RegisteredIngredient(IIngredientType<T> ingredientType, Collection<T> ingredients, IIngredientHelper<T> ingredientHelper, IIngredientRenderer<T> ingredientRenderer) {
 		this.ingredientType = ingredientType;
@@ -48,8 +49,17 @@ public class RegisteredIngredient<T> {
 		aliases.putAll(uid, ingredientAliases);
 	}
 
+	public void addSubtypeAliases(T ingredient, Collection<String> ingredientAliases) {
+		String wildcardId = ingredientHelper.getWildcardId(ingredient);
+		subtypeAliases.putAll(wildcardId, ingredientAliases);
+	}
+
 	public Collection<String> getAliases(T ingredient) {
 		String uid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
-		return ImmutableList.copyOf(aliases.get(uid));
+		String wildcardId = ingredientHelper.getWildcardId(ingredient);
+		return ImmutableList.<String>builder()
+			.addAll(aliases.get(uid))
+			.addAll(subtypeAliases.get(wildcardId))
+			.build();
 	}
 }

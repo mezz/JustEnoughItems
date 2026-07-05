@@ -49,6 +49,19 @@ public class ModIngredientRegistration implements IModIngredientRegistration, II
 	}
 
 	@Override
+	public <I> void addAliasToAllSubtypes(IIngredientType<I> type, I ingredient, String alias) {
+		addAliasesToAllSubtypes(type, ingredient, Collections.singleton(alias));
+	}
+
+	@Override
+	public <I> void addAliasesToAllSubtypes(IIngredientType<I> type, I ingredient, Collection<String> aliases) {
+		ErrorUtil.checkNotNull(type, "type");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		ErrorUtil.checkNotNull(aliases, "aliases");
+		getRegisteredIngredient(type).addSubtypeAliases(ingredient, aliases);
+	}
+
+	@Override
 	public <I> void addAliases(IIngredientType<I> type, I ingredient, Collection<String> aliases) {
 		ErrorUtil.checkNotNull(type, "type");
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
