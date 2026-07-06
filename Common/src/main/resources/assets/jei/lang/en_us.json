@@ -39,6 +39,8 @@
   "jei.tooltip.recipe.sort.bookmarks.first.disabled": "Show bookmarked recipes first (disabled).",
   "jei.tooltip.recipe.sort.craftable.first.enabled": "Show craftable recipes first (enabled).",
   "jei.tooltip.recipe.sort.craftable.first.disabled": "Show craftable recipes first (disabled).",
+  "jei.config.client.appearance.toastReflowEnabled": "Toast Reflow",
+  "jei.config.client.appearance.toastReflowEnabled.description": "Moves toast notifications to avoid overlapping with the JEI interface.",
 
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "Missing Items",

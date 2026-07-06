@@ -50,6 +50,7 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> lookupBlockTagsEnabled;
 	private final Supplier<Boolean> showTagRecipesEnabled;
 	private final Supplier<Boolean> showCreativeTabNamesEnabled;
+    private final Supplier<Boolean> toastReflowEnabled;
 
 	// input
 	private final Supplier<Integer> dragDelayMs;
@@ -98,6 +99,7 @@ public final class ClientConfig implements IClientConfig {
 		tagContentTooltipEnabled = tooltips.addBoolean("tagContentTooltipEnabled", true);
 		hideSingleTagContentTooltipEnabled = tooltips.addBoolean("hideSingleTagContentTooltipEnabled", true);
 		ingredientsSummaryEnabled = tooltips.addBoolean("enableRecipesGuiIngredientsSummary", false);
+        toastReflowEnabled = appearance.addBoolean("toastReflowEnabled", true);
 
 		IConfigCategoryBuilder performance = schema.addCategory("performance");
 		lowMemorySlowSearchEnabled = performance.addBoolean("lowMemorySlowSearchEnabled", false);
@@ -332,4 +334,9 @@ public final class ClientConfig implements IClientConfig {
 	public boolean isShowCreativeTabNamesEnabled() {
 		return showCreativeTabNamesEnabled.get();
 	}
+
+    @Override
+    public boolean isToastReflowEnabled() {
+        return toastReflowEnabled.get();
+    }
 }
