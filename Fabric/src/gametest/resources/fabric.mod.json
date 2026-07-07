@@ -7,7 +7,9 @@
   "entrypoints": {
     "fabric-client-gametest": [
       "mezz.jei.fabric.test.JeiFabricSingleplayerClientGameTest",
-      "mezz.jei.fabric.test.JeiFabricDedicatedServerClientGameTest"
+      "mezz.jei.fabric.test.JeiFabricServerWithJeiClientGameTest",
+      "mezz.jei.fabric.test.JeiFabricServerWithoutJeiClientGameTest",
+      "mezz.jei.fabric.test.JeiVanillaServerWithoutJeiClientGameTest"
     ]
   },
   "depends": {

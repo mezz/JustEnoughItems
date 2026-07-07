@@ -1,5 +1,6 @@
 package mezz.jei.neoforge.network;
 
+import mezz.jei.common.network.ClientConnectionHelper;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PlayToServerPacket;
@@ -9,6 +10,8 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 public final class ConnectionToServer implements IConnectionToServer {
+	private static final String NEOFORGE_SERVER_BRAND = "neoforge";
+
 	private static JeiServerState jeiOnServerCacheValue = JeiServerState.UNKNOWN;
 
 	private enum JeiServerState {
@@ -18,6 +21,11 @@ public final class ConnectionToServer implements IConnectionToServer {
 	@Override
 	public boolean isJeiOnServer() {
 		return canSendPacket(PacketDeletePlayerItem.TYPE);
+	}
+
+	@Override
+	public boolean isSameModLoader() {
+		return ClientConnectionHelper.hasServerBrand(NEOFORGE_SERVER_BRAND);
 	}
 
 	@Override

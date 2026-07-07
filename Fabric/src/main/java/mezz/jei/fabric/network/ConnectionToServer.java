@@ -1,5 +1,6 @@
 package mezz.jei.fabric.network;
 
+import mezz.jei.common.network.ClientConnectionHelper;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PlayToServerPacket;
@@ -7,9 +8,16 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public final class ConnectionToServer implements IConnectionToServer {
+	private static final String FABRIC_SERVER_BRAND = "fabric";
+
 	@Override
 	public boolean isJeiOnServer() {
 		return ClientPlayNetworking.canSend(PacketDeletePlayerItem.TYPE);
+	}
+
+	@Override
+	public boolean isSameModLoader() {
+		return ClientConnectionHelper.hasServerBrand(FABRIC_SERVER_BRAND);
 	}
 
 	@Override
