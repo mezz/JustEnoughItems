@@ -38,10 +38,15 @@ jobs:
       - name: Run NeoForge GameTests
         run: ./gradlew :NeoForge:runGameTestServer --no-daemon
 
-      - name: Run Fabric Client GameTests
+      - name: Run Client GameTests
         run: |
-          xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest --no-daemon
-          xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTestWithoutAmecs --no-daemon
+          if command -v xvfb-run >/dev/null 2>&1; then
+            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest --no-daemon
+            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTestWithoutAmecs --no-daemon
+            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :NeoForge:runClientRecipeSyncTest --no-daemon
+          else
+            echo "::error::xvfb-run is not available; skipping client GameTests."
+          fi
 
       - name: Copy together artifacts
         shell: bash

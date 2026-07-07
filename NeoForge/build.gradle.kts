@@ -1,6 +1,8 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import net.neoforged.moddevgradle.dsl.ModModel
 import org.slf4j.event.Level
+import java.io.File
 
 plugins {
 	id("java")
@@ -44,6 +46,7 @@ sourceSets {
 		}
 	}
 	create("gameTest")
+	create("clientGameTest")
 }
 
 val dependencyProjects: List<Project> = listOf(
@@ -66,6 +69,9 @@ configurations.implementation {
 	extendsFrom(embeddedLibraries)
 }
 configurations.named("gameTestImplementation") {
+	extendsFrom(configurations.implementation.get())
+}
+configurations.named("clientGameTestImplementation") {
 	extendsFrom(configurations.implementation.get())
 }
 
@@ -104,6 +110,25 @@ val changelogMarkdown: Configuration by configurations.creating {
 	}
 }
 
+val neoForgeServerWithJeiRunName = "neoForgeServerWithJei"
+val neoForgeServerWithoutJeiRunName = "neoForgeServerWithoutJei"
+val vanillaServerRunName = "vanillaServer"
+val clientRecipeSyncTestCases = listOf(
+	"clientRecipeSyncSingleplayer" to "singleplayer",
+	"clientRecipeSyncNeoForgeServerWithJei" to "neoforgeServerWithJei",
+	"clientRecipeSyncNeoForgeServerWithoutJei" to "neoforgeServerWithoutJei",
+	"clientRecipeSyncVanillaServerWithoutJei" to "vanillaServerWithoutJei",
+)
+
+fun clientRecipeSyncTestGameDirectory(runName: String) =
+	layout.projectDirectory.dir("run/$runName")
+
+fun clientRecipeSyncTestConfigDirectory(runName: String) =
+	layout.projectDirectory.dir("run/$runName/config")
+
+fun capitalizedRunName(runName: String): String =
+	runName.replaceFirstChar { it.uppercase() }
+
 fun Configuration.singleFileContents(): Provider<String> =
 	incoming
 		.files
@@ -121,6 +146,7 @@ dependencies {
 	"gameTestImplementation"("net.neoforged:testframework:${neoforgeVersion}") {
 		isTransitive = false
 	}
+	"clientGameTestImplementation"(testFixtures(project(":Common")))
 	testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	changelogHtml(project(":Changelog"))
@@ -134,6 +160,7 @@ neoForge {
 
 	addModdingDependenciesTo(sourceSets.test.get())
 	addModdingDependenciesTo(sourceSets.named("gameTest").get())
+	addModdingDependenciesTo(sourceSets.named("clientGameTest").get())
 
 	mods {
 		create("jei") {
@@ -144,6 +171,9 @@ neoForge {
 		}
 		create("jeitests") {
 			sourceSet(sourceSets.named("gameTest").get())
+		}
+		create("jeiclienttests") {
+			sourceSet(sourceSets.named("clientGameTest").get())
 		}
 	}
 
@@ -179,6 +209,73 @@ neoForge {
 			systemProperty("jei.gameTest.junitDir", gameTestJunitResultsDir.get().asFile.absolutePath)
 			logLevel = Level.INFO
 		}
+		clientRecipeSyncTestCases.forEach { (runName, testCase) ->
+			create(runName) {
+				client()
+				gameDirectory = clientRecipeSyncTestGameDirectory(runName).asFile
+				sourceSet = sourceSets.named("clientGameTest")
+				loadedMods.add(mods.named("jeiclienttests"))
+				programArguments.addAll("--username", "JeiClientTest")
+				systemProperty("jei.clientRecipeSyncTest", testCase)
+				logLevel = Level.INFO
+			}
+		}
+		create(neoForgeServerWithJeiRunName) {
+			server()
+			gameDirectory = file("run/$neoForgeServerWithJeiRunName")
+			programArguments.addAll("nogui")
+			logLevel = Level.INFO
+		}
+		create(neoForgeServerWithoutJeiRunName) {
+			server()
+			gameDirectory = file("run/$neoForgeServerWithoutJeiRunName")
+			loadedMods.set(emptySet())
+			programArguments.addAll("nogui")
+			logLevel = Level.INFO
+		}
+	}
+}
+
+fun neoForgeServerRunFile(runName: String, suffix: String): File =
+	layout.buildDirectory.file("moddev/$runName$suffix").get().asFile
+
+fun modFoldersProperty(mod: ModModel): String =
+	mod.modSourceSets.get()
+		.flatMap { sourceSet -> sourceSet.output.files }
+		.joinToString(File.pathSeparator) { file -> "${mod.name}%%${file.absolutePath}" }
+
+fun vanillaServerRunFile(suffix: String): File =
+	project(":Common").layout.buildDirectory.file("moddev/$vanillaServerRunName$suffix").get().asFile
+
+val writeExternalServerLaunchProperties = tasks.register<WriteProperties>("writeExternalServerLaunchProperties") {
+	destinationFile.set(layout.buildDirectory.file("generated/externalServerLaunch/resources/jei-external-server-launch.properties"))
+	property("neoForgeServerWithJei.classpathArgsFile", neoForgeServerRunFile(neoForgeServerWithJeiRunName, "RunClasspath.txt").absolutePath)
+	property("neoForgeServerWithJei.vmArgsFile", neoForgeServerRunFile(neoForgeServerWithJeiRunName, "RunVmArgs.txt").absolutePath)
+	property("neoForgeServerWithJei.programArgsFile", neoForgeServerRunFile(neoForgeServerWithJeiRunName, "RunProgramArgs.txt").absolutePath)
+	property("neoForgeServerWithJei.modFolders", modFoldersProperty(neoForge.mods.named("jei").get()))
+	property("neoForgeServerWithoutJei.classpathArgsFile", neoForgeServerRunFile(neoForgeServerWithoutJeiRunName, "RunClasspath.txt").absolutePath)
+	property("neoForgeServerWithoutJei.vmArgsFile", neoForgeServerRunFile(neoForgeServerWithoutJeiRunName, "RunVmArgs.txt").absolutePath)
+	property("neoForgeServerWithoutJei.programArgsFile", neoForgeServerRunFile(neoForgeServerWithoutJeiRunName, "RunProgramArgs.txt").absolutePath)
+	property("neoForgeServerWithoutJei.modFolders", "")
+	property("vanillaServer.classpathArgsFile", vanillaServerRunFile("RunClasspath.txt").absolutePath)
+	property("vanillaServer.vmArgsFile", vanillaServerRunFile("RunVmArgs.txt").absolutePath)
+	property("vanillaServer.programArgsFile", vanillaServerRunFile("RunProgramArgs.txt").absolutePath)
+	property("vanillaServer.modFolders", "")
+	dependsOn(
+		":Common:createVanillaServerLaunchScript",
+		"createNeoForgeServerWithJeiLaunchScript",
+		"createNeoForgeServerWithoutJeiLaunchScript"
+	)
+}
+
+tasks.named<ProcessResources>(sourceSets.named("clientGameTest").get().processResourcesTaskName) {
+	from(writeExternalServerLaunchProperties)
+}
+
+val copyClientRecipeSyncTestFmlConfigTasks = clientRecipeSyncTestCases.associate { (runName, _) ->
+	runName to tasks.register<Copy>("copy${capitalizedRunName(runName)}FmlConfig") {
+		from(layout.projectDirectory.file("src/clientGameTest/templates/config/fml.toml"))
+		into(clientRecipeSyncTestConfigDirectory(runName))
 	}
 }
 
@@ -189,6 +286,27 @@ val cleanGameTestJunitResults = tasks.register<Delete>("cleanGameTestJunitResult
 
 tasks.named("runGameTestServer") {
 	dependsOn(cleanGameTestJunitResults)
+}
+
+clientRecipeSyncTestCases.forEach { (runName, _) ->
+	tasks.named("prepare${capitalizedRunName(runName)}Run") {
+		dependsOn(writeExternalServerLaunchProperties, copyClientRecipeSyncTestFmlConfigTasks.getValue(runName))
+	}
+}
+
+val clientRecipeSyncTestRunTasks = clientRecipeSyncTestCases.map { (runName, _) ->
+	tasks.named("run${capitalizedRunName(runName)}")
+}
+clientRecipeSyncTestRunTasks.zipWithNext().forEach { (previousTask, nextTask) ->
+	nextTask.configure {
+		mustRunAfter(previousTask)
+	}
+}
+
+tasks.register("runClientRecipeSyncTest") {
+	group = "mod development"
+	description = "Runs all JEI client recipe-sync test scenarios."
+	dependsOn(clientRecipeSyncTestRunTasks)
 }
 
 tasks.jar {

@@ -1,0 +1,7 @@
+license="MIT"
+
+[[mods]]
+modId="jeiclienttests"
+displayName="Just Enough Items: Client Tests"
+displayTest="IGNORE_SERVER_VERSION"
+description='''Client tests for Just Enough Items.'''

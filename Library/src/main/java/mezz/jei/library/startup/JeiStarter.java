@@ -13,12 +13,15 @@ import mezz.jei.common.config.JeiClientConfigs;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
 import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
+import mezz.jei.common.network.ClientConnectionHelper;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.recipes.VanillaClientRecipeLoader;
 import mezz.jei.common.util.ChatUtil;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.common.util.Translator;
-import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.library.color.ColorHelper;
 import mezz.jei.library.config.ColorNameConfig;
 import mezz.jei.library.config.EditModeConfig;
@@ -42,6 +45,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.item.crafting.display.SlotDisplayContext;
@@ -54,6 +58,7 @@ import java.util.List;
 
 public final class JeiStarter {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String VANILLA_SERVER_BRAND = "vanilla";
 
 	private final StartData data;
 	private final List<IModPlugin> plugins;
@@ -114,6 +119,13 @@ public final class JeiStarter {
 		RegistryAccess registryAccess = level.registryAccess();
 		RegistryUtil.setRegistryAccess(registryAccess);
 		ContextMap contextMap = SlotDisplayContext.fromLevel(level);
+
+		if (!Internal.hasClientRecipes()) {
+			RecipeMap vanillaRecipes = VanillaClientRecipeLoader.getVanillaRecipes(registryAccess);
+			if (!vanillaRecipes.values().isEmpty()) {
+				Internal.setClientFallbackRecipes(vanillaRecipes);
+			}
+		}
 
 		LoggedTimer totalTime = new LoggedTimer();
 		totalTime.start("Starting JEI");
@@ -201,14 +213,42 @@ public final class JeiStarter {
 
 		totalTime.stop();
 
-		RecipeMap clientSyncedRecipes = Internal.getClientSyncedRecipes();
-		if (clientSyncedRecipes.values().isEmpty()) {
-			String message = Translator.translateToLocal("jei.message.missing.recipes.from.server");
-			LocalPlayer player = minecraft.player;
-			if (player != null) {
-				ChatUtil.writeChatMessage(player, message, ChatFormatting.RED);
+		verifyClientRecipes(minecraft);
+	}
+
+	private void verifyClientRecipes(Minecraft minecraft) {
+		IConnectionToServer serverConnection = data.serverConnection();
+		RecipeMap clientRecipes = Internal.getClientSyncedRecipes();
+
+		if (Internal.hasClientSyncedRecipes() && clientRecipes.values().isEmpty()) {
+			String key = "jei.message.server.recipe.sync.error";
+			writeChatMessage(minecraft, Component.translatable(key).withStyle(ChatFormatting.RED));
+			LOGGER.error(Translator.translateToLocal(key));
+		} else if (Internal.hasClientFallbackRecipes()) {
+			if (!serverConnection.isJeiOnServer() &&
+				serverConnection.isSameModLoader())
+			{
+				String key = "jei.message.server.recipe.sync.jei.missing";
+				String serverBrand = ClientConnectionHelper.getServerBrand();
+				writeChatMessage(minecraft, Component.translatable(key, serverBrand).withStyle(ChatFormatting.RED));
+				LOGGER.warn(Translator.translateToLocalFormatted(key, serverBrand));
+			} else if (ClientConnectionHelper.hasServerBrand(VANILLA_SERVER_BRAND)) {
+				String key = "jei.message.server.recipe.sync.vanilla";
+				writeChatMessage(minecraft, Component.translatable(key).withStyle(ChatFormatting.YELLOW));
+				LOGGER.warn(Translator.translateToLocal(key));
+			} else {
+				String key = "jei.message.server.recipe.sync.unavailable";
+				String serverBrand = ClientConnectionHelper.getServerBrand();
+				writeChatMessage(minecraft, Component.translatable(key, serverBrand).withStyle(ChatFormatting.RED));
+				LOGGER.warn(Translator.translateToLocalFormatted(key, serverBrand));
 			}
-			LOGGER.error(message);
+		}
+	}
+
+	private static void writeChatMessage(Minecraft minecraft, Component component) {
+		LocalPlayer player = minecraft.player;
+		if (player != null) {
+			ChatUtil.writeChatMessage(player, component);
 		}
 	}
 
