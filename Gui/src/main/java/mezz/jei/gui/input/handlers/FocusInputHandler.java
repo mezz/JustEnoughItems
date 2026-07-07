@@ -77,6 +77,10 @@ public class FocusInputHandler implements IUserInputHandler {
 			return handleShow(input, List.of(RecipeIngredientRole.OUTPUT), keyBindings);
 		}
 
+        if (input.is(keyBindings.getShareToChat())) {
+            return handleShareToChat(input, keyBindings);
+        }
+
 		if (input.is(keyBindings.getShowUses())) {
 			return handleShow(input, List.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.CRAFTING_STATION), keyBindings);
 		}
@@ -109,6 +113,25 @@ public class FocusInputHandler implements IUserInputHandler {
 				return new SameElementInputHandler(this, clicked::isMouseOver);
 			});
 	}
+
+    private Optional<IUserInputHandler> handleShareToChat(UserInput input, IInternalKeyMappings keyBindings) {
+        return focusSource.getIngredientUnderMouse(input, keyBindings)
+                .filter(clicked -> clicked.getElement().isVisible())
+                .findFirst()
+                .map(clicked -> {
+                    if (!input.isSimulate()) {
+                        ItemStack itemStack = clicked.getCheatItemStack(ingredientManager);
+                        if (!itemStack.isEmpty()) {
+                            String itemName = itemStack.getHoverName().getString();
+                            String itemId = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString();
+                            String chatText = "[JEI:" + itemId + "|" + itemName + "] ";
+
+                            net.minecraft.client.Minecraft.getInstance().setScreenAndShow(new net.minecraft.client.gui.screens.ChatScreen(chatText, false));
+                        }
+                    }
+                    return new SameElementInputHandler(this, clicked::isMouseOver);
+                });
+    }
 
 	private Optional<IUserInputHandler> handleGive(UserInput input, IInternalKeyMappings keyBindings, GiveAmount giveAmount) {
 		return focusSource.getIngredientUnderMouse(input, keyBindings)

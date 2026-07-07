@@ -13,6 +13,8 @@ import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipe;
 import mezz.jei.library.recipes.RecipeSerializers;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
+import mezz.jei.neoforge.chat.JeiChatEventHandler;
+import mezz.jei.neoforge.chat.JeiInternalShowCommand;
 import mezz.jei.neoforge.events.PermanentEventSubscriptions;
 import mezz.jei.neoforge.network.NetworkHandler;
 import mezz.jei.neoforge.plugins.neoforge.NeoForgeGuiPlugin;
@@ -73,6 +75,9 @@ public class JustEnoughItemsClient {
 			});
 			Internal.setKeyMappings(keyMappings);
 		});
+
+        JeiChatEventHandler.register(subscriptions);
+        JeiInternalShowCommand.register(subscriptions);
 
 		IEventBus modEventBus = subscriptions.getModEventBus();
 		DeferredRegister<RecipeSerializer<?>> deferredRegister = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, ModIds.JEI_ID);
