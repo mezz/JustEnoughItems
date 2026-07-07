@@ -20,8 +20,10 @@ import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.client.event.RecipesUpdatedEvent;
 
 import java.util.List;
 
@@ -41,7 +43,15 @@ public class JustEnoughItemsClient {
 		JeiChatTooltipEventHandler.register(subscriptions);
 		JeiInternalShowCommand.register(subscriptions);
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
+		subscriptions.register(RecipesUpdatedEvent.class, this::onRecipesUpdatedEvent);
 		Runtime.getRuntime().addShutdownHook(new Thread(Internal::onClientStopping, "JEI Client Shutdown"));
+	}
+
+	private void onRecipesUpdatedEvent(RecipesUpdatedEvent event) {
+		List<Recipe<?>> recipes = List.copyOf(event.getRecipeManager().getRecipes());
+		if (!recipes.isEmpty()) {
+			Internal.setClientSyncedRecipes(recipes);
+		}
 	}
 
 	private void onRegisterReloadListenerEvent(RegisterClientReloadListenersEvent event) {
@@ -68,7 +78,7 @@ public class JustEnoughItemsClient {
 		);
 
 		JeiStarter jeiStarter = new JeiStarter(startData);
-		StartEventObserver startEventObserver = new StartEventObserver(jeiStarter::start, jeiStarter::stop);
+		StartEventObserver startEventObserver = new StartEventObserver(serverConnection, jeiStarter::start, jeiStarter::stop);
 		startEventObserver.register(subscriptions);
 		event.registerReloadListener(startEventObserver);
 	}

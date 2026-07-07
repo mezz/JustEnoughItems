@@ -118,6 +118,11 @@
   "jei.message.config.folder": "Or click here to open the JEI config folder instead",
   "jei.message.copy.recipe.id.success": "The following recipe ID was copied to the clipboard: %s",
   "jei.message.copy.recipe.id.failure": "Failed to copy the recipe ID to the clipboard because the ID is unknown",
+  "jei.message.missing.recipes.from.server": "JEI is missing recipes. Please install JEI on the server to sync recipes to the client.",
+  "jei.message.server.recipe.sync.error": "This server sent recipes to JEI, but none were usable. JEI cannot show this server's recipes. Check the server's JEI setup, datapacks, and recipe mods.",
+  "jei.message.server.recipe.sync.vanilla": "This is a vanilla server. JEI is showing default recipes from your client, which may be different if the server uses datapacks. Install Forge, NeoForge, or Fabric on the server, along with JEI, to show the server's recipes correctly.",
+  "jei.message.server.recipe.sync.unavailable": "This %s server does not provide recipes to JEI. JEI is showing default recipes from your client, which may be different on the server.",
+  "jei.message.server.recipe.sync.jei.missing": "This %s server does not have JEI installed. JEI is showing default recipes from your client, which may be different on the server. Install JEI on the server to show the server's recipes correctly.",
 
   "_comment": "Key Names",
   "jei.key.combo.shift": "SHIFT + %s",

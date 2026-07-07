@@ -1,12 +1,18 @@
 package mezz.jei.common.network;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
+import org.jetbrains.annotations.Nullable;
 
+/**
+ * Client-side helpers for reading connection state that is shared by platform-specific network implementations.
+ */
 public final class ClientConnectionHelper {
 	private static final String UNKNOWN_SERVER_BRAND = "unknown";
 
 	private ClientConnectionHelper() {
+
 	}
 
 	public static String getServerBrand() {
@@ -28,5 +34,15 @@ public final class ClientConnectionHelper {
 			}
 		}
 		return false;
+	}
+
+	@Nullable
+	public static ClientPacketListener getConnectedClientPacketListener() {
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientPacketListener clientPacketListener = minecraft.getConnection();
+		if (clientPacketListener == null || !clientPacketListener.getConnection().isConnected()) {
+			return null;
+		}
+		return clientPacketListener;
 	}
 }

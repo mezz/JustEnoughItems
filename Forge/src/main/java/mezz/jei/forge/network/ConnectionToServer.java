@@ -39,7 +39,7 @@ public final class ConnectionToServer implements IConnectionToServer {
 	public boolean isJeiOnServer() {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientPacketListener clientPacketListener = minecraft.getConnection();
-		if (clientPacketListener == null) {
+		if (clientPacketListener == null || !clientPacketListener.getConnection().isConnected()) {
 			return false;
 		}
 		UUID id = clientPacketListener.getId();
@@ -65,5 +65,11 @@ public final class ConnectionToServer implements IConnectionToServer {
 			ICustomPacket<Packet<?>> payload = NetworkDirection.PLAY_TO_SERVER.buildPacket(packetData, networkHandler.getChannelId());
 			netHandler.send(payload.getThis());
 		}
+	}
+
+	@Override
+	public void onRuntimeStopped() {
+		jeiOnServerCacheUuid = null;
+		jeiOnServerCacheValue = false;
 	}
 }

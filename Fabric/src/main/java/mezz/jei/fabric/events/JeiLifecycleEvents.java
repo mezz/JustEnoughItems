@@ -20,7 +20,7 @@ public class JeiLifecycleEvents {
 		}
 	});
 
-	public static final Event<Runnable> AFTER_RECIPE_SYNC = EventFactory.createArrayBacked(Runnable.class, callbacks -> () -> {
+	public static final Event<Runnable> AFTER_RECIPES_UPDATED = EventFactory.createArrayBacked(Runnable.class, callbacks -> () -> {
 		for (Runnable callback : callbacks) {
 			callback.run();
 		}
