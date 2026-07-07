@@ -44,6 +44,11 @@ public final class TestConnectionToServer implements IConnectionToServer {
 	}
 
 	@Override
+	public boolean isSameModLoader() {
+		return false;
+	}
+
+	@Override
 	public boolean canSendPacket(CustomPacketPayload.Type<?> packetType) {
 		return !this.unsupportedPackets.contains(packetType);
 	}
@@ -72,6 +77,7 @@ public final class TestConnectionToServer implements IConnectionToServer {
 		}
 	}
 
+	@Override
 	public void onRuntimeStopped() {
 		clearPlayer();
 	}

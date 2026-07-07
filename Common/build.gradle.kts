@@ -1,9 +1,11 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.slf4j.event.Level
 
 plugins {
     id("idea")
     id("java")
+    id("java-test-fixtures")
     id("net.neoforged.moddev")
     id("maven-publish")
 }
@@ -32,6 +34,15 @@ dependencyProjects.forEach {
 neoForge {
     neoFormVersion = "$minecraftVersion-$neoformTimestamp"
     addModdingDependenciesTo(sourceSets.test.get())
+
+    runs {
+        create("vanillaServer") {
+            server()
+			gameDirectory = file("run/vanillaServer")
+			programArguments.addAll("nogui")
+			logLevel = Level.INFO
+		}
+	}
 }
 
 sourceSets {
@@ -77,6 +88,7 @@ dependencies {
     dependencyProjects.forEach {
         implementation(it)
     }
+    testFixturesCompileOnly("org.jspecify:jspecify:1.0.0")
     testImplementation(
         group = "org.junit.jupiter",
         name = "junit-jupiter",

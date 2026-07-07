@@ -1,65 +1,67 @@
 package mezz.jei.forge.startup;
 
+import mezz.jei.common.Internal;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.Connection;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.EventPriority;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.ref.WeakReference;
 
 /**
  * This class observes events and determines when it's the right time to start JEI.
  *
- * JEI needs to see both the {@link TagsUpdatedEvent} and {@link RecipesUpdatedEvent}
- * before it is ready to start.
+ * JEI needs to see {@link ClientPlayerNetworkEvent.LoggingIn} before it is ready to start. When
+ * the connection can provide server recipe content, JEI also waits for {@link RecipesUpdatedEvent}
+ * so it does not briefly start with fallback client recipes.
  *
- * Depending on the configuration (Integrated server, vanilla server, modded server),
- * these events might come in any order.
+ * Connections that never provide synced recipes continue with fallback recipes.
+ * Datapack reloads can fire another recipe event after JEI has started; if that event provides
+ * synced recipes, JEI restarts using the synced recipes.
  */
-public class StartEventObserver {
+public class StartEventObserver implements ResourceManagerReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
-	// note: JEI requires TagsUpdatedEvent as well, but Forge fires it before the LoggingIn event.
-	private static final Set<Class<? extends Event>> requiredEvents = Set.of(RecipesUpdatedEvent.class);
 
 	private enum State {
-		DISABLED, ENABLED, JEI_STARTED
+		LISTENING, JEI_STARTED
 	}
 
-	private final Set<Class<? extends Event>> observedEvents = new HashSet<>();
+	private final IConnectionToServer serverConnection;
 	private final Runnable startRunnable;
 	private final Runnable stopRunnable;
-	private State state = State.DISABLED;
+	private WeakReference<Connection> currentConnection = new WeakReference<>(null);
+	private State state = State.LISTENING;
+	private boolean observedLogin;
+	private boolean observedRecipeSync;
 
-	public StartEventObserver(Runnable startRunnable, Runnable stopRunnable) {
+	public StartEventObserver(IConnectionToServer serverConnection, Runnable startRunnable, Runnable stopRunnable) {
+		this.serverConnection = serverConnection;
 		this.startRunnable = startRunnable;
 		this.stopRunnable = stopRunnable;
 	}
 
 	public void register(PermanentEventSubscriptions subscriptions) {
-		requiredEvents
-			.forEach(eventClass -> subscriptions.register(eventClass, this::onEvent));
-
-		subscriptions.register(ClientPlayerNetworkEvent.LoggingIn.class, event -> {
-			if (event.getPlayer() != null) {
-				LOGGER.info("JEI StartEventObserver received {}", event.getClass());
-				if (this.state == State.DISABLED) {
-					transitionState(State.ENABLED);
-				}
-			}
-		});
+		subscriptions.register(EventPriority.LOWEST, ClientPlayerNetworkEvent.LoggingIn.class, this::onLoggingIn);
+		subscriptions.register(EventPriority.LOWEST, RecipesUpdatedEvent.class, this::onRecipesUpdatedEvent);
 
 		subscriptions.register(ClientPlayerNetworkEvent.LoggingOut.class, event -> {
 			if (event.getPlayer() != null) {
-				LOGGER.info("JEI StartEventObserver received {}", event.getClass());
-				transitionState(State.DISABLED);
+				logReceivedEvent(event);
+				Internal.clearClientRecipes();
+				transitionState(State.LISTENING);
 			}
 		});
 
@@ -68,70 +70,132 @@ public class StartEventObserver {
 				Screen screen = event.getScreen();
 				Minecraft minecraft = screen.getMinecraft();
 				if (screen instanceof AbstractContainerScreen && minecraft != null && minecraft.player != null) {
-					var missingEvents = requiredEvents.stream()
-						.filter(e -> !observedEvents.contains(e))
-						.sorted()
-						.toList();
-
 					LOGGER.error("""
 							A Screen is opening but JEI hasn't started yet.
-							Normally, JEI is started after ClientPlayerNetworkEvent.LoggedInEvent, TagsUpdatedEvent, and RecipesUpdatedEvent.
+							Normally, JEI is started after these events have fired: {}.
 							Something has caused one or more of these events to fail, so JEI is starting very late.
-							Missing events: {}""", missingEvents);
-					transitionState(State.DISABLED);
-					transitionState(State.ENABLED);
+							Missing events: {}""",
+						getRequiredStartEventsString(),
+						getMissingStartEventsString()
+					);
+					transitionState(State.LISTENING);
 					transitionState(State.JEI_STARTED);
 				}
 			}
 		});
 	}
 
-	/**
-	 * Observe an event and start JEI if we have observed all the required events.
-	 */
-	private <T extends Event> void onEvent(T event) {
-		if (this.state == State.DISABLED) {
+	private void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
+		if (!observeConnectionEvent(event)) {
 			return;
 		}
-		LOGGER.info("JEI StartEventObserver received {}", event.getClass());
-		Class<? extends Event> eventClass = event.getClass();
-		if (requiredEvents.contains(eventClass) &&
-			observedEvents.add(eventClass) &&
-			observedEvents.containsAll(requiredEvents)
-		) {
-			if (this.state == State.JEI_STARTED) {
-				restart();
-			} else {
-				transitionState(State.JEI_STARTED);
-			}
+		this.observedLogin = true;
+		startIfReady();
+	}
+
+	private void onRecipesUpdatedEvent(RecipesUpdatedEvent event) {
+		if (!observeConnectionEvent(event)) {
+			return;
 		}
+		this.observedRecipeSync = true;
+		if (this.state == State.JEI_STARTED && Internal.hasClientSyncedRecipes()) {
+			restart();
+		} else {
+			startIfReady();
+		}
+	}
+
+	private void startIfReady() {
+		if (this.state != State.LISTENING || !this.observedLogin) {
+			return;
+		}
+		if (shouldWaitForRecipes() && !this.observedRecipeSync) {
+			return;
+		}
+		transitionState(State.JEI_STARTED);
+	}
+
+	private <T extends Event> boolean observeConnectionEvent(T event) {
+		Connection observingConnection = this.currentConnection.get();
+		Connection currentConnection = getCurrentConnection();
+		if (currentConnection != observingConnection) {
+			clearObservedStartEvents();
+			this.currentConnection = new WeakReference<>(currentConnection);
+		}
+		if (currentConnection == null) {
+			LOGGER.debug("JEI StartEventObserver received {} too early, ignoring", event.getClass());
+			return false;
+		}
+		logReceivedEvent(event);
+		return true;
+	}
+
+	private boolean shouldWaitForRecipes() {
+		return serverConnection.isJeiOnServer() ||
+			serverConnection.isSameModLoader();
+	}
+
+	private String getRequiredStartEventsString() {
+		if (shouldWaitForRecipes()) {
+			return "[%s, %s]".formatted(ClientPlayerNetworkEvent.LoggingIn.class.getName(), RecipesUpdatedEvent.class.getName());
+		}
+		return "[%s]".formatted(ClientPlayerNetworkEvent.LoggingIn.class.getName());
+	}
+
+	private String getMissingStartEventsString() {
+		StringBuilder missingEvents = new StringBuilder("[");
+		if (!observedLogin) {
+			missingEvents.append(ClientPlayerNetworkEvent.LoggingIn.class.getName());
+		}
+		if (shouldWaitForRecipes() && !observedRecipeSync) {
+			if (missingEvents.length() > 1) {
+				missingEvents.append(", ");
+			}
+			missingEvents.append(RecipesUpdatedEvent.class.getName());
+		}
+		return missingEvents.append("]").toString();
+	}
+
+	private static <T extends Event> void logReceivedEvent(T event) {
+		LOGGER.debug("JEI StartEventObserver received event: {}", event.getClass());
+	}
+
+	@Nullable
+	private static Connection getCurrentConnection() {
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientPacketListener packetListener = minecraft.getConnection();
+		if (packetListener != null) {
+			return packetListener.getConnection();
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public void onResourceManagerReload(ResourceManager resourceManager) {
+		LOGGER.debug("JEI StartEventObserver detected resource manager reload.");
+		restart();
 	}
 
 	private void restart() {
 		if (this.state != State.JEI_STARTED) {
 			return;
 		}
-		transitionState(State.DISABLED);
-		transitionState(State.ENABLED);
+		transitionState(State.LISTENING);
 		transitionState(State.JEI_STARTED);
 	}
 
 	private void transitionState(State newState) {
-		LOGGER.info("JEI StartEventObserver transitioning state from {} to {}", this.state, newState);
+		LOGGER.debug("JEI StartEventObserver transitioning state from {} to {}", this.state, newState);
 
 		switch (newState) {
-			case DISABLED -> {
+			case LISTENING -> {
 				if (this.state == State.JEI_STARTED) {
 					this.stopRunnable.run();
 				}
 			}
-			case ENABLED -> {
-				if (this.state != State.DISABLED) {
-					throw new IllegalStateException("Attempted Illegal state transition from " + this.state + " to " + newState);
-				}
-			}
 			case JEI_STARTED -> {
-				if (this.state != State.ENABLED) {
+				if (this.state != State.LISTENING) {
 					throw new IllegalStateException("Attempted Illegal state transition from " + this.state + " to " + newState);
 				}
 				this.startRunnable.run();
@@ -139,6 +203,11 @@ public class StartEventObserver {
 		}
 
 		this.state = newState;
-		this.observedEvents.clear();
+		clearObservedStartEvents();
+	}
+
+	private void clearObservedStartEvents() {
+		this.observedLogin = false;
+		this.observedRecipeSync = false;
 	}
 }

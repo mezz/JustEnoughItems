@@ -1,5 +1,6 @@
 package mezz.jei.neoforge.network;
 
+import mezz.jei.common.network.ClientConnectionHelper;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PlayToServerPacket;
@@ -12,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public final class ConnectionToServer implements IConnectionToServer {
+	private static final String NEOFORGE_SERVER_BRAND = "neoforge";
+
 	@Nullable
 	private static UUID jeiOnServerCacheUuid = null;
 	private static boolean jeiOnServerCacheValue = false;
@@ -19,6 +22,11 @@ public final class ConnectionToServer implements IConnectionToServer {
 	@Override
 	public boolean isJeiOnServer() {
 		return canSendPacket(PacketDeletePlayerItem.TYPE);
+	}
+
+	@Override
+	public boolean isSameModLoader() {
+		return ClientConnectionHelper.hasServerBrand(NEOFORGE_SERVER_BRAND);
 	}
 
 	@Override
@@ -44,5 +52,11 @@ public final class ConnectionToServer implements IConnectionToServer {
 		if (netHandler != null && canSendPacket(packet.type())) {
 			PacketDistributor.sendToServer(packet);
 		}
+	}
+
+	@Override
+	public void onRuntimeStopped() {
+		jeiOnServerCacheUuid = null;
+		jeiOnServerCacheValue = false;
 	}
 }

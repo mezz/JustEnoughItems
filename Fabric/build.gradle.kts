@@ -177,6 +177,10 @@ val keyMappingGametestSourceSet = sourceSets.create("keyMappingGametest") {
     runtimeClasspath += output + compileClasspath + gametestSourceSet.runtimeClasspath.minus(gametestSourceSet.output)
 }
 
+dependencies {
+    "gametestImplementation"(testFixtures(project(":Common")))
+}
+
 loom {
     mods {
         create("jei") {
