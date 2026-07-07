@@ -48,8 +48,6 @@ This means:
 ## 1.12.2
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei_1.12.2%2Fmaven-metadata.xml&label=Forge%201.12.2)](https://maven.blamejared.com/mezz/jei/jei_1.12.2/maven-metadata.xml)
 
-## 1.10.2
-* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei_1.10.2%2Fmaven-metadata.xml&label=Forge%201.10.2)](https://maven.blamejared.com/mezz/jei/jei_1.10.2/maven-metadata.xml)
+# Unsupported Versions:
 
-## 1.8.9
-* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei_1.8.9%2Fmaven-metadata.xml&label=Forge%201.8.9)](https://maven.blamejared.com/mezz/jei/jei_1.8.9/maven-metadata.xml)
+See [Unsupported Versions](UNSUPPORTED_VERSIONS.md) for versions that are available on Maven, but are not receiving updates.
