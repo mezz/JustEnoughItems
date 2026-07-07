@@ -30,6 +30,7 @@ repositories {
 val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
 val fabricApiVersion: String by extra
+val fabricClientGametestApiVersion: String by extra
 val fabricLoaderVersion: String by extra
 val minecraftVersionRangeStart: String by extra
 val minecraftVersion: String by extra
@@ -67,6 +68,7 @@ val embeddedLibraries: Configuration by configurations.creating {
 configurations.implementation {
     extendsFrom(embeddedLibraries)
 }
+val keyMappingGametestModId = "${modId}-key-mapping-test"
 
 dependencyProjects.forEach {
     project.evaluationDependsOn(it.dependencyProject.path)
@@ -162,7 +164,31 @@ fabricApi {
     }
 }
 
+dependencies {
+    add(
+        "modGametestImplementation",
+        "net.fabricmc.fabric-api:fabric-client-gametest-api-v1:${fabricClientGametestApiVersion}"
+    )
+}
+
+val keyMappingGametestSourceSet = sourceSets.create("keyMappingGametest") {
+    val gametestSourceSet = sourceSets.named("gametest").get()
+    compileClasspath += sourceSets.main.get().output + gametestSourceSet.compileClasspath
+    runtimeClasspath += output + compileClasspath + gametestSourceSet.runtimeClasspath.minus(gametestSourceSet.output)
+}
+
 loom {
+    mods {
+        create("jei") {
+            sourceSet(sourceSets.main.get())
+            for (dependencyProject in dependencyProjects) {
+                sourceSet(dependencyProject.dependencyProject.sourceSets.main.get())
+            }
+        }
+        create(keyMappingGametestModId) {
+            sourceSet(keyMappingGametestSourceSet)
+        }
+    }
     runs {
         val dependencyJarPaths = dependencyProjects.map {
             it.dependencyProject.tasks.jar.get().archiveFile.get().asFile
@@ -221,6 +247,12 @@ loom {
                 "-Dfabric.log.level=debug"
             )
         }
+        create("clientGameTestWithoutAmecs") {
+            inherit(named("clientGameTest").get())
+            configName = "Fabric Client GameTest Without AMECS"
+            property("jei.fabric.disableAmecsSupport", "true")
+            property("fabric.client.gametest.modid", keyMappingGametestModId)
+        }
     }
 
     accessWidenerPath.set(file("src/main/resources/jei.accesswidener"))
@@ -234,6 +266,17 @@ sourceSets {
             }
         }
     }
+    named("gametest") {
+        runtimeClasspath += keyMappingGametestSourceSet.output
+    }
+}
+
+tasks.named("runClientGameTest") {
+    dependsOn(keyMappingGametestSourceSet.classesTaskName)
+}
+
+tasks.named("runClientGameTestWithoutAmecs") {
+    dependsOn(keyMappingGametestSourceSet.classesTaskName)
 }
 
 tasks.jar {
