@@ -8,7 +8,7 @@
   "client": [
     "AbstractContainerScreenMixin",
     "ChatListenerMixin",
-    "ClientPacketListenerMixin",
+    "ClientPacketListenerRecipeUpdateMixin",
     "ContainerEventHandlerMixin",
     "EffectRenderingInventoryScreenMixin",
     "GameMixin",

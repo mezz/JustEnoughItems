@@ -73,6 +73,18 @@ pipeline {
             }
         }
 
+        stage('Client GameTests') {
+            steps {
+                sh '''
+                    if command -v xvfb-run >/dev/null 2>&1; then
+                        xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest --no-daemon
+                    else
+                        echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
+                    fi
+                '''
+            }
+        }
+
         stage('Publish Maven') {
             when {
                 expression { env.SHOULD_PUBLISH != 'false' }

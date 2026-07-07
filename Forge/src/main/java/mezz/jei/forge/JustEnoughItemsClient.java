@@ -2,7 +2,6 @@ package mezz.jei.forge;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.common.Internal;
-import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.ClientPacketRouter;
@@ -16,13 +15,16 @@ import mezz.jei.forge.network.ConnectionToServer;
 import mezz.jei.forge.network.NetworkHandler;
 import mezz.jei.forge.startup.ForgePluginFinder;
 import mezz.jei.forge.startup.StartEventObserver;
+import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.event.GameShuttingDownEvent;
 
 import java.util.HashSet;
@@ -45,7 +47,15 @@ public class JustEnoughItemsClient {
 		JeiChatTooltipEventHandler.register(subscriptions);
 		JeiInternalShowCommand.register(subscriptions);
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
+		subscriptions.register(RecipesUpdatedEvent.class, this::onRecipesUpdatedEvent);
 		subscriptions.register(GameShuttingDownEvent.class, e -> Internal.onClientStopping());
+	}
+
+	private void onRecipesUpdatedEvent(RecipesUpdatedEvent event) {
+		List<Recipe<?>> recipes = List.copyOf(event.getRecipeManager().getRecipes());
+		if (!recipes.isEmpty()) {
+			Internal.setClientSyncedRecipes(recipes);
+		}
 	}
 
 	private void onRegisterReloadListenerEvent(RegisterClientReloadListenersEvent event) {
@@ -72,7 +82,7 @@ public class JustEnoughItemsClient {
 		);
 
 		JeiStarter jeiStarter = new JeiStarter(startData);
-		StartEventObserver startEventObserver = new StartEventObserver(jeiStarter::start, jeiStarter::stop);
+		StartEventObserver startEventObserver = new StartEventObserver(serverConnection, jeiStarter::start, jeiStarter::stop);
 		startEventObserver.register(subscriptions);
 		event.registerReloadListener(startEventObserver);
 	}
