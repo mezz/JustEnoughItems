@@ -2,6 +2,7 @@ package mezz.jei.fabric.mixin;
 
 import de.siphalor.amecs.key_modifiers.impl.AmecsKeyModifiersEarlyInit;
 import mezz.jei.fabric.input.AmecsHelper;
+import mezz.jei.fabric.input.FabricAmecsSupport;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,6 +24,8 @@ public class AmecsKeyModifiersEarlyInitMixin {
 		require = 0
 	)
 	private static void onInit(CallbackInfo ci) {
-		AmecsHelper.init();
+		if (FabricAmecsSupport.isEnabled()) {
+			AmecsHelper.init();
+		}
 	}
 }
