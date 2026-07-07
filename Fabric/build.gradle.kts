@@ -68,6 +68,7 @@ val embeddedLibraries: Configuration by configurations.creating {
 configurations.implementation {
     extendsFrom(embeddedLibraries)
 }
+val keyMappingGametestModId = "${modId}-key-mapping-test"
 
 dependencyProjects.forEach {
     project.evaluationDependsOn(it.path)
@@ -145,6 +146,12 @@ fabricApi {
     }
 }
 
+val keyMappingGametestSourceSet = sourceSets.create("keyMappingGametest") {
+    val gametestSourceSet = sourceSets.named("gametest").get()
+    compileClasspath += sourceSets.main.get().output + gametestSourceSet.compileClasspath
+    runtimeClasspath += output + compileClasspath + gametestSourceSet.runtimeClasspath.minus(gametestSourceSet.output)
+}
+
 loom {
     mods {
         create("jei") {
@@ -152,6 +159,9 @@ loom {
             for (dependencyProject in dependencyProjects) {
                 sourceSet(dependencyProject.sourceSets.main.get())
             }
+        }
+        create(keyMappingGametestModId) {
+            sourceSet(keyMappingGametestSourceSet)
         }
     }
 
@@ -195,6 +205,12 @@ loom {
                 "-Dfabric.log.level=debug"
             )
         }
+        create("clientGameTestWithoutAmecs") {
+            inherit(named("clientGameTest").get())
+            displayName.set("Fabric Client GameTest Without AMECS")
+            systemProperties.put("jei.fabric.disableAmecsSupport", "true")
+            systemProperties.put("fabric.client.gametest.modid", keyMappingGametestModId)
+        }
     }
 
     accessWidenerPath.set(file("src/main/resources/jei.accesswidener"))
@@ -208,6 +224,17 @@ sourceSets {
             }
         }
     }
+    named("gametest") {
+        runtimeClasspath += keyMappingGametestSourceSet.output
+    }
+}
+
+tasks.named("runClientGameTest") {
+    dependsOn(keyMappingGametestSourceSet.classesTaskName)
+}
+
+tasks.named("runClientGameTestWithoutAmecs") {
+    dependsOn(keyMappingGametestSourceSet.classesTaskName)
 }
 
 tasks.jar {
