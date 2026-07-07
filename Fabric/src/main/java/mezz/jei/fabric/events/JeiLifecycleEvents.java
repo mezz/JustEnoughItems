@@ -8,13 +8,6 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 
 public class JeiLifecycleEvents {
-	public static final Event<Runnable> GAME_START =
-			EventFactory.createArrayBacked(Runnable.class, callbacks -> () -> {
-				for (Runnable callback : callbacks) {
-					callback.run();
-				}
-			});
-
 	public static final Event<Runnable> GAME_STOP =
 			EventFactory.createArrayBacked(Runnable.class, callbacks -> () -> {
 				for (Runnable callback : callbacks) {
@@ -22,7 +15,7 @@ public class JeiLifecycleEvents {
 				}
 			});
 
-	public static final Event<Runnable> AFTER_RECIPE_SYNC =
+	public static final Event<Runnable> AFTER_RECIPES_UPDATED =
 			EventFactory.createArrayBacked(Runnable.class, callbacks -> () -> {
 				for (Runnable callback : callbacks) {
 					callback.run();

@@ -12,7 +12,6 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.DelayedExecutor;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.IDelayedExecutor;
-import mezz.jei.common.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -43,7 +42,7 @@ public final class Internal {
 	@Nullable
 	private static IJeiRuntime jeiRuntime;
 	@Nullable
-	private static Pair<RecipeMap, String> clientSyncedRecipes = null;
+	private static ClientRecipes clientRecipes = null;
 	private static final JeiFeatures jeiFeatures = new JeiFeatures();
 	private static final DelayedExecutor delayedExecutor = new DelayedExecutor(Duration.ofSeconds(10));
 
@@ -136,26 +135,58 @@ public final class Internal {
 	}
 
 	public static void setClientSyncedRecipes(RecipeMap clientSyncedRecipes) {
+		setClientRecipes(clientSyncedRecipes, true);
+	}
+
+	public static void setClientFallbackRecipes(RecipeMap clientRecipes) {
+		setClientRecipes(clientRecipes, false);
+	}
+
+	private static void setClientRecipes(RecipeMap recipes, boolean syncedWithServer) {
 		var connectionId = getRemoteConnectionId();
-		ErrorUtil.checkNotNull(connectionId, "connectionId");
-		Internal.clientSyncedRecipes = new Pair<>(clientSyncedRecipes, connectionId);
+		if (connectionId != null) {
+			Internal.clientRecipes = new ClientRecipes(recipes, connectionId, syncedWithServer);
+		}
 	}
 
 	public static RecipeMap getClientSyncedRecipes() {
-		if (clientSyncedRecipes != null) {
-			var connectionId = getRemoteConnectionId();
-			if (clientSyncedRecipes.second().equals(connectionId)) {
-				return clientSyncedRecipes.first();
-			}
+		ClientRecipes clientRecipes = getClientRecipes();
+		if (clientRecipes != null) {
+			return clientRecipes.recipes();
 		}
 		return RecipeMap.EMPTY;
 	}
 
-	public static void onRuntimeStopped() {
-		if (clientSyncedRecipes != null) {
+	public static boolean hasClientSyncedRecipes() {
+		ClientRecipes clientRecipes = getClientRecipes();
+		return clientRecipes != null && clientRecipes.syncedWithServer();
+	}
+
+	public static boolean hasClientFallbackRecipes() {
+		ClientRecipes clientRecipes = getClientRecipes();
+		return clientRecipes != null && !clientRecipes.syncedWithServer();
+	}
+
+	public static boolean hasClientRecipes() {
+		return getClientRecipes() != null;
+	}
+
+	@Nullable
+	private static ClientRecipes getClientRecipes() {
+		if (clientRecipes != null) {
 			var connectionId = getRemoteConnectionId();
-			if (!clientSyncedRecipes.second().equals(connectionId)) {
-				clientSyncedRecipes = null;
+			if (clientRecipes.connectionId().equals(connectionId)) {
+				return clientRecipes;
+			}
+		}
+		return null;
+	}
+
+	public static void onRuntimeStopped() {
+		if (clientRecipes != null) {
+			var connectionId = getRemoteConnectionId();
+			if (!clientRecipes.connectionId().equals(connectionId)) {
+				clientRecipes = null;
 			}
 		}
 		if (jeiClientConfigs != null) {
@@ -172,5 +203,9 @@ public final class Internal {
 	public static void onClientStopping() {
 		onRuntimeStopped();
 		delayedExecutor.shutdown();
+	}
+
+	private record ClientRecipes(RecipeMap recipes, String connectionId, boolean syncedWithServer) {
+
 	}
 }

@@ -152,6 +152,10 @@ val keyMappingGametestSourceSet = sourceSets.create("keyMappingGametest") {
     runtimeClasspath += output + compileClasspath + gametestSourceSet.runtimeClasspath.minus(gametestSourceSet.output)
 }
 
+dependencies {
+    "gametestImplementation"(testFixtures(project(":Common")))
+}
+
 loom {
     mods {
         create("jei") {
@@ -204,6 +208,9 @@ loom {
             jvmArguments.addAll(
                 "-Dfabric.log.level=debug"
             )
+        }
+        named("clientGameTest") {
+            systemProperties.put("fabric.client.gametest.disableNetworkSynchronizer", "true")
         }
         create("clientGameTestWithoutAmecs") {
             inherit(named("clientGameTest").get())
