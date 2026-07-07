@@ -12,10 +12,15 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.DelayedExecutor;
 import mezz.jei.common.util.IDelayedExecutor;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.network.Connection;
+import net.minecraft.world.item.crafting.Recipe;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.SocketAddress;
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -34,6 +39,8 @@ public final class Internal {
 	private static IJeiClientConfigs jeiClientConfigs;
 	@Nullable
 	private static IJeiRuntime jeiRuntime;
+	@Nullable
+	private static ClientRecipes clientRecipes = null;
 	private static final JeiFeatures jeiFeatures = new JeiFeatures();
 	private static final DelayedExecutor delayedExecutor = new DelayedExecutor(Duration.ofSeconds(10));
 
@@ -93,7 +100,7 @@ public final class Internal {
 		return jeiFeatures;
 	}
 
-	public static void setRuntime(IJeiRuntime jeiRuntime) {
+	public static void setRuntime(@Nullable IJeiRuntime jeiRuntime) {
 		Internal.jeiRuntime = jeiRuntime;
 	}
 
@@ -111,12 +118,86 @@ public final class Internal {
 		return Optional.ofNullable(jeiRuntime);
 	}
 
+	@Nullable
+	private static String getRemoteConnectionId() {
+		ClientPacketListener clientPacketListener = Minecraft.getInstance().getConnection();
+		if (clientPacketListener != null) {
+			Connection connection = clientPacketListener.getConnection();
+			if (connection.isConnected()) {
+				SocketAddress remoteAddress = connection.getRemoteAddress();
+				return String.valueOf(remoteAddress);
+			}
+		}
+		return null;
+	}
+
+	public static void setClientSyncedRecipes(List<Recipe<?>> clientSyncedRecipes) {
+		setClientRecipes(clientSyncedRecipes, true);
+	}
+
+	public static void setClientFallbackRecipes(List<Recipe<?>> clientRecipes) {
+		setClientRecipes(clientRecipes, false);
+	}
+
+	private static void setClientRecipes(List<Recipe<?>> recipes, boolean syncedWithServer) {
+		var connectionId = getRemoteConnectionId();
+		if (connectionId != null) {
+			Internal.clientRecipes = new ClientRecipes(List.copyOf(recipes), connectionId, syncedWithServer);
+		}
+	}
+
+	public static List<Recipe<?>> getClientSyncedRecipes() {
+		ClientRecipes clientRecipes = getClientRecipes();
+		if (clientRecipes != null) {
+			return clientRecipes.recipes();
+		}
+		return List.of();
+	}
+
+	public static boolean hasClientSyncedRecipes() {
+		ClientRecipes clientRecipes = getClientRecipes();
+		return clientRecipes != null && clientRecipes.syncedWithServer();
+	}
+
+	public static boolean hasClientFallbackRecipes() {
+		ClientRecipes clientRecipes = getClientRecipes();
+		return clientRecipes != null && !clientRecipes.syncedWithServer();
+	}
+
+	public static boolean hasClientRecipes() {
+		return getClientRecipes() != null;
+	}
+
+	public static void clearClientRecipes() {
+		clientRecipes = null;
+	}
+
+	@Nullable
+	private static ClientRecipes getClientRecipes() {
+		if (clientRecipes != null) {
+			var connectionId = getRemoteConnectionId();
+			if (clientRecipes.connectionId().equals(connectionId)) {
+				return clientRecipes;
+			}
+		}
+		return null;
+	}
+
 	public static void onRuntimeStopped() {
+		if (clientRecipes != null) {
+			var connectionId = getRemoteConnectionId();
+			if (!clientRecipes.connectionId().equals(connectionId)) {
+				clientRecipes = null;
+			}
+		}
 		if (jeiClientConfigs != null) {
 			jeiClientConfigs.onRuntimeStopped();
 		}
 		if (toggleState != null) {
 			toggleState.clearListeners();
+		}
+		if (serverConnection != null) {
+			serverConnection.onRuntimeStopped();
 		}
 		if (jeiRuntime != null) {
 			jeiRuntime = null;
@@ -126,5 +207,9 @@ public final class Internal {
 	public static void onClientStopping() {
 		onRuntimeStopped();
 		delayedExecutor.shutdown();
+	}
+
+	private record ClientRecipes(List<Recipe<?>> recipes, String connectionId, boolean syncedWithServer) {
+
 	}
 }

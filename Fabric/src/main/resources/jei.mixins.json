@@ -7,7 +7,7 @@
   ],
   "client": [
     "AbstractContainerScreenMixin",
-    "ClientPacketListenerMixin",
+    "ClientPacketListenerRecipeUpdateMixin",
     "ContainerEventHandlerMixin",
     "EffectRenderingInventoryScreenMixin",
     "GuiGraphicsMixin",

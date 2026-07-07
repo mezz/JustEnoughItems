@@ -4,6 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
     java
     id("org.spongepowered.gradle.vanilla")
+    `java-test-fixtures`
     `maven-publish`
 }
 
@@ -48,6 +49,7 @@ dependencies {
     dependencyProjects.forEach {
         implementation(it)
     }
+    testFixturesCompileOnly("org.jspecify:jspecify:1.0.0")
     testImplementation(
         group = "org.junit.jupiter",
         name = "junit-jupiter-api",
