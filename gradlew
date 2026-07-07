@@ -47,6 +47,15 @@ if $cygwin ; then
     [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
 fi
 
+if $darwin ; then
+    if [ -z "$JAVA_HOME" ] || ! "$JAVA_HOME/bin/java" -version 2>&1 | grep -q 'version "1\.8' ; then
+        JAVA8_HOME=`/usr/libexec/java_home -v 1.8 2>/dev/null`
+        if [ -n "$JAVA8_HOME" ] ; then
+            JAVA_HOME="$JAVA8_HOME"
+        fi
+    fi
+fi
+
 # Attempt to set APP_HOME
 # Resolve links: $0 may be a link
 PRG="$0"
