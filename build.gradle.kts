@@ -6,7 +6,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
 
 plugins {
-	id("com.gtnewhorizons.retrofuturagradle") version("1.3.+")
+	id("com.gtnewhorizons.retrofuturagradle") version("1.4.9")
 	id("com.modrinth.minotaur") version("2.+")
 	id("eclipse")
 	id("java")
