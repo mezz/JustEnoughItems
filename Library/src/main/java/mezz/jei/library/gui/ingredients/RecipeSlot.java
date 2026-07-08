@@ -279,8 +279,15 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			});
 	}
 
+	@SuppressWarnings("removal")
 	@Override
+	@Deprecated(since = "15.30.0", forRemoval = true)
 	public void draw(GuiGraphics guiGraphics) {
+		draw(guiGraphics, false);
+	}
+
+	@Override
+	public void draw(GuiGraphics guiGraphics, boolean hovered) {
 		final int x = this.rect.getX();
 		final int y = this.rect.getY();
 
@@ -305,6 +312,10 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			poseStack.popPose();
 		}
 
+		if (hovered) {
+			drawHighlight(guiGraphics, 0x80FFFFFF);
+		}
+
 		RenderSystem.disableBlend();
 	}
 
@@ -316,6 +327,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	}
 
 	@Override
+	@SuppressWarnings("removal")
+	@Deprecated(since = "15.30.0", forRemoval = true)
 	public void drawHoverOverlays(GuiGraphics guiGraphics) {
 		drawHighlight(guiGraphics, 0x80FFFFFF);
 	}

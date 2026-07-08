@@ -97,7 +97,7 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 				if (slotIndex < totalSlots) {
 					IRecipeSlotDrawable slot = slots.get(slotIndex);
 					slot.setPosition(x + 1, y + 1);
-					slot.draw(guiGraphics);
+					slot.draw(guiGraphics, slot.isMouseOver(mouseX, mouseY));
 				}
 			}
 		}

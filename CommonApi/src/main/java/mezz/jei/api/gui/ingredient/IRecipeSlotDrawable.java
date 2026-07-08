@@ -29,14 +29,31 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 * Draws the recipe slot relative to the pose stack.
 	 *
 	 * @since 11.5.0
+	 * @deprecated use {@link #draw(GuiGraphics, boolean)}
 	 */
+	@Deprecated(since = "15.30.0", forRemoval = true)
 	void draw(GuiGraphics guiGraphics);
+
+	/**
+	 * Draws the recipe slot relative to the pose stack.
+	 *
+	 * @since 15.30.0
+	 */
+	@SuppressWarnings("removal")
+	default void draw(GuiGraphics guiGraphics, boolean hovered) {
+		draw(guiGraphics);
+		if (hovered) {
+			drawHoverOverlays(guiGraphics);
+		}
+	}
 
 	/**
 	 * Draws the recipe slot overlays, called when the mouse is hovering over this recipe slot.
 	 *
 	 * @since 11.5.0
+	 * @deprecated use {@link #draw(GuiGraphics, boolean)}
 	 */
+	@Deprecated(since = "15.30.0", forRemoval = true)
 	void drawHoverOverlays(GuiGraphics guiGraphics);
 
 	/**
