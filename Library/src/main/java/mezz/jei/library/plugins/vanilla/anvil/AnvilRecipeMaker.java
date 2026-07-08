@@ -9,7 +9,6 @@ import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
-import mezz.jei.library.plugins.vanilla.ingredients.subtypes.EnchantedBookSubtypeInterpreter;
 import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -273,7 +272,7 @@ public final class AnvilRecipeMaker {
 
 		return repairables.stream()
 			.mapMulti((itemStack, consumer) -> {
-				String uid = EnchantedBookSubtypeInterpreter.INSTANCE.getStringName(itemStack);
+				String uid = ingredientHelper.getResourceLocation(itemStack).toString();
 				String ingredientIdPath = ResourceLocationUtil.sanitizePath(uid);
 				String itemModId = ingredientHelper.getResourceLocation(itemStack).getNamespace();
 
