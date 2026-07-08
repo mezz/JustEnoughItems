@@ -192,6 +192,10 @@ loom {
                 "-Dfabric.log.level=debug"
             )
         }
+        named("gameTest") {
+            val gameTestJunitReportFile = layout.buildDirectory.file("test-results/gameTest/TEST-fabric-game-tests.xml")
+            systemProperties.put("fabric-api.gametest.report-file", gameTestJunitReportFile.get().asFile.absolutePath)
+        }
         create("clientGameTestWithoutAmecs") {
             inherit(named("clientGameTest").get())
             displayName.set("Fabric Client GameTest Without AMECS")
