@@ -2,6 +2,7 @@ package mezz.jei.neoforge.tests.client;
 
 import mezz.jei.common.Internal;
 import mezz.jei.common.network.ClientConnectionHelper;
+import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.resources.ResourceLocation;
@@ -31,6 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public final class JeiNeoForgeClientRecipeSyncTests {
 	private static final String TEST_CASE_PROPERTY = "jei.clientRecipeSyncTest";
+	private static final String JUNIT_SUITE_NAME = "neoforge-client-recipe-sync";
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Duration ASSERTION_TIMEOUT = Duration.ofSeconds(60);
 	private static final Duration WORLD_LOAD_TIMEOUT = Duration.ofSeconds(120);
@@ -57,7 +59,11 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 		int exitCode = 0;
 		TestCase testCase = TestCase.fromSystemProperty();
 		try {
-			testCase.run();
+			JUnitXmlTestReporter.runAndReport(
+				JUNIT_SUITE_NAME,
+				testCase.id,
+				testCase::run
+			);
 			LOGGER.info("JEI NeoForge client recipe sync test passed: {}", testCase.displayName);
 		} catch (Throwable t) {
 			exitCode = 1;
