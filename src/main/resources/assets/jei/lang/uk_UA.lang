@@ -31,6 +31,7 @@ key.jei.showRecipe=Показувати рецепти предметів
 key.jei.showUses=Показувати використання предметів
 key.jei.recipeBack=Показувати минулу сторінку рецептів
 key.jei.toggleCheatMode=Перемкнути режим шахрайства
+key.jei.toggleBookmark=Перемкнути закладку
 
 # Config
 config.jei.default=По замовчуванню

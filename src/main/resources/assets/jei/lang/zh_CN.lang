@@ -31,6 +31,7 @@ key.jei.showRecipe=显示物品合成表
 key.jei.showUses=显示物品用途
 key.jei.recipeBack=显示上一页
 key.jei.toggleCheatMode=作弊模式开关
+key.jei.toggleBookmark=切换书签
 
 # Config
 config.jei.default=默认

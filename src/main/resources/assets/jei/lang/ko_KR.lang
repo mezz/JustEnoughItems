@@ -28,6 +28,7 @@ key.jei.showRecipe=아이템 조합법 보기
 key.jei.showUses=아이템 사용법 보기
 key.jei.recipeBack=이전 아이템 조합법 보기
 key.jei.toggleCheatMode=아이템 치트 모드 켜기/끄기
+key.jei.toggleBookmark=즐겨찾기 전환
 
 # Config
 config.jei.default=기본값

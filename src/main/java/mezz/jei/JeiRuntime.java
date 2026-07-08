@@ -5,6 +5,7 @@ import java.util.List;
 
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.gui.IAdvancedGuiHandler;
+import mezz.jei.api.ingredients.IIngredientBookmarks;
 import mezz.jei.gui.ItemListOverlay;
 import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.GuiScreen;
@@ -17,13 +18,15 @@ public class JeiRuntime implements IJeiRuntime {
 	private final RecipesGui recipesGui;
 	private final IngredientRegistry ingredientRegistry;
 	private final List<IAdvancedGuiHandler<?>> advancedGuiHandlers;
+	private final IngredientBookmarks ingredientBookmarks;
 
-	public JeiRuntime(RecipeRegistry recipeRegistry, ItemListOverlay itemListOverlay, RecipesGui recipesGui, IngredientRegistry ingredientRegistry, List<IAdvancedGuiHandler<?>> advancedGuiHandlers) {
+	public JeiRuntime(RecipeRegistry recipeRegistry, ItemListOverlay itemListOverlay, RecipesGui recipesGui, IngredientRegistry ingredientRegistry, List<IAdvancedGuiHandler<?>> advancedGuiHandlers, IngredientBookmarks ingredientBookmarks) {
 		this.recipeRegistry = recipeRegistry;
 		this.itemListOverlay = itemListOverlay;
 		this.recipesGui = recipesGui;
 		this.ingredientRegistry = ingredientRegistry;
 		this.advancedGuiHandlers = advancedGuiHandlers;
+		this.ingredientBookmarks = ingredientBookmarks;
 	}
 
 	public void close() {
@@ -52,6 +55,10 @@ public class JeiRuntime implements IJeiRuntime {
 
 	public IngredientRegistry getIngredientRegistry() {
 		return ingredientRegistry;
+	}
+
+	public IIngredientBookmarks getIngredientBookmarks() {
+		return ingredientBookmarks;
 	}
 
 	public List<IAdvancedGuiHandler<?>> getActiveAdvancedGuiHandlers(GuiScreen guiScreen) {

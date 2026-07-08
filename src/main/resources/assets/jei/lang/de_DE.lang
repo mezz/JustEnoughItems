@@ -31,6 +31,7 @@ key.jei.showRecipe=Zeige Rezept
 key.jei.showUses=Zeige Verwendung
 key.jei.recipeBack=Zeige vorherige Rezeptseite
 key.jei.toggleCheatMode=Item-Cheating (de-)aktivieren
+key.jei.toggleBookmark=Lesezeichen (de-)aktivieren
 
 # Config
 config.jei.default=Standard

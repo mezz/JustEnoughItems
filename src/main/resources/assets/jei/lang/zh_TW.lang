@@ -31,6 +31,7 @@ key.jei.showRecipe=顯示物品合成錶
 key.jei.showUses=顯示物品用途
 key.jei.recipeBack=顯示上一頁
 key.jei.toggleCheatMode=開關作弊模式
+key.jei.toggleBookmark=切換書籤
 
 # Config 配寘
 config.jei.default=默認

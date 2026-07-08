@@ -27,6 +27,7 @@ key.jei.showRecipe=Visa föremålsrecept
 key.jei.showUses=Visa användningar av föremål
 key.jei.recipeBack=Visa föregående receptsida
 key.jei.toggleCheatMode=Slå på/av föremålsfusk
+key.jei.toggleBookmark=Växla bokmärke
 
 # Config
 config.jei.default=Standard
