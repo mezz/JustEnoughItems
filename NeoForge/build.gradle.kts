@@ -46,7 +46,10 @@ sourceSets {
 		}
 	}
 	create("gameTest")
-	create("clientGameTest")
+	create("clientGameTest") {
+		java.srcDir(project(":Common").layout.projectDirectory.dir("src/testFixtures/java"))
+		java.srcDir(project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java"))
+	}
 }
 
 val dependencyProjects: List<Project> = listOf(
@@ -146,7 +149,7 @@ dependencies {
 	"gameTestImplementation"("net.neoforged:testframework:${neoforgeVersion}") {
 		isTransitive = false
 	}
-	"clientGameTestImplementation"(testFixtures(project(":Common")))
+	"clientGameTestCompileOnly"("org.jspecify:jspecify:1.0.0")
 	testImplementation(
 		group = "org.junit.jupiter",
 		name = "junit-jupiter",
@@ -283,10 +286,31 @@ tasks.named<ProcessResources>(sourceSets.named("clientGameTest").get().processRe
 	from(writeExternalServerLaunchProperties)
 }
 
+val copyClientGameTestModMetadataToClasses = tasks.register<Copy>("copyClientGameTestModMetadataToClasses") {
+	// ModDevGradle exposes classes and resources as separate mod roots on this branch.
+	from(layout.buildDirectory.file("resources/clientGameTest/META-INF/neoforge.mods.toml"))
+	into(layout.buildDirectory.dir("classes/java/clientGameTest/META-INF"))
+	dependsOn(
+		tasks.named(sourceSets.named("clientGameTest").get().compileJavaTaskName),
+		tasks.named(sourceSets.named("clientGameTest").get().processResourcesTaskName)
+	)
+}
+
+tasks.named(sourceSets.named("clientGameTest").get().classesTaskName) {
+	dependsOn(copyClientGameTestModMetadataToClasses)
+}
+
 val copyClientRecipeSyncTestFmlConfigTasks = clientRecipeSyncTestCases.associate { (runName, _) ->
 	runName to tasks.register<Copy>("copy${capitalizedRunName(runName)}FmlConfig") {
 		from(layout.projectDirectory.file("src/clientGameTest/templates/config/fml.toml"))
 		into(clientRecipeSyncTestConfigDirectory(runName))
+	}
+}
+
+val writeClientRecipeSyncTestOptionsTasks = clientRecipeSyncTestCases.associate { (runName, _) ->
+	runName to tasks.register<Copy>("write${capitalizedRunName(runName)}Options") {
+		from(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
+		into(clientRecipeSyncTestGameDirectory(runName))
 	}
 }
 
@@ -301,7 +325,11 @@ tasks.named("runGameTestServer") {
 
 clientRecipeSyncTestCases.forEach { (runName, _) ->
 	tasks.named("prepare${capitalizedRunName(runName)}Run") {
-		dependsOn(writeExternalServerLaunchProperties, copyClientRecipeSyncTestFmlConfigTasks.getValue(runName))
+		dependsOn(
+			writeExternalServerLaunchProperties,
+			copyClientRecipeSyncTestFmlConfigTasks.getValue(runName),
+			writeClientRecipeSyncTestOptionsTasks.getValue(runName)
+		)
 	}
 }
 

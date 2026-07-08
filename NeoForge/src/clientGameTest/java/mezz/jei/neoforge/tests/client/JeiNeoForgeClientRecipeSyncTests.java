@@ -117,27 +117,27 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 		);
 	}
 
-	private static void assertFallbackRecipesFromVanillaServer() {
+	private static void assertSyncedRecipesFromVanillaServer() {
 		ClientTestUtil.waitUntil(
 			() -> ClientTestUtil.computeOnClient(client -> hasJeiRuntime() &&
-				!Internal.hasClientSyncedRecipes() &&
+				Internal.hasClientSyncedRecipes() &&
 				hasVanillaRecipes(Internal.getClientSyncedRecipes()) &&
 				!Internal.getServerConnection().isJeiOnServer() &&
 				!Internal.getServerConnection().isSameModLoader()),
 			ASSERTION_TIMEOUT,
-			() -> "Expected JEI to detect a server without the client's mod loader and use fallback vanilla recipes. " + describeRecipeState()
+			() -> "Expected JEI to detect a server without the client's mod loader and use synced vanilla recipes. " + describeRecipeState()
 		);
 	}
 
-	private static void assertFallbackRecipesFromServerWithoutJei() {
+	private static void assertSyncedRecipesFromServerWithoutJei() {
 		ClientTestUtil.waitUntil(
 			() -> ClientTestUtil.computeOnClient(client -> hasJeiRuntime() &&
-				!Internal.hasClientSyncedRecipes() &&
+				Internal.hasClientSyncedRecipes() &&
 				hasVanillaRecipes(Internal.getClientSyncedRecipes()) &&
 				!Internal.getServerConnection().isJeiOnServer() &&
 				Internal.getServerConnection().isSameModLoader()),
 			ASSERTION_TIMEOUT,
-			() -> "Expected JEI to detect a server with the client's mod loader but without JEI and use fallback vanilla recipes. " + describeRecipeState()
+			() -> "Expected JEI to detect a server with the client's mod loader but without JEI and use synced vanilla recipes. " + describeRecipeState()
 		);
 	}
 
@@ -216,7 +216,7 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 			@Override
 			public void run() {
 				try (NeoForgeExternalTestServer server = NeoForgeExternalTestServer.startNeoForgeWithoutJei()) {
-					runTestCase(displayName(), server, JeiNeoForgeClientRecipeSyncTests::assertFallbackRecipesFromServerWithoutJei);
+					runTestCase(displayName(), server, JeiNeoForgeClientRecipeSyncTests::assertSyncedRecipesFromServerWithoutJei);
 				}
 			}
 		},
@@ -224,7 +224,7 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 			@Override
 			public void run() {
 				try (NeoForgeExternalTestServer server = NeoForgeExternalTestServer.startVanilla()) {
-					runTestCase(displayName(), server, JeiNeoForgeClientRecipeSyncTests::assertFallbackRecipesFromVanillaServer);
+					runTestCase(displayName(), server, JeiNeoForgeClientRecipeSyncTests::assertSyncedRecipesFromVanillaServer);
 				}
 			}
 		};

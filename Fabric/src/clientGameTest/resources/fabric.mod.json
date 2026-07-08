@@ -1,14 +1,17 @@
 {
   "schemaVersion": 1,
-  "id": "jei-key-mapping-test",
+  "id": "jei-client-tests",
   "version": "1.0.0",
-  "name": "JEI Fabric Key Mapping Tests",
+  "name": "JEI Fabric Client Tests",
   "environment": "client",
   "entrypoints": {
-    "fabric-client-gametest": [
-      "mezz.jei.fabric.test.JeiFabricKeyMappingClientGameTest"
+    "client": [
+      "mezz.jei.fabric.test.JeiFabricClientTests"
     ]
   },
+  "mixins": [
+    "jei-client-tests.mixins.json"
+  ],
   "depends": {
     "fabricloader": "*",
     "fabric-api": "*",

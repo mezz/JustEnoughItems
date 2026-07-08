@@ -1,7 +1,6 @@
 package mezz.jei.neoforge.startup;
 
 import mezz.jei.common.Internal;
-import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.neoforge.events.PermanentEventSubscriptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConnectScreen;
@@ -25,11 +24,10 @@ import java.lang.ref.WeakReference;
 /**
  * This class observes events and determines when it's the right time to start JEI.
  *
- * JEI needs to see {@link ClientPlayerNetworkEvent.LoggingIn} before it is ready to start. When
- * the connection can provide server recipe content, JEI also waits for {@link RecipesUpdatedEvent}
- * so it does not briefly start with fallback client recipes.
+ * JEI needs to see {@link ClientPlayerNetworkEvent.LoggingIn} before it is ready to start. In
+ * Minecraft 1.21.1, clients still receive server recipe data from all connection types, so JEI also
+ * waits for {@link RecipesUpdatedEvent} and does not briefly start with fallback client recipes.
  *
- * Connections that never provide synced recipes continue with fallback recipes.
  * Datapack reloads can fire another recipe event after JEI has started; if that event provides
  * synced recipes, JEI restarts using the synced recipes.
  */
@@ -40,7 +38,6 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 		LISTENING, JEI_STARTED
 	}
 
-	private final IConnectionToServer serverConnection;
 	private final Runnable startRunnable;
 	private final Runnable stopRunnable;
 	private WeakReference<Connection> currentConnection = new WeakReference<>(null);
@@ -48,8 +45,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 	private boolean observedLogin;
 	private boolean observedRecipeSync;
 
-	public StartEventObserver(IConnectionToServer serverConnection, Runnable startRunnable, Runnable stopRunnable) {
-		this.serverConnection = serverConnection;
+	public StartEventObserver(Runnable startRunnable, Runnable stopRunnable) {
 		this.startRunnable = startRunnable;
 		this.stopRunnable = stopRunnable;
 	}
@@ -110,7 +106,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 		if (this.state != State.LISTENING || !this.observedLogin) {
 			return;
 		}
-		if (shouldWaitForRecipes() && !this.observedRecipeSync) {
+		if (!this.observedRecipeSync) {
 			return;
 		}
 		transitionState(State.JEI_STARTED);
@@ -133,16 +129,8 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 		return true;
 	}
 
-	private boolean shouldWaitForRecipes() {
-		return serverConnection.isJeiOnServer() ||
-			serverConnection.isSameModLoader();
-	}
-
 	private String getRequiredStartEventsString() {
-		if (shouldWaitForRecipes()) {
-			return "[%s, %s]".formatted(ClientPlayerNetworkEvent.LoggingIn.class.getName(), RecipesUpdatedEvent.class.getName());
-		}
-		return "[%s]".formatted(ClientPlayerNetworkEvent.LoggingIn.class.getName());
+		return "[%s, %s]".formatted(ClientPlayerNetworkEvent.LoggingIn.class.getName(), RecipesUpdatedEvent.class.getName());
 	}
 
 	private String getMissingStartEventsString() {
@@ -150,7 +138,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 		if (!observedLogin) {
 			missingEvents.append(ClientPlayerNetworkEvent.LoggingIn.class.getName());
 		}
-		if (shouldWaitForRecipes() && !observedRecipeSync) {
+		if (!observedRecipeSync) {
 			if (missingEvents.length() > 1) {
 				missingEvents.append(", ");
 			}

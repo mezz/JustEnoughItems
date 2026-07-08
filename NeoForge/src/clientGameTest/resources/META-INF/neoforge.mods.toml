@@ -1,7 +1,31 @@
-license="MIT"
+modLoader="javafml"
+loaderVersion="${neoforgeLoaderVersionRange}"
+license="The MIT License (MIT)"
 
 [[mods]]
 modId="jeiclienttests"
+version="${version}"
 displayName="Just Enough Items: Client Tests"
 displayTest="IGNORE_SERVER_VERSION"
 description='''Client tests for Just Enough Items.'''
+
+[[dependencies.jeiclienttests]]
+    modId="jei"
+    type="required"
+    versionRange="[${version},)"
+    ordering="AFTER"
+    side="CLIENT"
+
+[[dependencies.jeiclienttests]]
+    modId="neoforge"
+    type="required"
+    versionRange="${neoforgeVersionRange}"
+    ordering="NONE"
+    side="CLIENT"
+
+[[dependencies.jeiclienttests]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraftVersionRange}"
+    ordering="NONE"
+    side="CLIENT"
