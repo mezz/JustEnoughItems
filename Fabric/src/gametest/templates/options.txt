@@ -1,0 +1,3 @@
+narrator:0
+narratorHotkey:false
+onboardAccessibility:false

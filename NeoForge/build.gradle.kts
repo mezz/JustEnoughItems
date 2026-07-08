@@ -279,6 +279,13 @@ val copyClientRecipeSyncTestFmlConfigTasks = clientRecipeSyncTestCases.associate
 	}
 }
 
+val writeClientRecipeSyncTestOptionsTasks = clientRecipeSyncTestCases.associate { (runName, _) ->
+	runName to tasks.register<Copy>("write${capitalizedRunName(runName)}Options") {
+		from(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
+		into(clientRecipeSyncTestGameDirectory(runName))
+	}
+}
+
 val cleanGameTestJunitResults = tasks.register<Delete>("cleanGameTestJunitResults") {
 	description = "Deletes NeoForge game test JUnit result files before running game tests."
 	delete(gameTestJunitResultsDir)
@@ -290,7 +297,11 @@ tasks.named("runGameTestServer") {
 
 clientRecipeSyncTestCases.forEach { (runName, _) ->
 	tasks.named("prepare${capitalizedRunName(runName)}Run") {
-		dependsOn(writeExternalServerLaunchProperties, copyClientRecipeSyncTestFmlConfigTasks.getValue(runName))
+		dependsOn(
+			writeExternalServerLaunchProperties,
+			copyClientRecipeSyncTestFmlConfigTasks.getValue(runName),
+			writeClientRecipeSyncTestOptionsTasks.getValue(runName)
+		)
 	}
 }
 
