@@ -33,7 +33,7 @@ public class RecipeSlots {
 
 	public void draw(PoseStack poseStack) {
 		for (IRecipeSlotDrawable slot : slots) {
-			slot.draw(poseStack);
+			slot.draw(poseStack, false);
 		}
 	}
 

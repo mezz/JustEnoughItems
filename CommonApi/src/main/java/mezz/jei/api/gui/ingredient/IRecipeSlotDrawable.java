@@ -3,6 +3,7 @@ package mezz.jei.api.gui.ingredient;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  *
  * @since 11.5.0
  */
+@ApiStatus.NonExtendable
 public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	/**
 	 * Get the position and size of the recipe slot drawable relative to its parent element.
@@ -23,14 +25,25 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 * Draws the recipe slot relative to the pose stack.
 	 *
 	 * @since 11.5.0
+	 * @deprecated use {@link #draw(PoseStack, boolean)}
 	 */
+	@Deprecated(since = "11.20.0", forRemoval = true)
 	void draw(PoseStack poseStack);
+
+	/**
+	 * Draws the recipe slot relative to the pose stack.
+	 *
+	 * @since 11.20.0
+	 */
+	void draw(PoseStack poseStack, boolean hovered);
 
 	/**
 	 * Draws the recipe slot overlays, called when the mouse is hovering over this recipe slot.
 	 *
 	 * @since 11.5.0
+	 * @deprecated use {@link #draw(PoseStack, boolean)}
 	 */
+	@Deprecated(since = "11.20.0", forRemoval = true)
 	void drawHoverOverlays(PoseStack poseStack);
 
 	/**
