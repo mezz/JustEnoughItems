@@ -315,6 +315,7 @@
   "gui.jei.category.brewing.steps": "步数：%s",
   "gui.jei.category.compostable": "堆肥",
   "gui.jei.category.compostable.chance": "概率：%s%%",
+  "gui.jei.category.grindstone": "研磨",
   "gui.jei.category.grindstone.experience": "%s至%s点经验",
   "gui.jei.category.itemInformation": "信息",
   "gui.jei.category.tagInformation": "%s标签",
@@ -328,6 +329,7 @@
   "jei.message.config.folder": "或点击此处打开JEI配置文件夹",
   "jei.message.copy.recipe.id.success": "已复制配方ID到剪贴板：%s",
   "jei.message.copy.recipe.id.failure": "复制配方ID到剪贴板失败，配方ID未知",
+  "jei.message.missing.recipes.from.server": "JEI 缺少配方。请在服务器上安装 JEI 以将配方同步到客户端。\n自 Minecraft 1.21.2 起，配方存储在服务器而非客户端。",
 
   "_comment": "Key Names",
   "jei.key.combo.shift": "SHIFT+%s",
