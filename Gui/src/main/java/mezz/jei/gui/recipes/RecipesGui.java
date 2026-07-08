@@ -350,7 +350,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		RenderSystem.disableBlend();
 
 		hoveredRecipeLayout.ifPresent(l -> l.drawOverlays(guiGraphics, mouseX, mouseY));
-		hoveredRecipeCatalyst.ifPresent(h -> h.drawHoverOverlays(guiGraphics));
 
 		hoveredRecipeCatalyst.ifPresent(h -> {
 			h.drawTooltip(guiGraphics, mouseX, mouseY);

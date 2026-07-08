@@ -27,7 +27,6 @@ import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -113,24 +112,26 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		RenderSystem.disableBlend();
 
+		Optional<IngredientListSlot> highlightedSlot = getHighlightedSlot(minecraft, mouseX, mouseY);
+
 		ingredientListRenderer.render(guiGraphics);
 
-		if (isMouseOver(mouseX, mouseY)) {
-			if (!this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
-				ingredientListRenderer.getSlots()
-					.filter(s -> s.getArea().contains(mouseX, mouseY))
-					.filter(s -> s.getOptionalElement().isPresent())
-					.findFirst()
-					.ifPresent(s -> drawHighlight(guiGraphics, s.getArea()));
-			}
-		}
+		highlightedSlot.ifPresent(s -> drawHighlight(guiGraphics, s.getArea()));
 	}
 
-	/**
-	 * Matches the highlight code in {@link AbstractContainerScreen#renderSlotHighlight(GuiGraphics, int, int, int)}
-	 * but with a custom area width and height
-	 */
-	public static void drawHighlight(GuiGraphics guiGraphics, ImmutableRect2i area) {
+	private Optional<IngredientListSlot> getHighlightedSlot(Minecraft minecraft, int mouseX, int mouseY) {
+		if (isMouseOver(mouseX, mouseY)) {
+			if (!this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
+				return ingredientListRenderer.getSlots()
+					.filter(s -> s.getArea().contains(mouseX, mouseY))
+					.filter(s -> s.getOptionalElement().isPresent())
+					.findFirst();
+			}
+		}
+		return Optional.empty();
+	}
+
+	private static void drawHighlight(GuiGraphics guiGraphics, ImmutableRect2i area) {
 		guiGraphics.fillGradient(
 			RenderType.guiOverlay(),
 			area.getX(),
