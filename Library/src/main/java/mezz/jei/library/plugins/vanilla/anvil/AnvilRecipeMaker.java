@@ -274,7 +274,8 @@ public final class AnvilRecipeMaker {
 
 		return repairables.stream()
 			.mapMulti((itemStack, consumer) -> {
-				String ingredientIdPath = ResourceLocationUtil.sanitizePath(ingredientHelper.getUniqueId(itemStack, UidContext.Recipe));
+				String uid = ingredientHelper.getResourceLocation(itemStack).toString();
+				String ingredientIdPath = ResourceLocationUtil.sanitizePath(uid);
 				String itemModId = ingredientHelper.getResourceLocation(itemStack).getNamespace();
 
 				ItemStack damagedThreeQuarters = itemStack.copy();
