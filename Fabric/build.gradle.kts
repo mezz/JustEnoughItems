@@ -244,6 +244,20 @@ tasks.named("runClientGameTestWithoutAmecs") {
     dependsOn(keyMappingGametestSourceSet.classesTaskName)
 }
 
+val writeClientGameTestOptions = tasks.register<Copy>("writeClientGameTestOptions") {
+    from(layout.projectDirectory.file("src/gametest/templates/options.txt"))
+    into(layout.projectDirectory.dir("run"))
+    mustRunAfter("deleteGameTestRunDir")
+}
+
+tasks.named("runClientGameTest") {
+    dependsOn(writeClientGameTestOptions)
+}
+
+tasks.named("runClientGameTestWithoutAmecs") {
+    dependsOn(writeClientGameTestOptions)
+}
+
 tasks.jar {
     dependsOn(embeddedLibraries)
     from(sourceSets.main.get().output)
