@@ -1,3 +1,5 @@
 narrator:0
 narratorHotkey:false
 onboardAccessibility:false
+soundCategory_master:0.0
+soundCategory_music:0.0
