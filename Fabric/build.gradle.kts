@@ -209,6 +209,10 @@ loom {
                 "-Dfabric.log.level=debug"
             )
         }
+        named("gameTest") {
+            val gameTestJunitReportFile = layout.buildDirectory.file("test-results/gameTest/TEST-fabric-game-tests.xml")
+            systemProperties.put("fabric-api.gametest.report-file", gameTestJunitReportFile.get().asFile.absolutePath)
+        }
         named("clientGameTest") {
             systemProperties.put("fabric.client.gametest.disableNetworkSynchronizer", "true")
         }

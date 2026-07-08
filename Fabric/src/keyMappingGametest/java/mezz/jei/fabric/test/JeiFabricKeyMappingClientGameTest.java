@@ -14,6 +14,7 @@ import mezz.jei.fabric.input.FabricAmecsSupport;
 import mezz.jei.fabric.input.FabricJeiKeyMapping;
 import mezz.jei.fabric.input.FabricJeiKeyMappingCategoryBuilder;
 import mezz.jei.fabric.input.FabricKeyMapping;
+import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.TestInput;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -31,14 +32,22 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		context.runOnClient(client -> {
-			assertFabricJeiKeyMappingMatches("key.jei.test.fabricKeyMapping.keyboardR", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R);
-			assertFabricJeiKeyMappingMatches("key.jei.test.fabricKeyMapping.keyboardU", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_U);
-			assertFabricJeiKeyMappingMatches("key.jei.test.fabricKeyMapping.mouseLeft", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT);
-			assertFabricJeiKeyMappingMatches("key.jei.test.fabricKeyMapping.mouseRight", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT);
-		});
-		assertModifiedJeiKeyMappings(context);
-		assertInactiveJeiMouseMappingsDoNotHideVanillaMouseMappings(context);
+		JUnitXmlTestReporter.runAndReportWithBooleanVariant(
+			"fabric-client-gametest",
+			"jei.fabric.disableAmecsSupport",
+			"without-amecs",
+			getClass().getSimpleName(),
+			() -> {
+				context.runOnClient(client -> {
+					assertFabricJeiKeyMappingMatches("key.jei.test.fabricKeyMapping.keyboardR", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R);
+					assertFabricJeiKeyMappingMatches("key.jei.test.fabricKeyMapping.keyboardU", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_U);
+					assertFabricJeiKeyMappingMatches("key.jei.test.fabricKeyMapping.mouseLeft", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT);
+					assertFabricJeiKeyMappingMatches("key.jei.test.fabricKeyMapping.mouseRight", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT);
+				});
+				assertModifiedJeiKeyMappings(context);
+				assertInactiveJeiMouseMappingsDoNotHideVanillaMouseMappings(context);
+			}
+		);
 	}
 
 	private static void assertFabricJeiKeyMappingMatches(String description, InputConstants.Type type, int keyCode) {

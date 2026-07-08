@@ -1,5 +1,6 @@
 package mezz.jei.fabric.test;
 
+import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 
@@ -10,12 +11,20 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 public class JeiFabricServerWithJeiClientGameTest implements FabricClientGameTest {
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		try (ExternalTestServer server = ExternalTestServer.startFabricWithJei(context);
-			ExternalTestServer.Connection ignored = server.connect()
-		) {
-			JeiFabricClientGameTestAssertions.assertJeiStartedWithSyncedRecipes(context);
-			JeiFabricClientGameTestAssertions.assertServerHasJei(context);
-		}
-		JeiFabricClientGameTestAssertions.assertClientRecipesCleared(context, "Fabric server with JEI");
+		JUnitXmlTestReporter.runAndReportWithBooleanVariant(
+			"fabric-client-gametest",
+			"jei.fabric.disableAmecsSupport",
+			"without-amecs",
+			getClass().getSimpleName(),
+			() -> {
+				try (ExternalTestServer server = ExternalTestServer.startFabricWithJei(context);
+					ExternalTestServer.Connection ignored = server.connect()
+				) {
+					JeiFabricClientGameTestAssertions.assertJeiStartedWithSyncedRecipes(context);
+					JeiFabricClientGameTestAssertions.assertServerHasJei(context);
+				}
+				JeiFabricClientGameTestAssertions.assertClientRecipesCleared(context, "Fabric server with JEI");
+			}
+		);
 	}
 }
