@@ -2,7 +2,6 @@ package mezz.jei.library.plugins.vanilla.anvil;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -271,7 +270,8 @@ public final class AnvilRecipeMaker {
 
 		return repairables.stream()
 			.mapMulti((itemStack, consumer) -> {
-				String ingredientIdPath = ResourceLocationUtil.sanitizePath(ingredientHelper.getUniqueId(itemStack, UidContext.Recipe));
+				String uid = ingredientHelper.getResourceLocation(itemStack).toString();
+				String ingredientIdPath = ResourceLocationUtil.sanitizePath(uid);
 				String itemModId = ingredientHelper.getResourceLocation(itemStack).getNamespace();
 
 				ItemStack damagedThreeQuarters = itemStack.copy();
