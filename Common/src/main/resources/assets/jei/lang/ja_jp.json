@@ -316,6 +316,7 @@
   "gui.jei.category.brewing.steps": "第%s段階",
   "gui.jei.category.compostable": "堆肥化",
   "gui.jei.category.compostable.chance": "確率：%s%%",
+  "gui.jei.category.grindstone": "砥石",
   "gui.jei.category.grindstone.experience": "%sから%s経験値",
   "gui.jei.category.itemInformation": "情報",
   "gui.jei.category.tagInformation": "%sタグ",
@@ -329,6 +330,7 @@
   "jei.message.config.folder": "ここをクリックするとJEIの設定フォルダーを開きます",
   "jei.message.copy.recipe.id.success": "以下のレシピIDをクリップボードにコピーしました：%s",
   "jei.message.copy.recipe.id.failure": "IDが不明なため、レシピIDのクリップボードへのコピーに失敗しました",
+  "jei.message.missing.recipes.from.server": "JEIのレシピが表示されていません。クライアントとレシピを同期させるため、サーバーにもJEIを導入してください。\nMinecraft 1.21.2以降、レシピはクライアント側ではなくサーバー側に保存される仕様になっています。",
 
   "_comment": "Key Names",
   "jei.key.combo.shift": "SHIFT + %s",
