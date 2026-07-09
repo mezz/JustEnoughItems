@@ -71,4 +71,6 @@ public interface IClientConfig {
 	boolean isShowTagRecipesEnabled();
 
 	boolean isShowCreativeTabNamesEnabled();
+
+	boolean isToastReflowEnabled();
 }
