@@ -149,6 +149,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isToastReflowEnabled() {
+		return true;
+	}
+
+	@Override
 	public int getMaxRecipeGuiHeight() {
 		return 500;
 	}
