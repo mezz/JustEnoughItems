@@ -72,11 +72,11 @@ public class ScreenHelper implements IPlatformScreenHelper {
 
 	@Override
 	public ImmutableRect2i getToastsArea() {
-        IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-        if (!clientConfig.isToastReflowEnabled()) {
-            return ImmutableRect2i.EMPTY;
-        }
-        Minecraft minecraft = Minecraft.getInstance();
+		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		if (!clientConfig.isToastReflowEnabled()) {
+			return ImmutableRect2i.EMPTY;
+		}
+		Minecraft minecraft = Minecraft.getInstance();
 		ToastManager toastManager = minecraft.gui.toastManager();
 		List<ToastManager.ToastInstance<?>> visible = toastManager.visibleToasts;
 		if (visible.isEmpty()) {

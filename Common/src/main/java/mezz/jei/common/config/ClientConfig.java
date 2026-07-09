@@ -22,6 +22,7 @@ public final class ClientConfig implements IClientConfig {
 	// appearance
 	private final Supplier<Boolean> centerSearchBarEnabled;
 	private final Supplier<Integer> maxRecipeGuiHeight;
+	private final Supplier<Boolean> toastReflowEnabled;
 
 	// cheat_mode
 	private final Supplier<GiveMode> giveMode;
@@ -50,7 +51,6 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> lookupBlockTagsEnabled;
 	private final Supplier<Boolean> showTagRecipesEnabled;
 	private final Supplier<Boolean> showCreativeTabNamesEnabled;
-    private final Supplier<Boolean> toastReflowEnabled;
 
 	// input
 	private final Supplier<Integer> dragDelayMs;
@@ -77,6 +77,7 @@ public final class ClientConfig implements IClientConfig {
 			minRecipeGuiHeight,
 			Integer.MAX_VALUE
 		);
+		toastReflowEnabled = appearance.addBoolean("toastReflowEnabled", true);
 
 		IConfigCategoryBuilder cheating = schema.addCategory("cheating");
 		giveMode = cheating.addEnum("giveMode", GiveMode.defaultGiveMode);
@@ -99,7 +100,6 @@ public final class ClientConfig implements IClientConfig {
 		tagContentTooltipEnabled = tooltips.addBoolean("tagContentTooltipEnabled", true);
 		hideSingleTagContentTooltipEnabled = tooltips.addBoolean("hideSingleTagContentTooltipEnabled", true);
 		ingredientsSummaryEnabled = tooltips.addBoolean("enableRecipesGuiIngredientsSummary", false);
-        toastReflowEnabled = appearance.addBoolean("toastReflowEnabled", true);
 
 		IConfigCategoryBuilder performance = schema.addCategory("performance");
 		lowMemorySlowSearchEnabled = performance.addBoolean("lowMemorySlowSearchEnabled", false);
@@ -335,8 +335,8 @@ public final class ClientConfig implements IClientConfig {
 		return showCreativeTabNamesEnabled.get();
 	}
 
-    @Override
-    public boolean isToastReflowEnabled() {
-        return toastReflowEnabled.get();
-    }
+	@Override
+	public boolean isToastReflowEnabled() {
+		return toastReflowEnabled.get();
+	}
 }

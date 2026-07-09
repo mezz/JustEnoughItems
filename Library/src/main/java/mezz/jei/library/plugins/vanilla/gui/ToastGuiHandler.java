@@ -13,20 +13,20 @@ import java.util.List;
 
 public class ToastGuiHandler implements IGlobalGuiHandler {
 
-    @Override
-    public Collection<Rect2i> getGuiExtraAreas() {
-        IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+	@Override
+	public Collection<Rect2i> getGuiExtraAreas() {
+		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
 
-        if (!clientConfig.isToastReflowEnabled()) {
-            return List.of();
-        }
+		if (!clientConfig.isToastReflowEnabled()) {
+			return List.of();
+		}
 
-        IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-        ImmutableRect2i toastsArea = screenHelper.getToastsArea();
+		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
+		ImmutableRect2i toastsArea = screenHelper.getToastsArea();
 
-        if (toastsArea.isEmpty()) {
-            return List.of();
-        }
-        return List.of(toastsArea.toMutable());
-    }
+		if (toastsArea.isEmpty()) {
+			return List.of();
+		}
+		return List.of(toastsArea.toMutable());
+	}
 }
