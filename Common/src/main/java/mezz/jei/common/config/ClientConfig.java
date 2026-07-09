@@ -23,6 +23,7 @@ public final class ClientConfig implements IClientConfig {
 	// appearance
 	private final ConfigValue<Boolean> centerSearchBarEnabled;
 	private final ConfigValue<Integer> maxRecipeGuiHeight;
+	private final Supplier<Boolean> toastReflowEnabled;
 
 	// cheat_mode
 	private final Supplier<GiveMode> giveMode;
@@ -76,6 +77,7 @@ public final class ClientConfig implements IClientConfig {
 			minRecipeGuiHeight,
 			Integer.MAX_VALUE
 		);
+		toastReflowEnabled = appearance.addBoolean("toastReflowEnabled", true);
 
 		IConfigCategoryBuilder cheating = schema.addCategory("cheating");
 		giveMode = cheating.addEnum("giveMode", GiveMode.defaultGiveMode);
@@ -328,5 +330,10 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isShowCreativeTabNamesEnabled() {
 		return showCreativeTabNamesEnabled.get();
+	}
+
+	@Override
+	public boolean isToastReflowEnabled() {
+		return toastReflowEnabled.get();
 	}
 }
