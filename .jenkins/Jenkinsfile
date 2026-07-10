@@ -29,7 +29,7 @@ pipeline {
             }
         }
 
-        stage('NeoForge GameTests') {
+        stage('Server GameTests') {
             steps {
                 sh "./gradlew :NeoForge:runGameTestServer"
             }
