@@ -115,6 +115,10 @@ public final class Internal {
 		return jeiRuntime;
 	}
 
+	public static Optional<IJeiRuntime> getOptionalJeiRuntime() {
+		return Optional.ofNullable(jeiRuntime);
+	}
+
 	@Nullable
 	private static String getRemoteConnectionId() {
 		ClientPacketListener clientPacketListener = Minecraft.getInstance().getConnection();
