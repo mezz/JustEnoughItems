@@ -31,8 +31,8 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 			Internal.setClientSyncedRecipes(RecipeMap.create(synchronizedRecipes.recipes()));
 		});
 
-        JeiChatEventHandler.register();
-        JeiInternalShowCommand.register();
+		JeiChatEventHandler.register();
+		JeiInternalShowCommand.register();
 
 		JeiLifecycleEvents.REGISTER_RESOURCE_RELOAD_LISTENER.register((resourceManager, textureManager) -> {
 			Textures textures = Internal.getTextures();

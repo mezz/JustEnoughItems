@@ -1,7 +1,8 @@
 package mezz.jei.fabric.chat;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
-import mezz.jei.gui.chat.JeiChatItemLinks;
+import mezz.jei.common.chat.JeiChatItemLinkRecipeLookup;
+import mezz.jei.common.chat.JeiChatItemLinks;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 
@@ -13,11 +14,10 @@ public final class JeiInternalShowCommand {
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
 			dispatcher.register(
 				ClientCommands.literal(JeiChatItemLinks.SHOW_RECIPE_COMMAND)
-					.then(ClientCommands.argument("itemId", StringArgumentType.greedyString())
+					.then(ClientCommands.argument(JeiChatItemLinks.LINK_ARGUMENT, StringArgumentType.greedyString())
 						.executes(context -> {
-							String itemId = StringArgumentType.getString(context, "itemId");
-							boolean shown = JeiChatItemLinks.showRecipeForItemId(itemId);
-							return shown ? 1 : 0;
+							String link = StringArgumentType.getString(context, JeiChatItemLinks.LINK_ARGUMENT);
+							return JeiChatItemLinkRecipeLookup.executeShowRecipeCommand(link);
 						})
 					)
 			)

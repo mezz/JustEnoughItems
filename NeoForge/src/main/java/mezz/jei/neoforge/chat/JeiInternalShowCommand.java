@@ -1,7 +1,8 @@
 package mezz.jei.neoforge.chat;
- 
+
 import com.mojang.brigadier.arguments.StringArgumentType;
-import mezz.jei.gui.chat.JeiChatItemLinks;
+import mezz.jei.common.chat.JeiChatItemLinkRecipeLookup;
+import mezz.jei.common.chat.JeiChatItemLinks;
 import mezz.jei.neoforge.events.PermanentEventSubscriptions;
 import net.minecraft.commands.Commands;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
@@ -9,22 +10,20 @@ import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 public final class JeiInternalShowCommand {
 	private JeiInternalShowCommand() {
 	}
- 
+
 	public static void register(PermanentEventSubscriptions subscriptions) {
 		subscriptions.register(RegisterClientCommandsEvent.class, JeiInternalShowCommand::onRegisterClientCommands);
 	}
- 
+
 	private static void onRegisterClientCommands(RegisterClientCommandsEvent event) {
 		event.getDispatcher().register(
 			Commands.literal(JeiChatItemLinks.SHOW_RECIPE_COMMAND)
-				.then(Commands.argument("itemId", StringArgumentType.greedyString())
+				.then(Commands.argument(JeiChatItemLinks.LINK_ARGUMENT, StringArgumentType.greedyString())
 					.executes(context -> {
-						String itemId = StringArgumentType.getString(context, "itemId");
-						boolean shown = JeiChatItemLinks.showRecipeForItemId(itemId);
-						return shown ? 1 : 0;
+						String link = StringArgumentType.getString(context, JeiChatItemLinks.LINK_ARGUMENT);
+						return JeiChatItemLinkRecipeLookup.executeShowRecipeCommand(link);
 					})
 				)
 		);
 	}
 }
- 

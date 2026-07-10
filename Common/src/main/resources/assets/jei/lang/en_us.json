@@ -57,7 +57,6 @@
   "jei.chat.error.no.cheat.permission.creative": "players who are in the creative mode",
   "jei.chat.error.no.cheat.permission.op": "players who have an operator status (/op)",
   "jei.chat.error.no.cheat.permission.give": "players who can use the \"/give\" command",
-
   "_comment": "Key Bindings",
   "key.category.jei.overlays": "JEI (Overlays)",
   "key.jei.toggleOverlay": "Show/Hide JEI Overlays",

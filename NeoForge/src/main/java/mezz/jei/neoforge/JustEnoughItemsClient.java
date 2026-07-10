@@ -76,8 +76,8 @@ public class JustEnoughItemsClient {
 			Internal.setKeyMappings(keyMappings);
 		});
 
-        JeiChatEventHandler.register(subscriptions);
-        JeiInternalShowCommand.register(subscriptions);
+		JeiChatEventHandler.register(subscriptions);
+		JeiInternalShowCommand.register(subscriptions);
 
 		IEventBus modEventBus = subscriptions.getModEventBus();
 		DeferredRegister<RecipeSerializer<?>> deferredRegister = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, ModIds.JEI_ID);
