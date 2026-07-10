@@ -1,12 +1,8 @@
 package mezz.jei.neoforge.tests.client;
 
+import mezz.jei.test.client.ExternalServerClient;
 import mezz.jei.test.lib.ExternalServerProcess;
-import net.minecraft.client.gui.screens.ConnectScreen;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.multiplayer.resolver.ServerAddress;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,13 +12,36 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Starts disposable vanilla or NeoForge dedicated servers for client recipe-sync tests.
  */
 final class NeoForgeExternalTestServer implements AutoCloseable {
-	private static final Duration CLIENT_CONNECT_TIMEOUT = Duration.ofSeconds(60);
+	private static final Duration EXTERNAL_SERVER_CLIENT_TIMEOUT = Duration.ofSeconds(ExternalServerClient.EXTERNAL_SERVER_CLIENT_TIMEOUT_SECONDS);
+	private static final ExternalServerClient.ClientAccess CLIENT_ACCESS = new ExternalServerClient.ClientAccess() {
+		@Override
+		public void run(Consumer<Minecraft> task) {
+			ClientTestUtil.runOnClient(task::accept);
+		}
+
+		@Override
+		public <T> T compute(Function<Minecraft, T> task) {
+			return ClientTestUtil.computeOnClient(task::apply);
+		}
+
+		@Override
+		public void waitFor(Predicate<Minecraft> predicate, Supplier<String> timeoutMessage) {
+			ClientTestUtil.waitUntil(
+				() -> ClientTestUtil.computeOnClient(predicate::test),
+				EXTERNAL_SERVER_CLIENT_TIMEOUT,
+				timeoutMessage
+			);
+		}
+	};
 
 	private final ExternalServerProcess server;
 
@@ -43,29 +62,13 @@ final class NeoForgeExternalTestServer implements AutoCloseable {
 	}
 
 	private static NeoForgeExternalTestServer start(String directoryName, LaunchType launchType) {
+		ExternalServerClient.assertNativeTransportDisabled(CLIENT_ACCESS);
 		ExternalServerProcess server = ExternalServerProcess.start(directoryName, launchType.description, launchType);
 		return new NeoForgeExternalTestServer(server);
 	}
 
 	public Connection connect() {
-		AtomicReference<String> clientConnectState = new AtomicReference<>("client connection was not started");
-		ClientTestUtil.runOnClient(client -> {
-			String address = server.getConnectionAddress();
-			ServerData serverData = new ServerData("JEI Test Server", address, ServerData.Type.OTHER);
-			client.gui.hud.getChat().clearMessages(false);
-			Screen screen = client.gui.screen();
-			assert screen != null;
-			clientConnectState.set("useNativeTransport=" + client.options.useNativeTransport() + ", screen=" + screen.getClass().getName());
-			ConnectScreen.startConnecting(screen, client, ServerAddress.parseString(address), serverData, false, null);
-		});
-		ClientTestUtil.waitUntil(
-			() -> ClientTestUtil.computeOnClient(client -> client.level != null),
-			CLIENT_CONNECT_TIMEOUT,
-			() -> "Timed out connecting to external server " + server.getConnectionAddress() + " (" +
-				clientConnectState.get() + ", " +
-				server.describeProcessState() + "):\n" +
-				server.readServerLogTail()
-		);
+		ExternalServerClient.connect(server, CLIENT_ACCESS);
 		return new Connection();
 	}
 
@@ -209,18 +212,7 @@ final class NeoForgeExternalTestServer implements AutoCloseable {
 
 		@Override
 		public void close() {
-			ClientTestUtil.runOnClient(client -> {
-				if (client.level != null) {
-					client.level.disconnect(Component.literal("Disconnecting"));
-					client.disconnectWithSavingScreen();
-				}
-			});
-			ClientTestUtil.waitUntil(
-				() -> ClientTestUtil.computeOnClient(client -> client.level == null),
-				CLIENT_CONNECT_TIMEOUT,
-				() -> "Timed out disconnecting from external server."
-			);
-			ClientTestUtil.runOnClient(client -> client.gui.setScreen(new TitleScreen()));
+			ExternalServerClient.disconnect(CLIENT_ACCESS);
 		}
 	}
 }

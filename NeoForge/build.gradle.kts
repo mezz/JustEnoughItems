@@ -46,7 +46,9 @@ sourceSets {
 		}
 	}
 	create("gameTest")
-	create("clientGameTest")
+	create("clientGameTest") {
+		java.srcDir(project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java"))
+	}
 }
 
 val dependencyProjects: List<Project> = listOf(

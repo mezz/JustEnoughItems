@@ -216,6 +216,7 @@ sourceSets {
         }
     }
     named("gametest") {
+        java.srcDir(project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java"))
         runtimeClasspath += keyMappingGametestSourceSet.output
     }
 }
@@ -230,7 +231,7 @@ tasks.named("runClientGameTestWithoutAmecs") {
 
 val writeClientGameTestOptions = tasks.register<Copy>("writeClientGameTestOptions") {
     from(layout.projectDirectory.file("src/gametest/templates/options.txt"))
-    into(layout.projectDirectory.dir("run"))
+    into(layout.buildDirectory.dir("run/clientGameTest"))
     mustRunAfter("deleteGameTestRunDir")
 }
 

@@ -2,9 +2,7 @@ package mezz.jei.test.lib;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -136,14 +134,12 @@ public final class ExternalServerProcess implements AutoCloseable {
 
 	private void waitUntilReady() {
 		Instant deadline = Instant.now().plus(SERVER_START_TIMEOUT);
-		boolean serverDone = false;
 
 		while (Instant.now().isBefore(deadline)) {
 			if (!process.isAlive()) {
 				throw new AssertionError("External server stopped during startup:\n" + readServerLogTail());
 			}
-			serverDone = serverDone || isServerDone();
-			if (serverDone && isAcceptingConnections()) {
+			if (isServerDone()) {
 				return;
 			}
 			sleepDuringServerStartup();
@@ -157,15 +153,6 @@ public final class ExternalServerProcess implements AutoCloseable {
 			return Files.exists(serverLog) && Files.readString(serverLog).contains("Done (");
 		} catch (IOException e) {
 			throw new AssertionError("Failed to read external server log: " + serverLog, e);
-		}
-	}
-
-	private boolean isAcceptingConnections() {
-		try (Socket socket = new Socket()) {
-			socket.connect(new InetSocketAddress("127.0.0.1", port), 500);
-			return true;
-		} catch (IOException e) {
-			return false;
 		}
 	}
 
