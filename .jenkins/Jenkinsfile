@@ -45,9 +45,7 @@ pipeline {
             steps {
                 sh '''
                     if command -v xvfb-run >/dev/null 2>&1; then
-                        xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest --no-daemon
-                        xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTestWithoutAmecs --no-daemon
-                        xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :NeoForge:runClientRecipeSyncTest --no-daemon
+                        xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs :NeoForge:runClientRecipeSyncTest --no-daemon --no-parallel
                     else
                         echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
                     fi

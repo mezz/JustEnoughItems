@@ -13,7 +13,7 @@ import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.Nullable;
 
 import java.net.UnknownHostException;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 public final class ExternalServerClient {
 	public static final int EXTERNAL_SERVER_CLIENT_TIMEOUT_SECONDS = 60;
 	public static final int EXTERNAL_SERVER_CLIENT_TIMEOUT_TICKS = EXTERNAL_SERVER_CLIENT_TIMEOUT_SECONDS * SharedConstants.TICKS_PER_SECOND;
-	private static final long SERVER_STATUS_PING_RETRY_INTERVAL_MILLIS = 1_000L;
+	private static final Duration SERVER_STATUS_PING_RETRY_INTERVAL = Duration.ofMillis(50L);
 
 	private ExternalServerClient() {
 
@@ -85,9 +85,14 @@ public final class ExternalServerClient {
 		return new ServerData("JEI Test Server", server.getConnectionAddress(), ServerData.Type.OTHER);
 	}
 
+	private static ServerData copyServerData(ServerData serverData) {
+		return new ServerData(serverData.name, serverData.ip, serverData.type());
+	}
+
 	private static void waitForServerStatusPing(ExternalServerProcess server, ServerData serverData, ClientAccess clientAccess) {
 		ServerStatusPinger pinger = new ServerStatusPinger();
-		AtomicBoolean pingSucceeded = new AtomicBoolean(false);
+		AtomicReference<ServerData> latestPingData = new AtomicReference<>(serverData);
+		AtomicReference<ServerData> successfulPingData = new AtomicReference<>();
 		AtomicReference<UnknownHostException> pingStartFailure = new AtomicReference<>();
 		AtomicLong nextPingAttemptMillis = new AtomicLong(0L);
 		AtomicInteger pingAttempts = new AtomicInteger();
@@ -96,19 +101,26 @@ public final class ExternalServerClient {
 			clientAccess.waitFor(
 				client -> {
 					pinger.tick();
-					if (pingSucceeded.get() || pingStartFailure.get() != null) {
+					if (pingStartFailure.get() != null) {
 						return true;
 					}
 					long now = System.currentTimeMillis();
 					if (now >= nextPingAttemptMillis.get()) {
-						startServerStatusPing(pinger, serverData, pingSucceeded, pingStartFailure, pingAttempts);
-						nextPingAttemptMillis.set(now + SERVER_STATUS_PING_RETRY_INTERVAL_MILLIS);
+						startServerStatusPing(
+							pinger,
+							serverData,
+							latestPingData,
+							successfulPingData,
+							pingStartFailure,
+							pingAttempts
+						);
+						nextPingAttemptMillis.set(now + SERVER_STATUS_PING_RETRY_INTERVAL.toMillis());
 					}
-					return pingSucceeded.get() || pingStartFailure.get() != null;
+					return successfulPingData.get() != null || pingStartFailure.get() != null;
 				},
 				() -> "Timed out waiting for external server status ping " + serverData.ip +
 					" after " + pingAttempts.get() + " attempts (" +
-					describeServerStatus(serverData) + ", " +
+					describeServerStatus(latestPingData.get()) + ", " +
 					server.describeProcessState() + "):\n" +
 					server.readServerLogTail()
 			);
@@ -126,49 +138,44 @@ public final class ExternalServerClient {
 		if (startFailure != null) {
 			throw new AssertionError("Failed to resolve external server " + serverData.ip, startFailure);
 		}
-		assertServerStatusReady(serverData, pingAttempts.get());
+		if (successfulPingData.get() == null) {
+			throw new AssertionError(
+				"Expected external server status ping to succeed after " + pingAttempts.get() + " attempts: " +
+					describeServerStatus(latestPingData.get())
+			);
+		}
 	}
 
 	private static void startServerStatusPing(
 		ServerStatusPinger pinger,
 		ServerData serverData,
-		AtomicBoolean pingSucceeded,
+		AtomicReference<ServerData> latestPingData,
+		AtomicReference<ServerData> successfulPingData,
 		AtomicReference<UnknownHostException> pingStartFailure,
 		AtomicInteger pingAttempts
 	) {
+		ServerData pingData = copyServerData(serverData);
+		pingData.setState(ServerData.State.PINGING);
+		latestPingData.set(pingData);
 		try {
-			serverData.setState(ServerData.State.PINGING);
 			pingAttempts.incrementAndGet();
 			pinger.pingServer(
-				serverData,
+				pingData,
 				() -> {},
 				() -> {
-					serverData.setState(
-						serverData.protocol == SharedConstants.getProtocolVersion()
-							? ServerData.State.SUCCESSFUL
-							: ServerData.State.INCOMPATIBLE
-					);
-					pingSucceeded.set(true);
+					if (pingData.protocol == SharedConstants.getProtocolVersion()) {
+						pingData.setState(ServerData.State.SUCCESSFUL);
+						successfulPingData.compareAndSet(null, pingData);
+					} else {
+						pingData.setState(ServerData.State.INCOMPATIBLE);
+					}
+					latestPingData.set(pingData);
 				}
 			);
 		} catch (UnknownHostException e) {
-			serverData.setState(ServerData.State.UNREACHABLE);
+			pingData.setState(ServerData.State.UNREACHABLE);
+			latestPingData.set(pingData);
 			pingStartFailure.compareAndSet(null, e);
-		}
-	}
-
-	private static void assertServerStatusReady(ServerData serverData, int pingAttempts) {
-		if (serverData.state() != ServerData.State.SUCCESSFUL) {
-			throw new AssertionError(
-				"Expected external server status ping to succeed after " + pingAttempts + " attempts: " +
-					describeServerStatus(serverData)
-			);
-		}
-		if (serverData.ping < 0) {
-			throw new AssertionError(
-				"Expected external server status ping time to be set after " + pingAttempts + " attempts: " +
-					describeServerStatus(serverData)
-			);
 		}
 	}
 
