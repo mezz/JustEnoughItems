@@ -206,7 +206,7 @@ public class IngredientManager implements IIngredientManager {
 
 	@Override
 	public IClickableIngredientFactory getClickableIngredientFactory() {
-		return new ClickableIngredientFactory(this);
+		return new ClickableIngredientFactory(this::createTypedIngredient);
 	}
 
 	@Override
