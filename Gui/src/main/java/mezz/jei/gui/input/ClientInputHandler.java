@@ -4,6 +4,7 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ReflectionUtil;
+import mezz.jei.gui.input.handlers.ChatLinkInputHandler;
 import mezz.jei.gui.input.handlers.DragRouter;
 import mezz.jei.gui.input.handlers.UserInputRouter;
 import net.minecraft.client.Minecraft;
@@ -15,6 +16,7 @@ import java.util.List;
 
 public class ClientInputHandler {
 	private final List<ICharTypedHandler> charTypedHandlers;
+	private final ChatLinkInputHandler chatLinkInputHandler;
 	private final UserInputRouter inputRouter;
 	private final DragRouter dragRouter;
 	private final IInternalKeyMappings keybindings;
@@ -23,12 +25,14 @@ public class ClientInputHandler {
 
 	public ClientInputHandler(
 		List<ICharTypedHandler> charTypedHandlers,
+		ChatLinkInputHandler chatLinkInputHandler,
 		UserInputRouter inputRouter,
 		DragRouter dragRouter,
 		IInternalKeyMappings keybindings,
 		IScreenHelper screenHelper
 	) {
 		this.charTypedHandlers = charTypedHandlers;
+		this.chatLinkInputHandler = chatLinkInputHandler;
 		this.inputRouter = inputRouter;
 		this.dragRouter = dragRouter;
 		this.keybindings = keybindings;
@@ -36,6 +40,7 @@ public class ClientInputHandler {
 	}
 
 	public void onInitGui() {
+		this.chatLinkInputHandler.handleGuiChange();
 		this.inputRouter.handleGuiChange();
 		this.dragRouter.handleGuiChange();
 	}
@@ -44,6 +49,10 @@ public class ClientInputHandler {
 	 * When we have keyboard focus, use Pre
 	 */
 	public boolean onKeyboardKeyPressedPre(Screen screen, UserInput input) {
+		if (this.chatLinkInputHandler.handleUserInput(screen, input, keybindings)) {
+			return true;
+		}
+
 		if (!isContainerTextFieldFocused(screen)) {
 			IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
 			if (guiProperties != null) {
@@ -86,6 +95,10 @@ public class ClientInputHandler {
 	}
 
 	public boolean onGuiMouseClicked(Screen screen, UserInput input) {
+		if (this.chatLinkInputHandler.handleUserInput(screen, input, keybindings)) {
+			return true;
+		}
+
 		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
 		if (guiProperties == null) {
 			return false;
@@ -100,6 +113,10 @@ public class ClientInputHandler {
 	}
 
 	public boolean onGuiMouseReleased(Screen screen, UserInput input) {
+		if (this.chatLinkInputHandler.handleUserInput(screen, input, keybindings)) {
+			return true;
+		}
+
 		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
 		if (guiProperties == null) {
 			return false;

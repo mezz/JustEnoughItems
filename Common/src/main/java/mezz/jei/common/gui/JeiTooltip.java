@@ -45,6 +45,9 @@ public class JeiTooltip implements ITooltipBuilder {
 	private final List<Either<FormattedText, TooltipComponent>> lines = new ArrayList<>();
 	private @Nullable ITypedIngredient<?> typedIngredient;
 
+	public record TooltipRenderData(Font font, ItemStack itemStack) {
+	}
+
 	@Override
 	public void add(@Nullable FormattedText formattedText) {
 		if (formattedText == null) {
@@ -168,6 +171,26 @@ public class JeiTooltip implements ITooltipBuilder {
 		IIngredientRenderer<T> ingredientRenderer,
 		IIngredientManager ingredientManager
 	) {
+		TooltipRenderData renderData = prepareForIngredientTooltip(typedIngredient, ingredientRenderer, ingredientManager);
+		if (isEmpty()) {
+			return;
+		}
+		try {
+			IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+			renderHelper.renderTooltip(guiGraphics, lines, x, y, renderData.font(), renderData.itemStack());
+		} catch (RuntimeException e) {
+			CrashReport crashReport = ErrorUtil.createIngredientCrashReport(e, "Rendering ingredient tooltip", ingredientManager, typedIngredient);
+			crashReport.addCategory("tooltip")
+				.setDetail("value", this);
+			throw new ReportedException(crashReport);
+		}
+	}
+
+	public <T> TooltipRenderData prepareForIngredientTooltip(
+		ITypedIngredient<T> typedIngredient,
+		IIngredientRenderer<T> ingredientRenderer,
+		IIngredientManager ingredientManager
+	) {
 		Minecraft minecraft = Minecraft.getInstance();
 		T ingredient = typedIngredient.getIngredient();
 		Font font = ingredientRenderer.getFontRenderer(minecraft, ingredient);
@@ -185,18 +208,7 @@ public class JeiTooltip implements ITooltipBuilder {
 		modIdHelper.getModNameForTooltip(typedIngredient)
 			.ifPresent(this::add);
 
-		if (isEmpty()) {
-			return;
-		}
-		try {
-			IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-			renderHelper.renderTooltip(guiGraphics, lines, x, y, font, itemStack);
-		} catch (RuntimeException e) {
-			CrashReport crashReport = ErrorUtil.createIngredientCrashReport(e, "Rendering ingredient tooltip", ingredientManager, typedIngredient);
-			crashReport.addCategory("tooltip")
-				.setDetail("value", this);
-			throw new ReportedException(crashReport);
-		}
+		return new TooltipRenderData(font, itemStack);
 	}
 
 	private <T> void addDebugInfo(IIngredientManager ingredientManager,  ITypedIngredient<T> typedIngredient) {

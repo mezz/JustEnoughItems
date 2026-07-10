@@ -10,6 +10,7 @@
     "AbstractContainerScreenMixin",
     "ClientPacketListenerRecipeUpdateMixin",
     "EffectsInInventoryMixin",
+    "GuiGraphicsMixin",
     "KeyboardHandlerMixin",
     "MinecraftMixin",
     "ScreenMixin"

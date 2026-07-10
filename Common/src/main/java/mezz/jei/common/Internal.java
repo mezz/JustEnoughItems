@@ -10,7 +10,6 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.DelayedExecutor;
-import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.IDelayedExecutor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -120,6 +119,10 @@ public final class Internal {
 		Preconditions.checkState(jeiRuntime != null, "Jei Client Configs have not been created yet.");
 
 		return jeiRuntime;
+	}
+
+	public static Optional<IJeiRuntime> getOptionalJeiRuntime() {
+		return Optional.ofNullable(jeiRuntime);
 	}
 
 	@Nullable
