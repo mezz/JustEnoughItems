@@ -1,6 +1,7 @@
 package mezz.jei.neoforge.tests.client;
 
 import net.minecraft.client.Minecraft;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -33,13 +34,15 @@ final class ClientTestUtil {
 		}, timeout);
 	}
 
+	@Nullable
 	public static <T> T computeOnClient(Function<Minecraft, T> task) {
 		return computeOnClient(task, CLIENT_TASK_TIMEOUT);
 	}
 
-	public static <T> T computeOnClient(Function<Minecraft, T> task, Duration timeout) {
+	@Nullable
+	public static <T> T computeOnClient(Function<Minecraft, @Nullable T> task, Duration timeout) {
 		Minecraft minecraft = Minecraft.getInstance();
-		CompletableFuture<T> future = new CompletableFuture<>();
+		CompletableFuture<@Nullable T> future = new CompletableFuture<>();
 		minecraft.execute(() -> {
 			try {
 				future.complete(task.apply(minecraft));
