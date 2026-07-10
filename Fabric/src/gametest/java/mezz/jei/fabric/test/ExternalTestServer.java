@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -53,18 +54,26 @@ final class ExternalTestServer implements AutoCloseable {
 	}
 
 	public Connection connect() {
+		AtomicReference<String> clientConnectState = new AtomicReference<>("client connection was not started");
 		context.runOnClient(client -> {
 			String address = server.getConnectionAddress();
 			ServerData serverData = new ServerData("JEI Test Server", address, ServerData.Type.OTHER);
 			client.gui.hud.getChat().clearMessages(false);
 			Screen screen = client.gui.screen();
 			assert screen != null;
+			clientConnectState.set("useNativeTransport=" + client.options.useNativeTransport() + ", screen=" + screen.getClass().getName());
 			ConnectScreen.startConnecting(screen, client, ServerAddress.parseString(address), serverData, false, null);
 		});
 		try {
 			context.waitFor(client -> client.level != null, ClientGameTestContext.DEFAULT_TIMEOUT * 6);
 		} catch (AssertionError e) {
-			throw new AssertionError("Timed out connecting to external server " + server.getConnectionAddress() + ":\n" + server.readServerLogTail(), e);
+			throw new AssertionError(
+				"Timed out connecting to external server " + server.getConnectionAddress() + " (" +
+					clientConnectState.get() + ", " +
+					server.describeProcessState() + "):\n" +
+					server.readServerLogTail(),
+				e
+			);
 		}
 		return new Connection(context);
 	}
