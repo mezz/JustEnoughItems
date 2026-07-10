@@ -8,6 +8,9 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.ClientPacketRouter;
 import mezz.jei.core.config.IServerConfig;
 import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.forge.chat.JeiChatEventHandler;
+import mezz.jei.forge.chat.JeiChatTooltipEventHandler;
+import mezz.jei.forge.chat.JeiInternalShowCommand;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.network.ConnectionToServer;
 import mezz.jei.forge.network.NetworkHandler;
@@ -34,6 +37,9 @@ public class JustEnoughItemsClient {
 	}
 
 	public void register() {
+		JeiChatEventHandler.register(subscriptions);
+		JeiChatTooltipEventHandler.register(subscriptions);
+		JeiInternalShowCommand.register(subscriptions);
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 		Runtime.getRuntime().addShutdownHook(new Thread(Internal::onClientStopping, "JEI Client Shutdown"));
 	}

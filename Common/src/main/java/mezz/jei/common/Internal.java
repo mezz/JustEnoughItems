@@ -109,6 +109,16 @@ public final class Internal {
 		return Optional.ofNullable(jeiClientConfigs);
 	}
 
+	public static Optional<IJeiRuntime> getOptionalJeiRuntime() {
+		return Optional.ofNullable(jeiRuntime);
+	}
+
+	public static void onRuntimeStopped() {
+		if (jeiRuntime != null) {
+			jeiRuntime = null;
+		}
+	}
+
 	public static void onClientStopping() {
 		setRuntime(null);
 		delayedExecutor.shutdown();

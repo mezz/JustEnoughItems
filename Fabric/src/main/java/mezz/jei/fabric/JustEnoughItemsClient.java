@@ -4,6 +4,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.core.config.IServerConfig;
+import mezz.jei.fabric.chat.JeiInternalShowCommand;
 import mezz.jei.fabric.config.ServerConfig;
 import mezz.jei.fabric.events.JeiIdentifiableResourceReloadListener;
 import mezz.jei.fabric.events.JeiLifecycleEvents;
@@ -22,6 +23,8 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		InternalKeyMappings keyMappings = new InternalKeyMappings(KeyBindingHelper::registerKeyBinding);
 		Internal.setKeyMappings(keyMappings);
+
+		JeiInternalShowCommand.register();
 
 		JeiLifecycleEvents.REGISTER_RESOURCE_RELOAD_LISTENER.register((resourceManager, textureManager) -> {
 			JeiSpriteUploader spriteUploader = new JeiSpriteUploader(textureManager);

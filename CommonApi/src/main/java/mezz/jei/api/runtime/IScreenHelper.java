@@ -27,7 +27,8 @@ public interface IScreenHelper {
 	 *
 	 * This uses information from plugins via
 	 * {@link IGuiContainerHandler#getClickableIngredientUnderMouse(IClickableIngredientFactory, AbstractContainerScreen, double, double)}
-	 * and {@link IGlobalGuiHandler#getClickableIngredientUnderMouse(IClickableIngredientFactory, double, double)}
+	 * and {@link IGlobalGuiHandler#getClickableIngredientUnderMouse(IClickableIngredientFactory, double, double)},
+	 * and from vanilla and JEI chat ingredient links.
 	 *
 	 * @since 10.3.0
 	 */
