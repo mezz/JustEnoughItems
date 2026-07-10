@@ -6,6 +6,8 @@ import mezz.jei.common.gui.textures.JeiAtlasManager;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.MinecraftLocaleSupplier;
 import mezz.jei.common.util.Translator;
+import mezz.jei.fabric.chat.JeiChatEventHandler;
+import mezz.jei.fabric.chat.JeiInternalShowCommand;
 import mezz.jei.fabric.events.JeiLifecycleEvents;
 import mezz.jei.fabric.plugins.fabric.FabricGuiPlugin;
 import mezz.jei.fabric.startup.ClientLifecycleHandler;
@@ -28,6 +30,9 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 		ClientRecipeSynchronizedEvent.EVENT.register((minecraft, synchronizedRecipes) -> {
 			Internal.setClientSyncedRecipes(RecipeMap.create(synchronizedRecipes.recipes()));
 		});
+
+		JeiChatEventHandler.register();
+		JeiInternalShowCommand.register();
 
 		JeiLifecycleEvents.REGISTER_RESOURCE_RELOAD_LISTENER.register((resourceManager, textureManager) -> {
 			Textures textures = Internal.getTextures();

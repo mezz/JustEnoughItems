@@ -3,6 +3,7 @@ package mezz.jei.neoforge;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.IngredientTooltipComponent;
 import mezz.jei.common.gui.IngredientsTooltipComponent;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.IConnectionToServer;
@@ -13,6 +14,9 @@ import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipe;
 import mezz.jei.library.recipes.RecipeSerializers;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
+import mezz.jei.neoforge.chat.JeiChatEventHandler;
+import mezz.jei.neoforge.chat.JeiChatTooltipEventHandler;
+import mezz.jei.neoforge.chat.JeiInternalShowCommand;
 import mezz.jei.neoforge.events.PermanentEventSubscriptions;
 import mezz.jei.neoforge.network.NetworkHandler;
 import mezz.jei.neoforge.plugins.neoforge.NeoForgeGuiPlugin;
@@ -74,6 +78,10 @@ public class JustEnoughItemsClient {
 			Internal.setKeyMappings(keyMappings);
 		});
 
+		JeiChatEventHandler.register(subscriptions);
+		JeiChatTooltipEventHandler.register(subscriptions);
+		JeiInternalShowCommand.register(subscriptions);
+
 		IEventBus modEventBus = subscriptions.getModEventBus();
 		DeferredRegister<RecipeSerializer<?>> deferredRegister = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, ModIds.JEI_ID);
 		deferredRegister.register(modEventBus);
@@ -96,6 +104,7 @@ public class JustEnoughItemsClient {
 	}
 
 	private void onRegisterClientTooltipEvent(RegisterClientTooltipComponentFactoriesEvent event) {
+		event.register(IngredientTooltipComponent.class, Function.identity());
 		event.register(IngredientsTooltipComponent.class, Function.identity());
 		event.register(PreviewTooltipComponent.class, Function.identity());
 		event.register(TagContentTooltipComponent.class, Function.identity());
