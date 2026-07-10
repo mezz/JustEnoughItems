@@ -37,6 +37,7 @@ base {
 }
 
 val gameTestJunitResultsDir = layout.buildDirectory.dir("test-results/gameTest")
+val commonClientTestFixturesSource = project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java")
 
 sourceSets {
 	named("test") {
@@ -46,7 +47,9 @@ sourceSets {
 		}
 	}
 	create("gameTest")
-	create("clientGameTest")
+	create("clientGameTest") {
+		java.srcDir(commonClientTestFixturesSource)
+	}
 }
 
 val dependencyProjects: List<Project> = listOf(
@@ -113,12 +116,15 @@ val changelogMarkdown: Configuration by configurations.creating {
 val neoForgeServerWithJeiRunName = "neoForgeServerWithJei"
 val neoForgeServerWithoutJeiRunName = "neoForgeServerWithoutJei"
 val vanillaServerRunName = "vanillaServer"
-val clientRecipeSyncTestCases = listOf(
+val clientRecipeSyncTestProperty = "jei.clientRecipeSyncTest"
+val clientRecipeSyncTestRunName = "clientRecipeSyncTest"
+val clientRecipeSyncTestCaseRuns = listOf(
 	"clientRecipeSyncSingleplayer" to "singleplayer",
 	"clientRecipeSyncNeoForgeServerWithJei" to "neoforgeServerWithJei",
 	"clientRecipeSyncNeoForgeServerWithoutJei" to "neoforgeServerWithoutJei",
 	"clientRecipeSyncVanillaServerWithoutJei" to "vanillaServerWithoutJei",
 )
+val clientRecipeSyncRuns = listOf(clientRecipeSyncTestRunName to "all") + clientRecipeSyncTestCaseRuns
 
 fun clientRecipeSyncTestGameDirectory(runName: String) =
 	layout.projectDirectory.dir("run/$runName")
@@ -209,14 +215,14 @@ neoForge {
 			systemProperty("jei.gameTest.junitDir", gameTestJunitResultsDir.get().asFile.absolutePath)
 			logLevel = Level.INFO
 		}
-		clientRecipeSyncTestCases.forEach { (runName, testCase) ->
+		clientRecipeSyncRuns.forEach { (runName, testCase) ->
 			create(runName) {
 				client()
 				gameDirectory = clientRecipeSyncTestGameDirectory(runName).asFile
 				sourceSet = sourceSets.named("clientGameTest")
 				loadedMods.add(mods.named("jeiclienttests"))
 				programArguments.addAll("--username", "JeiClientTest")
-				systemProperty("jei.clientRecipeSyncTest", testCase)
+				systemProperty(clientRecipeSyncTestProperty, testCase)
 				logLevel = Level.INFO
 			}
 		}
@@ -272,14 +278,14 @@ tasks.named<ProcessResources>(sourceSets.named("clientGameTest").get().processRe
 	from(writeExternalServerLaunchProperties)
 }
 
-val copyClientRecipeSyncTestFmlConfigTasks = clientRecipeSyncTestCases.associate { (runName, _) ->
+val copyClientRecipeSyncTestFmlConfigTasks = clientRecipeSyncRuns.associate { (runName, _) ->
 	runName to tasks.register<Copy>("copy${capitalizedRunName(runName)}FmlConfig") {
 		from(layout.projectDirectory.file("src/clientGameTest/templates/config/fml.toml"))
 		into(clientRecipeSyncTestConfigDirectory(runName))
 	}
 }
 
-val writeClientRecipeSyncTestOptionsTasks = clientRecipeSyncTestCases.associate { (runName, _) ->
+val writeClientRecipeSyncTestOptionsTasks = clientRecipeSyncRuns.associate { (runName, _) ->
 	runName to tasks.register<Copy>("write${capitalizedRunName(runName)}Options") {
 		from(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
 		into(clientRecipeSyncTestGameDirectory(runName))
@@ -295,7 +301,7 @@ tasks.named("runGameTestServer") {
 	dependsOn(cleanGameTestJunitResults)
 }
 
-clientRecipeSyncTestCases.forEach { (runName, _) ->
+clientRecipeSyncRuns.forEach { (runName, _) ->
 	tasks.named("prepare${capitalizedRunName(runName)}Run") {
 		dependsOn(
 			writeExternalServerLaunchProperties,
@@ -303,21 +309,6 @@ clientRecipeSyncTestCases.forEach { (runName, _) ->
 			writeClientRecipeSyncTestOptionsTasks.getValue(runName)
 		)
 	}
-}
-
-val clientRecipeSyncTestRunTasks = clientRecipeSyncTestCases.map { (runName, _) ->
-	tasks.named("run${capitalizedRunName(runName)}")
-}
-clientRecipeSyncTestRunTasks.zipWithNext().forEach { (previousTask, nextTask) ->
-	nextTask.configure {
-		mustRunAfter(previousTask)
-	}
-}
-
-tasks.register("runClientRecipeSyncTest") {
-	group = "mod development"
-	description = "Runs all JEI client recipe-sync test scenarios."
-	dependsOn(clientRecipeSyncTestRunTasks)
 }
 
 tasks.jar {

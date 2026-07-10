@@ -1,16 +1,12 @@
 package mezz.jei.fabric.test;
 
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.test.client.ExternalServerClient;
 import mezz.jei.test.lib.ExternalServerProcess;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.client.gui.screens.ConnectScreen;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.multiplayer.resolver.ServerAddress;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -20,6 +16,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("UnstableApiUsage")
 final class ExternalTestServer implements AutoCloseable {
-	private final ClientGameTestContext context;
+	private final ExternalServerClient.ClientAccess clientAccess;
 	private final ExternalServerProcess server;
 
-	private ExternalTestServer(ClientGameTestContext context, ExternalServerProcess server) {
-		this.context = context;
+	private ExternalTestServer(ExternalServerClient.ClientAccess clientAccess, ExternalServerProcess server) {
+		this.clientAccess = clientAccess;
 		this.server = server;
 	}
 
@@ -48,25 +48,38 @@ final class ExternalTestServer implements AutoCloseable {
 	}
 
 	private static ExternalTestServer start(ClientGameTestContext context, String directoryName, LaunchType launchType) {
+		ExternalServerClient.ClientAccess clientAccess = createClientAccess(context);
+		ExternalServerClient.assertNativeTransportDisabled(clientAccess);
 		ExternalServerProcess server = ExternalServerProcess.start(directoryName, launchType.description, launchType);
-		return new ExternalTestServer(context, server);
+		return new ExternalTestServer(clientAccess, server);
 	}
 
 	public Connection connect() {
-		context.runOnClient(client -> {
-			String address = server.getConnectionAddress();
-			ServerData serverData = new ServerData("JEI Test Server", address, ServerData.Type.OTHER);
-			client.gui.getChat().clearMessages(false);
-			Screen screen = client.screen;
-			assert screen != null;
-			ConnectScreen.startConnecting(screen, client, ServerAddress.parseString(address), serverData, false, null);
-		});
-		try {
-			context.waitFor(client -> client.level != null, ClientGameTestContext.DEFAULT_TIMEOUT * 6);
-		} catch (AssertionError e) {
-			throw new AssertionError("Timed out connecting to external server " + server.getConnectionAddress() + ":\n" + server.readServerLogTail(), e);
-		}
-		return new Connection(context);
+		ExternalServerClient.connect(server, clientAccess);
+		return new Connection(clientAccess);
+	}
+
+	private static ExternalServerClient.ClientAccess createClientAccess(ClientGameTestContext context) {
+		return new ExternalServerClient.ClientAccess() {
+			@Override
+			public void run(Consumer<Minecraft> task) {
+				context.runOnClient(task::accept);
+			}
+
+			@Override
+			public <T> T compute(Function<Minecraft, T> task) {
+				return context.computeOnClient(task::apply);
+			}
+
+			@Override
+			public void waitFor(Predicate<Minecraft> predicate, Supplier<String> timeoutMessage) {
+				try {
+					context.waitFor(predicate::test, ExternalServerClient.EXTERNAL_SERVER_CLIENT_TIMEOUT_TICKS);
+				} catch (AssertionError e) {
+					throw new AssertionError(timeoutMessage.get(), e);
+				}
+			}
+		};
 	}
 
 	@Override
@@ -165,23 +178,15 @@ final class ExternalTestServer implements AutoCloseable {
 	}
 
 	static final class Connection implements AutoCloseable {
-		private final ClientGameTestContext context;
+		private final ExternalServerClient.ClientAccess clientAccess;
 
-		private Connection(ClientGameTestContext context) {
-			this.context = context;
+		private Connection(ExternalServerClient.ClientAccess clientAccess) {
+			this.clientAccess = clientAccess;
 		}
 
 		@Override
 		public void close() {
-			context.runOnClient(client -> {
-				if (client.level != null) {
-					client.level.disconnect(Component.literal("Disconnecting"));
-					client.disconnectWithSavingScreen();
-				}
-			});
-			context.waitFor(client -> client.level == null);
-			context.waitTicks(2);
-			context.setScreen(TitleScreen::new);
+			ExternalServerClient.disconnect(clientAccess);
 		}
 	}
 }

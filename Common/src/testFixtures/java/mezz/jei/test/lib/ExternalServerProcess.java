@@ -23,13 +23,16 @@ public final class ExternalServerProcess implements AutoCloseable {
 
 	private final TemporaryDirectory temporaryDirectory;
 	private final Process process;
+	// Keep the child stdin pipe open so dedicated servers do not treat EOF as an immediate shutdown signal.
+	private final BufferedWriter processInput;
 	private final Path serverDirectory;
 	private final Path serverLog;
 	private final int port;
 
-	private ExternalServerProcess(TemporaryDirectory temporaryDirectory, Process process, Path serverDirectory, Path serverLog, int port) {
+	private ExternalServerProcess(TemporaryDirectory temporaryDirectory, Process process, BufferedWriter processInput, Path serverDirectory, Path serverLog, int port) {
 		this.temporaryDirectory = temporaryDirectory;
 		this.process = process;
+		this.processInput = processInput;
 		this.serverDirectory = serverDirectory;
 		this.serverLog = serverLog;
 		this.port = port;
@@ -74,18 +77,26 @@ public final class ExternalServerProcess implements AutoCloseable {
 			throw e;
 		}
 
-		ExternalServerProcess server = new ExternalServerProcess(temporaryDirectory, process, serverDirectory, serverLog, port);
+		BufferedWriter processInput = process.outputWriter(StandardCharsets.UTF_8);
+		ExternalServerProcess server = new ExternalServerProcess(temporaryDirectory, process, processInput, serverDirectory, serverLog, port);
 		try {
 			server.waitUntilReady();
 			return server;
 		} catch (RuntimeException | Error e) {
-			closeOnStartFailure(process, temporaryDirectory, e);
+			closeOnStartFailure(server, e);
 			throw e;
 		}
 	}
 
 	public String getConnectionAddress() {
 		return "127.0.0.1:" + port;
+	}
+
+	public String describeProcessState() {
+		if (process.isAlive()) {
+			return "external server process is still running";
+		}
+		return "external server process exited with code " + process.exitValue();
 	}
 
 	public String readServerLogTail() {
@@ -106,7 +117,7 @@ public final class ExternalServerProcess implements AutoCloseable {
 	@Override
 	public void close() {
 		try {
-			stopServerProcess(process);
+			stopServerProcess(process, processInput);
 		} finally {
 			temporaryDirectory.close();
 		}
@@ -154,39 +165,43 @@ public final class ExternalServerProcess implements AutoCloseable {
 		}
 	}
 
-	private static void stopServerProcess(Process process) {
-		if (!process.isAlive()) {
-			return;
-		}
-		try (BufferedWriter writer = process.outputWriter(StandardCharsets.UTF_8)) {
-			writer.write("stop");
-			writer.newLine();
-			writer.flush();
-		} catch (IOException ignored) {
-
-		}
-
+	private static void stopServerProcess(Process process, BufferedWriter processInput) {
 		try {
-			if (!process.waitFor(SERVER_STOP_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)) {
-				process.destroy();
+			if (process.isAlive()) {
+				try {
+					processInput.write("stop");
+					processInput.newLine();
+					processInput.flush();
+				} catch (IOException ignored) {
+
+				}
+
 				if (!process.waitFor(SERVER_STOP_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)) {
-					process.destroyForcibly();
+					process.destroy();
+					if (!process.waitFor(SERVER_STOP_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)) {
+						process.destroyForcibly();
+					}
 				}
 			}
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			process.destroyForcibly();
 			throw new AssertionError("Interrupted while stopping external server", e);
+		} finally {
+			try {
+				processInput.close();
+			} catch (IOException ignored) {
+
+			}
 		}
 	}
 
-	private static void closeOnStartFailure(Process process, TemporaryDirectory temporaryDirectory, Throwable failure) {
+	private static void closeOnStartFailure(ExternalServerProcess server, Throwable failure) {
 		try {
-			stopServerProcess(process);
+			server.close();
 		} catch (Throwable cleanupFailure) {
 			failure.addSuppressed(cleanupFailure);
 		}
-		closeOnStartFailure(temporaryDirectory, failure);
 	}
 
 	private static void closeOnStartFailure(TemporaryDirectory temporaryDirectory, Throwable failure) {
