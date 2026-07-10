@@ -7,9 +7,9 @@ import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.runtime.IClickableIngredient;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.collect.ListMultiMap;
+import mezz.jei.common.ingredients.ITypedIngredientFactory;
 import mezz.jei.common.input.ClickableIngredientFactory;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
@@ -22,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,7 +30,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class ScreenHelper implements IScreenHelper {
-	private final IIngredientManager ingredientManager;
+	private final IClickableIngredientFactory clickableIngredientFactory;
 	private final List<IGlobalGuiHandler> globalGuiHandlers;
 	private final GuiContainerHandlers guiContainerHandlers;
 	private final ListMultiMap<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers;
@@ -37,13 +38,13 @@ public class ScreenHelper implements IScreenHelper {
 	private final Map<Class<?>, IScreenHandler<?>> guiScreenHandlers;
 
 	public ScreenHelper(
-		IIngredientManager ingredientManager,
+		ITypedIngredientFactory typedIngredientFactory,
 		List<IGlobalGuiHandler> globalGuiHandlers,
 		GuiContainerHandlers guiContainerHandlers,
 		ListMultiMap<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers,
 		Map<Class<?>, IScreenHandler<?>> guiScreenHandlers
 	) {
-		this.ingredientManager = ingredientManager;
+		this.clickableIngredientFactory = new ClickableIngredientFactory(typedIngredientFactory);
 		this.globalGuiHandlers = globalGuiHandlers;
 		this.guiContainerHandlers = guiContainerHandlers;
 		this.ghostIngredientHandlers = ghostIngredientHandlers;
@@ -75,14 +76,13 @@ public class ScreenHelper implements IScreenHelper {
 
 	@Override
 	public Stream<IClickableIngredient<?>> getClickableIngredientUnderMouse(Screen screen, double mouseX, double mouseY) {
-		ClickableIngredientFactory factory = new ClickableIngredientFactory(ingredientManager);
 		return Stream.concat(
-			getPluginsIngredientUnderMouse(factory, screen, mouseX, mouseY),
-			getHoveredSlotIngredient(factory, screen).stream()
+			getPluginsIngredientUnderMouse(clickableIngredientFactory, screen, mouseX, mouseY),
+			getHoveredSlotIngredient(clickableIngredientFactory, screen).stream()
 		);
 	}
 
-	private Optional<IClickableIngredient<?>> getHoveredSlotIngredient(ClickableIngredientFactory factory, Screen guiScreen) {
+	private Optional<IClickableIngredient<?>> getHoveredSlotIngredient(IClickableIngredientFactory factory, Screen guiScreen) {
 		if (!(guiScreen instanceof AbstractContainerScreen<?> guiContainer)) {
 			return Optional.empty();
 		}
@@ -91,7 +91,7 @@ public class ScreenHelper implements IScreenHelper {
 			.flatMap(slot -> getClickedIngredient(factory, slot, guiContainer));
 	}
 
-	private Stream<IClickableIngredient<?>> getPluginsIngredientUnderMouse(ClickableIngredientFactory factory, Screen guiScreen, double mouseX, double mouseY) {
+	private Stream<IClickableIngredient<?>> getPluginsIngredientUnderMouse(IClickableIngredientFactory factory, Screen guiScreen, double mouseX, double mouseY) {
 		Stream<IClickableIngredient<?>> screenIngredients = getScreenHandlerIngredients(factory, guiScreen, mouseX, mouseY);
 		Stream<IClickableIngredient<?>> globalIngredients = this.globalGuiHandlers.stream()
 			.map(a -> a.getClickableIngredientUnderMouse(factory, mouseX, mouseY))
@@ -107,7 +107,7 @@ public class ScreenHelper implements IScreenHelper {
 		return Stream.concat(screenIngredients, globalIngredients);
 	}
 
-	private Optional<IClickableIngredient<ItemStack>> getClickedIngredient(ClickableIngredientFactory factory, Slot slot, AbstractContainerScreen<?> guiContainer) {
+	private Optional<IClickableIngredient<ItemStack>> getClickedIngredient(IClickableIngredientFactory factory, Slot slot, AbstractContainerScreen<?> guiContainer) {
 		ItemStack stack = slot.getItem();
 		return getGuiProperties(guiContainer)
 			.flatMap(guiProperties -> {
@@ -129,25 +129,29 @@ public class ScreenHelper implements IScreenHelper {
 
 	private <T extends Screen> Stream<IClickableIngredient<?>> getScreenHandlerIngredients(IClickableIngredientFactory factory, T guiScreen, double mouseX, double mouseY) {
 		return getActiveScreenHandlerStream(guiScreen)
-			.map(a -> a.getClickableIngredientUnderMouse(factory, guiScreen, mouseX, mouseY))
-			.map(optionalIngredient -> optionalIngredient.map(ingredient -> (IClickableIngredient<?>) ingredient))
+			.map(handler -> handler.getClickableIngredientUnderMouse(factory, guiScreen, mouseX, mouseY))
 			.flatMap(Optional::stream);
 	}
 
 	private <T extends Screen> Stream<IScreenHandler<T>> getActiveScreenHandlerStream(T guiScreen) {
 		Class<? extends Screen> guiScreenClass = guiScreen.getClass();
-		Stream<IScreenHandler<T>> exactHandlers = Optional.ofNullable(guiScreenHandlers.get(guiScreenClass))
-			.map(handler -> ScreenHelper.<T>castScreenHandler(handler))
-			.stream();
-
-		Stream<IScreenHandler<T>> assignableHandlers = guiScreenHandlers.entrySet()
+		return guiScreenHandlers.entrySet()
 			.stream()
-			.filter(entry -> entry.getKey() != guiScreenClass)
 			.filter(entry -> entry.getKey().isInstance(guiScreen))
+			.sorted(Comparator.comparingInt(entry -> getClassDistance(guiScreenClass, entry.getKey())))
 			.map(Map.Entry::getValue)
-			.map(handler -> ScreenHelper.<T>castScreenHandler(handler));
+			.map(ScreenHelper::castScreenHandler);
+	}
 
-		return Stream.concat(exactHandlers, assignableHandlers);
+	private static int getClassDistance(Class<?> childClass, Class<?> parentClass) {
+		int distance = 0;
+		for (Class<?> currentClass = childClass; currentClass != null; currentClass = currentClass.getSuperclass()) {
+			if (currentClass == parentClass) {
+				return distance;
+			}
+			distance++;
+		}
+		return Integer.MAX_VALUE;
 	}
 
 	@SuppressWarnings("unchecked")
