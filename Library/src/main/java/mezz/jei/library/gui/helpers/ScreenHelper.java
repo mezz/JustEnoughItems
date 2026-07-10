@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -52,26 +53,10 @@ public class ScreenHelper implements IScreenHelper {
 
 	@Override
 	public <T extends Screen> Optional<IGuiProperties> getGuiProperties(T screen) {
-		{
-			@SuppressWarnings("unchecked")
-			IScreenHandler<T> handler = (IScreenHandler<T>) guiScreenHandlers.get(screen.getClass());
-			if (handler != null) {
-				IGuiProperties properties = handler.apply(screen);
-				return Optional.ofNullable(properties);
-			}
-		}
-		for (Map.Entry<Class<?>, IScreenHandler<?>> entry : guiScreenHandlers.entrySet()) {
-			Class<?> guiScreenClass = entry.getKey();
-			if (guiScreenClass.isInstance(screen)) {
-				@SuppressWarnings("unchecked")
-				IScreenHandler<T> handler = (IScreenHandler<T>) entry.getValue();
-				if (handler != null) {
-					IGuiProperties properties = handler.apply(screen);
-					return Optional.ofNullable(properties);
-				}
-			}
-		}
-		return Optional.empty();
+		return getActiveScreenHandlerStream(screen)
+			.map(handler -> handler.apply(screen))
+			.filter(Objects::nonNull)
+			.findFirst();
 	}
 
 	@Override
@@ -107,6 +92,7 @@ public class ScreenHelper implements IScreenHelper {
 	}
 
 	private Stream<IClickableIngredient<?>> getPluginsIngredientUnderMouse(ClickableIngredientFactory factory, Screen guiScreen, double mouseX, double mouseY) {
+		Stream<IClickableIngredient<?>> screenIngredients = getScreenHandlerIngredients(factory, guiScreen, mouseX, mouseY);
 		Stream<IClickableIngredient<?>> globalIngredients = this.globalGuiHandlers.stream()
 			.map(a -> a.getClickableIngredientUnderMouse(factory, mouseX, mouseY))
 			.flatMap(Optional::stream);
@@ -115,10 +101,10 @@ public class ScreenHelper implements IScreenHelper {
 			Stream<IClickableIngredient<?>> containerIngredients = getGuiContainerHandlerIngredients(factory, guiContainer, mouseX, mouseY);
 			return Stream.concat(
 				containerIngredients,
-				globalIngredients
+				Stream.concat(screenIngredients, globalIngredients)
 			);
 		}
-		return globalIngredients;
+		return Stream.concat(screenIngredients, globalIngredients);
 	}
 
 	private Optional<IClickableIngredient<ItemStack>> getClickedIngredient(ClickableIngredientFactory factory, Slot slot, AbstractContainerScreen<?> guiContainer) {
@@ -139,6 +125,34 @@ public class ScreenHelper implements IScreenHelper {
 		return this.guiContainerHandlers.getActiveGuiHandlerStream(guiContainer)
 			.map(a -> a.getClickableIngredientUnderMouse(factory, guiContainer, mouseX, mouseY))
 			.flatMap(Optional::stream);
+	}
+
+	private <T extends Screen> Stream<IClickableIngredient<?>> getScreenHandlerIngredients(IClickableIngredientFactory factory, T guiScreen, double mouseX, double mouseY) {
+		return getActiveScreenHandlerStream(guiScreen)
+			.map(a -> a.getClickableIngredientUnderMouse(factory, guiScreen, mouseX, mouseY))
+			.map(optionalIngredient -> optionalIngredient.map(ingredient -> (IClickableIngredient<?>) ingredient))
+			.flatMap(Optional::stream);
+	}
+
+	private <T extends Screen> Stream<IScreenHandler<T>> getActiveScreenHandlerStream(T guiScreen) {
+		Class<? extends Screen> guiScreenClass = guiScreen.getClass();
+		Stream<IScreenHandler<T>> exactHandlers = Optional.ofNullable(guiScreenHandlers.get(guiScreenClass))
+			.map(handler -> ScreenHelper.<T>castScreenHandler(handler))
+			.stream();
+
+		Stream<IScreenHandler<T>> assignableHandlers = guiScreenHandlers.entrySet()
+			.stream()
+			.filter(entry -> entry.getKey() != guiScreenClass)
+			.filter(entry -> entry.getKey().isInstance(guiScreen))
+			.map(Map.Entry::getValue)
+			.map(handler -> ScreenHelper.<T>castScreenHandler(handler));
+
+		return Stream.concat(exactHandlers, assignableHandlers);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T extends Screen> IScreenHandler<T> castScreenHandler(IScreenHandler<?> handler) {
+		return (IScreenHandler<T>) handler;
 	}
 
 	@Override
