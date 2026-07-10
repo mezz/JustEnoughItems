@@ -14,6 +14,7 @@ import net.minecraft.server.network.EventLoopGroupHolder;
 import org.jspecify.annotations.Nullable;
 
 import java.net.UnknownHostException;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -29,7 +30,7 @@ import java.util.function.Supplier;
 public final class ExternalServerClient {
 	public static final int EXTERNAL_SERVER_CLIENT_TIMEOUT_SECONDS = 60;
 	public static final int EXTERNAL_SERVER_CLIENT_TIMEOUT_TICKS = EXTERNAL_SERVER_CLIENT_TIMEOUT_SECONDS * SharedConstants.TICKS_PER_SECOND;
-	private static final long SERVER_STATUS_PING_RETRY_INTERVAL_MILLIS = 1_000L;
+	private static final Duration SERVER_STATUS_PING_RETRY_INTERVAL = Duration.ofMillis(50L);
 
 	private ExternalServerClient() {
 
@@ -103,7 +104,7 @@ public final class ExternalServerClient {
 					long now = System.currentTimeMillis();
 					if (now >= nextPingAttemptMillis.get()) {
 						startServerStatusPing(client, pinger, serverData, pingSucceeded, pingStartFailure, pingAttempts);
-						nextPingAttemptMillis.set(now + SERVER_STATUS_PING_RETRY_INTERVAL_MILLIS);
+						nextPingAttemptMillis.set(now + SERVER_STATUS_PING_RETRY_INTERVAL.toMillis());
 					}
 					return pingSucceeded.get() || pingStartFailure.get() != null;
 				},
