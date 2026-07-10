@@ -69,6 +69,9 @@ configurations.implementation {
     extendsFrom(embeddedLibraries)
 }
 val keyMappingGametestModId = "${modId}-key-mapping-test"
+val commonClientTestFixturesSource = project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java")
+val clientGameTestRunDirectory = layout.buildDirectory.dir("run/clientGameTest")
+val clientGameTestWithoutAmecsRunDirectory = layout.buildDirectory.dir("run/clientGameTestWithoutAmecs")
 
 dependencyProjects.forEach {
     project.evaluationDependsOn(it.path)
@@ -219,6 +222,7 @@ loom {
         create("clientGameTestWithoutAmecs") {
             inherit(named("clientGameTest").get())
             displayName.set("Fabric Client GameTest Without AMECS")
+            runDirectory.set(clientGameTestWithoutAmecsRunDirectory.get().asFile)
             systemProperties.put("jei.fabric.disableAmecsSupport", "true")
             systemProperties.put("fabric.client.gametest.modid", keyMappingGametestModId)
         }
@@ -236,6 +240,7 @@ sourceSets {
         }
     }
     named("gametest") {
+        java.srcDir(commonClientTestFixturesSource)
         runtimeClasspath += keyMappingGametestSourceSet.output
     }
 }
@@ -248,18 +253,28 @@ tasks.named("runClientGameTestWithoutAmecs") {
     dependsOn(keyMappingGametestSourceSet.classesTaskName)
 }
 
-val writeClientGameTestOptions = tasks.register<Copy>("writeClientGameTestOptions") {
-    from(layout.projectDirectory.file("src/gametest/templates/options.txt"))
-    into(layout.projectDirectory.dir("run"))
-    mustRunAfter("deleteGameTestRunDir")
-}
+fun registerWriteClientGameTestOptionsTask(name: String, runDirectory: Provider<Directory>) =
+    tasks.register<Copy>(name) {
+        from(layout.projectDirectory.file("src/gametest/templates/options.txt"))
+        into(runDirectory)
+        mustRunAfter("deleteGameTestRunDir")
+    }
+
+val writeClientGameTestOptions = registerWriteClientGameTestOptionsTask(
+    "writeClientGameTestOptions",
+    clientGameTestRunDirectory
+)
+val writeClientGameTestWithoutAmecsOptions = registerWriteClientGameTestOptionsTask(
+    "writeClientGameTestWithoutAmecsOptions",
+    clientGameTestWithoutAmecsRunDirectory
+)
 
 tasks.named("runClientGameTest") {
     dependsOn(writeClientGameTestOptions)
 }
 
 tasks.named("runClientGameTestWithoutAmecs") {
-    dependsOn(writeClientGameTestOptions)
+    dependsOn(writeClientGameTestWithoutAmecsOptions)
 }
 
 tasks.jar {

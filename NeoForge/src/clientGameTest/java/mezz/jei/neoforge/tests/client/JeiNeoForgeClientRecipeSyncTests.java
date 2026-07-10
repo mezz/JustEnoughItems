@@ -27,14 +27,17 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /**
  * Runs client-side recipe sync tests against disposable external servers.
  */
 public final class JeiNeoForgeClientRecipeSyncTests {
 	private static final String TEST_CASE_PROPERTY = "jei.clientRecipeSyncTest";
+	private static final String ALL_TEST_CASES = "all";
 	private static final String JUNIT_SUITE_NAME = "neoforge-client-recipe-sync";
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Duration ASSERTION_TIMEOUT = Duration.ofSeconds(60);
@@ -60,17 +63,20 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 
 	private static void runTests() {
 		int exitCode = 0;
-		TestCase testCase = TestCase.fromSystemProperty();
+		String testName = TestCase.fromSystemPropertyId();
 		try {
-			JUnitXmlTestReporter.runAndReport(
-				JUNIT_SUITE_NAME,
-				testCase.id,
-				testCase::run
-			);
-			LOGGER.info("JEI NeoForge client recipe sync test passed: {}", testCase.displayName);
+			for (TestCase currentTestCase : TestCase.fromSystemProperty()) {
+				testName = currentTestCase.displayName;
+				JUnitXmlTestReporter.runAndReport(
+					JUNIT_SUITE_NAME,
+					currentTestCase.id,
+					currentTestCase::run
+				);
+				LOGGER.info("JEI NeoForge client recipe sync test passed: {}", currentTestCase.displayName);
+			}
 		} catch (Throwable t) {
 			exitCode = 1;
-			LOGGER.error("JEI NeoForge client recipe sync test failed: {}", testCase.displayName, t);
+			LOGGER.error("JEI NeoForge client recipe sync test failed: {}", testName, t);
 		} finally {
 			stopClient(exitCode);
 		}
@@ -81,7 +87,7 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 		try (SingleplayerWorld ignored = SingleplayerWorld.create()) {
 			assertions.run();
 		}
-		assertClientRecipesCleared(name);
+		assertJeiClientStateCleared(name);
 		LOGGER.info("Finished JEI NeoForge client recipe sync test: {}", name);
 	}
 
@@ -91,7 +97,7 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 		) {
 			assertions.run();
 		}
-		assertClientRecipesCleared(name);
+		assertJeiClientStateCleared(name);
 		LOGGER.info("Finished JEI NeoForge client recipe sync test: {}", name);
 	}
 
@@ -149,16 +155,38 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 			recipeMap.byKey(CRAFTING_TABLE_RECIPE_KEY) != null;
 	}
 
-	private static void assertClientRecipesCleared(String name) {
+	private static void assertJeiClientStateCleared(String name) {
 		ClientTestUtil.waitUntil(
 			() -> ClientTestUtil.computeOnClient(client ->
-				client.level == null &&
-					!hasJeiRuntime() &&
+				!hasJeiRuntime() &&
 					!Internal.hasClientRecipes() &&
-					Internal.getClientSyncedRecipes().values().isEmpty()),
+					!Internal.hasClientSyncedRecipes() &&
+					!Internal.hasClientFallbackRecipes() &&
+					Internal.getClientSyncedRecipes().values().isEmpty() &&
+					!Internal.getServerConnection().isJeiOnServer() &&
+					!Internal.getServerConnection().isSameModLoader()),
 			ASSERTION_TIMEOUT,
-			() -> "Expected JEI to clear client recipes after disconnecting from " + name + ". " + describeRecipeState()
+			() -> "Expected JEI client state to be cleared after disconnecting from " + name + ". " + describeJeiClientState()
 		);
+	}
+
+	private static String describeJeiClientState() {
+		return ClientTestUtil.computeOnClient(client -> {
+			boolean hasRuntime = hasJeiRuntime();
+			boolean hasClientRecipes = Internal.hasClientRecipes();
+			boolean hasSyncedRecipes = Internal.hasClientSyncedRecipes();
+			boolean hasFallbackRecipes = Internal.hasClientFallbackRecipes();
+			RecipeMap recipes = Internal.getClientSyncedRecipes();
+			return "runtime=" + hasRuntime +
+				", hasClientRecipes=" + hasClientRecipes +
+				", synced=" + hasSyncedRecipes +
+				", fallback=" + hasFallbackRecipes +
+				", recipeCount=" + recipes.values().size() +
+				", hasCraftingTable=" + (recipes.byKey(CRAFTING_TABLE_RECIPE_KEY) != null) +
+				", jeiOnServer=" + Internal.getServerConnection().isJeiOnServer() +
+				", sameModLoader=" + Internal.getServerConnection().isSameModLoader() +
+				", serverBrand=" + ClientConnectionHelper.getServerBrand();
+		});
 	}
 
 	private static String describeRecipeState() {
@@ -246,21 +274,29 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 			return displayName;
 		}
 
-		public static TestCase fromSystemProperty() {
-			String id = System.getProperty(TEST_CASE_PROPERTY);
+		public static List<TestCase> fromSystemProperty() {
+			String id = fromSystemPropertyId();
+			if (ALL_TEST_CASES.equals(id)) {
+				return Arrays.asList(values());
+			}
 			return Arrays.stream(values())
 				.filter(testCase -> testCase.id.equals(id))
 				.findFirst()
+				.map(List::of)
 				.orElseThrow(() -> new IllegalArgumentException(
 					"Unknown JEI client recipe sync test case '" + id + "'. Expected one of: " + validIds()
 				));
 		}
 
+		public static String fromSystemPropertyId() {
+			return System.getProperty(TEST_CASE_PROPERTY, "");
+		}
+
 		private static String validIds() {
-			return Arrays.stream(values())
+			String singleTestCaseIds = Arrays.stream(values())
 				.map(testCase -> testCase.id)
-				.toList()
-				.toString();
+				.collect(Collectors.joining(", "));
+			return "[" + ALL_TEST_CASES + ", " + singleTestCaseIds + "]";
 		}
 	}
 

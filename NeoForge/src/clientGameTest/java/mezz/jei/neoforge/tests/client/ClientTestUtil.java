@@ -29,7 +29,7 @@ final class ClientTestUtil {
 	public static void runOnClient(Consumer<Minecraft> task, Duration timeout) {
 		computeOnClient(client -> {
 			task.accept(client);
-			return null;
+			return 0;
 		}, timeout);
 	}
 
