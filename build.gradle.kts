@@ -100,6 +100,8 @@ subprojects {
     }
 
     tasks.withType<ProcessResources> {
+        exclude("**/.DS_Store")
+
         val properties = mapOf(
             "curseHomepageUrl" to curseHomepageUrl,
             "fabricApiVersion" to fabricApiVersion,
