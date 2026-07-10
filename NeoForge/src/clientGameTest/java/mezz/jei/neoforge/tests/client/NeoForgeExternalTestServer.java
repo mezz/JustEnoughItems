@@ -25,12 +25,12 @@ final class NeoForgeExternalTestServer implements AutoCloseable {
 	private static final ExternalServerClient.ClientAccess CLIENT_ACCESS = new ExternalServerClient.ClientAccess() {
 		@Override
 		public void run(Consumer<Minecraft> task) {
-			ClientTestUtil.runOnClient(task::accept);
+			ClientTestUtil.runOnClient(task);
 		}
 
 		@Override
 		public <T> T compute(Function<Minecraft, T> task) {
-			return ClientTestUtil.computeOnClient(task::apply);
+			return ClientTestUtil.computeOnClient(task);
 		}
 
 		@Override

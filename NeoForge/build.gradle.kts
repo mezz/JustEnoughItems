@@ -37,6 +37,7 @@ base {
 }
 
 val gameTestJunitResultsDir = layout.buildDirectory.dir("test-results/gameTest")
+val commonClientTestFixturesSource = project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java")
 
 sourceSets {
 	named("test") {
@@ -47,7 +48,7 @@ sourceSets {
 	}
 	create("gameTest")
 	create("clientGameTest") {
-		java.srcDir(project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java"))
+		java.srcDir(commonClientTestFixturesSource)
 	}
 }
 

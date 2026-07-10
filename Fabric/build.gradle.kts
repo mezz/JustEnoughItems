@@ -60,6 +60,7 @@ configurations.implementation {
     extendsFrom(embeddedLibraries)
 }
 val keyMappingGametestModId = "${modId}-key-mapping-test"
+val commonClientTestFixturesSource = project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java")
 
 dependencyProjects.forEach {
     project.evaluationDependsOn(it.path)
@@ -216,7 +217,7 @@ sourceSets {
         }
     }
     named("gametest") {
-        java.srcDir(project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java"))
+        java.srcDir(commonClientTestFixturesSource)
         runtimeClasspath += keyMappingGametestSourceSet.output
     }
 }
