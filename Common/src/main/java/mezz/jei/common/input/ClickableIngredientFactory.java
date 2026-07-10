@@ -4,17 +4,17 @@ import mezz.jei.api.gui.builder.IClickableIngredientFactory;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickableIngredient;
-import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.ingredients.ITypedIngredientFactory;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.renderer.Rect2i;
 
 import java.util.Optional;
 
 public class ClickableIngredientFactory implements IClickableIngredientFactory {
-	private final IIngredientManager ingredientManager;
+	private final ITypedIngredientFactory typedIngredientFactory;
 
-	public ClickableIngredientFactory(IIngredientManager ingredientManager) {
-		this.ingredientManager = ingredientManager;
+	public ClickableIngredientFactory(ITypedIngredientFactory typedIngredientFactory) {
+		this.typedIngredientFactory = typedIngredientFactory;
 	}
 
 	@Override
@@ -23,8 +23,8 @@ public class ClickableIngredientFactory implements IClickableIngredientFactory {
 	}
 
 	@Override
-	public <T>  IBuilder<T> createBuilder(IIngredientType<T> ingredientType, T ingredient) {
-		return ingredientManager.createTypedIngredient(ingredientType, ingredient, false)
+	public <T> IBuilder<T> createBuilder(IIngredientType<T> ingredientType, T ingredient) {
+		return typedIngredientFactory.createTypedIngredient(ingredientType, ingredient, false)
 			.<IBuilder<T>>map(WithIngredient::new)
 			.orElse(WithoutIngredient.getInstance());
 	}
