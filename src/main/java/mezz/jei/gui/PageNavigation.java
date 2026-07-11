@@ -41,6 +41,10 @@ public class PageNavigation {
 	public void updatePageState() {
 		int pageNum = this.paged.getPageNumber();
 		int pageCount = this.paged.getPageCount();
+		boolean hasMultiplePages = pageCount > 1;
+		this.nextButton.enabled = hasMultiplePages;
+		this.backButton.enabled = hasMultiplePages;
+
 		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
 		pageNumDisplayString = (pageNum + 1) + "/" + pageCount;
 		int pageDisplayWidth = fontRenderer.getStringWidth(pageNumDisplayString);
