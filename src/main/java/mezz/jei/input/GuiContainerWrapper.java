@@ -22,24 +22,26 @@ public class GuiContainerWrapper implements IShowsRecipeFocuses {
 	@Override
 	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
 		GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
-		if (!(guiScreen instanceof GuiContainer)) {
+		if (guiScreen == null) {
 			return null;
 		}
-		GuiContainer guiContainer = (GuiContainer) guiScreen;
-		Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
-		if (slotUnderMouse != null) {
-			ItemStack stack = slotUnderMouse.getStack();
-			if (!stack.isEmpty()) {
-				Rectangle slotArea = new Rectangle(
-					guiContainer.getGuiLeft() + slotUnderMouse.xPos,
-					guiContainer.getGuiTop() + slotUnderMouse.yPos,
-					16,
-					16
-				);
-				return ClickedIngredient.create(stack, slotArea);
+		if (guiScreen instanceof GuiContainer) {
+			GuiContainer guiContainer = (GuiContainer) guiScreen;
+			Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
+			if (slotUnderMouse != null) {
+				ItemStack stack = slotUnderMouse.getStack();
+				if (!stack.isEmpty()) {
+					Rectangle slotArea = new Rectangle(
+						guiContainer.getGuiLeft() + slotUnderMouse.xPos,
+						guiContainer.getGuiTop() + slotUnderMouse.yPos,
+						16,
+						16
+					);
+					return ClickedIngredient.create(stack, slotArea);
+				}
 			}
 		}
-		return guiScreenHelper.getPluginsIngredientUnderMouse(guiContainer, mouseX, mouseY);
+		return guiScreenHelper.getPluginsIngredientUnderMouse(guiScreen, mouseX, mouseY);
 	}
 
 	@Override

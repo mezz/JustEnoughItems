@@ -113,14 +113,21 @@ public class GuiScreenHelper {
 
 
 	@Nullable
-	public <T extends GuiContainer> IClickedIngredient<?> getPluginsIngredientUnderMouse(T guiContainer, int mouseX, int mouseY) {
-		List<IAdvancedGuiHandler<T>> activeAdvancedGuiHandlers = getActiveAdvancedGuiHandlers(guiContainer);
-		for (IAdvancedGuiHandler<T> advancedGuiHandler : activeAdvancedGuiHandlers) {
-			Object clicked = advancedGuiHandler.getIngredientUnderMouse(guiContainer, mouseX, mouseY);
-			IClickedIngredient<?> clickedIngredient = createClickedIngredient(clicked, guiContainer);
-			if (clickedIngredient != null) {
-				return clickedIngredient;
+	public <T extends GuiScreen> IClickedIngredient<?> getPluginsIngredientUnderMouse(T guiScreen, int mouseX, int mouseY) {
+		GuiContainer guiContainer = guiScreen instanceof GuiContainer ? (GuiContainer) guiScreen : null;
+		if (guiContainer != null) {
+			List<IAdvancedGuiHandler<GuiContainer>> activeAdvancedGuiHandlers = getActiveAdvancedGuiHandlers(guiContainer);
+			for (IAdvancedGuiHandler<GuiContainer> advancedGuiHandler : activeAdvancedGuiHandlers) {
+				Object clicked = advancedGuiHandler.getIngredientUnderMouse(guiContainer, mouseX, mouseY);
+				IClickedIngredient<?> clickedIngredient = createClickedIngredient(clicked, guiContainer);
+				if (clickedIngredient != null) {
+					return clickedIngredient;
+				}
 			}
+		}
+		IClickedIngredient<?> guiScreenClicked = getGuiScreenHandlerIngredientUnderMouse(guiScreen, mouseX, mouseY, guiContainer);
+		if (guiScreenClicked != null) {
+			return guiScreenClicked;
 		}
 		for (IGlobalGuiHandler globalGuiHandler : globalGuiHandlers) {
 			Object clicked = globalGuiHandler.getIngredientUnderMouse(mouseX, mouseY);
@@ -130,6 +137,39 @@ public class GuiScreenHelper {
 			}
 		}
 		return null;
+	}
+
+	@Nullable
+	private <T extends GuiScreen> IClickedIngredient<?> getGuiScreenHandlerIngredientUnderMouse(T guiScreen, int mouseX, int mouseY, @Nullable GuiContainer guiContainer) {
+		{
+			@SuppressWarnings("unchecked")
+			IGuiScreenHandler<T> handler = (IGuiScreenHandler<T>) guiScreenHandlers.get(guiScreen.getClass());
+			IClickedIngredient<?> clicked = getGuiScreenHandlerIngredientUnderMouse(handler, guiScreen, mouseX, mouseY, guiContainer);
+			if (clicked != null) {
+				return clicked;
+			}
+		}
+		for (Map.Entry<Class, IGuiScreenHandler> entry : guiScreenHandlers.entrySet()) {
+			Class guiScreenClass = entry.getKey();
+			if (guiScreenClass.isInstance(guiScreen)) {
+				@SuppressWarnings("unchecked")
+				IGuiScreenHandler<T> handler = entry.getValue();
+				IClickedIngredient<?> clicked = getGuiScreenHandlerIngredientUnderMouse(handler, guiScreen, mouseX, mouseY, guiContainer);
+				if (clicked != null) {
+					return clicked;
+				}
+			}
+		}
+		return null;
+	}
+
+	@Nullable
+	private <T extends GuiScreen> IClickedIngredient<?> getGuiScreenHandlerIngredientUnderMouse(@Nullable IGuiScreenHandler<T> handler, T guiScreen, int mouseX, int mouseY, @Nullable GuiContainer guiContainer) {
+		if (handler == null) {
+			return null;
+		}
+		Object clicked = handler.getIngredientUnderMouse(guiScreen, mouseX, mouseY);
+		return createClickedIngredient(clicked, guiContainer);
 	}
 
 	@Nullable
@@ -155,10 +195,10 @@ public class GuiScreenHelper {
 	}
 
 	@Nullable
-	private <T> IClickedIngredient<T> createClickedIngredient(@Nullable T ingredient, GuiContainer guiContainer) {
+	private <T> IClickedIngredient<T> createClickedIngredient(@Nullable T ingredient, @Nullable GuiContainer guiContainer) {
 		if (ingredient != null && ingredientRegistry.isValidIngredient(ingredient)) {
 			Rectangle area = null;
-			Slot slotUnderMouse = guiContainer.getSlotUnderMouse();
+			Slot slotUnderMouse = guiContainer == null ? null : guiContainer.getSlotUnderMouse();
 			if (ingredient instanceof ItemStack && slotUnderMouse != null && ItemStack.areItemStacksEqual(slotUnderMouse.getStack(), (ItemStack) ingredient)) {
 				area = new Rectangle(slotUnderMouse.xPos, slotUnderMouse.yPos, 16, 16);
 			}
