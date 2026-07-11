@@ -8,6 +8,7 @@ import mezz.jei.api.runtime.config.IJeiConfigManager;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.registration.IAdvancedRegistration;
+import mezz.jei.api.registration.IAdvancedSearchRegistration;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
@@ -73,6 +74,15 @@ public interface IModPlugin {
 	 * @since 19.10.0
 	 */
 	default void registerIngredientAliases(IIngredientAliasRegistration registration) {
+
+	}
+
+	/**
+	 * Register advanced custom search behavior for JEI.
+	 *
+	 * @since 19.37.0
+	 */
+	default void registerAdvancedSearch(IAdvancedSearchRegistration registration) {
 
 	}
 

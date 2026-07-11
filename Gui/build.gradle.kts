@@ -54,6 +54,11 @@ dependencies {
         name = "annotations",
         version = "23.0.0"
     )
+    testCompileOnly(
+        group = "com.google.code.findbugs",
+        name = "jsr305",
+        version = "3.0.1"
+    )
     testImplementation(
         group = "org.junit.jupiter",
         name = "junit-jupiter",
