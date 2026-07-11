@@ -60,7 +60,7 @@ public class BrewingRecipeMaker {
 		return recipeList;
 	}
 
-	private static void addModdedBrewingRecipes(
+	public static void addModdedBrewingRecipes(
 		IVanillaRecipeFactory vanillaRecipeFactory,
 		IIngredientHelper<ItemStack> itemStackHelper,
 		Collection<IBrewingRecipe> brewingRecipes,
