@@ -3,6 +3,7 @@ package mezz.jei.gui.recipes;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -32,13 +33,17 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 			this.recipeTransferError = RecipeTransferErrorInternal.INSTANCE;
 		}
 
+		updateStateForTransferError(this, recipeTransferError);
+	}
+
+	public static void updateStateForTransferError(GuiButton button, @Nullable IRecipeTransferError recipeTransferError) {
 		if (RecipeTransferUtil.allowsTransfer(recipeTransferError)) {
-			this.enabled = true;
-			this.visible = true;
+			button.enabled = true;
+			button.visible = true;
 		} else {
-			this.enabled = false;
-			IRecipeTransferError.Type type = this.recipeTransferError.getType();
-			this.visible = (type == IRecipeTransferError.Type.USER_FACING);
+			button.enabled = false;
+			IRecipeTransferError.Type type = recipeTransferError.getType();
+			button.visible = (type == IRecipeTransferError.Type.USER_FACING);
 		}
 	}
 
