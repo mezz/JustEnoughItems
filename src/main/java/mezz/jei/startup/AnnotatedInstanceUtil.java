@@ -1,6 +1,7 @@
 package mezz.jei.startup;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -22,15 +23,23 @@ public final class AnnotatedInstanceUtil {
 	private static <T> List<T> getInstances(ASMDataTable asmDataTable, Class annotationClass, Class<T> instanceClass) {
 		String annotationClassName = annotationClass.getCanonicalName();
 		Set<ASMDataTable.ASMData> asmDatas = asmDataTable.getAll(annotationClassName);
-		List<T> instances = new ArrayList<>();
+		Collection<String> classNames = new ArrayList<>();
 		for (ASMDataTable.ASMData asmData : asmDatas) {
+			classNames.add(asmData.getClassName());
+		}
+		return getInstances(classNames, instanceClass);
+	}
+
+	public static <T> List<T> getInstances(Iterable<String> classNames, Class<T> instanceClass) {
+		List<T> instances = new ArrayList<>();
+		for (String className : classNames) {
 			try {
-				Class<?> asmClass = Class.forName(asmData.getClassName());
+				Class<?> asmClass = Class.forName(className);
 				Class<? extends T> asmInstanceClass = asmClass.asSubclass(instanceClass);
 				T instance = asmInstanceClass.newInstance();
 				instances.add(instance);
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | RuntimeException | LinkageError e) {
-				Log.get().error("Failed to load: {}", asmData.getClassName(), e);
+				Log.get().error("Failed to load: {}", className, e);
 			}
 		}
 		return instances;
