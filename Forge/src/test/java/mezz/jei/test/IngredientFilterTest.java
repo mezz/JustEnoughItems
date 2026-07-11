@@ -10,6 +10,7 @@ import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.WorldConfig;
 import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.gui.filter.FilterTextSource;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.ingredients.IListElementInfo;
@@ -94,6 +95,7 @@ public class IngredientFilterTest {
 			modIdHelper,
 			ingredientVisibility,
 			colorHelper,
+			GeneralizedSuffixTree::new,
 			toggleState
 		);
 

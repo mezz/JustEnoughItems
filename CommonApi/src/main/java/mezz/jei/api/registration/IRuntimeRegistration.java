@@ -1,5 +1,6 @@
 package mezz.jei.api.registration;
 
+import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
@@ -12,6 +13,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.search.ISearchStorageFactory;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -101,4 +103,14 @@ public interface IRuntimeRegistration {
 	 * This is used by JEI's GUI and can be used by other mods that want to use the same information from JEI.
 	 */
 	IEditModeConfig getEditModeConfig();
+
+	/**
+	 * Get the search storage factory used by JEI's ingredient filter.
+	 * This can be overridden for advanced search behavior with
+	 * {@link IModPlugin#registerAdvancedSearch(IAdvancedSearchRegistration)} and
+	 * {@link IAdvancedSearchRegistration#replaceSearchStorage}.
+	 *
+	 * @since 10.11.0
+	 */
+	ISearchStorageFactory getSearchStorageFactory();
 }

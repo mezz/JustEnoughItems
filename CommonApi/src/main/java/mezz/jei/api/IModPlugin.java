@@ -2,6 +2,7 @@ package mezz.jei.api;
 
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.registration.IAdvancedRegistration;
+import mezz.jei.api.registration.IAdvancedSearchRegistration;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
@@ -92,6 +93,15 @@ public interface IModPlugin {
 	 * @since 10.10.0
 	 */
 	default void registerModInfo(IModInfoRegistration registration) {
+
+	}
+
+	/**
+	 * Register advanced custom search behavior for JEI.
+	 *
+	 * @since 10.11.0
+	 */
+	default void registerAdvancedSearch(IAdvancedSearchRegistration registration) {
 
 	}
 

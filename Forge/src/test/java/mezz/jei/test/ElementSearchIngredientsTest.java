@@ -1,6 +1,7 @@
 package mezz.jei.test;
 
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
 import mezz.jei.gui.ingredients.IngredientListElementFactory;
@@ -150,7 +151,8 @@ public class ElementSearchIngredientsTest {
 			ingredientManager,
 			FILTER_CONFIG,
 			COLOR_HELPER,
-			MOD_ID_HELPER
+			MOD_ID_HELPER,
+			GeneralizedSuffixTree::new
 		);
 		return new SearchFixture(ingredientManager, elementPrefixParser, new ElementSearch(elementPrefixParser));
 	}
@@ -194,7 +196,7 @@ public class ElementSearchIngredientsTest {
 
 		private Set<Integer> searchIngredientNumbers(String token) {
 			ElementPrefixParser.TokenInfo tokenInfo = elementPrefixParser.parseToken(token)
-				.orElse(new ElementPrefixParser.TokenInfo("", ElementPrefixParser.NO_PREFIX));
+				.orElse(new ElementPrefixParser.TokenInfo("", elementPrefixParser.getNoPrefix()));
 			return getIngredientNumbers(search.getSearchResults(tokenInfo));
 		}
 	}
