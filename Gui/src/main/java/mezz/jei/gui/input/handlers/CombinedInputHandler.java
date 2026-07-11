@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screens.Screen;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class CombinedInputHandler implements IUserInputHandler {
@@ -40,10 +41,17 @@ public class CombinedInputHandler implements IUserInputHandler {
 	 * 2. every mouse handler that never got a chance to handleClick because something else handled it first.
 	 */
 	private Optional<IUserInputHandler> handleClickInternal(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
+		return handleClickInternal(this.inputHandlers, inputHandler -> inputHandler.handleUserInput(screen, guiProperties, input, keyBindings));
+	}
+
+	static Optional<IUserInputHandler> handleClickInternal(
+		List<IUserInputHandler> inputHandlers,
+		Function<IUserInputHandler, Optional<IUserInputHandler>> handleInput
+	) {
 		Optional<IUserInputHandler> firstHandled = Optional.empty();
-		for (IUserInputHandler inputHandler : this.inputHandlers) {
+		for (IUserInputHandler inputHandler : inputHandlers) {
 			if (firstHandled.isEmpty()) {
-				firstHandled = inputHandler.handleUserInput(screen, guiProperties, input, keyBindings);
+				firstHandled = handleInput.apply(inputHandler);
 				if (firstHandled.isEmpty()) {
 					inputHandler.unfocus();
 				}
