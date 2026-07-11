@@ -59,25 +59,45 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 	public void updateLayout(List<ITypedIngredient<?>> ingredients, RecipesGui recipesGui) {
 		this.recipeSlots.clear();
+		ImmutableRect2i recipeArea = recipesGui.getArea();
+		Layout layout = calculateLayout(ingredients.size(), recipeArea, ImmutableRect2i.EMPTY);
+		left = layout.left();
+		top = layout.top();
+		width = layout.width();
+		height = layout.height();
 
-		if (!ingredients.isEmpty()) {
-			ImmutableRect2i recipeArea = recipesGui.getArea();
-			int availableHeight = recipeArea.getHeight() - 8;
-			int borderHeight = (2 * borderSize) + (2 * ingredientBorderSize);
-			int maxIngredientsPerColumn = (availableHeight - borderHeight) / ingredientSize;
-			int columnCount = MathUtil.divideCeil(ingredients.size(), maxIngredientsPerColumn);
-			maxIngredientsPerColumn = MathUtil.divideCeil(ingredients.size(), columnCount);
-
-			width = (2 * ingredientBorderSize) + (borderSize * 2) + (columnCount * ingredientSize);
-			height = (2 * ingredientBorderSize) + (borderSize * 2) + (maxIngredientsPerColumn * ingredientSize);
-			top = recipeArea.getY();
-			left = recipeArea.getX() - width + overlapSize; // overlaps the recipe gui slightly
-
+		if (layout.hasSlots()) {
 			for (int i = 0; i < ingredients.size(); i++) {
 				ITypedIngredient<?> ingredientForSlot = ingredients.get(i);
-				RecipeSlot recipeSlot = createSlot(ingredientForSlot, i, maxIngredientsPerColumn);
+				RecipeSlot recipeSlot = createSlot(ingredientForSlot, i, layout.maxIngredientsPerColumn());
 				this.recipeSlots.add(recipeSlot);
 			}
+		}
+	}
+
+	static Layout calculateLayout(int ingredientCount, ImmutableRect2i recipeArea, ImmutableRect2i optionButtonsArea) {
+		if (ingredientCount <= 0) {
+			return Layout.EMPTY;
+		}
+
+		int availableHeight = recipeArea.getHeight() - optionButtonsArea.getHeight() - 8;
+		int borderHeight = (2 * borderSize) + (2 * ingredientBorderSize);
+		int maxIngredientsPerColumn = Math.max(1, (availableHeight - borderHeight) / ingredientSize);
+		int columnCount = MathUtil.divideCeil(ingredientCount, maxIngredientsPerColumn);
+		maxIngredientsPerColumn = MathUtil.divideCeil(ingredientCount, columnCount);
+
+		int width = (2 * ingredientBorderSize) + (borderSize * 2) + (columnCount * ingredientSize);
+		int height = (2 * ingredientBorderSize) + (borderSize * 2) + (maxIngredientsPerColumn * ingredientSize);
+		int top = recipeArea.getY();
+		int left = recipeArea.getX() - width + overlapSize; // overlaps the recipe gui slightly
+		return new Layout(left, top, width, height, maxIngredientsPerColumn);
+	}
+
+	record Layout(int left, int top, int width, int height, int maxIngredientsPerColumn) {
+		private static final Layout EMPTY = new Layout(0, 0, 0, 0, 0);
+
+		private boolean hasSlots() {
+			return maxIngredientsPerColumn > 0;
 		}
 	}
 
