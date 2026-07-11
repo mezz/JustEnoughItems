@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 public class CombinedInputHandler implements IUserInputHandler {
 	private final List<IUserInputHandler> inputHandlers;
@@ -80,15 +81,23 @@ public class CombinedInputHandler implements IUserInputHandler {
 	 * 2. every mouse handler that never got a chance to handleClick because something else handled it first.
 	 */
 	private Optional<IUserInputHandler> handleClickInternal(Screen screen, UserInput input, IKeyBindings keyBindings) {
+		return handleClickInternal(this.inputHandlers, input.getKey(), inputHandler -> inputHandler.handleUserInput(screen, input, keyBindings));
+	}
+
+	static Optional<IUserInputHandler> handleClickInternal(
+		List<IUserInputHandler> inputHandlers,
+		InputConstants.Key key,
+		Function<IUserInputHandler, Optional<IUserInputHandler>> handleInput
+	) {
 		Optional<IUserInputHandler> firstHandled = Optional.empty();
-		for (IUserInputHandler inputHandler : this.inputHandlers) {
+		for (IUserInputHandler inputHandler : inputHandlers) {
 			if (firstHandled.isEmpty()) {
-				firstHandled = inputHandler.handleUserInput(screen, input, keyBindings);
+				firstHandled = handleInput.apply(inputHandler);
 				if (firstHandled.isEmpty()) {
-					inputHandler.handleMouseClickedOut(input.getKey());
+					inputHandler.handleMouseClickedOut(key);
 				}
 			} else {
-				inputHandler.handleMouseClickedOut(input.getKey());
+				inputHandler.handleMouseClickedOut(key);
 			}
 		}
 		return firstHandled;
