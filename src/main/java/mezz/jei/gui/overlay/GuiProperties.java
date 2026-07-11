@@ -71,14 +71,6 @@ public class GuiProperties implements IGuiProperties {
 
 	@Nullable
 	private static GuiProperties create(Class<? extends GuiScreen> guiClass, int guiLeft, int guiTop, int guiXSize, int guiYSize, int screenWidth, int screenHeight) {
-		if (guiLeft < 0) {
-			guiXSize += guiLeft;
-			guiLeft = 0;
-		}
-		if (guiTop < 0) {
-			guiYSize += guiTop;
-			guiTop = 0;
-		}
 		if (guiXSize <= 0 || guiYSize <= 0) {
 			return null;
 		}
