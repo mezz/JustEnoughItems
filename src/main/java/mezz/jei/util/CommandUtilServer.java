@@ -136,7 +136,9 @@ public final class CommandUtilServer {
 		if (ItemHandlerHelper.canItemStacksStack(existingStack, itemStack)) {
 			int newCount = Math.min(existingStack.getMaxStackSize(), existingStack.getCount() + itemStack.getCount());
 			giveCount = newCount - existingStack.getCount();
-			existingStack.setCount(newCount);
+			if (giveCount > 0) {
+				existingStack.setCount(newCount);
+			}
 		} else {
 			sender.inventory.setItemStack(itemStack);
 			giveCount = itemStack.getCount();
