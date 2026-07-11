@@ -49,7 +49,7 @@ public final class ReflectionUtil {
 					return field;
 				}
 			}
-		} catch (SecurityException ignored) {
+		} catch (SecurityException | LinkageError ignored) {
 
 		}
 		CACHE.put(fieldClass, objectClass, Optional.empty());
