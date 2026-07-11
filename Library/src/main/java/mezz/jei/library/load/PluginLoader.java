@@ -20,14 +20,15 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.search.ISearchStorage;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.StackHelper;
 import mezz.jei.common.util.LoggedTimer;
+import mezz.jei.common.util.StackHelper;
 import mezz.jei.library.config.EditModeConfig;
 import mezz.jei.library.config.IModIdFormatConfig;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
@@ -41,6 +42,7 @@ import mezz.jei.library.ingredients.IngredientVisibility;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.AdvancedRegistration;
+import mezz.jei.library.load.registration.AdvancedSearchRegistration;
 import mezz.jei.library.load.registration.GuiHandlerRegistration;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
 import mezz.jei.library.load.registration.ModInfoRegistration;
@@ -65,6 +67,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public final class PluginLoader {
 	private PluginLoader() {}
@@ -188,6 +191,12 @@ public final class PluginLoader {
 		RecipeTransferRegistration recipeTransferRegistration = new RecipeTransferRegistration(stackHelper, handlerHelper, jeiHelpers, connectionToServer);
 		PluginCaller.callOnPlugins("Registering recipes transfer handlers", plugins, p -> p.registerRecipeTransferHandlers(recipeTransferRegistration));
 		return recipeTransferRegistration.createRecipeTransferManager();
+	}
+
+	public static Supplier<? extends ISearchStorage<?>> createSearchStorageSupplier(List<IModPlugin> plugins) {
+		AdvancedSearchRegistration searchRegistration = new AdvancedSearchRegistration();
+		PluginCaller.callOnPlugins("Registering advanced search", plugins, p -> p.registerAdvancedSearch(searchRegistration));
+		return searchRegistration.getSearchStorageSupplier();
 	}
 
 	public static RecipeManager createRecipeManager(

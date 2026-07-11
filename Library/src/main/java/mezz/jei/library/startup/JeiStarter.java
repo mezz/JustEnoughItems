@@ -5,6 +5,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.search.ISearchStorage;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.config.DebugConfig;
@@ -55,6 +56,7 @@ import org.apache.logging.log4j.Logger;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public final class JeiStarter {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -163,6 +165,8 @@ public final class JeiStarter {
 		);
 		stopCallbacks.add(jeiHelpers::onRuntimeStopped);
 
+		Supplier<? extends ISearchStorage<?>> searchStorageSupplier = PluginLoader.createSearchStorageSupplier(plugins);
+
 		RecipeManager recipeManager = PluginLoader.createRecipeManager(
 			plugins,
 			vanillaPlugin,
@@ -188,7 +192,8 @@ public final class JeiStarter {
 			editModeConfig,
 			ingredientManager,
 			recipeTransferManager,
-			screenHelper
+			screenHelper,
+			searchStorageSupplier
 		);
 		PluginCaller.callOnPlugins("Registering Runtime", plugins, p -> p.registerRuntime(runtimeRegistration));
 

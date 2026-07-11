@@ -11,10 +11,13 @@ import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.search.ISearchStorage;
 import mezz.jei.library.gui.BookmarkOverlayDummy;
 import mezz.jei.library.gui.IngredientListOverlayDummy;
 import mezz.jei.library.gui.recipes.RecipesGuiDummy;
 import mezz.jei.library.ingredients.IngredientFilterApiDummy;
+
+import java.util.function.Supplier;
 
 public class RuntimeRegistration implements IRuntimeRegistration {
 	private final IRecipeManager recipeManager;
@@ -23,6 +26,7 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 	private final IIngredientManager ingredientManager;
 	private final IRecipeTransferManager recipeTransferManager;
 	private final IScreenHelper screenHelper;
+	private final Supplier<? extends ISearchStorage<?>> searchStorageSupplier;
 
 	private IIngredientListOverlay ingredientListOverlay = IngredientListOverlayDummy.INSTANCE;
 	private IBookmarkOverlay bookmarkOverlay = BookmarkOverlayDummy.INSTANCE;
@@ -35,7 +39,8 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 		IEditModeConfig editModeConfig,
 		IIngredientManager ingredientManager,
 		IRecipeTransferManager recipeTransferManager,
-		IScreenHelper screenHelper
+		IScreenHelper screenHelper,
+		Supplier<? extends ISearchStorage<?>> searchStorageSupplier
 	) {
 		this.recipeManager = recipeManager;
 		this.jeiHelpers = jeiHelpers;
@@ -43,6 +48,7 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 		this.ingredientManager = ingredientManager;
 		this.recipeTransferManager = recipeTransferManager;
 		this.screenHelper = screenHelper;
+		this.searchStorageSupplier = searchStorageSupplier;
 	}
 
 	@Override
@@ -93,6 +99,11 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 	@Override
 	public IEditModeConfig getEditModeConfig() {
 		return this.editModeConfig;
+	}
+
+	@Override
+	public Supplier<? extends ISearchStorage<?>> getSearchStorageSupplier() {
+		return searchStorageSupplier;
 	}
 
 	public IIngredientListOverlay getIngredientListOverlay() {

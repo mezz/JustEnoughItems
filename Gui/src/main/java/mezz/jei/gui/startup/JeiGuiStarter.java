@@ -15,6 +15,7 @@ import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.search.ISearchStorage;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
@@ -68,6 +69,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class JeiGuiStarter {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -85,6 +87,7 @@ public class JeiGuiStarter {
 		IRecipeManager recipeManager = registration.getRecipeManager();
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IEditModeConfig editModeConfig = registration.getEditModeConfig();
+		Supplier<? extends ISearchStorage<?>> searchStorageSupplier = registration.getSearchStorageSupplier();
 
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IIngredientVisibility ingredientVisibility = jeiHelpers.getIngredientVisibility();
@@ -138,6 +141,7 @@ public class JeiGuiStarter {
 			modIdHelper,
 			ingredientVisibility,
 			colorHelper,
+			searchStorageSupplier,
 			toggleState
 		);
 		ingredientManager.registerIngredientListener(ingredientFilter);
