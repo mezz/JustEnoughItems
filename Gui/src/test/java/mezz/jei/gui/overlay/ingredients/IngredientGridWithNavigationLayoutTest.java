@@ -362,6 +362,81 @@ public class IngredientGridWithNavigationLayoutTest {
 	}
 
 	@Test
+	public void negativeGuiExclusionOutsideAvailableAreaDoesNotMoveLayout() {
+		// Setup: a GUI exclusion has negative screen coordinates but does not overlap the available grid area.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.maxColumns(4)
+			.maxRows(3)
+			.drawBackground(false)
+			.navigationVisibility(NavigationVisibility.DISABLED);
+		ImmutableRect2i offscreenExclusion = new ImmutableRect2i(-20, -20, 10, 10);
+
+		// Operation: calculate layout with and without the offscreen negative exclusion.
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
+			gridConfig,
+			availableArea,
+			Set.of(),
+			null,
+			0
+		);
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
+			gridConfig,
+			availableArea,
+			Set.of(offscreenExclusion),
+			null,
+			0
+		);
+
+		// Assertions: negative extra areas outside the screen do not move or shrink the overlay.
+		assertEquals(unobstructedLayout.ingredientGridArea(), obstructedLayout.ingredientGridArea());
+		assertEquals(unobstructedLayout.backgroundArea(), obstructedLayout.backgroundArea());
+		assertEquals(unobstructedLayout.availableSlotCount(), obstructedLayout.availableSlotCount());
+	}
+
+	@Test
+	public void negativeGuiExclusionOnlyBlocksOverlappingGridSlots() {
+		// Setup: a GUI exclusion starts offscreen but reaches into the first visible ingredient slot.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.maxColumns(4)
+			.maxRows(3)
+			.drawBackground(false)
+			.navigationVisibility(NavigationVisibility.DISABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
+			gridConfig,
+			availableArea,
+			Set.of(),
+			null,
+			0
+		);
+		ImmutableRect2i firstSlot = unobstructedLayout.ingredientGridArea()
+			.keepTop(IngredientGrid.INGREDIENT_HEIGHT)
+			.keepLeft(IngredientGrid.INGREDIENT_WIDTH);
+		ImmutableRect2i negativeExclusion = new ImmutableRect2i(
+			-10,
+			firstSlot.y(),
+			firstSlot.x() + 12,
+			1
+		);
+
+		// Operation: calculate layout with the negative exclusion.
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
+			gridConfig,
+			availableArea,
+			Set.of(negativeExclusion),
+			null,
+			0
+		);
+
+		// Assertions: only the slot overlapped by the negative extra area is unavailable.
+		assertTrue(negativeExclusion.x() < 0, "test exclusion should start offscreen");
+		assertTrue(negativeExclusion.intersects(firstSlot), "test exclusion should overlap the first ingredient slot");
+		assertEquals(unobstructedLayout.ingredientGridArea(), obstructedLayout.ingredientGridArea());
+		assertEquals(unobstructedLayout.availableSlotCount() - 1, obstructedLayout.availableSlotCount());
+	}
+
+	@Test
 	public void tooNarrowNavigationGapShiftsOverlayDown() {
 		ImmutableRect2i availableArea = largeAvailableArea();
 		TestGridConfig gridConfig = config()
