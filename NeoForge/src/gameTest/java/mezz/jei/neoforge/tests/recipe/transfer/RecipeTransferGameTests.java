@@ -8,7 +8,11 @@ import static mezz.jei.neoforge.tests.lib.TestRecipes.testRecipe;
 import static mezz.jei.neoforge.tests.lib.StackPlacement.stackAt;
 
 import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.common.config.IServerConfig;
+import mezz.jei.common.network.IConnectionToClient;
+import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.packets.PacketRecipeTransfer;
+import mezz.jei.common.network.packets.PlayToClientPacket;
 import mezz.jei.common.transfer.BasicRecipeTransferHandlerServer;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.TransferOperation;
@@ -50,11 +54,15 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 
 @ForEachTest(groups = "recipe_transfer")
 public final class RecipeTransferGameTests {
+	private static final IServerConfig SERVER_CONFIG = new EmptyServerConfig();
+	private static final IConnectionToClient CONNECTION_TO_CLIENT = new EmptyConnectionToClient();
+
 	private static final int CRAFTING_GRID_TOP_LEFT = 0;
 	private static final int CRAFTING_GRID_TOP_CENTER = 1;
 	private static final int CRAFTING_GRID_TOP_RIGHT = 2;
@@ -1958,6 +1966,44 @@ public final class RecipeTransferGameTests {
 
 	@GameTest
 	@EmptyTemplate
+	@TestHolder(description = "Ignores malicious recipe transfer packets with oversized slot lists.")
+	public static void ignoresMaliciousPacketWithOversizedSlotList(RecipeTransferTestHelper helper) {
+		// Setup: the packet has one real source item, but its crafting-slot list advertises an impossible size.
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		List<Slot> craftingSlots = menu.getInputGridSlots();
+		Slot sourceSlot = helper.getStandardInventorySlots(menu).get(0);
+		sourceSlot.set(new ItemStack(Items.OAK_PLANKS));
+
+		PacketRecipeTransfer packet = new PacketRecipeTransfer(
+			List.of(new TransferOperation(sourceSlot.index, craftingSlots.get(CRAFTING_GRID_TOP_LEFT).index)),
+			new OversizedSlotIdList(),
+			List.of(sourceSlot.index),
+			false,
+			true
+		);
+
+		// Operation: process the forged packet directly so the impossible-size list reaches the server handler.
+		processPacketDirectly(helper, packet);
+
+		// Assertions: the invalid packet is rejected before reading or allocating from the oversized slot list.
+		helper.createMenuChecker(menu)
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				CraftingMenu::getInputGridSlots,
+				List.of()
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, Items.OAK_PLANKS))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
 	@TestHolder(description = "Ignores malicious recipe transfer operations with invalid slot ids.")
 	public static void ignoresMaliciousPacketWithInvalidOperationSlotId(RecipeTransferTestHelper helper) {
 		// Setup: the allowed slot lists are valid, but the transfer operation references an invalid source.
@@ -2412,6 +2458,45 @@ public final class RecipeTransferGameTests {
 		ItemStack stack = new ItemStack(Items.TIPPED_ARROW, count);
 		stack.set(DataComponents.POTION_CONTENTS, new PotionContents(potion));
 		return stack;
+	}
+
+	private static void processPacketDirectly(RecipeTransferTestHelper helper, PacketRecipeTransfer packet) {
+		packet.process(new ServerPacketContext(helper.getPlayer(), SERVER_CONFIG, CONNECTION_TO_CLIENT));
+	}
+
+	private static final class EmptyServerConfig implements IServerConfig {
+		@Override
+		public boolean isCheatModeEnabledForOp() {
+			return false;
+		}
+
+		@Override
+		public boolean isCheatModeEnabledForGive() {
+			return false;
+		}
+
+		@Override
+		public boolean isCheatModeEnabledForCreative() {
+			return false;
+		}
+	}
+
+	private static final class EmptyConnectionToClient implements IConnectionToClient {
+		@Override
+		public <T extends PlayToClientPacket<T>> void sendPacketToClient(T packet, ServerPlayer player) {
+		}
+	}
+
+	private static final class OversizedSlotIdList extends AbstractList<Integer> {
+		@Override
+		public Integer get(int index) {
+			throw new AssertionError("Oversized slot lists should be rejected before reading ids.");
+		}
+
+		@Override
+		public int size() {
+			return Integer.MAX_VALUE;
+		}
 	}
 
 }
