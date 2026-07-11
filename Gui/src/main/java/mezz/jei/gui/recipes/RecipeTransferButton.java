@@ -122,12 +122,17 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 				IRecipeSlotsView recipeSlotsView = recipeLayout.getRecipeSlotsView();
 				Rect2i recipeRect = recipeLayout.getRect();
 				PoseStack poseStack = guiGraphics.pose();
-				poseStack.pushPose();
-				{
-					recipeTransferError.showError(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY());
-				}
-				poseStack.popPose();
+				runWithRestoredPose(poseStack, () -> recipeTransferError.showError(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY()));
 			}
+		}
+	}
+
+	private static void runWithRestoredPose(PoseStack poseStack, Runnable action) {
+		poseStack.pushPose();
+		try {
+			action.run();
+		} finally {
+			poseStack.popPose();
 		}
 	}
 
