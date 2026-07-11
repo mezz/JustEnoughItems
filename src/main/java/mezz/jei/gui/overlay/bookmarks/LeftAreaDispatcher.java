@@ -92,6 +92,9 @@ public class LeftAreaDispatcher implements IShowsRecipeFocuses, IPaged {
 		final int x = BORDER_PADDING;
 		final int y = BORDER_PADDING;
 		int width = guiProperties.getGuiLeft() - x - BORDER_PADDING;
+		if (width <= 0) {
+			width = 0;
+		}
 		final int height = guiProperties.getScreenHeight() - y - BORDER_PADDING;
 		displayArea = new Rectangle(x, y, width, height);
 		if (contents.size() > 1) {
