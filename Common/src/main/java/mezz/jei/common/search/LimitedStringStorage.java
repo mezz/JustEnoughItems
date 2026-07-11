@@ -1,5 +1,7 @@
 package mezz.jei.common.search;
 
+import mezz.jei.api.search.ISearchStorage;
+import mezz.jei.api.search.ISearchStorageFactory;
 import mezz.jei.common.collect.SetMultiMap;
 
 import java.util.Collection;
@@ -9,16 +11,20 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * This is more memory-efficient than {@link GeneralizedSuffixTreeSearchStorage}
- * when there are many values for each key.
+ * This is more memory-efficient than storing each value directly in an {@link ISearchStorage}
+ * when many values share each key.
  *
  * It stores a map of keys to a set of values.
- * The set values are shared with the internal {@link GeneralizedSuffixTreeSearchStorage} to index and find them.
+ * The set values are shared with the internal backing search storage to index and find them.
  * The set's values are modified directly when values with the same key are added.
  */
 public class LimitedStringStorage<T> implements ISearchStorage<T> {
 	private final SetMultiMap<String, T> multiMap = new SetMultiMap<>(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
-	private final ISearchStorage<Set<T>> generalizedSuffixTree = new GeneralizedSuffixTreeSearchStorage<>();
+	private final ISearchStorage<Set<T>> generalizedSuffixTree;
+
+	public LimitedStringStorage(ISearchStorageFactory searchStorageFactory) {
+		this.generalizedSuffixTree = searchStorageFactory.createSearchStorage();
+	}
 
 	@Override
 	public void getSearchResults(String token, Consumer<Collection<T>> resultsConsumer) {

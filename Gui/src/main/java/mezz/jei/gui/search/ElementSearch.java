@@ -4,8 +4,8 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.search.ISearchStorage;
 import mezz.jei.common.search.CombinedSearchables;
-import mezz.jei.common.search.ISearchStorage;
 import mezz.jei.common.search.ISearchable;
 import mezz.jei.common.search.PrefixInfo;
 import mezz.jei.common.search.PrefixedSearchable;
@@ -29,8 +29,10 @@ public class ElementSearch implements IElementSearch {
 	private final Map<PrefixInfo<IListElementInfo<?>, IListElement<?>>, PrefixedSearchable<IListElementInfo<?>, IListElement<?>>> prefixedSearchables = new IdentityHashMap<>();
 	private final CombinedSearchables<IListElement<?>> combinedSearchables = new CombinedSearchables<>();
 	private final Map<Object, IListElement<?>> allElements = new HashMap<>();
+	private final PrefixInfo<IListElementInfo<?>, IListElement<?>> noPrefix;
 
 	public ElementSearch(ElementPrefixParser elementPrefixParser) {
+		this.noPrefix = elementPrefixParser.getNoPrefix();
 		for (PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo : elementPrefixParser.allPrefixInfos()) {
 			ISearchStorage<IListElement<?>> storage = prefixInfo.createStorage();
 			var prefixedSearchable = new PrefixedSearchable<>(storage, prefixInfo);
@@ -49,7 +51,7 @@ public class ElementSearch implements IElementSearch {
 		Set<IListElement<?>> results = Collections.newSetFromMap(new IdentityHashMap<>());
 
 		PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo = tokenInfo.prefixInfo();
-		if (prefixInfo == ElementPrefixParser.NO_PREFIX) {
+		if (prefixInfo == noPrefix) {
 			combinedSearchables.getSearchResults(token, results::addAll);
 			return results;
 		}
