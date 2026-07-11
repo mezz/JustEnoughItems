@@ -96,20 +96,38 @@ public class StackHelper implements IStackHelper {
 				continue;
 			}
 
-			Integer matching = containsAnyStackIndexed(availableItemStacks, requiredStacks);
+			MatchingItem matching = getMatchingItem(availableItemStacks, requiredStacks);
 			if (matching == null) {
 				matchingItemResult.missingItems.add(key);
 			} else {
-				ItemStack matchingStack = availableItemStacks.get(matching);
-				matchingStack.shrink(1);
+				ItemStack matchingStack = availableItemStacks.get(matching.slotIndex);
+				matchingStack.shrink(matching.count);
 				if (matchingStack.getCount() == 0) {
-					availableItemStacks.remove(matching);
+					availableItemStacks.remove(matching.slotIndex);
 				}
-				matchingItemResult.matchingItems.put(recipeSlotNumber, matching);
+				matchingItemResult.matchingItems.put(recipeSlotNumber, matching.slotIndex);
+				matchingItemResult.matchingItemCounts.put(recipeSlotNumber, matching.count);
 			}
 		}
 
 		return matchingItemResult;
+	}
+
+	@Nullable
+	private MatchingItem getMatchingItem(Map<Integer, ItemStack> stacks, Iterable<ItemStack> contains) {
+		for (ItemStack requiredStack : contains) {
+			if (requiredStack == null || requiredStack.isEmpty()) {
+				continue;
+			}
+			int requiredCount = Math.max(1, requiredStack.getCount());
+			for (Map.Entry<Integer, ItemStack> entry : stacks.entrySet()) {
+				ItemStack availableStack = entry.getValue();
+				if (availableStack.getCount() >= requiredCount && isEquivalent(requiredStack, availableStack)) {
+					return new MatchingItem(entry.getKey(), requiredCount);
+				}
+			}
+		}
+		return null;
 	}
 
 	public boolean containsSameStacks(Collection<ItemStack> stacks, Collection<ItemStack> contains) {
@@ -462,7 +480,18 @@ public class StackHelper implements IStackHelper {
 
 	public static class MatchingItemsResult {
 		public final Map<Integer, Integer> matchingItems = new HashMap<>();
+		public final Map<Integer, Integer> matchingItemCounts = new HashMap<>();
 		public final List<Integer> missingItems = new ArrayList<>();
+	}
+
+	private static class MatchingItem {
+		public final int slotIndex;
+		public final int count;
+
+		public MatchingItem(int slotIndex, int count) {
+			this.slotIndex = slotIndex;
+			this.count = count;
+		}
 	}
 
 	private interface ItemStackMatchable<R> {

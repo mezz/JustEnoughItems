@@ -14,13 +14,19 @@ import mezz.jei.transfer.BasicRecipeTransferHandlerServer;
 
 public class PacketRecipeTransfer extends PacketJei {
 	public final Map<Integer, Integer> recipeMap;
+	public final Map<Integer, Integer> recipeCountMap;
 	public final List<Integer> craftingSlots;
 	public final List<Integer> inventorySlots;
 	private final boolean maxTransfer;
 	private final boolean requireCompleteSets;
 
 	public PacketRecipeTransfer(Map<Integer, Integer> recipeMap, List<Integer> craftingSlots, List<Integer> inventorySlots, boolean maxTransfer, boolean requireCompleteSets) {
+		this(recipeMap, createDefaultRecipeCountMap(recipeMap), craftingSlots, inventorySlots, maxTransfer, requireCompleteSets);
+	}
+
+	public PacketRecipeTransfer(Map<Integer, Integer> recipeMap, Map<Integer, Integer> recipeCountMap, List<Integer> craftingSlots, List<Integer> inventorySlots, boolean maxTransfer, boolean requireCompleteSets) {
 		this.recipeMap = recipeMap;
+		this.recipeCountMap = recipeCountMap;
 		this.craftingSlots = craftingSlots;
 		this.inventorySlots = inventorySlots;
 		this.maxTransfer = maxTransfer;
@@ -38,6 +44,7 @@ public class PacketRecipeTransfer extends PacketJei {
 		for (Map.Entry<Integer, Integer> recipeMapEntry : recipeMap.entrySet()) {
 			buf.writeVarInt(recipeMapEntry.getKey());
 			buf.writeVarInt(recipeMapEntry.getValue());
+			buf.writeVarInt(recipeCountMap.getOrDefault(recipeMapEntry.getKey(), 1));
 		}
 
 		buf.writeVarInt(craftingSlots.size());
@@ -57,10 +64,13 @@ public class PacketRecipeTransfer extends PacketJei {
 	public static void readPacketData(PacketBuffer buf, EntityPlayer player) {
 		int recipeMapSize = buf.readVarInt();
 		Map<Integer, Integer> recipeMap = new HashMap<>();
+		Map<Integer, Integer> recipeCountMap = new HashMap<>();
 		for (int i = 0; i < recipeMapSize; i++) {
 			int slotIndex = buf.readVarInt();
 			int recipeItem = buf.readVarInt();
+			int recipeItemCount = buf.readVarInt();
 			recipeMap.put(slotIndex, recipeItem);
+			recipeCountMap.put(slotIndex, recipeItemCount);
 		}
 
 		int craftingSlotsSize = buf.readVarInt();
@@ -79,7 +89,15 @@ public class PacketRecipeTransfer extends PacketJei {
 		boolean maxTransfer = buf.readBoolean();
 		boolean requireCompleteSets = buf.readBoolean();
 
-		BasicRecipeTransferHandlerServer.setItems(player, recipeMap, craftingSlots, inventorySlots, maxTransfer, requireCompleteSets);
+		BasicRecipeTransferHandlerServer.setItems(player, recipeMap, recipeCountMap, craftingSlots, inventorySlots, maxTransfer, requireCompleteSets);
+	}
+
+	private static Map<Integer, Integer> createDefaultRecipeCountMap(Map<Integer, Integer> recipeMap) {
+		Map<Integer, Integer> recipeCountMap = new HashMap<>(recipeMap.size());
+		for (Integer key : recipeMap.keySet()) {
+			recipeCountMap.put(key, 1);
+		}
+		return recipeCountMap;
 	}
 
 }

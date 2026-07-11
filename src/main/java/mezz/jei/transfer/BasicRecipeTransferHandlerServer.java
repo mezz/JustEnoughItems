@@ -20,7 +20,7 @@ public final class BasicRecipeTransferHandlerServer {
 	/**
 	 * Called server-side to actually put the items in place.
 	 */
-	public static void setItems(EntityPlayer player, Map<Integer, Integer> slotIdMap, List<Integer> craftingSlots, List<Integer> inventorySlots, boolean maxTransfer, boolean requireCompleteSets) {
+	public static void setItems(EntityPlayer player, Map<Integer, Integer> slotIdMap, Map<Integer, Integer> slotCountMap, List<Integer> craftingSlots, List<Integer> inventorySlots, boolean maxTransfer, boolean requireCompleteSets) {
 		Container container = player.openContainer;
 
 		// grab items from slots
@@ -28,11 +28,12 @@ public final class BasicRecipeTransferHandlerServer {
 		for (Map.Entry<Integer, Integer> entry : slotIdMap.entrySet()) {
 			Slot slot = container.getSlot(entry.getValue());
 			final ItemStack slotStack = slot.getStack();
-			if (slotStack.isEmpty()) {
+			int count = Math.max(1, slotCountMap.getOrDefault(entry.getKey(), 1));
+			if (slotStack.isEmpty() || slotStack.getCount() < count) {
 				return;
 			}
 			ItemStack stack = slotStack.copy();
-			stack.setCount(1);
+			stack.setCount(count);
 			slotMap.put(entry.getKey(), stack);
 		}
 
@@ -146,7 +147,7 @@ public final class BasicRecipeTransferHandlerServer {
 
 				boolean itemFound = (slot != null) && !slot.getStack().isEmpty();
 				ItemStack resultItemStack = result.get(entry.getKey());
-				boolean resultItemStackLimitReached = (resultItemStack != null) && (resultItemStack.getCount() == resultItemStack.getMaxStackSize());
+				boolean resultItemStackLimitReached = (resultItemStack != null) && (resultItemStack.getCount() + requiredStack.getCount() > resultItemStack.getMaxStackSize());
 
 				if (!itemFound || resultItemStackLimitReached) {
 					// We can't find any more items to fulfill the requirements or the maximum stack size for this item
@@ -170,7 +171,7 @@ public final class BasicRecipeTransferHandlerServer {
 					}
 
 					// Reduce the size of the found slot.
-					ItemStack removedItemStack = slot.decrStackSize(1);
+					ItemStack removedItemStack = slot.decrStackSize(requiredStack.getCount());
 					foundItemsInSet.put(entry.getKey(), removedItemStack);
 
 					noItemsFound = false;
@@ -185,7 +186,7 @@ public final class BasicRecipeTransferHandlerServer {
 					result.put(entry.getKey(), entry.getValue());
 
 				} else {
-					resultItemStack.grow(1);
+					resultItemStack.grow(entry.getValue().getCount());
 				}
 			}
 
@@ -283,7 +284,7 @@ public final class BasicRecipeTransferHandlerServer {
 			if (slotNumber >= 0 && slotNumber < container.inventorySlots.size()) {
 				Slot slot = container.getSlot(slotNumber);
 				ItemStack slotStack = slot.getStack();
-				if (slot.canTakeStack(player) && ItemStack.areItemsEqual(itemStack, slotStack) && ItemStack.areItemStackTagsEqual(itemStack, slotStack)) {
+				if (slot.canTakeStack(player) && slotStack.getCount() >= itemStack.getCount() && ItemStack.areItemsEqual(itemStack, slotStack) && ItemStack.areItemStackTagsEqual(itemStack, slotStack)) {
 					return slot;
 				}
 			}
