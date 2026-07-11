@@ -7,7 +7,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.api.search.ISearchStorage;
+import mezz.jei.api.search.ISearchStorageFactory;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
@@ -33,7 +33,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -72,7 +71,7 @@ public class IngredientFilter implements
 		IModIdHelper modIdHelper,
 		IIngredientVisibility ingredientVisibility,
 		IColorHelper colorHelper,
-		Supplier<? extends ISearchStorage<?>> searchStorageSupplier,
+		ISearchStorageFactory searchStorageFactory,
 		IClientToggleState clientToggleState
 	) {
 		this.filterTextSource = filterTextSource;
@@ -81,7 +80,7 @@ public class IngredientFilter implements
 		this.ingredientComparator = ingredientComparator;
 		this.modIdHelper = modIdHelper;
 		this.ingredientVisibility = ingredientVisibility;
-		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, modIdHelper, searchStorageSupplier);
+		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, modIdHelper, searchStorageFactory);
 
 		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser);
 

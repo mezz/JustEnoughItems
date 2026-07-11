@@ -20,13 +20,14 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.api.search.ISearchStorage;
+import mezz.jei.api.search.ISearchStorageFactory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.search.GeneralizedSuffixTreeSearchStorage;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.library.config.EditModeConfig;
@@ -67,7 +68,6 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 public final class PluginLoader {
 	private PluginLoader() {}
@@ -193,10 +193,11 @@ public final class PluginLoader {
 		return recipeTransferRegistration.createRecipeTransferManager();
 	}
 
-	public static Supplier<? extends ISearchStorage<?>> createSearchStorageSupplier(List<IModPlugin> plugins) {
+	public static ISearchStorageFactory createSearchStorageFactory(List<IModPlugin> plugins) {
 		AdvancedSearchRegistration searchRegistration = new AdvancedSearchRegistration();
 		PluginCaller.callOnPlugins("Registering advanced search", plugins, p -> p.registerAdvancedSearch(searchRegistration));
-		return searchRegistration.getSearchStorageSupplier();
+		return searchRegistration.getSearchStorageFactoryOverride()
+			.orElse(GeneralizedSuffixTreeSearchStorage::new);
 	}
 
 	public static RecipeManager createRecipeManager(

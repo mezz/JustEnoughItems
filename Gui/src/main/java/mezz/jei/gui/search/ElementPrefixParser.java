@@ -5,12 +5,11 @@ import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.search.ISearchStorage;
+import mezz.jei.api.search.ISearchStorageFactory;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.search.LimitedStringStorage;
 import mezz.jei.common.search.PrefixInfo;
 import mezz.jei.common.search.SearchMode;
-import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.Translator;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
@@ -21,7 +20,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
@@ -37,13 +35,13 @@ public class ElementPrefixParser {
 		IIngredientFilterConfig config,
 		IColorHelper colorHelper,
 		IModIdHelper modIdHelper,
-		Supplier<? extends ISearchStorage<?>> searchStorageSupplier
+		ISearchStorageFactory searchStorageFactory
 	) {
 		this.noPrefix = new PrefixInfo<>(
 			'\0',
 			() -> SearchMode.ENABLED,
 			IListElementInfo::getNames,
-			() -> createSearchStorage(searchStorageSupplier)
+			searchStorageFactory::createSearchStorage
 		);
 
 		addPrefix(new PrefixInfo<>(
@@ -79,25 +77,25 @@ public class ElementPrefixParser {
 
 				return sanitizedModNames;
 			},
-			() -> new LimitedStringStorage<>(searchStorageSupplier)
+			() -> new LimitedStringStorage<>(searchStorageFactory)
 		));
 		addPrefix(new PrefixInfo<>(
 			'#',
 			config::getTagSearchMode,
 			e -> e.getTagStrings(ingredientManager),
-			() -> new LimitedStringStorage<>(searchStorageSupplier)
+			() -> new LimitedStringStorage<>(searchStorageFactory)
 		));
 		addPrefix(new PrefixInfo<>(
 			'$',
 			config::getTooltipSearchMode,
 			e -> e.getTooltipStrings(config, ingredientManager),
-			() -> createSearchStorage(searchStorageSupplier)
+			searchStorageFactory::createSearchStorage
 		));
 		addPrefix(new PrefixInfo<>(
 			'%',
 			config::getCreativeTabSearchMode,
 			e -> e.getCreativeTabsStrings(ingredientManager),
-			() -> new LimitedStringStorage<>(searchStorageSupplier)
+			() -> new LimitedStringStorage<>(searchStorageFactory)
 		));
 		addPrefix(new PrefixInfo<>(
 			'^',
@@ -110,25 +108,14 @@ public class ElementPrefixParser {
 					.distinct()
 					.toList();
 			},
-			() -> new LimitedStringStorage<>(searchStorageSupplier)
+			() -> new LimitedStringStorage<>(searchStorageFactory)
 		));
 		addPrefix(new PrefixInfo<>(
 			'&',
 			config::getIdentifierSearchMode,
 			element -> List.of(element.getIdentifier().toString()),
-			() -> createSearchStorage(searchStorageSupplier)
+			searchStorageFactory::createSearchStorage
 		));
-	}
-
-	private static <T> ISearchStorage<T> createSearchStorage(Supplier<? extends ISearchStorage<?>> searchStorageSupplier) {
-		ISearchStorage<?> searchStorage = searchStorageSupplier.get();
-		ErrorUtil.checkNotNull(searchStorage, "searchStorageSupplier result");
-		return castSearchStorage(searchStorage);
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T> ISearchStorage<T> castSearchStorage(ISearchStorage<?> searchStorage) {
-		return (ISearchStorage<T>) searchStorage;
 	}
 
 	private void addPrefix(PrefixInfo<IListElementInfo<?>, IListElement<?>> info) {

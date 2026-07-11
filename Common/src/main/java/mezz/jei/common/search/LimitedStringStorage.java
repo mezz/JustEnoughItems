@@ -1,15 +1,14 @@
 package mezz.jei.common.search;
 
 import mezz.jei.api.search.ISearchStorage;
+import mezz.jei.api.search.ISearchStorageFactory;
 import mezz.jei.common.collect.SetMultiMap;
-import mezz.jei.common.util.ErrorUtil;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * This is more memory-efficient than storing each value directly in an {@link ISearchStorage}
@@ -23,19 +22,8 @@ public class LimitedStringStorage<T> implements ISearchStorage<T> {
 	private final SetMultiMap<String, T> multiMap = new SetMultiMap<>(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
 	private final ISearchStorage<Set<T>> generalizedSuffixTree;
 
-	public LimitedStringStorage(Supplier<? extends ISearchStorage<?>> searchStorageSupplier) {
-		this.generalizedSuffixTree = createSearchStorage(searchStorageSupplier);
-	}
-
-	private static <T> ISearchStorage<T> createSearchStorage(Supplier<? extends ISearchStorage<?>> searchStorageSupplier) {
-		ISearchStorage<?> searchStorage = searchStorageSupplier.get();
-		ErrorUtil.checkNotNull(searchStorage, "searchStorageSupplier result");
-		return castSearchStorage(searchStorage);
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T> ISearchStorage<T> castSearchStorage(ISearchStorage<?> searchStorage) {
-		return (ISearchStorage<T>) searchStorage;
+	public LimitedStringStorage(ISearchStorageFactory searchStorageFactory) {
+		this.generalizedSuffixTree = searchStorageFactory.createSearchStorage();
 	}
 
 	@Override

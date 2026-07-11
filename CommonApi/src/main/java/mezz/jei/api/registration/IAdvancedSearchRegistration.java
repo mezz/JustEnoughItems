@@ -1,9 +1,7 @@
 package mezz.jei.api.registration;
 
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.search.ISearchStorage;
-
-import java.util.function.Supplier;
+import mezz.jei.api.search.ISearchStorageFactory;
 
 /**
  * The IAdvancedSearchRegistration instance is passed to your mod plugin in {@link IModPlugin#registerAdvancedSearch(IAdvancedSearchRegistration)}.
@@ -22,12 +20,12 @@ public interface IAdvancedSearchRegistration {
 	 * </p>
 	 *
 	 * <p>
-	 * The supplier must create a new empty storage instance each time it is called. JEI uses this replacement for all
+	 * The factory must create a new empty storage instance each time it is called. JEI uses this replacement for all
 	 * indexed ingredient search storage, including the backing indexes inside limited string storage.
 	 * If multiple plugins replace the search storage, the last replacement is used.
 	 * </p>
 	 *
 	 * @since 30.10.0
 	 */
-	void replaceSearchStorage(Supplier<? extends ISearchStorage<?>> searchStorageSupplier);
+	void replaceSearchStorage(ISearchStorageFactory searchStorageFactory);
 }

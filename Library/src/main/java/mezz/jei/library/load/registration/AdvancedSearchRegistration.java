@@ -1,28 +1,29 @@
 package mezz.jei.library.load.registration;
 
 import mezz.jei.api.registration.IAdvancedSearchRegistration;
-import mezz.jei.api.search.ISearchStorage;
-import mezz.jei.common.search.GeneralizedSuffixTreeSearchStorage;
+import mezz.jei.api.search.ISearchStorageFactory;
 import mezz.jei.common.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
+import java.util.Optional;
 
 public class AdvancedSearchRegistration implements IAdvancedSearchRegistration {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private Supplier<? extends ISearchStorage<?>> searchStorageSupplier = GeneralizedSuffixTreeSearchStorage::new;
+	@Nullable
+	private ISearchStorageFactory searchStorageFactoryOverride;
 
 	@Override
-	public void replaceSearchStorage(Supplier<? extends ISearchStorage<?>> searchStorageSupplier) {
-		ErrorUtil.checkNotNull(searchStorageSupplier, "searchStorageSupplier");
+	public void replaceSearchStorage(ISearchStorageFactory searchStorageFactory) {
+		ErrorUtil.checkNotNull(searchStorageFactory, "searchStorageFactory");
 
-		LOGGER.info("Replaced search storage supplier: {}", searchStorageSupplier);
-		this.searchStorageSupplier = searchStorageSupplier;
+		LOGGER.info("Replaced search storage factory: {}", searchStorageFactory);
+		this.searchStorageFactoryOverride = searchStorageFactory;
 	}
 
-	public Supplier<? extends ISearchStorage<?>> getSearchStorageSupplier() {
-		return searchStorageSupplier;
+	public Optional<ISearchStorageFactory> getSearchStorageFactoryOverride() {
+		return Optional.ofNullable(searchStorageFactoryOverride);
 	}
 }

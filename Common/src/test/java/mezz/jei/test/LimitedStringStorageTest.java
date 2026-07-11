@@ -1,6 +1,7 @@
 package mezz.jei.test;
 
 import mezz.jei.api.search.ISearchStorage;
+import mezz.jei.api.search.ISearchStorageFactory;
 import mezz.jei.common.search.LimitedStringStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -14,12 +15,15 @@ import java.util.function.Consumer;
 
 public class LimitedStringStorageTest {
 	@Test
-	public void customSupplierIsUsedForBackingIndex() {
+	public void customFactoryIsUsedForBackingIndex() {
 		List<RecordingSearchStorage<?>> createdStorages = new ArrayList<>();
-		LimitedStringStorage<String> limitedStringStorage = new LimitedStringStorage<>(() -> {
-			RecordingSearchStorage<Object> storage = new RecordingSearchStorage<>();
-			createdStorages.add(storage);
-			return storage;
+		LimitedStringStorage<String> limitedStringStorage = new LimitedStringStorage<>(new ISearchStorageFactory() {
+			@Override
+			public <T> ISearchStorage<T> createSearchStorage() {
+				RecordingSearchStorage<T> storage = new RecordingSearchStorage<>();
+				createdStorages.add(storage);
+				return storage;
+			}
 		});
 
 		limitedStringStorage.put("alpha", "first");

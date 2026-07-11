@@ -1,33 +1,45 @@
 package mezz.jei.test;
 
 import mezz.jei.api.search.ISearchStorage;
+import mezz.jei.api.search.ISearchStorageFactory;
 import mezz.jei.common.search.GeneralizedSuffixTreeSearchStorage;
+import mezz.jei.library.load.PluginLoader;
 import mezz.jei.library.load.registration.AdvancedSearchRegistration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class AdvancedSearchRegistrationTest {
 	@Test
 	public void defaultStorageUsesGeneralizedSuffixTreeSearchStorage() {
-		AdvancedSearchRegistration searchRegistration = new AdvancedSearchRegistration();
-
-		ISearchStorage<?> searchStorage = searchRegistration.getSearchStorageSupplier().get();
+		ISearchStorage<String> searchStorage = PluginLoader.createSearchStorageFactory(List.of()).createSearchStorage();
 
 		Assertions.assertInstanceOf(GeneralizedSuffixTreeSearchStorage.class, searchStorage);
 	}
 
 	@Test
-	public void customSupplierIsUsedByFactory() {
-		RecordingSearchStorage<Object> storage = new RecordingSearchStorage<>();
+	public void customFactoryIsUsedByRegistration() {
+		List<RecordingSearchStorage<?>> createdStorages = new ArrayList<>();
 		AdvancedSearchRegistration searchRegistration = new AdvancedSearchRegistration();
-		searchRegistration.replaceSearchStorage(() -> storage);
+		searchRegistration.replaceSearchStorage(new ISearchStorageFactory() {
+			@Override
+			public <T> ISearchStorage<T> createSearchStorage() {
+				RecordingSearchStorage<T> storage = new RecordingSearchStorage<>();
+				createdStorages.add(storage);
+				return storage;
+			}
+		});
 
-		ISearchStorage<?> searchStorage = searchRegistration.getSearchStorageSupplier().get();
+		ISearchStorageFactory searchStorageFactory = searchRegistration.getSearchStorageFactoryOverride()
+			.orElseThrow();
+		ISearchStorage<String> searchStorage = searchStorageFactory.createSearchStorage();
 
-		Assertions.assertSame(storage, searchStorage);
+		Assertions.assertEquals(1, createdStorages.size());
+		Assertions.assertSame(createdStorages.getFirst(), searchStorage);
 	}
 
 	private static class RecordingSearchStorage<T> implements ISearchStorage<T> {
