@@ -46,7 +46,10 @@ sourceSets {
 			setSrcDirs(emptyList<String>())
 		}
 	}
-	create("gameTest")
+	create("gameTest") {
+		compileClasspath += sourceSets.main.get().output
+		runtimeClasspath += sourceSets.main.get().output
+	}
 	create("clientGameTest") {
 		java.srcDir(project(":Common").layout.projectDirectory.dir("src/testFixtures/java"))
 		java.srcDir(commonClientTestFixturesSource)
@@ -393,6 +396,8 @@ publishMods {
 
 tasks.test {
 	useJUnitPlatform()
+	include("mezz/jei/gui/**")
+	include("mezz/jei/neoforge/**")
 	include("mezz/jei/test/**")
 	exclude("mezz/jei/test/lib/**")
 	outputs.upToDateWhen { false }
