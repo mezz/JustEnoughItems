@@ -102,6 +102,16 @@ public class PacketRecipeTransfer extends PlayToServerPacket<PacketRecipeTransfe
 
 	@Nullable
 	static List<Slot> getSlots(AbstractContainerMenu container, List<Integer> slotIds) {
+		if (slotIds.size() > container.slots.size()) {
+			LOGGER.error(
+				"Recipe transfer packet has too many slot ids {} for container {} with {} slots",
+				slotIds.size(),
+				container.getClass(),
+				container.slots.size()
+			);
+			return null;
+		}
+
 		List<Slot> slots = new ArrayList<>(slotIds.size());
 		for (int slotId : slotIds) {
 			if (slotId < 0 || slotId >= container.slots.size()) {
