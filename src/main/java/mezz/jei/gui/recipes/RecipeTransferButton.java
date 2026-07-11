@@ -56,7 +56,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
 		super.drawButton(mc, mouseX, mouseY, partialTicks);
 		if (this.visible && this.recipeTransferError != null && this.recipeTransferError.getType() == IRecipeTransferError.Type.COSMETIC) {
-			drawRect(this.x, this.y, this.x + this.width, this.y + this.height, 0x80FFA500);
+			drawRect(this.x, this.y, this.x + this.width, this.y + this.height, this.recipeTransferError.getButtonHighlightColor());
 		}
 	}
 }

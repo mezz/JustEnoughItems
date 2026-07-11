@@ -38,6 +38,16 @@ public interface IRecipeTransferError {
 	Type getType();
 
 	/**
+	 * Return the ARGB color of the additional button highlight for {@link Type#COSMETIC}.
+	 * For example, return 0 to disable the colored highlight. Default color is orange.
+	 *
+	 * @since JEI version 4.16.3
+	 */
+	default int getButtonHighlightColor() {
+		return 0x80FFA500;
+	}
+
+	/**
 	 * Called on {@link Type#USER_FACING} errors.
 	 */
 	void showError(Minecraft minecraft, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY);
