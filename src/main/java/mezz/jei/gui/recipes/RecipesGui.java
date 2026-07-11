@@ -326,6 +326,9 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		if (mc == null) {
 			return;
 		}
+		if (handleButtonClick(mouseX, mouseY, mouseButton)) {
+			return;
+		}
 		if (isMouseOver(mouseX, mouseY)) {
 			if (titleHoverChecker.checkHover(mouseX, mouseY)) {
 				if (logic.setCategoryFocus()) {
@@ -351,6 +354,20 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		}
 
 		super.mouseClicked(mouseX, mouseY, mouseButton);
+	}
+
+	private boolean handleButtonClick(int mouseX, int mouseY, int mouseButton) throws IOException {
+		if (mouseButton != 0) {
+			return false;
+		}
+		for (GuiButton button : this.buttonList) {
+			if (button.mousePressed(mc, mouseX, mouseY)) {
+				button.playPressSound(mc.getSoundHandler());
+				this.actionPerformed(button);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
