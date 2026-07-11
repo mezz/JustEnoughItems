@@ -97,6 +97,10 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		return this.area;
 	}
 
+	public int size() {
+		return this.ingredientGrid.size();
+	}
+
 	public void draw(Minecraft minecraft, int mouseX, int mouseY, float partialTicks) {
 		this.ingredientGrid.draw(minecraft, mouseX, mouseY);
 		this.navigation.draw(minecraft, mouseX, mouseY, partialTicks);

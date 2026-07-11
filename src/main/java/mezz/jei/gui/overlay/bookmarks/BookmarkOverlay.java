@@ -100,7 +100,9 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 			displayArea.width,
 			displayArea.height - (BUTTON_SIZE + 4)
 		);
+		int legacySize = contents.size();
 		boolean contentsHasRoom = this.contents.updateBounds(availableContentsArea, guiExclusionAreas, minWidth);
+		boolean resetToFirstPage = legacySize != contents.size();
 
 		// update area to match contents size
 		Rectangle contentsArea = this.contents.getArea();
@@ -114,7 +116,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 			BUTTON_SIZE
 		));
 
-		this.contents.updateLayout(false);
+		this.contents.updateLayout(resetToFirstPage);
 
 		return contentsHasRoom;
 	}
