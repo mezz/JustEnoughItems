@@ -43,8 +43,16 @@ public final class RecipeTransferUtil {
 			return RecipeTransferErrorInternal.INSTANCE;
 		}
 
-		//noinspection unchecked
-		return transferHandler.transferRecipe(container, recipeLayout, player, maxTransfer, doTransfer);
+		try {
+			//noinspection unchecked
+			return transferHandler.transferRecipe(container, recipeLayout, player, maxTransfer, doTransfer);
+		} catch (RuntimeException e) {
+			Log.get().error(
+				"Recipe transfer handler '{}' for container '{}' and recipe category '{}' threw an error: ",
+				transferHandler.getClass(), container.getClass(), recipeLayout.getRecipeCategory().getUid(), e
+			);
+			return RecipeTransferErrorInternal.INSTANCE;
+		}
 	}
 
 	public static boolean allowsTransfer(@Nullable IRecipeTransferError error) {
