@@ -1,5 +1,6 @@
 package mezz.jei.common.search;
 
+import mezz.jei.api.search.ISearchStorage;
 import net.mezzdev.suffixtree.GeneralizedSuffixTree;
 
 import java.util.Collection;
