@@ -21,7 +21,6 @@ import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
-import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.DeleteItemInputHandler;
 import mezz.jei.gui.overlay.elements.IElement;
@@ -45,7 +44,7 @@ import java.util.stream.Stream;
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.
  * It does not draw a background or have external padding, those are left up to a higher-level element.
  */
-public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
+public class IngredientGrid implements IIngredientGrid {
 	private final IIngredientManager ingredientManager;
 	private final IIngredientGridConfig gridConfig;
 	private final boolean searchable;
@@ -78,6 +77,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		return deleteItemHandler;
 	}
 
+	@Override
 	public int size() {
 		return this.ingredientListRenderer.size();
 	}
@@ -222,6 +222,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		return ingredientListRenderer.getSlots();
 	}
 
+	@Override
 	public Stream<IElement<?>> getVisibleElements() {
 		return this.ingredientListRenderer.getSlots()
 			.map(IngredientListSlot::getOptionalElement)
@@ -235,6 +236,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 			.flatMap(Optional::stream);
 	}
 
+	@Override
 	public void set(int firstItemIndex, List<IElement<?>> ingredientList) {
 		this.ingredientListRenderer.set(firstItemIndex, ingredientList);
 	}

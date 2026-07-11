@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 class IngredientGridWithNavigationController implements IPaged, IUserInputHandler {
 	private final IngredientGridPageState pageState = new IngredientGridPageState();
 	private final IIngredientGridSource ingredientSource;
-	private final IngredientGrid ingredientGrid;
+	private final IIngredientGrid ingredientGrid;
 	private final IClientToggleState toggleState;
 	private final IClientConfig clientConfig;
 	private final IMouseOverable mouseOverable;
@@ -44,7 +44,7 @@ class IngredientGridWithNavigationController implements IPaged, IUserInputHandle
 
 	IngredientGridWithNavigationController(
 		IIngredientGridSource ingredientSource,
-		IngredientGrid ingredientGrid,
+		IIngredientGrid ingredientGrid,
 		IClientToggleState toggleState,
 		IClientConfig clientConfig,
 		CommandUtil commandUtil,
