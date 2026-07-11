@@ -1,5 +1,6 @@
 package mezz.jei.gui;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,7 +39,16 @@ public final class TooltipRenderer {
 	}
 
 	public static void drawHoveringText(ItemStack itemStack, Minecraft minecraft, List<String> textLines, int x, int y, int maxWidth, FontRenderer font) {
+		List<String> safeTextLines = new ArrayList<>(textLines.size());
+		for (String textLine : textLines) {
+			if (textLine != null) {
+				safeTextLines.add(textLine);
+			}
+		}
+		if (safeTextLines.isEmpty()) {
+			return;
+		}
 		ScaledResolution scaledresolution = new ScaledResolution(minecraft);
-		GuiUtils.drawHoveringText(itemStack, textLines, x, y, scaledresolution.getScaledWidth(), scaledresolution.getScaledHeight(), maxWidth, font);
+		GuiUtils.drawHoveringText(itemStack, safeTextLines, x, y, scaledresolution.getScaledWidth(), scaledresolution.getScaledHeight(), maxWidth, font);
 	}
 }
