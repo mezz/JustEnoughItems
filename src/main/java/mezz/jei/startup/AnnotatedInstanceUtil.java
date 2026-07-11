@@ -29,7 +29,7 @@ public final class AnnotatedInstanceUtil {
 				Class<? extends T> asmInstanceClass = asmClass.asSubclass(instanceClass);
 				T instance = asmInstanceClass.newInstance();
 				instances.add(instance);
-			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | LinkageError e) {
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | RuntimeException | LinkageError e) {
 				Log.get().error("Failed to load: {}", asmData.getClassName(), e);
 			}
 		}
