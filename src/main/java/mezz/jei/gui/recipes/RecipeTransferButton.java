@@ -24,7 +24,7 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 		this.recipeLayout = recipeLayout;
 	}
 
-	public void init(@Nullable Container container, EntityPlayer player) {
+	public void update(@Nullable Container container, EntityPlayer player) {
 		if (container != null) {
 			this.recipeTransferError = RecipeTransferUtil.getTransferRecipeError(container, recipeLayout, player);
 		} else {
