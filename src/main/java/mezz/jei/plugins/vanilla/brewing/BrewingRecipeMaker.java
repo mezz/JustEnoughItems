@@ -52,7 +52,7 @@ public class BrewingRecipeMaker {
 			.map(r -> (VanillaBrewingRecipe) r)
 			.findFirst()
 			.ifPresent(vanillaBrewingRecipe -> addVanillaBrewingRecipes(recipes, vanillaBrewingRecipe));
-		addModdedBrewingRecipes(brewingRecipes, recipes);
+		addModdedBrewingRecipes(brewingRecipes, recipes, unhandledRecipeClasses);
 
 		List<BrewingRecipeWrapper> recipeList = new ArrayList<>(recipes);
 		recipeList.sort(Comparator.comparingInt(BrewingRecipeWrapper::getBrewingSteps));
@@ -111,7 +111,11 @@ public class BrewingRecipeMaker {
 		return newPotions;
 	}
 
-	private void addModdedBrewingRecipes(Collection<IBrewingRecipe> brewingRecipes, Collection<BrewingRecipeWrapper> recipes) {
+	public static void addModdedBrewingRecipes(Collection<IBrewingRecipe> brewingRecipes, Collection<BrewingRecipeWrapper> recipes) {
+		addModdedBrewingRecipes(brewingRecipes, recipes, new HashSet<>());
+	}
+
+	private static void addModdedBrewingRecipes(Collection<IBrewingRecipe> brewingRecipes, Collection<BrewingRecipeWrapper> recipes, Set<Class> unhandledRecipeClasses) {
 		for (IBrewingRecipe iBrewingRecipe : brewingRecipes) {
 			if (iBrewingRecipe instanceof AbstractBrewingRecipe) {
 				AbstractBrewingRecipe brewingRecipe = (AbstractBrewingRecipe) iBrewingRecipe;
