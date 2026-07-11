@@ -26,9 +26,11 @@ public class ElementSearchLowMem implements IElementSearch {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final List<IListElementInfo<?>> elementInfoList;
+	private final PrefixInfo<IListElementInfo<?>, IListElement<?>> noPrefix;
 
-	public ElementSearchLowMem() {
+	public ElementSearchLowMem(PrefixInfo<IListElementInfo<?>, IListElement<?>> noPrefix) {
 		this.elementInfoList = new ArrayList<>();
+		this.noPrefix = noPrefix;
 	}
 
 	@Override
@@ -80,7 +82,7 @@ public class ElementSearchLowMem implements IElementSearch {
 		Function<ITypedIngredient<T>, Object> uidFunction = (i) -> ingredientHelper.getUniqueId(i.getIngredient(), UidContext.Ingredient);
 		Object ingredientUid = uidFunction.apply(typedIngredient);
 		String lowercaseDisplayName = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
-		ElementPrefixParser.TokenInfo tokenInfo = new ElementPrefixParser.TokenInfo(lowercaseDisplayName, ElementPrefixParser.NO_PREFIX);
+		ElementPrefixParser.TokenInfo tokenInfo = new ElementPrefixParser.TokenInfo(lowercaseDisplayName, noPrefix);
 		PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo = tokenInfo.prefixInfo();
 
 		for (IListElementInfo<?> elementInfo : this.elementInfoList) {

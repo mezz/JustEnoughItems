@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.api.search.ISearchStorageFactory;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
@@ -70,6 +71,7 @@ public class IngredientFilter implements
 		IModIdHelper modIdHelper,
 		IIngredientVisibility ingredientVisibility,
 		IColorHelper colorHelper,
+		ISearchStorageFactory searchStorageFactory,
 		IClientToggleState clientToggleState
 	) {
 		this.filterTextSource = filterTextSource;
@@ -78,7 +80,7 @@ public class IngredientFilter implements
 		this.ingredientComparator = ingredientComparator;
 		this.modIdHelper = modIdHelper;
 		this.ingredientVisibility = ingredientVisibility;
-		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, modIdHelper);
+		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, modIdHelper, searchStorageFactory);
 
 		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser);
 
@@ -101,7 +103,7 @@ public class IngredientFilter implements
 
 	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser) {
 		if (clientConfig.isLowMemorySlowSearchEnabled()) {
-			return new ElementSearchLowMem();
+			return new ElementSearchLowMem(elementPrefixParser.getNoPrefix());
 		} else {
 			return new ElementSearch(elementPrefixParser);
 		}
