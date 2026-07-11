@@ -281,6 +281,7 @@ publishing {
 tasks.named<Test>("test") {
 	useJUnitPlatform()
 	include("mezz/jei/test/**")
+	include("mezz/jei/gui/recipes/**")
 	exclude("mezz/jei/test/lib/**")
 	outputs.upToDateWhen { false }
 	testLogging {

@@ -29,6 +29,7 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	private static final int ingredientBorderSize = 1;
 	private static final int borderSize = 5;
 	private static final int overlapSize = 6;
+	private static final Rectangle EMPTY_AREA = new Rectangle(0, 0, 0, 0);
 
 	private final DrawableNineSliceTexture backgroundTab;
 
@@ -58,23 +59,90 @@ public class RecipeCatalysts implements IShowsRecipeFocuses {
 	public void updateLayout(List<Object> ingredients, RecipesGui recipesGui) {
 		this.ingredients.clear();
 
-		if (!ingredients.isEmpty()) {
-			int availableHeight = recipesGui.getYSize() - 8;
-			int borderHeight = (2 * borderSize) + (2 * ingredientBorderSize);
-			int maxIngredientsPerColumn = (availableHeight - borderHeight) / ingredientSize;
-			int columnCount = MathUtil.divideCeil(ingredients.size(), maxIngredientsPerColumn);
-			maxIngredientsPerColumn = MathUtil.divideCeil(ingredients.size(), columnCount);
+		Rectangle recipeArea = new Rectangle(recipesGui.getGuiLeft(), recipesGui.getGuiTop(), recipesGui.getXSize(), recipesGui.getYSize());
+		Layout layout = calculateLayout(ingredients.size(), recipeArea, EMPTY_AREA);
+		left = layout.left();
+		top = layout.top();
+		width = layout.width();
+		height = layout.height();
 
-			width = (2 * ingredientBorderSize) + (borderSize * 2) + (columnCount * ingredientSize);
-			height = (2 * ingredientBorderSize) + (borderSize * 2) + (maxIngredientsPerColumn * ingredientSize);
-			top = recipesGui.getGuiTop();
-			left = recipesGui.getGuiLeft() - width + overlapSize; // overlaps the recipe gui slightly
-
+		if (layout.hasSlots()) {
 			for (int i = 0; i < ingredients.size(); i++) {
 				Object ingredientForSlot = ingredients.get(i);
-				GuiIngredient<Object> guiIngredient = createGuiIngredient(ingredientForSlot, i, maxIngredientsPerColumn);
+				GuiIngredient<Object> guiIngredient = createGuiIngredient(ingredientForSlot, i, layout.maxIngredientsPerColumn());
 				this.ingredients.add(guiIngredient);
 			}
+		}
+	}
+
+	static Layout calculateLayout(int ingredientCount, Rectangle recipeArea, Rectangle optionButtonsArea) {
+		if (ingredientCount <= 0) {
+			return Layout.EMPTY;
+		}
+
+		int availableHeight = recipeArea.height - optionButtonsArea.height - 8;
+		int borderHeight = (2 * borderSize) + (2 * ingredientBorderSize);
+		int maxIngredientsPerColumn = Math.max(1, (availableHeight - borderHeight) / ingredientSize);
+		int columnCount = MathUtil.divideCeil(ingredientCount, maxIngredientsPerColumn);
+		maxIngredientsPerColumn = MathUtil.divideCeil(ingredientCount, columnCount);
+
+		int width = (2 * ingredientBorderSize) + (borderSize * 2) + (columnCount * ingredientSize);
+		int height = (2 * ingredientBorderSize) + (borderSize * 2) + (maxIngredientsPerColumn * ingredientSize);
+		int top = recipeArea.y;
+		int left = recipeArea.x - width + overlapSize; // overlaps the recipe gui slightly
+		return new Layout(left, top, width, height, maxIngredientsPerColumn);
+	}
+
+	static class Layout {
+		private static final Layout EMPTY = new Layout(0, 0, 0, 0, 0);
+
+		private final int left;
+		private final int top;
+		private final int width;
+		private final int height;
+		private final int maxIngredientsPerColumn;
+
+		private Layout(int left, int top, int width, int height, int maxIngredientsPerColumn) {
+			this.left = left;
+			this.top = top;
+			this.width = width;
+			this.height = height;
+			this.maxIngredientsPerColumn = maxIngredientsPerColumn;
+		}
+
+		int left() {
+			return left;
+		}
+
+		int top() {
+			return top;
+		}
+
+		int width() {
+			return width;
+		}
+
+		int height() {
+			return height;
+		}
+
+		int maxIngredientsPerColumn() {
+			return maxIngredientsPerColumn;
+		}
+
+		private boolean hasSlots() {
+			return maxIngredientsPerColumn > 0;
+		}
+
+		@Override
+		public String toString() {
+			return "Layout{" +
+				"left=" + left +
+				", top=" + top +
+				", width=" + width +
+				", height=" + height +
+				", maxIngredientsPerColumn=" + maxIngredientsPerColumn +
+				'}';
 		}
 	}
 
