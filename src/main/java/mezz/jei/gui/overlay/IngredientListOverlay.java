@@ -272,8 +272,13 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 					EntityPlayerSP player = minecraft.player;
 					if (player != null) {
 						ItemStack mouseItem = player.inventory.getItemStack();
-						if (mouseItem.isEmpty() && this.ghostIngredientDragManager.handleClickGhostIngredient(currentScreen, clicked)) {
-							return true;
+						if (mouseItem.isEmpty()) {
+							if (mouseButton == 0 && GuiScreen.isShiftKeyDown() && this.ghostIngredientDragManager.handleQuickMoveGhostIngredient(currentScreen, clicked)) {
+								return true;
+							}
+							if (this.ghostIngredientDragManager.handleClickGhostIngredient(currentScreen, clicked)) {
+								return true;
+							}
 						}
 					}
 				}

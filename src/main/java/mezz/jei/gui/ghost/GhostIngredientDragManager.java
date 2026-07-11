@@ -109,4 +109,16 @@ public class GhostIngredientDragManager {
 		}
 		return false;
 	}
+
+	public <T extends GuiScreen, V> boolean handleQuickMoveGhostIngredient(T currentScreen, IClickedIngredient<V> clicked) {
+		IGhostIngredientHandler<T> handler = guiScreenHelper.getGhostIngredientHandler(currentScreen);
+		if (handler != null) {
+			V ingredient = clicked.getValue();
+			if (handler.quickMove(currentScreen, ingredient)) {
+				clicked.onClickHandled();
+				return true;
+			}
+		}
+		return false;
+	}
 }
