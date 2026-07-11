@@ -76,9 +76,16 @@ public class ElementSearch implements IElementSearch {
 				Collection<String> strings = prefixedSearchable.getStrings(info);
 				ISearchStorage<IListElement<?>> storage = prefixedSearchable.getSearchStorage();
 				for (String string : strings) {
-					storage.put(string, element);
+					putIfNotBlank(storage, string, element);
 				}
 			}
+		}
+	}
+
+	static <T> void putIfNotBlank(ISearchStorage<T> storage, String string, T element) {
+		String trimmedString = string.trim();
+		if (!trimmedString.isEmpty()) {
+			storage.put(trimmedString, element);
 		}
 	}
 
@@ -101,7 +108,7 @@ public class ElementSearch implements IElementSearch {
 				for (IListElementInfo<?> info : infos) {
 					Collection<String> strings = prefixedSearchable.getStrings(info);
 					for (String string : strings) {
-						storage.put(string, info.getElement());
+						putIfNotBlank(storage, string, info.getElement());
 					}
 				}
 			}
