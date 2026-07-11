@@ -18,12 +18,14 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.search.ISearchStorageFactory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.common.util.StackHelper;
+import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
 import mezz.jei.library.config.IModIdFormatConfig;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.library.focus.FocusFactory;
@@ -32,6 +34,7 @@ import mezz.jei.library.helpers.ModIdHelper;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.AdvancedRegistration;
+import mezz.jei.library.load.registration.AdvancedSearchRegistration;
 import mezz.jei.library.load.registration.GuiHandlerRegistration;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
 import mezz.jei.library.load.registration.ModInfoRegistration;
@@ -123,6 +126,13 @@ public class PluginLoader {
 		RecipeTransferRegistration recipeTransferRegistration = new RecipeTransferRegistration(stackHelper, handlerHelper, this.jeiHelpers, data.serverConnection());
 		PluginCaller.callOnPlugins("Registering recipes transfer handlers", plugins, p -> p.registerRecipeTransferHandlers(recipeTransferRegistration));
 		return recipeTransferRegistration.getRecipeTransferHandlers();
+	}
+
+	public static ISearchStorageFactory createSearchStorageFactory(List<IModPlugin> plugins) {
+		AdvancedSearchRegistration searchRegistration = new AdvancedSearchRegistration();
+		PluginCaller.callOnPlugins("Registering advanced search", plugins, p -> p.registerAdvancedSearch(searchRegistration));
+		return searchRegistration.getSearchStorageFactoryOverride()
+			.orElse(GeneralizedSuffixTree::new);
 	}
 
 	public RecipeManager createRecipeManager(

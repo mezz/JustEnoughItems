@@ -12,6 +12,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.search.ISearchStorageFactory;
 import mezz.jei.library.gui.BookmarkOverlayDummy;
 import mezz.jei.library.gui.IngredientListOverlayDummy;
 import mezz.jei.library.gui.recipes.RecipesGuiDummy;
@@ -25,6 +26,7 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 	private final IIngredientVisibility ingredientVisibility;
 	private final IRecipeTransferManager recipeTransferManager;
 	private final IScreenHelper screenHelper;
+	private final ISearchStorageFactory searchStorageFactory;
 
 	private IIngredientListOverlay ingredientListOverlay = IngredientListOverlayDummy.INSTANCE;
 	private IBookmarkOverlay bookmarkOverlay = BookmarkOverlayDummy.INSTANCE;
@@ -38,7 +40,8 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 		IIngredientManager ingredientManager,
 		IIngredientVisibility ingredientVisibility,
 		IRecipeTransferManager recipeTransferManager,
-		IScreenHelper screenHelper
+		IScreenHelper screenHelper,
+		ISearchStorageFactory searchStorageFactory
 	) {
 		this.recipeManager = recipeManager;
 		this.jeiHelpers = jeiHelpers;
@@ -47,6 +50,7 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 		this.ingredientVisibility = ingredientVisibility;
 		this.recipeTransferManager = recipeTransferManager;
 		this.screenHelper = screenHelper;
+		this.searchStorageFactory = searchStorageFactory;
 	}
 
 	@Override
@@ -102,6 +106,11 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 	@Override
 	public IEditModeConfig getEditModeConfig() {
 		return this.editModeConfig;
+	}
+
+	@Override
+	public ISearchStorageFactory getSearchStorageFactory() {
+		return searchStorageFactory;
 	}
 
 	public IIngredientListOverlay getIngredientListOverlay() {
