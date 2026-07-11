@@ -314,12 +314,22 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 		final int y = height - Mouse.getEventY() * height / mc.displayHeight - 1;
 		if (isMouseOver(x, y)) {
 			int scrollDelta = Mouse.getEventDWheel();
-			if (scrollDelta < 0) {
-				logic.nextPage();
-				return;
-			} else if (scrollDelta > 0) {
-				logic.previousPage();
-				return;
+			if (GuiScreen.isShiftKeyDown()) {
+				if (scrollDelta < 0) {
+					logic.nextRecipeCategory();
+					return;
+				} else if (scrollDelta > 0) {
+					logic.previousRecipeCategory();
+					return;
+				}
+			} else {
+				if (scrollDelta < 0) {
+					logic.nextPage();
+					return;
+				} else if (scrollDelta > 0) {
+					logic.previousPage();
+					return;
+				}
 			}
 		}
 		super.handleMouseInput();
