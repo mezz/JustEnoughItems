@@ -3,10 +3,10 @@ package mezz.jei.gui.recipes;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.buttons.IIconButtonController;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.common.Internal;
@@ -53,13 +53,17 @@ public class RecipeTransferButtonController implements IIconButtonController {
 			this.recipeTransferError = RecipeTransferErrorInternal.INSTANCE;
 		}
 
+		updateStateForTransferError(state, recipeTransferError);
+	}
+
+	static void updateStateForTransferError(IButtonState state, @Nullable IRecipeTransferError recipeTransferError) {
 		if (recipeTransferError == null ||
 			recipeTransferError.getType().allowsTransfer) {
 			state.setActive(true);
 			state.setVisible(true);
 		} else {
 			state.setActive(false);
-			IRecipeTransferError.Type type = this.recipeTransferError.getType();
+			IRecipeTransferError.Type type = recipeTransferError.getType();
 			state.setVisible(type == IRecipeTransferError.Type.USER_FACING);
 		}
 	}
@@ -81,6 +85,10 @@ public class RecipeTransferButtonController implements IIconButtonController {
 
 	@Override
 	public void getTooltips(ITooltipBuilder tooltip) {
+		getTooltips(this.recipeTransferError, tooltip);
+	}
+
+	static void getTooltips(@Nullable IRecipeTransferError recipeTransferError, ITooltipBuilder tooltip) {
 		if (recipeTransferError == null) {
 			Component tooltipTransfer = Component.translatable("jei.tooltip.transfer");
 			tooltip.add(tooltipTransfer);
@@ -107,16 +115,25 @@ public class RecipeTransferButtonController implements IIconButtonController {
 				IRecipeSlotsView recipeSlotsView = recipeLayout.getRecipeSlotsView();
 				Rect2i recipeRect = recipeLayout.getRect();
 				PoseStack poseStack = guiGraphics.pose();
-				poseStack.pushPose();
-				{
-					recipeTransferError.showError(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY());
-				}
-				poseStack.popPose();
+				runWithRestoredPose(poseStack, () -> recipeTransferError.showError(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY()));
 			}
 		}
 	}
 
+	static void runWithRestoredPose(PoseStack poseStack, Runnable action) {
+		poseStack.pushPose();
+		try {
+			action.run();
+		} finally {
+			poseStack.popPose();
+		}
+	}
+
 	public int getMissingCountHint() {
+		return getMissingCountHint(this.recipeTransferError);
+	}
+
+	static int getMissingCountHint(@Nullable IRecipeTransferError recipeTransferError) {
 		if (recipeTransferError == null) {
 			return 0;
 		}
