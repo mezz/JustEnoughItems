@@ -40,6 +40,7 @@ public class InputHandler {
 	private final IngredientFilter ingredientFilter;
 	private final RecipesGui recipesGui;
 	private final IngredientListOverlay ingredientListOverlay;
+	private final GuiScreenHelper guiScreenHelper;
 	private final LeftAreaDispatcher leftAreaDispatcher;
 	private final BookmarkList bookmarkList;
 	private final List<IShowsRecipeFocuses> showsRecipeFocuses = new ArrayList<>();
@@ -51,6 +52,7 @@ public class InputHandler {
 		this.ingredientFilter = runtime.getIngredientFilter();
 		this.recipesGui = runtime.getRecipesGui();
 		this.ingredientListOverlay = ingredientListOverlay;
+		this.guiScreenHelper = guiScreenHelper;
 		this.leftAreaDispatcher = leftAreaDispatcher;
 		this.bookmarkList = bookmarkList;
 
@@ -65,7 +67,8 @@ public class InputHandler {
 	 */
 	@SubscribeEvent
 	public void onGuiKeyboardEvent(GuiScreenEvent.KeyboardInputEvent.Pre event) {
-		if (hasKeyboardFocus()) {
+		GuiScreen guiScreen = event.getGui();
+		if (guiScreenHelper.getGuiProperties(guiScreen) != null && hasKeyboardFocus()) {
 			handleKeyEvent();
 			event.setCanceled(true);
 		}
@@ -76,7 +79,8 @@ public class InputHandler {
 	 */
 	@SubscribeEvent
 	public void onGuiKeyboardEvent(GuiScreenEvent.KeyboardInputEvent.Post event) {
-		if (!hasKeyboardFocus() && handleKeyEvent()) {
+		GuiScreen guiScreen = event.getGui();
+		if (guiScreenHelper.getGuiProperties(guiScreen) != null && !hasKeyboardFocus() && handleKeyEvent()) {
 			event.setCanceled(true);
 		}
 	}
@@ -84,6 +88,9 @@ public class InputHandler {
 	@SubscribeEvent
 	public void onGuiMouseEvent(GuiScreenEvent.MouseInputEvent.Pre event) {
 		GuiScreen guiScreen = event.getGui();
+		if (guiScreenHelper.getGuiProperties(guiScreen) == null) {
+			return;
+		}
 		Minecraft minecraft = guiScreen.mc;
 		if (minecraft != null) {
 			int x = Mouse.getEventX() * guiScreen.width / minecraft.displayWidth;
