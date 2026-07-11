@@ -141,6 +141,10 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 
 		this.xSize = 198;
 		this.ySize = this.height - 68;
+		if (this.ySize < Config.minRecipeGuiHeight) {
+			this.ySize = Config.minRecipeGuiHeight;
+		}
+
 		int extraSpace = 0;
 		final int maxHeight = Config.getMaxRecipeGuiHeight();
 		if (this.ySize > maxHeight) {
