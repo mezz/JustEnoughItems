@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.Screen;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 public class CombinedMouseHandler implements IMouseHandler {
 	private final Int2ObjectMap<IMouseHandler> mousedDown = new Int2ObjectArrayMap<>();
@@ -89,10 +90,19 @@ public class CombinedMouseHandler implements IMouseHandler {
 	 */
 	@Nullable
 	private IMouseHandler handleClickInternal(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState mouseClickState) {
+		return handleClickInternal(this.mouseHandlers, mouseButton, mouseHandler -> mouseHandler.handleClick(screen, mouseX, mouseY, mouseButton, mouseClickState));
+	}
+
+	@Nullable
+	static IMouseHandler handleClickInternal(
+		List<IMouseHandler> mouseHandlers,
+		int mouseButton,
+		Function<IMouseHandler, IMouseHandler> handleInput
+	) {
 		IMouseHandler firstHandled = null;
-		for (IMouseHandler mouseHandler : this.mouseHandlers) {
+		for (IMouseHandler mouseHandler : mouseHandlers) {
 			if (firstHandled == null) {
-				firstHandled = mouseHandler.handleClick(screen, mouseX, mouseY, mouseButton, mouseClickState);
+				firstHandled = handleInput.apply(mouseHandler);
 				if (firstHandled == null) {
 					mouseHandler.handleMouseClickedOut(mouseButton);
 				}
