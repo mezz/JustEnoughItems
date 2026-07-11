@@ -15,7 +15,6 @@
  */
 package mezz.jei.core.search.suffixtree;
 
-import mezz.jei.core.search.ISearchStorage;
 import mezz.jei.core.util.Pair;
 import mezz.jei.core.util.SubString;
 import org.jetbrains.annotations.Nullable;
@@ -64,7 +63,7 @@ import java.util.function.Consumer;
  * - formatting
  * - refactored and optimized
  */
-public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
+public class GeneralizedSuffixTree<T> {
 	/**
 	 * The root of the suffix tree
 	 */
@@ -83,7 +82,6 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 	 * @param word the key to search for
 	 * @param resultsConsumer accepts the results data
 	 */
-	@Override
 	public void getSearchResults(String word, Consumer<Collection<T>> resultsConsumer) {
 		Node<T> tmpNode = searchNode(root, word);
 		if (tmpNode == null) {
@@ -93,7 +91,6 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 		tmpNode.getData(resultsConsumer);
 	}
 
-	@Override
 	public void getAllElements(Consumer<Collection<T>> resultsConsumer) {
 		root.getData(resultsConsumer);
 	}
@@ -142,7 +139,6 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 	 * @param key   the string key that will be added to the index
 	 * @param value the value that will be added
 	 */
-	@Override
 	public void put(String key, T value) {
 		// reset activeLeaf
 		activeLeaf = root;
@@ -377,7 +373,6 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 		return subString.shorten(1);
 	}
 
-	@Override
 	public String statistics() {
 		return "GeneralizedSuffixTree:" +
 			"\nNode size stats: \n" + this.root.nodeSizeStats() +

@@ -4,11 +4,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.core.search.CombinedSearchables;
-import mezz.jei.core.search.ISearchStorage;
-import mezz.jei.core.search.ISearchable;
-import mezz.jei.core.search.PrefixInfo;
-import mezz.jei.core.search.PrefixedSearchable;
+import mezz.jei.api.search.ISearchStorage;
 import mezz.jei.core.search.SearchMode;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
@@ -29,8 +25,10 @@ public class ElementSearch implements IElementSearch {
 	private final Map<PrefixInfo<IListElementInfo<?>, IListElement<?>>, PrefixedSearchable<IListElementInfo<?>, IListElement<?>>> prefixedSearchables = new IdentityHashMap<>();
 	private final CombinedSearchables<IListElement<?>> combinedSearchables = new CombinedSearchables<>();
 	private final Map<Object, IListElement<?>> allElements = new HashMap<>();
+	private final PrefixInfo<IListElementInfo<?>, IListElement<?>> noPrefix;
 
 	public ElementSearch(ElementPrefixParser elementPrefixParser) {
+		this.noPrefix = elementPrefixParser.getNoPrefix();
 		for (PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo : elementPrefixParser.allPrefixInfos()) {
 			ISearchStorage<IListElement<?>> storage = prefixInfo.createStorage();
 			var prefixedSearchable = new PrefixedSearchable<>(storage, prefixInfo);
@@ -49,7 +47,7 @@ public class ElementSearch implements IElementSearch {
 		Set<IListElement<?>> results = Collections.newSetFromMap(new IdentityHashMap<>());
 
 		PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo = tokenInfo.prefixInfo();
-		if (prefixInfo == ElementPrefixParser.NO_PREFIX) {
+		if (prefixInfo == noPrefix) {
 			combinedSearchables.getSearchResults(token, results::addAll);
 			return results;
 		}
@@ -74,9 +72,16 @@ public class ElementSearch implements IElementSearch {
 				Collection<String> strings = prefixedSearchable.getStrings(info);
 				ISearchStorage<IListElement<?>> storage = prefixedSearchable.getSearchStorage();
 				for (String string : strings) {
-					storage.put(string, element);
+					putIfNotBlank(storage, string, element);
 				}
 			}
+		}
+	}
+
+	static <T> void putIfNotBlank(ISearchStorage<T> storage, String string, T element) {
+		String trimmedString = string.trim();
+		if (!trimmedString.isEmpty()) {
+			storage.put(trimmedString, element);
 		}
 	}
 
@@ -99,7 +104,7 @@ public class ElementSearch implements IElementSearch {
 				for (IListElementInfo<?> info : infos) {
 					Collection<String> strings = prefixedSearchable.getStrings(info);
 					for (String string : strings) {
-						storage.put(string, info.getElement());
+						putIfNotBlank(storage, string, info.getElement());
 					}
 				}
 			}

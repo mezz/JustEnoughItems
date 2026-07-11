@@ -64,6 +64,7 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
     include("mezz/jei/test/gui/**")
+    include("mezz/jei/gui/**")
     exclude("mezz/jei/test/gui/lib/**")
     outputs.upToDateWhen { false }
     testLogging {

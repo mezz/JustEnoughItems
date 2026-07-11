@@ -23,15 +23,16 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class ListElementInfo<V> implements IListElementInfo<V> {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
 	private static int elementCount = 0;
 
 	private final IListElement<V> element;
@@ -144,10 +145,22 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 			string = Translator.toLowercaseWithLocale(string);
 			// Split tooltip strings into words to keep them from being too long.
 			// Longer strings are more expensive for the suffix tree to handle.
-			String[] strings = string.split(" ");
-			Collections.addAll(result, strings);
+			addSplitStrings(result, string);
 		}
 		return result;
+	}
+
+	private static void addSplitStrings(Set<String> result, String string) {
+		string = string.trim();
+		if (string.isEmpty()) {
+			return;
+		}
+		String[] strings = WHITESPACE_PATTERN.split(string);
+		for (String splitString : strings) {
+			if (!splitString.isEmpty()) {
+				result.add(splitString);
+			}
+		}
 	}
 
 	@Override
@@ -189,7 +202,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 				String name = itemGroup.getDisplayName().getString();
 				name = StringUtil.removeChatFormatting(name);
 				name = Translator.toLowercaseWithLocale(name);
-				Collections.addAll(creativeTabStrings, name.split(" "));
+				addSplitStrings(creativeTabStrings, name);
 			}
 		}
 		return creativeTabStrings;

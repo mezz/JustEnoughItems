@@ -1,4 +1,6 @@
-package mezz.jei.core.search;
+package mezz.jei.gui.search;
+
+import mezz.jei.core.search.SearchMode;
 
 import java.util.Collection;
 import java.util.function.Consumer;
