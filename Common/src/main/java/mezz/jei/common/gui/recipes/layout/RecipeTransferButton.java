@@ -59,9 +59,18 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 			} else {
 				RecipeSlots recipeSlots = recipeLayout.getRecipeSlots();
 				IRecipeSlotsView recipeSlotsView = recipeSlots.getView();
-				recipeTransferError.showError(poseStack, mouseX, mouseY, recipeSlotsView, recipeLayout.getPosX(), recipeLayout.getPosY());
-				recipeTransferError.showError(poseStack, mouseX, mouseY, recipeLayout.getLegacyAdapter(), recipeLayout.getPosX(), recipeLayout.getPosY());
+				runWithRestoredPose(poseStack, () -> recipeTransferError.showError(poseStack, mouseX, mouseY, recipeSlotsView, recipeLayout.getPosX(), recipeLayout.getPosY()));
+				runWithRestoredPose(poseStack, () -> recipeTransferError.showError(poseStack, mouseX, mouseY, recipeLayout.getLegacyAdapter(), recipeLayout.getPosX(), recipeLayout.getPosY()));
 			}
+		}
+	}
+
+	private static void runWithRestoredPose(PoseStack poseStack, Runnable action) {
+		poseStack.pushPose();
+		try {
+			action.run();
+		} finally {
+			poseStack.popPose();
 		}
 	}
 
