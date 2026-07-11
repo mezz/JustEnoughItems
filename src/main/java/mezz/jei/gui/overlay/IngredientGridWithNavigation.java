@@ -122,22 +122,18 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	@Override
 	public boolean handleMouseScrolled(int mouseX, int mouseY, int scrollDelta) {
 		if (scrollDelta < 0) {
-			this.pageDelegate.nextPage();
-			return true;
+			return this.pageDelegate.nextPage();
 		} else if (scrollDelta > 0) {
-			this.pageDelegate.previousPage();
-			return true;
+			return this.pageDelegate.previousPage();
 		}
 		return false;
 	}
 
 	public boolean onKeyPressed(char typedChar, int keyCode) {
 		if (KeyBindings.nextPage.isActiveAndMatches(keyCode)) {
-			this.pageDelegate.nextPage();
-			return true;
+			return this.pageDelegate.nextPage();
 		} else if (KeyBindings.previousPage.isActiveAndMatches(keyCode)) {
-			this.pageDelegate.previousPage();
-			return true;
+			return this.pageDelegate.previousPage();
 		}
 		return checkHotbarKeys(keyCode);
 	}
@@ -202,6 +198,9 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	private class IngredientGridPaged implements IPaged {
 		@Override
 		public boolean nextPage() {
+			if (getPageCount() <= 1) {
+				return false;
+			}
 			final int itemsCount = ingredientSource.size();
 			if (itemsCount > 0) {
 				firstItemIndex += ingredientGrid.size();
@@ -219,6 +218,9 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 
 		@Override
 		public boolean previousPage() {
+			if (getPageCount() <= 1) {
+				return false;
+			}
 			final int itemsPerPage = ingredientGrid.size();
 			if (itemsPerPage == 0) {
 				firstItemIndex = 0;
@@ -246,15 +248,13 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		@Override
 		public boolean hasNext() {
 			// true if there is more than one page because this wraps around
-			int itemsPerPage = ingredientGrid.size();
-			return itemsPerPage > 0 && ingredientSource.size() > itemsPerPage;
+			return getPageCount() > 1;
 		}
 
 		@Override
 		public boolean hasPrevious() {
 			// true if there is more than one page because this wraps around
-			int itemsPerPage = ingredientGrid.size();
-			return itemsPerPage > 0 && ingredientSource.size() > itemsPerPage;
+			return getPageCount() > 1;
 		}
 
 		@Override
