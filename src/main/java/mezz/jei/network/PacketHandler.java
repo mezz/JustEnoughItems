@@ -54,12 +54,21 @@ public class PacketHandler {
 			packetBuffer.retain();
 			threadListener.addScheduledTask(() -> {
 				try {
-					packetHandler.readPacketData(packetBuffer, player);
+					handlePacket(packetHandler, packetBuffer, player);
+				} finally {
 					packetBuffer.release();
-				} catch (IOException e) {
-					Log.get().error("Network Error", e);
 				}
 			});
+		} else {
+			handlePacket(packetHandler, packetBuffer, player);
+		}
+	}
+
+	private static void handlePacket(IPacketJeiHandler packetHandler, PacketBuffer packetBuffer, EntityPlayer player) {
+		try {
+			packetHandler.readPacketData(packetBuffer, player);
+		} catch (IOException e) {
+			Log.get().error("Network Error", e);
 		}
 	}
 }
