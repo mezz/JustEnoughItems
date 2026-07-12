@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.core.util.PathUtil;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IBookmark;
@@ -51,10 +52,11 @@ public class BookmarkConfig implements IBookmarkConfig {
 
 	@Override
 	public void saveBookmarks(IIngredientManager ingredientManager, List<IBookmark> ingredientList) {
+		List<IBookmark> bookmarksSnapshot = List.copyOf(ingredientList);
 		getPath(jeiConfigurationDir)
 			.ifPresent(path -> {
 				List<String> strings = new ArrayList<>();
-				for (IBookmark bookmark : ingredientList) {
+				for (IBookmark bookmark : bookmarksSnapshot) {
 					ITypedIngredient<?> typedIngredient = bookmark.getElement().getTypedIngredient();
 					if (typedIngredient.getIngredient() instanceof ItemStack stack) {
 						strings.add(MARKER_STACK + stack.save(new CompoundTag()));
@@ -64,8 +66,9 @@ public class BookmarkConfig implements IBookmarkConfig {
 				}
 
 				try {
-					Files.write(path, strings);
-				} catch (IOException e) {
+					PathUtil.writeUsingTempFile(path, strings);
+					LOGGER.debug("Saved bookmarks list to file {}", path);
+				} catch (RuntimeException | IOException e) {
 					LOGGER.error("Failed to save bookmarks list to file {}", path, e);
 				}
 			});
