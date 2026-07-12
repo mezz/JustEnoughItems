@@ -122,13 +122,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 @JeiPlugin
 public class VanillaPlugin implements IModPlugin {
@@ -270,6 +267,7 @@ public class VanillaPlugin implements IModPlugin {
 		var craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
 		var handledCraftingRecipes = craftingRecipes.getHandled();
 		var unhandledCraftingRecipes = craftingRecipes.getUnhandled();
+		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		var specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, jeiHelpers);
 
 		registration.addRecipes(RecipeTypes.CRAFTING, handledCraftingRecipes);
@@ -291,7 +289,6 @@ public class VanillaPlugin implements IModPlugin {
 		ClientLevel level = minecraft.level;
 		ErrorUtil.checkNotNull(level, "minecraft.level");
 		PotionBrewing potionBrewing = level.potionBrewing();
-		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		List<IJeiBrewingRecipe> brewingRecipes = recipeHelper.getBrewingRecipes(ingredientManager, vanillaRecipeFactory, potionBrewing, contextMap);
 		brewingRecipes.sort(Comparator.comparingInt(IJeiBrewingRecipe::getBrewingSteps));
 		registration.addRecipes(RecipeTypes.BREWING, brewingRecipes);
@@ -377,27 +374,27 @@ public class VanillaPlugin implements IModPlugin {
 	 * we do not replace it.
 	 */
 	private static List<RecipeHolder<CraftingRecipe>> replaceSpecialCraftingRecipes(List<RecipeHolder<CraftingRecipe>> unhandledCraftingRecipes, IJeiHelpers jeiHelpers) {
-		Map<Class<? extends CraftingRecipe>, Supplier<List<RecipeHolder<CraftingRecipe>>>> replacers = new IdentityHashMap<>();
-		replacers.put(TippedArrowRecipe.class, () -> TippedArrowRecipeMaker.createRecipes(jeiHelpers));
-		replacers.put(ShieldDecorationRecipe.class, ShieldDecorationRecipeMaker::createRecipes);
-
-		return unhandledCraftingRecipes.stream()
-			.map(RecipeHolder::value)
-			.map(CraftingRecipe::getClass)
-			.filter(replacers::containsKey)
-			.distinct()
-			// distinct + this limit will ensure we stop iterating early if we find all the recipes we're looking for.
-			.limit(replacers.size())
-			.flatMap(recipeClass -> {
-				var supplier = replacers.get(recipeClass);
+		List<RecipeHolder<CraftingRecipe>> recipes = new ArrayList<>();
+		boolean tippedArrowRecipesAdded = false;
+		boolean shieldDecorationRecipesAdded = false;
+		for (RecipeHolder<CraftingRecipe> recipeHolder : unhandledCraftingRecipes) {
+			CraftingRecipe recipe = recipeHolder.value();
+			if (recipe instanceof TippedArrowRecipe && !tippedArrowRecipesAdded) {
 				try {
-					return supplier.get()
-						.stream();
+					recipes.addAll(TippedArrowRecipeMaker.createRecipes(jeiHelpers));
+					tippedArrowRecipesAdded = true;
 				} catch (RuntimeException e) {
-					LOGGER.error("Failed to create JEI recipes for {}", recipeClass, e);
-					return Stream.of();
+					LOGGER.error("Failed to create JEI recipes for {}", recipe.getClass(), e);
 				}
-			})
-			.toList();
+			} else if (recipe instanceof ShieldDecorationRecipe && !shieldDecorationRecipesAdded) {
+				try {
+					recipes.addAll(ShieldDecorationRecipeMaker.createRecipes());
+					shieldDecorationRecipesAdded = true;
+				} catch (RuntimeException e) {
+					LOGGER.error("Failed to create JEI recipes for {}", recipe.getClass(), e);
+				}
+			}
+		}
+		return List.copyOf(recipes);
 	}
 }
