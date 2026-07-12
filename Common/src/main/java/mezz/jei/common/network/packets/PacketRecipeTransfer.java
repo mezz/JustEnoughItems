@@ -11,6 +11,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,6 +21,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class PacketRecipeTransfer extends PacketJei {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	public final Collection<TransferOperation> transferOperations;
 	public final Collection<Slot> craftingSlots;
 	public final Collection<Slot> inventorySlots;
@@ -78,19 +83,15 @@ public class PacketRecipeTransfer extends PacketJei {
 		}
 
 		int craftingSlotsSize = buf.readVarInt();
-		List<Slot> craftingSlots = new ArrayList<>(craftingSlotsSize);
-		for (int i = 0; i < craftingSlotsSize; i++) {
-			int slotIndex = buf.readVarInt();
-			Slot slot = container.getSlot(slotIndex);
-			craftingSlots.add(slot);
+		List<Slot> craftingSlots = readSlots(buf, container, craftingSlotsSize);
+		if (craftingSlots == null) {
+			return CompletableFuture.completedFuture(null);
 		}
 
 		int inventorySlotsSize = buf.readVarInt();
-		List<Slot> inventorySlots = new ArrayList<>();
-		for (int i = 0; i < inventorySlotsSize; i++) {
-			int slotIndex = buf.readVarInt();
-			Slot slot = container.getSlot(slotIndex);
-			inventorySlots.add(slot);
+		List<Slot> inventorySlots = readSlots(buf, container, inventorySlotsSize);
+		if (inventorySlots == null) {
+			return CompletableFuture.completedFuture(null);
 		}
 		boolean maxTransfer = buf.readBoolean();
 		boolean requireCompleteSets = buf.readBoolean();
@@ -106,6 +107,35 @@ public class PacketRecipeTransfer extends PacketJei {
 				requireCompleteSets
 			)
 		);
+	}
+
+	@Nullable
+	private static List<Slot> readSlots(FriendlyByteBuf buf, AbstractContainerMenu container, int slotCount) {
+		if (slotCount > container.slots.size()) {
+			LOGGER.error(
+				"Recipe transfer packet has too many slot ids {} for container {} with {} slots",
+				slotCount,
+				container.getClass(),
+				container.slots.size()
+			);
+			return null;
+		}
+
+		List<Slot> slots = new ArrayList<>(slotCount);
+		for (int i = 0; i < slotCount; i++) {
+			int slotIndex = buf.readVarInt();
+			if (slotIndex < 0 || slotIndex >= container.slots.size()) {
+				LOGGER.error(
+					"Recipe transfer packet has invalid slot id {} for container {}",
+					slotIndex,
+					container.getClass()
+				);
+				return null;
+			}
+			Slot slot = container.getSlot(slotIndex);
+			slots.add(slot);
+		}
+		return slots;
 	}
 
 }
