@@ -194,24 +194,26 @@ neoForge {
 	runs {
 		configureEach {
 			loadedMods.set(setOf(
-				mods.named("jei").get(),
-				mods.named("jeidebug").get()
+				mods.named("jei").get()
 			))
 		}
 		create("client") {
 			client()
+			loadedMods.add(mods.named("jeidebug"))
 			systemProperty("forge.logging.console.level", "debug")
 			gameDirectory = file("run/client/Dev")
 			logLevel = Level.DEBUG
 		}
 		create("client_01") {
 			client()
+			loadedMods.add(mods.named("jeidebug"))
 			gameDirectory = file("run/client/Player01")
 			programArguments.addAll("--username", "Player01")
 			logLevel = Level.DEBUG
 		}
 		create("server") {
 			server()
+			loadedMods.add(mods.named("jeidebug"))
 			systemProperty("forge.logging.console.level", "debug")
 			gameDirectory = file("run/server")
 			programArguments.addAll("nogui")
@@ -276,8 +278,7 @@ val writeExternalServerLaunchProperties = tasks.register<WriteProperties>("write
 	property("neoForgeServerWithJei.vmArgsFile", neoForgeServerRunFile(neoForgeServerWithJeiRunName, "RunVmArgs.txt").absolutePath)
 	property("neoForgeServerWithJei.programArgsFile", neoForgeServerRunFile(neoForgeServerWithJeiRunName, "RunProgramArgs.txt").absolutePath)
 	property("neoForgeServerWithJei.modFolders", modFoldersProperty(
-		neoForge.mods.named("jei").get(),
-		neoForge.mods.named("jeidebug").get()
+		neoForge.mods.named("jei").get()
 	))
 	property("neoForgeServerWithoutJei.classpathArgsFile", neoForgeServerRunFile(neoForgeServerWithoutJeiRunName, "RunClasspath.txt").absolutePath)
 	property("neoForgeServerWithoutJei.vmArgsFile", neoForgeServerRunFile(neoForgeServerWithoutJeiRunName, "RunVmArgs.txt").absolutePath)
