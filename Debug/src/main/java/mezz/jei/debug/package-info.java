@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package mezz.jei.library.plugins.debug;
+package mezz.jei.debug;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

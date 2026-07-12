@@ -1,7 +1,7 @@
 package mezz.jei.fabric.config;
 
 import mezz.jei.core.config.IServerConfig;
-import mezz.jei.core.util.PathUtil;
+import mezz.jei.common.util.PathUtil;
 import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

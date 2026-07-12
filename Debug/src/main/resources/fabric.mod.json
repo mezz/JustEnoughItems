@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "${modId}-debug",
+  "version": "${version}",
+  "name": "${modName} Debug",
+  "environment": "client",
+  "entrypoints": {
+    "jei_mod_plugin": [
+      "mezz.jei.debug.JeiDebugPlugin"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${fabricLoaderVersion}",
+    "java": ">=${modJavaVersion}",
+    "${modId}": "${version}"
+  }
+}

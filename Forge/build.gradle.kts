@@ -71,10 +71,12 @@ val dependencyProjects: List<Project> = listOf(
 	project(":Gui"),
 	project(":ForgeApi"),
 )
+val debugProject = project(":Debug")
 
 dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
 }
+project.evaluationDependsOn(debugProject.path)
 project.evaluationDependsOn(":Changelog")
 
 java {
@@ -157,6 +159,9 @@ legacyForge {
 			for (p in dependencyProjects) {
 				sourceSet(p.sourceSets.main.get())
 			}
+		}
+		create("${modId}debug") {
+			sourceSet(debugProject.sourceSets.main.get())
 		}
 	}
 

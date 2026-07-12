@@ -1,4 +1,4 @@
-package mezz.jei.library.plugins.debug;
+package mezz.jei.debug;
 
 import net.minecraft.network.chat.TextComponent;
 import mezz.jei.api.constants.ModIds;

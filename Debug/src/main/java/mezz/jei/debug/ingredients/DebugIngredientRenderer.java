@@ -1,4 +1,4 @@
-package mezz.jei.library.plugins.jei.ingredients;
+package mezz.jei.debug.ingredients;
 
 import net.minecraft.network.chat.TextComponent;
 import com.mojang.blaze3d.systems.RenderSystem;
