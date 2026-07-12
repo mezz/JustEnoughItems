@@ -1,6 +1,7 @@
 package mezz.jei.library.load;
 
 import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
@@ -33,6 +34,7 @@ import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.AdvancedRegistration;
 import mezz.jei.library.load.registration.GuiHandlerRegistration;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
+import mezz.jei.library.load.registration.ModInfoRegistration;
 import mezz.jei.library.load.registration.RecipeCatalystRegistration;
 import mezz.jei.library.load.registration.RecipeCategoryRegistration;
 import mezz.jei.library.load.registration.RecipeRegistration;
@@ -91,7 +93,10 @@ public class PluginLoader {
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		GuiHelper guiHelper = new GuiHelper(ingredientManager, data.textures());
 		FocusFactory focusFactory = new FocusFactory(ingredientManager);
-		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, ingredientManager);
+		ModInfoRegistration modInfoRegistration = new ModInfoRegistration();
+		PluginCaller.callOnPlugins("Registering Mod Info", plugins, p -> p.registerModInfo(modInfoRegistration));
+		ImmutableSetMultimap<String, String> modAliases = modInfoRegistration.getModAliases();
+		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, ingredientManager, modAliases);
 		this.jeiHelpers = new JeiHelpers(guiHelper, stackHelper, modIdHelper, focusFactory, colorHelper, ingredientManager);
 	}
 
