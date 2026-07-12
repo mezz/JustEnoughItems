@@ -48,7 +48,7 @@ public interface IAdvancedRegistration {
 	 * Get access to disable various JEI features.
 	 * This may be needed by mods that substantially change hard-coded vanilla behaviors.
 	 *
-	 * @since 17.3.0
+	 * @since 15.3.0
 	 */
 	IJeiFeatures getJeiFeatures();
 }
