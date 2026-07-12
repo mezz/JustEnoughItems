@@ -39,6 +39,10 @@ public class DrawableSprite implements IDrawableStatic {
 		this(() -> textureAtlas.getSprite(spriteId));
 	}
 
+	public DrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId, int width, int height) {
+		this(() -> textureAtlas.getSprite(spriteId), width, height);
+	}
+
 	DrawableSprite(Supplier<TextureAtlasSprite> spriteSupplier) {
 		this(spriteSupplier, 0, 0);
 	}
