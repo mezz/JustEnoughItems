@@ -19,8 +19,23 @@ val minecraftVersion: String by extra
 val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val lwjglVersionMacArm64: String by extra
 val bakedSubstringIndexVersion: String by extra
 val parchmentVersionForge: String by extra
+
+val isAppleSilicon = System.getProperty("os.name").startsWith("Mac") &&
+	System.getProperty("os.arch") in setOf("aarch64", "arm64")
+
+if (isAppleSilicon) {
+	configurations.configureEach {
+		resolutionStrategy.eachDependency {
+			if (requested.group == "org.lwjgl") {
+				useVersion(lwjglVersionMacArm64)
+				because("Minecraft 1.18's LWJGL 3.2.1 has no Apple Silicon natives")
+			}
+		}
+	}
+}
 
 val forgeArtifactVersion = "${minecraftVersion}-${forgeVersion}"
 val parchmentMinecraftVersion = minecraftVersion
@@ -85,6 +100,19 @@ fun Configuration.singleFileContents(): Provider<String> =
 		.map { elements -> elements.single() }
 		.map { it.asFile.readText() }
 
+val appleSiliconLwjglNatives = rootProject.configurations.named("appleSiliconLwjglNatives")
+val appleSiliconLwjglNativeDirectory = layout.buildDirectory.dir("lwjglNatives/macosArm64")
+val extractAppleSiliconLwjglNatives = tasks.register<Sync>("extractAppleSiliconLwjglNatives") {
+	from({ appleSiliconLwjglNatives.get().map { zipTree(it) } })
+	include("**/*.dylib")
+	eachFile {
+		path = name
+	}
+	includeEmptyDirs = false
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	into(appleSiliconLwjglNativeDirectory)
+}
+
 dependencies {
 	dependencyProjects.forEach {
 		compileOnly(it)
@@ -135,12 +163,20 @@ legacyForge {
 	runs {
 		create("clientDev") {
 			client()
+			if (isAppleSilicon) {
+				taskBefore(extractAppleSiliconLwjglNatives)
+				systemProperty("org.lwjgl.librarypath", appleSiliconLwjglNativeDirectory.get().asFile.absolutePath)
+			}
 			systemProperty("forge.logging.console.level", "debug")
 			gameDirectory = file("run/client/Dev")
 			logLevel = Level.DEBUG
 		}
 		create("clientPlayer01") {
 			client()
+			if (isAppleSilicon) {
+				taskBefore(extractAppleSiliconLwjglNatives)
+				systemProperty("org.lwjgl.librarypath", appleSiliconLwjglNativeDirectory.get().asFile.absolutePath)
+			}
 			systemProperty("forge.logging.console.level", "debug")
 			gameDirectory = file("run/client/Player01")
 			programArguments.addAll("--username", "Player01")
@@ -148,6 +184,10 @@ legacyForge {
 		}
 		create("clientPlayer02") {
 			client()
+			if (isAppleSilicon) {
+				taskBefore(extractAppleSiliconLwjglNatives)
+				systemProperty("org.lwjgl.librarypath", appleSiliconLwjglNativeDirectory.get().asFile.absolutePath)
+			}
 			systemProperty("forge.logging.console.level", "debug")
 			gameDirectory = file("run/client/Player02")
 			programArguments.addAll("--username", "Player02")

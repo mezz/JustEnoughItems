@@ -29,6 +29,29 @@ repositories {
     mavenCentral()
 }
 
+val lwjglVersionMacArm64: String by extra
+
+val appleSiliconLwjglTestRuntime = configurations.create("appleSiliconLwjglTestRuntime") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    isTransitive = false
+}
+
+val appleSiliconLwjglNatives = configurations.create("appleSiliconLwjglNatives") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    isTransitive = false
+}
+
+dependencies {
+    add(appleSiliconLwjglTestRuntime.name, "org.lwjgl:lwjgl:$lwjglVersionMacArm64")
+    add(appleSiliconLwjglTestRuntime.name, "org.lwjgl:lwjgl:$lwjglVersionMacArm64:natives-macos-arm64")
+
+    listOf("lwjgl", "lwjgl-glfw", "lwjgl-jemalloc", "lwjgl-openal", "lwjgl-opengl", "lwjgl-stb", "lwjgl-tinyfd").forEach {
+        add(appleSiliconLwjglNatives.name, "org.lwjgl:$it:$lwjglVersionMacArm64:natives-macos-arm64")
+    }
+}
+
 // gradle.properties
 val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
