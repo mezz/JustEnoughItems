@@ -1,8 +1,4 @@
 pipeline {
-    options {
-        disableConcurrentBuilds(abortPrevious: true)
-    }
-
     agent any
     tools {
         jdk "jdk-21"
