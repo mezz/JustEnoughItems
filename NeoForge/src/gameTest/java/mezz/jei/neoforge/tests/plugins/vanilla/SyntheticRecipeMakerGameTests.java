@@ -16,9 +16,15 @@ import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
 import mezz.jei.neoforge.tests.lib.TestGuiHelper;
 import mezz.jei.neoforge.tests.lib.TestIngredientManagers;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.HolderOwner;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
@@ -32,6 +38,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
@@ -44,6 +51,7 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +82,22 @@ public final class SyntheticRecipeMakerGameTests {
 		ContextMap displayContext = createDisplayContext(helper);
 		List<ItemStack> expectedOutputs = createExpectedShieldDecorationOutputs();
 		List<RecipeHolder<CraftingRecipe>> jeiRecipes = createShieldDecorationRecipes(helper);
+
+		assertJeiRecipesCraftExpectedOutputs(helper, displayContext, expectedOutputs, jeiRecipes);
+
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Shield-decoration recipes with an unbound vanilla banner tag have JEI recipes that craft in a real crafting table.")
+	public static void shieldDecorationRecipesWithUnboundBannerTagCraftExpectedRegistryOutputs(JeiGameTestHelper helper) {
+		ContextMap displayContext = createDisplayContext(helper);
+		List<ItemStack> expectedOutputs = getVanillaBanners()
+			.stream()
+			.map(banner -> createDecoratedOutput(Items.SHIELD, Items.SHIELD, banner))
+			.toList();
+		List<RecipeHolder<CraftingRecipe>> jeiRecipes = createShieldDecorationRecipesWithUnboundBannerTag();
 
 		assertJeiRecipesCraftExpectedOutputs(helper, displayContext, expectedOutputs, jeiRecipes);
 
@@ -145,6 +169,37 @@ public final class SyntheticRecipeMakerGameTests {
 			.filter(recipeHolder -> recipeHolder.value() instanceof ShieldDecorationRecipe)
 			.forEach(recipeHolder -> recipeMaker.replace(recipeHolder, recipes::add));
 		return recipes;
+	}
+
+	private static List<RecipeHolder<CraftingRecipe>> createShieldDecorationRecipesWithUnboundBannerTag() {
+		Ingredient unboundBannerTag = createUnboundVanillaBannerTagIngredient();
+		ShieldDecorationRecipe shieldDecorationRecipe = new ShieldDecorationRecipe(
+			unboundBannerTag,
+			Ingredient.of(Items.SHIELD),
+			new ItemStackTemplate(Items.SHIELD)
+		);
+		RecipeHolder<CraftingRecipe> originalRecipe = new RecipeHolder<>(
+			ResourceKey.create(Registries.RECIPE, Identifier.withDefaultNamespace("unbound_banner_shield_decoration")),
+			shieldDecorationRecipe
+		);
+		List<RecipeHolder<CraftingRecipe>> recipes = new ArrayList<>();
+		ShieldDecorationRecipeMaker recipeMaker = new ShieldDecorationRecipeMaker(Services.PLATFORM.getRecipeHelper());
+		recipeMaker.replace(originalRecipe, recipes::add);
+		return recipes;
+	}
+
+	private static Ingredient createUnboundVanillaBannerTagIngredient() {
+		Registry<Item> itemRegistry = RegistryUtil.getRegistry(Registries.ITEM);
+		try {
+			// Client fallback recipes can contain tag ingredients before tags are bound.
+			Constructor<?> constructor = HolderSet.Named.class.getDeclaredConstructor(HolderOwner.class, TagKey.class);
+			constructor.setAccessible(true);
+			@SuppressWarnings("unchecked")
+			HolderSet<Item> unboundBannerTag = (HolderSet<Item>) constructor.newInstance(itemRegistry, ItemTags.BANNERS);
+			return Ingredient.of(unboundBannerTag);
+		} catch (ReflectiveOperationException e) {
+			throw new AssertionError("Failed to create unbound vanilla banner tag ingredient", e);
+		}
 	}
 
 	private static List<ItemStack> createExpectedShieldDecorationOutputs() {
