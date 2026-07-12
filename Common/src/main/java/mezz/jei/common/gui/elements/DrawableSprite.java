@@ -39,6 +39,18 @@ public class DrawableSprite implements IDrawableStatic {
 		this(() -> textureAtlas.getSprite(spriteId), textureAtlas.location());
 	}
 
+	public DrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId, int width, int height) {
+		this(() -> textureAtlas.getSprite(spriteId), textureAtlas.location(), width, height);
+	}
+
+	DrawableSprite(Supplier<TextureAtlasSprite> spriteSupplier) {
+		this(spriteSupplier, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
+	}
+
+	DrawableSprite(Supplier<TextureAtlasSprite> spriteSupplier, int width, int height) {
+		this(spriteSupplier, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS, width, height);
+	}
+
 	DrawableSprite(Supplier<TextureAtlasSprite> spriteSupplier, ResourceLocation atlasLocation) {
 		this(spriteSupplier, atlasLocation, 0, 0);
 	}
@@ -63,12 +75,18 @@ public class DrawableSprite implements IDrawableStatic {
 
 	@Override
 	public int getWidth() {
+		if (width > 0) {
+			return width;
+		}
 		TextureAtlasSprite sprite = spriteSupplier.get();
 		return getWidth(sprite);
 	}
 
 	@Override
 	public int getHeight() {
+		if (height > 0) {
+			return height;
+		}
 		TextureAtlasSprite sprite = spriteSupplier.get();
 		return getHeight(sprite);
 	}

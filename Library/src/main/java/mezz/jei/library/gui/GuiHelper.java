@@ -39,6 +39,7 @@ public class GuiHelper implements IGuiHelper {
 	}
 
 	@Override
+	@Deprecated(since = "11.22.0")
 	public IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId) {
 		ErrorUtil.checkNotNull(textureAtlas, "textureAtlas");
 		ErrorUtil.checkNotNull(spriteId, "spriteId");
@@ -46,10 +47,25 @@ public class GuiHelper implements IGuiHelper {
 	}
 
 	@Override
+	public IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId, int width, int height) {
+		ErrorUtil.checkNotNull(textureAtlas, "textureAtlas");
+		ErrorUtil.checkNotNull(spriteId, "spriteId");
+		checkPositive(width, "width");
+		checkPositive(height, "height");
+		return new DrawableSprite(textureAtlas, spriteId, width, height);
+	}
+
+	@Override
 	public IScalableDrawable createScalableDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId) {
 		ErrorUtil.checkNotNull(textureAtlas, "textureAtlas");
 		ErrorUtil.checkNotNull(spriteId, "spriteId");
 		return new ScalableDrawable(textureAtlas, spriteId);
+	}
+
+	private static void checkPositive(int value, String name) {
+		if (value <= 0) {
+			throw new IllegalArgumentException(name + " must be positive.");
+		}
 	}
 
 	@Override

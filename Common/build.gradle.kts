@@ -65,6 +65,7 @@ dependencies {
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+    include("mezz/jei/common/gui/elements/**")
     include("mezz/jei/test/**")
     include("mezz/jei/common/util/**")
     exclude("mezz/jei/test/lib/**")
