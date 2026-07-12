@@ -49,7 +49,7 @@ public final class ShieldDecorationRecipeMaker {
 
 		ItemStack output = createOutput(banner);
 
-		ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.shield.decoration." + output.getDescriptionId());
+		ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.shield.decoration." + banner.getDescriptionId());
 		return new ShapelessRecipe(id, "jei.shield.decoration", CraftingBookCategory.MISC, output, inputs);
 	}
 
