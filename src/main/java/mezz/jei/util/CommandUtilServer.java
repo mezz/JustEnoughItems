@@ -26,7 +26,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -133,24 +132,34 @@ public final class CommandUtilServer {
 	}
 
 	public static void mousePickupItemStack(PlayerEntity sender, ItemStack itemStack) {
-		int giveCount;
 		ItemStack itemStackCopy = itemStack.copy();
 		ItemStack existingStack = sender.inventory.getCarried();
-		if (ItemHandlerHelper.canItemStacksStack(existingStack, itemStack)) {
+
+		final int giveCount;
+		if (canStack(existingStack, itemStack)) {
 			int newCount = Math.min(existingStack.getMaxStackSize(), existingStack.getCount() + itemStack.getCount());
 			giveCount = newCount - existingStack.getCount();
-			existingStack.setCount(newCount);
+			if (giveCount > 0) {
+				existingStack.setCount(newCount);
+			}
 		} else {
 			sender.inventory.setCarried(itemStack);
 			giveCount = itemStack.getCount();
 		}
 
-		if (sender instanceof ServerPlayerEntity) {
+		if (giveCount > 0 && sender instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) sender;
 			itemStackCopy.setCount(giveCount);
 			notifyGive(serverPlayerEntity, itemStackCopy);
 			serverPlayerEntity.broadcastCarriedItem();
 		}
+	}
+
+	public static boolean canStack(ItemStack a, ItemStack b) {
+		return !a.isEmpty() &&
+			!b.isEmpty() &&
+			ItemStack.isSame(a, b) &&
+			ItemStack.tagMatches(a, b);
 	}
 
 	/**
