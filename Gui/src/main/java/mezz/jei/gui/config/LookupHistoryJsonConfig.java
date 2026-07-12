@@ -7,6 +7,7 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.file.serializers.TypedIngredientSerializer;
+import mezz.jei.core.util.PathUtil;
 import mezz.jei.common.util.DeduplicatingRunner;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.gui.bookmarks.IBookmark;
@@ -61,10 +62,11 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 		IFocusFactory focusFactory,
 		List<IBookmark> bookmarks
 	) {
+		List<IBookmark> bookmarksSnapshot = List.copyOf(bookmarks);
 		getPath(jeiConfigurationDir)
 			.ifPresent(path -> {
 				delayedSave.run(() -> {
-					save(path, recipeManager, ingredientManager, focusFactory, bookmarks);
+					save(path, recipeManager, ingredientManager, focusFactory, bookmarksSnapshot);
 				});
 			});
 	}
@@ -94,9 +96,9 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 		}
 
 		try {
-			Files.write(path, strings);
+			PathUtil.writeUsingTempFile(path, strings);
 			LOGGER.debug("Saved lookup history config to file {}", path);
-		} catch (IOException e) {
+		} catch (RuntimeException | IOException e) {
 			LOGGER.error("Failed to save lookup history config to file {}", path, e);
 		}
 	}

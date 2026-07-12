@@ -11,6 +11,7 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer.IDeserializeResult;
 import mezz.jei.common.config.file.serializers.TypedIngredientSerializer;
+import mezz.jei.core.util.PathUtil;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IBookmark;
@@ -71,13 +72,14 @@ public class BookmarkConfig implements IBookmarkConfig {
 		RegistryAccess registryAccess,
 		Collection<IBookmark> bookmarks
 	) {
+		List<IBookmark> bookmarksSnapshot = List.copyOf(bookmarks);
 		getPath(jeiConfigurationDir)
 			.ifPresent(path -> {
 				TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
 				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer);
 
 				List<String> strings = new ArrayList<>();
-				for (IBookmark bookmark : bookmarks) {
+				for (IBookmark bookmark : bookmarksSnapshot) {
 					if (bookmark instanceof IngredientBookmark<?> ingredientBookmark) {
 						ITypedIngredient<?> typedIngredient = ingredientBookmark.getIngredient();
 						if (typedIngredient.getIngredient() instanceof ItemStack stack) {
@@ -93,9 +95,9 @@ public class BookmarkConfig implements IBookmarkConfig {
 				}
 
 				try {
-					Files.write(path, strings);
+					PathUtil.writeUsingTempFile(path, strings);
 					LOGGER.debug("Saved bookmarks list to file {}", path);
-				} catch (IOException e) {
+				} catch (RuntimeException | IOException e) {
 					LOGGER.error("Failed to save bookmarks list to file {}", path, e);
 				}
 			});
