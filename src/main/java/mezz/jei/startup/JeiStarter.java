@@ -49,6 +49,7 @@ public class JeiStarter {
 
 		IModIdHelper modIdHelper = ForgeModIdHelper.getInstance();
 		ErrorUtil.setModIdHelper(modIdHelper);
+		registerModInfo(plugins, modIdHelper);
 
 		SubtypeRegistry subtypeRegistry = new SubtypeRegistry();
 
@@ -139,6 +140,28 @@ public class JeiStarter {
 
 	public boolean hasStarted() {
 		return started;
+	}
+
+	private static void registerModInfo(List<IModPlugin> plugins, IModIdHelper modIdHelper) {
+		if (!(modIdHelper instanceof AbstractModIdHelper)) {
+			return;
+		}
+
+		ProgressManager.ProgressBar progressBar = ProgressManager.push("Registering mod info", plugins.size());
+		ModInfoRegistration registration = new ModInfoRegistration();
+		for (IModPlugin plugin : plugins) {
+			try {
+				progressBar.step(plugin.getClass().getName());
+				plugin.registerModInfo(registration);
+			} catch (RuntimeException | LinkageError e) {
+				if (plugin instanceof VanillaPlugin) {
+					throw e;
+				}
+				Log.get().error("Failed to register mod info for mod plugin: {}", plugin.getClass(), e);
+			}
+		}
+		ProgressManager.pop(progressBar);
+		((AbstractModIdHelper) modIdHelper).setModAliases(registration.getModAliases());
 	}
 
 	private static void registerItemSubtypes(List<IModPlugin> plugins, SubtypeRegistry subtypeRegistry) {
