@@ -10,23 +10,44 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.Identifier;
 
+import java.util.function.Supplier;
+
 public class DrawableSprite implements IDrawableStatic {
 	private final LazySupplier<TextureAtlasSprite> spriteSupplier;
+	private final int width;
+	private final int height;
 
 	public DrawableSprite(TextureAtlas textureAtlas, Identifier spriteId) {
-		this.spriteSupplier = new LazySupplier<>(() -> textureAtlas.getSprite(spriteId));
+		this(() -> textureAtlas.getSprite(spriteId));
+	}
+
+	public DrawableSprite(TextureAtlas textureAtlas, Identifier spriteId, int width, int height) {
+		this(() -> textureAtlas.getSprite(spriteId), width, height);
+	}
+
+	DrawableSprite(Supplier<TextureAtlasSprite> spriteSupplier) {
+		this(spriteSupplier, 0, 0);
+	}
+
+	DrawableSprite(Supplier<TextureAtlasSprite> spriteSupplier, int width, int height) {
+		if (width < 0 || height < 0 || (width == 0) != (height == 0)) {
+			throw new IllegalArgumentException("DrawableSprite size must be positive, or both dimensions must be 0 to use the sprite size");
+		}
+		this.spriteSupplier = new LazySupplier<>(spriteSupplier);
+		this.width = width;
+		this.height = height;
 	}
 
 	@Override
 	public int getWidth() {
 		TextureAtlasSprite sprite = spriteSupplier.get();
-		return sprite.contents().width();
+		return getWidth(sprite);
 	}
 
 	@Override
 	public int getHeight() {
 		TextureAtlasSprite sprite = spriteSupplier.get();
-		return sprite.contents().height();
+		return getHeight(sprite);
 	}
 
 	@Override
@@ -37,8 +58,8 @@ public class DrawableSprite implements IDrawableStatic {
 	@Override
 	public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
 		TextureAtlasSprite sprite = spriteSupplier.get();
-		int width = sprite.contents().width();
-		int height = sprite.contents().height();
+		int width = getWidth(sprite);
+		int height = getHeight(sprite);
 
 		int uWidth = width - (maskRight + maskLeft);
 		int vHeight = height - (maskBottom + maskTop);
@@ -57,5 +78,19 @@ public class DrawableSprite implements IDrawableStatic {
 			uWidth,
 			vHeight
 		);
+	}
+
+	private int getWidth(TextureAtlasSprite sprite) {
+		if (width > 0) {
+			return width;
+		}
+		return sprite.contents().width();
+	}
+
+	private int getHeight(TextureAtlasSprite sprite) {
+		if (height > 0) {
+			return height;
+		}
+		return sprite.contents().height();
 	}
 }

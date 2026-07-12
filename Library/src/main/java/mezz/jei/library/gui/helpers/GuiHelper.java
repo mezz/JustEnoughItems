@@ -41,10 +41,20 @@ public class GuiHelper implements IGuiHelper {
 	}
 
 	@Override
+	@Deprecated(since = "30.11.0", forRemoval = true)
 	public IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, Identifier spriteId) {
 		ErrorUtil.checkNotNull(textureAtlas, "textureAtlas");
 		ErrorUtil.checkNotNull(spriteId, "spriteId");
 		return new DrawableSprite(textureAtlas, spriteId);
+	}
+
+	@Override
+	public IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, Identifier spriteId, int width, int height) {
+		ErrorUtil.checkNotNull(textureAtlas, "textureAtlas");
+		ErrorUtil.checkNotNull(spriteId, "spriteId");
+		checkPositive(width, "width");
+		checkPositive(height, "height");
+		return new DrawableSprite(textureAtlas, spriteId, width, height);
 	}
 
 	@Override
@@ -67,6 +77,12 @@ public class GuiHelper implements IGuiHelper {
 		ErrorUtil.checkNotNull(tickTimer, "tickTimer");
 		ErrorUtil.checkNotNull(startDirection, "startDirection");
 		return new DrawableAnimated(drawable, tickTimer, startDirection);
+	}
+
+	private static void checkPositive(int value, String name) {
+		if (value <= 0) {
+			throw new IllegalArgumentException(name + " must be positive.");
+		}
 	}
 
 	@Override
