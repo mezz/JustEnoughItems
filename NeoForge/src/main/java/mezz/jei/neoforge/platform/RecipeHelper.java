@@ -4,6 +4,7 @@ import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
+import mezz.jei.common.platform.IPlatformRecipeHelper.ShieldDecorationRecipeData;
 import net.minecraft.core.Holder;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.inventory.GrindstoneMenu;
@@ -11,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
+import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
@@ -51,6 +53,11 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 			return Optional.of(trimRecipe.template);
 		}
 		throw new IllegalArgumentException("Unknown recipe type: " + recipe.getClass());
+	}
+
+	@Override
+	public ShieldDecorationRecipeData getShieldDecorationRecipeData(ShieldDecorationRecipe recipe) {
+		return new ShieldDecorationRecipeData(recipe.banner, recipe.target, recipe.result);
 	}
 
 	@Override

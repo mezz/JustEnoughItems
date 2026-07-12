@@ -24,12 +24,18 @@ import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.BannerItem;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
+import net.minecraft.world.item.crafting.TransmuteRecipe;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplayContext;
@@ -63,11 +69,11 @@ public final class SyntheticRecipeMakerGameTests {
 
 	@GameTest
 	@EmptyTemplate
-	@TestHolder(description = "Every banner color has a shield-decoration JEI recipe that crafts in a real crafting table.")
+	@TestHolder(description = "Every shield-decoration recipe has JEI recipes that craft in a real crafting table.")
 	public static void shieldDecorationRecipesCraftExpectedRegistryOutputs(JeiGameTestHelper helper) {
 		ContextMap displayContext = createDisplayContext(helper);
 		List<ItemStack> expectedOutputs = createExpectedShieldDecorationOutputs();
-		List<RecipeHolder<CraftingRecipe>> jeiRecipes = createShieldDecorationRecipes();
+		List<RecipeHolder<CraftingRecipe>> jeiRecipes = createShieldDecorationRecipes(helper);
 
 		assertJeiRecipesCraftExpectedOutputs(helper, displayContext, expectedOutputs, jeiRecipes);
 
@@ -127,22 +133,49 @@ public final class SyntheticRecipeMakerGameTests {
 		return stack;
 	}
 
-	private static List<RecipeHolder<CraftingRecipe>> createShieldDecorationRecipes() {
+	private static List<RecipeHolder<CraftingRecipe>> createShieldDecorationRecipes(JeiGameTestHelper helper) {
 		List<RecipeHolder<CraftingRecipe>> recipes = new ArrayList<>();
-		ShieldDecorationRecipeMaker.createRecipes(recipes::add);
+		ShieldDecorationRecipeMaker recipeMaker = new ShieldDecorationRecipeMaker(Services.PLATFORM.getRecipeHelper());
+		helper.getLevel()
+			.getServer()
+			.getRecipeManager()
+			.recipeMap()
+			.byType(RecipeType.CRAFTING)
+			.stream()
+			.filter(recipeHolder -> recipeHolder.value() instanceof ShieldDecorationRecipe)
+			.forEach(recipeHolder -> recipeMaker.replace(recipeHolder, recipes::add));
 		return recipes;
 	}
 
 	private static List<ItemStack> createExpectedShieldDecorationOutputs() {
+		List<ItemStack> outputs = new ArrayList<>();
+		for (BannerItem banner : getVanillaBanners()) {
+			outputs.add(createDecoratedOutput(Items.SHIELD, Items.SHIELD, banner));
+			outputs.add(createDecoratedOutput(Items.GOLD_INGOT, Items.IRON_INGOT, banner));
+		}
+		outputs.add(createDecoratedOutput(Items.DIAMOND, Items.COPPER_INGOT, getVanillaBanner(DyeColor.RED)));
+		return outputs;
+	}
+
+	private static List<BannerItem> getVanillaBanners() {
 		return Items.BANNER.asList()
 			.stream()
 			.map(BannerItem.class::cast)
-			.map(SyntheticRecipeMakerGameTests::createDecoratedShieldOutput)
 			.toList();
 	}
 
-	private static ItemStack createDecoratedShieldOutput(BannerItem banner) {
-		ItemStack stack = new ItemStack(Items.SHIELD);
+	private static BannerItem getVanillaBanner(DyeColor color) {
+		return getVanillaBanners()
+			.stream()
+			.filter(banner -> banner.getColor() == color)
+			.findFirst()
+			.orElseThrow();
+	}
+
+	private static ItemStack createDecoratedOutput(Item result, Item target, BannerItem banner) {
+		ItemStack stack = TransmuteRecipe.createWithOriginalComponents(new ItemStackTemplate(result), new ItemStack(target));
+		ItemStack bannerStack = new ItemStack(banner);
+		stack.set(DataComponents.BANNER_PATTERNS, bannerStack.get(DataComponents.BANNER_PATTERNS));
 		stack.set(DataComponents.BASE_COLOR, banner.getColor());
 		return stack;
 	}

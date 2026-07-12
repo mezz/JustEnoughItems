@@ -282,7 +282,8 @@ public class VanillaPlugin implements IModPlugin {
 		var craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
 		var handledCraftingRecipes = craftingRecipes.getHandled();
 		var unhandledCraftingRecipes = craftingRecipes.getUnhandled();
-		var specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, jeiHelpers);
+		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
+		var specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, jeiHelpers, recipeHelper);
 
 		registration.addRecipes(RecipeTypes.CRAFTING, handledCraftingRecipes);
 		registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes);
@@ -303,7 +304,6 @@ public class VanillaPlugin implements IModPlugin {
 		ClientLevel level = minecraft.level;
 		ErrorUtil.checkNotNull(level, "minecraft.level");
 		PotionBrewing potionBrewing = level.potionBrewing();
-		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		List<IJeiBrewingRecipe> brewingRecipes = recipeHelper.getBrewingRecipes(ingredientManager, vanillaRecipeFactory, potionBrewing, contextMap);
 		brewingRecipes.sort(Comparator.comparingInt(IJeiBrewingRecipe::getBrewingSteps));
 		registration.addRecipes(RecipeTypes.BREWING, brewingRecipes);
@@ -388,10 +388,10 @@ public class VanillaPlugin implements IModPlugin {
 	 * If a special recipe we know how to replace is not present (because it has been removed),
 	 * we do not replace it.
 	 */
-	private static List<RecipeHolder<CraftingRecipe>> replaceSpecialCraftingRecipes(List<RecipeHolder<CraftingRecipe>> unhandledCraftingRecipes, IJeiHelpers jeiHelpers) {
+	private static List<RecipeHolder<CraftingRecipe>> replaceSpecialCraftingRecipes(List<RecipeHolder<CraftingRecipe>> unhandledCraftingRecipes, IJeiHelpers jeiHelpers, IPlatformRecipeHelper recipeHelper) {
 		List<IRecipeReplacer> replacers = new ArrayList<>();
 		replacers.add(new TippedArrowRecipeMaker(jeiHelpers.getVanillaRecipeFactory()));
-		replacers.add(new ShieldDecorationRecipeMaker());
+		replacers.add(new ShieldDecorationRecipeMaker(recipeHelper));
 
 		List<RecipeHolder<CraftingRecipe>> recipes = new ArrayList<>();
 
