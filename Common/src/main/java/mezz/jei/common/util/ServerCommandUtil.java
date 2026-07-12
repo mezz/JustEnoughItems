@@ -153,9 +153,9 @@ public final class ServerCommandUtil {
 	}
 
 	public static boolean canStack(ItemStack a, ItemStack b) {
-		ItemStack singleStack = a.copy();
-		singleStack.setCount(1);
-		return ItemEntity.areMergable(singleStack, b);
+		return !a.isEmpty() &&
+			!b.isEmpty() &&
+			ItemStack.isSameItemSameTags(a, b);
 	}
 
 	/**
