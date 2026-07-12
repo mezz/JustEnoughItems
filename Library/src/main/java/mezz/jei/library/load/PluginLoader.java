@@ -1,6 +1,7 @@
 package mezz.jei.library.load;
 
 import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ImmutableSetMultimap;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
@@ -38,6 +39,7 @@ import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.AdvancedRegistration;
 import mezz.jei.library.load.registration.GuiHandlerRegistration;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
+import mezz.jei.library.load.registration.ModInfoRegistration;
 import mezz.jei.library.load.registration.RecipeCatalystRegistration;
 import mezz.jei.library.load.registration.RecipeCategoryRegistration;
 import mezz.jei.library.load.registration.RecipeManagerPluginHelper;
@@ -86,6 +88,7 @@ public final class PluginLoader {
 	}
 
 	public static JeiHelpers createJeiHelpers(
+		List<IModPlugin> plugins,
 		IModIdFormatConfig modIdFormatConfig,
 		IColorHelper colorHelper,
 		EditModeConfig editModeConfig,
@@ -97,7 +100,10 @@ public final class PluginLoader {
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		GuiHelper guiHelper = new GuiHelper(ingredientManager);
 
-		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, ingredientManager);
+		ModInfoRegistration modInfoRegistration = new ModInfoRegistration();
+		PluginCaller.callOnPlugins("Registering Mod Info", plugins, p -> p.registerModInfo(modInfoRegistration));
+		ImmutableSetMultimap<String, String> modAliases = modInfoRegistration.getModAliases();
+		IModIdHelper modIdHelper = new ModIdHelper(modIdFormatConfig, ingredientManager, modAliases);
 
 		IClientToggleState toggleState = Internal.getClientToggleState();
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();

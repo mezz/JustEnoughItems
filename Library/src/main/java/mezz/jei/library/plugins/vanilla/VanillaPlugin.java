@@ -19,6 +19,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.registration.IModInfoRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
@@ -173,6 +174,11 @@ public class VanillaPlugin implements IModPlugin {
 
 		IPlatformFluidHelperInternal<?> platformFluidHelper = Services.PLATFORM.getFluidHelper();
 		registerFluidIngredients(registration, platformFluidHelper);
+	}
+
+	@Override
+	public void registerModInfo(IModInfoRegistration registration) {
+		registration.addModAliases(ModIds.MINECRAFT_ID, "mc");
 	}
 
 	private <T> void registerFluidIngredients(IModIngredientRegistration registration, IPlatformFluidHelperInternal<T> platformFluidHelper) {

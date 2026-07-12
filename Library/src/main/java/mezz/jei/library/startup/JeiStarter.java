@@ -110,7 +110,7 @@ public final class JeiStarter {
 		Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
 		EditModeConfig editModeConfig = new EditModeConfig(new EditModeConfig.FileSerializer(configDir.resolve("blacklist.cfg")), ingredientManager);
 
-		JeiHelpers jeiHelpers = PluginLoader.createJeiHelpers(modIdFormatConfig, colorHelper, editModeConfig, focusFactory, ingredientManager, subtypeManager);
+		JeiHelpers jeiHelpers = PluginLoader.createJeiHelpers(plugins, modIdFormatConfig, colorHelper, editModeConfig, focusFactory, ingredientManager, subtypeManager);
 
 		RecipeManager recipeManager = PluginLoader.createRecipeManager(
 			plugins,

@@ -15,6 +15,7 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	public final Supplier<SearchMode> creativeTabSearchMode;
 	public final Supplier<Boolean> searchAdvancedTooltips;
 	public final Supplier<Boolean> searchModIds;
+	public final Supplier<Boolean> searchModAliases;
 	public final Supplier<Boolean> searchShortModNames;
 	public final Supplier<Boolean> searchIngredientAliases;
 
@@ -59,6 +60,11 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 			"SearchModIds",
 			true,
 			"Search mod IDs in addition to mod names."
+		);
+		searchModAliases = search.addBoolean(
+			"SearchModAliases",
+			true,
+			"Search mod aliases in addition to mod names."
 		);
 		searchShortModNames = search.addBoolean(
 			"SearchShortModNames",
@@ -110,6 +116,11 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	@Override
 	public boolean getSearchModIds() {
 		return searchModIds.get();
+	}
+
+	@Override
+	public boolean getSearchModAliases() {
+		return searchModAliases.get();
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class TestModIdHelper implements IModIdHelper {
 	@Override
@@ -17,6 +18,11 @@ public class TestModIdHelper implements IModIdHelper {
 	@Override
 	public String getFormattedModNameForModId(String modId) {
 		return getModNameForModId(modId);
+	}
+
+	@Override
+	public Set<String> getModAliases(String modId) {
+		return Set.of();
 	}
 
 	@SuppressWarnings("removal")

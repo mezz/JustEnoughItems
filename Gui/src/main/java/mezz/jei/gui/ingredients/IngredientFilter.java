@@ -78,7 +78,7 @@ public class IngredientFilter implements
 		this.ingredientComparator = ingredientComparator;
 		this.modIdHelper = modIdHelper;
 		this.ingredientVisibility = ingredientVisibility;
-		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper);
+		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, modIdHelper);
 
 		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser);
 

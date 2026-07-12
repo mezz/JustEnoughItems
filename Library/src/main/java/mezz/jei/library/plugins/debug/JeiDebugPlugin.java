@@ -16,6 +16,7 @@ import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
+import mezz.jei.api.registration.IModInfoRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
@@ -137,6 +138,11 @@ public class JeiDebugPlugin implements IModPlugin {
 			fluidHelper.create(Fluids.WATER, fluidHelper.bucketVolume()),
 			List.of("wet", "aqua", "sea", "ocean")
 		);
+	}
+
+	@Override
+	public void registerModInfo(IModInfoRegistration registration) {
+		registration.addModAliases(ModIds.JEI_ID, "jei");
 	}
 
 	@Override
