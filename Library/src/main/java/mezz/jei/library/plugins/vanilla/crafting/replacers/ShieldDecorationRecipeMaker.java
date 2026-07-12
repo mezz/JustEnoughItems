@@ -78,12 +78,13 @@ public final class ShieldDecorationRecipeMaker implements IRecipeReplacer {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private static List<BannerItem> getBannerItems(Ingredient bannerIngredient) {
-		return bannerIngredient.items()
+		return RegistryUtil.getRegistry(Registries.ITEM)
+			.listElements()
 			.filter(Holder::isBound)
+			.filter(holder -> holder.value() instanceof BannerItem)
+			.filter(bannerIngredient::acceptsItem)
 			.map(Holder::value)
-			.filter(BannerItem.class::isInstance)
 			.map(BannerItem.class::cast)
 			.distinct()
 			.toList();
