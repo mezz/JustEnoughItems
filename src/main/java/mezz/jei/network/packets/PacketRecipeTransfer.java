@@ -1,18 +1,24 @@
 package mezz.jei.network.packets;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
 import net.minecraft.network.PacketBuffer;
 
 import mezz.jei.network.IPacketId;
 import mezz.jei.network.PacketIdServer;
 import mezz.jei.transfer.BasicRecipeTransferHandlerServer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class PacketRecipeTransfer extends PacketJei {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	public final Map<Integer, Integer> recipeMap;
 	public final Map<Integer, Integer> recipeCountMap;
 	public final List<Integer> craftingSlots;
@@ -62,34 +68,129 @@ public class PacketRecipeTransfer extends PacketJei {
 	}
 
 	public static void readPacketData(PacketBuffer buf, EntityPlayer player) {
+		Container container = player.openContainer;
+
 		int recipeMapSize = buf.readVarInt();
+		RecipeMapData recipeMapData = readRecipeMap(buf, container, recipeMapSize);
+		if (recipeMapData == null) {
+			return;
+		}
+
+		int craftingSlotsSize = buf.readVarInt();
+		List<Integer> craftingSlots = readSlotIndexes(buf, container, craftingSlotsSize);
+		if (craftingSlots == null) {
+			return;
+		}
+
+		if (!validateRecipeMapCraftingSlots(recipeMapData.recipeMap, craftingSlots)) {
+			return;
+		}
+
+		int inventorySlotsSize = buf.readVarInt();
+		List<Integer> inventorySlots = readSlotIndexes(buf, container, inventorySlotsSize);
+		if (inventorySlots == null) {
+			return;
+		}
+		boolean maxTransfer = buf.readBoolean();
+		boolean requireCompleteSets = buf.readBoolean();
+
+		BasicRecipeTransferHandlerServer.setItems(
+			player,
+			recipeMapData.recipeMap,
+			recipeMapData.recipeCountMap,
+			craftingSlots,
+			inventorySlots,
+			maxTransfer,
+			requireCompleteSets
+		);
+	}
+
+	@Nullable
+	private static RecipeMapData readRecipeMap(PacketBuffer buf, Container container, int recipeMapSize) {
+		if (!isValidCollectionSize(container, recipeMapSize, "recipe map")) {
+			return null;
+		}
+
 		Map<Integer, Integer> recipeMap = new HashMap<>();
 		Map<Integer, Integer> recipeCountMap = new HashMap<>();
 		for (int i = 0; i < recipeMapSize; i++) {
 			int slotIndex = buf.readVarInt();
 			int recipeItem = buf.readVarInt();
 			int recipeItemCount = buf.readVarInt();
+			if (!isValidSlotIndex(container, recipeItem, "recipe item")) {
+				return null;
+			}
+			if (recipeItemCount < 1) {
+				LOGGER.error(
+					"Recipe transfer packet has invalid recipe item count {} for container {}",
+					recipeItemCount,
+					container.getClass()
+				);
+				return null;
+			}
 			recipeMap.put(slotIndex, recipeItem);
 			recipeCountMap.put(slotIndex, recipeItemCount);
 		}
+		return new RecipeMapData(recipeMap, recipeCountMap);
+	}
 
-		int craftingSlotsSize = buf.readVarInt();
-		List<Integer> craftingSlots = new ArrayList<>();
-		for (int i = 0; i < craftingSlotsSize; i++) {
-			int slotIndex = buf.readVarInt();
-			craftingSlots.add(slotIndex);
+	@Nullable
+	private static List<Integer> readSlotIndexes(PacketBuffer buf, Container container, int slotCount) {
+		if (!isValidCollectionSize(container, slotCount, "slot ids")) {
+			return null;
 		}
 
-		int inventorySlotsSize = buf.readVarInt();
-		List<Integer> inventorySlots = new ArrayList<>();
-		for (int i = 0; i < inventorySlotsSize; i++) {
+		List<Integer> slots = new ArrayList<>();
+		for (int i = 0; i < slotCount; i++) {
 			int slotIndex = buf.readVarInt();
-			inventorySlots.add(slotIndex);
+			if (!isValidSlotIndex(container, slotIndex, "slot")) {
+				return null;
+			}
+			slots.add(slotIndex);
 		}
-		boolean maxTransfer = buf.readBoolean();
-		boolean requireCompleteSets = buf.readBoolean();
+		return slots;
+	}
 
-		BasicRecipeTransferHandlerServer.setItems(player, recipeMap, recipeCountMap, craftingSlots, inventorySlots, maxTransfer, requireCompleteSets);
+	private static boolean isValidCollectionSize(Container container, int slotCount, String collectionName) {
+		if (slotCount < 0 || slotCount > container.inventorySlots.size()) {
+			LOGGER.error(
+				"Recipe transfer packet has invalid {} count {} for container {} with {} slots",
+				collectionName,
+				slotCount,
+				container.getClass(),
+				container.inventorySlots.size()
+			);
+			return false;
+		}
+		return true;
+	}
+
+	private static boolean isValidSlotIndex(Container container, int slotIndex, String slotName) {
+		if (slotIndex < 0 || slotIndex >= container.inventorySlots.size()) {
+			LOGGER.error(
+				"Recipe transfer packet has invalid {} id {} for container {}",
+				slotName,
+				slotIndex,
+				container.getClass()
+			);
+			return false;
+		}
+		return true;
+	}
+
+	private static boolean validateRecipeMapCraftingSlots(Map<Integer, Integer> recipeMap, List<Integer> craftingSlots) {
+		int craftingSlotCount = craftingSlots.size();
+		for (Integer craftingSlotNumber : recipeMap.keySet()) {
+			if (craftingSlotNumber < 0 || craftingSlotNumber >= craftingSlotCount) {
+				LOGGER.error(
+					"Recipe transfer packet has invalid crafting slot number {} for {} crafting slots",
+					craftingSlotNumber,
+					craftingSlotCount
+				);
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private static Map<Integer, Integer> createDefaultRecipeCountMap(Map<Integer, Integer> recipeMap) {
@@ -100,4 +201,13 @@ public class PacketRecipeTransfer extends PacketJei {
 		return recipeCountMap;
 	}
 
+	private static final class RecipeMapData {
+		private final Map<Integer, Integer> recipeMap;
+		private final Map<Integer, Integer> recipeCountMap;
+
+		private RecipeMapData(Map<Integer, Integer> recipeMap, Map<Integer, Integer> recipeCountMap) {
+			this.recipeMap = recipeMap;
+			this.recipeCountMap = recipeCountMap;
+		}
+	}
 }
