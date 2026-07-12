@@ -10,7 +10,6 @@ import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -57,7 +56,6 @@ public class ClientLifecycleHandler {
 				startJei();
 			}
 		});
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, minecraft) -> minecraft.execute(this::stopJei));
 		JeiLifecycleEvents.GAME_STOP.register(this::stopJei);
 	}
 

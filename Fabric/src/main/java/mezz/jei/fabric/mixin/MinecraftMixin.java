@@ -2,8 +2,8 @@ package mezz.jei.fabric.mixin;
 
 import mezz.jei.fabric.events.JeiLifecycleEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.main.GameConfig;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import org.spongepowered.asm.mixin.Final;
@@ -37,15 +37,12 @@ public class MinecraftMixin {
 	}
 
 	@Inject(
-		method = "clearClientLevel(Lnet/minecraft/client/gui/screens/Screen;)V",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/client/renderer/GameRenderer;resetData()V",
-			ordinal = 0,
-			shift = At.Shift.AFTER
-		)
+		method = "updateLevelInEngines(Lnet/minecraft/client/multiplayer/ClientLevel;)V",
+		at = @At("HEAD")
 	)
-	public void clearLevel(Screen screen, CallbackInfo ci) {
-		JeiLifecycleEvents.GAME_STOP.invoker().run();
+	public void updateLevelInEngines(ClientLevel level, CallbackInfo ci) {
+		if (level == null) {
+			JeiLifecycleEvents.GAME_STOP.invoker().run();
+		}
 	}
 }
