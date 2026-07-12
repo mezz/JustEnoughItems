@@ -4,6 +4,7 @@ import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
+import java.io.ByteArrayOutputStream
 
 plugins {
 	id("com.gtnewhorizons.retrofuturagradle") version("1.4.9")
@@ -54,6 +55,48 @@ dependencies {
 		version = jUnitVersion
 	)
 	testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.8.2")
+}
+
+val macOsxX64Lwjgl2Natives = configurations.create("macOsxX64Lwjgl2Natives") {
+	isCanBeConsumed = false
+	isCanBeResolved = true
+	isTransitive = false
+}
+
+dependencies {
+	add(macOsxX64Lwjgl2Natives.name, "org.lwjgl.lwjgl:lwjgl-platform:2.9.4-nightly-20150209:natives-osx")
+	add(macOsxX64Lwjgl2Natives.name, "net.java.jinput:jinput-platform:2.0.5:natives-osx")
+}
+
+val extractMacOsxX64Lwjgl2Natives = tasks.register<Copy>("extractMacOsxX64Lwjgl2Natives") {
+	group = "Internal Vanilla Minecraft"
+	description = "Replaces LWJGL 2 natives with x86_64 macOS natives when runClient uses an x86_64 Java launcher."
+	from({ macOsxX64Lwjgl2Natives.map { zipTree(it) } })
+	into(layout.projectDirectory.dir("run/natives/lwjgl2"))
+	onlyIf("runClient uses an x86_64 Java launcher on macOS") {
+		val isMacOs = System.getProperty("os.name").startsWith("Mac")
+		val javaExec = tasks.named<JavaExec>("runClient").get()
+		val javaSettings = ByteArrayOutputStream()
+		exec {
+			commandLine(javaExec.javaLauncher.get().executablePath.asFile, "-XshowSettings:properties", "-version")
+			standardOutput = javaSettings
+			errorOutput = javaSettings
+			isIgnoreExitValue = true
+		}
+		isMacOs && javaSettings.toString().contains("os.arch = x86_64")
+	}
+}
+
+tasks.named("extractNatives2") {
+	finalizedBy(extractMacOsxX64Lwjgl2Natives)
+}
+
+tasks.named("runClient") {
+	dependsOn(extractMacOsxX64Lwjgl2Natives)
+}
+
+extractMacOsxX64Lwjgl2Natives.configure {
+	mustRunAfter(tasks.named("extractNatives2"))
 }
 
 minecraft {
