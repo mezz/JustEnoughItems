@@ -1,19 +1,16 @@
 package mezz.jei.library.plugins.vanilla.crafting.replacers;
 
-import mezz.jei.api.constants.ModIds;
+import mezz.jei.common.platform.IPlatformRecipeHelper;
+import mezz.jei.common.platform.IPlatformRecipeHelper.ShieldDecorationRecipeData;
 import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.BannerItem;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -21,70 +18,133 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
+import net.minecraft.world.item.crafting.TransmuteRecipe;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jspecify.annotations.Nullable;
 
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public final class ShieldDecorationRecipeMaker implements IRecipeReplacer {
+	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String GROUP = "jei.shield.decoration";
+	private static final String JEI_RECIPE_PATH_PREFIX = "jei.shield.decoration.";
+	private final IPlatformRecipeHelper recipeHelper;
 
-	public ShieldDecorationRecipeMaker() {
-
+	public ShieldDecorationRecipeMaker(IPlatformRecipeHelper recipeHelper) {
+		this.recipeHelper = recipeHelper;
 	}
 
 	@Override
 	public boolean replace(RecipeHolder<CraftingRecipe> recipe, Consumer<RecipeHolder<CraftingRecipe>> replacements) {
-		if (recipe.value() instanceof ShieldDecorationRecipe) {
-			createRecipes(replacements);
-			return true;
+		if (recipe.value() instanceof ShieldDecorationRecipe shieldDecorationRecipe) {
+			try {
+				createRecipes(recipe.id(), shieldDecorationRecipe, replacements);
+			} catch (RuntimeException e) {
+				LOGGER.warn("Skipping shield decoration recipe {} because JEI failed to create replacement recipes.", recipe.id().identifier(), e);
+			}
 		}
 		return false;
 	}
 
-	public static void createRecipes(Consumer<RecipeHolder<CraftingRecipe>> recipes) {
-		Iterable<Holder<Item>> banners = RegistryUtil.getRegistry(Registries.ITEM).getTagOrEmpty(ItemTags.BANNERS);
+	private void createRecipes(
+		ResourceKey<Recipe<?>> originalRecipeId,
+		ShieldDecorationRecipe shieldDecorationRecipe,
+		Consumer<RecipeHolder<CraftingRecipe>> recipes
+	) {
+		ShieldDecorationRecipeData recipeData = recipeHelper.getShieldDecorationRecipeData(shieldDecorationRecipe);
+		if (recipeData.target().isEmpty()) {
+			LOGGER.warn("Skipping shield decoration recipe {} because its target ingredient is empty.", originalRecipeId.identifier());
+			return;
+		}
+		ItemStack target = getFirstItemStack(recipeData.target());
+		if (target == null) {
+			LOGGER.warn("Skipping shield decoration recipe {} because its target ingredient has no item stacks.", originalRecipeId.identifier());
+			return;
+		}
 
-		Set<DyeColor> colors = EnumSet.noneOf(DyeColor.class);
+		List<BannerItem> banners = getBannerItems(recipeData.banner());
+		if (banners.isEmpty()) {
+			LOGGER.warn("Skipping shield decoration recipe {} because its banner ingredient has no banner items.", originalRecipeId.identifier());
+			return;
+		}
 
-		for (Holder<Item> banner : banners) {
-			if (banner.isBound()) {
-				Item value = banner.value();
-				if (value instanceof BannerItem item) {
-					if (colors.add(item.getColor())) {
-						RecipeHolder<CraftingRecipe> recipe = createRecipe(item);
-						recipes.accept(recipe);
-					}
-				}
+		for (BannerItem banner : banners) {
+			RecipeHolder<CraftingRecipe> recipe = createRecipe(originalRecipeId, recipeData, target, banner);
+			if (recipe != null) {
+				recipes.accept(recipe);
 			}
 		}
 	}
 
-	private static RecipeHolder<CraftingRecipe> createRecipe(BannerItem banner) {
-		ItemStackTemplate output = createOutput(banner);
+	@SuppressWarnings("deprecation")
+	private static List<BannerItem> getBannerItems(Ingredient bannerIngredient) {
+		return bannerIngredient.items()
+			.filter(Holder::isBound)
+			.map(Holder::value)
+			.filter(BannerItem.class::isInstance)
+			.map(BannerItem.class::cast)
+			.distinct()
+			.toList();
+	}
 
-		Identifier id = Identifier.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "jei.shield.decoration." + banner.getDescriptionId());
+	@SuppressWarnings("deprecation")
+	private static @Nullable ItemStack getFirstItemStack(Ingredient ingredient) {
+		return ingredient.items()
+			.filter(Holder::isBound)
+			.findFirst()
+			.map(ItemStack::new)
+			.orElse(null);
+	}
+
+	private static @Nullable RecipeHolder<CraftingRecipe> createRecipe(ResourceKey<Recipe<?>> originalRecipeId, ShieldDecorationRecipeData recipeData, ItemStack target, BannerItem banner) {
+		ItemStackTemplate output = createOutput(originalRecipeId, recipeData.result(), target, banner);
+		if (output == null) {
+			return null;
+		}
+
+		Identifier id = createRecipeId(originalRecipeId, banner);
 		ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, id);
 		CraftingRecipe recipe = new ShapelessRecipe(
 			new Recipe.CommonInfo(false),
 			new CraftingRecipe.CraftingBookInfo(
 				CraftingBookCategory.MISC,
-				"jei.shield.decoration"
+				GROUP
 			),
 			output,
 			List.of(
-				Ingredient.of(Items.SHIELD),
+				recipeData.target(),
 				Ingredient.of(banner)
 			)
 		);
 		return new RecipeHolder<>(resourceKey, recipe);
 	}
 
-	private static ItemStackTemplate createOutput(BannerItem banner) {
-		DyeColor color = banner.getColor();
-		DataComponentPatch components = DataComponentPatch.builder()
-			.set(DataComponents.BASE_COLOR, color)
-			.build();
-		return new ItemStackTemplate(Items.SHIELD, components);
+	private static Identifier createRecipeId(ResourceKey<Recipe<?>> originalRecipeId, BannerItem banner) {
+		Identifier originalId = originalRecipeId.identifier();
+		Identifier bannerId = getBannerId(banner);
+		String path = JEI_RECIPE_PATH_PREFIX + originalId.getPath() + "." + bannerId.getNamespace() + "." + bannerId.getPath();
+		return Identifier.fromNamespaceAndPath(originalId.getNamespace(), path);
+	}
+
+	private static @Nullable ItemStackTemplate createOutput(ResourceKey<Recipe<?>> originalRecipeId, ItemStackTemplate result, ItemStack target, BannerItem banner) {
+		ItemStack output = TransmuteRecipe.createWithOriginalComponents(result, target);
+		if (output.isEmpty()) {
+			LOGGER.warn("Skipping shield decoration recipe {} for banner {} because its result item stack is empty.", originalRecipeId.identifier(), getBannerId(banner));
+			return null;
+		}
+		ItemStack bannerStack = new ItemStack(banner);
+		output.set(DataComponents.BANNER_PATTERNS, bannerStack.get(DataComponents.BANNER_PATTERNS));
+		output.set(DataComponents.BASE_COLOR, banner.getColor());
+		return ItemStackTemplate.fromNonEmptyStack(output);
+	}
+
+	private static Identifier getBannerId(BannerItem banner) {
+		Identifier bannerId = RegistryUtil.getRegistry(Registries.ITEM).getKey(banner);
+		if (bannerId == null) {
+			throw new IllegalStateException("Banner item is not registered: " + banner);
+		}
+		return bannerId;
 	}
 }
