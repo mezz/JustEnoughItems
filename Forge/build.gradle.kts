@@ -6,7 +6,7 @@ plugins {
 	idea
 	eclipse
 	`maven-publish`
-	id("net.minecraftforge.gradle") version("[6.0,6.2)")
+	id("net.minecraftforge.gradle") version("6.0.25")
 	id("org.parchmentmc.librarian.forgegradle") version("1.+")
 	id("net.darkhax.curseforgegradle") version("1.0.8")
 }
