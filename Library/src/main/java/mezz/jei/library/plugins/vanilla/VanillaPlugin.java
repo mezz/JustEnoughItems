@@ -108,12 +108,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 @JeiPlugin
 public class VanillaPlugin implements IModPlugin {
@@ -325,28 +322,42 @@ public class VanillaPlugin implements IModPlugin {
 	 * we do not replace it.
 	 */
 	private static List<CraftingRecipe> replaceSpecialCraftingRecipes(List<CraftingRecipe> unhandledCraftingRecipes, IStackHelper stackHelper) {
-		Map<Class<? extends CraftingRecipe>, Supplier<List<CraftingRecipe>>> replacers = new IdentityHashMap<>();
-		replacers.put(TippedArrowRecipe.class, () -> TippedArrowRecipeMaker.createRecipes(stackHelper));
-		replacers.put(ShulkerBoxColoring.class, ShulkerBoxColoringRecipeMaker::createRecipes);
-		replacers.put(SuspiciousStewRecipe.class, SuspiciousStewRecipeMaker::createRecipes);
-		replacers.put(ShieldDecorationRecipe.class, ShieldDecorationRecipeMaker::createRecipes);
-
-		return unhandledCraftingRecipes.stream()
-			.map(CraftingRecipe::getClass)
-			.distinct()
-			.filter(replacers::containsKey)
-			// distinct + this limit will ensure we stop iterating early if we find all the recipes we're looking for.
-			.limit(replacers.size())
-			.flatMap(recipeClass -> {
-				Supplier<List<CraftingRecipe>> supplier = replacers.get(recipeClass);
+		List<CraftingRecipe> recipes = new ArrayList<>();
+		boolean tippedArrowRecipesAdded = false;
+		boolean shulkerBoxColoringRecipesAdded = false;
+		boolean suspiciousStewRecipesAdded = false;
+		boolean shieldDecorationRecipesAdded = false;
+		for (CraftingRecipe recipe : unhandledCraftingRecipes) {
+			if (recipe instanceof TippedArrowRecipe && !tippedArrowRecipesAdded) {
 				try {
-					List<CraftingRecipe> results = supplier.get();
-					return results.stream();
+					recipes.addAll(TippedArrowRecipeMaker.createRecipes(stackHelper));
+					tippedArrowRecipesAdded = true;
 				} catch (RuntimeException e) {
-					LOGGER.error("Failed to create JEI recipes for {}", recipeClass, e);
-					return Stream.of();
+					LOGGER.error("Failed to create JEI recipes for {}", recipe.getClass(), e);
 				}
-			})
-			.toList();
+			} else if (recipe instanceof ShulkerBoxColoring && !shulkerBoxColoringRecipesAdded) {
+				try {
+					recipes.addAll(ShulkerBoxColoringRecipeMaker.createRecipes());
+					shulkerBoxColoringRecipesAdded = true;
+				} catch (RuntimeException e) {
+					LOGGER.error("Failed to create JEI recipes for {}", recipe.getClass(), e);
+				}
+			} else if (recipe instanceof SuspiciousStewRecipe && !suspiciousStewRecipesAdded) {
+				try {
+					recipes.addAll(SuspiciousStewRecipeMaker.createRecipes());
+					suspiciousStewRecipesAdded = true;
+				} catch (RuntimeException e) {
+					LOGGER.error("Failed to create JEI recipes for {}", recipe.getClass(), e);
+				}
+			} else if (recipe instanceof ShieldDecorationRecipe && !shieldDecorationRecipesAdded) {
+				try {
+					recipes.addAll(ShieldDecorationRecipeMaker.createRecipes());
+					shieldDecorationRecipesAdded = true;
+				} catch (RuntimeException e) {
+					LOGGER.error("Failed to create JEI recipes for {}", recipe.getClass(), e);
+				}
+			}
+		}
+		return List.copyOf(recipes);
 	}
 }
