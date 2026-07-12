@@ -14,29 +14,48 @@ import java.util.function.Supplier;
 
 public class DrawableSprite implements IDrawableStatic {
 	private final LazySupplier<TextureAtlasSprite> spriteSupplier;
+	private final int width;
+	private final int height;
 
 	public DrawableSprite(JeiGuiSpriteManager spriteManager, ResourceLocation spriteId) {
 		this(() -> spriteManager.getSprite(spriteId));
+	}
+
+	public DrawableSprite(JeiGuiSpriteManager spriteManager, ResourceLocation spriteId, int width, int height) {
+		this(() -> spriteManager.getSprite(spriteId), width, height);
 	}
 
 	public DrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId) {
 		this(() -> textureAtlas.getSprite(spriteId));
 	}
 
-	private DrawableSprite(Supplier<TextureAtlasSprite> spriteSupplier) {
+	public DrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId, int width, int height) {
+		this(() -> textureAtlas.getSprite(spriteId), width, height);
+	}
+
+	DrawableSprite(Supplier<TextureAtlasSprite> spriteSupplier) {
+		this(spriteSupplier, 0, 0);
+	}
+
+	DrawableSprite(Supplier<TextureAtlasSprite> spriteSupplier, int width, int height) {
+		if (width < 0 || height < 0 || (width == 0) != (height == 0)) {
+			throw new IllegalArgumentException("DrawableSprite size must be positive, or both dimensions must be 0 to use the sprite size");
+		}
 		this.spriteSupplier = new LazySupplier<>(spriteSupplier);
+		this.width = width;
+		this.height = height;
 	}
 
 	@Override
 	public int getWidth() {
 		TextureAtlasSprite sprite = spriteSupplier.get();
-		return sprite.contents().width();
+		return getWidth(sprite);
 	}
 
 	@Override
 	public int getHeight() {
 		TextureAtlasSprite sprite = spriteSupplier.get();
-		return sprite.contents().height();
+		return getHeight(sprite);
 	}
 
 	@Override
@@ -47,8 +66,8 @@ public class DrawableSprite implements IDrawableStatic {
 	@Override
 	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
 		TextureAtlasSprite sprite = spriteSupplier.get();
-		int width = sprite.contents().width();
-		int height = sprite.contents().height();
+		int width = getWidth(sprite);
+		int height = getHeight(sprite);
 
 		int uWidth = width - (maskRight + maskLeft);
 		int vHeight = height - (maskBottom + maskTop);
@@ -66,5 +85,19 @@ public class DrawableSprite implements IDrawableStatic {
 			uWidth,
 			vHeight
 		);
+	}
+
+	private int getWidth(TextureAtlasSprite sprite) {
+		if (width > 0) {
+			return width;
+		}
+		return sprite.contents().width();
+	}
+
+	private int getHeight(TextureAtlasSprite sprite) {
+		if (height > 0) {
+			return height;
+		}
+		return sprite.contents().height();
 	}
 }

@@ -49,8 +49,26 @@ public interface IGuiHelper {
 	 * @return a new {@link IDrawableStatic} with the given texture atlas and sprite location
 	 *
 	 * @since 19.35.0
+	 * @deprecated Use {@link #createDrawableSprite(TextureAtlas, ResourceLocation, int, int)} instead.
+	 * The drawable size from this method comes from the sprite's texture size, so higher-resolution
+	 * resource pack replacements can make the drawable render too large.
 	 */
+	@Deprecated(since = "19.38.0")
 	IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId);
+
+	/**
+	 * Create a drawable from a gui sprite with an explicit logical size.
+	 * Use this when the sprite may be replaced by higher-resolution resource packs,
+	 * so the texture can be drawn at the intended gui size.
+	 *
+	 * @return a new {@link IDrawableStatic} with the given texture atlas, sprite location, and size
+	 *
+	 * @since 19.38.0
+	 */
+	@SuppressWarnings("deprecation")
+	default IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId, int width, int height) {
+		return createDrawableSprite(textureAtlas, spriteId);
+	}
 
 	/**
 	 * Create a scalable drawable from a gui sprite.
