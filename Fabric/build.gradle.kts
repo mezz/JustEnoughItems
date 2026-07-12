@@ -51,6 +51,7 @@ val loomDependencyProjects: List<Project> = listOf(
     project(":FabricApi"),
 )
 val dependencyProjects = vanillaDependencyProjects + loomDependencyProjects
+val debugProject = project(":Debug")
 
 val embeddedLibraries: Configuration by configurations.creating {
     isCanBeConsumed = false
@@ -67,6 +68,7 @@ val clientGameTestWithoutAmecsRunDirectory = layout.buildDirectory.dir("run/clie
 dependencyProjects.forEach {
     project.evaluationDependsOn(it.path)
 }
+project.evaluationDependsOn(debugProject.path)
 
 java {
     toolchain {
@@ -114,6 +116,7 @@ dependencies {
     dependencyProjects.forEach {
         implementation(it)
     }
+    runtimeOnly(debugProject.sourceSets.main.get().output)
     embeddedLibraries("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
     }
@@ -152,6 +155,9 @@ loom {
         }
         create(keyMappingGametestModId) {
             sourceSet(keyMappingGametestSourceSet)
+        }
+        create("${modId}-debug") {
+            sourceSet(debugProject.sourceSets.main.get())
         }
     }
 
@@ -255,6 +261,10 @@ tasks.named("runClientGameTest") {
 
 tasks.named("runClientGameTestWithoutAmecs") {
     dependsOn(writeClientGameTestWithoutAmecsOptions)
+}
+
+tasks.named("configureLaunch") {
+    dependsOn(debugProject.tasks.named(debugProject.sourceSets.main.get().classesTaskName))
 }
 
 tasks.jar {

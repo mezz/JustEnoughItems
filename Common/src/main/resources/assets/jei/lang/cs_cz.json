@@ -55,8 +55,6 @@
   "jei.config.client.advanced.description": "Pokročilé funkce pro JEI.",
   "jei.config.client.advanced.itemBlacklist": "Černý list itemů",
   "jei.config.client.advanced.itemBlacklist.description": "List itemů které se nezobrazí na listu itemů. Formát: modId[:jméno[:data]]. Edit Mód automaticky přidá/odstraní záznamy.",
-  "jei.config.debug.debug.debugMode": "Programovací Mód",
-  "jei.config.debug.debug.debugMode.description": "Použitelné jen pro JEI vývojáře, přidá tisíce test itemů a některé vývojářské recepty.",
   "jei.config.client.appearance.centerSearch": "Hýbat s vyhledávacím polem",
   "jei.config.client.appearance.centerSearch.description": "Přesune JEI bar dolů doprostřed obrazovky.",
 

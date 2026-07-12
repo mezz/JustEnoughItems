@@ -276,16 +276,12 @@
 
   "jei.config.debug.debug": "Налагодження",
   "jei.config.debug.debug.description": "Налаштування, які стосуються допомоги розробникам усунути проблеми в JEI",
-  "jei.config.debug.debug.debugMode": "Режим налагодження",
-  "jei.config.debug.debug.debugMode.description": "Увімкнути режим налагодження",
   "jei.config.debug.debug.debugGuis": "Налагодження інтерфейсу",
   "jei.config.debug.debug.debugGuis.description": "Умикає режим налагодження інтерфейсу",
   "jei.config.debug.debug.debugInputs": "Уведення налагодження",
   "jei.config.debug.debug.debugInputs.description": "Умикає режим уведення налагодження",
   "jei.config.debug.debug.debugInfoTooltipsEnabled": "Спливні підказки інформації про налагодження",
   "jei.config.debug.debug.debugInfoTooltipsEnabled.description": "Додає інформацію про налагодження до підказок інгредієнтів, якщо ввімкнено розширені підказки.",
-  "jei.config.debug.debug.crashingTestItemsEnabled": "Увімкнути предмети тесту на збій",
-  "jei.config.debug.debug.crashingTestItemsEnabled.description": "Додає інгредієнти до JEI, які навмисно аварійно завершують роботу, щоби допомогти налагодити JEI.",
   "jei.config.debug.debug.logSuffixTreeStats": "Статистика дерева пошуку журналу",
   "jei.config.debug.debug.logSuffixTreeStats.description": "Реєструє інформацію про дерева суфіксів, які використовуються для пошуку, щоби допомогти налагодити JEI.",
 

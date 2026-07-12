@@ -1,4 +1,4 @@
-package mezz.jei.library.plugins.debug;
+package mezz.jei.debug;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.helpers.IJeiHelpers;

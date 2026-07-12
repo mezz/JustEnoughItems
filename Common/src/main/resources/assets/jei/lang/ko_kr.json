@@ -132,8 +132,6 @@
   "jei.config.client.advanced.description": "JEI의 고급 기능들에 대해 설정합니다.",
   "jei.config.client.advanced.itemBlacklist": "아이템 금지 목록",
   "jei.config.client.advanced.itemBlacklist.description": "아이템 목록에 표시하지 않을 아이템들의 목록입니다. 형식: modId[:name[:meta]]. 수정 모드는 자동으로 항목을 추가/삭제할 것입니다.",
-  "jei.config.debug.debug.debugMode": "디버그 모드",
-  "jei.config.debug.debug.debugMode.description": "JEI 개발자들에게만 유용한 항목입니다. 몇천 개의 테스트 아이템과 몇몇 디버그용 제작법을 추가합니다.",
   "jei.config.client.appearance.centerSearch": "중앙 검색 창",
   "jei.config.client.appearance.centerSearch.description": "JEI의 검색 창을 아래쪽 중앙으로 이동합니다.",
   "jei.config.modIdFormat.modName.modNameFormat": "모드 이름 형식",

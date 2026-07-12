@@ -111,8 +111,6 @@
   "jei.config.client.advanced.description": "Haladó konfigurációs beállítások a JEI funkciók működésének megváltoztatásához.",
   "jei.config.client.advanced.itemBlacklist": "Recept Feketelista",
   "jei.config.client.advanced.itemBlacklist.description": "Azon receptek listálya, melyeknek nem kéne megjelenniük a hozzávaló lista felületen. Formátum: modId[:név[:meta]]. A Rejtett Hozzávalók mód automatikusan hozzá fog adni és el fog venni bejegyzéseket innen.",
-  "jei.config.debug.debug.debugMode": "Debug Mód",
-  "jei.config.debug.debug.debugMode.description": "Csak JEI fejlesztőknek hasznos, hozzáad néhány teszt hozzávalót és receptet.",
   "jei.config.client.appearance.centerSearch": "Kereső Mező Középre Igazítása",
   "jei.config.client.appearance.centerSearch.description": "A képernyő aljának közepére mozgatja a JEI kereső mezőt.",
   "jei.config.modIdFormat.modName.modNameFormat": "Mod Név Formátum",

@@ -24,6 +24,7 @@ pipeline {
                 sh "./gradlew :NeoForge:build"
                 sh "./gradlew :Common:build"
                 sh "./gradlew :CommonApi:build"
+                sh "./gradlew :Debug:build"
                 sh "./gradlew :FabricApi:build"
                 sh "./gradlew :NeoForgeApi:build"
             }
