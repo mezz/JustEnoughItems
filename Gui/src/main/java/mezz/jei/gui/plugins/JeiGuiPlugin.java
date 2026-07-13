@@ -21,7 +21,6 @@ public class JeiGuiPlugin implements IModPlugin {
 	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
 		registration.addGuiScreenHandler(AbstractContainerScreen.class, GuiProperties::create);
 		registration.addGuiScreenHandler(RecipesGui.class, RecipesGui::getProperties);
-		registration.addGuiScreenHandler(JeiConfigScreen.class, JeiConfigScreen::getGuiProperties);
 		registration.addGlobalGuiHandler(JeiConfigScreen.createGuiHandler());
 	}
 }

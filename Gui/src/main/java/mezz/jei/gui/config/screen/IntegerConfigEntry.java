@@ -13,7 +13,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
-public class IntegerConfigEntry extends ConfigEntryWidget<Integer> {
+import java.util.ArrayList;
+import java.util.List;
+
+final class IntegerConfigEntry extends ConfigEntryWidget<Integer> {
 
     private static final int ARROW_BLOCK_WIDTH = 12;
     private static final int ARROW_BLOCK_HEIGHT = 14;
@@ -30,7 +33,7 @@ public class IntegerConfigEntry extends ConfigEntryWidget<Integer> {
     private boolean editing = false;
     private String editText = "";
 
-    public IntegerConfigEntry(IJeiConfigValue<Integer> value) {
+    IntegerConfigEntry(IJeiConfigValue<Integer> value) {
         super(value);
         this.serializer = (IntegerSerializer) value.getSerializer();
     }
@@ -76,26 +79,24 @@ public class IntegerConfigEntry extends ConfigEntryWidget<Integer> {
 
         // value box
         textures.getConfigValueSlot().draw(guiGraphics, valueBoxArea);
-        int textY = valueBoxArea.getY() + (valueBoxArea.getHeight() - (int) (font.lineHeight * TEXT_SCALE)) / 2;
+        int textY = valueBoxArea.getY() + (valueBoxArea.getHeight() - font.lineHeight + 1) / 2;
         if (editing) {
             String displayText = editText + "_";
-            int textColor = 0xFFFFFF;
+            int textColor = TEXT_COLOR;
             if (!editText.isEmpty() && !editText.equals("-")) {
                 try {
                     int parsed = Integer.parseInt(editText);
                     if (parsed < serializer.getMin() || parsed > serializer.getMax()) {
-                        textColor = 0xFF4444;
+                        textColor = 0xFFFF7070;
                     }
                 } catch (NumberFormatException ignored) {
-                    textColor = 0xFF4444;
+                    textColor = 0xFFFF7070;
                 }
             }
-            drawScaledString(guiGraphics, font, displayText, valueBoxArea.getX() + 3, textY, textColor, true);
+            drawText(guiGraphics, font, displayText, valueBoxArea.getX() + 3, textY, textColor);
         } else {
-            drawScaledString(guiGraphics, font, Component.literal(configValue.getValue().toString()), valueBoxArea.getX() + 3, textY, 0xFFFFFF, true);
+            drawText(guiGraphics, font, Component.literal(configValue.getValue().toString()), valueBoxArea.getX() + 3, textY, TEXT_COLOR);
         }
-
-        // range hint in tooltip handled via getTooltip
 
         // shared arrow background
         textures.getConfigValueSlot().draw(guiGraphics, arrowBgArea);
@@ -140,9 +141,11 @@ public class IntegerConfigEntry extends ConfigEntryWidget<Integer> {
     }
 
     @Override
-    void getTooltip(mezz.jei.common.gui.JeiTooltip tooltip) {
-        super.getTooltip(tooltip);
-        tooltip.add(Component.literal("Range: " + serializer.getMin() + " ~ " + serializer.getMax()).withStyle(net.minecraft.ChatFormatting.GRAY));
+    ConfigInfo getInfo() {
+        ConfigInfo info = super.getInfo();
+        List<Component> lines = new ArrayList<>(info.lines());
+        lines.add(Component.translatable("jei.config.screen.range", serializer.getMin(), serializer.getMax()));
+        return new ConfigInfo(info.title(), lines);
     }
 
     @Override
@@ -193,7 +196,7 @@ public class IntegerConfigEntry extends ConfigEntryWidget<Integer> {
         editing = false;
         try {
             int val = Integer.parseInt(editText.trim());
-            val = Math.max(serializer.getMin(), Math.min(serializer.getMax(), val));
+            val = Math.clamp(val, serializer.getMin(), serializer.getMax());
             configValue.set(val);
         } catch (NumberFormatException ignored) {
         }
@@ -235,6 +238,11 @@ public class IntegerConfigEntry extends ConfigEntryWidget<Integer> {
             return true;
         }
         return true; // consume all keys while editing
+    }
+
+    @Override
+    public void unfocus() {
+        commitEdit();
     }
 
 }

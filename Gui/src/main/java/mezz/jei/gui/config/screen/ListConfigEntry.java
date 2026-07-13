@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
+final class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
 
     private static final int ENTRY_ROW_HEIGHT = 16;
     private static final int BUTTON_SIZE = 14;
@@ -32,7 +32,7 @@ public class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
     private final Runnable layoutUpdater;
     private ImmutableRect2i addButtonArea = ImmutableRect2i.EMPTY;
 
-    public ListConfigEntry(IJeiConfigValue<List<T>> listValue, Consumer<ConfigValueSelector<?>> valueSelectorOpener, Runnable layoutUpdater) {
+    ListConfigEntry(IJeiConfigValue<List<T>> listValue, Consumer<ConfigValueSelector<?>> valueSelectorOpener, Runnable layoutUpdater) {
         super(listValue);
         this.valueSelectorOpener = valueSelectorOpener;
         this.layoutUpdater = layoutUpdater;
@@ -64,17 +64,19 @@ public class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
 
     @Override
     public int getHeight() {
-        return 20 + valueRows.size() * ENTRY_ROW_HEIGHT + 2;
+        return super.getHeight() + valueRows.size() * ENTRY_ROW_HEIGHT + 2;
     }
 
     @Override
     public void updateBounds(ImmutableRect2i area) {
-        super.updateBounds(new ImmutableRect2i(area.getX(), area.getY(), area.getWidth(), 20));
+        super.updateBounds(new ImmutableRect2i(area.getX(), area.getY(), area.getWidth(), Math.max(20, area.getHeight())));
+        int headerHeight = super.getHeight();
+        super.updateBounds(new ImmutableRect2i(area.getX(), area.getY(), area.getWidth(), headerHeight));
         this.area = area;
         if (canAddMore()) {
             addButtonArea = new ImmutableRect2i(
                     area.getX() + area.getWidth() - 32 - 2 - BUTTON_SIZE - 2,
-                    area.getY() + (20 - BUTTON_SIZE) / 2,
+                    area.getY() + (headerHeight - BUTTON_SIZE) / 2,
                     BUTTON_SIZE,
                     BUTTON_SIZE
             );
@@ -82,7 +84,7 @@ public class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
             addButtonArea = ImmutableRect2i.EMPTY;
         }
 
-        int y = area.getY() + 20;
+        int y = area.getY() + headerHeight;
         for (ListValueRow row : valueRows) {
             row.updateBounds(new ImmutableRect2i(area.getX() + 4, y, area.getWidth() - 8, ENTRY_ROW_HEIGHT));
             y += ENTRY_ROW_HEIGHT;
@@ -98,9 +100,7 @@ public class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
             boolean hovered = addButtonArea.contains(mouseX, mouseY);
             textures.getButtonForState(false, true, hovered).draw(guiGraphics, addButtonArea);
             Font addFont = Minecraft.getInstance().font;
-            int aix = addButtonArea.getX() + (addButtonArea.getWidth() - addFont.width("+")) / 2;
-            int aiy = addButtonArea.getY() + (addButtonArea.getHeight() - addFont.lineHeight) / 2;
-            guiGraphics.drawString(addFont, "+", aix, aiy, hovered ? 0xFFFFFF55 : 0xFFFFFFFF, false);
+            ConfigEntryWidget.drawCenteredButtonText(guiGraphics, addFont, "+", addButtonArea, hovered ? HOVER_TEXT_COLOR : TEXT_COLOR);
         }
 
         for (ListValueRow row : valueRows) {
@@ -211,17 +211,15 @@ public class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
                     0x30000000);
 
             int textX = area.getX() + 4;
-            int textY = area.getY() + (area.getHeight() - (int) (font.lineHeight * ConfigEntryWidget.TEXT_SCALE)) / 2;
-            ConfigEntryWidget.drawScaledString(guiGraphics, font, Component.literal(value.toString()),
-                    textX, textY, 0xFFFFFF, true);
+            int textY = area.getY() + (area.getHeight() - font.lineHeight + 1) / 2;
+            ConfigEntryWidget.drawText(guiGraphics, font, Component.literal(value.toString()),
+                    textX, textY, TEXT_COLOR);
 
             // delete button
             boolean deleteHovered = deleteArea.contains(mouseX, mouseY);
             ScalableDrawable deleteBg = textures.getButtonForState(false, true, deleteHovered);
             deleteBg.draw(guiGraphics, deleteArea);
-            int dix = deleteArea.getX() + (deleteArea.getWidth() - font.width("x")) / 2;
-            int diy = deleteArea.getY() + (deleteArea.getHeight() - font.lineHeight) / 2;
-            guiGraphics.drawString(font, "x", dix, diy, deleteHovered ? 0xFFFFFF55 : 0xFFFFFFFF, false);
+            ConfigEntryWidget.drawCenteredButtonText(guiGraphics, font, "x", deleteArea, deleteHovered ? HOVER_TEXT_COLOR : TEXT_COLOR);
         }
     }
 }

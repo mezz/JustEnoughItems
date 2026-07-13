@@ -2,20 +2,16 @@ package mezz.jei.gui.config.screen;
 
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
-public class ConfigValueSelector<T> {
+final class ConfigValueSelector<T> {
 
     private final List<ValueEntry> valueEntries;
     private final Consumer<T> setter;
@@ -35,9 +31,12 @@ public class ConfigValueSelector<T> {
 
     public void updateBounds(int x, int y) {
         Font font = Minecraft.getInstance().font;
-        final int entryHeight = 14;
+        final int entryHeight = 20;
         int width = valueEntries.stream()
-                                .mapToInt(entry -> (int) (font.width(entry.value.toString()) * ConfigEntryWidget.TEXT_SCALE))
+                                .mapToInt(entry -> {
+                                    int textWidth = (int) (font.width(entry.value.toString()) * ConfigEntryWidget.TEXT_SCALE);
+                                    return textWidth + ConfigValueIcon.getTextOffset(entry.value);
+                                })
                                 .max().orElse(50);
         int entryWidth = width + 12;
         area = new ImmutableRect2i(x, y, entryWidth, valueEntries.size() * entryHeight);
@@ -64,7 +63,12 @@ public class ConfigValueSelector<T> {
                         valueArea.getX() + valueArea.getWidth(), valueArea.getY() + valueArea.getHeight(),
                         0x50FFFFFF);
             }
-            ConfigEntryWidget.drawScaledString(guiGraphics, font, entry.value.toString(), valueArea.getX() + 4, valueArea.getY() + 4, hovered ? 0xFFFFFF55 : 0xFFFFFFFF, true);
+            int contentX = valueArea.getX() + 4;
+            int iconY = valueArea.getY() + (valueArea.getHeight() - ConfigValueIcon.ICON_SIZE) / 2;
+            ConfigValueIcon.draw(guiGraphics, entry.value, contentX, iconY);
+            int textX = contentX + ConfigValueIcon.getTextOffset(entry.value);
+            int textY = valueArea.getY() + (valueArea.getHeight() - font.lineHeight + 1) / 2;
+            ConfigEntryWidget.drawText(guiGraphics, font, entry.value.toString(), textX, textY, hovered ? ConfigEntryWidget.HOVER_TEXT_COLOR : ConfigEntryWidget.TEXT_COLOR);
         }
     }
 
@@ -78,33 +82,6 @@ public class ConfigValueSelector<T> {
             }
         }
         return false;
-    }
-
-    public IUserInputHandler createInputHandler(Runnable onClose) {
-        return new SelectorInputHandler(onClose);
-    }
-
-    private class SelectorInputHandler implements IUserInputHandler {
-        private final Runnable onClose;
-
-        SelectorInputHandler(Runnable onClose) {
-            this.onClose = onClose;
-        }
-
-        @Override
-        public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-            if (isMouseOver(input.getMouseX(), input.getMouseY()) && input.is(keyBindings.getLeftClick())) {
-                if (onMouseClicked(input)) {
-                    if (!input.isSimulate()) {
-                        onClose.run();
-                    }
-                    return Optional.of(this);
-                }
-            } else if (!input.isSimulate()) {
-                onClose.run();
-            }
-            return Optional.empty();
-        }
     }
 
     private class ValueEntry {

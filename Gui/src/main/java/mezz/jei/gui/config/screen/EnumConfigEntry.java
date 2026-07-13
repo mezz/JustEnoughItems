@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class EnumConfigEntry<T extends Enum<T>> extends ConfigEntryWidget<T> {
+final class EnumConfigEntry<T extends Enum<T>> extends ConfigEntryWidget<T> {
 
     private static final int ARROW_SIZE = 9;
     private static final int ARROW_PADDING = 3;
@@ -24,7 +24,7 @@ public class EnumConfigEntry<T extends Enum<T>> extends ConfigEntryWidget<T> {
     private final Consumer<ConfigValueSelector<?>> valueSelectorOpener;
     private ImmutableRect2i valueArea = ImmutableRect2i.EMPTY;
 
-    public EnumConfigEntry(IJeiConfigValue<T> value, Consumer<ConfigValueSelector<?>> valueSelectorOpener) {
+    EnumConfigEntry(IJeiConfigValue<T> value, Consumer<ConfigValueSelector<?>> valueSelectorOpener) {
         super(value);
         this.valueSelectorOpener = valueSelectorOpener;
         this.validValues = value.getSerializer()
@@ -38,10 +38,13 @@ public class EnumConfigEntry<T extends Enum<T>> extends ConfigEntryWidget<T> {
     public void updateBounds(ImmutableRect2i area) {
         super.updateBounds(area);
         Font font = Minecraft.getInstance().font;
-        int textWidth = (int) (font.width(configValue.getValue().toString()) * TEXT_SCALE);
+        T value = configValue.getValue();
+        int textWidth = (int) (font.width(value.toString()) * TEXT_SCALE);
+        int iconWidth = ConfigValueIcon.getTextOffset(value);
         int totalWidth = textWidth + ARROW_SIZE + ARROW_PADDING * 2 + 8;
+        totalWidth += iconWidth;
         totalWidth = Math.min(totalWidth, area.getWidth() / 2);
-        int height = 14;
+        int height = 18;
         valueArea = new ImmutableRect2i(
                 area.getX() + area.getWidth() - totalWidth - 36,
                 area.getY() + (area.getHeight() - height) / 2,
@@ -62,9 +65,14 @@ public class EnumConfigEntry<T extends Enum<T>> extends ConfigEntryWidget<T> {
         textures.getConfigValueSlot().draw(guiGraphics, valueArea);
 
         // value text
-        int textY = valueArea.getY() + (valueArea.getHeight() - (int) (font.lineHeight * TEXT_SCALE)) / 2;
-        String valueString = configValue.getValue().toString();
-        drawScaledString(guiGraphics, font, Component.literal(valueString), valueArea.getX() + 4, textY, 0xFFFFFF, true);
+        int textY = valueArea.getY() + (valueArea.getHeight() - font.lineHeight + 1) / 2;
+        T value = configValue.getValue();
+        String valueString = value.toString();
+        int contentX = valueArea.getX() + 4;
+        int iconY = valueArea.getY() + (valueArea.getHeight() - ConfigValueIcon.ICON_SIZE) / 2;
+        ConfigValueIcon.draw(guiGraphics, value, contentX, iconY);
+        int textX = contentX + ConfigValueIcon.getTextOffset(value);
+        drawText(guiGraphics, font, Component.literal(valueString), textX, textY, TEXT_COLOR);
 
         // down arrow icon on the right
         IDrawableStatic arrowDown = Internal.getTextures().getArrowDown();

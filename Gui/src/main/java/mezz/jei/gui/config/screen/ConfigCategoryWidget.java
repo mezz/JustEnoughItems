@@ -1,31 +1,24 @@
 package mezz.jei.gui.config.screen;
 
 import mezz.jei.api.runtime.config.IJeiConfigCategory;
-import mezz.jei.api.runtime.config.IJeiConfigValue;
-import mezz.jei.common.config.file.serializers.BooleanSerializer;
-import mezz.jei.common.config.file.serializers.EnumSerializer;
-import mezz.jei.common.config.file.serializers.IntegerSerializer;
-import mezz.jei.common.config.file.serializers.ListSerializer;
-import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class ConfigCategoryWidget {
+final class ConfigCategoryWidget {
 
     private final IJeiConfigCategory category;
     private final List<ConfigEntryWidget<?>> entryWidgets = new ArrayList<>();
@@ -37,28 +30,19 @@ public class ConfigCategoryWidget {
     ImmutableRect2i clickArea = ImmutableRect2i.EMPTY;
     ImmutableRect2i nameArea = ImmutableRect2i.EMPTY;
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public ConfigCategoryWidget(
+    ConfigCategoryWidget(
             IJeiConfigCategory category,
             Supplier<ImmutableRect2i> displayAreaSupplier,
             Runnable layoutUpdater,
-            Consumer<ConfigValueSelector<?>> valueSelectorOpener
+            ConfigEntryWidgetFactory entryWidgetFactory
     ) {
         this.category = category;
         this.displayAreaSupplier = displayAreaSupplier;
         this.layoutUpdater = layoutUpdater;
-        for (IJeiConfigValue<?> value : category.getConfigValues()) {
-            switch (value.getSerializer()) {
-                case BooleanSerializer ignored ->
-                        entryWidgets.add(new BooleanConfigEntry((IJeiConfigValue<Boolean>) value));
-                case IntegerSerializer ignored ->
-                        entryWidgets.add(new IntegerConfigEntry((IJeiConfigValue<Integer>) value));
-                case EnumSerializer ignored -> entryWidgets.add(new EnumConfigEntry(value, valueSelectorOpener));
-                case ListSerializer ignored ->
-                        entryWidgets.add(new ListConfigEntry(value, valueSelectorOpener, layoutUpdater));
-                default -> throw new UnsupportedOperationException("Unsupported serializer: " + value.getSerializer());
-            }
-        }
+        category.getConfigValues()
+                .stream()
+                .map(entryWidgetFactory::create)
+                .forEach(entryWidgets::add);
     }
 
     public List<ConfigEntryWidget<?>> getEntryWidgets() {
@@ -70,8 +54,7 @@ public class ConfigCategoryWidget {
         this.clickArea = ImmutableRect2i.EMPTY;
         this.nameArea = ImmutableRect2i.EMPTY;
         for (ConfigEntryWidget<?> entryWidget : entryWidgets) {
-            entryWidget.area = ImmutableRect2i.EMPTY;
-            entryWidget.nameArea = ImmutableRect2i.EMPTY;
+            entryWidget.resetBounds();
         }
     }
 
@@ -98,10 +81,17 @@ public class ConfigCategoryWidget {
                                     public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
                                         ImmutableRect2i displayArea = displayAreaSupplier.get();
                                         boolean entryVisible = !entry.area.equals(ImmutableRect2i.EMPTY);
-                                        if ((expanded || entryVisible) && displayArea.contains(input.getMouseX(), input.getMouseY())) {
+                                        if ((expanded || entryVisible) &&
+                                                displayArea.contains(input.getMouseX(), input.getMouseY()) &&
+                                                entry.isMouseOver(input.getMouseX(), input.getMouseY())) {
                                             return entryInputHandler.handleUserInput(screen, input, keyBindings);
                                         }
                                         return Optional.empty();
+                                    }
+
+                                    @Override
+                                    public void unfocus() {
+                                        entryInputHandler.unfocus();
                                     }
 
                                     @Override
@@ -119,11 +109,8 @@ public class ConfigCategoryWidget {
         return new CombinedInputHandler("ConfigCategory:" + category.getName(), entryHandlers);
     }
 
-    public void drawTooltip(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        JeiTooltip tooltip = new JeiTooltip();
-        tooltip.add(category.getLocalizedName().copy().withStyle(ChatFormatting.YELLOW));
-        tooltip.add(category.getDescription().copy().withStyle(ChatFormatting.GREEN));
-        tooltip.draw(guiGraphics, (int) mouseX, (int) mouseY);
+    public ConfigInfo getInfo() {
+        return new ConfigInfo(category.getLocalizedName(), category.getDescription());
     }
 
     public void draw(GuiGraphics guiGraphics, double mouseX, double mouseY) {
@@ -132,7 +119,7 @@ public class ConfigCategoryWidget {
         guiGraphics.fill(area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), 0x28000000);
         guiGraphics.fill(area.getX(), area.getY() + area.getHeight() - 1, area.getX() + area.getWidth(), area.getY() + area.getHeight(), 0x20FFFFFF);
 
-        ConfigEntryWidget.drawScaledString(guiGraphics, font, category.getLocalizedName(), nameArea.getX(), nameArea.getY(), 0xFFE0E0E0, false);
+        ConfigEntryWidget.drawText(guiGraphics, font, category.getLocalizedName(), nameArea.getX(), nameArea.getY(), ConfigEntryWidget.SECONDARY_TEXT_COLOR);
     }
 
     private class CategoryInputHandler implements IUserInputHandler {

@@ -109,6 +109,10 @@
 
   "_comment": "Config",
   "jei.config": "JEI Config",
+  "jei.config.screen.title": "JEI Configuration",
+  "jei.config.screen.search": "Search...",
+  "jei.config.screen.reset": "Reset",
+  "jei.config.screen.range": "Range: %s ~ %s",
   "jei.config.name": "Name: %s",
   "jei.config.description": "Description: %s",
   "jei.config.valueValues": "Valid Values: %s",

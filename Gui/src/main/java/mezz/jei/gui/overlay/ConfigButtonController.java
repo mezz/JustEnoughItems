@@ -112,7 +112,7 @@ public class ConfigButtonController implements IIconButtonController {
 		}
 
 		IPlatformConfigHelper configHelper = Services.PLATFORM.getConfigHelper();
-		Optional<Screen> configScreen = configHelper.getConfigScreen();
+		Optional<Screen> configScreen = configHelper.getConfigScreen(mc.screen);
 
 		if (configScreen.isPresent()) {
 			mc.setScreen(configScreen.get());

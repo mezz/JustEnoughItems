@@ -2,7 +2,6 @@ package mezz.jei.gui.config.screen;
 
 import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -10,7 +9,6 @@ import mezz.jei.common.util.StringUtil;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.handlers.SameElementInputHandler;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -21,33 +19,40 @@ import net.minecraft.util.FormattedCharSequence;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class ConfigEntryWidget<T> {
+abstract class ConfigEntryWidget<T> {
+
+    static final int TEXT_COLOR = 0xFFECECEC;
+    static final int SECONDARY_TEXT_COLOR = 0xFFBFC7D5;
+    static final int HOVER_TEXT_COLOR = 0xFFFFFFFF;
 
     protected static final int NAME_RIGHT_RESERVE = 95;
     private static final int NAME_LEFT_PADDING = 5;
-    static final float TEXT_SCALE = 0.8f;
+    static final float TEXT_SCALE = 1.0f;
     private static final int RESET_BUTTON_W = 32;
     private static final int RESET_BUTTON_H = 14;
 
-    static void drawScaledString(GuiGraphics g, Font font, FormattedCharSequence text, int x, int y, int color, boolean shadow) {
-        g.pose().pushPose();
-        g.pose().scale(TEXT_SCALE, TEXT_SCALE, 1.0f);
-        g.drawString(font, text, (int) (x / TEXT_SCALE), (int) (y / TEXT_SCALE), color, shadow);
-        g.pose().popPose();
+    static void drawText(GuiGraphics guiGraphics, Font font, FormattedCharSequence text, int x, int y, int color) {
+        guiGraphics.drawString(font, text, x, y, color, false);
     }
 
-    static void drawScaledString(GuiGraphics g, Font font, Component text, int x, int y, int color, boolean shadow) {
-        g.pose().pushPose();
-        g.pose().scale(TEXT_SCALE, TEXT_SCALE, 1.0f);
-        g.drawString(font, text, (int) (x / TEXT_SCALE), (int) (y / TEXT_SCALE), color, shadow);
-        g.pose().popPose();
+    static void drawText(GuiGraphics guiGraphics, Font font, Component text, int x, int y, int color) {
+        guiGraphics.drawString(font, text, x, y, color, false);
     }
 
-    static void drawScaledString(GuiGraphics g, Font font, String text, int x, int y, int color, boolean shadow) {
-        g.pose().pushPose();
-        g.pose().scale(TEXT_SCALE, TEXT_SCALE, 1.0f);
-        g.drawString(font, text, (int) (x / TEXT_SCALE), (int) (y / TEXT_SCALE), color, shadow);
-        g.pose().popPose();
+    static void drawText(GuiGraphics guiGraphics, Font font, String text, int x, int y, int color) {
+        guiGraphics.drawString(font, text, x, y, color, false);
+    }
+
+    static void drawCenteredButtonText(GuiGraphics guiGraphics, Font font, Component text, ImmutableRect2i area, int color) {
+        int textX = area.getX() + (area.getWidth() - font.width(text)) / 2;
+        int textY = area.getY() + (area.getHeight() - font.lineHeight + 1) / 2;
+        drawText(guiGraphics, font, text, textX, textY, color);
+    }
+
+    static void drawCenteredButtonText(GuiGraphics guiGraphics, Font font, String text, ImmutableRect2i area, int color) {
+        int textX = area.getX() + (area.getWidth() - font.width(text)) / 2;
+        int textY = area.getY() + (area.getHeight() - font.lineHeight + 1) / 2;
+        drawText(guiGraphics, font, text, textX, textY, color);
     }
 
     final IJeiConfigValue<T> configValue;
@@ -114,6 +119,12 @@ public abstract class ConfigEntryWidget<T> {
         return area.contains(mouseX, mouseY);
     }
 
+    public void resetBounds() {
+        this.area = ImmutableRect2i.EMPTY;
+        this.nameArea = ImmutableRect2i.EMPTY;
+        this.resetArea = ImmutableRect2i.EMPTY;
+    }
+
     public IUserInputHandler createInputHandler() {
         return new EntryWidgetInputHandler();
     }
@@ -136,6 +147,10 @@ public abstract class ConfigEntryWidget<T> {
         return false;
     }
 
+    public void unfocus() {
+
+    }
+
     public void draw(GuiGraphics guiGraphics, double mouseX, double mouseY) {
         Internal.getTextures().getConfigValueSlot().draw(guiGraphics, area);
         drawContent(guiGraphics, mouseX, mouseY);
@@ -150,28 +165,16 @@ public abstract class ConfigEntryWidget<T> {
         boolean hovered = resetArea.contains(mouseX, mouseY);
         textures.getButtonForState(false, true, hovered).draw(guiGraphics, resetArea);
         Font font = Minecraft.getInstance().font;
-        String label = "Reset";
-        int textWidth = (int) (font.width(label) * TEXT_SCALE);
-        int textX = resetArea.getX() + (resetArea.getWidth() - textWidth) / 2;
-        int textY = resetArea.getY() + (resetArea.getHeight() - (int) (font.lineHeight * TEXT_SCALE)) / 2;
-        drawScaledString(guiGraphics, font, label, textX, textY, hovered ? 0xFFFFFF55 : 0xFFFFFFFF, true);
+        Component label = Component.translatable("jei.config.screen.reset");
+        drawCenteredButtonText(guiGraphics, font, label, resetArea, hovered ? HOVER_TEXT_COLOR : TEXT_COLOR);
     }
 
     public boolean isModified() {
         return !configValue.getValue().equals(configValue.getDefaultValue());
     }
 
-    public void drawTooltip(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        JeiTooltip tooltip = new JeiTooltip();
-        getTooltip(tooltip);
-        if (!tooltip.isEmpty()) {
-            tooltip.draw(guiGraphics, (int) mouseX, (int) mouseY);
-        }
-    }
-
-    void getTooltip(JeiTooltip tooltip) {
-        tooltip.add(configValue.getLocalizedName().copy().withStyle(ChatFormatting.YELLOW));
-        tooltip.add(configValue.getLocalizedDescription().copy().withStyle(ChatFormatting.GREEN));
+    ConfigInfo getInfo() {
+        return new ConfigInfo(configValue.getLocalizedName(), configValue.getLocalizedDescription());
     }
 
     final void drawName(GuiGraphics guiGraphics) {
@@ -179,7 +182,7 @@ public abstract class ConfigEntryWidget<T> {
         int scaledLineHeight = (int) (font.lineHeight * TEXT_SCALE);
         int y = nameArea.getY();
         for (FormattedCharSequence line : nameLines) {
-            drawScaledString(guiGraphics, font, line, nameArea.getX(), y, 0xFFFFFFFF, true);
+            drawText(guiGraphics, font, line, nameArea.getX(), y, TEXT_COLOR);
             y += scaledLineHeight;
         }
     }
@@ -197,6 +200,11 @@ public abstract class ConfigEntryWidget<T> {
                 return Optional.of(new SameElementInputHandler(this, area::contains));
             }
             return Optional.empty();
+        }
+
+        @Override
+        public void unfocus() {
+            ConfigEntryWidget.this.unfocus();
         }
     }
 }
