@@ -1,5 +1,6 @@
 package mezz.jei.gui.config.screen;
 
+import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -7,18 +8,21 @@ import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 final class ConfigValueSelector<T> {
 
+    private final IJeiConfigValue<?> configValue;
     private final List<ValueEntry> valueEntries;
     private final Consumer<T> setter;
 
     ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
-    public ConfigValueSelector(List<T> allValues, Consumer<T> setter) {
+    public ConfigValueSelector(IJeiConfigValue<?> configValue, List<T> allValues, Consumer<T> setter) {
+        this.configValue = configValue;
         this.valueEntries = allValues.stream()
                                      .map(ValueEntry::new)
                                      .toList();
@@ -27,6 +31,20 @@ final class ConfigValueSelector<T> {
 
     public boolean isMouseOver(double mouseX, double mouseY) {
         return area.contains(mouseX, mouseY);
+    }
+
+    public ConfigInfo getInfo() {
+        return new ConfigInfo(configValue.getLocalizedName(), configValue.getLocalizedDescription());
+    }
+
+    @Nullable
+    public ConfigInfo getTooltipInfo(double mouseX, double mouseY) {
+        for (ValueEntry entry : valueEntries) {
+            if (entry.isMouseOver(mouseX, mouseY)) {
+                return ConfigValueInfoFactory.create(configValue, entry.value);
+            }
+        }
+        return null;
     }
 
     public void updateBounds(int x, int y) {
@@ -57,17 +75,12 @@ final class ConfigValueSelector<T> {
         for (ValueEntry entry : valueEntries) {
             ImmutableRect2i valueArea = entry.area;
             boolean hovered = entry.isMouseOver(mouseX, mouseY);
-            textures.getConfigValueSlot().draw(guiGraphics, valueArea);
-            if (hovered) {
-                guiGraphics.fill(valueArea.getX(), valueArea.getY(),
-                        valueArea.getX() + valueArea.getWidth(), valueArea.getY() + valueArea.getHeight(),
-                        0x50FFFFFF);
-            }
+            ConfigEntryWidget.drawButtonBackground(guiGraphics, textures, valueArea, true, hovered);
             int contentX = valueArea.getX() + 4;
             int iconY = valueArea.getY() + (valueArea.getHeight() - ConfigValueIcon.ICON_SIZE) / 2;
             ConfigValueIcon.draw(guiGraphics, entry.value, contentX, iconY);
             int textX = contentX + ConfigValueIcon.getTextOffset(entry.value);
-            int textY = valueArea.getY() + (valueArea.getHeight() - font.lineHeight + 1) / 2;
+            int textY = ConfigEntryWidget.getCenteredTextY(font, valueArea);
             ConfigEntryWidget.drawText(guiGraphics, font, entry.value.toString(), textX, textY, hovered ? ConfigEntryWidget.HOVER_TEXT_COLOR : ConfigEntryWidget.TEXT_COLOR);
         }
     }

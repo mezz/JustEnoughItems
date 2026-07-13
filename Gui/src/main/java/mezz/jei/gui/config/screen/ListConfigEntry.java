@@ -4,7 +4,6 @@ import mezz.jei.api.runtime.config.IJeiConfigListValueSerializer;
 import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -15,6 +14,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +23,8 @@ import java.util.function.Consumer;
 
 final class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
 
-    private static final int ENTRY_ROW_HEIGHT = 16;
-    private static final int BUTTON_SIZE = 14;
+    private static final int ENTRY_ROW_HEIGHT = 20;
+    private static final int BUTTON_SIZE = 18;
 
     private final List<ListValueRow> valueRows = new ArrayList<>();
     private final List<T> allValidValues;
@@ -69,7 +69,7 @@ final class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
 
     @Override
     public void updateBounds(ImmutableRect2i area) {
-        super.updateBounds(new ImmutableRect2i(area.getX(), area.getY(), area.getWidth(), Math.max(20, area.getHeight())));
+        super.updateBounds(new ImmutableRect2i(area.getX(), area.getY(), area.getWidth(), Math.max(getMinimumHeight(), area.getHeight())));
         int headerHeight = super.getHeight();
         super.updateBounds(new ImmutableRect2i(area.getX(), area.getY(), area.getWidth(), headerHeight));
         this.area = area;
@@ -98,7 +98,7 @@ final class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
         if (!addButtonArea.equals(ImmutableRect2i.EMPTY)) {
             Textures textures = Internal.getTextures();
             boolean hovered = addButtonArea.contains(mouseX, mouseY);
-            textures.getButtonForState(false, true, hovered).draw(guiGraphics, addButtonArea);
+            drawButtonBackground(guiGraphics, textures, addButtonArea, true, hovered);
             Font addFont = Minecraft.getInstance().font;
             ConfigEntryWidget.drawCenteredButtonText(guiGraphics, addFont, "+", addButtonArea, hovered ? HOVER_TEXT_COLOR : TEXT_COLOR);
         }
@@ -106,6 +106,31 @@ final class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
         for (ListValueRow row : valueRows) {
             row.draw(guiGraphics, mouseX, mouseY);
         }
+    }
+
+    @Override
+    @Nullable
+    ConfigInfo getTooltipInfo(double mouseX, double mouseY) {
+        if (!addButtonArea.equals(ImmutableRect2i.EMPTY) && addButtonArea.contains(mouseX, mouseY)) {
+            return new ConfigInfo(
+                    Component.translatable("jei.config.screen.add"),
+                    Component.translatable("jei.config.screen.add.info")
+            );
+        }
+        for (ListValueRow row : valueRows) {
+            if (row.deleteArea.contains(mouseX, mouseY)) {
+                return new ConfigInfo(
+                        Component.translatable("jei.config.screen.remove"),
+                        Component.translatable("jei.config.screen.remove.info")
+                );
+            }
+        }
+        for (ListValueRow row : valueRows) {
+            if (row.area.contains(mouseX, mouseY)) {
+                return ConfigValueInfoFactory.create(configValue, row.value);
+            }
+        }
+        return null;
     }
 
     @Override
@@ -153,7 +178,7 @@ final class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
                                                       .filter(v -> !currentValues.contains(v))
                                                       .toList();
                     if (!available.isEmpty()) {
-                        ConfigValueSelector<T> selector = new ConfigValueSelector<>(available, ListConfigEntry.this::addValue);
+                        ConfigValueSelector<T> selector = new ConfigValueSelector<>(configValue, available, ListConfigEntry.this::addValue);
                         selector.updateBounds((int) input.getMouseX(), addButtonArea.getY() + addButtonArea.getHeight() + 2);
                         valueSelectorOpener.accept(selector);
                     }
@@ -206,14 +231,13 @@ final class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
                     0x30000000);
 
             int textX = area.getX() + 4;
-            int textY = area.getY() + (area.getHeight() - font.lineHeight + 1) / 2;
+            int textY = ConfigEntryWidget.getCenteredTextY(font, area);
             ConfigEntryWidget.drawText(guiGraphics, font, Component.literal(value.toString()),
                     textX, textY, TEXT_COLOR);
 
             // delete button
             boolean deleteHovered = deleteArea.contains(mouseX, mouseY);
-            ScalableDrawable deleteBg = textures.getButtonForState(false, true, deleteHovered);
-            deleteBg.draw(guiGraphics, deleteArea);
+            ConfigEntryWidget.drawButtonBackground(guiGraphics, textures, deleteArea, true, deleteHovered);
             ConfigEntryWidget.drawCenteredButtonText(guiGraphics, font, "x", deleteArea, deleteHovered ? HOVER_TEXT_COLOR : TEXT_COLOR);
         }
     }

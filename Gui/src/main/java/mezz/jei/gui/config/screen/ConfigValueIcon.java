@@ -31,13 +31,6 @@ final class ConfigValueIcon {
 		if (value instanceof Boolean booleanValue) {
 			return booleanValue ? ENABLED_ICON : DISABLED_ICON;
 		}
-		if (value instanceof Enum<?> enumValue) {
-			return switch (enumValue.name()) {
-				case "ENABLED" -> ENABLED_ICON;
-				case "DISABLED" -> DISABLED_ICON;
-				default -> null;
-			};
-		}
 		return null;
 	}
 }

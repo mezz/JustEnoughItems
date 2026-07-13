@@ -5,7 +5,6 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.util.Mth;
 
 final class ConfigScreenLayout {
-	static final int ENTRY_HEIGHT = 20;
 	static final int NAV_ITEM_HEIGHT = 20;
 	static final int NAV_ITEM_GAP = 2;
 	static final int SEARCH_HEIGHT = 18;
@@ -14,10 +13,14 @@ final class ConfigScreenLayout {
 	private static final int MIN_GUI_WIDTH = 320;
 	private static final int MAX_GUI_WIDTH = 380;
 	private static final int MIN_HEIGHT = 230;
-	private static final int NAV_WIDTH = 96;
+	private static final int NAV_WIDTH = 104;
+	private static final int NAV_SCROLLBAR_WIDTH = 6;
+	private static final int NAV_SCROLLBAR_GAP = 2;
 	private static final int RESET_BUTTON_WIDTH = 40;
 	private static final int APPLY_BUTTON_WIDTH = 40;
 	private static final int TOP_BUTTON_GAP = 2;
+	private static final int SEARCH_TEXT_LEFT_PADDING = 5;
+	private static final int SEARCH_TEXT_RIGHT_PADDING = 4;
 	private static final int INFO_AREA_GAP = 4;
 	private static final int MIN_SCROLL_MARKER_HEIGHT = 10;
 	private static final double SCROLL_SPEED = 10.0;
@@ -25,6 +28,7 @@ final class ConfigScreenLayout {
 
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i navArea = ImmutableRect2i.EMPTY;
+	private ImmutableRect2i navScrollBarArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i contentArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i searchBackgroundArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i resetCategoryButtonArea = ImmutableRect2i.EMPTY;
@@ -41,6 +45,8 @@ final class ConfigScreenLayout {
 	private int totalNavHeight = 0;
 	private double navTargetScrollY = 0;
 	private double navCurrentScrollY = 0;
+	private boolean draggingNavScroll = false;
+	private double navScrollDragOffsetY = 0;
 
 	public void updateScreenBounds(int screenWidth, int screenHeight, EditBox searchBox) {
 		int guiWidth = Math.clamp(screenWidth - 40, MIN_GUI_WIDTH, MAX_GUI_WIDTH);
@@ -56,7 +62,7 @@ final class ConfigScreenLayout {
 		infoArea = new ImmutableRect2i(
 			area.getX() + 4,
 			infoTop,
-			area.getWidth() - 18,
+			area.getWidth() - 8,
 			INFO_AREA_HEIGHT
 		);
 
@@ -68,6 +74,12 @@ final class ConfigScreenLayout {
 			innerTop,
 			NAV_WIDTH,
 			innerHeight
+		);
+		navScrollBarArea = new ImmutableRect2i(
+			navArea.getX() + navArea.getWidth() - NAV_SCROLLBAR_WIDTH,
+			navArea.getY(),
+			NAV_SCROLLBAR_WIDTH,
+			navArea.getHeight()
 		);
 
 		int contentLeft = navArea.getX() + navArea.getWidth() + 4;
@@ -93,9 +105,9 @@ final class ConfigScreenLayout {
 			resetButtonX - contentLeft - TOP_BUTTON_GAP,
 			SEARCH_HEIGHT
 		);
-		searchBox.setX(contentLeft + 2);
+		searchBox.setX(searchBackgroundArea.getX() + SEARCH_TEXT_LEFT_PADDING);
 		searchBox.setY(innerTop + 5);
-		searchBox.setWidth(searchBackgroundArea.getWidth() - 4);
+		searchBox.setWidth(searchBackgroundArea.getWidth() - SEARCH_TEXT_LEFT_PADDING - SEARCH_TEXT_RIGHT_PADDING);
 		searchBox.setHeight(SEARCH_HEIGHT);
 
 		int contentTop = innerTop + SEARCH_HEIGHT + 2;
@@ -120,6 +132,14 @@ final class ConfigScreenLayout {
 
 	public ImmutableRect2i getNavArea() {
 		return navArea;
+	}
+
+	public int getNavItemWidth() {
+		return navArea.getWidth() - NAV_SCROLLBAR_WIDTH - NAV_SCROLLBAR_GAP;
+	}
+
+	public ImmutableRect2i getNavScrollBarArea() {
+		return navScrollBarArea;
 	}
 
 	public ImmutableRect2i getContentArea() {
@@ -162,6 +182,22 @@ final class ConfigScreenLayout {
 		);
 	}
 
+	public ImmutableRect2i getNavScrollMarkerArea() {
+		int maxScroll = getMaxNavScroll();
+		if (maxScroll <= 0) {
+			return ImmutableRect2i.EMPTY;
+		}
+		int markerHeight = getNavScrollMarkerHeight();
+		int trackHeight = navScrollBarArea.getHeight();
+		int markerY = navScrollBarArea.getY() + (int) ((trackHeight - markerHeight) * navCurrentScrollY / maxScroll);
+		return new ImmutableRect2i(
+			navScrollBarArea.getX() + 1,
+			markerY,
+			navScrollBarArea.getWidth() - 2,
+			markerHeight
+		);
+	}
+
 	public int getTotalContentHeight() {
 		return totalContentHeight;
 	}
@@ -200,7 +236,7 @@ final class ConfigScreenLayout {
 
 	public boolean scroll(double mouseX, double mouseY, double scrollY) {
 		if (navArea.contains(mouseX, mouseY)) {
-			int maxNavScroll = Math.max(0, totalNavHeight - navArea.getHeight());
+			int maxNavScroll = getMaxNavScroll();
 			navTargetScrollY = Mth.clamp(navTargetScrollY - scrollY * SCROLL_SPEED, 0, maxNavScroll);
 			return true;
 		}
@@ -242,6 +278,36 @@ final class ConfigScreenLayout {
 		return wasDragging;
 	}
 
+	public boolean startNavScrollDrag(double mouseX, double mouseY) {
+		ImmutableRect2i markerArea = getNavScrollMarkerArea();
+		if (markerArea.isEmpty() || !navScrollBarArea.contains(mouseX, mouseY)) {
+			return false;
+		}
+
+		if (markerArea.contains(mouseX, mouseY)) {
+			navScrollDragOffsetY = mouseY - markerArea.getY();
+		} else {
+			navScrollDragOffsetY = markerArea.getHeight() / 2.0;
+			setNavScrollFromMarkerY(mouseY - navScrollDragOffsetY);
+		}
+		draggingNavScroll = true;
+		return true;
+	}
+
+	public boolean dragNavScroll(double mouseY) {
+		if (!draggingNavScroll) {
+			return false;
+		}
+		setNavScrollFromMarkerY(mouseY - navScrollDragOffsetY);
+		return true;
+	}
+
+	public boolean stopNavScrollDrag() {
+		boolean wasDragging = draggingNavScroll;
+		draggingNavScroll = false;
+		return wasDragging;
+	}
+
 	public boolean stepContentScroll() {
 		double nextScroll = stepScroll(currentScrollY, targetScrollY);
 		if (nextScroll == currentScrollY) {
@@ -274,11 +340,22 @@ final class ConfigScreenLayout {
 		return Math.max(0, totalContentHeight - contentArea.getHeight());
 	}
 
+	private int getMaxNavScroll() {
+		return Math.max(0, totalNavHeight - navArea.getHeight());
+	}
+
 	private int getScrollMarkerHeight() {
 		if (totalContentHeight <= 0) {
 			return scrollBarArea.getHeight();
 		}
 		return Math.max(MIN_SCROLL_MARKER_HEIGHT, scrollBarArea.getHeight() * contentArea.getHeight() / totalContentHeight);
+	}
+
+	private int getNavScrollMarkerHeight() {
+		if (totalNavHeight <= 0) {
+			return navScrollBarArea.getHeight();
+		}
+		return Math.max(MIN_SCROLL_MARKER_HEIGHT, navScrollBarArea.getHeight() * navArea.getHeight() / totalNavHeight);
 	}
 
 	private void setContentScrollFromMarkerY(double markerY) {
@@ -297,6 +374,22 @@ final class ConfigScreenLayout {
 		currentScrollY = nextScroll;
 	}
 
+	private void setNavScrollFromMarkerY(double markerY) {
+		int maxScroll = getMaxNavScroll();
+		int markerHeight = getNavScrollMarkerHeight();
+		int trackSpace = navScrollBarArea.getHeight() - markerHeight;
+		if (maxScroll <= 0 || trackSpace <= 0) {
+			navTargetScrollY = 0;
+			navCurrentScrollY = 0;
+			return;
+		}
+
+		double scrollPercent = (markerY - navScrollBarArea.getY()) / trackSpace;
+		double nextScroll = Mth.clamp(scrollPercent * maxScroll, 0, maxScroll);
+		navTargetScrollY = nextScroll;
+		navCurrentScrollY = nextScroll;
+	}
+
 	private boolean clampContentScroll() {
 		int maxScroll = getMaxContentScroll();
 		double oldTarget = targetScrollY;
@@ -307,7 +400,7 @@ final class ConfigScreenLayout {
 	}
 
 	private boolean clampNavScroll() {
-		int maxNavScroll = Math.max(0, totalNavHeight - navArea.getHeight());
+		int maxNavScroll = getMaxNavScroll();
 		double oldTarget = navTargetScrollY;
 		double oldCurrent = navCurrentScrollY;
 		navTargetScrollY = Mth.clamp(navTargetScrollY, 0, maxNavScroll);

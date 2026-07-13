@@ -64,7 +64,7 @@ final class ConfigCategoryWidget {
         clickArea = new ImmutableRect2i(area.getX() + 6, area.getY() + 6, 16, 16);
         int nameWidth = font.width(category.getLocalizedName());
         nameWidth = Math.min(nameWidth, area.getWidth() - 20);
-        nameArea = new ImmutableRect2i(area.getX() + 20, area.getY() + 7, nameWidth, 16);
+        nameArea = new ImmutableRect2i(area.getX() + 20, ConfigEntryWidget.getCenteredTextY(font, area), nameWidth, font.lineHeight);
     }
 
     public boolean isMouseOver(double mouseX, double mouseY) {

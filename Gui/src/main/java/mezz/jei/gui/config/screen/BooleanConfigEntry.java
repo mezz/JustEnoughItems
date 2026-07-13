@@ -2,11 +2,11 @@ package mezz.jei.gui.config.screen;
 
 import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.GuiGraphics;
+import org.jetbrains.annotations.Nullable;
 
 final class BooleanConfigEntry extends ConfigEntryWidget<Boolean> {
 
@@ -37,12 +37,20 @@ final class BooleanConfigEntry extends ConfigEntryWidget<Boolean> {
 
         Textures textures = Internal.getTextures();
         boolean hovered = buttonArea.contains(mouseX, mouseY);
-        ScalableDrawable bg = textures.getButtonForState(false, true, hovered);
-        bg.draw(guiGraphics, buttonArea);
+        drawButtonBackground(guiGraphics, textures, buttonArea, true, hovered);
 
         int iconX = buttonArea.getX() + (buttonArea.getWidth() - ConfigValueIcon.ICON_SIZE) / 2;
         int iconY = buttonArea.getY() + (buttonArea.getHeight() - ConfigValueIcon.ICON_SIZE) / 2;
         ConfigValueIcon.draw(guiGraphics, getValue(), iconX, iconY);
+    }
+
+    @Override
+    @Nullable
+    ConfigInfo getTooltipInfo(double mouseX, double mouseY) {
+        if (buttonArea.contains(mouseX, mouseY)) {
+            return ConfigValueInfoFactory.create(configValue, getValue());
+        }
+        return null;
     }
 
     @Override

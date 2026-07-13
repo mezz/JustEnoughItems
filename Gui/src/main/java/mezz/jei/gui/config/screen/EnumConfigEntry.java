@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,9 +41,7 @@ final class EnumConfigEntry<T extends Enum<T>> extends ConfigEntryWidget<T> {
         Font font = Minecraft.getInstance().font;
         T value = getValue();
         int textWidth = (int) (font.width(value.toString()) * TEXT_SCALE);
-        int iconWidth = ConfigValueIcon.getTextOffset(value);
         int totalWidth = textWidth + ARROW_SIZE + ARROW_PADDING * 2 + 8;
-        totalWidth += iconWidth;
         totalWidth = Math.min(totalWidth, area.getWidth() / 2);
         int height = 18;
         valueArea = new ImmutableRect2i(
@@ -60,18 +59,15 @@ final class EnumConfigEntry<T extends Enum<T>> extends ConfigEntryWidget<T> {
         Font font = Minecraft.getInstance().font;
         drawName(guiGraphics);
 
-        // value background (same nine-slice as integer value box)
         Textures textures = Internal.getTextures();
-        textures.getConfigValueSlot().draw(guiGraphics, valueArea);
+        boolean hovered = valueArea.contains(mouseX, mouseY);
+        drawButtonBackground(guiGraphics, textures, valueArea, true, hovered);
 
         // value text
-        int textY = valueArea.getY() + (valueArea.getHeight() - font.lineHeight + 1) / 2;
+        int textY = getCenteredTextY(font, valueArea);
         T value = getValue();
         String valueString = value.toString();
-        int contentX = valueArea.getX() + 4;
-        int iconY = valueArea.getY() + (valueArea.getHeight() - ConfigValueIcon.ICON_SIZE) / 2;
-        ConfigValueIcon.draw(guiGraphics, value, contentX, iconY);
-        int textX = contentX + ConfigValueIcon.getTextOffset(value);
+        int textX = valueArea.getX() + 4;
         drawText(guiGraphics, font, Component.literal(valueString), textX, textY, TEXT_COLOR);
 
         // down arrow icon on the right
@@ -82,13 +78,22 @@ final class EnumConfigEntry<T extends Enum<T>> extends ConfigEntryWidget<T> {
     }
 
     @Override
+    @Nullable
+    ConfigInfo getTooltipInfo(double mouseX, double mouseY) {
+        if (valueArea.contains(mouseX, mouseY)) {
+            return ConfigValueInfoFactory.create(configValue, getValue());
+        }
+        return null;
+    }
+
+    @Override
     boolean onMouseClicked(UserInput input) {
         if (super.onMouseClicked(input)) {
             return true;
         }
         if (valueArea.contains(input.getMouseX(), input.getMouseY())) {
             if (!input.isSimulate()) {
-                ConfigValueSelector<T> selector = new ConfigValueSelector<>(validValues, value -> {
+                ConfigValueSelector<T> selector = new ConfigValueSelector<>(configValue, validValues, value -> {
                     setValue(value);
                     this.updateBounds(this.area);
                 });

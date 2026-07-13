@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -78,8 +79,9 @@ final class IntegerConfigEntry extends ConfigEntryWidget<Integer> {
         drawName(guiGraphics);
 
         // value box
-        textures.getConfigValueSlot().draw(guiGraphics, valueBoxArea);
-        int textY = valueBoxArea.getY() + (valueBoxArea.getHeight() - font.lineHeight + 1) / 2;
+        boolean valueHovered = valueBoxArea.contains(mouseX, mouseY);
+        drawButtonBackground(guiGraphics, textures, valueBoxArea, true, valueHovered);
+        int textY = getCenteredTextY(font, valueBoxArea);
         if (editing) {
             String displayText = editText + "_";
             int textColor = TEXT_COLOR;
@@ -99,7 +101,7 @@ final class IntegerConfigEntry extends ConfigEntryWidget<Integer> {
         }
 
         // shared arrow background
-        textures.getConfigValueSlot().draw(guiGraphics, arrowBgArea);
+        drawButtonBackground(guiGraphics, textures, arrowBgArea, true, arrowBgArea.contains(mouseX, mouseY));
 
         // up arrow
         boolean canUp = getValue() < serializer.getMax();
@@ -146,6 +148,18 @@ final class IntegerConfigEntry extends ConfigEntryWidget<Integer> {
         List<Component> lines = new ArrayList<>(info.lines());
         lines.add(Component.translatable("jei.config.screen.range", serializer.getMin(), serializer.getMax()));
         return new ConfigInfo(info.title(), lines);
+    }
+
+    @Override
+    @Nullable
+    ConfigInfo getTooltipInfo(double mouseX, double mouseY) {
+        if (valueBoxArea.contains(mouseX, mouseY) || arrowBgArea.contains(mouseX, mouseY)) {
+            ConfigInfo info = ConfigValueInfoFactory.create(configValue, getValue());
+            List<Component> lines = new ArrayList<>(info.lines());
+            lines.add(Component.translatable("jei.config.screen.range", serializer.getMin(), serializer.getMax()));
+            return new ConfigInfo(info.title(), lines);
+        }
+        return null;
     }
 
     @Override

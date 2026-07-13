@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JeiConfigScreen extends Screen {
+	private static final int SEARCH_TEXT_COLOR = 0xFFE8EEF7;
+	private static final int SEARCH_HINT_COLOR = 0xFF8F98A6;
+
 	public static Screen create(@Nullable Screen parent) {
 		return new JeiConfigScreen(parent, Internal.getClientConfigSchema());
 	}
@@ -53,7 +56,8 @@ public class JeiConfigScreen extends Screen {
 		this.searchBox = new EditBox(font, 0, 0, 0, ConfigScreenLayout.SEARCH_HEIGHT, Component.translatable("jei.config.screen.search"));
 		this.searchBox.setMaxLength(64);
 		this.searchBox.setBordered(false);
-		this.searchBox.setTextColor(0xFFFFFFFF);
+		this.searchBox.setHint(Component.translatable("jei.config.screen.search"));
+		updateSearchTextColor("");
 
 		this.model = new ConfigScreenModel(clientSchema);
 		this.controller = new ConfigScreenController(model, layout, () -> {
@@ -62,7 +66,10 @@ public class JeiConfigScreen extends Screen {
 			}
 		});
 		this.view = new ConfigScreenView(searchBox, model, layout, controller);
-		this.searchBox.setResponder(controller::setSearchText);
+		this.searchBox.setResponder(searchText -> {
+			updateSearchTextColor(searchText);
+			controller.setSearchText(searchText);
+		});
 
 		List<IUserInputHandler> allInputHandlers = new ArrayList<>();
 		List<IJeiConfigCategory> categories = model.getCategories();
@@ -95,6 +102,10 @@ public class JeiConfigScreen extends Screen {
 			controller::updateContentLayout
 		));
 		this.inputHandler = new UserInputRouter("JeiConfigScreen", allInputHandlers);
+	}
+
+	private void updateSearchTextColor(String searchText) {
+		this.searchBox.setTextColor(searchText.isEmpty() ? SEARCH_HINT_COLOR : SEARCH_TEXT_COLOR);
 	}
 
 	private void openValueSelector(ConfigValueSelector<?> selector) {
@@ -225,6 +236,9 @@ public class JeiConfigScreen extends Screen {
 		if (button == 0 && controller.startContentScrollDrag(mouseX, mouseY)) {
 			return true;
 		}
+		if (button == 0 && controller.startNavScrollDrag(mouseX, mouseY)) {
+			return true;
+		}
 		ImmutableRect2i resetCategoryButtonArea = layout.getResetCategoryButtonArea();
 		ImmutableRect2i applyButtonArea = layout.getApplyButtonArea();
 		if (button == 0 && (resetCategoryButtonArea.contains(mouseX, mouseY) || applyButtonArea.contains(mouseX, mouseY))) {
@@ -247,7 +261,7 @@ public class JeiConfigScreen extends Screen {
 
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		if (button == 0 && controller.stopContentScrollDrag()) {
+		if (button == 0 && (controller.stopContentScrollDrag() || controller.stopNavScrollDrag())) {
 			return true;
 		}
 		ImmutableRect2i resetCategoryButtonArea = layout.getResetCategoryButtonArea();
@@ -276,6 +290,9 @@ public class JeiConfigScreen extends Screen {
 	@Override
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
 		if (button == 0 && controller.dragContentScroll(mouseY)) {
+			return true;
+		}
+		if (button == 0 && controller.dragNavScroll(mouseY)) {
 			return true;
 		}
 		return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);

@@ -85,12 +85,12 @@ final class ConfigNavItem implements IUserInputHandler {
 			textures.getConfigCategoryHighlight().draw(guiGraphics, area);
 		}
 		if (active) {
-			guiGraphics.fill(area.getX(), area.getY(), area.getX() + 2, area.getY() + area.getHeight(), 0xCCFFFFFF);
+			guiGraphics.fill(area.getX(), area.getY(), area.getX() + 2, area.getY() + area.getHeight(), 0xCC2B3442);
 		}
 
-		int textColor = 0xFFFFFFFF;
+		int textColor = active || hovered ? ConfigEntryWidget.HOVER_TEXT_COLOR : ConfigEntryWidget.TEXT_COLOR;
 		int textX = area.getX() + (active ? ACTIVE_TEXT_LEFT_PADDING : TEXT_LEFT_PADDING);
-		int textY = area.getY() + (area.getHeight() - font.lineHeight) / 2;
+		int textY = ConfigEntryWidget.getCenteredTextY(font, area);
 		guiGraphics.drawString(font, visibleName, textX, textY, textColor, false);
 	}
 

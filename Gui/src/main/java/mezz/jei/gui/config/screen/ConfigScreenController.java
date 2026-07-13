@@ -104,6 +104,26 @@ final class ConfigScreenController {
 		return layout.stopContentScrollDrag();
 	}
 
+	public boolean startNavScrollDrag(double mouseX, double mouseY) {
+		if (layout.startNavScrollDrag(mouseX, mouseY)) {
+			updateNavLayout();
+			return true;
+		}
+		return false;
+	}
+
+	public boolean dragNavScroll(double mouseY) {
+		if (layout.dragNavScroll(mouseY)) {
+			updateNavLayout();
+			return true;
+		}
+		return false;
+	}
+
+	public boolean stopNavScrollDrag() {
+		return layout.stopNavScrollDrag();
+	}
+
 	public void stepScrollPositions() {
 		if (layout.stepContentScroll()) {
 			updateContentLayout();
@@ -114,9 +134,9 @@ final class ConfigScreenController {
 	}
 
 	public void calculateNavItemHeights() {
-		ImmutableRect2i navArea = layout.getNavArea();
+		int navItemWidth = layout.getNavItemWidth();
 		for (ConfigNavItem navItem : model.getNavItems()) {
-			navItem.calculateHeight(navArea.getWidth());
+			navItem.calculateHeight(navItemWidth);
 		}
 	}
 
@@ -165,7 +185,7 @@ final class ConfigScreenController {
 	private int updateEntryBounds(ConfigEntryWidget<?> entryWidget, int y) {
 		ImmutableRect2i contentArea = layout.getContentArea();
 		int entryWidth = contentArea.getWidth() - 4;
-		entryWidget.updateBounds(new ImmutableRect2i(contentArea.getX() + 2, y, entryWidth, ConfigScreenLayout.ENTRY_HEIGHT));
+		entryWidget.updateBounds(new ImmutableRect2i(contentArea.getX() + 2, y, entryWidth, ConfigEntryWidget.getMinimumHeight()));
 		int height = entryWidget.getHeight();
 		entryWidget.updateBounds(new ImmutableRect2i(contentArea.getX() + 2, y, entryWidth, height));
 		return height;
@@ -179,6 +199,7 @@ final class ConfigScreenController {
 
 	private boolean updateNavLayoutInternal() {
 		ImmutableRect2i navArea = layout.getNavArea();
+		int navItemWidth = layout.getNavItemWidth();
 		int navY = navArea.getY() - (int) layout.getNavCurrentScrollY();
 		int totalNavHeight = 0;
 		for (ConfigNavItem navItem : model.getNavItems()) {
@@ -186,7 +207,7 @@ final class ConfigScreenController {
 			navItem.updateBounds(new ImmutableRect2i(
 				navArea.getX(),
 				navY,
-				navArea.getWidth(),
+				navItemWidth,
 				itemHeight
 			));
 			navY += itemHeight + ConfigScreenLayout.NAV_ITEM_GAP;

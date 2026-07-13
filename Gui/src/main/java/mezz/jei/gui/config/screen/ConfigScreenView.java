@@ -1,6 +1,7 @@
 package mezz.jei.gui.config.screen;
 
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -21,6 +22,8 @@ final class ConfigScreenView {
 	private static final int INFO_BORDER_COLOR = 0x70FFFFFF;
 	private static final int INFO_TITLE_COLOR = 0xFFF3F6FF;
 	private static final int INFO_TEXT_COLOR = 0xFFC9D3E2;
+	private static final int VALUE_AREA_BACKGROUND_COLOR = 0x82000000;
+	private static final int VALUE_AREA_BORDER_COLOR = 0x35FFFFFF;
 
 	private final EditBox searchBox;
 	private final ConfigScreenModel model;
@@ -61,20 +64,26 @@ final class ConfigScreenView {
 		ImmutableRect2i searchBackgroundArea = layout.getSearchBackgroundArea();
 		ImmutableRect2i resetCategoryButtonArea = layout.getResetCategoryButtonArea();
 		ImmutableRect2i applyButtonArea = layout.getApplyButtonArea();
+		@Nullable ConfigInfo hoveredValueSelectorInfo = getValueSelectorInfo(valueSelector, mouseX, mouseY);
+		@Nullable ConfigInfo tooltipInfo = getTooltipInfo(valueSelector, contentArea, mouseX, mouseY);
+		@Nullable ConfigInfo hoveredControlInfo = getControlInfo(searchBackgroundArea, resetCategoryButtonArea, applyButtonArea, mouseX, mouseY);
 
 		guiGraphics.pose().pushPose();
 		background.draw(guiGraphics, area);
 		drawNavBackground(guiGraphics, navArea);
 		@Nullable ConfigNavItem hoveredNavItem = drawNavItems(guiGraphics, navArea, mouseX, mouseY);
+		drawNavScrollBar(guiGraphics);
 		drawSearch(guiGraphics, textures, searchBackgroundArea, mouseX, mouseY, partialTick);
 		drawResetButton(guiGraphics, font, textures, resetCategoryButtonArea, mouseX, mouseY);
 		drawApplyButton(guiGraphics, font, textures, applyButtonArea, mouseX, mouseY);
-		@Nullable ConfigEntryWidget<?> hoveredEntryWidget = drawEntries(guiGraphics, contentArea, mouseX, mouseY);
-		drawInfoPanel(guiGraphics, font, getInfo(hoveredNavItem, hoveredEntryWidget));
+		drawValueAreaBackground(guiGraphics, contentArea);
+		@Nullable ConfigInfo hoveredEntryInfo = drawEntries(guiGraphics, contentArea, mouseX, mouseY, valueSelector == null);
+		drawInfoPanel(guiGraphics, font, getInfo(hoveredValueSelectorInfo, hoveredControlInfo, hoveredNavItem, hoveredEntryInfo));
 		guiGraphics.pose().popPose();
 
-		drawScrollBar(guiGraphics);
+		drawContentScrollBar(guiGraphics);
 		drawValueSelector(guiGraphics, valueSelector, mouseX, mouseY);
+		drawTooltip(guiGraphics, mouseX, mouseY, tooltipInfo);
 	}
 
 	private static void drawNavBackground(GuiGraphics guiGraphics, ImmutableRect2i navArea) {
@@ -121,6 +130,23 @@ final class ConfigScreenView {
 		searchBox.render(guiGraphics, mouseX, mouseY, partialTick);
 	}
 
+	private static void drawValueAreaBackground(GuiGraphics guiGraphics, ImmutableRect2i contentArea) {
+		guiGraphics.fill(
+			contentArea.getX(),
+			contentArea.getY(),
+			contentArea.getX() + contentArea.getWidth(),
+			contentArea.getY() + contentArea.getHeight(),
+			VALUE_AREA_BACKGROUND_COLOR
+		);
+		guiGraphics.fill(
+			contentArea.getX(),
+			contentArea.getY(),
+			contentArea.getX() + contentArea.getWidth(),
+			contentArea.getY() + 1,
+			VALUE_AREA_BORDER_COLOR
+		);
+	}
+
 	private void drawResetButton(
 		GuiGraphics guiGraphics,
 		Font font,
@@ -156,13 +182,20 @@ final class ConfigScreenView {
 		Component label
 	) {
 		boolean hovered = active && buttonArea.contains(mouseX, mouseY);
-		textures.getButtonForState(false, active, hovered).draw(guiGraphics, buttonArea);
-		ConfigEntryWidget.drawCenteredButtonText(guiGraphics, font, label, buttonArea, hovered ? ConfigEntryWidget.HOVER_TEXT_COLOR : ConfigEntryWidget.TEXT_COLOR);
+		ConfigEntryWidget.drawButtonBackground(guiGraphics, textures, buttonArea, active, hovered);
+		int textColor = active ? (hovered ? ConfigEntryWidget.HOVER_TEXT_COLOR : ConfigEntryWidget.TEXT_COLOR) : ConfigEntryWidget.DISABLED_TEXT_COLOR;
+		ConfigEntryWidget.drawCenteredButtonText(guiGraphics, font, label, buttonArea, textColor);
 	}
 
 	@Nullable
-	private ConfigEntryWidget<?> drawEntries(GuiGraphics guiGraphics, ImmutableRect2i contentArea, int mouseX, int mouseY) {
-		@Nullable ConfigEntryWidget<?> hoveredEntryWidget = null;
+	private ConfigInfo drawEntries(
+		GuiGraphics guiGraphics,
+		ImmutableRect2i contentArea,
+		int mouseX,
+		int mouseY,
+		boolean allowEntryHover
+	) {
+		@Nullable ConfigInfo hoveredEntryInfo = null;
 		guiGraphics.enableScissor(
 			contentArea.getX(),
 			contentArea.getY(),
@@ -173,38 +206,113 @@ final class ConfigScreenView {
 			if (entryWidget.area.equals(ImmutableRect2i.EMPTY)) {
 				continue;
 			}
-			entryWidget.draw(guiGraphics, mouseX, mouseY);
-			if (contentArea.contains(mouseX, mouseY) && entryWidget.isMouseOver(mouseX, mouseY)) {
-				hoveredEntryWidget = entryWidget;
+			entryWidget.draw(guiGraphics, mouseX, mouseY, allowEntryHover);
+			if (allowEntryHover && contentArea.contains(mouseX, mouseY) && entryWidget.isMouseOver(mouseX, mouseY)) {
+				hoveredEntryInfo = entryWidget.getInfo(mouseX, mouseY);
 			}
 		}
 		guiGraphics.disableScissor();
-		return hoveredEntryWidget;
+		return hoveredEntryInfo;
 	}
 
-	private void drawScrollBar(GuiGraphics guiGraphics) {
-		ImmutableRect2i scrollMarkerArea = layout.getScrollMarkerArea();
-		if (scrollMarkerArea.isEmpty()) {
-			return;
+	@Nullable
+	private ConfigInfo getValueSelectorInfo(@Nullable ConfigValueSelector<?> valueSelector, int mouseX, int mouseY) {
+		if (valueSelector != null && valueSelector.isMouseOver(mouseX, mouseY)) {
+			return valueSelector.getInfo();
 		}
-		ImmutableRect2i scrollBarArea = layout.getScrollBarArea();
-		scrollbarBackground.draw(guiGraphics, scrollBarArea);
-		scrollbarMarker.draw(guiGraphics, scrollMarkerArea);
+		return null;
+	}
+
+	@Nullable
+	private ConfigInfo getTooltipInfo(
+		@Nullable ConfigValueSelector<?> valueSelector,
+		ImmutableRect2i contentArea,
+		int mouseX,
+		int mouseY
+	) {
+		if (valueSelector != null) {
+			return valueSelector.getTooltipInfo(mouseX, mouseY);
+		}
+		if (!contentArea.contains(mouseX, mouseY)) {
+			return null;
+		}
+		for (ConfigEntryWidget<?> entryWidget : controller.getVisibleEntryWidgets()) {
+			if (entryWidget.area.equals(ImmutableRect2i.EMPTY) || !entryWidget.isMouseOver(mouseX, mouseY)) {
+				continue;
+			}
+			@Nullable ConfigInfo info = entryWidget.getTooltipInfo(mouseX, mouseY);
+			if (info != null) {
+				return info;
+			}
+		}
+		return null;
+	}
+
+	private void drawNavScrollBar(GuiGraphics guiGraphics) {
+		drawScrollBar(guiGraphics, layout.getNavScrollBarArea(), layout.getNavScrollMarkerArea());
+	}
+
+	private void drawContentScrollBar(GuiGraphics guiGraphics) {
+		drawScrollBar(guiGraphics, layout.getScrollBarArea(), layout.getScrollMarkerArea());
+	}
+
+	private void drawScrollBar(GuiGraphics guiGraphics, ImmutableRect2i scrollBarArea, ImmutableRect2i scrollMarkerArea) {
+		if (!scrollMarkerArea.isEmpty()) {
+			scrollbarBackground.draw(guiGraphics, scrollBarArea);
+			scrollbarMarker.draw(guiGraphics, scrollMarkerArea);
+		}
 	}
 
 	@Nullable
 	private ConfigInfo getInfo(
+		@Nullable ConfigInfo hoveredValueSelectorInfo,
+		@Nullable ConfigInfo hoveredControlInfo,
 		@Nullable ConfigNavItem hoveredNavItem,
-		@Nullable ConfigEntryWidget<?> hoveredEntryWidget
+		@Nullable ConfigInfo hoveredEntryInfo
 	) {
-		if (hoveredEntryWidget != null) {
-			return hoveredEntryWidget.getInfo();
+		if (hoveredValueSelectorInfo != null) {
+			return hoveredValueSelectorInfo;
+		}
+		if (hoveredControlInfo != null) {
+			return hoveredControlInfo;
+		}
+		if (hoveredEntryInfo != null) {
+			return hoveredEntryInfo;
 		}
 		if (hoveredNavItem != null) {
 			return hoveredNavItem.getInfo();
 		}
 		if (model.hasActiveCategory()) {
 			return model.getActiveCategoryWidget().getInfo();
+		}
+		return null;
+	}
+
+	@Nullable
+	private ConfigInfo getControlInfo(
+		ImmutableRect2i searchBackgroundArea,
+		ImmutableRect2i resetCategoryButtonArea,
+		ImmutableRect2i applyButtonArea,
+		int mouseX,
+		int mouseY
+	) {
+		if (searchBackgroundArea.contains(mouseX, mouseY)) {
+			return new ConfigInfo(
+				Component.translatable("jei.config.screen.search.info.title"),
+				Component.translatable("jei.config.screen.search.info")
+			);
+		}
+		if (resetCategoryButtonArea.contains(mouseX, mouseY)) {
+			return new ConfigInfo(
+				Component.translatable("jei.config.screen.reset"),
+				Component.translatable("jei.config.screen.reset.visible.info")
+			);
+		}
+		if (applyButtonArea.contains(mouseX, mouseY)) {
+			return new ConfigInfo(
+				Component.translatable("jei.config.screen.apply"),
+				Component.translatable("jei.config.screen.apply.info")
+			);
 		}
 		return null;
 	}
@@ -274,5 +382,17 @@ final class ConfigScreenView {
 		guiGraphics.pose().translate(0, 0, VALUE_SELECTOR_Z_OFFSET);
 		valueSelector.draw(guiGraphics, mouseX, mouseY);
 		guiGraphics.pose().popPose();
+	}
+
+	private static void drawTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY, @Nullable ConfigInfo info) {
+		if (info == null) {
+			return;
+		}
+		JeiTooltip tooltip = new JeiTooltip();
+		tooltip.add(info.title());
+		for (Component line : info.lines()) {
+			tooltip.add(line);
+		}
+		tooltip.draw(guiGraphics, mouseX, mouseY);
 	}
 }
