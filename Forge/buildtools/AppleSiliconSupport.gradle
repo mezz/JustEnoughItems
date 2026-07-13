@@ -18,28 +18,83 @@ import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.nio.file.Path
+import java.io.ByteArrayOutputStream
+
+def lwjglVersion = "3.3.0"
+def lwjglModules = [
+	"lwjgl-glfw",
+	"lwjgl-jemalloc",
+	"lwjgl-openal",
+	"lwjgl-opengl",
+	"lwjgl-stb",
+	"lwjgl-tinyfd",
+	"lwjgl",
+]
 
 configurations.all {
 	// lwjgl:3.3.0 and java-objc-bridge:1.1 have support for apple silicon
 	resolutionStrategy {
 		force "ca.weblite:java-objc-bridge:1.1"
-		force "org.lwjgl:lwjgl-glfw:3.3.0"
-		force "org.lwjgl:lwjgl-jemalloc:3.3.0"
-		force "org.lwjgl:lwjgl-openal:3.3.0"
-		force "org.lwjgl:lwjgl-opengl:3.3.0"
-		force "org.lwjgl:lwjgl-stb:3.3.0"
-		force "org.lwjgl:lwjgl-tinyfd:3.3.0"
-		force "org.lwjgl:lwjgl:3.3.0"
+		lwjglModules.each {
+			force "org.lwjgl:${it}:${lwjglVersion}"
+		}
+	}
+}
+
+def appleSiliconLwjglNatives = configurations.create("appleSiliconLwjglNatives") {
+	canBeConsumed = false
+	canBeResolved = true
+	transitive = false
+}
+
+dependencies {
+	lwjglModules.each {
+		add(appleSiliconLwjglNatives.name, "org.lwjgl:${it}:${lwjglVersion}:natives-macos-arm64")
 	}
 }
 
 task extractLwjglNatives(type: ExtractLwjglNatives) {
 	meta = tasks.extractNatives.meta
 	output = tasks.extractNatives.output
+	outputs.upToDateWhen { false }
 }
 
 extractNatives {
 	finalizedBy extractLwjglNatives
+}
+
+def minecraftArtifacts = {
+	def minecraft = configurations.findByName("minecraft")
+	if (minecraft == null) {
+		minecraft = configurations.findByName("minecraftImplementation")
+	}
+	if (minecraft == null) {
+		throw new GradleException("Could not find ForgeGradle minecraft configuration")
+	}
+	return minecraft.copyRecursive().incoming.artifacts.artifactFiles
+}
+
+def withAppleSiliconLwjglNatives = { FileCollection artifacts, String taskName ->
+	return project.files({
+		if (VersionJson.OS.current != VersionJson.OS.OSX ||
+				!["aarch64", "arm64"].contains(getClientJavaArch(taskName))) {
+			return artifacts.files
+		}
+		def arm64NativeByX64NativeName = appleSiliconLwjglNatives.files.collectEntries {
+			[(it.name.replace("-natives-macos-arm64.jar", "-natives-macos.jar")): it]
+		}
+		return artifacts.files.collect {
+			arm64NativeByX64NativeName[it.name] ?: it
+		}
+	})
+}
+
+tasks.matching { it.name == "runClientDev" }.configureEach { runTask ->
+	runTask.getMinecraftArtifacts().setFrom(withAppleSiliconLwjglNatives(minecraftArtifacts(), runTask.name))
+	runTask.getRuntimeClasspathArtifacts().setFrom(withAppleSiliconLwjglNatives(
+			configurations.runtimeClasspath.copyRecursive().incoming.artifacts.artifactFiles,
+			runTask.name
+	))
 }
 
 // Extract LWJGL natives from the native JARs provided by LWJGL on Maven Central
@@ -55,7 +110,7 @@ abstract class ExtractLwjglNatives extends DefaultTask {
 		def os = VersionJson.OS.current
 		def osName = os == VersionJson.OS.OSX ? "macos" : os.name
 		def classifier = osName
-		def arch = System.getProperty("os.arch")
+		def arch = getClientJavaArch()
 		if (["aarch64", "arm64"].contains(arch)) {
 			classifier += "-arm64"
 		}
@@ -78,17 +133,83 @@ abstract class ExtractLwjglNatives extends DefaultTask {
 					def rootPath = FileSystems.newFileSystem(target.toPath(), new HashMap<>()).getPath("/")
 					Files.walk(rootPath.resolve(osName))
 							.filter { Files.isRegularFile(it) }
+							.filter {
+								def fileName = it.fileName.toString()
+								fileName.endsWith(".dylib") || fileName.endsWith(".jnilib")
+							}
 							.each {
 								def outputFile = getOutput().get().getAsFile()
-								def filePath = Path.of("${outputFile.toPath()}${it}")
-								def file = filePath.toFile()
-								if (!file.exists()) {
-									if (!file.getParentFile().exists()) {
-										file.getParentFile().mkdirs()
-									}
+								def filePath = outputFile.toPath().resolve(it.fileName.toString())
+								if (!filePath.getParent().toFile().exists()) {
+									filePath.getParent().toFile().mkdirs()
 								}
 								Files.copy(it, filePath, StandardCopyOption.REPLACE_EXISTING)
 							}
 				}
+		extractJavaObjcBridgeNative()
 	}
+
+	private String getClientJavaArch() {
+		def runClient = project.tasks.findByName("runClientDev")
+		def executable = null
+		if (runClient != null && runClient.hasProperty("javaLauncher") && runClient.javaLauncher.isPresent()) {
+			executable = runClient.javaLauncher.get().executablePath.asFile
+		} else if (runClient != null && runClient.hasProperty("executable") && runClient.executable != null) {
+			executable = project.file(runClient.executable)
+		}
+		if (executable == null) {
+			return System.getProperty("os.arch")
+		}
+		def javaSettings = new ByteArrayOutputStream()
+		project.exec {
+			commandLine(executable, "-XshowSettings:properties", "-version")
+			standardOutput = javaSettings
+			errorOutput = javaSettings
+			ignoreExitValue = true
+		}
+		def matcher = javaSettings.toString() =~ /os\.arch = (\S+)/
+		if (matcher.find()) {
+			return matcher.group(1)
+		}
+		return System.getProperty("os.arch")
+	}
+
+	private void extractJavaObjcBridgeNative() {
+		def dependency = project.dependencies.create("ca.weblite:java-objc-bridge:1.1")
+		def configuration = project.configurations.detachedConfiguration(dependency)
+		configuration.transitive = false
+		def target = configuration.singleFile
+		def rootPath = FileSystems.newFileSystem(target.toPath(), new HashMap<>()).getPath("/")
+		def nativePath = rootPath.resolve("libjcocoa.dylib")
+		if (Files.isRegularFile(nativePath)) {
+			def outputFile = getOutput().get().getAsFile()
+			def filePath = outputFile.toPath().resolve(nativePath.fileName.toString())
+			Files.copy(nativePath, filePath, StandardCopyOption.REPLACE_EXISTING)
+		}
+	}
+}
+
+String getClientJavaArch(String taskName) {
+	def runClient = project.tasks.findByName(taskName)
+	def executable = null
+	if (runClient != null && runClient.hasProperty("javaLauncher") && runClient.javaLauncher.isPresent()) {
+		executable = runClient.javaLauncher.get().executablePath.asFile
+	} else if (runClient != null && runClient.hasProperty("executable") && runClient.executable != null) {
+		executable = project.file(runClient.executable)
+	}
+	if (executable == null) {
+		return System.getProperty("os.arch")
+	}
+	def javaSettings = new ByteArrayOutputStream()
+	project.exec {
+		commandLine(executable, "-XshowSettings:properties", "-version")
+		standardOutput = javaSettings
+		errorOutput = javaSettings
+		ignoreExitValue = true
+	}
+	def matcher = javaSettings.toString() =~ /os\.arch = (\S+)/
+	if (matcher.find()) {
+		return matcher.group(1)
+	}
+	return System.getProperty("os.arch")
 }
