@@ -1,6 +1,8 @@
 package mezz.jei.fabric.platform;
 
 import com.mojang.blaze3d.platform.Window;
+import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
@@ -10,7 +12,6 @@ import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
-import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.world.inventory.Slot;
 
 import java.util.List;
@@ -44,8 +45,7 @@ public class ScreenHelper implements IPlatformScreenHelper {
 	}
 
 	@Override
-	public ImmutableRect2i getBookArea(RecipeUpdateListener containerScreen) {
-		RecipeBookComponent guiRecipeBook = containerScreen.getRecipeBookComponent();
+	public ImmutableRect2i getBookArea(RecipeBookComponent guiRecipeBook) {
 		if (guiRecipeBook.isVisible()) {
 			int i = (guiRecipeBook.width - 147) / 2 - guiRecipeBook.xOffset;
 			int j = (guiRecipeBook.height - 166) / 2;
@@ -56,6 +56,10 @@ public class ScreenHelper implements IPlatformScreenHelper {
 
 	@Override
 	public ImmutableRect2i getToastsArea() {
+		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		if (!clientConfig.isToastReflowEnabled()) {
+			return ImmutableRect2i.EMPTY;
+		}
 		Minecraft minecraft = Minecraft.getInstance();
 		ToastComponent toasts = minecraft.getToasts();
 		List<ToastComponent.ToastInstance<?>> visible = toasts.visible;

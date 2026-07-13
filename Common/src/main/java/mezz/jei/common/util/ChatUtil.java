@@ -12,8 +12,12 @@ public final class ChatUtil {
 	}
 
 	public static void writeChatMessage(Player player, String translationKey, ChatFormatting color) {
-		Component component = Component.translatable(translationKey);
-		component.getStyle().applyFormat(color);
+		Component component = Component.translatable(translationKey)
+			.withStyle(color);
+		writeChatMessage(player, component);
+	}
+
+	public static void writeChatMessage(Player player, Component component) {
 		player.sendSystemMessage(component);
 	}
 }

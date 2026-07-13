@@ -106,21 +106,7 @@
   "jei.config.valueValues": "Valores Válidos: %s",
   "jei.config.defaultValue": "Valor Predeterminado: %s",
 
-  "jei.config.title": "%MODNAME Configurar",
   "jei.config.default": "Predeterminado",
-  "jei.config.valid": "Válido",
-  "jei.config.mode": "Modo",
-  "jei.config.mode.description": "Cambia el modo en el que está operando JEI.",
-  "jei.config.mode.cheatItemsEnabled": "Modo Trampa",
-  "jei.config.mode.cheatItemsEnabled.description": "Dar objetos en lugar de mostrar la receta.",
-  "jei.config.mode.editEnabled": "Modo Ocultar Ingredientes",
-  "jei.config.mode.editEnabled.description": "Oculte o desoculte los ingredientes haciendo clic en ellos en la superposición de la lista de ingredientes.",
-  "jei.config.interface": "Interfaz",
-  "jei.config.interface.description": "Opciones relacionadas con la interfaz de usuario.",
-  "jei.config.interface.overlayEnabled": "Mostrar Superposición de la Lista de Ingredientes",
-  "jei.config.interface.overlayEnabled.description": "Mostrar la lista de ingredientes superpuesta junto a las GUIs abiertas.",
-  "jei.config.interface.bookmarkOverlayEnabled": "Mostrar Superposición de la Lista de Favoritos",
-  "jei.config.interface.bookmarkOverlayEnabled.description": "Mostrar la lista de favoritos superpuesta junto a las GUIs abiertas.",
 
   "jei.config.client.appearance": "Apariencia",
   "jei.config.client.appearance.description": "Opciones de configuración para cambiar la apariencia de JEI.",
@@ -246,10 +232,6 @@
   "jei.config.client.bookmarkList.drawBackground": "Dibujar Fondo GUI",
   "jei.config.client.bookmarkList.drawBackground.description": "Active esta opción para dibujar una textura de fondo detrás de la lista de favoritos.",
 
-  "jei.config.client.advanced.itemBlacklist": "Lista Negra de Ingredientes",
-  "jei.config.client.advanced.itemBlacklist.description": "Lista de ingredientes que no deben mostrarse en la superposición de la lista de ingredientes. Format: modId[:name[:meta]]. El modo de ocultar ingredientes añadirá o eliminará automáticamente entradas aquí.",
-  "jei.config.client.advanced.maxColumns": "Anchura Máxima de Superposición",
-  "jei.config.client.advanced.maxColumns.description": "La anchura máxima de las superposiciones de la lista de ingredientes y favoritos.",
 
   "jei.config.modIdFormat.modName": "Nombre del Mod",
   "jei.config.modIdFormat.modName.description": "Opciones de configuración relacionadas con la visualización de nombres de mods",

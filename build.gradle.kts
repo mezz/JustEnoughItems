@@ -1,6 +1,6 @@
 plugins {
     // https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-	id("com.diffplug.spotless") version("7.0.4")
+	id("com.diffplug.spotless") version("8.7.0")
 
     // https://plugins.gradle.org/plugin/com.dorongold.task-tree
     id("com.dorongold.task-tree") version("4.0.0")
@@ -12,7 +12,7 @@ plugins {
     id("net.neoforged.moddev") version("2.0.26-beta") apply(false)
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
-    id("me.modmuss50.mod-publish-plugin") version("0.7.3") apply(false)
+    id("me.modmuss50.mod-publish-plugin") version("2.0.1") apply(false)
 
     // https://files.minecraftforge.net/net/minecraftforge/gradle/ForgeGradle/index.html
     id("net.minecraftforge.gradle") version("6.0.26") apply(false)
@@ -58,7 +58,7 @@ spotless {
 		endWithNewline()
 		trimTrailingWhitespace()
 		removeUnusedImports()
-        indentWithTabs(4)
+        leadingSpacesToTabs(4)
         replaceRegex("class-level javadoc indentation fix", "^\\*", " *")
         replaceRegex("method-level javadoc indentation fix", "\t\\*", "\t *")
 	}
@@ -100,6 +100,8 @@ subprojects {
     }
 
     tasks.withType<ProcessResources> {
+        exclude("**/.DS_Store")
+
         val properties = mapOf(
             "curseHomepageUrl" to curseHomepageUrl,
             "fabricApiVersion" to fabricApiVersion,
@@ -131,5 +133,12 @@ subprojects {
     tasks.withType<AbstractArchiveTask>().configureEach {
         isPreserveFileTimestamps = false
         isReproducibleFileOrder = true
+    }
+}
+
+subprojects {
+    tasks.withType<JavaCompile> {
+        options.isDeprecation = true
+        options.compilerArgs.add("-Xlint:unchecked")
     }
 }

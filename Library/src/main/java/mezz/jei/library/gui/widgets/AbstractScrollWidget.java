@@ -5,7 +5,7 @@ import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.GuiGraphics;
@@ -35,8 +35,8 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 	protected final ImmutableRect2i contentsArea;
 
 	private final ImmutableRect2i scrollArea;
-	private final DrawableNineSliceTexture scrollbarMarker;
-	private final DrawableNineSliceTexture scrollbarBackground;
+	private final ScalableDrawable scrollbarMarker;
+	private final ScalableDrawable scrollbarBackground;
 	/**
 	 * Position of the mouse on the scroll marker when dragging.
 	 */

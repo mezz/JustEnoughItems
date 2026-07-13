@@ -7,7 +7,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
@@ -34,10 +34,10 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 	private static final int borderSize = 5;
 	private static final int overlapSize = 6;
 
-	private final DrawableNineSliceTexture backgroundTab;
+	private final ScalableDrawable backgroundTab;
 
 	private final List<IRecipeSlotDrawable> recipeSlots;
-	private final DrawableNineSliceTexture slotBackground;
+	private final ScalableDrawable slotBackground;
 	private final IRecipeManager recipeManager;
 	private int left = 0;
 	private int top = 0;
@@ -63,24 +63,44 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 
 	public void updateLayout(List<ITypedIngredient<?>> ingredients, ImmutableRect2i recipeArea, ImmutableRect2i optionButtonsArea) {
 		this.recipeSlots.clear();
+		Layout layout = calculateLayout(ingredients.size(), recipeArea, optionButtonsArea);
+		left = layout.left();
+		top = layout.top();
+		width = layout.width();
+		height = layout.height();
 
-		if (!ingredients.isEmpty()) {
-			int availableHeight = recipeArea.getHeight() - optionButtonsArea.getHeight() - 8;
-			int borderHeight = (2 * borderSize) + (2 * ingredientBorderSize);
-			int maxIngredientsPerColumn = (availableHeight - borderHeight) / ingredientSize;
-			int columnCount = MathUtil.divideCeil(ingredients.size(), maxIngredientsPerColumn);
-			maxIngredientsPerColumn = MathUtil.divideCeil(ingredients.size(), columnCount);
-
-			width = (2 * ingredientBorderSize) + (borderSize * 2) + (columnCount * ingredientSize);
-			height = (2 * ingredientBorderSize) + (borderSize * 2) + (maxIngredientsPerColumn * ingredientSize);
-			top = recipeArea.getY();
-			left = recipeArea.getX() - width + overlapSize; // overlaps the recipe gui slightly
-
+		if (layout.hasSlots()) {
 			for (int i = 0; i < ingredients.size(); i++) {
 				ITypedIngredient<?> ingredientForSlot = ingredients.get(i);
-				IRecipeSlotDrawable recipeSlot = createSlot(ingredientForSlot, i, maxIngredientsPerColumn);
+				IRecipeSlotDrawable recipeSlot = createSlot(ingredientForSlot, i, layout.maxIngredientsPerColumn());
 				this.recipeSlots.add(recipeSlot);
 			}
+		}
+	}
+
+	static Layout calculateLayout(int ingredientCount, ImmutableRect2i recipeArea, ImmutableRect2i optionButtonsArea) {
+		if (ingredientCount <= 0) {
+			return Layout.EMPTY;
+		}
+
+		int availableHeight = recipeArea.getHeight() - optionButtonsArea.getHeight() - 8;
+		int borderHeight = (2 * borderSize) + (2 * ingredientBorderSize);
+		int maxIngredientsPerColumn = Math.max(1, (availableHeight - borderHeight) / ingredientSize);
+		int columnCount = MathUtil.divideCeil(ingredientCount, maxIngredientsPerColumn);
+		maxIngredientsPerColumn = MathUtil.divideCeil(ingredientCount, columnCount);
+
+		int width = (2 * ingredientBorderSize) + (borderSize * 2) + (columnCount * ingredientSize);
+		int height = (2 * ingredientBorderSize) + (borderSize * 2) + (maxIngredientsPerColumn * ingredientSize);
+		int top = recipeArea.getY();
+		int left = recipeArea.getX() - width + overlapSize; // overlaps the recipe gui slightly
+		return new Layout(left, top, width, height, maxIngredientsPerColumn);
+	}
+
+	record Layout(int left, int top, int width, int height, int maxIngredientsPerColumn) {
+		private static final Layout EMPTY = new Layout(0, 0, 0, 0, 0);
+
+		private boolean hasSlots() {
+			return maxIngredientsPerColumn > 0;
 		}
 	}
 
@@ -119,7 +139,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 				if (recipeSlot.isMouseOver(mouseX, mouseY)) {
 					hovered = recipeSlot;
 				}
-				recipeSlot.draw(guiGraphics);
+				recipeSlot.draw(guiGraphics, hovered == recipeSlot);
 			}
 			return Optional.ofNullable(hovered);
 		}

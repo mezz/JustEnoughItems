@@ -1,0 +1,30 @@
+modLoader="javafml"
+loaderVersion="${neoforgeLoaderVersionRange}"
+license="The MIT License (MIT)"
+
+[[mods]]
+modId="jeitests"
+version="${version}"
+displayName="Just Enough Items: Tests"
+description='''Tests for Just Enough Items.'''
+
+[[dependencies.jeitests]]
+    modId="jei"
+    type="required"
+    versionRange="[${version},)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.jeitests]]
+    modId="neoforge"
+    type="required"
+    versionRange="${neoforgeVersionRange}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.jeitests]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraftVersionRange}"
+    ordering="NONE"
+    side="BOTH"

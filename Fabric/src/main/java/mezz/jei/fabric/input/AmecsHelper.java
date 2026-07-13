@@ -1,8 +1,11 @@
 package mezz.jei.fabric.input;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import de.siphalor.amecs.api.KeyModifier;
 import de.siphalor.amecs.api.KeyModifiers;
+import mezz.jei.common.input.KeyNameUtil;
 import mezz.jei.common.input.keys.JeiKeyModifier;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,5 +37,13 @@ public class AmecsHelper {
 			modifiersList.add(JeiKeyModifier.SHIFT);
 		}
 		return modifiersList;
+	}
+
+	public static Component getCombinedName(KeyModifiers modifiers, InputConstants.Key key) {
+		Component component = KeyNameUtil.getKeyDisplayName(key);
+		for (JeiKeyModifier modifier : getJeiModifiers(modifiers)) {
+			component = modifier.getCombinedName(component);
+		}
+		return component;
 	}
 }

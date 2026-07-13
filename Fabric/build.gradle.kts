@@ -1,4 +1,3 @@
-import me.modmuss50.mpp.PublishModTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
@@ -42,6 +41,7 @@ val parchmentVersionFabric: String by extra
 val modrinthId: String by extra
 val amecsVersionFabric: String by extra
 val amecsMinecraftVersion: String by extra
+val suffixtreeVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -52,19 +52,55 @@ val baseArchivesName = "${modId}-${minecraftVersion}-fabric"
 base {
     archivesName.set(baseArchivesName)
 }
-val dependencyProjects: List<ProjectDependency> = listOf(
-    project.dependencies.project(":Core"),
-    project.dependencies.project(":Common"),
-    project.dependencies.project(":CommonApi"),
-    project.dependencies.project(":Library"),
-    project.dependencies.project(":Gui"),
-    project.dependencies.project(":FabricApi", configuration = "namedElements")
+val vanillaDependencyProjects: List<Project> = listOf(
+    project(":Common"),
+    project(":CommonApi"),
+    project(":Library"),
+    project(":Gui"),
+)
+val loomDependencyProjects: List<Project> = listOf(
+    project(":FabricApi"),
+)
+val dependencyProjects: List<Project> = vanillaDependencyProjects + loomDependencyProjects
+
+val embeddedLibraries: Configuration by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+configurations.implementation {
+    extendsFrom(embeddedLibraries)
+}
+val commonClientTestFixturesSource = project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java")
+val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
+    java.srcDir(commonClientTestFixturesSource)
+    compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
+    runtimeClasspath += output + sourceSets.main.get().runtimeClasspath
+}
+configurations.named(clientGameTestSourceSet.runtimeOnlyConfigurationName) {
+    extendsFrom(configurations.runtimeOnly.get())
+}
+val clientTestModId = "${modId}-client-tests"
+val clientRecipeSyncTestCases = listOf(
+    "clientRecipeSyncSingleplayer" to "singleplayer",
+    "clientRecipeSyncFabricServerWithJei" to "fabricServerWithJei",
+    "clientRecipeSyncFabricServerWithoutJei" to "fabricServerWithoutJei",
+    "clientRecipeSyncVanillaServerWithoutJei" to "vanillaServerWithoutJei",
 )
 
+fun clientTestGameDirectory(runName: String) =
+    layout.projectDirectory.dir("run/$runName")
+
+fun capitalizedRunName(runName: String): String =
+    runName.replaceFirstChar { it.uppercase() }
+
 dependencyProjects.forEach {
-    project.evaluationDependsOn(it.dependencyProject.path)
+    project.evaluationDependsOn(it.path)
 }
-project.evaluationDependsOn(":Changelog")
+
+val commonTestFixturesSourceSet = project(":Common").sourceSets.named("testFixtures").get()
+val commonTestFixturesClasses = commonTestFixturesSourceSet.output.classesDirs
+clientGameTestSourceSet.compileClasspath += commonTestFixturesClasses
+clientGameTestSourceSet.runtimeClasspath += commonTestFixturesClasses
 
 java {
     toolchain {
@@ -72,6 +108,29 @@ java {
     }
     withSourcesJar()
 }
+
+val changelogHtml: Configuration by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogHtml"))
+    }
+}
+
+val changelogMarkdown: Configuration by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogMarkdown"))
+    }
+}
+
+fun Configuration.singleFileContents(): Provider<String> =
+    incoming
+        .files
+        .elements
+        .map { elements -> elements.single() }
+        .map { it.asFile.readText() }
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
@@ -88,6 +147,7 @@ dependencies {
         name = "minecraft",
         version = minecraftVersion,
     )
+    @Suppress("UnstableApiUsage")
     mappings(loom.layered {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-${parchmentMinecraftVersion}:${parchmentVersionFabric}@zip")
@@ -112,15 +172,35 @@ dependencies {
         name = "amecsapi-${amecsMinecraftVersion}",
         version = amecsVersionFabric
     )
-    dependencyProjects.forEach {
+    "clientGameTestCompileOnly"("org.jspecify:jspecify:1.0.0")
+    vanillaDependencyProjects.forEach {
         implementation(it)
     }
+    loomDependencyProjects.forEach {
+        implementation(project(it.path, "namedElements"))
+    }
+    embeddedLibraries("net.mezzdev:suffixtree:${suffixtreeVersion}") {
+        isTransitive = false
+    }
+    changelogHtml(project(":Changelog"))
+    changelogMarkdown(project(":Changelog"))
 }
 
 loom {
+    mods {
+        create("jei") {
+            sourceSet(sourceSets.main.get())
+            for (dependencyProject in dependencyProjects) {
+                sourceSet(dependencyProject.sourceSets.main.get())
+            }
+        }
+        create(clientTestModId) {
+            sourceSet(clientGameTestSourceSet)
+        }
+    }
     runs {
         val dependencyJarPaths = dependencyProjects.map {
-            it.dependencyProject.tasks.jar.get().archiveFile.get().asFile
+            it.tasks.jar.get().archiveFile.get().asFile
         }
         val classPaths = sourceSets.main.get().output.classesDirs
         val resourcesPaths = listOfNotNull(
@@ -176,6 +256,39 @@ loom {
                 "-Dfabric.log.level=debug"
             )
         }
+        clientRecipeSyncTestCases.forEach { (runName, testCase) ->
+            create(runName) {
+                client()
+                source(clientGameTestSourceSet)
+                configName = "Fabric Client Recipe Sync Test ${capitalizedRunName(testCase)}"
+                ideConfigGenerated(false)
+                runDir(loomRunDir.resolve(runName).toString())
+                property("jei.fabric.clientTest", "recipeSync")
+                property("jei.clientRecipeSyncTest", testCase)
+                vmArgs(
+                    "-Dfabric.log.level=info"
+                )
+                programArgs("--username", "JeiClientTest")
+            }
+        }
+        create("clientKeyMappingTest") {
+            client()
+            source(clientGameTestSourceSet)
+            configName = "Fabric Client Key Mapping Test"
+            ideConfigGenerated(false)
+            runDir(loomRunDir.resolve("clientKeyMappingTest").toString())
+            property("jei.fabric.clientTest", "keyMapping")
+            vmArgs(
+                "-Dfabric.log.level=info"
+            )
+            programArgs("--username", "JeiClientTest")
+        }
+        create("clientKeyMappingTestWithoutAmecs") {
+            inherit(named("clientKeyMappingTest").get())
+            configName = "Fabric Client Key Mapping Test Without AMECS"
+            runDir(loomRunDir.resolve("clientKeyMappingTestWithoutAmecs").toString())
+            property("jei.fabric.disableAmecsSupport", "true")
+        }
     }
 
     accessWidenerPath.set(file("src/main/resources/jei.accesswidener"))
@@ -185,24 +298,85 @@ sourceSets {
     named("main") {
         resources {
             for (p in dependencyProjects) {
-                srcDir(p.dependencyProject.sourceSets.main.get().resources)
+                srcDir(p.sourceSets.main.get().resources)
             }
         }
     }
 }
 
+val writeClientTestOptionsTasks = (
+    clientRecipeSyncTestCases.map { it.first } +
+        listOf("clientKeyMappingTest", "clientKeyMappingTestWithoutAmecs")
+    ).associateWith { runName ->
+        tasks.register<Copy>("write${capitalizedRunName(runName)}Options") {
+            from(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
+            into(clientTestGameDirectory(runName))
+        }
+    }
+
+clientRecipeSyncTestCases.forEach { (runName, _) ->
+    tasks.named("run${capitalizedRunName(runName)}") {
+        dependsOn(writeClientTestOptionsTasks.getValue(runName))
+    }
+}
+
+tasks.named("runClientKeyMappingTest") {
+    dependsOn(writeClientTestOptionsTasks.getValue("clientKeyMappingTest"))
+}
+
+tasks.named("runClientKeyMappingTestWithoutAmecs") {
+    dependsOn(writeClientTestOptionsTasks.getValue("clientKeyMappingTestWithoutAmecs"))
+}
+
+val clientRecipeSyncTestRunTasks = clientRecipeSyncTestCases.map { (runName, _) ->
+    tasks.named("run${capitalizedRunName(runName)}")
+}
+clientRecipeSyncTestRunTasks.zipWithNext().forEach { (previousTask, nextTask) ->
+    nextTask.configure {
+        mustRunAfter(previousTask)
+    }
+}
+
+tasks.named("runClientKeyMappingTest") {
+    mustRunAfter(clientRecipeSyncTestRunTasks)
+}
+
+tasks.named("runClientKeyMappingTestWithoutAmecs") {
+    mustRunAfter("runClientKeyMappingTest")
+}
+
+tasks.register("runClientRecipeSyncTest") {
+    group = "mod development"
+    description = "Runs all JEI Fabric client recipe-sync test scenarios."
+    dependsOn(clientRecipeSyncTestRunTasks)
+}
+
+tasks.register("runClientGameTest") {
+    group = "mod development"
+    description = "Runs JEI Fabric client tests with AMECS support enabled."
+    dependsOn(clientRecipeSyncTestRunTasks, "runClientKeyMappingTest")
+}
+
+tasks.register("runClientGameTestWithoutAmecs") {
+    group = "mod development"
+    description = "Runs JEI Fabric client tests with AMECS support disabled."
+    dependsOn("runClientKeyMappingTestWithoutAmecs")
+}
+
 tasks.jar {
+    dependsOn(embeddedLibraries)
     from(sourceSets.main.get().output)
     for (p in dependencyProjects) {
-        from(p.dependencyProject.sourceSets.main.get().output)
+        from(p.sourceSets.main.get().output)
     }
+    from(embeddedLibraries.map(::zipTree))
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 tasks.named<Jar>("sourcesJar") {
     from(sourceSets.main.get().allJava)
     for (p in dependencyProjects) {
-        from(p.dependencyProject.sourceSets.main.get().allJava)
+        from(p.sourceSets.main.get().allJava)
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveClassifier.set("sources")
@@ -210,7 +384,7 @@ tasks.named<Jar>("sourcesJar") {
 
 publishMods {
     file.set(tasks.remapJar.get().archiveFile)
-    changelog.set(provider { file("../Changelog/changelog.md").readText() })
+    changelog.set(changelogMarkdown.singleFileContents())
     type = BETA
     modLoaders.add("fabric")
     displayName.set("${project.version} for Fabric $minecraftVersion")
@@ -219,13 +393,16 @@ publishMods {
     curseforge {
         projectId = curseProjectId
         accessToken.set(curseforgeApikey ?: "0")
-        changelog.set(provider { file("../Changelog/changelog.html").readText() })
+        changelog.set(changelogHtml.singleFileContents())
         changelogType = "html"
         minecraftVersionRange {
             start = minecraftVersionRangeStart
             end = minecraftVersion
         }
         javaVersions.add(JavaVersion.toVersion(modJavaVersion))
+        client = true
+        server = true
+        dryRun = curseforgeApikey == null
     }
 
     modrinth {
@@ -235,10 +412,8 @@ publishMods {
             start = minecraftVersionRangeStart
             end = minecraftVersion
         }
+        dryRun = modrinthToken == null
     }
-}
-tasks.withType<PublishModTask> {
-    dependsOn(tasks.jar, ":Changelog:makeChangelog", ":Changelog:makeMarkdownChangelog")
 }
 
 tasks.named<Test>("test") {
@@ -252,9 +427,8 @@ tasks.named<Test>("test") {
     }
 }
 
-artifacts {
-    archives(tasks.remapJar)
-    archives(tasks.remapSourcesJar)
+tasks.assemble {
+    dependsOn(tasks.remapJar, tasks.remapSourcesJar)
 }
 
 publishing {
@@ -269,7 +443,7 @@ publishing {
             val dependencyInfos = dependencyProjects.map {
                 mapOf(
                     "groupId" to it.group,
-                    "artifactId" to it.dependencyProject.base.archivesName.get(),
+                    "artifactId" to it.base.archivesName.get(),
                     "version" to it.version
                 )
             }

@@ -111,21 +111,7 @@
   "jei.config.valueValues": "有效值：%s",
   "jei.config.defaultValue": "默认值：%s",
 
-  "jei.config.title": "%MODNAME配置",
   "jei.config.default": "默认",
-  "jei.config.valid": "有效",
-  "jei.config.mode": "模式",
-  "jei.config.mode.description": "更改JEI的工作模式。",
-  "jei.config.mode.cheatItemsEnabled": "作弊模式",
-  "jei.config.mode.cheatItemsEnabled.description": "给予物品而非显示其配方。",
-  "jei.config.mode.editEnabled": "隐藏原料模式",
-  "jei.config.mode.editEnabled.description": "在原料列表叠加层中点击原料以隐藏或取消隐藏。",
-  "jei.config.interface": "界面",
-  "jei.config.interface.description": "用户界面的相关选项。",
-  "jei.config.interface.overlayEnabled": "显示原料列表叠加层",
-  "jei.config.interface.overlayEnabled.description": "在打开的界面旁显示原料列表叠加层。",
-  "jei.config.interface.bookmarkOverlayEnabled": "显示书签列表叠加层",
-  "jei.config.interface.bookmarkOverlayEnabled.description": "在打开的界面旁显示书签列表叠加层。",
 
   "jei.config.client.appearance": "外观",
   "jei.config.client.appearance.description": "用于更改JEI外观的配置选项。",
@@ -264,10 +250,6 @@
   "jei.config.client.bookmarkList.drawBackground": "绘制界面背景",
   "jei.config.client.bookmarkList.drawBackground.description": "启用该项以在书签列表后绘制背景纹理。",
 
-  "jei.config.client.advanced.itemBlacklist": "原料黑名单",
-  "jei.config.client.advanced.itemBlacklist.description": "不会显示于原料列表叠加层中的原料列表。格式：modId[:name[:meta]]。原料隐藏模式会自动添加或移除此处条目。",
-  "jei.config.client.advanced.maxColumns": "最大叠加层宽度",
-  "jei.config.client.advanced.maxColumns.description": "原料和书签列表叠加层的最大宽度。",
 
   "jei.config.modIdFormat.modName": "模组名称",
   "jei.config.modIdFormat.modName.description": "与模组名称显示相关的配置选项",

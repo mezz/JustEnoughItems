@@ -21,7 +21,6 @@ base {
 }
 
 val dependencyProjects: List<Project> = listOf(
-    project(":Core"),
     project(":Common"),
     project(":CommonApi"),
 )
@@ -50,21 +49,31 @@ dependencies {
     dependencyProjects.forEach {
         implementation(it)
     }
+    testCompileOnly(
+        group = "org.jetbrains",
+        name = "annotations",
+        version = "23.0.0"
+    )
+    testCompileOnly(
+        group = "com.google.code.findbugs",
+        name = "jsr305",
+        version = "3.0.1"
+    )
     testImplementation(
         group = "org.junit.jupiter",
-        name = "junit-jupiter-api",
+        name = "junit-jupiter",
         version = jUnitVersion
     )
     testRuntimeOnly(
-        group = "org.junit.jupiter",
-        name = "junit-jupiter-engine",
-        version = jUnitVersion
+        group = "org.junit.platform",
+        name = "junit-platform-launcher"
     )
 }
 
-tasks.named<Test>("test") {
+tasks.test {
     useJUnitPlatform()
     include("mezz/jei/test/gui/**")
+    include("mezz/jei/gui/**")
     exclude("mezz/jei/test/gui/lib/**")
     outputs.upToDateWhen { false }
     testLogging {

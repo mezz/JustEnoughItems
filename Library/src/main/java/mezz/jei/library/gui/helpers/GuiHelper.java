@@ -5,6 +5,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
@@ -18,6 +19,8 @@ import mezz.jei.common.gui.elements.DrawableAnimated;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.DrawableCombined;
 import mezz.jei.common.gui.elements.DrawableIngredient;
+import mezz.jei.common.gui.elements.DrawableSprite;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.TickTimer;
@@ -26,6 +29,7 @@ import mezz.jei.library.gui.widgets.AbstractScrollWidget;
 import mezz.jei.library.gui.widgets.DrawableWidget;
 import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
 import mezz.jei.library.gui.widgets.ScrollGridWidgetFactory;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 
 public class GuiHelper implements IGuiHelper {
@@ -41,6 +45,30 @@ public class GuiHelper implements IGuiHelper {
 	}
 
 	@Override
+	@Deprecated(since = "19.38.0")
+	public IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId) {
+		ErrorUtil.checkNotNull(textureAtlas, "textureAtlas");
+		ErrorUtil.checkNotNull(spriteId, "spriteId");
+		return new DrawableSprite(textureAtlas, spriteId);
+	}
+
+	@Override
+	public IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId, int width, int height) {
+		ErrorUtil.checkNotNull(textureAtlas, "textureAtlas");
+		ErrorUtil.checkNotNull(spriteId, "spriteId");
+		checkPositive(width, "width");
+		checkPositive(height, "height");
+		return new DrawableSprite(textureAtlas, spriteId, width, height);
+	}
+
+	@Override
+	public IScalableDrawable createScalableDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId) {
+		ErrorUtil.checkNotNull(textureAtlas, "textureAtlas");
+		ErrorUtil.checkNotNull(spriteId, "spriteId");
+		return new ScalableDrawable(textureAtlas, spriteId);
+	}
+
+	@Override
 	public IDrawableAnimated createAnimatedDrawable(IDrawableStatic drawable, int ticksPerCycle, IDrawableAnimated.StartDirection startDirection, boolean inverted) {
 		ErrorUtil.checkNotNull(drawable, "drawable");
 		ErrorUtil.checkNotNull(startDirection, "startDirection");
@@ -53,6 +81,12 @@ public class GuiHelper implements IGuiHelper {
 		ErrorUtil.checkNotNull(tickTimer, "tickTimer");
 		ErrorUtil.checkNotNull(startDirection, "startDirection");
 		return new DrawableAnimated(drawable, tickTimer, startDirection);
+	}
+
+	private static void checkPositive(int value, String name) {
+		if (value <= 0) {
+			throw new IllegalArgumentException(name + " must be positive.");
+		}
 	}
 
 	@Override
@@ -124,7 +158,7 @@ public class GuiHelper implements IGuiHelper {
 		ErrorUtil.checkNotNull(type, "type");
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
-		ITypedIngredient<V> typedIngredient = ingredientManager.createTypedIngredient(type, ingredient)
+		ITypedIngredient<V> typedIngredient = ingredientManager.createTypedIngredient(type, ingredient, false)
 			.orElseThrow(() -> {
 				String info = ErrorUtil.getIngredientInfo(ingredient, type, ingredientManager);
 				return new IllegalArgumentException(String.format("Ingredient is invalid and cannot be used as a drawable ingredient: %s", info));

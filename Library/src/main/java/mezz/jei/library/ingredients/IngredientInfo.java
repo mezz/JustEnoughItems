@@ -5,15 +5,19 @@ import com.mojang.serialization.Codec;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.core.collect.ListMultiMap;
+import mezz.jei.common.collect.ListMultiMap;
 import mezz.jei.library.load.registration.LegacyUidCodec;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Optional;
 
 public class IngredientInfo<T> {
@@ -23,6 +27,7 @@ public class IngredientInfo<T> {
 	private final Codec<T> ingredientCodec;
 	private final TypedIngredientSet<T> ingredientSet;
 	private final ListMultiMap<Object, String> aliases;
+	private final ListMultiMap<Object, String> baseAliases;
 
 	public IngredientInfo(
 		IIngredientType<T> ingredientType,
@@ -45,6 +50,7 @@ public class IngredientInfo<T> {
 		this.ingredientSet.addAll(ingredients);
 
 		this.aliases = new ListMultiMap<>();
+		this.baseAliases = new ListMultiMap<>(new IdentityHashMap<>(), ArrayList::new);
 	}
 
 	public IIngredientType<T> getIngredientType() {
@@ -92,7 +98,18 @@ public class IngredientInfo<T> {
 	@Unmodifiable
 	public Collection<String> getIngredientAliases(ITypedIngredient<T> ingredient) {
 		Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
-		return aliases.get(uid);
+		Collection<String> ingredientAliases = aliases.get(uid);
+		Collection<String> baseIngredientAliases = getBaseIngredientAliases(ingredient);
+		if (ingredientAliases.isEmpty()) {
+			return baseIngredientAliases;
+		}
+		if (baseIngredientAliases.isEmpty()) {
+			return ingredientAliases;
+		}
+		List<String> combinedAliases = new ArrayList<>(ingredientAliases.size() + baseIngredientAliases.size());
+		combinedAliases.addAll(ingredientAliases);
+		combinedAliases.addAll(baseIngredientAliases);
+		return Collections.unmodifiableList(combinedAliases);
 	}
 
 	public void addIngredientAlias(T ingredient, String alias) {
@@ -113,5 +130,22 @@ public class IngredientInfo<T> {
 	public void addIngredientAliases(ITypedIngredient<T> ingredient, Collection<String> aliases) {
 		Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
 		this.aliases.putAll(uid, aliases);
+	}
+
+	public void addBaseIngredientAlias(Object baseIngredient, String alias) {
+		this.baseAliases.put(baseIngredient, alias);
+	}
+
+	public void addBaseIngredientAliases(Object baseIngredient, Collection<String> aliases) {
+		this.baseAliases.putAll(baseIngredient, aliases);
+	}
+
+	@Unmodifiable
+	private Collection<String> getBaseIngredientAliases(ITypedIngredient<T> ingredient) {
+		if (ingredientType instanceof IIngredientTypeWithSubtypes<?, T> ingredientTypeWithSubtypes) {
+			Object baseIngredient = ingredient.getBaseIngredient(ingredientTypeWithSubtypes);
+			return baseAliases.get(baseIngredient);
+		}
+		return Collections.emptyList();
 	}
 }

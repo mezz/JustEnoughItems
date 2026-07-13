@@ -5,7 +5,7 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.runtime.config.IJeiConfigCategory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.file.IConfigSchema;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -50,7 +50,7 @@ public class JeiConfigScreen extends Screen {
 		return new JeiConfigScreen(Internal.getClientConfigSchema());
 	}
 
-	private final DrawableNineSliceTexture background;
+	private final ScalableDrawable background;
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
     private ImmutableRect2i navArea = ImmutableRect2i.EMPTY;
     private ImmutableRect2i contentArea = ImmutableRect2i.EMPTY;
@@ -62,8 +62,8 @@ public class JeiConfigScreen extends Screen {
     private final EditBox searchBox;
     private String searchText = "";
 	private ImmutableRect2i scrollBarArea = ImmutableRect2i.EMPTY;
-	private final DrawableNineSliceTexture scrollbarMarker;
-	private final DrawableNineSliceTexture scrollbarBackground;
+	private final ScalableDrawable scrollbarMarker;
+	private final ScalableDrawable scrollbarBackground;
     private double targetScrollY = 0;
     private double currentScrollY = 0;
     private int totalContentHeight = 0;

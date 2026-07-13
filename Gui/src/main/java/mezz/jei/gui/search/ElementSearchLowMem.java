@@ -6,7 +6,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.core.search.PrefixInfo;
+import mezz.jei.common.search.PrefixInfo;
 import mezz.jei.gui.ingredients.DisplayNameUtil;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
@@ -25,9 +25,11 @@ public class ElementSearchLowMem implements IElementSearch {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final List<IListElementInfo<?>> elementInfoList;
+	private final PrefixInfo<IListElementInfo<?>, IListElement<?>> noPrefix;
 
-	public ElementSearchLowMem() {
+	public ElementSearchLowMem(PrefixInfo<IListElementInfo<?>, IListElement<?>> noPrefix) {
 		this.elementInfoList = new ArrayList<>();
+		this.noPrefix = noPrefix;
 	}
 
 	@Override
@@ -80,7 +82,7 @@ public class ElementSearchLowMem implements IElementSearch {
 		Object ingredientUid = uidFunction.apply(typedIngredient);
 		String lowercaseDisplayName = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
 
-		ElementPrefixParser.TokenInfo tokenInfo = new ElementPrefixParser.TokenInfo(lowercaseDisplayName, ElementPrefixParser.NO_PREFIX);
+		ElementPrefixParser.TokenInfo tokenInfo = new ElementPrefixParser.TokenInfo(lowercaseDisplayName, noPrefix);
 		PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo = tokenInfo.prefixInfo();
 
 		for (IListElementInfo<?> elementInfo : this.elementInfoList) {

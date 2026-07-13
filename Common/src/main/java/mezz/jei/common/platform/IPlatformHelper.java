@@ -1,6 +1,5 @@
 package mezz.jei.common.platform;
 
-
 public interface IPlatformHelper {
 	IPlatformItemStackHelper getItemStackHelper();
 
@@ -19,4 +18,6 @@ public interface IPlatformHelper {
 	IPlatformIngredientHelper getIngredientHelper();
 
 	IPlatformModHelper getModHelper();
+
+	IPlatformWorldHelper getWorldHelper();
 }

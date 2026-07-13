@@ -4,7 +4,7 @@ import mezz.jei.api.runtime.config.IJeiConfigListValueSerializer;
 import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -217,7 +217,7 @@ public class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
 
             // delete button
             boolean deleteHovered = deleteArea.contains(mouseX, mouseY);
-            DrawableNineSliceTexture deleteBg = textures.getButtonForState(false, true, deleteHovered);
+            ScalableDrawable deleteBg = textures.getButtonForState(false, true, deleteHovered);
             deleteBg.draw(guiGraphics, deleteArea);
             int dix = deleteArea.getX() + (deleteArea.getWidth() - font.width("x")) / 2;
             int diy = deleteArea.getY() + (deleteArea.getHeight() - font.lineHeight) / 2;

@@ -152,8 +152,8 @@ public class GuiEventHandler {
 					RenderType.gui(),
 					guiProperties.guiLeft(),
 					guiProperties.guiTop(),
-					guiProperties.guiLeft() + guiProperties.guiXSize(),
-					guiProperties.guiTop() + guiProperties.guiYSize(),
+					guiProperties.guiRight(),
+					guiProperties.guiBottom(),
 					0x22CCCC00
 				);
 

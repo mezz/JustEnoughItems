@@ -8,8 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.renderer.ItemModelShaper;
-import net.minecraft.client.renderer.block.BlockModelShaper;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.SpriteContents;
@@ -78,7 +76,9 @@ public final class ColorGetter {
 		BlockState blockState = block.defaultBlockState();
 		final BlockColors blockColors = Minecraft.getInstance().getBlockColors();
 		final int renderColor = blockColors.getColor(blockState, null, null, 0);
-		final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(blockState);
+
+		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+		final TextureAtlasSprite textureAtlasSprite = renderHelper.getTextureAtlasSprite(blockState);
 		if (textureAtlasSprite == null) {
 			return Collections.emptyList();
 		}
@@ -121,20 +121,6 @@ public final class ColorGetter {
 
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 		return renderHelper.getMainImage(textureAtlasSprite);
-	}
-
-	@Nullable
-	private static TextureAtlasSprite getTextureAtlasSprite(BlockState blockState) {
-		Minecraft minecraft = Minecraft.getInstance();
-		BlockRenderDispatcher blockRendererDispatcher = minecraft.getBlockRenderer();
-		BlockModelShaper blockModelShapes = blockRendererDispatcher.getBlockModelShaper();
-		BakedModel blockModel = blockModelShapes.getBlockModel(blockState);
-		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-		TextureAtlasSprite textureAtlasSprite = renderHelper.getParticleIcon(blockModel);
-		if (textureAtlasSprite.atlasLocation().equals(MissingTextureAtlasSprite.getLocation())) {
-			return null;
-		}
-		return textureAtlasSprite;
 	}
 
 	@Nullable

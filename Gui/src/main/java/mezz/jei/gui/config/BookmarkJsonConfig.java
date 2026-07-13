@@ -9,8 +9,9 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.file.JsonArrayFileHelper;
+import mezz.jei.common.util.DeduplicatingRunner;
+import mezz.jei.common.util.PathUtil;
 import mezz.jei.common.util.ServerConfigPathUtil;
-import mezz.jei.core.util.PathUtil;
 import mezz.jei.gui.bookmarks.BookmarkFactory;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IBookmark;
@@ -21,21 +22,24 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 public class BookmarkJsonConfig implements IBookmarkConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Duration SAVE_DELAY_TIME = Duration.ofSeconds(5);
 	private static final int VERSION = 2;
 
 	@SuppressWarnings("deprecation")
 	private final LegacyBookmarkConfig legacyBookmarkConfig;
 	private final Path jeiConfigurationDir;
+	private final DeduplicatingRunner delayedSave = new DeduplicatingRunner(SAVE_DELAY_TIME);
 
 	private static Optional<Path> getPath(Path jeiConfigurationDir) {
 		return ServerConfigPathUtil.getWorldPath(jeiConfigurationDir)
@@ -51,9 +55,9 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 			});
 	}
 
+	@SuppressWarnings("deprecation")
 	public BookmarkJsonConfig(Path jeiConfigurationDir) {
 		this.jeiConfigurationDir = jeiConfigurationDir;
-		//noinspection deprecation
 		this.legacyBookmarkConfig = new LegacyBookmarkConfig(jeiConfigurationDir);
 	}
 
@@ -72,34 +76,43 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 		List<IBookmark> bookmarks,
 		Codec<IBookmark> bookmarkCodec
 	) {
+		List<IBookmark> bookmarksSnapshot = List.copyOf(bookmarks);
 		return getPath(jeiConfigurationDir)
 			.map(path -> {
-				RegistryOps<JsonElement> registryOps = getRegistryOps(registryAccess);
-
-				try (BufferedWriter out = Files.newBufferedWriter(path)) {
-					JsonArrayFileHelper.write(
-						out,
-						VERSION,
-						bookmarks,
-						bookmarkCodec,
-						registryOps,
-						error -> {
-							LOGGER.error("Encountered an error when saving the bookmarks config to file {}\n{}", path, error);
-						},
-						(element, exception) -> {
-							LOGGER.error("Encountered an exception when saving the bookmarks config to file {}\n{}", path, element, exception);
-						}
-					);
-					LOGGER.debug("Saved bookmarks config to file: {}", path);
-					return true;
-				} catch (IOException e) {
-					LOGGER.error("Failed to save bookmarks config to file {}", path, e);
-					return false;
-				}
+				delayedSave.run(() -> {
+					save(path, registryAccess, bookmarksSnapshot, bookmarkCodec);
+				});
+				return true;
 			})
 			.orElse(false);
 	}
 
+	private boolean save(Path path, RegistryAccess registryAccess, Collection<IBookmark> bookmarks, Codec<IBookmark> bookmarkCodec) {
+		RegistryOps<JsonElement> registryOps = getRegistryOps(registryAccess);
+
+		try {
+			JsonArrayFileHelper.write(
+				path,
+				VERSION,
+				bookmarks,
+				bookmarkCodec,
+				registryOps,
+				error -> {
+					LOGGER.error("Encountered an error when saving the bookmarks config to file {}\n{}", path, error);
+				},
+				(element, exception) -> {
+					LOGGER.error("Encountered an exception when saving the bookmarks config to file {}\n{}", path, element, exception);
+				}
+			);
+			LOGGER.debug("Saved bookmarks config to file: {}", path);
+			return true;
+		} catch (RuntimeException | IOException e) {
+			LOGGER.error("Failed to save bookmarks config to file {}", path, e);
+			return false;
+		}
+	}
+
+	@SuppressWarnings("deprecation")
 	@Override
 	public void loadBookmarks(
 		IRecipeManager recipeManager,
@@ -139,8 +152,13 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 					}
 				});
 
-			if (saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, codecHelper, bookmarks, bookmarkCodec)) {
-				//noinspection deprecation
+			boolean savedBookmarks = false;
+			Optional<Path> savePath = getPath(jeiConfigurationDir);
+			if (savePath.isPresent()) {
+				savedBookmarks = save(savePath.get(), registryAccess, bookmarks, bookmarkCodec);
+			}
+
+			if (savedBookmarks) {
 				LegacyBookmarkConfig.getPath(jeiConfigurationDir)
 					.ifPresent(legacyPath -> {
 						if (Files.exists(legacyPath)) {

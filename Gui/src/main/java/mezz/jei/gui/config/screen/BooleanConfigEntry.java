@@ -2,7 +2,7 @@ package mezz.jei.gui.config.screen;
 
 import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.UserInput;
@@ -56,7 +56,7 @@ public class BooleanConfigEntry extends ConfigEntryWidget<Boolean> {
 
         Textures textures = Internal.getTextures();
         boolean hovered = buttonArea.contains(mouseX, mouseY);
-        DrawableNineSliceTexture bg = textures.getButtonForState(false, true, hovered);
+        ScalableDrawable bg = textures.getButtonForState(false, true, hovered);
         bg.draw(guiGraphics, buttonArea);
 
         int textWidth = (int) (font.width(displayValue) * TEXT_SCALE);

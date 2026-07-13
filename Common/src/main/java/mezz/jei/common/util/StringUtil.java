@@ -1,6 +1,5 @@
 package mezz.jei.common.util;
 
-import mezz.jei.core.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;

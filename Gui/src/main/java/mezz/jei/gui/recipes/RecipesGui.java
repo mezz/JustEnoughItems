@@ -23,7 +23,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ErrorUtil;
@@ -82,7 +82,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final RecipeGuiLayouts layouts;
 
 	private String pageString = "1/1";
-	private final DrawableNineSliceTexture background;
+	private final ScalableDrawable background;
 
 	private final RecipeCatalysts recipeCatalysts;
 	private final RecipeGuiTabs recipeGuiTabs;
@@ -265,23 +265,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		super.init();
 
 		final int xSize = minGuiWidth;
-		int ySize;
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		if (clientConfig.isCenterSearchBarEnabled()) {
-			ySize = this.height - 76;
-		} else {
-			ySize = this.height - 58;
-		}
-		if (ySize < IClientConfig.minRecipeGuiHeight) {
-			ySize = IClientConfig.minRecipeGuiHeight;
-		}
-
-		int extraSpace = 0;
-		final int maxHeight = clientConfig.getMaxRecipeGuiHeight();
-		if (ySize > maxHeight) {
-			extraSpace = ySize - maxHeight;
-			ySize = maxHeight;
-		}
+		RecipeGuiSizing.Size recipeGuiSize = RecipeGuiSizing.calculateInitialSize(
+			this.height,
+			clientConfig.isCenterSearchBarEnabled(),
+			clientConfig.getMaxRecipeGuiHeight()
+		);
+		int ySize = recipeGuiSize.ySize();
+		int extraSpace = recipeGuiSize.extraSpace();
 
 		final int guiLeft = (this.width - xSize) / 2;
 		final int guiTop = RecipeGuiTab.TAB_HEIGHT + 21 + (extraSpace / 2);
@@ -359,7 +350,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		RenderSystem.disableBlend();
 
 		hoveredRecipeLayout.ifPresent(l -> l.drawOverlays(guiGraphics, mouseX, mouseY));
-		hoveredRecipeCatalyst.ifPresent(h -> h.drawHoverOverlays(guiGraphics));
 
 		hoveredRecipeCatalyst.ifPresent(h -> {
 			h.drawTooltip(guiGraphics, mouseX, mouseY);
@@ -737,12 +727,22 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		@Override
 		public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
 			if (recipesGui.isMouseOver(mouseX, mouseY)) {
-				if (scrollDeltaY < 0) {
-					recipesGui.logic.nextPage();
-					return Optional.of(this);
-				} else if (scrollDeltaY > 0) {
-					recipesGui.logic.previousPage();
-					return Optional.of(this);
+				if (Screen.hasShiftDown()) {
+					if (scrollDeltaY < 0) {
+						recipesGui.logic.nextRecipeCategory();
+						return Optional.of(this);
+					} else if (scrollDeltaY > 0) {
+						recipesGui.logic.previousRecipeCategory();
+						return Optional.of(this);
+					}
+				} else {
+					if (scrollDeltaY < 0) {
+						recipesGui.logic.nextPage();
+						return Optional.of(this);
+					} else if (scrollDeltaY > 0) {
+						recipesGui.logic.previousPage();
+						return Optional.of(this);
+					}
 				}
 			}
 

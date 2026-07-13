@@ -41,6 +41,10 @@ public final class ForgePluginFinder {
 				}
 			}
 		}
+		return getInstances(pluginClassNames, instanceClass);
+	}
+
+	static <T> List<T> getInstances(Iterable<String> pluginClassNames, Class<T> instanceClass) {
 		List<T> instances = new ArrayList<>();
 		for (String className : pluginClassNames) {
 			try {
@@ -49,7 +53,7 @@ public final class ForgePluginFinder {
 				Constructor<? extends T> constructor = asmInstanceClass.getDeclaredConstructor();
 				T instance = constructor.newInstance();
 				instances.add(instance);
-			} catch (ReflectiveOperationException | LinkageError e) {
+			} catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
 				LOGGER.error("Failed to load: {}", className, e);
 			}
 		}

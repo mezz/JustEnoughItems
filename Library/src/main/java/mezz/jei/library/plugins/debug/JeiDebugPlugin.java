@@ -336,7 +336,8 @@ public class JeiDebugPlugin implements IModPlugin {
 				.forEach(r -> registration.addRecipeCategoryDecorator(r, DebugCategoryDecorator.getInstance()));
 
 			registration.addTypedRecipeManagerPlugin(RecipeTypes.CRAFTING, new DebugSimpleRecipeManagerPlugin(jeiHelpers));
-			registration.addRecipeButtonFactory(new IRecipeButtonControllerFactory() {
+
+			IRecipeButtonControllerFactory debugButton = new IRecipeButtonControllerFactory() {
 				@Override
 				public <T> IIconButtonController createButtonController(IRecipeLayoutDrawable<T> recipeLayoutDrawable) {
 					return new IIconButtonController() {
@@ -356,7 +357,10 @@ public class JeiDebugPlugin implements IModPlugin {
 						}
 					};
 				}
-			});
+			};
+			for (int i = 0; i < 9; i++) {
+				registration.addRecipeButtonFactory(debugButton);
+			}
 		}
 	}
 

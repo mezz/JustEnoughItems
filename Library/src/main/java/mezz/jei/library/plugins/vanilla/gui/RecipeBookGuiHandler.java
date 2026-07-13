@@ -3,6 +3,7 @@ package mezz.jei.library.plugins.vanilla.gui;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
@@ -24,13 +25,15 @@ public class RecipeBookGuiHandler<C extends AbstractContainerMenu, T extends Abs
 		RecipeBookComponent guiRecipeBook = containerScreen.getRecipeBookComponent();
 		if (guiRecipeBook.isVisible()) {
 			IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-			List<Rect2i> tabAreas = new ArrayList<>();
+			List<Rect2i> extraAreas = new ArrayList<>();
+			ImmutableRect2i bookArea = screenHelper.getBookArea(guiRecipeBook);
+			extraAreas.add(bookArea.toMutable());
 			for (RecipeBookTabButton tab : screenHelper.getTabButtons(guiRecipeBook)) {
 				if (tab.visible) {
-					tabAreas.add(new Rect2i(tab.getX(), tab.getY(), tab.getWidth(), tab.getHeight()));
+					extraAreas.add(new Rect2i(tab.getX(), tab.getY(), tab.getWidth(), tab.getHeight()));
 				}
 			}
-			return tabAreas;
+			return extraAreas;
 		}
 		return Collections.emptyList();
 	}

@@ -20,10 +20,14 @@ public class PermanentEventSubscriptions {
 	}
 
 	public <T extends Event> void register(Class<T> eventType, Consumer<T> listener) {
+		register(EventPriority.NORMAL, eventType, listener);
+	}
+
+	public <T extends Event> void register(EventPriority priority, Class<T> eventType, Consumer<T> listener) {
 		if (IModBusEvent.class.isAssignableFrom(eventType)) {
-			modEventBus.addListener(EventPriority.NORMAL, false, eventType, listener);
+			modEventBus.addListener(priority, false, eventType, listener);
 		} else {
-			eventBus.addListener(EventPriority.NORMAL, false, eventType, listener);
+			eventBus.addListener(priority, false, eventType, listener);
 		}
 	}
 

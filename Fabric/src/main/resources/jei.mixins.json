@@ -7,7 +7,7 @@
   ],
   "client": [
     "AbstractContainerScreenMixin",
-    "ClientPacketListenerMixin",
+    "ClientPacketListenerRecipeUpdateMixin",
     "EffectRenderingInventoryScreenMixin",
     "KeyboardHandlerMixin",
     "MinecraftMixin"

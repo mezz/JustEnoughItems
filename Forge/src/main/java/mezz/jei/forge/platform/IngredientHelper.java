@@ -3,6 +3,7 @@ package mezz.jei.forge.platform;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
 import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
@@ -11,7 +12,9 @@ import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.ComposterBlock;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -53,5 +56,19 @@ public class IngredientHelper implements IPlatformIngredientHelper {
 	@Override
 	public List<Ingredient> getPotionContainers(PotionBrewing potionBrewing) {
 		return potionBrewing.containers;
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public float getCompostValue(ItemStack itemStack) {
+		Item item = itemStack.getItem();
+		return ComposterBlock.COMPOSTABLES.getOrDefault(item, 0f);
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public HolderSet<Item> getSupportedItems(Holder<Enchantment> enchantment) {
+		return enchantment.value()
+			.getSupportedItems();
 	}
 }

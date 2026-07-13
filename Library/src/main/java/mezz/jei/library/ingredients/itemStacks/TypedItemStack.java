@@ -7,8 +7,10 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -36,6 +38,13 @@ public abstract class TypedItemStack implements ITypedIngredient<ItemStack> {
 			ingredient.getComponentsPatch(),
 			ingredient.getCount()
 		);
+	}
+
+	public static ITypedIngredient<ItemStack> create(ItemLike itemLike) {
+		Item item = itemLike.asItem();
+		@SuppressWarnings("deprecation")
+		Holder.Reference<Item> itemHolder = item.builtInRegistryHolder();
+		return new NormalizedTypedItem(itemHolder);
 	}
 
 	public static ITypedIngredient<ItemStack> normalize(ITypedIngredient<ItemStack> typedIngredient) {

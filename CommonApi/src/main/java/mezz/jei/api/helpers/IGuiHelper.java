@@ -7,6 +7,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
@@ -14,6 +15,7 @@ import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -40,6 +42,42 @@ public interface IGuiHelper {
 	 * @return a new {@link IDrawableBuilder} with the given resource location
 	 */
 	IDrawableBuilder drawableBuilder(ResourceLocation resourceLocation, int u, int v, int width, int height);
+
+	/**
+	 * Create a drawable from a gui sprite.
+	 *
+	 * @return a new {@link IDrawableStatic} with the given texture atlas and sprite location
+	 *
+	 * @since 19.35.0
+	 * @deprecated Use {@link #createDrawableSprite(TextureAtlas, ResourceLocation, int, int)} instead.
+	 * The drawable size from this method comes from the sprite's texture size, so higher-resolution
+	 * resource pack replacements can make the drawable render too large.
+	 */
+	@Deprecated(since = "19.38.0")
+	IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId);
+
+	/**
+	 * Create a drawable from a gui sprite with an explicit logical size.
+	 * Use this when the sprite may be replaced by higher-resolution resource packs,
+	 * so the texture can be drawn at the intended gui size.
+	 *
+	 * @return a new {@link IDrawableStatic} with the given texture atlas, sprite location, and size
+	 *
+	 * @since 19.38.0
+	 */
+	@SuppressWarnings("deprecation")
+	default IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId, int width, int height) {
+		return createDrawableSprite(textureAtlas, spriteId);
+	}
+
+	/**
+	 * Create a scalable drawable from a gui sprite.
+	 *
+	 * @return a new {@link IScalableDrawable} with the given texture atlas and sprite location
+	 *
+	 * @since 19.35.0
+	 */
+	IScalableDrawable createScalableDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId);
 
 	/**
 	 * Creates an animated texture for a gui, revealing the texture over time.

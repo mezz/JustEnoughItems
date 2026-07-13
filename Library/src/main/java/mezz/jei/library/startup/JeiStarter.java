@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableSetMultimap;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.search.ISearchStorageFactory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.config.DebugConfig;
@@ -14,10 +14,15 @@ import mezz.jei.common.config.JeiClientConfigs;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
 import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
+import mezz.jei.common.network.ClientConnectionHelper;
+import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.recipes.VanillaClientRecipeLoader;
+import mezz.jei.common.util.ChatUtil;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.common.util.RegistryUtil;
-import mezz.jei.core.util.LoggedTimer;
+import mezz.jei.common.util.Translator;
 import mezz.jei.library.color.ColorHelper;
 import mezz.jei.library.config.ColorNameConfig;
 import mezz.jei.library.config.EditModeConfig;
@@ -25,6 +30,7 @@ import mezz.jei.library.config.ModIdFormatConfig;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.library.focus.FocusFactory;
 import mezz.jei.library.helpers.CodecHelper;
+import mezz.jei.library.ingredients.IngredientManager;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.PluginCaller;
 import mezz.jei.library.load.PluginHelper;
@@ -35,16 +41,23 @@ import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 import mezz.jei.library.recipes.RecipeManager;
 import mezz.jei.library.runtime.JeiHelpers;
 import mezz.jei.library.runtime.JeiRuntime;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class JeiStarter {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final String VANILLA_SERVER_BRAND = "vanilla";
 
 	private final StartData data;
 	private final List<IModPlugin> plugins;
@@ -56,6 +69,7 @@ public final class JeiStarter {
 	private final FileWatcher fileWatcher = new FileWatcher("JEI Config File Watcher");
 	private final ConfigManager configManager;
 	private final JeiClientConfigs jeiClientConfigs;
+	private final List<IStopCallback> stopCallbacks = new ArrayList<>();
 
 	public JeiStarter(StartData data) {
 		ErrorUtil.checkNotEmpty(data.plugins(), "plugins");
@@ -96,12 +110,21 @@ public final class JeiStarter {
 
 	public void start() {
 		Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft.level == null) {
+		ClientLevel level = minecraft.level;
+		if (level == null) {
 			LOGGER.error("Failed to start JEI, there is no Minecraft client level.");
 			return;
 		}
-		RegistryAccess registryAccess = minecraft.level.registryAccess();
+		RegistryAccess registryAccess = level.registryAccess();
 		RegistryUtil.setRegistryAccess(registryAccess);
+
+		if (!Internal.hasClientRecipes()) {
+			List<RecipeHolder<?>> vanillaRecipes = VanillaClientRecipeLoader.getVanillaRecipes(registryAccess);
+			if (!vanillaRecipes.isEmpty()) {
+				Internal.setClientFallbackRecipes(vanillaRecipes);
+				level.getRecipeManager().replaceRecipes(vanillaRecipes);
+			}
+		}
 
 		LoggedTimer totalTime = new LoggedTimer();
 		totalTime.start("Starting JEI");
@@ -110,7 +133,8 @@ public final class JeiStarter {
 		IColorHelper colorHelper = new ColorHelper(colorNameConfig);
 		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
 		SubtypeManager subtypeManager = PluginLoader.registerSubtypes(data);
-		IIngredientManager ingredientManager = PluginLoader.registerIngredients(data, subtypeManager, colorHelper, ingredientFilterConfig);
+		IngredientManager ingredientManager = PluginLoader.registerIngredients(data, subtypeManager, colorHelper, ingredientFilterConfig);
+		stopCallbacks.add(ingredientManager::onRuntimeStopped);
 
 		FocusFactory focusFactory = new FocusFactory(ingredientManager);
 		CodecHelper codecHelper = new CodecHelper(ingredientManager, focusFactory);
@@ -124,7 +148,19 @@ public final class JeiStarter {
 		EditModeConfig editModeConfig = new EditModeConfig(editModeSerializer, ingredientManager);
 
 		ImmutableSetMultimap<String, String> modAliases = PluginLoader.registerModAliases(data, ingredientFilterConfig);
-		JeiHelpers jeiHelpers = PluginLoader.createJeiHelpers(modAliases, modIdFormatConfig, colorHelper, editModeConfig, focusFactory, codecHelper, ingredientManager, subtypeManager);
+		JeiHelpers jeiHelpers = PluginLoader.createJeiHelpers(
+			modAliases,
+			modIdFormatConfig,
+			colorHelper,
+			editModeConfig,
+			focusFactory,
+			codecHelper,
+			ingredientManager,
+			subtypeManager
+		);
+		stopCallbacks.add(jeiHelpers::onRuntimeStopped);
+
+		ISearchStorageFactory searchStorageFactory = PluginLoader.createSearchStorageFactory(plugins);
 
 		RecipeManager recipeManager = PluginLoader.createRecipeManager(
 			plugins,
@@ -150,7 +186,8 @@ public final class JeiStarter {
 			editModeConfig,
 			ingredientManager,
 			recipeTransferManager,
-			screenHelper
+			screenHelper,
+			searchStorageFactory
 		);
 		PluginCaller.callOnPlugins("Registering Runtime", plugins, p -> p.registerRuntime(runtimeRegistration));
 
@@ -174,13 +211,59 @@ public final class JeiStarter {
 		Internal.setRuntime(jeiRuntime);
 
 		totalTime.stop();
+
+		verifyClientRecipes(minecraft);
+	}
+
+	private void verifyClientRecipes(Minecraft minecraft) {
+		IConnectionToServer serverConnection = data.serverConnection();
+		List<RecipeHolder<?>> clientRecipes = Internal.getClientSyncedRecipes();
+
+		if (Internal.hasClientSyncedRecipes() && clientRecipes.isEmpty()) {
+			String key = "jei.message.server.recipe.sync.error";
+			writeChatMessage(minecraft, Component.translatable(key).withStyle(ChatFormatting.RED));
+			LOGGER.error(Translator.translateToLocal(key));
+		} else if (Internal.hasClientFallbackRecipes()) {
+			if (!serverConnection.isJeiOnServer() &&
+				serverConnection.isSameModLoader())
+			{
+				String key = "jei.message.server.recipe.sync.jei.missing";
+				String serverBrand = ClientConnectionHelper.getServerBrand();
+				writeChatMessage(minecraft, Component.translatable(key, serverBrand).withStyle(ChatFormatting.RED));
+				LOGGER.warn(Translator.translateToLocalFormatted(key, serverBrand));
+			} else if (ClientConnectionHelper.hasServerBrand(VANILLA_SERVER_BRAND)) {
+				String key = "jei.message.server.recipe.sync.vanilla";
+				writeChatMessage(minecraft, Component.translatable(key).withStyle(ChatFormatting.YELLOW));
+				LOGGER.warn(Translator.translateToLocal(key));
+			} else {
+				String key = "jei.message.server.recipe.sync.unavailable";
+				String serverBrand = ClientConnectionHelper.getServerBrand();
+				writeChatMessage(minecraft, Component.translatable(key, serverBrand).withStyle(ChatFormatting.RED));
+				LOGGER.warn(Translator.translateToLocalFormatted(key, serverBrand));
+			}
+		}
+	}
+
+	private static void writeChatMessage(Minecraft minecraft, Component component) {
+		LocalPlayer player = minecraft.player;
+		if (player != null) {
+			ChatUtil.writeChatMessage(player, component);
+		}
 	}
 
 	public void stop() {
 		LOGGER.info("Stopping JEI");
+
 		List<IModPlugin> plugins = data.plugins();
 		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, IModPlugin::onRuntimeUnavailable);
-		Internal.setRuntime(null);
+
+		Internal.onRuntimeStopped();
+
+		for (IStopCallback stopCallback : stopCallbacks) {
+			stopCallback.onRuntimeStopped();
+		}
+		stopCallbacks.clear();
+
 		RegistryUtil.setRegistryAccess(null);
 	}
 }

@@ -1,55 +1,61 @@
 package mezz.jei.common.gui.elements;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferUploader;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.common.gui.textures.JeiGuiSpriteManager;
+import mezz.jei.common.platform.IPlatformRenderHelper;
+import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.function.LazySupplier;
 import net.minecraft.client.gui.GuiGraphics;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
-import mezz.jei.common.Constants;
-import mezz.jei.common.gui.textures.JeiSpriteUploader;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.resources.ResourceLocation;
 
-import mezz.jei.api.gui.drawable.IDrawableStatic;
-
-import org.joml.Matrix4f;
+import java.util.function.Supplier;
 
 public class DrawableSprite implements IDrawableStatic {
-	private final JeiSpriteUploader spriteUploader;
-	private final ResourceLocation location;
+	private final LazySupplier<TextureAtlasSprite> spriteSupplier;
 	private final int width;
 	private final int height;
-	private int trimLeft;
-	private int trimRight;
-	private int trimTop;
-	private int trimBottom;
 
-	public DrawableSprite(JeiSpriteUploader spriteUploader, ResourceLocation location, int width, int height) {
-		this.spriteUploader = spriteUploader;
-		this.location = location;
+	public DrawableSprite(JeiGuiSpriteManager spriteManager, ResourceLocation spriteId) {
+		this(() -> spriteManager.getSprite(spriteId));
+	}
+
+	public DrawableSprite(JeiGuiSpriteManager spriteManager, ResourceLocation spriteId, int width, int height) {
+		this(() -> spriteManager.getSprite(spriteId), width, height);
+	}
+
+	public DrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId) {
+		this(() -> textureAtlas.getSprite(spriteId));
+	}
+
+	public DrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId, int width, int height) {
+		this(() -> textureAtlas.getSprite(spriteId), width, height);
+	}
+
+	DrawableSprite(Supplier<TextureAtlasSprite> spriteSupplier) {
+		this(spriteSupplier, 0, 0);
+	}
+
+	DrawableSprite(Supplier<TextureAtlasSprite> spriteSupplier, int width, int height) {
+		if (width < 0 || height < 0 || (width == 0) != (height == 0)) {
+			throw new IllegalArgumentException("DrawableSprite size must be positive, or both dimensions must be 0 to use the sprite size");
+		}
+		this.spriteSupplier = new LazySupplier<>(spriteSupplier);
 		this.width = width;
 		this.height = height;
 	}
 
-	public DrawableSprite trim(int left, int right, int top, int bottom) {
-		this.trimLeft = left;
-		this.trimRight = right;
-		this.trimTop = top;
-		this.trimBottom = bottom;
-		return this;
-	}
-
 	@Override
 	public int getWidth() {
-		return width;
+		TextureAtlasSprite sprite = spriteSupplier.get();
+		return getWidth(sprite);
 	}
 
 	@Override
 	public int getHeight() {
-		return height;
+		TextureAtlasSprite sprite = spriteSupplier.get();
+		return getHeight(sprite);
 	}
 
 	@Override
@@ -59,42 +65,39 @@ public class DrawableSprite implements IDrawableStatic {
 
 	@Override
 	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, int maskTop, int maskBottom, int maskLeft, int maskRight) {
-		TextureAtlasSprite sprite = spriteUploader.getSprite(location);
-		int textureWidth = this.width;
-		int textureHeight = this.height;
+		TextureAtlasSprite sprite = spriteSupplier.get();
+		int width = getWidth(sprite);
+		int height = getHeight(sprite);
 
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
-		RenderSystem.setShaderTexture(0, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
+		int uWidth = width - (maskRight + maskLeft);
+		int vHeight = height - (maskBottom + maskTop);
 
-		maskTop += trimTop;
-		maskBottom += trimBottom;
-		maskLeft += trimLeft;
-		maskRight += trimRight;
+		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+		renderHelper.blitSprite(
+			guiGraphics,
+			sprite,
+			width,
+			height,
+			maskLeft,
+			maskTop,
+			xOffset + maskLeft,
+			yOffset + maskTop,
+			uWidth,
+			vHeight
+		);
+	}
 
-		int x = xOffset + maskLeft;
-		int y = yOffset + maskTop;
-		int width = textureWidth - maskRight - maskLeft;
-		int height = textureHeight - maskBottom - maskTop;
-		float uSize = sprite.getU1() - sprite.getU0();
-		float vSize = sprite.getV1() - sprite.getV0();
+	private int getWidth(TextureAtlasSprite sprite) {
+		if (width > 0) {
+			return width;
+		}
+		return sprite.contents().width();
+	}
 
-		float minU = sprite.getU0() + uSize * (maskLeft / (float) textureWidth);
-		float minV = sprite.getV0() + vSize * (maskTop / (float) textureHeight);
-		float maxU = sprite.getU1() - uSize * (maskRight / (float) textureWidth);
-		float maxV = sprite.getV1() - vSize * (maskBottom / (float) textureHeight);
-
-		Tesselator tesselator = Tesselator.getInstance();
-		BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-		Matrix4f matrix = guiGraphics.pose().last().pose();
-		bufferBuilder.addVertex(matrix, x, y + height, 0)
-			.setUv(minU, maxV);
-		bufferBuilder.addVertex(matrix, x + width, y + height, 0)
-			.setUv(maxU, maxV);
-		bufferBuilder.addVertex(matrix, x + width, y, 0)
-			.setUv(maxU, minV);
-		bufferBuilder.addVertex(matrix, x, y, 0)
-			.setUv(minU, minV);
-
-		BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+	private int getHeight(TextureAtlasSprite sprite) {
+		if (height > 0) {
+			return height;
+		}
+		return sprite.contents().height();
 	}
 }

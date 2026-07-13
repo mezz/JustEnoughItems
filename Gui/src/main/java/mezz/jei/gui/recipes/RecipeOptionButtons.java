@@ -3,7 +3,7 @@ package mezz.jei.gui.recipes;
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.RecipeSorterStage;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.elements.IconButton;
@@ -22,7 +22,7 @@ public class RecipeOptionButtons {
 	private static final int overlapSize = 6;
 
 	private final List<IconButton> buttons;
-	private final DrawableNineSliceTexture backgroundTab;
+	private final ScalableDrawable backgroundTab;
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
 	public RecipeOptionButtons(Runnable onValueChanged) {

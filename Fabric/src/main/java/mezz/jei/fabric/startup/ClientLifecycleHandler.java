@@ -10,7 +10,9 @@ import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,14 +44,18 @@ public class ClientLifecycleHandler {
 	}
 
 	public void registerEvents() {
-		JeiLifecycleEvents.GAME_START.register(() ->
-			JeiLifecycleEvents.AFTER_RECIPE_SYNC.register(() -> {
-				if (running) {
-					stopJei();
-				}
+		JeiLifecycleEvents.AFTER_RECIPES_UPDATED.register(() -> {
+			if (running) {
+				stopJei();
+			}
+			startJei();
+		});
+		ScreenEvents.AFTER_INIT.register((minecraft, screen, scaledWidth, scaledHeight) -> {
+			if (!running && screen instanceof AbstractContainerScreen && minecraft.player != null) {
+				LOGGER.error("A Screen is opening but JEI hasn't started yet because the update recipes event didn't happen.");
 				startJei();
-			})
-		);
+			}
+		});
 		JeiLifecycleEvents.GAME_STOP.register(this::stopJei);
 	}
 
@@ -83,6 +89,9 @@ public class ClientLifecycleHandler {
 	}
 
 	private void stopJei() {
+		if (!running) {
+			return;
+		}
 		LOGGER.info("Stopping JEI");
 		this.jeiStarter.stop();
 		running = false;
