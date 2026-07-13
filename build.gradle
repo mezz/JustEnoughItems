@@ -161,9 +161,8 @@ afterEvaluate {
 }
 
 configurations.all {
-	// lwjgl:3.3.0 and java-objc-bridge:1.1 have support for apple silicon
+	// lwjgl:3.3.0 has support for apple silicon
 	resolutionStrategy {
-		force "ca.weblite:java-objc-bridge:1.1"
 		force "org.lwjgl:lwjgl-glfw:3.3.0"
 		force "org.lwjgl:lwjgl-jemalloc:3.3.0"
 		force "org.lwjgl:lwjgl-openal:3.3.0"
@@ -182,10 +181,12 @@ import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.nio.file.Path
+import java.io.ByteArrayOutputStream
 
 task extractLwjglNatives(type: ExtractLwjglNatives) {
 	meta = tasks.extractNatives.meta
 	output = tasks.extractNatives.output
+	outputs.upToDateWhen { false }
 }
 
 extractNatives {
@@ -205,7 +206,7 @@ abstract class ExtractLwjglNatives extends DefaultTask {
 		def os = VersionJson.OS.current
 		def osName = os == VersionJson.OS.OSX ? 'macos' : os.name
 		def classifier = osName
-		def arch = System.getProperty('os.arch')
+		def arch = getClientJavaArch()
 		if (['aarch64', 'arm64'].contains(arch)) {
 			classifier += '-arm64'
 		}
@@ -228,18 +229,59 @@ abstract class ExtractLwjglNatives extends DefaultTask {
 				def rootPath = FileSystems.newFileSystem(target.toPath(), Map.of()).getPath('/')
 				Files.walk(rootPath.resolve(osName))
 					.filter { Files.isRegularFile(it) }
+					.filter {
+						def fileName = it.fileName.toString()
+						fileName.endsWith('.dylib') || fileName.endsWith('.jnilib')
+					}
 					.each {
 						def outputFile = getOutput().get().getAsFile()
-						def file = new File("${outputFile.toPath()}${it}")
-						def filePath = file.toPath()
-						if (!file.exists()) {
-							if (!file.getParentFile().exists()) {
-								file.getParentFile().mkdirs()
-							}
+						def filePath = outputFile.toPath().resolve(it.fileName.toString())
+						if (!filePath.getParent().toFile().exists()) {
+							filePath.getParent().toFile().mkdirs()
 						}
 						Files.copy(it, filePath, StandardCopyOption.REPLACE_EXISTING)
 					}
 			}
+		extractJavaObjcBridgeNative()
+	}
+
+	private String getClientJavaArch() {
+		def runClient = project.tasks.findByName('runClient')
+		def executable = null
+		if (runClient != null && runClient.hasProperty('javaLauncher') && runClient.javaLauncher.isPresent()) {
+			executable = runClient.javaLauncher.get().executablePath.asFile
+		} else if (runClient != null && runClient.hasProperty('executable') && runClient.executable != null) {
+			executable = project.file(runClient.executable)
+		}
+		if (executable == null) {
+			return System.getProperty('os.arch')
+		}
+		def javaSettings = new ByteArrayOutputStream()
+		project.exec {
+			commandLine(executable, '-XshowSettings:properties', '-version')
+			standardOutput = javaSettings
+			errorOutput = javaSettings
+			ignoreExitValue = true
+		}
+		def matcher = javaSettings.toString() =~ /os\.arch = (\S+)/
+		if (matcher.find()) {
+			return matcher.group(1)
+		}
+		return System.getProperty('os.arch')
+	}
+
+	private void extractJavaObjcBridgeNative() {
+		def dependency = project.dependencies.create('ca.weblite:java-objc-bridge:1.1')
+		def configuration = project.configurations.detachedConfiguration(dependency)
+		configuration.transitive = false
+		def target = configuration.singleFile
+		def rootPath = FileSystems.newFileSystem(target.toPath(), Map.of()).getPath('/')
+		def nativePath = rootPath.resolve('libjcocoa.dylib')
+		if (Files.isRegularFile(nativePath)) {
+			def outputFile = getOutput().get().getAsFile()
+			def filePath = outputFile.toPath().resolve(nativePath.fileName.toString())
+			Files.copy(nativePath, filePath, StandardCopyOption.REPLACE_EXISTING)
+		}
 	}
 }
 
