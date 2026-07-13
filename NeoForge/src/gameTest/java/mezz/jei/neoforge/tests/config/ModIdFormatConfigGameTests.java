@@ -5,24 +5,19 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.library.config.IModIdFormatConfig;
 import mezz.jei.library.config.ModIdFormatConfig;
 import mezz.jei.library.helpers.ModIdHelper;
 import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.gametest.framework.GameTest;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -313,7 +308,7 @@ public final class ModIdFormatConfigGameTests {
 		String result = modIdHelper.getFormattedModNameForModId(ModIds.MINECRAFT_ID);
 
 		// Assertions: the returned string preserves the component formatting as legacy codes.
-		String expected = ChatFormatting.RED + "Mod: " + ChatFormatting.BLUE + "" + ChatFormatting.ITALIC + MOD_NAME;
+		String expected = ChatFormatting.RED + "Mod: " + ChatFormatting.BLUE + ChatFormatting.ITALIC + MOD_NAME;
 		helper.assertEquals(expected, result, "ModIdHelper should apply component formatting before legacy serialization");
 		helper.succeed();
 	}
@@ -354,7 +349,7 @@ public final class ModIdFormatConfigGameTests {
 	}
 
 	private static Component detectModNameTooltipFormatting(List<Component> tooltip) {
-		return ModIdFormatConfig.detectModNameTooltipFormatting(new TestItemStackHelper(tooltip), null);
+		return ModIdFormatConfig.detectModNameTooltipFormatting(tooltip);
 	}
 
 	private static void assertComponentEquals(JeiGameTestHelper helper, Component expected, Component result, String message) {
@@ -386,33 +381,6 @@ public final class ModIdFormatConfigGameTests {
 	}
 
 	private record StyledText(String text, Style style) {
-	}
-
-	private record TestItemStackHelper(List<Component> tooltip) implements IPlatformItemStackHelper {
-		@Override
-		public int getBurnTime(ItemStack itemStack) {
-			return 0;
-		}
-
-		@Override
-		public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-			return false;
-		}
-
-		@Override
-		public Optional<String> getCreatorModId(ItemStack stack) {
-			return Optional.empty();
-		}
-
-		@Override
-		public List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack) {
-			return tooltip;
-		}
-
-		@Override
-		public boolean canEnchant(Holder<Enchantment> enchantment, ItemStack ingredient) {
-			return false;
-		}
 	}
 
 	private record TestModIdFormatConfig(Component modNameFormat) implements IModIdFormatConfig {

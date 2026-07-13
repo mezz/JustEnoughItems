@@ -1,24 +1,17 @@
 package mezz.jei.test;
 
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.library.config.ModIdFormatConfig;
 import mezz.jei.library.config.StyledTextHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
-import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.Bootstrap;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
 
 public class ModIdFormatConfigTest {
 	@BeforeAll
@@ -211,55 +204,12 @@ public class ModIdFormatConfigTest {
 		Assertions.assertEquals(ModIdFormatConfig.MOD_NAME_FORMAT_CODE, result);
 	}
 
-	@Test
-	public void testDetectModNameTooltipFormattingUsesPlatformTooltip() {
-		// Setup: the platform item stack helper returns a tooltip with a styled mod-name line.
-		List<Component> tooltip = List.of(
-			Component.literal("Apple"),
-			Component.literal(ModIds.MINECRAFT_NAME)
-				.withStyle(ChatFormatting.BLUE)
-		);
-
-		// Operation: detect formatting through ModIdFormatConfig's platform-helper entry point.
-		String result = toLegacyString(ModIdFormatConfig.detectModNameTooltipFormatting(new TestItemStackHelper(tooltip)));
-
-		// Assertions: the platform tooltip is delegated to the formatting detector.
-		String expected = ChatFormatting.BLUE + ModIdFormatConfig.MOD_NAME_FORMAT_CODE;
-		Assertions.assertEquals(expected, result);
-	}
-
 	private static String detectModNameTooltipFormatting(List<Component> tooltip) {
-		return toLegacyString(ModIdFormatConfig.detectModNameTooltipFormatting(new TestItemStackHelper(tooltip)));
+		return toLegacyString(ModIdFormatConfig.detectModNameTooltipFormatting(tooltip));
 	}
 
 	private static String toLegacyString(Component component) {
 		return StyledTextHelper.toLegacyString(component);
 	}
 
-	private record TestItemStackHelper(List<Component> tooltip) implements IPlatformItemStackHelper {
-		@Override
-		public int getBurnTime(ItemStack itemStack) {
-			return 0;
-		}
-
-		@Override
-		public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
-			return false;
-		}
-
-		@Override
-		public Optional<String> getCreatorModId(ItemStack stack) {
-			return Optional.empty();
-		}
-
-		@Override
-		public List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack) {
-			return tooltip;
-		}
-
-		@Override
-		public boolean canEnchant(Holder<Enchantment> enchantment, ItemStack ingredient) {
-			return false;
-		}
-	}
 }
