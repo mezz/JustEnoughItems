@@ -1,0 +1,262 @@
+package mezz.jei.gui.config.screen;
+
+import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.runtime.config.IJeiConfigValue;
+import mezz.jei.common.Internal;
+import mezz.jei.common.config.file.serializers.IntegerSerializer;
+import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.gui.input.UserInput;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.ArrayList;
+import java.util.List;
+
+final class IntegerConfigEntry extends ConfigEntryWidget<Integer> {
+
+    private static final int ARROW_BLOCK_WIDTH = 12;
+    private static final int ARROW_BLOCK_HEIGHT = 14;
+    private static final int ICON_SIZE = 9;
+    private static final int VALUE_BOX_WIDTH = 36;
+    private static final int VALUE_BOX_HEIGHT = 14;
+
+    private final IntegerSerializer serializer;
+    private ImmutableRect2i valueBoxArea = ImmutableRect2i.EMPTY;
+    private ImmutableRect2i arrowBgArea = ImmutableRect2i.EMPTY;
+    private ImmutableRect2i upArea = ImmutableRect2i.EMPTY;
+    private ImmutableRect2i downArea = ImmutableRect2i.EMPTY;
+
+    private boolean editing = false;
+    private String editText = "";
+
+    IntegerConfigEntry(IJeiConfigValue<Integer> value) {
+        super(value);
+        this.serializer = (IntegerSerializer) value.getSerializer();
+    }
+
+    @Override
+    public void updateBounds(ImmutableRect2i area) {
+        super.updateBounds(area);
+        int cy = area.getY() + (area.getHeight() - VALUE_BOX_HEIGHT) / 2;
+
+        arrowBgArea = new ImmutableRect2i(
+                area.getX() + area.getWidth() - ARROW_BLOCK_WIDTH - 36,
+                cy,
+                ARROW_BLOCK_WIDTH,
+                ARROW_BLOCK_HEIGHT
+        );
+
+        upArea = new ImmutableRect2i(
+                arrowBgArea.getX(),
+                arrowBgArea.getY(),
+                arrowBgArea.getWidth(),
+                arrowBgArea.getHeight() / 2
+        );
+        downArea = new ImmutableRect2i(
+                arrowBgArea.getX(),
+                arrowBgArea.getY() + arrowBgArea.getHeight() / 2,
+                arrowBgArea.getWidth(),
+                arrowBgArea.getHeight() - arrowBgArea.getHeight() / 2
+        );
+
+        valueBoxArea = new ImmutableRect2i(
+                arrowBgArea.getX() - VALUE_BOX_WIDTH - 2,
+                cy,
+                VALUE_BOX_WIDTH,
+                VALUE_BOX_HEIGHT
+        );
+    }
+
+    @Override
+    void drawContent(GuiGraphics guiGraphics, double mouseX, double mouseY) {
+        Font font = Minecraft.getInstance().font;
+        Textures textures = Internal.getTextures();
+        drawName(guiGraphics);
+
+        // value box
+        boolean valueHovered = valueBoxArea.contains(mouseX, mouseY);
+        drawButtonBackground(guiGraphics, textures, valueBoxArea, true, valueHovered);
+        int textY = getCenteredTextY(font, valueBoxArea);
+        if (editing) {
+            String displayText = editText + "_";
+            int textColor = TEXT_COLOR;
+            if (!editText.isEmpty() && !editText.equals("-")) {
+                try {
+                    int parsed = Integer.parseInt(editText);
+                    if (parsed < serializer.getMin() || parsed > serializer.getMax()) {
+                        textColor = 0xFFFF7070;
+                    }
+                } catch (NumberFormatException ignored) {
+                    textColor = 0xFFFF7070;
+                }
+            }
+            drawText(guiGraphics, font, displayText, valueBoxArea.getX() + 3, textY, textColor);
+        } else {
+            drawText(guiGraphics, font, Component.literal(getValue().toString()), valueBoxArea.getX() + 3, textY, TEXT_COLOR);
+        }
+
+        // shared arrow background
+        drawButtonBackground(guiGraphics, textures, arrowBgArea, true, arrowBgArea.contains(mouseX, mouseY));
+
+        // up arrow
+        boolean canUp = getValue() < serializer.getMax();
+        boolean upHovered = canUp && upArea.contains(mouseX, mouseY);
+        if (upHovered) {
+            guiGraphics.fill(upArea.getX(), upArea.getY(), upArea.getX() + upArea.getWidth(), upArea.getY() + upArea.getHeight(), 0x30FFFFFF);
+        }
+        IDrawableStatic upIcon = textures.getArrowUp();
+        int upIx = arrowBgArea.getX() + (arrowBgArea.getWidth() - ICON_SIZE) / 2;
+        int upIy = upArea.getY() + (upArea.getHeight() - ICON_SIZE) / 2;
+        if (canUp) {
+            upIcon.draw(guiGraphics, upIx, upIy);
+        } else {
+            guiGraphics.pose().pushPose();
+            guiGraphics.setColor(0.3f, 0.3f, 0.3f, 0.5f);
+            upIcon.draw(guiGraphics, upIx, upIy);
+            guiGraphics.setColor(1f, 1f, 1f, 1f);
+            guiGraphics.pose().popPose();
+        }
+
+        // down arrow
+        boolean canDown = getValue() > serializer.getMin();
+        boolean downHovered = canDown && downArea.contains(mouseX, mouseY);
+        if (downHovered) {
+            guiGraphics.fill(downArea.getX(), downArea.getY(), downArea.getX() + downArea.getWidth(), downArea.getY() + downArea.getHeight(), 0x30FFFFFF);
+        }
+        IDrawableStatic downIcon = textures.getArrowDown();
+        int downIx = arrowBgArea.getX() + (arrowBgArea.getWidth() - ICON_SIZE) / 2;
+        int downIy = downArea.getY() + (downArea.getHeight() - ICON_SIZE) / 2;
+        if (canDown) {
+            downIcon.draw(guiGraphics, downIx, downIy);
+        } else {
+            guiGraphics.pose().pushPose();
+            guiGraphics.setColor(0.3f, 0.3f, 0.3f, 0.5f);
+            downIcon.draw(guiGraphics, downIx, downIy);
+            guiGraphics.setColor(1f, 1f, 1f, 1f);
+            guiGraphics.pose().popPose();
+        }
+    }
+
+    @Override
+    ConfigInfo getInfo() {
+        ConfigInfo info = super.getInfo();
+        List<Component> lines = new ArrayList<>(info.lines());
+        lines.add(Component.translatable("jei.config.screen.range", serializer.getMin(), serializer.getMax()));
+        return new ConfigInfo(info.title(), lines);
+    }
+
+    @Override
+    @Nullable
+    ConfigInfo getTooltipInfo(double mouseX, double mouseY) {
+        if (valueBoxArea.contains(mouseX, mouseY) || arrowBgArea.contains(mouseX, mouseY)) {
+            ConfigInfo info = ConfigValueInfoFactory.create(configValue, getValue());
+            List<Component> lines = new ArrayList<>(info.lines());
+            lines.add(Component.translatable("jei.config.screen.range", serializer.getMin(), serializer.getMax()));
+            return new ConfigInfo(info.title(), lines);
+        }
+        return null;
+    }
+
+    @Override
+    boolean onMouseClicked(UserInput input) {
+        if (super.onMouseClicked(input)) {
+            editing = false;
+            editText = "";
+            return true;
+        }
+        // click on value box → start editing
+        if (valueBoxArea.contains(input.getMouseX(), input.getMouseY())) {
+            if (!input.isSimulate()) {
+                startEditing();
+            }
+            return true;
+        }
+        // click elsewhere → commit edit if active
+        if (editing && !input.isSimulate()) {
+            commitEdit();
+        }
+        // arrow buttons
+        if (getValue() < serializer.getMax() && upArea.contains(input.getMouseX(), input.getMouseY())) {
+            if (!input.isSimulate()) {
+                commitEdit();
+                setValue(Math.min(serializer.getMax(), getValue() + 1));
+            }
+            return true;
+        }
+        if (getValue() > serializer.getMin() && downArea.contains(input.getMouseX(), input.getMouseY())) {
+            if (!input.isSimulate()) {
+                commitEdit();
+                setValue(Math.max(serializer.getMin(), getValue() - 1));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private void startEditing() {
+        editing = true;
+        editText = getValue().toString();
+    }
+
+    private void commitEdit() {
+        if (!editing) {
+            return;
+        }
+        editing = false;
+        try {
+            int val = Integer.parseInt(editText.trim());
+            val = Math.clamp(val, serializer.getMin(), serializer.getMax());
+            setValue(val);
+        } catch (NumberFormatException ignored) {
+        }
+        editText = "";
+    }
+
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (!editing) {
+            return false;
+        }
+        if (codePoint == '-' && editText.isEmpty()) {
+            editText = "-";
+            return true;
+        }
+        if (Character.isDigit(codePoint) && editText.length() < 10) {
+            editText += codePoint;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (!editing) {
+            return false;
+        }
+        if (keyCode == GLFW.GLFW_KEY_ENTER) {
+            commitEdit();
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            editing = false;
+            editText = "";
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_BACKSPACE && !editText.isEmpty()) {
+            editText = editText.substring(0, editText.length() - 1);
+            return true;
+        }
+        return true; // consume all keys while editing
+    }
+
+    @Override
+    public void unfocus() {
+        commitEdit();
+    }
+
+}

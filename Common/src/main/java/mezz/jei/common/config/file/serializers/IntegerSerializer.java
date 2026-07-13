@@ -16,6 +16,14 @@ public class IntegerSerializer implements IJeiConfigValueSerializer<Integer> {
 		this.max = max;
 	}
 
+	public int getMin() {
+		return min;
+	}
+
+	public int getMax() {
+		return max;
+	}
+
 	@Override
 	public String serialize(Integer value) {
 		return value.toString();

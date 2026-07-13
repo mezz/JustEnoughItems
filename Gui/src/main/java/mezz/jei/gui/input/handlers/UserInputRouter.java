@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,6 +24,11 @@ public class UserInputRouter {
 	private final Map<InputConstants.Key, IUserInputHandler> pending = new HashMap<>();
 
 	public UserInputRouter(String debugName, IUserInputHandler... inputHandlers) {
+		this.debugName = debugName;
+		this.combinedInputHandler = new CombinedInputHandler(debugName, inputHandlers);
+	}
+
+	public UserInputRouter(String debugName, List<IUserInputHandler> inputHandlers) {
 		this.debugName = debugName;
 		this.combinedInputHandler = new CombinedInputHandler(debugName, inputHandlers);
 	}

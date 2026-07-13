@@ -1,6 +1,7 @@
 package mezz.jei.common.config;
 
 import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.common.Internal;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
 import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.common.config.file.IConfigSchema;
@@ -25,6 +26,7 @@ public class JeiClientConfigs implements IJeiClientConfigs {
 		bookmarkListConfig = new IngredientGridConfig("bookmarkList", builder, HorizontalAlignment.LEFT);
 
 		schema = builder.build();
+		Internal.setClientConfigSchema(schema);
 	}
 
 	public void register(FileWatcher fileWatcher, ConfigManager configManager) {

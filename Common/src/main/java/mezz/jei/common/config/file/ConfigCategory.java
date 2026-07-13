@@ -1,6 +1,7 @@
 package mezz.jei.common.config.file;
 
 import mezz.jei.api.runtime.config.IJeiConfigCategory;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
@@ -13,11 +14,15 @@ import java.util.Set;
 
 public class ConfigCategory implements IJeiConfigCategory {
 	private final String name;
+	private final Component localizedName;
+	private final Component description;
 	@Unmodifiable
 	private final Map<String, ConfigValue<?>> valueMap;
 
-	public ConfigCategory(String name, List<ConfigValue<?>> values) {
+	public ConfigCategory(String localizationPath, String name, List<ConfigValue<?>> values) {
 		this.name = name;
+		this.localizedName = Component.translatable(localizationPath);
+		this.description = Component.translatable(localizationPath + ".description");
 		Map<String, ConfigValue<?>> map = new LinkedHashMap<>();
 		for (ConfigValue<?> value : values) {
 			map.put(value.getName(), value);
@@ -28,6 +33,16 @@ public class ConfigCategory implements IJeiConfigCategory {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public Component getLocalizedName() {
+		return localizedName;
+	}
+
+	@Override
+	public Component getDescription() {
+		return description;
 	}
 
 	public Optional<ConfigValue<?>> getConfigValue(String configValueName) {

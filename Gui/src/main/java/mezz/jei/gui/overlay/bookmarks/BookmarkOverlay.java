@@ -102,6 +102,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 		clientConfig.addLookupHistoryEnabledListener(v -> updateScreenProperties());
 		clientConfig.addLookupHistoryDisplaySideListener(v -> updateScreenProperties());
+		clientConfig.addMaxLookupHistoryRowsListener(v -> updateScreenProperties());
 	}
 
 	public boolean isListDisplayed() {

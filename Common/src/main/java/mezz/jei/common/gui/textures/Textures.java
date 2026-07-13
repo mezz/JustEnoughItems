@@ -15,6 +15,7 @@ public class Textures {
 	private final ScalableDrawable recipeCatalystSlotBackground;
 	private final ScalableDrawable ingredientListSlotBackground;
 	private final ScalableDrawable bookmarkListSlotBackground;
+	private final ScalableDrawable configValueSlot;
 	private final IDrawableStatic tabSelected;
 	private final IDrawableStatic tabUnselected;
 	private final ScalableDrawable buttonDisabled;
@@ -30,10 +31,14 @@ public class Textures {
 	private final ScalableDrawable searchBackground;
 	private final ScalableDrawable scrollbarBackground;
 	private final ScalableDrawable scrollbarMarker;
+	private final ScalableDrawable configCategoryButton;
+	private final ScalableDrawable configCategoryHighlight;
 
 	private final HighResolutionDrawable shapelessIcon;
 	private final IDrawableStatic arrowPrevious;
 	private final IDrawableStatic arrowNext;
+	private final IDrawableStatic arrowUp;
+	private final IDrawableStatic arrowDown;
 	private final IDrawableStatic recipeTransfer;
 	private final IDrawableStatic recipeBookmark;
 	private final IDrawableStatic configButtonIcon;
@@ -66,6 +71,7 @@ public class Textures {
 		this.recipeCatalystSlotBackground = createScalableGuiSprite("recipe_catalyst_slot_background_v2");
 		this.ingredientListSlotBackground = createScalableGuiSprite("ingredient_list_slot_background_v2");
 		this.bookmarkListSlotBackground = createScalableGuiSprite("bookmark_list_slot_background_v2");
+		this.configValueSlot = createScalableGuiSprite("config_value_slot");
 		this.tabSelected = createGuiSprite("tab_selected", 24, 24);
 		this.tabUnselected = createGuiSprite("tab_unselected", 24, 24);
 		this.buttonDisabled = createScalableGuiSprite("button_disabled_v2");
@@ -83,6 +89,8 @@ public class Textures {
 		this.scrollbarMarker = createScalableGuiSprite("scrollbar_marker_v2");
 		this.catalystTab = createScalableGuiSprite("catalyst_tab_v2");
 		this.recipeOptionsTab = createScalableGuiSprite("recipe_options_tab_v2");
+		this.configCategoryButton = createScalableGuiSprite("config_category");
+		this.configCategoryHighlight = createScalableGuiSprite("config_category_highlight");
 		this.recipeArrow = createGuiSprite("recipe_arrow", 22, 16);
 		this.recipeArrowFilled = createGuiSprite("recipe_arrow_filled", 22, 16);
 		this.recipePlusSign = createGuiSprite("recipe_plus_sign", 13, 13);
@@ -97,6 +105,8 @@ public class Textures {
 
 		this.arrowPrevious = createGuiSprite("icons/arrow_previous_v2", 9, 7);
 		this.arrowNext = createGuiSprite("icons/arrow_next_v2", 9, 7);
+		this.arrowUp = createGuiSprite("icons/arrow_up", 9, 9);
+		this.arrowDown = createGuiSprite("icons/arrow_down", 9, 9);
 		this.recipeTransfer = createGuiSprite("icons/recipe_transfer", 7, 7);
 		this.recipeBookmark = createGuiSprite("icons/recipe_bookmark", 9, 9);
 		this.configButtonIcon = createGuiSprite("icons/config_button", 16, 16);
@@ -152,6 +162,14 @@ public class Textures {
 
 	public IDrawableStatic getArrowNext() {
 		return arrowNext;
+	}
+
+	public IDrawableStatic getArrowDown() {
+		return arrowDown;
+	}
+
+	public IDrawableStatic getArrowUp() {
+		return arrowUp;
 	}
 
 	public IDrawableStatic getRecipeTransfer() {
@@ -264,6 +282,18 @@ public class Textures {
 
 	public ScalableDrawable getBookmarkListSlotBackground() {
 		return bookmarkListSlotBackground;
+	}
+
+	public ScalableDrawable getConfigValueSlot() {
+		return configValueSlot;
+	}
+
+	public ScalableDrawable getConfigCategoryButton() {
+		return configCategoryButton;
+	}
+
+	public ScalableDrawable getConfigCategoryHighlight() {
+		return configCategoryHighlight;
 	}
 
 	public IDrawableStatic getFlameIcon() {

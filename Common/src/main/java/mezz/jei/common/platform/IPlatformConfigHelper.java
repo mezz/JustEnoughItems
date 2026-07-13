@@ -2,6 +2,7 @@ package mezz.jei.common.platform;
 
 import mezz.jei.api.constants.ModIds;
 import net.minecraft.client.gui.screens.Screen;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,7 +12,7 @@ import java.util.Optional;
 public interface IPlatformConfigHelper {
 	Path getModConfigDir();
 
-	Optional<Screen> getConfigScreen();
+	Optional<Screen> getConfigScreen(@Nullable Screen parent);
 
 	default Path createJeiConfigDir() {
 		Path configDir = getModConfigDir()

@@ -86,6 +86,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 		clientConfig.addLookupHistoryEnabledListener(v -> this.controller.updateScreenProperties());
 		clientConfig.addLookupHistoryDisplaySideListener(v -> this.controller.updateScreenProperties());
+		clientConfig.addMaxLookupHistoryRowsListener(v -> this.controller.updateScreenProperties());
 	}
 
 	@Override
