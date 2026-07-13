@@ -42,7 +42,7 @@ final class BooleanConfigEntry extends ConfigEntryWidget<Boolean> {
 
         int iconX = buttonArea.getX() + (buttonArea.getWidth() - ConfigValueIcon.ICON_SIZE) / 2;
         int iconY = buttonArea.getY() + (buttonArea.getHeight() - ConfigValueIcon.ICON_SIZE) / 2;
-        ConfigValueIcon.draw(guiGraphics, configValue.getValue(), iconX, iconY);
+        ConfigValueIcon.draw(guiGraphics, getValue(), iconX, iconY);
     }
 
     @Override
@@ -52,7 +52,7 @@ final class BooleanConfigEntry extends ConfigEntryWidget<Boolean> {
         }
         if (buttonArea.contains(input.getMouseX(), input.getMouseY())) {
             if (!input.isSimulate()) {
-                configValue.set(!configValue.getValue());
+                setValue(!getValue());
             }
             return true;
         }

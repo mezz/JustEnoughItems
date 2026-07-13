@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
@@ -104,6 +105,11 @@ public class JeiConfigScreen extends Screen {
 		this.valueSelector = null;
 	}
 
+	private void flushPendingInput() {
+		inputHandler.handleGuiChange();
+		closeValueSelector();
+	}
+
 	@Nullable
 	ImmutableRect2i getValueSelectorArea() {
 		ConfigValueSelector<?> valueSelector = this.valueSelector;
@@ -132,9 +138,41 @@ public class JeiConfigScreen extends Screen {
 
 	@Override
 	public void onClose() {
+		requestClose();
+	}
+
+	private void requestClose() {
+		flushPendingInput();
+		if (controller.hasPendingChanges()) {
+			openPendingChangesConfirmation();
+			return;
+		}
+		closeWithoutPrompt();
+	}
+
+	private void closeWithoutPrompt() {
 		if (minecraft != null) {
 			minecraft.setScreen(parent);
 		}
+	}
+
+	private void openPendingChangesConfirmation() {
+		if (minecraft == null) {
+			return;
+		}
+		minecraft.setScreen(new ConfirmScreen(applyChanges -> {
+			if (applyChanges) {
+				controller.applyPendingChanges();
+			} else {
+				controller.discardPendingChanges();
+			}
+			closeWithoutPrompt();
+		},
+			Component.translatable("jei.config.screen.pendingChanges.title"),
+			Component.translatable("jei.config.screen.pendingChanges.message"),
+			Component.translatable("jei.config.screen.apply"),
+			Component.translatable("jei.config.screen.discard")
+		));
 	}
 
 	@Override
@@ -152,7 +190,7 @@ public class JeiConfigScreen extends Screen {
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		UserInput input = UserInput.fromVanilla(keyCode, scanCode, modifiers, InputType.IMMEDIATE);
 		if (input.is(Minecraft.getInstance().options.keyInventory)) {
-			onClose();
+			requestClose();
 			return true;
 		}
 		if (forwardKeyPressedToEntries(keyCode, scanCode, modifiers)) {
@@ -188,8 +226,15 @@ public class JeiConfigScreen extends Screen {
 			return true;
 		}
 		ImmutableRect2i resetCategoryButtonArea = layout.getResetCategoryButtonArea();
-		if (button == 0 && resetCategoryButtonArea.contains(mouseX, mouseY) && !controller.hasResettableEntries()) {
-			return true;
+		ImmutableRect2i applyButtonArea = layout.getApplyButtonArea();
+		if (button == 0 && (resetCategoryButtonArea.contains(mouseX, mouseY) || applyButtonArea.contains(mouseX, mouseY))) {
+			flushPendingInput();
+			if (resetCategoryButtonArea.contains(mouseX, mouseY) && !controller.hasResettableEntries()) {
+				return true;
+			}
+			if (applyButtonArea.contains(mouseX, mouseY) && !controller.hasPendingChanges()) {
+				return true;
+			}
 		}
 		if (searchBox.isFocused() && !searchBox.isMouseOver(mouseX, mouseY)) {
 			searchBox.setFocused(false);
@@ -207,7 +252,15 @@ public class JeiConfigScreen extends Screen {
 		}
 		ImmutableRect2i resetCategoryButtonArea = layout.getResetCategoryButtonArea();
 		if (button == 0 && resetCategoryButtonArea.contains(mouseX, mouseY) && controller.hasResettableEntries()) {
+			flushPendingInput();
 			controller.resetTargetEntries();
+			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+			return true;
+		}
+		ImmutableRect2i applyButtonArea = layout.getApplyButtonArea();
+		if (button == 0 && applyButtonArea.contains(mouseX, mouseY) && controller.hasPendingChanges()) {
+			flushPendingInput();
+			controller.applyPendingChanges();
 			Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			return true;
 		}

@@ -95,14 +95,14 @@ final class IntegerConfigEntry extends ConfigEntryWidget<Integer> {
             }
             drawText(guiGraphics, font, displayText, valueBoxArea.getX() + 3, textY, textColor);
         } else {
-            drawText(guiGraphics, font, Component.literal(configValue.getValue().toString()), valueBoxArea.getX() + 3, textY, TEXT_COLOR);
+            drawText(guiGraphics, font, Component.literal(getValue().toString()), valueBoxArea.getX() + 3, textY, TEXT_COLOR);
         }
 
         // shared arrow background
         textures.getConfigValueSlot().draw(guiGraphics, arrowBgArea);
 
         // up arrow
-        boolean canUp = configValue.getValue() < serializer.getMax();
+        boolean canUp = getValue() < serializer.getMax();
         boolean upHovered = canUp && upArea.contains(mouseX, mouseY);
         if (upHovered) {
             guiGraphics.fill(upArea.getX(), upArea.getY(), upArea.getX() + upArea.getWidth(), upArea.getY() + upArea.getHeight(), 0x30FFFFFF);
@@ -121,7 +121,7 @@ final class IntegerConfigEntry extends ConfigEntryWidget<Integer> {
         }
 
         // down arrow
-        boolean canDown = configValue.getValue() > serializer.getMin();
+        boolean canDown = getValue() > serializer.getMin();
         boolean downHovered = canDown && downArea.contains(mouseX, mouseY);
         if (downHovered) {
             guiGraphics.fill(downArea.getX(), downArea.getY(), downArea.getX() + downArea.getWidth(), downArea.getY() + downArea.getHeight(), 0x30FFFFFF);
@@ -163,21 +163,21 @@ final class IntegerConfigEntry extends ConfigEntryWidget<Integer> {
             return true;
         }
         // click elsewhere → commit edit if active
-        if (editing) {
+        if (editing && !input.isSimulate()) {
             commitEdit();
         }
         // arrow buttons
-        if (configValue.getValue() < serializer.getMax() && upArea.contains(input.getMouseX(), input.getMouseY())) {
+        if (getValue() < serializer.getMax() && upArea.contains(input.getMouseX(), input.getMouseY())) {
             if (!input.isSimulate()) {
                 commitEdit();
-                configValue.set(Math.min(serializer.getMax(), configValue.getValue() + 1));
+                setValue(Math.min(serializer.getMax(), getValue() + 1));
             }
             return true;
         }
-        if (configValue.getValue() > serializer.getMin() && downArea.contains(input.getMouseX(), input.getMouseY())) {
+        if (getValue() > serializer.getMin() && downArea.contains(input.getMouseX(), input.getMouseY())) {
             if (!input.isSimulate()) {
                 commitEdit();
-                configValue.set(Math.max(serializer.getMin(), configValue.getValue() - 1));
+                setValue(Math.max(serializer.getMin(), getValue() - 1));
             }
             return true;
         }
@@ -186,7 +186,7 @@ final class IntegerConfigEntry extends ConfigEntryWidget<Integer> {
 
     private void startEditing() {
         editing = true;
-        editText = configValue.getValue().toString();
+        editText = getValue().toString();
     }
 
     private void commitEdit() {
@@ -197,7 +197,7 @@ final class IntegerConfigEntry extends ConfigEntryWidget<Integer> {
         try {
             int val = Integer.parseInt(editText.trim());
             val = Math.clamp(val, serializer.getMin(), serializer.getMax());
-            configValue.set(val);
+            setValue(val);
         } catch (NumberFormatException ignored) {
         }
         editText = "";

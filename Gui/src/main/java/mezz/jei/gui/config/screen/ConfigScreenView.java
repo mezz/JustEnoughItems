@@ -58,14 +58,17 @@ final class ConfigScreenView {
 		ImmutableRect2i area = layout.getArea();
 		ImmutableRect2i navArea = layout.getNavArea();
 		ImmutableRect2i contentArea = layout.getContentArea();
+		ImmutableRect2i searchBackgroundArea = layout.getSearchBackgroundArea();
 		ImmutableRect2i resetCategoryButtonArea = layout.getResetCategoryButtonArea();
+		ImmutableRect2i applyButtonArea = layout.getApplyButtonArea();
 
 		guiGraphics.pose().pushPose();
 		background.draw(guiGraphics, area);
 		drawNavBackground(guiGraphics, navArea);
 		@Nullable ConfigNavItem hoveredNavItem = drawNavItems(guiGraphics, navArea, mouseX, mouseY);
-		drawSearch(guiGraphics, textures, contentArea, resetCategoryButtonArea, mouseX, mouseY, partialTick);
+		drawSearch(guiGraphics, textures, searchBackgroundArea, mouseX, mouseY, partialTick);
 		drawResetButton(guiGraphics, font, textures, resetCategoryButtonArea, mouseX, mouseY);
+		drawApplyButton(guiGraphics, font, textures, applyButtonArea, mouseX, mouseY);
 		@Nullable ConfigEntryWidget<?> hoveredEntryWidget = drawEntries(guiGraphics, contentArea, mouseX, mouseY);
 		drawInfoPanel(guiGraphics, font, getInfo(hoveredNavItem, hoveredEntryWidget));
 		guiGraphics.pose().popPose();
@@ -108,16 +111,13 @@ final class ConfigScreenView {
 	private void drawSearch(
 		GuiGraphics guiGraphics,
 		Textures textures,
-		ImmutableRect2i contentArea,
-		ImmutableRect2i resetCategoryButtonArea,
+		ImmutableRect2i searchBackgroundArea,
 		int mouseX,
 		int mouseY,
 		float partialTick
 	) {
-		int searchBgX = contentArea.getX();
-		int searchBgW = contentArea.getWidth() - resetCategoryButtonArea.getWidth() - 3;
 		textures.getSearchBackground()
-			.draw(guiGraphics, new ImmutableRect2i(searchBgX, layout.getNavArea().getY(), searchBgW, ConfigScreenLayout.SEARCH_HEIGHT));
+			.draw(guiGraphics, searchBackgroundArea);
 		searchBox.render(guiGraphics, mouseX, mouseY, partialTick);
 	}
 
@@ -129,12 +129,35 @@ final class ConfigScreenView {
 		int mouseX,
 		int mouseY
 	) {
-		boolean canReset = controller.hasResettableEntries();
-		boolean hovered = canReset && resetCategoryButtonArea.contains(mouseX, mouseY);
-		textures.getButtonForState(false, canReset, hovered).draw(guiGraphics, resetCategoryButtonArea);
-
 		Component resetLabel = Component.translatable("jei.config.screen.reset");
-		ConfigEntryWidget.drawCenteredButtonText(guiGraphics, font, resetLabel, resetCategoryButtonArea, hovered ? ConfigEntryWidget.HOVER_TEXT_COLOR : ConfigEntryWidget.TEXT_COLOR);
+		drawButton(guiGraphics, font, textures, resetCategoryButtonArea, mouseX, mouseY, controller.hasResettableEntries(), resetLabel);
+	}
+
+	private void drawApplyButton(
+		GuiGraphics guiGraphics,
+		Font font,
+		Textures textures,
+		ImmutableRect2i applyButtonArea,
+		int mouseX,
+		int mouseY
+	) {
+		Component applyLabel = Component.translatable("jei.config.screen.apply");
+		drawButton(guiGraphics, font, textures, applyButtonArea, mouseX, mouseY, controller.hasPendingChanges(), applyLabel);
+	}
+
+	private static void drawButton(
+		GuiGraphics guiGraphics,
+		Font font,
+		Textures textures,
+		ImmutableRect2i buttonArea,
+		int mouseX,
+		int mouseY,
+		boolean active,
+		Component label
+	) {
+		boolean hovered = active && buttonArea.contains(mouseX, mouseY);
+		textures.getButtonForState(false, active, hovered).draw(guiGraphics, buttonArea);
+		ConfigEntryWidget.drawCenteredButtonText(guiGraphics, font, label, buttonArea, hovered ? ConfigEntryWidget.HOVER_TEXT_COLOR : ConfigEntryWidget.TEXT_COLOR);
 	}
 
 	@Nullable

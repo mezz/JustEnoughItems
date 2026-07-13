@@ -57,6 +57,7 @@ abstract class ConfigEntryWidget<T> {
 
     final IJeiConfigValue<T> configValue;
     final Component fullName;
+    private T value;
 
     protected List<FormattedCharSequence> nameLines = List.of();
 
@@ -67,6 +68,7 @@ abstract class ConfigEntryWidget<T> {
     protected ConfigEntryWidget(IJeiConfigValue<T> configValue) {
         this.configValue = configValue;
         this.fullName = StringUtil.stripStyling(configValue.getLocalizedName());
+        this.value = configValue.getValue();
     }
 
     public int getHeight() {
@@ -170,7 +172,19 @@ abstract class ConfigEntryWidget<T> {
     }
 
     public boolean isModified() {
-        return !configValue.getValue().equals(configValue.getDefaultValue());
+        return !value.equals(configValue.getDefaultValue());
+    }
+
+    public boolean hasPendingChange() {
+        return !value.equals(configValue.getValue());
+    }
+
+    public void applyPendingChange() {
+        configValue.set(value);
+    }
+
+    public void discardPendingChange() {
+        setValue(configValue.getValue());
     }
 
     ConfigInfo getInfo() {
@@ -188,7 +202,24 @@ abstract class ConfigEntryWidget<T> {
     }
 
     public void resetToDefault() {
-        configValue.set(configValue.getDefaultValue());
+        setValue(configValue.getDefaultValue());
+    }
+
+    protected T getValue() {
+        return value;
+    }
+
+    protected boolean setValue(T value) {
+        if (!configValue.getSerializer().isValid(value) || this.value.equals(value)) {
+            return false;
+        }
+        this.value = value;
+        onValueChanged();
+        return true;
+    }
+
+    protected void onValueChanged() {
+
     }
 
     abstract void drawContent(GuiGraphics guiGraphics, double mouseX, double mouseY);

@@ -57,6 +57,25 @@ final class ConfigScreenController {
 		updateContentLayout();
 	}
 
+	public boolean hasPendingChanges() {
+		return model.getAllEntryWidgets()
+			.anyMatch(ConfigEntryWidget::hasPendingChange);
+	}
+
+	public void applyPendingChanges() {
+		model.getAllEntryWidgets()
+			.filter(ConfigEntryWidget::hasPendingChange)
+			.forEach(ConfigEntryWidget::applyPendingChange);
+		updateContentLayout();
+	}
+
+	public void discardPendingChanges() {
+		model.getAllEntryWidgets()
+			.filter(ConfigEntryWidget::hasPendingChange)
+			.forEach(ConfigEntryWidget::discardPendingChange);
+		updateContentLayout();
+	}
+
 	public List<ConfigEntryWidget<?>> getVisibleEntryWidgets() {
 		return model.getVisibleEntryWidgets();
 	}

@@ -50,7 +50,7 @@ final class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
 
     private void rebuildRows() {
         valueRows.clear();
-        List<T> currentValues = configValue.getValue();
+        List<T> currentValues = getValue();
         for (int i = 0; i < currentValues.size(); i++) {
             valueRows.add(new ListValueRow(currentValues.get(i), i));
         }
@@ -58,7 +58,7 @@ final class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
 
     private boolean canAddMore() {
         if (allValidValues.isEmpty()) return false;
-        List<T> current = configValue.getValue();
+        List<T> current = getValue();
         return allValidValues.stream().anyMatch(v -> !current.contains(v));
     }
 
@@ -114,27 +114,22 @@ final class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
     }
 
     @Override
-    public void resetToDefault() {
-        super.resetToDefault();
+    protected void onValueChanged() {
         rebuildRows();
         layoutUpdater.run();
     }
 
     private void addValue(T value) {
-        List<T> current = new ArrayList<>(configValue.getValue());
+        List<T> current = new ArrayList<>(getValue());
         current.add(value);
-        configValue.set(current);
-        rebuildRows();
-        layoutUpdater.run();
+        setValue(current);
     }
 
     private void removeValue(int index) {
-        List<T> current = new ArrayList<>(configValue.getValue());
+        List<T> current = new ArrayList<>(getValue());
         if (index >= 0 && index < current.size()) {
             current.remove(index);
-            configValue.set(current);
-            rebuildRows();
-            layoutUpdater.run();
+            setValue(current);
         }
     }
 
@@ -153,7 +148,7 @@ final class ListConfigEntry<T> extends ConfigEntryWidget<List<T>> {
             }
             if (!addButtonArea.equals(ImmutableRect2i.EMPTY) && addButtonArea.contains(input.getMouseX(), input.getMouseY())) {
                 if (!input.isSimulate()) {
-                    List<T> currentValues = configValue.getValue();
+                    List<T> currentValues = getValue();
                     List<T> available = allValidValues.stream()
                                                       .filter(v -> !currentValues.contains(v))
                                                       .toList();

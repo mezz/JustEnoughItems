@@ -16,6 +16,8 @@ final class ConfigScreenLayout {
 	private static final int MIN_HEIGHT = 230;
 	private static final int NAV_WIDTH = 96;
 	private static final int RESET_BUTTON_WIDTH = 40;
+	private static final int APPLY_BUTTON_WIDTH = 40;
+	private static final int TOP_BUTTON_GAP = 2;
 	private static final int INFO_AREA_GAP = 4;
 	private static final int MIN_SCROLL_MARKER_HEIGHT = 10;
 	private static final double SCROLL_SPEED = 10.0;
@@ -24,7 +26,9 @@ final class ConfigScreenLayout {
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i navArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i contentArea = ImmutableRect2i.EMPTY;
+	private ImmutableRect2i searchBackgroundArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i resetCategoryButtonArea = ImmutableRect2i.EMPTY;
+	private ImmutableRect2i applyButtonArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i scrollBarArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i infoArea = ImmutableRect2i.EMPTY;
 
@@ -69,15 +73,29 @@ final class ConfigScreenLayout {
 		int contentLeft = navArea.getX() + navArea.getWidth() + 4;
 		int contentWidth = area.getWidth() - NAV_WIDTH - 20;
 
+		int applyButtonX = contentLeft + contentWidth - APPLY_BUTTON_WIDTH + 1;
+		applyButtonArea = new ImmutableRect2i(
+			applyButtonX,
+			innerTop,
+			APPLY_BUTTON_WIDTH - 3,
+			SEARCH_HEIGHT
+		);
+		int resetButtonX = applyButtonX - TOP_BUTTON_GAP - RESET_BUTTON_WIDTH;
 		resetCategoryButtonArea = new ImmutableRect2i(
-			contentLeft + contentWidth - RESET_BUTTON_WIDTH + 1,
+			resetButtonX,
 			innerTop,
 			RESET_BUTTON_WIDTH - 3,
 			SEARCH_HEIGHT
 		);
+		searchBackgroundArea = new ImmutableRect2i(
+			contentLeft,
+			innerTop,
+			resetButtonX - contentLeft - TOP_BUTTON_GAP,
+			SEARCH_HEIGHT
+		);
 		searchBox.setX(contentLeft + 2);
 		searchBox.setY(innerTop + 5);
-		searchBox.setWidth(contentWidth - RESET_BUTTON_WIDTH - 4);
+		searchBox.setWidth(searchBackgroundArea.getWidth() - 4);
 		searchBox.setHeight(SEARCH_HEIGHT);
 
 		int contentTop = innerTop + SEARCH_HEIGHT + 2;
@@ -108,8 +126,16 @@ final class ConfigScreenLayout {
 		return contentArea;
 	}
 
+	public ImmutableRect2i getSearchBackgroundArea() {
+		return searchBackgroundArea;
+	}
+
 	public ImmutableRect2i getResetCategoryButtonArea() {
 		return resetCategoryButtonArea;
+	}
+
+	public ImmutableRect2i getApplyButtonArea() {
+		return applyButtonArea;
 	}
 
 	public ImmutableRect2i getScrollBarArea() {

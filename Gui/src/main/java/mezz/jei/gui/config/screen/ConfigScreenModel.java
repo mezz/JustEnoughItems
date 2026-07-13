@@ -78,8 +78,7 @@ final class ConfigScreenModel {
 
 	public List<ConfigEntryWidget<?>> getVisibleEntryWidgets() {
 		if (isSearching()) {
-			return categoryWidgets.stream()
-				.flatMap(widget -> widget.getEntryWidgets().stream())
+			return getAllEntryWidgets()
 				.filter(this::matchesSearch)
 				.toList();
 		}
@@ -91,5 +90,10 @@ final class ConfigScreenModel {
 
 	public Stream<ConfigEntryWidget<?>> getResetTargetEntries() {
 		return getVisibleEntryWidgets().stream();
+	}
+
+	public Stream<ConfigEntryWidget<?>> getAllEntryWidgets() {
+		return categoryWidgets.stream()
+			.flatMap(widget -> widget.getEntryWidgets().stream());
 	}
 }

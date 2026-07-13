@@ -38,7 +38,7 @@ final class EnumConfigEntry<T extends Enum<T>> extends ConfigEntryWidget<T> {
     public void updateBounds(ImmutableRect2i area) {
         super.updateBounds(area);
         Font font = Minecraft.getInstance().font;
-        T value = configValue.getValue();
+        T value = getValue();
         int textWidth = (int) (font.width(value.toString()) * TEXT_SCALE);
         int iconWidth = ConfigValueIcon.getTextOffset(value);
         int totalWidth = textWidth + ARROW_SIZE + ARROW_PADDING * 2 + 8;
@@ -66,7 +66,7 @@ final class EnumConfigEntry<T extends Enum<T>> extends ConfigEntryWidget<T> {
 
         // value text
         int textY = valueArea.getY() + (valueArea.getHeight() - font.lineHeight + 1) / 2;
-        T value = configValue.getValue();
+        T value = getValue();
         String valueString = value.toString();
         int contentX = valueArea.getX() + 4;
         int iconY = valueArea.getY() + (valueArea.getHeight() - ConfigValueIcon.ICON_SIZE) / 2;
@@ -89,7 +89,7 @@ final class EnumConfigEntry<T extends Enum<T>> extends ConfigEntryWidget<T> {
         if (valueArea.contains(input.getMouseX(), input.getMouseY())) {
             if (!input.isSimulate()) {
                 ConfigValueSelector<T> selector = new ConfigValueSelector<>(validValues, value -> {
-                    configValue.set(value);
+                    setValue(value);
                     this.updateBounds(this.area);
                 });
                 selector.updateBounds(valueArea.getX(), valueArea.getY() + valueArea.getHeight() + 2);
