@@ -157,13 +157,16 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		ImmutableRect2i availableContentsArea = displayArea.cropBottom(BUTTON_SIZE + INNER_PADDING);
 		if (clientConfig.lookupHistoryEnabled().getValue() && lookupHistoryOverlay.isDisplayedOnThisSide()) {
 			int historyRows = clientConfig.maxLookupHistoryRows().getValue();
-			availableContentsArea = availableContentsArea.cropBottom(historyRows * LookupHistoryOverlay.SLOT_HEIGHT);
-			ImmutableRect2i historyArea = displayArea
-				.insetBy(BORDER_MARGIN)
-				.moveUp(BUTTON_SIZE + INNER_PADDING)
-				.keepBottom(historyRows * LookupHistoryOverlay.SLOT_HEIGHT);
-			this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, mouseExclusionArea);
-			this.lookupHistoryOverlay.updateLayout();
+			int historyHeight = historyRows * LookupHistoryOverlay.SLOT_HEIGHT;
+			if (historyHeight > 0) {
+				ImmutableRect2i historyArea = displayArea
+					.insetBy(BORDER_MARGIN)
+					.cropBottom(BUTTON_SIZE + INNER_PADDING)
+					.keepBottom(historyHeight);
+				availableContentsArea = cropBottomTo(availableContentsArea, historyArea.y());
+				this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, mouseExclusionArea);
+				this.lookupHistoryOverlay.updateLayout();
+			}
 		}
 		IElement<?> pageAnchorElement = this.contents.getPageAnchorElement();
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas, mouseExclusionArea);
@@ -197,6 +200,18 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		}
 		int screenHeight = guiProperties.screenHeight();
 		return new ImmutableRect2i(0, 0, width, screenHeight);
+	}
+
+	private static ImmutableRect2i cropBottomTo(ImmutableRect2i area, int bottomY) {
+		int cropAmount = getBottom(area) - bottomY;
+		if (cropAmount <= 0) {
+			return area;
+		}
+		return area.cropBottom(cropAmount);
+	}
+
+	private static int getBottom(ImmutableRect2i area) {
+		return area.y() + area.height();
 	}
 
 	public void drawScreen(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {

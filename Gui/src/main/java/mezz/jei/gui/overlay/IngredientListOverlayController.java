@@ -118,6 +118,10 @@ class IngredientListOverlayController {
 		return this.guiPropertiesCache.createUpdater(this::onGuiPropertiesChanged);
 	}
 
+	void updateScreenProperties() {
+		onGuiPropertiesChanged();
+	}
+
 	private void onFilterTextChanged(String oldFilterText, String newFilterText) {
 		this.searchField.setValue(newFilterText);
 		if (!oldFilterText.isEmpty() && newFilterText.isEmpty()) {

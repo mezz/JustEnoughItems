@@ -26,13 +26,11 @@ class IngredientListOverlayLayout {
 
 		if (lookupHistoryEnabled && lookupHistoryDisplayedOnThisSide) {
 			int lookupHistoryHeight = maxLookupHistoryRows * LookupHistoryOverlay.SLOT_HEIGHT;
-			availableContentsArea = availableContentsArea.cropBottom(lookupHistoryHeight);
-			lookupHistoryArea = Optional.of(
-				displayArea
-					.insetBy(BORDER_MARGIN)
-					.moveUp(BUTTON_SIZE + INNER_PADDING)
-					.keepBottom(lookupHistoryHeight)
-			);
+			if (lookupHistoryHeight > 0) {
+				ImmutableRect2i area = getLookupHistoryArea(displayArea, searchBarCentered, lookupHistoryHeight);
+				availableContentsArea = cropBottomTo(availableContentsArea, area.y());
+				lookupHistoryArea = Optional.of(area);
+			}
 		}
 
 		return new Layout(guiProperties, displayArea, availableContentsArea, lookupHistoryArea, searchBarCentered);
@@ -53,6 +51,26 @@ class IngredientListOverlayLayout {
 			return displayArea;
 		}
 		return displayArea.cropBottom(SEARCH_HEIGHT + INNER_PADDING);
+	}
+
+	private static ImmutableRect2i getLookupHistoryArea(ImmutableRect2i displayArea, boolean searchBarCentered, int lookupHistoryHeight) {
+		int bottomReservedHeight = searchBarCentered ? 0 : SEARCH_HEIGHT + INNER_PADDING;
+		return displayArea
+			.insetBy(BORDER_MARGIN)
+			.cropBottom(bottomReservedHeight)
+			.keepBottom(lookupHistoryHeight);
+	}
+
+	private static ImmutableRect2i cropBottomTo(ImmutableRect2i area, int bottomY) {
+		int cropAmount = getBottom(area) - bottomY;
+		if (cropAmount <= 0) {
+			return area;
+		}
+		return area.cropBottom(cropAmount);
+	}
+
+	private static int getBottom(ImmutableRect2i area) {
+		return area.y() + area.height();
 	}
 
 	record Layout(
