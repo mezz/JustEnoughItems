@@ -79,7 +79,7 @@ public final class SafeIngredientUtil {
 		IIngredientManager ingredientManager,
 		IIngredientRenderer<T> ingredientRenderer,
 		ITypedIngredient<T> typedIngredient,
-		TooltipFlag.Default tooltipFlag
+		TooltipFlag tooltipFlag
 	) {
 		T ingredient = typedIngredient.getIngredient();
 
