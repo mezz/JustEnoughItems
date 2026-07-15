@@ -48,7 +48,6 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	private static final int INNER_PADDING = 2;
 	private static final int BUTTON_SIZE = 20;
 	private static final int LOOKUP_HISTORY_BOTTOM_PADDING = BORDER_MARGIN;
-	private static final int LOOKUP_HISTORY_PADDING_EXTRA = LOOKUP_HISTORY_BOTTOM_PADDING - INNER_PADDING;
 
 	// input
 	private final BookmarkDragManager bookmarkDragManager;
@@ -141,13 +140,15 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		ImmutableRect2i availableContentsArea = displayArea.cropBottom(BUTTON_SIZE + INNER_PADDING);
 		if (clientConfig.isLookupHistoryEnabled() && lookupHistoryOverlay.isDisplayedOnThisSide()) {
 			int lookupHistoryDisplayHeight = lookupHistoryOverlay.getDisplayHeight();
-			availableContentsArea = availableContentsArea.cropBottom(lookupHistoryDisplayHeight + LOOKUP_HISTORY_PADDING_EXTRA);
-			ImmutableRect2i historyArea = displayArea
-				.insetBy(BORDER_MARGIN)
-				.moveUp(BUTTON_SIZE + LOOKUP_HISTORY_BOTTOM_PADDING)
-				.keepBottom(lookupHistoryDisplayHeight);
-			this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, mouseExclusionArea);
-			this.lookupHistoryOverlay.updateLayout();
+			if (lookupHistoryDisplayHeight > 0) {
+				ImmutableRect2i historyArea = displayArea
+					.insetBy(BORDER_MARGIN)
+					.cropBottom(BUTTON_SIZE + LOOKUP_HISTORY_BOTTOM_PADDING)
+					.keepBottom(lookupHistoryDisplayHeight);
+				availableContentsArea = cropBottomTo(availableContentsArea, historyArea.y());
+				this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, mouseExclusionArea);
+				this.lookupHistoryOverlay.updateLayout();
+			}
 		}
 		IElement<?> pageAnchorElement = this.contents.getPageAnchorElement();
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas, mouseExclusionArea);
@@ -181,6 +182,18 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		}
 		int screenHeight = guiProperties.screenHeight();
 		return new ImmutableRect2i(0, 0, width, screenHeight);
+	}
+
+	private static ImmutableRect2i cropBottomTo(ImmutableRect2i area, int bottomY) {
+		int cropAmount = getBottom(area) - bottomY;
+		if (cropAmount <= 0) {
+			return area;
+		}
+		return area.cropBottom(cropAmount);
+	}
+
+	private static int getBottom(ImmutableRect2i area) {
+		return area.y() + area.height();
 	}
 
 	public void drawScreen(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
