@@ -285,6 +285,8 @@ public class JeiDebugPlugin implements IModPlugin {
 
 		registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>(ingredientManager, this::getScreenHelper));
 		registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandlerTwo<>(ingredientManager, this::getScreenHelper));
+
+		registration.addGlobalGuiHandler(new DebugExclusionAreaHandler());
 	}
 
 	@Override
