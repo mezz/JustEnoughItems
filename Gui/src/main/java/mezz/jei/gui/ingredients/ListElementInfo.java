@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.common.util.Translator;
@@ -153,7 +154,9 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		TooltipFlag.Default tooltipFlag = config.getSearchAdvancedTooltips() ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
 		tooltipFlag = tooltipFlag.asCreative();
 
-		List<Component> tooltip = SafeIngredientUtil.getPlainTooltipForSearch(ingredientManager, ingredientRenderer, value, tooltipFlag);
+		TooltipFlag searchTooltipFlag = Services.PLATFORM.getInputHelper()
+			.getSearchTooltipFlag(tooltipFlag);
+		List<Component> tooltip = SafeIngredientUtil.getPlainTooltipForSearch(ingredientManager, ingredientRenderer, value, searchTooltipFlag);
 		Set<String> strings = getStrings(tooltip);
 
 		strings.remove(this.names.getFirst());
