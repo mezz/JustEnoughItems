@@ -6,7 +6,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
@@ -16,6 +18,8 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 	private final String description;
 	private final T defaultValue;
 	private final IJeiConfigValueSerializer<T> serializer;
+	@Nullable
+	private List<Consumer<T>> listeners;
 	private volatile T currentValue;
 	@Nullable
 	private IConfigSchema schema;
@@ -68,7 +72,14 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 	public List<String> setFromSerializedValue(String value) {
 		IJeiConfigValueSerializer.IDeserializeResult<T> deserializeResult = serializer.deserialize(value);
 		deserializeResult.getResult()
-			.ifPresent(t -> currentValue = t);
+			.ifPresent(t -> {
+				if (currentValue != t){
+					currentValue = t;
+					if (listeners != null) {
+						listeners.forEach(listener -> listener.accept(currentValue));
+					}
+				}
+			});
 		return deserializeResult.getErrors();
 	}
 
@@ -80,11 +91,22 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 		}
 		if (!currentValue.equals(value)) {
 			currentValue = value;
+			if (listeners != null) {
+				listeners.forEach(listener -> listener.accept(currentValue));
+			}
 			if (schema != null) {
 				schema.markDirty();
 			}
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void addListener(Consumer<T> listener) {
+		if (this.listeners == null) {
+			this.listeners = new ArrayList<>();
+		}
+		this.listeners.add(listener);
 	}
 }

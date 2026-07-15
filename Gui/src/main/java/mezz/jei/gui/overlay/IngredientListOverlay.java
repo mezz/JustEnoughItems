@@ -6,11 +6,12 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.GuiProperties;
-import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.input.GuiTextFieldFilter;
@@ -57,6 +58,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IFilterTextSource filterTextSource,
 		IScreenHelper screenHelper,
 		IngredientGridWithNavigation contents,
+		IIngredientGridConfig ingredientGridConfig,
 		IClientConfig clientConfig,
 		IWorldConfig worldConfig,
 		IInternalKeyMappings keyBindings
@@ -83,6 +85,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		});
 
 		this.configButton = ConfigButton.create(this::isListDisplayed, worldConfig, keyBindings);
+		clientConfig.addCenterSearchBarEnabledListener(v -> onScreenPropertiesChanged());
+		ingredientGridConfig.addLayoutListener(this::onScreenPropertiesChanged);
 	}
 
 	@Override

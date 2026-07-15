@@ -1,5 +1,7 @@
 package mezz.jei.api.runtime.config;
 
+import java.util.function.Consumer;
+
 /**
  * Represents config value used by JEI.
  * Config values can be read or updated by mods that display in-game config files to players.
@@ -47,6 +49,15 @@ public interface IJeiConfigValue<T> {
 	 * @since 11.7.0
 	 */
 	boolean set(T value);
+
+	/**
+	 * Add a listener that is called when this config value changes.
+	 *
+	 * @since 11.16.0
+	 */
+	default void addListener(Consumer<T> listener) {
+
+	}
 
 	/**
 	 * Get the helper for serializing values to and from Strings, and validating values.

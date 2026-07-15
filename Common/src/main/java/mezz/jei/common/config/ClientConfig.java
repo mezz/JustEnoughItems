@@ -1,6 +1,7 @@
 package mezz.jei.common.config;
 
 import com.google.common.base.Preconditions;
+import mezz.jei.common.config.file.ConfigValue;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.config.file.serializers.EnumSerializer;
@@ -9,6 +10,7 @@ import mezz.jei.common.platform.Services;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public final class ClientConfig implements IClientConfig {
@@ -16,8 +18,8 @@ public final class ClientConfig implements IClientConfig {
 	private static IClientConfig instance;
 
 	// appearance
-	private final Supplier<Boolean> centerSearchBarEnabled;
-	private final Supplier<Integer> maxRecipeGuiHeight;
+	private final ConfigValue<Boolean> centerSearchBarEnabled;
+	private final ConfigValue<Integer> maxRecipeGuiHeight;
 
 	// cheat_mode
 	private final Supplier<GiveMode> giveMode;
@@ -28,7 +30,7 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Boolean> dragToRearrangeBookmarksEnabled;
 
 	// advanced
-	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
+	private final ConfigValue<Boolean> lowMemorySlowSearchEnabled;
 	private final Supplier<Boolean> catchRenderErrorsEnabled;
 	private final Supplier<Boolean> lookupFluidContentsEnabled;
 
@@ -36,7 +38,7 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<Integer> dragDelayMs;
 
 	// sorting
-	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
+	private final ConfigValue<List<IngredientSortStage>> ingredientSorterStages;
 
 	// tags
 	private final Supplier<Boolean> hideSingleIngredientTagsEnabled;
@@ -141,8 +143,23 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public void addCenterSearchBarEnabledListener(Consumer<Boolean> listener) {
+		centerSearchBarEnabled.addListener(listener);
+	}
+
+	@Override
+	public void addMaxRecipeGuiHeightListener(Consumer<Integer> listener) {
+		maxRecipeGuiHeight.addListener(listener);
+	}
+
+	@Override
 	public boolean isLowMemorySlowSearchEnabled() {
 		return lowMemorySlowSearchEnabled.get();
+	}
+
+	@Override
+	public void addLowMemorySlowSearchEnabledListener(Consumer<Boolean> listener) {
+		lowMemorySlowSearchEnabled.addListener(listener);
 	}
 
 	@Override
@@ -188,6 +205,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public List<IngredientSortStage> getIngredientSorterStages() {
 		return ingredientSorterStages.get();
+	}
+
+	@Override
+	public void addIngredientSorterStagesListener(Consumer<List<IngredientSortStage>> listener) {
+		ingredientSorterStages.addListener(listener);
 	}
 
 	@Override

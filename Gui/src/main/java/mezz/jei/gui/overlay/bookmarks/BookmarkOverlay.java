@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -61,6 +62,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		BookmarkList bookmarkList,
 		IngredientGridWithNavigation contents,
 		IWorldConfig worldConfig,
+		IIngredientGridConfig bookmarkListConfig,
 		IScreenHelper screenHelper,
 		IInternalKeyMappings keyBindings
 	) {
@@ -77,6 +79,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				.updateScreen(minecraft.screen)
 				.update();
 		});
+		bookmarkListConfig.addLayoutListener(this::onScreenPropertiesChanged);
 	}
 
 	public boolean isListDisplayed() {

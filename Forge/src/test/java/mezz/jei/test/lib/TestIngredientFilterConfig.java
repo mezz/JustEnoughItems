@@ -59,4 +59,9 @@ public class TestIngredientFilterConfig implements IIngredientFilterConfig {
 	public boolean getSearchShortModNames() {
 		return false;
 	}
+
+	@Override
+	public void addSearchConfigListener(Runnable listener) {
+
+	}
 }

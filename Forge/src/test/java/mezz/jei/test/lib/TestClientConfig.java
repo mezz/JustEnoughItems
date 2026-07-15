@@ -5,6 +5,7 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IngredientSortStage;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class TestClientConfig implements IClientConfig {
 	private final boolean lowMemorySlowSearchEnabled;
@@ -19,8 +20,23 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public void addCenterSearchBarEnabledListener(Consumer<Boolean> listener) {
+
+	}
+
+	@Override
+	public void addMaxRecipeGuiHeightListener(Consumer<Integer> listener) {
+
+	}
+
+	@Override
 	public boolean isLowMemorySlowSearchEnabled() {
 		return lowMemorySlowSearchEnabled;
+	}
+
+	@Override
+	public void addLowMemorySlowSearchEnabledListener(Consumer<Boolean> listener) {
+
 	}
 
 	@Override
@@ -71,5 +87,10 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public List<IngredientSortStage> getIngredientSorterStages() {
 		return List.of();
+	}
+
+	@Override
+	public void addIngredientSorterStagesListener(Consumer<List<IngredientSortStage>> listener) {
+
 	}
 }
