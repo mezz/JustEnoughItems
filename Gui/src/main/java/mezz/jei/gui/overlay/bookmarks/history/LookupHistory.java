@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.config.ILookupHistoryConfig;
 import mezz.jei.gui.overlay.IIngredientGridSource;
@@ -14,7 +15,6 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class LookupHistory implements IIngredientGridSource {
 	private final List<IBookmark> elements = new LinkedList<>();
@@ -23,7 +23,7 @@ public class LookupHistory implements IIngredientGridSource {
 	private final IIngredientManager ingredientManager;
 	private final RegistryAccess registryAccess;
 	private final ICodecHelper codecHelper;
-	private final Supplier<Integer> maxElements;
+	private final IJeiConfigValue<Integer> maxElements;
 	private final ILookupHistoryConfig lookupHistoryConfig;
 	private final Codec<IBookmark> bookmarkCodec;
 
@@ -32,7 +32,7 @@ public class LookupHistory implements IIngredientGridSource {
 		IIngredientManager ingredientManager,
 		RegistryAccess registryAccess,
 		ICodecHelper codecHelper,
-		Supplier<Integer> maxElements,
+		IJeiConfigValue<Integer> maxElements,
 		ILookupHistoryConfig lookupHistoryConfig,
 		Codec<IBookmark> bookmarkCodec
 	) {
@@ -46,16 +46,18 @@ public class LookupHistory implements IIngredientGridSource {
 
 		List<IBookmark> loaded = lookupHistoryConfig.load(recipeManager, ingredientManager, registryAccess, codecHelper, bookmarkCodec);
 		this.elements.addAll(loaded);
+		maxElements.addListener(v -> trimToMaxElements());
+		trimToMaxElements();
 	}
 
 	public void add(IBookmark element) {
 		elements.remove(element);
 		elements.addFirst(element);
-		if (elements.size() > maxElements.get()) {
+		if (elements.size() > maxElements.getValue()) {
 			elements.removeLast();
 		}
 		notifyListeners();
-		lookupHistoryConfig.save(recipeManager, ingredientManager, registryAccess, codecHelper, elements, bookmarkCodec);
+		save();
 	}
 
 	@Override
@@ -74,5 +76,21 @@ public class LookupHistory implements IIngredientGridSource {
 		for (SourceListChangedListener listener : listeners) {
 			listener.onSourceListChanged();
 		}
+	}
+
+	private void trimToMaxElements() {
+		boolean changed = false;
+		while (elements.size() > maxElements.getValue()) {
+			elements.removeLast();
+			changed = true;
+		}
+		if (changed) {
+			notifyListeners();
+			save();
+		}
+	}
+
+	private void save() {
+		lookupHistoryConfig.save(recipeManager, ingredientManager, registryAccess, codecHelper, elements, bookmarkCodec);
 	}
 }

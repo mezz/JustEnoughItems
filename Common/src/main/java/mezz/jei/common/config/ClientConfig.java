@@ -3,37 +3,33 @@ package mezz.jei.common.config;
 import com.google.common.base.Preconditions;
 import mezz.jei.common.config.file.ConfigValue;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
-import mezz.jei.common.config.file.IConfigListener;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.config.file.serializers.EnumSerializer;
 import mezz.jei.common.config.file.serializers.ListSerializer;
 import mezz.jei.common.platform.Services;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Supplier;
 
 public final class ClientConfig implements IClientConfig {
 	@Nullable
 	private static IClientConfig instance;
 
 	// appearance
-	private final Supplier<Boolean> centerSearchBarEnabled;
-	private final Supplier<Integer> maxRecipeGuiHeight;
-	private final Supplier<Boolean> toastReflowEnabled;
+	private final ConfigValue<Boolean> centerSearchBarEnabled;
+	private final ConfigValue<Integer> maxRecipeGuiHeight;
+	private final ConfigValue<Boolean> toastReflowEnabled;
 
 	// cheat_mode
-	private final Supplier<GiveMode> giveMode;
-	private final Supplier<Boolean> cheatToHotbarUsingHotkeysEnabled;
-	private final Supplier<Boolean> showHiddenIngredients;
+	private final ConfigValue<GiveMode> giveMode;
+	private final ConfigValue<Boolean> cheatToHotbarUsingHotkeysEnabled;
+	private final ConfigValue<Boolean> showHiddenIngredients;
 
 	// bookmarks
-	private final Supplier<Boolean> addBookmarksToFrontEnabled;
-	private final Supplier<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures;
-	private final Supplier<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled;
-	private final Supplier<Boolean> dragToRearrangeBookmarksEnabled;
+	private final ConfigValue<Boolean> addBookmarksToFrontEnabled;
+	private final ConfigValue<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures;
+	private final ConfigValue<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled;
+	private final ConfigValue<Boolean> dragToRearrangeBookmarksEnabled;
 
 	// lookup history
 	private final ConfigValue<Boolean> lookupHistoryEnabled;
@@ -45,24 +41,24 @@ public final class ClientConfig implements IClientConfig {
 	private final ConfigValue<Boolean> ingredientsSummaryEnabled;
 
 	// advanced
-	private final Supplier<Boolean> lowMemorySlowSearchEnabled;
-	private final Supplier<Boolean> catchRenderErrorsEnabled;
-	private final Supplier<Boolean> lookupFluidContentsEnabled;
-	private final Supplier<Boolean> lookupBlockTagsEnabled;
-	private final Supplier<Boolean> showTagRecipesEnabled;
-	private final Supplier<Boolean> showCreativeTabNamesEnabled;
+	private final ConfigValue<Boolean> lowMemorySlowSearchEnabled;
+	private final ConfigValue<Boolean> catchRenderErrorsEnabled;
+	private final ConfigValue<Boolean> lookupFluidContentsEnabled;
+	private final ConfigValue<Boolean> lookupBlockTagsEnabled;
+	private final ConfigValue<Boolean> showTagRecipesEnabled;
+	private final ConfigValue<Boolean> showCreativeTabNamesEnabled;
 
 	// input
-	private final Supplier<Integer> dragDelayMs;
-	private final Supplier<Integer> smoothScrollRate;
+	private final ConfigValue<Integer> dragDelayMs;
+	private final ConfigValue<Integer> smoothScrollRate;
 
 	// sorting
-	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
+	private final ConfigValue<List<IngredientSortStage>> ingredientSorterStages;
 	private final ConfigValue<List<RecipeSorterStage>> recipeSorterStages;
 
 	// tags
-	private final Supplier<Boolean> tagContentTooltipEnabled;
-	private final Supplier<Boolean> hideSingleTagContentTooltipEnabled;
+	private final ConfigValue<Boolean> tagContentTooltipEnabled;
+	private final ConfigValue<Boolean> hideSingleTagContentTooltipEnabled;
 
 	public ClientConfig(IConfigSchemaBuilder schema) {
 		instance = this;
@@ -70,7 +66,7 @@ public final class ClientConfig implements IClientConfig {
 		boolean isDev = Services.PLATFORM.getModHelper().isInDev();
 
 		IConfigCategoryBuilder appearance = schema.addCategory("appearance");
-		centerSearchBarEnabled = appearance.addBoolean("centerSearch",			defaultCenterSearchBar		);
+		centerSearchBarEnabled = appearance.addBoolean("centerSearch", defaultCenterSearchBar);
 		maxRecipeGuiHeight = appearance.addInteger(
 			"recipeGuiHeight",
 			defaultRecipeGuiHeight,
@@ -171,172 +167,137 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Override
-	public boolean isCenterSearchBarEnabled() {
-		return centerSearchBarEnabled.get();
+	public ConfigValue<Boolean> centerSearchBarEnabled() {
+		return centerSearchBarEnabled;
 	}
 
 	@Override
-	public boolean isLowMemorySlowSearchEnabled() {
-		return lowMemorySlowSearchEnabled.get();
+	public ConfigValue<Integer> maxRecipeGuiHeight() {
+		return maxRecipeGuiHeight;
 	}
 
 	@Override
-	public boolean isCatchRenderErrorsEnabled() {
-		return catchRenderErrorsEnabled.get();
+	public ConfigValue<Boolean> toastReflowEnabled() {
+		return toastReflowEnabled;
 	}
 
 	@Override
-	public boolean isCheatToHotbarUsingHotkeysEnabled() {
-		return cheatToHotbarUsingHotkeysEnabled.get();
+	public ConfigValue<GiveMode> giveMode() {
+		return giveMode;
 	}
 
 	@Override
-	public boolean isAddingBookmarksToFrontEnabled() {
-		return addBookmarksToFrontEnabled.get();
+	public ConfigValue<Boolean> cheatToHotbarUsingHotkeysEnabled() {
+		return cheatToHotbarUsingHotkeysEnabled;
 	}
 
 	@Override
-	public boolean isLookupFluidContentsEnabled() {
-		return lookupFluidContentsEnabled.get();
+	public ConfigValue<Boolean> showHiddenIngredients() {
+		return showHiddenIngredients;
 	}
 
 	@Override
-	public boolean isLookupBlockTagsEnabled() {
-		return lookupBlockTagsEnabled.get();
+	public ConfigValue<Boolean> showTagRecipesEnabled() {
+		return showTagRecipesEnabled;
 	}
 
 	@Override
-	public GiveMode getGiveMode() {
-		return giveMode.get();
+	public ConfigValue<Boolean> addBookmarksToFrontEnabled() {
+		return addBookmarksToFrontEnabled;
 	}
 
 	@Override
-	public boolean getShowHiddenIngredients() {
-		return showHiddenIngredients.get();
+	public ConfigValue<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures() {
+		return bookmarkTooltipFeatures;
 	}
 
 	@Override
-	public List<BookmarkTooltipFeature> getBookmarkTooltipFeatures() {
-		return bookmarkTooltipFeatures.get();
+	public ConfigValue<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled() {
+		return holdShiftToShowBookmarkTooltipFeaturesEnabled;
 	}
 
 	@Override
-	public boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled() {
-		return holdShiftToShowBookmarkTooltipFeaturesEnabled.get();
+	public ConfigValue<Boolean> dragToRearrangeBookmarksEnabled() {
+		return dragToRearrangeBookmarksEnabled;
 	}
 
 	@Override
-	public boolean isDragToRearrangeBookmarksEnabled() {
-		return dragToRearrangeBookmarksEnabled.get();
+	public ConfigValue<Boolean> lookupHistoryEnabled() {
+		return lookupHistoryEnabled;
 	}
 
 	@Override
-	public boolean isLookupHistoryEnabled() {
-		return lookupHistoryEnabled.get();
+	public ConfigValue<Integer> maxLookupHistoryRows() {
+		return maxLookupHistoryRows;
 	}
 
 	@Override
-	public void setLookupHistoryEnabled(boolean enabled) {
-		lookupHistoryEnabled.set(enabled);
+	public ConfigValue<Integer> maxLookupHistoryIngredients() {
+		return maxLookupHistoryIngredients;
 	}
 
 	@Override
-	public void addLookupHistoryEnabledListener(IConfigListener<Boolean> listener) {
-		lookupHistoryEnabled.addListener(listener);
+	public ConfigValue<HistoryDisplaySide> lookupHistoryDisplaySide() {
+		return lookupHistoryDisplaySide;
 	}
 
 	@Override
-	public int getMaxLookupHistoryRows() {
-		return maxLookupHistoryRows.get();
+	public ConfigValue<Boolean> ingredientsSummaryEnabled() {
+		return ingredientsSummaryEnabled;
 	}
 
 	@Override
-	public int getMaxLookupHistoryIngredients() {
-		return maxLookupHistoryIngredients.get();
+	public ConfigValue<Boolean> lowMemorySlowSearchEnabled() {
+		return lowMemorySlowSearchEnabled;
 	}
 
 	@Override
-	public HistoryDisplaySide getLookupHistoryDisplaySide() {
-		return lookupHistoryDisplaySide.get();
+	public ConfigValue<Boolean> catchRenderErrorsEnabled() {
+		return catchRenderErrorsEnabled;
 	}
 
 	@Override
-	public void addLookupHistoryDisplaySideListener(IConfigListener<HistoryDisplaySide> listener) {
-		lookupHistoryDisplaySide.addListener(listener);
+	public ConfigValue<Boolean> lookupFluidContentsEnabled() {
+		return lookupFluidContentsEnabled;
 	}
 
 	@Override
-	public boolean isIngredientsSummaryEnabled() {
-		return ingredientsSummaryEnabled.get();
+	public ConfigValue<Boolean> lookupBlockTagsEnabled() {
+		return lookupBlockTagsEnabled;
 	}
 
 	@Override
-	public int getDragDelayMs() {
-		return dragDelayMs.get();
+	public ConfigValue<Boolean> showCreativeTabNamesEnabled() {
+		return showCreativeTabNamesEnabled;
 	}
 
 	@Override
-	public int getSmoothScrollRate() {
-		return smoothScrollRate.get();
+	public ConfigValue<Integer> dragDelayMs() {
+		return dragDelayMs;
 	}
 
 	@Override
-	public int getMaxRecipeGuiHeight() {
-		return maxRecipeGuiHeight.get();
+	public ConfigValue<Integer> smoothScrollRate() {
+		return smoothScrollRate;
 	}
 
 	@Override
-	public List<IngredientSortStage> getIngredientSorterStages() {
-		return ingredientSorterStages.get();
+	public ConfigValue<List<IngredientSortStage>> ingredientSorterStages() {
+		return ingredientSorterStages;
 	}
 
 	@Override
-	public Set<RecipeSorterStage> getRecipeSorterStages() {
-		return Set.copyOf(recipeSorterStages.getValue());
+	public ConfigValue<List<RecipeSorterStage>> recipeSorterStages() {
+		return recipeSorterStages;
 	}
 
 	@Override
-	public void enableRecipeSorterStage(RecipeSorterStage stage) {
-		List<RecipeSorterStage> recipeSorterStages = this.recipeSorterStages.get();
-		if (!recipeSorterStages.contains(stage)) {
-			recipeSorterStages = new ArrayList<>(recipeSorterStages);
-			recipeSorterStages.add(stage);
-			this.recipeSorterStages.set(recipeSorterStages);
-		}
+	public ConfigValue<Boolean> tagContentTooltipEnabled() {
+		return tagContentTooltipEnabled;
 	}
 
 	@Override
-	public void disableRecipeSorterStage(RecipeSorterStage stage) {
-		List<RecipeSorterStage> recipeSorterStages = this.recipeSorterStages.get();
-		if (recipeSorterStages.contains(stage)) {
-			recipeSorterStages = new ArrayList<>(recipeSorterStages);
-			recipeSorterStages.remove(stage);
-			this.recipeSorterStages.set(recipeSorterStages);
-		}
-	}
-
-	@Override
-	public boolean isTagContentTooltipEnabled() {
-		return tagContentTooltipEnabled.get();
-	}
-
-	@Override
-	public boolean getHideSingleTagContentTooltipEnabled() {
-		return hideSingleTagContentTooltipEnabled.get();
-	}
-
-	@Override
-	public boolean isShowTagRecipesEnabled() {
-		return showTagRecipesEnabled.get();
-	}
-
-	@Override
-	public boolean isShowCreativeTabNamesEnabled() {
-		return showCreativeTabNamesEnabled.get();
-	}
-
-	@Override
-	public boolean isToastReflowEnabled() {
-		return toastReflowEnabled.get();
+	public ConfigValue<Boolean> hideSingleTagContentTooltipEnabled() {
+		return hideSingleTagContentTooltipEnabled;
 	}
 }

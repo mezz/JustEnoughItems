@@ -232,7 +232,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		}
 
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		if (clientConfig.getHideSingleTagContentTooltipEnabled() && ingredients.size() == 1) {
+		if (clientConfig.hideSingleTagContentTooltipEnabled().getValue() && ingredients.size() == 1) {
 			return;
 		}
 
@@ -253,7 +253,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	private <T> void addIngredientsToTooltip(ITooltipBuilder tooltip, ITypedIngredient<T> displayed) {
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		if (clientConfig.isTagContentTooltipEnabled()) {
+		if (clientConfig.tagContentTooltipEnabled().getValue()) {
 			IIngredientType<T> type = displayed.getType();
 
 			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();

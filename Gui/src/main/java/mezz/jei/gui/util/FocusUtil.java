@@ -30,7 +30,7 @@ public class FocusUtil {
 		List<ITypedIngredient<?>> ingredients = new ArrayList<>();
 		ingredients.add(ingredient);
 
-		if (clientConfig.isLookupFluidContentsEnabled()) {
+		if (clientConfig.lookupFluidContentsEnabled().getValue()) {
 			IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
 			getContainedFluid(fluidHelper, ingredient)
 				.ifPresent(ingredients::add);

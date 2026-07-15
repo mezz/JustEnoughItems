@@ -6,6 +6,7 @@ import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.filter.IFilterTextSource;
@@ -41,6 +42,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IClientToggleState toggleState;
 	private final GuiTextFieldFilter searchField;
 	private final IngredientListOverlayController controller;
+	private boolean screenPropertiesDirty;
 
 	public IngredientListOverlay(
 		IIngredientGridSource ingredientGridSource,
@@ -48,6 +50,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IScreenHelper screenHelper,
 		IIngredientListOverlayContents contents,
 		LookupHistoryOverlay lookupHistoryOverlay,
+		IIngredientGridConfig ingredientGridConfig,
 		IClientConfig clientConfig,
 		IClientToggleState toggleState,
 		IInternalKeyMappings keyBindings
@@ -77,20 +80,42 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.controller.init();
 		this.searchField.setResponder(filterTextSource::setFilterText);
 
-		ingredientGridSource.addSourceListChangedListener(() -> {
-			Minecraft minecraft = Minecraft.getInstance();
-			getScreenPropertiesUpdater()
-				.updateScreen(minecraft.screen)
-				.forceUpdate();
-		});
+		ingredientGridSource.addSourceListChangedListener(this::markScreenPropertiesDirty);
 
-		clientConfig.addLookupHistoryEnabledListener(v -> this.controller.updateScreenProperties());
-		clientConfig.addLookupHistoryDisplaySideListener(v -> this.controller.updateScreenProperties());
+		clientConfig.centerSearchBarEnabled().addListener(v -> markScreenPropertiesDirty());
+		clientConfig.lookupHistoryEnabled().addListener(v -> markScreenPropertiesDirty());
+		clientConfig.maxLookupHistoryRows().addListener(v -> markScreenPropertiesDirty());
+		clientConfig.lookupHistoryDisplaySide().addListener(v -> markScreenPropertiesDirty());
+		addGridConfigListeners(ingredientGridConfig);
 	}
 
 	@Override
 	public boolean isListDisplayed() {
+		updateScreenPropertiesIfDirty();
 		return this.controller.isListDisplayed();
+	}
+
+	private void markScreenPropertiesDirty() {
+		this.screenPropertiesDirty = true;
+	}
+
+	private void addGridConfigListeners(IIngredientGridConfig gridConfig) {
+		gridConfig.maxColumns().addListener(v -> markScreenPropertiesDirty());
+		gridConfig.maxRows().addListener(v -> markScreenPropertiesDirty());
+		gridConfig.drawBackground().addListener(v -> markScreenPropertiesDirty());
+		gridConfig.horizontalAlignment().addListener(v -> markScreenPropertiesDirty());
+		gridConfig.verticalAlignment().addListener(v -> markScreenPropertiesDirty());
+		gridConfig.buttonNavigationVisibility().addListener(v -> markScreenPropertiesDirty());
+	}
+
+	private void updateScreenPropertiesIfDirty() {
+		if (this.screenPropertiesDirty) {
+			this.screenPropertiesDirty = false;
+			Minecraft minecraft = Minecraft.getInstance();
+			getScreenPropertiesUpdater()
+				.updateScreen(minecraft.screen)
+				.forceUpdate();
+		}
 	}
 
 	public IScreenPropertiesUpdater getScreenPropertiesUpdater() {
@@ -98,6 +123,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	public void drawScreen(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		updateScreenPropertiesIfDirty();
 		if (isListDisplayed()) {
 			this.searchField.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
@@ -112,6 +138,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		updateScreenPropertiesIfDirty();
 		if (isListDisplayed()) {
 			this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		}
@@ -124,6 +151,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		updateScreenPropertiesIfDirty();
 		if (isListDisplayed()) {
 			this.contents.drawOnForeground(guiGraphics, mouseX, mouseY);
 		}
@@ -132,6 +160,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		updateScreenPropertiesIfDirty();
 		if (isListDisplayed()) {
 			return Stream.concat(this.contents.getIngredientUnderMouse(mouseX, mouseY), this.lookupHistoryOverlay.getIngredientUnderMouse(mouseX, mouseY));
 		}
@@ -143,6 +172,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		updateScreenPropertiesIfDirty();
 		if (isListDisplayed()) {
 			return Stream.concat(this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY), this.lookupHistoryOverlay.getDraggableIngredientUnderMouse(mouseX, mouseY));
 		}
@@ -227,6 +257,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	@Override
 	public <T> List<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
+		updateScreenPropertiesIfDirty();
 		if (isListDisplayed()) {
 			return this.contents.getVisibleIngredients(ingredientType)
 				.toList();

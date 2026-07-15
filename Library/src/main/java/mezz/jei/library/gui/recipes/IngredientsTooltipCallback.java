@@ -22,7 +22,7 @@ public class IngredientsTooltipCallback implements IRecipeSlotRichTooltipCallbac
 
 	@Override
 	public void onRichTooltip(IRecipeSlotView recipeSlotView, ITooltipBuilder tooltip) {
-		if (Internal.getJeiClientConfigs().getClientConfig().isIngredientsSummaryEnabled()) {
+		if (Internal.getJeiClientConfigs().getClientConfig().ingredientsSummaryEnabled().getValue()) {
 			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutSupplier.get();
 			if (recipeLayout != null) {
 				tooltip.add(Component.translatable("jei.tooltip.recipe.tooltips.craft.ingredients").withStyle(ChatFormatting.GRAY));

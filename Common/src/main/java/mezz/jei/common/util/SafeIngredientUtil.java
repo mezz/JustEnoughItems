@@ -183,7 +183,7 @@ public final class SafeIngredientUtil {
 	private static boolean shouldCatchRenderErrors() {
 		return Internal.getOptionalJeiClientConfigs()
 			.map(IJeiClientConfigs::getClientConfig)
-			.map(IClientConfig::isCatchRenderErrorsEnabled)
+			.map(clientConfig -> clientConfig.catchRenderErrorsEnabled().getValue())
 			.orElse(false);
 	}
 

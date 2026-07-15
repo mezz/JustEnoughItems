@@ -85,7 +85,7 @@ public class ScrollBoxRecipeWidget extends AbstractScrollWidget implements IScro
 	protected float calculateScrollAmount(double scrollDeltaY) {
 		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-		int smoothScrollRate = clientConfig.getSmoothScrollRate();
+		int smoothScrollRate = clientConfig.smoothScrollRate().getValue();
 
 		int totalHeight = contents.getHeight();
 		double scrollAmount = scrollDeltaY * smoothScrollRate;

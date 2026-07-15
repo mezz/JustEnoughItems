@@ -46,22 +46,22 @@ public class ElementPrefixParser {
 
 		addPrefix(new PrefixInfo<>(
 			'@',
-			config::getModNameSearchMode,
+			config.modNameSearchMode()::getValue,
 			info -> {
 				Set<String> modNames = new HashSet<>(info.getModNames());
 
-				if (config.getSearchModIds()) {
+				if (config.searchModIds().getValue()) {
 					modNames.addAll(info.getModIds());
 				}
 
-				if (config.getSearchModAliases()) {
+				if (config.searchModAliases().getValue()) {
 					for (String modId : info.getModIds()) {
 						Set<String> modAliases = modIdHelper.getModAliases(modId);
 						modNames.addAll(modAliases);
 					}
 				}
 
-				if (config.getSearchShortModNames()) {
+				if (config.searchShortModNames().getValue()) {
 					for (String modName : info.getModNames()) {
 						List<String> shortModNames = getShortModNames(modName);
 						modNames.addAll(shortModNames);
@@ -81,25 +81,25 @@ public class ElementPrefixParser {
 		));
 		addPrefix(new PrefixInfo<>(
 			'#',
-			config::getTagSearchMode,
+			config.tagSearchMode()::getValue,
 			e -> e.getTagStrings(ingredientManager),
 			() -> new LimitedStringStorage<>(searchStorageFactory)
 		));
 		addPrefix(new PrefixInfo<>(
 			'$',
-			config::getTooltipSearchMode,
+			config.tooltipSearchMode()::getValue,
 			e -> e.getTooltipStrings(config, ingredientManager),
 			searchStorageFactory::createSearchStorage
 		));
 		addPrefix(new PrefixInfo<>(
 			'%',
-			config::getCreativeTabSearchMode,
+			config.creativeTabSearchMode()::getValue,
 			e -> e.getCreativeTabsStrings(ingredientManager),
 			() -> new LimitedStringStorage<>(searchStorageFactory)
 		));
 		addPrefix(new PrefixInfo<>(
 			'^',
-			config::getColorSearchMode,
+			config.colorSearchMode()::getValue,
 			e -> {
 				Iterable<Integer> colors = e.getColors(ingredientManager);
 				return StreamSupport.stream(colors.spliterator(), false)
@@ -112,7 +112,7 @@ public class ElementPrefixParser {
 		));
 		addPrefix(new PrefixInfo<>(
 			'&',
-			config::getResourceLocationSearchMode,
+			config.resourceLocationSearchMode()::getValue,
 			element -> List.of(element.getResourceLocation().toString()),
 			searchStorageFactory::createSearchStorage
 		));

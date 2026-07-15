@@ -59,17 +59,17 @@ class IngredientListOverlayController {
 		return new Config() {
 			@Override
 			public boolean isCenterSearchBarEnabled() {
-				return clientConfig.isCenterSearchBarEnabled();
+				return clientConfig.centerSearchBarEnabled().getValue();
 			}
 
 			@Override
 			public boolean isLookupHistoryEnabled() {
-				return clientConfig.isLookupHistoryEnabled();
+				return clientConfig.lookupHistoryEnabled().getValue();
 			}
 
 			@Override
 			public int getMaxLookupHistoryRows() {
-				return clientConfig.getMaxLookupHistoryRows();
+				return clientConfig.maxLookupHistoryRows().getValue();
 			}
 		};
 	}
@@ -116,10 +116,6 @@ class IngredientListOverlayController {
 
 	IScreenPropertiesUpdater getScreenPropertiesUpdater() {
 		return this.guiPropertiesCache.createUpdater(this::onGuiPropertiesChanged);
-	}
-
-	void updateScreenProperties() {
-		onGuiPropertiesChanged();
 	}
 
 	private void onFilterTextChanged(String oldFilterText, String newFilterText) {

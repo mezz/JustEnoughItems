@@ -53,6 +53,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	private final HistoryDisplaySide ownerDisplaySide;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private int rows;
+	private boolean layoutDirty = true;
 
 	public LookupHistoryOverlay(
 			IIngredientManager ingredientManager,
@@ -82,18 +83,19 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, screenHelper, ingredientManager, toggleState);
 		this.ownerDisplaySide = ownerDisplaySide;
-		lookupHistory.addSourceListChangedListener(this::updateLayout);
+		lookupHistory.addSourceListChangedListener(this::markLayoutDirty);
 	}
 
 	public boolean isListDisplayed() {
-		return clientConfig.isLookupHistoryEnabled() &&
+		updateLayoutIfDirty();
+		return clientConfig.lookupHistoryEnabled().getValue() &&
 				isDisplayedOnThisSide() &&
 				contents.hasRoom();
 	}
 
 	@Override
 	public boolean isDisplayedOnThisSide() {
-		return ownerDisplaySide.equals(clientConfig.getLookupHistoryDisplaySide());
+		return ownerDisplaySide.equals(clientConfig.lookupHistoryDisplaySide().getValue());
 	}
 
 	public IIngredientGridSource getLookupHistory() {
@@ -104,13 +106,24 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
 		this.contents.updateBounds(availableArea, guiExclusionAreas, mouseExclusionPoint);
 		int rows = this.contents.getArea().getHeight() / SLOT_HEIGHT;
-		this.rows = Math.min(rows, clientConfig.getMaxLookupHistoryRows());
+		this.rows = Math.min(rows, clientConfig.maxLookupHistoryRows().getValue());
 	}
 
 	@Override
 	public void updateLayout() {
 		List<IElement<?>> ingredientList = lookupHistory.getElements();
 		this.contents.set(0, ingredientList);
+		this.layoutDirty = false;
+	}
+
+	private void markLayoutDirty() {
+		this.layoutDirty = true;
+	}
+
+	private void updateLayoutIfDirty() {
+		if (this.layoutDirty) {
+			updateLayout();
+		}
 	}
 
 	private void drawLine(PoseStack poseStack, int x1, int x2, int y, int argbColor) {
@@ -151,6 +164,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	}
 
 	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		updateLayoutIfDirty();
 		if (isListDisplayed()) {
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY);
 			ImmutableRect2i area = this.contents.getArea();
@@ -162,6 +176,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	}
 
 	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		updateLayoutIfDirty();
 		if (isListDisplayed()) {
 			this.ghostIngredientDragManager.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 			this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
@@ -178,6 +193,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	}
 
 	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		updateLayoutIfDirty();
 		if (isListDisplayed()) {
 			this.ghostIngredientDragManager.drawOnForeground(guiGraphics, mouseX, mouseY);
 		}
@@ -185,6 +201,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		updateLayoutIfDirty();
 		if (isListDisplayed()) {
 			return contents.getIngredientUnderMouse(mouseX, mouseY);
 		}
@@ -193,6 +210,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		updateLayoutIfDirty();
 		if (isListDisplayed()) {
 			return contents.getDraggableIngredientUnderMouse(mouseX, mouseY);
 		}

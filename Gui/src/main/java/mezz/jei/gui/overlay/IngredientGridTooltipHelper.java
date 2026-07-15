@@ -48,11 +48,11 @@ public final class IngredientGridTooltipHelper {
 	) {
 		SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
 
-		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {
+		if (ingredientFilterConfig.colorSearchMode().getValue() != SearchMode.DISABLED) {
 			addColorSearchInfoToTooltip(tooltip, typedIngredient, ingredientHelper);
 		}
 
-		if (ingredientFilterConfig.getSearchIngredientAliases()) {
+		if (ingredientFilterConfig.searchIngredientAliases().getValue()) {
 			addIngredientAliasesToTooltip(tooltip, typedIngredient, ingredientManager);
 		}
 

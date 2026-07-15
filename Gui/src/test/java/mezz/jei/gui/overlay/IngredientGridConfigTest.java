@@ -3,6 +3,10 @@ package mezz.jei.gui.overlay;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.file.ConfigValue;
+import mezz.jei.common.config.file.serializers.BooleanSerializer;
+import mezz.jei.common.config.file.serializers.EnumSerializer;
+import mezz.jei.common.config.file.serializers.IntegerSerializer;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
@@ -670,17 +674,17 @@ public class IngredientGridConfigTest {
 	}
 
 	private static class TestGridConfig implements IIngredientGridConfig {
-		private int maxColumns = 9;
+		private final ConfigValue<Integer> maxColumns = integerValue("maxColumns", 9);
+		private final ConfigValue<Integer> maxRows = integerValue("maxRows", 6);
+		private final ConfigValue<Boolean> drawBackground = booleanValue("drawBackground", true);
+		private final ConfigValue<HorizontalAlignment> horizontalAlignment = enumValue("horizontalAlignment", HorizontalAlignment.LEFT, HorizontalAlignment.class);
+		private final ConfigValue<VerticalAlignment> verticalAlignment = enumValue("verticalAlignment", VerticalAlignment.TOP, VerticalAlignment.class);
+		private final ConfigValue<NavigationVisibility> buttonNavigationVisibility = enumValue("buttonNavigationVisibility", NavigationVisibility.AUTO_HIDE, NavigationVisibility.class);
 		private int minColumns = 1;
-		private int maxRows = 6;
 		private int minRows = 1;
-		private boolean drawBackground = true;
-		private HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
-		private VerticalAlignment verticalAlignment = VerticalAlignment.TOP;
-		private NavigationVisibility buttonNavigationVisibility = NavigationVisibility.AUTO_HIDE;
 
 		public TestGridConfig maxColumns(int maxColumns) {
-			this.maxColumns = maxColumns;
+			this.maxColumns.set(maxColumns);
 			return this;
 		}
 
@@ -690,7 +694,7 @@ public class IngredientGridConfigTest {
 		}
 
 		public TestGridConfig maxRows(int maxRows) {
-			this.maxRows = maxRows;
+			this.maxRows.set(maxRows);
 			return this;
 		}
 
@@ -700,27 +704,27 @@ public class IngredientGridConfigTest {
 		}
 
 		public TestGridConfig drawBackground(boolean drawBackground) {
-			this.drawBackground = drawBackground;
+			this.drawBackground.set(drawBackground);
 			return this;
 		}
 
 		public TestGridConfig horizontalAlignment(HorizontalAlignment horizontalAlignment) {
-			this.horizontalAlignment = horizontalAlignment;
+			this.horizontalAlignment.set(horizontalAlignment);
 			return this;
 		}
 
 		public TestGridConfig verticalAlignment(VerticalAlignment verticalAlignment) {
-			this.verticalAlignment = verticalAlignment;
+			this.verticalAlignment.set(verticalAlignment);
 			return this;
 		}
 
 		public TestGridConfig buttonNavigationVisibility(NavigationVisibility buttonNavigationVisibility) {
-			this.buttonNavigationVisibility = buttonNavigationVisibility;
+			this.buttonNavigationVisibility.set(buttonNavigationVisibility);
 			return this;
 		}
 
 		@Override
-		public int getMaxColumns() {
+		public ConfigValue<Integer> maxColumns() {
 			return maxColumns;
 		}
 
@@ -730,7 +734,7 @@ public class IngredientGridConfigTest {
 		}
 
 		@Override
-		public int getMaxRows() {
+		public ConfigValue<Integer> maxRows() {
 			return maxRows;
 		}
 
@@ -740,23 +744,50 @@ public class IngredientGridConfigTest {
 		}
 
 		@Override
-		public boolean drawBackground() {
+		public ConfigValue<Boolean> drawBackground() {
 			return drawBackground;
 		}
 
 		@Override
-		public HorizontalAlignment getHorizontalAlignment() {
+		public ConfigValue<HorizontalAlignment> horizontalAlignment() {
 			return horizontalAlignment;
 		}
 
 		@Override
-		public VerticalAlignment getVerticalAlignment() {
+		public ConfigValue<VerticalAlignment> verticalAlignment() {
 			return verticalAlignment;
 		}
 
 		@Override
-		public NavigationVisibility getButtonNavigationVisibility() {
+		public ConfigValue<NavigationVisibility> buttonNavigationVisibility() {
 			return buttonNavigationVisibility;
+		}
+
+		private static ConfigValue<Integer> integerValue(String name, int defaultValue) {
+			return new ConfigValue<>(
+				"jei.config.test",
+				name,
+				defaultValue,
+				new IntegerSerializer(Integer.MIN_VALUE, Integer.MAX_VALUE)
+			);
+		}
+
+		private static ConfigValue<Boolean> booleanValue(String name, boolean defaultValue) {
+			return new ConfigValue<>(
+				"jei.config.test",
+				name,
+				defaultValue,
+				BooleanSerializer.INSTANCE
+			);
+		}
+
+		private static <T extends Enum<T>> ConfigValue<T> enumValue(String name, T defaultValue, Class<T> enumClass) {
+			return new ConfigValue<>(
+				"jei.config.test",
+				name,
+				defaultValue,
+				new EnumSerializer<>(enumClass)
+			);
 		}
 	}
 }

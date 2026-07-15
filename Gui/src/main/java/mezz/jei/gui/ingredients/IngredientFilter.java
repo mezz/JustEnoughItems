@@ -33,6 +33,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -53,6 +54,7 @@ public class IngredientFilter implements
 	private final Comparator<IListElement<?>> ingredientComparator;
 	private final IModIdHelper modIdHelper;
 	private final IIngredientVisibility ingredientVisibility;
+	private final Function<List<IListElementInfo<?>>, Comparator<IListElement<?>>> sortIndexUpdater;
 
 	private final ElementPrefixParser elementPrefixParser;
 	private IElementSearch elementSearch;
@@ -60,13 +62,15 @@ public class IngredientFilter implements
 	@Nullable
 	private List<IElement<?>> ingredientListCached;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
+	private boolean searchIndexDirty;
+	private boolean sortIndexesDirty;
 
 	public IngredientFilter(
 		IFilterTextSource filterTextSource,
 		IClientConfig clientConfig,
 		IIngredientFilterConfig config,
 		IIngredientManager ingredientManager,
-		Comparator<IListElement<?>> ingredientComparator,
+		Function<List<IListElementInfo<?>>, Comparator<IListElement<?>>> sortIndexUpdater,
 		List<IListElementInfo<?>> ingredients,
 		IModIdHelper modIdHelper,
 		IIngredientVisibility ingredientVisibility,
@@ -77,12 +81,14 @@ public class IngredientFilter implements
 		this.filterTextSource = filterTextSource;
 		this.clientConfig = clientConfig;
 		this.ingredientManager = ingredientManager;
-		this.ingredientComparator = ingredientComparator;
+		this.ingredientComparator = sortIndexUpdater.apply(ingredients);
 		this.modIdHelper = modIdHelper;
 		this.ingredientVisibility = ingredientVisibility;
+		this.sortIndexUpdater = sortIndexUpdater;
 		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, modIdHelper, searchStorageFactory);
 
 		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser);
+		addConfigListeners(clientConfig, config);
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
 		for (IListElementInfo<?> ingredient : ingredients) {
@@ -101,8 +107,25 @@ public class IngredientFilter implements
 		clientToggleState.addEditModeToggleListener(this);
 	}
 
+	private void addConfigListeners(IClientConfig clientConfig, IIngredientFilterConfig config) {
+		clientConfig.lowMemorySlowSearchEnabled().addListener(v -> markSearchIndexDirty());
+		clientConfig.ingredientSorterStages().addListener(v -> markSortIndexesDirty());
+
+		config.modNameSearchMode().addListener(v -> markSearchIndexDirty());
+		config.tooltipSearchMode().addListener(v -> markSearchIndexDirty());
+		config.tagSearchMode().addListener(v -> markSearchIndexDirty());
+		config.colorSearchMode().addListener(v -> markSearchIndexDirty());
+		config.resourceLocationSearchMode().addListener(v -> markSearchIndexDirty());
+		config.creativeTabSearchMode().addListener(v -> markSearchIndexDirty());
+		config.searchAdvancedTooltips().addListener(v -> markSearchIndexDirty());
+		config.searchModIds().addListener(v -> markSearchIndexDirty());
+		config.searchModAliases().addListener(v -> markSearchIndexDirty());
+		config.searchIngredientAliases().addListener(v -> markSearchIndexDirty());
+		config.searchShortModNames().addListener(v -> markSearchIndexDirty());
+	}
+
 	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser) {
-		if (clientConfig.isLowMemorySlowSearchEnabled()) {
+		if (clientConfig.lowMemorySlowSearchEnabled().getValue()) {
 			return new ElementSearchLowMem(elementPrefixParser.getNoPrefix());
 		} else {
 			return new ElementSearch(elementPrefixParser);
@@ -127,7 +150,36 @@ public class IngredientFilter implements
 		Collection<IListElement<?>> ingredients = this.elementSearch.getAllIngredients();
 		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser);
 		List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, modIdHelper);
+		this.sortIndexUpdater.apply(elementInfos);
 		this.elementSearch.addAll(elementInfos, ingredientManager);
+		this.searchIndexDirty = false;
+		this.sortIndexesDirty = false;
+	}
+
+	private void markSearchIndexDirty() {
+		this.searchIndexDirty = true;
+		notifyListenersOfChange();
+	}
+
+	private void markSortIndexesDirty() {
+		this.sortIndexesDirty = true;
+		notifyListenersOfChange();
+	}
+
+	private void updateDirtyState() {
+		if (searchIndexDirty) {
+			rebuildItemFilter();
+		}
+		if (sortIndexesDirty) {
+			List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(
+				ingredientManager,
+				this.elementSearch.getAllIngredients(),
+				modIdHelper
+			);
+			this.sortIndexUpdater.apply(elementInfos);
+			this.sortIndexesDirty = false;
+			invalidateCache();
+		}
 	}
 
 	@Override
@@ -188,6 +240,7 @@ public class IngredientFilter implements
 
 	@Override
 	public List<IElement<?>> getElements() {
+		updateDirtyState();
 		String filterText = this.filterTextSource.getFilterText();
 		filterText = filterText.toLowerCase();
 		if (ingredientListCached == null) {

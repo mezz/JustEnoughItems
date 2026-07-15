@@ -209,7 +209,7 @@ class IngredientGridWithNavigationController implements IPaged, IUserInputHandle
 	 * Sets the stack in a hotbar slot to the one that's hovered over.
 	 */
 	private Optional<IUserInputHandler> checkHotbarKeys(Screen screen, UserInput input) {
-		if (!clientConfig.isCheatToHotbarUsingHotkeysEnabled() ||
+		if (!clientConfig.cheatToHotbarUsingHotkeysEnabled().getValue() ||
 			!this.toggleState.isCheatItemsEnabled() ||
 			screen instanceof RecipesGui
 		) {

@@ -68,6 +68,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 
 public class JeiGuiStarter {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -121,20 +122,21 @@ public class JeiGuiStarter {
 		IIngredientGridConfig bookmarkListConfig = jeiClientConfigs.getBookmarkListConfig();
 		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
 
-		Comparator<IListElement<?>> ingredientComparator = IngredientSorter.sortIngredients(
-			clientConfig,
-			modNameSortingConfig,
-			ingredientTypeSortingConfig,
-			ingredientManager,
-			ingredientList
-		);
+		Function<List<IListElementInfo<?>>, Comparator<IListElement<?>>> sortIndexUpdater =
+			ingredients -> IngredientSorter.sortIngredients(
+				clientConfig,
+				modNameSortingConfig,
+				ingredientTypeSortingConfig,
+				ingredientManager,
+				ingredients
+			);
 
 		IngredientFilter ingredientFilter = new IngredientFilter(
 			filterTextSource,
 			clientConfig,
 			ingredientFilterConfig,
 			ingredientManager,
-			ingredientComparator,
+			sortIndexUpdater,
 			ingredientList,
 			modIdHelper,
 			ingredientVisibility,
@@ -157,7 +159,7 @@ public class JeiGuiStarter {
 			ingredientManager,
 			registryAccess,
 			codecHelper,
-			clientConfig::getMaxLookupHistoryIngredients,
+			clientConfig.maxLookupHistoryIngredients(),
 			lookupHistoryConfig,
 			bookmarkCodec
 		);

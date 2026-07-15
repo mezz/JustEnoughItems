@@ -45,8 +45,13 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	private ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i slotBackgroundArea = ImmutableRect2i.EMPTY;
+	@Nullable
+	private ImmutableRect2i availableArea;
 	private Set<ImmutableRect2i> guiExclusionAreas = Set.of();
+	@Nullable
+	private ImmutablePoint2i mouseExclusionPoint;
 	private boolean active;
+	private boolean layoutDirty;
 
 	public IngredientGridWithNavigation(
 		String debugName,
@@ -88,19 +93,34 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 			this.navigation.createInputHandler()
 		);
 
-		this.ingredientSource.addSourceListChangedListener(() -> {
-			if (isActive()) {
-				updateLayoutKeepingPageAnchorVisible(getPageAnchorElement());
-			}
-		});
+		this.ingredientSource.addSourceListChangedListener(this::markLayoutDirty);
+		addGridConfigListeners(gridConfig);
 	}
 
-	private boolean isActive() {
-		return active;
+	private void addGridConfigListeners(IIngredientGridConfig gridConfig) {
+		gridConfig.maxColumns().addListener(v -> markLayoutDirty());
+		gridConfig.maxRows().addListener(v -> markLayoutDirty());
+		gridConfig.drawBackground().addListener(v -> markLayoutDirty());
+		gridConfig.horizontalAlignment().addListener(v -> markLayoutDirty());
+		gridConfig.verticalAlignment().addListener(v -> markLayoutDirty());
+		gridConfig.buttonNavigationVisibility().addListener(v -> markLayoutDirty());
+	}
+
+	private void markLayoutDirty() {
+		this.layoutDirty = true;
+	}
+
+	private void updateLayoutIfDirty() {
+		if (this.layoutDirty && this.availableArea != null) {
+			IElement<?> pageAnchorElement = getPageAnchorElement();
+			updateBounds(this.availableArea, this.guiExclusionAreas, this.mouseExclusionPoint);
+			this.controller.updateLayoutKeepingPageAnchorVisible(pageAnchorElement);
+		}
 	}
 
 	@Override
 	public boolean hasRoom() {
+		updateLayoutIfDirty();
 		return this.ingredientGrid.hasRoom();
 	}
 
@@ -121,6 +141,10 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
+		this.availableArea = availableArea;
+		this.guiExclusionAreas = guiExclusionAreas;
+		this.mouseExclusionPoint = mouseExclusionPoint;
+		this.layoutDirty = false;
 		IngredientGridWithNavigationLayout.Layout layout = IngredientGridWithNavigationLayout.calculate(
 			this.gridConfig,
 			availableArea,
@@ -151,18 +175,22 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public ImmutableRect2i getBackgroundArea() {
+		updateLayoutIfDirty();
 		return this.backgroundArea;
 	}
 
 	public ImmutableRect2i getSlotBackgroundArea() {
+		updateLayoutIfDirty();
 		return this.slotBackgroundArea;
 	}
 
 	public ImmutableRect2i getNextPageButtonArea() {
+		updateLayoutIfDirty();
 		return this.navigation.getNextButtonArea();
 	}
 
 	public ImmutableRect2i getBackButtonArea() {
+		updateLayoutIfDirty();
 		return this.navigation.getBackButtonArea();
 	}
 
@@ -172,7 +200,8 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		if (gridConfig.drawBackground()) {
+		updateLayoutIfDirty();
+		if (gridConfig.drawBackground().getValue()) {
 			background.draw(guiGraphics, this.backgroundArea);
 			slotBackground.draw(guiGraphics, this.slotBackgroundArea);
 		}
@@ -183,11 +212,13 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		updateLayoutIfDirty();
 		this.ghostIngredientDragManager.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		this.ingredientGrid.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
+		updateLayoutIfDirty();
 		return this.backgroundArea.contains(mouseX, mouseY) &&
 			this.guiExclusionAreas.stream()
 				.noneMatch(area -> area.contains(mouseX, mouseY));
@@ -200,17 +231,20 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		updateLayoutIfDirty();
 		return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY)
 			.map(this.controller::createPageAnchorIngredient);
 	}
 
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		updateLayoutIfDirty();
 		return this.ingredientGrid.getDraggableIngredientUnderMouse(mouseX, mouseY);
 	}
 
 	@Override
 	public <T> Stream<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
+		updateLayoutIfDirty();
 		return this.ingredientGrid.getVisibleIngredients(ingredientType);
 	}
 
@@ -227,6 +261,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		updateLayoutIfDirty();
 		this.ghostIngredientDragManager.drawOnForeground(guiGraphics, mouseX, mouseY);
 	}
 
@@ -240,6 +275,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	public Stream<IngredientListSlot> getSlots() {
+		updateLayoutIfDirty();
 		return this.ingredientGrid.getSlots();
 	}
 }

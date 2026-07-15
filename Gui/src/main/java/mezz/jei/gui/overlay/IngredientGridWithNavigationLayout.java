@@ -27,7 +27,7 @@ final class IngredientGridWithNavigationLayout {
 		@Nullable ImmutablePoint2i mouseExclusionPoint,
 		int ingredientCount
 	) {
-		return switch (gridConfig.getButtonNavigationVisibility()) {
+		return switch (gridConfig.buttonNavigationVisibility().getValue()) {
 			case ENABLED -> calculateForNavigation(gridConfig, availableArea, guiExclusionAreas, mouseExclusionPoint, true);
 			case DISABLED -> calculateForNavigation(gridConfig, availableArea, guiExclusionAreas, mouseExclusionPoint, false);
 			case AUTO_HIDE -> calculateAutoHide(
@@ -94,7 +94,7 @@ final class IngredientGridWithNavigationLayout {
 		boolean navigationEnabled
 	) {
 		ImmutableRect2i availableGridArea = availableArea.insetBy(BORDER_MARGIN);
-		if (gridConfig.drawBackground()) {
+		if (gridConfig.drawBackground().getValue()) {
 			availableGridArea = availableGridArea
 				.insetBy(BORDER_PADDING + INNER_PADDING);
 		}
@@ -104,7 +104,7 @@ final class IngredientGridWithNavigationLayout {
 		if (!estimatedGridArea.isEmpty()) {
 			ImmutableRect2i slotBackgroundArea = calculateSlotBackgroundArea(estimatedGridArea, gridConfig);
 			ImmutableRect2i estimatedNavigationArea = calculateNavigationArea(slotBackgroundArea, navigationEnabled);
-			if (gridConfig.drawBackground() && !estimatedNavigationArea.isEmpty()) {
+			if (gridConfig.drawBackground().getValue() && !estimatedNavigationArea.isEmpty()) {
 				estimatedNavigationArea = estimatedNavigationArea.expandBy(BORDER_PADDING + INNER_PADDING);
 			}
 
@@ -117,7 +117,7 @@ final class IngredientGridWithNavigationLayout {
 				.insetBy(BORDER_MARGIN)
 				.cropTop(NAVIGATION_HEIGHT + INNER_PADDING);
 
-			if (gridConfig.drawBackground()) {
+			if (gridConfig.drawBackground().getValue()) {
 				availableGridArea = availableGridArea.insetBy(BORDER_PADDING + INNER_PADDING);
 			}
 		}
@@ -150,7 +150,7 @@ final class IngredientGridWithNavigationLayout {
 		ImmutableRect2i slotBackgroundArea = calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
 		ImmutableRect2i navigationArea = calculateNavigationArea(slotBackgroundArea, navigationEnabled);
 		ImmutableRect2i backgroundArea = MathUtil.union(slotBackgroundArea, navigationArea);
-		if (gridConfig.drawBackground()) {
+		if (gridConfig.drawBackground().getValue()) {
 			backgroundArea = backgroundArea.expandBy(BORDER_PADDING);
 		}
 		return new Layout(
@@ -197,7 +197,7 @@ final class IngredientGridWithNavigationLayout {
 	}
 
 	private static ImmutableRect2i calculateSlotBackgroundArea(ImmutableRect2i ingredientGridArea, IIngredientGridConfig gridConfig) {
-		if (gridConfig.drawBackground()) {
+		if (gridConfig.drawBackground().getValue()) {
 			return ingredientGridArea.expandBy(INNER_PADDING);
 		} else {
 			return ingredientGridArea;
