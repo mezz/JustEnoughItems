@@ -40,7 +40,7 @@ public record IngredientGridWithNavigationLayout(
 			availableGridArea = availableGridArea.cropTop(NAVIGATION_HEIGHT + INNER_PADDING);
 		}
 
-		if (gridConfig.drawBackground()) {
+		if (gridConfig.drawBackground().getValue()) {
 			availableGridArea = availableGridArea.insetBy(BORDER_PADDING + INNER_PADDING);
 		}
 
@@ -83,7 +83,7 @@ public record IngredientGridWithNavigationLayout(
 	) {
 		ImmutableRect2i slotBackgroundArea = calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
 		ImmutableRect2i backgroundArea = MathUtil.union(MathUtil.union(slotBackgroundArea, backgroundNavigationArea), scrollbarArea);
-		if (gridConfig.drawBackground() && !backgroundArea.isEmpty()) {
+		if (gridConfig.drawBackground().getValue() && !backgroundArea.isEmpty()) {
 			backgroundArea = backgroundArea.expandBy(BORDER_PADDING);
 		}
 		return new IngredientGridWithNavigationLayout(
@@ -102,7 +102,7 @@ public record IngredientGridWithNavigationLayout(
 		if (ingredientGridArea.isEmpty()) {
 			return ImmutableRect2i.EMPTY;
 		}
-		if (gridConfig.drawBackground()) {
+		if (gridConfig.drawBackground().getValue()) {
 			return ingredientGridArea.expandBy(INNER_PADDING);
 		} else {
 			return ingredientGridArea;

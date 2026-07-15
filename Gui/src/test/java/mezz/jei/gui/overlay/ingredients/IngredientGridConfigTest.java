@@ -2,6 +2,7 @@ package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
+import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
@@ -9,6 +10,7 @@ import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.NavigationVisibility;
+import mezz.jei.gui.overlay.TestJeiConfigValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -1833,19 +1835,19 @@ public class IngredientGridConfigTest {
 	}
 
 	private static class TestGridConfig implements IIngredientGridConfig {
-		private int maxColumns = 9;
+		private final TestJeiConfigValue<Integer> maxColumns = value("maxColumns", 9);
 		private int minColumns = 1;
-		private int maxRows = 6;
+		private final TestJeiConfigValue<Integer> maxRows = value("maxRows", 6);
 		private int minRows = 1;
-		private boolean drawBackground = true;
-		private IngredientGridLayoutMode layoutMode = IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE;
-		private IngredientGridNavigationMode navigationMode = IngredientGridNavigationMode.PAGED;
-		private HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
-		private VerticalAlignment verticalAlignment = VerticalAlignment.TOP;
-		private NavigationVisibility navigationVisibility = NavigationVisibility.AUTO_HIDE;
+		private final TestJeiConfigValue<Boolean> drawBackground = value("drawBackground", true);
+		private final TestJeiConfigValue<IngredientGridLayoutMode> layoutMode = value("layoutMode", IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE);
+		private final TestJeiConfigValue<IngredientGridNavigationMode> navigationMode = value("navigationMode", IngredientGridNavigationMode.PAGED);
+		private final TestJeiConfigValue<HorizontalAlignment> horizontalAlignment = value("horizontalAlignment", HorizontalAlignment.LEFT);
+		private final TestJeiConfigValue<VerticalAlignment> verticalAlignment = value("verticalAlignment", VerticalAlignment.TOP);
+		private final TestJeiConfigValue<NavigationVisibility> navigationVisibility = value("navigationVisibility", NavigationVisibility.AUTO_HIDE);
 
 		public TestGridConfig maxColumns(int maxColumns) {
-			this.maxColumns = maxColumns;
+			this.maxColumns.set(maxColumns);
 			return this;
 		}
 
@@ -1855,7 +1857,7 @@ public class IngredientGridConfigTest {
 		}
 
 		public TestGridConfig maxRows(int maxRows) {
-			this.maxRows = maxRows;
+			this.maxRows.set(maxRows);
 			return this;
 		}
 
@@ -1865,37 +1867,37 @@ public class IngredientGridConfigTest {
 		}
 
 		public TestGridConfig drawBackground(boolean drawBackground) {
-			this.drawBackground = drawBackground;
+			this.drawBackground.set(drawBackground);
 			return this;
 		}
 
 		public TestGridConfig layoutMode(IngredientGridLayoutMode layoutMode) {
-			this.layoutMode = layoutMode;
+			this.layoutMode.set(layoutMode);
 			return this;
 		}
 
 		public TestGridConfig navigationMode(IngredientGridNavigationMode navigationMode) {
-			this.navigationMode = navigationMode;
+			this.navigationMode.set(navigationMode);
 			return this;
 		}
 
 		public TestGridConfig horizontalAlignment(HorizontalAlignment horizontalAlignment) {
-			this.horizontalAlignment = horizontalAlignment;
+			this.horizontalAlignment.set(horizontalAlignment);
 			return this;
 		}
 
 		public TestGridConfig verticalAlignment(VerticalAlignment verticalAlignment) {
-			this.verticalAlignment = verticalAlignment;
+			this.verticalAlignment.set(verticalAlignment);
 			return this;
 		}
 
 		public TestGridConfig navigationVisibility(NavigationVisibility navigationVisibility) {
-			this.navigationVisibility = navigationVisibility;
+			this.navigationVisibility.set(navigationVisibility);
 			return this;
 		}
 
 		@Override
-		public int getMaxColumns() {
+		public IJeiConfigValue<Integer> maxColumns() {
 			return maxColumns;
 		}
 
@@ -1905,7 +1907,7 @@ public class IngredientGridConfigTest {
 		}
 
 		@Override
-		public int getMaxRows() {
+		public IJeiConfigValue<Integer> maxRows() {
 			return maxRows;
 		}
 
@@ -1915,33 +1917,37 @@ public class IngredientGridConfigTest {
 		}
 
 		@Override
-		public boolean drawBackground() {
+		public IJeiConfigValue<Boolean> drawBackground() {
 			return drawBackground;
 		}
 
 		@Override
-		public IngredientGridLayoutMode getLayoutMode() {
+		public IJeiConfigValue<IngredientGridLayoutMode> layoutMode() {
 			return layoutMode;
 		}
 
 		@Override
-		public IngredientGridNavigationMode getNavigationMode() {
+		public IJeiConfigValue<IngredientGridNavigationMode> navigationMode() {
 			return navigationMode;
 		}
 
 		@Override
-		public HorizontalAlignment getHorizontalAlignment() {
+		public IJeiConfigValue<HorizontalAlignment> horizontalAlignment() {
 			return horizontalAlignment;
 		}
 
 		@Override
-		public VerticalAlignment getVerticalAlignment() {
+		public IJeiConfigValue<VerticalAlignment> verticalAlignment() {
 			return verticalAlignment;
 		}
 
 		@Override
-		public NavigationVisibility getNavigationVisibility() {
+		public IJeiConfigValue<NavigationVisibility> navigationVisibility() {
 			return navigationVisibility;
+		}
+
+		private static <T> TestJeiConfigValue<T> value(String name, T value) {
+			return new TestJeiConfigValue<>(name, value);
 		}
 	}
 }

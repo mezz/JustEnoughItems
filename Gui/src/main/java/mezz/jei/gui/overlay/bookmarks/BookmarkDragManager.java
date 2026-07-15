@@ -84,7 +84,7 @@ public class BookmarkDragManager {
 		@Override
 		public Optional<IDragHandler> handleDragStart(Screen screen, UserInput input) {
 			IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-			if (!clientConfig.isDragToRearrangeBookmarksEnabled()) {
+			if (!clientConfig.dragToRearrangeBookmarksEnabled().getValue()) {
 				stopDrag();
 				return Optional.empty();
 			}

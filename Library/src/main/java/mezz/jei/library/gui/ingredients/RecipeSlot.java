@@ -124,7 +124,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	private Optional<SlotIngredient<?>> getDisplayedSlotIngredient() {
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		if (!clientConfig.isRecipeSlotCyclingEnabled()) {
+		if (!clientConfig.recipeSlotCyclingEnabled().getValue()) {
 			return ingredients.getFirstDisplayedIngredient();
 		}
 		return ingredients.getDisplayedIngredient(cycler);
@@ -218,7 +218,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		}
 
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		if (clientConfig.getHideSingleTagContentTooltipEnabled() && visibleCandidates.size() == 1) {
+		if (clientConfig.hideSingleTagContentTooltipEnabled().getValue() && visibleCandidates.size() == 1) {
 			return;
 		}
 
@@ -294,7 +294,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		List<T> visibleCandidates
 	) {
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		if (clientConfig.isTagContentTooltipEnabled() && visibleCandidates.size() > 1) {
+		if (clientConfig.tagContentTooltipEnabled().getValue() && visibleCandidates.size() > 1) {
 			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(ingredientType);
 			tooltip.add(new TagContentTooltipComponent<>(renderer, visibleCandidates));
 		}

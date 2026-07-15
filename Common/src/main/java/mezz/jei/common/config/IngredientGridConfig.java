@@ -2,11 +2,10 @@ package mezz.jei.common.config;
 
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
+import mezz.jei.common.config.file.ConfigValue;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.util.NavigationVisibility;
-
-import java.util.function.Supplier;
 
 public class IngredientGridConfig implements IIngredientGridConfig {
 	private static final int minNumRows = 1;
@@ -23,14 +22,14 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	private static final IngredientGridLayoutMode defaultLayoutMode = IngredientGridLayoutMode.RECTANGULAR;
 	private static final IngredientGridNavigationMode defaultNavigationMode = IngredientGridNavigationMode.PAGED;
 
-	private final Supplier<Integer> maxRows;
-	private final Supplier<Integer> maxColumns;
-	private final Supplier<HorizontalAlignment> horizontalAlignment;
-	private final Supplier<VerticalAlignment> verticalAlignment;
-	private final Supplier<NavigationVisibility> navigationVisibility;
-	private final Supplier<Boolean> drawBackground;
-	private final Supplier<IngredientGridLayoutMode> layoutMode;
-	private final Supplier<IngredientGridNavigationMode> navigationMode;
+	private final ConfigValue<Integer> maxRows;
+	private final ConfigValue<Integer> maxColumns;
+	private final ConfigValue<HorizontalAlignment> horizontalAlignment;
+	private final ConfigValue<VerticalAlignment> verticalAlignment;
+	private final ConfigValue<NavigationVisibility> navigationVisibility;
+	private final ConfigValue<Boolean> drawBackground;
+	private final ConfigValue<IngredientGridLayoutMode> layoutMode;
+	private final ConfigValue<IngredientGridNavigationMode> navigationMode;
 
 	public IngredientGridConfig(String categoryName, IConfigSchemaBuilder builder, HorizontalAlignment defaultHorizontalAlignment) {
 		IConfigCategoryBuilder category = builder.addCategory(categoryName);
@@ -65,42 +64,42 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	}
 
 	@Override
-	public HorizontalAlignment getHorizontalAlignment() {
-		return horizontalAlignment.get();
+	public ConfigValue<Integer> maxColumns() {
+		return maxColumns;
 	}
 
 	@Override
-	public VerticalAlignment getVerticalAlignment() {
-		return verticalAlignment.get();
+	public ConfigValue<Integer> maxRows() {
+		return maxRows;
 	}
 
 	@Override
-	public boolean drawBackground() {
-		return drawBackground.get();
+	public ConfigValue<Boolean> drawBackground() {
+		return drawBackground;
 	}
 
 	@Override
-	public IngredientGridLayoutMode getLayoutMode() {
-		return layoutMode.get();
+	public ConfigValue<IngredientGridLayoutMode> layoutMode() {
+		return layoutMode;
 	}
 
 	@Override
-	public IngredientGridNavigationMode getNavigationMode() {
-		return navigationMode.get();
+	public ConfigValue<IngredientGridNavigationMode> navigationMode() {
+		return navigationMode;
 	}
 
 	@Override
-	public int getMaxColumns() {
-		return maxColumns.get();
+	public ConfigValue<HorizontalAlignment> horizontalAlignment() {
+		return horizontalAlignment;
 	}
 
 	@Override
-	public int getMaxRows() {
-		return maxRows.get();
+	public ConfigValue<VerticalAlignment> verticalAlignment() {
+		return verticalAlignment;
 	}
 
 	@Override
-	public NavigationVisibility getNavigationVisibility() {
-		return navigationVisibility.get();
+	public ConfigValue<NavigationVisibility> navigationVisibility() {
+		return navigationVisibility;
 	}
 }

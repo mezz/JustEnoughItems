@@ -64,7 +64,7 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	public boolean add(IBookmark value) {
-		if (!addToListWithoutNotifying(value, clientConfig.isAddingBookmarksToFrontEnabled())) {
+		if (!addToListWithoutNotifying(value, clientConfig.addBookmarksToFrontEnabled().getValue())) {
 			return false;
 		}
 		notifyListenersOfChange();
