@@ -161,8 +161,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			clickTargetFactory
 		);
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		clientConfig.centerSearchBarEnabled().addListener(v -> closeIfOpen());
-		clientConfig.maxRecipeGuiHeight().addListener(v -> closeIfOpen());
+		clientConfig.centerSearchBarEnabled().addListener(v -> reopenIfOpen());
+		clientConfig.maxRecipeGuiHeight().addListener(v -> reopenIfOpen());
 
 		Textures textures = Internal.getTextures();
 		IDrawableStatic arrowNext = textures.getArrowNext();
@@ -552,9 +552,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		return minecraft.gui.screen() == this;
 	}
 
-	private void closeIfOpen() {
-		if (isOpen()) {
-			onClose();
+	private void reopenIfOpen() {
+		if (isOpen() && minecraft != null) {
+			Screen currentParentScreen = parentScreen;
+			minecraft.gui.setScreen(currentParentScreen);
+			parentScreen = currentParentScreen;
+			open();
 		}
 	}
 
