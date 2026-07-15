@@ -8,6 +8,7 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.file.IConfigListener;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutablePoint2i;
@@ -77,6 +78,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		LookupHistoryOverlay lookupHistoryOverlay,
 		IClientToggleState toggleState,
 		IClientConfig clientConfig,
+		IIngredientGridConfig bookmarkListConfig,
 		IScreenHelper screenHelper,
 		IInternalKeyMappings keyBindings
 	) {
@@ -109,6 +111,8 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 		clientConfig.addLookupHistoryEnabledListener(lookupHistoryEnabledListener);
 		clientConfig.addLookupHistoryDisplaySideListener(lookupHistoryViewSideListener);
+		clientConfig.addMaxLookupHistoryRowsListener(v -> onScreenPropertiesChanged());
+		bookmarkListConfig.addLayoutListener(this::onScreenPropertiesChanged);
 	}
 
 	public boolean isListDisplayed() {

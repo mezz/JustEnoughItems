@@ -2,12 +2,13 @@ package mezz.jei.common.config.file;
 
 import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
-import mezz.jei.core.util.WeakList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
@@ -17,7 +18,8 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 	private final String description;
 	private final T defaultValue;
 	private final IJeiConfigValueSerializer<T> serializer;
-	private final WeakList<IConfigListener<T>> listeners = new WeakList<>();
+	@Nullable
+	private List<Consumer<T>> listeners;
 	private volatile T currentValue;
 	@Nullable
 	private IConfigSchema schema;
@@ -73,7 +75,9 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 			.ifPresent(t -> {
 				if (currentValue != t){
 					currentValue = t;
-					listeners.forEach(c -> c.onConfigValueChanged(currentValue));
+					if (listeners != null) {
+						listeners.forEach(listener -> listener.accept(currentValue));
+					}
 				}
 			});
 		return deserializeResult.getErrors();
@@ -87,7 +91,9 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 		}
 		if (!currentValue.equals(value)) {
 			currentValue = value;
-			listeners.forEach(c -> c.onConfigValueChanged(currentValue));
+			if (listeners != null) {
+				listeners.forEach(listener -> listener.accept(currentValue));
+			}
 			if (schema != null) {
 				schema.markDirty();
 			}
@@ -96,7 +102,11 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 		return false;
 	}
 
-	public void addListener(IConfigListener<T> listener) {
+	@Override
+	public void addListener(Consumer<T> listener) {
+		if (this.listeners == null) {
+			this.listeners = new ArrayList<>();
+		}
 		this.listeners.add(listener);
 	}
 }

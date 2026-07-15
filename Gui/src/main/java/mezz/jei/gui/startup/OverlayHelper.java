@@ -120,6 +120,7 @@ public final class OverlayHelper {
 			screenHelper,
 			ingredientListGridNavigation,
 			lookupHistoryOverlay,
+			ingredientGridConfig,
 			clientConfig,
 			toggleState,
 			keyMappings
@@ -177,6 +178,7 @@ public final class OverlayHelper {
 			lookupHistoryOverlay,
 			toggleState,
 			clientConfig,
+			bookmarkListConfig,
 			screenHelper,
 			keyMappings
 		);

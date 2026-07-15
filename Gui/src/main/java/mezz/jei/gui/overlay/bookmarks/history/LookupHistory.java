@@ -3,6 +3,7 @@ package mezz.jei.gui.overlay.bookmarks.history;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.config.ILookupHistoryConfig;
 import mezz.jei.gui.overlay.IIngredientGridSource;
@@ -12,7 +13,6 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class LookupHistory implements IIngredientGridSource {
 	private final List<IBookmark> elements = new LinkedList<>();
@@ -20,34 +20,36 @@ public class LookupHistory implements IIngredientGridSource {
 	private final IRecipeManager recipeManager;
 	private final IIngredientManager ingredientManager;
 	private final IFocusFactory focusFactory;
-	private final Supplier<Integer> maxElements;
+	private final IClientConfig clientConfig;
 	private final ILookupHistoryConfig lookupHistoryConfig;
 
 	public LookupHistory(
 		IRecipeManager recipeManager,
 		IIngredientManager ingredientManager,
 		IFocusFactory focusFactory,
-		Supplier<Integer> maxElements,
+		IClientConfig clientConfig,
 		ILookupHistoryConfig lookupHistoryConfig
 	) {
 		this.recipeManager = recipeManager;
 		this.ingredientManager = ingredientManager;
 		this.focusFactory = focusFactory;
-		this.maxElements = maxElements;
+		this.clientConfig = clientConfig;
 		this.lookupHistoryConfig = lookupHistoryConfig;
 
 		List<IBookmark> loaded = lookupHistoryConfig.load(recipeManager, ingredientManager, focusFactory);
 		this.elements.addAll(loaded);
+		clientConfig.addMaxLookupHistoryIngredientsListener(v -> trimToMaxElements());
+		trimToMaxElements();
 	}
 
 	public void add(IBookmark element) {
 		elements.remove(element);
 		elements.add(0, element);
-		if (elements.size() > maxElements.get()) {
+		if (elements.size() > clientConfig.getMaxLookupHistoryIngredients()) {
 			elements.remove(elements.size() - 1);
 		}
 		notifyListeners();
-		lookupHistoryConfig.save(recipeManager, ingredientManager, focusFactory, elements);
+		save();
 	}
 
 	@Override
@@ -66,5 +68,21 @@ public class LookupHistory implements IIngredientGridSource {
 		for (SourceListChangedListener listener : listeners) {
 			listener.onSourceListChanged();
 		}
+	}
+
+	private void trimToMaxElements() {
+		boolean changed = false;
+		while (elements.size() > clientConfig.getMaxLookupHistoryIngredients()) {
+			elements.remove(elements.size() - 1);
+			changed = true;
+		}
+		if (changed) {
+			notifyListeners();
+			save();
+		}
+	}
+
+	private void save() {
+		lookupHistoryConfig.save(recipeManager, ingredientManager, focusFactory, elements);
 	}
 }

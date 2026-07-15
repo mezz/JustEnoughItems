@@ -12,7 +12,13 @@ public interface IClientConfig {
 
 	boolean isCenterSearchBarEnabled();
 
+	void addCenterSearchBarEnabledListener(IConfigListener<Boolean> listener);
+
+	void addMaxRecipeGuiHeightListener(IConfigListener<Integer> listener);
+
 	boolean isLowMemorySlowSearchEnabled();
+
+	void addLowMemorySlowSearchEnabledListener(IConfigListener<Boolean> listener);
 
 	boolean isCatchRenderErrorsEnabled();
 
@@ -48,6 +54,10 @@ public interface IClientConfig {
 
 	void addLookupHistoryDisplaySideListener(IConfigListener<HistoryDisplaySide> listener);
 
+	void addMaxLookupHistoryRowsListener(IConfigListener<Integer> listener);
+
+	void addMaxLookupHistoryIngredientsListener(IConfigListener<Integer> listener);
+
 	int getDragDelayMs();
 
 	int getSmoothScrollRate();
@@ -55,6 +65,8 @@ public interface IClientConfig {
 	int getMaxRecipeGuiHeight();
 
 	List<IngredientSortStage> getIngredientSorterStages();
+
+	void addIngredientSorterStagesListener(IConfigListener<List<IngredientSortStage>> listener);
 
 	Set<RecipeSorterStage> getRecipeSorterStages();
 

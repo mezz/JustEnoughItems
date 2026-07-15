@@ -8,6 +8,7 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.file.IConfigListener;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -70,6 +71,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IScreenHelper screenHelper,
 		IngredientGridWithNavigation contents,
 		LookupHistoryOverlay lookupHistoryOverlay,
+		IIngredientGridConfig ingredientGridConfig,
 		IClientConfig clientConfig,
 		IClientToggleState toggleState,
 		IInternalKeyMappings keyBindings
@@ -103,6 +105,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 		clientConfig.addLookupHistoryEnabledListener(lookupHistoryEnabledListener);
 		clientConfig.addLookupHistoryDisplaySideListener(lookupHistoryViewSideListener);
+		clientConfig.addMaxLookupHistoryRowsListener(v -> onScreenPropertiesChanged());
+		clientConfig.addCenterSearchBarEnabledListener(v -> onScreenPropertiesChanged());
+		ingredientGridConfig.addLayoutListener(this::onScreenPropertiesChanged);
 	}
 
 	@Override

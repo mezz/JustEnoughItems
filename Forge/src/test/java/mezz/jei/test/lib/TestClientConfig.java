@@ -24,8 +24,23 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public void addCenterSearchBarEnabledListener(IConfigListener<Boolean> listener) {
+
+	}
+
+	@Override
+	public void addMaxRecipeGuiHeightListener(IConfigListener<Integer> listener) {
+
+	}
+
+	@Override
 	public boolean isLowMemorySlowSearchEnabled() {
 		return lowMemorySlowSearchEnabled;
+	}
+
+	@Override
+	public void addLowMemorySlowSearchEnabledListener(IConfigListener<Boolean> listener) {
+
 	}
 
 	@Override
@@ -114,6 +129,16 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public void addMaxLookupHistoryRowsListener(IConfigListener<Integer> listener) {
+
+	}
+
+	@Override
+	public void addMaxLookupHistoryIngredientsListener(IConfigListener<Integer> listener) {
+
+	}
+
+	@Override
 	public int getDragDelayMs() {
 		return 0;
 	}
@@ -151,6 +176,11 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public List<IngredientSortStage> getIngredientSorterStages() {
 		return List.of();
+	}
+
+	@Override
+	public void addIngredientSorterStagesListener(IConfigListener<List<IngredientSortStage>> listener) {
+
 	}
 
 	@Override

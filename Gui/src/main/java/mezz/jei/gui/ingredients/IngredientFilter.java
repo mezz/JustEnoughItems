@@ -35,6 +35,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class IngredientFilter implements
@@ -49,9 +50,10 @@ public class IngredientFilter implements
 	private final IClientConfig clientConfig;
 	private final IFilterTextSource filterTextSource;
 	private final IIngredientManager ingredientManager;
-	private final Comparator<IListElement<?>> ingredientComparator;
+	private Comparator<IListElement<?>> ingredientComparator;
 	private final IModIdHelper modIdHelper;
 	private final IIngredientVisibility ingredientVisibility;
+	private final Function<List<IListElementInfo<?>>, Comparator<IListElement<?>>> sortIndexUpdater;
 
 	private final ElementPrefixParser elementPrefixParser;
 	private IElementSearch elementSearch;
@@ -59,13 +61,15 @@ public class IngredientFilter implements
 	@Nullable
 	private List<IElement<?>> ingredientListCached;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
+	private boolean searchIndexDirty;
+	private boolean sortIndexesDirty;
 
 	public IngredientFilter(
 		IFilterTextSource filterTextSource,
 		IClientConfig clientConfig,
 		IIngredientFilterConfig config,
 		IIngredientManager ingredientManager,
-		Comparator<IListElement<?>> ingredientComparator,
+		Function<List<IListElementInfo<?>>, Comparator<IListElement<?>>> sortIndexUpdater,
 		List<IListElementInfo<?>> ingredients,
 		IModIdHelper modIdHelper,
 		IIngredientVisibility ingredientVisibility,
@@ -76,12 +80,14 @@ public class IngredientFilter implements
 		this.filterTextSource = filterTextSource;
 		this.clientConfig = clientConfig;
 		this.ingredientManager = ingredientManager;
-		this.ingredientComparator = ingredientComparator;
+		this.sortIndexUpdater = sortIndexUpdater;
+		this.ingredientComparator = sortIndexUpdater.apply(ingredients);
 		this.modIdHelper = modIdHelper;
 		this.ingredientVisibility = ingredientVisibility;
 		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, modIdHelper, searchStorageBuilderFactory);
 
 		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser, ingredients, ingredientManager);
+		addConfigListeners(clientConfig, config);
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
 		for (IListElementInfo<?> ingredient : ingredients) {
@@ -99,6 +105,12 @@ public class IngredientFilter implements
 		});
 
 		clientToggleState.addEditModeToggleListener(this);
+	}
+
+	private void addConfigListeners(IClientConfig clientConfig, IIngredientFilterConfig config) {
+		clientConfig.addLowMemorySlowSearchEnabledListener(v -> markSearchIndexDirty());
+		clientConfig.addIngredientSorterStagesListener(v -> markSortIndexesDirty());
+		config.addSearchConfigListener(this::markSearchIndexDirty);
 	}
 
 	private static IElementSearch createElementSearch(
@@ -131,7 +143,33 @@ public class IngredientFilter implements
 		this.invalidateCache();
 		Collection<IListElement<?>> ingredients = this.elementSearch.getAllIngredients();
 		List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, modIdHelper);
+		this.ingredientComparator = this.sortIndexUpdater.apply(elementInfos);
 		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser, elementInfos, ingredientManager);
+		this.searchIndexDirty = false;
+		this.sortIndexesDirty = false;
+	}
+
+	private void markSearchIndexDirty() {
+		this.searchIndexDirty = true;
+		notifyListenersOfChange();
+	}
+
+	private void markSortIndexesDirty() {
+		this.sortIndexesDirty = true;
+		notifyListenersOfChange();
+	}
+
+	private void updateDirtyState() {
+		if (searchIndexDirty) {
+			rebuildItemFilter();
+		}
+		if (sortIndexesDirty) {
+			Collection<IListElement<?>> ingredients = this.elementSearch.getAllIngredients();
+			List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, modIdHelper);
+			this.ingredientComparator = this.sortIndexUpdater.apply(elementInfos);
+			this.sortIndexesDirty = false;
+			invalidateCache();
+		}
 	}
 
 	@Override
@@ -176,6 +214,7 @@ public class IngredientFilter implements
 
 	@Override
 	public List<IElement<?>> getElements() {
+		updateDirtyState();
 		String filterText = this.filterTextSource.getFilterText();
 		filterText = filterText.toLowerCase();
 		if (ingredientListCached == null) {
