@@ -93,7 +93,7 @@ public final class PluginLoader {
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(ingredientManagerBuilder));
 		PluginCaller.callOnPlugins("Registering extra ingredients", plugins, p -> p.registerExtraIngredients(ingredientManagerBuilder));
 
-		if (ingredientFilterConfig.getSearchIngredientAliases()) {
+		if (ingredientFilterConfig.searchIngredientAliases().getValue()) {
 			PluginCaller.callOnPlugins("Registering search ingredient aliases", plugins, p -> p.registerIngredientAliases(ingredientManagerBuilder));
 		}
 
@@ -111,7 +111,7 @@ public final class PluginLoader {
 		IIngredientFilterConfig ingredientFilterConfig
 	) {
 		List<IModPlugin> plugins = data.plugins();
-		if (!ingredientFilterConfig.getSearchModAliases()) {
+		if (!ingredientFilterConfig.searchModAliases().getValue()) {
 			return ImmutableSetMultimap.of();
 		}
 		ModInfoRegistration modInfoRegistration = new ModInfoRegistration();

@@ -61,12 +61,12 @@ class IngredientListOverlayController {
 		return new Config() {
 			@Override
 			public boolean isCenterSearchBarEnabled() {
-				return clientConfig.isCenterSearchBarEnabled();
+				return clientConfig.centerSearchBarEnabled().getValue();
 			}
 
 			@Override
 			public boolean isLookupHistoryEnabled() {
-				return clientConfig.isLookupHistoryEnabled();
+				return clientConfig.lookupHistoryEnabled().getValue();
 			}
 		};
 	}

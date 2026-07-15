@@ -46,8 +46,13 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	private ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i slotBackgroundArea = ImmutableRect2i.EMPTY;
+	@Nullable
+	private ImmutableRect2i availableArea;
 	private Set<ImmutableRect2i> guiExclusionAreas = Set.of();
+	@Nullable
+	private ImmutablePoint2i mouseExclusionPoint;
 	private boolean active;
+	private boolean layoutDirty;
 
 	public IngredientGridWithNavigation(
 		String debugName,
@@ -94,19 +99,36 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 			this.navigation.createInputHandler()
 		);
 
-		this.ingredientSource.addSourceListChangedListener(() -> {
-			if (isActive()) {
-				updateLayoutKeepingPageAnchorVisible(getPageAnchorElement());
-			}
-		});
+		this.ingredientSource.addSourceListChangedListener(this::markLayoutDirty);
+		addGridConfigListeners(gridConfig);
 	}
 
-	private boolean isActive() {
-		return active;
+	private void addGridConfigListeners(IIngredientGridConfig gridConfig) {
+		gridConfig.maxColumns().addListener(v -> markLayoutDirty());
+		gridConfig.maxRows().addListener(v -> markLayoutDirty());
+		gridConfig.drawBackground().addListener(v -> markLayoutDirty());
+		gridConfig.layoutMode().addListener(v -> markLayoutDirty());
+		gridConfig.navigationMode().addListener(v -> markLayoutDirty());
+		gridConfig.horizontalAlignment().addListener(v -> markLayoutDirty());
+		gridConfig.verticalAlignment().addListener(v -> markLayoutDirty());
+		gridConfig.navigationVisibility().addListener(v -> markLayoutDirty());
+	}
+
+	private void markLayoutDirty() {
+		this.layoutDirty = true;
+	}
+
+	private void updateLayoutIfDirty() {
+		if (this.layoutDirty && this.availableArea != null) {
+			IElement<?> pageAnchorElement = getPageAnchorElement();
+			updateBounds(this.availableArea, this.guiExclusionAreas, this.mouseExclusionPoint);
+			this.controller.updateLayoutKeepingPageAnchorVisible(pageAnchorElement);
+		}
 	}
 
 	@Override
 	public boolean hasRoom() {
+		updateLayoutIfDirty();
 		return this.active;
 	}
 
@@ -127,6 +149,10 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
+		this.availableArea = availableArea;
+		this.guiExclusionAreas = guiExclusionAreas;
+		this.mouseExclusionPoint = mouseExclusionPoint;
+		this.layoutDirty = false;
 		IngredientGridWithNavigationLayout layout = calculateLayout(
 			availableArea,
 			guiExclusionAreas,
@@ -142,7 +168,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		@Nullable ImmutablePoint2i mouseExclusionPoint,
 		int ingredientCount
 	) {
-		if (this.gridConfig.getNavigationMode().usesScrollbar()) {
+		if (this.gridConfig.navigationMode().getValue().usesScrollbar()) {
 			return IngredientGridScrollbarLayout.calculate(
 				this.gridConfig,
 				availableArea,
@@ -191,18 +217,22 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public ImmutableRect2i getBackgroundArea() {
+		updateLayoutIfDirty();
 		return this.backgroundArea;
 	}
 
 	public ImmutableRect2i getSlotBackgroundArea() {
+		updateLayoutIfDirty();
 		return this.slotBackgroundArea;
 	}
 
 	public ImmutableRect2i getNextPageButtonArea() {
+		updateLayoutIfDirty();
 		return this.navigation.getNextButtonArea();
 	}
 
 	public ImmutableRect2i getBackButtonArea() {
+		updateLayoutIfDirty();
 		return this.navigation.getBackButtonArea();
 	}
 
@@ -212,10 +242,11 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public void drawBackground(GuiGraphicsExtractor guiGraphics) {
+		updateLayoutIfDirty();
 		if (!this.active) {
 			return;
 		}
-		if (this.gridConfig.drawBackground()) {
+		if (this.gridConfig.drawBackground().getValue()) {
 			this.background.draw(guiGraphics, this.backgroundArea);
 			this.slotBackground.draw(guiGraphics, this.slotBackgroundArea);
 			GuiExclusionAreaShadow.draw(guiGraphics, this.exclusionAreaShadow, this.backgroundArea, this.guiExclusionAreas);
@@ -234,6 +265,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+		updateLayoutIfDirty();
 		if (!this.active) {
 			return;
 		}
@@ -250,6 +282,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
+		updateLayoutIfDirty();
 		return this.active &&
 			this.backgroundArea.contains(mouseX, mouseY) &&
 			this.guiExclusionAreas.stream()
@@ -263,6 +296,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		updateLayoutIfDirty();
 		if (!this.active) {
 			return Stream.empty();
 		}
@@ -272,6 +306,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		updateLayoutIfDirty();
 		if (!this.active) {
 			return Stream.empty();
 		}
@@ -280,6 +315,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public <T> Stream<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
+		updateLayoutIfDirty();
 		if (!this.active) {
 			return Stream.empty();
 		}
@@ -299,6 +335,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+		updateLayoutIfDirty();
 		if (!this.active) {
 			return;
 		}
@@ -318,6 +355,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	public Stream<IngredientListSlot> getSlots() {
+		updateLayoutIfDirty();
 		if (!this.active) {
 			return Stream.empty();
 		}

@@ -96,7 +96,7 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 		if (itemStack.isEmpty()) {
 			return false;
 		}
-		GiveMode giveMode = this.clientConfig.getGiveMode();
+		GiveMode giveMode = this.clientConfig.giveMode().getValue();
 		if (giveMode == GiveMode.MOUSE_PICKUP) {
 			return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY)
 				.findFirst()
