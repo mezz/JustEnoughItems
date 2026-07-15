@@ -147,13 +147,13 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		ImmutableRect2i availableContentsArea = getAvailableContentsArea(displayArea, searchBarCentered);
 		if (clientConfig.isLookupHistoryEnabled() && lookupHistoryOverlay.isOnSide()) {
 			int historyRows = clientConfig.getMaxLookupHistoryRows();
-			availableContentsArea = availableContentsArea.cropBottom(historyRows * LookupHistoryOverlay.SLOT_HEIGHT);
-			ImmutableRect2i historyArea = displayArea
-				.insetBy(BORDER_MARGIN)
-				.moveUp(BUTTON_SIZE + INNER_PADDING)
-				.keepBottom(historyRows * LookupHistoryOverlay.SLOT_HEIGHT);
-			this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, null);
-			this.lookupHistoryOverlay.updateLayout();
+			int historyHeight = historyRows * LookupHistoryOverlay.SLOT_HEIGHT;
+			if (historyHeight > 0) {
+				ImmutableRect2i historyArea = getLookupHistoryArea(displayArea, searchBarCentered, historyHeight);
+				availableContentsArea = cropBottomTo(availableContentsArea, historyArea.y());
+				this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, null);
+				this.lookupHistoryOverlay.updateLayout();
+			}
 		}
 		IElement<?> pageAnchorElement = this.contents.getPageAnchorElement();
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas, null);
@@ -187,6 +187,26 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			return displayArea;
 		}
 		return displayArea.cropBottom(SEARCH_HEIGHT + INNER_PADDING);
+	}
+
+	private static ImmutableRect2i getLookupHistoryArea(ImmutableRect2i displayArea, boolean searchBarCentered, int lookupHistoryHeight) {
+		int bottomReservedHeight = searchBarCentered ? 0 : SEARCH_HEIGHT + INNER_PADDING;
+		return displayArea
+			.insetBy(BORDER_MARGIN)
+			.cropBottom(bottomReservedHeight)
+			.keepBottom(lookupHistoryHeight);
+	}
+
+	private static ImmutableRect2i cropBottomTo(ImmutableRect2i area, int bottomY) {
+		int cropAmount = getBottom(area) - bottomY;
+		if (cropAmount <= 0) {
+			return area;
+		}
+		return area.cropBottom(cropAmount);
+	}
+
+	private static int getBottom(ImmutableRect2i area) {
+		return area.y() + area.height();
 	}
 
 	private ImmutableRect2i getSearchAndConfigArea(ImmutableRect2i displayArea, boolean searchBarCentered, IGuiProperties guiProperties) {
