@@ -11,7 +11,6 @@ class IngredientListOverlayLayout {
 	private static final int BUTTON_SIZE = 20;
 	private static final int SEARCH_HEIGHT = BUTTON_SIZE;
 	private static final int LOOKUP_HISTORY_BOTTOM_PADDING = BORDER_MARGIN;
-	private static final int LOOKUP_HISTORY_PADDING_EXTRA = LOOKUP_HISTORY_BOTTOM_PADDING - INNER_PADDING;
 
 	static Layout calculate(
 		IGuiProperties guiProperties,
@@ -26,13 +25,11 @@ class IngredientListOverlayLayout {
 		Optional<ImmutableRect2i> lookupHistoryArea = Optional.empty();
 
 		if (lookupHistoryEnabled && lookupHistoryDisplayedOnThisSide) {
-			availableContentsArea = availableContentsArea.cropBottom(lookupHistoryDisplayHeight + LOOKUP_HISTORY_PADDING_EXTRA);
-			lookupHistoryArea = Optional.of(
-				displayArea
-					.insetBy(BORDER_MARGIN)
-					.moveUp(BUTTON_SIZE + LOOKUP_HISTORY_BOTTOM_PADDING)
-					.keepBottom(lookupHistoryDisplayHeight)
-			);
+			if (lookupHistoryDisplayHeight > 0) {
+				ImmutableRect2i area = getLookupHistoryArea(displayArea, searchBarCentered, lookupHistoryDisplayHeight);
+				availableContentsArea = cropBottomTo(availableContentsArea, area.y());
+				lookupHistoryArea = Optional.of(area);
+			}
 		}
 
 		return new Layout(guiProperties, displayArea, availableContentsArea, lookupHistoryArea, searchBarCentered);
@@ -53,6 +50,31 @@ class IngredientListOverlayLayout {
 			return displayArea;
 		}
 		return displayArea.cropBottom(SEARCH_HEIGHT + INNER_PADDING);
+	}
+
+	private static ImmutableRect2i getLookupHistoryArea(ImmutableRect2i displayArea, boolean searchBarCentered, int lookupHistoryHeight) {
+		int bottomReservedHeight;
+		if (searchBarCentered) {
+			bottomReservedHeight = 0;
+		} else {
+			bottomReservedHeight = SEARCH_HEIGHT + LOOKUP_HISTORY_BOTTOM_PADDING;
+		}
+		return displayArea
+			.insetBy(BORDER_MARGIN)
+			.cropBottom(bottomReservedHeight)
+			.keepBottom(lookupHistoryHeight);
+	}
+
+	private static ImmutableRect2i cropBottomTo(ImmutableRect2i area, int bottomY) {
+		int cropAmount = getBottom(area) - bottomY;
+		if (cropAmount <= 0) {
+			return area;
+		}
+		return area.cropBottom(cropAmount);
+	}
+
+	private static int getBottom(ImmutableRect2i area) {
+		return area.y() + area.height();
 	}
 
 	record Layout(
