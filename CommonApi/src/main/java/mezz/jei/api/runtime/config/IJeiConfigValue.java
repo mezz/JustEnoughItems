@@ -71,7 +71,7 @@ public interface IJeiConfigValue<T> {
 	/**
 	 * Add a listener that is called when this config value changes.
 	 *
-	 * @since 19.21.0
+	 * @since 19.39.0
 	 */
 	default void addListener(Consumer<T> listener) {
 
