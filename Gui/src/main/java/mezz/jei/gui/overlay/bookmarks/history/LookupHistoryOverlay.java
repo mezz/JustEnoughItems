@@ -56,6 +56,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	private ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i slotBackgroundArea = ImmutableRect2i.EMPTY;
 	private int rows;
+	private boolean layoutDirty = true;
 
 	public LookupHistoryOverlay(
 			IIngredientManager ingredientManager,
@@ -92,18 +93,19 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, screenHelper, ingredientManager, toggleState);
 		this.ownerDisplaySide = ownerDisplaySide;
-		lookupHistory.addSourceListChangedListener(this::updateLayout);
+		lookupHistory.addSourceListChangedListener(this::markLayoutDirty);
 	}
 
 	public boolean isListDisplayed() {
-		return clientConfig.isLookupHistoryEnabled() &&
-				isDisplayedOnThisSide() &&
-				contents.hasRoom();
+		updateLayoutIfDirty();
+		return clientConfig.lookupHistoryEnabled().getValue() &&
+			isDisplayedOnThisSide() &&
+			contents.hasRoom();
 	}
 
 	@Override
 	public boolean isDisplayedOnThisSide() {
-		return ownerDisplaySide.equals(clientConfig.getLookupHistoryDisplaySide());
+		return ownerDisplaySide.equals(clientConfig.lookupHistoryDisplaySide().getValue());
 	}
 
 	public IIngredientGridSource getLookupHistory() {
@@ -112,7 +114,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 
 	@Override
 	public int getDisplayHeight() {
-		return getDisplayHeight(clientConfig.getMaxLookupHistoryRows(), historyListConfig.drawBackground());
+		return getDisplayHeight(clientConfig.maxLookupHistoryRows().getValue(), historyListConfig.drawBackground().getValue());
 	}
 
 	public static int getDisplayHeight(int maxRows, boolean drawBackground) {
@@ -127,13 +129,24 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		this.backgroundArea = layout.backgroundArea();
 		this.slotBackgroundArea = layout.slotBackgroundArea();
 		int rows = this.contents.getArea().getHeight() / SLOT_HEIGHT;
-		this.rows = Math.min(rows, clientConfig.getMaxLookupHistoryRows());
+		this.rows = Math.min(rows, clientConfig.maxLookupHistoryRows().getValue());
 	}
 
 	@Override
 	public void updateLayout() {
 		List<IElement<?>> ingredientList = lookupHistory.getElements();
 		this.contents.set(0, ingredientList);
+		this.layoutDirty = false;
+	}
+
+	private void markLayoutDirty() {
+		this.layoutDirty = true;
+	}
+
+	private void updateLayoutIfDirty() {
+		if (this.layoutDirty) {
+			updateLayout();
+		}
 	}
 
 	private void drawLine(GuiGraphics guiGraphics, ImmutableRect2i lineArea, int argbColor) {
@@ -209,9 +222,10 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	}
 
 	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		updateLayoutIfDirty();
 		if (isListDisplayed()) {
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY);
-			if (!this.historyListConfig.drawBackground()) {
+			if (!this.historyListConfig.drawBackground().getValue()) {
 				ImmutableRect2i area = this.contents.getArea();
 				int startY = area.getY() + area.getHeight() - rows * SLOT_HEIGHT - 3;
 				int color = JeiGuiColors.getColor(GuiColor.LOOKUP_HISTORY_LINE);
@@ -222,7 +236,8 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	}
 
 	public void drawBackground(GuiGraphics guiGraphics) {
-		if (isListDisplayed() && this.historyListConfig.drawBackground()) {
+		updateLayoutIfDirty();
+		if (isListDisplayed() && this.historyListConfig.drawBackground().getValue()) {
 			this.background.draw(guiGraphics, this.backgroundArea);
 			this.slotBackground.draw(guiGraphics, this.slotBackgroundArea);
 			GuiExclusionAreaShadow.draw(guiGraphics, this.exclusionAreaShadow, this.backgroundArea, this.guiExclusionAreas);
@@ -230,6 +245,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	}
 
 	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		updateLayoutIfDirty();
 		if (isListDisplayed()) {
 			this.ghostIngredientDragManager.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 			this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
@@ -255,6 +271,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	}
 
 	public void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		updateLayoutIfDirty();
 		if (isListDisplayed()) {
 			this.ghostIngredientDragManager.drawOnForeground(guiGraphics, mouseX, mouseY);
 		}
@@ -262,6 +279,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		updateLayoutIfDirty();
 		if (isListDisplayed()) {
 			return contents.getIngredientUnderMouse(mouseX, mouseY);
 		}
@@ -270,6 +288,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		updateLayoutIfDirty();
 		if (isListDisplayed()) {
 			return contents.getDraggableIngredientUnderMouse(mouseX, mouseY);
 		}

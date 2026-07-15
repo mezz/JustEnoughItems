@@ -253,7 +253,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-		Set<RecipeSorterStage> recipeSorterStages = clientConfig.getRecipeSorterStages();
+		Set<RecipeSorterStage> recipeSorterStages = RecipeSorterStage.getEnabled(clientConfig);
 
 		int containerId = container == null ? -1 : container.containerId;
 		if (!recipeSorterStages.equals(cachedSorterStages) ||

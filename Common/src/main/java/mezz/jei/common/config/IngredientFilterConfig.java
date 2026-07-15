@@ -1,23 +1,22 @@
 package mezz.jei.common.config;
 
+import mezz.jei.common.config.file.ConfigValue;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.search.SearchMode;
 
-import java.util.function.Supplier;
-
 public class IngredientFilterConfig implements IIngredientFilterConfig {
-	public final Supplier<SearchMode> modNameSearchMode;
-	public final Supplier<SearchMode> tooltipSearchMode;
-	public final Supplier<SearchMode> tagSearchMode;
-	public final Supplier<SearchMode> colorSearchMode;
-	public final Supplier<SearchMode> identifierSearchMode;
-	public final Supplier<SearchMode> creativeTabSearchMode;
-	public final Supplier<Boolean> searchAdvancedTooltips;
-	public final Supplier<Boolean> searchModIds;
-	public final Supplier<Boolean> searchModAliases;
-	public final Supplier<Boolean> searchShortModNames;
-	public final Supplier<Boolean> searchIngredientAliases;
+	private final ConfigValue<SearchMode> modNameSearchMode;
+	private final ConfigValue<SearchMode> tooltipSearchMode;
+	private final ConfigValue<SearchMode> tagSearchMode;
+	private final ConfigValue<SearchMode> colorSearchMode;
+	private final ConfigValue<SearchMode> identifierSearchMode;
+	private final ConfigValue<SearchMode> creativeTabSearchMode;
+	private final ConfigValue<Boolean> searchAdvancedTooltips;
+	private final ConfigValue<Boolean> searchModIds;
+	private final ConfigValue<Boolean> searchModAliases;
+	private final ConfigValue<Boolean> searchShortModNames;
+	private final ConfigValue<Boolean> searchIngredientAliases;
 
 	public IngredientFilterConfig(IConfigSchemaBuilder builder) {
 		IConfigCategoryBuilder search = builder.addCategory("search");
@@ -35,57 +34,57 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	}
 
 	@Override
-	public SearchMode getModNameSearchMode() {
-		return modNameSearchMode.get();
+	public ConfigValue<SearchMode> modNameSearchMode() {
+		return modNameSearchMode;
 	}
 
 	@Override
-	public SearchMode getTooltipSearchMode() {
-		return tooltipSearchMode.get();
+	public ConfigValue<SearchMode> tooltipSearchMode() {
+		return tooltipSearchMode;
 	}
 
 	@Override
-	public SearchMode getTagSearchMode() {
-		return tagSearchMode.get();
+	public ConfigValue<SearchMode> tagSearchMode() {
+		return tagSearchMode;
 	}
 
 	@Override
-	public SearchMode getColorSearchMode() {
-		return colorSearchMode.get();
+	public ConfigValue<SearchMode> colorSearchMode() {
+		return colorSearchMode;
 	}
 
 	@Override
-	public SearchMode getIdentifierSearchMode() {
-		return identifierSearchMode.get();
+	public ConfigValue<SearchMode> identifierSearchMode() {
+		return identifierSearchMode;
 	}
 
 	@Override
-	public SearchMode getCreativeTabSearchMode() {
-		return creativeTabSearchMode.get();
+	public ConfigValue<SearchMode> creativeTabSearchMode() {
+		return creativeTabSearchMode;
 	}
 
 	@Override
-	public boolean getSearchAdvancedTooltips() {
-		return searchAdvancedTooltips.get();
+	public ConfigValue<Boolean> searchAdvancedTooltips() {
+		return searchAdvancedTooltips;
 	}
 
 	@Override
-	public boolean getSearchModIds() {
-		return searchModIds.get();
+	public ConfigValue<Boolean> searchModIds() {
+		return searchModIds;
 	}
 
 	@Override
-	public boolean getSearchModAliases() {
-		return searchModAliases.get();
+	public ConfigValue<Boolean> searchModAliases() {
+		return searchModAliases;
 	}
 
 	@Override
-	public boolean getSearchIngredientAliases() {
-		return searchIngredientAliases.get();
+	public ConfigValue<Boolean> searchIngredientAliases() {
+		return searchIngredientAliases;
 	}
 
 	@Override
-	public boolean getSearchShortModNames() {
-		return searchShortModNames.get();
+	public ConfigValue<Boolean> searchShortModNames() {
+		return searchShortModNames;
 	}
 }

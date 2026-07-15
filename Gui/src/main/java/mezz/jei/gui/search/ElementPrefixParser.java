@@ -40,42 +40,42 @@ public class ElementPrefixParser {
 		addPrefix(new PrefixInfo<>(
 			"mod_names",
 			'@',
-			config::getModNameSearchMode,
+			config.modNameSearchMode()::getValue,
 			info -> info.getModNames(config),
 			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
 			"tags",
 			'#',
-			config::getTagSearchMode,
+			config.tagSearchMode()::getValue,
 			e -> e.getTagStrings(ingredientManager),
 			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
 			"tooltips",
 			'$',
-			config::getTooltipSearchMode,
+			config.tooltipSearchMode()::getValue,
 			e -> e.getTooltipStrings(config, ingredientManager),
 			searchStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
 			"creative_tabs",
 			'%',
-			config::getCreativeTabSearchMode,
+			config.creativeTabSearchMode()::getValue,
 			e -> e.getCreativeTabsStrings(ingredientManager),
 			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
 			"colors",
 			'^',
-			config::getColorSearchMode,
+			config.colorSearchMode()::getValue,
 			e -> e.getColorNames(ingredientManager, colorHelper),
 			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
 			"identifiers",
 			'&',
-			config::getIdentifierSearchMode,
+			config.identifierSearchMode()::getValue,
 			element -> List.of(element.getIdentifier().toString()),
 			searchStorageBuilderFactory
 		));

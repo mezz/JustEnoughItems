@@ -26,7 +26,7 @@ public final class IngredientGridButtonNavigationLayout {
 		@Nullable ImmutablePoint2i mouseExclusionPoint,
 		int ingredientCount
 	) {
-		return switch (gridConfig.getNavigationVisibility()) {
+		return switch (gridConfig.navigationVisibility().getValue()) {
 			case ENABLED -> calculateForNavigation(gridConfig, availableArea, guiExclusionAreas, mouseExclusionPoint, true);
 			case DISABLED -> calculateForNavigation(gridConfig, availableArea, guiExclusionAreas, mouseExclusionPoint, false);
 			case AUTO_HIDE -> calculateAutoHide(
@@ -132,7 +132,7 @@ public final class IngredientGridButtonNavigationLayout {
 		Set<ImmutableRect2i> guiExclusionAreas,
 		IIngredientGridConfig gridConfig
 	) {
-		if (gridConfig.getLayoutMode() == IngredientGridLayoutMode.RECTANGULAR) {
+		if (gridConfig.layoutMode().getValue() == IngredientGridLayoutMode.RECTANGULAR) {
 			boolean blocked = guiExclusionAreas.stream()
 				.anyMatch(defaultNavigationArea::intersects);
 			if (blocked) {
@@ -155,7 +155,7 @@ public final class IngredientGridButtonNavigationLayout {
 		Set<ImmutableRect2i> guiExclusionAreas,
 		IIngredientGridConfig gridConfig
 	) {
-		int padding = gridConfig.drawBackground() ?
+		int padding = gridConfig.drawBackground().getValue() ?
 			IngredientGridWithNavigationLayout.BORDER_PADDING + IngredientGridWithNavigationLayout.INNER_PADDING :
 			0;
 		int stripTop = availableArea.y() + IngredientGridWithNavigationLayout.BORDER_MARGIN;
@@ -303,7 +303,7 @@ public final class IngredientGridButtonNavigationLayout {
 	) {
 		int x = slotBackgroundArea.x();
 		int right = slotBackgroundArea.x() + slotBackgroundArea.width();
-		if (gridConfig.drawBackground()) {
+		if (gridConfig.drawBackground().getValue()) {
 			x -= IngredientGridWithNavigationLayout.BORDER_PADDING;
 			right += IngredientGridWithNavigationLayout.BORDER_PADDING;
 		}

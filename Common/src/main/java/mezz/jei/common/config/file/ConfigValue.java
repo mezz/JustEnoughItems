@@ -9,6 +9,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
@@ -19,12 +20,17 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 	private final Component description;
 	private final T defaultValue;
 	private final IJeiConfigValueSerializer<T> serializer;
-	private @Nullable List<IConfigListener<T>> listeners;
+	private @Nullable List<Consumer<T>> listeners;
 	private volatile T currentValue;
 	@Nullable
 	private IConfigSchema schema;
 
-	public ConfigValue(String localizationPath, String name, T defaultValue, IJeiConfigValueSerializer<T> serializer) {
+	public ConfigValue(
+		String localizationPath,
+		String name,
+		T defaultValue,
+		IJeiConfigValueSerializer<T> serializer
+	) {
 		this.name = name;
 
 		String nameKey = localizationPath + "." + name;
@@ -85,7 +91,7 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 				if (currentValue != t) {
 					currentValue = t;
 					if (listeners != null) {
-						listeners.forEach(c -> c.onConfigValueChanged(currentValue));
+						listeners.forEach(listener -> listener.accept(currentValue));
 					}
 				}
 			});
@@ -101,7 +107,7 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 		if (!currentValue.equals(value)) {
 			currentValue = value;
 			if (listeners != null) {
-				listeners.forEach(c -> c.onConfigValueChanged(currentValue));
+				listeners.forEach(listener -> listener.accept(currentValue));
 			}
 			if (schema != null) {
 				schema.markDirty();
@@ -111,7 +117,8 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 		return false;
 	}
 
-	public void addListener(IConfigListener<T> listener) {
+	@Override
+	public void addListener(Consumer<T> listener) {
 		if (this.listeners == null) {
 			this.listeners = new ArrayList<>();
 		}

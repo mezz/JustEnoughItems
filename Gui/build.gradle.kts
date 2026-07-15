@@ -25,6 +25,7 @@ val dependencyProjectPaths = listOf(":Common", ":CommonApi")
 
 neoForge {
     neoFormVersion = neoformVersionAndTimestamp
+    addModdingDependenciesTo(sourceSets.test.get())
 }
 
 sourceSets {

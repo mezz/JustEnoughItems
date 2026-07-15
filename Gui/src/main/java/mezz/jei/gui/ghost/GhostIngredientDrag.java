@@ -42,7 +42,7 @@ public class GhostIngredientDrag<T> {
 		this.mouseStartX = mouseX;
 		this.mouseStartY = mouseY;
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		this.dragCanStartTime = System.currentTimeMillis() + clientConfig.getDragDelayMs();
+		this.dragCanStartTime = System.currentTimeMillis() + clientConfig.dragDelayMs().getValue();
 	}
 
 	public void drawTargets(GuiGraphics guiGraphics, int mouseX, int mouseY) {

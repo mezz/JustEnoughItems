@@ -218,7 +218,7 @@ public class IngredientGrid implements IIngredientGrid {
 
 	private <T> void addCreativeTabs(ITooltipBuilder tooltipBuilder, ITypedIngredient<T> typedIngredient) {
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		if (!clientConfig.isShowCreativeTabNamesEnabled()) {
+		if (!clientConfig.showCreativeTabNamesEnabled().getValue()) {
 			return;
 		}
 
