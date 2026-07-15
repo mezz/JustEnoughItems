@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.client.ClientTooltipFlag;
+import net.neoforged.neoforge.common.extensions.TooltipFlagExtension;
 
 public class InputHelper implements IPlatformInputHelper {
 	@Override
@@ -30,5 +31,27 @@ public class InputHelper implements IPlatformInputHelper {
 			return tooltipFlag;
 		}
 		return ClientTooltipFlag.of(tooltipFlag);
+	}
+
+	@Override
+	public TooltipFlag getSearchTooltipFlag(TooltipFlag tooltipFlag) {
+		return new SearchTooltipFlag(tooltipFlag.isAdvanced(), tooltipFlag.isCreative());
+	}
+
+	private record SearchTooltipFlag(boolean advanced, boolean creative) implements TooltipFlag, TooltipFlagExtension {
+		@Override
+		public boolean isAdvanced() {
+			return advanced;
+		}
+
+		@Override
+		public boolean isCreative() {
+			return creative;
+		}
+
+		@Override
+		public boolean shouldDisplayAllInformation() {
+			return true;
+		}
 	}
 }
