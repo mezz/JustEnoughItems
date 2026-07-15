@@ -101,6 +101,7 @@ public final class OverlayHelper {
 			filterTextSource,
 			screenHelper,
 			ingredientListGridNavigation,
+			ingredientGridConfig,
 			clientConfig,
 			worldConfig,
 			keyMappings
@@ -141,6 +142,7 @@ public final class OverlayHelper {
 			bookmarkList,
 			bookmarkListGridNavigation,
 			worldConfig,
+			bookmarkListConfig,
 			screenHelper,
 			keyMappings
 		);

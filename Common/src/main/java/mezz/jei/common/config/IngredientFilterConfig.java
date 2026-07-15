@@ -1,23 +1,22 @@
 package mezz.jei.common.config;
 
+import mezz.jei.common.config.file.ConfigValue;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.core.search.SearchMode;
 
-import java.util.function.Supplier;
-
 public class IngredientFilterConfig implements IIngredientFilterConfig {
-	public final Supplier<SearchMode> modNameSearchMode;
-	public final Supplier<SearchMode> tooltipSearchMode;
-	public final Supplier<SearchMode> tagSearchMode;
-	public final Supplier<SearchMode> creativeTabSearchMode;
-	public final Supplier<SearchMode> colorSearchMode;
-	public final Supplier<SearchMode> resourceLocationSearchMode;
-	public final Supplier<Boolean> searchAdvancedTooltips;
-	public final Supplier<Boolean> searchModIds;
-	public final Supplier<Boolean> searchModAliases;
-	public final Supplier<Boolean> searchShortModNames;
-	public final Supplier<Boolean> searchIngredientAliases;
+	public final ConfigValue<SearchMode> modNameSearchMode;
+	public final ConfigValue<SearchMode> tooltipSearchMode;
+	public final ConfigValue<SearchMode> tagSearchMode;
+	public final ConfigValue<SearchMode> colorSearchMode;
+	public final ConfigValue<SearchMode> resourceLocationSearchMode;
+	public final ConfigValue<SearchMode> creativeTabSearchMode;
+	public final ConfigValue<Boolean> searchAdvancedTooltips;
+	public final ConfigValue<Boolean> searchModIds;
+	public final ConfigValue<Boolean> searchModAliases;
+	public final ConfigValue<Boolean> searchShortModNames;
+	public final ConfigValue<Boolean> searchIngredientAliases;
 
 	public IngredientFilterConfig(IConfigSchemaBuilder builder) {
 		IConfigCategoryBuilder search = builder.addCategory("search");
@@ -131,5 +130,20 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 	@Override
 	public boolean getSearchShortModNames() {
 		return searchShortModNames.get();
+	}
+
+	@Override
+	public void addSearchConfigListener(Runnable listener) {
+		modNameSearchMode.addListener(v -> listener.run());
+		tooltipSearchMode.addListener(v -> listener.run());
+		tagSearchMode.addListener(v -> listener.run());
+		colorSearchMode.addListener(v -> listener.run());
+		resourceLocationSearchMode.addListener(v -> listener.run());
+		creativeTabSearchMode.addListener(v -> listener.run());
+		searchAdvancedTooltips.addListener(v -> listener.run());
+		searchModIds.addListener(v -> listener.run());
+		searchModAliases.addListener(v -> listener.run());
+		searchShortModNames.addListener(v -> listener.run());
+		searchIngredientAliases.addListener(v -> listener.run());
 	}
 }

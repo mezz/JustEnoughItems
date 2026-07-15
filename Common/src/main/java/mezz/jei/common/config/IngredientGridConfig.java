@@ -1,12 +1,11 @@
 package mezz.jei.common.config;
 
+import mezz.jei.common.config.file.ConfigValue;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.util.HorizontalAlignment;
 import mezz.jei.common.util.NavigationVisibility;
 import mezz.jei.common.util.VerticalAlignment;
-
-import java.util.function.Supplier;
 
 public class IngredientGridConfig implements IIngredientGridConfig {
 	private static final int minNumRows = 1;
@@ -21,12 +20,12 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	private static final NavigationVisibility defaultButtonNavigationVisibility = NavigationVisibility.ENABLED;
 	private static final boolean defaultDrawBackground = false;
 
-	private final Supplier<Integer> maxRows;
-	private final Supplier<Integer> maxColumns;
-	private final Supplier<HorizontalAlignment> horizontalAlignment;
-	private final Supplier<VerticalAlignment> verticalAlignment;
-	private final Supplier<NavigationVisibility> buttonNavigationVisibility;
-	private final Supplier<Boolean> drawBackground;
+	private final ConfigValue<Integer> maxRows;
+	private final ConfigValue<Integer> maxColumns;
+	private final ConfigValue<HorizontalAlignment> horizontalAlignment;
+	private final ConfigValue<VerticalAlignment> verticalAlignment;
+	private final ConfigValue<NavigationVisibility> buttonNavigationVisibility;
+	private final ConfigValue<Boolean> drawBackground;
 
 	public IngredientGridConfig(String categoryName, IConfigSchemaBuilder builder, HorizontalAlignment defaultHorizontalAlignment) {
 		IConfigCategoryBuilder category = builder.addCategory(categoryName);
@@ -104,5 +103,15 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	@Override
 	public NavigationVisibility getButtonNavigationVisibility() {
 		return buttonNavigationVisibility.get();
+	}
+
+	@Override
+	public void addLayoutListener(Runnable listener) {
+		maxRows.addListener(v -> listener.run());
+		maxColumns.addListener(v -> listener.run());
+		horizontalAlignment.addListener(v -> listener.run());
+		verticalAlignment.addListener(v -> listener.run());
+		buttonNavigationVisibility.addListener(v -> listener.run());
+		drawBackground.addListener(v -> listener.run());
 	}
 }
