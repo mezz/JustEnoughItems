@@ -494,12 +494,10 @@ public class IngredientGridConfigTest {
 
 		// Operation: calculate the area passed down to ingredient grid sizing.
 		ImmutableRect2i withoutBackground = IngredientGridWithNavigationLayout.getAvailableGridArea(
-			withoutBackgroundConfig,
-			availableArea
+			withoutBackgroundConfig, availableArea
 		);
 		ImmutableRect2i withBackground = IngredientGridWithNavigationLayout.getAvailableGridArea(
-			withBackgroundConfig,
-			availableArea
+			withBackgroundConfig, availableArea
 		);
 
 		// Assertions: background padding reduces the usable grid area while keeping it inside the unpadded area.
@@ -695,7 +693,6 @@ public class IngredientGridConfigTest {
 		assertPositiveArea(obstructedLayout.navigationBackgroundArea());
 		assertFalse(obstructedLayout.navigationBackgroundArea().intersects(rightExclusion));
 		assertFalse(obstructedLayout.slotBackgroundArea().intersects(rightExclusion));
-		assertFalse(obstructedLayout.navigationArea().intersects(obstructedLayout.backgroundArea()));
 	}
 
 	@Test
@@ -720,8 +717,8 @@ public class IngredientGridConfigTest {
 	}
 
 	@Test
-	public void fullWidthNavigationExclusionHidesNavigation() {
-		// Setup: an exclusion covers the entire navigation strip width, leaving no room to shift.
+	public void fullWidthNavigationExclusionShiftsOverlayDown() {
+		// Setup: an exclusion covers the entire navigation strip width, leaving no room to shift horizontally.
 		ImmutableRect2i availableArea = largeAvailableArea();
 		TestGridConfig gridConfig = config()
 			.maxColumns(4)
@@ -741,9 +738,13 @@ public class IngredientGridConfigTest {
 			gridConfig, availableArea, Set.of(fullWidthExclusion), null, 0
 		);
 
-		// Assertions: navigation is hidden when there's no horizontal room, but grid stays in place.
-		assertEquals(ImmutableRect2i.EMPTY, obstructedLayout.navigationArea());
-		assertEquals(unobstructedLayout.ingredientGridArea(), obstructedLayout.ingredientGridArea());
+		// Assertions: overlay shifts down, navigation stays on top but below the exclusion.
+		assertPositiveArea(obstructedLayout.navigationArea());
+		assertFalse(obstructedLayout.navigationArea().intersects(fullWidthExclusion));
+		assertTrue(
+			obstructedLayout.navigationArea().y() >= fullWidthExclusion.y() + fullWidthExclusion.height(),
+			"navigation should be below the exclusion"
+		);
 	}
 
 	@Test

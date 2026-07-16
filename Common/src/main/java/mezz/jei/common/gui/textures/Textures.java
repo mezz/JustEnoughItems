@@ -20,7 +20,9 @@ public class Textures {
 	private final IDrawableStatic tabUnselected;
 	private final ScalableDrawable recipeGuiBackground;
 	private final ScalableDrawable ingredientListBackground;
+	private final ScalableDrawable ingredientListNavigationTab;
 	private final ScalableDrawable bookmarkListBackground;
+	private final ScalableDrawable bookmarkListNavigationTab;
 	private final ScalableDrawable recipeBackground;
 	private final ScalableDrawable recipePreviewBackground;
 	private final ScalableDrawable searchBackground;
@@ -69,7 +71,9 @@ public class Textures {
 		this.tabUnselected = createGuiSprite("tab_unselected", 24, 24);
 		this.recipeGuiBackground = createScalableGuiSprite("gui_background");
 		this.ingredientListBackground = createScalableGuiSprite("ingredient_list_background");
+		this.ingredientListNavigationTab = createScalableGuiSprite("ingredient_list_navigation_tab");
 		this.bookmarkListBackground = createScalableGuiSprite("bookmark_list_background");
+		this.bookmarkListNavigationTab = createScalableGuiSprite("bookmark_list_navigation_tab");
 		this.recipeBackground = createScalableGuiSprite("single_recipe_background");
 		this.recipePreviewBackground = createScalableGuiSprite("recipe_preview_background");
 		this.searchBackground = createScalableGuiSprite("search_background");
@@ -199,8 +203,16 @@ public class Textures {
 		return ingredientListBackground;
 	}
 
+	public ScalableDrawable getIngredientListNavigationTab() {
+		return ingredientListNavigationTab;
+	}
+
 	public ScalableDrawable getBookmarkListBackground() {
 		return bookmarkListBackground;
+	}
+
+	public ScalableDrawable getBookmarkListNavigationTab() {
+		return bookmarkListNavigationTab;
 	}
 
 	public ScalableDrawable getRecipeBackground() {

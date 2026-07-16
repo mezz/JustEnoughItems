@@ -16,6 +16,7 @@ final class IngredientGridWithNavigationLayout {
 	private static final int BORDER_MARGIN = 6;
 	private static final int BORDER_PADDING = 5;
 	private static final int INNER_PADDING = 2;
+	private static final int TAB_OVERLAP = 3;
 
 	private IngredientGridWithNavigationLayout() {
 
@@ -73,7 +74,8 @@ final class IngredientGridWithNavigationLayout {
 		@Nullable ImmutablePoint2i mouseExclusionPoint,
 		boolean navigationEnabled
 	) {
-		ImmutableRect2i availableGridArea = getAvailableGridArea(gridConfig, availableArea);
+		ImmutableRect2i effectiveArea = availableArea;
+		ImmutableRect2i availableGridArea = getAvailableGridArea(gridConfig, effectiveArea);
 		ImmutableRect2i ingredientGridArea = IngredientGridLayout.calculateBounds(gridConfig, availableGridArea);
 		IngredientGridLayout.SlotInfo slotInfo = IngredientGridLayout.calculateSlotInfo(
 			ingredientGridArea,
@@ -84,8 +86,28 @@ final class IngredientGridWithNavigationLayout {
 		ImmutableRect2i slotBackgroundArea = calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
 		ImmutableRect2i defaultNavigationArea = calculateNavigationArea(slotBackgroundArea, navigationEnabled);
 		ImmutableRect2i navigationArea = calculateNavigationAreaAvoidingExclusions(
-			defaultNavigationArea, availableGridArea, guiExclusionAreas, gridConfig
+			defaultNavigationArea, slotBackgroundArea, guiExclusionAreas, gridConfig
 		);
+
+		if (navigationEnabled && navigationArea.isEmpty() && !defaultNavigationArea.isEmpty()) {
+			int shiftY = calculateNavigationShiftY(effectiveArea, guiExclusionAreas, gridConfig);
+			if (shiftY > effectiveArea.y()) {
+				effectiveArea = new ImmutableRect2i(
+					effectiveArea.x(), shiftY,
+					effectiveArea.width(), effectiveArea.y() + effectiveArea.height() - shiftY
+				);
+				availableGridArea = getAvailableGridArea(gridConfig, effectiveArea);
+				ingredientGridArea = IngredientGridLayout.calculateBounds(gridConfig, availableGridArea);
+				slotInfo = IngredientGridLayout.calculateSlotInfo(
+					ingredientGridArea, guiExclusionAreas, mouseExclusionPoint
+				);
+				slotBackgroundArea = calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
+				defaultNavigationArea = calculateNavigationArea(slotBackgroundArea, navigationEnabled);
+				navigationArea = calculateNavigationAreaAvoidingExclusions(
+					defaultNavigationArea, slotBackgroundArea, guiExclusionAreas, gridConfig
+				);
+			}
+		}
 
 		return calculateFromGridArea(
 			gridConfig,
@@ -150,9 +172,10 @@ final class IngredientGridWithNavigationLayout {
 		} else {
 			backgroundArea = slotBackgroundArea;
 			if (gridConfig.drawBackground()) {
-				backgroundArea = backgroundArea.expandBy(BORDER_PADDING)
-					.cropTop(BORDER_PADDING);
-				navigationBackgroundArea = navigationArea.expandBy(BORDER_PADDING);
+				backgroundArea = backgroundArea.expandBy(BORDER_PADDING);
+				navigationBackgroundArea = calculateNavigationBackgroundArea(
+					navigationArea, slotBackgroundArea
+				);
 			} else {
 				navigationBackgroundArea = ImmutableRect2i.EMPTY;
 			}
@@ -185,6 +208,31 @@ final class IngredientGridWithNavigationLayout {
 			.moveUp(NAVIGATION_HEIGHT + INNER_PADDING);
 	}
 
+	private static ImmutableRect2i calculateNavigationBackgroundArea(
+		ImmutableRect2i navigationArea,
+		ImmutableRect2i slotBackgroundArea
+	) {
+		int gridBgX = slotBackgroundArea.x() - BORDER_PADDING;
+		int gridBgRight = slotBackgroundArea.x() + slotBackgroundArea.width() + BORDER_PADDING;
+		int gridBgTop = slotBackgroundArea.y() - BORDER_PADDING;
+
+		int navBgX = navigationArea.x() - BORDER_PADDING;
+		int navBgRight = navigationArea.x() + navigationArea.width() + BORDER_PADDING;
+		int navBgY = navigationArea.y() - BORDER_PADDING;
+		// Overlap the grid background's top border by TAB_OVERLAP pixels.
+		int navBgBottom = gridBgTop + TAB_OVERLAP;
+
+		// Clamp to the grid background's horizontal bounds.
+		navBgX = Math.max(navBgX, gridBgX);
+		navBgRight = Math.min(navBgRight, gridBgRight);
+
+		if (navBgRight <= navBgX || navBgBottom <= navBgY) {
+			return ImmutableRect2i.EMPTY;
+		}
+
+		return new ImmutableRect2i(navBgX, navBgY, navBgRight - navBgX, navBgBottom - navBgY);
+	}
+
 	private static boolean isNavigationAligned(ImmutableRect2i slotBackgroundArea, ImmutableRect2i navigationArea) {
 		if (navigationArea.isEmpty()) {
 			return true;
@@ -194,12 +242,27 @@ final class IngredientGridWithNavigationLayout {
 			navigationArea.y() + navigationArea.height() <= slotBackgroundArea.y();
 	}
 
-	/**
-	 * Shifts the navigation area horizontally to avoid GUI exclusion areas, allowing an L-shaped overlay.
-	 */
+	private static int calculateNavigationShiftY(
+		ImmutableRect2i availableArea,
+		Set<ImmutableRect2i> guiExclusionAreas,
+		IIngredientGridConfig gridConfig
+	) {
+		int padding = gridConfig.drawBackground() ? BORDER_PADDING + INNER_PADDING : 0;
+		int stripTop = availableArea.y() + BORDER_MARGIN;
+		int stripBottom = stripTop + NAVIGATION_HEIGHT + INNER_PADDING + 2 * padding;
+
+		int shiftY = availableArea.y();
+		for (ImmutableRect2i exclusion : guiExclusionAreas) {
+			if (exclusion.getY() < stripBottom && exclusion.getY() + exclusion.getHeight() > stripTop) {
+				shiftY = Math.max(shiftY, exclusion.getY() + exclusion.getHeight());
+			}
+		}
+		return shiftY;
+	}
+
 	private static ImmutableRect2i calculateNavigationAreaAvoidingExclusions(
 		ImmutableRect2i defaultNavigationArea,
-		ImmutableRect2i availableGridArea,
+		ImmutableRect2i slotBackgroundArea,
 		Set<ImmutableRect2i> guiExclusionAreas,
 		IIngredientGridConfig gridConfig
 	) {
@@ -214,8 +277,13 @@ final class IngredientGridWithNavigationLayout {
 			return defaultNavigationArea;
 		}
 
-		int stripX = availableGridArea.x() - padding;
-		int stripWidth = availableGridArea.width() + 2 * padding;
+		int stripX = slotBackgroundArea.x();
+		int stripRight = slotBackgroundArea.x() + slotBackgroundArea.width();
+		if (gridConfig.drawBackground()) {
+			stripX -= BORDER_PADDING;
+			stripRight += BORDER_PADDING;
+		}
+		int stripWidth = stripRight - stripX;
 		int stripY = defaultNavigationArea.y();
 		int stripHeight = defaultNavigationArea.height();
 
