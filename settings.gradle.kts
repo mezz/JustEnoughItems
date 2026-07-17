@@ -1,15 +1,26 @@
+@file:Suppress("UnstableApiUsage")
+
 pluginManagement {
 	repositories {
-		maven("https://maven.minecraftforge.net")
-		maven("https://maven.parchmentmc.org")
+		fun exclusiveMaven(url: String, vararg groupPrefixes: String) =
+			exclusiveContent {
+				forRepository { maven(url) }
+				filter {
+					groupPrefixes.forEach(::includeGroupAndSubgroups)
+				}
+			}
+		exclusiveMaven("https://maven.minecraftforge.net", "net.minecraftforge")
+		exclusiveMaven("https://maven.parchmentmc.org", "org.parchmentmc")
 		maven("https://maven.blamejared.com")
-		gradlePluginPortal()
-		maven("https://maven.fabricmc.net/") {
-			name = "Fabric"
-		}
+		exclusiveMaven("https://maven.fabricmc.net/", "net.fabricmc", "fabric-loom")
 		maven("https://repo.spongepowered.org/repository/maven-public/") {
 			name = "Sponge Snapshots"
+			content {
+				includeGroupAndSubgroups("org.spongepowered")
+				includeGroupAndSubgroups("net.minecraftforge")
+			}
 		}
+		gradlePluginPortal()
 	}
 	resolutionStrategy {
 		eachPlugin {
