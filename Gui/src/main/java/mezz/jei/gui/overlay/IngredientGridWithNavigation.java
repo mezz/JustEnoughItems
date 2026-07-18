@@ -39,6 +39,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	private final IIngredientGridSource ingredientSource;
 	private final ScalableDrawable background;
 	private final ScalableDrawable slotBackground;
+	private final ScalableDrawable exclusionAreaShadow;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private final IUserInputHandler inputHandler;
 
@@ -57,6 +58,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		IIngredientGridConfig gridConfig,
 		ScalableDrawable background,
 		ScalableDrawable slotBackground,
+		ScalableDrawable exclusionAreaShadow,
 		IScreenHelper screenHelper,
 		IIngredientManager ingredientManager
 	) {
@@ -65,6 +67,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.gridConfig = gridConfig;
 		this.background = background;
 		this.slotBackground = slotBackground;
+		this.exclusionAreaShadow = exclusionAreaShadow;
 		CommandUtil commandUtil = new CommandUtil(clientConfig, serverConnection);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.ingredientGrid, screenHelper, ingredientManager, toggleState);
 		GhostIngredientQuickMoveManager ghostIngredientQuickMoveManager = new GhostIngredientQuickMoveManager(this.ingredientGrid, screenHelper);
@@ -174,7 +177,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		if (this.gridConfig.drawBackground()) {
 			this.background.draw(guiGraphics, this.backgroundArea);
 			this.slotBackground.draw(guiGraphics, this.slotBackgroundArea);
-			GuiExclusionAreaShadow.draw(guiGraphics, this.backgroundArea, this.guiExclusionAreas);
+			GuiExclusionAreaShadow.draw(guiGraphics, this.exclusionAreaShadow, this.backgroundArea, this.guiExclusionAreas);
 		}
 	}
 
