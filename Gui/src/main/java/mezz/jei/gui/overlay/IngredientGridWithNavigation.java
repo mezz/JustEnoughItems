@@ -170,13 +170,16 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	@Override
-	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void drawBackground(GuiGraphicsExtractor guiGraphics) {
 		if (this.gridConfig.drawBackground()) {
 			this.background.draw(guiGraphics, this.backgroundArea);
 			this.slotBackground.draw(guiGraphics, this.slotBackgroundArea);
 			GuiExclusionAreaShadow.draw(guiGraphics, this.backgroundArea, this.guiExclusionAreas);
 		}
+	}
 
+	@Override
+	public void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		this.ingredientGrid.draw(minecraft, guiGraphics, mouseX, mouseY);
 		this.navigation.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 	}

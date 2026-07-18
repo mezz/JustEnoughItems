@@ -9,6 +9,9 @@ modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the minecraft version (without the 1.)
 loaderVersion="${neoforgeLoaderVersionRange}" #mandatory
 
+[[mixins]]
+    config="jei.neoforge.mixins.json"
+
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="${githubUrl}/issues?q=is%3Aissue" #optional
 

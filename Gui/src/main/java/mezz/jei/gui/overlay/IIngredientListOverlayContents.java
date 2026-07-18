@@ -19,9 +19,14 @@ public interface IIngredientListOverlayContents extends IIngredientGridView, IIn
 	boolean isEmpty();
 
 	/**
-	 * Draws the ingredient-list contents.
+	 * Draws the background for the ingredient-list contents.
 	 */
-	void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks);
+	void drawBackground(GuiGraphicsExtractor guiGraphics);
+
+	/**
+	 * Draws foreground elements for the ingredient-list contents.
+	 */
+	void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks);
 
 	/**
 	 * Draws tooltips for the ingredient-list contents.
