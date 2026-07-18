@@ -207,20 +207,17 @@ final class IngredientGridWithNavigationLayout {
 	) {
 		int padding = gridConfig.drawBackground() ? BORDER_PADDING + INNER_PADDING : 0;
 		int stripTop = availableArea.y() + BORDER_MARGIN;
-		int stripBottom = stripTop + NAVIGATION_HEIGHT + INNER_PADDING + 2 * padding;
-		int stripX = slotBackgroundArea.x();
-		int stripRight = slotBackgroundArea.x() + slotBackgroundArea.width();
-		if (gridConfig.drawBackground()) {
-			stripX -= BORDER_PADDING;
-			stripRight += BORDER_PADDING;
-		}
+		int stripHeight = NAVIGATION_HEIGHT + INNER_PADDING + 2 * padding;
+		ImmutableRect2i navigationStripArea = calculateNavigationStripArea(
+			slotBackgroundArea,
+			stripTop,
+			stripHeight,
+			gridConfig
+		);
 
 		int shiftY = availableArea.y();
 		for (ImmutableRect2i exclusion : guiExclusionAreas) {
-			if (exclusion.getY() < stripBottom &&
-				exclusion.getY() + exclusion.getHeight() > stripTop &&
-				exclusion.getX() < stripRight &&
-				exclusion.getX() + exclusion.getWidth() > stripX) {
+			if (exclusion.intersects(navigationStripArea)) {
 				shiftY = Math.max(shiftY, exclusion.getY() + exclusion.getHeight());
 			}
 		}
@@ -241,20 +238,18 @@ final class IngredientGridWithNavigationLayout {
 			return defaultNavigationArea;
 		}
 
-		int stripX = slotBackgroundArea.x();
-		int stripRight = slotBackgroundArea.x() + slotBackgroundArea.width();
-		if (gridConfig.drawBackground()) {
-			stripX -= BORDER_PADDING;
-			stripRight += BORDER_PADDING;
-		}
-		int stripWidth = stripRight - stripX;
-		int stripY = defaultNavigationArea.y();
-		int stripHeight = defaultNavigationArea.height();
+		ImmutableRect2i navigationStripArea = calculateNavigationStripArea(
+			slotBackgroundArea,
+			defaultNavigationArea.y(),
+			defaultNavigationArea.height(),
+			gridConfig
+		);
+		int stripX = navigationStripArea.x();
+		int stripWidth = navigationStripArea.width();
 
 		List<int[]> excludedRanges = new ArrayList<>();
 		for (ImmutableRect2i exclusion : guiExclusionAreas) {
-			if (exclusion.getY() < stripY + stripHeight &&
-				exclusion.getY() + exclusion.getHeight() > stripY) {
+			if (exclusion.intersects(navigationStripArea)) {
 				int exclStart = Math.max(exclusion.getX(), stripX);
 				int exclEnd = Math.min(exclusion.getX() + exclusion.getWidth(), stripX + stripWidth);
 				if (exclStart < exclEnd) {
@@ -311,7 +306,27 @@ final class IngredientGridWithNavigationLayout {
 			return ImmutableRect2i.EMPTY;
 		}
 
-		return new ImmutableRect2i(bestGapStart, stripY, bestGapWidth, stripHeight);
+		return new ImmutableRect2i(
+			bestGapStart,
+			navigationStripArea.y(),
+			bestGapWidth,
+			navigationStripArea.height()
+		);
+	}
+
+	private static ImmutableRect2i calculateNavigationStripArea(
+		ImmutableRect2i slotBackgroundArea,
+		int y,
+		int height,
+		IIngredientGridConfig gridConfig
+	) {
+		int x = slotBackgroundArea.x();
+		int right = slotBackgroundArea.x() + slotBackgroundArea.width();
+		if (gridConfig.drawBackground()) {
+			x -= BORDER_PADDING;
+			right += BORDER_PADDING;
+		}
+		return new ImmutableRect2i(x, y, right - x, height);
 	}
 
 	record Layout(

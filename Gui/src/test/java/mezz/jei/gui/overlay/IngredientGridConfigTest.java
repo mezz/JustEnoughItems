@@ -902,12 +902,8 @@ public class IngredientGridConfigTest {
 		// Assertions: side exclusions do not further squish an overlay that already needed vertical fallback.
 		assertPositiveArea(shiftedLayout.navigationArea());
 		assertFalse(shiftedLayout.navigationArea().intersects(ownNavigationExclusion));
-		assertEquals(shiftedLayout.ingredientGridArea(), withLeftSideExclusion.ingredientGridArea());
-		assertEquals(shiftedLayout.navigationArea(), withLeftSideExclusion.navigationArea());
-		assertEquals(shiftedLayout.backgroundArea(), withLeftSideExclusion.backgroundArea());
-		assertEquals(shiftedLayout.ingredientGridArea(), withRightSideExclusion.ingredientGridArea());
-		assertEquals(shiftedLayout.navigationArea(), withRightSideExclusion.navigationArea());
-		assertEquals(shiftedLayout.backgroundArea(), withRightSideExclusion.backgroundArea());
+		assertEquals(shiftedLayout, withLeftSideExclusion);
+		assertEquals(shiftedLayout, withRightSideExclusion);
 	}
 
 	@Test
