@@ -13,6 +13,7 @@ import org.lwjgl.glfw.GLFW;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 	private static final String DEBUG_TEXT = "debug";
@@ -39,17 +40,34 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 	private double dragOffsetY = 0;
 
 	private boolean wasLeftButtonDown = false;
-	private final Renderable renderScheduler = (guiGraphics, mouseX, mouseY, partialTick) ->
-		guiGraphics.setPreeditOverlay(this::draw);
+	private final BooleanSupplier screenHasGuiProperties;
+	private final Renderable renderScheduler = (guiGraphics, mouseX, mouseY, partialTick) -> {
+		if (screenHasGuiProperties()) {
+			guiGraphics.setPreeditOverlay(this::draw);
+		}
+	};
+
+	public DebugExclusionAreaHandler(BooleanSupplier screenHasGuiProperties) {
+		this.screenHasGuiProperties = screenHasGuiProperties;
+	}
 
 	@Override
 	public Collection<Rect2i> getGuiExtraAreas() {
+		if (!screenHasGuiProperties()) {
+			stopInteraction();
+			return List.of();
+		}
+
 		pollMouse();
 		installRenderer();
 		return List.of(getArea());
 	}
 
 	private void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+		if (!screenHasGuiProperties()) {
+			return;
+		}
+
 		Rect2i area = getArea();
 		guiGraphics.fill(area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), BACKGROUND_COLOR);
 		guiGraphics.outline(area.getX(), area.getY(), area.getWidth(), area.getHeight(), BORDER_COLOR);
@@ -79,6 +97,10 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 		} catch (ReflectiveOperationException | SecurityException e) {
 			return null;
 		}
+	}
+
+	private boolean screenHasGuiProperties() {
+		return screenHasGuiProperties.getAsBoolean();
 	}
 
 	private Rect2i getArea() {
@@ -129,6 +151,12 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 		}
 
 		wasLeftButtonDown = leftButtonDown;
+	}
+
+	private void stopInteraction() {
+		dragging = false;
+		resizing = false;
+		wasLeftButtonDown = false;
 	}
 
 	private boolean isInside(double mouseX, double mouseY) {
