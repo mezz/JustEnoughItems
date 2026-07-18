@@ -16,7 +16,6 @@ final class IngredientGridWithNavigationLayout {
 	private static final int BORDER_MARGIN = 6;
 	private static final int BORDER_PADDING = 5;
 	private static final int INNER_PADDING = 2;
-	private static final int TAB_OVERLAP = 3;
 	private static final int NAVIGATION_MIN_WIDTH = NAVIGATION_HEIGHT + BORDER_PADDING + INNER_PADDING;
 
 	private IngredientGridWithNavigationLayout() {
@@ -162,34 +161,16 @@ final class IngredientGridWithNavigationLayout {
 		ImmutableRect2i navigationArea
 	) {
 		ImmutableRect2i slotBackgroundArea = calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
-		boolean navigationAligned = isNavigationAligned(slotBackgroundArea, navigationArea);
-
-		ImmutableRect2i backgroundArea;
-		ImmutableRect2i navigationBackgroundArea;
-		if (navigationAligned || navigationArea.isEmpty()) {
-			backgroundArea = MathUtil.union(slotBackgroundArea, navigationArea);
-			if (gridConfig.drawBackground() && !backgroundArea.isEmpty()) {
-				backgroundArea = backgroundArea.expandBy(BORDER_PADDING);
-			}
-			navigationBackgroundArea = ImmutableRect2i.EMPTY;
-		} else {
-			backgroundArea = slotBackgroundArea;
-			if (gridConfig.drawBackground()) {
-				backgroundArea = backgroundArea.expandBy(BORDER_PADDING);
-				navigationBackgroundArea = calculateNavigationBackgroundArea(
-					navigationArea, slotBackgroundArea
-				);
-			} else {
-				navigationBackgroundArea = ImmutableRect2i.EMPTY;
-			}
+		ImmutableRect2i backgroundArea = MathUtil.union(slotBackgroundArea, navigationArea);
+		if (gridConfig.drawBackground() && !backgroundArea.isEmpty()) {
+			backgroundArea = backgroundArea.expandBy(BORDER_PADDING);
 		}
 		return new Layout(
 			ingredientGridArea,
 			availableSlotCount,
 			slotBackgroundArea,
 			navigationArea,
-			backgroundArea,
-			navigationBackgroundArea
+			backgroundArea
 		);
 	}
 
@@ -212,40 +193,6 @@ final class IngredientGridWithNavigationLayout {
 		return slotBackgroundArea
 			.keepTop(NAVIGATION_HEIGHT)
 			.moveUp(NAVIGATION_HEIGHT + INNER_PADDING);
-	}
-
-	private static ImmutableRect2i calculateNavigationBackgroundArea(
-		ImmutableRect2i navigationArea,
-		ImmutableRect2i slotBackgroundArea
-	) {
-		int gridBgX = slotBackgroundArea.x() - BORDER_PADDING;
-		int gridBgRight = slotBackgroundArea.x() + slotBackgroundArea.width() + BORDER_PADDING;
-		int gridBgTop = slotBackgroundArea.y() - BORDER_PADDING;
-
-		int navBgX = navigationArea.x() - BORDER_PADDING;
-		int navBgRight = navigationArea.x() + navigationArea.width() + BORDER_PADDING;
-		int navBgY = navigationArea.y() - BORDER_PADDING;
-		// Overlap the grid background's top border by TAB_OVERLAP pixels.
-		int navBgBottom = gridBgTop + TAB_OVERLAP;
-
-		// Clamp to the grid background's horizontal bounds.
-		navBgX = Math.max(navBgX, gridBgX);
-		navBgRight = Math.min(navBgRight, gridBgRight);
-
-		if (navBgRight <= navBgX || navBgBottom <= navBgY) {
-			return ImmutableRect2i.EMPTY;
-		}
-
-		return new ImmutableRect2i(navBgX, navBgY, navBgRight - navBgX, navBgBottom - navBgY);
-	}
-
-	private static boolean isNavigationAligned(ImmutableRect2i slotBackgroundArea, ImmutableRect2i navigationArea) {
-		if (navigationArea.isEmpty()) {
-			return true;
-		}
-		return navigationArea.x() == slotBackgroundArea.x() &&
-			navigationArea.width() == slotBackgroundArea.width() &&
-			navigationArea.y() + navigationArea.height() <= slotBackgroundArea.y();
 	}
 
 	private static int calculateNavigationShiftY(
@@ -276,10 +223,7 @@ final class IngredientGridWithNavigationLayout {
 			return ImmutableRect2i.EMPTY;
 		}
 
-		int padding = gridConfig.drawBackground() ? BORDER_PADDING + INNER_PADDING : 0;
-		ImmutableRect2i paddedNavigationArea = padding > 0 ? defaultNavigationArea.expandBy(padding) : defaultNavigationArea;
-
-		if (guiExclusionAreas.stream().noneMatch(paddedNavigationArea::intersects)) {
+		if (guiExclusionAreas.stream().noneMatch(defaultNavigationArea::intersects)) {
 			return defaultNavigationArea;
 		}
 
@@ -295,8 +239,8 @@ final class IngredientGridWithNavigationLayout {
 
 		List<int[]> excludedRanges = new ArrayList<>();
 		for (ImmutableRect2i exclusion : guiExclusionAreas) {
-			if (exclusion.getY() < stripY + stripHeight + padding &&
-				exclusion.getY() + exclusion.getHeight() > stripY - padding) {
+			if (exclusion.getY() < stripY + stripHeight &&
+				exclusion.getY() + exclusion.getHeight() > stripY) {
 				int exclStart = Math.max(exclusion.getX(), stripX);
 				int exclEnd = Math.min(exclusion.getX() + exclusion.getWidth(), stripX + stripWidth);
 				if (exclStart < exclEnd) {
@@ -336,12 +280,11 @@ final class IngredientGridWithNavigationLayout {
 		for (int[] gap : gaps) {
 			int gapStart = gap[0];
 			int gapWidth = gap[1] - gap[0];
-			int maxNavWidthInGap = gapWidth - 2 * padding;
-			if (maxNavWidthInGap < NAVIGATION_MIN_WIDTH) {
+			if (gapWidth < NAVIGATION_MIN_WIDTH) {
 				continue;
 			}
-			int navWidthInGap = Math.min(originalWidth, maxNavWidthInGap);
-			int navStart = Math.clamp(originalX, gapStart + padding, gap[1] - padding - navWidthInGap);
+			int navWidthInGap = Math.min(originalWidth, gapWidth);
+			int navStart = Math.clamp(originalX, gapStart, gap[1] - navWidthInGap);
 			int distance = Math.abs(navStart - originalX);
 			if (distance < bestDistance) {
 				bestGapStart = navStart;
@@ -362,8 +305,7 @@ final class IngredientGridWithNavigationLayout {
 		int availableSlotCount,
 		ImmutableRect2i slotBackgroundArea,
 		ImmutableRect2i navigationArea,
-		ImmutableRect2i backgroundArea,
-		ImmutableRect2i navigationBackgroundArea
+		ImmutableRect2i backgroundArea
 	) {
 		boolean hasRoom() {
 			return !ingredientGridArea.isEmpty();

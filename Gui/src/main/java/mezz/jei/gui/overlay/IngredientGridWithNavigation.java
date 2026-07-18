@@ -39,13 +39,11 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	private final IIngredientGridSource ingredientSource;
 	private final ScalableDrawable background;
 	private final ScalableDrawable slotBackground;
-	private final ScalableDrawable navigationBackground;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private final IUserInputHandler inputHandler;
 
 	private ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i slotBackgroundArea = ImmutableRect2i.EMPTY;
-	private ImmutableRect2i navigationBackgroundArea = ImmutableRect2i.EMPTY;
 	private Set<ImmutableRect2i> guiExclusionAreas = Set.of();
 	private boolean active;
 
@@ -59,7 +57,6 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		IIngredientGridConfig gridConfig,
 		ScalableDrawable background,
 		ScalableDrawable slotBackground,
-		ScalableDrawable navigationBackground,
 		IScreenHelper screenHelper,
 		IIngredientManager ingredientManager
 	) {
@@ -68,7 +65,6 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.gridConfig = gridConfig;
 		this.background = background;
 		this.slotBackground = slotBackground;
-		this.navigationBackground = navigationBackground;
 		CommandUtil commandUtil = new CommandUtil(clientConfig, serverConnection);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.ingredientGrid, screenHelper, ingredientManager, toggleState);
 		GhostIngredientQuickMoveManager ghostIngredientQuickMoveManager = new GhostIngredientQuickMoveManager(this.ingredientGrid, screenHelper);
@@ -149,7 +145,6 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.slotBackgroundArea = layout.slotBackgroundArea();
 		this.navigation.updateBounds(layout.navigationArea());
 		this.backgroundArea = layout.backgroundArea();
-		this.navigationBackgroundArea = layout.navigationBackgroundArea();
 		this.active = true;
 	}
 
@@ -179,9 +174,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		if (this.gridConfig.drawBackground()) {
 			this.background.draw(guiGraphics, this.backgroundArea);
 			this.slotBackground.draw(guiGraphics, this.slotBackgroundArea);
-			if (!this.navigationBackgroundArea.isEmpty()) {
-				this.navigationBackground.draw(guiGraphics, this.navigationBackgroundArea);
-			}
+			GuiExclusionAreaShadow.draw(guiGraphics, this.backgroundArea, this.guiExclusionAreas);
 		}
 
 		this.ingredientGrid.draw(minecraft, guiGraphics, mouseX, mouseY);
@@ -195,9 +188,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		boolean overBackground = this.backgroundArea.contains(mouseX, mouseY) ||
-			this.navigationBackgroundArea.contains(mouseX, mouseY);
-		return overBackground &&
+		return this.backgroundArea.contains(mouseX, mouseY) &&
 			this.guiExclusionAreas.stream()
 				.noneMatch(area -> area.contains(mouseX, mouseY));
 	}

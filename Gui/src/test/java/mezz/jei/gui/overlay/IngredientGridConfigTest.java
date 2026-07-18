@@ -510,8 +510,8 @@ public class IngredientGridConfigTest {
 	}
 
 	@Test
-	public void exclusionInNavigationBackgroundPaddingShiftsNavigationNotGrid() {
-		// Setup: an exclusion overlaps the padded background just above visible navigation.
+	public void exclusionBelowNavigationPaddingDoesNotMoveNavigation() {
+		// Setup: an exclusion overlaps the background immediately below the visible navigation controls.
 		ImmutableRect2i availableArea = largeAvailableArea();
 		TestGridConfig gridConfig = config()
 			.maxColumns(4)
@@ -523,28 +523,22 @@ public class IngredientGridConfigTest {
 		);
 		ImmutableRect2i navigationPaddingExclusion = new ImmutableRect2i(
 			unobstructedLayout.navigationArea().x(),
-			unobstructedLayout.navigationArea().y() - 1,
+			unobstructedLayout.navigationArea().y() + unobstructedLayout.navigationArea().height(),
 			1,
 			1
 		);
 
-		// Operation: recalculate layout with the padded navigation background occupied.
+		// Operation: recalculate layout with the background below navigation occupied.
 		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(navigationPaddingExclusion), null, 0
 		);
 
-		// Assertions: the exclusion is outside the buttons but inside their background padding, so the
-		// navigation shifts horizontally instead of pushing the grid down.
+		// Assertions: the exclusion is outside the controls, so it does not move navigation.
 		assertFalse(unobstructedLayout.navigationArea().intersects(navigationPaddingExclusion));
 		assertTrue(unobstructedLayout.backgroundArea().intersects(navigationPaddingExclusion));
-		assertFalse(obstructedLayout.backgroundArea().intersects(navigationPaddingExclusion));
-		assertEquals(unobstructedLayout.ingredientGridArea().y(), obstructedLayout.ingredientGridArea().y());
-		assertPositiveArea(obstructedLayout.navigationArea());
-		assertTrue(
-			obstructedLayout.navigationArea().x() != unobstructedLayout.navigationArea().x() ||
-				obstructedLayout.navigationArea().width() != unobstructedLayout.navigationArea().width()
-		);
-		assertFalse(obstructedLayout.navigationArea().intersects(navigationPaddingExclusion));
+		assertEquals(unobstructedLayout.ingredientGridArea(), obstructedLayout.ingredientGridArea());
+		assertEquals(unobstructedLayout.navigationArea(), obstructedLayout.navigationArea());
+		assertEquals(unobstructedLayout.backgroundArea(), obstructedLayout.backgroundArea());
 	}
 
 	@Test
@@ -667,8 +661,8 @@ public class IngredientGridConfigTest {
 	}
 
 	@Test
-	public void lShapedLayoutHasSeparateNavigationBackground() {
-		// Setup: with background drawing enabled, an exclusion in the navigation strip creates an L-shape.
+	public void shiftedNavigationStaysOnRectangularBackground() {
+		// Setup: with background drawing enabled, an exclusion in the navigation strip shifts the buttons.
 		ImmutableRect2i availableArea = largeAvailableArea();
 		TestGridConfig gridConfig = config()
 			.maxColumns(4)
@@ -688,16 +682,21 @@ public class IngredientGridConfigTest {
 			gridConfig, availableArea, Set.of(rightExclusion), null, 0
 		);
 
-		// Assertions: shifted navigation gets its own separate background area (L-shape).
+		// Assertions: shifted navigation is still contained by the single rectangular background.
 		assertPositiveArea(obstructedLayout.navigationArea());
 		assertFalse(obstructedLayout.navigationArea().intersects(rightExclusion));
-		assertPositiveArea(obstructedLayout.navigationBackgroundArea());
-		assertFalse(obstructedLayout.navigationBackgroundArea().intersects(rightExclusion));
+		assertEquals(unobstructedLayout.ingredientGridArea(), obstructedLayout.ingredientGridArea());
+		assertContainedBy(obstructedLayout.navigationArea(), obstructedLayout.backgroundArea());
+		assertContainedBy(obstructedLayout.slotBackgroundArea(), obstructedLayout.backgroundArea());
+		assertTrue(
+			obstructedLayout.backgroundArea().intersects(rightExclusion),
+			"rectangular background should span the gap instead of carving out a navigation tab"
+		);
 		assertFalse(obstructedLayout.slotBackgroundArea().intersects(rightExclusion));
 	}
 
 	@Test
-	public void alignedNavigationHasNoSeparateNavigationBackground() {
+	public void alignedNavigationStaysOnRectangularBackground() {
 		// Setup: no exclusion overlaps navigation, so it stays aligned with the grid.
 		ImmutableRect2i availableArea = largeAvailableArea();
 		TestGridConfig gridConfig = config()
@@ -711,10 +710,10 @@ public class IngredientGridConfigTest {
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 
-		// Assertions: aligned navigation is part of the main background, no separate navigation background.
+		// Assertions: aligned navigation is part of the main rectangular background.
 		assertPositiveArea(layout.navigationArea());
-		assertEquals(ImmutableRect2i.EMPTY, layout.navigationBackgroundArea());
 		assertContainedBy(layout.navigationArea(), layout.backgroundArea());
+		assertContainedBy(layout.slotBackgroundArea(), layout.backgroundArea());
 	}
 
 	@Test
@@ -803,12 +802,11 @@ public class IngredientGridConfigTest {
 			gridConfig, availableArea, Set.of(fullWidthExclusion), null, 0
 		);
 
-		// Assertions: the navigation and both drawn background regions move below the exclusion.
+		// Assertions: the navigation and drawn background move below the exclusion.
 		assertPositiveArea(obstructedLayout.navigationArea());
 		assertFalse(obstructedLayout.navigationArea().intersects(fullWidthExclusion));
 		assertFalse(obstructedLayout.backgroundArea().intersects(fullWidthExclusion));
 		assertFalse(obstructedLayout.slotBackgroundArea().intersects(fullWidthExclusion));
-		assertFalse(obstructedLayout.navigationBackgroundArea().intersects(fullWidthExclusion));
 		assertTrue(
 			obstructedLayout.navigationArea().y() >= fullWidthExclusion.y() + fullWidthExclusion.height(),
 			"navigation should be below the exclusion"
@@ -870,7 +868,6 @@ public class IngredientGridConfigTest {
 		assertEquals(ImmutableRect2i.EMPTY, obstructedLayout.slotBackgroundArea());
 		assertEquals(ImmutableRect2i.EMPTY, obstructedLayout.navigationArea());
 		assertEquals(ImmutableRect2i.EMPTY, obstructedLayout.backgroundArea());
-		assertEquals(ImmutableRect2i.EMPTY, obstructedLayout.navigationBackgroundArea());
 		assertFalse(obstructedLayout.hasRoom());
 	}
 
@@ -914,8 +911,8 @@ public class IngredientGridConfigTest {
 	}
 
 	@Test
-	public void backgroundPaddingMakesNavigationGapTooNarrow() {
-		// Setup: the visible gap is wider than the navigation buttons, but background padding consumes it.
+	public void backgroundPaddingCanProvideNavigationGapWhenControlsOverlap() {
+		// Setup: an exclusion overlaps the right side of navigation, but the background area leaves enough room on the left.
 		ImmutableRect2i availableArea = largeAvailableArea();
 		TestGridConfig gridConfig = config()
 			.maxColumns(4)
@@ -934,22 +931,19 @@ public class IngredientGridConfigTest {
 			navArea.height()
 		);
 
-		// Operation: recalculate layout with only the padded-too-narrow gap available at the original Y.
+		// Operation: recalculate layout with only the background-expanded gap available at the original Y.
 		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(tooNarrowGapExclusion), null, 0
 		);
 
-		// Assertions: background padding forces vertical fallback instead of squeezing into the visible gap.
+		// Assertions: navigation moves horizontally because its controls overlap the exclusion.
 		assertPositiveArea(obstructedLayout.navigationArea());
 		assertFalse(obstructedLayout.navigationArea().intersects(tooNarrowGapExclusion));
-		assertFalse(obstructedLayout.backgroundArea().intersects(tooNarrowGapExclusion));
-		assertTrue(
-			obstructedLayout.navigationArea().y() >= tooNarrowGapExclusion.y() + tooNarrowGapExclusion.height(),
-			"navigation should move below the exclusion when padding makes the gap too narrow"
-		);
+		assertEquals(unobstructedLayout.ingredientGridArea(), obstructedLayout.ingredientGridArea());
+		assertEquals(unobstructedLayout.navigationArea().y(), obstructedLayout.navigationArea().y());
 		assertTrue(
 			obstructedLayout.navigationArea().width() > tooNarrowGapWidth,
-			"navigation should not shrink into the padded-too-narrow gap"
+			"navigation should only move into a gap that can fit usable controls"
 		);
 	}
 
@@ -984,7 +978,6 @@ public class IngredientGridConfigTest {
 		assertEquals(unobstructedLayout.ingredientGridArea(), obstructedLayout.ingredientGridArea());
 		assertEquals(unobstructedLayout.navigationArea(), obstructedLayout.navigationArea());
 		assertEquals(unobstructedLayout.backgroundArea(), obstructedLayout.backgroundArea());
-		assertEquals(unobstructedLayout.navigationBackgroundArea(), obstructedLayout.navigationBackgroundArea());
 	}
 
 	@Test

@@ -31,7 +31,6 @@ public final class OverlayHelper {
 		IIngredientGridConfig ingredientGridConfig,
 		ScalableDrawable background,
 		ScalableDrawable slotBackground,
-		ScalableDrawable navigationBackground,
 		IInternalKeyMappings keyMappings,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IClientConfig clientConfig,
@@ -63,7 +62,6 @@ public final class OverlayHelper {
 			ingredientGridConfig,
 			background,
 			slotBackground,
-			navigationBackground,
 			screenHelper,
 			ingredientManager
 		);
@@ -91,7 +89,6 @@ public final class OverlayHelper {
 			ingredientGridConfig,
 			textures.getIngredientListBackground(),
 			textures.getIngredientListSlotBackground(),
-			textures.getIngredientListNavigationTab(),
 			keyMappings,
 			ingredientFilterConfig,
 			clientConfig,
@@ -149,7 +146,6 @@ public final class OverlayHelper {
 			bookmarkListConfig,
 			textures.getBookmarkListBackground(),
 			textures.getBookmarkListSlotBackground(),
-			textures.getBookmarkListNavigationTab(),
 			keyMappings,
 			ingredientFilterConfig,
 			clientConfig,
