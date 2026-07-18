@@ -2,6 +2,7 @@ package mezz.jei.test;
 
 import mezz.jei.api.gui.builder.IClickableIngredientFactory;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
+import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -297,9 +298,21 @@ public class ScreenHelperTest {
 	}
 
 	private static ScreenHelper createScreenHelper(Map<Class<?>, IScreenHandler<?>> screenHandlers, GuiContainerHandlers guiContainerHandlers) {
+		return createScreenHelper(screenHandlers, List.of(), guiContainerHandlers);
+	}
+
+	private static ScreenHelper createScreenHelper(List<IGlobalGuiHandler> globalGuiHandlers) {
+		return createScreenHelper(Map.of(), globalGuiHandlers, new GuiContainerHandlers());
+	}
+
+	private static ScreenHelper createScreenHelper(
+		Map<Class<?>, IScreenHandler<?>> screenHandlers,
+		List<IGlobalGuiHandler> globalGuiHandlers,
+		GuiContainerHandlers guiContainerHandlers
+	) {
 		return new ScreenHelper(
 			TYPED_INGREDIENT_FACTORY,
-			List.of(),
+			globalGuiHandlers,
 			guiContainerHandlers,
 			new ListMultiMap<>(),
 			screenHandlers
@@ -482,4 +495,19 @@ public class ScreenHelperTest {
 			return guiExtraAreasCalls.get();
 		}
 	}
+
+	private static class TestGlobalGuiHandler implements IGlobalGuiHandler {
+		private final AtomicInteger guiExtraAreasCalls = new AtomicInteger();
+
+		@Override
+		public List<Rect2i> getGuiExtraAreas() {
+			guiExtraAreasCalls.incrementAndGet();
+			return List.of(new Rect2i(1, 2, 3, 4));
+		}
+
+		public int getGuiExtraAreasCalls() {
+			return guiExtraAreasCalls.get();
+		}
+	}
+
 }

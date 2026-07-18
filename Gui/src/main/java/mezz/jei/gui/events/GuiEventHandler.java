@@ -73,12 +73,12 @@ public class GuiEventHandler {
 		@Nullable IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
 		updateOverlayProperties(screen, guiProperties);
 
+		drawOverlayBackgrounds(guiGraphics);
+
 		if (screen instanceof AbstractContainerScreen<?>) {
-			drawOverlayBackgrounds(guiGraphics);
 			return;
 		}
 
-		drawOverlayBackgrounds(guiGraphics);
 		drawOverlayForegrounds(guiGraphics, mouseX, mouseY, false);
 		drawPostForeground(screen, guiProperties, guiGraphics, mouseX, mouseY);
 	}

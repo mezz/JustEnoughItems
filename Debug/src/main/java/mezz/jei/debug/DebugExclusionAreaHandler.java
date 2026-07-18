@@ -2,14 +2,23 @@ package mezz.jei.debug;
 
 import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
 import org.lwjgl.glfw.GLFW;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 
 public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
+	private static final String DEBUG_TEXT = "debug";
+	private static final int BACKGROUND_COLOR = 0xCC202020;
+	private static final int BORDER_COLOR = 0xFFFFFFFF;
+	private static final int TEXT_COLOR = 0xFFFFFFFF;
 	private static final int HANDLE_SIZE = 8;
 	private static final int MIN_WIDTH = 20;
 	private static final int MIN_HEIGHT = 20;
@@ -17,6 +26,7 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 	private static final int INITIAL_Y = 30;
 	private static final int INITIAL_WIDTH = 80;
 	private static final int INITIAL_HEIGHT = 80;
+	private static final Field RENDERABLES_FIELD = findRenderablesField();
 
 	private int x = INITIAL_X;
 	private int y = INITIAL_Y;
@@ -29,17 +39,63 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 	private double dragOffsetY = 0;
 
 	private boolean wasLeftButtonDown = false;
+	private final Renderable renderScheduler = (guiGraphics, mouseX, mouseY, partialTick) ->
+		guiGraphics.setPreeditOverlay(this::draw);
 
 	@Override
 	public Collection<Rect2i> getGuiExtraAreas() {
 		pollMouse();
-		return List.of(new Rect2i(x, y, width, height));
+		installRenderer();
+		return List.of(getArea());
+	}
+
+	private void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+		Rect2i area = getArea();
+		guiGraphics.fill(area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), BACKGROUND_COLOR);
+		guiGraphics.outline(area.getX(), area.getY(), area.getWidth(), area.getHeight(), BORDER_COLOR);
+		drawLabel(guiGraphics, area);
+	}
+
+	private void installRenderer() {
+		Screen screen = Minecraft.getInstance().gui.screen();
+		if (screen == null || RENDERABLES_FIELD == null) {
+			return;
+		}
+		try {
+			@SuppressWarnings("unchecked")
+			List<Renderable> renderables = (List<Renderable>) RENDERABLES_FIELD.get(screen);
+			if (!renderables.contains(renderScheduler)) {
+				renderables.add(renderScheduler);
+			}
+		} catch (IllegalAccessException ignored) {
+		}
+	}
+
+	private static Field findRenderablesField() {
+		try {
+			Field field = Screen.class.getDeclaredField("renderables");
+			field.setAccessible(true);
+			return field;
+		} catch (ReflectiveOperationException | SecurityException e) {
+			return null;
+		}
+	}
+
+	private Rect2i getArea() {
+		return new Rect2i(x, y, width, height);
+	}
+
+	private static void drawLabel(GuiGraphicsExtractor guiGraphics, Rect2i area) {
+		Font font = Minecraft.getInstance().font;
+		int textX = area.getX() + (area.getWidth() - font.width(DEBUG_TEXT)) / 2;
+		int textY = area.getY() + (area.getHeight() - font.lineHeight) / 2;
+		guiGraphics.text(font, DEBUG_TEXT, textX, textY, TEXT_COLOR, false);
 	}
 
 	private void pollMouse() {
 		Minecraft minecraft = Minecraft.getInstance();
 
-        long windowHandle = minecraft.getWindow().handle();
+		long windowHandle = minecraft.getWindow().handle();
 		boolean leftButtonDown = GLFW.glfwGetMouseButton(windowHandle, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
 
 		double mouseX = getScaledMouseX(minecraft);
