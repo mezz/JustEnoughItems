@@ -856,6 +856,61 @@ public class IngredientGridConfigTest {
 	}
 
 	@Test
+	public void verticalNavigationFallbackIgnoresExclusionsOutsideHorizontalStrip() {
+		// Setup: the overlay is already forced downward by its own blocked navigation strip.
+		ImmutableRect2i baseAvailableArea = largeAvailableArea();
+		ImmutableRect2i availableArea = baseAvailableArea
+			.moveRight(baseAvailableArea.width());
+		TestGridConfig gridConfig = config()
+			.maxColumns(4)
+			.maxRows(3)
+			.drawBackground(false)
+			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			gridConfig, availableArea, Set.of(), null, 0
+		);
+		ImmutableRect2i navArea = unobstructedLayout.navigationArea();
+		ImmutableRect2i ownNavigationExclusion = new ImmutableRect2i(
+			navArea.x(), navArea.y(), navArea.width(), navArea.height()
+		);
+		IngredientGridWithNavigationLayout.Layout shiftedLayout = IngredientGridWithNavigationLayout.calculate(
+			gridConfig, availableArea, Set.of(ownNavigationExclusion), null, 0
+		);
+		int sideGap = navArea.width();
+		int sideExclusionHeight = bottom(availableArea) - navArea.y();
+		ImmutableRect2i leftSideExclusion = new ImmutableRect2i(
+			baseAvailableArea.x(),
+			navArea.y(),
+			availableArea.x() - sideGap,
+			sideExclusionHeight
+		);
+		ImmutableRect2i rightSideExclusion = new ImmutableRect2i(
+			right(availableArea) + sideGap,
+			navArea.y(),
+			baseAvailableArea.width(),
+			sideExclusionHeight
+		);
+
+		// Operation: recalculate with tall exclusions outside this overlay's navigation strip.
+		IngredientGridWithNavigationLayout.Layout withLeftSideExclusion = IngredientGridWithNavigationLayout.calculate(
+			gridConfig, availableArea, Set.of(ownNavigationExclusion, leftSideExclusion), null, 0
+		);
+		IngredientGridWithNavigationLayout.Layout withRightSideExclusion = IngredientGridWithNavigationLayout.calculate(
+			gridConfig, availableArea, Set.of(ownNavigationExclusion, rightSideExclusion), null, 0
+		);
+
+		// Assertions: side exclusions do not further squish an overlay that already needed vertical fallback.
+		assertPositiveArea(shiftedLayout.navigationArea());
+		assertFalse(shiftedLayout.navigationArea().intersects(ownNavigationExclusion));
+		assertEquals(shiftedLayout.ingredientGridArea(), withLeftSideExclusion.ingredientGridArea());
+		assertEquals(shiftedLayout.navigationArea(), withLeftSideExclusion.navigationArea());
+		assertEquals(shiftedLayout.backgroundArea(), withLeftSideExclusion.backgroundArea());
+		assertEquals(shiftedLayout.ingredientGridArea(), withRightSideExclusion.ingredientGridArea());
+		assertEquals(shiftedLayout.navigationArea(), withRightSideExclusion.navigationArea());
+		assertEquals(shiftedLayout.backgroundArea(), withRightSideExclusion.backgroundArea());
+	}
+
+	@Test
 	public void overTallNavigationExclusionLeavesNoRoomWithoutThrowing() {
 		// Setup: an exclusion covers the navigation strip and extends beyond the available overlay area.
 		ImmutableRect2i availableArea = largeAvailableArea();

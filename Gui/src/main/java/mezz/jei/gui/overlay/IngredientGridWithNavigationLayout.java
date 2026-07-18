@@ -90,7 +90,7 @@ final class IngredientGridWithNavigationLayout {
 		);
 
 		if (navigationEnabled && navigationArea.isEmpty() && !defaultNavigationArea.isEmpty()) {
-			int shiftY = calculateNavigationShiftY(effectiveArea, guiExclusionAreas, gridConfig);
+			int shiftY = calculateNavigationShiftY(effectiveArea, slotBackgroundArea, guiExclusionAreas, gridConfig);
 			if (shiftY > effectiveArea.y()) {
 				int effectiveAreaBottom = effectiveArea.y() + effectiveArea.height();
 				shiftY = Math.min(shiftY, effectiveAreaBottom);
@@ -201,16 +201,26 @@ final class IngredientGridWithNavigationLayout {
 
 	private static int calculateNavigationShiftY(
 		ImmutableRect2i availableArea,
+		ImmutableRect2i slotBackgroundArea,
 		Set<ImmutableRect2i> guiExclusionAreas,
 		IIngredientGridConfig gridConfig
 	) {
 		int padding = gridConfig.drawBackground() ? BORDER_PADDING + INNER_PADDING : 0;
 		int stripTop = availableArea.y() + BORDER_MARGIN;
 		int stripBottom = stripTop + NAVIGATION_HEIGHT + INNER_PADDING + 2 * padding;
+		int stripX = slotBackgroundArea.x();
+		int stripRight = slotBackgroundArea.x() + slotBackgroundArea.width();
+		if (gridConfig.drawBackground()) {
+			stripX -= BORDER_PADDING;
+			stripRight += BORDER_PADDING;
+		}
 
 		int shiftY = availableArea.y();
 		for (ImmutableRect2i exclusion : guiExclusionAreas) {
-			if (exclusion.getY() < stripBottom && exclusion.getY() + exclusion.getHeight() > stripTop) {
+			if (exclusion.getY() < stripBottom &&
+				exclusion.getY() + exclusion.getHeight() > stripTop &&
+				exclusion.getX() < stripRight &&
+				exclusion.getX() + exclusion.getWidth() > stripX) {
 				shiftY = Math.max(shiftY, exclusion.getY() + exclusion.getHeight());
 			}
 		}
