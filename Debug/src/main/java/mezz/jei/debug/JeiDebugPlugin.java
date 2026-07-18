@@ -40,6 +40,7 @@ import mezz.jei.debug.ingredients.ErrorIngredientListFactory;
 import mezz.jei.debug.ingredients.ErrorIngredientRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -285,6 +286,8 @@ public class JeiDebugPlugin implements IModPlugin {
 
 		registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>(ingredientManager, this::getScreenHelper));
 		registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandlerTwo<>(ingredientManager, this::getScreenHelper));
+
+		registration.addGlobalGuiHandler(new DebugExclusionAreaHandler(this::screenHasGuiProperties));
 	}
 
 	@Override
@@ -375,6 +378,16 @@ public class JeiDebugPlugin implements IModPlugin {
 
 	private Optional<IScreenHelper> getScreenHelper() {
 		return Optional.ofNullable(screenHelper);
+	}
+
+	private boolean screenHasGuiProperties() {
+		IScreenHelper screenHelper = this.screenHelper;
+		if (screenHelper == null) {
+			return false;
+		}
+		Screen screen = Minecraft.getInstance().gui.screen();
+		return screen != null && screenHelper.getGuiProperties(screen)
+			.isPresent();
 	}
 
 	private static void assertMainThread() {

@@ -60,36 +60,29 @@ public class GuiEventHandler {
 	}
 
 	/**
-	 * Draws above most ContainerScreen elements, but below the tooltips.
+	 * Draws after the screen contents and before deferred tooltips are extracted.
 	 */
 	public void drawForContainerScreen(AbstractContainerScreen<?> screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		var poseStack = guiGraphics.pose();
-		poseStack.pushMatrix();
-		{
-			@Nullable IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
-			if (guiProperties != null) {
-				poseStack.translate(-guiProperties.guiLeft(), -guiProperties.guiTop());
-				bookmarkOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
-				ingredientListOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
-			}
-
-			drawMainContents(screen, guiProperties, guiGraphics, mouseX, mouseY);
-		}
-		poseStack.popMatrix();
+		@Nullable IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
+		drawOverlayForegrounds(guiGraphics, mouseX, mouseY, true);
+		drawPostForeground(screen, guiProperties, guiGraphics, mouseX, mouseY);
 	}
 
 	public void drawForScreen(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+		@Nullable IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
+		updateOverlayProperties(screen, guiProperties);
+
+		drawOverlayBackgrounds(guiGraphics);
+
 		if (screen instanceof AbstractContainerScreen<?>) {
-			// for container screens, drawing the main contents is handled in drawForContainerScreen
 			return;
 		}
-		@Nullable IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
-		drawMainContents(screen, guiProperties, guiGraphics, mouseX, mouseY);
+
+		drawOverlayForegrounds(guiGraphics, mouseX, mouseY, false);
+		drawPostForeground(screen, guiProperties, guiGraphics, mouseX, mouseY);
 	}
 
-	private void drawMainContents(Screen screen, @Nullable IGuiProperties guiProperties, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		Minecraft minecraft = Minecraft.getInstance();
-
+	private void updateOverlayProperties(Screen screen, @Nullable IGuiProperties guiProperties) {
 		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
 			.map(ImmutableRect2i::new)
 			.collect(Collectors.toUnmodifiableSet());
@@ -101,11 +94,29 @@ public class GuiEventHandler {
 			.updateGuiProperties(guiProperties)
 			.updateExclusionAreas(guiExclusionAreas)
 			.update();
+	}
+
+	private void drawOverlayBackgrounds(GuiGraphicsExtractor guiGraphics) {
+		ingredientListOverlay.drawBackground(guiGraphics);
+		bookmarkOverlay.drawBackground(guiGraphics);
+	}
+
+	private void drawOverlayForegrounds(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean drawScreenForeground) {
+		Minecraft minecraft = Minecraft.getInstance();
 
 		DeltaTracker deltaTracker = minecraft.getDeltaTracker();
 		float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
-		ingredientListOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
-		bookmarkOverlay.drawScreen(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+
+		if (drawScreenForeground) {
+			bookmarkOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
+			ingredientListOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
+		}
+		ingredientListOverlay.drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+		bookmarkOverlay.drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+	}
+
+	private void drawPostForeground(Screen screen, @Nullable IGuiProperties guiProperties, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+		Minecraft minecraft = Minecraft.getInstance();
 
 		if (guiProperties != null && screen instanceof AbstractContainerScreen<?> guiContainer) {
 			int guiLeft = guiProperties.guiLeft();

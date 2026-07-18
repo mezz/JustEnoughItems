@@ -182,9 +182,20 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	public void drawScreen(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		drawBackground(guiGraphics);
+		drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+	}
+
+	public void drawBackground(GuiGraphicsExtractor guiGraphics) {
+		if (isListDisplayed()) {
+			this.contents.drawBackground(guiGraphics);
+		}
+	}
+
+	public void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
 			this.bookmarkDragManager.updateDrag(mouseX, mouseY);
-			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+			this.contents.drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (guiPropertiesCache.hasValidScreen() && toggleState.isOverlayEnabled()) {
 			this.lookupHistoryOverlay.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);

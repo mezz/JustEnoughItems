@@ -21,7 +21,6 @@ license="The MIT License (MIT)"
 # A text field displayed in the mod UI
 #credits="Thanks for this example mod goes to Java" #optional
 
-# A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 
 # The modid of the mod

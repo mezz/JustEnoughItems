@@ -3,6 +3,8 @@ package mezz.jei.fabric.mixin;
 import mezz.jei.fabric.events.JeiScreenEvents;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import org.joml.Matrix3x2fStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,6 +24,41 @@ public class ScreenMixin {
 	private void drawBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
 		@SuppressWarnings("DataFlowIssue")
 		Screen screen = (Screen) (Object) this;
-		JeiScreenEvents.DRAW_BACKGROUND.invoker().drawBackground(screen, graphics, mouseX, mouseY, a);
+		runWithIdentityPose(
+			graphics,
+			() -> JeiScreenEvents.DRAW_BACKGROUND.invoker().drawBackground(screen, graphics, mouseX, mouseY, a)
+		);
+	}
+
+	@Inject(
+		method = "extractRenderStateWithTooltipAndSubtitles(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/client/gui/screens/Screen;extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V",
+			ordinal = 0,
+			shift = At.Shift.AFTER
+		)
+	)
+	private void drawForeground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
+		@SuppressWarnings("DataFlowIssue")
+		Screen screen = (Screen) (Object) this;
+		if (screen instanceof AbstractContainerScreen<?> containerScreen) {
+			graphics.nextStratum();
+			runWithIdentityPose(
+				graphics,
+				() -> JeiScreenEvents.DRAW_FOREGROUND.invoker().drawForeground(containerScreen, graphics, mouseX, mouseY)
+			);
+		}
+	}
+
+	private static void runWithIdentityPose(GuiGraphicsExtractor graphics, Runnable runnable) {
+		Matrix3x2fStack pose = graphics.pose();
+		pose.pushMatrix();
+		pose.identity();
+		try {
+			runnable.run();
+		} finally {
+			pose.popMatrix();
+		}
 	}
 }
