@@ -115,7 +115,8 @@ final class IngredientGridWithNavigationLayout {
 			gridConfig,
 			ingredientGridArea,
 			slotInfo.available(),
-			navigationArea
+			navigationArea,
+			navigationEnabled
 		);
 	}
 
@@ -150,7 +151,8 @@ final class IngredientGridWithNavigationLayout {
 			gridConfig,
 			ingredientGridArea,
 			IngredientGridLayout.calculateSlotInfo(ingredientGridArea, Set.of(), null).available(),
-			navigationArea
+			navigationArea,
+			navigationEnabled
 		);
 	}
 
@@ -158,7 +160,8 @@ final class IngredientGridWithNavigationLayout {
 		IIngredientGridConfig gridConfig,
 		ImmutableRect2i ingredientGridArea,
 		int availableSlotCount,
-		ImmutableRect2i navigationArea
+		ImmutableRect2i navigationArea,
+		boolean navigationEnabled
 	) {
 		ImmutableRect2i slotBackgroundArea = calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
 		ImmutableRect2i backgroundArea = MathUtil.union(slotBackgroundArea, navigationArea);
@@ -170,7 +173,8 @@ final class IngredientGridWithNavigationLayout {
 			availableSlotCount,
 			slotBackgroundArea,
 			navigationArea,
-			backgroundArea
+			backgroundArea,
+			navigationEnabled
 		);
 	}
 
@@ -305,10 +309,13 @@ final class IngredientGridWithNavigationLayout {
 		int availableSlotCount,
 		ImmutableRect2i slotBackgroundArea,
 		ImmutableRect2i navigationArea,
-		ImmutableRect2i backgroundArea
+		ImmutableRect2i backgroundArea,
+		boolean navigationEnabled
 	) {
 		boolean hasRoom() {
-			return !ingredientGridArea.isEmpty();
+			return !ingredientGridArea.isEmpty() &&
+				availableSlotCount > 0 &&
+				(!navigationEnabled || !navigationArea.isEmpty());
 		}
 	}
 }

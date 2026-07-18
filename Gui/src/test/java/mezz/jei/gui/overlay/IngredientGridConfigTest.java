@@ -842,6 +842,42 @@ public class IngredientGridConfigTest {
 	}
 
 	@Test
+	public void blockedNavigationAfterVerticalFallbackLeavesNoRoom() {
+		// Setup: the first exclusion forces navigation downward, and a second exclusion blocks that fallback.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.maxColumns(4)
+			.maxRows(3)
+			.drawBackground(false)
+			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			gridConfig, availableArea, Set.of(), null, 0
+		);
+		ImmutableRect2i firstNavigationArea = unobstructedLayout.navigationArea();
+		ImmutableRect2i firstExclusion = new ImmutableRect2i(
+			availableArea.x(), firstNavigationArea.y(), availableArea.width(), firstNavigationArea.height()
+		);
+		IngredientGridWithNavigationLayout.Layout fallbackLayout = IngredientGridWithNavigationLayout.calculate(
+			gridConfig, availableArea, Set.of(firstExclusion), null, 0
+		);
+		ImmutableRect2i fallbackNavigationArea = fallbackLayout.navigationArea();
+		ImmutableRect2i fallbackExclusion = new ImmutableRect2i(
+			availableArea.x(), fallbackNavigationArea.y(), availableArea.width(), fallbackNavigationArea.height()
+		);
+
+		// Operation: recalculate layout with no available navigation position.
+		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			gridConfig, availableArea, Set.of(firstExclusion, fallbackExclusion), null, 0
+		);
+
+		// Assertions: item slots would fit, but the overlay is unusable because required navigation cannot draw.
+		assertPositiveArea(obstructedLayout.ingredientGridArea());
+		assertTrue(obstructedLayout.availableSlotCount() > 0);
+		assertEquals(ImmutableRect2i.EMPTY, obstructedLayout.navigationArea());
+		assertFalse(obstructedLayout.hasRoom());
+	}
+
+	@Test
 	public void overTallNavigationExclusionWithBackgroundLeavesNoRoomWithoutThrowing() {
 		// Setup: an exclusion covers the drawn navigation strip and extends beyond the available overlay area.
 		ImmutableRect2i availableArea = largeAvailableArea();
@@ -868,6 +904,31 @@ public class IngredientGridConfigTest {
 		assertEquals(ImmutableRect2i.EMPTY, obstructedLayout.slotBackgroundArea());
 		assertEquals(ImmutableRect2i.EMPTY, obstructedLayout.navigationArea());
 		assertEquals(ImmutableRect2i.EMPTY, obstructedLayout.backgroundArea());
+		assertFalse(obstructedLayout.hasRoom());
+	}
+
+	@Test
+	public void fullyBlockedGridSlotsLeaveNoRoom() {
+		// Setup: navigation is disabled, but a GUI exclusion covers every item slot.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.maxColumns(4)
+			.maxRows(3)
+			.drawBackground(false)
+			.buttonNavigationVisibility(NavigationVisibility.DISABLED);
+		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			gridConfig, availableArea, Set.of(), null, 0
+		);
+		ImmutableRect2i gridExclusion = unobstructedLayout.ingredientGridArea();
+
+		// Operation: recalculate layout with the whole grid covered by an exclusion.
+		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			gridConfig, availableArea, Set.of(gridExclusion), null, 0
+		);
+
+		// Assertions: the grid bounds still exist, but no item slot is drawable.
+		assertPositiveArea(obstructedLayout.ingredientGridArea());
+		assertEquals(0, obstructedLayout.availableSlotCount());
 		assertFalse(obstructedLayout.hasRoom());
 	}
 

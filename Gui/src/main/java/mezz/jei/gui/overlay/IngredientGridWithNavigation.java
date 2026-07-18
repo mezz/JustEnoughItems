@@ -103,7 +103,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public boolean hasRoom() {
-		return this.ingredientGrid.hasRoom();
+		return this.active;
 	}
 
 	@Override
@@ -139,16 +139,24 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		@Nullable ImmutablePoint2i mouseExclusionPoint
 	) {
 		this.guiExclusionAreas = guiExclusionAreas;
-		this.ingredientGrid.updateBounds(layout.ingredientGridArea(), guiExclusionAreas, mouseExclusionPoint);
 		if (!layout.hasRoom()) {
-			this.active = false;
+			clearLayout();
 			return;
 		}
 
+		this.ingredientGrid.updateBounds(layout.ingredientGridArea(), guiExclusionAreas, mouseExclusionPoint);
 		this.slotBackgroundArea = layout.slotBackgroundArea();
 		this.navigation.updateBounds(layout.navigationArea());
 		this.backgroundArea = layout.backgroundArea();
 		this.active = true;
+	}
+
+	private void clearLayout() {
+		this.ingredientGrid.updateBounds(ImmutableRect2i.EMPTY, Set.of(), null);
+		this.slotBackgroundArea = ImmutableRect2i.EMPTY;
+		this.navigation.updateBounds(ImmutableRect2i.EMPTY);
+		this.backgroundArea = ImmutableRect2i.EMPTY;
+		this.active = false;
 	}
 
 	@Override
@@ -174,6 +182,9 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public void drawBackground(GuiGraphicsExtractor guiGraphics) {
+		if (!this.active) {
+			return;
+		}
 		if (this.gridConfig.drawBackground()) {
 			this.background.draw(guiGraphics, this.backgroundArea);
 			this.slotBackground.draw(guiGraphics, this.slotBackgroundArea);
@@ -183,18 +194,25 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		if (!this.active) {
+			return;
+		}
 		this.ingredientGrid.draw(minecraft, guiGraphics, mouseX, mouseY);
 		this.navigation.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 	}
 
 	@Override
 	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+		if (!this.active) {
+			return;
+		}
 		this.ghostIngredientDragManager.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		this.ingredientGrid.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return this.backgroundArea.contains(mouseX, mouseY) &&
+		return this.active &&
+			this.backgroundArea.contains(mouseX, mouseY) &&
 			this.guiExclusionAreas.stream()
 				.noneMatch(area -> area.contains(mouseX, mouseY));
 	}
@@ -206,17 +224,26 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		if (!this.active) {
+			return Stream.empty();
+		}
 		return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY)
 			.map(this.controller::createPageAnchorIngredient);
 	}
 
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		if (!this.active) {
+			return Stream.empty();
+		}
 		return this.ingredientGrid.getDraggableIngredientUnderMouse(mouseX, mouseY);
 	}
 
 	@Override
 	public <T> Stream<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
+		if (!this.active) {
+			return Stream.empty();
+		}
 		return this.ingredientGrid.getVisibleIngredients(ingredientType);
 	}
 
@@ -227,12 +254,15 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public void close() {
-		this.active = false;
+		clearLayout();
 		this.ghostIngredientDragManager.stopDrag();
 	}
 
 	@Override
 	public void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+		if (!this.active) {
+			return;
+		}
 		this.ghostIngredientDragManager.drawOnForeground(guiGraphics, mouseX, mouseY);
 	}
 
@@ -242,10 +272,16 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	public int size() {
+		if (!this.active) {
+			return 0;
+		}
 		return this.ingredientGrid.size();
 	}
 
 	public Stream<IngredientListSlot> getSlots() {
+		if (!this.active) {
+			return Stream.empty();
+		}
 		return this.ingredientGrid.getSlots();
 	}
 }
