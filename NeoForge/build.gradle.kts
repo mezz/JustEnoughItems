@@ -211,7 +211,7 @@ neoForge {
 
 		configureEach {
 			getAdditionalRuntimeClasspathConfiguration().extendsFrom(embeddedLibraries)
-			getMods().set(setOf(
+			loadedMods.set(setOf(
 				jeiMod.get()
 			))
 		}
@@ -238,7 +238,7 @@ neoForge {
 			type.set("gameTestServer")
 			gameDirectory = file("run/gameTestServer")
 			sourceSet = sourceSets.named("gameTest")
-			getMods().set(setOf(jeiMod.get(), jeiTestsMod.get()))
+			loadedMods.set(setOf(jeiMod.get(), jeiTestsMod.get()))
 			systemProperty("jei.gameTest.junitDir", gameTestJunitResultsDir.get().asFile.absolutePath)
 			logLevel = Level.INFO
 		}
@@ -247,7 +247,7 @@ neoForge {
 				client()
 				gameDirectory = clientRecipeSyncTestGameDirectory(runName).asFile
 				sourceSet = sourceSets.named("clientGameTest")
-				getMods().set(setOf(jeiMod.get(), jeiClientTestsMod.get()))
+				loadedMods.set(setOf(jeiMod.get(), jeiClientTestsMod.get()))
 				programArguments.addAll("--username", "JeiClientTest")
 				systemProperty(clientRecipeSyncTestProperty, testCase)
 				logLevel = Level.INFO
@@ -262,7 +262,7 @@ neoForge {
 		create(neoForgeServerWithoutJeiRunName) {
 			server()
 			gameDirectory = file("run/$neoForgeServerWithoutJeiRunName")
-			getMods().set(emptySet())
+			loadedMods.set(emptySet())
 			programArguments.addAll("nogui")
 			logLevel = Level.INFO
 		}

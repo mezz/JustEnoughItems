@@ -15,6 +15,7 @@ val minecraftVersion: String by extra
 val neoformTimestamp: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val neoformVersionAndTimestamp = "$minecraftVersion-$neoformTimestamp"
 
 val baseArchivesName = "${modId}-${minecraftVersion}-lib"
 base {
@@ -31,7 +32,7 @@ dependencyProjects.forEach {
 }
 
 neoForge {
-    neoFormVersion = "$minecraftVersion-$neoformTimestamp"
+    neoFormVersion = neoformVersionAndTimestamp
     addModdingDependenciesTo(sourceSets.test.get())
 }
 

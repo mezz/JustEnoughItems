@@ -9,7 +9,7 @@ plugins {
     id("fabric-loom") version("1.11.0-alpha.26") apply(false)
 
     // https://projects.neoforged.net/neoforged/moddevgradle
-    id("net.neoforged.moddev") version("2.0.26-beta") apply(false)
+    id("net.neoforged.moddev") version("2.0.142") apply(false)
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
     id("me.modmuss50.mod-publish-plugin") version("2.0.1") apply(false)

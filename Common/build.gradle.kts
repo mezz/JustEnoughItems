@@ -18,6 +18,7 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val bakedSubstringIndexVersion: String by extra
 val suffixtreeVersion: String by extra
+val neoformVersionAndTimestamp = "$minecraftVersion-$neoformTimestamp"
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
 base {
@@ -33,7 +34,7 @@ dependencyProjects.forEach {
 }
 
 neoForge {
-    neoFormVersion = "$minecraftVersion-$neoformTimestamp"
+    neoFormVersion = neoformVersionAndTimestamp
     addModdingDependenciesTo(sourceSets.test.get())
 
     runs {
