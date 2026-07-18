@@ -4,13 +4,16 @@ import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.startup.JeiEventHandlers;
-import mezz.jei.neoforge.events.JeiScreenEvent;
 import mezz.jei.neoforge.events.RuntimeEventSubscriptions;
 import mezz.jei.neoforge.input.ForgeUserInput;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.CharacterEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.neoforge.client.event.ContainerScreenEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
+import org.joml.Matrix3x2fStack;
 
 public class EventRegistration {
 	public static void registerEvents(RuntimeEventSubscriptions subscriptions, JeiEventHandlers eventHandlers) {
@@ -94,19 +97,24 @@ public class EventRegistration {
 			Screen screen = event.getScreen();
 			guiEventHandler.onGuiOpen(screen);
 		});
-		subscriptions.register(JeiScreenEvent.RenderForeground.class, event -> {
-			AbstractContainerScreen<?> containerScreen = event.getScreen();
+		subscriptions.register(EventPriority.LOWEST, ContainerScreenEvent.Render.Foreground.class, event -> {
+			AbstractContainerScreen<?> containerScreen = event.getContainerScreen();
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			guiEventHandler.drawForContainerScreen(containerScreen, guiGraphics, mouseX, mouseY);
+			guiGraphics.nextStratum();
+			runWithIdentityPose(guiGraphics, () ->
+				guiEventHandler.drawForContainerScreen(containerScreen, guiGraphics, mouseX, mouseY)
+			);
 		});
-		subscriptions.register(ScreenEvent.Render.Background.class, event -> {
+		subscriptions.register(EventPriority.HIGHEST, ScreenEvent.Render.Background.class, event -> {
 			Screen screen = event.getScreen();
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			guiEventHandler.drawForScreen(screen, guiGraphics, mouseX, mouseY);
+			runWithIdentityPose(guiGraphics, () ->
+				guiEventHandler.drawForScreen(screen, guiGraphics, mouseX, mouseY)
+			);
 		});
 		subscriptions.register(ScreenEvent.RenderInventoryMobEffects.class, event -> {
 			if (guiEventHandler.renderCompactPotionIndicators()) {
@@ -115,5 +123,16 @@ public class EventRegistration {
 				event.setCompact(true);
 			}
 		});
+	}
+
+	private static void runWithIdentityPose(GuiGraphicsExtractor guiGraphics, Runnable runnable) {
+		Matrix3x2fStack pose = guiGraphics.pose();
+		pose.pushMatrix();
+		pose.identity();
+		try {
+			runnable.run();
+		} finally {
+			pose.popMatrix();
+		}
 	}
 }

@@ -19,7 +19,6 @@ val curseProjectId: String by extra
 val neoforgeVersion: String by extra
 val jUnitVersion: String by extra
 val minecraftVersion: String by extra
-val mixinVersion: String by extra
 val minecraftVersionRangeStart: String by extra
 val modGroup: String by extra
 val modId: String by extra
@@ -152,7 +151,6 @@ dependencies {
 	dependencyProjects.forEach {
 		implementation(it)
 	}
-	compileOnly("org.spongepowered:mixin:${mixinVersion}")
 	embeddedLibraries("net.mezzdev:suffixtree:${suffixtreeVersion}") {
 		isTransitive = false
 	}
