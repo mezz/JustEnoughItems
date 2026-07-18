@@ -10,6 +10,7 @@ import mezz.jei.common.util.NavigationVisibility;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -319,6 +320,47 @@ public class IngredientGridConfigTest {
 		// Assertions: the blocked slot reduces capacity, so auto-hide reserves navigation for the overflow item.
 		assertEquals(unblockedLayout.availableSlotCount() - 1, blockedLayout.availableSlotCount());
 		assertPositiveArea(autoHideLayout.navigationArea());
+	}
+
+	@Test
+	public void ingredientGridHasNoRoomWhenAvailableAreaHasNoUsableSlots() {
+		// Setup: a plain grid has enough outer area for slots, but no unblocked slots remain.
+		ImmutableRect2i area = new ImmutableRect2i(
+			0,
+			0,
+			2 * IngredientGridLayout.INGREDIENT_WIDTH,
+			IngredientGridLayout.INGREDIENT_HEIGHT
+		);
+
+		// Operation: calculate room from an empty stream of usable slots.
+		boolean hasRoom = IngredientGridRoom.hasRoom(area, Stream.empty());
+
+		// Assertions: lookup-history style grids should stop displaying when no usable item slot remains.
+		assertFalse(hasRoom);
+	}
+
+	@Test
+	public void ingredientGridHasRoomWhenAtLeastOneSlotIsAvailable() {
+		// Setup: a plain grid has enough outer area and one unblocked slot.
+		ImmutableRect2i area = new ImmutableRect2i(
+			0,
+			0,
+			2 * IngredientGridLayout.INGREDIENT_WIDTH,
+			IngredientGridLayout.INGREDIENT_HEIGHT
+		);
+		IngredientListSlot availableSlot = new IngredientListSlot(
+			0,
+			0,
+			IngredientGridLayout.INGREDIENT_WIDTH,
+			IngredientGridLayout.INGREDIENT_HEIGHT,
+			IngredientGridLayout.INGREDIENT_PADDING
+		);
+
+		// Operation: calculate room from one usable slot.
+		boolean hasRoom = IngredientGridRoom.hasRoom(area, Stream.of(availableSlot));
+
+		// Assertions: one usable slot is enough for the grid to keep displaying.
+		assertTrue(hasRoom);
 	}
 
 	@Test
