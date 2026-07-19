@@ -56,6 +56,8 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping hoveredClearSearchBar;
 	private final IJeiKeyMapping previousSearch;
 	private final IJeiKeyMapping nextSearch;
+	private final IJeiKeyMapping previousCompletion;
+	private final IJeiKeyMapping nextCompletion;
 
 	private final IJeiKeyMapping copyRecipeId;
 
@@ -213,6 +215,16 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.register(registerMethod);
 
 		nextSearch = search.createMapping("key.jei.nextSearch")
+			.setContext(JeiKeyConflictContext.GUI)
+			.buildKeyboardKey(GLFW.GLFW_KEY_DOWN)
+			.register(registerMethod);
+
+		previousCompletion = search.createMapping("key.jei.previousCompletion")
+			.setContext(JeiKeyConflictContext.GUI)
+			.buildKeyboardKey(GLFW.GLFW_KEY_UP)
+			.register(registerMethod);
+
+		nextCompletion = search.createMapping("key.jei.nextCompletion")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildKeyboardKey(GLFW.GLFW_KEY_DOWN)
 			.register(registerMethod);
@@ -492,6 +504,16 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	@Override
 	public IJeiKeyMapping getNextSearch() {
 		return nextSearch;
+	}
+
+	@Override
+	public IJeiKeyMapping getPreviousCompletion() {
+		return previousCompletion;
+	}
+
+	@Override
+	public IJeiKeyMapping getNextCompletion() {
+		return nextCompletion;
 	}
 
 	@Override

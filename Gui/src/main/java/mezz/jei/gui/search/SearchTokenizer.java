@@ -2,7 +2,11 @@ package mezz.jei.gui.search;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class SearchTokenizer {
+	private static final Pattern FULL_TOKEN = Pattern.compile("-?[^\\s\"\\-|]?\"[^\\\"]*(?:\"|$)|\\||-[^\\s\\-|]*|[^\\s\\-|]+");
 
 	public List<Token> tokenize(String filterText) {
 		List<Token> tokens = new ArrayList<>();
@@ -73,5 +77,29 @@ public class SearchTokenizer {
 		if (!text.isEmpty()) {
 			tokens.add(new Token(text, exclusion));
 		}
+	}
+
+	public static Matcher fullTokenMatcher(String text) {
+		return FULL_TOKEN.matcher(text);
+	}
+
+	public static List<String> splitByOrOutsideQuotes(String text) {
+		List<String> filters = new ArrayList<>();
+		StringBuilder current = new StringBuilder();
+		boolean inQuote = false;
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (c == '"') {
+				inQuote = !inQuote;
+			}
+			if (c == '|' && !inQuote) {
+				filters.add(current.toString());
+				current.setLength(0);
+			} else {
+				current.append(c);
+			}
+		}
+		filters.add(current.toString());
+		return filters;
 	}
 }

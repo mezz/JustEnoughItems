@@ -25,6 +25,7 @@ public class Textures {
 	private final ScalableDrawable recipeBackground;
 	private final ScalableDrawable recipePreviewBackground;
 	private final ScalableDrawable searchBackground;
+	private final ScalableDrawable completionPopupBackground;
 	private final ScalableDrawable scrollbarBackground;
 	private final ScalableDrawable scrollbarMarker;
 
@@ -75,6 +76,7 @@ public class Textures {
 		this.recipeBackground = createScalableGuiSprite("single_recipe_background");
 		this.recipePreviewBackground = createScalableGuiSprite("recipe_preview_background");
 		this.searchBackground = createScalableGuiSprite("search_background");
+		this.completionPopupBackground = createScalableGuiSprite("completion_popup_background");
 		this.scrollbarBackground = createScalableGuiSprite("scrollbar_background");
 		this.scrollbarMarker = createScalableGuiSprite("scrollbar_marker");
 		this.catalystTab = createScalableGuiSprite("catalyst_tab");
@@ -219,6 +221,10 @@ public class Textures {
 
 	public ScalableDrawable getSearchBackground() {
 		return searchBackground;
+	}
+
+	public ScalableDrawable getCompletionPopupBackground() {
+		return completionPopupBackground;
 	}
 
 	public IDrawableStatic getInfoIcon() {

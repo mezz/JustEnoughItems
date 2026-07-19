@@ -105,6 +105,8 @@
   "key.jei.clearSearchBar": "Clear Search Filter",
   "key.jei.previousSearch": "Previous Search",
   "key.jei.nextSearch": "Next Search",
+  "key.jei.previousCompletion": "Previous Completion",
+  "key.jei.nextCompletion": "Next Completion",
 
   "key.category.jei.dev.tools": "JEI (Dev Tools)",
   "key.jei.copy.recipe.id": "Copy Recipe ID to Clipboard",
@@ -198,6 +200,8 @@
   "jei.config.client.input.dragDelayInMilliseconds.description": "Number of milliseconds before a long mouse click is considered dragging the mouse.",
   "jei.config.client.input.smoothScrollRate": "Smooth Scroll Rate",
   "jei.config.client.input.smoothScrollRate.description": "Scroll rate for scrolling the mouse wheel in smooth-scrolling scroll boxes. Measured in pixels.",
+  "jei.config.client.input.searchCompletionEnabled": "Search Completion",
+  "jei.config.client.input.searchCompletionEnabled.description": "Show search completion suggestions when typing in the JEI search bar.",
 
   "jei.config.client.performance": "Performance",
   "jei.config.client.performance.description": "Config options related to performance optimizations in JEI.",
@@ -240,6 +244,15 @@
   "jei.config.client.search.searchShortModNames.description": "Search by the shorthand first letters of a mod's name.",
   "jei.config.client.search.searchIngredientAliases": "Search Ingredient Aliases",
   "jei.config.client.search.searchIngredientAliases.description": "Search ingredient aliases (alternative names) that are added by plugins, in addition to ingredient names.",
+
+  "jei.search.completion.prefix.modName": "Search by mod name",
+  "jei.search.completion.prefix.tag": "Search by tag name",
+  "jei.search.completion.prefix.tooltip": "Search within item tooltips",
+  "jei.search.completion.prefix.creativeTab": "Search by creative tab name",
+  "jei.search.completion.prefix.color": "Search by color name",
+  "jei.search.completion.prefix.identifier": "Search by item identifier",
+  "jei.search.completion.operator.not": "NOT: exclude results matching this token",
+  "jei.search.completion.operator.or": "OR: combine with another search group",
 
   "jei.config.client.ingredientList": "Ingredient List",
   "jei.config.client.ingredientList.description": "Config options related to the Ingredient List (the list of ingredients on the right side of the screen)",

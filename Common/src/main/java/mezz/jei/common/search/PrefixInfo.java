@@ -2,6 +2,7 @@ package mezz.jei.common.search;
 
 import mezz.jei.api.search.ISearchStorageBuilder;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
@@ -9,6 +10,8 @@ import java.util.Collection;
 public class PrefixInfo<T, I> {
 	private final String id;
 	private final char prefix;
+	private final Component description;
+	private final boolean supportsDynamicCompletion;
 	private final IModeGetter modeGetter;
 	private final IStringsGetter<T> stringsGetter;
 	private final ISearchStorageBuilderFactory searchStorageBuilderFactory;
@@ -16,12 +19,16 @@ public class PrefixInfo<T, I> {
 	public PrefixInfo(
 		String id,
 		char prefix,
+		Component description,
+		boolean supportsDynamicCompletion,
 		IModeGetter modeGetter,
 		IStringsGetter<T> stringsGetter,
 		ISearchStorageBuilderFactory searchStorageBuilderFactory
 	) {
 		this.id = id;
 		this.prefix = prefix;
+		this.description = description;
+		this.supportsDynamicCompletion = supportsDynamicCompletion;
 		this.modeGetter = modeGetter;
 		this.stringsGetter = stringsGetter;
 		this.searchStorageBuilderFactory = searchStorageBuilderFactory;
@@ -29,6 +36,14 @@ public class PrefixInfo<T, I> {
 
 	public char getPrefix() {
 		return prefix;
+	}
+
+	public Component getDescription() {
+		return description;
+	}
+
+	public boolean supportsDynamicCompletion() {
+		return supportsDynamicCompletion;
 	}
 
 	public SearchMode getMode() {

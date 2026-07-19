@@ -49,6 +49,9 @@ public interface IInternalKeyMappings extends IJeiKeyMappings {
 	IJeiKeyMapping getPreviousSearch();
 	IJeiKeyMapping getNextSearch();
 
+	IJeiKeyMapping getPreviousCompletion();
+	IJeiKeyMapping getNextCompletion();
+
 	IJeiKeyMapping getCopyRecipeId();
 
 	// internal only, unregistered and can't be changed because they match vanilla Minecraft hard-coded keys:

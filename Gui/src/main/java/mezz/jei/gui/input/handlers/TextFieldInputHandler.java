@@ -26,6 +26,33 @@ public class TextFieldInputHandler implements IUserInputHandler {
 	}
 
 	private boolean handleUserInputBoolean(UserInput input, IInternalKeyMappings keyBindings) {
+		if (textFieldFilter.isCompletionVisible()) {
+			if (input.is(keyBindings.getEnterKey())) {
+				if (!input.isSimulate()) {
+					textFieldFilter.acceptCompletion();
+				}
+				return true;
+			}
+			if (input.is(keyBindings.getPreviousCompletion())) {
+				if (!input.isSimulate()) {
+					textFieldFilter.moveCompletion(-1);
+				}
+				return true;
+			}
+			if (input.is(keyBindings.getNextCompletion())) {
+				if (!input.isSimulate()) {
+					textFieldFilter.moveCompletion(1);
+				}
+				return true;
+			}
+			if (input.is(keyBindings.getEscapeKey())) {
+				if (!input.isSimulate()) {
+					textFieldFilter.closeCompletion();
+				}
+				return true;
+			}
+		}
+
 		if (input.is(keyBindings.getEnterKey()) || input.is(keyBindings.getEscapeKey())) {
 			return handleSetFocused(input, false);
 		}
@@ -38,6 +65,21 @@ public class TextFieldInputHandler implements IUserInputHandler {
 			textFieldFilter.isMouseOver(input.getMouseX(), input.getMouseY())
 		) {
 			return handleHoveredClearSearchBar(input);
+		}
+
+		if (textFieldFilter.isCompletionVisible()) {
+			if (input.ifMouseEvent((event, doubleClicked) -> {
+				if (input.isSimulate()) {
+					return textFieldFilter.isCompletionMouseOver(event.x(), event.y());
+				} else {
+					return textFieldFilter.handleCompletionClick(event.x(), event.y());
+				}
+			})) {
+				if (!input.isSimulate()) {
+					handleSetFocused(input, true);
+				}
+				return true;
+			}
 		}
 
 		if (input.callVanilla(
