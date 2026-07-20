@@ -11,7 +11,15 @@ public interface IIngredientGrid extends IRecipeFocusSource {
 
 	int size();
 
+	int getColumnCount();
+
+	int getRowCount();
+
 	void set(int firstItemIndex, List<IElement<?>> ingredientList);
+
+	default void set(int firstItemIndex, int smoothScrollRowPixelOffset, List<IElement<?>> ingredientList) {
+		set(firstItemIndex, ingredientList);
+	}
 
 	Stream<IElement<?>> getVisibleElements();
 

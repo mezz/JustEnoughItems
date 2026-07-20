@@ -232,7 +232,9 @@
   "jei.config.client.ingredientList.verticalAlignment": "Vertical Alignment",
   "jei.config.client.ingredientList.verticalAlignment.description": "Vertical alignment of the ingredient list inside the available area.",
   "jei.config.client.ingredientList.navigationVisibility": "Navigation Visibility",
-  "jei.config.client.ingredientList.navigationVisibility.description": "Visibility of the top page buttons. Use AUTO_HIDE to only show it when there are multiple pages.",
+  "jei.config.client.ingredientList.navigationVisibility.description": "Visibility of navigation controls like page buttons and scroll bars. Use AUTO_HIDE to only show them when the list overflows.",
+  "jei.config.client.ingredientList.navigationMode": "Navigation Mode",
+  "jei.config.client.ingredientList.navigationMode.description": "Choose PAGED for page buttons, SCROLLING for a row-stepped scroll bar, or SMOOTH_SCROLLING for a smooth scroll bar.",
   "jei.config.client.ingredientList.drawBackground": "Draw GUI Background",
   "jei.config.client.ingredientList.drawBackground.description": "Enable this to draw a background texture behind the ingredient list.",
 
@@ -247,7 +249,9 @@
   "jei.config.client.bookmarkList.verticalAlignment": "Vertical Alignment",
   "jei.config.client.bookmarkList.verticalAlignment.description": "Vertical alignment of the bookmark list inside the available area.",
   "jei.config.client.bookmarkList.navigationVisibility": "Navigation Visibility",
-  "jei.config.client.bookmarkList.navigationVisibility.description": "Visibility of the top page buttons. Use AUTO_HIDE to only show it when there are multiple pages.",
+  "jei.config.client.bookmarkList.navigationVisibility.description": "Visibility of navigation controls like page buttons and scroll bars. Use AUTO_HIDE to only show them when the list overflows.",
+  "jei.config.client.bookmarkList.navigationMode": "Navigation Mode",
+  "jei.config.client.bookmarkList.navigationMode.description": "Choose PAGED for page buttons, SCROLLING for a row-stepped scroll bar, or SMOOTH_SCROLLING for a smooth scroll bar.",
   "jei.config.client.bookmarkList.drawBackground": "Draw GUI Background",
   "jei.config.client.bookmarkList.drawBackground.description": "Enable this to draw a background texture behind the bookmark list.",
 

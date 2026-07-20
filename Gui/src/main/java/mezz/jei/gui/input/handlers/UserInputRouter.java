@@ -119,6 +119,26 @@ public class UserInputRouter {
 			.orElse(false);
 	}
 
+	public boolean handleMouseDragged(double mouseX, double mouseY, InputConstants.Key mouseKey, double dragX, double dragY) {
+		Optional<IUserInputHandler> pendingHandler = Optional.ofNullable(this.pending.get(mouseKey))
+			.flatMap(inputHandler -> inputHandler.handleMouseDragged(mouseX, mouseY, mouseKey, dragX, dragY));
+		if (pendingHandler.isPresent()) {
+			if (DebugConfig.isDebugInputsEnabled()) {
+				LOGGER.debug("{} drag handled by pending handler: {}", debugName, pendingHandler.get());
+			}
+			return true;
+		}
+
+		return this.combinedInputHandler.handleMouseDragged(mouseX, mouseY, mouseKey, dragX, dragY)
+			.map(callback -> {
+				if (DebugConfig.isDebugInputsEnabled()) {
+					LOGGER.debug("{} drag handled by: {}", debugName, callback);
+				}
+				return true;
+			})
+			.orElse(false);
+	}
+
 	@Override
 	public String toString() {
 		String pendingString = pending.entrySet().stream()

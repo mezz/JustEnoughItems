@@ -50,7 +50,9 @@ import java.util.stream.Stream;
 public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private final IngredientGridPageState pageState = new IngredientGridPageState();
 	private final IngredientGridPaged pageDelegate;
+	private final IngredientGridScrollController scrollController;
 	private final PageNavigation navigation;
+	private final IngredientGridScrollbar scrollbar;
 	private final IIngredientGridConfig gridConfig;
 	private final IIngredientManager ingredientManager;
 	private final String debugName;
@@ -90,7 +92,14 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.gridConfig = gridConfig;
 		this.ingredientManager = ingredientManager;
 		this.pageDelegate = new IngredientGridPaged();
+		this.scrollController = new IngredientGridScrollController(
+			ingredientSource,
+			this.ingredientGrid,
+			gridConfig,
+			clientConfig
+		);
 		this.navigation = new PageNavigation(this.pageDelegate, false);
+		this.scrollbar = new IngredientGridScrollbar(this.scrollController, this.navigation::updatePageNumber);
 		this.background = background;
 		this.slotBackground = slotBackground;
 		this.commandUtil = new CommandUtil(clientConfig, serverConnection);
@@ -125,15 +134,24 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	public void updateLayoutKeepingPageAnchorVisible(@Nullable IElement<?> pageAnchorElement) {
-		List<IElement<?>> ingredientList = ingredientSource.getElements();
-		int firstItemIndex = this.pageState.updateKeepingPageAnchorVisible(pageAnchorElement, ingredientList, ingredientGrid.size());
-		this.ingredientGrid.set(firstItemIndex, ingredientList);
+		if (usesScrollbar()) {
+			this.scrollController.updateLayoutKeepingScrollAnchorVisible(pageAnchorElement);
+		} else {
+			List<IElement<?>> ingredientList = ingredientSource.getElements();
+			int firstItemIndex = this.pageState.updateKeepingPageAnchorVisible(pageAnchorElement, ingredientList, ingredientGrid.size());
+			this.ingredientGrid.set(firstItemIndex, ingredientList);
+		}
 		this.navigation.updatePageNumber();
 	}
 
 	@Nullable
 	public IElement<?> getPageAnchorElement() {
-		IElement<?> pageAnchorElement = this.pageState.getPageAnchorElement(ingredientSource.getElements());
+		IElement<?> pageAnchorElement;
+		if (usesScrollbar()) {
+			pageAnchorElement = this.scrollController.getScrollAnchorElement();
+		} else {
+			pageAnchorElement = this.pageState.getPageAnchorElement(ingredientSource.getElements());
+		}
 		if (pageAnchorElement != null) {
 			return pageAnchorElement;
 		}
@@ -149,11 +167,17 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	private void updateLayoutStartingAt(int firstItemIndex) {
-		List<IElement<?>> ingredientList = ingredientSource.getElements();
-		int renderFirstItemIndex = this.pageState.updateForPageNavigation(firstItemIndex, ingredientList.size(), ingredientGrid.size());
-		this.ingredientGrid.set(renderFirstItemIndex, ingredientList);
+		if (usesScrollbar()) {
+			this.scrollController.updateLayoutStartingAt(firstItemIndex);
+		} else {
+			List<IElement<?>> ingredientList = ingredientSource.getElements();
+			int renderFirstItemIndex = this.pageState.updateForPageNavigation(firstItemIndex, ingredientList.size(), ingredientGrid.size());
+			this.ingredientGrid.set(renderFirstItemIndex, ingredientList);
+		}
 		this.navigation.updatePageNumber();
-		setAnchorToFirstVisible();
+		if (!usesScrollbar()) {
+			setAnchorToFirstVisible();
+		}
 	}
 
 	private void setAnchorToFirstVisible() {
@@ -166,8 +190,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
 		this.guiExclusionAreas = guiExclusionAreas;
-		IngredientGridWithNavigationLayout layout = IngredientGridButtonNavigationLayout.calculate(
-			this.gridConfig,
+		IngredientGridWithNavigationLayout layout = calculateLayout(
 			availableArea,
 			guiExclusionAreas,
 			mouseExclusionPoint,
@@ -180,14 +203,41 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.ingredientGrid.updateBounds(layout.ingredientGridArea(), guiExclusionAreas, mouseExclusionPoint);
 		this.slotBackgroundArea = layout.slotBackgroundArea();
 		this.navigation.updateBounds(layout.navigationArea());
+		this.scrollbar.updateBounds(layout.scrollbarArea());
 		this.backgroundArea = layout.backgroundArea();
 		this.active = true;
+	}
+
+	private IngredientGridWithNavigationLayout calculateLayout(
+		ImmutableRect2i availableArea,
+		Set<ImmutableRect2i> guiExclusionAreas,
+		@Nullable ImmutablePoint2i mouseExclusionPoint,
+		int ingredientCount
+	) {
+		if (usesScrollbar()) {
+			return IngredientGridScrollbarLayout.calculate(
+				this.gridConfig,
+				availableArea,
+				guiExclusionAreas,
+				mouseExclusionPoint,
+				ingredientCount
+			);
+		}
+
+		return IngredientGridButtonNavigationLayout.calculate(
+			this.gridConfig,
+			availableArea,
+			guiExclusionAreas,
+			mouseExclusionPoint,
+			ingredientCount
+		);
 	}
 
 	private void clearLayout() {
 		this.ingredientGrid.updateBounds(ImmutableRect2i.EMPTY, Set.of(), null);
 		this.slotBackgroundArea = ImmutableRect2i.EMPTY;
 		this.navigation.updateBounds(ImmutableRect2i.EMPTY);
+		this.scrollbar.updateBounds(ImmutableRect2i.EMPTY);
 		this.backgroundArea = ImmutableRect2i.EMPTY;
 		this.active = false;
 	}
@@ -219,6 +269,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		}
 
 		this.ingredientGrid.draw(minecraft, guiGraphics, mouseX, mouseY);
+		this.scrollbar.draw(guiGraphics, mouseX, mouseY);
 		this.navigation.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 	}
 
@@ -243,7 +294,20 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	public IUserInputHandler createInputHandler() {
 		return new CombinedInputHandler(
 			this.debugName,
-			new UserInputHandler(this.pageDelegate, this.ingredientGrid, this.toggleState, this.clientConfig, this.commandUtil, this.ingredientManager, this::isMouseOver, this.ghostIngredientQuickMoveManager),
+			this.scrollbar,
+			new UserInputHandler(
+				this.pageDelegate,
+				this.scrollController,
+				this.gridConfig,
+				this.ingredientGrid,
+				this.toggleState,
+				this.clientConfig,
+				this.commandUtil,
+				this.ingredientManager,
+				this::isMouseOver,
+				this.navigation::updatePageNumber,
+				this.ghostIngredientQuickMoveManager
+			),
 			this.ingredientGrid.getInputHandler(),
 			this.navigation.createInputHandler()
 		);
@@ -289,9 +353,25 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		return this.ingredientGrid.getSlots();
 	}
 
+	private boolean usesScrollbar() {
+		return this.gridConfig.getNavigationMode()
+			.usesScrollbar();
+	}
+
+	private boolean updateLayoutWhenChanged(boolean layoutChanged) {
+		if (layoutChanged) {
+			this.navigation.updatePageNumber();
+		}
+		return layoutChanged;
+	}
+
 	private class IngredientGridPaged implements IPaged {
 		@Override
 		public boolean nextPage() {
+			if (usesScrollbar()) {
+				return updateLayoutWhenChanged(scrollController.scrollByRows(scrollController.getVisibleScrollRows()));
+			}
+
 			if (getPageCount() <= 1) {
 				return false;
 			}
@@ -311,6 +391,10 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 		@Override
 		public boolean previousPage() {
+			if (usesScrollbar()) {
+				return updateLayoutWhenChanged(scrollController.scrollByRows(-scrollController.getVisibleScrollRows()));
+			}
+
 			if (getPageCount() <= 1) {
 				return false;
 			}
@@ -340,23 +424,39 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 		@Override
 		public boolean hasNext() {
+			if (usesScrollbar()) {
+				return scrollController.canScroll();
+			}
+
 			// true if there is more than one page because this wraps around
 			return getPageCount() > 1;
 		}
 
 		@Override
 		public boolean hasPrevious() {
+			if (usesScrollbar()) {
+				return scrollController.canScroll();
+			}
+
 			// true if there is more than one page because this wraps around
 			return getPageCount() > 1;
 		}
 
 		@Override
 		public int getPageCount() {
+			if (usesScrollbar()) {
+				return scrollController.getHiddenScrollRows() + 1;
+			}
+
 			return IngredientGridPageState.getPageCount(ingredientSource.getElements().size(), ingredientGrid.size());
 		}
 
 		@Override
 		public int getPageNumber() {
+			if (usesScrollbar()) {
+				return scrollController.getFirstVisibleScrollRow();
+			}
+
 			return IngredientGridPageState.getPageNumberForFirstItemIndex(pageState.getFirstItemIndex(), ingredientGrid.size(), ingredientSource.getElements().size());
 		}
 	}
@@ -371,6 +471,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			IElement<T> element = getElement();
 			if (element.isVisible()) {
 				pageState.setPageAnchorElement(element);
+				scrollController.setScrollAnchorElement(element);
 			}
 			super.show(recipesGui, focusUtil, roles);
 		}
@@ -378,29 +479,38 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	private static class UserInputHandler implements IUserInputHandler {
 		private final IngredientGridPaged paged;
+		private final IngredientGridScrollController scrollController;
+		private final IIngredientGridConfig gridConfig;
 		private final IRecipeFocusSource focusSource;
 		private final IClientToggleState toggleState;
 		private final IClientConfig clientConfig;
 		private final IMouseOverable mouseOverable;
+		private final Runnable onLayoutChanged;
 		private final CommandUtil commandUtil;
 		private final IIngredientManager ingredientManager;
 		private final GhostIngredientQuickMoveManager ghostIngredientQuickMoveManager;
 
 		private UserInputHandler(
 			IngredientGridPaged paged,
+			IngredientGridScrollController scrollController,
+			IIngredientGridConfig gridConfig,
 			IRecipeFocusSource focusSource,
 			IClientToggleState toggleState,
 			IClientConfig clientConfig,
 			CommandUtil commandUtil,
 			IIngredientManager ingredientManager,
 			IMouseOverable mouseOverable,
+			Runnable onLayoutChanged,
 			GhostIngredientQuickMoveManager ghostIngredientQuickMoveManager
 		) {
 			this.paged = paged;
+			this.scrollController = scrollController;
+			this.gridConfig = gridConfig;
 			this.focusSource = focusSource;
 			this.toggleState = toggleState;
 			this.clientConfig = clientConfig;
 			this.mouseOverable = mouseOverable;
+			this.onLayoutChanged = onLayoutChanged;
 			this.commandUtil = commandUtil;
 			this.ingredientManager = ingredientManager;
 			this.ghostIngredientQuickMoveManager = ghostIngredientQuickMoveManager;
@@ -409,6 +519,16 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		@Override
 		public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaY) {
 			if (!mouseOverable.isMouseOver(mouseX, mouseY)) {
+				return Optional.empty();
+			}
+			if (this.gridConfig.getNavigationMode().usesScrollbar()) {
+				IngredientGridScrollController.ScrollResult scrollResult = this.scrollController.scrollByMouse(scrollDeltaY);
+				if (scrollResult.changed()) {
+					this.onLayoutChanged.run();
+				}
+				if (scrollResult.consumed()) {
+					return Optional.of(this);
+				}
 				return Optional.empty();
 			}
 			if (scrollDeltaY < 0) {
