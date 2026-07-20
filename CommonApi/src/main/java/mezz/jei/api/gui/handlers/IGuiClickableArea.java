@@ -24,7 +24,7 @@ public interface IGuiClickableArea {
 	/**
 	 * Returns whether the area should render a tooltip when hovered over.
 	 * The tooltip can be modified by overriding {@link #getTooltip}.
-	 * This will also disable the default "Show Recipes" message.
+	 * This will also disable the default "Show all recipes" message.
 	 *
 	 * @since 11.2.2
 	 */
@@ -46,7 +46,7 @@ public interface IGuiClickableArea {
 
 	/**
 	 * Add the tooltip elements to be shown on the tooltip when this area is hovered over.
-	 * Leave it empty to display the default "Show Recipes" message.
+	 * Leave it empty to display the default "Show all recipes" message.
 	 *
 	 * @since 19.5.4
 	 */
