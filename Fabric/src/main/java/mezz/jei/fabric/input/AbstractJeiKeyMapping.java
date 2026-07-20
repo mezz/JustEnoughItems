@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import java.util.function.Consumer;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 
@@ -37,6 +38,12 @@ public abstract class AbstractJeiKeyMapping implements IJeiKeyMappingInternal {
 	@Override
 	public Component getTranslatedKeyMessage() {
 		return this.getMapping().getTranslatedKeyMessage();
+	}
+
+	@Override
+	public boolean isDown() {
+		return context.isActive() &&
+			IJeiKeyMappingInternal.isKeyDown(KeyBindingHelper.getBoundKeyOf(this.getMapping()));
 	}
 
 	@Override

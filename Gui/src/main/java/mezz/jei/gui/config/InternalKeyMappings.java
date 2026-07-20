@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.keys.IJeiKeyMappingCategoryBuilder;
+import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
 import mezz.jei.common.input.keys.JeiMultiKeyMapping;
@@ -26,6 +27,7 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping nextCategory;
 	private final IJeiKeyMapping previousRecipePage;
 	private final IJeiKeyMapping nextRecipePage;
+	private final IJeiKeyMappingInternal pauseRecipeCycling;
 
 	private final IJeiKeyMapping previousPage;
 	private final IJeiKeyMapping nextPage;
@@ -235,6 +237,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.buildKeyboardKey(GLFW.GLFW_KEY_PAGE_DOWN)
 			.register(registerMethod);
 
+		pauseRecipeCycling = recipeCategory.createMapping("key.jei.pauseRecipeCycling")
+			.setContext(JeiKeyConflictContext.GUI)
+			.buildKeyboardKey(GLFW.GLFW_KEY_LEFT_SHIFT)
+			.register(registerMethod);
+
 		previousCategory = recipeCategory.createMapping("key.jei.previousCategory")
 			.setContext(JeiKeyConflictContext.GUI)
 			.setModifier(JeiKeyModifier.SHIFT)
@@ -337,6 +344,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	@Override
 	public IJeiKeyMapping getNextRecipePage() {
 		return nextRecipePage;
+	}
+
+	@Override
+	public IJeiKeyMappingInternal getPauseRecipeCycling() {
+		return pauseRecipeCycling;
 	}
 
 	@Override
