@@ -263,19 +263,22 @@ public class MMCQ {
 
 			if (rval < rmin) {
 				rmin = rval;
-			} else if (rval > rmax) {
+			}
+			if (rval > rmax) {
 				rmax = rval;
 			}
 
 			if (gval < gmin) {
 				gmin = gval;
-			} else if (gval > gmax) {
+			}
+			if (gval > gmax) {
 				gmax = gval;
 			}
 
 			if (bval < bmin) {
 				bmin = bval;
-			} else if (bval > bmax) {
+			}
+			if (bval > bmax) {
 				bmax = bval;
 			}
 		}
