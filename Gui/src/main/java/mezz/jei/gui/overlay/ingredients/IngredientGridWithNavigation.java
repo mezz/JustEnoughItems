@@ -123,7 +123,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
-		IngredientGridWithNavigationLayout.Layout layout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout layout = IngredientGridButtonNavigationLayout.calculate(
 			this.gridConfig,
 			availableArea,
 			guiExclusionAreas,
@@ -134,7 +134,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	private void applyLayout(
-		IngredientGridWithNavigationLayout.Layout layout,
+		IngredientGridWithNavigationLayout layout,
 		Set<ImmutableRect2i> guiExclusionAreas,
 		@Nullable ImmutablePoint2i mouseExclusionPoint
 	) {

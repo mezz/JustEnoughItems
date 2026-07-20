@@ -226,8 +226,8 @@
   "jei.config.client.ingredientList.horizontalAlignment.description": "Horisontal justering av ingredienslistan inuti det tillgängliga området.",
   "jei.config.client.ingredientList.verticalAlignment": "Vertikal justering",
   "jei.config.client.ingredientList.verticalAlignment.description": "Vertikal justering av ingredienslistan inuti det tillgängliga området.",
-  "jei.config.client.ingredientList.buttonNavigationVisibility": "Visa navigering",
-  "jei.config.client.ingredientList.buttonNavigationVisibility.description": "Visa knappar ovanför sidorna. Använd AUTO_HIDE för att endast visa dem när det finns flera sidor.",
+  "jei.config.client.ingredientList.navigationVisibility": "Visa navigering",
+  "jei.config.client.ingredientList.navigationVisibility.description": "Visa knappar ovanför sidorna. Använd AUTO_HIDE för att endast visa dem när det finns flera sidor.",
   "jei.config.client.ingredientList.drawBackground": "Rendera gränssnittsbakgrund",
   "jei.config.client.ingredientList.drawBackground.description": "Aktivera detta för att rendera en bakgrundstextur bakom ingredienslistan.",
 
@@ -241,8 +241,8 @@
   "jei.config.client.bookmarkList.horizontalAlignment.description": "Horisontal justering av bokmärkeslistan inuti det tillgängliga området.",
   "jei.config.client.bookmarkList.verticalAlignment": "Vertikal justering",
   "jei.config.client.bookmarkList.verticalAlignment.description": "Vertikal justering av bokmärkeslistan inuti det tillgängliga området.",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility": "Visa navigering",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility.description": "Visa knappar ovanför sidorna. Använd AUTO_HIDE för att endast visa dem när det finns flera sidor.",
+  "jei.config.client.bookmarkList.navigationVisibility": "Visa navigering",
+  "jei.config.client.bookmarkList.navigationVisibility.description": "Visa knappar ovanför sidorna. Använd AUTO_HIDE för att endast visa dem när det finns flera sidor.",
   "jei.config.client.bookmarkList.drawBackground": "Rendera gränssnittsbakgrund",
   "jei.config.client.bookmarkList.drawBackground.description": "Aktivera detta för att rendera en bakgrundstextur bakom bokmärkeslistan.",
 

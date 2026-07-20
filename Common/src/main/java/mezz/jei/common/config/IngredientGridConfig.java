@@ -18,14 +18,14 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	private static final int largestNumColumns = 100;
 
 	private static final VerticalAlignment defaultVerticalAlignment = VerticalAlignment.TOP;
-	private static final NavigationVisibility defaultButtonNavigationVisibility = NavigationVisibility.ENABLED;
+	private static final NavigationVisibility defaultNavigationVisibility = NavigationVisibility.ENABLED;
 	private static final boolean defaultDrawBackground = false;
 
 	private final Supplier<Integer> maxRows;
 	private final Supplier<Integer> maxColumns;
 	private final Supplier<HorizontalAlignment> horizontalAlignment;
 	private final Supplier<VerticalAlignment> verticalAlignment;
-	private final Supplier<NavigationVisibility> buttonNavigationVisibility;
+	private final Supplier<NavigationVisibility> navigationVisibility;
 	private final Supplier<Boolean> drawBackground;
 
 	public IngredientGridConfig(String categoryName, IConfigSchemaBuilder builder, HorizontalAlignment defaultHorizontalAlignment) {
@@ -44,7 +44,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 		);
 		horizontalAlignment = category.addEnum("horizontalAlignment", defaultHorizontalAlignment);
 		verticalAlignment = category.addEnum("verticalAlignment", defaultVerticalAlignment);
-		buttonNavigationVisibility = category.addEnum("buttonNavigationVisibility", defaultButtonNavigationVisibility);
+		navigationVisibility = category.addEnum("navigationVisibility", defaultNavigationVisibility);
 		drawBackground = category.addBoolean("drawBackground", defaultDrawBackground);
 	}
 
@@ -84,7 +84,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	}
 
 	@Override
-	public NavigationVisibility getButtonNavigationVisibility() {
-		return buttonNavigationVisibility.get();
+	public NavigationVisibility getNavigationVisibility() {
+		return navigationVisibility.get();
 	}
 }
