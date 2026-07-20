@@ -41,6 +41,7 @@ public class EventRegistration {
 		ScreenEvents.AFTER_INIT.register(this::afterInit);
 		JeiScreenEvents.DRAW_BACKGROUND.register(this::drawBackground);
 		JeiScreenEvents.DRAW_FOREGROUND.register(this::drawForeground);
+		JeiScreenEvents.ALLOW_MOUSE_DRAG.register(this::allowMouseDrag);
 	}
 
 	private void registerScreenEvents(Screen screen) {
@@ -86,6 +87,13 @@ public class EventRegistration {
 			return false;
 		}
 		return !clientInputHandler.onGuiMouseScroll(mouseX, mouseY, horizontalAmount, verticalAmount);
+	}
+
+	private boolean allowMouseDrag(Screen screen, double mouseX, double mouseY, int button, double dragX, double dragY) {
+		if (clientInputHandler == null) {
+			return true;
+		}
+		return !clientInputHandler.onGuiMouseDragged(screen, mouseX, mouseY, button, dragX, dragY);
 	}
 
 	private void afterTick(Screen screen) {

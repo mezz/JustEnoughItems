@@ -1,5 +1,6 @@
 package mezz.jei.gui.input;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ReflectionUtil;
@@ -109,6 +110,11 @@ public class ClientInputHandler {
 
 	public boolean onGuiMouseScroll(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
 		return this.inputRouter.handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
+	}
+
+	public boolean onGuiMouseDragged(Screen screen, double mouseX, double mouseY, int button, double dragX, double dragY) {
+		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(button);
+		return this.inputRouter.handleMouseDragged(mouseX, mouseY, input, dragX, dragY);
 	}
 
 	private boolean handleCharTyped(char codePoint, int modifiers) {

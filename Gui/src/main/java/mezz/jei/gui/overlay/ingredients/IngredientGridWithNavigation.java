@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 public class IngredientGridWithNavigation implements IIngredientListOverlayContents {
 	private final IngredientGridWithNavigationController controller;
 	private final PageNavigation navigation;
+	private final IngredientGridScrollbar scrollbar;
 	private final IIngredientGridConfig gridConfig;
 	private final IngredientGrid ingredientGrid;
 	private final IIngredientGridSource ingredientSource;
@@ -80,6 +81,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.controller = new IngredientGridWithNavigationController(
 			ingredientSource,
 			this.ingredientGrid,
+			gridConfig,
 			toggleState,
 			clientConfig,
 			this.commandUtil,
@@ -88,9 +90,11 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 			ghostIngredientQuickMoveManager
 		);
 		this.navigation = new PageNavigation(this.controller, false);
+		this.scrollbar = new IngredientGridScrollbar(this.controller);
 		this.controller.setOnLayoutChanged(this.navigation::updatePageNumber);
 		this.inputHandler = new CombinedInputHandler(
 			debugName,
+			this.scrollbar,
 			this.controller,
 			this.ingredientGrid.getInputHandler(),
 			this.navigation.createInputHandler()
@@ -107,6 +111,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		gridConfig.horizontalAlignment().addListener(v -> markLayoutDirty());
 		gridConfig.verticalAlignment().addListener(v -> markLayoutDirty());
 		gridConfig.navigationVisibility().addListener(v -> markLayoutDirty());
+		gridConfig.navigationMode().addListener(v -> markLayoutDirty());
 	}
 
 	private void markLayoutDirty() {
@@ -148,14 +153,38 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.guiExclusionAreas = guiExclusionAreas;
 		this.mouseExclusionPoint = mouseExclusionPoint;
 		this.layoutDirty = false;
-		IngredientGridWithNavigationLayout layout = IngredientGridButtonNavigationLayout.calculate(
-			this.gridConfig,
+		IngredientGridWithNavigationLayout layout = calculateLayout(
 			availableArea,
 			guiExclusionAreas,
 			mouseExclusionPoint,
 			this.ingredientSource.getElements().size()
 		);
 		applyLayout(layout, guiExclusionAreas, mouseExclusionPoint);
+	}
+
+	private IngredientGridWithNavigationLayout calculateLayout(
+		final ImmutableRect2i availableArea,
+		Set<ImmutableRect2i> guiExclusionAreas,
+		@Nullable ImmutablePoint2i mouseExclusionPoint,
+		int ingredientCount
+	) {
+		if (this.gridConfig.navigationMode().getValue().usesScrollbar()) {
+			return IngredientGridScrollbarLayout.calculate(
+				this.gridConfig,
+				availableArea,
+				guiExclusionAreas,
+				mouseExclusionPoint,
+				ingredientCount
+			);
+		}
+
+		return IngredientGridButtonNavigationLayout.calculate(
+			this.gridConfig,
+			availableArea,
+			guiExclusionAreas,
+			mouseExclusionPoint,
+			ingredientCount
+		);
 	}
 
 	private void applyLayout(
@@ -172,6 +201,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.ingredientGrid.updateBounds(layout.ingredientGridArea(), guiExclusionAreas, mouseExclusionPoint);
 		this.slotBackgroundArea = layout.slotBackgroundArea();
 		this.navigation.updateBounds(layout.navigationArea());
+		this.scrollbar.updateBounds(layout.scrollbarArea());
 		this.backgroundArea = layout.backgroundArea();
 		this.active = true;
 	}
@@ -180,6 +210,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.ingredientGrid.updateBounds(ImmutableRect2i.EMPTY, Set.of(), null);
 		this.slotBackgroundArea = ImmutableRect2i.EMPTY;
 		this.navigation.updateBounds(ImmutableRect2i.EMPTY);
+		this.scrollbar.updateBounds(ImmutableRect2i.EMPTY);
 		this.backgroundArea = ImmutableRect2i.EMPTY;
 		this.active = false;
 	}
@@ -229,6 +260,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 			return;
 		}
 		this.ingredientGrid.draw(minecraft, guiGraphics, mouseX, mouseY);
+		this.scrollbar.draw(guiGraphics, mouseX, mouseY);
 		this.navigation.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 	}
 

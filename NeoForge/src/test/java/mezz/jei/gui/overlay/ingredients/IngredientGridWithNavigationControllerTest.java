@@ -3,11 +3,24 @@ package mezz.jei.gui.overlay.ingredients;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiProperties;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PlayToServerPacket;
+import mezz.jei.common.util.NavigationVisibility;
 import mezz.jei.gui.ghost.GhostIngredientQuickMoveManager;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
@@ -16,6 +29,8 @@ import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
 import mezz.jei.gui.util.CommandUtil;
+import mezz.jei.gui.util.FocusUtil;
+import mezz.jei.library.focus.FocusFactory;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
@@ -23,11 +38,13 @@ import mezz.jei.test.lib.TestClientConfig;
 import mezz.jei.test.lib.TestClientToggleState;
 import mezz.jei.test.lib.TestColorHelper;
 import mezz.jei.test.lib.TestIngredient;
+import mezz.jei.test.lib.TestJeiConfigValue;
 import mezz.jei.test.lib.TestPlugin;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.item.ItemStack;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -193,25 +210,211 @@ public class IngredientGridWithNavigationControllerTest {
 		assertEquals(0, fixture.controller.getPageNumber());
 	}
 
+	@Test
+	public void scrollingModeScrollsRowsWithoutPaging() {
+		// Setup: scrollbar mode is enabled for a three-column grid with three rows of ingredients.
+		Fixture fixture = Fixture.create(3, 7, true, IngredientGridNavigationMode.SCROLLING);
+		fixture.controller.updateLayoutToFirstPage();
+		fixture.clearLayoutChanges();
+
+		// Operation: scroll down by one wheel notch.
+		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, -1);
+
+		// Assertions: scrollbar mode consumes the scroll and moves down one row instead of a page.
+		assertEquals(Optional.of(fixture.controller), handler);
+		assertEquals(1, fixture.layoutChanges);
+		assertEquals(1, fixture.controller.getPageNumber());
+		assertEquals(3, fixture.grid.firstItemIndex);
+		assertEquals(0, fixture.grid.scrollOffsetY);
+	}
+
+	@Test
+	public void smoothScrollingModeScrollsByPixels() {
+		// Setup: smooth scrollbar mode is enabled for a three-column grid with three rows of ingredients.
+		Fixture fixture = Fixture.create(3, 9, true, IngredientGridNavigationMode.SMOOTH_SCROLLING);
+		fixture.controller.updateLayoutToFirstPage();
+		fixture.clearLayoutChanges();
+
+		// Operation: scroll down by one wheel notch.
+		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, -1);
+
+		// Assertions: smooth mode consumes the scroll and moves by pixels instead of snapping to the next row.
+		assertEquals(Optional.of(fixture.controller), handler);
+		assertEquals(1, fixture.layoutChanges);
+		assertEquals(0, fixture.controller.getPageNumber());
+		assertEquals(0, fixture.grid.firstItemIndex);
+		assertEquals(6, fixture.grid.scrollOffsetY);
+	}
+
+	@Test
+	public void scrollingModeDoesNotWrapFromFirstRowToLastRow() {
+		// Setup: scrollbar mode starts at the top of a multi-row list.
+		Fixture fixture = Fixture.create(3, 7, true, IngredientGridNavigationMode.SCROLLING);
+		fixture.controller.updateLayoutToFirstPage();
+		fixture.clearLayoutChanges();
+
+		// Operation: request previous-page movement from the first scroll row.
+		boolean moved = fixture.controller.previousPage();
+
+		// Assertions: scrollbars clamp at the top instead of wrapping.
+		assertFalse(moved);
+		assertEquals(0, fixture.layoutChanges);
+		assertEquals(0, fixture.controller.getPageNumber());
+	}
+
+	@Test
+	public void scrollingModeConsumesScrollAtBottom() {
+		// Setup: scrollbar mode is already at the bottom of a multi-row list.
+		Fixture fixture = Fixture.create(3, 7, true, IngredientGridNavigationMode.SCROLLING);
+		fixture.controller.updateLayoutToFirstPage();
+		fixture.controller.setScrollOffsetY(1);
+		fixture.clearLayoutChanges();
+
+		// Operation: scroll farther toward the bottom.
+		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, -1);
+
+		// Assertions: JEI consumes the scroll even though the clamped position does not change.
+		assertEquals(Optional.of(fixture.controller), handler);
+		assertEquals(0, fixture.layoutChanges);
+		assertEquals(2, fixture.controller.getPageNumber());
+		assertEquals(6, fixture.grid.firstItemIndex);
+	}
+
+	@Test
+	public void smoothScrollingModeConsumesScrollAtBottom() {
+		// Setup: smooth scrollbar mode is already at the bottom of a multi-row list.
+		Fixture fixture = Fixture.create(3, 9, true, IngredientGridNavigationMode.SMOOTH_SCROLLING);
+		fixture.controller.updateLayoutToFirstPage();
+		fixture.controller.setScrollOffsetY(1);
+		fixture.clearLayoutChanges();
+
+		// Operation: scroll farther toward the bottom.
+		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, -1);
+
+		// Assertions: JEI consumes the scroll even though the clamped position does not change.
+		assertEquals(Optional.of(fixture.controller), handler);
+		assertEquals(0, fixture.layoutChanges);
+		assertEquals(2, fixture.controller.getPageNumber());
+		assertEquals(6, fixture.grid.firstItemIndex);
+		assertEquals(0, fixture.grid.scrollOffsetY);
+	}
+
+	@Test
+	public void scrollingModeCanScrollWhenExclusionReducesVisibleSlots() {
+		// Setup: 50 ingredients fit in six nine-column rows, but exclusions leave only 45 usable visible slots.
+		Fixture fixture = Fixture.create(9, 6, 50, true, IngredientGridNavigationMode.SCROLLING);
+		fixture.grid.setVisibleSlotCount(45);
+		fixture.controller.updateLayoutToFirstPage();
+		fixture.clearLayoutChanges();
+
+		// Operation: move to the bottom of the scroll range.
+		fixture.controller.setScrollOffsetY(1);
+
+		// Assertions: the controller treats the blocked cells as reducing visible capacity.
+		assertEquals(1, fixture.layoutChanges);
+		assertEquals(5, fixture.grid.firstItemIndex);
+	}
+
+	@Test
+	public void scrollingModeBottomShowsLastItemsWhenExclusionReducesVisibleSlots() {
+		// Setup: exclusions leave fewer usable slots than the raw row count can display.
+		Fixture fixture = Fixture.create(9, 6, 100, true, IngredientGridNavigationMode.SCROLLING);
+		fixture.grid.setVisibleSlotCount(45);
+		fixture.controller.updateLayoutToFirstPage();
+		fixture.clearLayoutChanges();
+
+		// Operation: move to the bottom of the scroll range.
+		fixture.controller.setScrollOffsetY(1);
+
+		// Assertions: the last 45 visible slots can include the final ingredient.
+		assertEquals(1, fixture.layoutChanges);
+		assertEquals(55, fixture.grid.firstItemIndex);
+	}
+
+	@Test
+	public void smoothScrollingModeBottomShowsLastItemsWhenExclusionReducesVisibleSlots() {
+		// Setup: smooth scrolling uses a separate pixel-offset render path.
+		Fixture fixture = Fixture.create(9, 6, 100, true, IngredientGridNavigationMode.SMOOTH_SCROLLING);
+		fixture.grid.setVisibleSlotCount(45);
+		fixture.controller.updateLayoutToFirstPage();
+		fixture.clearLayoutChanges();
+
+		// Operation: move to the bottom of the scroll range.
+		fixture.controller.setScrollOffsetY(1);
+
+		// Assertions: the exact bottom starts late enough for the final ingredient and has no partial-row offset.
+		assertEquals(1, fixture.layoutChanges);
+		assertEquals(55, fixture.grid.firstItemIndex);
+		assertEquals(0, fixture.grid.scrollOffsetY);
+	}
+
+	@Test
+	public void scrollingModeKeepsClickedAnchorAtRelativePositionWhenVisibleRowsChange() {
+		// Setup: a clicked ingredient is one row down in a ten-row viewport.
+		Fixture fixture = Fixture.create(10, 10, 1000, true, IngredientGridNavigationMode.SCROLLING);
+		fixture.controller.updateLayoutToFirstPage();
+		int hiddenRows = IngredientGridScrollState.getHiddenRows(1000, 10, 10);
+		fixture.controller.setScrollOffsetY(20 / (float) hiddenRows);
+		IElement<?> clickedElement = fixture.source.getElements().get(210);
+		IClickableIngredientInternal<?> clickableIngredient = fixture.controller.createPageAnchorIngredient(
+			createClickableIngredient(clickedElement)
+		);
+		clickableIngredient.show(fixture.recipesGui, fixture.focusUtil, List.of());
+		fixture.clearLayoutChanges();
+
+		// Operation: the GUI changes to show twenty rows.
+		fixture.grid.setGridSize(10, 20);
+		fixture.controller.updateLayoutKeepingPageAnchorVisible(fixture.controller.getPageAnchorElement());
+
+		// Assertions: the clicked ingredient is kept near 10% down the new viewport instead of moving to the top.
+		assertEquals(1, fixture.layoutChanges);
+		assertEquals(190, fixture.grid.firstItemIndex);
+	}
+
 	private static class Fixture {
 		final IngredientGridWithNavigationController controller;
+		final TestNavigationGrid grid;
+		final TestIngredientGridSource source;
+		final IRecipesGui recipesGui;
+		final FocusUtil focusUtil;
 		int layoutChanges;
 
-		private Fixture(IngredientGridWithNavigationController controller) {
+		private Fixture(
+			IngredientGridWithNavigationController controller,
+			TestNavigationGrid grid,
+			TestIngredientGridSource source,
+			FocusUtil focusUtil
+		) {
 			this.controller = controller;
+			this.grid = grid;
+			this.source = source;
+			this.recipesGui = new TestRecipesGui();
+			this.focusUtil = focusUtil;
 			this.controller.setOnLayoutChanged(() -> this.layoutChanges++);
 		}
 
 		static Fixture create(int gridSlots, int itemCount, boolean mouseOver) {
+			return create(gridSlots, itemCount, mouseOver, IngredientGridNavigationMode.PAGED);
+		}
+
+		static Fixture create(int gridSlots, int itemCount, boolean mouseOver, IngredientGridNavigationMode navigationMode) {
+			return create(gridSlots, 1, itemCount, mouseOver, navigationMode);
+		}
+
+		static Fixture create(int columns, int rows, int itemCount, boolean mouseOver, IngredientGridNavigationMode navigationMode) {
 			TestClientConfig clientConfig = new TestClientConfig(false);
 			TestConnectionToServer connection = new TestConnectionToServer();
 			IIngredientManager ingredientManager = createIngredientManager();
+			FocusUtil focusUtil = new FocusUtil(new FocusFactory(ingredientManager), clientConfig, ingredientManager);
 			IRecipeFocusSource emptyFocusSource = new EmptyRecipeFocusSource();
 			GhostIngredientQuickMoveManager quickMoveManager = new GhostIngredientQuickMoveManager(emptyFocusSource, new TestScreenHelper());
 			CommandUtil commandUtil = new CommandUtil(clientConfig, connection);
+			TestNavigationGrid grid = new TestNavigationGrid(columns, rows);
+			TestIngredientGridSource source = new TestIngredientGridSource(itemCount);
 			IngredientGridWithNavigationController controller = new IngredientGridWithNavigationController(
-				new TestIngredientGridSource(itemCount),
-				new TestNavigationGrid(gridSlots),
+				source,
+				grid,
+				new TestGridConfig(navigationMode),
 				new TestClientToggleState(),
 				clientConfig,
 				commandUtil,
@@ -219,11 +422,68 @@ public class IngredientGridWithNavigationControllerTest {
 				(x, y) -> mouseOver,
 				quickMoveManager
 			);
-			return new Fixture(controller);
+			return new Fixture(controller, grid, source, focusUtil);
 		}
 
 		void clearLayoutChanges() {
 			this.layoutChanges = 0;
+		}
+	}
+
+	private static class TestGridConfig implements IIngredientGridConfig {
+		private final IngredientGridNavigationMode navigationMode;
+
+		private TestGridConfig(IngredientGridNavigationMode navigationMode) {
+			this.navigationMode = navigationMode;
+		}
+
+		@Override
+		public IJeiConfigValue<Integer> maxColumns() {
+			return value("maxColumns", 9);
+		}
+
+		@Override
+		public int getMinColumns() {
+			return 1;
+		}
+
+		@Override
+		public IJeiConfigValue<Integer> maxRows() {
+			return value("maxRows", 16);
+		}
+
+		@Override
+		public int getMinRows() {
+			return 1;
+		}
+
+		@Override
+		public IJeiConfigValue<Boolean> drawBackground() {
+			return value("drawBackground", false);
+		}
+
+		@Override
+		public IJeiConfigValue<IngredientGridNavigationMode> navigationMode() {
+			return value("navigationMode", navigationMode);
+		}
+
+		@Override
+		public IJeiConfigValue<HorizontalAlignment> horizontalAlignment() {
+			return value("horizontalAlignment", HorizontalAlignment.RIGHT);
+		}
+
+		@Override
+		public IJeiConfigValue<VerticalAlignment> verticalAlignment() {
+			return value("verticalAlignment", VerticalAlignment.TOP);
+		}
+
+		@Override
+		public IJeiConfigValue<NavigationVisibility> navigationVisibility() {
+			return value("navigationVisibility", NavigationVisibility.ENABLED);
+		}
+
+		private static <T> IJeiConfigValue<T> value(String name, T defaultValue) {
+			return new TestJeiConfigValue<>(name, defaultValue);
 		}
 	}
 
@@ -235,7 +495,33 @@ public class IngredientGridWithNavigationControllerTest {
 		return builder.build();
 	}
 
-	private record TestNavigationGrid(int slotCount) implements IIngredientGrid {
+	private static class TestNavigationGrid implements IIngredientGrid {
+		private int columns;
+		private int rows;
+		private int visibleSlotCount;
+		private int firstItemIndex;
+		private int scrollOffsetY;
+
+		private TestNavigationGrid(int slotCount) {
+			this(slotCount, 1);
+		}
+
+		private TestNavigationGrid(int columns, int rows) {
+			this.columns = columns;
+			this.rows = rows;
+			this.visibleSlotCount = columns * rows;
+		}
+
+		private void setGridSize(int columns, int rows) {
+			this.columns = columns;
+			this.rows = rows;
+			this.visibleSlotCount = columns * rows;
+		}
+
+		private void setVisibleSlotCount(int visibleSlotCount) {
+			this.visibleSlotCount = visibleSlotCount;
+		}
+
 		@Override
 		public boolean isMouseOver(double mouseX, double mouseY) {
 			return false;
@@ -243,11 +529,28 @@ public class IngredientGridWithNavigationControllerTest {
 
 		@Override
 		public int size() {
-			return slotCount;
+			return visibleSlotCount;
+		}
+
+		@Override
+		public int getColumnCount() {
+			return columns;
+		}
+
+		@Override
+		public int getRowCount() {
+			return rows;
 		}
 
 		@Override
 		public void set(int firstItemIndex, List<IElement<?>> ingredientList) {
+			set(firstItemIndex, 0, ingredientList);
+		}
+
+		@Override
+		public void set(int firstItemIndex, int scrollOffsetY, List<IElement<?>> ingredientList) {
+			this.firstItemIndex = firstItemIndex;
+			this.scrollOffsetY = scrollOffsetY;
 		}
 
 		@Override
@@ -267,6 +570,69 @@ public class IngredientGridWithNavigationControllerTest {
 		@Override
 		public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 			return Stream.of();
+		}
+	}
+
+	private static IClickableIngredientInternal<?> createClickableIngredient(IElement<?> element) {
+		return createClickableIngredientTyped(element);
+	}
+
+	private static class TestRecipesGui implements IRecipesGui {
+		@Override
+		public void show(List<IFocus<?>> focuses) {
+		}
+
+		@Override
+		public void showTypes(List<RecipeType<?>> recipeTypes) {
+		}
+
+		@Override
+		public <T> void showRecipes(IRecipeCategory<T> recipeCategory, List<T> recipes, List<IFocus<?>> focuses) {
+		}
+
+		@Override
+		public <T> Optional<T> getIngredientUnderMouse(IIngredientType<T> ingredientType) {
+			return Optional.empty();
+		}
+
+		@Override
+		public Optional<Screen> getParentScreen() {
+			return Optional.empty();
+		}
+	}
+
+	private static <T> IClickableIngredientInternal<T> createClickableIngredientTyped(IElement<T> element) {
+		return new TestClickableIngredient<>(element);
+	}
+
+	private record TestClickableIngredient<T>(IElement<T> element) implements IClickableIngredientInternal<T> {
+		@Override
+		public ITypedIngredient<T> getTypedIngredient() {
+			return element.getTypedIngredient();
+		}
+
+		@Override
+		public IElement<T> getElement() {
+			return element;
+		}
+
+		@Override
+		public boolean isMouseOver(double mouseX, double mouseY) {
+			return false;
+		}
+
+		@Override
+		public ItemStack getCheatItemStack(IIngredientManager ingredientManager) {
+			return ItemStack.EMPTY;
+		}
+
+		@Override
+		public boolean canClickToFocus() {
+			return false;
+		}
+
+		@Override
+		public void show(IRecipesGui recipesGui, FocusUtil focusUtil, List<RecipeIngredientRole> roles) {
 		}
 	}
 

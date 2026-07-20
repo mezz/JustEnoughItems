@@ -31,6 +31,7 @@ dependencyProjects.forEach {
 
 neoForge {
     neoFormVersion = "$minecraftVersion-$neoformTimestamp"
+    addModdingDependenciesTo(sourceSets.test.get())
 }
 
 sourceSets {
