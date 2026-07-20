@@ -231,8 +231,8 @@
   "jei.config.client.ingredientList.horizontalAlignment.description": "Horizontal alignment of the ingredient list inside the available area.",
   "jei.config.client.ingredientList.verticalAlignment": "Vertical Alignment",
   "jei.config.client.ingredientList.verticalAlignment.description": "Vertical alignment of the ingredient list inside the available area.",
-  "jei.config.client.ingredientList.buttonNavigationVisibility": "Navigation Visibility",
-  "jei.config.client.ingredientList.buttonNavigationVisibility.description": "Visibility of the top page buttons. Use AUTO_HIDE to only show it when there are multiple pages.",
+  "jei.config.client.ingredientList.navigationVisibility": "Navigation Visibility",
+  "jei.config.client.ingredientList.navigationVisibility.description": "Visibility of the top page buttons. Use AUTO_HIDE to only show it when there are multiple pages.",
   "jei.config.client.ingredientList.drawBackground": "Draw GUI Background",
   "jei.config.client.ingredientList.drawBackground.description": "Enable this to draw a background texture behind the ingredient list.",
 
@@ -246,8 +246,8 @@
   "jei.config.client.bookmarkList.horizontalAlignment.description": "Horizontal alignment of the bookmark list inside the available area.",
   "jei.config.client.bookmarkList.verticalAlignment": "Vertical Alignment",
   "jei.config.client.bookmarkList.verticalAlignment.description": "Vertical alignment of the bookmark list inside the available area.",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility": "Navigation Visibility",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility.description": "Visibility of the top page buttons. Use AUTO_HIDE to only show it when there are multiple pages.",
+  "jei.config.client.bookmarkList.navigationVisibility": "Navigation Visibility",
+  "jei.config.client.bookmarkList.navigationVisibility.description": "Visibility of the top page buttons. Use AUTO_HIDE to only show it when there are multiple pages.",
   "jei.config.client.bookmarkList.drawBackground": "Draw GUI Background",
   "jei.config.client.bookmarkList.drawBackground.description": "Enable this to draw a background texture behind the bookmark list.",
 

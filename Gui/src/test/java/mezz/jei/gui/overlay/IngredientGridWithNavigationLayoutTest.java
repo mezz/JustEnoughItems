@@ -22,8 +22,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(false)
-			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
-		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 		ImmutableRect2i navigationArea = unobstructedLayout.navigationArea();
@@ -31,7 +31,7 @@ public class IngredientGridWithNavigationLayoutTest {
 			0, navigationArea.y(), availableArea.width(), navigationArea.height()
 		);
 
-		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(fullWidthExclusion), null, 0
 		);
 
@@ -50,8 +50,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(true)
-			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
-		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 		ImmutableRect2i navigationArea = unobstructedLayout.navigationArea();
@@ -59,7 +59,7 @@ public class IngredientGridWithNavigationLayoutTest {
 			0, navigationArea.y(), availableArea.width(), navigationArea.height()
 		);
 
-		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(fullWidthExclusion), null, 0
 		);
 
@@ -80,8 +80,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(false)
-			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
-		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 		ImmutableRect2i navigationArea = unobstructedLayout.navigationArea();
@@ -92,7 +92,7 @@ public class IngredientGridWithNavigationLayoutTest {
 			navigationArea.height()
 		);
 
-		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(rightHalfExclusion), null, 0
 		);
 
@@ -109,8 +109,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(false)
-			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
-		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 		ImmutableRect2i navigationArea = unobstructedLayout.navigationArea();
@@ -121,7 +121,7 @@ public class IngredientGridWithNavigationLayoutTest {
 			navigationArea.height()
 		);
 
-		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(leftHalfExclusion), null, 0
 		);
 
@@ -138,8 +138,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(false)
-			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
-		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 		ImmutableRect2i farExclusion = new ImmutableRect2i(
@@ -149,7 +149,7 @@ public class IngredientGridWithNavigationLayoutTest {
 			10
 		);
 
-		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(farExclusion), null, 0
 		);
 
@@ -163,8 +163,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(true)
-			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
-		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 		ImmutableRect2i navigationArea = unobstructedLayout.navigationArea();
@@ -175,7 +175,7 @@ public class IngredientGridWithNavigationLayoutTest {
 			navigationArea.height()
 		);
 
-		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(rightExclusion), null, 0
 		);
 
@@ -199,8 +199,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(false)
-			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
-		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 		ImmutableRect2i navigationArea = unobstructedLayout.navigationArea();
@@ -210,7 +210,7 @@ public class IngredientGridWithNavigationLayoutTest {
 			navigationArea.width(),
 			navigationArea.height()
 		);
-		IngredientGridWithNavigationLayout.Layout shiftedLayout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout shiftedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(ownNavigationExclusion), null, 0
 		);
 		int sideGap = navigationArea.width();
@@ -228,10 +228,10 @@ public class IngredientGridWithNavigationLayoutTest {
 			sideExclusionHeight
 		);
 
-		IngredientGridWithNavigationLayout.Layout withLeftSideExclusion = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout withLeftSideExclusion = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(ownNavigationExclusion, leftSideExclusion), null, 0
 		);
-		IngredientGridWithNavigationLayout.Layout withRightSideExclusion = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout withRightSideExclusion = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(ownNavigationExclusion, rightSideExclusion), null, 0
 		);
 
@@ -248,8 +248,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(false)
-			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
-		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 		ImmutableRect2i navigationArea = unobstructedLayout.navigationArea();
@@ -260,8 +260,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			availableArea.height()
 		);
 
-		IngredientGridWithNavigationLayout.Layout obstructedLayout = assertDoesNotThrow(() ->
-			IngredientGridWithNavigationLayout.calculate(gridConfig, availableArea, Set.of(overTallExclusion), null, 0)
+		IngredientGridWithNavigationLayout obstructedLayout = assertDoesNotThrow(() ->
+			IngredientGridButtonNavigationLayout.calculate(gridConfig, availableArea, Set.of(overTallExclusion), null, 0)
 		);
 
 		assertEquals(ImmutableRect2i.EMPTY, obstructedLayout.ingredientGridArea());
@@ -276,8 +276,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(false)
-			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
-		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 		ImmutableRect2i firstNavigationArea = unobstructedLayout.navigationArea();
@@ -287,7 +287,7 @@ public class IngredientGridWithNavigationLayoutTest {
 			availableArea.width(),
 			firstNavigationArea.height()
 		);
-		IngredientGridWithNavigationLayout.Layout fallbackLayout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout fallbackLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(firstExclusion), null, 0
 		);
 		ImmutableRect2i fallbackNavigationArea = fallbackLayout.navigationArea();
@@ -298,7 +298,7 @@ public class IngredientGridWithNavigationLayoutTest {
 			fallbackNavigationArea.height()
 		);
 
-		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(firstExclusion, fallbackExclusion), null, 0
 		);
 
@@ -315,8 +315,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(true)
-			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
-		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 		ImmutableRect2i navigationArea = unobstructedLayout.navigationArea();
@@ -327,8 +327,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			availableArea.height()
 		);
 
-		IngredientGridWithNavigationLayout.Layout obstructedLayout = assertDoesNotThrow(() ->
-			IngredientGridWithNavigationLayout.calculate(gridConfig, availableArea, Set.of(overTallExclusion), null, 0)
+		IngredientGridWithNavigationLayout obstructedLayout = assertDoesNotThrow(() ->
+			IngredientGridButtonNavigationLayout.calculate(gridConfig, availableArea, Set.of(overTallExclusion), null, 0)
 		);
 
 		assertEquals(ImmutableRect2i.EMPTY, obstructedLayout.ingredientGridArea());
@@ -345,13 +345,13 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(false)
-			.buttonNavigationVisibility(NavigationVisibility.DISABLED);
-		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			.navigationVisibility(NavigationVisibility.DISABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 		ImmutableRect2i gridExclusion = unobstructedLayout.ingredientGridArea();
 
-		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(gridExclusion), null, 0
 		);
 
@@ -367,8 +367,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(false)
-			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
-		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 		ImmutableRect2i navigationArea = unobstructedLayout.navigationArea();
@@ -380,7 +380,7 @@ public class IngredientGridWithNavigationLayoutTest {
 			navigationArea.height()
 		);
 
-		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(tooNarrowGapExclusion), null, 0
 		);
 
@@ -403,8 +403,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(true)
-			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
-		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 		ImmutableRect2i navigationArea = unobstructedLayout.navigationArea();
@@ -416,7 +416,7 @@ public class IngredientGridWithNavigationLayoutTest {
 			navigationArea.height()
 		);
 
-		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(tooNarrowGapExclusion), null, 0
 		);
 
@@ -437,8 +437,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(true)
-			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
-		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 		int collisionPadding = unobstructedLayout.ingredientGridArea().x() - unobstructedLayout.backgroundArea().x();
@@ -450,7 +450,7 @@ public class IngredientGridWithNavigationLayoutTest {
 			paddedNavigationArea.height()
 		);
 
-		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(touchingExclusion), null, 0
 		);
 
@@ -467,8 +467,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(false)
-			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
-		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 		ImmutableRect2i gridArea = unobstructedLayout.ingredientGridArea();
@@ -476,7 +476,7 @@ public class IngredientGridWithNavigationLayoutTest {
 			gridArea.x(), gridArea.y(), gridArea.width() / 2, gridArea.height()
 		);
 
-		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(leftGridExclusion), null, 0
 		);
 
@@ -493,8 +493,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(false)
-			.buttonNavigationVisibility(NavigationVisibility.ENABLED);
-		IngredientGridWithNavigationLayout.Layout unobstructedLayout = IngredientGridWithNavigationLayout.calculate(
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
 		);
 		ImmutableRect2i gridArea = unobstructedLayout.ingredientGridArea();
@@ -505,7 +505,7 @@ public class IngredientGridWithNavigationLayoutTest {
 			gridArea.height()
 		);
 
-		IngredientGridWithNavigationLayout.Layout obstructedLayout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(rightGridExclusion), null, 0
 		);
 
@@ -556,7 +556,7 @@ public class IngredientGridWithNavigationLayoutTest {
 		private boolean drawBackground;
 		private HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
 		private VerticalAlignment verticalAlignment = VerticalAlignment.TOP;
-		private NavigationVisibility buttonNavigationVisibility = NavigationVisibility.ENABLED;
+		private NavigationVisibility navigationVisibility = NavigationVisibility.ENABLED;
 
 		TestGridConfig maxColumns(int maxColumns) {
 			this.maxColumns = maxColumns;
@@ -583,8 +583,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			return this;
 		}
 
-		TestGridConfig buttonNavigationVisibility(NavigationVisibility buttonNavigationVisibility) {
-			this.buttonNavigationVisibility = buttonNavigationVisibility;
+		TestGridConfig navigationVisibility(NavigationVisibility navigationVisibility) {
+			this.navigationVisibility = navigationVisibility;
 			return this;
 		}
 
@@ -624,8 +624,8 @@ public class IngredientGridWithNavigationLayoutTest {
 		}
 
 		@Override
-		public NavigationVisibility getButtonNavigationVisibility() {
-			return buttonNavigationVisibility;
+		public NavigationVisibility getNavigationVisibility() {
+			return navigationVisibility;
 		}
 
 		@Override
