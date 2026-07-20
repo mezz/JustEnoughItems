@@ -17,14 +17,14 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	private static final int largestNumColumns = 100;
 
 	private static final VerticalAlignment defaultVerticalAlignment = VerticalAlignment.TOP;
-	private static final NavigationVisibility defaultButtonNavigationVisibility = NavigationVisibility.ENABLED;
+	private static final NavigationVisibility defaultNavigationVisibility = NavigationVisibility.ENABLED;
 	private static final boolean defaultDrawBackground = false;
 
 	private final ConfigValue<Integer> maxRows;
 	private final ConfigValue<Integer> maxColumns;
 	private final ConfigValue<HorizontalAlignment> horizontalAlignment;
 	private final ConfigValue<VerticalAlignment> verticalAlignment;
-	private final ConfigValue<NavigationVisibility> buttonNavigationVisibility;
+	private final ConfigValue<NavigationVisibility> navigationVisibility;
 	private final ConfigValue<Boolean> drawBackground;
 
 	public IngredientGridConfig(String categoryName, IConfigSchemaBuilder builder, HorizontalAlignment defaultHorizontalAlignment) {
@@ -53,9 +53,9 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 			defaultVerticalAlignment,
 			"Vertical alignment of the ingredient grid inside the available area."
 		);
-		buttonNavigationVisibility = category.addEnum(
-			"ButtonNavigationVisibility",
-			defaultButtonNavigationVisibility,
+		navigationVisibility = category.addEnum(
+			"NavigationVisibility",
+			defaultNavigationVisibility,
 			"Visibility of the top page buttons. Use AUTO_HIDE to only show it when there are multiple pages."
 		);
 		drawBackground = category.addBoolean(
@@ -101,8 +101,8 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	}
 
 	@Override
-	public NavigationVisibility getButtonNavigationVisibility() {
-		return buttonNavigationVisibility.get();
+	public NavigationVisibility getNavigationVisibility() {
+		return navigationVisibility.get();
 	}
 
 	@Override
@@ -111,7 +111,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 		maxColumns.addListener(v -> listener.run());
 		horizontalAlignment.addListener(v -> listener.run());
 		verticalAlignment.addListener(v -> listener.run());
-		buttonNavigationVisibility.addListener(v -> listener.run());
+		navigationVisibility.addListener(v -> listener.run());
 		drawBackground.addListener(v -> listener.run());
 	}
 }

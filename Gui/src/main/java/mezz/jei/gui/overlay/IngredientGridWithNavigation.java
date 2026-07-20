@@ -166,7 +166,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
 		this.guiExclusionAreas = guiExclusionAreas;
-		IngredientGridWithNavigationLayout.Layout layout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout layout = IngredientGridButtonNavigationLayout.calculate(
 			this.gridConfig,
 			availableArea,
 			guiExclusionAreas,

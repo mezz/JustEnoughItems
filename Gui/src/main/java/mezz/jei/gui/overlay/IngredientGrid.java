@@ -130,6 +130,10 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		return calculateSlotInfo(area, exclusionAreas, null);
 	}
 
+	public static int calculateAvailableSlotCount(ImmutableRect2i area, Set<ImmutableRect2i> exclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
+		return calculateSlotInfo(area, exclusionAreas, mouseExclusionPoint).available();
+	}
+
 	public static SlotInfo calculateSlotInfo(ImmutableRect2i area, Set<ImmutableRect2i> exclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
 		int total = 0;
 		int blocked = 0;
@@ -248,6 +252,9 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	}
 
 	public boolean hasRoom() {
-		return !this.area.isEmpty();
+		return !this.area.isEmpty() &&
+			this.ingredientListRenderer.getSlots()
+				.findAny()
+				.isPresent();
 	}
 }
