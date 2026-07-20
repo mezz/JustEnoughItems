@@ -24,12 +24,14 @@ import java.util.Arrays;
 import net.minecraft.client.renderer.texture.NativeImage;
 
 public class ColorThief {
+	private static final int MIN_QUALITY = 1;
+
 	/**
 	 * Use the median cut algorithm to cluster similar colors.
 	 *
 	 * @param sourceImage the source image
 	 * @param colorCount  the size of the palette; the number of colors returned
-	 * @param quality     0 is the highest quality settings. 10 is the default. There is
+	 * @param quality     1 is the highest quality setting. 10 is the default. There is
 	 *                    a trade-off between quality and speed. The bigger the number,
 	 *                    the faster the palette generation but the greater the
 	 *                    likelihood that colors will be missed.
@@ -59,6 +61,7 @@ public class ColorThief {
 	 */
 	@Nullable
 	public static MMCQ.CMap getColorMap(NativeImage sourceImage, int colorCount, int quality, boolean ignoreWhite) {
+		validateQuality(quality);
 		if (sourceImage.format() == NativeImage.PixelFormat.RGBA) {
 			int[][] pixelArray = getPixels(sourceImage, quality, ignoreWhite);
 			// Send array to quantize function which clusters values using median
@@ -114,5 +117,11 @@ public class ColorThief {
 		}
 		// trim the array
 		return Arrays.copyOfRange(pixelArray, 0, numUsedPixels);
+	}
+
+	private static void validateQuality(int quality) {
+		if (quality < MIN_QUALITY) {
+			throw new IllegalArgumentException("quality must be at least " + MIN_QUALITY);
+		}
 	}
 }
