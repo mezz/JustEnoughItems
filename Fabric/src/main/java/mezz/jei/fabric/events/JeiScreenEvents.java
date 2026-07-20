@@ -23,6 +23,15 @@ public class JeiScreenEvents {
 			}
 		});
 
+	public static final Event<AllowMouseDrag> ALLOW_MOUSE_DRAG =
+		EventFactory.createArrayBacked(AllowMouseDrag.class, callbacks -> (screen, mouseX, mouseY, button, dragX, dragY) -> {
+			for (AllowMouseDrag callback : callbacks) {
+				if (!callback.allowMouseDrag(screen, mouseX, mouseY, button, dragX, dragY)) {
+					return false;
+				}
+			}
+			return true;
+		});
 
 	@Environment(EnvType.CLIENT)
 	@FunctionalInterface
@@ -34,5 +43,11 @@ public class JeiScreenEvents {
 	@FunctionalInterface
 	public interface DrawForeground {
 		void drawForeground(AbstractContainerScreen<?> screen, PoseStack poseStack, int mouseX, int mouseY);
+	}
+
+	@Environment(EnvType.CLIENT)
+	@FunctionalInterface
+	public interface AllowMouseDrag {
+		boolean allowMouseDrag(Screen screen, double mouseX, double mouseY, int button, double dragX, double dragY);
 	}
 }

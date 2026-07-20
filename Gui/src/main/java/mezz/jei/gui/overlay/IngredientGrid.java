@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay;
 
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.helpers.IColorHelper;
@@ -32,6 +33,7 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -52,7 +54,11 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	private final DeleteItemInputHandler deleteItemHandler;
 	private final IngredientGridTooltipHelper tooltipHelper;
 	private Set<ImmutableRect2i> guiExclusionAreas = Set.of();
+	@Nullable
+	private ImmutablePoint2i mouseExclusionPoint;
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
+	private int visibleSlotCount = 0;
+	private int smoothScrollRowPixelOffset = 0;
 
 	public IngredientGrid(
 		IIngredientManager ingredientManager,
@@ -76,25 +82,54 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		return deleteItemHandler;
 	}
 
+	@Override
 	public int size() {
-		return this.ingredientListRenderer.size();
+		return visibleSlotCount;
+	}
+
+	@Override
+	public int getColumnCount() {
+		return this.area.getWidth() / INGREDIENT_WIDTH;
+	}
+
+	@Override
+	public int getRowCount() {
+		return this.area.getHeight() / INGREDIENT_HEIGHT;
 	}
 
 	public void updateBounds(ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
-		this.ingredientListRenderer.clear();
-
 		this.area = calculateBounds(this.gridConfig, availableArea);
 		this.guiExclusionAreas = guiExclusionAreas;
+		this.mouseExclusionPoint = mouseExclusionPoint;
+		this.visibleSlotCount = calculateAvailableSlotCount(
+			this.area,
+			this.guiExclusionAreas,
+			this.mouseExclusionPoint
+		);
+		updateSlots(0);
+	}
 
-		for (int y = this.area.getY(); y < this.area.getY() + this.area.getHeight(); y += INGREDIENT_HEIGHT) {
-			for (int x = this.area.getX(); x < this.area.getX() + this.area.getWidth(); x += INGREDIENT_WIDTH) {
-				IngredientListSlot ingredientListSlot = new IngredientListSlot(x, y, INGREDIENT_WIDTH, INGREDIENT_HEIGHT, INGREDIENT_PADDING);
-				ImmutableRect2i stackArea = ingredientListSlot.getArea();
-				final boolean blocked = MathUtil.intersects(guiExclusionAreas, stackArea.expandBy(2)) ||
-					(mouseExclusionPoint != null && stackArea.contains(mouseExclusionPoint));
-				ingredientListSlot.setBlocked(blocked);
-				this.ingredientListRenderer.add(ingredientListSlot);
-			}
+	private void updateSlots(int smoothScrollRowPixelOffset) {
+		this.smoothScrollRowPixelOffset = smoothScrollRowPixelOffset;
+		this.ingredientListRenderer.clear();
+
+		List<SlotLayout> slotLayouts = calculateSlots(
+			this.area,
+			this.guiExclusionAreas,
+			this.mouseExclusionPoint,
+			smoothScrollRowPixelOffset
+		);
+		for (SlotLayout slotLayout : slotLayouts) {
+			ImmutableRect2i slotArea = slotLayout.area();
+			IngredientListSlot ingredientListSlot = new IngredientListSlot(
+				slotArea.getX(),
+				slotArea.getY(),
+				slotArea.getWidth(),
+				slotArea.getHeight(),
+				INGREDIENT_PADDING
+			);
+			ingredientListSlot.setBlocked(slotLayout.blocked());
+			this.ingredientListRenderer.add(ingredientListSlot);
 		}
 	}
 
@@ -137,18 +172,51 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	public static SlotInfo calculateSlotInfo(ImmutableRect2i area, Set<ImmutableRect2i> exclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
 		int total = 0;
 		int blocked = 0;
-		for (int y = area.getY(); y < area.getY() + area.getHeight(); y += INGREDIENT_HEIGHT) {
-			for (int x = area.getX(); x < area.getX() + area.getWidth(); x += INGREDIENT_WIDTH) {
-				IngredientListSlot ingredientListSlot = new IngredientListSlot(x, y, INGREDIENT_WIDTH, INGREDIENT_HEIGHT, INGREDIENT_PADDING);
-				ImmutableRect2i stackArea = ingredientListSlot.getArea();
-				if (MathUtil.intersects(exclusionAreas, stackArea.expandBy(2)) ||
-					(mouseExclusionPoint != null && stackArea.contains(mouseExclusionPoint))) {
-					blocked++;
-				}
-				total++;
+		List<SlotLayout> slotLayouts = calculateSlots(area, exclusionAreas, mouseExclusionPoint, 0);
+		for (SlotLayout slotLayout : slotLayouts) {
+			if (slotLayout.blocked()) {
+				blocked++;
 			}
+			total++;
 		}
 		return new SlotInfo(total, blocked);
+	}
+
+	public static List<SlotLayout> calculateSlots(
+		ImmutableRect2i area,
+		Set<ImmutableRect2i> exclusionAreas,
+		@Nullable ImmutablePoint2i mouseExclusionPoint,
+		int smoothScrollRowPixelOffset
+	) {
+		List<SlotLayout> slotLayouts = new ArrayList<>();
+		int rowPixelOffset = clamp(smoothScrollRowPixelOffset, 0, INGREDIENT_HEIGHT - 1);
+		for (int y = area.getY() - rowPixelOffset; y < area.getY() + area.getHeight(); y += INGREDIENT_HEIGHT) {
+			for (int x = area.getX(); x < area.getX() + area.getWidth(); x += INGREDIENT_WIDTH) {
+				ImmutableRect2i slotArea = new ImmutableRect2i(x, y, INGREDIENT_WIDTH, INGREDIENT_HEIGHT);
+				slotLayouts.add(new SlotLayout(
+					slotArea,
+					isSlotBlocked(slotArea, exclusionAreas, mouseExclusionPoint)
+				));
+			}
+		}
+		return slotLayouts;
+	}
+
+	private static boolean isSlotBlocked(
+		ImmutableRect2i stackArea,
+		Set<ImmutableRect2i> exclusionAreas,
+		@Nullable ImmutablePoint2i mouseExclusionPoint
+	) {
+		return MathUtil.intersects(exclusionAreas, stackArea.expandBy(2)) ||
+			(mouseExclusionPoint != null && stackArea.contains(mouseExclusionPoint));
+	}
+
+	private static int clamp(int value, int min, int max) {
+		return Math.max(min, Math.min(value, max));
+	}
+
+	public record SlotLayout(ImmutableRect2i area, boolean blocked) {
+
 	}
 
 	public ImmutableRect2i getArea() {
@@ -156,19 +224,48 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	}
 
 	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+		if (this.smoothScrollRowPixelOffset > 0) {
+			enableScissor(this.area);
+			try {
+				drawContents(minecraft, poseStack, mouseX, mouseY);
+			} finally {
+				RenderSystem.disableScissor();
+			}
+		} else {
+			drawContents(minecraft, poseStack, mouseX, mouseY);
+		}
+	}
+
+	private static void enableScissor(ImmutableRect2i area) {
+		Window window = Minecraft.getInstance().getWindow();
+		double scale = window.getGuiScale();
+		int x = (int) (area.getX() * scale);
+		int y = (int) (window.getHeight() - ((area.getY() + area.getHeight()) * scale));
+		int width = (int) (area.getWidth() * scale);
+		int height = (int) (area.getHeight() * scale);
+		RenderSystem.enableScissor(x, y, width, height);
+	}
+
+	private void drawContents(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		RenderSystem.disableBlend();
+
+		Optional<IngredientListSlot> highlightedSlot = getHighlightedSlot(minecraft, mouseX, mouseY);
 
 		ingredientListRenderer.render(poseStack);
 
+		highlightedSlot.ifPresent(s -> drawHighlight(poseStack, s.getArea()));
+	}
+
+	private Optional<IngredientListSlot> getHighlightedSlot(Minecraft minecraft, int mouseX, int mouseY) {
 		if (isMouseOver(mouseX, mouseY)) {
 			if (!this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
-				ingredientListRenderer.getSlots()
+				return ingredientListRenderer.getSlots()
 					.filter(s -> s.getArea().contains(mouseX, mouseY))
 					.filter(s -> s.getOptionalElement().isPresent())
-					.findFirst()
-					.ifPresent(s -> drawHighlight(poseStack, s.getArea()));
+					.findFirst();
 			}
 		}
+		return Optional.empty();
 	}
 
 	/**
@@ -238,16 +335,35 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		return ingredientListRenderer.getSlots();
 	}
 
-	public <T> Stream<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
+	@Override
+	public Stream<IElement<?>> getVisibleElements() {
 		return this.ingredientListRenderer.getSlots()
 			.map(IngredientListSlot::getOptionalElement)
-			.flatMap(Optional::stream)
+			.flatMap(Optional::stream);
+	}
+
+	@Override
+	public void tick() {
+
+	}
+
+	public <T> Stream<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
+		return getVisibleElements()
 			.map(IElement::getTypedIngredient)
 			.map(i -> i.getIngredient(ingredientType))
 			.flatMap(Optional::stream);
 	}
 
+	@Override
 	public void set(int firstItemIndex, List<IElement<?>> ingredientList) {
+		set(firstItemIndex, 0, ingredientList);
+	}
+
+	@Override
+	public void set(int firstItemIndex, int smoothScrollRowPixelOffset, List<IElement<?>> ingredientList) {
+		if (this.smoothScrollRowPixelOffset != smoothScrollRowPixelOffset) {
+			updateSlots(smoothScrollRowPixelOffset);
+		}
 		this.ingredientListRenderer.set(firstItemIndex, ingredientList);
 	}
 

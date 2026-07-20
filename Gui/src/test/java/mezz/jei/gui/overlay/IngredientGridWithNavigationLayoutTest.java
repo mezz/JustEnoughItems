@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay;
 
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.util.HorizontalAlignment;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.NavigationVisibility;
@@ -515,6 +516,65 @@ public class IngredientGridWithNavigationLayoutTest {
 		assertTrue(obstructedLayout.availableSlotCount() < unobstructedLayout.availableSlotCount());
 	}
 
+	@Test
+	public void scrollbarNavigationReservesRightSideForScrollbar() {
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.maxColumns(4)
+			.maxRows(3)
+			.drawBackground(false)
+			.navigationMode(IngredientGridNavigationMode.SCROLLING)
+			.navigationVisibility(NavigationVisibility.ENABLED);
+
+		IngredientGridWithNavigationLayout layout = IngredientGridScrollbarLayout.calculate(
+			gridConfig, availableArea, Set.of(), null, 100
+		);
+
+		assertTrue(layout.hasRoom());
+		assertPositiveArea(layout.scrollbarArea());
+		assertEquals(ImmutableRect2i.EMPTY, layout.navigationArea());
+		assertTrue(right(layout.ingredientGridArea()) <= layout.scrollbarArea().getX());
+	}
+
+	@Test
+	public void scrollbarAutoHideLeavesScrollbarEmptyWhenItemsFit() {
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.maxColumns(4)
+			.maxRows(3)
+			.drawBackground(false)
+			.navigationMode(IngredientGridNavigationMode.SCROLLING)
+			.navigationVisibility(NavigationVisibility.AUTO_HIDE);
+
+		IngredientGridWithNavigationLayout layout = IngredientGridScrollbarLayout.calculate(
+			gridConfig, availableArea, Set.of(), null, 4
+		);
+
+		assertTrue(layout.hasRoom());
+		assertEquals(ImmutableRect2i.EMPTY, layout.scrollbarArea());
+		assertEquals(ImmutableRect2i.EMPTY, layout.navigationArea());
+	}
+
+	@Test
+	public void scrollbarWithBackgroundIsContainedByBackground() {
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.maxColumns(4)
+			.maxRows(3)
+			.drawBackground(true)
+			.navigationMode(IngredientGridNavigationMode.SMOOTH_SCROLLING)
+			.navigationVisibility(NavigationVisibility.ENABLED);
+
+		IngredientGridWithNavigationLayout layout = IngredientGridScrollbarLayout.calculate(
+			gridConfig, availableArea, Set.of(), null, 100
+		);
+
+		assertTrue(layout.hasRoom());
+		assertPositiveArea(layout.scrollbarArea());
+		assertContainedBy(layout.slotBackgroundArea(), layout.backgroundArea());
+		assertContainedBy(layout.scrollbarArea(), layout.backgroundArea());
+	}
+
 	private static ImmutableRect2i largeAvailableArea() {
 		return new ImmutableRect2i(
 			0,
@@ -557,6 +617,7 @@ public class IngredientGridWithNavigationLayoutTest {
 		private HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
 		private VerticalAlignment verticalAlignment = VerticalAlignment.TOP;
 		private NavigationVisibility navigationVisibility = NavigationVisibility.ENABLED;
+		private IngredientGridNavigationMode navigationMode = IngredientGridNavigationMode.PAGED;
 
 		TestGridConfig maxColumns(int maxColumns) {
 			this.maxColumns = maxColumns;
@@ -585,6 +646,11 @@ public class IngredientGridWithNavigationLayoutTest {
 
 		TestGridConfig navigationVisibility(NavigationVisibility navigationVisibility) {
 			this.navigationVisibility = navigationVisibility;
+			return this;
+		}
+
+		TestGridConfig navigationMode(IngredientGridNavigationMode navigationMode) {
+			this.navigationMode = navigationMode;
 			return this;
 		}
 
@@ -626,6 +692,11 @@ public class IngredientGridWithNavigationLayoutTest {
 		@Override
 		public NavigationVisibility getNavigationVisibility() {
 			return navigationVisibility;
+		}
+
+		@Override
+		public IngredientGridNavigationMode getNavigationMode() {
+			return navigationMode;
 		}
 
 		@Override
