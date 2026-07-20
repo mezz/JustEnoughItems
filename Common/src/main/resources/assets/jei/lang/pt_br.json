@@ -245,8 +245,8 @@
   "jei.config.client.ingredientList.horizontalAlignment.description": "Alinhamento horizontal da lista na área disponível.",
   "jei.config.client.ingredientList.verticalAlignment": "Alinhamento vertical",
   "jei.config.client.ingredientList.verticalAlignment.description": "Alinhamento vertical da lista na área disponível.",
-  "jei.config.client.ingredientList.buttonNavigationVisibility": "Visibilidade de navegação",
-  "jei.config.client.ingredientList.buttonNavigationVisibility.description": "Visibilidade dos botões de página superior. AUTO_HIDE mostra só quando há várias páginas.",
+  "jei.config.client.ingredientList.navigationVisibility": "Visibilidade de navegação",
+  "jei.config.client.ingredientList.navigationVisibility.description": "Visibilidade dos botões de página superior. AUTO_HIDE mostra só quando há várias páginas.",
   "jei.config.client.ingredientList.drawBackground": "Desenhar fundo da GUI",
   "jei.config.client.ingredientList.drawBackground.description": "Ative para desenhar textura de fundo atrás da lista de ingredientes.",
 
@@ -260,8 +260,8 @@
   "jei.config.client.bookmarkList.horizontalAlignment.description": "Alinhamento horizontal da lista na área disponível.",
   "jei.config.client.bookmarkList.verticalAlignment": "Alinhamento vertical",
   "jei.config.client.bookmarkList.verticalAlignment.description": "Alinhamento vertical da lista na área disponível.",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility": "Visibilidade de navegação",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility.description": "Visibilidade dos botões de página superior. AUTO_HIDE mostra só quando há várias páginas.",
+  "jei.config.client.bookmarkList.navigationVisibility": "Visibilidade de navegação",
+  "jei.config.client.bookmarkList.navigationVisibility.description": "Visibilidade dos botões de página superior. AUTO_HIDE mostra só quando há várias páginas.",
   "jei.config.client.bookmarkList.drawBackground": "Desenhar fundo da GUI",
   "jei.config.client.bookmarkList.drawBackground.description": "Ative para desenhar textura de fundo atrás da lista de favoritos.",
 

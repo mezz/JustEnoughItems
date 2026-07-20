@@ -244,8 +244,8 @@
   "jei.config.client.ingredientList.horizontalAlignment.description": "Pahalang na pagkakahanay ng listahan ng mga sangkap sa loob ng magagamit na lugar.",
   "jei.config.client.ingredientList.verticalAlignment": "Patayo na Pagkakahanay",
   "jei.config.client.ingredientList.verticalAlignment.description": "Patayo na pagkakahanay ng listahan ng mga sangkap sa loob ng magagamit na lugar.",
-  "jei.config.client.ingredientList.buttonNavigationVisibility": "Bisibilidad sa Nabigasyon",
-  "jei.config.client.ingredientList.buttonNavigationVisibility.description": "Pagpapakita ng mga pindutan sa itaas na pahina. Gamitin ang AUTO_HIDE upang ipakita lamang ito kapag may maraming pahina.",
+  "jei.config.client.ingredientList.navigationVisibility": "Bisibilidad sa Nabigasyon",
+  "jei.config.client.ingredientList.navigationVisibility.description": "Pagpapakita ng mga pindutan sa itaas na pahina. Gamitin ang AUTO_HIDE upang ipakita lamang ito kapag may maraming pahina.",
   "jei.config.client.ingredientList.drawBackground": "Gumuhit ng Background ng GUI",
   "jei.config.client.ingredientList.drawBackground.description": "Paganahin ito upang gumuhit ng texture sa background sa likod ng listahan ng sangkap.",
 
@@ -259,8 +259,8 @@
   "jei.config.client.bookmarkList.horizontalAlignment.description": "Pahalang na pagkakahanay ng listahan ng mga sangkap sa loob ng magagamit na lugar.",
   "jei.config.client.bookmarkList.verticalAlignment": "Patayo na Pagkakahanay",
   "jei.config.client.bookmarkList.verticalAlignment.description": "Patayo na pagkakahanay ng listahan ng mga sangkap sa loob ng magagamit na lugar.",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility": "Bisibilidad sa Nabigasyon",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility.description": "Pagpapakita ng mga pindutan sa itaas na pahina. Gamitin ang AUTO_HIDE upang ipakita lamang ito kapag may maraming pahina.",
+  "jei.config.client.bookmarkList.navigationVisibility": "Bisibilidad sa Nabigasyon",
+  "jei.config.client.bookmarkList.navigationVisibility.description": "Pagpapakita ng mga pindutan sa itaas na pahina. Gamitin ang AUTO_HIDE upang ipakita lamang ito kapag may maraming pahina.",
   "jei.config.client.bookmarkList.drawBackground": "Gumuhit ng Background ng GUI",
   "jei.config.client.bookmarkList.drawBackground.description": "Paganahin ito upang gumuhit ng texture sa background sa likod ng listahan ng sangkap.",
 

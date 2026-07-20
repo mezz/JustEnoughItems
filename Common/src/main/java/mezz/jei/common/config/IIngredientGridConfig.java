@@ -12,5 +12,5 @@ public interface IIngredientGridConfig {
 	boolean drawBackground();
 	HorizontalAlignment getHorizontalAlignment();
 	VerticalAlignment getVerticalAlignment();
-	NavigationVisibility getButtonNavigationVisibility();
+	NavigationVisibility getNavigationVisibility();
 }
