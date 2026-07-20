@@ -9,6 +9,8 @@ import mezz.jei.gui.filter.FilterTextSource;
 import mezz.jei.gui.overlay.bookmarks.history.ILookupHistoryOverlay;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
+import mezz.jei.gui.overlay.ingredients.IIngredientGridPageNavigation;
+import mezz.jei.gui.overlay.ingredients.IIngredientGridView;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 

@@ -1,4 +1,4 @@
-package mezz.jei.gui.overlay;
+package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.gui.overlay.elements.IElement;
 import org.jetbrains.annotations.Nullable;
