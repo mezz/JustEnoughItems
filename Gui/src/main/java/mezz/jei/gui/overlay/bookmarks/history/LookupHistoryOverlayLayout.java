@@ -3,8 +3,8 @@ package mezz.jei.gui.overlay.bookmarks.history;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
-import mezz.jei.gui.overlay.IngredientGrid;
-import mezz.jei.gui.overlay.IngredientGridWithNavigationLayout;
+import mezz.jei.gui.overlay.ingredients.IngredientGrid;
+import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigationLayout;
 
 public record LookupHistoryOverlayLayout(
 	ImmutableRect2i availableGridArea,

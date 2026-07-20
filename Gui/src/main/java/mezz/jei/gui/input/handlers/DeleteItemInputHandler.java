@@ -12,7 +12,7 @@ import mezz.jei.common.network.packets.PacketJei;
 import mezz.jei.common.util.ServerCommandUtil;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
-import mezz.jei.gui.overlay.IIngredientGrid;
+import mezz.jei.gui.overlay.ingredients.IIngredientGrid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;

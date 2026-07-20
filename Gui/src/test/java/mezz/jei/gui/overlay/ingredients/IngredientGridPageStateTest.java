@@ -1,4 +1,4 @@
-package mezz.jei.gui.overlay;
+package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static mezz.jei.gui.overlay.IngredientGridPageState.findIndexOfIngredientElement;
-import static mezz.jei.gui.overlay.IngredientGridPageState.getFirstItemIndexForValidPage;
-import static mezz.jei.gui.overlay.IngredientGridPageState.getPageCount;
-import static mezz.jei.gui.overlay.IngredientGridPageState.getPageNumberForFirstItemIndex;
+import static mezz.jei.gui.overlay.ingredients.IngredientGridPageState.findIndexOfIngredientElement;
+import static mezz.jei.gui.overlay.ingredients.IngredientGridPageState.getFirstItemIndexForValidPage;
+import static mezz.jei.gui.overlay.ingredients.IngredientGridPageState.getPageCount;
+import static mezz.jei.gui.overlay.ingredients.IngredientGridPageState.getPageNumberForFirstItemIndex;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;

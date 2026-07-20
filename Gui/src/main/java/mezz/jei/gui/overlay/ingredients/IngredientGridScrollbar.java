@@ -1,4 +1,4 @@
-package mezz.jei.gui.overlay;
+package mezz.jei.gui.overlay.ingredients;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.Internal;
