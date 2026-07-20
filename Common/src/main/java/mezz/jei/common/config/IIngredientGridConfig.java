@@ -20,5 +20,5 @@ public interface IIngredientGridConfig {
 
 	IJeiConfigValue<VerticalAlignment> verticalAlignment();
 
-	IJeiConfigValue<NavigationVisibility> buttonNavigationVisibility();
+	IJeiConfigValue<NavigationVisibility> navigationVisibility();
 }

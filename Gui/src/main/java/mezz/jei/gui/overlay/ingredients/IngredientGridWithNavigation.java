@@ -106,7 +106,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		gridConfig.drawBackground().addListener(v -> markLayoutDirty());
 		gridConfig.horizontalAlignment().addListener(v -> markLayoutDirty());
 		gridConfig.verticalAlignment().addListener(v -> markLayoutDirty());
-		gridConfig.buttonNavigationVisibility().addListener(v -> markLayoutDirty());
+		gridConfig.navigationVisibility().addListener(v -> markLayoutDirty());
 	}
 
 	private void markLayoutDirty() {
@@ -148,7 +148,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.guiExclusionAreas = guiExclusionAreas;
 		this.mouseExclusionPoint = mouseExclusionPoint;
 		this.layoutDirty = false;
-		IngredientGridWithNavigationLayout.Layout layout = IngredientGridWithNavigationLayout.calculate(
+		IngredientGridWithNavigationLayout layout = IngredientGridButtonNavigationLayout.calculate(
 			this.gridConfig,
 			availableArea,
 			guiExclusionAreas,
@@ -159,7 +159,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	private void applyLayout(
-		IngredientGridWithNavigationLayout.Layout layout,
+		IngredientGridWithNavigationLayout layout,
 		Set<ImmutableRect2i> guiExclusionAreas,
 		@Nullable ImmutablePoint2i mouseExclusionPoint
 	) {

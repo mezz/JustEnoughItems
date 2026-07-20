@@ -212,8 +212,8 @@
   "jei.config.client.ingredientList.horizontalAlignment.description": "Alineación horizontal de la lista de ingredientes dentro del área disponible.",
   "jei.config.client.ingredientList.verticalAlignment": "Alineación Vertical",
   "jei.config.client.ingredientList.verticalAlignment.description": "Alineación vertical de la lista de ingredientes dentro del área disponible.",
-  "jei.config.client.ingredientList.buttonNavigationVisibility": "Visibilidad de la Navegación",
-  "jei.config.client.ingredientList.buttonNavigationVisibility.description": "Visibilidad de los botones de la página superior. Utiliza AUTO_HIDE para mostrarlo sólo cuando haya varias páginas.",
+  "jei.config.client.ingredientList.navigationVisibility": "Visibilidad de la Navegación",
+  "jei.config.client.ingredientList.navigationVisibility.description": "Visibilidad de los botones de la página superior. Utiliza AUTO_HIDE para mostrarlo sólo cuando haya varias páginas.",
   "jei.config.client.ingredientList.drawBackground": "Dibujar Fondo GUI",
   "jei.config.client.ingredientList.drawBackground.description": "Active esta opción para dibujar una textura de fondo detrás de la lista de ingredientes.",
 
@@ -227,8 +227,8 @@
   "jei.config.client.bookmarkList.horizontalAlignment.description": "Alineación horizontal de la lista de favoritos dentro del área disponible.",
   "jei.config.client.bookmarkList.verticalAlignment": "Alineación Vertical",
   "jei.config.client.bookmarkList.verticalAlignment.description": "Alineación vertical de la lista de favoritos dentro del área disponible.",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility": "Visibilidad de la Navegación",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility.description": "Visibilidad de los botones de la página superior. Utiliza AUTO_HIDE para mostrarlo sólo cuando haya varias páginas.",
+  "jei.config.client.bookmarkList.navigationVisibility": "Visibilidad de la Navegación",
+  "jei.config.client.bookmarkList.navigationVisibility.description": "Visibilidad de los botones de la página superior. Utiliza AUTO_HIDE para mostrarlo sólo cuando haya varias páginas.",
   "jei.config.client.bookmarkList.drawBackground": "Dibujar Fondo GUI",
   "jei.config.client.bookmarkList.drawBackground.description": "Active esta opción para dibujar una textura de fondo detrás de la lista de favoritos.",
 

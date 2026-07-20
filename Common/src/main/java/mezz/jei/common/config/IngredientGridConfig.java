@@ -3,9 +3,9 @@ package mezz.jei.common.config;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.config.file.ConfigValue;
-import mezz.jei.common.util.NavigationVisibility;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
+import mezz.jei.common.util.NavigationVisibility;
 
 public class IngredientGridConfig implements IIngredientGridConfig {
 	private static final int minNumRows = 1;
@@ -17,14 +17,14 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	private static final int largestNumColumns = 100;
 
 	private static final VerticalAlignment defaultVerticalAlignment = VerticalAlignment.TOP;
-	private static final NavigationVisibility defaultButtonNavigationVisibility = NavigationVisibility.ENABLED;
+	private static final NavigationVisibility defaultNavigationVisibility = NavigationVisibility.ENABLED;
 	private static final boolean defaultDrawBackground = false;
 
 	private final ConfigValue<Integer> maxRows;
 	private final ConfigValue<Integer> maxColumns;
 	private final ConfigValue<HorizontalAlignment> horizontalAlignment;
 	private final ConfigValue<VerticalAlignment> verticalAlignment;
-	private final ConfigValue<NavigationVisibility> buttonNavigationVisibility;
+	private final ConfigValue<NavigationVisibility> navigationVisibility;
 	private final ConfigValue<Boolean> drawBackground;
 
 	public IngredientGridConfig(String categoryName, IConfigSchemaBuilder builder, HorizontalAlignment defaultHorizontalAlignment) {
@@ -43,7 +43,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 		);
 		horizontalAlignment = category.addEnum("horizontalAlignment", defaultHorizontalAlignment);
 		verticalAlignment = category.addEnum("verticalAlignment", defaultVerticalAlignment);
-		buttonNavigationVisibility = category.addEnum("buttonNavigationVisibility", defaultButtonNavigationVisibility);
+		navigationVisibility = category.addEnum("navigationVisibility", defaultNavigationVisibility);
 		drawBackground = category.addBoolean("drawBackground", defaultDrawBackground);
 	}
 
@@ -83,7 +83,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	}
 
 	@Override
-	public ConfigValue<NavigationVisibility> buttonNavigationVisibility() {
-		return buttonNavigationVisibility;
+	public ConfigValue<NavigationVisibility> navigationVisibility() {
+		return navigationVisibility;
 	}
 }

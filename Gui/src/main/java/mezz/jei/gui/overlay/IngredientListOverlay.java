@@ -107,7 +107,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		gridConfig.drawBackground().addListener(v -> markScreenPropertiesDirty());
 		gridConfig.horizontalAlignment().addListener(v -> markScreenPropertiesDirty());
 		gridConfig.verticalAlignment().addListener(v -> markScreenPropertiesDirty());
-		gridConfig.buttonNavigationVisibility().addListener(v -> markScreenPropertiesDirty());
+		gridConfig.navigationVisibility().addListener(v -> markScreenPropertiesDirty());
 	}
 
 	private void updateScreenPropertiesIfDirty() {

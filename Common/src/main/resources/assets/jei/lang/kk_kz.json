@@ -227,8 +227,8 @@
   "jei.config.client.ingredientList.horizontalAlignment.description": "Қолжетімді аймақтағы ингредиент тізімінің көлденең туралауы.",
   "jei.config.client.ingredientList.verticalAlignment": "Тік туралау",
   "jei.config.client.ingredientList.verticalAlignment.description": "Қолжетімді аймақтағы ингредиент тізімінің тік туралауы.",
-  "jei.config.client.ingredientList.buttonNavigationVisibility": "Навигация көрінісі",
-  "jei.config.client.ingredientList.buttonNavigationVisibility.description": "Үстіңгі бет батырмаларының көрінісі. Бірнеше бет болғанда ғана көрсету үшін AUTO_HIDE қолдан.",
+  "jei.config.client.ingredientList.navigationVisibility": "Навигация көрінісі",
+  "jei.config.client.ingredientList.navigationVisibility.description": "Үстіңгі бет батырмаларының көрінісі. Бірнеше бет болғанда ғана көрсету үшін AUTO_HIDE қолдан.",
   "jei.config.client.ingredientList.drawBackground": "GUI артын салу",
   "jei.config.client.ingredientList.drawBackground.description": "Ингредиент тізімінің артына арт текстурасын салуды қос.",
 
@@ -242,8 +242,8 @@
   "jei.config.client.bookmarkList.horizontalAlignment.description": "Қолжетімді аймақтағы бетбелгі тізімінің көлденең туралауы.",
   "jei.config.client.bookmarkList.verticalAlignment": "Тік туралау",
   "jei.config.client.bookmarkList.verticalAlignment.description": "Қолжетімді аймақтағы бетбелгі тізімінің тік туралауы.",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility": "Навигация көрінісі",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility.description": "Үстіңгі бет батырмаларының көрінісі. Бірнеше бет болғанда ғана көрсету үшін AUTO_HIDE қолдан.",
+  "jei.config.client.bookmarkList.navigationVisibility": "Навигация көрінісі",
+  "jei.config.client.bookmarkList.navigationVisibility.description": "Үстіңгі бет батырмаларының көрінісі. Бірнеше бет болғанда ғана көрсету үшін AUTO_HIDE қолдан.",
   "jei.config.client.bookmarkList.drawBackground": "GUI артын салу",
   "jei.config.client.bookmarkList.drawBackground.description": "Бетбелгі тізімінің артына арт текстурасын салуды қос.",
 

@@ -231,8 +231,8 @@
   "jei.config.client.ingredientList.horizontalAlignment.description": "利用可能なエリア内でのアイテムリストの水平方向の配置。",
   "jei.config.client.ingredientList.verticalAlignment": "垂直方向の配置",
   "jei.config.client.ingredientList.verticalAlignment.description": "利用可能なエリア内でのアイテムリストの垂直方向の配置。",
-  "jei.config.client.ingredientList.buttonNavigationVisibility": "ナビゲーションの表示",
-  "jei.config.client.ingredientList.buttonNavigationVisibility.description": "上部のページボタンの表示設定。ページが複数ある場合のみ表示するにはAUTO_HIDEを使用してください。",
+  "jei.config.client.ingredientList.navigationVisibility": "ナビゲーションの表示",
+  "jei.config.client.ingredientList.navigationVisibility.description": "上部のページボタンの表示設定。ページが複数ある場合のみ表示するにはAUTO_HIDEを使用してください。",
   "jei.config.client.ingredientList.drawBackground": "GUIの背景を描画",
   "jei.config.client.ingredientList.drawBackground.description": "trueにすると、アイテムリストの背後に背景テクスチャを描画します。",
 
@@ -246,8 +246,8 @@
   "jei.config.client.bookmarkList.horizontalAlignment.description": "利用可能なエリア内でのブックマークリストの水平方向の配置。",
   "jei.config.client.bookmarkList.verticalAlignment": "垂直方向の配置",
   "jei.config.client.bookmarkList.verticalAlignment.description": "利用可能なエリア内でのブックマークリストの垂直方向の配置。",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility": "ナビゲーションの表示",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility.description": "上部のページボタンの表示設定。ページが複数ある場合のみ表示するにはAUTO_HIDEを使用してください。",
+  "jei.config.client.bookmarkList.navigationVisibility": "ナビゲーションの表示",
+  "jei.config.client.bookmarkList.navigationVisibility.description": "上部のページボタンの表示設定。ページが複数ある場合のみ表示するにはAUTO_HIDEを使用してください。",
   "jei.config.client.bookmarkList.drawBackground": "GUIの背景を描画",
   "jei.config.client.bookmarkList.drawBackground.description": "trueにすると、ブックマークリストの背後に背景テクスチャを描画します。",
 

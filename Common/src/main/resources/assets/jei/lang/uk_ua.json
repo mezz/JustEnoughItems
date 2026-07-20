@@ -230,8 +230,8 @@
   "jei.config.client.ingredientList.horizontalAlignment.description": "Горизонтальне вирівнювання списку інгредієнтів у доступній області.",
   "jei.config.client.ingredientList.verticalAlignment": "Вертикальне вирівнювання",
   "jei.config.client.ingredientList.verticalAlignment.description": "Вертикальне вирівнювання списку інгредієнтів у доступній області.",
-  "jei.config.client.ingredientList.buttonNavigationVisibility": "Видимість навігації",
-  "jei.config.client.ingredientList.buttonNavigationVisibility.description": "Показує кнопки верхньої сторінки. Використовуйте AUTO_HIDE, щоби показувати її, лише коли є кілька сторінок.",
+  "jei.config.client.ingredientList.navigationVisibility": "Видимість навігації",
+  "jei.config.client.ingredientList.navigationVisibility.description": "Показує кнопки верхньої сторінки. Використовуйте AUTO_HIDE, щоби показувати її, лише коли є кілька сторінок.",
   "jei.config.client.ingredientList.drawBackground": "Малювати тло інтерфейсу",
   "jei.config.client.ingredientList.drawBackground.description": "Умикає малювання текстури тла за списком інгредієнтів.",
 
@@ -245,8 +245,8 @@
   "jei.config.client.bookmarkList.horizontalAlignment.description": "Горизонтальне вирівнювання списку закладок у доступній області.",
   "jei.config.client.bookmarkList.verticalAlignment": "Вертикальне вирівнювання",
   "jei.config.client.bookmarkList.verticalAlignment.description": "Вертикальне вирівнювання списку закладок у доступній області.",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility": "Видимість навігації",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility.description": "Видимість кнопок верхньої сторінки. Використовуйте AUTO_HIDE, щоби показувати її, лише якщо є кілька сторінок.",
+  "jei.config.client.bookmarkList.navigationVisibility": "Видимість навігації",
+  "jei.config.client.bookmarkList.navigationVisibility.description": "Видимість кнопок верхньої сторінки. Використовуйте AUTO_HIDE, щоби показувати її, лише якщо є кілька сторінок.",
   "jei.config.client.bookmarkList.drawBackground": "Малювати тло інтерфейсу",
   "jei.config.client.bookmarkList.drawBackground.description": "Умикає малювання текстури тла за списком закладок.",
 
