@@ -24,17 +24,19 @@ import java.util.Arrays;
 import com.mojang.blaze3d.platform.NativeImage;
 
 public class ColorThief {
+	private static final int MIN_QUALITY = 1;
+
 	/**
 	 * Use the median cut algorithm to cluster similar colors.
 	 *
 	 * @param sourceImage the source image
 	 * @param colorCount  the size of the palette; the number of colors returned
-	 * @param quality     0 is the highest quality settings. 10 is the default. There is
-	 *                    a trade-off between quality and speed. The bigger the number,
-	 *                    the faster the palette generation but the greater the
-	 *                    likelihood that colors will be missed.
+	 * @param quality     1 is the highest quality setting. There is a trade-off between
+	 *                    quality and speed. The bigger the number, the faster the palette
+	 *                    generation but the greater the likelihood that colors will be missed.
 	 * @param ignoreWhite if <code>true</code>, white pixels are ignored
 	 * @return the palette as array of RGB arrays
+	 * @throws IllegalArgumentException if quality is less than 1
 	 */
 	public static int[][] getPalette(NativeImage sourceImage, int colorCount, int quality, boolean ignoreWhite) {
 		MMCQ.CMap cmap = getColorMap(sourceImage, colorCount, quality, ignoreWhite);
@@ -49,15 +51,16 @@ public class ColorThief {
 	 *
 	 * @param sourceImage the source image
 	 * @param colorCount  the size of the palette; the number of colors returned
-	 * @param quality     0 is the highest quality settings. 10 is the default. There is
-	 *                    a trade-off between quality and speed. The bigger the number,
-	 *                    the faster the palette generation but the greater the
-	 *                    likelihood that colors will be missed.
+	 * @param quality     1 is the highest quality setting. There is a trade-off between
+	 *                    quality and speed. The bigger the number, the faster the palette
+	 *                    generation but the greater the likelihood that colors will be missed.
 	 * @param ignoreWhite if <code>true</code>, white pixels are ignored
 	 * @return the color map
+	 * @throws IllegalArgumentException if quality is less than 1
 	 */
 	@Nullable
 	public static MMCQ.CMap getColorMap(NativeImage sourceImage, int colorCount, int quality, boolean ignoreWhite) {
+		validateQuality(quality);
 		if (sourceImage.format() == NativeImage.Format.RGBA) {
 			int[][] pixelArray = getPixels(sourceImage, quality, ignoreWhite);
 			// Send array to quantize function which clusters values using median
@@ -72,10 +75,9 @@ public class ColorThief {
 	 * Fast, but doesn't work for all color models.
 	 *
 	 * @param sourceImage the source image
-	 * @param quality     1 is the highest quality settings. 10 is the default. There is
-	 *                    a trade-off between quality and speed. The bigger the number,
-	 *                    the faster the palette generation but the greater the
-	 *                    likelihood that colors will be missed.
+	 * @param quality     1 is the highest quality setting. There is a trade-off between
+	 *                    quality and speed. The bigger the number, the faster the palette
+	 *                    generation but the greater the likelihood that colors will be missed.
 	 * @param ignoreWhite if <code>true</code>, white pixels are ignored
 	 * @return an array of pixels (each an RGB int array)
 	 */
@@ -113,5 +115,11 @@ public class ColorThief {
 		}
 		// trim the array
 		return Arrays.copyOfRange(pixelArray, 0, numUsedPixels);
+	}
+
+	private static void validateQuality(int quality) {
+		if (quality < MIN_QUALITY) {
+			throw new IllegalArgumentException("quality must be at least " + MIN_QUALITY);
+		}
 	}
 }
