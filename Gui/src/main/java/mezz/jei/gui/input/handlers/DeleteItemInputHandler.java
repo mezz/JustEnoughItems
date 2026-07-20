@@ -13,7 +13,7 @@ import mezz.jei.common.config.GiveMode;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
-import mezz.jei.gui.overlay.IIngredientGrid;
+import mezz.jei.gui.overlay.ingredients.IIngredientGrid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;

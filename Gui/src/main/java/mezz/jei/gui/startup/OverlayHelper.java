@@ -13,9 +13,9 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
-import mezz.jei.gui.overlay.IIngredientGridSource;
-import mezz.jei.gui.overlay.IngredientGrid;
-import mezz.jei.gui.overlay.IngredientGridWithNavigation;
+import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
+import mezz.jei.gui.overlay.ingredients.IngredientGrid;
+import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 

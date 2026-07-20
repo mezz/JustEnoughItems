@@ -4,7 +4,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.config.IBookmarkConfig;
-import mezz.jei.gui.overlay.IIngredientGridSource;
+import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.elements.IElement;
 
 import java.util.ArrayList;
