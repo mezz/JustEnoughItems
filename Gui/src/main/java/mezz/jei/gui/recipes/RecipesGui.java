@@ -310,6 +310,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+
 		guiGraphics.fill(
 			previousRecipeCategory.getX() + previousRecipeCategory.getWidth(),
 			previousRecipeCategory.getY(),
