@@ -1,4 +1,4 @@
-package mezz.jei.gui.overlay;
+package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.gui.input.IDragHandler;
