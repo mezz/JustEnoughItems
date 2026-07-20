@@ -1,4 +1,4 @@
-package mezz.jei.gui.overlay;
+package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.util.ImmutableRect2i;

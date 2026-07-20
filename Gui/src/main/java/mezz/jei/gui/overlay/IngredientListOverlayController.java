@@ -8,6 +8,8 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.bookmarks.history.ILookupHistoryOverlay;
 import mezz.jei.gui.overlay.elements.IElement;
+import mezz.jei.gui.overlay.ingredients.IIngredientGridPageNavigation;
+import mezz.jei.gui.overlay.ingredients.IIngredientGridView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
