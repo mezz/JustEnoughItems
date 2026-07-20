@@ -1,8 +1,8 @@
 {
   "_comment": "Debug (for a debug mode, do not need translation)",
   "jei.tooltip.config": "JEI Config",
-  "jei.tooltip.show.recipes": "Show Recipes",
-  "jei.tooltip.show.all.recipes.hotkey": "Press \"%s\" to show all recipes.",
+  "jei.tooltip.show.recipes": "Show all recipes",
+  "jei.tooltip.show.all.recipes.hotkey": "%s to show all recipes.",
   "jei.tooltip.delete.item": "Click to delete.",
   "jei.tooltip.liquid.amount.with.capacity": "%s / %s mB",
   "jei.tooltip.liquid.amount": "%s mB",
