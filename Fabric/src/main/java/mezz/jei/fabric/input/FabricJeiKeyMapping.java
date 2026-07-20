@@ -2,6 +2,7 @@ package mezz.jei.fabric.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 
@@ -27,6 +28,12 @@ public class FabricJeiKeyMapping<T extends KeyMapping & ContextAwareKeyMapping> 
 	@Override
 	public Component getTranslatedKeyMessage() {
 		return this.mapping.getTranslatedKeyMessage();
+	}
+
+	@Override
+	public boolean isDown() {
+		return mapping.isContextActive() &&
+			IJeiKeyMappingInternal.isKeyDown(KeyBindingHelper.getBoundKeyOf(mapping));
 	}
 
 	@Override
