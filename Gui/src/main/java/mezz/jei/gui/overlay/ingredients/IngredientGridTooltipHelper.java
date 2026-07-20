@@ -1,4 +1,4 @@
-package mezz.jei.gui.overlay;
+package mezz.jei.gui.overlay.ingredients;
 
 import net.minecraft.network.chat.TranslatableComponent;
 import com.mojang.blaze3d.vertex.PoseStack;

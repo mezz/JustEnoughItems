@@ -1,4 +1,4 @@
-package mezz.jei.gui.overlay;
+package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientGridConfig;

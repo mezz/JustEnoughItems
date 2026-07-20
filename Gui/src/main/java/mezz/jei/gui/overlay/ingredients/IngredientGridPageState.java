@@ -1,4 +1,4 @@
-package mezz.jei.gui.overlay;
+package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.util.MathUtil;

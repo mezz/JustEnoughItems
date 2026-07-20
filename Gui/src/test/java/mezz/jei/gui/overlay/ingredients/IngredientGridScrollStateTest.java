@@ -1,4 +1,4 @@
-package mezz.jei.gui.overlay;
+package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -9,14 +9,14 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static mezz.jei.gui.overlay.IngredientGridScrollState.getFirstItemIndexForScrollOffset;
-import static mezz.jei.gui.overlay.IngredientGridScrollState.getFirstRowForSmoothScrollPixelOffset;
-import static mezz.jei.gui.overlay.IngredientGridScrollState.getHiddenRows;
-import static mezz.jei.gui.overlay.IngredientGridScrollState.getRowPixelOffset;
-import static mezz.jei.gui.overlay.IngredientGridScrollState.getScrollOffsetYKeepingAnchorVisible;
-import static mezz.jei.gui.overlay.IngredientGridScrollState.getSmoothScrollPixelOffset;
-import static mezz.jei.gui.overlay.IngredientGridScrollState.getTotalRows;
-import static mezz.jei.gui.overlay.IngredientGridScrollState.getValidScrollOffsetY;
+import static mezz.jei.gui.overlay.ingredients.IngredientGridScrollState.getFirstItemIndexForScrollOffset;
+import static mezz.jei.gui.overlay.ingredients.IngredientGridScrollState.getFirstRowForSmoothScrollPixelOffset;
+import static mezz.jei.gui.overlay.ingredients.IngredientGridScrollState.getHiddenRows;
+import static mezz.jei.gui.overlay.ingredients.IngredientGridScrollState.getRowPixelOffset;
+import static mezz.jei.gui.overlay.ingredients.IngredientGridScrollState.getScrollOffsetYKeepingAnchorVisible;
+import static mezz.jei.gui.overlay.ingredients.IngredientGridScrollState.getSmoothScrollPixelOffset;
+import static mezz.jei.gui.overlay.ingredients.IngredientGridScrollState.getTotalRows;
+import static mezz.jei.gui.overlay.ingredients.IngredientGridScrollState.getValidScrollOffsetY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class IngredientGridScrollStateTest {
