@@ -56,4 +56,9 @@ public class IngredientBookmarkElement<T> implements IElement<T> {
 	public boolean isVisible() {
 		return bookmark.isVisible();
 	}
+
+	@Override
+	public void tick() {
+
+	}
 }

@@ -14,4 +14,6 @@ public interface IIngredientGrid extends IRecipeFocusSource {
 	void set(int firstItemIndex, List<IElement<?>> ingredientList);
 
 	Stream<IElement<?>> getVisibleElements();
+
+	void tick();
 }

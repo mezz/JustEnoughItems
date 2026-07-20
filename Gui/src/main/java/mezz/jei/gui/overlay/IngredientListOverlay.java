@@ -143,6 +143,15 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.lookupHistoryOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
 	}
 
+	public void tick() {
+		if (isListDisplayed()) {
+			this.contents.tick();
+		}
+		if (this.controller.hasValidScreen() && toggleState.isOverlayEnabled()) {
+			this.lookupHistoryOverlay.tick();
+		}
+	}
+
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {

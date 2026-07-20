@@ -1,6 +1,6 @@
 package mezz.jei.library.gui.ingredients;
 
-import net.minecraft.client.Minecraft;
+import mezz.jei.common.Internal;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -33,8 +33,7 @@ public class CycleTicker implements ICycler {
 	}
 
 	public boolean tick() {
-		Minecraft minecraft = Minecraft.getInstance();
-		if (minecraft.hasShiftDown()) {
+		if (Internal.getKeyMappings().getPauseRecipeCycling().isDown()) {
 			return false;
 		}
 		tick++;

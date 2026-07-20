@@ -198,6 +198,12 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		}
 	}
 
+	public void tick() {
+		if (isListDisplayed()) {
+			this.contents.tick();
+		}
+	}
+
 	public ImmutableRect2i getArea() {
 		return this.contents.getArea();
 	}

@@ -59,6 +59,11 @@ public class GuiEventHandler {
 			.update();
 	}
 
+	public void onClientTick() {
+		ingredientListOverlay.tick();
+		bookmarkOverlay.tick();
+	}
+
 	/**
 	 * Draws after the screen contents and before deferred tooltips are extracted.
 	 */
