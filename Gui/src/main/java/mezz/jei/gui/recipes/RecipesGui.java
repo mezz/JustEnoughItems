@@ -234,6 +234,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		if (minecraft == null) {
 			return;
 		}
+		super.render(guiGraphics, mouseX, mouseY, partialTicks);
+
 		renderBackground(guiGraphics);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		this.background.draw(guiGraphics, area);
