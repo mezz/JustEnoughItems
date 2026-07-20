@@ -25,6 +25,7 @@ import mezz.jei.common.config.BookmarkTooltipFeature;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.transfer.RecipeTransferUtil;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.bookmarks.IBookmark;
@@ -45,17 +46,16 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jspecify.annotations.Nullable;
 
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
 
 public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	private final RecipeBookmark<R, I> recipeBookmark;
 	private final IClientConfig clientConfig;
-	private final EnumMap<BookmarkTooltipFeature, TooltipComponent> cache = new EnumMap<>(BookmarkTooltipFeature.class);
+	private @Nullable PreviewTooltipComponent<R> previewTooltipComponent;
+	private @Nullable IngredientsTooltipComponent ingredientsTooltipComponent;
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	private @Nullable Optional<IRecipeLayoutDrawable<R>> cachedLayoutDrawable;
 
@@ -159,14 +159,14 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 		}
 
 		if (clientConfig.isHoldShiftToShowBookmarkTooltipFeaturesEnabled()) {
-			Minecraft minecraft = Minecraft.getInstance();
-			if (minecraft.hasShiftDown()) {
+			IJeiKeyMappingInternal showBookmarkTooltipFeatures = Internal.getKeyMappings().getShowBookmarkTooltipFeatures();
+			if (showBookmarkTooltipFeatures.isDown()) {
 				addBookmarkTooltipFeatures(tooltip);
 				tooltip.addAll(transferComponents);
 			} else {
 				tooltip.addKeyUsageComponent(
 					"jei.tooltip.bookmarks.tooltips.usage",
-					Component.keybind("jei.key.shift")
+					showBookmarkTooltipFeatures
 				);
 			}
 		} else {
@@ -177,21 +177,48 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 
 	private void addBookmarkTooltipFeatures(JeiTooltip tooltip) {
 		for (BookmarkTooltipFeature feature : clientConfig.getBookmarkTooltipFeatures()) {
-			TooltipComponent component = cache.get(feature);
-			if (component == null) {
-				IRecipeLayoutDrawable<R> recipeLayout = getRecipeLayoutDrawable().orElse(null);
-				if (recipeLayout == null) {
-					break;
-				}
-
-				component = switch (feature) {
-					case PREVIEW -> new PreviewTooltipComponent<>(recipeLayout);
-					case INGREDIENTS -> new IngredientsTooltipComponent(recipeLayout);
-				};
-				cache.put(feature, component);
+			boolean added = addBookmarkTooltipFeature(tooltip, feature);
+			if (!added) {
+				break;
 			}
-			tooltip.add(component);
 		}
+	}
+
+	private boolean addBookmarkTooltipFeature(JeiTooltip tooltip, BookmarkTooltipFeature feature) {
+		return switch (feature) {
+			case PREVIEW -> addPreviewTooltipComponent(tooltip);
+			case INGREDIENTS -> addIngredientsTooltipComponent(tooltip);
+		};
+	}
+
+	private boolean addPreviewTooltipComponent(JeiTooltip tooltip) {
+		PreviewTooltipComponent<R> component = previewTooltipComponent;
+		if (component == null) {
+			IRecipeLayoutDrawable<R> recipeLayout = getRecipeLayoutDrawable().orElse(null);
+			if (recipeLayout == null) {
+				return false;
+			}
+			component = new PreviewTooltipComponent<>(recipeLayout);
+			previewTooltipComponent = component;
+		}
+
+		tooltip.add(component);
+		return true;
+	}
+
+	private boolean addIngredientsTooltipComponent(JeiTooltip tooltip) {
+		IngredientsTooltipComponent component = ingredientsTooltipComponent;
+		if (component == null) {
+			IRecipeLayoutDrawable<R> recipeLayout = getRecipeLayoutDrawable().orElse(null);
+			if (recipeLayout == null) {
+				return false;
+			}
+			component = new IngredientsTooltipComponent(recipeLayout);
+			ingredientsTooltipComponent = component;
+		}
+
+		tooltip.add(component);
+		return true;
 	}
 
 	private JeiTooltip createTransferComponents() {
@@ -254,6 +281,14 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	@Override
 	public boolean isVisible() {
 		return recipeBookmark.isVisible();
+	}
+
+	@Override
+	public void tick() {
+		PreviewTooltipComponent<R> component = previewTooltipComponent;
+		if (component != null) {
+			component.tick();
+		}
 	}
 
 	private static class RecipeBookmarkIcon implements IDrawable {

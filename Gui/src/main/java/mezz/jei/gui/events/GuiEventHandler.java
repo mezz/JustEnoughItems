@@ -59,6 +59,11 @@ public class GuiEventHandler {
 			.update();
 	}
 
+	public void onClientTick() {
+		ingredientListOverlay.tick();
+		bookmarkOverlay.tick();
+	}
+
 	/**
 	 * Draws above most ContainerScreen elements, but below the tooltips.
 	 */

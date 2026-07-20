@@ -71,6 +71,7 @@
   "key.jei.nextCategory": "Next Recipe Category",
   "key.jei.previousRecipePage": "Previous Recipe Page",
   "key.jei.nextRecipePage": "Next Recipe Page",
+  "key.jei.pauseRecipeCycling": "Pause Recipe Ingredient Cycling",
   "key.jei.closeRecipeGui": "Close Recipes GUI",
 
   "key.category.jei.cheat.mode": "JEI (Cheat Mode)",
@@ -96,6 +97,7 @@
   "key.jei.showUses2": "Show Uses",
   "key.jei.transferRecipeBookmark": "Craft Bookmarked Recipe (One)",
   "key.jei.maxTransferRecipeBookmark": "Craft Bookmarked Recipe (Many)",
+  "key.jei.showBookmarkTooltipFeatures": "Show Bookmark Details",
   "key.jei.quickMove": "Quick Move Ghost Item",
   "key.jei.shareToChat": "Share Item to Chat",
 
@@ -159,8 +161,8 @@
   "jei.config.client.tooltips.description": "Config options related to Tooltips in JEI.",
   "jei.config.client.tooltips.bookmarkTooltipFeatures": "Bookmarks Tooltips Features",
   "jei.config.client.tooltips.bookmarkTooltipFeatures.description": "Extra features for bookmark tooltips.",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures": "Shift for Bookmarks Tooltips",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures.description": "Hold Shift to show bookmark tooltip features.",
+  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures": "Keybind for Bookmarks Tooltips",
+  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures.description": "Hold the configured key to show bookmark tooltip features.",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled": "Show Creative Tab Names",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled.description": "Show creative tab names in ingredient tooltips.",
   "jei.config.client.tooltips.tagContentTooltipEnabled": "Show Tag Contents",

@@ -55,6 +55,7 @@ public class EventRegistration {
 		ScreenMouseEvents.allowMouseClick(screen).register(this::allowMouseClick);
 		ScreenMouseEvents.allowMouseRelease(screen).register(this::allowMouseRelease);
 		ScreenMouseEvents.allowMouseScroll(screen).register(this::allowMouseScroll);
+		ScreenEvents.afterTick(screen).register(this::afterTick);
 	}
 
 	private boolean allowMouseClick(Screen screen, MouseButtonEvent event) {
@@ -88,6 +89,12 @@ public class EventRegistration {
 			return false;
 		}
 		return !clientInputHandler.onGuiMouseScroll(mouseX, mouseY, horizontalAmount, verticalAmount);
+	}
+
+	private void afterTick(Screen screen) {
+		if (guiEventHandler != null) {
+			guiEventHandler.onClientTick();
+		}
 	}
 
 	private boolean beforeCharTyped(long windowHandle, CharacterEvent event) {

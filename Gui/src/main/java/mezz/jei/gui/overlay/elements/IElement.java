@@ -34,6 +34,8 @@ public interface IElement<T> {
 
 	boolean isVisible();
 
+	void tick();
+
 	default boolean handleClick(UserInput input, IInternalKeyMappings keyBindings) {
 		return false;
 	}

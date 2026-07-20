@@ -229,6 +229,12 @@ public class IngredientGrid implements IIngredientGrid {
 			.flatMap(Optional::stream);
 	}
 
+	@Override
+	public void tick() {
+		getVisibleElements()
+			.forEach(IElement::tick);
+	}
+
 	public <T> Stream<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
 		return getVisibleElements()
 			.map(IElement::getTypedIngredient)
