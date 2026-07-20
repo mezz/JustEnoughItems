@@ -36,6 +36,7 @@ public final class ClientConfig implements IClientConfig {
 
 	// input
 	private final Supplier<Integer> dragDelayMs;
+	private final Supplier<Integer> smoothScrollRate;
 
 	// sorting
 	private final ConfigValue<List<IngredientSortStage>> ingredientSorterStages;
@@ -110,6 +111,13 @@ public final class ClientConfig implements IClientConfig {
 			0,
 			1000,
 			"Number of milliseconds before a long mouse click is considered a drag operation."
+		);
+		smoothScrollRate = input.addInteger(
+			"smoothScrollRate",
+			9,
+			1,
+			50,
+			"Scroll rate for scrolling the mouse wheel in smooth-scrolling scroll boxes. Measured in pixels."
 		);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
@@ -195,6 +203,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public int getDragDelayMs() {
 		return dragDelayMs.get();
+	}
+
+	@Override
+	public int getSmoothScrollRate() {
+		return smoothScrollRate.get();
 	}
 
 	@Override

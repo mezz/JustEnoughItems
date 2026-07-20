@@ -13,6 +13,7 @@ public interface IIngredientGridConfig {
 	HorizontalAlignment getHorizontalAlignment();
 	VerticalAlignment getVerticalAlignment();
 	NavigationVisibility getNavigationVisibility();
+	IngredientGridNavigationMode getNavigationMode();
 
 	void addLayoutListener(Runnable listener);
 }

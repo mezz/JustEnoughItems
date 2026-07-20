@@ -1,5 +1,6 @@
 package mezz.jei.gui.input.handlers;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IMouseOverable;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -37,6 +38,15 @@ public class SameElementInputHandler implements IUserInputHandler {
 	public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
 		if (mouseOverable.isMouseOver(mouseX, mouseY)) {
 			return this.handler.handleMouseScrolled(mouseX, mouseY, scrollDelta);
+		}
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<IUserInputHandler> handleMouseDragged(double mouseX, double mouseY, InputConstants.Key mouseKey, double dragX, double dragY) {
+		if (mouseOverable.isMouseOver(mouseX, mouseY)) {
+			return this.handler.handleMouseDragged(mouseX, mouseY, mouseKey, dragX, dragY)
+				.map(handled -> this);
 		}
 		return Optional.empty();
 	}

@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractContainerScreen.class)
 public class AbstractContainerScreenMixin {
@@ -21,5 +22,17 @@ public class AbstractContainerScreenMixin {
 	private void drawForeground(PoseStack poseStack, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
 		AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
 		JeiScreenEvents.DRAW_FOREGROUND.invoker().drawForeground(screen, poseStack, mouseX, mouseY);
+	}
+
+	@Inject(
+		method = "mouseDragged(DDIDD)Z",
+		at = @At("HEAD"),
+		cancellable = true
+	)
+	private void allowMouseDrag(double mouseX, double mouseY, int button, double dragX, double dragY, CallbackInfoReturnable<Boolean> ci) {
+		AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
+		if (!JeiScreenEvents.ALLOW_MOUSE_DRAG.invoker().allowMouseDrag(screen, mouseX, mouseY, button, dragX, dragY)) {
+			ci.setReturnValue(true);
+		}
 	}
 }

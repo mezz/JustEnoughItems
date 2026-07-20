@@ -11,8 +11,10 @@ public record IngredientGridWithNavigationLayout(
 	int availableSlotCount,
 	ImmutableRect2i slotBackgroundArea,
 	ImmutableRect2i navigationArea,
+	ImmutableRect2i scrollbarArea,
 	ImmutableRect2i backgroundArea,
-	boolean navigationEnabled
+	boolean navigationEnabled,
+	boolean scrollbarEnabled
 ) {
 	public static final int NAVIGATION_HEIGHT = 20;
 	public static final int BORDER_MARGIN = 6;
@@ -23,9 +25,20 @@ public record IngredientGridWithNavigationLayout(
 		IIngredientGridConfig gridConfig,
 		ImmutableRect2i availableArea
 	) {
+		return getAvailableGridArea(gridConfig, availableArea, true);
+	}
+
+	public static ImmutableRect2i getAvailableGridArea(
+		IIngredientGridConfig gridConfig,
+		ImmutableRect2i availableArea,
+		boolean reserveNavigationArea
+	) {
 		ImmutableRect2i availableGridArea = availableArea
-			.insetBy(BORDER_MARGIN)
-			.cropTop(NAVIGATION_HEIGHT + INNER_PADDING);
+			.insetBy(BORDER_MARGIN);
+
+		if (reserveNavigationArea) {
+			availableGridArea = availableGridArea.cropTop(NAVIGATION_HEIGHT + INNER_PADDING);
+		}
 
 		if (gridConfig.drawBackground()) {
 			availableGridArea = availableGridArea.insetBy(BORDER_PADDING + INNER_PADDING);
@@ -51,7 +64,9 @@ public record IngredientGridWithNavigationLayout(
 			ingredientGridArea,
 			IngredientGrid.calculateAvailableSlotCount(ingredientGridArea, Set.of(), null),
 			navigationArea,
-			navigationEnabled
+			navigationEnabled,
+			ImmutableRect2i.EMPTY,
+			false
 		);
 	}
 
@@ -60,10 +75,12 @@ public record IngredientGridWithNavigationLayout(
 		ImmutableRect2i ingredientGridArea,
 		int availableSlotCount,
 		ImmutableRect2i navigationArea,
-		boolean navigationEnabled
+		boolean navigationEnabled,
+		ImmutableRect2i scrollbarArea,
+		boolean scrollbarEnabled
 	) {
 		ImmutableRect2i slotBackgroundArea = calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
-		ImmutableRect2i backgroundArea = MathUtil.union(slotBackgroundArea, navigationArea);
+		ImmutableRect2i backgroundArea = MathUtil.union(MathUtil.union(slotBackgroundArea, navigationArea), scrollbarArea);
 		if (gridConfig.drawBackground() && !backgroundArea.isEmpty()) {
 			backgroundArea = backgroundArea.expandBy(BORDER_PADDING);
 		}
@@ -72,8 +89,10 @@ public record IngredientGridWithNavigationLayout(
 			availableSlotCount,
 			slotBackgroundArea,
 			navigationArea,
+			scrollbarArea,
 			backgroundArea,
-			navigationEnabled
+			navigationEnabled,
+			scrollbarEnabled
 		);
 	}
 
@@ -101,6 +120,7 @@ public record IngredientGridWithNavigationLayout(
 	public boolean hasRoom() {
 		return !ingredientGridArea.isEmpty() &&
 			availableSlotCount > 0 &&
-			(!navigationEnabled || !navigationArea.isEmpty());
+			(!navigationEnabled || !navigationArea.isEmpty()) &&
+			(!scrollbarEnabled || !scrollbarArea.isEmpty());
 	}
 }
