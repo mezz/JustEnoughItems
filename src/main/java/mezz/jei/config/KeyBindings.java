@@ -32,6 +32,7 @@ public final class KeyBindings {
 	public static final KeyBinding toggleBookmarkOverlay;
 	public static final KeyBinding copyRecipeId;
 	public static final KeyBinding quickMove;
+	public static final KeyBinding pauseRecipeCycling;
 	private static final List<KeyBinding> allBindings;
 
 	static InputMappings.Input getKey(int key) {
@@ -55,7 +56,8 @@ public final class KeyBindings {
 			bookmark = new KeyBinding("key.jei.bookmark", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_A), categoryName),
 			toggleBookmarkOverlay = new KeyBinding("key.jei.toggleBookmarkOverlay", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), categoryName),
 			copyRecipeId = new KeyBinding("key.jei.copy.recipe.id", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_UNKNOWN), categoryName),
-			quickMove = new KeyBinding("key.jei.quickMove", KeyConflictContext.GUI, KeyModifier.SHIFT, InputMappings.Type.MOUSE.getOrCreate(GLFW.GLFW_MOUSE_BUTTON_LEFT), categoryName)
+			quickMove = new KeyBinding("key.jei.quickMove", KeyConflictContext.GUI, KeyModifier.SHIFT, InputMappings.Type.MOUSE.getOrCreate(GLFW.GLFW_MOUSE_BUTTON_LEFT), categoryName),
+			pauseRecipeCycling = new KeyBinding("key.jei.pauseRecipeCycling", KeyConflictContext.GUI, getKey(GLFW.GLFW_KEY_LEFT_SHIFT), categoryName)
 		);
 	}
 
