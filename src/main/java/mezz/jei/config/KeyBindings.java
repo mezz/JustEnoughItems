@@ -26,6 +26,7 @@ public final class KeyBindings {
 	public static final KeyBinding bookmark;
 	public static final KeyBinding toggleBookmarkOverlay;
 	public static final KeyBinding copyRecipeId;
+	public static final KeyBinding pauseRecipeCycling;
 	private static final List<KeyBinding> allBindings;
 
 	static {
@@ -41,7 +42,8 @@ public final class KeyBindings {
 			nextPage = new KeyBinding("key.jei.nextPage", KeyConflictContext.GUI, Keyboard.KEY_NEXT, categoryName),
 			bookmark = new KeyBinding("key.jei.bookmark", KeyConflictContext.GUI, Keyboard.KEY_A, categoryName),
 			toggleBookmarkOverlay = new KeyBinding("key.jei.toggleBookmarkOverlay", KeyConflictContext.GUI, Keyboard.KEY_NONE, categoryName),
-			copyRecipeId = new KeyBinding("key.jei.copy.recipe.id", KeyConflictContext.GUI, Keyboard.KEY_NONE, categoryName)
+			copyRecipeId = new KeyBinding("key.jei.copy.recipe.id", KeyConflictContext.GUI, Keyboard.KEY_NONE, categoryName),
+			pauseRecipeCycling = new KeyBinding("key.jei.pauseRecipeCycling", KeyConflictContext.GUI, Keyboard.KEY_LSHIFT, categoryName)
 		);
 	}
 

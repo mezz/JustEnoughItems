@@ -47,6 +47,7 @@ key.jei.nextPage=Next Page
 key.jei.bookmark=Add/Remove Bookmark
 key.jei.toggleBookmarkOverlay=Show/Hide Bookmarked Ingredients
 key.jei.copy.recipe.id=Copy Recipe ID to Clipboard
+key.jei.pauseRecipeCycling=Pause Recipe Cycling
 
 # Messages
 jei.message.copy.recipe.id.success=Copied Recipe ID to clipboard: %s
