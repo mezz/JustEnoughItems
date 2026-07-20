@@ -3,13 +3,18 @@ package mezz.jei.gui.overlay.ingredients;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.NavigationVisibility;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -319,6 +324,329 @@ public class IngredientGridConfigTest {
 		// Assertions: the blocked slot reduces capacity, so auto-hide reserves navigation for the overflow item.
 		assertEquals(unblockedLayout.availableSlotCount() - 1, blockedLayout.availableSlotCount());
 		assertPositiveArea(autoHideLayout.navigationArea());
+	}
+
+	@Test
+	public void scrollingModeUsesScrollbarInsteadOfNavigation() {
+		// Setup: scrollbar navigation is configured for a multi-page ingredient list.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.drawBackground(false)
+			.navigationMode(IngredientGridNavigationMode.SCROLLING)
+			.navigationVisibility(NavigationVisibility.ENABLED);
+
+		// Operation: calculate the layout.
+		IngredientGridWithNavigationLayout layout = IngredientGridScrollbarLayout.calculate(
+			gridConfig,
+			availableArea,
+			Set.of(),
+			null,
+			100
+		);
+
+		// Assertions: scrollbar mode reserves side scrollbar space and suppresses page-button navigation.
+		assertEquals(ImmutableRect2i.EMPTY, layout.navigationArea());
+		assertPositiveArea(layout.scrollbarArea());
+		assertTrue(
+			layout.scrollbarArea().x() >= layout.ingredientGridArea().x() + layout.ingredientGridArea().width(),
+			"scrollbar should be on the right side of the ingredient grid"
+		);
+		assertContainedBy(layout.ingredientGridArea(), layout.backgroundArea());
+		assertContainedBy(layout.scrollbarArea(), layout.backgroundArea());
+	}
+
+	@Test
+	public void scrollingModeKeepsScrollbarLayoutInsideAvailableArea() {
+		// Setup: scrollbar navigation is configured for a multi-page ingredient list.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.drawBackground(false)
+			.navigationMode(IngredientGridNavigationMode.SCROLLING)
+			.navigationVisibility(NavigationVisibility.ENABLED);
+
+		// Operation: calculate the layout.
+		IngredientGridWithNavigationLayout layout = IngredientGridScrollbarLayout.calculate(
+			gridConfig,
+			availableArea,
+			Set.of(),
+			null,
+			100
+		);
+
+		// Assertions: the reserved scrollbar space shifts the grid left so nothing renders offscreen.
+		assertContainedBy(layout.ingredientGridArea(), availableArea);
+		assertContainedBy(layout.scrollbarArea(), availableArea);
+		assertContainedBy(layout.backgroundArea(), availableArea);
+	}
+
+	@Test
+	public void scrollbarBackgroundAlignsVerticallyWithSlotBackground() {
+		// Setup: drawing the background adds padding around the ingredient slots.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.drawBackground(true)
+			.navigationMode(IngredientGridNavigationMode.SCROLLING)
+			.navigationVisibility(NavigationVisibility.ENABLED);
+
+		// Operation: calculate the layout.
+		IngredientGridWithNavigationLayout layout = IngredientGridScrollbarLayout.calculate(
+			gridConfig,
+			availableArea,
+			Set.of(),
+			null,
+			100
+		);
+
+		// Assertions: the scrollbar background spans the same top and bottom as the slot background.
+		assertEquals(layout.slotBackgroundArea().y(), layout.scrollbarArea().y());
+		assertEquals(layout.slotBackgroundArea().height(), layout.scrollbarArea().height());
+	}
+
+	@Test
+	public void scrollbarBackgroundHasHorizontalPadding() {
+		// Setup: drawing the background adds a border around the ingredient slots and scrollbar.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.drawBackground(true)
+			.navigationMode(IngredientGridNavigationMode.SCROLLING)
+			.navigationVisibility(NavigationVisibility.ENABLED);
+
+		// Operation: calculate the layout.
+		IngredientGridWithNavigationLayout layout = IngredientGridScrollbarLayout.calculate(
+			gridConfig,
+			availableArea,
+			Set.of(),
+			null,
+			100
+		);
+
+		// Assertions: the gap between the slot background and scrollbar keeps the controls visually separated.
+		assertEquals(2, layout.scrollbarArea().x() - right(layout.slotBackgroundArea()));
+	}
+
+	@Test
+	public void scrollbarBackgroundKeepsRightScreenPaddingAlignedWithTopPadding() {
+		// Setup: drawing the background adds the outer border around the scrollbar.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.drawBackground(true)
+			.navigationMode(IngredientGridNavigationMode.SCROLLING)
+			.navigationVisibility(NavigationVisibility.ENABLED)
+			.horizontalAlignment(HorizontalAlignment.RIGHT);
+
+		// Operation: calculate the layout.
+		IngredientGridWithNavigationLayout layout = IngredientGridScrollbarLayout.calculate(
+			gridConfig,
+			availableArea,
+			Set.of(),
+			null,
+			100
+		);
+
+		// Assertions: the outer background has the same screen-edge padding on top and right.
+		int topPadding = layout.backgroundArea().y() - availableArea.y();
+		int rightPadding = right(availableArea) - right(layout.backgroundArea());
+		assertEquals(topPadding, rightPadding);
+	}
+
+	@ParameterizedTest(name = "drawBackground={0}, alignment={1}")
+	@MethodSource("navigationLayoutAlignmentConfigs")
+	public void navigationLayoutsShareAlignedEdges(boolean drawBackground, GridAlignment alignment) {
+		ImmutableRect2i availableArea = largeAvailableArea();
+		HorizontalAlignment horizontalAlignment = alignment.horizontalAlignment();
+		VerticalAlignment verticalAlignment = alignment.verticalAlignment();
+
+		TestGridConfig buttonGridConfig = config()
+			.drawBackground(drawBackground)
+			.navigationVisibility(NavigationVisibility.ENABLED)
+			.horizontalAlignment(horizontalAlignment)
+			.verticalAlignment(verticalAlignment);
+		TestGridConfig scrollbarGridConfig = config()
+			.drawBackground(drawBackground)
+			.navigationMode(IngredientGridNavigationMode.SCROLLING)
+			.navigationVisibility(NavigationVisibility.ENABLED)
+			.horizontalAlignment(horizontalAlignment)
+			.verticalAlignment(verticalAlignment);
+
+		IngredientGridWithNavigationLayout buttonLayout = IngredientGridButtonNavigationLayout.calculate(
+			buttonGridConfig,
+			availableArea,
+			Set.of(),
+			null,
+			100
+		);
+		IngredientGridWithNavigationLayout scrollbarLayout = IngredientGridScrollbarLayout.calculate(
+			scrollbarGridConfig,
+			availableArea,
+			Set.of(),
+			null,
+			100
+		);
+
+		assertSharedAlignedEdges(
+			horizontalAlignment,
+			verticalAlignment,
+			buttonLayout.backgroundArea(),
+			scrollbarLayout.backgroundArea(),
+			availableArea
+		);
+	}
+
+	@Test
+	public void disabledNavigationVisibilityHidesScrollbarForScrollingMode() {
+		// Setup: scrollbar navigation is configured, but navigation visibility is disabled.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.drawBackground(false)
+			.navigationMode(IngredientGridNavigationMode.SCROLLING)
+			.navigationVisibility(NavigationVisibility.DISABLED);
+
+		// Operation: calculate the layout for a multi-page ingredient list.
+		IngredientGridWithNavigationLayout layout = IngredientGridScrollbarLayout.calculate(
+			gridConfig,
+			availableArea,
+			Set.of(),
+			null,
+			100
+		);
+
+		// Assertions: disabled navigation suppresses the visible scrollbar and its reserved space.
+		assertEquals(ImmutableRect2i.EMPTY, layout.navigationArea());
+		assertEquals(ImmutableRect2i.EMPTY, layout.scrollbarArea());
+		assertPositiveArea(layout.ingredientGridArea());
+		assertContainedBy(layout.ingredientGridArea(), layout.backgroundArea());
+	}
+
+	@Test
+	public void autoHideNavigationVisibilityShowsScrollbarOnlyForOverflowingScrollingMode() {
+		// Setup: scrollbar navigation is configured to auto-hide.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.maxColumns(4)
+			.maxRows(3)
+			.drawBackground(false)
+			.navigationMode(IngredientGridNavigationMode.SCROLLING)
+			.navigationVisibility(NavigationVisibility.AUTO_HIDE);
+		IngredientGridWithNavigationLayout referenceLayout = IngredientGridScrollbarLayout.calculate(
+			config()
+				.maxColumns(4)
+				.maxRows(3)
+				.drawBackground(false)
+				.navigationMode(IngredientGridNavigationMode.SCROLLING)
+				.navigationVisibility(NavigationVisibility.DISABLED),
+			availableArea,
+			Set.of(),
+			null,
+			0
+		);
+		int onePageIngredientCount = referenceLayout.availableSlotCount();
+
+		// Operation: calculate layout for one-page and overflowing states.
+		IngredientGridWithNavigationLayout hiddenWithOnePage = IngredientGridScrollbarLayout.calculate(
+			gridConfig,
+			availableArea,
+			Set.of(),
+			null,
+			onePageIngredientCount
+		);
+		IngredientGridWithNavigationLayout shownWithOverflow = IngredientGridScrollbarLayout.calculate(
+			gridConfig,
+			availableArea,
+			Set.of(),
+			null,
+			onePageIngredientCount + 1
+		);
+
+		// Assertions: auto-hide only reserves the scrollbar when the ingredient list overflows.
+		assertEquals(ImmutableRect2i.EMPTY, hiddenWithOnePage.navigationArea());
+		assertEquals(ImmutableRect2i.EMPTY, hiddenWithOnePage.scrollbarArea());
+		assertEquals(ImmutableRect2i.EMPTY, shownWithOverflow.navigationArea());
+		assertPositiveArea(shownWithOverflow.scrollbarArea());
+	}
+
+	@Test
+	public void autoHideScrollbarUsesGuiExclusionBlockedSlotCapacity() {
+		// Setup: a GUI exclusion blocks one otherwise available slot in an auto-hide scrolling grid.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig disabledGridConfig = config()
+			.maxColumns(4)
+			.maxRows(3)
+			.drawBackground(false)
+			.navigationMode(IngredientGridNavigationMode.SCROLLING)
+			.navigationVisibility(NavigationVisibility.DISABLED);
+		TestGridConfig autoHideGridConfig = config()
+			.maxColumns(4)
+			.maxRows(3)
+			.drawBackground(false)
+			.navigationMode(IngredientGridNavigationMode.SCROLLING)
+			.navigationVisibility(NavigationVisibility.AUTO_HIDE);
+		IngredientGridWithNavigationLayout unblockedLayout = IngredientGridScrollbarLayout.calculate(
+			disabledGridConfig,
+			availableArea,
+			Set.of(),
+			null,
+			0
+		);
+		Set<ImmutableRect2i> guiExclusionAreas = Set.of(new ImmutableRect2i(
+			unblockedLayout.ingredientGridArea().x(),
+			unblockedLayout.ingredientGridArea().y(),
+			1,
+			1
+		));
+
+		// Operation: calculate layout with one slot blocked and enough ingredients to need that slot.
+		IngredientGridWithNavigationLayout blockedLayout = IngredientGridScrollbarLayout.calculate(
+			disabledGridConfig,
+			availableArea,
+			guiExclusionAreas,
+			null,
+			0
+		);
+		IngredientGridWithNavigationLayout autoHideLayout = IngredientGridScrollbarLayout.calculate(
+			autoHideGridConfig,
+			availableArea,
+			guiExclusionAreas,
+			null,
+			unblockedLayout.availableSlotCount()
+		);
+
+		// Assertions: the blocked slot reduces capacity, so auto-hide reserves the scrollbar for the overflow item.
+		assertEquals(unblockedLayout.availableSlotCount() - 1, blockedLayout.availableSlotCount());
+		assertPositiveArea(autoHideLayout.scrollbarArea());
+	}
+
+	@Test
+	public void scrollbarLayoutReclaimsNavigationHeight() {
+		// Setup: the same grid can use either page buttons or scrollbar navigation.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig pageConfig = config()
+			.drawBackground(false)
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		TestGridConfig scrollbarConfig = config()
+			.drawBackground(false)
+			.navigationMode(IngredientGridNavigationMode.SCROLLING)
+			.navigationVisibility(NavigationVisibility.ENABLED);
+
+		// Operation: calculate both layouts.
+		IngredientGridWithNavigationLayout pageLayout = IngredientGridButtonNavigationLayout.calculate(
+			pageConfig,
+			availableArea,
+			Set.of(),
+			null,
+			100
+		);
+		IngredientGridWithNavigationLayout scrollbarLayout = IngredientGridScrollbarLayout.calculate(
+			scrollbarConfig,
+			availableArea,
+			Set.of(),
+			null,
+			100
+		);
+
+		// Assertions: without page buttons, the scrollable grid can start higher in the same available area.
+		assertPositiveArea(pageLayout.navigationArea());
+		assertPositiveArea(scrollbarLayout.scrollbarArea());
+		assertTrue(scrollbarLayout.ingredientGridArea().y() < pageLayout.ingredientGridArea().y());
 	}
 
 	@Test
@@ -1195,6 +1523,93 @@ public class IngredientGridConfigTest {
 		assertContainedBy(bounds, availableArea);
 	}
 
+	private static Stream<Arguments> navigationLayoutAlignmentConfigs() {
+		return Stream.of(false, true)
+			.flatMap(drawBackground -> Stream.of(HorizontalAlignment.values())
+				.flatMap(horizontalAlignment -> Stream.of(VerticalAlignment.values())
+					.map(verticalAlignment -> Arguments.of(
+						drawBackground,
+						new GridAlignment(horizontalAlignment, verticalAlignment)
+					))));
+	}
+
+	private static void assertSharedAlignedEdges(
+		HorizontalAlignment horizontalAlignment,
+		VerticalAlignment verticalAlignment,
+		ImmutableRect2i buttonNavigationArea,
+		ImmutableRect2i scrollbarNavigationArea,
+		ImmutableRect2i availableArea
+	) {
+		assertContainedBy(buttonNavigationArea, availableArea);
+		assertContainedBy(scrollbarNavigationArea, availableArea);
+		assertSharedHorizontalAlignedEdge(
+			horizontalAlignment,
+			verticalAlignment,
+			buttonNavigationArea,
+			scrollbarNavigationArea,
+			availableArea
+		);
+		assertSharedVerticalAlignedEdge(
+			horizontalAlignment,
+			verticalAlignment,
+			buttonNavigationArea,
+			scrollbarNavigationArea,
+			availableArea
+		);
+	}
+
+	private static void assertSharedHorizontalAlignedEdge(
+		HorizontalAlignment horizontalAlignment,
+		VerticalAlignment verticalAlignment,
+		ImmutableRect2i buttonNavigationArea,
+		ImmutableRect2i scrollbarNavigationArea,
+		ImmutableRect2i availableArea
+	) {
+		String alignment = horizontalAlignment + " " + verticalAlignment;
+		switch (horizontalAlignment) {
+			case LEFT -> assertEquals(
+				buttonNavigationArea.x(),
+				scrollbarNavigationArea.x(),
+				() -> alignment + " left edges should match"
+			);
+			case CENTER -> {
+				assertCenteredHorizontally(buttonNavigationArea, availableArea);
+				assertCenteredHorizontally(scrollbarNavigationArea, availableArea);
+			}
+			case RIGHT -> assertEquals(
+				right(buttonNavigationArea),
+				right(scrollbarNavigationArea),
+				() -> alignment + " right edges should match"
+			);
+		}
+	}
+
+	private static void assertSharedVerticalAlignedEdge(
+		HorizontalAlignment horizontalAlignment,
+		VerticalAlignment verticalAlignment,
+		ImmutableRect2i buttonNavigationArea,
+		ImmutableRect2i scrollbarNavigationArea,
+		ImmutableRect2i availableArea
+	) {
+		String alignment = horizontalAlignment + " " + verticalAlignment;
+		switch (verticalAlignment) {
+			case TOP -> assertEquals(
+				buttonNavigationArea.y(),
+				scrollbarNavigationArea.y(),
+				() -> alignment + " top edges should match"
+			);
+			case CENTER -> {
+				assertCenteredVertically(buttonNavigationArea, availableArea);
+				assertCenteredVertically(scrollbarNavigationArea, availableArea);
+			}
+			case BOTTOM -> assertEquals(
+				bottom(buttonNavigationArea),
+				bottom(scrollbarNavigationArea),
+				() -> alignment + " bottom edges should match"
+			);
+		}
+	}
+
 	private static void assertContainedBy(ImmutableRect2i inner, ImmutableRect2i outer) {
 		assertTrue(inner.x() >= outer.x(), () -> inner + " should not start left of " + outer);
 		assertTrue(inner.y() >= outer.y(), () -> inner + " should not start above " + outer);
@@ -1228,12 +1643,20 @@ public class IngredientGridConfigTest {
 		);
 	}
 
+	public record GridAlignment(HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
+		@Override
+		public String toString() {
+			return horizontalAlignment + " " + verticalAlignment;
+		}
+	}
+
 	private static class TestGridConfig implements IIngredientGridConfig {
 		private int maxColumns = 9;
 		private int minColumns = 1;
 		private int maxRows = 6;
 		private int minRows = 1;
 		private boolean drawBackground = true;
+		private IngredientGridNavigationMode navigationMode = IngredientGridNavigationMode.PAGED;
 		private HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
 		private VerticalAlignment verticalAlignment = VerticalAlignment.TOP;
 		private NavigationVisibility navigationVisibility = NavigationVisibility.AUTO_HIDE;
@@ -1260,6 +1683,11 @@ public class IngredientGridConfigTest {
 
 		public TestGridConfig drawBackground(boolean drawBackground) {
 			this.drawBackground = drawBackground;
+			return this;
+		}
+
+		public TestGridConfig navigationMode(IngredientGridNavigationMode navigationMode) {
+			this.navigationMode = navigationMode;
 			return this;
 		}
 
@@ -1301,6 +1729,11 @@ public class IngredientGridConfigTest {
 		@Override
 		public boolean drawBackground() {
 			return drawBackground;
+		}
+
+		@Override
+		public IngredientGridNavigationMode getNavigationMode() {
+			return navigationMode;
 		}
 
 		@Override

@@ -1,6 +1,7 @@
 package mezz.jei.gui.input.handlers;
 
 import com.google.common.base.MoreObjects;
+import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -37,5 +38,10 @@ public class ProxyInputHandler implements IUserInputHandler {
 	@Override
 	public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
 		return this.source.get().handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
+	}
+
+	@Override
+	public Optional<IUserInputHandler> handleMouseDragged(double mouseX, double mouseY, InputConstants.Key mouseKey, double dragX, double dragY) {
+		return this.source.get().handleMouseDragged(mouseX, mouseY, mouseKey, dragX, dragY);
 	}
 }

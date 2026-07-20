@@ -54,6 +54,7 @@ public class EventRegistration {
 		ScreenKeyboardEvents.allowKeyPress(screen).register(this::allowKeyPress);
 		ScreenMouseEvents.allowMouseClick(screen).register(this::allowMouseClick);
 		ScreenMouseEvents.allowMouseRelease(screen).register(this::allowMouseRelease);
+		ScreenMouseEvents.allowMouseDrag(screen).register(this::allowMouseDrag);
 		ScreenMouseEvents.allowMouseScroll(screen).register(this::allowMouseScroll);
 		ScreenEvents.afterTick(screen).register(this::afterTick);
 	}
@@ -89,6 +90,13 @@ public class EventRegistration {
 			return false;
 		}
 		return !clientInputHandler.onGuiMouseScroll(mouseX, mouseY, horizontalAmount, verticalAmount);
+	}
+
+	private boolean allowMouseDrag(Screen screen, MouseButtonEvent event, double horizontalAmount, double verticalAmount) {
+		if (clientInputHandler == null) {
+			return true;
+		}
+		return !clientInputHandler.onGuiMouseDragged(screen, event, horizontalAmount, verticalAmount);
 	}
 
 	private void afterTick(Screen screen) {

@@ -1,5 +1,6 @@
 package mezz.jei.gui.input;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.common.input.IInternalKeyMappings;
 import net.minecraft.client.gui.screens.Screen;
@@ -17,6 +18,10 @@ public interface IUserInputHandler {
 	}
 
 	default Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+		return Optional.empty();
+	}
+
+	default Optional<IUserInputHandler> handleMouseDragged(double mouseX, double mouseY, InputConstants.Key mouseKey, double dragX, double dragY) {
 		return Optional.empty();
 	}
 }
