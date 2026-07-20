@@ -2,6 +2,7 @@ package mezz.jei.common.input;
 
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.api.runtime.IJeiKeyMappings;
+import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 
 public interface IInternalKeyMappings extends IJeiKeyMappings {
 	IJeiKeyMapping getToggleOverlay();
@@ -16,6 +17,7 @@ public interface IInternalKeyMappings extends IJeiKeyMappings {
 	IJeiKeyMapping getNextCategory();
 	IJeiKeyMapping getPreviousRecipePage();
 	IJeiKeyMapping getNextRecipePage();
+	IJeiKeyMappingInternal getPauseRecipeCycling();
 
 	IJeiKeyMapping getPreviousPage();
 	IJeiKeyMapping getNextPage();
@@ -33,6 +35,7 @@ public interface IInternalKeyMappings extends IJeiKeyMappings {
 
 	IJeiKeyMapping getTransferRecipeBookmark();
 	IJeiKeyMapping getMaxTransferRecipeBookmark();
+	IJeiKeyMappingInternal getShowBookmarkTooltipFeatures();
 	IJeiKeyMapping getQuickMove();
 
 	IJeiKeyMapping getCheatOneItem();

@@ -32,6 +32,11 @@ public class ForgeJeiKeyMapping implements IJeiKeyMappingInternal {
 	}
 
 	@Override
+	public boolean isDown() {
+		return IJeiKeyMappingInternal.isKeyDown(keyMapping.getKey());
+	}
+
+	@Override
 	public IJeiKeyMappingInternal register(Consumer<KeyMapping> registerMethod) {
 		registerMethod.accept(keyMapping);
 		return this;

@@ -7,6 +7,7 @@ import mezz.jei.common.input.KeyNameUtil;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
+import net.neoforged.neoforge.client.settings.KeyModifier;
 
 public class NeoForgeJeiKeyMapping implements IJeiKeyMappingInternal {
 	private final KeyMapping keyMapping;
@@ -29,6 +30,24 @@ public class NeoForgeJeiKeyMapping implements IJeiKeyMappingInternal {
 	public Component getTranslatedKeyMessage() {
 		InputConstants.Key key = keyMapping.getKey();
 		return keyMapping.getKeyModifier().getCombinedName(key, () -> KeyNameUtil.getKeyDisplayName(key));
+	}
+
+	@Override
+	public boolean isDown() {
+		InputConstants.Key key = keyMapping.getKey();
+		return IJeiKeyMappingInternal.isKeyDown(key) &&
+			keyMapping.getKeyConflictContext().isActive() &&
+			isKeyModifierActive(key);
+	}
+
+	private boolean isKeyModifierActive(InputConstants.Key key) {
+		KeyModifier keyModifier = keyMapping.getKeyModifier();
+		// Work around NeoForge treating KeyModifier.NONE as inactive in GUI contexts
+		// when the key binding itself is a modifier key, like Left Shift.
+		if (keyModifier == KeyModifier.NONE && KeyModifier.isKeyCodeModifier(key)) {
+			return true;
+		}
+		return keyModifier.isActive(keyMapping.getKeyConflictContext());
 	}
 
 	@Override

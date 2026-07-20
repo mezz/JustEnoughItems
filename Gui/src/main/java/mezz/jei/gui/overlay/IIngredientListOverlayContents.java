@@ -33,6 +33,8 @@ public interface IIngredientListOverlayContents extends IIngredientGridView, IIn
 	 */
 	void drawOnForeground(GuiGraphics guiGraphics, int mouseX, int mouseY);
 
+	void tick();
+
 	/**
 	 * Creates the input handler for the ingredient-list contents.
 	 */
