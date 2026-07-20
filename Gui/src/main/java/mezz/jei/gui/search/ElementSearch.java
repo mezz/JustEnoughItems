@@ -5,6 +5,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.search.ISearchStorage;
+import mezz.jei.api.search.ISearchStorageBuilder;
 import mezz.jei.core.search.CombinedSearchables;
 import mezz.jei.core.search.ISearchable;
 import mezz.jei.core.search.PrefixInfo;
@@ -31,11 +32,34 @@ public class ElementSearch implements IElementSearch {
 	private final Map<Object, IListElement<?>> allElements = new HashMap<>();
 	private final PrefixInfo<IListElementInfo<?>, IListElement<?>> noPrefix;
 
-	public ElementSearch(ElementPrefixParser elementPrefixParser) {
+	public ElementSearch(
+		ElementPrefixParser elementPrefixParser,
+		Collection<IListElementInfo<?>> infos,
+		IIngredientManager ingredientManager
+	) {
 		this.noPrefix = elementPrefixParser.getNoPrefix();
+
+		for (IListElementInfo<?> info : infos) {
+			IListElement<?> element = info.getElement();
+			Object uid = getUid(info.getTypedIngredient(), ingredientManager);
+			this.allElements.put(uid, element);
+		}
+
 		for (PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo : elementPrefixParser.allPrefixInfos()) {
-			ISearchStorage<IListElement<?>> storage = prefixInfo.createStorage();
-			var prefixedSearchable = new PrefixedSearchable<>(storage, prefixInfo);
+			ISearchStorageBuilder<IListElement<?>> storageBuilder = prefixInfo.createStorageBuilder();
+
+			SearchMode searchMode = prefixInfo.getMode();
+			if (searchMode != SearchMode.DISABLED) {
+				for (IListElementInfo<?> info : infos) {
+					Collection<String> strings = prefixInfo.getStrings(info);
+					IListElement<?> element = info.getElement();
+					for (String string : strings) {
+						putIfNotBlank(storageBuilder, string, element);
+					}
+				}
+			}
+			ISearchStorage<IListElement<?>> searchStorage = storageBuilder.build();
+			var prefixedSearchable = new PrefixedSearchable<>(searchStorage, prefixInfo);
 			this.prefixedSearchables.put(prefixInfo, prefixedSearchable);
 			this.combinedSearchables.addSearchable(prefixedSearchable);
 		}
@@ -88,30 +112,16 @@ public class ElementSearch implements IElementSearch {
 		}
 	}
 
+	static <T> void putIfNotBlank(ISearchStorageBuilder<T> storageBuilder, String string, T element) {
+		String trimmedString = string.trim();
+		if (!trimmedString.isEmpty()) {
+			storageBuilder.put(trimmedString, element);
+		}
+	}
+
 	private static <T> Object getUid(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
 		return ingredientHelper.getUniqueId(typedIngredient.getIngredient(), UidContext.Ingredient);
-	}
-
-	@Override
-	public void addAll(Collection<IListElementInfo<?>> infos, IIngredientManager ingredientManager) {
-		for (IListElementInfo<?> info : infos) {
-			IListElement<?> element = info.getElement();
-			Object uid = getUid(info.getTypedIngredient(), ingredientManager);
-			this.allElements.put(uid, element);
-		}
-		for (PrefixedSearchable<IListElementInfo<?>, IListElement<?>> prefixedSearchable : this.prefixedSearchables.values()) {
-			SearchMode searchMode = prefixedSearchable.getMode();
-			if (searchMode != SearchMode.DISABLED) {
-				ISearchStorage<IListElement<?>> storage = prefixedSearchable.getSearchStorage();
-				for (IListElementInfo<?> info : infos) {
-					Collection<String> strings = prefixedSearchable.getStrings(info);
-					for (String string : strings) {
-						putIfNotBlank(storage, string, info.getElement());
-					}
-				}
-			}
-		}
 	}
 
 	@Override

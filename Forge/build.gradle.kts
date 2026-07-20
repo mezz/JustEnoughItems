@@ -18,6 +18,7 @@ val minecraftVersion: String by extra
 val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val bakedSubstringIndexVersion: String by extra
 val parchmentVersionForge: String by extra
 
 val forgeArtifactVersion = "${minecraftVersion}-${forgeVersion}"
@@ -60,6 +61,8 @@ dependencyProjects.forEach {
 }
 project.evaluationDependsOn(":Changelog")
 
+val embeddedLibraries = configurations.create("embeddedLibraries")
+
 java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
@@ -90,6 +93,12 @@ dependencies {
 		add(gameTestSourceSet.implementationConfigurationName, it)
 	}
 	changelogHtml(project(":Changelog"))
+	add(
+		embeddedLibraries.name,
+		"net.mezzdev:baked-substring-index:$bakedSubstringIndexVersion"
+	) {
+		isTransitive = false
+	}
 	testImplementation(
 		group = "org.junit.jupiter",
 		name = "junit-jupiter",
@@ -178,6 +187,11 @@ tasks.jar {
 	for (p in dependencyProjects) {
 		from(p.sourceSets.main.get().output)
 	}
+	from({
+		embeddedLibraries.map {
+			zipTree(it)
+		}
+	})
 
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

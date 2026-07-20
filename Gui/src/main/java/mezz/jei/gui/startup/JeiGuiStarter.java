@@ -12,7 +12,7 @@ import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.api.search.ISearchStorageFactory;
+import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
@@ -76,7 +76,7 @@ public class JeiGuiStarter {
 		IIngredientVisibility ingredientVisibility = registration.getIngredientVisibility();
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IEditModeConfig editModeConfig = registration.getEditModeConfig();
-		ISearchStorageFactory searchStorageFactory = registration.getSearchStorageFactory();
+		ISearchStorageBuilderFactory searchStorageBuilderFactory = registration.getSearchStorageBuilderFactory();
 
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IColorHelper colorHelper = jeiHelpers.getColorHelper();
@@ -125,7 +125,7 @@ public class JeiGuiStarter {
 			modIdHelper,
 			ingredientVisibility,
 			colorHelper,
-			searchStorageFactory,
+			searchStorageBuilderFactory,
 			worldConfig
 		);
 		ingredientManager.registerIngredientListener(ingredientFilter);

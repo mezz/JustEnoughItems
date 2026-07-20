@@ -28,8 +28,9 @@ public class ElementSearchLowMem implements IElementSearch {
 	private final List<IListElementInfo<?>> elementInfoList;
 	private final PrefixInfo<IListElementInfo<?>, IListElement<?>> noPrefix;
 
-	public ElementSearchLowMem(PrefixInfo<IListElementInfo<?>, IListElement<?>> noPrefix) {
+	public ElementSearchLowMem(PrefixInfo<IListElementInfo<?>, IListElement<?>> noPrefix, Collection<IListElementInfo<?>> infos) {
 		this.elementInfoList = new ArrayList<>();
+		this.elementInfoList.addAll(infos);
 		this.noPrefix = noPrefix;
 	}
 
@@ -63,11 +64,6 @@ public class ElementSearchLowMem implements IElementSearch {
 	@Override
 	public <T> void add(IListElementInfo<T> info, IIngredientManager ingredientManager) {
 		this.elementInfoList.add(info);
-	}
-
-	@Override
-	public void addAll(Collection<IListElementInfo<?>> infos, IIngredientManager ingredientManager) {
-		this.elementInfoList.addAll(infos);
 	}
 
 	@Override

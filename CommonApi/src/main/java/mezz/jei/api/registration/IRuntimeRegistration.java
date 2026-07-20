@@ -13,6 +13,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.api.search.ISearchStorageFactory;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -113,4 +114,14 @@ public interface IRuntimeRegistration {
 	 * @since 10.11.0
 	 */
 	ISearchStorageFactory getSearchStorageFactory();
+
+	/**
+	 * Get the search storage builder factory used by JEI's ingredient filter.
+	 * This can be overridden for advanced search behavior with
+	 * {@link IModPlugin#registerAdvancedSearch(IAdvancedSearchRegistration)} and
+	 * {@link IAdvancedSearchRegistration#replaceSearchStorage(ISearchStorageBuilderFactory)}.
+	 *
+	 * @since 10.12.0
+	 */
+	ISearchStorageBuilderFactory getSearchStorageBuilderFactory();
 }
