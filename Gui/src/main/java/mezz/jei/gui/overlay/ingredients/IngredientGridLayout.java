@@ -45,7 +45,7 @@ public final class IngredientGridLayout {
 		@Nullable ImmutablePoint2i mouseExclusionPoint
 	) {
 		int blocked = 0;
-		List<SlotLayout> slotLayouts = calculateSlots(area, exclusionAreas, mouseExclusionPoint);
+		List<SlotLayout> slotLayouts = calculateSlots(area, exclusionAreas, mouseExclusionPoint, 0);
 		for (SlotLayout slotLayout : slotLayouts) {
 			if (slotLayout.blocked()) {
 				blocked++;
@@ -57,10 +57,12 @@ public final class IngredientGridLayout {
 	public static List<SlotLayout> calculateSlots(
 		ImmutableRect2i area,
 		Set<ImmutableRect2i> exclusionAreas,
-		@Nullable ImmutablePoint2i mouseExclusionPoint
+		@Nullable ImmutablePoint2i mouseExclusionPoint,
+		int smoothScrollRowPixelOffset
 	) {
 		List<SlotLayout> slotLayouts = new ArrayList<>();
-		for (int y = area.getY(); y < area.getY() + area.getHeight(); y += INGREDIENT_HEIGHT) {
+		int rowPixelOffset = Math.clamp(smoothScrollRowPixelOffset, 0, INGREDIENT_HEIGHT - 1);
+		for (int y = area.getY() - rowPixelOffset; y < area.getY() + area.getHeight(); y += INGREDIENT_HEIGHT) {
 			for (int x = area.getX(); x < area.getX() + area.getWidth(); x += INGREDIENT_WIDTH) {
 				ImmutableRect2i slotArea = new ImmutableRect2i(x, y, INGREDIENT_WIDTH, INGREDIENT_HEIGHT);
 				slotLayouts.add(new SlotLayout(

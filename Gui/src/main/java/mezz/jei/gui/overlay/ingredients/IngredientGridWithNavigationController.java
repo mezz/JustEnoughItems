@@ -6,6 +6,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.ghost.GhostIngredientQuickMoveManager;
 import mezz.jei.gui.input.DelegatingClickableIngredientInternal;
@@ -30,10 +31,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-class IngredientGridWithNavigationController implements IPaged, IUserInputHandler {
+public class IngredientGridWithNavigationController implements IPaged, IUserInputHandler {
 	private final IngredientGridPageState pageState = new IngredientGridPageState();
+	private final IngredientGridScrollController scrollController;
 	private final IIngredientGridSource ingredientSource;
 	private final IIngredientGrid ingredientGrid;
+	private final IIngredientGridConfig gridConfig;
 	private final IClientToggleState toggleState;
 	private final IClientConfig clientConfig;
 	private final IMouseOverable mouseOverable;
@@ -42,9 +45,10 @@ class IngredientGridWithNavigationController implements IPaged, IUserInputHandle
 	private final GhostIngredientQuickMoveManager ghostIngredientQuickMoveManager;
 	private Runnable onLayoutChanged = () -> {};
 
-	IngredientGridWithNavigationController(
+	public IngredientGridWithNavigationController(
 		IIngredientGridSource ingredientSource,
 		IIngredientGrid ingredientGrid,
+		IIngredientGridConfig gridConfig,
 		IClientToggleState toggleState,
 		IClientConfig clientConfig,
 		CommandUtil commandUtil,
@@ -54,32 +58,49 @@ class IngredientGridWithNavigationController implements IPaged, IUserInputHandle
 	) {
 		this.ingredientSource = ingredientSource;
 		this.ingredientGrid = ingredientGrid;
+		this.gridConfig = gridConfig;
 		this.toggleState = toggleState;
 		this.clientConfig = clientConfig;
 		this.mouseOverable = mouseOverable;
 		this.commandUtil = commandUtil;
 		this.ingredientManager = ingredientManager;
 		this.ghostIngredientQuickMoveManager = ghostIngredientQuickMoveManager;
+		this.scrollController = new IngredientGridScrollController(
+			ingredientSource,
+			ingredientGrid,
+			gridConfig,
+			clientConfig
+		);
 	}
 
-	void setOnLayoutChanged(Runnable onLayoutChanged) {
+	public void setOnLayoutChanged(Runnable onLayoutChanged) {
 		this.onLayoutChanged = onLayoutChanged;
 	}
 
-	void updateLayoutToFirstPage() {
+	public void updateLayoutToFirstPage() {
 		updateLayoutStartingAt(0);
 	}
 
-	void updateLayoutKeepingPageAnchorVisible(@Nullable IElement<?> pageAnchorElement) {
-		List<IElement<?>> ingredientList = ingredientSource.getElements();
-		int firstItemIndex = this.pageState.updateKeepingPageAnchorVisible(pageAnchorElement, ingredientList, ingredientGrid.size());
-		this.ingredientGrid.set(firstItemIndex, ingredientList);
+	public void updateLayoutKeepingPageAnchorVisible(@Nullable IElement<?> pageAnchorElement) {
+		if (usesScrollbar()) {
+			this.scrollController.updateLayoutKeepingScrollAnchorVisible(pageAnchorElement);
+		} else {
+			List<IElement<?>> ingredientList = ingredientSource.getElements();
+			int firstItemIndex = this.pageState.updateKeepingPageAnchorVisible(pageAnchorElement, ingredientList, ingredientGrid.size());
+			this.ingredientGrid.set(firstItemIndex, ingredientList);
+		}
 		this.onLayoutChanged.run();
 	}
 
 	@Nullable
-	IElement<?> getPageAnchorElement() {
-		IElement<?> pageAnchorElement = this.pageState.getPageAnchorElement(ingredientSource.getElements());
+	public IElement<?> getPageAnchorElement() {
+		IElement<?> pageAnchorElement;
+		if (usesScrollbar()) {
+			pageAnchorElement = this.scrollController.getScrollAnchorElement();
+		} else {
+			List<IElement<?>> ingredientList = ingredientSource.getElements();
+			pageAnchorElement = this.pageState.getPageAnchorElement(ingredientList);
+		}
 		if (pageAnchorElement != null) {
 			return pageAnchorElement;
 		}
@@ -88,19 +109,27 @@ class IngredientGridWithNavigationController implements IPaged, IUserInputHandle
 			.orElse(null);
 	}
 
-	<T> IClickableIngredientInternal<T> createPageAnchorIngredient(IClickableIngredientInternal<T> delegate) {
+	public <T> IClickableIngredientInternal<T> createPageAnchorIngredient(IClickableIngredientInternal<T> delegate) {
 		return new PageAnchorClickableIngredient<>(delegate);
 	}
 
 	private void updateLayoutStartingAt(int firstItemIndex) {
-		List<IElement<?>> ingredientList = ingredientSource.getElements();
-		int renderFirstItemIndex = this.pageState.updateForPageNavigation(firstItemIndex, ingredientList.size(), ingredientGrid.size());
-		this.ingredientGrid.set(renderFirstItemIndex, ingredientList);
+		if (usesScrollbar()) {
+			this.scrollController.updateLayoutStartingAt(firstItemIndex);
+		} else {
+			List<IElement<?>> ingredientList = ingredientSource.getElements();
+			int renderFirstItemIndex = this.pageState.updateForPageNavigation(firstItemIndex, ingredientList.size(), ingredientGrid.size());
+			this.ingredientGrid.set(renderFirstItemIndex, ingredientList);
+		}
 		this.onLayoutChanged.run();
 	}
 
 	@Override
 	public boolean nextPage() {
+		if (usesScrollbar()) {
+			return updateLayoutWhenChanged(this.scrollController.scrollByRows(this.scrollController.getVisibleScrollRows()));
+		}
+
 		if (getPageCount() <= 1) {
 			return false;
 		}
@@ -120,6 +149,10 @@ class IngredientGridWithNavigationController implements IPaged, IUserInputHandle
 
 	@Override
 	public boolean previousPage() {
+		if (usesScrollbar()) {
+			return updateLayoutWhenChanged(this.scrollController.scrollByRows(-this.scrollController.getVisibleScrollRows()));
+		}
+
 		if (getPageCount() <= 1) {
 			return false;
 		}
@@ -149,27 +182,47 @@ class IngredientGridWithNavigationController implements IPaged, IUserInputHandle
 
 	@Override
 	public boolean hasNext() {
+		if (usesScrollbar()) {
+			return this.scrollController.canScroll();
+		}
 		return getPageCount() > 1;
 	}
 
 	@Override
 	public boolean hasPrevious() {
+		if (usesScrollbar()) {
+			return this.scrollController.canScroll();
+		}
 		return getPageCount() > 1;
 	}
 
 	@Override
 	public int getPageCount() {
+		if (usesScrollbar()) {
+			return this.scrollController.getHiddenScrollRows() + 1;
+		}
 		return IngredientGridPageState.getPageCount(ingredientSource.getElements().size(), ingredientGrid.size());
 	}
 
 	@Override
 	public int getPageNumber() {
+		if (usesScrollbar()) {
+			return this.scrollController.getFirstVisibleScrollRow();
+		}
 		return IngredientGridPageState.getPageNumberForFirstItemIndex(pageState.getFirstItemIndex(), ingredientGrid.size(), ingredientSource.getElements().size());
 	}
 
 	@Override
 	public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
 		if (!mouseOverable.isMouseOver(mouseX, mouseY)) {
+			return Optional.empty();
+		}
+		if (usesScrollbar()) {
+			IngredientGridScrollController.ScrollResult scrollResult = this.scrollController.scrollByMouse(scrollDeltaY);
+			updateLayoutWhenChanged(scrollResult.changed());
+			if (scrollResult.consumed()) {
+				return Optional.of(this);
+			}
 			return Optional.empty();
 		}
 		if (scrollDeltaY < 0) {
@@ -203,6 +256,38 @@ class IngredientGridWithNavigationController implements IPaged, IUserInputHandle
 		}
 
 		return checkHotbarKeys(screen, input);
+	}
+
+	private boolean usesScrollbar() {
+		return this.gridConfig.getNavigationMode()
+			.usesScrollbar();
+	}
+
+	public boolean canScroll() {
+		return this.scrollController.canScroll();
+	}
+
+	public int getVisibleScrollAmount() {
+		return this.scrollController.getVisibleScrollAmount();
+	}
+
+	public int getHiddenScrollAmount() {
+		return this.scrollController.getHiddenScrollAmount();
+	}
+
+	public float getScrollOffsetY() {
+		return this.scrollController.getScrollOffsetY();
+	}
+
+	public void setScrollOffsetY(float scrollOffsetY) {
+		updateLayoutWhenChanged(this.scrollController.setScrollOffsetY(scrollOffsetY));
+	}
+
+	private boolean updateLayoutWhenChanged(boolean layoutChanged) {
+		if (layoutChanged) {
+			this.onLayoutChanged.run();
+		}
+		return layoutChanged;
 	}
 
 	/**
@@ -262,6 +347,7 @@ class IngredientGridWithNavigationController implements IPaged, IUserInputHandle
 			IElement<T> element = getElement();
 			if (element.isVisible()) {
 				pageState.setPageAnchorElement(element);
+				scrollController.setScrollAnchorElement(element);
 			}
 			super.show(recipesGui, focusUtil, roles);
 		}

@@ -112,7 +112,9 @@ public final class IngredientGridButtonNavigationLayout {
 			ingredientGridArea,
 			availableSlotCount,
 			navigationArea,
-			navigationEnabled
+			navigationEnabled,
+			ImmutableRect2i.EMPTY,
+			false
 		);
 	}
 

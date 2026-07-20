@@ -10,6 +10,7 @@ public interface IIngredientGridConfig {
 	int getMaxRows();
 	int getMinRows();
 	boolean drawBackground();
+	IngredientGridNavigationMode getNavigationMode();
 	HorizontalAlignment getHorizontalAlignment();
 	VerticalAlignment getVerticalAlignment();
 	NavigationVisibility getNavigationVisibility();
