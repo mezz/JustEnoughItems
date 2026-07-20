@@ -210,6 +210,14 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.ingredientGrid.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 	}
 
+	@Override
+	public void tick() {
+		if (!this.active) {
+			return;
+		}
+		this.ingredientGrid.tick();
+	}
+
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return this.active &&
 			this.backgroundArea.contains(mouseX, mouseY) &&
