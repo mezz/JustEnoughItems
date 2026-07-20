@@ -13,16 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-final class IngredientGridLayout {
-	static final int INGREDIENT_PADDING = 1;
-	static final int INGREDIENT_WIDTH = GuiIngredientProperties.getWidth(INGREDIENT_PADDING);
-	static final int INGREDIENT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
+public final class IngredientGridLayout {
+	public static final int INGREDIENT_PADDING = 1;
+	public static final int INGREDIENT_WIDTH = GuiIngredientProperties.getWidth(INGREDIENT_PADDING);
+	public static final int INGREDIENT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
 
 	private IngredientGridLayout() {
 
 	}
 
-	static ImmutableSize2i calculateSize(IIngredientGridConfig config, ImmutableRect2i availableArea) {
+	public static ImmutableSize2i calculateSize(IIngredientGridConfig config, ImmutableRect2i availableArea) {
 		final int columns = Math.min(availableArea.getWidth() / INGREDIENT_WIDTH, config.getMaxColumns());
 		final int rows = Math.min(availableArea.getHeight() / INGREDIENT_HEIGHT, config.getMaxRows());
 		if (rows < config.getMinRows() || columns < config.getMinColumns()) {
@@ -34,17 +34,12 @@ final class IngredientGridLayout {
 		);
 	}
 
-	static ImmutableRect2i calculateBounds(IIngredientGridConfig config, ImmutableRect2i availableArea) {
+	public static ImmutableRect2i calculateBounds(IIngredientGridConfig config, ImmutableRect2i availableArea) {
 		ImmutableSize2i size = calculateSize(config, availableArea);
 		return AlignmentUtil.align(size, availableArea, config.getHorizontalAlignment(), config.getVerticalAlignment());
 	}
 
-	static SlotInfo calculateSlotInfo(IIngredientGridConfig config, ImmutableRect2i availableArea, Set<ImmutableRect2i> exclusionAreas) {
-		ImmutableRect2i area = calculateBounds(config, availableArea);
-		return calculateSlotInfo(area, exclusionAreas, null);
-	}
-
-	static SlotInfo calculateSlotInfo(
+	public static int calculateAvailableSlotCount(
 		ImmutableRect2i area,
 		Set<ImmutableRect2i> exclusionAreas,
 		@Nullable ImmutablePoint2i mouseExclusionPoint
@@ -56,10 +51,10 @@ final class IngredientGridLayout {
 				blocked++;
 			}
 		}
-		return new SlotInfo(slotLayouts.size(), blocked);
+		return slotLayouts.size() - blocked;
 	}
 
-	static List<SlotLayout> calculateSlots(
+	public static List<SlotLayout> calculateSlots(
 		ImmutableRect2i area,
 		Set<ImmutableRect2i> exclusionAreas,
 		@Nullable ImmutablePoint2i mouseExclusionPoint
@@ -77,7 +72,7 @@ final class IngredientGridLayout {
 		return slotLayouts;
 	}
 
-	static boolean isSlotBlocked(
+	private static boolean isSlotBlocked(
 		ImmutableRect2i stackArea,
 		Set<ImmutableRect2i> exclusionAreas,
 		@Nullable ImmutablePoint2i mouseExclusionPoint
@@ -86,17 +81,7 @@ final class IngredientGridLayout {
 			(mouseExclusionPoint != null && stackArea.contains(mouseExclusionPoint));
 	}
 
-	record SlotLayout(ImmutableRect2i area, boolean blocked) {
+	public record SlotLayout(ImmutableRect2i area, boolean blocked) {
 
-	}
-
-	record SlotInfo(int total, int blocked) {
-		float percentBlocked() {
-			return blocked / (float) total;
-		}
-
-		int available() {
-			return total - blocked;
-		}
 	}
 }
