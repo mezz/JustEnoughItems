@@ -176,6 +176,7 @@ neoForge {
 	version = neoforgeVersion
 	// MDG already defaults to this, but override it for clarity.
 	setAccessTransformers("src/main/resources/META-INF/accesstransformer.cfg")
+	validateAccessTransformers = true
 
 	addModdingDependenciesTo(sourceSets.test.get())
 	addModdingDependenciesTo(sourceSets.named("gameTest").get())
