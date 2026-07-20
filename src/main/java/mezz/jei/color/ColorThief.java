@@ -25,6 +25,7 @@ import java.util.Arrays;
 
 @SuppressWarnings("ALL")
 public class ColorThief {
+	private static final int MIN_QUALITY = 1;
 
 	private static final int DEFAULT_QUALITY = 2;
 	private static final boolean DEFAULT_IGNORE_WHITE = false;
@@ -132,6 +133,7 @@ public class ColorThief {
 	 */
 	@Nullable
 	public static MMCQ.CMap getColorMap(BufferedImage sourceImage, int colorCount, int quality, boolean ignoreWhite) {
+		validateQuality(quality);
 		int[][] pixelArray;
 
 		switch (sourceImage.getType()) {
@@ -278,13 +280,19 @@ public class ColorThief {
 			r = (rgb >> 16) & 0xFF;
 			g = (rgb >> 8) & 0xFF;
 			b = (rgb) & 0xFF;
-			if (!(ignoreWhite && r > 250 && r > 250 && r > 250)) {
+			if (!(ignoreWhite && r > 250 && g > 250 && b > 250)) {
 				res[numUsedPixels] = new int[]{r, g, b};
 				numUsedPixels++;
 			}
 		}
 
 		return Arrays.copyOfRange(res, 0, numUsedPixels);
+	}
+
+	private static void validateQuality(int quality) {
+		if (quality < MIN_QUALITY) {
+			throw new IllegalArgumentException("quality must be at least " + MIN_QUALITY);
+		}
 	}
 
 }
