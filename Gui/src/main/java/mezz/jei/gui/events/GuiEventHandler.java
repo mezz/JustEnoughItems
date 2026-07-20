@@ -92,6 +92,11 @@ public class GuiEventHandler {
 		bookmarkOverlay.drawScreen(minecraft, guiGraphics, (int) mouseX, (int) mouseY, minecraft.getFrameTime());
 	}
 
+	public void onClientTick() {
+		ingredientListOverlay.tick();
+		bookmarkOverlay.tick();
+	}
+
 	/**
 	 * Draws above most ContainerScreen elements, but below the tooltips.
 	 */
@@ -155,10 +160,6 @@ public class GuiEventHandler {
 		if (DebugConfig.isDebugGuisEnabled()) {
 			drawDebugInfoForScreen(screen, guiGraphics);
 		}
-	}
-
-	public void onClientTick() {
-		ingredientListOverlay.handleTick();
 	}
 
 	public boolean renderCompactPotionIndicators() {

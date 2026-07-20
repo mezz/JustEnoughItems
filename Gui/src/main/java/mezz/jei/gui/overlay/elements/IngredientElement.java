@@ -54,4 +54,9 @@ public class IngredientElement<T> implements IElement<T> {
 	public boolean isVisible() {
 		return true;
 	}
+
+	@Override
+	public void tick() {
+
+	}
 }

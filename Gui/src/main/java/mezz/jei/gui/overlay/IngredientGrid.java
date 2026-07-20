@@ -265,10 +265,21 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		return ingredientListRenderer.getSlots();
 	}
 
-	public <T> Stream<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
+	@Override
+	public Stream<IElement<?>> getVisibleElements() {
 		return this.ingredientListRenderer.getSlots()
 			.map(IngredientListSlot::getOptionalElement)
-			.flatMap(Optional::stream)
+			.flatMap(Optional::stream);
+	}
+
+	@Override
+	public void tick() {
+		getVisibleElements()
+			.forEach(IElement::tick);
+	}
+
+	public <T> Stream<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
+		return getVisibleElements()
 			.map(IElement::getTypedIngredient)
 			.map(i -> i.getIngredient(ingredientType))
 			.flatMap(Optional::stream);

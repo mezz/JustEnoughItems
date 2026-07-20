@@ -5,11 +5,13 @@ import java.util.function.Consumer;
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.keys.IJeiKeyMappingCategoryBuilder;
+import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
 import mezz.jei.common.input.keys.JeiMultiKeyMapping;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.KeyMapping;
 import org.lwjgl.glfw.GLFW;
 
@@ -26,6 +28,7 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping nextCategory;
 	private final IJeiKeyMapping previousRecipePage;
 	private final IJeiKeyMapping nextRecipePage;
+	private final IJeiKeyMappingInternal pauseRecipeCycling;
 
 	private final IJeiKeyMapping previousPage;
 	private final IJeiKeyMapping nextPage;
@@ -34,6 +37,7 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping toggleBookmarkOverlay;
 	private final IJeiKeyMapping transferRecipeBookmark;
 	private final IJeiKeyMapping maxTransferRecipeBookmark;
+	private final IJeiKeyMappingInternal showBookmarkTooltipFeatures;
 	private final IJeiKeyMapping quickMove;
 	private final IJeiKeyMapping shareToChat;
 
@@ -59,6 +63,13 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping leftClick;
 	private final IJeiKeyMapping rightClick;
 	private final IJeiKeyMapping enterKey;
+
+	private static int getDefaultBookmarkTooltipFeaturesKey() {
+		if (Minecraft.ON_OSX) {
+			return GLFW.GLFW_KEY_LEFT_SUPER;
+		}
+		return GLFW.GLFW_KEY_LEFT_CONTROL;
+	}
 
 	public InternalKeyMappings(Consumer<KeyMapping> registerMethod) {
 		IPlatformInputHelper inputHelper = Services.PLATFORM.getInputHelper();
@@ -154,6 +165,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.buildMouseLeft()
 			.register(registerMethod);
 
+		showBookmarkTooltipFeatures = mouseHover.createMapping("key.jei.showBookmarkTooltipFeatures")
+			.setContext(JeiKeyConflictContext.GUI)
+			.buildKeyboardKey(getDefaultBookmarkTooltipFeaturesKey())
+			.register(registerMethod);
+
 		quickMove = mouseHover.createMapping("key.jei.quickMove")
 				.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
 				.setModifier(JeiKeyModifier.SHIFT)
@@ -247,6 +263,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 		nextRecipePage = recipeCategory.createMapping("key.jei.nextRecipePage")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildKeyboardKey(GLFW.GLFW_KEY_PAGE_DOWN)
+			.register(registerMethod);
+
+		pauseRecipeCycling = recipeCategory.createMapping("key.jei.pauseRecipeCycling")
+			.setContext(JeiKeyConflictContext.GUI)
+			.buildKeyboardKey(GLFW.GLFW_KEY_LEFT_SHIFT)
 			.register(registerMethod);
 
 		previousCategory = recipeCategory.createMapping("key.jei.previousCategory")
@@ -354,6 +375,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	}
 
 	@Override
+	public IJeiKeyMappingInternal getPauseRecipeCycling() {
+		return pauseRecipeCycling;
+	}
+
+	@Override
 	public IJeiKeyMapping getPreviousPage() {
 		return previousPage;
 	}
@@ -396,6 +422,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	@Override
 	public IJeiKeyMapping getMaxTransferRecipeBookmark() {
 		return maxTransferRecipeBookmark;
+	}
+
+	@Override
+	public IJeiKeyMappingInternal getShowBookmarkTooltipFeatures() {
+		return showBookmarkTooltipFeatures;
 	}
 
 	@Override

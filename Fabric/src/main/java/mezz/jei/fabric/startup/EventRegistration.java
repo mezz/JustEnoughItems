@@ -55,6 +55,7 @@ public class EventRegistration {
 		ScreenMouseEvents.allowMouseRelease(screen).register(this::allowMouseRelease);
 		ScreenMouseEvents.allowMouseScroll(screen).register(this::allowMouseScroll);
 		ScreenEvents.afterRender(screen).register(this::afterRender);
+		ScreenEvents.afterTick(screen).register(this::afterTick);
 	}
 
 	private boolean allowMouseClick(Screen screen, double mouseX, double mouseY, int button) {
@@ -93,6 +94,12 @@ public class EventRegistration {
 	private void afterRender(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
 		if (guiEventHandler != null) {
 			guiEventHandler.onDrawScreenPost(screen, guiGraphics, mouseX, mouseY);
+		}
+	}
+
+	private void afterTick(Screen screen) {
+		if (guiEventHandler != null) {
+			guiEventHandler.onClientTick();
 		}
 	}
 

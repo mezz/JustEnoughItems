@@ -55,6 +55,10 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 		pose.popPose();
 	}
 
+	public void tick() {
+		drawable.tick();
+	}
+
 	private void updateTransferError() {
 		long currentTime = System.currentTimeMillis();
 		if (currentTime - lastUpdateTime < UPDATE_INTERVAL_MS) {
