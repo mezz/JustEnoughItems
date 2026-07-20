@@ -256,6 +256,10 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		@Override
+		public void tick() {
+		}
+
+		@Override
 		public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 			return Stream.of();
 		}
