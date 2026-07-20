@@ -52,7 +52,11 @@ public class IngredientGrid implements IIngredientGrid {
 	private final DeleteItemInputHandler deleteItemHandler;
 	private final IngredientGridTooltipHelper tooltipHelper;
 	private Set<ImmutableRect2i> guiExclusionAreas = Set.of();
+	@Nullable
+	private ImmutablePoint2i mouseExclusionPoint;
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
+	private int visibleSlotCount = 0;
+	private int smoothScrollRowPixelOffset = 0;
 
 	public IngredientGrid(
 		IIngredientManager ingredientManager,
@@ -79,19 +83,40 @@ public class IngredientGrid implements IIngredientGrid {
 
 	@Override
 	public int size() {
-		return this.ingredientListRenderer.size();
+		return visibleSlotCount;
+	}
+
+	@Override
+	public int getColumnCount() {
+		return this.area.width() / IngredientGridLayout.INGREDIENT_WIDTH;
+	}
+
+	@Override
+	public int getRowCount() {
+		return this.area.height() / IngredientGridLayout.INGREDIENT_HEIGHT;
 	}
 
 	public void updateBounds(ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
-		this.ingredientListRenderer.clear();
-
 		this.area = IngredientGridLayout.calculateBounds(this.gridConfig, availableArea);
 		this.guiExclusionAreas = guiExclusionAreas;
+		this.mouseExclusionPoint = mouseExclusionPoint;
+		this.visibleSlotCount = IngredientGridLayout.calculateAvailableSlotCount(
+			this.area,
+			this.guiExclusionAreas,
+			this.mouseExclusionPoint
+		);
+		updateSlots(0);
+	}
+
+	private void updateSlots(int smoothScrollRowPixelOffset) {
+		this.smoothScrollRowPixelOffset = smoothScrollRowPixelOffset;
+		this.ingredientListRenderer.clear();
 
 		List<IngredientGridLayout.SlotLayout> slotLayouts = IngredientGridLayout.calculateSlots(
 			this.area,
-			guiExclusionAreas,
-			mouseExclusionPoint
+			this.guiExclusionAreas,
+			this.mouseExclusionPoint,
+			smoothScrollRowPixelOffset
 		);
 		for (IngredientGridLayout.SlotLayout slotLayout : slotLayouts) {
 			ImmutableRect2i slotArea = slotLayout.area();
@@ -112,11 +137,29 @@ public class IngredientGrid implements IIngredientGrid {
 	}
 
 	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+		if (this.smoothScrollRowPixelOffset > 0) {
+			guiGraphics.enableScissor(
+				this.area.x(),
+				this.area.y(),
+				this.area.x() + this.area.width(),
+				this.area.y() + this.area.height()
+			);
+			try {
+				drawContents(minecraft, guiGraphics, mouseX, mouseY);
+			} finally {
+				guiGraphics.disableScissor();
+			}
+		} else {
+			drawContents(minecraft, guiGraphics, mouseX, mouseY);
+		}
+	}
+
+	private void drawContents(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		Optional<IngredientListSlot> highlightedSlot = getHighlightedSlot(minecraft, mouseX, mouseY);
 		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 		highlightedSlot.ifPresent(s -> drawHighlight(guiGraphics, s.getArea(), screenHelper.getSlotHighlightBackSprite()));
 
-		ingredientListRenderer.render(guiGraphics);
+		this.ingredientListRenderer.render(guiGraphics);
 
 		highlightedSlot.ifPresent(s -> drawHighlight(guiGraphics, s.getArea(), screenHelper.getSlotHighlightFrontSprite()));
 	}
@@ -244,6 +287,14 @@ public class IngredientGrid implements IIngredientGrid {
 
 	@Override
 	public void set(int firstItemIndex, List<IElement<?>> ingredientList) {
+		set(firstItemIndex, 0, ingredientList);
+	}
+
+	@Override
+	public void set(int firstItemIndex, int smoothScrollRowPixelOffset, List<IElement<?>> ingredientList) {
+		if (this.smoothScrollRowPixelOffset != smoothScrollRowPixelOffset) {
+			updateSlots(smoothScrollRowPixelOffset);
+		}
 		this.ingredientListRenderer.set(firstItemIndex, ingredientList);
 	}
 

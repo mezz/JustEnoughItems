@@ -85,6 +85,13 @@ public class EventRegistration {
 				event.setCanceled(true);
 			}
 		});
+
+		subscriptions.register(ScreenEvent.MouseDragged.Pre.class, event -> {
+			Screen screen = event.getScreen();
+			if (handler.onGuiMouseDragged(screen, event.getMouseButtonEvent(), event.getDragX(), event.getDragY())) {
+				event.setCanceled(true);
+			}
+		});
 	}
 
 	public static void registerGuiHandler(

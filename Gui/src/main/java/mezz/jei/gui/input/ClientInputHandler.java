@@ -1,5 +1,6 @@
 package mezz.jei.gui.input;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -11,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 
 import java.util.List;
 
@@ -132,6 +134,11 @@ public class ClientInputHandler {
 
 	public boolean onGuiMouseScroll(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
 		return this.inputRouter.handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
+	}
+
+	public boolean onGuiMouseDragged(Screen screen, MouseButtonEvent event, double dragX, double dragY) {
+		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(event.button());
+		return this.inputRouter.handleMouseDragged(event.x(), event.y(), input, dragX, dragY);
 	}
 
 	private boolean handleCharTyped(CharacterEvent event) {
