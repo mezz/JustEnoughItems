@@ -3,36 +3,35 @@ package mezz.jei.library.helpers;
 import com.google.common.collect.ImmutableSetMultimap;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IModIdHelper;
-import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.config.IModIdFormatConfig;
 import mezz.jei.library.config.ModIdFormatConfig;
+import mezz.jei.library.config.StyledTextHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import org.apache.commons.lang3.Strings;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 public final class ModIdHelper implements IModIdHelper {
 	private final IModIdFormatConfig modIdFormattingConfig;
-	private final IIngredientManager ingredientManager;
+	private final Function<ITypedIngredient<?>, String> getDisplayModId;
 	private final ImmutableSetMultimap<String, String> modAliases;
 
-	public ModIdHelper(IModIdFormatConfig modIdFormattingConfig, IIngredientManager ingredientManager, ImmutableSetMultimap<String, String> modAliases) {
+	public ModIdHelper(IModIdFormatConfig modIdFormattingConfig, Function<ITypedIngredient<?>, String> getDisplayModId, ImmutableSetMultimap<String, String> modAliases) {
 		this.modIdFormattingConfig = modIdFormattingConfig;
-		this.ingredientManager = ingredientManager;
+		this.getDisplayModId = getDisplayModId;
 		this.modAliases = modAliases;
 	}
 
 	@Override
 	public boolean isDisplayingModNameEnabled() {
-		String modNameFormat = modIdFormattingConfig.getModNameFormat();
-		return !modNameFormat.isEmpty();
+		Component modNameFormat = modIdFormattingConfig.getModNameFormat();
+		return !modNameFormat.getString().isEmpty();
 	}
 
 	@Override
@@ -48,25 +47,27 @@ public final class ModIdHelper implements IModIdHelper {
 			return Optional.empty();
 		}
 
-		T ingredient = typedIngredient.getIngredient();
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(type);
-		String modId = ingredientHelper.getDisplayModId(ingredient);
-		String modName = getFormattedModNameForModId(modId);
-		return Optional.of(Component.literal(modName));
+		String modId = getDisplayModId.apply(typedIngredient);
+		return Optional.of(getFormattedModNameComponentForModId(modId));
 	}
 
 	@Override
+	@Deprecated(since = "30.4.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public String getFormattedModNameForModId(String modId) {
+		Component modName = getFormattedModNameComponentForModId(modId);
+		return StyledTextHelper.toLegacyString(modName);
+	}
+
+	@Override
+	public Component getFormattedModNameComponentForModId(String modId) {
 		String modName = getModNameForModId(modId);
 		modName = ChatFormatting.stripFormatting(modName); // some crazy mod has formatting in the name
-		String modNameFormat = modIdFormattingConfig.getModNameFormat();
-		if (!modNameFormat.isEmpty()) {
-			if (modNameFormat.contains(ModIdFormatConfig.MOD_NAME_FORMAT_CODE)) {
-				return Strings.CS.replaceOnce(modNameFormat, ModIdFormatConfig.MOD_NAME_FORMAT_CODE, modName);
-			}
-			return modNameFormat + modName;
+		Component modNameFormat = modIdFormattingConfig.getModNameFormat();
+		if (!modNameFormat.getString().isEmpty()) {
+			return ModIdFormatConfig.replaceModNameFormatCode(modNameFormat, modName);
 		}
-		return modName;
+		return Component.literal(modName);
 	}
 
 	@Override

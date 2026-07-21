@@ -29,6 +29,7 @@ val modJavaVersion: String by extra
 val modrinthId: String by extra
 val amecsVersionFabric: String by extra
 val amecsMinecraftVersion: String by extra
+val bakedSubstringIndexVersion: String by extra
 val suffixtreeVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
@@ -51,6 +52,7 @@ val loomDependencyProjects: List<Project> = listOf(
     project(":FabricApi"),
 )
 val dependencyProjects = vanillaDependencyProjects + loomDependencyProjects
+val debugProject = project(":Debug")
 
 val embeddedLibraries: Configuration by configurations.creating {
     isCanBeConsumed = false
@@ -59,10 +61,16 @@ val embeddedLibraries: Configuration by configurations.creating {
 configurations.implementation {
     extendsFrom(embeddedLibraries)
 }
+val keyMappingGametestModId = "${modId}-key-mapping-test"
+val commonClientTestFixturesSource = project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java")
+val clientGameTestRunDirectory = layout.buildDirectory.dir("run/clientGameTest")
+val clientGameTestWithoutAmecsRunDirectory = layout.buildDirectory.dir("run/clientGameTestWithoutAmecs")
 
 dependencyProjects.forEach {
     project.evaluationDependsOn(it.path)
 }
+project.evaluationDependsOn(debugProject.path)
+val debugSourceSet = debugProject.sourceSets.main.get()
 
 java {
     toolchain {
@@ -110,12 +118,35 @@ dependencies {
     dependencyProjects.forEach {
         implementation(it)
     }
+    embeddedLibraries("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
+        isTransitive = false
+    }
     embeddedLibraries("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
     }
     implementation("de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric")
     changelogHtml(project(":Changelog"))
     changelogMarkdown(project(":Changelog"))
+}
+
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = "${modId}-test"
+        enableGameTests = true
+        enableClientGameTests = true
+        eula = true
+    }
+}
+
+val keyMappingGametestSourceSet = sourceSets.create("keyMappingGametest") {
+    val gametestSourceSet = sourceSets.named("gametest").get()
+    compileClasspath += sourceSets.main.get().output + gametestSourceSet.compileClasspath
+    runtimeClasspath += output + compileClasspath + gametestSourceSet.runtimeClasspath.minus(gametestSourceSet.output)
+}
+
+dependencies {
+    "gametestImplementation"(testFixtures(project(":Common")))
 }
 
 loom {
@@ -125,6 +156,9 @@ loom {
             for (dependencyProject in loomDependencyProjects) {
                 sourceSet(dependencyProject.sourceSets.main.get())
             }
+        }
+        create(keyMappingGametestModId) {
+            sourceSet(keyMappingGametestSourceSet)
         }
     }
 
@@ -168,6 +202,17 @@ loom {
                 "-Dfabric.log.level=debug"
             )
         }
+        named("gameTest") {
+            val gameTestJunitReportFile = layout.buildDirectory.file("test-results/gameTest/TEST-fabric-game-tests.xml")
+            systemProperties.put("fabric-api.gametest.report-file", gameTestJunitReportFile.get().asFile.absolutePath)
+        }
+        create("clientGameTestWithoutAmecs") {
+            inherit(named("clientGameTest").get())
+            displayName.set("Fabric Client GameTest Without AMECS")
+            runDirectory.set(clientGameTestWithoutAmecsRunDirectory.get().asFile)
+            systemProperties.put("jei.fabric.disableAmecsSupport", "true")
+            systemProperties.put("fabric.client.gametest.modid", keyMappingGametestModId)
+        }
     }
 
     accessWidenerPath.set(file("src/main/resources/jei.accesswidener"))
@@ -180,6 +225,53 @@ sourceSets {
                 srcDir(p.sourceSets.main.get().resources)
             }
         }
+    }
+    named("gametest") {
+        java.srcDir(commonClientTestFixturesSource)
+        runtimeClasspath += keyMappingGametestSourceSet.output
+    }
+}
+
+tasks.named("runClientGameTest") {
+    dependsOn(keyMappingGametestSourceSet.classesTaskName)
+}
+
+tasks.named("runClientGameTestWithoutAmecs") {
+    dependsOn(keyMappingGametestSourceSet.classesTaskName)
+}
+
+fun registerWriteClientGameTestOptionsTask(name: String, runDirectory: Provider<Directory>) =
+    tasks.register<Copy>(name) {
+        from(layout.projectDirectory.file("src/gametest/templates/options.txt"))
+        into(runDirectory)
+        mustRunAfter("deleteGameTestRunDir")
+    }
+
+val writeClientGameTestOptions = registerWriteClientGameTestOptionsTask(
+    "writeClientGameTestOptions",
+    clientGameTestRunDirectory
+)
+val writeClientGameTestWithoutAmecsOptions = registerWriteClientGameTestOptionsTask(
+    "writeClientGameTestWithoutAmecsOptions",
+    clientGameTestWithoutAmecsRunDirectory
+)
+
+tasks.named("runClientGameTest") {
+    dependsOn(writeClientGameTestOptions)
+}
+
+tasks.named("runClientGameTestWithoutAmecs") {
+    dependsOn(writeClientGameTestWithoutAmecsOptions)
+}
+
+val debugClassesTask = debugProject.tasks.named(debugSourceSet.classesTaskName)
+val debugModPath = debugProject.layout.buildDirectory.dir("resources/main").get().asFile.absolutePath
+val debugRunTasks = setOf("runClient", "runServer", "runClientDebug", "runServerDebug")
+tasks.matching { it.name in debugRunTasks }.configureEach {
+    dependsOn(debugClassesTask)
+    if (this is org.gradle.api.tasks.JavaExec) {
+        classpath(debugSourceSet.output)
+        jvmArgs("-Dfabric.addMods=$debugModPath")
     }
 }
 

@@ -13,12 +13,13 @@ import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IngredientGroupConfig;
 import mezz.jei.common.ingredients.group.IngredientGroupInfo;
+import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.gui.config.GroupExpandStateConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
-import mezz.jei.gui.overlay.IIngredientGridSource;
 import mezz.jei.gui.overlay.elements.GroupElement;
 import mezz.jei.gui.overlay.elements.GroupElementOverlay;
 import mezz.jei.gui.overlay.elements.GroupMemberElement;
+import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
 import mezz.jei.gui.search.ElementPrefixParser;
@@ -58,7 +59,7 @@ public class IngredientFilter implements
 	private final IIngredientManager ingredientManager;
 	private final Comparator<IListElement> ingredientComparator;
 	private final IngredientGroupConfig ingredientGroupConfig;
-    private final GroupExpandStateConfig groupStateConfig;
+	private final GroupExpandStateConfig groupStateConfig;
 	private final IModIdHelper modIdHelper;
 	private final IIngredientVisibility ingredientVisibility;
 
@@ -79,10 +80,11 @@ public class IngredientFilter implements
 		Comparator<IListElement> ingredientComparator,
 		List<IListElementInfo> ingredients,
 		IngredientGroupConfig groupConfig,
-        GroupExpandStateConfig groupStateConfig,
+		GroupExpandStateConfig groupStateConfig,
 		IModIdHelper modIdHelper,
 		IIngredientVisibility ingredientVisibility,
 		IColorHelper colorHelper,
+		ISearchStorageBuilderFactory searchStorageBuilderFactory,
 		IClientToggleState clientToggleState
 	) {
 		this.filterTextSource = filterTextSource;
@@ -90,24 +92,24 @@ public class IngredientFilter implements
 		this.ingredientManager = ingredientManager;
 		this.ingredientComparator = ingredientComparator;
 		this.ingredientGroupConfig = groupConfig;
-        this.groupStateConfig = groupStateConfig;
+		this.groupStateConfig = groupStateConfig;
 		this.modIdHelper = modIdHelper;
 		this.ingredientVisibility = ingredientVisibility;
-		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, modIdHelper);
-
-		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser);
+		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, searchStorageBuilderFactory);
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
-		for (IListElementInfo ingredient : ingredients) {
-			addIngredient(ingredient);
-		}
+		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser, ingredients, ingredientManager);
 
+		for (IListElementInfo ingredient : ingredients) {
+			updateHiddenState(ingredient.getElement());
+		}
+		invalidateCache();
 		LOGGER.info("Added {} ingredients", ingredients.size());
 		if (DebugConfig.isLogSuffixTreeStatsEnabled()) {
 			this.elementSearch.logStatistics();
 		}
 
-		this.filterTextSource.addListener(filterText -> {
+		this.filterTextSource.addListener((oldFilterText, newFilterText) -> {
 			invalidateCache();
 			notifyListenersOfChange();
 		});
@@ -115,11 +117,11 @@ public class IngredientFilter implements
 		clientToggleState.addEditModeToggleListener(this);
 	}
 
-	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser) {
+	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser, List<IListElementInfo> elementInfos, IIngredientManager ingredientManager) {
 		if (clientConfig.isLowMemorySlowSearchEnabled()) {
-			return new ElementSearchLowMem();
+			return new ElementSearchLowMem(elementPrefixParser.getNoPrefix(), elementInfos);
 		} else {
-			return new ElementSearch(elementPrefixParser);
+			return new ElementSearch(elementPrefixParser, elementInfos, ingredientManager);
 		}
 	}
 
@@ -140,9 +142,8 @@ public class IngredientFilter implements
 	public void rebuildItemFilter() {
 		this.invalidateCache();
 		Collection<IListElement> ingredients = this.elementSearch.getAllIngredients();
-		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser);
 		List<IListElementInfo> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, modIdHelper);
-		this.elementSearch.addAll(elementInfos, ingredientManager);
+		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser, elementInfos, ingredientManager);
 	}
 
 	@Override
@@ -219,7 +220,12 @@ public class IngredientFilter implements
 			}
 			for (IListElement element : searchResultCached) {
 				switch (element) {
-					case ListGroupElement groupElement -> listElements.add(groupElements.get(groupElement.getGroupInfo()));
+					case ListGroupElement groupElement -> {
+						ListGroupElement listGroupElement = groupElements.get(groupElement.getGroupInfo());
+						if (listGroupElement != null) {
+							listElements.add(listGroupElement);
+						}
+					}
 					case ListElement<?> listElement -> {
 						boolean inGroup = false;
 						for (Map.Entry<IngredientGroupInfo, ListGroupElement> entry : groupElements.entrySet()) {
@@ -227,7 +233,6 @@ public class IngredientFilter implements
 							if (groupInfo.isMember(listElement.getTypedIngredient(), ingredientManager)) {
 								entry.getValue().addMember(listElement);
 								inGroup = true;
-
 							}
 						}
 						if (!inGroup) {
@@ -249,24 +254,24 @@ public class IngredientFilter implements
 						if (groupElement.getMembers().isEmpty()) {
 							continue;
 						}
-                        IngredientGroupInfo groupInfo = groupElement.getGroupInfo();
+						IngredientGroupInfo groupInfo = groupElement.getGroupInfo();
 						if (groupStateConfig.isExpanded(groupInfo)) {
 							GroupElementOverlay overlay = new GroupElementOverlay(groupIndex);
 							for (IListElement member : groupElement.getMembers()) {
 								results.add(new GroupMemberElement<>(
-										member.getTypedIngredient(),
-										groupInfo,
-										onGroupStateChange,
-                                        groupStateConfig,
-										overlay
+									member.getTypedIngredient(),
+									groupInfo,
+									onGroupStateChange,
+									groupStateConfig,
+									overlay
 								));
 							}
 						} else {
 							results.add(new GroupElement(
-									groupElement,
-									onGroupStateChange,
-                                    groupStateConfig,
-									new GroupElementOverlay(groupIndex)
+								groupElement,
+								onGroupStateChange,
+								groupStateConfig,
+								new GroupElementOverlay(groupIndex)
 							));
 						}
 						groupIndex++;
@@ -315,14 +320,14 @@ public class IngredientFilter implements
 			IListElement matchingElement = this.elementSearch.findElement(value, ingredientHelper);
 			if (matchingElement != null) {
 				updateHiddenState(matchingElement);
-				if (DebugConfig.isDebugModeEnabled()) {
+				if (DebugConfig.isDebugIngredientsEnabled()) {
 					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
 				}
 			} else {
 				IListElementInfo listElementInfo = ListElementInfo.create(value, this.ingredientManager, modIdHelper);
 				if (listElementInfo != null) {
 					addIngredient(listElementInfo);
-					if (DebugConfig.isDebugModeEnabled()) {
+					if (DebugConfig.isDebugIngredientsEnabled()) {
 						LOGGER.debug("Added ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
 					}
 				}

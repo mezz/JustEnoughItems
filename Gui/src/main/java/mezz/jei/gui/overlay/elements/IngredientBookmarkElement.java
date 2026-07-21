@@ -7,7 +7,7 @@ import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.bookmarks.IngredientBookmark;
-import mezz.jei.gui.overlay.IngredientGridTooltipHelper;
+import mezz.jei.gui.overlay.ingredients.IngredientGridTooltipHelper;
 import mezz.jei.gui.util.FocusUtil;
 import org.jspecify.annotations.Nullable;
 
@@ -52,5 +52,10 @@ public class IngredientBookmarkElement<T> implements IElement {
 	@Override
 	public boolean isVisible() {
 		return bookmark.isVisible();
+	}
+
+	@Override
+	public void tick() {
+
 	}
 }

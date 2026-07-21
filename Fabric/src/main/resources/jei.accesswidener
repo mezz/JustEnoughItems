@@ -21,12 +21,17 @@ accessible field net/minecraft/client/gui/screens/inventory/AbstractRecipeBookSc
 
 accessible field net/minecraft/client/renderer/texture/SpriteContents byMipLevel [Lcom/mojang/blaze3d/platform/NativeImage;
 
+accessible field net/minecraft/server/MinecraftServer storageSource Lnet/minecraft/world/level/storage/LevelStorageSource$LevelStorageAccess;
+
 accessible field net/minecraft/world/item/crafting/SmithingTransformRecipe base Lnet/minecraft/world/item/crafting/Ingredient;
 accessible field net/minecraft/world/item/crafting/SmithingTransformRecipe addition Ljava/util/Optional;
 accessible field net/minecraft/world/item/crafting/SmithingTransformRecipe template Ljava/util/Optional;
 accessible field net/minecraft/world/item/crafting/SmithingTrimRecipe base Lnet/minecraft/world/item/crafting/Ingredient;
 accessible field net/minecraft/world/item/crafting/SmithingTrimRecipe addition Lnet/minecraft/world/item/crafting/Ingredient;
 accessible field net/minecraft/world/item/crafting/SmithingTrimRecipe template Lnet/minecraft/world/item/crafting/Ingredient;
+accessible field net/minecraft/world/item/crafting/ShieldDecorationRecipe banner Lnet/minecraft/world/item/crafting/Ingredient;
+accessible field net/minecraft/world/item/crafting/ShieldDecorationRecipe target Lnet/minecraft/world/item/crafting/Ingredient;
+accessible field net/minecraft/world/item/crafting/ShieldDecorationRecipe result Lnet/minecraft/world/item/ItemStackTemplate;
 
 accessible field net/minecraft/world/item/alchemy/PotionBrewing containers Ljava/util/List;
 accessible field net/minecraft/world/item/alchemy/PotionBrewing potionMixes Ljava/util/List;
@@ -44,3 +49,5 @@ accessible field net/minecraft/client/gui/components/toasts/ToastManager visible
 accessible class net/minecraft/client/gui/components/toasts/ToastManager$ToastInstance
 
 accessible method net/minecraft/world/item/crafting/ShapedRecipePattern shrink (Ljava/util/List;)[Ljava/lang/String;
+
+accessible field net/minecraft/gametest/framework/UnknownGameTestException reason Ljava/lang/Throwable;

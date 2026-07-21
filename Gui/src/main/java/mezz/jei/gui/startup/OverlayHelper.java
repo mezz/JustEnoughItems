@@ -15,9 +15,9 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.filter.IFilterTextSource;
-import mezz.jei.gui.overlay.IIngredientGridSource;
-import mezz.jei.gui.overlay.IngredientGrid;
-import mezz.jei.gui.overlay.IngredientGridWithNavigation;
+import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
+import mezz.jei.gui.overlay.ingredients.IngredientGrid;
+import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
@@ -32,6 +32,7 @@ public final class OverlayHelper {
 		IIngredientGridConfig ingredientGridConfig,
 		ScalableDrawable background,
 		ScalableDrawable slotBackground,
+		ScalableDrawable exclusionAreaShadow,
 		IInternalKeyMappings keyMappings,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IClientConfig clientConfig,
@@ -65,6 +66,7 @@ public final class OverlayHelper {
 			ingredientGridConfig,
 			background,
 			slotBackground,
+			exclusionAreaShadow,
 			screenHelper,
 			ingredientManager
 		);
@@ -93,6 +95,7 @@ public final class OverlayHelper {
 			ingredientGridConfig,
 			textures.getIngredientListBackground(),
 			textures.getIngredientListSlotBackground(),
+			textures.getExclusionAreaShadow(),
 			keyMappings,
 			ingredientFilterConfig,
 			clientConfig,
@@ -153,6 +156,7 @@ public final class OverlayHelper {
 			bookmarkListConfig,
 			textures.getBookmarkListBackground(),
 			textures.getBookmarkListSlotBackground(),
+			textures.getExclusionAreaShadow(),
 			keyMappings,
 			ingredientFilterConfig,
 			clientConfig,

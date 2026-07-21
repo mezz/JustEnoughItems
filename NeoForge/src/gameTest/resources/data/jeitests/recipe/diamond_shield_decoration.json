@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:crafting_special_shielddecoration",
+  "banner": "minecraft:red_banner",
+  "result": {
+    "id": "minecraft:diamond"
+  },
+  "target": "#jeitests:shield_decoration_targets/diamond"
+}

@@ -13,6 +13,7 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -34,10 +35,17 @@ import java.util.Optional;
 @SuppressWarnings("OptionalIsPresent")
 public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngredientAcceptor> {
 	private final IIngredientManager ingredientManager;
+	private final ContextMap contextMap;
 	private final List<ITypedIngredient<?>> ingredients = new ArrayList<>();
 
-	public SimpleIngredientAcceptor(IIngredientManager ingredientManager) {
+	public SimpleIngredientAcceptor(IIngredientManager ingredientManager, ContextMap contextMap) {
 		this.ingredientManager = ingredientManager;
+		this.contextMap = contextMap;
+	}
+
+	@Override
+	public ContextMap getContextMap() {
+		return contextMap;
 	}
 
 	@Override
@@ -93,7 +101,7 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 	public SimpleIngredientAcceptor add(SlotDisplay slotDisplay) {
 		ErrorUtil.checkNotNull(slotDisplay, "slotDisplay");
 
-		TypedIngredient.createAndFilterInvalidList(ingredientManager, slotDisplay, false)
+		TypedIngredient.createAndFilterInvalidList(ingredientManager, contextMap, slotDisplay, false)
 			.forEach(typedIngredient -> {
 				if (typedIngredient != null) {
 					this.add(typedIngredient);
@@ -108,7 +116,7 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotNull(slotDisplay, "slotDisplay");
 
-		TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredientType, slotDisplay, false)
+		TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredientType, contextMap, slotDisplay, false)
 			.forEach(typedIngredient -> {
 				if (typedIngredient != null) {
 					this.add(typedIngredient);

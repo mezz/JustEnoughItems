@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.drawable.TilingDirection;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -26,7 +27,9 @@ import mezz.jei.library.gui.ingredients.ICycler;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RendererOverrides;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
+import mezz.jei.library.render.FluidTankRenderer;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -51,11 +54,16 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	private @Nullable IDrawable overlay;
 	private @Nullable String slotName;
 
-	public RecipeSlotBuilder(IIngredientManager ingredientManager, int slotIndex, RecipeIngredientRole role) {
-		this.ingredients = new DisplayIngredientAcceptor(ingredientManager);
+	public RecipeSlotBuilder(IIngredientManager ingredientManager, ContextMap contextMap, int slotIndex, RecipeIngredientRole role) {
+		this.ingredients = new DisplayIngredientAcceptor(ingredientManager, contextMap);
 		this.rect = new ImmutableRect2i(0, 0, 16, 16);
 		this.role = role;
 		this.slotIndex = slotIndex;
+	}
+
+	@Override
+	public ContextMap getContextMap() {
+		return ingredients.getContextMap();
 	}
 
 	@Override
@@ -194,17 +202,42 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 
 	@Override
 	public IRecipeSlotBuilder setFluidRenderer(long capacity, boolean showCapacity, int width, int height) {
-		Preconditions.checkArgument(capacity > 0, "capacity must be > 0");
-
-		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
-		return setFluidRenderer(fluidHelper, capacity, showCapacity, width, height);
+		return setFluidRenderer(capacity, showCapacity, width, height, TilingDirection.UP_RIGHT);
 	}
 
-	private <T> IRecipeSlotBuilder setFluidRenderer(IPlatformFluidHelperInternal<T> fluidHelper, long capacity, boolean showCapacity, int width, int height) {
-		IIngredientRenderer<T> renderer = fluidHelper.createRenderer(capacity, showCapacity, width, height);
+	@Override
+	public IRecipeSlotBuilder setFluidRenderer(long capacity, boolean showCapacity, int width, int height, TilingDirection tilingDirection) {
+		Preconditions.checkArgument(capacity > 0, "capacity must be > 0");
+		ErrorUtil.checkNotNull(tilingDirection, "tilingDirection");
+
+		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+		return setFluidRenderer(fluidHelper, capacity, showCapacity, width, height, tilingDirection);
+	}
+
+	private <T> IRecipeSlotBuilder setFluidRenderer(
+		IPlatformFluidHelperInternal<T> fluidHelper,
+		long capacity,
+		boolean showCapacity,
+		int width,
+		int height,
+		TilingDirection tilingDirection
+	) {
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
+		IIngredientRenderer<T> renderer = createFluidRenderer(fluidHelper, type, capacity, showCapacity, width, height, tilingDirection);
 		addRenderOverride(type, renderer);
 		return this;
+	}
+
+	private static <T> IIngredientRenderer<T> createFluidRenderer(
+		IPlatformFluidHelperInternal<T> fluidHelper,
+		IIngredientTypeWithSubtypes<Fluid, T> type,
+		long capacity,
+		boolean showCapacity,
+		int width,
+		int height,
+		TilingDirection tilingDirection
+	) {
+		return new FluidTankRenderer<>(fluidHelper, type, capacity, showCapacity, width, height, tilingDirection);
 	}
 
 	@Override
@@ -281,7 +314,8 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 			background,
 			overlay,
 			slotName,
-			rendererOverrides
+			rendererOverrides,
+			getContextMap()
 		);
 		return new Pair<>(slotIndex, recipeSlot);
 	}

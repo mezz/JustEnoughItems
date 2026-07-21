@@ -3,9 +3,9 @@ package mezz.jei.common.gui.textures;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
-import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.elements.DrawableSprite;
 import mezz.jei.common.gui.elements.HighResolutionDrawable;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import net.minecraft.resources.Identifier;
 
 public class Textures {
@@ -21,6 +21,7 @@ public class Textures {
 	private final ScalableDrawable recipeGuiBackground;
 	private final ScalableDrawable ingredientListBackground;
 	private final ScalableDrawable bookmarkListBackground;
+	private final ScalableDrawable exclusionAreaShadow;
 	private final ScalableDrawable recipeBackground;
 	private final ScalableDrawable recipePreviewBackground;
 	private final ScalableDrawable searchBackground;
@@ -70,6 +71,7 @@ public class Textures {
 		this.recipeGuiBackground = createScalableGuiSprite("gui_background");
 		this.ingredientListBackground = createScalableGuiSprite("ingredient_list_background");
 		this.bookmarkListBackground = createScalableGuiSprite("bookmark_list_background");
+		this.exclusionAreaShadow = createScalableGuiSprite("exclusion_area_shadow");
 		this.recipeBackground = createScalableGuiSprite("single_recipe_background");
 		this.recipePreviewBackground = createScalableGuiSprite("recipe_preview_background");
 		this.searchBackground = createScalableGuiSprite("search_background");
@@ -89,14 +91,11 @@ public class Textures {
 		this.buttonPressed = createScalableGuiSprite("button_pressed");
 		this.buttonPressedHighlight = createScalableGuiSprite("button_pressed_highlighted");
 
-		DrawableSprite rawShapelessIcon = createGuiSprite("icons/shapeless_icon", 36, 36)
-			.trim(1, 2, 1, 1);
+		IDrawableStatic rawShapelessIcon = createGuiSprite("icons/shapeless_icon", 32, 32);
 		this.shapelessIcon = new HighResolutionDrawable(rawShapelessIcon, 4);
 
-		this.arrowPrevious = createGuiSprite("icons/arrow_previous", 9, 9)
-			.trim(0, 0, 1, 1);
-		this.arrowNext = createGuiSprite("icons/arrow_next", 9, 9)
-			.trim(0, 0, 1, 1);
+		this.arrowPrevious = createGuiSprite("icons/arrow_previous", 9, 7);
+		this.arrowNext = createGuiSprite("icons/arrow_next", 9, 7);
 		this.recipeTransfer = createGuiSprite("icons/recipe_transfer", 7, 7);
 		this.recipeBookmark = createGuiSprite("icons/recipe_bookmark", 9, 9);
 		this.configButtonIcon = createGuiSprite("icons/config_button", 16, 16);
@@ -116,14 +115,14 @@ public class Textures {
 		return Identifier.fromNamespaceAndPath(ModIds.JEI_ID, name);
 	}
 
-	private DrawableSprite createGuiSprite(String name, int width, int height) {
+	private IDrawableStatic createGuiSprite(String name, int width, int height) {
 		Identifier id = createSpriteId(name);
-		return new DrawableSprite(jeiAtlasManager, id, width, height);
+		return new DrawableSprite(jeiAtlasManager.getAtlas(), id, width, height);
 	}
 
 	private ScalableDrawable createScalableGuiSprite(String name) {
 		Identifier id = createSpriteId(name);
-		return new ScalableDrawable(jeiAtlasManager, id);
+		return new ScalableDrawable(jeiAtlasManager.getAtlas(), id);
 	}
 
 	public IDrawableStatic getSlot() {
@@ -204,6 +203,10 @@ public class Textures {
 
 	public ScalableDrawable getBookmarkListBackground() {
 		return bookmarkListBackground;
+	}
+
+	public ScalableDrawable getExclusionAreaShadow() {
+		return exclusionAreaShadow;
 	}
 
 	public ScalableDrawable getRecipeBackground() {

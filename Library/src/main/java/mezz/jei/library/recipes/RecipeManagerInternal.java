@@ -19,6 +19,7 @@ import mezz.jei.library.recipes.collect.RecipeTypeDataMap;
 import mezz.jei.library.util.IngredientSupplierHelper;
 import mezz.jei.library.util.RecipeDebugUtil;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
@@ -102,7 +103,7 @@ public class RecipeManagerInternal {
 		this.pluginManager.addAll(plugins);
 	}
 
-	public <T> void addRecipes(IRecipeType<T> recipeType, List<T> recipes) {
+	public <T> void addRecipes(IRecipeType<T> recipeType, List<T> recipes, ContextMap contextMap) {
 		LOGGER.debug("Adding recipes: {}", recipeType);
 		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipeType);
 		IRecipeCategory<T> recipeCategory = recipeTypeData.getRecipeCategory();
@@ -110,7 +111,7 @@ public class RecipeManagerInternal {
 
 		List<T> addedRecipes = new ArrayList<>(recipes.size());
 		for (T recipe : recipes) {
-			if (addRecipe(recipeCategory, recipe, hiddenRecipes)) {
+			if (addRecipe(recipeCategory, recipe, hiddenRecipes, contextMap)) {
 				addedRecipes.add(recipe);
 			}
 		}
@@ -121,23 +122,23 @@ public class RecipeManagerInternal {
 		}
 	}
 
-	private <T> boolean addRecipe(IRecipeCategory<T> recipeCategory, T recipe, Set<T> hiddenRecipes) {
+	private <T> boolean addRecipe(IRecipeCategory<T> recipeCategory, T recipe, Set<T> hiddenRecipes, ContextMap contextMap) {
 		IRecipeType<T> recipeType = recipeCategory.getRecipeType();
 		if (hiddenRecipes.contains(recipe)) {
 			if (LOGGER.isDebugEnabled()) {
-				String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipe, recipeCategory, ingredientManager);
+				String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipe, recipeCategory, ingredientManager, contextMap);
 				LOGGER.debug("Recipe not added because it is hidden: {}", recipeInfo);
 			}
 			return false;
 		}
 		if (!recipeCategory.isHandled(recipe)) {
 			if (LOGGER.isDebugEnabled()) {
-				String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipe, recipeCategory, ingredientManager);
+				String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipe, recipeCategory, ingredientManager, contextMap);
 				LOGGER.debug("Recipe not added because the recipe category cannot handle it: {}", recipeInfo);
 			}
 			return false;
 		}
-		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
+		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager, contextMap);
 
 		try {
 			for (RecipeIngredientRoleMap recipeIngredientRoleMap : recipeIngredientRoleMaps.values()) {
@@ -145,7 +146,7 @@ public class RecipeManagerInternal {
 			}
 			return true;
 		} catch (RuntimeException | LinkageError e) {
-			String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipe, recipeCategory, ingredientManager);
+			String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipe, recipeCategory, ingredientManager, contextMap);
 			LOGGER.error("Found a broken recipe, failed to addRecipe: {}\n", recipeInfo, e);
 			return false;
 		}

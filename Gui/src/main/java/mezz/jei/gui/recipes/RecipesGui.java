@@ -30,6 +30,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.gui.GuiProperties;
+import mezz.jei.gui.bookmarks.BookmarkFactory;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.buttons.IIconButtonController;
@@ -119,7 +120,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		IFocusFactory focusFactory,
 		BookmarkList bookmarks,
 		LookupHistory lookupHistory,
-		IGuiHelper guiHelper
+		IGuiHelper guiHelper,
+		BookmarkFactory bookmarkFactory
 	) {
 		super(Component.literal("Recipes"));
 		this.bookmarks = bookmarks;
@@ -130,7 +132,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			lookupHistory,
 			recipeTransferManager,
 			this::updateLayout,
-			focusFactory
+			focusFactory,
+			bookmarkFactory
 		);
 		this.craftingStations = new CraftingStations(recipeManager);
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, recipeManager, guiHelper);
@@ -266,19 +269,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		super.init();
 
 		final int xSize = minGuiWidth;
-		int ySize;
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		if (clientConfig.isCenterSearchBarEnabled()) {
-			ySize = this.height - 76;
-		} else {
-			ySize = this.height - 58;
-		}
-		int extraSpace = 0;
-		final int maxHeight = clientConfig.getMaxRecipeGuiHeight();
-		if (ySize > maxHeight) {
-			extraSpace = ySize - maxHeight;
-			ySize = maxHeight;
-		}
+		RecipeGuiSizing.Size recipeGuiSize = RecipeGuiSizing.calculateInitialSize(
+			this.height,
+			clientConfig.isCenterSearchBarEnabled(),
+			clientConfig.getMaxRecipeGuiHeight()
+		);
+		int ySize = recipeGuiSize.ySize();
+		int extraSpace = recipeGuiSize.extraSpace();
 
 		final int guiLeft = (this.width - xSize) / 2;
 		final int guiTop = RecipeGuiTab.TAB_HEIGHT + 21 + (extraSpace / 2);
@@ -312,6 +310,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+
 		guiGraphics.fill(
 			previousRecipeCategory.getX() + previousRecipeCategory.getWidth(),
 			previousRecipeCategory.getY(),

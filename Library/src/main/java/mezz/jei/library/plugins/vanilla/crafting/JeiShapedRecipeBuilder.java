@@ -8,6 +8,9 @@ import it.unimi.dsi.fastutil.chars.CharSet;
 import mezz.jei.api.recipe.vanilla.IJeiShapedRecipeBuilder;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
+import net.minecraft.util.context.ContextMap;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -20,15 +23,17 @@ import java.util.Map;
 
 public class JeiShapedRecipeBuilder implements IJeiShapedRecipeBuilder {
 	private final CraftingBookCategory category;
-	private final SlotDisplay results;
+	private final SlotDisplay resultDisplay;
+	private final ContextMap contextMap;
 	private final List<String> rows = Lists.newArrayList();
 	private final Map<Character, Ingredient> key = Maps.newLinkedHashMap();
 	private final Map<Character, SlotDisplay> displayKey = Maps.newLinkedHashMap();
 	private String group = "";
 
-	public JeiShapedRecipeBuilder(CraftingBookCategory category, SlotDisplay results) {
+	public JeiShapedRecipeBuilder(CraftingBookCategory category, SlotDisplay resultDisplay, ContextMap contextMap) {
 		this.category = category;
-		this.results = results;
+		this.resultDisplay = resultDisplay;
+		this.contextMap = contextMap;
 	}
 
 	@Override
@@ -77,12 +82,14 @@ public class JeiShapedRecipeBuilder implements IJeiShapedRecipeBuilder {
 	public CraftingRecipe build() {
 		ShapedRecipePattern pattern = ShapedRecipePattern.of(this.key, this.rows);
 		List<SlotDisplay> displays = unpack(this.displayKey, this.rows).getOrThrow();
+		ItemStack resultStack = resultDisplay.resolveForFirstStack(contextMap);
+		ItemStackTemplate result = ItemStackTemplate.fromNonEmptyStack(resultStack);
 		return new JeiShapedRecipe(
 			group,
 			category,
 			pattern,
 			displays,
-			results
+			result
 		);
 	}
 

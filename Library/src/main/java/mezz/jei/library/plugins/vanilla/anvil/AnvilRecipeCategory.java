@@ -101,7 +101,7 @@ public class AnvilRecipeCategory extends AbstractRecipeCategory<IJeiAnvilRecipe>
 			return null;
 		}
 
-		return AnvilRecipeMaker.findLevelsCost(leftStack.get(), rightStack.get());
+		return AnvilHelper.findLevelsCost(leftStack.get(), rightStack.get());
 	}
 
 	@Override

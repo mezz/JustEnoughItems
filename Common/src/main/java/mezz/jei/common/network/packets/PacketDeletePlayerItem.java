@@ -49,7 +49,7 @@ public class PacketDeletePlayerItem extends PlayToServerPacket<PacketDeletePlaye
 			ItemStack playerItem = player.containerMenu.getCarried();
 			if (playerItem.getItem() == itemStack.getItem()) {
 				player.containerMenu.setCarried(ItemStack.EMPTY);
-			} else {
+			} else if (!playerItem.isEmpty()) {
 				LOGGER.warn("Player '{} ({})' tried to delete ItemStack '{}' but is currently holding a different ItemStack '{}'.", player.getName(), player.getUUID(), itemStack.getDisplayName(), playerItem.getDisplayName());
 			}
 		} else {

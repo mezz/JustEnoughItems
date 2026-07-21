@@ -1,9 +1,11 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.slf4j.event.Level
 
 plugins {
     id("idea")
     id("java")
+    id("java-test-fixtures")
     id("net.neoforged.moddev")
     id("maven-publish")
 }
@@ -15,6 +17,7 @@ val minecraftVersion: String by extra
 val neoformVersionAndTimestamp: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val bakedSubstringIndexVersion: String by extra
 val suffixtreeVersion: String by extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
@@ -33,6 +36,16 @@ dependencyProjects.forEach {
 neoForge {
     neoFormVersion = neoformVersionAndTimestamp
     addModdingDependenciesTo(sourceSets.test.get())
+
+    runs {
+        create("vanillaServer") {
+            server()
+            gameDirectory = file("run/vanillaServer")
+            programArguments.addAll("nogui")
+            logLevel = Level.INFO
+            disableIdeRun()
+        }
+    }
 }
 
 sourceSets {
@@ -48,12 +61,16 @@ dependencies {
     implementation("com.google.guava:guava:33.5.0-jre")
     implementation("it.unimi.dsi:fastutil:8.5.18")
     implementation("org.apache.logging.log4j:log4j-api:2.25.2")
+    implementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
+        isTransitive = false
+    }
     implementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
     }
     dependencyProjects.forEach {
         implementation(it)
     }
+    testFixturesCompileOnly("org.jspecify:jspecify:1.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
@@ -61,6 +78,7 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
     include("mezz/jei/test/**")
+    include("mezz/jei/common/util/**")
     exclude("mezz/jei/test/lib/**")
     outputs.upToDateWhen { false }
     testLogging {

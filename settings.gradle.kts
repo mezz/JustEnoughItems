@@ -1,24 +1,20 @@
+@file:Suppress("UnstableApiUsage")
+
 pluginManagement {
 	repositories {
-		fun exclusiveMaven(url: String, filter: Action<InclusiveRepositoryContentDescriptor>) =
+		fun exclusiveMaven(url: String, vararg groupPrefixes: String) =
 			exclusiveContent {
 				forRepository { maven(url) }
-				filter(filter)
+				filter {
+					groupPrefixes.forEach(::includeGroupAndSubgroups)
+				}
 			}
-		exclusiveMaven("https://maven.fabricmc.net/") {
-			includeGroup("net.fabricmc")
-			includeGroupByRegex("net\\.fabricmc\\..*")
-			includeGroup("net.fabricmc.fabric-loom")
-		}
-		exclusiveMaven("https://maven.neoforged.net/releases") {
-			includeGroupByRegex("net\\.neoforged.*")
-			includeGroup("codechicken")
-			includeGroup("net.covers1624")
-		}
+		exclusiveMaven("https://maven.fabricmc.net/", "net.fabricmc")
+		exclusiveMaven("https://maven.neoforged.net/releases", "net.neoforged", "codechicken", "net.covers1624")
 		maven("https://repo.spongepowered.org/repository/maven-public/") {
 			content {
-				includeGroupByRegex("org\\.spongepowered.*")
-				includeGroupByRegex("net\\.minecraftforge.*")
+				includeGroupAndSubgroups("org.spongepowered")
+				includeGroupAndSubgroups("net.minecraftforge")
 			}
 		}
 		gradlePluginPortal()
@@ -41,5 +37,6 @@ include(
 	"Fabric", "FabricApi",
 	"NeoForge", "NeoForgeApi",
 	"Library",
+	"Debug",
 	"Gui"
 )

@@ -244,8 +244,8 @@
   "jei.config.client.ingredientList.horizontalAlignment.description": "Alineación horizontal de la lista de ingredientes dentro del área disponible.",
   "jei.config.client.ingredientList.verticalAlignment": "Alineación Vertical",
   "jei.config.client.ingredientList.verticalAlignment.description": "Alineación vertical de la lista de ingredientes dentro del área disponible.",
-  "jei.config.client.ingredientList.buttonNavigationVisibility": "Visibilidad de Navegación",
-  "jei.config.client.ingredientList.buttonNavigationVisibility.description": "Visibilidad de los botones superiores. Usá AUTO_HIDE para que se muestren solo si hay varias páginas.",
+  "jei.config.client.ingredientList.navigationVisibility": "Visibilidad de Navegación",
+  "jei.config.client.ingredientList.navigationVisibility.description": "Visibilidad de los botones superiores. Usá AUTO_HIDE para que se muestren solo si hay varias páginas.",
   "jei.config.client.ingredientList.drawBackground": "Mostrar Fondo de Interfaz",
   "jei.config.client.ingredientList.drawBackground.description": "Activá esto para mostrar una textura de fondo detrás de la lista de ingredientes.",
 
@@ -259,8 +259,8 @@
   "jei.config.client.bookmarkList.horizontalAlignment.description": "Alineación horizontal de la lista de favoritos dentro del área disponible.",
   "jei.config.client.bookmarkList.verticalAlignment": "Alineación Vertical",
   "jei.config.client.bookmarkList.verticalAlignment.description": "Alineación vertical de la lista de favoritos dentro del área disponible.",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility": "Visibilidad de Navegación",
-  "jei.config.client.bookmarkList.buttonNavigationVisibility.description": "Visibilidad de los botones superiores. Usá AUTO_HIDE para que se muestren solo si hay varias páginas.",
+  "jei.config.client.bookmarkList.navigationVisibility": "Visibilidad de Navegación",
+  "jei.config.client.bookmarkList.navigationVisibility.description": "Visibilidad de los botones superiores. Usá AUTO_HIDE para que se muestren solo si hay varias páginas.",
   "jei.config.client.bookmarkList.drawBackground": "Mostrar Fondo de Interfaz",
   "jei.config.client.bookmarkList.drawBackground.description": "Activá esto para mostrar una textura de fondo detrás de la lista de favoritos.",
 
@@ -276,16 +276,12 @@
 
   "jei.config.debug.debug": "Depuración",
   "jei.config.debug.debug.description": "Opciones para ayudar a desarrolladores a depurar errores en JEI.",
-  "jei.config.debug.debug.debugMode": "Modo de Depuración",
-  "jei.config.debug.debug.debugMode.description": "Activar modo de depuración.",
   "jei.config.debug.debug.debugGuis": "GUIs de Depuración",
   "jei.config.debug.debug.debugGuis.description": "Activar modo GUIs de depuración.",
   "jei.config.debug.debug.debugInputs": "Entradas de Depuración",
   "jei.config.debug.debug.debugInputs.description": "Activar modo de entradas de depuración.",
   "jei.config.debug.debug.debugInfoTooltipsEnabled": "Tooltips de Info de Depuración",
   "jei.config.debug.debug.debugInfoTooltipsEnabled.description": "Agregar información de depuración a los tooltips de ingredientes cuando están activados los tooltips avanzados.",
-  "jei.config.debug.debug.crashingTestItemsEnabled": "Habilitar Ítems de Prueba que Crashean",
-  "jei.config.debug.debug.crashingTestItemsEnabled.description": "Agrega ingredientes a JEI que causan crash intencionalmente, para ayudar con la depuración.",
   "jei.config.debug.debug.logSuffixTreeStats": "Registrar Estadísticas de Árboles de Sufijos",
   "jei.config.debug.debug.logSuffixTreeStats.description": "Registrar información sobre los árboles de sufijos usados para las búsquedas, para ayudar en la depuración.",
 

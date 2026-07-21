@@ -52,8 +52,6 @@
   "jei.config.client.advanced.description": "Avanserte innstillinger for å endre måten JEI fungerer på.",
   "jei.config.client.advanced.itemBlacklist": "Svartliste for Artikler",
   "jei.config.client.advanced.itemBlacklist.description": "Liste over artikler som ikke skal vises i artikkel listen. Format: modId[:navn[:meta]]. Redigerings Modus vil automatisk legge til eller fjerne oppføringer her.",
-  "jei.config.debug.debug.debugMode": "Feilsøkings Modus",
-  "jei.config.debug.debug.debugMode.description": "Nyttig for utviklerne av JEI. Legger til tusenvis av test artikler og noen feilsøkings oppskrifter.",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Artikkel Liste Redigerings Modus:",

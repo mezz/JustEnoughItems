@@ -12,7 +12,7 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.config.GroupExpandStateConfig;
 import mezz.jei.gui.input.UserInput;
-import mezz.jei.gui.overlay.IngredientGridTooltipHelper;
+import mezz.jei.gui.overlay.ingredients.IngredientGridTooltipHelper;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -66,7 +66,7 @@ public class GroupMemberElement<T> implements IElement {
 		IInternalKeyMappings keyMappings = Internal.getKeyMappings();
 		IJeiKeyMapping groupAction = keyMappings.getGroupAction();
 		tooltip.addKeyUsageComponent("jei.group.collapse", groupAction);
-		String modName = tooltipHelper.getModIdHelper().getFormattedModNameForModId(groupInfo.id().getNamespace());
+		Component modName = tooltipHelper.getModIdHelper().getFormattedModNameComponentForModId(groupInfo.id().getNamespace());
 		MutableComponent addedBy = Component.translatable("jei.group.added_by", modName);
 		tooltip.add(addedBy.withStyle(ChatFormatting.GRAY));
 	}
@@ -87,5 +87,10 @@ public class GroupMemberElement<T> implements IElement {
 	@Override
 	public boolean isVisible() {
 		return true;
+	}
+
+	@Override
+	public void tick() {
+
 	}
 }

@@ -9,32 +9,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up JDK 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'microsoft'
           java-version: '25'
 
       - name: Validate wrapper
-        uses: gradle/actions/wrapper-validation@v4
+        uses: gradle/actions/wrapper-validation@v6
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: wrapper
           cache-read-only: false
 
       - name: Build with Gradle
         run: |
-          ./gradlew :Core:build --no-daemon
           ./gradlew :Fabric:build --no-daemon
           ./gradlew :NeoForge:build --no-daemon
           ./gradlew :Common:build --no-daemon
           ./gradlew :CommonApi:build --no-daemon
+          ./gradlew :Debug:build --no-daemon
           ./gradlew :FabricApi:build --no-daemon
           ./gradlew :NeoForgeApi:build --no-daemon
+
+      - name: Run NeoForge GameTests
+        run: ./gradlew :NeoForge:runGameTestServer --no-daemon
+
+      - name: Run Client GameTests
+        run: |
+          if command -v xvfb-run >/dev/null 2>&1; then
+            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest --no-daemon
+            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTestWithoutAmecs --no-daemon
+            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :NeoForge:runClientRecipeSyncTest --no-daemon
+          else
+            echo "::error::xvfb-run is not available; skipping client GameTests."
+          fi
 
       - name: Copy together artifacts
         shell: bash
@@ -42,7 +55,6 @@ jobs:
           mkdir dist
           cp Common/build/libs/*.jar dist
           cp CommonApi/build/libs/*.jar dist
-          cp Core/build/libs/*.jar dist
           cp Fabric/build/libs/*.jar dist
           cp FabricApi/build/libs/*.jar dist
           cp NeoForge/build/libs/*.jar dist
@@ -50,7 +62,7 @@ jobs:
           cp Gui/build/libs/*.jar dist
           cp Library/build/libs/*.jar dist
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           if-no-files-found: error
           path: dist/*

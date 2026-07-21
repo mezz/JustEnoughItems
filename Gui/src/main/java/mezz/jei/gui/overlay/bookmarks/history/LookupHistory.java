@@ -1,11 +1,12 @@
 package mezz.jei.gui.overlay.bookmarks.history;
 
+import com.mojang.serialization.Codec;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.config.ILookupHistoryConfig;
-import mezz.jei.gui.overlay.IIngredientGridSource;
+import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.core.RegistryAccess;
 import org.jetbrains.annotations.Unmodifiable;
@@ -24,6 +25,7 @@ public class LookupHistory implements IIngredientGridSource {
 	private final ICodecHelper codecHelper;
 	private final Supplier<Integer> maxElements;
 	private final ILookupHistoryConfig lookupHistoryConfig;
+	private final Codec<IBookmark> bookmarkCodec;
 
 	public LookupHistory(
 		IRecipeManager recipeManager,
@@ -31,7 +33,8 @@ public class LookupHistory implements IIngredientGridSource {
 		RegistryAccess registryAccess,
 		ICodecHelper codecHelper,
 		Supplier<Integer> maxElements,
-		ILookupHistoryConfig lookupHistoryConfig
+		ILookupHistoryConfig lookupHistoryConfig,
+		Codec<IBookmark> bookmarkCodec
 	) {
 		this.recipeManager = recipeManager;
 		this.ingredientManager = ingredientManager;
@@ -39,8 +42,9 @@ public class LookupHistory implements IIngredientGridSource {
 		this.codecHelper = codecHelper;
 		this.maxElements = maxElements;
 		this.lookupHistoryConfig = lookupHistoryConfig;
+		this.bookmarkCodec = bookmarkCodec;
 
-		List<IBookmark> loaded = lookupHistoryConfig.load(recipeManager, ingredientManager, registryAccess, codecHelper);
+		List<IBookmark> loaded = lookupHistoryConfig.load(recipeManager, ingredientManager, registryAccess, codecHelper, bookmarkCodec);
 		this.elements.addAll(loaded);
 	}
 
@@ -51,7 +55,7 @@ public class LookupHistory implements IIngredientGridSource {
 			elements.removeLast();
 		}
 		notifyListeners();
-		lookupHistoryConfig.save(recipeManager, ingredientManager, registryAccess, codecHelper, elements);
+		lookupHistoryConfig.save(recipeManager, ingredientManager, registryAccess, codecHelper, elements, bookmarkCodec);
 	}
 
 	@Override

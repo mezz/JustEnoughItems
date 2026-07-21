@@ -7,9 +7,9 @@
     "AmecsKeyModifiersEarlyInitMixin"
   ],
   "client": [
-    "AbstractContainerScreenMixin",
-    "ClientPacketListenerMixin",
+    "ClientPacketListenerRecipeUpdateMixin",
     "EffectsInInventoryMixin",
+    "GuiGraphicsExtractorMixin",
     "KeyboardHandlerMixin",
     "MinecraftMixin",
     "ScreenMixin"

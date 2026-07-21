@@ -19,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -203,9 +202,9 @@ public class IngredientGroupConfig {
 					}
 
 					IngredientGroupFileData data = new IngredientGroupFileData(selectors, info.override());
-					try (BufferedWriter out = Files.newBufferedWriter(path)) {
+					try {
 						JsonArrayFileHelper.write(
-							out,
+							path,
 							VERSION,
 							List.of(data),
 							groupFileCodec,

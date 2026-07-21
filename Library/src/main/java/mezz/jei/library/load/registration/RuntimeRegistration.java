@@ -11,6 +11,9 @@ import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.search.ISearchStorage;
+import mezz.jei.api.search.ISearchStorageBuilderFactory;
+import mezz.jei.api.search.ISearchStorageFactory;
 import mezz.jei.library.gui.BookmarkOverlayDummy;
 import mezz.jei.library.gui.IngredientListOverlayDummy;
 import mezz.jei.library.gui.recipes.RecipesGuiDummy;
@@ -23,6 +26,7 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 	private final IIngredientManager ingredientManager;
 	private final IRecipeTransferManager recipeTransferManager;
 	private final IScreenHelper screenHelper;
+	private final ISearchStorageBuilderFactory searchStorageBuilderFactory;
 
 	private IIngredientListOverlay ingredientListOverlay = IngredientListOverlayDummy.INSTANCE;
 	private IBookmarkOverlay bookmarkOverlay = BookmarkOverlayDummy.INSTANCE;
@@ -35,7 +39,8 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 		IEditModeConfig editModeConfig,
 		IIngredientManager ingredientManager,
 		IRecipeTransferManager recipeTransferManager,
-		IScreenHelper screenHelper
+		IScreenHelper screenHelper,
+		ISearchStorageBuilderFactory searchStorageBuilderFactory
 	) {
 		this.recipeManager = recipeManager;
 		this.jeiHelpers = jeiHelpers;
@@ -43,6 +48,7 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 		this.ingredientManager = ingredientManager;
 		this.recipeTransferManager = recipeTransferManager;
 		this.screenHelper = screenHelper;
+		this.searchStorageBuilderFactory = searchStorageBuilderFactory;
 	}
 
 	@Override
@@ -93,6 +99,21 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 	@Override
 	public IEditModeConfig getEditModeConfig() {
 		return this.editModeConfig;
+	}
+
+	@Override
+	public ISearchStorageFactory getSearchStorageFactory() {
+		return new ISearchStorageFactory() {
+			@Override
+			public <T> ISearchStorage<T> createSearchStorage() {
+				return searchStorageBuilderFactory.<T>create().build();
+			}
+		};
+	}
+
+	@Override
+	public ISearchStorageBuilderFactory getSearchStorageBuilderFactory() {
+		return searchStorageBuilderFactory;
 	}
 
 	public IIngredientListOverlay getIngredientListOverlay() {

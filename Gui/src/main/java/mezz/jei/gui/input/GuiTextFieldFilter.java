@@ -7,6 +7,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.TextHistory;
 import mezz.jei.gui.input.focus.ScreenFocusHandler;
 import mezz.jei.gui.input.handlers.TextFieldInputHandler;
+import mezz.jei.gui.overlay.ISearchField;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
@@ -17,7 +18,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
-public class GuiTextFieldFilter extends EditBox {
+public class GuiTextFieldFilter extends EditBox implements ISearchField {
 	private static final int maxSearchLength = 128;
 	private static final TextHistory history = new TextHistory();
 	private final BooleanSupplier filterEmpty;
@@ -41,6 +42,7 @@ public class GuiTextFieldFilter extends EditBox {
 		setBordered(false);
 	}
 
+	@Override
 	public void updateBounds(ImmutableRect2i area) {
 		this.backgroundBounds = area;
 		setX(area.getX() + 4);
@@ -102,9 +104,17 @@ public class GuiTextFieldFilter extends EditBox {
 
 	@Override
 	public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		extractBackgroundRenderState(guiGraphics);
+		extractForegroundRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+	}
+
+	public void extractBackgroundRenderState(GuiGraphicsExtractor guiGraphics) {
 		if (this.isVisible()) {
 			background.draw(guiGraphics, this.backgroundBounds);
 		}
+	}
+
+	public void extractForegroundRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		super.extractWidgetRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 	}
 }

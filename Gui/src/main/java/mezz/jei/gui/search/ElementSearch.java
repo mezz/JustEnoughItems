@@ -4,8 +4,9 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.search.ISearchStorage;
+import mezz.jei.api.search.ISearchStorageBuilder;
 import mezz.jei.common.search.CombinedSearchables;
-import mezz.jei.common.search.ISearchStorage;
 import mezz.jei.common.search.ISearchable;
 import mezz.jei.common.search.PrefixInfo;
 import mezz.jei.common.search.PrefixedSearchable;
@@ -15,7 +16,6 @@ import mezz.jei.gui.ingredients.IListElementInfo;
 import mezz.jei.gui.ingredients.ListGroupElementInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.UnknownNullability;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
@@ -31,11 +31,35 @@ public class ElementSearch implements IElementSearch {
 	private final Map<PrefixInfo<IListElementInfo, IListElement>, PrefixedSearchable<IListElementInfo, IListElement>> prefixedSearchables = new IdentityHashMap<>();
 	private final CombinedSearchables<IListElement> combinedSearchables = new CombinedSearchables<>();
 	private final Map<Object, IListElement> allElements = new HashMap<>();
+	private final PrefixInfo<IListElementInfo, IListElement> noPrefix;
 
-	public ElementSearch(ElementPrefixParser elementPrefixParser) {
+	public ElementSearch(
+		ElementPrefixParser elementPrefixParser,
+		Collection<IListElementInfo> infos,
+		IIngredientManager ingredientManager
+	) {
+		this.noPrefix = elementPrefixParser.getNoPrefix();
+
+		for (IListElementInfo info : infos) {
+			IListElement element = info.getElement();
+			Object uid = getUid(info, ingredientManager);
+			this.allElements.put(uid, element);
+		}
+
 		for (PrefixInfo<IListElementInfo, IListElement> prefixInfo : elementPrefixParser.allPrefixInfos()) {
-			ISearchStorage<IListElement> storage = prefixInfo.createStorage();
-			var prefixedSearchable = new PrefixedSearchable<>(storage, prefixInfo);
+			ISearchStorageBuilder<IListElement> storageBuilder = prefixInfo.createStorageBuilder();
+
+			SearchMode searchMode = prefixInfo.getMode();
+			if (searchMode != SearchMode.DISABLED) {
+				for (IListElementInfo info : infos) {
+					Collection<String> strings = prefixInfo.getStrings(info);
+					for (String string : strings) {
+						putIfNotBlank(storageBuilder, string, info.getElement());
+					}
+				}
+			}
+			ISearchStorage<IListElement> searchStorage = storageBuilder.build();
+			var prefixedSearchable = new PrefixedSearchable<>(searchStorage, prefixInfo);
 			this.prefixedSearchables.put(prefixInfo, prefixedSearchable);
 			this.combinedSearchables.addSearchable(prefixedSearchable);
 		}
@@ -51,7 +75,7 @@ public class ElementSearch implements IElementSearch {
 		Set<IListElement> results = Collections.newSetFromMap(new IdentityHashMap<>());
 
 		PrefixInfo<IListElementInfo, IListElement> prefixInfo = tokenInfo.prefixInfo();
-		if (prefixInfo == ElementPrefixParser.NO_PREFIX) {
+		if (prefixInfo == noPrefix) {
 			combinedSearchables.getSearchResults(token, results::addAll);
 			return results;
 		}
@@ -76,9 +100,23 @@ public class ElementSearch implements IElementSearch {
 				Collection<String> strings = prefixedSearchable.getStrings(info);
 				ISearchStorage<IListElement> storage = prefixedSearchable.getSearchStorage();
 				for (String string : strings) {
-					storage.put(string, element);
+					putIfNotBlank(storage, string, element);
 				}
 			}
+		}
+	}
+
+	static <T> void putIfNotBlank(ISearchStorageBuilder<T> storageBuilder, String string, T element) {
+		String trimmedString = string.trim();
+		if (!trimmedString.isEmpty()) {
+			storageBuilder.put(trimmedString, element);
+		}
+	}
+
+	static <T> void putIfNotBlank(ISearchStorage<T> storage, String string, T element) {
+		String trimmedString = string.trim();
+		if (!trimmedString.isEmpty()) {
+			storage.put(trimmedString, element);
 		}
 	}
 
@@ -95,31 +133,10 @@ public class ElementSearch implements IElementSearch {
 	}
 
 	@Override
-	public void addAll(@UnknownNullability Collection<? extends IListElementInfo> infos, IIngredientManager ingredientManager) {
-		for (IListElementInfo info : infos) {
-			IListElement element = info.getElement();
-			Object uid = getUid(info, ingredientManager);
-			this.allElements.put(uid, element);
-		}
-		for (PrefixedSearchable<IListElementInfo, IListElement> prefixedSearchable : this.prefixedSearchables.values()) {
-			SearchMode searchMode = prefixedSearchable.getMode();
-			if (searchMode != SearchMode.DISABLED) {
-				ISearchStorage<IListElement> storage = prefixedSearchable.getSearchStorage();
-				for (IListElementInfo info : infos) {
-					Collection<String> strings = prefixedSearchable.getStrings(info);
-					for (String string : strings) {
-						storage.put(string, info.getElement());
-					}
-				}
-			}
-		}
-	}
-
-	@Override
 	public @Nullable <T> IListElement findElement(ITypedIngredient<T> ingredient, IIngredientHelper<T> ingredientHelper) {
 		Object ingredientUid = ingredientHelper.getUid(ingredient.getIngredient(), UidContext.Ingredient);
 		IListElement listElement = allElements.get(ingredientUid);
-		if (listElement != null && listElement.getTypedIngredient().getType().equals(ingredient.getType())) {
+		if (listElement != null && !listElement.isGroup() && listElement.getTypedIngredient().getType().equals(ingredient.getType())) {
 			return listElement;
 		}
 		return null;

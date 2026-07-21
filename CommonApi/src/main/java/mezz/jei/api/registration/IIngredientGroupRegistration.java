@@ -1,8 +1,10 @@
 package mezz.jei.api.registration;
 
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.SequencedCollection;
 import java.util.function.Predicate;
@@ -10,7 +12,13 @@ import java.util.function.Predicate;
 /**
  * The registration interface for ingredient groups in jei overlay
  */
+@ApiStatus.NonExtendable
 public interface IIngredientGroupRegistration {
+
+	/**
+	 * {@link IJeiHelpers} provides helpers and tools for addon mods.
+	 */
+	IJeiHelpers getJeiHelpers();
 
 	/**
 	 * Add ingredients to an ingredient group.

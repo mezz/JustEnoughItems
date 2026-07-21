@@ -41,7 +41,7 @@ public final class TippedArrowRecipeMaker implements IRecipeReplacer {
 		return false;
 	}
 
-	private void createRecipes(Consumer<RecipeHolder<CraftingRecipe>> recipes) {
+	public void createRecipes(Consumer<RecipeHolder<CraftingRecipe>> recipes) {
 		String group = "jei.tipped.arrow";
 		Ingredient arrowIngredient = Ingredient.of(Items.ARROW);
 

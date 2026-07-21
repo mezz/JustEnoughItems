@@ -1,5 +1,6 @@
 package mezz.jei.gui.ingredients;
 
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -47,13 +48,13 @@ public final class ListGroupElementInfo implements IListElementInfo {
 	}
 
 	@Override
-	public List<String> getModNames() {
+	public Collection<String> getModNames(IIngredientFilterConfig config) {
 		return List.of(modIdHelper.getModNameForModId(groupInfo.id().getNamespace()));
 	}
 
 	@Override
-	public List<String> getModIds() {
-		return List.of(groupInfo.id().getNamespace());
+	public @Unmodifiable Collection<String> getColorNames(IIngredientManager ingredientManager, IColorHelper colorHelper) {
+		return List.of();
 	}
 
 	@Override

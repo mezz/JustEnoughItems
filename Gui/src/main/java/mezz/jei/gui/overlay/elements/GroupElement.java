@@ -12,7 +12,7 @@ import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.config.GroupExpandStateConfig;
 import mezz.jei.gui.ingredients.ListGroupElement;
 import mezz.jei.gui.input.UserInput;
-import mezz.jei.gui.overlay.IngredientGridTooltipHelper;
+import mezz.jei.gui.overlay.ingredients.IngredientGridTooltipHelper;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -26,22 +26,22 @@ public class GroupElement implements IElement {
 	private final ListGroupElement groupElement;
 	private final List<IElement> memberElements;
 	private final Runnable onExpandedChange;
-    private final GroupExpandStateConfig groupStateConfig;
+	private final GroupExpandStateConfig groupStateConfig;
 	private final GroupElementOverlay overlay;
 
 	public GroupElement(
-            ListGroupElement groupElement,
-            Runnable onExpandedChange,
-            GroupExpandStateConfig groupStateConfig,
-            GroupElementOverlay overlay
-    ) {
+		ListGroupElement groupElement,
+		Runnable onExpandedChange,
+		GroupExpandStateConfig groupStateConfig,
+		GroupElementOverlay overlay
+	) {
 		this.groupElement = groupElement;
 		this.memberElements = groupElement.getMembers()
-				.stream()
-				.<IElement>map(element -> new IngredientElement<>(element.getTypedIngredient()))
-				.toList();
+			.stream()
+			.<IElement>map(element -> new IngredientElement<>(element.getTypedIngredient()))
+			.toList();
 		this.onExpandedChange = onExpandedChange;
-        this.groupStateConfig = groupStateConfig;
+		this.groupStateConfig = groupStateConfig;
 		this.overlay = overlay;
 	}
 
@@ -66,7 +66,7 @@ public class GroupElement implements IElement {
 			memberElements.getFirst().getTooltip(tooltip, tooltipHelper);
 			tooltip.add(Component.empty());
 			tooltip.add(groupElement.getGroupInfo().getName().copy().withStyle(ChatFormatting.WHITE));
-			String modName = tooltipHelper.getModIdHelper().getFormattedModNameForModId(groupElement.getGroupInfo().id().getNamespace());
+			Component modName = tooltipHelper.getModIdHelper().getFormattedModNameComponentForModId(groupElement.getGroupInfo().id().getNamespace());
 			MutableComponent addedBy = Component.translatable("jei.group.added_by", modName);
 			tooltip.add(addedBy.withStyle(ChatFormatting.GRAY));
 			return;
@@ -76,7 +76,7 @@ public class GroupElement implements IElement {
 		IJeiKeyMapping groupAction = keyMappings.getGroupAction();
 		tooltip.addKeyUsageComponent("jei.group.expand", groupAction);
 		tooltip.add(new GroupElementTooltipComponent(memberElements));
-		String modName = tooltipHelper.getModIdHelper().getFormattedModNameForModId(groupElement.getGroupInfo().id().getNamespace());
+		Component modName = tooltipHelper.getModIdHelper().getFormattedModNameComponentForModId(groupElement.getGroupInfo().id().getNamespace());
 		MutableComponent addedBy = Component.translatable("jei.group.added_by", modName);
 		tooltip.add(addedBy.withStyle(ChatFormatting.GRAY));
 	}
@@ -87,7 +87,7 @@ public class GroupElement implements IElement {
 			if (input.isSimulate()) {
 				return true;
 			}
-            IngredientGroupInfo groupInfo = groupElement.getGroupInfo();
+			IngredientGroupInfo groupInfo = groupElement.getGroupInfo();
 			groupStateConfig.setExpanded(groupInfo.id(), !groupStateConfig.isExpanded(groupInfo));
 			onExpandedChange.run();
 			return true;
@@ -102,5 +102,10 @@ public class GroupElement implements IElement {
 
 	@Override
 	public void show(IRecipesGui recipesGui, FocusUtil focusUtil, List<RecipeIngredientRole> roles) {
+	}
+
+	@Override
+	public void tick() {
+
 	}
 }

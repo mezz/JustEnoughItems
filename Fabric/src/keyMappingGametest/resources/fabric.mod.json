@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "jei-key-mapping-test",
+  "version": "1.0.0",
+  "name": "JEI Fabric Key Mapping Tests",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-client-gametest": [
+      "mezz.jei.fabric.test.JeiFabricKeyMappingClientGameTest"
+    ]
+  },
+  "depends": {
+    "fabricloader": "*",
+    "fabric-api": "*",
+    "jei": "*"
+  }
+}

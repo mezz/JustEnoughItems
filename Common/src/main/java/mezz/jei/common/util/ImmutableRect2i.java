@@ -42,6 +42,10 @@ public record ImmutableRect2i(
 		return height;
 	}
 
+	public ImmutableSize2i getSize() {
+		return new ImmutableSize2i(width, height);
+	}
+
 	public boolean isEmpty() {
 		return width == 0 || height == 0;
 	}

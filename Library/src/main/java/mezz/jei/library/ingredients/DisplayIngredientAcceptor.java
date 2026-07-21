@@ -20,6 +20,7 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -36,14 +37,21 @@ import java.util.Optional;
 
 public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIngredientAcceptor> {
 	private final IIngredientManager ingredientManager;
+	private final ContextMap contextMap;
 	/**
 	 * A list of ingredients, including "blank" ingredients represented by {@link Optional#empty()}.
 	 * Blank ingredients are drawn as "nothing" in a rotation of ingredients, but aren't considered in lookups.
 	 */
 	private final List<@Nullable ITypedIngredient<?>> ingredients = new ArrayList<>();
 
-	public DisplayIngredientAcceptor(IIngredientManager ingredientManager) {
+	public DisplayIngredientAcceptor(IIngredientManager ingredientManager, ContextMap contextMap) {
 		this.ingredientManager = ingredientManager;
+		this.contextMap = contextMap;
+	}
+
+	@Override
+	public ContextMap getContextMap() {
+		return contextMap;
 	}
 
 	@Override
@@ -62,7 +70,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	public DisplayIngredientAcceptor add(SlotDisplay slotDisplay) {
 		Preconditions.checkNotNull(slotDisplay, "slotDisplay");
 
-		TypedIngredient.createAndFilterInvalidList(ingredientManager, slotDisplay, false)
+		TypedIngredient.createAndFilterInvalidList(ingredientManager, contextMap, slotDisplay, false)
 			.forEach(this.ingredients::add);
 
 		return this;
@@ -73,7 +81,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Preconditions.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(slotDisplay, "slotDisplay");
 
-		TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredientType, slotDisplay, false)
+		TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredientType, contextMap, slotDisplay, false)
 			.forEach(this.ingredients::add);
 
 		return this;

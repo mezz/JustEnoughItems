@@ -1,5 +1,6 @@
 package mezz.jei.gui.config;
 
+import com.mojang.serialization.Codec;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -9,7 +10,7 @@ import net.minecraft.core.RegistryAccess;
 import java.util.List;
 
 public interface ILookupHistoryConfig {
-	void save(IRecipeManager recipeManager, IIngredientManager ingredientManager, RegistryAccess registryAccess, ICodecHelper codecHelper, List<IBookmark> bookmarks);
+	void save(IRecipeManager recipeManager, IIngredientManager ingredientManager, RegistryAccess registryAccess, ICodecHelper codecHelper, List<IBookmark> bookmarks, Codec<IBookmark> bookmarkCodec);
 
-	List<IBookmark> load(IRecipeManager recipeManager, IIngredientManager ingredientManager, RegistryAccess registryAccess, ICodecHelper codecHelper);
+	List<IBookmark> load(IRecipeManager recipeManager, IIngredientManager ingredientManager, RegistryAccess registryAccess, ICodecHelper codecHelper, Codec<IBookmark> bookmarkCodec);
 }

@@ -12,8 +12,10 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketRecipeTransfer;
+import mezz.jei.common.network.packets.PacketRecipeTransferCounted;
 import mezz.jei.common.transfer.RecipeTransferOperationsResult;
 import mezz.jei.common.transfer.RecipeTransferUtil;
+import mezz.jei.common.transfer.TransferOperation;
 import mezz.jei.common.util.StringUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -101,7 +103,9 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		}
 
 		// check if we have enough inventory space to shuffle items around to their final locations
-		int inputCount = inputItemSlotViews.size();
+		int inputCount = (int) inputItemSlotViews.stream()
+			.filter(slot -> !slot.isEmpty())
+			.count();
 		if (!inventoryState.hasRoom(inputCount)) {
 			Component message = Component.translatable("jei.tooltip.error.recipe.transfer.inventory.full");
 			return handlerHelper.createUserErrorWithTooltip(message);
@@ -123,19 +127,43 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 			return handlerHelper.createInternalError();
 		}
 
+		boolean requiresCountedTransferPacket = requiresCountedTransferPacket(transferOperations.results);
+		boolean useCountedTransferPacket = requiresCountedTransferPacket && serverConnection.canSendPacket(PacketRecipeTransferCounted.TYPE);
+
 		if (doTransfer) {
 			boolean requireCompleteSets = transferInfo.requireCompleteSets(container, recipe);
-			PacketRecipeTransfer packet = PacketRecipeTransfer.fromSlots(
-				transferOperations.results,
-				craftingSlots,
-				inventorySlots,
-				maxTransfer,
-				requireCompleteSets
-			);
-			serverConnection.sendPacketToServer(packet);
+			if (useCountedTransferPacket) {
+				PacketRecipeTransferCounted packet = PacketRecipeTransferCounted.fromSlots(
+					transferOperations.results,
+					craftingSlots,
+					inventorySlots,
+					maxTransfer,
+					requireCompleteSets
+				);
+				serverConnection.sendPacketToServer(packet);
+			} else {
+				PacketRecipeTransfer packet = PacketRecipeTransfer.fromSlots(
+					transferOperations.results,
+					craftingSlots,
+					inventorySlots,
+					maxTransfer,
+					requireCompleteSets
+				);
+				serverConnection.sendPacketToServer(packet);
+			}
 		}
 
 		return null;
+	}
+
+	private static boolean requiresCountedTransferPacket(List<TransferOperation> transferOperations) {
+		Set<Integer> craftingSlotIds = new IntOpenHashSet();
+		for (TransferOperation transferOperation : transferOperations) {
+			if (transferOperation.count() > 1 || !craftingSlotIds.add(transferOperation.craftingSlotId())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static <C extends AbstractContainerMenu, R> boolean validateTransferInfo(

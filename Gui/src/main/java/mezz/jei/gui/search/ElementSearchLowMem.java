@@ -10,10 +10,8 @@ import mezz.jei.common.search.PrefixInfo;
 import mezz.jei.gui.ingredients.DisplayNameUtil;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
-import mezz.jei.gui.ingredients.ListGroupElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.UnknownNullability;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -27,9 +25,12 @@ public class ElementSearchLowMem implements IElementSearch {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final List<IListElementInfo> elementInfoList;
+	private final PrefixInfo<IListElementInfo, IListElement> noPrefix;
 
-	public ElementSearchLowMem() {
+	public ElementSearchLowMem(PrefixInfo<IListElementInfo, IListElement> noPrefix, Collection<IListElementInfo> infos) {
 		this.elementInfoList = new ArrayList<>();
+		this.elementInfoList.addAll(infos);
+		this.noPrefix = noPrefix;
 	}
 
 	@Override
@@ -65,11 +66,6 @@ public class ElementSearchLowMem implements IElementSearch {
 	}
 
 	@Override
-	public void addAll(@UnknownNullability Collection<? extends IListElementInfo> infos, IIngredientManager ingredientManager) {
-		this.elementInfoList.addAll(infos);
-	}
-
-	@Override
 	public List<IListElement> getAllIngredients() {
 		return Lists.transform(this.elementInfoList, IListElementInfo::getElement);
 	}
@@ -78,11 +74,11 @@ public class ElementSearchLowMem implements IElementSearch {
 	public @Nullable <T> IListElement findElement(ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
 		T ingredient = typedIngredient.getIngredient();
 		IIngredientType<T> type = typedIngredient.getType();
-		Function<ITypedIngredient<T>, Object> uidFunction = (i) -> ingredientHelper.getUid(i, UidContext.Ingredient);
+		Function<ITypedIngredient<T>, Object> uidFunction = i -> ingredientHelper.getUid(i, UidContext.Ingredient);
 		Object ingredientUid = uidFunction.apply(typedIngredient);
 		String lowercaseDisplayName = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
 
-		ElementPrefixParser.TokenInfo tokenInfo = new ElementPrefixParser.TokenInfo(lowercaseDisplayName, ElementPrefixParser.NO_PREFIX);
+		ElementPrefixParser.TokenInfo tokenInfo = new ElementPrefixParser.TokenInfo(lowercaseDisplayName, noPrefix);
 		PrefixInfo<IListElementInfo, IListElement> prefixInfo = tokenInfo.prefixInfo();
 
 		for (IListElementInfo elementInfo : this.elementInfoList) {

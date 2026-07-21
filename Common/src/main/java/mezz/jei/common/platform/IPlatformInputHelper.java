@@ -16,4 +16,8 @@ public interface IPlatformInputHelper {
 	default TooltipFlag getClientTooltipFlag(TooltipFlag tooltipFlag) {
 		return tooltipFlag;
 	}
+
+	default TooltipFlag getSearchTooltipFlag(TooltipFlag tooltipFlag) {
+		return tooltipFlag;
+	}
 }

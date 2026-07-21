@@ -20,19 +20,36 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "./gradlew :Core:build"
                 sh "./gradlew :Fabric:build"
                 sh "./gradlew :NeoForge:build"
                 sh "./gradlew :Common:build"
                 sh "./gradlew :CommonApi:build"
+                sh "./gradlew :Debug:build"
                 sh "./gradlew :FabricApi:build"
                 sh "./gradlew :NeoForgeApi:build"
             }
         }
 
+        stage('Server GameTests') {
+            steps {
+                sh "./gradlew :NeoForge:runGameTestServer"
+            }
+        }
+
+        stage('Client GameTests') {
+            steps {
+                sh '''
+                    if command -v xvfb-run >/dev/null 2>&1; then
+                        xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs :NeoForge:runClientRecipeSyncTest --no-daemon --no-parallel
+                    else
+                        echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
+                    fi
+                '''
+            }
+        }
+
         stage('Publish Maven') {
             steps {
-                sh "./gradlew :Core:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :Gui:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :Library:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :Fabric:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
@@ -58,10 +75,10 @@ pipeline {
             }
         }
 
-        stage('Archive') {
-            steps {
-                junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
-            }
+    }
+    post {
+        always {
+            junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
         }
     }
 }

@@ -119,8 +119,6 @@
   "jei.config.client.advanced.description": "Options de configuration avancées pour modifier le fonctionnement de JEI.",
   "jei.config.client.advanced.itemBlacklist": "Objets blacklistés",
   "jei.config.client.advanced.itemBlacklist.description": "Liste des objets qui ne doivent pas être affichés dans la liste. Format : modId[:name[:meta]]. Le mode Edition ajoute/retire automatiquement les objets de la liste.",
-  "jei.config.debug.debug.debugMode": "Mode de débogage",
-  "jei.config.debug.debug.debugMode.description": "Utile seulement pour les développeurs de JEI, ajoute des milliers d'objets et de recettes factices.",
   "jei.config.client.appearance.centerSearch": "Centrer la barre de recherche",
   "jei.config.client.appearance.centerSearch.description": "Déplace la barre de recherche de JEI en bas et au centre de l'écran.",
   "jei.config.modIdFormat.modName.modNameFormat": "Format du nom des mods",

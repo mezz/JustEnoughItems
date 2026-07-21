@@ -7,9 +7,13 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.api.search.ISearchStorageBuilder;
+import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IngredientGroupConfig;
+import mezz.jei.common.search.GeneralizedSuffixTreeSearchStorage;
+import mezz.jei.common.search.SearchStorageBuilderAdapter;
 import mezz.jei.gui.config.GroupExpandStateConfig;
 import mezz.jei.gui.filter.FilterTextSource;
 import mezz.jei.gui.filter.IFilterTextSource;
@@ -57,8 +61,8 @@ public class IngredientFilterTest {
 	private IIngredientVisibility ingredientVisibility;
 	@Nullable
 	private IngredientGroupConfig ingredientGroupConfig;
-    @Nullable
-    private GroupExpandStateConfig groupExpandStateConfig;
+	@Nullable
+	private GroupExpandStateConfig groupExpandStateConfig;
 	@Nullable
 	private List<IListElementInfo> baseList;
 	@Nullable
@@ -86,8 +90,8 @@ public class IngredientFilterTest {
 
 		this.baseList = IngredientListElementFactory.createBaseList(ingredientManager, modIdHelper);
 
-		this.ingredientGroupConfig = new IngredientGroupConfig(new CodecHelper(ingredientManager,new FocusFactory(ingredientManager)), ingredientManager, Paths.get(""));
-        this.groupExpandStateConfig = new GroupExpandStateConfig(Paths.get(""));
+		this.ingredientGroupConfig = new IngredientGroupConfig(new CodecHelper(ingredientManager, new FocusFactory(ingredientManager)), ingredientManager, Paths.get(""));
+		this.groupExpandStateConfig = new GroupExpandStateConfig(Paths.get(""));
 		this.editModeConfig = new EditModeConfig(new NullSerializer(), ingredientManager);
 
 		IClientToggleState toggleState = new TestClientToggleState();
@@ -103,10 +107,16 @@ public class IngredientFilterTest {
 			Comparator.comparingInt(Object::hashCode),
 			baseList,
 			ingredientGroupConfig,
-            groupExpandStateConfig,
+			groupExpandStateConfig,
 			modIdHelper,
 			ingredientVisibility,
 			colorHelper,
+			new ISearchStorageBuilderFactory() {
+				@Override
+				public <T> ISearchStorageBuilder<T> create() {
+					return new SearchStorageBuilderAdapter<>(new GeneralizedSuffixTreeSearchStorage<>());
+				}
+			},
 			toggleState
 		);
 

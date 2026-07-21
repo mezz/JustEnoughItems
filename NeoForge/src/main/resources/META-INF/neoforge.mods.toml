@@ -21,7 +21,6 @@ license="The MIT License (MIT)"
 # A text field displayed in the mod UI
 #credits="Thanks for this example mod goes to Java" #optional
 
-# A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 
 # The modid of the mod
@@ -35,6 +34,9 @@ displayName="${modName}" #mandatory
 
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL="${curseHomepageUrl}" #optional
+
+# Lets the client join servers that do not have JEI installed.
+displayTest="IGNORE_SERVER_VERSION" #optional
 
 # A URL to query for updates for this mod. See the JSON update specification <here>
 #updateJSONURL="" #optional

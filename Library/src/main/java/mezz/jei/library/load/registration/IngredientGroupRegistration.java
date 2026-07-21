@@ -1,14 +1,15 @@
 package mezz.jei.library.load.registration;
 
 import com.google.common.collect.ImmutableListMultimap;
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IIngredientGroupRegistration;
+import mezz.jei.common.collect.ListMultiMap;
 import mezz.jei.common.ingredients.group.DynamicSelector;
 import mezz.jei.common.ingredients.group.IIngredientGroupSelector;
 import mezz.jei.common.ingredients.group.IngredientsSelector;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.collect.ListMultiMap;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -19,6 +20,16 @@ import java.util.function.Predicate;
 public class IngredientGroupRegistration implements IIngredientGroupRegistration {
 
 	private final ListMultiMap<Identifier, IIngredientGroupSelector> ingredientGroups = new ListMultiMap<>();
+	private final IJeiHelpers jeiHelpers;
+
+	public IngredientGroupRegistration(IJeiHelpers jeiHelpers) {
+		this.jeiHelpers = jeiHelpers;
+	}
+
+	@Override
+	public IJeiHelpers getJeiHelpers() {
+		return jeiHelpers;
+	}
 
 	@Override
 	public <T> void addGroup(Identifier id, SequencedCollection<? extends ITypedIngredient<? extends T>> ingredients) {

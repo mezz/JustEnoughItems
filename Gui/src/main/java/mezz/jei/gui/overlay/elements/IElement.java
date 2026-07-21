@@ -7,7 +7,7 @@ import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.input.UserInput;
-import mezz.jei.gui.overlay.IngredientGridTooltipHelper;
+import mezz.jei.gui.overlay.ingredients.IngredientGridTooltipHelper;
 import mezz.jei.gui.util.FocusUtil;
 import org.jspecify.annotations.Nullable;
 
@@ -30,6 +30,8 @@ public interface IElement {
 	void getTooltip(JeiTooltip tooltip, IngredientGridTooltipHelper tooltipHelper);
 
 	boolean isVisible();
+
+	void tick();
 
 	default boolean handleClick(UserInput input, IInternalKeyMappings keyBindings) {
 		return false;

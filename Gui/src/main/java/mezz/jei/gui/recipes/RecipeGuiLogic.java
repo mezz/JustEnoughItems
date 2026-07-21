@@ -17,6 +17,7 @@ import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IngredientBookmark;
+import mezz.jei.gui.bookmarks.BookmarkFactory;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
 import mezz.jei.gui.recipes.layouts.IRecipeLayoutList;
@@ -45,6 +46,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final Stack<ILookupState> stateHistory = new Stack<>();
 	private final LookupHistory lookupHistory;
 	private final IFocusFactory focusFactory;
+	private final BookmarkFactory bookmarkFactory;
 	private @Nullable IRecipeCategory<?> cachedRecipeCategory;
 	private @Nullable IRecipeLayoutList cachedRecipeLayoutsWithButtons;
 	private int cachedContainerId = -1;
@@ -56,7 +58,8 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		LookupHistory lookupHistory,
 		IRecipeTransferManager recipeTransferManager,
 		IRecipeLogicStateListener stateListener,
-		IFocusFactory focusFactory
+		IFocusFactory focusFactory,
+		BookmarkFactory bookmarkFactory
 	) {
 		this.recipeManager = recipeManager;
 		this.ingredientManager = ingredientManager;
@@ -73,6 +76,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			recipeTransferManager
 		);
 		this.focusFactory = focusFactory;
+		this.bookmarkFactory = bookmarkFactory;
 	}
 
 	@Override
@@ -97,7 +101,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		);
 
 		for (IFocus<?> focus : allFocuses) {
-			IngredientBookmark<?> ingredientBookmark = IngredientBookmark.create(focus.getTypedValue(), ingredientManager);
+			IngredientBookmark<?> ingredientBookmark = bookmarkFactory.create(focus.getTypedValue());
 			this.lookupHistory.add(ingredientBookmark);
 		}
 
@@ -111,7 +115,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			this.lookupHistory.add(recipeBookmark);
 		} else {
 			for (IFocus<?> focus : focuses.getAllFocuses()) {
-				IngredientBookmark<?> ingredientBookmark = IngredientBookmark.create(focus.getTypedValue(), ingredientManager);
+				IngredientBookmark<?> ingredientBookmark = bookmarkFactory.create(focus.getTypedValue());
 				this.lookupHistory.add(ingredientBookmark);
 			}
 		}

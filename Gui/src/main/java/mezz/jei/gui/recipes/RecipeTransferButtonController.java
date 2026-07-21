@@ -20,6 +20,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jspecify.annotations.Nullable;
+import org.joml.Matrix3x2fStack;
 
 public class RecipeTransferButtonController implements IIconButtonController {
 	private final IRecipeLayoutDrawable<?> recipeLayout;
@@ -50,13 +51,17 @@ public class RecipeTransferButtonController implements IIconButtonController {
 			this.recipeTransferError = RecipeTransferErrorInternal.INSTANCE;
 		}
 
+		updateStateForTransferError(state, recipeTransferError);
+	}
+
+	static void updateStateForTransferError(IButtonState state, @Nullable IRecipeTransferError recipeTransferError) {
 		if (recipeTransferError == null ||
 			recipeTransferError.getType().allowsTransfer) {
 			state.setActive(true);
 			state.setVisible(true);
 		} else {
 			state.setActive(false);
-			IRecipeTransferError.Type type = this.recipeTransferError.getType();
+			IRecipeTransferError.Type type = recipeTransferError.getType();
 			state.setVisible(type == IRecipeTransferError.Type.USER_FACING);
 		}
 	}
@@ -78,6 +83,10 @@ public class RecipeTransferButtonController implements IIconButtonController {
 
 	@Override
 	public void getTooltips(ITooltipBuilder tooltip) {
+		getTooltips(this.recipeTransferError, tooltip);
+	}
+
+	static void getTooltips(@Nullable IRecipeTransferError recipeTransferError, ITooltipBuilder tooltip) {
 		if (recipeTransferError == null) {
 			Component tooltipTransfer = Component.translatable("jei.tooltip.transfer");
 			tooltip.add(tooltipTransfer);
@@ -102,12 +111,26 @@ public class RecipeTransferButtonController implements IIconButtonController {
 			if (buttonArea.contains(mouseX, mouseY)) {
 				IRecipeSlotsView recipeSlotsView = recipeLayout.getRecipeSlotsView();
 				Rect2i recipeRect = recipeLayout.getRect();
-				recipeTransferError.showError(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY());
+				var poseStack = guiGraphics.pose();
+				runWithRestoredPose(poseStack, () -> recipeTransferError.showError(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY()));
 			}
 		}
 	}
 
+	static void runWithRestoredPose(Matrix3x2fStack poseStack, Runnable action) {
+		poseStack.pushMatrix();
+		try {
+			action.run();
+		} finally {
+			poseStack.popMatrix();
+		}
+	}
+
 	public int getMissingCountHint() {
+		return getMissingCountHint(this.recipeTransferError);
+	}
+
+	static int getMissingCountHint(@Nullable IRecipeTransferError recipeTransferError) {
 		if (recipeTransferError == null) {
 			return 0;
 		}
