@@ -21,8 +21,7 @@ public class FabricKeyMapping extends KeyMapping {
 		super(description, type, keyCode, category);
 		this.realKey = KeyBindingHelper.getBoundKeyOf(this);
 		this.context = context;
-		// Overwrite the parent's key variable so it doesn't block other keybinds.
-		super.setKey(InputConstants.UNKNOWN);
+		hideFromMinecraftClickDispatch();
 	}
 
 	// Override all methods that would otherwise interact with super.key so displaying
@@ -32,13 +31,14 @@ public class FabricKeyMapping extends KeyMapping {
 	@Override
 	public void setKey(InputConstants.Key key) {
 		this.realKey = key;
+		hideFromMinecraftClickDispatch();
 	}
 
 	@Override
 	public boolean same(KeyMapping binding) {
 		// Special implementation which is aware of the key conflict context.
 		if (binding instanceof FabricKeyMapping other) {
-			return realKey.equals(KeyBindingHelper.getBoundKeyOf(other)) &&
+			return realKey.equals(other.realKey) &&
 				(context.conflicts(other.context) || other.context.conflicts(context));
 		} else {
 			// This ensures symmetry between conflicts, as regular keybinds see this one as
@@ -82,5 +82,12 @@ public class FabricKeyMapping extends KeyMapping {
 	@Override
 	public String saveString() {
 		return this.realKey.getName();
+	}
+
+	private void hideFromMinecraftClickDispatch() {
+		// Overwrite the parent's key variable and rebuild the static key map so hidden JEI mappings
+		// do not steal clicks from vanilla mappings like attack/use.
+		super.setKey(InputConstants.UNKNOWN);
+		KeyMapping.resetMapping();
 	}
 }
