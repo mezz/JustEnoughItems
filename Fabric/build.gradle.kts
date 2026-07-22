@@ -47,6 +47,18 @@ dependencyProjects.forEach {
 }
 project.evaluationDependsOn(":Changelog")
 
+val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
+    compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
+    runtimeClasspath += output + sourceSets.main.get().runtimeClasspath
+}
+configurations.named(clientGameTestSourceSet.runtimeOnlyConfigurationName) {
+    extendsFrom(configurations.runtimeOnly.get())
+}
+val clientTestModId = "${modId}-client-tests"
+
+fun clientTestGameDirectory(runName: String) =
+    layout.projectDirectory.dir("run/$runName")
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
@@ -90,6 +102,11 @@ dependencies {
 }
 
 loom {
+    mods {
+        create(clientTestModId) {
+            sourceSet(clientGameTestSourceSet)
+        }
+    }
     runs {
         val dependencyJarPaths = dependencyProjects.map {
             it.dependencyProject.tasks.jar.get().archiveFile.get().asFile
@@ -122,6 +139,18 @@ loom {
             runDir(loomRunDir.resolve("server").toString())
             vmArgs("-Dfabric.classPathGroups=${classPathGroupsString}")
         }
+        create("clientKeyMappingTest") {
+            inherit(named("client").get())
+            source(clientGameTestSourceSet)
+            configName = "Fabric Client Key Mapping Test"
+            ideConfigGenerated(false)
+            runDir(loomRunDir.resolve("clientKeyMappingTest").toString())
+            property("jei.fabric.clientTest", "keyMapping")
+            vmArgs("-Dfabric.log.level=info")
+            vmArgs("-Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient")
+            vmArgs("-Dfabric.classPathGroups=${classPathGroupsString}")
+            programArgs("--username", "JeiClientTest")
+        }
     }
 
     accessWidenerPath.set(file("src/main/resources/jei.accesswidener"))
@@ -135,6 +164,29 @@ sourceSets {
             }
         }
     }
+}
+
+tasks.register<Copy>("writeClientKeyMappingTestOptions") {
+    from(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
+    into(clientTestGameDirectory("clientKeyMappingTest"))
+}
+
+tasks.named<JavaExec>("runClientKeyMappingTest") {
+    dependsOn("writeClientKeyMappingTestOptions")
+    if (System.getProperty("os.name").contains("Mac")) {
+        jvmArgs("-XstartOnFirstThread")
+    }
+    jvmArgs("-Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient")
+    jvmArgs("-Dfabric.dli.env=client")
+    jvmArgs("-Dfabric.dli.config=${project.projectDir.resolve(".gradle/loom-cache/launch.cfg").absolutePath}")
+    jvmArgs("-Dfabric.log.level=info")
+    jvmArgs("-Djei.fabric.clientTest=keyMapping")
+}
+
+tasks.register("runClientGameTest") {
+    group = "mod development"
+    description = "Runs JEI Fabric client tests."
+    dependsOn("runClientKeyMappingTest")
 }
 
 tasks.jar {
