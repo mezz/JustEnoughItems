@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "mezz.jei.fabric.test.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "InputConstantsMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

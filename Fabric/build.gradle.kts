@@ -40,6 +40,18 @@ dependencyProjects.forEach {
 }
 project.evaluationDependsOn(":Changelog")
 
+val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
+    compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
+    runtimeClasspath += output + sourceSets.main.get().runtimeClasspath
+}
+configurations.named(clientGameTestSourceSet.runtimeOnlyConfigurationName) {
+    extendsFrom(configurations.runtimeOnly.get())
+}
+val clientTestModId = "${modId}-client-tests"
+
+fun clientTestGameDirectory(runName: String) =
+    layout.projectDirectory.dir("run/$runName")
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
@@ -88,6 +100,11 @@ dependencies {
 }
 
 loom {
+    mods {
+        create(clientTestModId) {
+            sourceSet(clientGameTestSourceSet)
+        }
+    }
     runs {
         val dependencyJarPaths = dependencyProjects.map {
             it.dependencyProject.tasks.jar.get().archiveFile.get().asFile
@@ -120,6 +137,17 @@ loom {
             runDir(loomRunDir.resolve("server").toString())
             vmArgs("-Dfabric.classPathGroups=${classPathGroupsString}")
         }
+        create("clientKeyMappingTest") {
+            client()
+            source(clientGameTestSourceSet)
+            configName = "Fabric Client Key Mapping Test"
+            ideConfigGenerated(false)
+            runDir("run/clientKeyMappingTest")
+            property("jei.fabric.clientTest", "keyMapping")
+            vmArgs("-Dfabric.log.level=info")
+            vmArgs("-Dfabric.classPathGroups=${classPathGroupsString}")
+            programArgs("--username", "JeiClientTest")
+        }
     }
 
     accessWidenerPath.set(file("src/main/resources/jei.accesswidener"))
@@ -133,6 +161,21 @@ sourceSets {
             }
         }
     }
+}
+
+tasks.register<Copy>("writeClientKeyMappingTestOptions") {
+    from(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
+    into(clientTestGameDirectory("clientKeyMappingTest"))
+}
+
+tasks.named("runClientKeyMappingTest") {
+    dependsOn("writeClientKeyMappingTestOptions")
+}
+
+tasks.register("runClientGameTest") {
+    group = "mod development"
+    description = "Runs JEI Fabric client tests."
+    dependsOn("runClientKeyMappingTest")
 }
 
 tasks.jar {

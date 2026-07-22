@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "jei-client-tests",
+  "version": "1.0.0",
+  "name": "JEI Fabric Client Tests",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "mezz.jei.fabric.test.JeiFabricClientTests"
+    ]
+  },
+  "mixins": [
+    "jei-client-tests.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "*",
+    "fabric-api": "*",
+    "jei": "*"
+  }
+}
