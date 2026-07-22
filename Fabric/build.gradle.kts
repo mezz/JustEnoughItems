@@ -66,6 +66,21 @@ dependencyProjects.forEach {
 }
 project.evaluationDependsOn(":Changelog")
 
+val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
+    compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
+    runtimeClasspath += output + sourceSets.main.get().runtimeClasspath
+}
+configurations.named(clientGameTestSourceSet.runtimeOnlyConfigurationName) {
+    extendsFrom(configurations.runtimeOnly.get())
+}
+val clientTestModId = "${modId}-client-tests"
+
+fun clientTestGameDirectory(runName: String) =
+    layout.projectDirectory.dir("run/$runName")
+
+fun capitalizedRunName(runName: String): String =
+    runName.replaceFirstChar { it.uppercase() }
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
@@ -119,6 +134,17 @@ dependencies {
 }
 
 loom {
+    mods {
+        create("jei") {
+            sourceSet(sourceSets.main.get())
+            for (dependencyProject in dependencyProjects) {
+                sourceSet(dependencyProject.dependencyProject.sourceSets.main.get())
+            }
+        }
+        create(clientTestModId) {
+            sourceSet(clientGameTestSourceSet)
+        }
+    }
     runs {
         val dependencyJarPaths = dependencyProjects.map {
             it.dependencyProject.tasks.jar.get().archiveFile.get().asFile
@@ -151,6 +177,22 @@ loom {
             runDir(loomRunDir.resolve("server").toString())
             vmArgs("-Dfabric.classPathGroups=${classPathGroupsString}")
         }
+        create("clientKeyMappingTest") {
+            client()
+            source(clientGameTestSourceSet)
+            configName = "Fabric Client Key Mapping Test"
+            ideConfigGenerated(false)
+            runDir(loomRunDir.resolve("clientKeyMappingTest").toString())
+            property("jei.fabric.clientTest", "keyMapping")
+            vmArgs("-Dfabric.log.level=info")
+            programArgs("--username", "JeiClientTest")
+        }
+        create("clientKeyMappingTestWithoutAmecs") {
+            inherit(named("clientKeyMappingTest").get())
+            configName = "Fabric Client Key Mapping Test Without AMECS"
+            runDir(loomRunDir.resolve("clientKeyMappingTestWithoutAmecs").toString())
+            property("jei.fabric.disableAmecsSupport", "true")
+        }
     }
 
     accessWidenerPath.set(file("src/main/resources/jei.accesswidener"))
@@ -164,6 +206,37 @@ sourceSets {
             }
         }
     }
+}
+
+val writeClientTestOptionsTasks = listOf(
+    "clientKeyMappingTest",
+    "clientKeyMappingTestWithoutAmecs"
+).associateWith { runName ->
+    tasks.register<Copy>("write${capitalizedRunName(runName)}Options") {
+        from(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
+        into(clientTestGameDirectory(runName))
+    }
+}
+
+tasks.named("runClientKeyMappingTest") {
+    dependsOn(writeClientTestOptionsTasks.getValue("clientKeyMappingTest"))
+}
+
+tasks.named("runClientKeyMappingTestWithoutAmecs") {
+    dependsOn(writeClientTestOptionsTasks.getValue("clientKeyMappingTestWithoutAmecs"))
+    mustRunAfter("runClientKeyMappingTest")
+}
+
+tasks.register("runClientGameTest") {
+    group = "mod development"
+    description = "Runs JEI Fabric client tests with AMECS support enabled."
+    dependsOn("runClientKeyMappingTest")
+}
+
+tasks.register("runClientGameTestWithoutAmecs") {
+    group = "mod development"
+    description = "Runs JEI Fabric client tests with AMECS support disabled."
+    dependsOn("runClientKeyMappingTestWithoutAmecs")
 }
 
 tasks.jar {
