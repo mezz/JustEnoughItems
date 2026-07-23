@@ -26,6 +26,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -43,6 +45,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	private final IClientConfig clientConfig;
 	private final HistoryDisplaySide ownerDisplaySide;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
+	private Set<ImmutableRect2i> guiExclusionAreas = Set.of();
 	private int rows;
 
 	public LookupHistoryOverlay(
@@ -93,6 +96,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 
 	@Override
 	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
+		this.guiExclusionAreas = guiExclusionAreas;
 		this.contents.updateBounds(availableArea, guiExclusionAreas, mouseExclusionPoint);
 		int rows = this.contents.getArea().getHeight() / SLOT_HEIGHT;
 		this.rows = Math.min(rows, clientConfig.getMaxLookupHistoryRows());
@@ -104,39 +108,87 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		this.contents.set(0, ingredientList);
 	}
 
-	private void drawLine(GuiGraphics guiGraphics, int x1, int x2, int y, int argbColor) {
+	private void drawLine(GuiGraphics guiGraphics, ImmutableRect2i lineArea, int argbColor) {
+		for (LineSegment segment : calculateLineSegments(lineArea, this.guiExclusionAreas)) {
+			drawLineSegment(guiGraphics, segment.x1(), segment.x2(), lineArea.y(), lineArea.height(), argbColor);
+		}
+	}
+
+	private static void drawLineSegment(GuiGraphics guiGraphics, int x1, int x2, int y, int height, int argbColor) {
 		final int availableWidth = x2 - x1;
 		if (availableWidth <= 0) {
 			return;
 		}
 		final int dashWidth = 8;
-		final int dashHeight = 1;
 		final int spacing = 6;
+		if (availableWidth < 2 * dashWidth + spacing) {
+			guiGraphics.fill(Math.min(x1 + dashWidth, x2), y, x1, y + height, argbColor);
+			return;
+		}
 
 		// space out the dashes so that we always start and end with whole dashes
 		final int interval = dashWidth + spacing;
-		final int dashCount = availableWidth / interval;
-		final float floatInterval = (availableWidth - dashWidth) / (float) dashCount;
+		final int dashCount = availableWidth / interval + 1;
+		final float floatInterval = (availableWidth - dashWidth) / (float) (dashCount - 1);
 
-		for (float x = x1; x < x2; x += floatInterval) {
+		for (int i = 0; i < dashCount; i++) {
+			float x = x1 + i * floatInterval;
 			guiGraphics.fill(
 				(int) Mth.clamp(x + dashWidth, x1, x2),
 				y,
 				(int) Mth.clamp(x, x1, x2),
-				y + dashHeight,
+				y + height,
 				argbColor)
 			;
 		}
 	}
 
 	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	static List<LineSegment> calculateLineSegments(ImmutableRect2i lineArea, Set<ImmutableRect2i> guiExclusionAreas) {
+		if (lineArea.isEmpty()) {
+			return List.of();
+		}
+		if (guiExclusionAreas.isEmpty()) {
+			return List.of(new LineSegment(lineArea.x(), lineArea.x() + lineArea.width()));
+		}
+
+		List<LineSegment> blockedSegments = guiExclusionAreas.stream()
+			.filter(lineArea::intersects)
+			.map(exclusionArea -> new LineSegment(
+				Math.max(lineArea.x(), exclusionArea.x()),
+				Math.min(lineArea.x() + lineArea.width(), exclusionArea.x() + exclusionArea.width())
+			))
+			.filter(segment -> segment.x1() < segment.x2())
+			.sorted(Comparator.comparingInt(LineSegment::x1))
+			.toList();
+
+		if (blockedSegments.isEmpty()) {
+			return List.of(new LineSegment(lineArea.x(), lineArea.x() + lineArea.width()));
+		}
+
+		List<LineSegment> lineSegments = new ArrayList<>();
+		int currentX = lineArea.x();
+		int lineRight = lineArea.x() + lineArea.width();
+		for (LineSegment blockedSegment : blockedSegments) {
+			if (blockedSegment.x1() > currentX) {
+				lineSegments.add(new LineSegment(currentX, blockedSegment.x1()));
+			}
+			currentX = Math.max(currentX, blockedSegment.x2());
+		}
+		if (currentX < lineRight) {
+			lineSegments.add(new LineSegment(currentX, lineRight));
+		}
+		return List.copyOf(lineSegments);
+	}
+
+	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY);
 			ImmutableRect2i area = this.contents.getArea();
-			int endX = area.getX() + area.getWidth();
 			int startY = area.getY() + area.getHeight() - rows * SLOT_HEIGHT - 3;
 			int color = 0xFF959595;
-			drawLine(guiGraphics, area.getX(), endX, startY, color);
+			ImmutableRect2i lineArea = new ImmutableRect2i(area.getX(), startY, area.getWidth(), 1);
+			drawLine(guiGraphics, lineArea, color);
 		}
 	}
 
@@ -159,6 +211,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 
 	@Override
 	public void close() {
+		this.guiExclusionAreas = Set.of();
 		this.ghostIngredientDragManager.stopDrag();
 	}
 
@@ -186,5 +239,9 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 
 	public IDragHandler createDragHandler() {
 		return this.ghostIngredientDragManager.createDragHandler();
+	}
+
+	record LineSegment(int x1, int x2) {
+
 	}
 }

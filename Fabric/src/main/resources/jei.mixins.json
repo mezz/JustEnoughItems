@@ -7,7 +7,6 @@
     "AmecsKeyModifiersEarlyInitMixin"
   ],
   "client": [
-    "AbstractContainerScreenMixin",
     "ClientPacketListenerRecipeUpdateMixin",
     "EffectsInInventoryMixin",
     "GuiGraphicsMixin",

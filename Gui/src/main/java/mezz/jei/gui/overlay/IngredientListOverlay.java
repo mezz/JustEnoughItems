@@ -101,9 +101,21 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	public void drawScreen(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		drawBackground(guiGraphics);
+		drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+	}
+
+	public void drawBackground(GuiGraphics guiGraphics) {
 		if (isListDisplayed()) {
-			this.searchField.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
-			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+			this.searchField.drawBackground(guiGraphics);
+			this.contents.drawBackground(guiGraphics);
+		}
+	}
+
+	public void drawForeground(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		if (isListDisplayed()) {
+			this.searchField.drawForeground(guiGraphics, mouseX, mouseY, partialTicks);
+			this.contents.drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (this.controller.hasValidScreen()) {
 			this.configButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
