@@ -1,5 +1,6 @@
 package mezz.jei.gui.ingredients;
 
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IIngredientFilterConfig;
@@ -17,9 +18,7 @@ public interface IListElementInfo<V> {
 
 	String getModNameForSorting();
 
-	List<String> getModNames();
-
-	List<String> getModIds();
+	Collection<String> getModNames(IIngredientFilterConfig config);
 
 	@Unmodifiable
 	Set<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager);
@@ -29,6 +28,9 @@ public interface IListElementInfo<V> {
 	Stream<Identifier> getTagIds(IIngredientManager ingredientManager);
 
 	Iterable<Integer> getColors(IIngredientManager ingredientManager);
+
+	@Unmodifiable
+	Collection<String> getColorNames(IIngredientManager ingredientManager, IColorHelper colorHelper);
 
 	@Unmodifiable
 	Collection<String> getCreativeTabsStrings(IIngredientManager ingredientManager);

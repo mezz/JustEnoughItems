@@ -17,6 +17,7 @@ val minecraftVersion: String by extra
 val neoformVersionAndTimestamp: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val bakedSubstringIndexVersion: String by extra
 val suffixtreeVersion: String by extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
@@ -60,6 +61,9 @@ dependencies {
     implementation("com.google.guava:guava:33.5.0-jre")
     implementation("it.unimi.dsi:fastutil:8.5.18")
     implementation("org.apache.logging.log4j:log4j-api:2.25.2")
+    implementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
+        isTransitive = false
+    }
     implementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
     }
