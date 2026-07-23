@@ -15,25 +15,25 @@ public class IngredientListSlot {
 	private final int padding;
 	private boolean blocked = false;
 	@Nullable
-	private IElement<?> element;
+	private IElement element;
 
 	public IngredientListSlot(int xPosition, int yPosition, int width, int height, int padding) {
 		this.area = new ImmutableRect2i(xPosition, yPosition, width, height);
 		this.padding = padding;
 	}
 
-	public Optional<IElement<?>> getOptionalElement() {
+	public Optional<IElement> getOptionalElement() {
 		return Optional.ofNullable(element);
 	}
 
-	public Optional<IClickableIngredientInternal<?>> getClickableIngredient() {
+	public Optional<IClickableIngredientInternal> getClickableIngredient() {
 		return Optional.ofNullable(element)
-			.map(element -> new ClickableIngredientInternal<>(element, this::isMouseOver, true, true));
+			.map(element -> new ClickableIngredientInternal(element, this::isMouseOver, true, true));
 	}
 
-	public Optional<IDraggableIngredientInternal<?>> getDraggableIngredient() {
+	public Optional<IDraggableIngredientInternal> getDraggableIngredient() {
 		return Optional.ofNullable(element)
-			.map(element -> new DraggableIngredientInternal<>(element, area));
+			.map(element -> new DraggableIngredientInternal(element, area));
 	}
 
 	public void clear() {
@@ -44,7 +44,7 @@ public class IngredientListSlot {
 		return (this.element != null) && area.contains(mouseX, mouseY);
 	}
 
-	public void setElement(IElement<?> element) {
+	public void setElement(IElement element) {
 		this.element = element;
 	}
 

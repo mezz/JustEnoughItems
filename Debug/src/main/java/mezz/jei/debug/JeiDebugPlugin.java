@@ -21,6 +21,7 @@ import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
+import mezz.jei.api.registration.IIngredientGroupRegistration;
 import mezz.jei.api.registration.IModInfoRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
@@ -48,6 +49,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
@@ -138,6 +140,30 @@ public class JeiDebugPlugin implements IModPlugin {
 		);
 
 		registration.addAliases(Fluids.WATER, List.of("wet", "aqua", "sea", "ocean"));
+	}
+
+	@Override
+	public void registerIngredientGroups(IIngredientGroupRegistration registration) {
+		IPlatformFluidHelper<?> fluidHelper = registration.getJeiHelpers().getPlatformFluidHelper();
+		registerFluidIngredientGroups(registration, fluidHelper);
+	}
+
+	private <T> void registerFluidIngredientGroups(IIngredientGroupRegistration registration, IPlatformFluidHelper<T> fluidHelper) {
+		registration.addGroupSelector(
+			Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "debug_fluid"),
+			fluidHelper.getFluidIngredientType(),
+			_ -> true
+		);
+		registration.addGroupSelector(
+			Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "debug_fluid_and_bucket"),
+			fluidHelper.getFluidIngredientType(),
+			_ -> true
+		);
+		registration.addGroupSelector(
+			Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "debug_fluid_and_bucket"),
+			VanillaTypes.ITEM_STACK,
+			itemStack -> itemStack.getItem() instanceof BucketItem
+		);
 	}
 
 	@Override

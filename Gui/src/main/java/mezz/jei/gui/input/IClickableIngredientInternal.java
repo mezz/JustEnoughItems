@@ -11,10 +11,10 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 
-public interface IClickableIngredientInternal<T> {
-	ITypedIngredient<T> getTypedIngredient();
+public interface IClickableIngredientInternal {
+	ITypedIngredient<?> getTypedIngredient();
 
-	IElement<T> getElement();
+	IElement getElement();
 
 	boolean isMouseOver(double mouseX, double mouseY);
 

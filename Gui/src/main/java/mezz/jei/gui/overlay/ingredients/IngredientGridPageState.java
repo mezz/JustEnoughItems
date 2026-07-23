@@ -18,7 +18,7 @@ final class IngredientGridPageState {
 	 * When this is missing or stale, the caller should fall back to the first visible element.
 	 */
 	@Nullable
-	private IElement<?> pageAnchorElement;
+	private IElement pageAnchorElement;
 
 	public int getFirstItemIndex() {
 		return firstItemIndex;
@@ -30,13 +30,13 @@ final class IngredientGridPageState {
 		return this.firstItemIndex;
 	}
 
-	public int updateKeepingPageAnchorVisible(@Nullable IElement<?> pageAnchorElement, List<IElement<?>> ingredientList, int itemsPerPage) {
+	public int updateKeepingPageAnchorVisible(@Nullable IElement pageAnchorElement, List<IElement> ingredientList, int itemsPerPage) {
 		int anchorIndex = findIndexOfIngredientElement(pageAnchorElement, ingredientList);
 		this.firstItemIndex = getFirstItemIndexForValidPage(anchorIndex, ingredientList.size(), itemsPerPage);
 		return this.firstItemIndex;
 	}
 
-	public @Nullable IElement<?> getPageAnchorElement(List<IElement<?>> ingredientList) {
+	public @Nullable IElement getPageAnchorElement(List<IElement> ingredientList) {
 		if (this.pageAnchorElement != null) {
 			if (findIndexOfIngredientElement(this.pageAnchorElement, ingredientList) >= 0) {
 				return this.pageAnchorElement;
@@ -46,11 +46,11 @@ final class IngredientGridPageState {
 		return null;
 	}
 
-	public void setPageAnchorElement(IElement<?> pageAnchorElement) {
+	public void setPageAnchorElement(IElement pageAnchorElement) {
 		this.pageAnchorElement = pageAnchorElement;
 	}
 
-	static int findIndexOfIngredientElement(@Nullable IElement<?> element, List<IElement<?>> ingredientList) {
+	static int findIndexOfIngredientElement(@Nullable IElement element, List<IElement> ingredientList) {
 		if (element == null) {
 			return -1;
 		}
@@ -76,7 +76,7 @@ final class IngredientGridPageState {
 	 * A full UID comparison would call ingredient helpers and subtype interpreters for every candidate here,
 	 * which is slower and unnecessary for keeping the user's visible page stable.
 	 */
-	static boolean isSameIngredientElement(IElement<?> first, IElement<?> second) {
+	static boolean isSameIngredientElement(IElement first, IElement second) {
 		if (first == second) {
 			return true;
 		}

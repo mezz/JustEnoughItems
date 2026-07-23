@@ -24,31 +24,31 @@ import java.util.stream.Collectors;
 public class ElementSearchLowMem implements IElementSearch {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final List<IListElementInfo<?>> elementInfoList;
-	private final PrefixInfo<IListElementInfo<?>, IListElement<?>> noPrefix;
+	private final List<IListElementInfo> elementInfoList;
+	private final PrefixInfo<IListElementInfo, IListElement> noPrefix;
 
-	public ElementSearchLowMem(PrefixInfo<IListElementInfo<?>, IListElement<?>> noPrefix, Collection<IListElementInfo<?>> infos) {
+	public ElementSearchLowMem(PrefixInfo<IListElementInfo, IListElement> noPrefix, Collection<IListElementInfo> infos) {
 		this.elementInfoList = new ArrayList<>();
 		this.elementInfoList.addAll(infos);
 		this.noPrefix = noPrefix;
 	}
 
 	@Override
-	public Set<IListElement<?>> getSearchResults(ElementPrefixParser.TokenInfo tokenInfo) {
+	public Set<IListElement> getSearchResults(ElementPrefixParser.TokenInfo tokenInfo) {
 		String token = tokenInfo.token();
 		if (token.isEmpty()) {
 			return Set.of();
 		}
 
-		PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo = tokenInfo.prefixInfo();
+		PrefixInfo<IListElementInfo, IListElement> prefixInfo = tokenInfo.prefixInfo();
 		return this.elementInfoList.stream()
 			.filter(elementInfo -> matches(token, prefixInfo, elementInfo))
 			.map(IListElementInfo::getElement)
 			.collect(Collectors.toSet());
 	}
 
-	private static boolean matches(String word, PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo, IListElementInfo<?> elementInfo) {
-		IListElement<?> element = elementInfo.getElement();
+	private static boolean matches(String word, PrefixInfo<IListElementInfo, IListElement> prefixInfo, IListElementInfo elementInfo) {
+		IListElement element = elementInfo.getElement();
 		if (element.isVisible()) {
 			Collection<String> strings = prefixInfo.getStrings(elementInfo);
 			for (String string : strings) {
@@ -61,30 +61,30 @@ public class ElementSearchLowMem implements IElementSearch {
 	}
 
 	@Override
-	public <T> void add(IListElementInfo<T> info, IIngredientManager ingredientManager) {
+	public void add(IListElementInfo info, IIngredientManager ingredientManager) {
 		this.elementInfoList.add(info);
 	}
 
 	@Override
-	public List<IListElement<?>> getAllIngredients() {
+	public List<IListElement> getAllIngredients() {
 		return Lists.transform(this.elementInfoList, IListElementInfo::getElement);
 	}
 
 	@Override
-	public @Nullable <T> IListElement<T> findElement(ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
+	public @Nullable <T> IListElement findElement(ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
 		T ingredient = typedIngredient.getIngredient();
 		IIngredientType<T> type = typedIngredient.getType();
-		Function<ITypedIngredient<T>, Object> uidFunction = (i) -> ingredientHelper.getUid(i, UidContext.Ingredient);
+		Function<ITypedIngredient<T>, Object> uidFunction = i -> ingredientHelper.getUid(i, UidContext.Ingredient);
 		Object ingredientUid = uidFunction.apply(typedIngredient);
 		String lowercaseDisplayName = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
 
 		ElementPrefixParser.TokenInfo tokenInfo = new ElementPrefixParser.TokenInfo(lowercaseDisplayName, noPrefix);
-		PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo = tokenInfo.prefixInfo();
+		PrefixInfo<IListElementInfo, IListElement> prefixInfo = tokenInfo.prefixInfo();
 
-		for (IListElementInfo<?> elementInfo : this.elementInfoList) {
+		for (IListElementInfo elementInfo : this.elementInfoList) {
 			if (matches(lowercaseDisplayName, prefixInfo, elementInfo)) {
-				IListElement<?> element = elementInfo.getElement();
-				IListElement<T> match = checkForMatch(element, type, ingredientUid, uidFunction);
+				IListElement element = elementInfo.getElement();
+				IListElement match = checkForMatch(element, type, ingredientUid, uidFunction);
 				if (match != null) {
 					return match;
 				}
@@ -95,26 +95,19 @@ public class ElementSearchLowMem implements IElementSearch {
 	}
 
 	@Nullable
-	private static <T> IListElement<T> checkForMatch(IListElement<?> element, IIngredientType<T> ingredientType, Object uid, Function<ITypedIngredient<T>, Object> uidFunction) {
-		IListElement<T> cast = optionalCast(element, ingredientType);
-		if (cast == null) {
+	@SuppressWarnings("unchecked")
+	private static <T> IListElement checkForMatch(IListElement element, IIngredientType<T> ingredientType, Object uid, Function<ITypedIngredient<T>, Object> uidFunction) {
+		if (element.isGroup()) {
 			return null;
 		}
-		ITypedIngredient<T> typedIngredient = cast.getTypedIngredient();
-		Object elementUid = uidFunction.apply(typedIngredient);
-		if (uid.equals(elementUid)) {
-			return cast;
-		}
-		return null;
-	}
-
-	@Nullable
-	private static <T> IListElement<T> optionalCast(IListElement<?> element, IIngredientType<T> ingredientType) {
 		ITypedIngredient<?> typedIngredient = element.getTypedIngredient();
-		if (typedIngredient.getType() == ingredientType) {
-			@SuppressWarnings("unchecked")
-			IListElement<T> cast = (IListElement<T>) element;
-			return cast;
+		if (typedIngredient.getType() != ingredientType) {
+			return null;
+		}
+		ITypedIngredient<T> cast = (ITypedIngredient<T>) typedIngredient;
+		Object elementUid = uidFunction.apply(cast);
+		if (uid.equals(elementUid)) {
+			return element;
 		}
 		return null;
 	}

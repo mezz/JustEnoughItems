@@ -2,6 +2,7 @@ package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.helpers.IColorHelper;
+import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -67,13 +68,14 @@ public class IngredientGrid implements IIngredientGrid {
 		IConnectionToServer serverConnection,
 		IInternalKeyMappings keyBindings,
 		IColorHelper colorHelper,
+		IModIdHelper modIdHelper,
 		boolean searchable
 	) {
 		this.ingredientManager = ingredientManager;
 		this.gridConfig = gridConfig;
 		this.searchable = searchable;
 		this.ingredientListRenderer = new IngredientListRenderer(ingredientManager, searchable);
-		this.tooltipHelper = new IngredientGridTooltipHelper(ingredientManager, ingredientFilterConfig, toggleState, keyBindings, colorHelper);
+		this.tooltipHelper = new IngredientGridTooltipHelper(ingredientManager, ingredientFilterConfig, toggleState, keyBindings, colorHelper, modIdHelper);
 		this.deleteItemHandler = new DeleteItemInputHandler(this, toggleState, clientConfig, serverConnection, ingredientManager);
 	}
 
@@ -202,14 +204,16 @@ public class IngredientGrid implements IIngredientGrid {
 		}
 	}
 
-	private <T> void drawTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, IElement<T> element) {
-		ITypedIngredient<T> typedIngredient = element.getTypedIngredient();
+	private void drawTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, IElement element) {
+		doDrawTooltip(guiGraphics, mouseX, mouseY, element, element.getTypedIngredient());
+	}
+
+	private <T> void doDrawTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, IElement element, ITypedIngredient<T> typedIngredient) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
 		JeiTooltip tooltip = new JeiTooltip();
-		element.getTooltip(tooltip, tooltipHelper, ingredientRenderer, ingredientHelper);
+		element.getTooltip(tooltip, tooltipHelper);
 		if (searchable) {
 			addCreativeTabs(tooltip, typedIngredient);
 		}
@@ -246,7 +250,7 @@ public class IngredientGrid implements IIngredientGrid {
 	}
 
 	@Override
-	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickableIngredientInternal> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return ingredientListRenderer.getSlots()
 			.filter(s -> s.isMouseOver(mouseX, mouseY))
 			.map(IngredientListSlot::getClickableIngredient)
@@ -254,7 +258,7 @@ public class IngredientGrid implements IIngredientGrid {
 	}
 
 	@Override
-	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IDraggableIngredientInternal> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		return ingredientListRenderer.getSlots()
 			.filter(s -> s.isMouseOver(mouseX, mouseY))
 			.map(IngredientListSlot::getDraggableIngredient)
@@ -266,7 +270,7 @@ public class IngredientGrid implements IIngredientGrid {
 	}
 
 	@Override
-	public Stream<IElement<?>> getVisibleElements() {
+	public Stream<IElement> getVisibleElements() {
 		return this.ingredientListRenderer.getSlots()
 			.map(IngredientListSlot::getOptionalElement)
 			.flatMap(Optional::stream);
@@ -286,12 +290,12 @@ public class IngredientGrid implements IIngredientGrid {
 	}
 
 	@Override
-	public void set(int firstItemIndex, List<IElement<?>> ingredientList) {
+	public void set(int firstItemIndex, List<IElement> ingredientList) {
 		set(firstItemIndex, 0, ingredientList);
 	}
 
 	@Override
-	public void set(int firstItemIndex, int smoothScrollRowPixelOffset, List<IElement<?>> ingredientList) {
+	public void set(int firstItemIndex, int smoothScrollRowPixelOffset, List<IElement> ingredientList) {
 		if (this.smoothScrollRowPixelOffset != smoothScrollRowPixelOffset) {
 			updateSlots(smoothScrollRowPixelOffset);
 		}

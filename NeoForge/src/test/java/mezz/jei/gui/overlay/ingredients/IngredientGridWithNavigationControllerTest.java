@@ -353,8 +353,8 @@ public class IngredientGridWithNavigationControllerTest {
 		fixture.controller.updateLayoutToFirstPage();
 		int hiddenRows = IngredientGridScrollState.getHiddenRows(1000, 10, 10);
 		fixture.controller.setScrollOffsetY(20 / (float) hiddenRows);
-		IElement<?> clickedElement = fixture.source.getElements().get(210);
-		IClickableIngredientInternal<?> clickableIngredient = fixture.controller.createPageAnchorIngredient(
+		IElement clickedElement = fixture.source.getElements().get(210);
+		IClickableIngredientInternal clickableIngredient = fixture.controller.createPageAnchorIngredient(
 			createClickableIngredient(clickedElement)
 		);
 		clickableIngredient.show(fixture.recipesGui, fixture.focusUtil, List.of());
@@ -531,18 +531,18 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		@Override
-		public void set(int firstItemIndex, List<IElement<?>> ingredientList) {
+		public void set(int firstItemIndex, List<IElement> ingredientList) {
 			set(firstItemIndex, 0, ingredientList);
 		}
 
 		@Override
-		public void set(int firstItemIndex, int scrollOffsetY, List<IElement<?>> ingredientList) {
+		public void set(int firstItemIndex, int scrollOffsetY, List<IElement> ingredientList) {
 			this.firstItemIndex = firstItemIndex;
 			this.scrollOffsetY = scrollOffsetY;
 		}
 
 		@Override
-		public Stream<IElement<?>> getVisibleElements() {
+		public Stream<IElement> getVisibleElements() {
 			return Stream.of();
 		}
 
@@ -551,18 +551,18 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		@Override
-		public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		public Stream<IClickableIngredientInternal> getIngredientUnderMouse(double mouseX, double mouseY) {
 			return Stream.of();
 		}
 
 		@Override
-		public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		public Stream<IDraggableIngredientInternal> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 			return Stream.of();
 		}
 	}
 
-	private static IClickableIngredientInternal<?> createClickableIngredient(IElement<?> element) {
-		return createClickableIngredientTyped(element);
+	private static IClickableIngredientInternal createClickableIngredient(IElement element) {
+		return new TestClickableIngredient(element);
 	}
 
 	private static class TestRecipesGui implements IRecipesGui {
@@ -589,18 +589,14 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 	}
 
-	private static <T> IClickableIngredientInternal<T> createClickableIngredientTyped(IElement<T> element) {
-		return new TestClickableIngredient<>(element);
-	}
-
-	private record TestClickableIngredient<T>(IElement<T> element) implements IClickableIngredientInternal<T> {
+	private record TestClickableIngredient(IElement element) implements IClickableIngredientInternal {
 		@Override
-		public ITypedIngredient<T> getTypedIngredient() {
+		public ITypedIngredient<?> getTypedIngredient() {
 			return element.getTypedIngredient();
 		}
 
 		@Override
-		public IElement<T> getElement() {
+		public IElement getElement() {
 			return element;
 		}
 
@@ -624,13 +620,13 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 	}
 
-	private record TestIngredientGridSource(List<IElement<?>> elements) implements IIngredientGridSource {
+	private record TestIngredientGridSource(List<IElement> elements) implements IIngredientGridSource {
 		private TestIngredientGridSource(int itemCount) {
 			this(createElements(itemCount));
 		}
 
 		@Override
-		public List<IElement<?>> getElements() {
+		public List<IElement> getElements() {
 			return elements;
 		}
 
@@ -639,8 +635,8 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 	}
 
-	private static List<IElement<?>> createElements(int itemCount) {
-		List<IElement<?>> elements = new ArrayList<>();
+	private static List<IElement> createElements(int itemCount) {
+		List<IElement> elements = new ArrayList<>();
 		for (int i = 0; i < itemCount; i++) {
 			elements.add(new IngredientElement<>(new TestTypedIngredient(new TestIngredient(i))));
 		}
@@ -661,12 +657,12 @@ public class IngredientGridWithNavigationControllerTest {
 
 	private static class EmptyRecipeFocusSource implements IRecipeFocusSource {
 		@Override
-		public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		public Stream<IClickableIngredientInternal> getIngredientUnderMouse(double mouseX, double mouseY) {
 			return Stream.of();
 		}
 
 		@Override
-		public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		public Stream<IDraggableIngredientInternal> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 			return Stream.of();
 		}
 	}

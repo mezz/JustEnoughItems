@@ -175,13 +175,13 @@ public class IngredientGridPageStateTest {
 		// list changed again. The old clicked ingredient is still in the source list, but it should no longer
 		// control future relayouts after explicit page navigation.
 		IngredientGridPageState pageState = new IngredientGridPageState();
-		IElement<?> clickedAnchor = new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, new Object()));
-		List<IElement<?>> elements = List.of(clickedAnchor);
+		IElement clickedAnchor = new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, new Object()));
+		List<IElement> elements = List.of(clickedAnchor);
 		pageState.setPageAnchorElement(clickedAnchor);
 
 		// Operation: explicit page navigation renders a page without using the clicked ingredient as an anchor.
 		pageState.updateForPageNavigation(1, elements.size(), 1);
-		IElement<?> pageAnchor = pageState.getPageAnchorElement(elements);
+		IElement pageAnchor = pageState.getPageAnchorElement(elements);
 
 		// Assertions: the next relayout will fall back to the first visible element on the navigated-to page,
 		// instead of exposing the stale clicked anchor from a previous recipe lookup.
@@ -193,15 +193,15 @@ public class IngredientGridPageStateTest {
 		// Setup: the user clicked an ingredient to open recipes, and the source list still contains that exact
 		// element when the overlay needs an anchor for the next relayout.
 		IngredientGridPageState pageState = new IngredientGridPageState();
-		IElement<?> clickedAnchor = new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, new Object()));
-		List<IElement<?>> elements = List.of(
+		IElement clickedAnchor = new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, new Object()));
+		List<IElement> elements = List.of(
 			new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, new Object())),
 			clickedAnchor
 		);
 		pageState.setPageAnchorElement(clickedAnchor);
 
 		// Operation: ask the page state for its explicit anchor.
-		IElement<?> pageAnchor = pageState.getPageAnchorElement(elements);
+		IElement pageAnchor = pageState.getPageAnchorElement(elements);
 
 		// Assertions: a valid remembered anchor is returned instead of forcing the caller to use a fallback.
 		assertSame(clickedAnchor, pageAnchor);
@@ -213,14 +213,14 @@ public class IngredientGridPageStateTest {
 		// matches an entry by ingredient identity.
 		IngredientGridPageState pageState = new IngredientGridPageState();
 		Object ingredient = new Object();
-		IElement<?> clickedAnchor = new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, ingredient));
-		List<IElement<?>> rebuiltElements = List.of(
+		IElement clickedAnchor = new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, ingredient));
+		List<IElement> rebuiltElements = List.of(
 			new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, ingredient))
 		);
 		pageState.setPageAnchorElement(clickedAnchor);
 
 		// Operation: ask the page state for its explicit anchor after the source list changed.
-		IElement<?> pageAnchor = pageState.getPageAnchorElement(rebuiltElements);
+		IElement pageAnchor = pageState.getPageAnchorElement(rebuiltElements);
 
 		// Assertions: the original remembered anchor is still usable because page-state lookup can locate an
 		// equivalent entry in the current list.
@@ -231,15 +231,15 @@ public class IngredientGridPageStateTest {
 	public void getPageAnchorElementClearsStaleAnchor() {
 		// Setup: the remembered clicked ingredient is no longer present after filtering or bookmark changes.
 		IngredientGridPageState pageState = new IngredientGridPageState();
-		IElement<?> staleAnchor = new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, new Object()));
-		List<IElement<?>> elements = List.of(
+		IElement staleAnchor = new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, new Object()));
+		List<IElement> elements = List.of(
 			new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, new Object()))
 		);
 		pageState.setPageAnchorElement(staleAnchor);
 
 		// Operation: ask for the anchor twice after it has gone stale.
-		IElement<?> firstLookup = pageState.getPageAnchorElement(elements);
-		IElement<?> secondLookup = pageState.getPageAnchorElement(elements);
+		IElement firstLookup = pageState.getPageAnchorElement(elements);
+		IElement secondLookup = pageState.getPageAnchorElement(elements);
 
 		// Assertions: the stale anchor is not returned, and it is cleared so the caller owns fallback behavior.
 		assertNull(firstLookup);
@@ -250,8 +250,8 @@ public class IngredientGridPageStateTest {
 	public void anchorMatchesTheSameElementInstance() {
 		// Setup: the visible first element or clicked ingredient is still the same element object after nearby
 		// entries were inserted or removed.
-		IElement<?> anchor = new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, new Object()));
-		List<IElement<?>> elements = List.of(
+		IElement anchor = new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, new Object()));
+		List<IElement> elements = List.of(
 			new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, new Object())),
 			anchor,
 			new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, new Object()))
@@ -269,8 +269,8 @@ public class IngredientGridPageStateTest {
 		// Setup: the list was rebuilt with new element wrappers, but one rebuilt entry still points to the
 		// same typed ingredient object that was remembered.
 		ITypedIngredient<Object> typedIngredient = new TestTypedIngredient<>(OBJECT_TYPE, new Object());
-		IElement<?> anchor = new IngredientElement<>(typedIngredient);
-		List<IElement<?>> elements = List.of(
+		IElement anchor = new IngredientElement<>(typedIngredient);
+		List<IElement> elements = List.of(
 			new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, new Object())),
 			new IngredientElement<>(typedIngredient)
 		);
@@ -287,8 +287,8 @@ public class IngredientGridPageStateTest {
 		// Setup: a source-list rebuild recreated both element and typed-ingredient wrappers, but reused the
 		// same underlying ingredient object.
 		Object ingredient = new Object();
-		IElement<?> anchor = new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, ingredient));
-		List<IElement<?>> elements = List.of(
+		IElement anchor = new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, ingredient));
+		List<IElement> elements = List.of(
 			new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, new Object())),
 			new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, ingredient))
 		);
@@ -305,8 +305,8 @@ public class IngredientGridPageStateTest {
 		// Setup: a candidate entry was derived from the same value but registered under another ingredient
 		// type, such as an item-like value versus a string/debug ingredient.
 		Object ingredient = new Object();
-		IElement<?> anchor = new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, ingredient));
-		List<IElement<?>> elements = List.of(
+		IElement anchor = new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, ingredient));
+		List<IElement> elements = List.of(
 			new IngredientElement<>(new TestTypedIngredient<>(STRING_TYPE, ingredient.toString()))
 		);
 
@@ -321,7 +321,7 @@ public class IngredientGridPageStateTest {
 	public void nullAnchorIsMissing() {
 		// Setup: the layout is updating before any visible element has been remembered or after the previous
 		// anchor was explicitly cleared.
-		List<IElement<?>> elements = List.of(
+		List<IElement> elements = List.of(
 			new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, new Object()))
 		);
 

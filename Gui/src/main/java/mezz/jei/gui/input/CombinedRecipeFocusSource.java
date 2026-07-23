@@ -13,11 +13,11 @@ public class CombinedRecipeFocusSource {
 		this.handlers = List.of(handlers);
 	}
 
-	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(UserInput input, IInternalKeyMappings keyBindings) {
+	public Stream<IClickableIngredientInternal> getIngredientUnderMouse(UserInput input, IInternalKeyMappings keyBindings) {
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
 
-		Stream<IClickableIngredientInternal<?>> stream = handlers.stream()
+		Stream<IClickableIngredientInternal> stream = handlers.stream()
 			.flatMap(handler -> handler.getIngredientUnderMouse(mouseX, mouseY));
 
 		if (isConflictingVanillaMouseButton(input, keyBindings)) {

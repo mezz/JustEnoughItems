@@ -2,8 +2,11 @@ package mezz.jei.gui.ingredients;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 
-public interface IListElement<V> {
-	ITypedIngredient<V> getTypedIngredient();
+public sealed interface IListElement permits ListElement, ListGroupElement {
+
+	boolean isGroup();
+
+	ITypedIngredient<?> getTypedIngredient();
 
 	int getSortedIndex();
 

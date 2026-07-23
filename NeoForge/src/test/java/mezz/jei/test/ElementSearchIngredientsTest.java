@@ -53,7 +53,7 @@ public class ElementSearchIngredientsTest {
 		SearchFixture fixture = createFixture();
 
 		// Operation: ask for all indexed ingredients.
-		Collection<IListElement<?>> allIngredients = fixture.search().getAllIngredients();
+		Collection<IListElement> allIngredients = fixture.search().getAllIngredients();
 
 		// Assertions: the empty search reports no ingredients.
 		Assertions.assertTrue(allIngredients.isEmpty());
@@ -63,7 +63,7 @@ public class ElementSearchIngredientsTest {
 	public void addAllIndexesBaseIngredientsFromBuilder() {
 		// Setup: IngredientManagerBuilder registered the base test plugin ingredients.
 		SearchFixture fixture = createFixture();
-		List<IListElementInfo<?>> baseList = IngredientListElementFactory.createBaseList(fixture.ingredientManager(), MOD_ID_HELPER);
+		List<IListElementInfo> baseList = IngredientListElementFactory.createBaseList(fixture.ingredientManager(), MOD_ID_HELPER);
 
 		// Operation: add the whole base list to the search index.
 		fixture = fixture.withInitialIngredients(baseList);
@@ -76,7 +76,7 @@ public class ElementSearchIngredientsTest {
 	public void addAllIndexesExtraIngredientsFromBuilder() {
 		// Setup: extra ingredients are added through IngredientManagerBuilder before the manager is built.
 		SearchFixture fixture = createFixture(List.of(new TestIngredient(10), new TestIngredient(11)));
-		List<IListElementInfo<?>> baseList = IngredientListElementFactory.createBaseList(fixture.ingredientManager(), MOD_ID_HELPER);
+		List<IListElementInfo> baseList = IngredientListElementFactory.createBaseList(fixture.ingredientManager(), MOD_ID_HELPER);
 
 		// Operation: add the whole manager-backed list to the search index.
 		fixture = fixture.withInitialIngredients(baseList);
@@ -89,7 +89,7 @@ public class ElementSearchIngredientsTest {
 	public void addAllCollapsesDuplicateIngredientUids() {
 		// Setup: two list elements describe equivalent ingredients with the same UID.
 		SearchFixture fixture = createFixture();
-		List<IListElementInfo<?>> infos = fixture.createInfos(
+		List<IListElementInfo> infos = fixture.createInfos(
 			List.of(
 				new TestIngredient(1),
 				new TestIngredient(1),
@@ -108,7 +108,7 @@ public class ElementSearchIngredientsTest {
 	public void laterDuplicateUidReplacesEarlierElement() {
 		// Setup: two elements share an ingredient UID but have different created indexes.
 		SearchFixture fixture = createFixture();
-		List<IListElementInfo<?>> infos = fixture.createInfos(
+		List<IListElementInfo> infos = fixture.createInfos(
 			List.of(
 				new TestIngredient(3),
 				new TestIngredient(3)
@@ -119,7 +119,7 @@ public class ElementSearchIngredientsTest {
 		fixture = fixture.withInitialIngredients(infos);
 
 		// Assertions: the UID map keeps the later element for direct ingredient lookup.
-		IListElement<?> element = fixture.search().getAllIngredients().iterator().next();
+		IListElement element = fixture.search().getAllIngredients().iterator().next();
 		Assertions.assertSame(infos.get(1).getElement(), element);
 		Assertions.assertEquals(3, getIngredientNumber(element));
 	}
@@ -128,7 +128,7 @@ public class ElementSearchIngredientsTest {
 	public void addIndexesSingleIngredient() {
 		// Setup: one list element has been created outside the manager's base list.
 		SearchFixture fixture = createFixture();
-		IListElementInfo<?> info = fixture.createInfos(List.of(new TestIngredient(4))).getFirst();
+		IListElementInfo info = fixture.createInfos(List.of(new TestIngredient(4))).getFirst();
 
 		// Operation: add the single element to the search index.
 		fixture.search().add(info, fixture.ingredientManager());
@@ -141,7 +141,7 @@ public class ElementSearchIngredientsTest {
 	public void addIndexesMultipleIngredients() {
 		// Setup: two distinct elements will be added individually.
 		SearchFixture fixture = createFixture();
-		List<IListElementInfo<?>> infos = fixture.createInfos(
+		List<IListElementInfo> infos = fixture.createInfos(
 			List.of(
 				new TestIngredient(5),
 				new TestIngredient(6)
@@ -161,7 +161,7 @@ public class ElementSearchIngredientsTest {
 		// Setup: the index already contains elements added in bulk.
 		SearchFixture fixture = createFixture();
 		fixture = fixture.withInitialIngredients(fixture.createInfos(List.of(new TestIngredient(7))));
-		IListElementInfo<?> extraInfo = fixture.createInfos(List.of(new TestIngredient(8))).getFirst();
+		IListElementInfo extraInfo = fixture.createInfos(List.of(new TestIngredient(8))).getFirst();
 
 		// Operation: add another ingredient through the single-add path.
 		fixture.search().add(extraInfo, fixture.ingredientManager());
@@ -175,7 +175,7 @@ public class ElementSearchIngredientsTest {
 		// Setup: at least one ingredient has been indexed.
 		SearchFixture fixture = createFixture();
 		fixture = fixture.withInitialIngredients(fixture.createInfos(List.of(new TestIngredient(9))));
-		Collection<IListElement<?>> allIngredients = fixture.search().getAllIngredients();
+		Collection<IListElement> allIngredients = fixture.search().getAllIngredients();
 
 		// Operation and assertions: callers cannot mutate the search index through the returned collection.
 		Assertions.assertThrows(UnsupportedOperationException.class, allIngredients::clear);
@@ -190,11 +190,11 @@ public class ElementSearchIngredientsTest {
 		IIngredientHelper<TestIngredient> ingredientHelper = fixture.ingredientManager().getIngredientHelper(TestIngredient.TYPE);
 
 		// Operation: look up the indexed element using the equivalent typed ingredient.
-		IListElement<TestIngredient> foundElement = fixture.search().findElement(typedIngredient, ingredientHelper);
+		IListElement foundElement = fixture.search().findElement(typedIngredient, ingredientHelper);
 
 		// Assertions: equivalent ingredient UIDs resolve to the indexed element.
 		Assertions.assertNotNull(foundElement);
-		Assertions.assertEquals(12, foundElement.getTypedIngredient().getIngredient().number());
+		Assertions.assertEquals(12, getIngredientNumber(foundElement));
 	}
 
 	@Test
@@ -206,7 +206,7 @@ public class ElementSearchIngredientsTest {
 		IIngredientHelper<TestIngredient> ingredientHelper = fixture.ingredientManager().getIngredientHelper(TestIngredient.TYPE);
 
 		// Operation: look up a UID that was not indexed.
-		IListElement<TestIngredient> foundElement = fixture.search().findElement(typedIngredient, ingredientHelper);
+		IListElement foundElement = fixture.search().findElement(typedIngredient, ingredientHelper);
 
 		// Assertions: missing UIDs do not produce a match.
 		Assertions.assertNull(foundElement);
@@ -221,7 +221,7 @@ public class ElementSearchIngredientsTest {
 		IIngredientHelper<TestIngredient> ingredientHelper = fixture.ingredientManager().getIngredientHelper(TestIngredient.TYPE);
 
 		// Operation: look up the matching UID with a different ingredient type.
-		IListElement<TestIngredient> foundElement = fixture.search().findElement(typedIngredient, ingredientHelper);
+		IListElement foundElement = fixture.search().findElement(typedIngredient, ingredientHelper);
 
 		// Assertions: type mismatches are not returned even when UIDs are equal.
 		Assertions.assertNull(foundElement);
@@ -316,18 +316,18 @@ public class ElementSearchIngredientsTest {
 		return new IngredientManagerBuilder(subtypeManager, COLOR_HELPER);
 	}
 
-	private static void assertIngredientNumbers(Collection<IListElement<?>> allIngredients, Set<Integer> expectedNumbers) {
+	private static void assertIngredientNumbers(Collection<IListElement> allIngredients, Set<Integer> expectedNumbers) {
 		Assertions.assertEquals(expectedNumbers.size(), allIngredients.size());
 		Assertions.assertEquals(expectedNumbers, getIngredientNumbers(allIngredients));
 	}
 
-	private static Set<Integer> getIngredientNumbers(Collection<IListElement<?>> allIngredients) {
+	private static Set<Integer> getIngredientNumbers(Collection<IListElement> allIngredients) {
 		return allIngredients.stream()
 			.map(ElementSearchIngredientsTest::getIngredientNumber)
 			.collect(Collectors.toSet());
 	}
 
-	private static int getIngredientNumber(IListElement<?> element) {
+	private static int getIngredientNumber(IListElement element) {
 		TestIngredient ingredient = (TestIngredient) element.getTypedIngredient().getIngredient();
 		return ingredient.number();
 	}
@@ -337,8 +337,8 @@ public class ElementSearchIngredientsTest {
 		ElementPrefixParser elementPrefixParser,
 		ElementSearch search
 	) {
-		private List<IListElementInfo<?>> createInfos(Collection<TestIngredient> ingredients) {
-			List<IListElementInfo<TestIngredient>> infos = IngredientListElementFactory.createTestList(
+		private List<IListElementInfo> createInfos(Collection<TestIngredient> ingredients) {
+			List<IListElementInfo> infos = IngredientListElementFactory.createTestList(
 				ingredientManager,
 				TestIngredient.TYPE,
 				ingredients,
@@ -351,7 +351,7 @@ public class ElementSearchIngredientsTest {
 			return ingredientManager.createTypedIngredient(TestIngredient.TYPE, ingredient, false);
 		}
 
-		private SearchFixture withInitialIngredients(Collection<IListElementInfo<?>> infos) {
+		private SearchFixture withInitialIngredients(Collection<IListElementInfo> infos) {
 			ElementSearch search = new ElementSearch(elementPrefixParser, infos, ingredientManager);
 			return new SearchFixture(ingredientManager, elementPrefixParser, search);
 		}

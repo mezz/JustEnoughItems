@@ -2,7 +2,7 @@ package mezz.jei.gui.ingredients;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 
-public class ListElement<V> implements IListElement<V> {
+public final class ListElement<V> implements IListElement {
 	private final ITypedIngredient<V> ingredient;
 	private final int createdIndex;
 	private int sortIndex;
@@ -12,6 +12,11 @@ public class ListElement<V> implements IListElement<V> {
 		this.ingredient = ingredient;
 		this.createdIndex = createdIndex;
 		this.sortIndex = createdIndex;
+	}
+
+	@Override
+	public boolean isGroup() {
+		return false;
 	}
 
 	@Override

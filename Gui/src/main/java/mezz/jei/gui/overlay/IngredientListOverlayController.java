@@ -175,7 +175,7 @@ class IngredientListOverlayController {
 				this.lookupHistory.updateLayout();
 			});
 
-		IElement<?> pageAnchorElement = this.contentsPageNavigation.getPageAnchorElement();
+		IElement pageAnchorElement = this.contentsPageNavigation.getPageAnchorElement();
 		this.contentsView.updateBounds(layout.availableContentsArea(), guiExclusionAreas, null);
 		this.contentsPageNavigation.updateLayoutKeepingPageAnchorVisible(pageAnchorElement);
 

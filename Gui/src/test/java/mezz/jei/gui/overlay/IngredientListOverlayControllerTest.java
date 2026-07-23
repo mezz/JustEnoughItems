@@ -98,7 +98,7 @@ public class IngredientListOverlayControllerTest {
 	public void screenUpdateKeepsPageAnchorVisibleAfterBoundsChange() {
 		// Setup: the grid has a page anchor before bounds are recalculated, but updating bounds clears it.
 		Fixture fixture = Fixture.create();
-		IElement<?> pageAnchorElement = element();
+		IElement pageAnchorElement = element();
 		fixture.contents.pageAnchorElement = pageAnchorElement;
 		fixture.contents.clearPageAnchorOnUpdateBounds = true;
 		fixture.controller.init();
@@ -351,7 +351,7 @@ public class IngredientListOverlayControllerTest {
 		return area.y() + area.height();
 	}
 
-	private static IElement<?> element() {
+	private static IElement element() {
 		return new IngredientElement<>(new TestTypedIngredient<>(OBJECT_TYPE, new Object()));
 	}
 
@@ -424,9 +424,9 @@ public class IngredientListOverlayControllerTest {
 		boolean throwOnUpdateBounds = false;
 		Set<ImmutableRect2i> guiExclusionAreas = Set.of();
 		@Nullable
-		IElement<?> pageAnchorElement;
+		IElement pageAnchorElement;
 		@Nullable
-		IElement<?> layoutPageAnchorElement;
+		IElement layoutPageAnchorElement;
 		ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
 		@Nullable
 		ImmutableRect2i availableArea;
@@ -442,7 +442,7 @@ public class IngredientListOverlayControllerTest {
 		}
 
 		@Override
-		public @Nullable IElement<?> getPageAnchorElement() {
+		public @Nullable IElement getPageAnchorElement() {
 			return pageAnchorElement;
 		}
 
@@ -459,7 +459,7 @@ public class IngredientListOverlayControllerTest {
 		}
 
 		@Override
-		public void updateLayoutKeepingPageAnchorVisible(@Nullable IElement<?> pageAnchorElement) {
+		public void updateLayoutKeepingPageAnchorVisible(@Nullable IElement pageAnchorElement) {
 			this.layoutPageAnchorElement = pageAnchorElement;
 			this.keepAnchorLayoutUpdates++;
 		}

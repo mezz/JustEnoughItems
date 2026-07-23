@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class ElementPrefixParser {
-	private final Char2ObjectMap<PrefixInfo<IListElementInfo<?>, IListElement<?>>> map = new Char2ObjectOpenHashMap<>();
-	private final PrefixInfo<IListElementInfo<?>, IListElement<?>> noPrefix;
+	private final Char2ObjectMap<PrefixInfo<IListElementInfo, IListElement>> map = new Char2ObjectOpenHashMap<>();
+	private final PrefixInfo<IListElementInfo, IListElement> noPrefix;
 
 	public ElementPrefixParser(
 		IIngredientManager ingredientManager,
@@ -85,28 +85,28 @@ public class ElementPrefixParser {
 		};
 	}
 
-	private void addPrefix(PrefixInfo<IListElementInfo<?>, IListElement<?>> info) {
+	private void addPrefix(PrefixInfo<IListElementInfo, IListElement> info) {
 		this.map.put(info.getPrefix(), info);
 	}
 
-	public Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> allPrefixInfos() {
-		Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> values = new ArrayList<>(map.values());
+	public Collection<PrefixInfo<IListElementInfo, IListElement>> allPrefixInfos() {
+		Collection<PrefixInfo<IListElementInfo, IListElement>> values = new ArrayList<>(map.values());
 		values.add(noPrefix);
 		return values;
 	}
 
-	public PrefixInfo<IListElementInfo<?>, IListElement<?>> getNoPrefix() {
+	public PrefixInfo<IListElementInfo, IListElement> getNoPrefix() {
 		return noPrefix;
 	}
 
-	public record TokenInfo(String token, PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo) {}
+	public record TokenInfo(String token, PrefixInfo<IListElementInfo, IListElement> prefixInfo) {}
 
 	public Optional<TokenInfo> parseToken(String token) {
 		if (token.isEmpty()) {
 			return Optional.empty();
 		}
 		char firstChar = token.charAt(0);
-		PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo = map.get(firstChar);
+		PrefixInfo<IListElementInfo, IListElement> prefixInfo = map.get(firstChar);
 		//noinspection ConstantValue
 		if (prefixInfo == null || prefixInfo.getMode() == SearchMode.DISABLED) {
 			return Optional.of(new TokenInfo(token, noPrefix));

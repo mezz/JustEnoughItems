@@ -33,13 +33,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class ListElementInfo<V> implements IListElementInfo<V> {
+public final class ListElementInfo<V> implements IListElementInfo {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
 	private static final Pattern MOD_NAME_SEPARATOR_PATTERN = Pattern.compile("(?=[A-Z_-])|\\s+");
-	private static int elementCount = 0;
+	static int elementCount = 0;
 
-	private final IListElement<V> element;
+	private final ListElement<V> element;
 	private final IModIdHelper modIdHelper;
 	private final List<String> names;
 	private final List<String> modIds;
@@ -47,14 +47,14 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	private final Identifier id;
 
 	@Nullable
-	public static <V> IListElementInfo<V> create(ITypedIngredient<V> value, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	public static <V> IListElementInfo create(ITypedIngredient<V> value, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		int createdIndex = elementCount++;
 		ListElement<V> element = new ListElement<>(value, createdIndex);
 		return createFromElement(element, ingredientManager, modIdHelper);
 	}
 
 	@Nullable
-	public static <V> IListElementInfo<V> createFromElement(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	public static <V> IListElementInfo createFromElement(ListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		try {
 			return new ListElementInfo<>(element, ingredientManager, modIdHelper);
 		} catch (RuntimeException e) {
@@ -70,7 +70,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		}
 	}
 
-	protected ListElementInfo(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	protected ListElementInfo(ListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		this.element = element;
 		this.modIdHelper = modIdHelper;
 		ITypedIngredient<V> value = element.getTypedIngredient();
@@ -102,6 +102,11 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 				this.names.add(lowercaseAlias);
 			}
 		}
+	}
+
+	@Override
+	public boolean isGroup() {
+		return false;
 	}
 
 	@Override
@@ -274,7 +279,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	public IListElement<V> getElement() {
+	public IListElement getElement() {
 		return element;
 	}
 

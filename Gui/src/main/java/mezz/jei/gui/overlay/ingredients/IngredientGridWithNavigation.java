@@ -116,12 +116,12 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	@Override
-	public void updateLayoutKeepingPageAnchorVisible(@Nullable IElement<?> pageAnchorElement) {
+	public void updateLayoutKeepingPageAnchorVisible(@Nullable IElement pageAnchorElement) {
 		this.controller.updateLayoutKeepingPageAnchorVisible(pageAnchorElement);
 	}
 
 	@Override
-	public @Nullable IElement<?> getPageAnchorElement() {
+	public @Nullable IElement getPageAnchorElement() {
 		return this.controller.getPageAnchorElement();
 	}
 
@@ -262,7 +262,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	@Override
-	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickableIngredientInternal> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (!this.active) {
 			return Stream.empty();
 		}
@@ -271,7 +271,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	@Override
-	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IDraggableIngredientInternal> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		if (!this.active) {
 			return Stream.empty();
 		}

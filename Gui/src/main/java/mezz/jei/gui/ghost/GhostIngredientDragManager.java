@@ -126,12 +126,15 @@ public class GhostIngredientDragManager {
 		this.hoveredTargetAreas = List.of();
 	}
 
-	private <T extends Screen, V> boolean handleClickGhostIngredient(T currentScreen, IDraggableIngredientInternal<V> clicked, UserInput input) {
+	private <T extends Screen> boolean handleClickGhostIngredient(T currentScreen, IDraggableIngredientInternal clicked, UserInput input) {
+		return doHandleClickGhostIngredient(currentScreen, clicked.getTypedIngredient(), clicked.getArea(), input);
+	}
+
+	private <T extends Screen, V> boolean doHandleClickGhostIngredient(T currentScreen, ITypedIngredient<V> ingredient, ImmutableRect2i clickedArea, UserInput input) {
 		List<IGhostIngredientHandler<T>> handlers = screenHelper.getGhostIngredientHandlers(currentScreen);
 
 		List<GhostIngredientDrag.HandlerData<V>> handlerDataList = new ArrayList<>();
 		for (IGhostIngredientHandler<T> handler : handlers) {
-			ITypedIngredient<V> ingredient = clicked.getTypedIngredient();
 			List<IGhostIngredientHandler.Target<V>> targets = handler.getTargetsTyped(currentScreen, ingredient, true);
 			if (!targets.isEmpty()) {
 				handlerDataList.add(new GhostIngredientDrag.HandlerData<>(handler, targets));
@@ -142,10 +145,8 @@ public class GhostIngredientDragManager {
 			return false;
 		}
 
-		ITypedIngredient<V> ingredient = clicked.getTypedIngredient();
 		IIngredientType<V> type = ingredient.getType();
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
-		ImmutableRect2i clickedArea = clicked.getArea();
 		this.ghostIngredientDrag = new GhostIngredientDrag<>(handlerDataList, ingredientRenderer, ingredient, input.getMouseX(), input.getMouseY(), clickedArea);
 		return true;
 	}

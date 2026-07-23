@@ -6,6 +6,7 @@ import mezz.jei.api.registration.IAdvancedSearchRegistration;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
+import mezz.jei.api.registration.IIngredientGroupRegistration;
 import mezz.jei.api.registration.IModInfoRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
@@ -74,6 +75,13 @@ public interface IModPlugin {
 	 * @since 19.10.0
 	 */
 	default void registerIngredientAliases(IIngredientAliasRegistration registration) {
+
+	}
+
+	/**
+	 * Register ingredient groups.
+	 */
+	default void registerIngredientGroups(IIngredientGroupRegistration registration) {
 
 	}
 

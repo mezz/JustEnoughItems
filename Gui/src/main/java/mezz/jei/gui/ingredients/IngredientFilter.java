@@ -11,8 +11,14 @@ import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.config.IngredientGroupConfig;
+import mezz.jei.common.ingredients.group.IngredientGroupInfo;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
+import mezz.jei.gui.config.GroupExpandStateConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
+import mezz.jei.gui.overlay.elements.GroupElement;
+import mezz.jei.gui.overlay.elements.GroupElementOverlay;
+import mezz.jei.gui.overlay.elements.GroupMemberElement;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
@@ -29,8 +35,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -38,11 +46,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class IngredientFilter implements
-	IIngredientGridSource,
-	IIngredientManager.IIngredientListener,
-	IIngredientVisibility.IListener,
-	IClientToggleState.IEditModeListener
-{
+							  IIngredientGridSource,
+							  IIngredientManager.IIngredientListener,
+							  IIngredientVisibility.IListener,
+							  IClientToggleState.IEditModeListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
@@ -50,7 +57,9 @@ public class IngredientFilter implements
 	private final IClientConfig clientConfig;
 	private final IFilterTextSource filterTextSource;
 	private final IIngredientManager ingredientManager;
-	private final Comparator<IListElement<?>> ingredientComparator;
+	private final Comparator<IListElement> ingredientComparator;
+	private final IngredientGroupConfig ingredientGroupConfig;
+	private final GroupExpandStateConfig groupStateConfig;
 	private final IModIdHelper modIdHelper;
 	private final IIngredientVisibility ingredientVisibility;
 
@@ -58,7 +67,9 @@ public class IngredientFilter implements
 	private IElementSearch elementSearch;
 
 	@Nullable
-	private List<IElement<?>> ingredientListCached;
+	private List<IListElement> searchResultCached;
+	@Nullable
+	private List<IElement> ingredientListCached;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
 
 	public IngredientFilter(
@@ -66,8 +77,10 @@ public class IngredientFilter implements
 		IClientConfig clientConfig,
 		IIngredientFilterConfig config,
 		IIngredientManager ingredientManager,
-		Comparator<IListElement<?>> ingredientComparator,
-		List<IListElementInfo<?>> ingredients,
+		Comparator<IListElement> ingredientComparator,
+		List<IListElementInfo> ingredients,
+		IngredientGroupConfig groupConfig,
+		GroupExpandStateConfig groupStateConfig,
 		IModIdHelper modIdHelper,
 		IIngredientVisibility ingredientVisibility,
 		IColorHelper colorHelper,
@@ -78,6 +91,8 @@ public class IngredientFilter implements
 		this.clientConfig = clientConfig;
 		this.ingredientManager = ingredientManager;
 		this.ingredientComparator = ingredientComparator;
+		this.ingredientGroupConfig = groupConfig;
+		this.groupStateConfig = groupStateConfig;
 		this.modIdHelper = modIdHelper;
 		this.ingredientVisibility = ingredientVisibility;
 		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, searchStorageBuilderFactory);
@@ -85,7 +100,7 @@ public class IngredientFilter implements
 		LOGGER.info("Adding {} ingredients", ingredients.size());
 		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser, ingredients, ingredientManager);
 
-		for (IListElementInfo<?> ingredient : ingredients) {
+		for (IListElementInfo ingredient : ingredients) {
 			updateHiddenState(ingredient.getElement());
 		}
 		invalidateCache();
@@ -102,7 +117,7 @@ public class IngredientFilter implements
 		clientToggleState.addEditModeToggleListener(this);
 	}
 
-	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser, List<IListElementInfo<?>> elementInfos, IIngredientManager ingredientManager) {
+	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser, List<IListElementInfo> elementInfos, IIngredientManager ingredientManager) {
 		if (clientConfig.isLowMemorySlowSearchEnabled()) {
 			return new ElementSearchLowMem(elementPrefixParser.getNoPrefix(), elementInfos);
 		} else {
@@ -110,8 +125,8 @@ public class IngredientFilter implements
 		}
 	}
 
-	public <V> void addIngredient(IListElementInfo<V> info) {
-		IListElement<V> element = info.getElement();
+	public void addIngredient(IListElementInfo info) {
+		IListElement element = info.getElement();
 		updateHiddenState(element);
 
 		this.elementSearch.add(info, ingredientManager);
@@ -120,13 +135,14 @@ public class IngredientFilter implements
 	}
 
 	public void invalidateCache() {
+		searchResultCached = null;
 		ingredientListCached = null;
 	}
 
 	public void rebuildItemFilter() {
 		this.invalidateCache();
-		Collection<IListElement<?>> ingredients = this.elementSearch.getAllIngredients();
-		List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, modIdHelper);
+		Collection<IListElement> ingredients = this.elementSearch.getAllIngredients();
+		List<IListElementInfo> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, modIdHelper);
 		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser, elementInfos, ingredientManager);
 	}
 
@@ -137,7 +153,7 @@ public class IngredientFilter implements
 
 	public void updateHidden() {
 		boolean changed = false;
-		for (IListElement<?> element : this.elementSearch.getAllIngredients()) {
+		for (IListElement element : this.elementSearch.getAllIngredients()) {
 			changed |= updateHiddenState(element);
 		}
 		if (changed) {
@@ -146,8 +162,11 @@ public class IngredientFilter implements
 		}
 	}
 
-	private <V> boolean updateHiddenState(IListElement<V> element) {
-		ITypedIngredient<V> typedIngredient = element.getTypedIngredient();
+	private boolean updateHiddenState(IListElement element) {
+		if (element.isGroup()) {
+			return false;
+		}
+		ITypedIngredient<?> typedIngredient = element.getTypedIngredient();
 		boolean visible = this.ingredientVisibility.isIngredientVisible(typedIngredient);
 		if (element.isVisible() != visible) {
 			element.setVisible(visible);
@@ -160,7 +179,7 @@ public class IngredientFilter implements
 	public <V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible) {
 		IIngredientType<V> ingredientType = ingredient.getType();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		IListElement<V> match = this.elementSearch.findElement(ingredient, ingredientHelper);
+		IListElement match = this.elementSearch.findElement(ingredient, ingredientHelper);
 		if (match != null && match.isVisible() != visible) {
 			match.setVisible(visible);
 			invalidateCache();
@@ -174,7 +193,7 @@ public class IngredientFilter implements
 		for (ITypedIngredient<V> ingredient : ingredients) {
 			IIngredientType<V> ingredientType = ingredient.getType();
 			IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-			IListElement<V> match = this.elementSearch.findElement(ingredient, ingredientHelper);
+			IListElement match = this.elementSearch.findElement(ingredient, ingredientHelper);
 			if (match != null && match.isVisible() != visible) {
 				match.setVisible(visible);
 				changed = true;
@@ -187,13 +206,81 @@ public class IngredientFilter implements
 	}
 
 	@Override
-	public List<IElement<?>> getElements() {
-		String filterText = this.filterTextSource.getFilterText();
-		filterText = filterText.toLowerCase();
+	public List<IElement> getElements() {
+		if (searchResultCached == null) {
+			String filterText = this.filterTextSource.getFilterText().toLowerCase();
+			searchResultCached = getIngredientListUncached(filterText)
+					.toList();
+		}
 		if (ingredientListCached == null) {
-			ingredientListCached = getIngredientListUncached(filterText)
-				.<IElement<?>>map(IngredientElement::new)
-				.toList();
+			List<IListElement> listElements = new ArrayList<>();
+			Map<IngredientGroupInfo, ListGroupElement> groupElements = new HashMap<>();
+			for (IngredientGroupInfo groupInfo : ingredientGroupConfig.getIngredientGroups().values()) {
+				groupElements.put(groupInfo, new ListGroupElement(groupInfo));
+			}
+			for (IListElement element : searchResultCached) {
+				switch (element) {
+					case ListGroupElement groupElement -> {
+						ListGroupElement listGroupElement = groupElements.get(groupElement.getGroupInfo());
+						if (listGroupElement != null) {
+							listElements.add(listGroupElement);
+						}
+					}
+					case ListElement<?> listElement -> {
+						boolean inGroup = false;
+						for (Map.Entry<IngredientGroupInfo, ListGroupElement> entry : groupElements.entrySet()) {
+							IngredientGroupInfo groupInfo = entry.getKey();
+							if (groupInfo.isMember(listElement.getTypedIngredient(), ingredientManager)) {
+								entry.getValue().addMember(listElement);
+								inGroup = true;
+							}
+						}
+						if (!inGroup) {
+							listElements.add(listElement);
+						}
+					}
+				}
+			}
+			listElements.sort(ingredientComparator);
+			Runnable onGroupStateChange = () -> {
+				ingredientListCached = null;
+				notifyListenersOfChange();
+			};
+			List<IElement> results = new ArrayList<>();
+			int groupIndex = 0;
+			for (IListElement listElement : listElements) {
+				switch (listElement) {
+					case ListGroupElement groupElement -> {
+						if (groupElement.getMembers().isEmpty()) {
+							continue;
+						}
+						IngredientGroupInfo groupInfo = groupElement.getGroupInfo();
+						if (groupStateConfig.isExpanded(groupInfo)) {
+							GroupElementOverlay overlay = new GroupElementOverlay(groupIndex);
+							for (IListElement member : groupElement.getMembers()) {
+								results.add(new GroupMemberElement<>(
+									member.getTypedIngredient(),
+									groupInfo,
+									onGroupStateChange,
+									groupStateConfig,
+									overlay
+								));
+							}
+						} else {
+							results.add(new GroupElement(
+								groupElement,
+								onGroupStateChange,
+								groupStateConfig,
+								new GroupElementOverlay(groupIndex)
+							));
+						}
+						groupIndex++;
+					}
+					case ListElement<?> element -> results.add(new IngredientElement<>(element.getTypedIngredient()));
+				}
+			}
+
+			ingredientListCached = results;
 		}
 		return ingredientListCached;
 	}
@@ -207,41 +294,37 @@ public class IngredientFilter implements
 			.toList();
 	}
 
-	private Stream<ITypedIngredient<?>> getIngredientListUncached(String filterText) {
+	private Stream<IListElement> getIngredientListUncached(String filterText) {
 		String[] filters = filterText.split("\\|");
 		List<SearchTokens> searchTokens = Arrays.stream(filters)
 			.map(this::parseSearchTokens)
 			.filter(s -> !s.isEmpty())
 			.toList();
 
-		Stream<IListElement<?>> elementStream;
 		if (searchTokens.isEmpty()) {
-			elementStream = this.elementSearch.getAllIngredients()
-				.parallelStream();
-		} else {
-			elementStream = searchTokens.stream()
-				.map(this::getSearchResults)
-				.flatMap(Set::stream)
-				.distinct();
+			return this.elementSearch.getAllIngredients()
+									 .parallelStream()
+									 .filter(IListElement::isVisible);
 		}
 
-		return elementStream
-			.filter(IListElement::isVisible)
-			.sorted(ingredientComparator)
-			.map(IListElement::getTypedIngredient);
+		return searchTokens.stream()
+						   .map(this::getSearchResults)
+						   .flatMap(Set::stream)
+						   .filter(IListElement::isVisible)
+						   .distinct();
 	}
 
 	@Override
 	public <V> void onIngredientsAdded(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
 		for (ITypedIngredient<V> value : ingredients) {
-			IListElement<V> matchingElement = this.elementSearch.findElement(value, ingredientHelper);
+			IListElement matchingElement = this.elementSearch.findElement(value, ingredientHelper);
 			if (matchingElement != null) {
 				updateHiddenState(matchingElement);
 				if (DebugConfig.isDebugIngredientsEnabled()) {
 					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
 				}
 			} else {
-				IListElementInfo<V> listElementInfo = ListElementInfo.create(value, this.ingredientManager, modIdHelper);
+				IListElementInfo listElementInfo = ListElementInfo.create(value, this.ingredientManager, modIdHelper);
 				if (listElementInfo != null) {
 					addIngredient(listElementInfo);
 					if (DebugConfig.isDebugIngredientsEnabled()) {
@@ -258,7 +341,8 @@ public class IngredientFilter implements
 		// ignore this, it's handled by onIngredientVisibilityChanged
 	}
 
-	private record SearchTokens(List<ElementPrefixParser.TokenInfo> toSearch, List<ElementPrefixParser.TokenInfo> toRemove) {
+	private record SearchTokens(List<ElementPrefixParser.TokenInfo> toSearch,
+								List<ElementPrefixParser.TokenInfo> toRemove) {
 		public boolean isEmpty() {
 			return toSearch.isEmpty() && toRemove.isEmpty();
 		}
@@ -293,11 +377,11 @@ public class IngredientFilter implements
 		return searchTokens;
 	}
 
-	private Set<IListElement<?>> getSearchResults(SearchTokens searchTokens) {
-		List<Set<IListElement<?>>> resultsPerToken = searchTokens.toSearch.stream()
+	private Set<IListElement> getSearchResults(SearchTokens searchTokens) {
+		List<Set<IListElement>> resultsPerToken = searchTokens.toSearch.stream()
 			.map(this.elementSearch::getSearchResults)
 			.toList();
-		Set<IListElement<?>> results = intersection(resultsPerToken);
+		Set<IListElement> results = intersection(resultsPerToken);
 
 		if (results.isEmpty() && !searchTokens.toRemove.isEmpty()) {
 			results.addAll(this.elementSearch.getAllIngredients());
@@ -305,7 +389,7 @@ public class IngredientFilter implements
 
 		if (!results.isEmpty() && !searchTokens.toRemove.isEmpty()) {
 			for (ElementPrefixParser.TokenInfo tokenInfo : searchTokens.toRemove) {
-				Set<IListElement<?>> resultsToRemove = this.elementSearch.getSearchResults(tokenInfo);
+				Set<IListElement> resultsToRemove = this.elementSearch.getSearchResults(tokenInfo);
 				results.removeAll(resultsToRemove);
 				if (results.isEmpty()) {
 					break;

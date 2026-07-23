@@ -2,6 +2,7 @@ package mezz.jei.gui.startup;
 
 import mezz.jei.common.platform.Services;
 import mezz.jei.gui.config.BookmarkJsonConfig;
+import mezz.jei.gui.config.GroupExpandStateConfig;
 import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.gui.config.ILookupHistoryConfig;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
@@ -14,7 +15,8 @@ public record GuiConfigData(
 	IBookmarkConfig bookmarkConfig,
 	ILookupHistoryConfig lookupHistoryConfig,
 	ModNameSortingConfig modNameSortingConfig,
-	IngredientTypeSortingConfig ingredientTypeSortingConfig
+	IngredientTypeSortingConfig ingredientTypeSortingConfig,
+	GroupExpandStateConfig groupExpandStateConfig
 ) {
 	public static GuiConfigData create() {
 		Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
@@ -23,12 +25,13 @@ public record GuiConfigData(
 		ILookupHistoryConfig lookupHistoryConfig = new LookupHistoryJsonConfig(configDir);
 		ModNameSortingConfig ingredientModNameSortingConfig = new ModNameSortingConfig(configDir.resolve("ingredient-list-mod-sort-order.ini"));
 		IngredientTypeSortingConfig ingredientTypeSortingConfig = new IngredientTypeSortingConfig(configDir.resolve("ingredient-list-type-sort-order.ini"));
-
+		GroupExpandStateConfig groupExpandStateConfig = new GroupExpandStateConfig(configDir);
 		return new GuiConfigData(
 			bookmarkConfig,
 			lookupHistoryConfig,
 			ingredientModNameSortingConfig,
-			ingredientTypeSortingConfig
+			ingredientTypeSortingConfig,
+			groupExpandStateConfig
 		);
 	}
 }

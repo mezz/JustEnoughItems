@@ -7,6 +7,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.UserInput;
@@ -49,31 +50,31 @@ public class BookmarkDragManager {
 		}
 	}
 
-	private <V> boolean handleClickIngredient(IDraggableIngredientInternal<V> clicked, UserInput input) {
-		IElement<V> element = clicked.getElement();
+	private boolean handleClickIngredient(IDraggableIngredientInternal clicked, UserInput input) {
+		IElement element = clicked.getElement();
 		return element
 			.getBookmark()
-			.map(bookmark -> {
-				ITypedIngredient<V> ingredient = clicked.getTypedIngredient();
-				IIngredientType<V> type = ingredient.getType();
-
-				List<IBookmarkDragTarget> targets = bookmarkOverlay.createBookmarkDragTargets();
-				IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
-				IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
-				ImmutableRect2i clickedArea = clicked.getArea();
-				this.bookmarkDrag = new BookmarkDrag<>(
-					bookmarkOverlay,
-					targets,
-					ingredientRenderer,
-					ingredient,
-					bookmark,
-					input.getMouseX(),
-					input.getMouseY(),
-					clickedArea
-				);
-				return true;
-			})
+			.map(bookmark -> doHandleClickIngredient(clicked.getTypedIngredient(), clicked.getArea(), bookmark, input))
 			.orElse(false);
+	}
+
+	private <V> boolean doHandleClickIngredient(ITypedIngredient<V> ingredient, ImmutableRect2i clickedArea, IBookmark bookmark, UserInput input) {
+		IIngredientType<V> type = ingredient.getType();
+
+		List<IBookmarkDragTarget> targets = bookmarkOverlay.createBookmarkDragTargets();
+		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
+		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
+		this.bookmarkDrag = new BookmarkDrag<>(
+			bookmarkOverlay,
+			targets,
+			ingredientRenderer,
+			ingredient,
+			bookmark,
+			input.getMouseX(),
+			input.getMouseY(),
+			clickedArea
+		);
+		return true;
 	}
 
 	public IDragHandler createDragHandler() {

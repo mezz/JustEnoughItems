@@ -10,20 +10,20 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
-public class DelegatingClickableIngredientInternal<T> implements IClickableIngredientInternal<T> {
-	private final IClickableIngredientInternal<T> delegate;
+public class DelegatingClickableIngredientInternal implements IClickableIngredientInternal {
+	private final IClickableIngredientInternal delegate;
 
-	public DelegatingClickableIngredientInternal(IClickableIngredientInternal<T> delegate) {
+	public DelegatingClickableIngredientInternal(IClickableIngredientInternal delegate) {
 		this.delegate = delegate;
 	}
 
 	@Override
-	public ITypedIngredient<T> getTypedIngredient() {
+	public ITypedIngredient<?> getTypedIngredient() {
 		return delegate.getTypedIngredient();
 	}
 
 	@Override
-	public IElement<T> getElement() {
+	public IElement getElement() {
 		return delegate.getElement();
 	}
 

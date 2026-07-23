@@ -99,14 +99,14 @@ public class BookmarkList implements IIngredientGridSource {
 		return this.bookmarksSet.contains(value);
 	}
 
-	public <T> boolean onElementBookmarked(IElement<T> element, UserInput input, BookmarkOverlay bookmarkOverlay) {
+	public boolean onElementBookmarked(IElement element, UserInput input, BookmarkOverlay bookmarkOverlay) {
 		if (bookmarkOverlay.isMouseOver(input.getMouseX(), input.getMouseY())) {
 			return element.getBookmark()
 				.map(this::remove)
 				.orElse(false);
 		}
 
-		ITypedIngredient<T> ingredient = element.getTypedIngredient();
+		ITypedIngredient<?> ingredient = element.getTypedIngredient();
 		IBookmark bookmark = bookmarkFactory.create(ingredient);
 		return add(bookmark);
 	}
@@ -162,9 +162,9 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	@Override
-	public List<IElement<?>> getElements() {
+	public List<IElement> getElements() {
 		return bookmarksList.stream()
-			.<IElement<?>>map(IBookmark::getElement)
+			.<IElement>map(IBookmark::getElement)
 			.toList();
 	}
 

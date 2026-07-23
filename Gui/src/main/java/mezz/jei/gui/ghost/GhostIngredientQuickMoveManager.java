@@ -25,12 +25,12 @@ public class GhostIngredientQuickMoveManager {
 		this.screenHelper = screenHelper;
 	}
 
-	private <T extends Screen, V> boolean quickMoveInternal(T currentScreen, UserInput input, IDraggableIngredientInternal<V> clicked) {
+	private <T extends Screen> boolean quickMoveInternal(T currentScreen, UserInput input, IDraggableIngredientInternal clicked) {
 		for (IGhostIngredientHandler<T> handler : screenHelper.getGhostIngredientHandlers(currentScreen)) {
 			if (input.isSimulate()) {
 				return true;
 			}
-			ITypedIngredient<V> ingredient = clicked.getTypedIngredient();
+			ITypedIngredient<?> ingredient = clicked.getTypedIngredient();
 			if (handler.quickMove(currentScreen, ingredient)) {
 				return true;
 			}

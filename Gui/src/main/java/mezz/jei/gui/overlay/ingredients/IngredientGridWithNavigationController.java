@@ -81,11 +81,11 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 		updateLayoutStartingAt(0);
 	}
 
-	public void updateLayoutKeepingPageAnchorVisible(@Nullable IElement<?> pageAnchorElement) {
+	public void updateLayoutKeepingPageAnchorVisible(@Nullable IElement pageAnchorElement) {
 		if (usesScrollbar()) {
 			this.scrollController.updateLayoutKeepingScrollAnchorVisible(pageAnchorElement);
 		} else {
-			List<IElement<?>> ingredientList = ingredientSource.getElements();
+			List<IElement> ingredientList = ingredientSource.getElements();
 			int firstItemIndex = this.pageState.updateKeepingPageAnchorVisible(pageAnchorElement, ingredientList, ingredientGrid.size());
 			this.ingredientGrid.set(firstItemIndex, ingredientList);
 		}
@@ -93,12 +93,12 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 	}
 
 	@Nullable
-	public IElement<?> getPageAnchorElement() {
-		IElement<?> pageAnchorElement;
+	public IElement getPageAnchorElement() {
+		IElement pageAnchorElement;
 		if (usesScrollbar()) {
 			pageAnchorElement = this.scrollController.getScrollAnchorElement();
 		} else {
-			List<IElement<?>> ingredientList = ingredientSource.getElements();
+			List<IElement> ingredientList = ingredientSource.getElements();
 			pageAnchorElement = this.pageState.getPageAnchorElement(ingredientList);
 		}
 		if (pageAnchorElement != null) {
@@ -109,15 +109,15 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 			.orElse(null);
 	}
 
-	public <T> IClickableIngredientInternal<T> createPageAnchorIngredient(IClickableIngredientInternal<T> delegate) {
-		return new PageAnchorClickableIngredient<>(delegate);
+	public IClickableIngredientInternal createPageAnchorIngredient(IClickableIngredientInternal delegate) {
+		return new PageAnchorClickableIngredient(delegate);
 	}
 
 	private void updateLayoutStartingAt(int firstItemIndex) {
 		if (usesScrollbar()) {
 			this.scrollController.updateLayoutStartingAt(firstItemIndex);
 		} else {
-			List<IElement<?>> ingredientList = ingredientSource.getElements();
+			List<IElement> ingredientList = ingredientSource.getElements();
 			int renderFirstItemIndex = this.pageState.updateForPageNavigation(firstItemIndex, ingredientList.size(), ingredientGrid.size());
 			this.ingredientGrid.set(renderFirstItemIndex, ingredientList);
 		}
@@ -337,14 +337,14 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 		return -1;
 	}
 
-	private class PageAnchorClickableIngredient<T> extends DelegatingClickableIngredientInternal<T> {
-		PageAnchorClickableIngredient(IClickableIngredientInternal<T> delegate) {
+	private class PageAnchorClickableIngredient extends DelegatingClickableIngredientInternal {
+		PageAnchorClickableIngredient(IClickableIngredientInternal delegate) {
 			super(delegate);
 		}
 
 		@Override
 		public void show(IRecipesGui recipesGui, FocusUtil focusUtil, List<RecipeIngredientRole> roles) {
-			IElement<T> element = getElement();
+			IElement element = getElement();
 			if (element.isVisible()) {
 				pageState.setPageAnchorElement(element);
 				scrollController.setScrollAnchorElement(element);

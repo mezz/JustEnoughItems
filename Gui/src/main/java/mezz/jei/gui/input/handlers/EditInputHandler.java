@@ -53,7 +53,7 @@ public class EditInputHandler implements IUserInputHandler {
 			});
 	}
 
-	private <V> void execute(IClickableIngredientInternal<V> clicked, IEditModeConfig.HideMode hideMode) {
+	private void execute(IClickableIngredientInternal clicked, IEditModeConfig.HideMode hideMode) {
 		ITypedIngredient<?> typedIngredient = clicked.getTypedIngredient();
 		Set<IEditModeConfig.HideMode> hideModes = editModeConfig.getIngredientHiddenUsingConfigFile(typedIngredient);
 		if (hideModes.contains(hideMode)) {

@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public interface IListElementInfo<V> {
+public sealed interface IListElementInfo permits ListElementInfo, ListGroupElementInfo {
+
+	boolean isGroup();
 
 	List<String> getNames();
 
@@ -37,9 +39,9 @@ public interface IListElementInfo<V> {
 
 	Identifier getIdentifier();
 
-	IListElement<V> getElement();
+	IListElement getElement();
 
-	ITypedIngredient<V> getTypedIngredient();
+	ITypedIngredient<?> getTypedIngredient();
 
 	int getCreatedIndex();
 }

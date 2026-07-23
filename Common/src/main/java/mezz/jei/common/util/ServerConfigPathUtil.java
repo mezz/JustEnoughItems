@@ -23,6 +23,9 @@ public final class ServerConfigPathUtil {
 
 	public static Optional<Path> getWorldPath(Path basePath) {
 		Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft == null) {
+			return Optional.empty();
+		}
 		return Optional.ofNullable(minecraft.getConnection())
 			.flatMap(clientPacketListener -> {
 				Connection connection = clientPacketListener.getConnection();

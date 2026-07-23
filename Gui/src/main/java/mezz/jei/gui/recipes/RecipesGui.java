@@ -429,7 +429,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
-	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IClickableIngredientInternal> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isOpen()) {
 			return Stream.concat(
 				craftingStations.getIngredientUnderMouse(mouseX, mouseY),
@@ -440,7 +440,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
-	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+	public Stream<IDraggableIngredientInternal> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		return Stream.empty();
 	}
 

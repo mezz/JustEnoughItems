@@ -29,7 +29,7 @@ public final class IngredientGridScrollController {
 	}
 
 	public void updateLayoutStartingAt(int firstItemIndex) {
-		List<IElement<?>> ingredientList = ingredientSource.getElements();
+		List<IElement> ingredientList = ingredientSource.getElements();
 		int columnCount = ingredientGrid.getColumnCount();
 		int rowCount = ingredientGrid.getRowCount();
 		int visibleIngredientCount = ingredientGrid.size();
@@ -51,8 +51,8 @@ public final class IngredientGridScrollController {
 		updateGridFromScrollState(ingredientList);
 	}
 
-	public void updateLayoutKeepingScrollAnchorVisible(@Nullable IElement<?> scrollAnchorElement) {
-		List<IElement<?>> ingredientList = ingredientSource.getElements();
+	public void updateLayoutKeepingScrollAnchorVisible(@Nullable IElement scrollAnchorElement) {
+		List<IElement> ingredientList = ingredientSource.getElements();
 		this.scrollState.updateKeepingScrollAnchorVisible(
 			scrollAnchorElement,
 			ingredientList,
@@ -65,11 +65,11 @@ public final class IngredientGridScrollController {
 		updateGridFromScrollState(ingredientList);
 	}
 
-	public @Nullable IElement<?> getScrollAnchorElement() {
+	public @Nullable IElement getScrollAnchorElement() {
 		return this.scrollState.getScrollAnchorElement(ingredientSource.getElements());
 	}
 
-	public void setScrollAnchorElement(IElement<?> scrollAnchorElement) {
+	public void setScrollAnchorElement(IElement scrollAnchorElement) {
 		this.scrollState.setScrollAnchorElement(scrollAnchorElement, getScrollAnchorPositionY(scrollAnchorElement));
 	}
 
@@ -138,7 +138,7 @@ public final class IngredientGridScrollController {
 		if (!canScroll() || rows == 0) {
 			return false;
 		}
-		List<IElement<?>> ingredientList = ingredientSource.getElements();
+		List<IElement> ingredientList = ingredientSource.getElements();
 		int firstRow = getFirstVisibleScrollRow() + rows;
 		float scrollOffsetY = IngredientGridScrollState.getScrollOffsetYForFirstRow(
 			firstRow,
@@ -187,7 +187,7 @@ public final class IngredientGridScrollController {
 
 	private boolean updateScrollOffset(float scrollOffsetY) {
 		float oldScrollOffsetY = this.scrollState.getScrollOffsetY();
-		List<IElement<?>> ingredientList = ingredientSource.getElements();
+		List<IElement> ingredientList = ingredientSource.getElements();
 		int columnCount = ingredientGrid.getColumnCount();
 		int rowCount = ingredientGrid.getRowCount();
 		float validScrollOffsetY = IngredientGridScrollState.getValidScrollOffsetY(
@@ -212,12 +212,12 @@ public final class IngredientGridScrollController {
 		return true;
 	}
 
-	private void updateGridFromScrollState(List<IElement<?>> ingredientList) {
+	private void updateGridFromScrollState(List<IElement> ingredientList) {
 		ScrollRenderPosition scrollRenderPosition = getScrollRenderPosition(ingredientList);
 		this.ingredientGrid.set(scrollRenderPosition.firstItemIndex(), scrollRenderPosition.rowPixelOffset(), ingredientList);
 	}
 
-	private ScrollRenderPosition getScrollRenderPosition(List<IElement<?>> ingredientList) {
+	private ScrollRenderPosition getScrollRenderPosition(List<IElement> ingredientList) {
 		int columnCount = ingredientGrid.getColumnCount();
 		int rowCount = ingredientGrid.getRowCount();
 		int visibleIngredientCount = ingredientGrid.size();
@@ -269,8 +269,8 @@ public final class IngredientGridScrollController {
 		);
 	}
 
-	private float getScrollAnchorPositionY(IElement<?> element) {
-		List<IElement<?>> ingredientList = ingredientSource.getElements();
+	private float getScrollAnchorPositionY(IElement element) {
+		List<IElement> ingredientList = ingredientSource.getElements();
 		int anchorIndex = IngredientGridPageState.findIndexOfIngredientElement(element, ingredientList);
 		int columnCount = ingredientGrid.getColumnCount();
 		int rowCount = ingredientGrid.getRowCount();
@@ -285,7 +285,7 @@ public final class IngredientGridScrollController {
 		return Math.clamp(anchorTopY / (float) visibleHeight, 0, 1);
 	}
 
-	private int getCurrentScrollPixelOffset(List<IElement<?>> ingredientList) {
+	private int getCurrentScrollPixelOffset(List<IElement> ingredientList) {
 		int columnCount = ingredientGrid.getColumnCount();
 		int rowCount = ingredientGrid.getRowCount();
 		int hiddenRows = IngredientGridScrollState.getHiddenRows(ingredientList.size(), columnCount, rowCount, ingredientGrid.size());

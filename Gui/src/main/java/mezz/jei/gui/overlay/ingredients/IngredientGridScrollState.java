@@ -12,7 +12,7 @@ public final class IngredientGridScrollState {
 	 */
 	private float scrollOffsetY = 0;
 	@Nullable
-	private IElement<?> scrollAnchorElement;
+	private IElement scrollAnchorElement;
 	private float scrollAnchorPositionY = 0;
 
 	public float getScrollOffsetY() {
@@ -25,8 +25,8 @@ public final class IngredientGridScrollState {
 	}
 
 	public void updateKeepingScrollAnchorVisible(
-		@Nullable IElement<?> scrollAnchorElement,
-		List<IElement<?>> ingredientList,
+		@Nullable IElement scrollAnchorElement,
+		List<IElement> ingredientList,
 		int columns,
 		int visibleRows,
 		int visibleIngredientCount,
@@ -48,7 +48,7 @@ public final class IngredientGridScrollState {
 	}
 
 	@Nullable
-	public IElement<?> getScrollAnchorElement(List<IElement<?>> ingredientList) {
+	public IElement getScrollAnchorElement(List<IElement> ingredientList) {
 		if (this.scrollAnchorElement != null) {
 			if (IngredientGridPageState.findIndexOfIngredientElement(this.scrollAnchorElement, ingredientList) >= 0) {
 				return this.scrollAnchorElement;
@@ -58,12 +58,12 @@ public final class IngredientGridScrollState {
 		return null;
 	}
 
-	public void setScrollAnchorElement(IElement<?> scrollAnchorElement, float scrollAnchorPositionY) {
+	public void setScrollAnchorElement(IElement scrollAnchorElement, float scrollAnchorPositionY) {
 		this.scrollAnchorElement = scrollAnchorElement;
 		this.scrollAnchorPositionY = Math.clamp(scrollAnchorPositionY, 0, 1);
 	}
 
-	private float getStoredScrollAnchorPositionY(@Nullable IElement<?> scrollAnchorElement) {
+	private float getStoredScrollAnchorPositionY(@Nullable IElement scrollAnchorElement) {
 		if (scrollAnchorElement != null &&
 			this.scrollAnchorElement != null &&
 			IngredientGridPageState.isSameIngredientElement(this.scrollAnchorElement, scrollAnchorElement)) {
