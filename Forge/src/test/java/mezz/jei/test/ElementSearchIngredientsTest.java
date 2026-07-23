@@ -267,6 +267,21 @@ public class ElementSearchIngredientsTest {
 		Assertions.assertEquals(Set.of(20), results);
 	}
 
+	@Test
+	public void colorSearchFindsIngredients() {
+		// Setup: color search is enabled with a required prefix, and test ingredients expose black as their color.
+		SearchFixture fixture = createFixture();
+		fixture = fixture.withInfos(
+			fixture.createInfos(List.of(new TestIngredient(21), new TestIngredient(22)))
+		);
+
+		// Operation: search by the color prefix.
+		Set<Integer> results = fixture.searchIngredientNumbers("^black");
+
+		// Assertions: color search indexes the color names supplied by the color helper.
+		Assertions.assertEquals(Set.of(21, 22), results);
+	}
+
 	private static SearchFixture createFixture() {
 		return createFixture(List.of());
 	}
