@@ -2,6 +2,7 @@ package mezz.jei.neoforge.events;
 
 import mezz.jei.common.util.ErrorUtil;
 import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.IModBusEvent;
 
@@ -23,11 +24,15 @@ public class RuntimeEventSubscriptions {
 	}
 
 	public <T extends Event> void register(Class<T> eventType, Consumer<T> listener) {
+		register(EventPriority.NORMAL, eventType, listener);
+	}
+
+	public <T extends Event> void register(EventPriority priority, Class<T> eventType, Consumer<T> listener) {
 		if (IModBusEvent.class.isAssignableFrom(eventType)) {
 			throw new IllegalArgumentException(String.format("%s must be registered on the mod event bus", eventType));
 		}
 
-		EventSubscription<T> subscription = EventSubscription.register(eventBus, eventType, listener);
+		EventSubscription<T> subscription = EventSubscription.register(eventBus, priority, eventType, listener);
 		this.subscriptions.add(subscription);
 	}
 

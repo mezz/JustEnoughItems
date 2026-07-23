@@ -248,6 +248,6 @@ public class IngredientGrid implements IIngredientGrid {
 	}
 
 	public boolean hasRoom() {
-		return !this.area.isEmpty();
+		return IngredientGridRoom.hasRoom(this.area, this.ingredientListRenderer.getSlots());
 	}
 }

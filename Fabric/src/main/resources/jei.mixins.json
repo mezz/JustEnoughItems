@@ -6,11 +6,11 @@
   "mixins": [
   ],
   "client": [
-    "AbstractContainerScreenMixin",
     "ClientPacketListenerRecipeUpdateMixin",
     "EffectRenderingInventoryScreenMixin",
     "KeyboardHandlerMixin",
-    "MinecraftMixin"
+    "MinecraftMixin",
+    "ScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

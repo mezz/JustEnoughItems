@@ -1,12 +1,5 @@
 package mezz.jei.gui.overlay.bookmarks.history;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
@@ -25,16 +18,16 @@ import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
+import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.ingredients.IngredientGrid;
-import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -52,6 +45,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	private final IClientConfig clientConfig;
 	private final HistoryDisplaySide ownerDisplaySide;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
+	private Set<ImmutableRect2i> guiExclusionAreas = Set.of();
 	private int rows;
 	private boolean layoutDirty = true;
 
@@ -104,6 +98,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 
 	@Override
 	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
+		this.guiExclusionAreas = guiExclusionAreas;
 		this.contents.updateBounds(availableArea, guiExclusionAreas, mouseExclusionPoint);
 		int rows = this.contents.getArea().getHeight() / SLOT_HEIGHT;
 		this.rows = Math.min(rows, clientConfig.maxLookupHistoryRows().getValue());
@@ -126,41 +121,76 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		}
 	}
 
-	private void drawLine(PoseStack poseStack, int x1, int x2, int y, int argbColor) {
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
-		Tesselator tesselator = Tesselator.getInstance();
-		BufferBuilder builder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+	private void drawLine(GuiGraphics guiGraphics, ImmutableRect2i lineArea, int argbColor) {
+		for (LineSegment segment : calculateLineSegments(lineArea, this.guiExclusionAreas)) {
+			drawLineSegment(guiGraphics, segment.x1(), segment.x2(), lineArea.y(), lineArea.height(), argbColor);
+		}
+	}
 
-		float a = (float) (argbColor >> 24 & 255) / 255.0F;
-		float r = (float) (argbColor >> 16 & 255) / 255.0F;
-		float g = (float) (argbColor >> 8 & 255) / 255.0F;
-		float b = (float) (argbColor & 255) / 255.0F;
-		Matrix4f pose = poseStack.last().pose();
-
+	private static void drawLineSegment(GuiGraphics guiGraphics, int x1, int x2, int y, int height, int argbColor) {
 		final int availableWidth = x2 - x1;
 		if (availableWidth <= 0) {
 			return;
 		}
 		final int dashWidth = 8;
-		final int dashHeight = 1;
 		final int spacing = 6;
+		if (availableWidth < 2 * dashWidth + spacing) {
+			guiGraphics.fill(Math.min(x1 + dashWidth, x2), y, x1, y + height, argbColor);
+			return;
+		}
 
 		// space out the dashes so that we always start and end with whole dashes
 		final int interval = dashWidth + spacing;
-		final int dashCount = availableWidth / interval;
-		final float floatInterval = (availableWidth - dashWidth) / (float) dashCount;
+		final int dashCount = availableWidth / interval + 1;
+		final float floatInterval = (availableWidth - dashWidth) / (float) (dashCount - 1);
 
-		for (float x = x1; x < x2; x += floatInterval) {
-			builder.addVertex(pose, Mth.clamp(x + dashWidth, x1, x2), y, 0).setColor(r, g, b, a);
-			builder.addVertex(pose, Mth.clamp(x, x1, x2), y, 0).setColor(r, g, b, a);
-			builder.addVertex(pose, Mth.clamp(x, x1, x2), y + dashHeight, 0).setColor(r, g, b, a);
-			builder.addVertex(pose, Mth.clamp(x + dashWidth, x1, x2), y + dashHeight, 0).setColor(r, g, b, a);
+		for (int i = 0; i < dashCount; i++) {
+			float x = x1 + i * floatInterval;
+			guiGraphics.fill(
+				(int) Mth.clamp(x + dashWidth, x1, x2),
+				y,
+				(int) Mth.clamp(x, x1, x2),
+				y + height,
+				argbColor)
+			;
+		}
+	}
+
+	static List<LineSegment> calculateLineSegments(ImmutableRect2i lineArea, Set<ImmutableRect2i> guiExclusionAreas) {
+		if (lineArea.isEmpty()) {
+			return List.of();
+		}
+		if (guiExclusionAreas.isEmpty()) {
+			return List.of(new LineSegment(lineArea.x(), lineArea.x() + lineArea.width()));
 		}
 
-		BufferUploader.drawWithShader(builder.buildOrThrow());
-		RenderSystem.disableBlend();
+		List<LineSegment> blockedSegments = guiExclusionAreas.stream()
+			.filter(lineArea::intersects)
+			.map(exclusionArea -> new LineSegment(
+				Math.max(lineArea.x(), exclusionArea.x()),
+				Math.min(lineArea.x() + lineArea.width(), exclusionArea.x() + exclusionArea.width())
+			))
+			.filter(segment -> segment.x1() < segment.x2())
+			.sorted(Comparator.comparingInt(LineSegment::x1))
+			.toList();
+
+		if (blockedSegments.isEmpty()) {
+			return List.of(new LineSegment(lineArea.x(), lineArea.x() + lineArea.width()));
+		}
+
+		List<LineSegment> lineSegments = new ArrayList<>();
+		int currentX = lineArea.x();
+		int lineRight = lineArea.x() + lineArea.width();
+		for (LineSegment blockedSegment : blockedSegments) {
+			if (blockedSegment.x1() > currentX) {
+				lineSegments.add(new LineSegment(currentX, blockedSegment.x1()));
+			}
+			currentX = Math.max(currentX, blockedSegment.x2());
+		}
+		if (currentX < lineRight) {
+			lineSegments.add(new LineSegment(currentX, lineRight));
+		}
+		return List.copyOf(lineSegments);
 	}
 
 	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
@@ -168,11 +198,15 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		if (isListDisplayed()) {
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY);
 			ImmutableRect2i area = this.contents.getArea();
-			int endX = area.getX() + area.getWidth();
 			int startY = area.getY() + area.getHeight() - rows * SLOT_HEIGHT - 3;
 			int color = 0xFF959595;
-			drawLine(guiGraphics.pose(), area.getX(), endX, startY, color);
+			ImmutableRect2i lineArea = new ImmutableRect2i(area.getX(), startY, area.getWidth(), 1);
+			drawLine(guiGraphics, lineArea, color);
 		}
+	}
+
+	public void drawBackground(GuiGraphics guiGraphics) {
+
 	}
 
 	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
@@ -195,6 +229,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 
 	@Override
 	public void close() {
+		this.guiExclusionAreas = Set.of();
 		this.ghostIngredientDragManager.stopDrag();
 	}
 
@@ -225,5 +260,9 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 
 	public IDragHandler createDragHandler() {
 		return this.ghostIngredientDragManager.createDragHandler();
+	}
+
+	record LineSegment(int x1, int x2) {
+
 	}
 }

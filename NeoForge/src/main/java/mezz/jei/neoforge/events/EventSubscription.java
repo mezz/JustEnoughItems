@@ -9,7 +9,11 @@ import java.util.function.Consumer;
 
 public class EventSubscription<T extends Event> {
 	public static <T extends Event> EventSubscription<T> register(IEventBus eventBus, Class<T> eventType, Consumer<T> listener) {
-		return new EventSubscription<>(eventBus, eventType, listener);
+		return register(eventBus, EventPriority.NORMAL, eventType, listener);
+	}
+
+	public static <T extends Event> EventSubscription<T> register(IEventBus eventBus, EventPriority priority, Class<T> eventType, Consumer<T> listener) {
+		return new EventSubscription<>(eventBus, priority, eventType, listener);
 	}
 
 	private final IEventBus eventBus;
@@ -27,12 +31,12 @@ public class EventSubscription<T extends Event> {
 	 */
 	private final WeakConsumer<T> registeredListener;
 
-	private EventSubscription(IEventBus eventBus, Class<T> eventType, Consumer<T> listener) {
+	private EventSubscription(IEventBus eventBus, EventPriority priority, Class<T> eventType, Consumer<T> listener) {
 		this.eventBus = eventBus;
 		this.listener = listener;
 
 		WeakConsumer<T> weakListener = new WeakConsumer<>(listener);
-		eventBus.addListener(EventPriority.NORMAL, false, eventType, weakListener);
+		eventBus.addListener(priority, false, eventType, weakListener);
 		this.registeredListener = weakListener;
 	}
 

@@ -1,5 +1,6 @@
 package mezz.jei.neoforge.startup;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.neoforge.events.RuntimeEventSubscriptions;
 import mezz.jei.neoforge.input.ForgeUserInput;
 import mezz.jei.gui.events.GuiEventHandler;
@@ -7,8 +8,10 @@ import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ContainerScreenEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
@@ -68,7 +71,7 @@ public class EventRegistration {
 			ForgeUserInput.fromEvent(event)
 				.ifPresent(input -> {
 					Screen screen = event.getScreen();
-					if (handler.onGuiMouseReleased(screen, input)){
+					if (handler.onGuiMouseReleased(screen, input)) {
 						event.setCanceled(true);
 					}
 				})
@@ -102,19 +105,23 @@ public class EventRegistration {
 			Screen screen = event.getScreen();
 			guiEventHandler.onGuiOpen(screen);
 		});
-		subscriptions.register(ContainerScreenEvent.Render.Foreground.class, event -> {
+		subscriptions.register(EventPriority.LOWEST, ContainerScreenEvent.Render.Foreground.class, event -> {
 			AbstractContainerScreen<?> containerScreen = event.getContainerScreen();
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			guiEventHandler.onDrawForeground(containerScreen, guiGraphics, mouseX, mouseY);
+			runWithIdentityPose(guiGraphics, () ->
+				guiEventHandler.drawForContainerScreen(containerScreen, guiGraphics, mouseX, mouseY)
+			);
 		});
-		subscriptions.register(ScreenEvent.Render.Post.class, event -> {
+		subscriptions.register(EventPriority.HIGHEST, ScreenEvent.Render.Background.class, event -> {
 			Screen screen = event.getScreen();
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			guiEventHandler.onDrawScreenPost(screen, guiGraphics, mouseX, mouseY);
+			runWithIdentityPose(guiGraphics, () ->
+				guiEventHandler.drawForScreen(screen, guiGraphics, mouseX, mouseY)
+			);
 		});
 		subscriptions.register(ScreenEvent.RenderInventoryMobEffects.class, event -> {
 			if (guiEventHandler.renderCompactPotionIndicators()) {
@@ -123,5 +130,16 @@ public class EventRegistration {
 				event.setCompact(true);
 			}
 		});
+	}
+
+	private static void runWithIdentityPose(GuiGraphics guiGraphics, Runnable runnable) {
+		PoseStack pose = guiGraphics.pose();
+		pose.pushPose();
+		pose.setIdentity();
+		try {
+			runnable.run();
+		} finally {
+			pose.popPose();
+		}
 	}
 }
