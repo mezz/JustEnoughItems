@@ -22,6 +22,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class IngredientSorterComparators {
+	private static final Set<ResourceLocation> IGNORED_TAGS = Set.of(
+		new ResourceLocation("itemfilters", "check_nbt")
+	);
+
 	private final IIngredientManager ingredientManager;
 	private final ModNameSortingConfig modNameSortingConfig;
 	private final IngredientTypeSortingConfig ingredientTypeSortingConfig;
@@ -161,8 +165,7 @@ public class IngredientSorterComparators {
 	}
 
 	private static int tagCount(ResourceLocation tagId) {
-		//TODO: make a tag blacklist.
-		if (tagId.toString().equals("itemfilters:check_nbt")) {
+		if (IGNORED_TAGS.contains(tagId)) {
 			return 0;
 		}
 		TagKey<Item> tagKey = TagKey.create(Registries.ITEM, tagId);
