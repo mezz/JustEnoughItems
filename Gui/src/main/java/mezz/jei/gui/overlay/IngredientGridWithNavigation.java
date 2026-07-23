@@ -13,7 +13,6 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.ghost.GhostIngredientQuickMoveManager;
@@ -32,7 +31,6 @@ import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.util.CommandUtil;
 import mezz.jei.gui.util.FocusUtil;
-import mezz.jei.gui.util.MaximalRectangle;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -41,7 +39,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -51,11 +48,6 @@ import java.util.stream.Stream;
  * Displays a list of ingredients with navigation at the top.
  */
 public class IngredientGridWithNavigation implements IRecipeFocusSource {
-	private static final int NAVIGATION_HEIGHT = 20;
-	private static final int BORDER_MARGIN = 6;
-	private static final int BORDER_PADDING = 5;
-	private static final int INNER_PADDING = 2;
-
 	private final IngredientGridPageState pageState = new IngredientGridPageState();
 	private final IngredientGridPaged pageDelegate;
 	private final PageNavigation navigation;
@@ -117,7 +109,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	public boolean hasRoom() {
-		return this.ingredientGrid.hasRoom();
+		return active;
 	}
 
 	public void updateLayout(boolean resetToFirstPage) {
@@ -172,120 +164,32 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			.ifPresent(this.pageState::setPageAnchorElement);
 	}
 
-	private static ImmutableRect2i avoidExclusionAreas(
-		ImmutableRect2i availableArea,
-		ImmutableRect2i estimatedNavigationArea,
-		Set<ImmutableRect2i> guiExclusionAreas,
-		IIngredientGridConfig gridConfig
-	) {
-		final int maxDimension = Math.max(availableArea.getWidth(), availableArea.getHeight());
-		final int samplingScale = Math.max(IngredientGrid.INGREDIENT_HEIGHT / 2, maxDimension / 25);
-
-		ImmutableRect2i largestSafeArea = MaximalRectangle.getLargestRectangles(
+	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
+		this.guiExclusionAreas = guiExclusionAreas;
+		IngredientGridWithNavigationLayout.Layout layout = IngredientGridWithNavigationLayout.calculate(
+			this.gridConfig,
 			availableArea,
 			guiExclusionAreas,
-			samplingScale
-		)
-			.max(Comparator.comparingInt((ImmutableRect2i rect) -> IngredientGrid.calculateSize(gridConfig, rect).getArea())
-				.thenComparing(r -> r.getWidth() * r.getHeight()))
-			.orElse(ImmutableRect2i.EMPTY);
-
-		final boolean intersectsNavigationArea = guiExclusionAreas.stream()
-			.anyMatch(estimatedNavigationArea::intersects);
-		if (intersectsNavigationArea) {
-			return largestSafeArea;
-		}
-
-		IngredientGrid.SlotInfo slotInfo = IngredientGrid.calculateBlockedSlotPercentage(gridConfig, availableArea, guiExclusionAreas);
-		IngredientGrid.SlotInfo safeSlotInfo = IngredientGrid.calculateBlockedSlotPercentage(gridConfig, largestSafeArea, guiExclusionAreas);
-		if (slotInfo.percentBlocked() > 0.25 || safeSlotInfo.total() > slotInfo.total()) {
-			return largestSafeArea;
-		} else {
-			return availableArea;
-		}
-	}
-
-	private void updateGridBounds(final ImmutableRect2i availableArea, @Nullable ImmutablePoint2i mouseExclusionPoint, boolean navigationEnabled) {
-		ImmutableRect2i availableGridArea = availableArea.insetBy(BORDER_MARGIN);
-		if (gridConfig.drawBackground()) {
-			availableGridArea = availableGridArea
-				.insetBy(BORDER_PADDING + INNER_PADDING);
-		}
-
-		ImmutableRect2i estimatedGridArea = IngredientGrid.calculateBounds(gridConfig, availableGridArea);
-
-		if (!estimatedGridArea.isEmpty()) {
-			ImmutableRect2i slotBackgroundArea = calculateSlotBackgroundArea(estimatedGridArea, this.gridConfig);
-			ImmutableRect2i estimatedNavigationArea = calculateNavigationArea(slotBackgroundArea, navigationEnabled);
-			if (gridConfig.drawBackground()) {
-				estimatedNavigationArea.expandBy(BORDER_PADDING + INNER_PADDING);
-			}
-
-			availableGridArea = avoidExclusionAreas(
-				availableArea,
-				estimatedNavigationArea,
-				guiExclusionAreas,
-				gridConfig
-			)
-				.insetBy(BORDER_MARGIN)
-				.cropTop(NAVIGATION_HEIGHT + INNER_PADDING);
-
-			if (gridConfig.drawBackground()) {
-				availableGridArea = availableGridArea.insetBy(BORDER_PADDING + INNER_PADDING);
-			}
-		}
-
-		this.ingredientGrid.updateBounds(availableGridArea, guiExclusionAreas, mouseExclusionPoint);
-	}
-
-	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
-		this.active = true;
-		this.guiExclusionAreas = guiExclusionAreas;
-
-		final boolean navigationEnabled =
-			switch (this.gridConfig.getButtonNavigationVisibility()) {
-				case ENABLED -> true;
-				case DISABLED -> false;
-				case AUTO_HIDE -> {
-					updateGridBounds(availableArea, mouseExclusionPoint, false);
-					yield hasRoom() && this.pageDelegate.getPageCount() > 1;
-				}
-			};
-		if (navigationEnabled) {
-			updateGridBounds(availableArea, mouseExclusionPoint, true);
-		}
-		if (!hasRoom()) {
-			this.active = false;
+			mouseExclusionPoint,
+			ingredientSource.getElements().size()
+		);
+		if (!layout.hasRoom()) {
+			clearLayout();
 			return;
 		}
-
-		this.slotBackgroundArea = calculateSlotBackgroundArea(this.ingredientGrid.getArea(), this.gridConfig);
-
-		ImmutableRect2i navigationArea = calculateNavigationArea(this.slotBackgroundArea, navigationEnabled);
-		this.navigation.updateBounds(navigationArea);
-
-		this.backgroundArea = MathUtil.union(this.slotBackgroundArea, navigationArea);
-		if (gridConfig.drawBackground()) {
-			this.backgroundArea = this.backgroundArea.expandBy(BORDER_PADDING);
-		}
+		this.ingredientGrid.updateBounds(layout.ingredientGridArea(), guiExclusionAreas, mouseExclusionPoint);
+		this.slotBackgroundArea = layout.slotBackgroundArea();
+		this.navigation.updateBounds(layout.navigationArea());
+		this.backgroundArea = layout.backgroundArea();
+		this.active = true;
 	}
 
-	private static ImmutableRect2i calculateSlotBackgroundArea(ImmutableRect2i ingredientGridArea, IIngredientGridConfig gridConfig) {
-		if (gridConfig.drawBackground()) {
-			return ingredientGridArea.expandBy(INNER_PADDING);
-		} else {
-			return ingredientGridArea;
-		}
-	}
-
-	private static ImmutableRect2i calculateNavigationArea(ImmutableRect2i slotBackgroundArea, boolean navigationEnabled) {
-		if (!navigationEnabled) {
-			return ImmutableRect2i.EMPTY;
-		}
-
-		return slotBackgroundArea
-			.keepTop(NAVIGATION_HEIGHT)
-			.moveUp(NAVIGATION_HEIGHT + INNER_PADDING);
+	private void clearLayout() {
+		this.ingredientGrid.updateBounds(ImmutableRect2i.EMPTY, Set.of(), null);
+		this.slotBackgroundArea = ImmutableRect2i.EMPTY;
+		this.navigation.updateBounds(ImmutableRect2i.EMPTY);
+		this.backgroundArea = ImmutableRect2i.EMPTY;
+		this.active = false;
 	}
 
 	public ImmutableRect2i getBackgroundArea() {

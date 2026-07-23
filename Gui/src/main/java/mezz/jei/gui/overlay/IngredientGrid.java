@@ -125,6 +125,10 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	}
 
 	public record SlotInfo(int total, int blocked) {
+		public int available() {
+			return total - blocked;
+		}
+
 		public float percentBlocked() {
 			return blocked / (float) total;
 		}
@@ -132,14 +136,18 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 
 	public static SlotInfo calculateBlockedSlotPercentage(IIngredientGridConfig config, ImmutableRect2i availableArea, Set<ImmutableRect2i> exclusionAreas) {
 		ImmutableRect2i area = calculateBounds(config, availableArea);
+		return calculateSlotInfo(area, exclusionAreas, null);
+	}
 
+	public static SlotInfo calculateSlotInfo(ImmutableRect2i area, Set<ImmutableRect2i> exclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
 		int total = 0;
 		int blocked = 0;
 		for (int y = area.getY(); y < area.getY() + area.getHeight(); y += INGREDIENT_HEIGHT) {
 			for (int x = area.getX(); x < area.getX() + area.getWidth(); x += INGREDIENT_WIDTH) {
 				IngredientListSlot ingredientListSlot = new IngredientListSlot(x, y, INGREDIENT_WIDTH, INGREDIENT_HEIGHT, INGREDIENT_PADDING);
 				ImmutableRect2i stackArea = ingredientListSlot.getArea();
-				if (MathUtil.intersects(exclusionAreas, stackArea.expandBy(2))) {
+				if (MathUtil.intersects(exclusionAreas, stackArea.expandBy(2)) ||
+					(mouseExclusionPoint != null && stackArea.contains(mouseExclusionPoint))) {
 					blocked++;
 				}
 				total++;
