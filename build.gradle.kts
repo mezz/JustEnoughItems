@@ -1,3 +1,5 @@
+import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
+import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import com.gtnewhorizons.retrofuturagradle.mcp.DeobfuscateTask
 import org.gradle.api.attributes.java.TargetJvmVersion
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -8,6 +10,7 @@ plugins {
 	id("com.gtnewhorizons.retrofuturagradle") version("2.0.3")
 	id("eclipse")
 	id("java")
+	id("net.neoforged.jarcompatibilitychecker") version("0.1.23")
 	id("me.modmuss50.mod-publish-plugin") version("2.2.0")
 	id("maven-publish")
 	id("org.jetbrains.gradle.plugin.idea-ext") version "1.4.1"
@@ -371,4 +374,27 @@ tasks.named<Test>("test") {
 		events = setOf(TestLogEvent.FAILED)
 		exceptionFormat = TestExceptionFormat.FULL
 	}
+}
+
+
+val checkApiJarCompatibility = tasks.named<CompatibilityTask>("checkJarCompatibility") {
+	group = "verification"
+	description = "Checks the JEI API against the latest published API jar in the same major version."
+	inputJar.set(apiJarTask.flatMap { it.archiveFile })
+	artifact.set("$modGroup:$baseArchivesName")
+	classifier.set("api")
+	mavens.set(listOf("https://maven.blamejared.com"))
+	libraries.setFrom(emptyList<Any>())
+	nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
+	fail.set(true)
+}
+
+val checkApiCompatibility = tasks.register("checkApiCompatibility") {
+	group = "verification"
+	description = "Checks compatibility with the latest published JEI 4 API."
+	dependsOn(checkApiJarCompatibility)
+}
+
+tasks.named("check") {
+	dependsOn(checkApiCompatibility)
 }
