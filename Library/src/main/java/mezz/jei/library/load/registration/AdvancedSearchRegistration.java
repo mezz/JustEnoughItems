@@ -1,7 +1,10 @@
 package mezz.jei.library.load.registration;
 
 import mezz.jei.api.registration.IAdvancedSearchRegistration;
+import mezz.jei.api.search.ISearchStorageBuilder;
+import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.api.search.ISearchStorageFactory;
+import mezz.jei.core.search.SearchStorageBuilderAdapter;
 import mezz.jei.common.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,17 +16,30 @@ public class AdvancedSearchRegistration implements IAdvancedSearchRegistration {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	@Nullable
-	private ISearchStorageFactory searchStorageFactoryOverride;
+	private ISearchStorageBuilderFactory searchStorageBuilderFactoryOverride;
 
 	@Override
 	public void replaceSearchStorage(ISearchStorageFactory searchStorageFactory) {
 		ErrorUtil.checkNotNull(searchStorageFactory, "searchStorageFactory");
 
 		LOGGER.info("Replaced search storage factory: {}", searchStorageFactory);
-		this.searchStorageFactoryOverride = searchStorageFactory;
+		this.searchStorageBuilderFactoryOverride = new ISearchStorageBuilderFactory() {
+			@Override
+			public <T> ISearchStorageBuilder<T> create() {
+				return new SearchStorageBuilderAdapter<>(searchStorageFactory.createSearchStorage());
+			}
+		};
 	}
 
-	public Optional<ISearchStorageFactory> getSearchStorageFactoryOverride() {
-		return Optional.ofNullable(searchStorageFactoryOverride);
+	@Override
+	public void replaceSearchStorage(ISearchStorageBuilderFactory searchStorageBuilderFactory) {
+		ErrorUtil.checkNotNull(searchStorageBuilderFactory, "searchStorageBuilderFactory");
+
+		LOGGER.info("Replaced search storage factory: {}", searchStorageBuilderFactory);
+		this.searchStorageBuilderFactoryOverride = searchStorageBuilderFactory;
+	}
+
+	public Optional<ISearchStorageBuilderFactory> getSearchStorageBuilderFactoryOverride() {
+		return Optional.ofNullable(searchStorageBuilderFactoryOverride);
 	}
 }

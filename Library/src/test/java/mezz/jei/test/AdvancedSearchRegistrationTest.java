@@ -1,8 +1,10 @@
 package mezz.jei.test;
 
 import mezz.jei.api.search.ISearchStorage;
+import mezz.jei.api.search.ISearchStorageBuilder;
+import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.api.search.ISearchStorageFactory;
-import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
+import mezz.jei.core.search.BakedSubstringIndexBuilder;
 import mezz.jei.library.load.PluginLoader;
 import mezz.jei.library.load.registration.AdvancedSearchRegistration;
 import org.junit.jupiter.api.Assertions;
@@ -15,10 +17,10 @@ import java.util.function.Consumer;
 
 public class AdvancedSearchRegistrationTest {
 	@Test
-	public void defaultStorageUsesGeneralizedSuffixTree() {
-		ISearchStorage<String> searchStorage = PluginLoader.createSearchStorageFactory(List.of()).createSearchStorage();
+	public void defaultStorageUsesBakedSubstringIndexBuilder() {
+		ISearchStorageBuilder<String> searchStorageBuilder = PluginLoader.createSearchStorageFactory(List.of()).create();
 
-		Assertions.assertInstanceOf(GeneralizedSuffixTree.class, searchStorage);
+		Assertions.assertInstanceOf(BakedSubstringIndexBuilder.class, searchStorageBuilder);
 	}
 
 	@Test
@@ -34,9 +36,9 @@ public class AdvancedSearchRegistrationTest {
 			}
 		});
 
-		ISearchStorageFactory searchStorageFactory = searchRegistration.getSearchStorageFactoryOverride()
+		ISearchStorageBuilderFactory searchStorageBuilderFactory = searchRegistration.getSearchStorageBuilderFactoryOverride()
 			.orElseThrow();
-		ISearchStorage<String> searchStorage = searchStorageFactory.createSearchStorage();
+		ISearchStorage<String> searchStorage = searchStorageBuilderFactory.<String>create().build();
 
 		Assertions.assertEquals(1, createdStorages.size());
 		Assertions.assertSame(createdStorages.get(0), searchStorage);

@@ -9,7 +9,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IClientConfig;
-import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
+import mezz.jei.core.search.BakedSubstringIndexBuilder;
 import mezz.jei.gui.filter.FilterTextSource;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.ingredients.IListElementInfo;
@@ -95,7 +95,7 @@ public class IngredientFilterTest {
 			modIdHelper,
 			ingredientVisibility,
 			colorHelper,
-			GeneralizedSuffixTree::new,
+			BakedSubstringIndexBuilder::new,
 			toggleState
 		);
 
