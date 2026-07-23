@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.drawable.TilingDirection;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -23,6 +24,7 @@ import mezz.jei.library.gui.ingredients.ICycler;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RendererOverrides;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
+import mezz.jei.library.render.FluidTankRenderer;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
@@ -137,14 +139,27 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 
 	@Override
 	public IRecipeSlotBuilder setFluidRenderer(long capacity, boolean showCapacity, int width, int height) {
-		Preconditions.checkArgument(capacity > 0, "capacity must be > 0");
-
-		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
-		return setFluidRenderer(fluidHelper, capacity, showCapacity, width, height);
+		return setFluidRenderer(capacity, showCapacity, width, height, TilingDirection.UP_RIGHT);
 	}
 
-	private <T> IRecipeSlotBuilder setFluidRenderer(IPlatformFluidHelperInternal<T> fluidHelper, long capacity, boolean showCapacity, int width, int height) {
-		IIngredientRenderer<T> renderer = fluidHelper.createRenderer(capacity, showCapacity, width, height);
+	@Override
+	public IRecipeSlotBuilder setFluidRenderer(long capacity, boolean showCapacity, int width, int height, TilingDirection tilingDirection) {
+		Preconditions.checkArgument(capacity > 0, "capacity must be > 0");
+		ErrorUtil.checkNotNull(tilingDirection, "tilingDirection");
+
+		IPlatformFluidHelperInternal<?> fluidHelper = Services.PLATFORM.getFluidHelper();
+		return setFluidRenderer(fluidHelper, capacity, showCapacity, width, height, tilingDirection);
+	}
+
+	private <T> IRecipeSlotBuilder setFluidRenderer(
+		IPlatformFluidHelperInternal<T> fluidHelper,
+		long capacity,
+		boolean showCapacity,
+		int width,
+		int height,
+		TilingDirection tilingDirection
+	) {
+		IIngredientRenderer<T> renderer = new FluidTankRenderer<>(fluidHelper, capacity, showCapacity, width, height, tilingDirection);
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
 		addRenderOverride(type, renderer);
 		return this;
