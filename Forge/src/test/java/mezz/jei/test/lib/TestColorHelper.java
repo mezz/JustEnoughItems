@@ -19,6 +19,9 @@ public class TestColorHelper implements IColorHelper {
 
 	@Override
 	public String getClosestColorName(int color) {
-		return "";
+		return switch (color) {
+			case 0xFF000000 -> "black";
+			default -> "";
+		};
 	}
 }
