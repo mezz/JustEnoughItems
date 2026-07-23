@@ -21,6 +21,7 @@ public class Textures {
 	private final ScalableDrawable recipeGuiBackground;
 	private final ScalableDrawable ingredientListBackground;
 	private final ScalableDrawable bookmarkListBackground;
+	private final ScalableDrawable exclusionAreaShadow;
 	private final ScalableDrawable recipeBackground;
 	private final ScalableDrawable recipePreviewBackground;
 	private final ScalableDrawable searchBackground;
@@ -70,6 +71,7 @@ public class Textures {
 		this.recipeGuiBackground = createScalableGuiSprite("gui_background");
 		this.ingredientListBackground = createScalableGuiSprite("ingredient_list_background");
 		this.bookmarkListBackground = createScalableGuiSprite("bookmark_list_background");
+		this.exclusionAreaShadow = createScalableGuiSprite("exclusion_area_shadow");
 		this.recipeBackground = createScalableGuiSprite("single_recipe_background");
 		this.recipePreviewBackground = createScalableGuiSprite("recipe_preview_background");
 		this.searchBackground = createScalableGuiSprite("search_background");
@@ -201,6 +203,10 @@ public class Textures {
 
 	public ScalableDrawable getBookmarkListBackground() {
 		return bookmarkListBackground;
+	}
+
+	public ScalableDrawable getExclusionAreaShadow() {
+		return exclusionAreaShadow;
 	}
 
 	public ScalableDrawable getRecipeBackground() {

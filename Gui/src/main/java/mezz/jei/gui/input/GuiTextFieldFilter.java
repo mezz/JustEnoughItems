@@ -104,9 +104,17 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 
 	@Override
 	public void extractWidgetRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+		extractBackgroundRenderState(guiGraphics);
+		extractForegroundRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+	}
+
+	public void extractBackgroundRenderState(GuiGraphicsExtractor guiGraphics) {
 		if (this.isVisible()) {
 			background.draw(guiGraphics, this.backgroundBounds);
 		}
+	}
+
+	public void extractForegroundRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		super.extractWidgetRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 	}
 }
