@@ -2,7 +2,6 @@ package mezz.jei.gui.overlay;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 
 import java.util.Optional;
 
@@ -11,13 +10,15 @@ class IngredientListOverlayLayout {
 	private static final int INNER_PADDING = 2;
 	private static final int BUTTON_SIZE = 20;
 	private static final int SEARCH_HEIGHT = BUTTON_SIZE;
+	private static final int LOOKUP_HISTORY_BOTTOM_PADDING = BORDER_MARGIN;
+	private static final int LOOKUP_HISTORY_PADDING_EXTRA = LOOKUP_HISTORY_BOTTOM_PADDING - INNER_PADDING;
 
 	static Layout calculate(
 		IGuiProperties guiProperties,
 		boolean centerSearchBarEnabled,
 		boolean lookupHistoryEnabled,
 		boolean lookupHistoryDisplayedOnThisSide,
-		int maxLookupHistoryRows
+		int lookupHistoryDisplayHeight
 	) {
 		ImmutableRect2i displayArea = createDisplayArea(guiProperties);
 		boolean searchBarCentered = isSearchBarCentered(centerSearchBarEnabled, guiProperties);
@@ -25,10 +26,12 @@ class IngredientListOverlayLayout {
 		Optional<ImmutableRect2i> lookupHistoryArea = Optional.empty();
 
 		if (lookupHistoryEnabled && lookupHistoryDisplayedOnThisSide) {
-			int lookupHistoryHeight = maxLookupHistoryRows * LookupHistoryOverlay.SLOT_HEIGHT;
-			if (lookupHistoryHeight > 0) {
-				ImmutableRect2i area = getLookupHistoryArea(displayArea, searchBarCentered, lookupHistoryHeight);
-				availableContentsArea = cropBottomTo(availableContentsArea, area.y());
+			if (lookupHistoryDisplayHeight > 0) {
+				ImmutableRect2i area = getLookupHistoryArea(displayArea, searchBarCentered, lookupHistoryDisplayHeight);
+				availableContentsArea = cropBottomTo(
+					availableContentsArea,
+					area.y() - LOOKUP_HISTORY_PADDING_EXTRA
+				);
 				lookupHistoryArea = Optional.of(area);
 			}
 		}
@@ -54,7 +57,7 @@ class IngredientListOverlayLayout {
 	}
 
 	private static ImmutableRect2i getLookupHistoryArea(ImmutableRect2i displayArea, boolean searchBarCentered, int lookupHistoryHeight) {
-		int bottomReservedHeight = searchBarCentered ? 0 : SEARCH_HEIGHT + INNER_PADDING;
+		int bottomReservedHeight = searchBarCentered ? 0 : SEARCH_HEIGHT + LOOKUP_HISTORY_BOTTOM_PADDING;
 		return displayArea
 			.insetBy(BORDER_MARGIN)
 			.cropBottom(bottomReservedHeight)

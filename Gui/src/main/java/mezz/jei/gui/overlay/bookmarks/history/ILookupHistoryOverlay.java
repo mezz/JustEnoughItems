@@ -17,6 +17,11 @@ public interface ILookupHistoryOverlay {
 	boolean isDisplayedOnThisSide();
 
 	/**
+	 * Returns the vertical screen space needed to display this lookup-history panel.
+	 */
+	int getDisplayHeight();
+
+	/**
 	 * Closes the lookup-history panel and clears any screen-specific state.
 	 */
 	void close();

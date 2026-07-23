@@ -9,6 +9,7 @@ import mezz.jei.gui.filter.FilterTextSource;
 import mezz.jei.gui.overlay.bookmarks.history.ILookupHistoryOverlay;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
+import mezz.jei.gui.overlay.history.LookupHistoryOverlayLayout;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridPageNavigation;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridView;
 import org.jetbrains.annotations.Nullable;
@@ -62,8 +63,8 @@ public class IngredientListOverlayControllerTest {
 		// Setup: lookup history is shown beside the ingredient list, and contents report a usable background.
 		Fixture fixture = Fixture.create();
 		fixture.config.lookupHistoryEnabled = true;
-		fixture.config.maxLookupHistoryRows = 2;
 		fixture.lookupHistory.displayedOnThisSide = true;
+		fixture.lookupHistory.displayHeight = LookupHistoryOverlayLayout.getDisplayHeight(2, false);
 		fixture.contents.backgroundArea = new ImmutableRect2i(160, 8, 40, 40);
 		fixture.controller.init();
 		IGuiProperties guiProperties = guiProperties(50, 20, 100, 50, 200, 100);
@@ -116,8 +117,8 @@ public class IngredientListOverlayControllerTest {
 		// Setup: the cache has valid screen properties and an exclusion area from the active screen.
 		Fixture fixture = Fixture.create();
 		fixture.config.lookupHistoryEnabled = true;
-		fixture.config.maxLookupHistoryRows = 1;
 		fixture.lookupHistory.displayedOnThisSide = true;
+		fixture.lookupHistory.displayHeight = LookupHistoryOverlayLayout.getDisplayHeight(1, false);
 		Set<ImmutableRect2i> guiExclusionAreas = Set.of(new ImmutableRect2i(170, 10, 10, 10));
 		fixture.guiPropertiesCache.guiProperties = guiProperties(50, 20, 100, 50, 200, 100);
 		fixture.guiPropertiesCache.guiExclusionAreas = guiExclusionAreas;
@@ -389,7 +390,6 @@ public class IngredientListOverlayControllerTest {
 	private static class TestConfig implements IngredientListOverlayController.Config {
 		boolean centerSearchBarEnabled = false;
 		boolean lookupHistoryEnabled = false;
-		int maxLookupHistoryRows = 0;
 
 		@Override
 		public boolean isCenterSearchBarEnabled() {
@@ -399,11 +399,6 @@ public class IngredientListOverlayControllerTest {
 		@Override
 		public boolean isLookupHistoryEnabled() {
 			return lookupHistoryEnabled;
-		}
-
-		@Override
-		public int getMaxLookupHistoryRows() {
-			return maxLookupHistoryRows;
 		}
 	}
 
@@ -482,6 +477,7 @@ public class IngredientListOverlayControllerTest {
 
 	private static class TestLookupHistory implements ILookupHistoryOverlay {
 		boolean displayedOnThisSide = false;
+		int displayHeight = LookupHistoryOverlayLayout.getDisplayHeight(2, false);
 		int closeCount = 0;
 		int layoutUpdates = 0;
 		Set<ImmutableRect2i> guiExclusionAreas = Set.of();
@@ -491,6 +487,11 @@ public class IngredientListOverlayControllerTest {
 		@Override
 		public boolean isDisplayedOnThisSide() {
 			return displayedOnThisSide;
+		}
+
+		@Override
+		public int getDisplayHeight() {
+			return displayHeight;
 		}
 
 		@Override

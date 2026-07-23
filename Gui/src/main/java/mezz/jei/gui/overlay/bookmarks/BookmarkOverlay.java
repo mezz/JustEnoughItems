@@ -48,6 +48,8 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	private static final int BORDER_MARGIN = 6;
 	private static final int INNER_PADDING = 2;
 	private static final int BUTTON_SIZE = 20;
+	private static final int LOOKUP_HISTORY_BOTTOM_PADDING = BORDER_MARGIN;
+	private static final int LOOKUP_HISTORY_PADDING_EXTRA = LOOKUP_HISTORY_BOTTOM_PADDING - INNER_PADDING;
 
 	// input
 	private final BookmarkDragManager bookmarkDragManager;
@@ -156,14 +158,16 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		ImmutablePoint2i mouseExclusionArea = this.guiPropertiesCache.getMouseExclusionArea();
 		ImmutableRect2i availableContentsArea = displayArea.cropBottom(BUTTON_SIZE + INNER_PADDING);
 		if (clientConfig.lookupHistoryEnabled().getValue() && lookupHistoryOverlay.isDisplayedOnThisSide()) {
-			int historyRows = clientConfig.maxLookupHistoryRows().getValue();
-			int historyHeight = historyRows * LookupHistoryOverlay.SLOT_HEIGHT;
-			if (historyHeight > 0) {
+			int lookupHistoryDisplayHeight = lookupHistoryOverlay.getDisplayHeight();
+			if (lookupHistoryDisplayHeight > 0) {
 				ImmutableRect2i historyArea = displayArea
 					.insetBy(BORDER_MARGIN)
-					.cropBottom(BUTTON_SIZE + INNER_PADDING)
-					.keepBottom(historyHeight);
-				availableContentsArea = cropBottomTo(availableContentsArea, historyArea.y());
+					.cropBottom(BUTTON_SIZE + LOOKUP_HISTORY_BOTTOM_PADDING)
+					.keepBottom(lookupHistoryDisplayHeight);
+				availableContentsArea = cropBottomTo(
+					availableContentsArea,
+					historyArea.y() - LOOKUP_HISTORY_PADDING_EXTRA
+				);
 				this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, mouseExclusionArea);
 				this.lookupHistoryOverlay.updateLayout();
 			}

@@ -121,8 +121,20 @@ public class EventRegistration {
 				guiEventHandler.drawForContainerScreen(containerScreen, guiGraphics, mouseX, mouseY)
 			);
 		});
-		subscriptions.register(EventPriority.HIGHEST, ScreenEvent.Render.Background.class, event -> {
+		subscriptions.register(EventPriority.HIGHEST, ContainerScreenEvent.Render.Background.class, event -> {
+			AbstractContainerScreen<?> containerScreen = event.getContainerScreen();
+			var guiGraphics = event.getGuiGraphics();
+			int mouseX = event.getMouseX();
+			int mouseY = event.getMouseY();
+			runWithIdentityPose(guiGraphics, () ->
+				guiEventHandler.drawForScreen(containerScreen, guiGraphics, mouseX, mouseY)
+			);
+		});
+		subscriptions.register(EventPriority.HIGHEST, ScreenEvent.Render.Post.class, event -> {
 			Screen screen = event.getScreen();
+			if (screen instanceof AbstractContainerScreen<?>) {
+				return;
+			}
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();

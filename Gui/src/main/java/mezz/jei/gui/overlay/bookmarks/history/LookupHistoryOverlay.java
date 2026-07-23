@@ -8,18 +8,20 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
-import mezz.jei.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.overlay.elements.IElement;
+import mezz.jei.gui.overlay.history.LookupHistoryOverlayLayout;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
+import mezz.jei.gui.overlay.ingredients.GuiExclusionAreaShadow;
 import mezz.jei.gui.overlay.ingredients.IngredientGrid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -34,18 +36,23 @@ import java.util.stream.Stream;
 
 public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryOverlay {
 
-	private static final int INGREDIENT_PADDING = 1;
-	public static final int SLOT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
+	public static final int SLOT_HEIGHT = LookupHistoryOverlayLayout.SLOT_HEIGHT;
 
 	// display elements
 	private final IngredientGrid contents;
+	private final ScalableDrawable background;
+	private final ScalableDrawable slotBackground;
+	private final ScalableDrawable exclusionAreaShadow;
 
 	// data
 	private final IIngredientGridSource lookupHistory;
+	private final IIngredientGridConfig historyListConfig;
 	private final IClientConfig clientConfig;
 	private final HistoryDisplaySide ownerDisplaySide;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private Set<ImmutableRect2i> guiExclusionAreas = Set.of();
+	private ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
+	private ImmutableRect2i slotBackgroundArea = ImmutableRect2i.EMPTY;
 	private int rows;
 	private boolean layoutDirty = true;
 
@@ -55,6 +62,9 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 			IInternalKeyMappings keyMappings,
 			IIngredientGridConfig historyListConfig,
 			IIngredientFilterConfig ingredientFilterConfig,
+			ScalableDrawable background,
+			ScalableDrawable slotBackground,
+			ScalableDrawable exclusionAreaShadow,
 			IClientConfig clientConfig,
 			HistoryDisplaySide ownerDisplaySide,
 			IClientToggleState toggleState,
@@ -64,6 +74,10 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	) {
 		this.clientConfig = clientConfig;
 		this.lookupHistory = lookupHistory;
+		this.historyListConfig = historyListConfig;
+		this.background = background;
+		this.slotBackground = slotBackground;
+		this.exclusionAreaShadow = exclusionAreaShadow;
 		this.contents = new IngredientGrid(
 				ingredientManager,
 				historyListConfig,
@@ -97,9 +111,24 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	}
 
 	@Override
+	public int getDisplayHeight() {
+		return getDisplayHeight(
+			clientConfig.maxLookupHistoryRows().getValue(),
+			historyListConfig.drawBackground().getValue()
+		);
+	}
+
+	public static int getDisplayHeight(int maxRows, boolean drawBackground) {
+		return LookupHistoryOverlayLayout.getDisplayHeight(maxRows, drawBackground);
+	}
+
+	@Override
 	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
 		this.guiExclusionAreas = guiExclusionAreas;
-		this.contents.updateBounds(availableArea, guiExclusionAreas, mouseExclusionPoint);
+		LookupHistoryOverlayLayout layout = LookupHistoryOverlayLayout.calculate(this.historyListConfig, availableArea);
+		this.contents.updateBounds(layout.availableGridArea(), guiExclusionAreas, mouseExclusionPoint);
+		this.backgroundArea = layout.backgroundArea();
+		this.slotBackgroundArea = layout.slotBackgroundArea();
 		int rows = this.contents.getArea().getHeight() / SLOT_HEIGHT;
 		this.rows = Math.min(rows, clientConfig.maxLookupHistoryRows().getValue());
 	}
@@ -197,16 +226,22 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		updateLayoutIfDirty();
 		if (isListDisplayed()) {
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY);
-			ImmutableRect2i area = this.contents.getArea();
-			int startY = area.getY() + area.getHeight() - rows * SLOT_HEIGHT - 3;
-			int color = 0xFF959595;
-			ImmutableRect2i lineArea = new ImmutableRect2i(area.getX(), startY, area.getWidth(), 1);
-			drawLine(guiGraphics, lineArea, color);
+			if (!this.historyListConfig.drawBackground().getValue()) {
+				ImmutableRect2i area = this.contents.getArea();
+				int startY = area.getY() + area.getHeight() - rows * SLOT_HEIGHT - 3;
+				int color = 0xFF959595;
+				ImmutableRect2i lineArea = new ImmutableRect2i(area.getX(), startY, area.getWidth(), 1);
+				drawLine(guiGraphics, lineArea, color);
+			}
 		}
 	}
 
 	public void drawBackground(GuiGraphics guiGraphics) {
-
+		if (isListDisplayed() && this.historyListConfig.drawBackground().getValue()) {
+			this.background.draw(guiGraphics, this.backgroundArea);
+			this.slotBackground.draw(guiGraphics, this.slotBackgroundArea);
+			GuiExclusionAreaShadow.draw(guiGraphics, this.exclusionAreaShadow, this.backgroundArea, this.guiExclusionAreas);
+		}
 	}
 
 	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
@@ -230,6 +265,8 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	@Override
 	public void close() {
 		this.guiExclusionAreas = Set.of();
+		this.backgroundArea = ImmutableRect2i.EMPTY;
+		this.slotBackgroundArea = ImmutableRect2i.EMPTY;
 		this.ghostIngredientDragManager.stopDrag();
 	}
 
