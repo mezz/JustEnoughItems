@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay;
 
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.gui.overlay.history.LookupHistoryOverlayLayout;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -166,6 +167,50 @@ public class IngredientListOverlayLayoutTest {
 	}
 
 	@Test
+	public void sideLookupHistoryReservesBackgroundPaddingWhenBackgroundIsEnabled() {
+		// Setup: lookup history is enabled with a background, which needs padding around the slots.
+		TestGuiProperties guiProperties = new TestGuiProperties(50, 20, 100, 50, 200, 140);
+		int maxRows = 2;
+
+		// Operation: calculate the overlay layout with and without the lookup-history background.
+		IngredientListOverlayLayout.Layout withoutBackground = calculate(
+			guiProperties,
+			false,
+			true,
+			true,
+			maxRows,
+			false
+		);
+		IngredientListOverlayLayout.Layout withBackground = calculate(
+			guiProperties,
+			false,
+			true,
+			true,
+			maxRows,
+			true
+		);
+
+		// Assertions: background drawing reserves the extra display height required for the padded panel.
+		ImmutableRect2i withoutBackgroundArea = withoutBackground.lookupHistoryArea()
+			.orElseThrow(() -> new AssertionError("lookup history area should be reserved"));
+		ImmutableRect2i withBackgroundArea = withBackground.lookupHistoryArea()
+			.orElseThrow(() -> new AssertionError("lookup history area should be reserved"));
+		assertEquals(LookupHistoryOverlayLayout.getDisplayHeight(maxRows, true), withBackgroundArea.height());
+		assertTrue(withBackgroundArea.height() > withoutBackgroundArea.height());
+		IngredientListOverlayLayout.SearchAndConfigAreas withBackgroundControls = withBackground.getSearchAndConfigAreas(
+			false,
+			ImmutableRect2i.EMPTY
+		);
+		int screenEdgePadding = withBackgroundArea.x() - withBackground.displayArea().x();
+		int lookupHistoryToButtonPadding = withBackgroundControls.searchArea().y() - bottom(withBackgroundArea);
+		assertEquals(screenEdgePadding, lookupHistoryToButtonPadding);
+		assertTrue(
+			bottom(withBackground.availableContentsArea()) < bottom(withoutBackground.availableContentsArea()),
+			"main contents should reserve the extra lookup-history background padding"
+		);
+	}
+
+	@Test
 	public void lookupHistoryDoesNotReserveRowsWhenDisplayedOnTheOtherSide() {
 		// Setup: lookup history is enabled, but it is displayed on the opposite overlay side.
 		TestGuiProperties guiProperties = new TestGuiProperties(50, 20, 100, 50, 200, 100);
@@ -240,12 +285,30 @@ public class IngredientListOverlayLayoutTest {
 		boolean lookupHistoryDisplayedOnThisSide,
 		int maxLookupHistoryRows
 	) {
+		return calculate(
+			guiProperties,
+			centerSearchBarEnabled,
+			lookupHistoryEnabled,
+			lookupHistoryDisplayedOnThisSide,
+			maxLookupHistoryRows,
+			false
+		);
+	}
+
+	private static IngredientListOverlayLayout.Layout calculate(
+		TestGuiProperties guiProperties,
+		boolean centerSearchBarEnabled,
+		boolean lookupHistoryEnabled,
+		boolean lookupHistoryDisplayedOnThisSide,
+		int maxLookupHistoryRows,
+		boolean lookupHistoryDrawBackground
+	) {
 		return IngredientListOverlayLayout.calculate(
 			guiProperties,
 			centerSearchBarEnabled,
 			lookupHistoryEnabled,
 			lookupHistoryDisplayedOnThisSide,
-			maxLookupHistoryRows
+			LookupHistoryOverlayLayout.getDisplayHeight(maxLookupHistoryRows, lookupHistoryDrawBackground)
 		);
 	}
 }
