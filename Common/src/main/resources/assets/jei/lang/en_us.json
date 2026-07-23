@@ -87,6 +87,9 @@
   "jei.key.category.dev.tools": "JEI (Dev Tools)",
   "key.jei.copy.recipe.id": "Copy Recipe ID to Clipboard",
 
+  "_comment": "GUI",
+  "gui.jei.search": "Ingredient Filter",
+
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Hide Ingredients Mode:",
   "gui.jei.editMode.description.hide": "Press \"%s\" to hide.",

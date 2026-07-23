@@ -14,7 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -32,8 +32,7 @@ public class GuiTextFieldFilter extends EditBox {
 	private @Nullable AbstractWidget previouslyFocusedWidget;
 
 	public GuiTextFieldFilter(BooleanSupplier filterEmpty) {
-		// TODO narrator string
-		super(Minecraft.getInstance().font, 0, 0, 0, 0, TextComponent.EMPTY);
+		super(Minecraft.getInstance().font, 0, 0, 0, 0, new TranslatableComponent("gui.jei.search"));
 		this.filterEmpty = filterEmpty;
 
 		setMaxLength(maxSearchLength);
