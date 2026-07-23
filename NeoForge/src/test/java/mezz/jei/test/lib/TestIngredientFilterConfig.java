@@ -8,7 +8,7 @@ public class TestIngredientFilterConfig implements IIngredientFilterConfig {
 	private final IJeiConfigValue<SearchMode> modNameSearchMode = value("modNameSearchMode", SearchMode.ENABLED);
 	private final IJeiConfigValue<SearchMode> tooltipSearchMode = value("tooltipSearchMode", SearchMode.ENABLED);
 	private final IJeiConfigValue<SearchMode> tagSearchMode = value("tagSearchMode", SearchMode.ENABLED);
-	private final IJeiConfigValue<SearchMode> colorSearchMode = value("colorSearchMode", SearchMode.DISABLED);
+	private final IJeiConfigValue<SearchMode> colorSearchMode = value("colorSearchMode", SearchMode.REQUIRE_PREFIX);
 	private final IJeiConfigValue<SearchMode> resourceLocationSearchMode = value("resourceLocationSearchMode", SearchMode.ENABLED);
 	private final IJeiConfigValue<SearchMode> creativeTabSearchMode = value("creativeTabSearchMode", SearchMode.DISABLED);
 	private final IJeiConfigValue<Boolean> searchAdvancedTooltips = value("searchAdvancedTooltips", false);
