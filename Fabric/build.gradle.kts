@@ -29,6 +29,7 @@ val modJavaVersion: String by extra
 val modrinthId: String by extra
 val amecsVersionFabric: String by extra
 val amecsMinecraftVersion: String by extra
+val bakedSubstringIndexVersion: String by extra
 val suffixtreeVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
@@ -116,6 +117,9 @@ dependencies {
     implementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
     dependencyProjects.forEach {
         implementation(it)
+    }
+    embeddedLibraries("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
+        isTransitive = false
     }
     embeddedLibraries("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
