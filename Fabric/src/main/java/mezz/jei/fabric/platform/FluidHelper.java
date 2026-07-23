@@ -3,12 +3,10 @@ package mezz.jei.fabric.platform;
 import com.mojang.serialization.Codec;
 import mezz.jei.api.fabric.constants.FabricTypes;
 import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
-import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.fabric.ingredients.fluid.JeiFluidIngredient;
-import mezz.jei.library.render.FluidTankRenderer;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
@@ -49,11 +47,6 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	@Override
 	public IIngredientTypeWithSubtypes<Fluid, IJeiFluidIngredient> getFluidIngredientType() {
 		return FabricTypes.FLUID_STACK;
-	}
-
-	@Override
-	public IIngredientRenderer<IJeiFluidIngredient> createRenderer(long capacity, boolean showCapacity, int width, int height) {
-		return new FluidTankRenderer<>(this, capacity, showCapacity, width, height);
 	}
 
 	@Override

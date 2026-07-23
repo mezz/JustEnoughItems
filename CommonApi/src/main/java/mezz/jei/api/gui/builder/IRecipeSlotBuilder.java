@@ -1,6 +1,7 @@
 package mezz.jei.api.gui.builder;
 
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.TilingDirection;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.placement.IPlaceable;
@@ -91,12 +92,32 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	 *
 	 * If no fluid renderer is set, the default 16x16 renderer is used.
 	 *
-	 * @param capacity   maximum amount of fluid that this "tank" can hold
-	 * @param showCapacity set `true` to show the capacity in the tooltip
+	 * Uses {@link TilingDirection#UP_RIGHT} to keep the texture aligned to the bottom-left.
+	 *
+	 * @param capacity     maximum amount of fluid that this "tank" can hold
+	 * @param showCapacity set {@code true} to show the capacity in the tooltip
+	 * @param width        width of the fluid renderer
+	 * @param height       height of the fluid renderer
 	 *
 	 * @since 10.1.0
 	 */
 	IRecipeSlotBuilder setFluidRenderer(long capacity, boolean showCapacity, int width, int height);
+
+	/**
+	 * Set the properties of this slot's fluid renderer.
+	 * This will be used to render any fluid ingredients in the slot.
+	 *
+	 * If no fluid renderer is set, the default 16x16 renderer is used.
+	 *
+	 * @param capacity        maximum amount of fluid that this "tank" can hold
+	 * @param showCapacity    set {@code true} to show the capacity in the tooltip
+	 * @param width           width of the fluid renderer
+	 * @param height          height of the fluid renderer
+	 * @param tilingDirection controls which direction the texture is tiled from
+	 *
+	 * @since 29.18.0
+	 */
+	IRecipeSlotBuilder setFluidRenderer(long capacity, boolean showCapacity, int width, int height, TilingDirection tilingDirection);
 
 	/**
 	 * Set a custom renderer for the given ingredient type for this slot.
@@ -127,7 +148,7 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	 * By default, fluids amounts below 1000 (i.e. one bucket) are rendered using a partial sprite,
 	 * and fluid amounts above 1000 are rendered using a full sprite.
 	 *
-	 * The default renderer can be tweaked using {@link #setFluidRenderer}.
+	 * The default renderer can be tweaked using {@link #setFluidRenderer(long, boolean, int, int)}.
 	 * For example, {@code .setFluidRenderer(1, false, 16, 16)} to always draw a full 16x16 sprite
 	 * even if there is only a little fluid.
 	 *
@@ -152,7 +173,7 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	 * By default, fluids amounts below 1000 (i.e. one bucket) are rendered using a partial sprite,
 	 * and fluid amounts above 1000 are rendered using a full sprite.
 	 *
-	 * The default renderer can be tweaked using {@link #setFluidRenderer}.
+	 * The default renderer can be tweaked using {@link #setFluidRenderer(long, boolean, int, int)}.
 	 * For example, {@code .setFluidRenderer(1, false, 16, 16)} to always draw a full 16x16 sprite
 	 * even if there is only a little fluid.
 	 *
