@@ -132,8 +132,6 @@
   "jei.config.client.advanced.description": "用於變更 JEI 功能方式的進階設定選項。",
   "jei.config.client.advanced.itemBlacklist": "物品封鎖清單",
   "jei.config.client.advanced.itemBlacklist.description": "不應顯示於物品清單疊層的物品。格式：「modId[:name[:meta]]」。隱藏物品模式會自動新增或移除此處的項目。",
-  "jei.config.debug.debug.debugMode": "除錯模式",
-  "jei.config.debug.debug.debugMode.description": "僅對 JEI 開發者有用，新增測試物品和一些除錯配方。",
   "jei.config.client.appearance.centerSearch": "置中搜尋列",
   "jei.config.client.appearance.centerSearch.description": "將搜尋列移動到螢幕底部中央。",
   "jei.config.modIdFormat.modName.modNameFormat": "模組名稱格式",

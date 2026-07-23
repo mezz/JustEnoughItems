@@ -56,8 +56,6 @@
   "jei.config.client.advanced.description": "Προχωρημένες ρυθμίσεις για να αλλάξεις τον τρόπο που λειτουργεί το JEI.",
   "jei.config.client.advanced.itemBlacklist": "Μαύρη Λίστα Αντικειμένων",
   "jei.config.client.advanced.itemBlacklist.description": "Λίστα αντικειμένων τα οποία δεν πρέπει να εμφανίζονται στην λίστα αντικειμένων. Μορφή: modId[:name[:meta]]. Η Λειτουργία Επεξεργασίας βάζει και διαγράφει αυτόματα αντικείμενα εδώ.",
-  "jei.config.debug.debug.debugMode": "Λειτουργία Debug",
-  "jei.config.debug.debug.debugMode.description": "Μόνο χρήσιμο για προγραμματιστές του JEI, βάζει χιλιάδες δοκιμαστικά αντικείμενα και συνταγές.",
   "jei.config.client.appearance.centerSearch": "Κέντραρε Μπάρα Αναζήτησης",
   "jei.config.client.appearance.centerSearch.description": "Μετακίνησε την JEI μπάρα αναζήτης στο κεντρικό κάτω μέρος της οθόνης.",
 

@@ -51,6 +51,7 @@ val loomDependencyProjects: List<Project> = listOf(
     project(":FabricApi"),
 )
 val dependencyProjects = vanillaDependencyProjects + loomDependencyProjects
+val debugProject = project(":Debug")
 
 val embeddedLibraries: Configuration by configurations.creating {
     isCanBeConsumed = false
@@ -67,6 +68,8 @@ val clientGameTestWithoutAmecsRunDirectory = layout.buildDirectory.dir("run/clie
 dependencyProjects.forEach {
     project.evaluationDependsOn(it.path)
 }
+project.evaluationDependsOn(debugProject.path)
+val debugSourceSet = debugProject.sourceSets.main.get()
 
 java {
     toolchain {
@@ -255,6 +258,17 @@ tasks.named("runClientGameTest") {
 
 tasks.named("runClientGameTestWithoutAmecs") {
     dependsOn(writeClientGameTestWithoutAmecsOptions)
+}
+
+val debugClassesTask = debugProject.tasks.named(debugSourceSet.classesTaskName)
+val debugModPath = debugProject.layout.buildDirectory.dir("resources/main").get().asFile.absolutePath
+val debugRunTasks = setOf("runClient", "runServer", "runClientDebug", "runServerDebug")
+tasks.matching { it.name in debugRunTasks }.configureEach {
+    dependsOn(debugClassesTask)
+    if (this is org.gradle.api.tasks.JavaExec) {
+        classpath(debugSourceSet.output)
+        jvmArgs("-Dfabric.addMods=$debugModPath")
+    }
 }
 
 tasks.jar {
