@@ -110,6 +110,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			this.searchField.drawBackground(guiGraphics);
 			this.contents.drawBackground(guiGraphics);
 		}
+		if (this.controller.hasValidScreen() && toggleState.isOverlayEnabled()) {
+			this.lookupHistoryOverlay.drawBackground(guiGraphics);
+		}
 	}
 
 	public void drawForeground(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
