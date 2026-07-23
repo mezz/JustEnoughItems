@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-final class GuiExclusionAreaShadow {
+public final class GuiExclusionAreaShadow {
 	static final int SHADOW_SIZE = 4;
 
 	private GuiExclusionAreaShadow() {

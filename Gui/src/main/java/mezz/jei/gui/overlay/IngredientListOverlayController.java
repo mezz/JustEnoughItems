@@ -68,11 +68,6 @@ class IngredientListOverlayController {
 			public boolean isLookupHistoryEnabled() {
 				return clientConfig.isLookupHistoryEnabled();
 			}
-
-			@Override
-			public int getMaxLookupHistoryRows() {
-				return clientConfig.getMaxLookupHistoryRows();
-			}
 		};
 	}
 
@@ -171,7 +166,7 @@ class IngredientListOverlayController {
 			config.isCenterSearchBarEnabled(),
 			config.isLookupHistoryEnabled(),
 			lookupHistory.isDisplayedOnThisSide(),
-			config.getMaxLookupHistoryRows()
+			lookupHistory.getDisplayHeight()
 		);
 
 		layout.lookupHistoryArea()
@@ -197,8 +192,6 @@ class IngredientListOverlayController {
 		boolean isCenterSearchBarEnabled();
 
 		boolean isLookupHistoryEnabled();
-
-		int getMaxLookupHistoryRows();
 	}
 
 }
