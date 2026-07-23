@@ -46,6 +46,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private static final int INNER_PADDING = 2;
 	private static final int BUTTON_SIZE = 20;
 	private static final int SEARCH_HEIGHT = BUTTON_SIZE;
+	private static final int LOOKUP_HISTORY_BOTTOM_PADDING = BORDER_MARGIN;
+	private static final int LOOKUP_HISTORY_PADDING_EXTRA = LOOKUP_HISTORY_BOTTOM_PADDING - INNER_PADDING;
 
 	private final GuiIconToggleButton configButton;
 	private final IngredientGridWithNavigation contents;
@@ -146,11 +148,13 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 		ImmutableRect2i availableContentsArea = getAvailableContentsArea(displayArea, searchBarCentered);
 		if (clientConfig.isLookupHistoryEnabled() && lookupHistoryOverlay.isOnSide()) {
-			int historyRows = clientConfig.getMaxLookupHistoryRows();
-			int historyHeight = historyRows * LookupHistoryOverlay.SLOT_HEIGHT;
+			int historyHeight = lookupHistoryOverlay.getDisplayHeight();
 			if (historyHeight > 0) {
 				ImmutableRect2i historyArea = getLookupHistoryArea(displayArea, searchBarCentered, historyHeight);
-				availableContentsArea = cropBottomTo(availableContentsArea, historyArea.y());
+				availableContentsArea = cropBottomTo(
+					availableContentsArea,
+					historyArea.y() - LOOKUP_HISTORY_PADDING_EXTRA
+				);
 				this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, null);
 				this.lookupHistoryOverlay.updateLayout();
 			}
@@ -190,7 +194,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	private static ImmutableRect2i getLookupHistoryArea(ImmutableRect2i displayArea, boolean searchBarCentered, int lookupHistoryHeight) {
-		int bottomReservedHeight = searchBarCentered ? 0 : SEARCH_HEIGHT + INNER_PADDING;
+		int bottomReservedHeight = searchBarCentered ? 0 : SEARCH_HEIGHT + LOOKUP_HISTORY_BOTTOM_PADDING;
 		return displayArea
 			.insetBy(BORDER_MARGIN)
 			.cropBottom(bottomReservedHeight)
