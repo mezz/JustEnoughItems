@@ -27,6 +27,7 @@ val minecraftVersion: String by extra
 val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val bakedSubstringIndexVersion: String by extra
 val parchmentVersionFabric: String by extra
 val parchmentMinecraftVersion: String by extra
 val amecsVersionFabric: String by extra
@@ -55,6 +56,8 @@ dependencyProjects.forEach {
     project.evaluationDependsOn(it.dependencyProject.path)
 }
 project.evaluationDependsOn(":Changelog")
+
+val embeddedLibraries = configurations.create("embeddedLibraries")
 
 val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
     compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
@@ -119,6 +122,12 @@ dependencies {
     )
     dependencyProjects.forEach {
         implementation(it)
+    }
+    add(
+        embeddedLibraries.name,
+        "net.mezzdev:baked-substring-index:$bakedSubstringIndexVersion"
+    ) {
+        isTransitive = false
     }
 }
 
@@ -215,6 +224,11 @@ tasks.jar {
     for (p in dependencyProjects) {
         from(p.dependencyProject.sourceSets.main.get().output)
     }
+    from({
+        embeddedLibraries.map {
+            zipTree(it)
+        }
+    })
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 

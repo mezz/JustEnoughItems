@@ -9,7 +9,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.api.search.ISearchStorageFactory;
+import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.config.DebugConfig;
@@ -144,7 +144,7 @@ public final class JeiStarter {
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building runtime");
 		IScreenHelper screenHelper = pluginLoader.createGuiScreenHelper(plugins, jeiHelpers);
-		ISearchStorageFactory searchStorageFactory = PluginLoader.createSearchStorageFactory(plugins);
+		ISearchStorageBuilderFactory searchStorageBuilderFactory = PluginLoader.createSearchStorageFactory(plugins);
 
 		RuntimeRegistration runtimeRegistration = new RuntimeRegistration(
 			recipeManager,
@@ -154,7 +154,7 @@ public final class JeiStarter {
 			ingredientVisibility,
 			recipeTransferManager,
 			screenHelper,
-			searchStorageFactory
+			searchStorageBuilderFactory
 		);
 		PluginCaller.callOnPlugins("Registering Runtime", plugins, p -> p.registerRuntime(runtimeRegistration));
 

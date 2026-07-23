@@ -12,6 +12,7 @@ val jUnitVersion: String by extra
 val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val bakedSubstringIndexVersion: String by extra
 
 val dependencyProjects: List<Project> = listOf(
     project(":CommonApi"),
@@ -45,6 +46,13 @@ dependencies {
         name = "log4j-api",
         version = "2.17.0"
     )
+    implementation(
+        group = "net.mezzdev",
+        name = "baked-substring-index",
+        version = bakedSubstringIndexVersion
+    ) {
+        isTransitive = false
+    }
     testImplementation(
         group = "org.junit.jupiter",
         name = "junit-jupiter-api",

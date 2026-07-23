@@ -1,6 +1,8 @@
 package mezz.jei.api.registration;
 
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.search.ISearchStorageBuilder;
+import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.api.search.ISearchStorageFactory;
 
 /**
@@ -25,7 +27,46 @@ public interface IAdvancedSearchRegistration {
 	 * If multiple plugins replace the search storage, the last replacement is used.
 	 * </p>
 	 *
+	 * <p>
+	 * This overload creates live search storage directly. The storage receives both initial ingredient data and runtime
+	 * additions through {@link mezz.jei.api.search.ISearchStorage#put}, with no separate build step after the initial
+	 * data has been added.
+	 * </p>
+	 *
+	 * <p>
+	 * For implementations that need to preprocess or bake the initial search index before JEI starts using it, use
+	 * {@link #replaceSearchStorage(ISearchStorageBuilderFactory)}.
+	 * </p>
+	 *
 	 * @since 11.12.0
 	 */
 	void replaceSearchStorage(ISearchStorageFactory searchStorageFactory);
+
+	/**
+	 * Replace JEI's default ingredient search storage with a custom builder implementation.
+	 *
+	 * <p>
+	 * This completely replaces JEI's default search storage, and is an advanced hook for implementations that need
+	 * different indexing or matching behavior than JEI's default substring search. For example, a custom storage can
+	 * support language-aware matching where users type phonetic, transliterated, or otherwise normalized search terms
+	 * that should match localized ingredient names.
+	 * </p>
+	 *
+	 * <p>
+	 * The factory must create a new empty builder each time it is called. JEI uses this replacement for all indexed
+	 * ingredient search storage, including the backing indexes inside limited string storage.
+	 * Builders are single-use: JEI adds the initial data, calls {@link ISearchStorageBuilder#build()}, and then uses
+	 * the returned storage.
+	 * If multiple plugins replace the search storage, the last replacement is used.
+	 * </p>
+	 *
+	 * <p>
+	 * This differs from {@link #replaceSearchStorage(ISearchStorageFactory)}, which creates live storage directly and
+	 * has no build phase. Use this builder overload when the search implementation can preprocess or bake the initial
+	 * ingredient index for faster searching. The built storage is still used for runtime additions after startup.
+	 * </p>
+	 *
+	 * @since 11.13.0
+	 */
+	void replaceSearchStorage(ISearchStorageBuilderFactory searchStorageBuilderFactory);
 }
