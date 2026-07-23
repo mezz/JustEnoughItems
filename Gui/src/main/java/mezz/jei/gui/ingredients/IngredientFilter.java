@@ -7,7 +7,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
-import mezz.jei.api.search.ISearchStorageFactory;
+import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
@@ -75,7 +75,7 @@ public class IngredientFilter implements
 		IModIdHelper modIdHelper,
 		IIngredientVisibility ingredientVisibility,
 		IColorHelper colorHelper,
-		ISearchStorageFactory searchStorageFactory,
+		ISearchStorageBuilderFactory searchStorageBuilderFactory,
 		IClientToggleState clientToggleState
 	) {
 		this.filterTextSource = filterTextSource;
@@ -85,15 +85,15 @@ public class IngredientFilter implements
 		this.modIdHelper = modIdHelper;
 		this.ingredientVisibility = ingredientVisibility;
 		this.sortIndexUpdater = sortIndexUpdater;
-		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, modIdHelper, searchStorageFactory);
-
-		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser);
+		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, searchStorageBuilderFactory);
+		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser, ingredients, ingredientManager);
 		addConfigListeners(clientConfig, config);
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
 		for (IListElementInfo<?> ingredient : ingredients) {
-			addIngredient(ingredient);
+			updateHiddenState(ingredient.getElement());
 		}
+		invalidateCache();
 		LOGGER.info("Added {} ingredients", ingredients.size());
 		if (DebugConfig.isLogSuffixTreeStatsEnabled()) {
 			this.elementSearch.logStatistics();
@@ -124,11 +124,11 @@ public class IngredientFilter implements
 		config.searchShortModNames().addListener(v -> markSearchIndexDirty());
 	}
 
-	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser) {
+	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser, List<IListElementInfo<?>> elementInfos, IIngredientManager ingredientManager) {
 		if (clientConfig.lowMemorySlowSearchEnabled().getValue()) {
-			return new ElementSearchLowMem(elementPrefixParser.getNoPrefix());
+			return new ElementSearchLowMem(elementPrefixParser.getNoPrefix(), elementInfos);
 		} else {
-			return new ElementSearch(elementPrefixParser);
+			return new ElementSearch(elementPrefixParser, elementInfos, ingredientManager);
 		}
 	}
 
@@ -148,10 +148,9 @@ public class IngredientFilter implements
 	public void rebuildItemFilter() {
 		this.invalidateCache();
 		Collection<IListElement<?>> ingredients = this.elementSearch.getAllIngredients();
-		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser);
 		List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, modIdHelper);
 		this.sortIndexUpdater.apply(elementInfos);
-		this.elementSearch.addAll(elementInfos, ingredientManager);
+		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser, elementInfos, ingredientManager);
 		this.searchIndexDirty = false;
 		this.sortIndexesDirty = false;
 	}

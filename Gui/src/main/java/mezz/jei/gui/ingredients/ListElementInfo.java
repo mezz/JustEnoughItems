@@ -1,5 +1,6 @@
 package mezz.jei.gui.ingredients;
 
+import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -29,13 +30,16 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class ListElementInfo<V> implements IListElementInfo<V> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
+	private static final Pattern MOD_NAME_SEPARATOR_PATTERN = Pattern.compile("(?=[A-Z_-])|\\s+");
 	private static int elementCount = 0;
 
 	private final IListElement<V> element;
+	private final IModIdHelper modIdHelper;
 	private final List<String> names;
 	private final List<String> modIds;
 	private final List<String> modNames;
@@ -67,6 +71,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 
 	protected ListElementInfo(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
 		this.element = element;
+		this.modIdHelper = modIdHelper;
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		V ingredient = value.getIngredient();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
@@ -109,13 +114,35 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	public List<String> getModNames() {
-		return modNames;
-	}
+	public Collection<String> getModNames(IIngredientFilterConfig config) {
+		Set<String> modNames = new HashSet<>(this.modNames);
 
-	@Override
-	public List<String> getModIds() {
-		return modIds;
+		if (config.searchModIds().getValue()) {
+			modNames.addAll(this.modIds);
+		}
+
+		if (config.searchModAliases().getValue()) {
+			for (String modId : this.modIds) {
+				Set<String> modAliases = modIdHelper.getModAliases(modId);
+				modNames.addAll(modAliases);
+			}
+		}
+
+		if (config.searchShortModNames().getValue()) {
+			for (String modName : this.modNames) {
+				List<String> shortModNames = getShortModNames(modName);
+				modNames.addAll(shortModNames);
+			}
+		}
+
+		Set<String> sanitizedModNames = new HashSet<>();
+		for (String modName : modNames) {
+			modName = modName.toLowerCase(Locale.ROOT);
+			modName = WHITESPACE_PATTERN.matcher(modName).replaceAll("");
+			sanitizedModNames.add(modName);
+		}
+
+		return sanitizedModNames;
 	}
 
 	@Override
@@ -163,6 +190,26 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		}
 	}
 
+	private static List<String> getShortModNames(String modName) {
+		String[] words = MOD_NAME_SEPARATOR_PATTERN.split(modName);
+		if (words.length <= 1) {
+			return List.of();
+		}
+		return List.of(
+			combineFirstLetters(words, 1),
+			combineFirstLetters(words, 2)
+		);
+	}
+
+	private static String combineFirstLetters(String[] words, final int count) {
+		StringBuilder sb = new StringBuilder();
+		for (String word : words) {
+			int end = Math.min(count, word.length());
+			sb.append(word, 0, end);
+		}
+		return sb.toString();
+	}
+
 	@Override
 	public Collection<String> getTagStrings(IIngredientManager ingredientManager) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
@@ -185,6 +232,16 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		V ingredient = value.getIngredient();
 		return ingredientHelper.getColors(ingredient);
+	}
+
+	@Override
+	public @Unmodifiable Collection<String> getColorNames(IIngredientManager ingredientManager, IColorHelper colorHelper) {
+		Iterable<Integer> colors = getColors(ingredientManager);
+		return StreamSupport.stream(colors.spliterator(), false)
+			.map(colorHelper::getClosestColorName)
+			.map(Translator::toLowercaseWithLocale)
+			.distinct()
+			.toList();
 	}
 
 	@Override

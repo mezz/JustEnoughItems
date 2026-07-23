@@ -25,6 +25,7 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val parchmentVersionForge: String by extra
 val modrinthId: String by extra
+val bakedSubstringIndexVersion: String by extra
 val suffixtreeVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
@@ -61,6 +62,7 @@ dependencyProjects.forEach {
 project.evaluationDependsOn(debugProject.path)
 
 val embeddedLibraries: Configuration = project(":Common").configurations.detachedConfiguration(
+	project(":Common").dependencies.create("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}"),
 	project(":Common").dependencies.create("net.mezzdev:suffixtree:${suffixtreeVersion}")
 ).apply {
 	isTransitive = false

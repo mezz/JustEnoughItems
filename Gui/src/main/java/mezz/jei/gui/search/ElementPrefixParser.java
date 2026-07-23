@@ -3,30 +3,21 @@ package mezz.jei.gui.search;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import mezz.jei.api.helpers.IColorHelper;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.search.ISearchStorageFactory;
+import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.common.search.LimitedStringStorage;
+import mezz.jei.common.search.LimitedStringStorageBuilder;
 import mezz.jei.common.search.PrefixInfo;
 import mezz.jei.common.search.SearchMode;
-import mezz.jei.common.util.Translator;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.stream.StreamSupport;
 
 public class ElementPrefixParser {
-	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
-	private static final Pattern MOD_NAME_SEPARATOR_PATTERN = Pattern.compile("(?=[A-Z_-])|\\s+");
-
 	private final Char2ObjectMap<PrefixInfo<IListElementInfo<?>, IListElement<?>>> map = new Char2ObjectOpenHashMap<>();
 	private final PrefixInfo<IListElementInfo<?>, IListElement<?>> noPrefix;
 
@@ -34,88 +25,64 @@ public class ElementPrefixParser {
 		IIngredientManager ingredientManager,
 		IIngredientFilterConfig config,
 		IColorHelper colorHelper,
-		IModIdHelper modIdHelper,
-		ISearchStorageFactory searchStorageFactory
+		ISearchStorageBuilderFactory searchStorageBuilderFactory
 	) {
+		ISearchStorageBuilderFactory limitedStringStorageBuilderFactory = createLimitedStringStorageBuilderFactory(searchStorageBuilderFactory);
+
 		this.noPrefix = new PrefixInfo<>(
 			'\0',
 			() -> SearchMode.ENABLED,
 			IListElementInfo::getNames,
-			searchStorageFactory::createSearchStorage
+			searchStorageBuilderFactory
 		);
 
 		addPrefix(new PrefixInfo<>(
 			'@',
 			config.modNameSearchMode()::getValue,
-			info -> {
-				Set<String> modNames = new HashSet<>(info.getModNames());
-
-				if (config.searchModIds().getValue()) {
-					modNames.addAll(info.getModIds());
-				}
-
-				if (config.searchModAliases().getValue()) {
-					for (String modId : info.getModIds()) {
-						Set<String> modAliases = modIdHelper.getModAliases(modId);
-						modNames.addAll(modAliases);
-					}
-				}
-
-				if (config.searchShortModNames().getValue()) {
-					for (String modName : info.getModNames()) {
-						List<String> shortModNames = getShortModNames(modName);
-						modNames.addAll(shortModNames);
-					}
-				}
-
-				Set<String> sanitizedModNames = new HashSet<>();
-				for (String modName : modNames) {
-					modName = modName.toLowerCase();
-					modName = SPACE_PATTERN.matcher(modName).replaceAll("");
-					sanitizedModNames.add(modName);
-				}
-
-				return sanitizedModNames;
-			},
-			() -> new LimitedStringStorage<>(searchStorageFactory)
+			info -> info.getModNames(config),
+			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
 			'#',
 			config.tagSearchMode()::getValue,
 			e -> e.getTagStrings(ingredientManager),
-			() -> new LimitedStringStorage<>(searchStorageFactory)
+			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
 			'$',
 			config.tooltipSearchMode()::getValue,
 			e -> e.getTooltipStrings(config, ingredientManager),
-			searchStorageFactory::createSearchStorage
+			searchStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
 			'%',
 			config.creativeTabSearchMode()::getValue,
 			e -> e.getCreativeTabsStrings(ingredientManager),
-			() -> new LimitedStringStorage<>(searchStorageFactory)
+			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
 			'^',
 			config.colorSearchMode()::getValue,
-			e -> {
-				Iterable<Integer> colors = e.getColors(ingredientManager);
-				return StreamSupport.stream(colors.spliterator(), false)
-					.map(colorHelper::getClosestColorName)
-					.map(Translator::toLowercaseWithLocale)
-					.distinct()
-					.toList();
-			},
-			() -> new LimitedStringStorage<>(searchStorageFactory)
+			e -> e.getColorNames(ingredientManager, colorHelper),
+			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
 			'&',
 			config.resourceLocationSearchMode()::getValue,
 			element -> List.of(element.getResourceLocation().toString()),
-			searchStorageFactory::createSearchStorage
+			searchStorageBuilderFactory
 		));
+	}
+
+	private static ISearchStorageBuilderFactory createLimitedStringStorageBuilderFactory(
+		ISearchStorageBuilderFactory searchStorageBuilderFactory
+	) {
+		return new ISearchStorageBuilderFactory() {
+			@Override
+			public <T> LimitedStringStorageBuilder<T> create() {
+				return new LimitedStringStorageBuilder<>(searchStorageBuilderFactory);
+			}
+		};
 	}
 
 	private void addPrefix(PrefixInfo<IListElementInfo<?>, IListElement<?>> info) {
@@ -149,23 +116,4 @@ public class ElementPrefixParser {
 		return Optional.of(new TokenInfo(token.substring(1), prefixInfo));
 	}
 
-	private static List<String> getShortModNames(String modName) {
-		String[] words = MOD_NAME_SEPARATOR_PATTERN.split(modName);
-		if (words.length <= 1) {
-			return List.of();
-		}
-		return List.of(
-			combineFirstLetters(words, 1),
-			combineFirstLetters(words, 2)
-		);
-	}
-
-	private static String combineFirstLetters(String[] words, final int count){
-		StringBuilder sb = new StringBuilder();
-		for (String word : words) {
-			int end = Math.min(count, word.length());
-			sb.append(word, 0, end);
-		}
-		return sb.toString();
-	}
 }
