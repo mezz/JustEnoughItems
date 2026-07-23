@@ -52,8 +52,9 @@ public class ElementSearch implements IElementSearch {
 			if (searchMode != SearchMode.DISABLED) {
 				for (IListElementInfo<?> info : infos) {
 					Collection<String> strings = prefixInfo.getStrings(info);
+					IListElement<?> element = info.getElement();
 					for (String string : strings) {
-						putIfNotBlank(storageBuilder, string, info.getElement());
+						putIfNotBlank(storageBuilder, string, element);
 					}
 				}
 			}
