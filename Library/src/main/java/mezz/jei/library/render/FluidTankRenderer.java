@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix4f;
+import mezz.jei.api.gui.drawable.TilingDirection;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
@@ -39,6 +40,7 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	private final TooltipMode tooltipMode;
 	private final int width;
 	private final int height;
+	private final TilingDirection tilingDirection;
 
 	enum TooltipMode {
 		SHOW_AMOUNT,
@@ -47,22 +49,49 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	}
 
 	public FluidTankRenderer(IPlatformFluidHelperInternal<T> fluidHelper) {
-		this(fluidHelper, fluidHelper.bucketVolume(), TooltipMode.ITEM_LIST, 16, 16);
+		this(fluidHelper, fluidHelper.bucketVolume(), TooltipMode.ITEM_LIST, 16, 16, TilingDirection.UP_RIGHT);
 	}
 
 	public FluidTankRenderer(IPlatformFluidHelperInternal<T> fluidHelper, long capacity, boolean showCapacity, int width, int height) {
-		this(fluidHelper, capacity, showCapacity ? TooltipMode.SHOW_AMOUNT_AND_CAPACITY : TooltipMode.SHOW_AMOUNT, width, height);
+		this(fluidHelper, capacity, showCapacity, width, height, TilingDirection.UP_RIGHT);
 	}
 
-	private FluidTankRenderer(IPlatformFluidHelperInternal<T> fluidHelper, long capacity, TooltipMode tooltipMode, int width, int height) {
+	public FluidTankRenderer(
+		IPlatformFluidHelperInternal<T> fluidHelper,
+		long capacity,
+		boolean showCapacity,
+		int width,
+		int height,
+		TilingDirection tilingDirection
+	) {
+		this(
+			fluidHelper,
+			capacity,
+			showCapacity ? TooltipMode.SHOW_AMOUNT_AND_CAPACITY : TooltipMode.SHOW_AMOUNT,
+			width,
+			height,
+			tilingDirection
+		);
+	}
+
+	private FluidTankRenderer(
+		IPlatformFluidHelperInternal<T> fluidHelper,
+		long capacity,
+		TooltipMode tooltipMode,
+		int width,
+		int height,
+		TilingDirection tilingDirection
+	) {
 		Preconditions.checkArgument(capacity > 0, "capacity must be > 0");
 		Preconditions.checkArgument(width > 0, "width must be > 0");
 		Preconditions.checkArgument(height > 0, "height must be > 0");
+		Preconditions.checkNotNull(tilingDirection, "tilingDirection");
 		this.fluidHelper = fluidHelper;
 		this.capacity = capacity;
 		this.tooltipMode = tooltipMode;
 		this.width = width;
 		this.height = height;
+		this.tilingDirection = tilingDirection;
 	}
 
 	@Override
@@ -96,36 +125,69 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 					scaledAmount = height;
 				}
 
-				drawTiledSprite(poseStack, width, height, fluidColor, scaledAmount, fluidStillSprite);
+				if (scaledAmount > 0) {
+					drawTiledSprite(poseStack, width, height, fluidColor, scaledAmount, fluidStillSprite, tilingDirection);
+				}
 			});
 	}
 
-	private static void drawTiledSprite(PoseStack poseStack, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite) {
+	private static void drawTiledSprite(
+		PoseStack poseStack,
+		final int tiledWidth,
+		final int tiledHeight,
+		int color,
+		long scaledAmount,
+		TextureAtlasSprite sprite,
+		TilingDirection tilingDirection
+	) {
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 		Matrix4f matrix = poseStack.last().pose();
 		setGLColorFromInt(color);
 
-		final int xTileCount = tiledWidth / TEXTURE_SIZE;
-		final int xRemainder = tiledWidth - (xTileCount * TEXTURE_SIZE);
-		final long yTileCount = scaledAmount / TEXTURE_SIZE;
-		final long yRemainder = scaledAmount - (yTileCount * TEXTURE_SIZE);
+		int scaledHeight = Math.toIntExact(scaledAmount);
+		int posY = tiledHeight - scaledHeight;
+		int xShift = getXShift(tilingDirection, tiledWidth);
+		int yShift = getYShift(tilingDirection, scaledHeight);
 
-		final int yStart = tiledHeight;
+		drawTiledSpriteClipped(matrix, 0, posY, tiledWidth, scaledHeight, xShift, yShift, sprite);
+	}
 
-		for (int xTile = 0; xTile <= xTileCount; xTile++) {
-			for (int yTile = 0; yTile <= yTileCount; yTile++) {
-				int width = (xTile == xTileCount) ? xRemainder : TEXTURE_SIZE;
-				long height = (yTile == yTileCount) ? yRemainder : TEXTURE_SIZE;
-				int x = (xTile * TEXTURE_SIZE);
-				int y = yStart - ((yTile + 1) * TEXTURE_SIZE);
-				if (width > 0 && height > 0) {
-					long maskTop = TEXTURE_SIZE - height;
-					int maskRight = TEXTURE_SIZE - width;
+	private static void drawTiledSpriteClipped(Matrix4f matrix, int posX, int posY, int tiledWidth, int tiledHeight, int xShift, int yShift, TextureAtlasSprite sprite) {
+		for (int x = 0; x < tiledWidth; ) {
+			int uOffset = (x + xShift) % TEXTURE_SIZE;
+			int width = Math.min(TEXTURE_SIZE - uOffset, tiledWidth - x);
 
-					drawTextureWithMasking(matrix, x, y, sprite, maskTop, maskRight, 100);
-				}
+			for (int y = 0; y < tiledHeight; ) {
+				int vOffset = (y + yShift) % TEXTURE_SIZE;
+				int height = Math.min(TEXTURE_SIZE - vOffset, tiledHeight - y);
+				drawTexture(matrix, posX + x, posY + y, sprite, uOffset, vOffset, width, height, 100);
+				y += height;
 			}
+
+			x += width;
 		}
+	}
+
+	private static int getXShift(TilingDirection tilingDirection, int desiredWidth) {
+		return switch (tilingDirection) {
+			case DOWN_RIGHT, UP_RIGHT -> 0;
+			case DOWN_LEFT, UP_LEFT -> getShift(desiredWidth);
+		};
+	}
+
+	private static int getYShift(TilingDirection tilingDirection, int desiredHeight) {
+		return switch (tilingDirection) {
+			case DOWN_RIGHT, DOWN_LEFT -> 0;
+			case UP_RIGHT, UP_LEFT -> getShift(desiredHeight);
+		};
+	}
+
+	private static int getShift(int desired) {
+		int remainder = desired % TEXTURE_SIZE;
+		if (remainder == 0) {
+			return 0;
+		}
+		return TEXTURE_SIZE - remainder;
 	}
 
 	private static void setGLColorFromInt(int color) {
@@ -137,23 +199,33 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		RenderSystem.setShaderColor(red, green, blue, alpha);
 	}
 
-	private static void drawTextureWithMasking(Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, long maskTop, long maskRight, float zLevel) {
-		float uMin = textureSprite.getU0();
-		float uMax = textureSprite.getU1();
-		float vMin = textureSprite.getV0();
-		float vMax = textureSprite.getV1();
-		uMax = uMax - (maskRight / 16F * (uMax - uMin));
-		vMax = vMax - (maskTop / 16F * (vMax - vMin));
+	private static void drawTexture(
+		Matrix4f matrix,
+		float xCoord,
+		float yCoord,
+		TextureAtlasSprite textureSprite,
+		int uOffset,
+		int vOffset,
+		int width,
+		int height,
+		float zLevel
+	) {
+		float uScale = (textureSprite.getU1() - textureSprite.getU0()) / TEXTURE_SIZE;
+		float vScale = (textureSprite.getV1() - textureSprite.getV0()) / TEXTURE_SIZE;
+		float uMin = textureSprite.getU0() + (uOffset * uScale);
+		float uMax = uMin + (width * uScale);
+		float vMin = textureSprite.getV0() + (vOffset * vScale);
+		float vMax = vMin + (height * vScale);
 
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
 		Tesselator tessellator = Tesselator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuilder();
 		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-		bufferBuilder.vertex(matrix, xCoord, yCoord + 16, zLevel).uv(uMin, vMax).endVertex();
-		bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).uv(uMax, vMax).endVertex();
-		bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).uv(uMax, vMin).endVertex();
-		bufferBuilder.vertex(matrix, xCoord, yCoord + maskTop, zLevel).uv(uMin, vMin).endVertex();
+		bufferBuilder.vertex(matrix, xCoord, yCoord + height, zLevel).uv(uMin, vMax).endVertex();
+		bufferBuilder.vertex(matrix, xCoord + width, yCoord + height, zLevel).uv(uMax, vMax).endVertex();
+		bufferBuilder.vertex(matrix, xCoord + width, yCoord, zLevel).uv(uMax, vMin).endVertex();
+		bufferBuilder.vertex(matrix, xCoord, yCoord, zLevel).uv(uMin, vMin).endVertex();
 		tessellator.end();
 	}
 

@@ -1,7 +1,6 @@
 package mezz.jei.common.platform;
 
 import mezz.jei.api.helpers.IPlatformFluidHelper;
-import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -15,8 +14,6 @@ import java.util.Optional;
 public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T> {
 
 	IIngredientSubtypeInterpreter<T> getAllNbtSubtypeInterpreter();
-
-	IIngredientRenderer<T> createRenderer(long capacity, boolean showCapacity, int width, int height);
 
 	Optional<TextureAtlasSprite> getStillFluidSprite(T ingredient);
 

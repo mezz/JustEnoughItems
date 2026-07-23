@@ -1,13 +1,11 @@
 package mezz.jei.forge.platform;
 
 import mezz.jei.api.forge.ForgeTypes;
-import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
-import mezz.jei.library.render.FluidTankRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
@@ -41,11 +39,6 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	@Override
 	public IIngredientSubtypeInterpreter<FluidStack> getAllNbtSubtypeInterpreter() {
 		return AllFluidNbt.INSTANCE;
-	}
-
-	@Override
-	public IIngredientRenderer<FluidStack> createRenderer(long capacity, boolean showCapacity, int width, int height) {
-		return new FluidTankRenderer<>(this, capacity, showCapacity, width, height);
 	}
 
 	@Override

@@ -1,12 +1,14 @@
 package mezz.jei.api.gui.builder;
 
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.TilingDirection;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import org.jetbrains.annotations.ApiStatus;
 
 
 /**
@@ -17,6 +19,7 @@ import mezz.jei.api.registration.IModIngredientRegistration;
  *
  * @since 9.3.0
  */
+@ApiStatus.NonExtendable
 public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuilder> {
 	/**
 	 * Add a callback to alter the tooltip for these ingredients.
@@ -66,12 +69,32 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	 *
 	 * If no fluid renderer is set, the default 16x16 renderer is used.
 	 *
-	 * @param capacity   maximum amount of fluid that this "tank" can hold
-	 * @param showCapacity set `true` to show the capacity in the tooltip
+	 * Uses {@link TilingDirection#UP_RIGHT} to keep the texture aligned to the bottom-left.
+	 *
+	 * @param capacity     maximum amount of fluid that this "tank" can hold
+	 * @param showCapacity set {@code true} to show the capacity in the tooltip
+	 * @param width        width of the fluid renderer
+	 * @param height       height of the fluid renderer
 	 *
 	 * @since 10.1.0
 	 */
 	IRecipeSlotBuilder setFluidRenderer(long capacity, boolean showCapacity, int width, int height);
+
+	/**
+	 * Set the properties of this slot's fluid renderer.
+	 * This will be used to render any fluid ingredients in the slot.
+	 *
+	 * If no fluid renderer is set, the default 16x16 renderer is used.
+	 *
+	 * @param capacity        maximum amount of fluid that this "tank" can hold
+	 * @param showCapacity    set {@code true} to show the capacity in the tooltip
+	 * @param width           width of the fluid renderer
+	 * @param height          height of the fluid renderer
+	 * @param tilingDirection controls which direction the texture is tiled from
+	 *
+	 * @since 11.17.0
+	 */
+	IRecipeSlotBuilder setFluidRenderer(long capacity, boolean showCapacity, int width, int height, TilingDirection tilingDirection);
 
 	/**
 	 * Set a custom renderer for the given ingredient type for this slot.
