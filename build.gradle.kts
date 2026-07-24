@@ -23,6 +23,7 @@ plugins {
 apply {
 	from("buildtools/ColoredOutput.gradle")
 }
+
 repositories {
     mavenCentral()
 }
@@ -142,3 +143,5 @@ subprojects {
         options.compilerArgs.add("-Xlint:unchecked")
     }
 }
+
+apply(from = "gradle/api-compatibility.gradle.kts")
