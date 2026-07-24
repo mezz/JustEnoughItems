@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
@@ -169,9 +170,22 @@ public interface IIngredientHelper<V> {
 	/**
 	 * Get a list of tags that include this ingredient.
 	 * Used for searching by tags.
+	 *
+	 * @deprecated use {@link #getTagStream} instead
 	 */
+	@Deprecated(since = "10.3.1")
 	default Collection<ResourceLocation> getTags(V ingredient) {
 		return Collections.emptyList();
+	}
+
+	/**
+	 * Get a stream of tags that include this ingredient.
+	 * Used for searching by tags.
+	 *
+	 * @since 10.3.1
+	 */
+	default Stream<ResourceLocation> getTagStream(V ingredient) {
+		return getTags(ingredient).stream();
 	}
 
 	/**

@@ -156,9 +156,8 @@ public class IngredientSorterComparators {
 	}
 
 	private String getTagForSorting(IListElementInfo<?> elementInfo) {
-		Collection<ResourceLocation> tagIds = elementInfo.getTagIds(ingredientManager);
 		// Choose the most popular tag it has.
-		return tagIds.stream()
+		return elementInfo.getTagIds(ingredientManager)
 			.max(Comparator.comparing(IngredientSorterComparators::tagCount))
 			.map(ResourceLocation::getPath)
 			.orElse("");
