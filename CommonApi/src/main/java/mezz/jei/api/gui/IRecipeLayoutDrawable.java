@@ -122,5 +122,5 @@ public interface IRecipeLayoutDrawable<R> {
 	 *
 	 * @since 11.8.1
 	 */
-    void tick();
+	void tick();
 }

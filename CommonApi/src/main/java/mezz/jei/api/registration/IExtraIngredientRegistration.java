@@ -2,13 +2,7 @@ package mezz.jei.api.registration;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.helpers.IColorHelper;
-import mezz.jei.api.helpers.IPlatformFluidHelper;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
-import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Collection;
