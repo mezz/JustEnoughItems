@@ -119,16 +119,23 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 			if (isMouseOver(mouseX, mouseY)) {
 				IRecipeSlotsView recipeSlotsView = recipeLayout.getRecipeSlotsView();
 				Rect2i recipeRect = recipeLayout.getRect();
-				recipeTransferError.showError(poseStack, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY());
-				showLegacyError(poseStack, mouseX, mouseY, recipeRect);
+				runWithRestoredPose(poseStack, () -> recipeTransferError.showError(poseStack, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY()));
+				runWithRestoredPose(poseStack, () -> showLegacyError(recipeTransferError, poseStack, mouseX, mouseY, recipeRect));
 			}
 		}
 	}
 
 	@SuppressWarnings("removal")
-	private void showLegacyError(PoseStack poseStack, int mouseX, int mouseY, Rect2i recipeRect) {
-		if (recipeTransferError != null) {
-			recipeTransferError.showError(poseStack, mouseX, mouseY, recipeLayout, recipeRect.getX(), recipeRect.getY());
+	private void showLegacyError(IRecipeTransferError recipeTransferError, PoseStack poseStack, int mouseX, int mouseY, Rect2i recipeRect) {
+		recipeTransferError.showError(poseStack, mouseX, mouseY, recipeLayout, recipeRect.getX(), recipeRect.getY());
+	}
+
+	private static void runWithRestoredPose(PoseStack poseStack, Runnable action) {
+		poseStack.pushPose();
+		try {
+			action.run();
+		} finally {
+			poseStack.popPose();
 		}
 	}
 }
