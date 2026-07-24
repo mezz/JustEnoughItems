@@ -40,8 +40,6 @@
   "jei.config.client.search.colorSearchMode.description": ".طلب \"^\" قبل الكلمة ببحث في الوان العناصر",
   "jei.config.client.advanced": "متقدمة",
   "jei.config.client.advanced.description": ".إعدادات خيارات متقدمة لتغيير كيفية عمل جاي إي آي",
-  "jei.config.debug.debug.debugMode": "وضع التصحيح",
-  "jei.config.debug.debug.debugMode.description": ".ذو فائدة لمصممي جاي إي آي، يضيف الآلاف من العناصر وبعض وصفات التصحيح",
   "jei.config.client.appearance.centerSearch": ".شريط الشاشة في الوسط",
   "jei.config.client.appearance.centerSearch.description": ".انقل جاي إي آي إلى أسفل وسط الشاشة",
 

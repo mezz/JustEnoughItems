@@ -116,8 +116,6 @@
   "jei.config.client.search.searchAdvancedTooltips": "고급 툴팁 검색",
   "jei.config.client.advanced": "고급",
   "jei.config.client.advanced.description": "JEI의 고급 기능들에 대해 설정합니다.",
-  "jei.config.debug.debug.debugMode": "디버그 모드",
-  "jei.config.debug.debug.debugMode.description": "JEI 개발자들에게만 유용한 항목입니다. 몇천 개의 테스트 아이템과 몇몇 디버그용 제작법을 추가합니다.",
   "jei.config.client.appearance.centerSearch": "중앙 검색 창",
   "jei.config.client.appearance.centerSearch.description": "JEI의 검색 창을 아래쪽 중앙으로 이동합니다.",
   "jei.config.modIdFormat.modName.modNameFormat": "모드 이름 형식",

@@ -240,8 +240,6 @@
 
   "jei.config.debug.debug": "Depurar",
   "jei.config.debug.debug.description": "Opciones de configuración para ayudar a los desarrolladores a depurar problemas en JEI",
-  "jei.config.debug.debug.debugMode": "Modo Depuración",
-  "jei.config.debug.debug.debugMode.description": "Activar el modo de depuración",
   "jei.config.debug.debug.debugGuis": "Depurar GUIs",
   "jei.config.debug.debug.debugGuis.description": "Activar el modo Depurar GUIs",
   "jei.config.debug.debug.debugInputs": "Entradas de Depuración",

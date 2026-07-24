@@ -258,16 +258,12 @@
 
   "jei.config.debug.debug": "调试",
   "jei.config.debug.debug.description": "JEI中帮助开发者调试问题的配置选项",
-  "jei.config.debug.debug.debugMode": "调试模式",
-  "jei.config.debug.debug.debugMode.description": "启用调试模式。",
   "jei.config.debug.debug.debugGuis": "调试界面",
   "jei.config.debug.debug.debugGuis.description": "启用调试界面模式",
   "jei.config.debug.debug.debugInputs": "调试输入",
   "jei.config.debug.debug.debugInputs.description": "启用调试输入模式",
   "jei.config.debug.debug.debugInfoTooltipsEnabled": "调试信息提示框",
   "jei.config.debug.debug.debugInfoTooltipsEnabled.description": "启用高级提示框时，在原料提示框中添加调试信息。",
-  "jei.config.debug.debug.crashingTestItemsEnabled": "启用崩溃测试物品",
-  "jei.config.debug.debug.crashingTestItemsEnabled.description": "向JEI添加故意引发崩溃的原料，以帮助调试JEI。",
   "jei.config.debug.debug.logSuffixTreeStats": "日志搜索树统计信息",
   "jei.config.debug.debug.logSuffixTreeStats.description": "记录用于搜索的后缀树信息，以帮助调试JEI。",
 

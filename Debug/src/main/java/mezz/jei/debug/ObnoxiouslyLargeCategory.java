@@ -1,4 +1,4 @@
-package mezz.jei.library.plugins.debug;
+package mezz.jei.debug;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -8,7 +8,6 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.gui.textures.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -24,11 +23,11 @@ public class ObnoxiouslyLargeCategory extends AbstractRecipeCategory<Obnoxiously
 	private final IIngredientManager ingredientManager;
 	private final IDrawable slotBackground;
 
-	public ObnoxiouslyLargeCategory(IGuiHelper helper, Textures textures, IIngredientManager ingredientManager) {
+	public ObnoxiouslyLargeCategory(IGuiHelper helper, IIngredientManager ingredientManager) {
 		super(
 			TYPE,
 			Component.literal("Obnoxiously Large Recipe Category"),
-			textures.getFlameIcon(),
+			helper.getRecipeFlameFilled(),
 			GRID_WIDTH + (2 * helper.getSlotDrawable().getWidth()),
 			GRID_HEIGHT
 		);

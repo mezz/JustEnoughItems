@@ -261,16 +261,14 @@
 
   "jei.config.debug.debug": "Debug",
   "jei.config.debug.debug.description": "Config options to help developers debug issues in JEI",
-  "jei.config.debug.debug.debugMode": "Debug Mode",
-  "jei.config.debug.debug.debugMode.description": "Enable debug mode",
+  "jei.config.debug.debug.debugIngredientsEnabled": "Debug Ingredients",
+  "jei.config.debug.debug.debugIngredientsEnabled.description": "Log added and updated ingredients in JEI's ingredient filter.",
   "jei.config.debug.debug.debugGuis": "Debug GUIs",
   "jei.config.debug.debug.debugGuis.description": "Enable Debug GUIs mode",
   "jei.config.debug.debug.debugInputs": "Debug Inputs",
   "jei.config.debug.debug.debugInputs.description": "Enable Debug Inputs mode",
   "jei.config.debug.debug.debugInfoTooltipsEnabled": "Debug Info Tooltips",
   "jei.config.debug.debug.debugInfoTooltipsEnabled.description": "Add debug information to ingredient tooltips when advanced tooltips are enabled.",
-  "jei.config.debug.debug.crashingTestItemsEnabled": "Enable Crashing Test Items",
-  "jei.config.debug.debug.crashingTestItemsEnabled.description": "Adds ingredients to JEI that intentionally crash, to help debug JEI.",
   "jei.config.debug.debug.logSuffixTreeStats": "Log Search Tree Statistics",
   "jei.config.debug.debug.logSuffixTreeStats.description": "Log information about the suffix trees used for searching, to help debug JEI.",
 

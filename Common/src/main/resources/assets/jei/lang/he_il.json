@@ -42,8 +42,6 @@
   "jei.config.client.search.colorSearchMode.description": "נדרש \"^\" לפני מילה גדי לחפש צבע של חפץ.",
   "jei.config.client.advanced": "מתקדם",
   "jei.config.client.advanced.description": "הגדרות מתכדמות כדי לשנות את האופן שJEI מתנהג.",
-  "jei.config.debug.debug.debugMode": "מצב דיבאג",
-  "jei.config.debug.debug.debugMode.description": "שימושי רק בישביל מפתחי JEI, מוסיף אלפי חפצי ניסיון וכמה מתכוני דיבאג.",
   "jei.config.client.appearance.centerSearch": "בר חיפוש מרכזי",
   "jei.config.client.appearance.centerSearch.description": "הזז את בר החיפוש של JEI לתחתית מרכז המסך.",
 

@@ -52,5 +52,6 @@ include(
 	"Forge", "ForgeApi",
 	"Fabric", "FabricApi",
 	"Library",
+	"Debug",
 	"Gui"
 )

@@ -1,4 +1,4 @@
-package mezz.jei.library.plugins.debug.ingredients;
+package mezz.jei.debug.ingredients;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;

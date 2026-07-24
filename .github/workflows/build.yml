@@ -34,6 +34,7 @@ jobs:
           ./gradlew :Common:build --no-daemon
           ./gradlew :CommonApi:build --no-daemon
           ./gradlew :ForgeApi:build --no-daemon
+          ./gradlew :Debug:build --no-daemon
           ./gradlew :FabricApi:build --no-daemon
           ./gradlew :NeoForgeApi:build --no-daemon
 

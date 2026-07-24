@@ -68,8 +68,6 @@
   "jei.config.client.search.searchAdvancedTooltips": "Gelişmiş ipuçlarını ara",
   "jei.config.client.advanced": "Gelişmiş",
   "jei.config.client.advanced.description": "JEI fonksiyonlarını değiştirmek için gelişmiş seçenekler.",
-  "jei.config.debug.debug.debugMode": "Hata Ayıklama Modu",
-  "jei.config.debug.debug.debugMode.description": "Sadece JEI geliştiricileri için kullanışlı, binlerce test eşyası ve birkaç hata ayıklama tarifi ekler.",
   "jei.config.client.appearance.centerSearch": "Arama Çubuğu Merkezde",
   "jei.config.client.appearance.centerSearch.description": "JEI arama çubuğunu ekranın alt ortasına yerleştir.",
   "jei.config.modIdFormat.modName.modNameFormat": "Mod Adı Biçimi",

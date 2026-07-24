@@ -38,8 +38,6 @@
   "jei.config.client.search.colorSearchMode.description": "Krev \"^\" foran et ord for å søke på artikkel med farger. Eksempel: \"^blå\" viser artikler som er blå.",
   "jei.config.client.advanced": "Avansert",
   "jei.config.client.advanced.description": "Avanserte innstillinger for å endre måten JEI fungerer på.",
-  "jei.config.debug.debug.debugMode": "Feilsøkings Modus",
-  "jei.config.debug.debug.debugMode.description": "Nyttig for utviklerne av JEI. Legger til tusenvis av test artikler og noen feilsøkings oppskrifter.",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Artikkel Liste Redigerings Modus:",

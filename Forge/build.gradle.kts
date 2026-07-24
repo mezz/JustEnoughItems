@@ -53,10 +53,12 @@ val dependencyProjects: List<Project> = listOf(
 	project(":Gui"),
 	project(":ForgeApi"),
 )
+val debugProject = project(":Debug")
 
 dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
 }
+project.evaluationDependsOn(debugProject.path)
 
 val embeddedLibraries: Configuration = project(":Common").configurations.detachedConfiguration(
 	project(":Common").dependencies.create("net.mezzdev:suffixtree:${suffixtreeVersion}")
@@ -151,6 +153,9 @@ minecraft {
 				create(modId) {
 					source(sourceSets.main.get())
 				}
+				create("${modId}debug") {
+					source(debugProject.sourceSets.main.get())
+				}
 			}
 		}
 		create("client_01") {
@@ -172,6 +177,9 @@ minecraft {
 			mods {
 				create(modId) {
 					source(sourceSets.main.get())
+				}
+				create("${modId}debug") {
+					source(debugProject.sourceSets.main.get())
 				}
 			}
 		}

@@ -42,8 +42,6 @@
   "jei.config.client.search.colorSearchMode.description": "Απαίτηση \"^\" μπροστά από μια λέξη για αναζήτηση από χρώματα αντικειμένων.",
   "jei.config.client.advanced": "Προχωρημένα",
   "jei.config.client.advanced.description": "Προχωρημένες ρυθμίσεις για να αλλάξεις τον τρόπο που λειτουργεί το JEI.",
-  "jei.config.debug.debug.debugMode": "Λειτουργία Debug",
-  "jei.config.debug.debug.debugMode.description": "Μόνο χρήσιμο για προγραμματιστές του JEI, βάζει χιλιάδες δοκιμαστικά αντικείμενα και συνταγές.",
   "jei.config.client.appearance.centerSearch": "Κέντραρε Μπάρα Αναζήτησης",
   "jei.config.client.appearance.centerSearch.description": "Μετακίνησε την JEI μπάρα αναζήτης στο κεντρικό κάτω μέρος της οθόνης.",
 

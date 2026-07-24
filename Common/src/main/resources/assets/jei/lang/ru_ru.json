@@ -116,8 +116,6 @@
   "jei.config.client.search.searchAdvancedTooltips": "Подсказки для расширенного поиска",
   "jei.config.client.advanced": "Расширенные",
   "jei.config.client.advanced.description": "Параметры расширенной конфигурации для способа изменения функциональности JEI.",
-  "jei.config.debug.debug.debugMode": "Режим отладки",
-  "jei.config.debug.debug.debugMode.description": "Полезен только для разработчиков JEI, добавляет тестовые ингредиенты и несколько рецептов для отладки.",
   "jei.config.client.appearance.centerSearch": "Поле поиска по центру",
   "jei.config.client.appearance.centerSearch.description": "Перемещает поле поиска JEI в центр нижней части экрана.",
   "jei.config.modIdFormat.modName.modNameFormat": "Формат названия мода",

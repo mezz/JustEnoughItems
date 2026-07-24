@@ -41,8 +41,6 @@
   "jei.config.client.search.colorSearchMode.description": "Vyžaduje \"^\" před slovem pro hledání barev itemů.",
   "jei.config.client.advanced": "Pokročilé",
   "jei.config.client.advanced.description": "Pokročilé funkce pro JEI.",
-  "jei.config.debug.debug.debugMode": "Programovací Mód",
-  "jei.config.debug.debug.debugMode.description": "Použitelné jen pro JEI vývojáře, přidá tisíce test itemů a některé vývojářské recepty.",
   "jei.config.client.appearance.centerSearch": "Hýbat s vyhledávacím polem",
   "jei.config.client.appearance.centerSearch.description": "Přesune JEI bar dolů doprostřed obrazovky.",
 

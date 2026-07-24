@@ -63,10 +63,12 @@ val dependencyProjects: List<Project> = listOf(
 	project(":Gui"),
 	project(":NeoForgeApi"),
 )
+val debugProject = project(":Debug")
 
 dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
 }
+project.evaluationDependsOn(debugProject.path)
 
 val embeddedLibraries: Configuration by configurations.creating {
 	isCanBeConsumed = false
@@ -186,6 +188,9 @@ neoForge {
 				sourceSet(dependencyProject.sourceSets.main.get())
 			}
 		}
+		create("jeidebug") {
+			sourceSet(debugProject.sourceSets.main.get())
+		}
 		create("jeitests") {
 			sourceSet(sourceSets.named("gameTest").get())
 		}
@@ -196,27 +201,33 @@ neoForge {
 
 	runs {
 		val jeiMod = mods.named("jei")
+		val jeiDebugMod = mods.named("jeidebug")
 		val jeiTestsMod = mods.named("jeitests")
 		val jeiClientTestsMod = mods.named("jeiclienttests")
 
 		configureEach {
 			getAdditionalRuntimeClasspathConfiguration().extendsFrom(embeddedLibraries)
-			getMods().set(setOf(jeiMod.get()))
+			getMods().set(setOf(
+				jeiMod.get()
+			))
 		}
 		create("client") {
 			client()
+			getMods().set(setOf(jeiMod.get(), jeiDebugMod.get()))
 			systemProperty("forge.logging.console.level", "debug")
 			gameDirectory = file("run/client/Dev")
 			logLevel = Level.DEBUG
 		}
 		create("client_01") {
 			client()
+			getMods().set(setOf(jeiMod.get(), jeiDebugMod.get()))
 			gameDirectory = file("run/client/Player01")
 			programArguments.addAll("--username", "Player01")
 			logLevel = Level.DEBUG
 		}
 		create("server") {
 			server()
+			getMods().set(setOf(jeiMod.get(), jeiDebugMod.get()))
 			systemProperty("forge.logging.console.level", "debug")
 			gameDirectory = file("run/server")
 			programArguments.addAll("nogui")
@@ -260,10 +271,16 @@ neoForge {
 fun neoForgeServerRunFile(runName: String, suffix: String): File =
 	layout.buildDirectory.file("moddev/$runName$suffix").get().asFile
 
-fun modFoldersProperty(mod: ModModel): String =
-	mod.modSourceSets.get()
-		.flatMap { sourceSet -> sourceSet.output.files }
-		.joinToString(File.pathSeparator) { file -> "${mod.name}%%${file.absolutePath}" }
+fun modFoldersProperty(vararg mods: ModModel): String =
+	mods.asSequence()
+		.flatMap { mod ->
+			mod.modSourceSets.get().asSequence()
+				.flatMap { sourceSet ->
+					sourceSet.output.files.asSequence()
+						.map { file -> "${mod.name}%%${file.absolutePath}" }
+				}
+		}
+		.joinToString(File.pathSeparator)
 
 fun vanillaServerRunFile(suffix: String): File =
 	project(":Common").layout.buildDirectory.file("moddev/$vanillaServerRunName$suffix").get().asFile
@@ -273,7 +290,9 @@ val writeExternalServerLaunchProperties = tasks.register<WriteProperties>("write
 	property("neoForgeServerWithJei.classpathArgsFile", neoForgeServerRunFile(neoForgeServerWithJeiRunName, "RunClasspath.txt").absolutePath)
 	property("neoForgeServerWithJei.vmArgsFile", neoForgeServerRunFile(neoForgeServerWithJeiRunName, "RunVmArgs.txt").absolutePath)
 	property("neoForgeServerWithJei.programArgsFile", neoForgeServerRunFile(neoForgeServerWithJeiRunName, "RunProgramArgs.txt").absolutePath)
-	property("neoForgeServerWithJei.modFolders", modFoldersProperty(neoForge.mods.named("jei").get()))
+	property("neoForgeServerWithJei.modFolders", modFoldersProperty(
+		neoForge.mods.named("jei").get()
+	))
 	property("neoForgeServerWithoutJei.classpathArgsFile", neoForgeServerRunFile(neoForgeServerWithoutJeiRunName, "RunClasspath.txt").absolutePath)
 	property("neoForgeServerWithoutJei.vmArgsFile", neoForgeServerRunFile(neoForgeServerWithoutJeiRunName, "RunVmArgs.txt").absolutePath)
 	property("neoForgeServerWithoutJei.programArgsFile", neoForgeServerRunFile(neoForgeServerWithoutJeiRunName, "RunProgramArgs.txt").absolutePath)

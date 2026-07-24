@@ -102,8 +102,6 @@
   "jei.config.client.search.searchAdvancedTooltips": "Търсете разширени инструменти",
   "jei.config.client.advanced": "Напреднал",
   "jei.config.client.advanced.description": "Разширени опции за конфигурация, за да промените начина, по който JEI функционира.",
-  "jei.config.debug.debug.debugMode": "Режим на отстраняване на грешки",
-  "jei.config.debug.debug.debugMode.description": "Полезен само за разработчиците на JEI, добавя тестови съставки и някои рецепти за отстраняване на грешки.",
   "jei.config.client.appearance.centerSearch": "Централна лента за търсене",
   "jei.config.client.appearance.centerSearch.description": "Преместете лентата за търсене на JEI в долния център на екрана.",
   "jei.config.modIdFormat.modName.modNameFormat": "Формат на име на мод",

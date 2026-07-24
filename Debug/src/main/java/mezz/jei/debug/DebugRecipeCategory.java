@@ -1,4 +1,4 @@
-package mezz.jei.library.plugins.debug;
+package mezz.jei.debug;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.constants.ModIds;
@@ -24,9 +24,7 @@ import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
-import mezz.jei.common.Internal;
-import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.library.plugins.debug.ingredients.DebugIngredient;
+import mezz.jei.debug.ingredients.DebugIngredient;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -97,8 +95,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 
 	@Override
 	public IDrawable getIcon() {
-		Textures textures = Internal.getTextures();
-		return textures.getConfigButtonIcon();
+		return item;
 	}
 
 	@Override
@@ -220,10 +217,10 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 
 		@Override
 		public boolean handleInput(double mouseX, double mouseY, IJeiUserInput userInput) {
-			if (!userInput.is(Internal.getKeyMappings().getLeftClick())) {
+			InputConstants.Key key = userInput.getKey();
+			if (key.getType() != InputConstants.Type.MOUSE || key.getValue() != 0) {
 				return false;
 			}
-			InputConstants.Key key = userInput.getKey();
 			Button button = recipe.getButton();
 			int mouseButton = key.getValue();
 			if (mouseButton == 0 && button.mouseClicked(mouseX, mouseY, mouseButton)) {

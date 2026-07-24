@@ -98,8 +98,6 @@
   "jei.config.client.search.searchAdvancedTooltips": "Búsqueda avanzada de información",
   "jei.config.client.advanced": "Avanzado",
   "jei.config.client.advanced.description": "Opciones avanzadas de configuración para cambiar la forma en que JEI funciona.",
-  "jei.config.debug.debug.debugMode": "Modo de depuración",
-  "jei.config.debug.debug.debugMode.description": "Solo es útil para desarrolladores de JEI, agrega miles de elementos de prueba y algunas recetas de depuración.",
   "jei.config.client.appearance.centerSearch": "Centrar barra de búsqueda",
   "jei.config.client.appearance.centerSearch.description": "Mueva la barra de búsqueda JEI a la parte inferior central de la pantalla.",
   "jei.config.modIdFormat.modName.modNameFormat": "Formato del nombre del mod",

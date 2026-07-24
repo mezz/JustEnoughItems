@@ -120,8 +120,6 @@
   "jei.config.client.search.searchAdvancedTooltips": "Cari tooltips lanjutan",
   "jei.config.client.advanced": "Lanjutan",
   "jei.config.client.advanced.description": "Opsi konfigurasi lanjutan untuk mengubah cara JEI berfungsi.",
-  "jei.config.debug.debug.debugMode": "Mode Debug",
-  "jei.config.debug.debug.debugMode.description": "Hanya berguna untuk pengembang JEI, menambahkan Bahan uji coba dan beberapa resep debug.",
   "jei.config.client.appearance.centerSearch": "Bilah Pencarian di Tengah",
   "jei.config.client.appearance.centerSearch.description": "Pindahkan bilah pencarian JEI ke tengah bawah layar.",
   "jei.config.modIdFormat.modName.modNameFormat": "Format Nama Mod",

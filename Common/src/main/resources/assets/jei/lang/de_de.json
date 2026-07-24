@@ -99,8 +99,6 @@
   "jei.config.client.search.searchAdvancedTooltips": "Durchsuche erweiterte Tooltips",
   "jei.config.client.advanced": "Erweitert",
   "jei.config.client.advanced.description": "Erweiterte Konfigurationsoptionen, die ändern, wie JEI funktioniert.",
-  "jei.config.debug.debug.debugMode": "Debug-Modus aktivieren",
-  "jei.config.debug.debug.debugMode.description": "Fügt tausende Test-Items und einige Debug-Rezepte hinzu. Nur für Entwickler bestimmt.",
   "jei.config.client.appearance.centerSearch": "Zentriere Suchleiste",
   "jei.config.client.appearance.centerSearch.description": "Die JEI-Suchleiste wird unten in der Mitte des Bildschirms angezeigt.",
   "jei.config.modIdFormat.modName.modNameFormat": "Mod-Namensformat",

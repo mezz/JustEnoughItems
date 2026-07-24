@@ -1,0 +1,8 @@
+license="MIT"
+
+[[mods]]
+modId="${modId}debug"
+version="${version}"
+displayName="${modName}: Debug"
+displayTest="IGNORE_SERVER_VERSION"
+description='''Debug plugin for Just Enough Items.'''

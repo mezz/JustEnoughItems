@@ -45,8 +45,6 @@
   "jei.config.client.search.colorSearchMode.description": "Tavaroiden värien hakutila (etuliite: ^)",
   "jei.config.client.advanced": "Edistynyt",
   "jei.config.client.advanced.description": "Edistyneitä asetuksia jotka muokkaavat JEI:n toimintaa.",
-  "jei.config.debug.debug.debugMode": "Debug-tila",
-  "jei.config.debug.debug.debugMode.description": "Tarkoitettu JEI:n kehittäjille. Lisää tuhansia testitavaroita ja muutamia testireseptejä.",
   "jei.config.client.appearance.centerSearch": "Keskitä hakukenttä",
   "jei.config.client.appearance.centerSearch.description": "Siirrä JEI:n hakukenttä näytön alareunan keskelle.",
   "jei.config.modIdFormat.modName.modNameFormat": "Modin nimen muoto",

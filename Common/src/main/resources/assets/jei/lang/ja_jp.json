@@ -183,7 +183,7 @@
   "jei.config.client.performance.description": "JEIのパフォーマンスの最適化に関する設定。",
   "jei.config.client.performance.lowMemorySlowSearchEnabled": "省メモリ検索",
   "jei.config.client.performance.lowMemorySlowSearchEnabled.description": "検索を省メモリモードに設定します（検索は遅くなりますが、RAMの使用量が低下します）。",
-  
+
   "jei.config.client.advanced": "高度な設定",
   "jei.config.client.advanced.description": "JEIの機能を変更する高度な設定。",
   "jei.config.client.advanced.catchRenderErrorsEnabled": "レンダリングエラーのキャッチ",
@@ -259,16 +259,12 @@
 
   "jei.config.debug.debug": "デバッグ",
   "jei.config.debug.debug.description": "開発者がJEIの問題をデバッグするのに役立つ設定。",
-  "jei.config.debug.debug.debugMode": "デバッグモード",
-  "jei.config.debug.debug.debugMode.description": "デバッグモードを有効化します。",
   "jei.config.debug.debug.debugGuis": "デバッグGUI",
   "jei.config.debug.debug.debugGuis.description": "デバッグGUIモードを有効化します。",
   "jei.config.debug.debug.debugInputs": "デバッグ入力",
   "jei.config.debug.debug.debugInputs.description": "デバッグ入力モードを有効化します。",
   "jei.config.debug.debug.debugInfoTooltipsEnabled": "デバッグ説明ツールチップ",
   "jei.config.debug.debug.debugInfoTooltipsEnabled.description": "高度な情報が有効化されているとき、アイテムのツールチップにデバッグ情報を追加します。",
-  "jei.config.debug.debug.crashingTestItemsEnabled": "クラッシュテストアイテムの有効化",
-  "jei.config.debug.debug.crashingTestItemsEnabled.description": "JEIのデバッグを補助するために、意図的にクラッシュを引き起こすアイテムを追加します。",
   "jei.config.debug.debug.logSuffixTreeStats": "統計ツリーの記録",
   "jei.config.debug.debug.logSuffixTreeStats.description": "JEIのデバッグを補助するために、検索に使用された接尾辞ツリーに関する情報をログに記録します。",
 
