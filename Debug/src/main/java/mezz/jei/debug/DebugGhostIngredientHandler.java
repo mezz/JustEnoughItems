@@ -1,4 +1,4 @@
-package mezz.jei.library.plugins.debug;
+package mezz.jei.debug;
 
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -6,7 +6,6 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.common.Internal;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
@@ -15,51 +14,67 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 
-public class DebugGhostIngredientHandlerTwo<T extends AbstractContainerScreen<?>> implements IGhostIngredientHandler<T> {
+public class DebugGhostIngredientHandler<T extends AbstractContainerScreen<?>> implements IGhostIngredientHandler<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final IIngredientManager ingredientManager;
+	private final Supplier<Optional<IScreenHelper>> screenHelperSupplier;
 
-	public DebugGhostIngredientHandlerTwo(IIngredientManager ingredientManager) {
+	public DebugGhostIngredientHandler(IIngredientManager ingredientManager, Supplier<Optional<IScreenHelper>> screenHelperSupplier) {
 		this.ingredientManager = ingredientManager;
+		this.screenHelperSupplier = screenHelperSupplier;
 	}
 
 	@Override
 	public <I> List<Target<I>> getTargetsTyped(T gui, ITypedIngredient<I> typedIngredient, boolean doStart) {
 		List<Target<I>> targets = new ArrayList<>();
-		targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(40, 40, 20, 20), ingredientManager));
+		targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(0, 0, 20, 20), ingredientManager));
 		if (doStart) {
 			IIngredientType<I> ingredientType = typedIngredient.getType();
 			IIngredientHelper<I> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-			LOGGER.info("2: Ghost Ingredient Handler Two Starting with {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
-			targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(30, 30, 20, 20), ingredientManager));
+			LOGGER.info("1: Ghost Ingredient Handling Starting with {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
+			targets.add(new DebugInfoTarget<>("Got an Ingredient", new Rect2i(20, 20, 20, 20), ingredientManager));
 		}
-		IScreenHelper screenHelper = Internal.getJeiRuntime().getScreenHelper();
-		screenHelper.getGuiProperties(gui)
+		this.screenHelperSupplier.get()
+			.flatMap(screenHelper -> screenHelper.getGuiProperties(gui))
 			.ifPresent(guiProperties -> {
 				typedIngredient.getItemStack()
 					.ifPresent(itemStack -> {
 						final int guiLeft = guiProperties.guiLeft();
 						final int guiTop = guiProperties.guiTop();
-						boolean odd = false;
+						boolean even = true;
 						int count = 0;
 						for (Slot slot : gui.getMenu().slots) {
-							if (odd && count > 10) {
+							if (even) {
 								Rect2i area = new Rect2i(guiLeft + slot.x, guiTop + slot.y, 16, 16);
 								targets.add(new DebugInfoTarget<>("Got an Ingredient in Gui", area, ingredientManager));
 							}
 							count++;
-							odd = !odd;
+							if (count > 10) {
+								break;
+							}
+							even = !even;
 						}
 					});
 			});
+
 		return targets;
 	}
 
 	@Override
 	public void onComplete() {
-		LOGGER.info("2: Ghost Ingredient Handling Complete");
+		LOGGER.info("1: Ghost Ingredient Handling Complete");
+	}
+
+	@Override
+	public <I> boolean quickMove(T gui, ITypedIngredient<I> typedIngredient) {
+		IIngredientType<I> ingredientType = typedIngredient.getType();
+		IIngredientHelper<I> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		LOGGER.info("Ghost Ingredient Quick Moved with {}", ingredientHelper.getErrorInfo(typedIngredient.getIngredient()));
+		return true;
 	}
 
 	private record DebugInfoTarget<I>(
@@ -78,7 +93,7 @@ public class DebugGhostIngredientHandlerTwo<T extends AbstractContainerScreen<?>
 			IIngredientType<I> ingredientType = ingredientManager.getIngredientTypeChecked(ingredient)
 				.orElseThrow();
 			IIngredientHelper<I> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-			LOGGER.info("2: {}: {}", message, ingredientHelper.getErrorInfo(ingredient));
+			LOGGER.info("1: {}: {}", message, ingredientHelper.getErrorInfo(ingredient));
 		}
 	}
 }

@@ -273,16 +273,12 @@
 
   "jei.config.debug.debug": "Түзеу",
   "jei.config.debug.debug.description": "JEI-дегі мәселелерді түзеуге әзірлеушілерге көмектесетін баптаулар",
-  "jei.config.debug.debug.debugMode": "Түзеу режимі",
-  "jei.config.debug.debug.debugMode.description": "JEI әзірлеушілеріне ғана пайдалы. Қосымша ақпарат пен рецепт қосады.",
   "jei.config.debug.debug.debugGuis": "GUI түзеу",
   "jei.config.debug.debug.debugGuis.description": "GUI түзеу режімін қосу",
   "jei.config.debug.debug.debugInputs": "Енгізуді түзеу",
   "jei.config.debug.debug.debugInputs.description": "Енгізуді түзеу режімін қосу",
   "jei.config.debug.debug.debugInfoTooltipsEnabled": "Түзеу ақпарат түсіндірмесі",
   "jei.config.debug.debug.debugInfoTooltipsEnabled.description": "Қосымша түсіндірмелер қосулы болғанда ингредиент түсіндірмесіне түзеу ақпаратын қосу.",
-  "jei.config.debug.debug.crashingTestItemsEnabled": "Құлататын тест заттарды қосу",
-  "jei.config.debug.debug.crashingTestItemsEnabled.description": "JEI түзеуге көмектесу үшін әдейі құлататын ингредиенттерді JEI-ге қосу.",
   "jei.config.debug.debug.logSuffixTreeStats": "Іздеу ағаш статистикасын журналға жазу",
   "jei.config.debug.debug.logSuffixTreeStats.description": "JEI түзеуге көмектесу үшін іздеу үшін қолданылатын жұрнақ ағаштары туралы ақпаратты журналға жазу.",
 

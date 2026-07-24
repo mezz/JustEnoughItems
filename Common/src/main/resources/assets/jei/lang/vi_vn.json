@@ -119,8 +119,6 @@
   "jei.config.client.advanced.description": "Tùy chọn cấu hình nâng cao để thay đổi cách hoạt động của JEI.",
   "jei.config.client.advanced.itemBlacklist": "Danh sách đen thành phần",
   "jei.config.client.advanced.itemBlacklist.description": "Danh sách các thành phần không được hiển thị trong lớp phủ danh sách thành phần. Định dạng: modId[:name[:meta]]. Chế độ ẩn Thành phần sẽ tự động thêm hoặc xóa các mục tại đây.",
-  "jei.config.debug.debug.debugMode": "Chế độ gỡ lỗi",
-  "jei.config.debug.debug.debugMode.description": "Chỉ hữu ích cho các nhà phát triển JEI, thêm các thành phần thử nghiệm và một số công thức sửa lỗi.",
   "jei.config.client.appearance.centerSearch": "Thanh tìm kiếm trung tâm",
   "jei.config.client.appearance.centerSearch.description": "Di chuyển thanh tìm kiếm JEI xuống dưới cùng chính giữa màn hình.",
   "jei.config.modIdFormat.modName.modNameFormat": "Định dạng tên Mod",

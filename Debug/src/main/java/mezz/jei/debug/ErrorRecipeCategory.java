@@ -1,29 +1,31 @@
-package mezz.jei.library.plugins.debug;
+package mezz.jei.debug;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
-import mezz.jei.common.Internal;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.List;
 
 public class ErrorRecipeCategory extends AbstractRecipeCategory<ErrorRecipe> {
 	public static final IRecipeType<ErrorRecipe> TYPE = IRecipeType.create(ModIds.JEI_ID, "error", ErrorRecipe.class);
 
-	public ErrorRecipeCategory() {
+	public ErrorRecipeCategory(IGuiHelper guiHelper) {
 		super(
 			TYPE,
 			Component.literal("error"),
-			Internal.getTextures().getConfigButtonIcon(),
+			guiHelper.createDrawableItemStack(new ItemStack(Items.BARRIER)),
 			160,
 			60
 		);

@@ -1,4 +1,4 @@
 @NullMarked
-package mezz.jei.library.plugins.debug;
+package mezz.jei.debug;
 
 import org.jspecify.annotations.NullMarked;

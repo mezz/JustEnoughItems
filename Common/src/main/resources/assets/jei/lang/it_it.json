@@ -118,8 +118,6 @@
   "jei.config.client.advanced.description": "Opzioni avanzate per cambiare il modo in cui funziona la JEI.",
   "jei.config.client.advanced.itemBlacklist": "Lista nera dei oggetti",
   "jei.config.client.advanced.itemBlacklist.description": "Lista dei oggetti che non devono essere mostrati nella lista. Formato: modId[:name[:meta]]. La modalità nascondi Ingredienti aggiunge e rimuove automaticamente questi oggetti.",
-  "jei.config.debug.debug.debugMode": "Modalità debug",
-  "jei.config.debug.debug.debugMode.description": "Serve solo agli sviluppatori della JEI, aggiunge dei ingredienti per i test e qualche ricetta di debug.",
   "jei.config.client.appearance.centerSearch": "Centra la barra di ricerca",
   "jei.config.client.appearance.centerSearch.description": "Sposta la barra di ricerca della JEI in basso al centro dello schermo.",
   "jei.config.modIdFormat.modName.modNameFormat": "Formato nome della mod",

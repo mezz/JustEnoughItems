@@ -277,16 +277,12 @@
 
   "jei.config.debug.debug": "Depuração",
   "jei.config.debug.debug.description": "Opções para ajudar desenvolvedores a depurar o JEI",
-  "jei.config.debug.debug.debugMode": "Modo depuração",
-  "jei.config.debug.debug.debugMode.description": "Ativa o modo depuração",
   "jei.config.debug.debug.debugGuis": "Depuração de GUIs",
   "jei.config.debug.debug.debugGuis.description": "Ativa modo de depuração de interfaces",
   "jei.config.debug.debug.debugInputs": "Depuração de entradas",
   "jei.config.debug.debug.debugInputs.description": "Ativa modo de depuração de entradas",
   "jei.config.debug.debug.debugInfoTooltipsEnabled": "Dicas com info de depuração",
   "jei.config.debug.debug.debugInfoTooltipsEnabled.description": "Adiciona informações de depuração nas dicas quando dicas avançadas estão ativadas.",
-  "jei.config.debug.debug.crashingTestItemsEnabled": "Ativar itens de teste que causam crash",
-  "jei.config.debug.debug.crashingTestItemsEnabled.description": "Adiciona ingredientes que crasham de propósito para depurar o JEI.",
   "jei.config.debug.debug.logSuffixTreeStats": "Registrar estatísticas da árvore de sufixos",
   "jei.config.debug.debug.logSuffixTreeStats.description": "Registra informações sobre as árvores de sufixos usadas na busca.",
 

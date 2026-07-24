@@ -141,8 +141,6 @@
   "jei.config.client.advanced.description": "Zaawansowane opcje konfiguracyjne do zmiany sposobu, w jaki funkcjonuje JEI.",
   "jei.config.client.advanced.itemBlacklist": "Czarna lista składników",
   "jei.config.client.advanced.itemBlacklist.description": "Lista składników, które mają nie być wyświetlane na nakładce z listą składników. Format: idModa[:nazwa[:meta]]. Tryb ukrywania składników automatycznie doda tutaj wpisy lub je usunie.",
-  "jei.config.debug.debug.debugMode": "Tryb debugowania",
-  "jei.config.debug.debug.debugMode.description": "Przydatny jedynie dla programistów JEI, dodaje testowe składniki i kilka receptur pomocnych przy debugowaniu.",
   "jei.config.client.appearance.centerSearch": "Wyśrodkowany pasek wyszukiwania",
   "jei.config.client.appearance.centerSearch.description": "Przeniesienie paska wyszukiwania JEI na środek dolnej krawędzi ekranu.",
   "jei.config.modIdFormat.modName.modNameFormat": "Format nazw modów",

@@ -1,4 +1,4 @@
-package mezz.jei.library.plugins.debug;
+package mezz.jei.debug;
 
 public class ErrorRecipe {
 	private final CrashType type;

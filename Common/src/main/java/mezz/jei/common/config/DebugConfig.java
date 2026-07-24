@@ -14,30 +14,26 @@ public final class DebugConfig {
 		instance = new DebugConfig(schema);
 	}
 
-	private final Supplier<Boolean> debugModeEnabled;
+	private final Supplier<Boolean> debugIngredientsEnabled;
 	private final Supplier<Boolean> debugGuisEnabled;
 	private final Supplier<Boolean> debugInputsEnabled;
 	private final Supplier<Boolean> debugInfoTooltipsEnabled;
-	private final Supplier<Boolean> crashingTestIngredientsEnabled;
-	private final Supplier<Boolean> crashingTestRecipesEnabled;
 	private final Supplier<Boolean> logSuffixTreeStats;
 
 	private DebugConfig(IConfigSchemaBuilder schema) {
 		IConfigCategoryBuilder advanced = schema.addCategory("debug");
-		debugModeEnabled = advanced.addBoolean("debugMode", false);
+		debugIngredientsEnabled = advanced.addBoolean("debugIngredientsEnabled", false);
 		debugGuisEnabled = advanced.addBoolean("debugGuis", false);
 		debugInputsEnabled = advanced.addBoolean("debugInputs", false);
 		debugInfoTooltipsEnabled = advanced.addBoolean("debugInfoTooltipsEnabled", false);
-		crashingTestIngredientsEnabled = advanced.addBoolean("crashingTestItemsEnabled", false);
-		crashingTestRecipesEnabled =  advanced.addBoolean("crashingTestRecipesEnabled", false);
 		logSuffixTreeStats = advanced.addBoolean("logSuffixTreeStats", false);
 	}
 
-	public static boolean isDebugModeEnabled() {
+	public static boolean isDebugIngredientsEnabled() {
 		if (instance == null) {
 			return false;
 		}
-		return instance.debugModeEnabled.get();
+		return instance.debugIngredientsEnabled.get();
 	}
 
 	public static boolean isDebugGuisEnabled() {
@@ -59,20 +55,6 @@ public final class DebugConfig {
 			return false;
 		}
 		return instance.debugInfoTooltipsEnabled.get();
-	}
-
-	public static boolean isCrashingTestIngredientsEnabled() {
-		if (instance == null) {
-			return false;
-		}
-		return instance.crashingTestIngredientsEnabled.get();
-	}
-
-	public static boolean isCrashingTestRecipesEnabled() {
-		if (instance == null) {
-			return false;
-		}
-		return instance.crashingTestRecipesEnabled.get();
 	}
 
 	public static boolean isLogSuffixTreeStatsEnabled() {

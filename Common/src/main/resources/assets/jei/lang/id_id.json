@@ -74,7 +74,7 @@
   "key.jei.cheatOneItem2": "Curang 1 Item",
   "key.jei.cheatItemStack": "Curang 1 Stak",
   "key.jei.cheatItemStack2": "Curang 1 Stak",
-  
+
   "key.category.jei.hover.config.button": "JEI (Arahkan Kursor Ke Tombol Konfigurasi)",
   "key.jei.toggleCheatModeConfigButton": "Aktifkan/Nonaktifkan Mode Curang",
 
@@ -94,14 +94,14 @@
   "key.jei.clearSearchBar": "Bersihkan Filter Pencarian",
   "key.jei.previousSearch": "Pencarian Sebelumnya",
   "key.jei.nextSearch": "Pencarian Berikutnya",
-  
+
   "_comment": "Config",
   "jei.config": "Konfigurasi JEI",
   "jei.config.name": "Nama: %s",
   "jei.config.description": "Deskripsi: %s",
   "jei.config.valueValues": "Nilai Valid: %s",
   "jei.config.defaultValue": "Nilai Default: %s",
-  
+
   "jei.config.default": "Default",
   "jei.config.valid": "Valid",
   "jei.config.title": "Konfigurasi %MODNAME",
@@ -136,8 +136,6 @@
   "jei.config.client.advanced.description": "Opsi konfigurasi lanjutan untuk mengubah cara JEI berfungsi.",
   "jei.config.client.advanced.itemBlacklist": "Daftar hitam item",
   "jei.config.client.advanced.itemBlacklist.description": "Daftar Bahan yang tidak boleh ditampilkan dalam daftar. Format: modId[:name[:meta]]. Mode Sembunyikan Bahan akan secara otomatis menambah atau menghapus entri di sini.",
-  "jei.config.debug.debug.debugMode": "Mode Debug",
-  "jei.config.debug.debug.debugMode.description": "Hanya berguna untuk pengembang JEI, menambahkan Bahan uji coba dan beberapa resep debug.",
   "jei.config.client.appearance.centerSearch": "Bilah Pencarian di Tengah",
   "jei.config.client.appearance.centerSearch.description": "Pindahkan bilah pencarian JEI ke tengah bawah layar.",
   "jei.config.modIdFormat.modName.modNameFormat": "Format Nama Mod",
@@ -172,7 +170,7 @@
   "gui.jei.category.compostable.chance": "Peluang: %s%%",
   "gui.jei.category.itemInformation": "Informasi",
   "gui.jei.category.tagInformation": "Tag %s",
-  
+
   "_comment": "Key Names",
   "jei.key.combo.shift": "SHIFT + %s",
   "jei.key.combo.control": "CTRL + %s",

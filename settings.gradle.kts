@@ -44,5 +44,6 @@ include(
 	"Fabric", "FabricApi",
 	"NeoForge", "NeoForgeApi",
 	"Library",
+	"Debug",
 	"Gui"
 )
