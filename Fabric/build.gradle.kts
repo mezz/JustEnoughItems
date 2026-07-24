@@ -158,10 +158,8 @@ loom {
             it.absoluteFile.toString()
         }
 
-        // loom 1.11 runDir takes a directory relative to the root directory
-        val loomRunDir = project.projectDir
-            .relativeTo(project.rootDir)
-            .resolve("run")
+        // Loom 1.8 runDir takes a directory relative to this project directory.
+        val loomRunDir = File("run")
 
         named("client") {
             client()
