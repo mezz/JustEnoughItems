@@ -1,6 +1,6 @@
 plugins {
     // https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-	id("com.diffplug.spotless") version("6.25.0")
+	id("com.diffplug.spotless") version("8.8.0")
 
     // https://plugins.gradle.org/plugin/com.dorongold.task-tree
     id("com.dorongold.task-tree") version("4.0.0")
@@ -55,7 +55,7 @@ spotless {
 		endWithNewline()
 		trimTrailingWhitespace()
 		removeUnusedImports()
-        indentWithTabs(4)
+        leadingSpacesToTabs(4)
         replaceRegex("class-level javadoc indentation fix", "^\\*", " *")
         replaceRegex("method-level javadoc indentation fix", "\t\\*", "\t *")
     }
