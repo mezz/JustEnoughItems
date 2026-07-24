@@ -106,3 +106,5 @@ subprojects {
         }
     }
 }
+
+apply(from = "gradle/api-compatibility.gradle.kts")
