@@ -23,6 +23,7 @@ plugins {
 apply {
 	from("buildtools/ColoredOutput.gradle")
 }
+
 repositories {
     mavenCentral()
 }
@@ -125,3 +126,5 @@ subprojects {
         isReproducibleFileOrder = true
     }
 }
+
+apply(from = "gradle/api-compatibility.gradle.kts")
