@@ -251,7 +251,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		nextPage.render(poseStack, mouseX, mouseY, partialTicks);
 		previousPage.render(poseStack, mouseX, mouseY, partialTicks);
 
-		Optional<IRecipeLayoutDrawable<?>> hoveredRecipeLayout = this.layouts.draw(poseStack, mouseX, mouseY);
+		Optional<IRecipeLayoutDrawable> hoveredRecipeLayout = this.layouts.draw(poseStack, mouseX, mouseY);
 		Optional<IRecipeSlotDrawable> hoveredRecipeCatalyst = recipeCatalysts.draw(poseStack, mouseX, mouseY);
 
 		recipeGuiTabs.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
@@ -548,7 +548,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		);
 	}
 
-	private <T> RecipeLayoutWithButtons<T> createRecipeLayoutWithButtons(IRecipeLayoutDrawable<T> recipeLayoutDrawable) {
+	private <T> RecipeLayoutWithButtons<T> createRecipeLayoutWithButtons(IRecipeLayoutDrawable recipeLayoutDrawable) {
 		RecipeTransferButton transferButton = RecipeTransferButton.create(
 			recipeLayoutDrawable,
 			this::onClose

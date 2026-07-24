@@ -129,7 +129,7 @@ public interface IRecipeManager {
 	 *
 	 * @since 10.3.0
 	 */
-	default <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(
+	default <T> Optional<IRecipeLayoutDrawable> createRecipeLayoutDrawable(
 		IRecipeCategory<T> recipeCategory,
 		T recipe,
 		IFocusGroup focusGroup
@@ -138,8 +138,7 @@ public interface IRecipeManager {
 			.stream()
 			.findFirst()
 			.orElse(null);
-		@SuppressWarnings("unchecked")
-		IRecipeLayoutDrawable<T> recipeLayout = (IRecipeLayoutDrawable<T>) createRecipeLayoutDrawable(recipeCategory, recipe, focus);
+		IRecipeLayoutDrawable recipeLayout = createRecipeLayoutDrawable(recipeCategory, recipe, focus);
 		return Optional.ofNullable(recipeLayout);
 	}
 

@@ -26,7 +26,7 @@ import java.util.Optional;
  */
 @ApiStatus.NonExtendable
 @SuppressWarnings("removal")
-public interface IRecipeLayoutDrawable<R> extends IRecipeLayout {
+public interface IRecipeLayoutDrawable extends IRecipeLayout {
 	/**
 	 * Set the position of the recipe layout in screen coordinates.
 	 * To help decide on the position, you can get the width and height of this recipe from {@link IRecipeCategory#getBackground()}.
@@ -66,6 +66,15 @@ public interface IRecipeLayoutDrawable<R> extends IRecipeLayout {
 	 */
 	@Nullable
 	<T> T getIngredientUnderMouse(int mouseX, int mouseY, IIngredientType<T> ingredientType);
+
+	/**
+	 * Returns the ingredient currently under the mouse, if there is one.
+	 *
+	 * @since 10.6.1
+	 */
+	default <T> Optional<T> getOptionalIngredientUnderMouse(int mouseX, int mouseY, IIngredientType<T> ingredientType) {
+		return Optional.ofNullable(getIngredientUnderMouse(mouseX, mouseY, ingredientType));
+	}
 
 	/**
 	 * Get the recipe slot currently under the mouse, if there is one.
@@ -115,13 +124,13 @@ public interface IRecipeLayoutDrawable<R> extends IRecipeLayout {
 	 * Get the recipe category that this recipe layout is a part of.
 	 * @since 10.3.0
 	 */
-	IRecipeCategory<R> getRecipeCategory();
+	IRecipeCategory<?> getRecipeCategory();
 
 	/**
 	 * Get the recipe that this recipe layout displays.
 	 * @since 10.3.0
 	 */
-	R getRecipe();
+	Object getRecipe();
 
 	/**
 	 * Get the input handler for this recipe layout.
@@ -129,4 +138,11 @@ public interface IRecipeLayoutDrawable<R> extends IRecipeLayout {
 	 * @since 10.5.0
 	 */
 	IJeiInputHandler getInputHandler();
+
+	/**
+	 * Update the recipe layout on game tick.
+	 *
+	 * @since 10.6.1
+	 */
+	void tick();
 }

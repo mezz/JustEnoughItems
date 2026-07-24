@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class RecipeTransferButton extends GuiIconToggleButton {
 	public static RecipeTransferButton create(
-		IRecipeLayoutDrawable<?> recipeLayout,
+		IRecipeLayoutDrawable recipeLayout,
 		Runnable onClose
 	) {
 		Rect2i buttonArea = recipeLayout.getRecipeTransferButtonArea();
@@ -39,13 +39,13 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 		return transferButton;
 	}
 
-	private final IRecipeLayoutDrawable<?> recipeLayout;
+	private final IRecipeLayoutDrawable recipeLayout;
 	private final Runnable onClose;
 	private @Nullable IRecipeTransferError recipeTransferError;
 	private @Nullable AbstractContainerMenu parentContainer;
 	private @Nullable Player player;
 
-	private RecipeTransferButton(IDrawable icon, IRecipeLayoutDrawable<?> recipeLayout, Runnable onClose) {
+	private RecipeTransferButton(IDrawable icon, IRecipeLayoutDrawable recipeLayout, Runnable onClose) {
 		super(icon, icon);
 		this.recipeLayout = recipeLayout;
 		this.onClose = onClose;

@@ -8,6 +8,7 @@ import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
 import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
@@ -30,7 +31,7 @@ import java.util.Optional;
 
 @SuppressWarnings({"unchecked", "removal", "DeprecatedIsStillUsed"})
 @Deprecated
-public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayoutDrawable<R> {
+public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayoutDrawable {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final RecipeLayout<R> recipeLayout;
@@ -133,6 +134,16 @@ public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayou
 	@Override
 	public Object getRecipe() {
 		return this.recipeLayout.getRecipe();
+	}
+
+	@Override
+	public IJeiInputHandler getInputHandler() {
+		return this.recipeLayout.getInputHandler();
+	}
+
+	@Override
+	public void tick() {
+		this.recipeLayout.tick();
 	}
 
 	@Override

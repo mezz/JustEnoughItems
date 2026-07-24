@@ -51,7 +51,7 @@ public class RecipeGuiLayouts {
 		final int spacingY = recipeHeight + recipeSpacing;
 		int recipeYOffset = recipeLayoutsArea.getY() + recipeSpacing;
 		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.recipeLayout();
+			IRecipeLayoutDrawable recipeLayout = recipeLayoutWithButtons.recipeLayout();
 			Rect2i rectWithBorder = recipeLayout.getRectWithBorder();
 			Rect2i rect = recipeLayout.getRect();
 			recipeLayout.setPosition(
@@ -66,7 +66,7 @@ public class RecipeGuiLayouts {
 
 	private void updateRecipeButtonPositions() {
 		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.recipeLayout();
+			IRecipeLayoutDrawable recipeLayout = recipeLayoutWithButtons.recipeLayout();
 			Rect2i layoutArea = recipeLayout.getRect();
 
 			{
@@ -142,7 +142,7 @@ public class RecipeGuiLayouts {
 
 	public boolean mouseDragged(double mouseX, double mouseY, InputConstants.Key input, double dragX, double dragY) {
 		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.recipeLayout();
+			IRecipeLayoutDrawable recipeLayout = recipeLayoutWithButtons.recipeLayout();
 			if (mouseDragged(recipeLayout, mouseX, mouseY, input, dragX, dragY)) {
 				return true;
 			}
@@ -150,7 +150,7 @@ public class RecipeGuiLayouts {
 		return false;
 	}
 
-	private <R> boolean mouseDragged(IRecipeLayoutDrawable<R> recipeLayout, double mouseX, double mouseY, InputConstants.Key input, double dragX, double dragY) {
+	private boolean mouseDragged(IRecipeLayoutDrawable recipeLayout, double mouseX, double mouseY, InputConstants.Key input, double dragX, double dragY) {
 		if (recipeLayout.isMouseOver(mouseX, mouseY)) {
 			IJeiInputHandler inputHandler = recipeLayout.getInputHandler();
 			return inputHandler.handleMouseDragged(mouseX, mouseY, input, dragX, dragY);
@@ -160,7 +160,7 @@ public class RecipeGuiLayouts {
 
 	public void mouseMoved(double mouseX, double mouseY) {
 		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.recipeLayout();
+			IRecipeLayoutDrawable recipeLayout = recipeLayoutWithButtons.recipeLayout();
 			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
 				IJeiInputHandler inputHandler = recipeLayout.getInputHandler();
 				inputHandler.handleMouseMoved(mouseX, mouseY);
@@ -168,14 +168,14 @@ public class RecipeGuiLayouts {
 		}
 	}
 
-	public Optional<IRecipeLayoutDrawable<?>> draw(PoseStack poseStack, int mouseX, int mouseY) {
-		IRecipeLayoutDrawable<?> hoveredLayout = null;
+	public Optional<IRecipeLayoutDrawable> draw(PoseStack poseStack, int mouseX, int mouseY) {
+		IRecipeLayoutDrawable hoveredLayout = null;
 
 		Minecraft minecraft = Minecraft.getInstance();
 		float partialTicks = minecraft.getFrameTime();
 
 		for (RecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.recipeLayout();
+			IRecipeLayoutDrawable recipeLayout = recipeLayoutWithButtons.recipeLayout();
 			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
 				hoveredLayout = recipeLayout;
 			}

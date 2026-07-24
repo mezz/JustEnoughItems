@@ -12,7 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -24,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public record RecipeLayoutWithButtons<R>(
-	IRecipeLayoutDrawable<R> recipeLayout,
+	IRecipeLayoutDrawable recipeLayout,
 	RecipeTransferButton transferButton
 ) {
 	public int totalWidth() {
@@ -51,10 +50,11 @@ public record RecipeLayoutWithButtons<R>(
 	}
 
 	public void tick(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player) {
+		recipeLayout.tick();
 		transferButton.update(parentContainer, player);
 	}
 
-	private record RecipeLayoutUserInputHandler<R>(IRecipeLayoutDrawable<R> recipeLayout) implements IUserInputHandler {
+	private record RecipeLayoutUserInputHandler<R>(IRecipeLayoutDrawable recipeLayout) implements IUserInputHandler {
 
 		@Override
 		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
@@ -78,14 +78,15 @@ public record RecipeLayoutWithButtons<R>(
 			return Optional.empty();
 		}
 
-		private boolean handleCopyRecipeId(IRecipeLayoutDrawable<R> recipeLayout, boolean simulate) {
+		@SuppressWarnings("unchecked")
+		private boolean handleCopyRecipeId(IRecipeLayoutDrawable recipeLayout, boolean simulate) {
 			if (simulate) {
 				return true;
 			}
 			Minecraft minecraft = Minecraft.getInstance();
 			LocalPlayer player = minecraft.player;
-			IRecipeCategory<R> recipeCategory = recipeLayout.getRecipeCategory();
-			R recipe = recipeLayout.getRecipe();
+			IRecipeCategory<R> recipeCategory = (IRecipeCategory<R>) recipeLayout.getRecipeCategory();
+			R recipe = (R) recipeLayout.getRecipe();
 			ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
 			if (registryName == null) {
 				MutableComponent message = new TranslatableComponent("jei.message.copy.recipe.id.failure");

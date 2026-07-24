@@ -192,7 +192,8 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			recipeTransferButtonPosition,
 			slots,
 			focuses,
-			ingredientManager
+			ingredientManager,
+			cycleTicker
 		);
 	}
 

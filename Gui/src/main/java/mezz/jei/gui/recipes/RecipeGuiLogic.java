@@ -229,11 +229,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		List<T> brokenRecipes = new ArrayList<>();
 
 		List<RecipeLayoutWithButtons<T>> results = recipes.stream()
-			.<IRecipeLayoutDrawable<T>>mapMulti((recipe, acceptor) ->
+			.<IRecipeLayoutDrawable>mapMulti((recipe, acceptor) ->
 				recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses())
 					.ifPresentOrElse(acceptor, () -> brokenRecipes.add(recipe))
 			)
-			.map(recipeLayoutFactory::create)
+			.map(recipeLayout -> recipeLayoutFactory.<T>create(recipeLayout))
 			.toList();
 
 		if (!brokenRecipes.isEmpty()) {

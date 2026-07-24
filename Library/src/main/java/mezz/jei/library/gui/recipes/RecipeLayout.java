@@ -24,6 +24,7 @@ import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.library.deprecated.gui.recipes.layout.RecipeLayoutLegacyAdapter;
+import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RecipeSlots;
 import mezz.jei.library.gui.ingredients.RecipeSlotsView;
@@ -38,7 +39,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
+public class RecipeLayout<R> implements IRecipeLayoutDrawable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int DEFAULT_RECIPE_BORDER_PADDING = 4;
 	public static final int RECIPE_BUTTON_SIZE = 13;
@@ -59,10 +60,11 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 	private @Nullable ShapelessIcon shapelessIcon;
 	private final RecipeLayoutInputHandler<R> inputHandler;
 	private @Nullable RecipeLayoutLegacyAdapter<R> legacyAdapter;
+	private final CycleTicker cycleTicker;
 
 	private ImmutableRect2i area;
 
-	public static <T> Optional<IRecipeLayoutDrawable<T>> create(
+	public static <T> Optional<IRecipeLayoutDrawable> create(
 		IRecipeCategory<T> recipeCategory,
 		Collection<IRecipeCategoryDecorator<T>> recipeCategoryDecorators,
 		T recipe,
@@ -81,7 +83,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		);
 	}
 
-	public static <T> Optional<IRecipeLayoutDrawable<T>> create(
+	public static <T> Optional<IRecipeLayoutDrawable> create(
 		IRecipeCategory<T> recipeCategory,
 		Collection<IRecipeCategoryDecorator<T>> recipeCategoryDecorators,
 		T recipe,
@@ -124,13 +126,15 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 		ImmutablePoint2i recipeTransferButtonPos,
 		List<IRecipeSlotDrawable> recipeCategorySlots,
 		IFocusGroup focuses,
-		IIngredientManager ingredientManager
+		IIngredientManager ingredientManager,
+		CycleTicker cycleTicker
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipeCategoryDecorators = recipeCategoryDecorators;
 		this.focuses = focuses;
 		this.ingredientManager = ingredientManager;
 		this.inputHandler = new RecipeLayoutInputHandler<>(this);
+		this.cycleTicker = cycleTicker;
 
 		this.recipeCategorySlots = recipeCategorySlots;
 		this.recipeBorderPadding = recipeBorderPadding;
@@ -385,5 +389,10 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R> {
 			.filter(RecipeSlot.class::isInstance)
 			.map(RecipeSlot.class::cast)
 			.toList();
+	}
+
+	@Override
+	public void tick() {
+		cycleTicker.tick();
 	}
 }
