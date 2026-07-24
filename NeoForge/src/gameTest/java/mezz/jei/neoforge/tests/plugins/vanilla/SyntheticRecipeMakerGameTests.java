@@ -213,10 +213,14 @@ public final class SyntheticRecipeMakerGameTests {
 	}
 
 	private static List<BannerItem> getVanillaBanners() {
-		return Items.BANNER.asList()
-			.stream()
-			.map(BannerItem.class::cast)
-			.toList();
+		Registry<Item> itemRegistry = RegistryUtil.getRegistry(Registries.ITEM);
+		List<BannerItem> banners = new ArrayList<>();
+		for (Holder<Item> itemHolder : itemRegistry.getTagOrEmpty(ItemTags.BANNERS)) {
+			if (itemHolder.value() instanceof BannerItem banner) {
+				banners.add(banner);
+			}
+		}
+		return banners;
 	}
 
 	private static BannerItem getVanillaBanner(DyeColor color) {
