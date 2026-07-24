@@ -62,11 +62,14 @@ val dependencyProjects: List<ProjectDependency> = listOf(
     project.dependencies.project(":Gui"),
     project.dependencies.project(":FabricApi", configuration = "namedElements")
 )
+val debugProject = project(":Debug")
 
 dependencyProjects.forEach {
     project.evaluationDependsOn(it.dependencyProject.path)
 }
+project.evaluationDependsOn(debugProject.path)
 project.evaluationDependsOn(":Changelog")
+val debugSourceSet = debugProject.sourceSets.main.get()
 
 val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
     compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
@@ -240,6 +243,17 @@ tasks.register("runClientGameTestWithoutAmecs") {
     group = "mod development"
     description = "Runs JEI Fabric client tests with AMECS support disabled."
     dependsOn("runClientKeyMappingTestWithoutAmecs")
+}
+
+val debugClassesTask = debugProject.tasks.named(debugSourceSet.classesTaskName)
+val debugModPath = debugProject.layout.buildDirectory.dir("resources/main").get().asFile.absolutePath
+val debugRunTasks = setOf("runClient", "runServer")
+tasks.matching { it.name in debugRunTasks }.configureEach {
+    dependsOn(debugClassesTask)
+    if (this is org.gradle.api.tasks.JavaExec) {
+        classpath(debugSourceSet.output)
+        jvmArgs("-Dfabric.addMods=$debugModPath")
+    }
 }
 
 tasks.jar {

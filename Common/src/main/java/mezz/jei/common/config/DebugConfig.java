@@ -14,20 +14,18 @@ public final class DebugConfig {
 		instance = new DebugConfig(schema);
 	}
 
-	private final Supplier<Boolean> debugModeEnabled;
+	private final Supplier<Boolean> debugIngredientsEnabled;
 	private final Supplier<Boolean> debugGuisEnabled;
 	private final Supplier<Boolean> debugInputsEnabled;
 	private final Supplier<Boolean> debugInfoTooltipsEnabled;
-	private final Supplier<Boolean> crashingTestIngredientsEnabled;
-	private final Supplier<Boolean> crashingTestRecipesEnabled;
 	private final Supplier<Boolean> logSuffixTreeStats;
 
 	private DebugConfig(IConfigSchemaBuilder schema) {
 		IConfigCategoryBuilder advanced = schema.addCategory("debug");
-		debugModeEnabled = advanced.addBoolean(
-			"DebugMode",
+		debugIngredientsEnabled = advanced.addBoolean(
+			"debugIngredientsEnabled",
 			false,
-			"Debug mode enabled."
+			"Log added and updated ingredients in JEI's ingredient filter."
 		);
 		debugGuisEnabled = advanced.addBoolean(
 			"DebugGuis",
@@ -44,16 +42,6 @@ public final class DebugConfig {
 			false,
 			"Add debug information to ingredient tooltips when advanced tooltips are enabled."
 		);
-		crashingTestIngredientsEnabled = advanced.addBoolean(
-			"CrashingTestItemsEnabled",
-			false,
-			"Adds ingredients to JEI that intentionally crash, to help debug JEI."
-		);
-		crashingTestRecipesEnabled = advanced.addBoolean(
-			"CrashingTestRecipesEnabled",
-			false,
-			"Adds recipes to JEI that intentionally crash, to help debug JEI."
-		);
 		logSuffixTreeStats = advanced.addBoolean(
 			"logSuffixTreeStats",
 			false,
@@ -61,11 +49,11 @@ public final class DebugConfig {
 		);
 	}
 
-	public static boolean isDebugModeEnabled() {
+	public static boolean isDebugIngredientsEnabled() {
 		if (instance == null) {
 			return false;
 		}
-		return instance.debugModeEnabled.get();
+		return instance.debugIngredientsEnabled.get();
 	}
 
 	public static boolean isDebugGuisEnabled() {
@@ -87,20 +75,6 @@ public final class DebugConfig {
 			return false;
 		}
 		return instance.debugInfoTooltipsEnabled.get();
-	}
-
-	public static boolean isCrashingTestIngredientsEnabled() {
-		if (instance == null) {
-			return false;
-		}
-		return instance.crashingTestIngredientsEnabled.get();
-	}
-
-	public static boolean isCrashingTestRecipesEnabled() {
-		if (instance == null) {
-			return false;
-		}
-		return instance.crashingTestRecipesEnabled.get();
 	}
 
 	public static boolean isLogSuffixTreeStatsEnabled() {

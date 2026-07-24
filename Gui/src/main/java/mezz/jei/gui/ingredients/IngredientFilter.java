@@ -265,14 +265,14 @@ public class IngredientFilter implements
 			if (matchingElementOptional.isPresent()) {
 				IListElement<V> matchingElement = matchingElementOptional.get();
 				updateHiddenState(matchingElement);
-				if (DebugConfig.isDebugModeEnabled()) {
+				if (DebugConfig.isDebugIngredientsEnabled()) {
 					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
 				}
 			} else {
 				IListElementInfo<V> listElementInfo = ListElementInfo.create(value, this.ingredientManager, modIdHelper);
 				if (listElementInfo != null) {
 					addIngredient(listElementInfo);
-					if (DebugConfig.isDebugModeEnabled()) {
+					if (DebugConfig.isDebugIngredientsEnabled()) {
 						LOGGER.debug("Added ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
 					}
 				}

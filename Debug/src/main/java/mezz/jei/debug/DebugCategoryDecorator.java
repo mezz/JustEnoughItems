@@ -1,4 +1,4 @@
-package mezz.jei.library.plugins.debug;
+package mezz.jei.debug;
 
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.category.IRecipeCategory;

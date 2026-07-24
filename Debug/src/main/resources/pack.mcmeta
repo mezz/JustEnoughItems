@@ -1,0 +1,8 @@
+{
+    "pack": {
+        "description": {
+            "text": "${modName}: Debug resource pack"
+        },
+        "pack_format": 15
+    }
+}
