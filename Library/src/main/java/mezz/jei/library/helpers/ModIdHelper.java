@@ -44,7 +44,7 @@ public final class ModIdHelper implements IModIdHelper {
 
 	@Override
 	public <T> List<Component> addModNameToIngredientTooltip(List<Component> tooltip, T ingredient, IIngredientHelper<T> ingredientHelper) {
-		if (DebugConfig.isDebugModeEnabled() && Minecraft.getInstance().options.advancedItemTooltips) {
+		if (DebugConfig.isDebugInfoTooltipsEnabled() && Minecraft.getInstance().options.advancedItemTooltips) {
 			tooltip = addDebugInfo(tooltip, ingredient, ingredientHelper);
 		}
 		if (!isDisplayingModNameEnabled()) {

@@ -52,10 +52,12 @@ val dependencyProjects: List<Project> = listOf(
 	project(":Gui"),
 	project(":ForgeApi"),
 )
+val debugProject = project(":Debug")
 
 dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
 }
+project.evaluationDependsOn(debugProject.path)
 project.evaluationDependsOn(":Changelog")
 
 java {
@@ -117,6 +119,9 @@ minecraft {
 						source(p.sourceSets.main.get())
 					}
 				}
+				create("${modId}debug") {
+					source(debugProject.sourceSets.main.get())
+				}
 			}
 		}
 		create("client_01") {
@@ -144,6 +149,9 @@ minecraft {
 					for (p in dependencyProjects) {
 						source(p.sourceSets.main.get())
 					}
+				}
+				create("${modId}debug") {
+					source(debugProject.sourceSets.main.get())
 				}
 			}
 		}
