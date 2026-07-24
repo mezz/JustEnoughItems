@@ -38,7 +38,7 @@ public class TagContentTooltipComponent<T> implements ClientTooltipComponent, To
 				final int textWidth = font.width(countString);
 				final int textCenterX = x + (MAX_PER_LINE - 1) * INGREDIENT_SIZE  + ((INGREDIENT_SIZE - textWidth) / 2);
 				final int textCenterY = y + (MAX_LINES - 1) * INGREDIENT_SIZE + ((INGREDIENT_SIZE - textHeight) / 2);
-				guiGraphics.text(font, countString, textCenterX, textCenterY, 0xAAAAAA);
+				guiGraphics.text(font, countString, textCenterX, textCenterY, 0xFFAAAAAA);
 			}
 		}
 	}
