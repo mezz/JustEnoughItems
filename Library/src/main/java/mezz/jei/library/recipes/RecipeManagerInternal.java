@@ -1,5 +1,6 @@
 package mezz.jei.library.recipes;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
@@ -8,6 +9,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.util.ErrorUtil;
@@ -39,6 +41,7 @@ public class RecipeManagerInternal {
 
 	@Unmodifiable
 	private final List<IRecipeCategory<?>> recipeCategories;
+	private final ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators;
 	private final IIngredientManager ingredientManager;
 	private final RecipeTypeDataMap recipeTypeDataMap;
 	private final Comparator<IRecipeCategory<?>> recipeCategoryComparator;
@@ -54,12 +57,14 @@ public class RecipeManagerInternal {
 	public RecipeManagerInternal(
 		List<IRecipeCategory<?>> recipeCategories,
 		ImmutableListMultimap<RecipeType<?>, ITypedIngredient<?>> recipeCatalysts,
+		ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators,
 		IIngredientManager ingredientManager,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
 		IIngredientVisibility ingredientVisibility
 	) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
+		this.recipeCategoryDecorators = recipeCategoryDecorators;
 		this.ingredientManager = ingredientManager;
 		this.ingredientVisibility = ingredientVisibility;
 
@@ -108,26 +113,17 @@ public class RecipeManagerInternal {
 	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
 		LOGGER.debug("Adding recipes: {}", recipeType);
 		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipeType);
-		IRecipeCategory<T> recipeCategory = recipeTypeData.getRecipeCategory();
-		Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();
-
-		List<T> addedRecipes = new ArrayList<>(recipes.size());
-		for (T recipe : recipes) {
-			if (addRecipe(recipeCategory, recipe, hiddenRecipes)) {
-				addedRecipes.add(recipe);
-			}
-		}
-
-		if (!addedRecipes.isEmpty()) {
-			recipeTypeData.addRecipes(addedRecipes);
-			recipeCategoriesVisibleCache = null;
-		}
+		addRecipes(recipeTypeData, recipes);
 	}
 
 	@Deprecated
 	public <T> void addRecipes(ResourceLocation recipeCategoryUid, Collection<T> recipes) {
 		LOGGER.debug("Adding recipes: {}", recipeCategoryUid);
 		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipes, recipeCategoryUid);
+		addRecipes(recipeTypeData, recipes);
+	}
+
+	private <T> void addRecipes(RecipeTypeData<T> recipeTypeData, Collection<T> recipes) {
 		IRecipeCategory<T> recipeCategory = recipeTypeData.getRecipeCategory();
 		Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();
 
@@ -215,6 +211,12 @@ public class RecipeManagerInternal {
 		return getRecipeCategoriesCached(recipeCategories, focuses, includeHidden);
 	}
 
+	@Deprecated
+	public RecipeType<?> getTypeForRecipeCategoryUid(ResourceLocation uid) {
+		return recipeTypeDataMap.getType(uid)
+			.orElseThrow(() -> new IllegalStateException("There is no recipe type registered for: " + uid));
+	}
+
 	public <T> IRecipeCategory<T> getRecipeCategory(RecipeType<T> recipeType) {
 		RecipeTypeData<T> value = this.recipeTypeDataMap.get(recipeType);
 		return value.getRecipeCategory();
@@ -284,6 +286,7 @@ public class RecipeManagerInternal {
 		recipeCategoriesVisibleCache = null;
 	}
 
+	@Deprecated
 	public <T> void hideRecipe(ResourceLocation recipeCategoryUid, T recipe) {
 		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipe, recipeCategoryUid);
 		Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();
@@ -298,6 +301,7 @@ public class RecipeManagerInternal {
 		recipeCategoriesVisibleCache = null;
 	}
 
+	@Deprecated
 	public <T> void unhideRecipe(T recipe, ResourceLocation recipeCategoryUid) {
 		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipe, recipeCategoryUid);
 		Set<T> hiddenRecipes = recipeTypeData.getHiddenRecipes();
@@ -310,9 +314,9 @@ public class RecipeManagerInternal {
 		recipeCategoriesVisibleCache = null;
 	}
 
+	@Deprecated
 	public void hideRecipeCategory(ResourceLocation recipeCategoryUid) {
-		RecipeType<?> recipeType = recipeTypeDataMap.getType(recipeCategoryUid)
-			.orElseThrow(() -> new IllegalStateException("There is no recipe type registered for: " + recipeCategoryUid));
+		RecipeType<?> recipeType = getTypeForRecipeCategoryUid(recipeCategoryUid);
 		hideRecipeCategory(recipeType);
 	}
 
@@ -322,9 +326,9 @@ public class RecipeManagerInternal {
 		recipeCategoriesVisibleCache = null;
 	}
 
+	@Deprecated
 	public void unhideRecipeCategory(ResourceLocation recipeCategoryUid) {
-		RecipeType<?> recipeType = recipeTypeDataMap.getType(recipeCategoryUid)
-			.orElseThrow(() -> new IllegalStateException("There is no recipe type registered for: " + recipeCategoryUid));
+		RecipeType<?> recipeType = getTypeForRecipeCategoryUid(recipeCategoryUid);
 		unhideRecipeCategory(recipeType);
 	}
 
@@ -343,5 +347,12 @@ public class RecipeManagerInternal {
 	public boolean isRecipeCatalyst(RecipeType<?> recipeType, IFocus<?> focus) {
 		RecipeMap recipeMap = recipeMaps.get(focus.getRole());
 		return recipeMap.isCatalystForRecipeCategory(recipeType, focus.getTypedValue());
+	}
+
+	@Unmodifiable
+	@SuppressWarnings("unchecked")
+	public <T> List<IRecipeCategoryDecorator<T>> getRecipeCategoryDecorators(RecipeType<T> recipeType) {
+		ImmutableList<IRecipeCategoryDecorator<?>> decorators = recipeCategoryDecorators.get(recipeType);
+		return (List<IRecipeCategoryDecorator<T>>) (Object) decorators;
 	}
 }

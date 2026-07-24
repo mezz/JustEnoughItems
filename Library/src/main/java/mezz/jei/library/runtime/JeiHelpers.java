@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class JeiHelpers implements IJeiHelpers {
 	private final GuiHelper guiHelper;
@@ -88,6 +89,15 @@ public class JeiHelpers implements IJeiHelpers {
 				.filter(t -> t.getUid().equals(uid))
 				.findFirst()
 			);
+	}
+
+	@Override
+	public Stream<RecipeType<?>> getAllRecipeTypes() {
+		if (this.recipeCategories == null) {
+			return Stream.of();
+		}
+		return this.recipeCategories.stream()
+			.map(IRecipeCategory::getRecipeType);
 	}
 
 	@Override

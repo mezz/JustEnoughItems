@@ -7,6 +7,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * {@link IJeiHelpers} provides helpers and tools for addon mods.
@@ -41,7 +42,9 @@ public interface IJeiHelpers {
 	 *
 	 * @since 10.3.0
 	 */
-	IColorHelper getColorHelper();
+	default IColorHelper getColorHelper() {
+		throw new UnsupportedOperationException("IColorHelper is not available from this helper.");
+	}
 
 	/**
 	 * Helps with handling fluid ingredients on multiple platforms (Forge and Fabric).
@@ -62,9 +65,20 @@ public interface IJeiHelpers {
 	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
 
 	/**
+	 * Get all registered recipe types.
+	 *
+	 * @since 10.6.0
+	 */
+	default Stream<RecipeType<?>> getAllRecipeTypes() {
+		return Stream.of();
+	}
+
+	/**
 	 * The ingredient manager, with information about all registered ingredients.
 	 *
 	 * @since 10.3.0
 	 */
-	IIngredientManager getIngredientManager();
+	default IIngredientManager getIngredientManager() {
+		throw new UnsupportedOperationException("IIngredientManager is not available from this helper.");
+	}
 }

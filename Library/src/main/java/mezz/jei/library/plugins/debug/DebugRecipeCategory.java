@@ -18,7 +18,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.library.plugins.RecipeCategoryWithType;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientListOverlay;
@@ -47,7 +47,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
+public class DebugRecipeCategory<F> implements RecipeCategoryWithType<DebugRecipe> {
 	public static final RecipeType<DebugRecipe> TYPE = RecipeType.create(ModIds.JEI_ID, "debug", DebugRecipe.class);
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
@@ -229,5 +229,10 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public @Nullable ResourceLocation getRegistryName(DebugRecipe recipe) {
+		return recipe.getRegistryName();
 	}
 }

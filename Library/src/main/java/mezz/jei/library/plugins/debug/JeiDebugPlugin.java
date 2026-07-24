@@ -11,6 +11,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
@@ -33,7 +34,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -216,6 +216,16 @@ public class JeiDebugPlugin implements IModPlugin {
 					registration.addRecipeCatalyst(catalystIngredient, DebugRecipeCategory.TYPE);
 				}
 			});
+	}
+
+	@Override
+	public void registerAdvanced(IAdvancedRegistration registration) {
+		if (DebugConfig.isDebugModeEnabled()) {
+			registration.getJeiHelpers()
+				.getAllRecipeTypes()
+				.filter(r -> r.getUid().getNamespace().equals(ModIds.JEI_ID))
+				.forEach(r -> registration.addRecipeCategoryDecorator(r, DebugCategoryDecorator.getInstance()));
+		}
 	}
 
 	@Override
