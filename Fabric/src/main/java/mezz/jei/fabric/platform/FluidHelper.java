@@ -4,15 +4,20 @@ import mezz.jei.api.fabric.constants.FabricTypes;
 import mezz.jei.api.fabric.ingredients.fluids.IJeiFluidIngredient;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.library.render.FluidTankRenderer;
 import mezz.jei.fabric.ingredients.fluid.JeiFluidIngredient;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
+import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -20,6 +25,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -108,6 +114,24 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	public IJeiFluidIngredient normalize(IJeiFluidIngredient ingredient) {
 		CompoundTag tag = ingredient.getTag().orElse(null);
 		return new JeiFluidIngredient(ingredient.getFluid(), bucketVolume(), tag);
+	}
+
+	@Override
+	public Optional<IJeiFluidIngredient> getContainedFluid(ITypedIngredient<?> ingredient) {
+		return ingredient.getItemStack()
+			.map(ContainerItemContext::withInitial)
+			.map(c -> c.find(FluidStorage.ITEM))
+			.flatMap(storage -> {
+				try (Transaction transaction = Transaction.openOuter()) {
+					Iterator<? extends StorageView<FluidVariant>> iterator = storage.iterator(transaction);
+					if (!iterator.hasNext()) {
+						return Optional.empty();
+					}
+					StorageView<FluidVariant> view = iterator.next();
+					FluidVariant resource = view.getResource();
+					return Optional.of(new JeiFluidIngredient(resource.getFluid(), view.getAmount(), resource.getNbt()));
+				}
+			});
 	}
 
 	private static class AllFluidNbt implements IIngredientSubtypeInterpreter<IJeiFluidIngredient> {

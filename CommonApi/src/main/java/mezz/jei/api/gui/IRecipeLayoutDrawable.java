@@ -4,8 +4,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.renderer.Rect2i;
@@ -18,11 +21,12 @@ import java.util.Optional;
 /**
  * An extension of {@link IRecipeLayout} for addons that want to draw the layouts themselves somewhere.
  *
- * Create an instance with {@link IRecipeManager#createRecipeLayoutDrawable(IRecipeCategory, Object, IFocus)}.
+ * Create an instance with {@link IRecipeManager#createRecipeLayoutDrawable(IRecipeCategory, Object, IFocus)}
+ * or {@link IRecipeManager#createRecipeLayoutDrawable(IRecipeCategory, Object, IFocusGroup)}.
  */
 @ApiStatus.NonExtendable
 @SuppressWarnings("removal")
-public interface IRecipeLayoutDrawable extends IRecipeLayout {
+public interface IRecipeLayoutDrawable<R> extends IRecipeLayout {
 	/**
 	 * Set the position of the recipe layout in screen coordinates.
 	 * To help decide on the position, you can get the width and height of this recipe from {@link IRecipeCategory#getBackground()}.
@@ -76,6 +80,14 @@ public interface IRecipeLayoutDrawable extends IRecipeLayout {
 	Rect2i getRect();
 
 	/**
+	 * Get position and size for the recipe, including the border drawn around it, in absolute screen coordinates.
+	 * @since 10.5.0
+	 */
+	default Rect2i getRectWithBorder() {
+		return getRect();
+	}
+
+	/**
 	 * Get the position of the recipe transfer button area, relative to the recipe layout drawable.
 	 * @since 10.3.0
 	 */
@@ -88,14 +100,33 @@ public interface IRecipeLayoutDrawable extends IRecipeLayout {
 	IRecipeSlotsView getRecipeSlotsView();
 
 	/**
+	 * Get the recipe slot currently under the mouse, if there is one.
+	 *
+	 * @return the slot under the mouse, with an offset
+	 *
+	 * @since 10.5.0
+	 */
+	default Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY) {
+		return getRecipeSlotUnderMouse(mouseX, mouseY)
+			.map(slot -> new RecipeSlotUnderMouse(slot, 0, 0));
+	}
+
+	/**
 	 * Get the recipe category that this recipe layout is a part of.
 	 * @since 10.3.0
 	 */
-	IRecipeCategory<?> getRecipeCategory();
+	IRecipeCategory<R> getRecipeCategory();
 
 	/**
 	 * Get the recipe that this recipe layout displays.
 	 * @since 10.3.0
 	 */
-	Object getRecipe();
+	R getRecipe();
+
+	/**
+	 * Get the input handler for this recipe layout.
+	 *
+	 * @since 10.5.0
+	 */
+	IJeiInputHandler getInputHandler();
 }

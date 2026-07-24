@@ -219,7 +219,7 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		if (ingredient == null) {
 			return Optional.empty();
 		}
-		return TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient)
+		return TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false)
 			.map(i -> i);
 	}
 

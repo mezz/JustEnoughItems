@@ -9,6 +9,8 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
+import mezz.jei.gui.bookmarks.IBookmark;
+import mezz.jei.gui.bookmarks.IngredientBookmark;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
@@ -48,11 +50,12 @@ public class BookmarkConfig implements IBookmarkConfig {
 	}
 
 	@Override
-	public void saveBookmarks(IIngredientManager ingredientManager, List<ITypedIngredient<?>> ingredientList) {
+	public void saveBookmarks(IIngredientManager ingredientManager, List<IBookmark> ingredientList) {
 		getPath(jeiConfigurationDir)
 			.ifPresent(path -> {
 				List<String> strings = new ArrayList<>();
-				for (ITypedIngredient<?> typedIngredient : ingredientList) {
+				for (IBookmark bookmark : ingredientList) {
+					ITypedIngredient<?> typedIngredient = bookmark.getElement().getTypedIngredient();
 					if (typedIngredient.getIngredient() instanceof ItemStack stack) {
 						strings.add(MARKER_STACK + stack.save(new CompoundTag()));
 					} else {
@@ -102,7 +105,8 @@ public class BookmarkConfig implements IBookmarkConfig {
 								if (typedIngredient.isEmpty()) {
 									LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
 								} else {
-									bookmarkList.addToList(typedIngredient.get(), false);
+									IngredientBookmark<ItemStack> bookmark = IngredientBookmark.create(typedIngredient.get(), ingredientManager);
+									bookmarkList.addToListWithoutNotifying(bookmark, false);
 								}
 							} else {
 								LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
@@ -116,7 +120,8 @@ public class BookmarkConfig implements IBookmarkConfig {
 						if (typedIngredient.isEmpty()) {
 							LOGGER.error("Failed to load unknown bookmarked ingredient:\n{}", ingredientJsonString);
 						} else {
-							bookmarkList.addToList(typedIngredient.get(), false);
+							IngredientBookmark<?> bookmark = IngredientBookmark.create(typedIngredient.get(), ingredientManager);
+							bookmarkList.addToListWithoutNotifying(bookmark, false);
 						}
 					} else {
 						LOGGER.error("Failed to load unknown bookmarked ingredient:\n{}", ingredientJsonString);

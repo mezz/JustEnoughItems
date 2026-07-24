@@ -2,6 +2,7 @@ package mezz.jei.api.recipe.transfer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -81,6 +82,15 @@ public interface IRecipeTransferError {
 	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	default void showError(PoseStack poseStack, int mouseX, int mouseY, IRecipeLayout recipeLayout, int recipeX, int recipeY) {
+
+	}
+
+	/**
+	 * Called on {@link Type#USER_FACING} and {@link Type#COSMETIC} errors.
+	 *
+	 * @since 10.5.0
+	 */
+	default void getTooltip(ITooltipBuilder tooltip) {
 
 	}
 }

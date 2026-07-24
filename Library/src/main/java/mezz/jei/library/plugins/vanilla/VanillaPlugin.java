@@ -170,7 +170,7 @@ public class VanillaPlugin implements IModPlugin {
 
 		List<ItemStack> itemStacks = ItemStackListFactory.create(stackHelper);
 		IColorHelper colorHelper = registration.getColorHelper();
-		ItemStackHelper itemStackHelper = new ItemStackHelper(stackHelper, colorHelper);
+		ItemStackHelper itemStackHelper = new ItemStackHelper(subtypeManager, stackHelper, colorHelper);
 		ItemStackRenderer itemStackRenderer = new ItemStackRenderer();
 		registration.register(VanillaTypes.ITEM_STACK, itemStacks, itemStackHelper, itemStackRenderer);
 

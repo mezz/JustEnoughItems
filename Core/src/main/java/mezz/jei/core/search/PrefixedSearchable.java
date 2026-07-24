@@ -1,18 +1,18 @@
 package mezz.jei.core.search;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.function.Consumer;
 
-public class PrefixedSearchable<T> implements ISearchable<T> {
-	private final ISearchStorage<T> searchStorage;
-	private final PrefixInfo<T> prefixInfo;
+public class PrefixedSearchable<T, I> implements ISearchable<I> {
+	private final ISearchStorage<I> searchStorage;
+	private final PrefixInfo<T, I> prefixInfo;
 
-	public PrefixedSearchable(ISearchStorage<T> searchStorage, PrefixInfo<T> prefixInfo) {
+	public PrefixedSearchable(ISearchStorage<I> searchStorage, PrefixInfo<T, I> prefixInfo) {
 		this.searchStorage = searchStorage;
 		this.prefixInfo = prefixInfo;
 	}
 
-	public ISearchStorage<T> getSearchStorage() {
+	public ISearchStorage<I> getSearchStorage() {
 		return searchStorage;
 	}
 
@@ -26,12 +26,12 @@ public class PrefixedSearchable<T> implements ISearchable<T> {
 	}
 
 	@Override
-	public void getSearchResults(String token, Set<T> results) {
-		searchStorage.getSearchResults(token, results);
+	public void getSearchResults(String token, Consumer<Collection<I>> resultsConsumer) {
+		searchStorage.getSearchResults(token, resultsConsumer);
 	}
 
 	@Override
-	public void getAllElements(Set<T> results) {
-		searchStorage.getAllElements(results);
+	public void getAllElements(Consumer<Collection<I>> resultsConsumer) {
+		searchStorage.getAllElements(resultsConsumer);
 	}
 }

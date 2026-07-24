@@ -1,7 +1,11 @@
 package mezz.jei.gui.overlay;
 
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.gui.input.ClickableIngredientInternal;
+import mezz.jei.gui.input.DraggableIngredientInternal;
+import mezz.jei.gui.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IDraggableIngredientInternal;
+import mezz.jei.gui.overlay.elements.IElement;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -11,38 +15,49 @@ public class IngredientListSlot {
 	private final int padding;
 	private boolean blocked = false;
 	@Nullable
-	private ElementRenderer<?> ingredientRenderer;
+	private IElement<?> element;
 
 	public IngredientListSlot(int xPosition, int yPosition, int width, int height, int padding) {
 		this.area = new ImmutableRect2i(xPosition, yPosition, width, height);
 		this.padding = padding;
 	}
 
-	public Optional<ElementRenderer<?>> getIngredientRenderer() {
-		return Optional.ofNullable(ingredientRenderer);
+	public Optional<IElement<?>> getOptionalElement() {
+		return Optional.ofNullable(element);
 	}
 
-	public Optional<ITypedIngredient<?>> getTypedIngredient() {
-		return getIngredientRenderer()
-			.map(ElementRenderer::getTypedIngredient);
+	public @Nullable IElement<?> getElement() {
+		return element;
+	}
+
+	public Optional<IClickableIngredientInternal<?>> getClickableIngredient() {
+		return Optional.ofNullable(element)
+			.map(element -> new ClickableIngredientInternal<>(element, this::isMouseOver, true, true));
+	}
+
+	public Optional<IDraggableIngredientInternal<?>> getDraggableIngredient() {
+		return Optional.ofNullable(element)
+			.map(element -> new DraggableIngredientInternal<>(element, area));
 	}
 
 	public void clear() {
-		this.ingredientRenderer = null;
+		this.element = null;
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return (this.ingredientRenderer != null) && area.contains(mouseX, mouseY);
+		return (this.element != null) && area.contains(mouseX, mouseY);
 	}
 
-	public void setIngredientRenderer(ElementRenderer<?> ingredientRenderer) {
-		this.ingredientRenderer = ingredientRenderer;
-		ingredientRenderer.setArea(area);
-		ingredientRenderer.setPadding(padding);
+	public void setElement(IElement<?> element) {
+		this.element = element;
 	}
 
 	public ImmutableRect2i getArea() {
 		return area;
+	}
+
+	public ImmutableRect2i getRenderArea() {
+		return area.insetBy(padding);
 	}
 
 	/**
@@ -54,5 +69,9 @@ public class IngredientListSlot {
 
 	public boolean isBlocked() {
 		return blocked;
+	}
+
+	public int getPadding() {
+		return padding;
 	}
 }

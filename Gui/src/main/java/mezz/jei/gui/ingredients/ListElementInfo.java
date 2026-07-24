@@ -1,44 +1,43 @@
 package mezz.jei.gui.ingredients;
 
-import com.google.common.collect.ImmutableSet;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.gui.config.IIngredientFilterConfig;
-import mezz.jei.common.util.Translator;
+import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.util.SafeIngredientUtil;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.TooltipFlag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class ListElementInfo<V> implements IListElementInfo<V> {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s");
+	private static int elementCount = 0;
 
 	private final IListElement<V> element;
-	private final String displayNameLowercase;
+	private final List<String> names;
 	private final List<String> modIds;
 	private final List<String> modNames;
 	private final ResourceLocation resourceLocation;
-	private int sortedIndex = Integer.MAX_VALUE;
+	private final int createdIndex;
 
-	public static <V> Optional<IListElementInfo<V>> create(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
-		ITypedIngredient<V> value = element.getTypedIngredient();
+	@Nullable
+	public static <V> IListElementInfo<V> create(ITypedIngredient<V> value, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+		int createdIndex = elementCount++;
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
+		ListElement<V> element = new ListElement<>(value, createdIndex);
 		try {
-			ListElementInfo<V> info = new ListElementInfo<>(element, ingredientHelper, modIdHelper);
-			return Optional.of(info);
+			return new ListElementInfo<>(element, ingredientHelper, ingredientManager, modIdHelper, createdIndex);
 		} catch (RuntimeException e) {
 			try {
 				String ingredientInfo = ingredientHelper.getErrorInfo(value.getIngredient());
@@ -46,32 +45,37 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 			} catch (RuntimeException e2) {
 				LOGGER.warn("Found a broken ingredient.", e2);
 			}
-			return Optional.empty();
+			return null;
 		}
 	}
 
-	protected ListElementInfo(IListElement<V> element, IIngredientHelper<V> ingredientHelper, IModIdHelper modIdHelper) {
+	protected ListElementInfo(IListElement<V> element, IIngredientHelper<V> ingredientHelper, IIngredientManager ingredientManager, IModIdHelper modIdHelper, int createdIndex) {
+		this.createdIndex = createdIndex;
+
 		this.element = element;
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		V ingredient = value.getIngredient();
 		this.resourceLocation = ingredientHelper.getResourceLocation(ingredient);
 		String displayModId = ingredientHelper.getDisplayModId(ingredient);
 		String modId = this.resourceLocation.getNamespace();
-		this.modIds = new ArrayList<>();
-		this.modIds.add(displayModId);
-		if (!modId.equals(displayModId)) {
-			this.modIds.add(modId);
+		if (modId.equals(displayModId)) {
+			this.modIds = List.of(modId);
+			this.modNames = List.of(modIdHelper.getModNameForModId(modId));
+		} else {
+			this.modIds = List.of(modId, displayModId);
+			this.modNames = List.of(
+				modIdHelper.getModNameForModId(modId),
+				modIdHelper.getModNameForModId(displayModId)
+			);
 		}
-		this.modNames = this.modIds.stream()
-			.map(modIdHelper::getModNameForModId)
-			.toList();
-		String displayName = IngredientInformationUtil.getDisplayName(ingredient, ingredientHelper);
-		this.displayNameLowercase = Translator.toLowercaseWithLocale(displayName);
+
+		String displayNameLowercase = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
+		this.names = List.of(displayNameLowercase);
 	}
 
 	@Override
-	public String getName() {
-		return this.displayNameLowercase;
+	public List<String> getNames() {
+		return names;
 	}
 
 	@Override
@@ -80,34 +84,32 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	public Set<String> getModNameStrings() {
-		Set<String> modNameStrings = new HashSet<>();
-		for (int i = 0; i < modIds.size(); i++) {
-			String modId = modIds.get(i);
-			String modName = modNames.get(i);
-			addModNameStrings(modNameStrings, modId, modName);
-		}
-		return modNameStrings;
-	}
-
-	private static void addModNameStrings(Set<String> modNames, String modId, String modName) {
-		String modNameLowercase = modName.toLowerCase(Locale.ENGLISH);
-		String modNameNoSpaces = SPACE_PATTERN.matcher(modNameLowercase).replaceAll("");
-		String modIdNoSpaces = SPACE_PATTERN.matcher(modId).replaceAll("");
-		modNames.add(modId);
-		modNames.add(modNameNoSpaces);
-		modNames.add(modIdNoSpaces);
+	public List<String> getModNames() {
+		return modNames;
 	}
 
 	@Override
-	public final List<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager) {
-		String modName = this.modNames.get(0);
-		String modId = this.modIds.get(0);
-		String modNameLowercase = modName.toLowerCase(Locale.ENGLISH);
+	public List<String> getModIds() {
+		return modIds;
+	}
+
+	@Override
+	@Unmodifiable
+	public final Set<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(value.getType());
-		ImmutableSet<String> toRemove = ImmutableSet.of(modId, modNameLowercase, displayNameLowercase, resourceLocation.getPath());
-		return IngredientInformationUtil.getTooltipStrings(value.getIngredient(), ingredientRenderer, toRemove, config);
+		TooltipFlag.Default tooltipFlag = config.getSearchAdvancedTooltips() ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
+
+		ListElementInfoTooltip tooltip = new ListElementInfoTooltip();
+		SafeIngredientUtil.getTooltip(tooltip, ingredientManager, ingredientRenderer, value, tooltipFlag);
+		Set<String> strings = tooltip.getStrings();
+
+		strings.remove(this.names.get(0));
+		strings.remove(this.modNames.get(0).toLowerCase(Locale.ENGLISH));
+		strings.remove(this.modIds.get(0));
+		strings.remove(resourceLocation.getPath());
+
+		return strings;
 	}
 
 	@Override
@@ -124,16 +126,6 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
 		return ingredientHelper.getTagStream(value.getIngredient());
-	}
-
-	@Override
-	public Collection<String> getCreativeTabsStrings(IIngredientManager ingredientManager) {
-		ITypedIngredient<V> value = element.getTypedIngredient();
-		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
-		Collection<String> creativeTabsStrings = ingredientHelper.getCreativeTabNames(value.getIngredient());
-		return creativeTabsStrings.stream()
-			.map(Translator::toLowercaseWithLocale)
-			.toList();
 	}
 
 	@Override
@@ -160,13 +152,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	}
 
 	@Override
-	public void setSortedIndex(int sortIndex) {
-		this.sortedIndex = sortIndex;
+	public int getCreatedIndex() {
+		return createdIndex;
 	}
-
-	@Override
-	public int getSortedIndex() {
-		return sortedIndex;
-	}
-
 }

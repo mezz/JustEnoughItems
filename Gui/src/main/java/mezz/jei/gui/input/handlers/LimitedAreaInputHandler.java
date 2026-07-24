@@ -1,7 +1,6 @@
 package mezz.jei.gui.input.handlers;
 
 import com.google.common.base.MoreObjects;
-import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -44,8 +43,8 @@ public class LimitedAreaInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public void handleMouseClickedOut(InputConstants.Key input) {
-		this.handler.handleMouseClickedOut(input);
+	public void unfocus() {
+		this.handler.unfocus();
 	}
 
 	@Override

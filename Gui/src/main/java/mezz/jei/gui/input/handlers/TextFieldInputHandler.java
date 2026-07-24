@@ -1,6 +1,5 @@
 package mezz.jei.gui.input.handlers;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
@@ -95,7 +94,7 @@ public class TextFieldInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public void handleMouseClickedOut(InputConstants.Key input) {
+	public void unfocus() {
 		textFieldFilter.setFocused(false);
 	}
 }

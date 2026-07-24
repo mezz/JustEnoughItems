@@ -115,7 +115,7 @@ public final class RecipeTransferUtil {
 			if (!invalidRecipeIndexes.isEmpty()) {
 				LOGGER.error(
 					"Transfer handler has invalid slots for the destination of the recipe, " +
-						"the slots are not included in the list of crafting slots. " +
+						"the slots are not included in the list of crafting slots. {}",
 						StringUtil.intsToString(invalidRecipeIndexes)
 				);
 				return false;

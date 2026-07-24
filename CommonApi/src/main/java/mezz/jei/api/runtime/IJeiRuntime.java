@@ -8,6 +8,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.runtime.config.IJeiConfigManager;
 
 /**
  * Gives access to JEI functions that are available once everything has loaded.
@@ -69,7 +70,9 @@ public interface IJeiRuntime {
 	 *
 	 * @since 10.3.0
 	 */
-	IJeiKeyMappings getKeyMappings();
+	default IJeiKeyMappings getKeyMappings() {
+		throw new UnsupportedOperationException("IJeiKeyMappings is not available from this runtime.");
+	}
 
 	/**
 	 * Returns a new typed ingredient.
@@ -93,7 +96,9 @@ public interface IJeiRuntime {
 	 *
 	 * @since 10.3.0
 	 */
-	IScreenHelper getScreenHelper();
+	default IScreenHelper getScreenHelper() {
+		throw new UnsupportedOperationException("IScreenHelper is not available from this runtime.");
+	}
 
 	/**
 	 * Get a manager that holds all the registered recipe transfer handlers.
@@ -101,7 +106,9 @@ public interface IJeiRuntime {
 	 *
 	 * @since 10.3.0
 	 */
-	IRecipeTransferManager getRecipeTransferManager();
+	default IRecipeTransferManager getRecipeTransferManager() {
+		throw new UnsupportedOperationException("IRecipeTransferManager is not available from this runtime.");
+	}
 
 	/**
 	 * Get access to the edit-mode config, which lets users hide ingredients from JEI.
@@ -109,5 +116,19 @@ public interface IJeiRuntime {
 	 *
 	 * @since 10.3.0
 	 */
-	IEditModeConfig getEditModeConfig();
+	default IEditModeConfig getEditModeConfig() {
+		throw new UnsupportedOperationException("IEditModeConfig is not available from this runtime.");
+	}
+
+	/**
+	 * Get the config manager, used for displaying or updating JEI's config files.
+	 *
+	 * If you need to get this config manager as soon as it is ready,
+	 * override {@link IModPlugin#onConfigManagerAvailable} instead of waiting for it to be available here.
+	 *
+	 * @since 10.5.0
+	 */
+	default IJeiConfigManager getConfigManager() {
+		throw new UnsupportedOperationException("IJeiConfigManager is not available from this runtime.");
+	}
 }

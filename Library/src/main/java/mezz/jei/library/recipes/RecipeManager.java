@@ -2,7 +2,6 @@ package mezz.jei.library.recipes;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
-import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
@@ -15,13 +14,12 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.focus.Focus;
 import mezz.jei.library.focus.FocusGroup;
-import mezz.jei.library.gui.ingredients.RecipeSlot;
+import mezz.jei.library.gui.ingredients.CycleTimer;
 import mezz.jei.library.gui.recipes.RecipeLayout;
-import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,17 +30,11 @@ import java.util.Set;
 
 public class RecipeManager implements IRecipeManager {
 	private final RecipeManagerInternal internal;
-	private final IModIdHelper modIdHelper;
 	private final IIngredientManager ingredientManager;
-	private final Textures textures;
-	private final IIngredientVisibility ingredientVisibility;
 
-	public RecipeManager(RecipeManagerInternal internal, IModIdHelper modIdHelper, IIngredientManager ingredientManager, Textures textures, IIngredientVisibility ingredientVisibility) {
+	public RecipeManager(RecipeManagerInternal internal, IIngredientManager ingredientManager) {
 		this.internal = internal;
-		this.modIdHelper = modIdHelper;
 		this.ingredientManager = ingredientManager;
-		this.textures = textures;
-		this.ingredientVisibility = ingredientVisibility;
 	}
 
 	@SuppressWarnings("removal")
@@ -72,6 +64,15 @@ public class RecipeManager implements IRecipeManager {
 		return new RecipeCatalystLookup(recipeType, internal);
 	}
 
+	@Override
+	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
+		ErrorUtil.checkNotNull(recipeType, "recipeType");
+		ErrorUtil.checkNotNull(recipes, "recipes");
+		ErrorUtil.assertMainThread();
+
+		internal.addRecipes(recipeType, recipes);
+	}
+
 	@SuppressWarnings("removal")
 	@Override
 	@Deprecated(forRemoval = true, since = "9.5.0")
@@ -83,13 +84,40 @@ public class RecipeManager implements IRecipeManager {
 		internal.addRecipes(recipeCategoryUid, List.of(recipe));
 	}
 
+	@SuppressWarnings("removal")
 	@Override
-	public <T> void addRecipes(RecipeType<T> recipeType, List<T> recipes) {
-		ErrorUtil.checkNotNull(recipeType, "recipeType");
-		ErrorUtil.checkNotNull(recipes, "recipes");
-		ErrorUtil.assertMainThread();
+	@Deprecated
+	public <T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus) {
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		IFocusGroup focusGroup = FocusGroup.createFromNullable(focus, ingredientManager);
+		return RecipeLayout.create(
+			recipeCategory,
+			recipe,
+			focusGroup,
+			ingredientManager
+		).orElseThrow(() -> new NullPointerException("Recipe layout crashed during creation, see log."));
+	}
 
-		internal.addRecipes(recipeType, recipes);
+	@Override
+	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup) {
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
+		return RecipeLayout.create(
+			recipeCategory,
+			recipe,
+			focusGroup,
+			ingredientManager
+		);
+	}
+
+	@Override
+	public IRecipeSlotDrawable createRecipeSlotDrawable(RecipeIngredientRole role, List<Optional<ITypedIngredient<?>>> ingredients, Set<Integer> focusedIngredients, int xPos, int yPos, int ingredientCycleOffset) {
+		RecipeSlotBuilder builder = new RecipeSlotBuilder(ingredientManager, role, xPos, yPos);
+		builder.addOptionalTypedIngredients(ingredients);
+		CycleTimer cycleTimer = CycleTimer.create(ingredientCycleOffset);
+		return builder.build(focusedIngredients, cycleTimer);
 	}
 
 	@SuppressWarnings("removal")
@@ -170,46 +198,6 @@ public class RecipeManager implements IRecipeManager {
 		RecipeType<?> recipeType = recipeCategory.getRecipeType();
 		return internal.getRecipeCatalystStream(recipeType, includeHidden)
 			.toList();
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public <T> IRecipeLayoutDrawable createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, @Nullable IFocus<?> focus) {
-		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		ErrorUtil.checkNotNull(recipe, "recipe");
-		IFocusGroup focusGroup = FocusGroup.createFromNullable(focus, ingredientManager);
-		return RecipeLayout.create(
-			recipeCategory,
-			recipe,
-			focusGroup,
-			ingredientManager,
-			ingredientVisibility,
-			modIdHelper,
-			textures
-		).orElseThrow(() -> new NullPointerException("Recipe layout crashed during creation, see log."));
-	}
-
-	@Override
-	public <T> Optional<IRecipeLayoutDrawable> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup) {
-		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
-		ErrorUtil.checkNotNull(recipe, "recipe");
-		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
-		return RecipeLayout.create(
-			recipeCategory,
-			recipe,
-			focusGroup,
-			ingredientManager,
-			ingredientVisibility,
-			modIdHelper,
-			textures
-		);
-	}
-
-	@Override
-	public IRecipeSlotDrawable createRecipeSlotDrawable(RecipeIngredientRole role, List<Optional<ITypedIngredient<?>>> ingredients, Set<Integer> focusedIngredients, int xPos, int yPos, int ingredientCycleOffset) {
-		RecipeSlot recipeSlot = new RecipeSlot(ingredientManager, role, xPos, yPos, ingredientCycleOffset);
-		recipeSlot.set(ingredients, focusedIngredients, ingredientVisibility);
-		return recipeSlot;
 	}
 
 	@Override

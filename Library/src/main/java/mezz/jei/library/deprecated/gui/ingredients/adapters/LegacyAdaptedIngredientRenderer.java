@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -44,6 +45,16 @@ public class LegacyAdaptedIngredientRenderer<T> implements IIngredientRenderer<T
 			original.render(stack, ingredient);
 		}
 		stack.popPose();
+	}
+
+	@Override
+	public void render(PoseStack stack, T ingredient, int posX, int posY) {
+		original.render(stack, ingredient, posX + xOffset, posY + yOffset);
+	}
+
+	@Override
+	public void render(PoseStack stack, int xPosition, int yPosition, @Nullable T ingredient) {
+		original.render(stack, xPosition + xOffset, yPosition + yOffset, ingredient);
 	}
 
 	@Override

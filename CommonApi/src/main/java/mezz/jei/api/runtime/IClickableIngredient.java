@@ -1,6 +1,7 @@
 package mezz.jei.api.runtime;
 
 import mezz.jei.api.gui.builder.IClickableIngredientFactory;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
 
@@ -20,7 +21,23 @@ public interface IClickableIngredient<T> {
 	 *
 	 * @since 10.3.0
 	 */
+	@Deprecated(since = "10.5.0")
 	ITypedIngredient<T> getTypedIngredient();
+
+	/**
+	 * @since 10.5.0
+	 */
+	default IIngredientType<T> getIngredientType() {
+		return getTypedIngredient().getType();
+	}
+
+	/**
+	 * @since 10.5.0
+	 */
+	default T getIngredient() {
+		ITypedIngredient<T> typedIngredient = getTypedIngredient();
+		return typedIngredient.getIngredient();
+	}
 
 	/**
 	 * Get the area that this clickable ingredient is drawn in, in absolute screen coordinates.

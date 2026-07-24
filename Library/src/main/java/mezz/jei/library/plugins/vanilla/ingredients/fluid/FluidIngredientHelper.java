@@ -2,7 +2,7 @@ package mezz.jei.library.plugins.vanilla.ingredients.fluid;
 
 import com.google.common.base.MoreObjects;
 import mezz.jei.api.helpers.IColorHelper;
-import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.library.ingredients.IngredientHelperWithResourceLocation;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
+public class FluidIngredientHelper<T> implements IngredientHelperWithResourceLocation<T> {
 	private final ISubtypeManager subtypeManager;
 	private final IColorHelper colorHelper;
 	private final IPlatformFluidHelperInternal<T> platformFluidHelper;
@@ -110,7 +110,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 		return registry.getRegistryName(fluid)
 			.orElseThrow(() -> {
 				String ingredientInfo = getErrorInfo(ingredient);
-				throw new IllegalStateException("null registry name for: " + ingredientInfo);
+				return new IllegalStateException("null registry name for: " + ingredientInfo);
 			});
 	}
 
@@ -172,7 +172,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	}
 
 	@Override
-	public Optional<ResourceLocation> getTagEquivalent(Collection<T> ingredients) {
+	public Optional<TagKey<?>> getTagKeyEquivalent(Collection<T> ingredients) {
 		return TagUtil.getTagEquivalent(ingredients, fluidType::getBase, Registry.FLUID::getTags);
 	}
 }

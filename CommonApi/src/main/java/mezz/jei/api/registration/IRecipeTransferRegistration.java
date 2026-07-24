@@ -37,7 +37,9 @@ public interface IRecipeTransferRegistration {
 	 *
 	 * @since 10.3.0
 	 */
-	<C extends AbstractContainerMenu, R> void addRecipeTransferHandler(Class<? extends C> containerClass, @Nullable MenuType<C> menuType, RecipeType<R> recipeType, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount);
+	default <C extends AbstractContainerMenu, R> void addRecipeTransferHandler(Class<? extends C> containerClass, @Nullable MenuType<C> menuType, RecipeType<R> recipeType, int recipeSlotStart, int recipeSlotCount, int inventorySlotStart, int inventorySlotCount) {
+		addRecipeTransferHandler(containerClass, recipeType, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
+	}
 
 	/**
 	 * Basic method for adding a recipe transfer handler.

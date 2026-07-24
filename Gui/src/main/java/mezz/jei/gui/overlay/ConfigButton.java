@@ -1,9 +1,9 @@
 package mezz.jei.gui.overlay;
 
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
@@ -11,69 +11,70 @@ import mezz.jei.common.platform.IPlatformConfigHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.elements.GuiIconToggleButton;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TranslatableComponent;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
 public class ConfigButton extends GuiIconToggleButton {
 	private final IInternalKeyMappings keyBindings;
 
-	public static ConfigButton create(BooleanSupplier isListDisplayed, IWorldConfig worldConfig, Textures textures, IInternalKeyMappings keyBindings) {
-		return new ConfigButton(textures.getConfigButtonIcon(), textures.getConfigButtonCheatIcon(), isListDisplayed, worldConfig, textures, keyBindings);
+	public static ConfigButton create(BooleanSupplier isListDisplayed, IWorldConfig worldConfig, IInternalKeyMappings keyBindings) {
+		Textures textures = Internal.getTextures();
+		return new ConfigButton(textures.getConfigButtonIcon(), textures.getConfigButtonCheatIcon(), isListDisplayed, worldConfig, keyBindings);
 	}
 
 	private final BooleanSupplier isListDisplayed;
 	private final IWorldConfig worldConfig;
 
-	private ConfigButton(IDrawable disabledIcon, IDrawable enabledIcon, BooleanSupplier isListDisplayed, IWorldConfig worldConfig, Textures textures, IInternalKeyMappings keyBindings) {
-		super(disabledIcon, enabledIcon, textures);
+	private ConfigButton(IDrawable disabledIcon, IDrawable enabledIcon, BooleanSupplier isListDisplayed, IWorldConfig worldConfig, IInternalKeyMappings keyBindings) {
+		super(disabledIcon, enabledIcon);
 		this.isListDisplayed = isListDisplayed;
 		this.worldConfig = worldConfig;
 		this.keyBindings = keyBindings;
 	}
 
 	@Override
-	protected void getTooltips(List<Component> tooltip) {
+	protected void getTooltips(JeiTooltip tooltip) {
 		tooltip.add(new TranslatableComponent("jei.tooltip.config"));
 		if (!worldConfig.isOverlayEnabled()) {
-			MutableComponent disabled = new TranslatableComponent("jei.tooltip.ingredient.list.disabled");
-			MutableComponent disabledFix = new TranslatableComponent(
-				"jei.tooltip.ingredient.list.disabled.how.to.fix",
-				keyBindings.getToggleOverlay().getTranslatedKeyMessage()
+			tooltip.add(
+				new TranslatableComponent("jei.tooltip.ingredient.list.disabled")
+					.withStyle(ChatFormatting.GOLD)
 			);
-			tooltip.add(disabled.withStyle(ChatFormatting.GOLD));
-			tooltip.add(disabledFix.withStyle(ChatFormatting.GOLD));
+			tooltip.addKeyUsageComponent(
+				"jei.tooltip.ingredient.list.disabled.how.to.fix",
+				keyBindings.getToggleOverlay()
+			);
 		} else if (!isListDisplayed.getAsBoolean()) {
-			MutableComponent notEnoughSpace = new TranslatableComponent("jei.tooltip.not.enough.space");
-			tooltip.add(notEnoughSpace.withStyle(ChatFormatting.GOLD));
+			tooltip.add(
+				new TranslatableComponent("jei.tooltip.not.enough.space")
+					.withStyle(ChatFormatting.GOLD)
+			);
 		}
 		if (worldConfig.isCheatItemsEnabled()) {
-			MutableComponent enabled = new TranslatableComponent("jei.tooltip.cheat.mode.button.enabled")
-				.withStyle(ChatFormatting.RED);
-			tooltip.add(enabled);
+			tooltip.add(
+				new TranslatableComponent("jei.tooltip.cheat.mode.button.enabled")
+					.withStyle(ChatFormatting.RED)
+			);
 
 			if (!keyBindings.getToggleCheatMode().isUnbound()) {
-				MutableComponent component = new TranslatableComponent(
+				tooltip.addKeyUsageComponent(
 					"jei.tooltip.cheat.mode.how.to.disable.hotkey",
-					keyBindings.getToggleCheatMode().getTranslatedKeyMessage()
-				).withStyle(ChatFormatting.RED);
-				tooltip.add(component);
+					keyBindings.getToggleCheatMode()
+				);
 			} else if (!keyBindings.getToggleCheatModeConfigButton().isUnbound()) {
-				MutableComponent component = new TranslatableComponent(
+				tooltip.addKeyUsageComponent(
 					"jei.tooltip.cheat.mode.how.to.disable.hover.config.button.hotkey",
-					keyBindings.getToggleCheatModeConfigButton().getTranslatedKeyMessage()
-				).withStyle(ChatFormatting.RED);
-				tooltip.add(component);
+					keyBindings.getToggleCheatModeConfigButton()
+				);
 			}
 		}
 	}
@@ -120,7 +121,7 @@ public class ConfigButton extends GuiIconToggleButton {
 	}
 
 	private static Component getMissingConfigScreenMessage(IPlatformConfigHelper configHelper) {
-		MutableComponent message = new TranslatableComponent("jei.message.configured")
+		return new TranslatableComponent("jei.message.configured")
 			.setStyle(
 				Style.EMPTY
 					.withColor(ChatFormatting.DARK_BLUE)
@@ -131,22 +132,21 @@ public class ConfigButton extends GuiIconToggleButton {
 							"https://www.curseforge.com/minecraft/mc-mods/configured"
 						)
 					)
-			);
-		message.append(new TextComponent("\n"));
-		message.append(
-			new TranslatableComponent("jei.message.config.folder")
-				.setStyle(
-					Style.EMPTY
-						.withColor(ChatFormatting.WHITE)
-						.withUnderlined(true)
-						.withClickEvent(
-							new ClickEvent(
-								ClickEvent.Action.OPEN_FILE,
-								configHelper.createJeiConfigDir().toAbsolutePath().toString()
+			)
+			.append("\n")
+			.append(
+				new TranslatableComponent("jei.message.config.folder")
+					.setStyle(
+						Style.EMPTY
+							.withColor(ChatFormatting.WHITE)
+							.withUnderlined(true)
+							.withClickEvent(
+								new ClickEvent(
+									ClickEvent.Action.OPEN_FILE,
+									configHelper.createJeiConfigDir().toAbsolutePath().toString()
+								)
 							)
-						)
-				)
-		);
-		return message;
+					)
+			);
 	}
 }

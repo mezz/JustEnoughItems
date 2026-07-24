@@ -1,8 +1,11 @@
 package mezz.jei.common.config;
 
 import mezz.jei.core.config.IWorldConfig;
+import mezz.jei.core.util.WeakList;
 
 public class WorldConfig implements IWorldConfig {
+	private final WeakList<IEditModeListener> editModeListeners = new WeakList<>();
+
 	private boolean overlayEnabled = true;
 	private boolean cheatItemsEnabled = false;
 	private boolean editModeEnabled = false;
@@ -58,5 +61,11 @@ public class WorldConfig implements IWorldConfig {
 	@Override
 	public void toggleEditModeEnabled() {
 		this.editModeEnabled = !this.editModeEnabled;
+		editModeListeners.forEach(IEditModeListener::onEditModeChanged);
+	}
+
+	@Override
+	public void addEditModeToggleListener(IEditModeListener listener) {
+		editModeListeners.add(listener);
 	}
 }

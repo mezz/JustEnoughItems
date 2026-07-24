@@ -10,7 +10,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.library.plugins.RecipeCategoryWithType;
 import mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe;
 import mezz.jei.common.util.Translator;
 import net.minecraft.client.Minecraft;
@@ -19,7 +19,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 
-public class CompostableRecipeCategory implements IRecipeCategory<IJeiCompostingRecipe> {
+public class CompostableRecipeCategory implements RecipeCategoryWithType<IJeiCompostingRecipe> {
 	public static final int width = 120;
 	public static final int height = 18;
 

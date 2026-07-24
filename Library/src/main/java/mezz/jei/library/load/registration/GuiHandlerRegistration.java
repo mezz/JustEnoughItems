@@ -9,9 +9,10 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.core.collect.ListMultiMap;
 import mezz.jei.library.gui.GuiContainerHandlers;
-import mezz.jei.library.gui.ScreenHelper;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.library.gui.helpers.ScreenHelper;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -27,7 +28,7 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 	private final GuiContainerHandlers guiContainerHandlers = new GuiContainerHandlers();
 	private final List<IGlobalGuiHandler> globalGuiHandlers = new ArrayList<>();
 	private final Map<Class<?>, IScreenHandler<?>> guiScreenHandlers = new HashMap<>();
-	private final Map<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers = new HashMap<>();
+	private final ListMultiMap<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers = new ListMultiMap<>();
 	private final IJeiHelpers jeiHelpers;
 
 	public GuiHandlerRegistration(IJeiHelpers jeiHelpers) {

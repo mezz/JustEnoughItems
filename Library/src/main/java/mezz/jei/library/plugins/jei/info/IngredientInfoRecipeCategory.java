@@ -13,7 +13,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.library.plugins.RecipeCategoryWithType;
 import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.library.ingredients.IngredientInfoRecipe;
@@ -22,7 +22,7 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 
-public class IngredientInfoRecipeCategory implements IRecipeCategory<IJeiIngredientInfoRecipe> {
+public class IngredientInfoRecipeCategory implements RecipeCategoryWithType<IJeiIngredientInfoRecipe> {
 	private final IDrawable background;
 	private final IDrawable icon;
 	private final IDrawable slotBackground;

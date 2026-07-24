@@ -1,6 +1,5 @@
 package mezz.jei.gui.input;
 
-import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import net.minecraft.client.Minecraft;
 

@@ -2,16 +2,16 @@ package mezz.jei.gui.input.handlers;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IEditModeConfig;
-import mezz.jei.common.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.input.CombinedRecipeFocusSource;
+import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;
+import java.util.Set;
 
 public class EditInputHandler implements IUserInputHandler {
 	private final CombinedRecipeFocusSource focusSource;
@@ -48,14 +48,14 @@ public class EditInputHandler implements IUserInputHandler {
 				if (!input.isSimulate()) {
 					execute(clicked, hideMode);
 				}
-				ImmutableRect2i area = clicked.getArea();
-				return LimitedAreaInputHandler.create(this, area);
+				return new SameElementInputHandler(this, clicked::isMouseOver);
 			});
 	}
 
 	private <V> void execute(IClickableIngredientInternal<V> clicked, IEditModeConfig.HideMode hideMode) {
-		ITypedIngredient<V> typedIngredient = clicked.getTypedIngredient();
-		if (editModeConfig.isIngredientHiddenUsingConfigFile(typedIngredient)) {
+		ITypedIngredient<?> typedIngredient = clicked.getTypedIngredient();
+		Set<IEditModeConfig.HideMode> hideModes = editModeConfig.getIngredientHiddenUsingConfigFile(typedIngredient);
+		if (hideModes.contains(hideMode)) {
 			editModeConfig.showIngredientUsingConfigFile(typedIngredient, hideMode);
 		} else {
 			editModeConfig.hideIngredientUsingConfigFile(typedIngredient, hideMode);

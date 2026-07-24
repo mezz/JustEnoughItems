@@ -3,8 +3,9 @@ package mezz.jei.library.plugins.vanilla.ingredients;
 import com.google.common.collect.Streams;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IColorHelper;
-import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.library.ingredients.IngredientHelperWithResourceLocation;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
@@ -28,11 +29,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ItemStackHelper implements IIngredientHelper<ItemStack> {
+public class ItemStackHelper implements IngredientHelperWithResourceLocation<ItemStack> {
+	private final ISubtypeManager subtypeManager;
 	private final StackHelper stackHelper;
 	private final IColorHelper colorHelper;
 
-	public ItemStackHelper(StackHelper stackHelper, IColorHelper colorHelper) {
+	public ItemStackHelper(ISubtypeManager subtypeManager, StackHelper stackHelper, IColorHelper colorHelper) {
+		this.subtypeManager = subtypeManager;
 		this.stackHelper = stackHelper;
 		this.colorHelper = colorHelper;
 	}
@@ -57,6 +60,12 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
+	public boolean hasSubtypes(ItemStack ingredient) {
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		return subtypeManager.hasSubtypes(VanillaTypes.ITEM_STACK, ingredient);
+	}
+
+	@Override
 	public String getWildcardId(ItemStack ingredient) {
 		ErrorUtil.checkNotEmpty(ingredient);
 		return StackHelper.getRegistryNameForStack(ingredient);
@@ -76,7 +85,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			)
 			.orElseThrow(() -> {
 				String stackInfo = getErrorInfo(ingredient);
-                return new IllegalStateException("null registryName for: " + stackInfo);
+				return new IllegalStateException("null registryName for: " + stackInfo);
 			});
 	}
 
@@ -107,7 +116,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			.getRegistryName(item)
 			.orElseThrow(() -> {
 				String stackInfo = getErrorInfo(ingredient);
-                return new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
+				return new IllegalStateException("item.getRegistryName() returned null for: " + stackInfo);
 			});
 	}
 
@@ -181,7 +190,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	}
 
 	@Override
-	public Optional<ResourceLocation> getTagEquivalent(Collection<ItemStack> ingredients) {
+	public Optional<TagKey<?>> getTagKeyEquivalent(Collection<ItemStack> ingredients) {
 		return TagUtil.getTagEquivalent(ingredients, ItemStack::getItem, Registry.ITEM::getTags);
 	}
 }

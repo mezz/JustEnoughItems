@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * Implement this interface instead of just {@link IRecipeCategoryExtension}
- * to have your recipe extension work as part of {@link RecipeTypes#CRAFTING} recipe.
+ * to have your recipe extension work as part of {@link RecipeTypes#CRAFTING} as a shapeless recipe.
  *
  * For shaped recipes, override {@link #getWidth()} and {@link #getHeight()}.
  *
@@ -33,6 +33,7 @@ public interface ICraftingCategoryExtension extends IRecipeCategoryExtension {
 	 * @since 9.4.0
 	 */
 	default void setRecipe(IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
+		// if this new method is not implemented, call the legacy method
 		setRecipe(builder, craftingGridHelper, focuses.getAllFocuses());
 	}
 

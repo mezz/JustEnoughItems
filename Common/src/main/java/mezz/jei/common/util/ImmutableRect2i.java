@@ -56,6 +56,10 @@ public class ImmutableRect2i {
 			y < this.y + this.height;
 	}
 
+	public boolean contains(ImmutablePoint2i mouseExclusionPoint) {
+		return contains(mouseExclusionPoint.x(), mouseExclusionPoint.y());
+	}
+
 	public boolean intersects(ImmutableRect2i rect) {
 		if (this.isEmpty() || rect.isEmpty()) {
 			return false;
@@ -242,5 +246,17 @@ public class ImmutableRect2i {
 
 	public Rect2i toMutable() {
 		return new Rect2i(x, y, width, height);
+	}
+
+	public ImmutableRect2i setPosition(int x, int y) {
+		if (getX() == x && getY() == y) {
+			return this;
+		}
+		return new ImmutableRect2i(
+			x,
+			y,
+			getWidth(),
+			getHeight()
+		);
 	}
 }

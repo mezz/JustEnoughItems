@@ -83,7 +83,13 @@ public interface IIngredientManager {
 	 *
 	 * @since 10.3.0
 	 */
-	<V> Optional<IIngredientType<V>> getIngredientTypeChecked(V ingredient);
+	default <V> Optional<IIngredientType<V>> getIngredientTypeChecked(V ingredient) {
+		try {
+			return Optional.of(getIngredientType(ingredient));
+		} catch (RuntimeException e) {
+			return Optional.empty();
+		}
+	}
 
 	/**
 	 * Helper method to get ingredient type for an ingredient.
@@ -91,7 +97,13 @@ public interface IIngredientManager {
 	 *
 	 * @since 10.3.0
 	 */
-	<V> Optional<IIngredientType<V>> getIngredientTypeChecked(Class<? extends V> ingredientClass);
+	default <V> Optional<IIngredientType<V>> getIngredientTypeChecked(Class<? extends V> ingredientClass) {
+		try {
+			return Optional.of(getIngredientType(ingredientClass));
+		} catch (RuntimeException e) {
+			return Optional.empty();
+		}
+	}
 
 	/**
 	 * Helper method to get ingredient type for an ingredient.
@@ -112,7 +124,9 @@ public interface IIngredientManager {
 	 *
 	 * @since 10.3.0
 	 */
-	<V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient);
+	default <V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient) {
+		return Optional.empty();
+	}
 
 	/**
 	 * Get an ingredient by the given unique id.
@@ -120,14 +134,29 @@ public interface IIngredientManager {
 	 *
 	 * @since 10.3.0
 	 */
-	<V> Optional<V> getIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid);
+	default <V> Optional<V> getIngredientByUid(IIngredientType<V> ingredientType, String ingredientUuid) {
+		return Optional.empty();
+	}
 
 	/**
 	 * Add a listener to receive updates when ingredients are added or removed from the ingredient manager.
 	 *
 	 * @since 10.3.0
 	 */
-	void registerIngredientListener(IIngredientListener listener);
+	default void registerIngredientListener(IIngredientListener listener) {
+
+	}
+
+	/**
+	 * Normalize a typed ingredient.
+	 *
+	 * @see IIngredientHelper#normalizeIngredient
+	 *
+	 * @since 10.5.0
+	 */
+	default <V> ITypedIngredient<V> normalizeTypedIngredient(ITypedIngredient<V> typedIngredient) {
+		return typedIngredient;
+	}
 
 	/**
 	 * A listener that receives updates when ingredients are added or removed from the ingredient manager.

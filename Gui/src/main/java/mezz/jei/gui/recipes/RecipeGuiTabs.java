@@ -2,19 +2,18 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import mezz.jei.api.helpers.IModIdHelper;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.gui.PageNavigation;
-import mezz.jei.common.gui.TooltipRenderer;
 import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +29,8 @@ public class RecipeGuiTabs implements IPaged {
 	private final IRecipeGuiLogic recipeGuiLogic;
 	private final List<RecipeGuiTab> tabs = new ArrayList<>();
 	private final PageNavigation pageNavigation;
-	private final Textures textures;
-	private final IIngredientManager ingredientManager;
+	private final IRecipeManager recipeManager;
+	private final IGuiHelper guiHelper;
 	private IUserInputHandler inputHandler;
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
@@ -39,11 +38,11 @@ public class RecipeGuiTabs implements IPaged {
 	private int pageNumber = 0;
 	private int categoriesPerPage = 1;
 
-	public RecipeGuiTabs(IRecipeGuiLogic recipeGuiLogic, Textures textures, IIngredientManager ingredientManager) {
+	public RecipeGuiTabs(IRecipeGuiLogic recipeGuiLogic, IRecipeManager recipeManager, IGuiHelper guiHelper) {
 		this.recipeGuiLogic = recipeGuiLogic;
-		this.pageNavigation = new PageNavigation(this, true, textures);
-		this.textures = textures;
-		this.ingredientManager = ingredientManager;
+		this.pageNavigation = new PageNavigation(this, true);
+		this.recipeManager = recipeManager;
+		this.guiHelper = guiHelper;
 		this.inputHandler = this.pageNavigation.createInputHandler();
 	}
 
@@ -96,19 +95,26 @@ public class RecipeGuiTabs implements IPaged {
 				break;
 			}
 			IRecipeCategory<?> category = categories.get(index);
-			RecipeGuiTab tab = new RecipeCategoryTab(recipeGuiLogic, category, textures, tabX, area.getY(), ingredientManager);
+			RecipeGuiTab tab = new RecipeCategoryTab(
+				recipeGuiLogic,
+				category,
+				tabX,
+				area.getY(),
+				recipeManager,
+				guiHelper
+			);
 			this.tabs.add(tab);
 			inputHandlers.add(tab);
 			tabX += RecipeGuiTab.TAB_WIDTH;
 		}
 
 		inputHandlers.add(this.pageNavigation.createInputHandler());
-		this.inputHandler = new CombinedInputHandler(inputHandlers);
+		this.inputHandler = new CombinedInputHandler("RecipeGuiTabs", inputHandlers);
 
 		pageNavigation.updatePageNumber();
 	}
 
-	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, IModIdHelper modIdHelper) {
+	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		IRecipeCategory<?> selectedCategory = recipeGuiLogic.getSelectedRecipeCategory();
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -127,16 +133,17 @@ public class RecipeGuiTabs implements IPaged {
 		}
 		RenderSystem.enableDepthTest();
 
-		pageNavigation.draw(minecraft, poseStack, mouseX, mouseY, minecraft.getFrameTime());
+		pageNavigation.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
 
 		if (hovered != null) {
-			List<Component> tooltip = hovered.getTooltip(modIdHelper);
-			TooltipRenderer.drawHoveringText(poseStack, tooltip, mouseX, mouseY);
+			JeiTooltip tooltip = new JeiTooltip();
+			tooltip.addAll(hovered.getTooltip());
+			tooltip.draw(poseStack, mouseX, mouseY);
 		}
 	}
 
-	public IUserInputHandler getInputHandler() {
-		return this.inputHandler;
+	public IUserInputHandler createInputHandler() {
+		return new ProxyInputHandler(() -> inputHandler);
 	}
 
 	@Override

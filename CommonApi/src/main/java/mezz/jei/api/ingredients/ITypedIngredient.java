@@ -36,9 +36,7 @@ public interface ITypedIngredient<T> {
 	 *
 	 * @since 9.3.3
 	 */
-	default <V> Optional<V> getIngredient(IIngredientType<V> ingredientType) {
-		return ingredientType.castIngredient(getIngredient());
-	}
+	<V> Optional<V> getIngredient(IIngredientType<V> ingredientType);
 
 	/**
 	 * @return the ItemStack wrapped by this instance, only this holds an ItemStack ingredient.

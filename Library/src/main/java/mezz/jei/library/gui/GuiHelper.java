@@ -9,6 +9,7 @@ import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.elements.DrawableAnimated;
 import mezz.jei.common.gui.elements.DrawableBlank;
@@ -59,16 +60,25 @@ public class GuiHelper implements IGuiHelper {
 	}
 
 	@Override
-	@Deprecated(forRemoval = true, since = "9.1.1")
-	public <V> IDrawable createDrawableIngredient(V ingredient) {
+	public <V> IDrawable createDrawableIngredient(ITypedIngredient<V> ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
-		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredient);
-		return new DrawableIngredient<>(ingredient, ingredientRenderer);
+		IIngredientType<V> type = ingredient.getType();
+		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
+		return new DrawableIngredient<>(ingredient.getIngredient(), ingredientRenderer);
 	}
 
 	@Override
 	public ICraftingGridHelper createCraftingGridHelper(int craftInputSlot1) {
 		return new CraftingGridHelper(craftInputSlot1);
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	@Deprecated
+	public <V> IDrawable createDrawableIngredient(V ingredient) {
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		IIngredientType<V> type = ingredientManager.getIngredientType(ingredient);
+		return createDrawableIngredient(type, ingredient);
 	}
 
 	@Override

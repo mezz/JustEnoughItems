@@ -46,6 +46,9 @@ public interface IRecipeCategory<T> {
 
 	/**
 	 * Returns the drawable background for a single recipe in this category.
+	 *
+	 * The size of the background determines how recipes are laid out by JEI,
+	 * make sure it is the right size to contains everything being displayed.
 	 */
 	IDrawable getBackground();
 
@@ -72,8 +75,11 @@ public interface IRecipeCategory<T> {
 	 * You can use {@link IGuiHelper#createDrawableIngredient(IIngredientType, Object)}
 	 * to create a drawable from an ingredient.
 	 *
+	 * If null is returned here, JEI will try to use the first recipe catalyst as the icon.
+	 *
 	 * @return icon to draw on the category tab, max size is 16x16 pixels.
 	 */
+	@Nullable
 	IDrawable getIcon();
 
 	/**
@@ -83,6 +89,7 @@ public interface IRecipeCategory<T> {
 	 * @since 9.4.0
 	 */
 	default void setRecipe(IRecipeLayoutBuilder builder, T recipe, IFocusGroup focuses) {
+		// if this new method is not implemented, call the legacy method
 		setRecipe(builder, recipe, focuses.getAllFocuses());
 	}
 
@@ -104,6 +111,7 @@ public interface IRecipeCategory<T> {
 	 * @since 9.3.0
 	 */
 	default void draw(T recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
+		// if not implemented, this calls the old function for backward compatibility
 		draw(recipe, stack, mouseX, mouseY);
 	}
 
@@ -122,6 +130,7 @@ public interface IRecipeCategory<T> {
 	 * @since 9.3.0
 	 */
 	default List<Component> getTooltipStrings(T recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+		// if not implemented, this calls the old function for backward compatibility
 		return getTooltipStrings(recipe, mouseX, mouseY);
 	}
 

@@ -7,26 +7,26 @@ import java.util.stream.Stream;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.gui.config.IIngredientFilterConfig;
+import mezz.jei.common.config.IIngredientFilterConfig;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Unmodifiable;
 
 public interface IListElementInfo<V> {
 
-	String getName();
+	List<String> getNames();
 
 	String getModNameForSorting();
 
-	Set<String> getModNameStrings();
+	List<String> getModNames();
+
+	List<String> getModIds();
 
 	@Unmodifiable
-	List<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager);
+	Set<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager);
 
 	Collection<String> getTagStrings(IIngredientManager ingredientManager);
 
 	Stream<ResourceLocation> getTagIds(IIngredientManager ingredientManager);
-
-	Collection<String> getCreativeTabsStrings(IIngredientManager ingredientManager);
 
 	Iterable<Integer> getColors(IIngredientManager ingredientManager);
 
@@ -36,8 +36,5 @@ public interface IListElementInfo<V> {
 
 	ITypedIngredient<V> getTypedIngredient();
 
-	void setSortedIndex(int sortIndex);
-
-	int getSortedIndex();
-
+	int getCreatedIndex();
 }

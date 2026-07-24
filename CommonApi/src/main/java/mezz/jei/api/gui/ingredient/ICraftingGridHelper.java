@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface ICraftingGridHelper {
 	/**
-	 * Create and place input ingredients onto the crafting grid in a consistent way.
+	 * Create and place input ItemStacks onto the crafting grid in a consistent way.
 	 * For shapeless recipes, use a width and height of 0.
 	 *
 	 * @see #createAndSetInputs(IRecipeLayoutBuilder, IIngredientType, List, int, int) to set other ingredient types.
@@ -56,7 +56,6 @@ public interface ICraftingGridHelper {
 	default IRecipeSlotBuilder createAndSetOutputs(IRecipeLayoutBuilder builder, @Nullable List<@Nullable ItemStack> outputs) {
 		return createAndSetOutputs(builder, VanillaTypes.ITEM_STACK, outputs);
 	}
-
 
 	/**
 	 * Place output ingredients at the right location.

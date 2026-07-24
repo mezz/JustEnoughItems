@@ -22,8 +22,6 @@ public class FluidSubtypeHandlerTest<T> implements IIngredientSubtypeInterpreter
 			.getRegistry(Registry.FLUID_REGISTRY)
 			.getRegistryName(fluid)
 			.map(ResourceLocation::toString)
-			.orElseThrow(() -> {
-				throw new IllegalArgumentException("Fluid has no registry name: " + fluid);
-			});
+			.orElseThrow(() -> new IllegalArgumentException("Fluid has no registry name: " + fluid));
 	}
 }

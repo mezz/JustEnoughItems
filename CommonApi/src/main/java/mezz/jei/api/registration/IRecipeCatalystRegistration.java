@@ -17,7 +17,7 @@ public interface IRecipeCatalystRegistration {
 
 	/**
 	 * {@link IJeiHelpers} provides helpers and tools for addon mods.
-	 * @since 10.3.0
+	 * @since 10.2.0
 	 */
 	IJeiHelpers getJeiHelpers();
 

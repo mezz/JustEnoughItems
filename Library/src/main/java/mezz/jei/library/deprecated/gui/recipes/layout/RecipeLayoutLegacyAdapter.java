@@ -30,7 +30,7 @@ import java.util.Optional;
 
 @SuppressWarnings({"unchecked", "removal", "DeprecatedIsStillUsed"})
 @Deprecated
-public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayoutDrawable {
+public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayoutDrawable<R> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final RecipeLayout<R> recipeLayout;
@@ -71,6 +71,10 @@ public class RecipeLayoutLegacyAdapter<R> implements IRecipeLayout, IRecipeLayou
 			LOGGER.error("Error caught from Recipe Category: {}", recipeCategory.getRecipeType(), e);
 		}
 		return false;
+	}
+
+	public RecipeSlots getRecipeSlots() {
+		return recipeSlots;
 	}
 
 	@Override

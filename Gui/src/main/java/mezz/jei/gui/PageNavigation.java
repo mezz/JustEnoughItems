@@ -1,6 +1,7 @@
 package mezz.jei.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.common.Internal;
 import mezz.jei.gui.elements.GuiIconButton;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.input.IPaged;
@@ -11,6 +12,7 @@ import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.screens.Screen;
 
 public class PageNavigation {
 	private final IPaged paged;
@@ -20,10 +22,11 @@ public class PageNavigation {
 	private String pageNumDisplayString = "1/1";
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
-	public PageNavigation(IPaged paged, boolean hideOnSinglePage, Textures textures) {
+	public PageNavigation(IPaged paged, boolean hideOnSinglePage) {
 		this.paged = paged;
-		this.nextButton = new GuiIconButton(textures.getArrowNext(), b -> paged.nextPage(), textures);
-		this.backButton = new GuiIconButton(textures.getArrowPrevious(), b -> paged.previousPage(), textures);
+		Textures textures = Internal.getTextures();
+		this.nextButton = new GuiIconButton(textures.getArrowNext(), b -> paged.nextPage());
+		this.backButton = new GuiIconButton(textures.getArrowPrevious(), b -> paged.previousPage());
 		this.hideOnSinglePage = hideOnSinglePage;
 	}
 
@@ -53,23 +56,34 @@ public class PageNavigation {
 
 	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (isVisible()) {
-			GuiComponent.fill(poseStack,
-				backButton.x + backButton.getWidth(),
-				backButton.y,
-				nextButton.x,
-				nextButton.y + nextButton.getHeight(),
-				0x30000000);
+			GuiComponent.fill(
+				poseStack,
+				backButton.getX() + backButton.getWidth(),
+				backButton.getY(),
+				nextButton.getX(),
+				nextButton.getY() + nextButton.getHeight(),
+				0x30000000
+			);
 
 			Font font = minecraft.font;
 			ImmutableRect2i centerArea = MathUtil.centerTextArea(this.area, font, this.pageNumDisplayString);
-			font.drawShadow(poseStack, pageNumDisplayString, centerArea.getX(), centerArea.getY(), 0xFFFFFFFF);
+			Screen.drawString(poseStack, font, pageNumDisplayString, centerArea.getX(), centerArea.getY(), 0xFFFFFFFF);
 			nextButton.render(poseStack, mouseX, mouseY, partialTicks);
 			backButton.render(poseStack, mouseX, mouseY, partialTicks);
 		}
 	}
 
+	public ImmutableRect2i getNextButtonArea() {
+		return nextButton.getArea();
+	}
+
+	public ImmutableRect2i getBackButtonArea() {
+		return backButton.getArea();
+	}
+
 	public IUserInputHandler createInputHandler() {
 		return new CombinedInputHandler(
+			"PageNavigation",
 			this.nextButton.createInputHandler(),
 			this.backButton.createInputHandler()
 		);

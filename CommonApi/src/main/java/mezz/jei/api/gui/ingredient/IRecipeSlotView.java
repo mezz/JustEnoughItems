@@ -7,11 +7,8 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
-import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -19,7 +16,7 @@ import java.util.stream.Stream;
  * Represents one drawn ingredient that is part of a recipe.
  * One recipe slot can contain multiple ingredients, displayed one after the other over time.
  *
- * These ingredients may be different types, for example {@link VanillaTypes#ITEM_STACK} and another type
+ * These ingredients may be different types, for example {@link VanillaTypes#ITEM_STACK} and others
  * can be displayed in one recipe slot in rotation.
  *
  * Useful for implementing {@link IRecipeTransferHandler} and some other advanced cases.
@@ -114,7 +111,7 @@ public interface IRecipeSlotView {
 	 * Draws a highlight on background of this ingredient.
 	 * This is used by recipe transfer errors to turn missing ingredient backgrounds to red, but can be used for other purposes.
 	 *
-	 * @see IRecipeTransferHandlerHelper#createUserErrorForMissingSlots(Component, Collection)
+	 * @see IRecipeTransferHandlerHelper#createUserErrorForMissingSlots(Component, Collection).
 	 *
 	 * @since 9.3.0
 	 */

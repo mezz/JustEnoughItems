@@ -6,6 +6,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
@@ -128,7 +129,7 @@ public interface IRecipeManager {
 	 *
 	 * @since 10.3.0
 	 */
-	default <T> Optional<IRecipeLayoutDrawable> createRecipeLayoutDrawable(
+	default <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(
 		IRecipeCategory<T> recipeCategory,
 		T recipe,
 		IFocusGroup focusGroup
@@ -137,7 +138,9 @@ public interface IRecipeManager {
 			.stream()
 			.findFirst()
 			.orElse(null);
-		return Optional.ofNullable(createRecipeLayoutDrawable(recipeCategory, recipe, focus));
+		@SuppressWarnings("unchecked")
+		IRecipeLayoutDrawable<T> recipeLayout = (IRecipeLayoutDrawable<T>) createRecipeLayoutDrawable(recipeCategory, recipe, focus);
+		return Optional.ofNullable(recipeLayout);
 	}
 
 	/**
@@ -151,14 +154,16 @@ public interface IRecipeManager {
 	 * @param ingredientCycleOffset the starting index for cycling the list of ingredients when rendering.
 	 * @since 10.3.0
 	 */
-	IRecipeSlotDrawable createRecipeSlotDrawable(
+	default IRecipeSlotDrawable createRecipeSlotDrawable(
 		RecipeIngredientRole role,
 		List<Optional<ITypedIngredient<?>>> ingredients,
 		Set<Integer> focusedIngredients,
 		int xPos,
 		int yPos,
 		int ingredientCycleOffset
-	);
+	) {
+		throw new UnsupportedOperationException("Recipe slot drawable creation is not implemented by this recipe manager.");
+	}
 
 	/**
 	 * Get the registered recipe type for the given unique id.
@@ -169,7 +174,9 @@ public interface IRecipeManager {
 	 * @see RecipeType#getUid()
 	 * @since 10.3.0
 	 */
-	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
+	default Optional<RecipeType<?>> getRecipeType(ResourceLocation uid) {
+		return Optional.empty();
+	}
 
 	/**
 	 * Hide an entire recipe category of recipes from JEI.
@@ -258,6 +265,7 @@ public interface IRecipeManager {
 	/**
 	 * Returns an unmodifiable collection of ingredients that can craft the recipes from recipeCategory.
 	 * For instance, the crafting table ItemStack is returned here for Crafting recipe category.
+	 * These are registered with {@link IRecipeCatalystRegistration#addRecipeCatalyst(IIngredientType, Object, RecipeType[])}.
 	 *
 	 * @since 9.3.0
 	 * @deprecated use {@link #createRecipeCatalystLookup(RecipeType)} and
@@ -270,6 +278,11 @@ public interface IRecipeManager {
 	 * Hides a recipe so that it will not be displayed.
 	 * This can be used by mods that create recipe progression.
 	 *
+	 * @param recipe            the recipe to hide.
+	 * @param recipeCategoryUid the unique ID for the recipe category this recipe is a part of.
+	 *
+	 * @see #unhideRecipes(RecipeType, Collection)
+	 *
 	 * @deprecated use the typed {@link #hideRecipes(RecipeType, Collection)} instead.
 	 */
 	@Deprecated(forRemoval = true, since = "9.5.0")
@@ -278,6 +291,11 @@ public interface IRecipeManager {
 	/**
 	 * Unhides a recipe that was hidden by {@link #hideRecipes(RecipeType, Collection)}
 	 * This can be used by mods that create recipe progression.
+	 *
+	 * @param recipe            the recipe to unhide.
+	 * @param recipeCategoryUid the unique ID for the recipe category this recipe is a part of.
+	 *
+	 * @see #hideRecipes(RecipeType, Collection)
 	 *
 	 * @deprecated use the typed {@link #unhideRecipes(RecipeType, Collection)} instead.
 	 */
@@ -316,6 +334,7 @@ public interface IRecipeManager {
 	/**
 	 * Returns an unmodifiable collection of ingredients that can craft the recipes from recipeCategory.
 	 * For instance, the crafting table ItemStack is returned here for Crafting recipe category.
+	 * These are registered with {@link IRecipeCatalystRegistration#addRecipeCatalyst(IIngredientType, Object, RecipeType[])}.
 	 * @since 7.7.1
 	 *
 	 * @deprecated use {@link #createRecipeCatalystLookup(RecipeType)} and

@@ -1,17 +1,16 @@
 package mezz.jei.api.ingredients;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.ingredients.rendering.BatchRenderElement;
+import mezz.jei.api.registration.IModIngredientRegistration;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.world.item.TooltipFlag;
-
-import mezz.jei.api.registration.IModIngredientRegistration;
-import net.minecraft.network.chat.Component;
 
 /**
  * Renders a type of ingredient in JEI's item list and recipes.
@@ -32,6 +31,37 @@ public interface IIngredientRenderer<T> {
 	default void render(PoseStack stack, T ingredient) {
 		// if not implemented, this calls the old render function for backward compatibility
 		render(stack, 0, 0, ingredient);
+	}
+
+	/**
+	 * Renders an ingredient at a specific location.
+	 *
+	 * @param poseStack  The current {@link PoseStack} for rendering the ingredient.
+	 * @param ingredient the ingredient to render.
+	 * @param posX       the x offset for rendering this ingredient
+	 * @param posY       the y offset for rendering this ingredient
+	 *
+	 * @since 10.5.0
+	 */
+	default void render(PoseStack poseStack, T ingredient, int posX, int posY) {
+		poseStack.pushPose();
+		{
+			poseStack.translate(posX, posY, 0);
+			render(poseStack, ingredient);
+		}
+		poseStack.popPose();
+	}
+
+	/**
+	 * Render a batch of ingredients.
+	 * Implementing this is not necessary, but can be used to optimize rendering many ingredients at once.
+	 *
+	 * @since 10.5.0
+	 */
+	default void renderBatch(PoseStack poseStack, List<BatchRenderElement<T>> elements) {
+		for (BatchRenderElement<T> element : elements) {
+			render(poseStack, element.ingredient(), element.x(), element.y());
+		}
 	}
 
 	/**

@@ -5,7 +5,7 @@ import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.library.plugins.RecipeCategoryWithType;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +17,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.common.Constants;
 import net.minecraft.network.chat.Component;
 
-public class StoneCuttingRecipeCategory implements IRecipeCategory<StonecutterRecipe> {
+public class StoneCuttingRecipeCategory implements RecipeCategoryWithType<StonecutterRecipe> {
 	public static final int width = 82;
 	public static final int height = 34;
 

@@ -1,8 +1,9 @@
 package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import mezz.jei.common.input.keys.IJeiKeyMapping;
+import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.input.keys.IJeiKeyMappingBuilder;
+import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
 import mezz.jei.fabric.input.FabricJeiKeyMapping;
@@ -73,11 +74,11 @@ final class JeiFabricKeyMappingClientTests {
 	private static void assertUnboundJeiKeyMappingRejectsInput() {
 		// Setup: build an unbound JEI mapping through the category builder, the same representation used for
 		// JEI controls that are intentionally not assigned to an input.
-		IJeiKeyMapping jeiMapping = new FabricJeiKeyMappingCategoryBuilder(CATEGORY)
+		IJeiKeyMappingInternal jeiMapping = new FabricJeiKeyMappingCategoryBuilder(CATEGORY)
 			.createMapping("key.jei.test.fabricKeyMapping.unbound")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildUnbound();
-		IJeiKeyMapping registeredMapping = jeiMapping.register();
+		IJeiKeyMapping registeredMapping = jeiMapping.register(ignored -> {});
 
 		// Operation and assertions: the unbound JEI mapping must reject vanilla mouse buttons.
 		if (registeredMapping != jeiMapping) {
@@ -233,7 +234,7 @@ final class JeiFabricKeyMappingClientTests {
 		IJeiKeyMappingBuilder mappingBuilder = new FabricJeiKeyMappingCategoryBuilder(CATEGORY)
 			.createMapping("key.jei.test.fabricKeyMapping.boundMouse" + mouseButton)
 			.setContext(JeiKeyConflictContext.GUI);
-		IJeiKeyMapping jeiMapping;
+		IJeiKeyMappingInternal jeiMapping;
 		if (mouseButton == InputConstants.MOUSE_BUTTON_LEFT) {
 			jeiMapping = mappingBuilder.buildMouseLeft();
 		} else if (mouseButton == InputConstants.MOUSE_BUTTON_RIGHT) {
@@ -241,7 +242,7 @@ final class JeiFabricKeyMappingClientTests {
 		} else {
 			throw new IllegalArgumentException("Unsupported test mouse button: " + mouseButton);
 		}
-		IJeiKeyMapping registeredMapping = jeiMapping.register();
+		IJeiKeyMapping registeredMapping = jeiMapping.register(ignored -> {});
 
 		if (registeredMapping != jeiMapping) {
 			throw new AssertionError("Expected bound Fabric JEI mapping registration to keep the custom JEI mapping instance: " + mouseKey.getName());
@@ -256,11 +257,11 @@ final class JeiFabricKeyMappingClientTests {
 
 	private static void assertUnboundFabricJeiMouseMapping(int mouseButton) {
 		InputConstants.Key mouseKey = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
-		IJeiKeyMapping jeiMapping = new FabricJeiKeyMappingCategoryBuilder(CATEGORY)
+		IJeiKeyMappingInternal jeiMapping = new FabricJeiKeyMappingCategoryBuilder(CATEGORY)
 			.createMapping("key.jei.test.fabricKeyMapping.unboundMouse" + mouseButton)
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildUnbound();
-		IJeiKeyMapping registeredMapping = jeiMapping.register();
+		IJeiKeyMapping registeredMapping = jeiMapping.register(ignored -> {});
 
 		if (registeredMapping != jeiMapping) {
 			throw new AssertionError("Expected unbound Fabric JEI mapping registration to keep the custom JEI mapping instance: " + mouseKey.getName());

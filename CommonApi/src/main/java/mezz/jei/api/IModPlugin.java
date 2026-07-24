@@ -2,6 +2,7 @@ package mezz.jei.api;
 
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.registration.IRuntimeRegistration;
+import mezz.jei.api.runtime.config.IJeiConfigManager;
 import net.minecraft.resources.ResourceLocation;
 
 import mezz.jei.api.registration.IAdvancedRegistration;
@@ -136,6 +137,15 @@ public interface IModPlugin {
 	 * @since 10.3.0
 	 */
 	default void onRuntimeUnavailable() {
+
+	}
+
+	/**
+	 * Called when JEI's configs are available.
+	 * This is called early on, as soon as configs are available.
+	 * @since 10.5.0
+	 */
+	default void onConfigManagerAvailable(IJeiConfigManager configManager) {
 
 	}
 }

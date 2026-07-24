@@ -21,7 +21,8 @@ import mezz.jei.core.util.SubString;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintWriter;
-import java.util.Set;
+import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  * A Generalized Suffix Tree, based on the Ukkonen's paper "On-line construction of suffix trees"
@@ -80,21 +81,21 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 	 * supplied as input.
 	 *
 	 * @param word the key to search for
-	 * @param results the indexes associated with the input <tt>word</tt>
+	 * @param resultsConsumer accepts the results data
 	 */
 	@Override
-	public void getSearchResults(String word, Set<T> results) {
+	public void getSearchResults(String word, Consumer<Collection<T>> resultsConsumer) {
 		Node<T> tmpNode = searchNode(root, word);
 		if (tmpNode == null) {
 			return;
 		}
 
-		tmpNode.getData(results);
+		tmpNode.getData(resultsConsumer);
 	}
 
 	@Override
-	public void getAllElements(Set<T> results) {
-		root.getData(results);
+	public void getAllElements(Consumer<Collection<T>> resultsConsumer) {
+		root.getData(resultsConsumer);
 	}
 
 	/**
@@ -111,7 +112,7 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 
 		while (!wordSubString.isEmpty()) {
 			// follow the edge corresponding to this char
-			Edge<T> currentEdge = currentNode.getEdge(wordSubString);
+			Node<T> currentEdge = currentNode.getEdge(wordSubString);
 			if (currentEdge == null) {
 				// there is no edge starting with this char
 				return null;
@@ -124,11 +125,11 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 			}
 			if (lenToMatch == wordSubString.length()) {
 				// we found the edge we're looking for
-				return currentEdge.getDest();
+				return currentEdge;
 			}
 
 			// advance to next node
-			currentNode = currentEdge.getDest();
+			currentNode = currentEdge;
 			wordSubString = wordSubString.substring(lenToMatch);
 		}
 
@@ -148,12 +149,13 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 
 		Node<T> s = root;
 
+		final SubString keyString = new SubString(key);
 		// proceed with tree construction (closely related to procedure in Ukkonen's paper)
-		SubString text = new SubString(key, 0, 0);
+		SubString text = keyString.shorten(keyString.length());
 		// iterate over the string, one char at a time
-		for (int i = 0; i < key.length(); i++) {
+		for (int i = 0; i < keyString.length(); i++) {
 			// line 6, line 7: update the tree with the new transitions due to this new char
-			SubString rest = new SubString(key, i);
+			SubString rest = keyString.substring(i);
 			Pair<Node<T>, SubString> active = update(s, text, key.charAt(i), rest, value);
 
 			s = active.first();
@@ -201,7 +203,7 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 		searchString = canonizeResult.second();
 
 		if (!searchString.isEmpty()) {
-			Edge<T> g = startNode.getEdge(searchString);
+			Node<T> g = startNode.getEdge(searchString);
 			assert g != null;
 			// must see whether "searchString" is substring of the label of an edge
 			if (g.length() > searchString.length() && g.charAt(searchString.length()) == t) {
@@ -211,7 +213,7 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 			return new Pair<>(false, newNode);
 		}
 
-		Edge<T> e = startNode.getEdge(remainder);
+		Node<T> e = startNode.getEdge(remainder);
 		if (e == null) {
 			// if there is no t-transition from s
 			return new Pair<>(false, startNode);
@@ -220,8 +222,7 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 		if (e.startsWith(remainder)) {
 			if (e.length() == remainder.length()) {
 				// update payload of destination node
-				Node<T> dest = e.getDest();
-				dest.addRef(value);
+				e.addRef(value);
 				return new Pair<>(true, startNode);
 			} else {
 				Node<T> newNode = splitNode(startNode, e, remainder);
@@ -233,7 +234,7 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 		}
 	}
 
-	private static <T> Node<T> splitNode(Node<T> s, Edge<T> e, SubString splitFirstPart) {
+	private static <T> Node<T> splitNode(Node<T> s, Node<T> e, SubString splitFirstPart) {
 		assert e == s.getEdge(splitFirstPart);
 		assert e.startsWith(splitFirstPart);
 		assert e.length() > splitFirstPart.length();
@@ -242,11 +243,12 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 		SubString splitSecondPart = e.substring(splitFirstPart.length());
 
 		// build a new node r in between s and e.dest
-		Node<T> r = new Node<>();
+		Node<T> r = new Node<>(splitFirstPart);
 		// replace e with new first part pointing to r
-		s.addEdge(new Edge<>(splitFirstPart, r));
+		s.addEdge(r);
 		// r is the new node sitting in between s and the original destination
-		r.addEdge(new Edge<>(splitSecondPart, e.getDest()));
+		e.set(splitSecondPart);
+		r.addEdge(e);
 
 		return r;
 	}
@@ -264,11 +266,11 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 		SubString remainder = input;
 
 		while (!remainder.isEmpty()) {
-			Edge<T> nextEdge = currentNode.getEdge(remainder);
+			Node<T> nextEdge = currentNode.getEdge(remainder);
 			if (nextEdge == null || !nextEdge.isPrefix(remainder)) {
 				break;
 			}
-			currentNode = nextEdge.getDest();
+			currentNode = nextEdge;
 			remainder = remainder.substring(nextEdge.length());
 		}
 
@@ -315,16 +317,16 @@ public class GeneralizedSuffixTree<T> implements ISearchStorage<T> {
 		// line 2
 		while (!endpoint) {
 			// line 3
-			Edge<T> tempEdge = r.getEdge(newChar);
+			Node<T> tempEdge = r.getEdge(newChar);
 			if (tempEdge != null) {
 				// such a node is already present. This is one of the main differences from Ukkonen's case:
 				// the tree can contain deeper nodes at this stage because different strings were added by previous iterations.
-				leaf = tempEdge.getDest();
+				leaf = tempEdge;
 			} else {
 				// must build a new leaf
-				leaf = new Node<>();
+				leaf = new Node<>(rest);
 				leaf.addRef(value);
-				r.addEdge(new Edge<>(rest, leaf));
+				r.addEdge(leaf);
 			}
 
 			// update suffix link for newly created leaf

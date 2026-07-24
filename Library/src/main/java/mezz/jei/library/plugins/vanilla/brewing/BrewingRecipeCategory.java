@@ -13,7 +13,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.library.plugins.RecipeCategoryWithType;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.common.Constants;
 import net.minecraft.client.Minecraft;
@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.Blocks;
 
 import java.util.List;
 
-public class BrewingRecipeCategory implements IRecipeCategory<IJeiBrewingRecipe> {
+public class BrewingRecipeCategory implements RecipeCategoryWithType<IJeiBrewingRecipe> {
 	private final IDrawable background;
 	private final IDrawable icon;
 	private final IDrawable slotDrawable;

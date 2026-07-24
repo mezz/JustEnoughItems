@@ -2,7 +2,6 @@ package mezz.jei.library.plugins.debug;
 
 import net.minecraft.network.chat.TextComponent;
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -11,9 +10,7 @@ import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.common.Internal;
-import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.library.plugins.RecipeCategoryWithType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -21,7 +18,7 @@ import net.minecraft.world.level.material.Fluids;
 
 import java.util.List;
 
-public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
+public class DebugFocusRecipeCategory<F> implements RecipeCategoryWithType<DebugRecipe> {
 	public static final RecipeType<DebugRecipe> TYPE = RecipeType.create(ModIds.JEI_ID, "debug_focus", DebugRecipe.class);
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
@@ -52,8 +49,7 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 
 	@Override
 	public IDrawable getIcon() {
-		Textures textures = Internal.getTextures();
-		return textures.getConfigButtonIcon();
+		return null;
 	}
 
 	@Override
@@ -87,7 +83,7 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 				new ItemStack(Items.TROPICAL_FISH)
 			));
 
-		IIngredientAcceptor<?> invisibleSlot = builder.addInvisibleIngredients(RecipeIngredientRole.INPUT)
+		builder.addInvisibleIngredients(RecipeIngredientRole.INPUT)
 			.addItemStacks(List.of(
 				new ItemStack(Items.ACACIA_BOAT),
 				new ItemStack(Items.ACACIA_BUTTON),
@@ -100,7 +96,6 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 				new ItemStack(Items.ACACIA_PRESSURE_PLATE)
 			));
 
-		builder.createFocusLink(inputSlot, outputSlot, invisibleSlot);
+		builder.createFocusLink(inputSlot, outputSlot);
 	}
-
 }

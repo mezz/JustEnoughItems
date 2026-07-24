@@ -5,13 +5,18 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.Collection;
 import java.util.function.Supplier;
 
-public class PrefixInfo<T> {
+public class PrefixInfo<T, I> {
 	private final char prefix;
 	private final IModeGetter modeGetter;
 	private final IStringsGetter<T> stringsGetter;
-	private final Supplier<ISearchStorage<T>> storageSupplier;
+	private final Supplier<ISearchStorage<I>> storageSupplier;
 
-	public PrefixInfo(char prefix, IModeGetter modeGetter, IStringsGetter<T> stringsGetter, Supplier<ISearchStorage<T>> storageSupplier) {
+	public PrefixInfo(
+		char prefix,
+		IModeGetter modeGetter,
+		IStringsGetter<T> stringsGetter,
+		Supplier<ISearchStorage<I>> storageSupplier
+	) {
 		this.prefix = prefix;
 		this.modeGetter = modeGetter;
 		this.stringsGetter = stringsGetter;
@@ -26,7 +31,7 @@ public class PrefixInfo<T> {
 		return modeGetter.getMode();
 	}
 
-	public ISearchStorage<T> createStorage() {
+	public ISearchStorage<I> createStorage() {
 		return this.storageSupplier.get();
 	}
 

@@ -11,7 +11,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.library.plugins.RecipeCategoryWithType;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.common.Constants;
 import net.minecraft.client.Minecraft;
@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public class AnvilRecipeCategory implements IRecipeCategory<IJeiAnvilRecipe> {
+public class AnvilRecipeCategory implements RecipeCategoryWithType<IJeiAnvilRecipe> {
 	private final IDrawable background;
 	private final IDrawable icon;
 	private final String leftSlotName = "leftSlot";

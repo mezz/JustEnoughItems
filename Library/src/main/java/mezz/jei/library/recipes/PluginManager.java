@@ -10,11 +10,9 @@ import mezz.jei.library.recipes.collect.RecipeTypeData;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -25,13 +23,12 @@ import java.util.stream.Stream;
 public class PluginManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private @Unmodifiable List<IRecipeManagerPlugin> plugins = new ArrayList<>();
-	private final Function<ResourceLocation, Optional<RecipeType<?>>> recipeTypeLookup;
+	private List<IRecipeManagerPlugin> plugins = new ArrayList<>();
+	private final Function<ResourceLocation, Stream<RecipeType<?>>> recipeTypeLookup;
 
-	public PluginManager(IRecipeManagerPlugin internalRecipeManagerPlugin, List<IRecipeManagerPlugin> plugins, Function<ResourceLocation, Optional<RecipeType<?>>> recipeTypeLookup) {
-		this.plugins.add(internalRecipeManagerPlugin);
-		this.plugins.addAll(plugins);
+	public PluginManager(IRecipeManagerPlugin internalRecipeManagerPlugin, Function<ResourceLocation, Stream<RecipeType<?>>> recipeTypeLookup) {
 		this.recipeTypeLookup = recipeTypeLookup;
+		this.plugins.add(internalRecipeManagerPlugin);
 	}
 
 	public <T> Stream<T> getRecipes(RecipeTypeData<T> recipeTypeData, IFocusGroup focusGroup, boolean includeHidden) {
@@ -71,24 +68,20 @@ public class PluginManager {
 		return getRecipes(plugin, recipeCategory);
 	}
 
+	@SuppressWarnings("removal")
 	private Stream<RecipeType<?>> getRecipeTypes(IRecipeManagerPlugin plugin, IFocus<?> focus) {
 		Stream<RecipeType<?>> recipeTypes = safeCallPlugin(
 			plugin,
 			() -> plugin.getRecipeTypes(focus).stream(),
 			Stream.of()
 		);
-		return Stream.concat(recipeTypes, getLegacyRecipeTypes(plugin, focus));
-	}
-
-	@SuppressWarnings("removal")
-	private Stream<RecipeType<?>> getLegacyRecipeTypes(IRecipeManagerPlugin plugin, IFocus<?> focus) {
-		return safeCallPlugin(
+		Stream<RecipeType<?>> recipeTypesFromLegacyUids = safeCallPlugin(
 			plugin,
 			() -> plugin.getRecipeCategoryUids(focus).stream()
-				.map(recipeTypeLookup)
-				.flatMap(Optional::stream),
+				.flatMap(recipeTypeLookup),
 			Stream.of()
 		);
+		return Stream.concat(recipeTypes, recipeTypesFromLegacyUids);
 	}
 
 	private <T> Stream<T> getRecipes(IRecipeManagerPlugin plugin, IRecipeCategory<T> recipeCategory) {
@@ -123,5 +116,9 @@ public class PluginManager {
 			this.plugins.remove(plugin);
 			return defaultValue;
 		}
+	}
+
+	public void addAll(List<IRecipeManagerPlugin> plugins) {
+		this.plugins.addAll(plugins);
 	}
 }

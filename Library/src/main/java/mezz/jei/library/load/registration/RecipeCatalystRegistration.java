@@ -13,7 +13,7 @@ import mezz.jei.library.ingredients.TypedIngredient;
 import net.minecraft.resources.ResourceLocation;
 
 public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
-	private final ListMultiMap<ResourceLocation, ITypedIngredient<?>> recipeCatalysts = new ListMultiMap<>();
+	private final ListMultiMap<RecipeType<?>, ITypedIngredient<?>> recipeCatalysts = new ListMultiMap<>();
 	private final IIngredientManager ingredientManager;
 	private final IJeiHelpers jeiHelpers;
 
@@ -40,28 +40,25 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 
 		for (RecipeType<?> recipeType : recipeTypes) {
 			ErrorUtil.checkNotNull(recipeType, "recipeType");
-			ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient)
-				.orElseThrow(() -> new IllegalArgumentException("Recipe catalyst must not be empty"));
-			this.recipeCatalysts.put(recipeType.getUid(), typedIngredient);
+			ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, true)
+				.orElseThrow(() -> new IllegalArgumentException("Recipe catalyst must be valid"));
+			this.recipeCatalysts.put(recipeType, typedIngredient);
 		}
 	}
 
 	@SuppressWarnings("removal")
 	@Override
+	@Deprecated
 	public <T> void addRecipeCatalyst(IIngredientType<T> ingredientType, T catalystIngredient, ResourceLocation... recipeCategoryUids) {
-		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
-		ErrorUtil.checkNotNull(catalystIngredient, "catalystIngredient");
 		ErrorUtil.checkNotEmpty(recipeCategoryUids, "recipeCategoryUids");
-
-		for (ResourceLocation recipeCategoryUid : recipeCategoryUids) {
-			ErrorUtil.checkNotNull(recipeCategoryUid, "recipeCategoryUid");
-			ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, catalystIngredient)
-				.orElseThrow(() -> new IllegalArgumentException("Recipe catalyst must not be empty"));
-			this.recipeCatalysts.put(recipeCategoryUid, typedIngredient);
-		}
+		RecipeType<?>[] recipeTypes = java.util.Arrays.stream(recipeCategoryUids)
+			.map(uid -> jeiHelpers.getRecipeType(uid)
+				.orElseThrow(() -> new IllegalArgumentException("Unknown recipe category: " + uid)))
+			.toArray(RecipeType[]::new);
+		addRecipeCatalyst(ingredientType, catalystIngredient, recipeTypes);
 	}
 
-	public ImmutableListMultimap<ResourceLocation, ITypedIngredient<?>> getRecipeCatalysts() {
+	public ImmutableListMultimap<RecipeType<?>, ITypedIngredient<?>> getRecipeCatalysts() {
 		return recipeCatalysts.toImmutable();
 	}
 }

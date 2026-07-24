@@ -5,12 +5,14 @@ import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+import java.util.Optional;
+
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 
 import mezz.jei.api.recipe.IFocus;
-
-import java.util.List;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
  * JEI's gui for displaying recipes. Use this interface to open recipes.
@@ -43,10 +45,31 @@ public interface IRecipesGui {
 	void showTypes(List<RecipeType<?>> recipeTypes);
 
 	/**
+	 * Show specific recipes for one recipe category, with multiple {@link IFocus}.
+	 * Opens the {@link IRecipesGui} if recipes are valid and the gui is closed.
+	 *
+	 * @see IFocusFactory#createFocus(RecipeIngredientRole, IIngredientType, Object)
+	 *
+	 * @since 10.5.0
+	 */
+	default <T> void showRecipes(IRecipeCategory<T> recipeCategory, List<T> recipes, List<IFocus<?>> focuses) {
+		throw new UnsupportedOperationException("Showing specific recipes is not implemented by this recipes gui.");
+	}
+
+	/**
 	 * @return the ingredient that's currently under the mouse in this gui, or null if there is none.
 	 */
 	@Nullable
 	<T> T getIngredientUnderMouse(IIngredientType<T> ingredientType);
+
+	/**
+	 * @return the ingredient that's currently under the mouse in this gui
+	 *
+	 * @since 10.5.0
+	 */
+	default <T> Optional<T> getOptionalIngredientUnderMouse(IIngredientType<T> ingredientType) {
+		return Optional.ofNullable(getIngredientUnderMouse(ingredientType));
+	}
 
 	/**
 	 * Show entire categories of recipes.

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class RecipeTypeDataMap {
 	@Unmodifiable
-	private final Map<ResourceLocation, RecipeTypeData<?>> uidMap;
+	private final Map<RecipeType<?>, RecipeTypeData<?>> uidMap;
 
 	public RecipeTypeDataMap(
 		List<IRecipeCategory<?>> recipeCategories,
@@ -23,7 +23,7 @@ public class RecipeTypeDataMap {
 		this.uidMap = recipeCategories.stream()
 			.collect(
 				Collectors.toUnmodifiableMap(
-					recipeCategory -> recipeCategory.getRecipeType().getUid(),
+					IRecipeCategory::getRecipeType,
 					recipeCategory -> {
 						List<ITypedIngredient<?>> catalysts = recipeCategoryCatalystsMap.get(recipeCategory);
 						return new RecipeTypeData<>(recipeCategory, catalysts);
@@ -33,33 +33,40 @@ public class RecipeTypeDataMap {
 	}
 
 	public <T> RecipeTypeData<T> get(RecipeType<T> recipeType) {
-		RecipeTypeData<?> data = get(recipeType.getUid());
+		RecipeTypeData<?> data = this.uidMap.get(recipeType);
+		if (data == null) {
+			throw new IllegalStateException(
+				"There is no recipe category registered for: " + recipeType +
+					"\nA recipe category must be registered in order to use this recipe type."
+			);
+		}
 		@SuppressWarnings("unchecked")
 		RecipeTypeData<T> recipeTypeData = (RecipeTypeData<T>) data;
 		return recipeTypeData;
 	}
 
-	public RecipeTypeData<?> get(ResourceLocation recipeCategoryUid) {
-		RecipeTypeData<?> recipeTypeData = uidMap.get(recipeCategoryUid);
-		if (recipeTypeData == null) {
-			throw new IllegalStateException("There is no recipe category registered for: " + recipeCategoryUid);
-		}
-		return recipeTypeData;
+	@Deprecated
+	public RecipeTypeData<?> get(ResourceLocation recipeTypeUid) {
+		RecipeType<?> recipeType = getType(recipeTypeUid)
+			.orElseThrow(() -> new IllegalStateException("There is no recipe type registered for: " + recipeTypeUid));
+		return get(recipeType);
+	}
+
+	@Deprecated
+	public <T> RecipeTypeData<T> get(T recipe, ResourceLocation recipeTypeUid) {
+		RecipeTypeData<?> recipeTypeData = get(recipeTypeUid);
+		return validate(List.of(recipe), recipeTypeData);
+	}
+
+	@Deprecated
+	public <T> RecipeTypeData<T> get(Iterable<? extends T> recipes, ResourceLocation recipeTypeUid) {
+		RecipeTypeData<?> recipeTypeData = get(recipeTypeUid);
+		return validate(recipes, recipeTypeData);
 	}
 
 	public <T> RecipeTypeData<T> get(Iterable<? extends T> recipes, RecipeType<T> recipeType) {
 		RecipeTypeData<T> recipeTypeData = get(recipeType);
 		return validate(recipes, recipeTypeData);
-	}
-
-	public <T> RecipeTypeData<T> get(Iterable<? extends T> recipes, ResourceLocation recipeCategoryUid) {
-		RecipeTypeData<?> recipeTypeData = get(recipeCategoryUid);
-		return validate(recipes, recipeTypeData);
-	}
-
-	public <T> RecipeTypeData<T> get(T recipe, ResourceLocation recipeCategoryUid) {
-		RecipeTypeData<?> recipeTypeData = get(recipeCategoryUid);
-		return validate(List.of(recipe), recipeTypeData);
 	}
 
 	private static <T> RecipeTypeData<T> validate(Iterable<? extends T> recipes, RecipeTypeData<?> recipeTypeData) {
@@ -68,7 +75,7 @@ public class RecipeTypeDataMap {
 		Class<?> recipeClass = recipeType.getRecipeClass();
 		for (T recipe : recipes) {
 			if (!recipeClass.isInstance(recipe)) {
-				throw new IllegalArgumentException(recipeType.getUid() + " recipes must be an instance of " + recipeClass + ". Instead got: " + recipe.getClass());
+				throw new IllegalArgumentException(recipeType + " recipes must be an instance of " + recipeClass + ". Instead got: " + recipe.getClass());
 			}
 		}
 		@SuppressWarnings("unchecked")
@@ -77,19 +84,34 @@ public class RecipeTypeDataMap {
 	}
 
 	public void validate(RecipeType<?> recipeType) {
-		validate(recipeType.getUid());
+		if (!uidMap.containsKey(recipeType)) {
+			throw new IllegalStateException("There is no recipe type registered for: " + recipeType);
+		}
 	}
 
-	public void validate(ResourceLocation recipeCategoryUid) {
-		if (!uidMap.containsKey(recipeCategoryUid)) {
-			throw new IllegalStateException("There is no recipe category registered for: " + recipeCategoryUid);
+	@Deprecated
+	public void validate(ResourceLocation recipeTypeUid) {
+		if (getType(recipeTypeUid).isEmpty()) {
+			throw new IllegalStateException("There is no recipe type registered for: " + recipeTypeUid);
 		}
 	}
 
 	public Optional<RecipeType<?>> getType(ResourceLocation recipeTypeUid) {
-		RecipeTypeData<?> data = uidMap.get(recipeTypeUid);
-		return Optional.ofNullable(data)
-			.map(RecipeTypeData::getRecipeCategory)
-			.map(IRecipeCategory::getRecipeType);
+		return uidMap.keySet()
+			.stream()
+			.filter(recipeType -> recipeType.getUid().equals(recipeTypeUid))
+			.findFirst();
+	}
+
+	public <T> Optional<RecipeType<T>> getType(ResourceLocation recipeTypeUid, Class<? extends T> recipeClass) {
+		return uidMap.keySet()
+			.stream()
+			.filter(recipeType -> recipeType.getUid().equals(recipeTypeUid) && recipeType.getRecipeClass().equals(recipeClass))
+			.map(recipeType -> {
+				@SuppressWarnings("unchecked")
+				RecipeType<T> castRecipeType = (RecipeType<T>) recipeType;
+				return castRecipeType;
+			})
+			.findFirst();
 	}
 }

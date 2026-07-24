@@ -23,4 +23,12 @@ public class SubtypeManager implements ISubtypeManager {
 			.map(subtypeInterpreter -> subtypeInterpreter.apply(ingredient, context))
 			.orElse(IIngredientSubtypeInterpreter.NONE);
 	}
+
+	@Override
+	public <T, B> boolean hasSubtypes(IIngredientTypeWithSubtypes<B, T> ingredientType, T ingredient) {
+		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+
+		return interpreters.contains(ingredientType, ingredient);
+	}
 }

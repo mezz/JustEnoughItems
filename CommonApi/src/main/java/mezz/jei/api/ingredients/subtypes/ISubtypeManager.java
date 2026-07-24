@@ -56,4 +56,15 @@ public interface ISubtypeManager {
 		}
 		return subtypeInfo;
 	}
+
+	/**
+	 * Return true if the given ingredient can have subtypes.
+	 * For example in the vanilla game an enchanted book may have subtypes, but an apple does not.
+	 *
+	 * @see ISubtypeRegistration#registerSubtypeInterpreter
+	 * @see ISubtypeManager#getSubtypeInfo
+	 *
+	 * @since 10.5.0
+	 */
+	<T, B> boolean hasSubtypes(IIngredientTypeWithSubtypes<B, T> ingredientType, T ingredient);
 }

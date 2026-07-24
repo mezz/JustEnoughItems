@@ -52,4 +52,9 @@ public class TestWorldConfig implements IWorldConfig {
 	public void setBookmarkEnabled(boolean value) {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public void addEditModeToggleListener(IEditModeListener listener) {
+
+	}
 }
