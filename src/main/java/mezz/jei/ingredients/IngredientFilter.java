@@ -6,6 +6,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.config.Constants;
 import mezz.jei.config.IClientConfig;
 import mezz.jei.config.IEditModeConfig;
 import mezz.jei.config.IIngredientFilterConfig;
@@ -408,6 +409,9 @@ public class IngredientFilter implements IIngredientGridSource {
 			return false;
 		}
 		if (!ingredientHelper.isIngredientOnServer(ingredient)) {
+			return false;
+		}
+		if (ingredientHelper.getTagStream(ingredient).anyMatch(Constants.HIDDEN_INGREDIENT_TAG::equals)) {
 			return false;
 		}
 		return worldConfig.isEditModeEnabled() || !editModeConfig.isIngredientOnConfigBlacklist(ingredient, ingredientHelper);

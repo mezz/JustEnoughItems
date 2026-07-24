@@ -3,6 +3,7 @@ package mezz.jei.api.ingredients;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.item.ItemStack;
@@ -163,9 +164,21 @@ public interface IIngredientHelper<V> {
 	/**
 	 * Get a list of tags that include this ingredient.
 	 * Used for searching by tags.
+	 *
+	 * @see #getTagStream(Object)
 	 */
 	default Collection<ResourceLocation> getTags(V ingredient) {
 		return Collections.emptyList();
+	}
+
+	/**
+	 * Get a stream of tags that include this ingredient.
+	 * Used for searching by tags.
+	 *
+	 * @since JEI 7.8.1
+	 */
+	default Stream<ResourceLocation> getTagStream(V ingredient) {
+		return getTags(ingredient).stream();
 	}
 
 	/**
