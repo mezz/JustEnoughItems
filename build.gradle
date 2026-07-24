@@ -254,3 +254,5 @@ test {
 	include 'mezz/jei/**'
 	exclude 'mezz/jei/lib/**'
 }
+
+apply from: 'buildtools/ApiCompatibility.gradle'

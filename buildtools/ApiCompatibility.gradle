@@ -1,0 +1,367 @@
+import groovy.json.JsonSlurper
+import groovy.xml.XmlSlurper
+
+import java.util.jar.JarFile
+
+import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.api.attributes.Bundling
+import org.gradle.api.attributes.Usage
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.tasks.Classpath
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.TaskAction
+import org.gradle.language.base.plugins.LifecycleBasePlugin
+
+abstract class ApiCompatibilityReportValidator extends DefaultTask {
+	private static final String METHOD_MADE_ABSTRACT = 'Method was made abstract'
+
+	@Classpath
+	abstract ConfigurableFileCollection getBaselineJar()
+
+	@InputFile
+	@PathSensitive(PathSensitivity.RELATIVE)
+	abstract RegularFileProperty getReportFile()
+
+	@TaskAction
+	void validateReport() {
+		File report = reportFile.get().asFile
+		if (!report.isFile() || report.length() == 0L) {
+			return
+		}
+
+		File baseline = baselineJar.singleFile
+		Map<String, Set<String>> baselineMethodCache = [:]
+		List<String> allowedNewMethods = []
+		List<String> disallowedIncompatibilities = []
+		Map<?, ?> reportData = new JsonSlurper().parse(report) as Map<?, ?>
+
+		reportData.each { classNameValue, classReportValue ->
+			String className = classNameValue.toString()
+			Map<?, ?> classReport = classReportValue as Map<?, ?>
+
+			collectErrors(className, null, classReport['classIncompatibilities'], disallowedIncompatibilities)
+			collectErrors(className, null, classReport['fieldIncompatibilities'], disallowedIncompatibilities)
+
+			Map<?, ?> methodIncompatibilities = classReport['methodIncompatibilities'] as Map<?, ?> ?: [:]
+			methodIncompatibilities.each { methodSignatureValue, incompatibilitiesValue ->
+				String methodSignature = methodSignatureValue.toString()
+				Set<String> baselineMethods = baselineMethodCache.computeIfAbsent(className) {
+					readMethodSignatures(baseline, className)
+				}
+				Iterable<?> incompatibilities = incompatibilitiesValue as Iterable<?> ?: []
+				incompatibilities.each { incompatibility ->
+					Map<?, ?> incompatibilityReport = incompatibility as Map<?, ?>
+					String message = incompatibilityReport['message'].toString()
+					boolean isError = incompatibilityReport['isError'] as Boolean ?: true
+					if (isError) {
+						if (message == METHOD_MADE_ABSTRACT && !baselineMethods.contains(methodSignature)) {
+							allowedNewMethods.add("${className}#${methodSignature}")
+						} else {
+							disallowedIncompatibilities.add("${className}#${methodSignature} - ${message}")
+						}
+					}
+				}
+			}
+		}
+
+		if (!allowedNewMethods.isEmpty()) {
+			logger.lifecycle("Allowed ${allowedNewMethods.size()} new abstract API method additions in ${report.name}.")
+		}
+
+		if (!disallowedIncompatibilities.isEmpty()) {
+			throw new GradleException(
+				"API compatibility check failed for ${report.name}:\n" +
+					disallowedIncompatibilities.collect { "- ${it}" }.join('\n')
+			)
+		}
+	}
+
+	private void collectErrors(
+		String className,
+		String memberName,
+		Object incompatibilitiesValue,
+		List<String> disallowedIncompatibilities
+	) {
+		if (incompatibilitiesValue instanceof Map<?, ?>) {
+			(incompatibilitiesValue as Map<?, ?>).each { nestedMemberName, nestedIncompatibilities ->
+				collectErrors(className, nestedMemberName.toString(), nestedIncompatibilities, disallowedIncompatibilities)
+			}
+		} else if (incompatibilitiesValue instanceof Iterable<?>) {
+			(incompatibilitiesValue as Iterable<?>).each { incompatibility ->
+				Map<?, ?> incompatibilityReport = incompatibility as Map<?, ?>
+				boolean isError = incompatibilityReport['isError'] as Boolean ?: true
+				if (isError) {
+					String message = incompatibilityReport['message'].toString()
+					String memberPrefix = memberName == null ? '' : "#${memberName}"
+					disallowedIncompatibilities.add("${className}${memberPrefix} - ${message}")
+				}
+			}
+		}
+	}
+
+	private Set<String> readMethodSignatures(File jarFile, String className) {
+		JarFile jar = new JarFile(jarFile)
+		try {
+			def classEntry = jar.getJarEntry("${className}.class")
+			if (classEntry == null) {
+				return [] as Set<String>
+			}
+			jar.getInputStream(classEntry).withCloseable { inputStream ->
+				new DataInputStream(new BufferedInputStream(inputStream)).withCloseable { input ->
+					int magic = input.readInt()
+					if (magic != 0xCAFEBABE) {
+						throw new GradleException("Invalid class file in ${jarFile}: ${className}")
+					}
+
+					input.readUnsignedShort()
+					input.readUnsignedShort()
+
+					String[] constantPool = readConstantPool(input)
+
+					input.readUnsignedShort()
+					input.readUnsignedShort()
+					input.readUnsignedShort()
+
+					int interfaceCount = input.readUnsignedShort()
+					for (int i = 0; i < interfaceCount; i++) {
+						input.readUnsignedShort()
+					}
+
+					int fieldCount = input.readUnsignedShort()
+					for (int i = 0; i < fieldCount; i++) {
+						skipMember(input)
+					}
+
+					Set<String> methods = [] as Set<String>
+					int methodCount = input.readUnsignedShort()
+					for (int i = 0; i < methodCount; i++) {
+						input.readUnsignedShort()
+						String name = constantPool[input.readUnsignedShort()]
+						String descriptor = constantPool[input.readUnsignedShort()]
+						if (name != null && descriptor != null) {
+							methods.add(name + descriptor)
+						}
+						skipAttributes(input)
+					}
+					return methods
+				}
+			}
+		} finally {
+			jar.close()
+		}
+	}
+
+	private String[] readConstantPool(DataInputStream input) {
+		int constantPoolCount = input.readUnsignedShort()
+		String[] constantPool = new String[constantPoolCount]
+		int index = 1
+		while (index < constantPoolCount) {
+			switch (input.readUnsignedByte()) {
+				case 1:
+					constantPool[index] = input.readUTF()
+					break
+				case 3:
+				case 4:
+					skipFully(input, 4)
+					break
+				case 5:
+				case 6:
+					skipFully(input, 8)
+					index++
+					break
+				case 7:
+				case 8:
+				case 16:
+				case 19:
+				case 20:
+					skipFully(input, 2)
+					break
+				case 9:
+				case 10:
+				case 11:
+				case 12:
+				case 17:
+				case 18:
+					skipFully(input, 4)
+					break
+				case 15:
+					skipFully(input, 3)
+					break
+				default:
+					throw new GradleException('Unknown constant pool tag')
+			}
+			index++
+		}
+		return constantPool
+	}
+
+	private void skipMember(DataInputStream input) {
+		input.readUnsignedShort()
+		input.readUnsignedShort()
+		input.readUnsignedShort()
+		skipAttributes(input)
+	}
+
+	private void skipAttributes(DataInputStream input) {
+		int attributeCount = input.readUnsignedShort()
+		for (int i = 0; i < attributeCount; i++) {
+			input.readUnsignedShort()
+			skipFully(input, input.readInt())
+		}
+	}
+
+	private void skipFully(DataInputStream input, int length) {
+		int remaining = length
+		while (remaining > 0) {
+			int skipped = input.skipBytes(remaining)
+			if (skipped <= 0) {
+				throw new GradleException('Unexpected end of class file')
+			}
+			remaining -= skipped
+		}
+	}
+}
+
+repositories {
+	maven {
+		url = 'https://maven.neoforged.net/releases'
+		content {
+			includeGroup 'net.neoforged'
+		}
+	}
+	maven {
+		url = 'https://maven.blamejared.com'
+		content {
+			includeGroup 'mezz.jei'
+		}
+	}
+}
+
+def apiCompatibilityCheckerVersion = '0.1.15'
+def apiCompatibilityAsmVersion = '9.10.1'
+def apiCompatibilityMajorVersion = version_major.toInteger()
+def apiCompatibilityBaselineVersion = providers.gradleProperty('apiCompatibilityBaselineVersion')
+	.orElse("[${apiCompatibilityMajorVersion}.0.0,${apiCompatibilityMajorVersion + 1}.0.0)")
+	.get()
+
+configurations {
+	apiCompatibilityChecker {
+		description = "Runtime classpath for JEI's API compatibility checker."
+		canBeConsumed = false
+		canBeResolved = true
+		attributes {
+			attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
+		}
+		resolutionStrategy.eachDependency { details ->
+			if (details.requested.group == 'org.ow2.asm') {
+				details.useVersion apiCompatibilityAsmVersion
+				details.because 'ASM 9.7 cannot read Java 25 class files.'
+			}
+		}
+	}
+}
+
+dependencies {
+	apiCompatibilityChecker "net.neoforged:jarcompatibilitychecker:${apiCompatibilityCheckerVersion}"
+	apiCompatibilityChecker "org.ow2.asm:asm:${apiCompatibilityAsmVersion}"
+	apiCompatibilityChecker "org.ow2.asm:asm-analysis:${apiCompatibilityAsmVersion}"
+	apiCompatibilityChecker "org.ow2.asm:asm-commons:${apiCompatibilityAsmVersion}"
+	apiCompatibilityChecker "org.ow2.asm:asm-tree:${apiCompatibilityAsmVersion}"
+}
+
+def apiCompatibilityReportFile = layout.buildDirectory.file('reports/apiCompatibility/api.json')
+def apiCompatibilityBaselineJarFile = layout.buildDirectory.file('apiCompatibilityBaseline/api-baseline.jar')
+def apiCompatibilityMavenBaseUrl = 'https://maven.blamejared.com'
+def apiCompatibilityGroupPath = project.group.toString().replace('.', '/')
+
+def compareVersionStrings = { String left, String right ->
+	List<Integer> leftParts = left.tokenize('.').collect { it as int }
+	List<Integer> rightParts = right.tokenize('.').collect { it as int }
+	int partCount = Math.max(leftParts.size(), rightParts.size())
+	for (int i = 0; i < partCount; i++) {
+		int leftPart = i < leftParts.size() ? leftParts[i] : 0
+		int rightPart = i < rightParts.size() ? rightParts[i] : 0
+		int comparison = leftPart <=> rightPart
+		if (comparison != 0) {
+			return comparison
+		}
+	}
+	return 0
+}
+
+def resolveBaselineVersion = {
+	if (!apiCompatibilityBaselineVersion.startsWith('[') && !apiCompatibilityBaselineVersion.startsWith('(')) {
+		return apiCompatibilityBaselineVersion
+	}
+
+	def metadataUrl = "${apiCompatibilityMavenBaseUrl}/${apiCompatibilityGroupPath}/${project.name}/maven-metadata.xml"
+	def metadata = new XmlSlurper().parse(metadataUrl)
+	def matchingVersions = metadata.versioning.versions.version
+		.collect { it.text() }
+		.findAll { it.tokenize('.').first() == apiCompatibilityMajorVersion.toString() }
+		.sort(compareVersionStrings)
+
+	if (matchingVersions.isEmpty()) {
+		throw new GradleException("Could not find a published ${project.name} API baseline matching ${apiCompatibilityBaselineVersion}.")
+	}
+	return matchingVersions.last()
+}
+
+tasks.register('resolveApiCompatibilityBaseline') {
+	group = LifecycleBasePlugin.VERIFICATION_GROUP
+	description = "Downloads the latest published ${project.name} API jar in the same major version."
+
+	inputs.property 'apiCompatibilityBaselineVersion', apiCompatibilityBaselineVersion
+	outputs.file apiCompatibilityBaselineJarFile
+	outputs.upToDateWhen { false }
+
+	doLast {
+		String baselineVersion = resolveBaselineVersion()
+		File destination = apiCompatibilityBaselineJarFile.get().asFile
+		destination.parentFile.mkdirs()
+		def artifactUrl = "${apiCompatibilityMavenBaseUrl}/${apiCompatibilityGroupPath}/${project.name}/${baselineVersion}/${project.name}-${baselineVersion}-api.jar"
+		ant.get(src: artifactUrl, dest: destination, usetimestamp: true)
+	}
+}
+
+tasks.register('generateCheckApiCompatibilityReport', JavaExec) {
+	group = LifecycleBasePlugin.VERIFICATION_GROUP
+	description = "Generates an API compatibility report against the latest published ${project.name} API jar in the same major version."
+
+	dependsOn tasks.named('apiJar')
+	dependsOn tasks.named('resolveApiCompatibilityBaseline')
+	classpath = configurations.apiCompatibilityChecker
+	mainClass.set('net.neoforged.jarcompatibilitychecker.ConsoleTool')
+
+	inputs.property 'apiCompatibilityBaselineVersion', apiCompatibilityBaselineVersion
+	inputs.file apiCompatibilityBaselineJarFile
+	inputs.file tasks.named('apiJar').flatMap { it.archiveFile }
+	outputs.file apiCompatibilityReportFile
+	outputs.upToDateWhen { false }
+
+	doFirst {
+		setArgs([
+			'--api',
+			'--base-jar',
+			apiCompatibilityBaselineJarFile.get().asFile.absolutePath,
+			'--input-jar',
+			tasks.named('apiJar').get().archiveFile.get().asFile.absolutePath,
+			'--output',
+			apiCompatibilityReportFile.get().asFile.absolutePath,
+		])
+	}
+}
+
+tasks.register('checkApiCompatibility', ApiCompatibilityReportValidator) {
+	group = LifecycleBasePlugin.VERIFICATION_GROUP
+	description = "Checks JEI's published API jar for compatibility with the latest published API jar in the same major version."
+
+	dependsOn tasks.named('generateCheckApiCompatibilityReport')
+	baselineJar.from apiCompatibilityBaselineJarFile
+	reportFile.set apiCompatibilityReportFile
+}
