@@ -4,7 +4,6 @@ import mezz.jei.api.gui.builder.IClickableIngredientFactory;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
-import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.runtime.IClickableIngredient;
