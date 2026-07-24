@@ -272,6 +272,8 @@ publishMods {
             end = minecraftVersion
         }
         javaVersions.add(JavaVersion.toVersion(modJavaVersion))
+        clientRequired.set(true)
+        serverRequired.set(true)
     }
 
     modrinth {
