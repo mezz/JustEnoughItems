@@ -5,6 +5,7 @@ import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
@@ -60,6 +61,14 @@ public record RecipeLayoutWithButtons<R>(
 		recipeLayout.tick();
 		transferButton.update(parentContainer, player);
 		bookmarkButton.tick();
+	}
+
+	public @Nullable RecipeBookmark<?, ?> getRecipeBookmark() {
+		return bookmarkButton.getRecipeBookmark();
+	}
+
+	public int getMissingCountHint() {
+		return transferButton.getMissingCountHint();
 	}
 
 	private record RecipeLayoutUserInputHandler<R>(IRecipeLayoutDrawable<R> recipeLayout) implements IUserInputHandler {

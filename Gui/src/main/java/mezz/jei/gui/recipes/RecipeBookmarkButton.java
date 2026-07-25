@@ -104,4 +104,8 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 	public boolean isBookmarked() {
 		return bookmarked;
 	}
+
+	public @Nullable RecipeBookmark<?, ?> getRecipeBookmark() {
+		return recipeBookmark;
+	}
 }

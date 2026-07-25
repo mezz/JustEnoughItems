@@ -59,6 +59,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isBookmarkOutputAsRecipeEnabled() {
+		return true;
+	}
+
+	@Override
 	public boolean isLookupFluidContentsEnabled() {
 		return false;
 	}

@@ -30,6 +30,7 @@ public final class ClientConfig implements IClientConfig {
 
 	// bookmarks
 	private final Supplier<Boolean> addBookmarksToFrontEnabled;
+	private final Supplier<Boolean> bookmarkOutputAsRecipe;
 	private final Supplier<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures;
 	private final Supplier<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled;
 	private final Supplier<Boolean> dragToRearrangeBookmarksEnabled;
@@ -101,6 +102,11 @@ public final class ClientConfig implements IClientConfig {
 			"AddBookmarksToFrontEnabled",
 			false,
 			"Add new bookmarks to the front of the bookmark list instead of the end."
+		);
+		bookmarkOutputAsRecipe = bookmarks.addBoolean(
+			"BookmarkOutputAsRecipe",
+			true,
+			"Bookmark a recipe instead of an ingredient when the bookmark key is pressed on a recipe output."
 		);
 		bookmarkTooltipFeatures = bookmarks.addList(
 			"BookmarkTooltipFeatures",
@@ -268,6 +274,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isAddingBookmarksToFrontEnabled() {
 		return addBookmarksToFrontEnabled.get();
+	}
+
+	@Override
+	public boolean isBookmarkOutputAsRecipeEnabled() {
+		return bookmarkOutputAsRecipe.get();
 	}
 
 	@Override

@@ -102,6 +102,10 @@
   "jei.key.category.dev.tools": "JEI（开发者工具）",
   "key.jei.copy.recipe.id": "复制配方ID到剪贴板",
 
+  "_comment": "Config",
+  "jei.config.client.bookmarks.bookmarkOutputAsRecipe": "将产物收藏为配方书签",
+  "jei.config.client.bookmarks.bookmarkOutputAsRecipe.description": "启用后，在配方产物上按书签键会收藏该配方，而不是该原料。",
+
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI隐藏原料模式：",
   "gui.jei.editMode.description.hide": "按“%s”以隐藏。",

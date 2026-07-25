@@ -26,6 +26,8 @@ public interface IClientConfig {
 
 	boolean isAddingBookmarksToFrontEnabled();
 
+	boolean isBookmarkOutputAsRecipeEnabled();
+
 	boolean isLookupFluidContentsEnabled();
 
 	boolean isLookupBlockTagsEnabled();

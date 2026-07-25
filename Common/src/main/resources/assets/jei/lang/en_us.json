@@ -136,6 +136,8 @@
   "jei.config.client.bookmarks.description": "Config options related to Bookmarking ingredients and recipes.",
   "jei.config.client.bookmarks.addBookmarksToFrontEnabled": "Add Bookmarks to Front",
   "jei.config.client.bookmarks.addBookmarksToFrontEnabled.description": "When true, add new bookmarks to the front of the list. When false, add them to the end.",
+  "jei.config.client.bookmarks.bookmarkOutputAsRecipe": "Bookmark Output as Recipe",
+  "jei.config.client.bookmarks.bookmarkOutputAsRecipe.description": "When true, pressing the bookmark key on a recipe's output will bookmark the recipe instead of the ingredient.",
   "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled": "Drag To Rearrange Bookmarks",
   "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled.description": "Enable dragging bookmarks to rearrange them in the list.",
 
