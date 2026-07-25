@@ -4,8 +4,6 @@ import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.bookmarks.BookmarkList;
@@ -14,6 +12,8 @@ import mezz.jei.gui.input.CombinedRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
+import mezz.jei.gui.recipes.IRecipeLayoutWithButtons;
+import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;
@@ -23,15 +23,19 @@ public class BookmarkInputHandler implements IUserInputHandler {
 	private final BookmarkList bookmarkList;
 	private final BookmarkOverlay bookmarkOverlay;
 	private final IClientConfig clientConfig;
-	private final IIngredientManager ingredientManager;
-	private final IRecipesGui recipesGui;
+	private final RecipesGui recipesGui;
 
-	public BookmarkInputHandler(CombinedRecipeFocusSource focusSource, BookmarkList bookmarkList, BookmarkOverlay bookmarkOverlay, IClientConfig clientConfig, IIngredientManager ingredientManager, IRecipesGui recipesGui) {
+	public BookmarkInputHandler(
+		CombinedRecipeFocusSource focusSource,
+		BookmarkList bookmarkList,
+		BookmarkOverlay bookmarkOverlay,
+		IClientConfig clientConfig,
+		RecipesGui recipesGui
+	) {
 		this.focusSource = focusSource;
 		this.bookmarkList = bookmarkList;
 		this.bookmarkOverlay = bookmarkOverlay;
 		this.clientConfig = clientConfig;
-		this.ingredientManager = ingredientManager;
 		this.recipesGui = recipesGui;
 	}
 
@@ -50,22 +54,20 @@ public class BookmarkInputHandler implements IUserInputHandler {
 	private Optional<IUserInputHandler> handleRecipeBookmark(UserInput input) {
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
-		Optional<IRecipeLayoutDrawable<?>> recipeLayout = recipesGui.getRecipeLayoutUnderMouse(mouseX, mouseY);
-		if (recipeLayout.isEmpty()) {
+		Optional<IRecipeLayoutWithButtons<?>> layoutWithButtons = recipesGui.getRecipeLayoutUnderMouse(mouseX, mouseY);
+		if (layoutWithButtons.isEmpty()) {
 			return Optional.empty();
 		}
 
-		IRecipeLayoutDrawable<?> layout = recipeLayout.get();
-		Optional<RecipeSlotUnderMouse> slotUnderMouse = layout.getSlotUnderMouse(mouseX, mouseY);
-		if (slotUnderMouse.isPresent()) {
-			RecipeIngredientRole role = slotUnderMouse.get().slot().getRole();
-			if (role != RecipeIngredientRole.OUTPUT || !clientConfig.isBookmarkOutputAsRecipeEnabled()) {
-				return Optional.empty();
-			}
+		IRecipeLayoutWithButtons<?> recipeLayoutWithButtons = layoutWithButtons.get();
+		RecipeBookmark<?, ?> recipeBookmark = recipeLayoutWithButtons.getRecipeBookmark();
+		if (recipeBookmark == null) {
+			return Optional.empty();
 		}
 
-		RecipeBookmark<?, ?> recipeBookmark = RecipeBookmark.create(layout, ingredientManager);
-		if (recipeBookmark == null) {
+		IRecipeLayoutDrawable<?> layout = recipeLayoutWithButtons.getRecipeLayout();
+		Optional<RecipeSlotUnderMouse> slotUnderMouse = layout.getSlotUnderMouse(mouseX, mouseY);
+		if (!shouldBookmarkRecipe(slotUnderMouse, clientConfig.isBookmarkOutputAsRecipeEnabled())) {
 			return Optional.empty();
 		}
 
@@ -73,6 +75,16 @@ public class BookmarkInputHandler implements IUserInputHandler {
 			bookmarkList.toggleBookmark(recipeBookmark);
 		}
 		return Optional.of(new SameElementInputHandler(this, layout::isMouseOver));
+	}
+
+	static boolean shouldBookmarkRecipe(Optional<RecipeSlotUnderMouse> slotUnderMouse, boolean bookmarkOutputAsRecipeEnabled) {
+		return slotUnderMouse
+			.map(slot -> shouldBookmarkRecipe(slot.slot().getRole(), bookmarkOutputAsRecipeEnabled))
+			.orElse(true);
+	}
+
+	static boolean shouldBookmarkRecipe(RecipeIngredientRole role, boolean bookmarkOutputAsRecipeEnabled) {
+		return role == RecipeIngredientRole.OUTPUT && bookmarkOutputAsRecipeEnabled;
 	}
 
 	private Optional<IUserInputHandler> handleIngredientBookmark(UserInput input, IInternalKeyMappings keyBindings) {
