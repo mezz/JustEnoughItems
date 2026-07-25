@@ -101,6 +101,7 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 		return this.editModeConfig;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public ISearchStorageFactory getSearchStorageFactory() {
 		return new ISearchStorageFactory() {

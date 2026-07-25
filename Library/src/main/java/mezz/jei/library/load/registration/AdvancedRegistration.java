@@ -66,6 +66,8 @@ public class AdvancedRegistration implements IAdvancedRegistration {
 	}
 
 	@Override
+	@Deprecated(forRemoval = true, since = "15.28.0")
+	@SuppressWarnings("removal")
 	public IJeiFeatures getJeiFeatures() {
 		return jeiFeatures;
 	}
