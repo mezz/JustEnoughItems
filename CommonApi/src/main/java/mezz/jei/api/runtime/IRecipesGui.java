@@ -1,5 +1,6 @@
 package mezz.jei.api.runtime;
 
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
@@ -67,4 +68,14 @@ public interface IRecipesGui {
 	 * @since 19.20.0
 	 */
 	Optional<Screen> getParentScreen();
+
+	/**
+	 * Get the recipe layout currently under the mouse.
+	 *
+	 * If the {@link IRecipesGui} is not open or the mouse is not over a recipe layout,
+	 * this will return {@link Optional#empty()}.
+	 */
+	default Optional<IRecipeLayoutDrawable<?>> getRecipeLayoutUnderMouse(double mouseX, double mouseY) {
+		return Optional.empty();
+	}
 }

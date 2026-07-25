@@ -564,6 +564,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			.findFirst();
 	}
 
+	@Override
+	public Optional<IRecipeLayoutDrawable<?>> getRecipeLayoutUnderMouse(double mouseX, double mouseY) {
+		if (!isOpen()) {
+			return Optional.empty();
+		}
+		return layouts.getRecipeLayoutUnderMouse(mouseX, mouseY);
+	}
+
 	public void back() {
 		logic.back();
 	}
