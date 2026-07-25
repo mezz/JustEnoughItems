@@ -132,6 +132,8 @@ public final class JeiStarter {
 		totalTime.start("Starting JEI");
 		this.configManager.onJeiStarted();
 
+		PluginCaller.callOnPlugins("Configuring JEI", plugins, p -> p.configureJei(new PluginAwareJeiFeatures(Internal.getJeiFeatures(), p)));
+
 		IColorHelper colorHelper = new ColorHelper(colorNameConfig);
 		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
 		SubtypeManager subtypeManager = PluginLoader.registerSubtypes(data);
