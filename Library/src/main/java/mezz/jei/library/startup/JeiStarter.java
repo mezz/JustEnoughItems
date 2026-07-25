@@ -136,6 +136,12 @@ public final class JeiStarter {
 		totalTime.start("Starting JEI");
 		this.configManager.onJeiStarted();
 
+		PluginCaller.callOnPlugins(
+			"Configuring JEI",
+			plugins,
+			plugin -> plugin.configureJei(new PluginAwareJeiFeatures(Internal.getJeiFeatures(), plugin))
+		);
+
 		IColorHelper colorHelper = new ColorHelper(colorNameConfig);
 
 		IWorldConfig worldConfig = Internal.getWorldConfig();

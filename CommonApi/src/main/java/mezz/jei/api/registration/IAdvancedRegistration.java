@@ -69,6 +69,9 @@ public interface IAdvancedRegistration {
 	 * This may be needed by mods that substantially change hard-coded vanilla behaviors.
 	 *
 	 * @since 11.25.0
+	 * @deprecated use {@link IModPlugin#configureJei(mezz.jei.api.runtime.IJeiFeatures)}.
+	 * This is too late in JEI's lifecycle for feature configuration that affects startup.
 	 */
+	@Deprecated(forRemoval = true, since = "11.63.0")
 	IJeiFeatures getJeiFeatures();
 }
