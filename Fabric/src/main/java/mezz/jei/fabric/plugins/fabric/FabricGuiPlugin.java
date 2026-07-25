@@ -4,6 +4,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IRuntimeRegistration;
+import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.fabric.startup.EventRegistration;
 import mezz.jei.gui.startup.JeiEventHandlers;
@@ -22,6 +23,7 @@ public class FabricGuiPlugin implements IModPlugin {
 	private static @Nullable IJeiRuntime runtime;
 	private static @Nullable ResourceReloadHandler resourceReloadHandler;
 
+	private @Nullable IJeiFeatures jeiFeatures;
 	private final EventRegistration eventRegistration = new EventRegistration();
 
 	@Override
@@ -30,7 +32,16 @@ public class FabricGuiPlugin implements IModPlugin {
 	}
 
 	@Override
+	public void configureJei(IJeiFeatures jeiFeatures) {
+		this.jeiFeatures = jeiFeatures;
+	}
+
+	@Override
 	public void registerRuntime(IRuntimeRegistration registration) {
+		if (!isJeiGuiEnabled()) {
+			return;
+		}
+
 		JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration);
 		resourceReloadHandler = eventHandlers.resourceReloadHandler();
 		eventRegistration.setEventHandlers(eventHandlers);
@@ -38,7 +49,9 @@ public class FabricGuiPlugin implements IModPlugin {
 
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
-		runtime = jeiRuntime;
+		if (isJeiGuiEnabled()) {
+			runtime = jeiRuntime;
+		}
 	}
 
 	@Override
@@ -55,5 +68,10 @@ public class FabricGuiPlugin implements IModPlugin {
 
 	public static Optional<ResourceReloadHandler> getResourceReloadHandler() {
 		return Optional.ofNullable(resourceReloadHandler);
+	}
+
+	private boolean isJeiGuiEnabled() {
+		IJeiFeatures jeiFeatures = this.jeiFeatures;
+		return jeiFeatures == null || jeiFeatures.isJeiGuiEnabled();
 	}
 }
