@@ -94,13 +94,10 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 
 	@Nullable
 	public IElement<?> getPageAnchorElement() {
-		IElement<?> pageAnchorElement;
 		if (usesScrollbar()) {
-			pageAnchorElement = this.scrollController.getScrollAnchorElement();
-		} else {
-			List<IElement<?>> ingredientList = ingredientSource.getElements();
-			pageAnchorElement = this.pageState.getPageAnchorElement(ingredientList);
+			return this.scrollController.getScrollAnchorElement();
 		}
+		IElement<?> pageAnchorElement = this.pageState.getPageAnchorElement(ingredientSource.getElements());
 		if (pageAnchorElement != null) {
 			return pageAnchorElement;
 		}
@@ -121,7 +118,20 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 			int renderFirstItemIndex = this.pageState.updateForPageNavigation(firstItemIndex, ingredientList.size(), ingredientGrid.size());
 			this.ingredientGrid.set(renderFirstItemIndex, ingredientList);
 		}
+		if (!isSmoothScrolling()) {
+			this.ingredientGrid.getVisibleElements()
+				.findFirst()
+				.ifPresent(this::setAnchorElement);
+		}
 		this.onLayoutChanged.run();
+	}
+
+	private void setAnchorElement(IElement<?> element) {
+		if (usesScrollbar()) {
+			this.scrollController.setScrollAnchorElement(element);
+		} else {
+			this.pageState.setPageAnchorElement(element);
+		}
 	}
 
 	@Override
@@ -261,6 +271,11 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 	private boolean usesScrollbar() {
 		return this.gridConfig.getNavigationMode()
 			.usesScrollbar();
+	}
+
+	private boolean isSmoothScrolling() {
+		return this.gridConfig.getNavigationMode()
+			.usesSmoothScrolling();
 	}
 
 	public boolean canScroll() {

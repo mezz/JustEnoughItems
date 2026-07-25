@@ -209,6 +209,11 @@ public final class IngredientGridScrollController {
 			ingredientGrid.size()
 		);
 		updateGridFromScrollState(ingredientList);
+		if (!isSmoothScrolling()) {
+			this.ingredientGrid.getVisibleElements()
+				.findFirst()
+				.ifPresent(this::setScrollAnchorElement);
+		}
 		return true;
 	}
 

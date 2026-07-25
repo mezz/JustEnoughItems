@@ -34,17 +34,21 @@ public final class IngredientGridScrollState {
 		int rowHeight
 	) {
 		int anchorIndex = IngredientGridPageState.findIndexOfIngredientElement(scrollAnchorElement, ingredientList);
-		float anchorPositionY = getStoredScrollAnchorPositionY(scrollAnchorElement);
-		this.scrollOffsetY = getScrollOffsetYKeepingAnchorVisible(
-			anchorIndex,
-			ingredientList.size(),
-			columns,
-			visibleRows,
-			visibleIngredientCount,
-			anchorPositionY,
-			smoothScrolling,
-			rowHeight
-		);
+		if (anchorIndex < 0) {
+			this.scrollOffsetY = getValidScrollOffsetY(this.scrollOffsetY, ingredientList.size(), columns, visibleRows, visibleIngredientCount);
+		} else {
+			float anchorPositionY = getStoredScrollAnchorPositionY(scrollAnchorElement);
+			this.scrollOffsetY = getScrollOffsetYKeepingAnchorVisible(
+				anchorIndex,
+				ingredientList.size(),
+				columns,
+				visibleRows,
+				visibleIngredientCount,
+				anchorPositionY,
+				smoothScrolling,
+				rowHeight
+			);
+		}
 	}
 
 	@Nullable
