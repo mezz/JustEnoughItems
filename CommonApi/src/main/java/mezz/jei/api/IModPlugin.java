@@ -18,6 +18,7 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
+import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.api.runtime.IJeiRuntime;
 
 /**
@@ -31,6 +32,20 @@ public interface IModPlugin {
 	 * The namespace should be your mod's modId.
 	 */
 	ResourceLocation getPluginUid();
+
+	/**
+	 * Configure JEI feature changes.
+	 *
+	 * <p>
+	 * This is called early, before JEI collects ingredients, recipes, GUI handlers, and runtime registrations.
+	 * Use this for features that need to affect JEI startup, such as {@link IJeiFeatures#disableJeiGui()}.
+	 * </p>
+	 *
+	 * @since 19.42.0
+	 */
+	default void configureJei(IJeiFeatures jeiFeatures) {
+
+	}
 
 	/**
 	 * If your item has subtypes that depend on NBT or capabilities, use this to help JEI identify those subtypes correctly.
