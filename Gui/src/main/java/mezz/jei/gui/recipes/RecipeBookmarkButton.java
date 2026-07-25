@@ -73,6 +73,10 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 		return bookmarks.contains(recipeBookmark);
 	}
 
+	public RecipeBookmark<?, ?> getRecipeBookmark() {
+		return recipeBookmark;
+	}
+
 	@Override
 	protected boolean onMouseClicked(UserInput input) {
 		if (!input.isSimulate()) {

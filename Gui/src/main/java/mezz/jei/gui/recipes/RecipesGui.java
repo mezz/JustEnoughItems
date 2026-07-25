@@ -587,6 +587,13 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		logic.forward();
 	}
 
+	public Optional<IRecipeLayoutWithButtons<?>> getRecipeLayoutUnderMouse(double mouseX, double mouseY) {
+		if (!isOpen()) {
+			return Optional.empty();
+		}
+		return layouts.getRecipeLayoutUnderMouse(mouseX, mouseY);
+	}
+
 	private boolean openInteractiveIngredientTooltip(double mouseX, double mouseY) {
 		return layouts.getRecipeLayoutUnderMouse(mouseX, mouseY)
 			.map(IRecipeLayoutWithButtons::getRecipeLayout)
@@ -661,14 +668,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		RecipeBookmarkButton bookmarkButton;
 		if (recipeBookmark == null) {
-			bookmarkButton = RecipeBookmarkButton.create(
-				recipeLayoutDrawable,
-				ingredientManager,
-				recipeTransferService,
-				bookmarkList,
-				recipeManager,
-				guiHelper
-			).orElse(null);
+			bookmarkButton = RecipeBookmarkButton.create(recipeLayoutDrawable, ingredientManager, recipeTransferService, bookmarkList, recipeManager, guiHelper)
+				.orElse(null);
 		} else {
 			bookmarkButton = RecipeBookmarkButton.create(
 				recipeLayoutDrawable,
@@ -688,7 +689,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	@Nullable
 	private AbstractContainerMenu getParentContainerMenu() {
 		AbstractContainerScreen<?> parentContainerScreen = getParentContainerScreen();
-		return parentContainerScreen == null ? null : parentContainerScreen.getMenu();
+		if (parentContainerScreen == null) {
+			return null;
+		}
+		return parentContainerScreen.getMenu();
 	}
 
 	@Nullable

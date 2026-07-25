@@ -79,6 +79,8 @@ public interface IClientConfig {
 
 	boolean isAddingBookmarksToFrontEnabled();
 
+	boolean isBookmarkOutputAsRecipeEnabled();
+
 	boolean isShowTagRecipesEnabled();
 
 	boolean isShowCreativeTabNamesEnabled();
