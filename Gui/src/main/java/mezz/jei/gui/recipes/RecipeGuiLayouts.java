@@ -110,6 +110,16 @@ public class RecipeGuiLayouts {
 			.flatMap(Optional::stream);
 	}
 
+	public Optional<IRecipeLayoutWithButtons<?>> getRecipeLayoutUnderMouse(double mouseX, double mouseY) {
+		for (IRecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
+			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.getRecipeLayout();
+			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
+				return Optional.of(recipeLayoutWithButtons);
+			}
+		}
+		return Optional.empty();
+	}
+
 	private static Optional<IClickableIngredientInternal<?>> getClickedIngredient(RecipeSlotUnderMouse slotUnderMouse) {
 		return slotUnderMouse.slot().getDisplayedIngredient()
 			.map(displayedIngredient -> {

@@ -19,6 +19,7 @@ public class TestClientConfig implements IClientConfig {
 	private final IJeiConfigValue<Boolean> showHiddenIngredients = value("showHiddenIngredients", false);
 	private final IJeiConfigValue<Boolean> showTagRecipesEnabled = value("showTagRecipesEnabled", false);
 	private final IJeiConfigValue<Boolean> addBookmarksToFrontEnabled = value("addBookmarksToFrontEnabled", false);
+	private final IJeiConfigValue<Boolean> bookmarkOutputAsRecipe = value("bookmarkOutputAsRecipe", true);
 	private final IJeiConfigValue<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures = value("bookmarkTooltipFeatures", List.of());
 	private final IJeiConfigValue<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled = value("holdShiftToShowBookmarkTooltipFeaturesEnabled", true);
 	private final IJeiConfigValue<Boolean> dragToRearrangeBookmarksEnabled = value("dragToRearrangeBookmarksEnabled", false);
@@ -85,6 +86,11 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public IJeiConfigValue<Boolean> addBookmarksToFrontEnabled() {
 		return addBookmarksToFrontEnabled;
+	}
+
+	@Override
+	public IJeiConfigValue<Boolean> bookmarkOutputAsRecipe() {
+		return bookmarkOutputAsRecipe;
 	}
 
 	@Override

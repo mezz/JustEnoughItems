@@ -27,6 +27,7 @@ public final class ClientConfig implements IClientConfig {
 
 	// bookmarks
 	private final ConfigValue<Boolean> addBookmarksToFrontEnabled;
+	private final ConfigValue<Boolean> bookmarkOutputAsRecipe;
 	private final ConfigValue<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures;
 	private final ConfigValue<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled;
 	private final ConfigValue<Boolean> dragToRearrangeBookmarksEnabled;
@@ -83,6 +84,7 @@ public final class ClientConfig implements IClientConfig {
 
 		IConfigCategoryBuilder bookmarks = schema.addCategory("bookmarks");
 		addBookmarksToFrontEnabled = bookmarks.addBoolean("addBookmarksToFrontEnabled", false);
+		bookmarkOutputAsRecipe = bookmarks.addBoolean("bookmarkOutputAsRecipe", true);
 		dragToRearrangeBookmarksEnabled = bookmarks.addBoolean("dragToRearrangeBookmarksEnabled", true);
 
 		IConfigCategoryBuilder tooltips = schema.addCategory("tooltips");
@@ -204,6 +206,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public ConfigValue<Boolean> addBookmarksToFrontEnabled() {
 		return addBookmarksToFrontEnabled;
+	}
+
+	@Override
+	public ConfigValue<Boolean> bookmarkOutputAsRecipe() {
+		return bookmarkOutputAsRecipe;
 	}
 
 	@Override

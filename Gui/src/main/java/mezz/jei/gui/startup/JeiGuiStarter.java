@@ -238,7 +238,7 @@ public class JeiGuiStarter {
 			ingredientListOverlay.createInputHandler(),
 			bookmarkOverlay.createInputHandler(),
 			new FocusInputHandler(recipeFocusSource, recipesGui, focusUtil, clientConfig, ingredientManager, toggleState, serverConnection),
-			new BookmarkInputHandler(recipeFocusSource, bookmarkList, bookmarkOverlay),
+			new BookmarkInputHandler(recipeFocusSource, bookmarkList, bookmarkOverlay, clientConfig, recipesGui),
 			new GlobalInputHandler(toggleState),
 			new GuiAreaInputHandler(screenHelper, recipesGui, focusFactory)
 		);

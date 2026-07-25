@@ -25,6 +25,8 @@ public interface IClientConfig {
 
 	IJeiConfigValue<Boolean> addBookmarksToFrontEnabled();
 
+	IJeiConfigValue<Boolean> bookmarkOutputAsRecipe();
+
 	IJeiConfigValue<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures();
 
 	IJeiConfigValue<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled();

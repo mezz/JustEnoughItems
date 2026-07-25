@@ -50,20 +50,23 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 			}
 		}
 
-		return new RecipeLayoutWithButtons<>(recipeLayoutDrawable, transferButton, buttons);
+		return new RecipeLayoutWithButtons<>(recipeLayoutDrawable, transferButton, recipeBookmark, buttons);
 	}
 
 	private final IRecipeLayoutDrawable<R> recipeLayout;
 	private final RecipeTransferButtonController transferButton;
+	private final @Nullable RecipeBookmark<?, ?> recipeBookmark;
 	private final List<IconButton> buttons;
 
 	private RecipeLayoutWithButtons(
 		IRecipeLayoutDrawable<R> recipeLayout,
 		RecipeTransferButtonController transferButton,
+		@Nullable RecipeBookmark<?, ?> recipeBookmark,
 		List<IconButton> buttons
 	) {
 		this.recipeLayout = recipeLayout;
 		this.transferButton = transferButton;
+		this.recipeBookmark = recipeBookmark;
 		this.buttons = buttons;
 	}
 
@@ -152,6 +155,11 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 	@Override
 	public IRecipeLayoutDrawable<R> getRecipeLayout() {
 		return recipeLayout;
+	}
+
+	@Override
+	public @Nullable RecipeBookmark<?, ?> getRecipeBookmark() {
+		return recipeBookmark;
 	}
 
 	@Override

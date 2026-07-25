@@ -5,12 +5,14 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.gui.RecipeLayoutDrawableErrored;
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -64,6 +66,11 @@ public final class RecipeLayoutWithButtonsErrored<R> implements IRecipeLayoutWit
 	@Override
 	public IRecipeLayoutDrawable<R> getRecipeLayout() {
 		return errorLayout;
+	}
+
+	@Override
+	public @Nullable RecipeBookmark<?, ?> getRecipeBookmark() {
+		return null;
 	}
 
 	@Override
