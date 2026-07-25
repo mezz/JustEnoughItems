@@ -9,6 +9,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
@@ -201,6 +202,11 @@ public record RecipeLayoutWithButtons<R>(
 	@Override
 	public boolean isBookmarked() {
 		return bookmarkButton != null && bookmarkButton.isBookmarked();
+	}
+
+	@Override
+	public @Nullable RecipeBookmark<?, ?> getRecipeBookmark() {
+		return bookmarkButton == null ? null : bookmarkButton.getRecipeBookmark();
 	}
 
 	@Override

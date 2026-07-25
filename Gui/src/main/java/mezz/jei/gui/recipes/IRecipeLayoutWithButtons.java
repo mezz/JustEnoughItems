@@ -2,6 +2,7 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.input.IUserInputHandler;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -26,6 +27,10 @@ public interface IRecipeLayoutWithButtons<R> {
 
 	default boolean isBookmarked() {
 		return false;
+	}
+
+	default @Nullable RecipeBookmark<?, ?> getRecipeBookmark() {
+		return null;
 	}
 
 	int getMissingCountHint();

@@ -568,6 +568,13 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		logic.forward();
 	}
 
+	public Optional<IRecipeLayoutWithButtons<?>> getRecipeLayoutUnderMouse(double mouseX, double mouseY) {
+		if (!isOpen()) {
+			return Optional.empty();
+		}
+		return layouts.getRecipeLayoutUnderMouse(mouseX, mouseY);
+	}
+
 	private boolean openInteractiveIngredientTooltip(double mouseX, double mouseY) {
 		return layouts.getRecipeLayoutUnderMouse(mouseX, mouseY)
 			.map(IRecipeLayoutWithButtons::getRecipeLayout)
