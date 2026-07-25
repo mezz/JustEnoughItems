@@ -39,6 +39,8 @@
   "jei.tooltip.recipe.sort.bookmarks.first.disabled": "Mostrar recetas favoritas primero (desactivado).",
   "jei.tooltip.recipe.sort.craftable.first.enabled": "Mostrar recetas fabricables primero (activado).",
   "jei.tooltip.recipe.sort.craftable.first.disabled": "Mostrar recetas fabricables primero (desactivado).",
+  "jei.config.client.appearance.toastReflowEnabled": "Ajuste por notificaciones emergentes",
+  "jei.config.client.appearance.toastReflowEnabled.description": "Reserva espacio para las notificaciones emergentes para que no se superpongan con la interfaz de JEI.",
 
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "Faltan ítems",
@@ -70,6 +72,7 @@
   "key.jei.nextCategory": "Categoría siguiente",
   "key.jei.previousRecipePage": "Página de receta anterior",
   "key.jei.nextRecipePage": "Página de receta siguiente",
+  "key.jei.pauseRecipeCycling": "Pausar rotación de ingredientes en la receta",
   "key.jei.closeRecipeGui": "Cerrar interfaz de recetas",
 
   "jei.key.category.cheat.mode": "JEI (Modo Trampa)",
@@ -95,6 +98,9 @@
   "key.jei.showUses2": "Mostrar usos",
   "key.jei.transferRecipeBookmark": "Fabricar receta favorita (una vez)",
   "key.jei.maxTransferRecipeBookmark": "Fabricar receta favorita (muchas veces)",
+  "key.jei.showBookmarkTooltipFeatures": "Mostrar detalles de favoritos",
+  "key.jei.quickMove": "Mover rápido ítem fantasma",
+  "key.jei.shareToChat": "Compartir ítem en el chat",
 
   "jei.key.category.search": "JEI (Filtro de búsqueda)",
   "key.jei.clearSearchBar": "Limpiar búsqueda",
@@ -143,7 +149,7 @@
   "jei.config.client.tooltips.bookmarkTooltipFeatures": "Funciones de Tooltips en Favoritos",
   "jei.config.client.tooltips.bookmarkTooltipFeatures.description": "Funciones adicionales en los tooltips de favoritos.",
   "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures": "Shift para Tooltips de Favoritos",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures.description": "Mantené Shift para ver funciones extra en los tooltips de favoritos.",
+  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures.description": "Mantené la tecla configurada para ver funciones extra en los tooltips de favoritos.",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled": "Mostrar Nombre de la Pestaña Creativa",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled.description": "Muestra el nombre de la pestaña creativa en los tooltips de ingredientes.",
   "jei.config.client.tooltips.tagContentTooltipEnabled": "Mostrar Contenido de Etiquetas",
@@ -151,7 +157,7 @@
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled": "Ocultar Etiquetas de un Solo Ingrediente",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled.description": "Oculta el contenido de etiquetas cuando solo tienen un ingrediente.",
   "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary": "Resumen de ingredientes de la receta",
-  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary.description": "Muestra un resumen de los ingredientes necesarios para una receta, en el tooltip del ingrediente resultante.",
+  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary.description": "Muestra un resumen de los ingredientes necesarios para una receta en el tooltip del ingrediente resultante.",
 
   "jei.config.client.lookups": "Búsquedas",
   "jei.config.client.lookups.description": "Opciones relacionadas con la búsqueda de usos y recetas de ingredientes en JEI.",
@@ -161,7 +167,7 @@
   "jei.config.client.lookups.lookupBlockTagsEnabled.description": "Al buscar etiquetas de ítems, también se incluyen las etiquetas de bloques por defecto contenidas en ellos.",
 
   "jei.config.client.lookupHistory": "Historial de búsqueda",
-  "jei.config.client.lookupHistory.description": "Opciones de configuración para mostrar un historial de búsquedas de ingredientes en JEI",
+  "jei.config.client.lookupHistory.description": "Opciones de configuración para mostrar un historial de búsquedas de ingredientes en JEI.",
   "jei.config.client.lookupHistory.enabled": "Habilitado",
   "jei.config.client.lookupHistory.enabled.description": "Mostrar u ocultar la superposición del historial de búsqueda.",
   "jei.config.client.lookupHistory.maxRows": "Máx. filas",
@@ -234,6 +240,8 @@
   "jei.config.client.ingredientList.navigationVisibility.description": "Visibilidad de los botones superiores. Usá AUTO_HIDE para que se muestren solo si hay varias páginas.",
   "jei.config.client.ingredientList.drawBackground": "Mostrar Fondo de Interfaz",
   "jei.config.client.ingredientList.drawBackground.description": "Activá esto para mostrar una textura de fondo detrás de la lista de ingredientes.",
+  "jei.config.client.ingredientList.navigationMode": "Modo de Navegación",
+  "jei.config.client.ingredientList.navigationMode.description": "Elegí PAGED para botones de página, SCROLLING para barra por filas o SMOOTH_SCROLLING para desplazamiento suave.",
 
   "jei.config.client.bookmarkList": "Lista de Favoritos",
   "jei.config.client.bookmarkList.description": "Opciones relacionadas con la Lista de Favoritos (la lista de ingredientes favoritos a la izquierda de la pantalla).",
@@ -249,6 +257,8 @@
   "jei.config.client.bookmarkList.navigationVisibility.description": "Visibilidad de los botones superiores. Usá AUTO_HIDE para que se muestren solo si hay varias páginas.",
   "jei.config.client.bookmarkList.drawBackground": "Mostrar Fondo de Interfaz",
   "jei.config.client.bookmarkList.drawBackground.description": "Activá esto para mostrar una textura de fondo detrás de la lista de favoritos.",
+  "jei.config.client.bookmarkList.navigationMode": "Modo de Navegación",
+  "jei.config.client.bookmarkList.navigationMode.description": "Elegí PAGED para botones de página, SCROLLING para barra por filas o SMOOTH_SCROLLING para desplazamiento suave.",
 
 
   "jei.config.modIdFormat.modName": "Nombre del Mod",
@@ -258,6 +268,8 @@
 
   "jei.config.debug.debug": "Depuración",
   "jei.config.debug.debug.description": "Opciones para ayudar a desarrolladores a depurar errores en JEI.",
+  "jei.config.debug.debug.debugIngredientsEnabled": "Depuración de Ingredientes",
+  "jei.config.debug.debug.debugIngredientsEnabled.description": "Registrar ingredientes agregados y actualizados en el filtro de ingredientes de JEI.",
   "jei.config.debug.debug.debugGuis": "GUIs de Depuración",
   "jei.config.debug.debug.debugGuis.description": "Activar modo GUIs de depuración.",
   "jei.config.debug.debug.debugInputs": "Entradas de Depuración",
@@ -306,6 +318,10 @@
   "jei.message.config.folder": "O hacé clic acá para abrir la carpeta de configuración de JEI",
   "jei.message.copy.recipe.id.success": "El siguiente ID de receta se copió al portapapeles: %s",
   "jei.message.copy.recipe.id.failure": "No se pudo copiar el ID de receta al portapapeles porque es desconocido",
+  "jei.message.server.recipe.sync.error": "Este servidor envió recetas a JEI, pero ninguna se pudo usar. JEI no puede mostrar las recetas de este servidor. Revisá la configuración de JEI, los datapacks y los mods de recetas del servidor.",
+  "jei.message.server.recipe.sync.vanilla": "Este es un servidor vanilla. JEI está mostrando las recetas predeterminadas de tu cliente, que podrían ser distintas si el servidor usa datapacks. Instalá NeoForge o Fabric en el servidor junto con JEI para mostrar las recetas correctamente.",
+  "jei.message.server.recipe.sync.unavailable": "Este servidor de %s no envía recetas a JEI. JEI está mostrando las recetas predeterminadas de tu cliente, que podrían ser distintas en el servidor.",
+  "jei.message.server.recipe.sync.jei.missing": "Este servidor de %s no tiene JEI instalado. JEI está mostrando las recetas predeterminadas de tu cliente, que podrían ser distintas en el servidor. Instalá JEI en el servidor para mostrar las recetas correctamente.",
 
   "_comment": "Nombres de Teclas",
   "jei.key.combo.shift": "SHIFT + %s",
