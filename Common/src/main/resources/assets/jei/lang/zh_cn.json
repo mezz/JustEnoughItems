@@ -149,6 +149,8 @@
   "jei.config.client.bookmarks.description": "与书签原料和配方相关的配置选项。",
   "jei.config.client.bookmarks.addBookmarksToFrontEnabled": "置顶添加书签",
   "jei.config.client.bookmarks.addBookmarksToFrontEnabled.description": "设为true时，将新书签添加到列表顶端。设为false时，将新书签添加到列表末尾。",
+  "jei.config.client.bookmarks.bookmarkOutputAsRecipe": "将产物收藏为配方书签",
+  "jei.config.client.bookmarks.bookmarkOutputAsRecipe.description": "启用后，在配方产物上按书签键会收藏该配方，而不是该原料。",
   "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled": "拖拽以重新排列书签",
   "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled.description": "启用后，可拖拽书签以重新排列其在列表中顺序。",
 
