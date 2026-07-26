@@ -6,6 +6,7 @@ plugins {
     idea
     `maven-publish`
     id("net.fabricmc.fabric-loom")
+    id("net.mezzdev.modshade")
     id("me.modmuss50.mod-publish-plugin")
 }
 
@@ -54,13 +55,6 @@ val loomDependencyProjects: List<Project> = listOf(
 val dependencyProjects = vanillaDependencyProjects + loomDependencyProjects
 val debugProject = project(":Debug")
 
-val embeddedLibraries: Configuration by configurations.creating {
-    isCanBeConsumed = false
-    isCanBeResolved = true
-}
-configurations.implementation {
-    extendsFrom(embeddedLibraries)
-}
 val keyMappingGametestModId = "${modId}-key-mapping-test"
 val commonClientTestFixturesSource = project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java")
 val clientGameTestRunDirectory = layout.buildDirectory.dir("run/clientGameTest")
@@ -118,10 +112,10 @@ dependencies {
     dependencyProjects.forEach {
         implementation(it)
     }
-    embeddedLibraries("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
+    modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
         isTransitive = false
     }
-    embeddedLibraries("net.mezzdev:suffixtree:${suffixtreeVersion}") {
+    modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
     }
     implementation("de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric")
@@ -276,12 +270,10 @@ tasks.matching { it.name in debugRunTasks }.configureEach {
 }
 
 tasks.jar {
-    dependsOn(embeddedLibraries)
     from(sourceSets.main.get().output)
     for (p in dependencyProjects) {
         from(p.sourceSets.main.get().output)
     }
-    from(embeddedLibraries.map(::zipTree))
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
@@ -294,8 +286,11 @@ tasks.named<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
 }
 
+val shadedJar = modShade.shadeJar()
+val shadedSourcesJar = modShade.shadeSourcesJar()
+
 publishMods {
-    file.set(tasks.jar.get().archiveFile)
+    file.set(shadedJar.flatMap { it.archiveFile })
     changelog.set(provider { file("../Changelog/changelog.md").readText() })
     type = BETA
     modLoaders.add("fabric")
@@ -348,8 +343,8 @@ publishing {
     publications {
         register<MavenPublication>("fabricJar") {
             artifactId = baseArchivesName
-            artifact(tasks.jar)
-            artifact(tasks.named("sourcesJar"))
+            artifact(shadedJar)
+            artifact(shadedSourcesJar)
         }
     }
     repositories {
