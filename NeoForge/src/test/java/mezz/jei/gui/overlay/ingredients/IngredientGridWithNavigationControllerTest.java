@@ -193,6 +193,25 @@ public class IngredientGridWithNavigationControllerTest {
 	}
 
 	@Test
+	public void pagedModeKeepsNavigatedPageWhenOverlayReopens() {
+		// Setup: the user navigates to the second page, then the overlay closes so the grid no longer exposes
+		// visible elements as a fallback anchor.
+		Fixture fixture = Fixture.create(3, 7, true);
+		fixture.controller.updateLayoutToFirstPage();
+		assertTrue(fixture.controller.nextPage());
+		fixture.closeOverlay();
+
+		// Operation: reopen the overlay using the controller's page anchor.
+		fixture.reopenOverlay();
+
+		// Assertions: the controller remembered the first element on the navigated-to page before the overlay
+		// closed, so reopening does not reset to the first page.
+		assertEquals(1, fixture.layoutChanges);
+		assertEquals(3, fixture.grid.firstItemIndex);
+		assertEquals(1, fixture.controller.getPageNumber());
+	}
+
+	@Test
 	public void zeroScrollDeltaIsNotConsumed() {
 		// Setup: the mouse is over a grid with multiple pages.
 		Fixture fixture = Fixture.create(3, 7, true);
@@ -223,6 +242,28 @@ public class IngredientGridWithNavigationControllerTest {
 		assertEquals(1, fixture.layoutChanges);
 		assertEquals(1, fixture.controller.getPageNumber());
 		assertEquals(3, fixture.grid.firstItemIndex);
+		assertEquals(0, fixture.grid.scrollOffsetY);
+	}
+
+	@Test
+	public void scrollingModeKeepsScrolledRowWhenOverlayReopensAfterGridSizeChanges() {
+		// Setup: the user scrolls down to the fourth row, then the overlay closes so the grid no longer exposes
+		// visible elements as a fallback anchor.
+		Fixture fixture = Fixture.create(3, 3, 30, true, IngredientGridNavigationMode.SCROLLING);
+		fixture.controller.updateLayoutToFirstPage();
+		int hiddenRows = IngredientGridScrollState.getHiddenRows(30, 3, 3);
+		fixture.controller.setScrollOffsetY(3 / (float) hiddenRows);
+		fixture.closeOverlay();
+
+		// Operation: reopen the overlay after its grid size changes.
+		fixture.grid.setGridSize(3, 5);
+		fixture.reopenOverlay();
+
+		// Assertions: the scrollbar controller remembered the first visible element at the scrolled row before
+		// the overlay closed, so reopening does not reset or drift to another row.
+		assertEquals(1, fixture.layoutChanges);
+		assertEquals(9, fixture.grid.firstItemIndex);
+		assertEquals(3, fixture.controller.getPageNumber());
 		assertEquals(0, fixture.grid.scrollOffsetY);
 	}
 
@@ -426,6 +467,15 @@ public class IngredientGridWithNavigationControllerTest {
 		void clearLayoutChanges() {
 			this.layoutChanges = 0;
 		}
+
+		void closeOverlay() {
+			this.grid.clearVisibleElements();
+			clearLayoutChanges();
+		}
+
+		void reopenOverlay() {
+			this.controller.updateLayoutKeepingPageAnchorVisible(this.controller.getPageAnchorElement());
+		}
 	}
 
 	private record TestGridConfig(IngredientGridNavigationMode navigationMode) implements IIngredientGridConfig {
@@ -489,6 +539,7 @@ public class IngredientGridWithNavigationControllerTest {
 		private int visibleSlotCount;
 		private int firstItemIndex;
 		private int scrollOffsetY;
+		private List<IElement<?>> visibleElements = List.of();
 
 		private TestNavigationGrid(int slotCount) {
 			this(slotCount, 1);
@@ -508,6 +559,10 @@ public class IngredientGridWithNavigationControllerTest {
 
 		private void setVisibleSlotCount(int visibleSlotCount) {
 			this.visibleSlotCount = visibleSlotCount;
+		}
+
+		private void clearVisibleElements() {
+			this.visibleElements = List.of();
 		}
 
 		@Override
@@ -539,11 +594,14 @@ public class IngredientGridWithNavigationControllerTest {
 		public void set(int firstItemIndex, int scrollOffsetY, List<IElement<?>> ingredientList) {
 			this.firstItemIndex = firstItemIndex;
 			this.scrollOffsetY = scrollOffsetY;
+			int startIndex = Math.clamp(firstItemIndex, 0, ingredientList.size());
+			int endIndex = Math.min(startIndex + this.visibleSlotCount, ingredientList.size());
+			this.visibleElements = List.copyOf(ingredientList.subList(startIndex, endIndex));
 		}
 
 		@Override
 		public Stream<IElement<?>> getVisibleElements() {
-			return Stream.of();
+			return visibleElements.stream();
 		}
 
 		@Override
