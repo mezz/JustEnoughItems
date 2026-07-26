@@ -5,12 +5,12 @@ import mezz.jei.common.input.keys.IJeiKeyMappingBuilder;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
-import mezz.jei.fabric.input.FabricJeiKeyMapping;
 import mezz.jei.fabric.input.FabricJeiKeyMappingCategoryBuilder;
 import net.minecraft.client.KeyMapping;
 import org.lwjgl.glfw.GLFW;
 
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Verifies JEI's Fabric key-mapping wrapper on this branch's non-AMECS Fabric path.
@@ -47,14 +47,7 @@ final class JeiFabricKeyMappingClientTests {
 
 	private static void assertFabricJeiKeyMappingMatches(String description, InputConstants.Type type, int keyCode) {
 		// Setup: build an unmodified Fabric JEI mapping with a test-only translation key.
-		FabricJeiKeyMapping jeiMapping = new FabricJeiKeyMapping(
-			CATEGORY,
-			description,
-			JeiKeyConflictContext.UNIVERSAL,
-			JeiKeyModifier.NONE,
-			type,
-			keyCode
-		);
+		IJeiKeyMappingInternal jeiMapping = buildUnmodifiedMapping(description, type, keyCode);
 		InputConstants.Key boundKey = type.getOrCreate(keyCode);
 
 		// Operation: match the JEI wrapper against its real key and against an unbound key.
@@ -70,6 +63,36 @@ final class JeiFabricKeyMappingClientTests {
 		}
 	}
 
+	private static IJeiKeyMappingInternal buildUnmodifiedMapping(String description, InputConstants.Type type, int keyCode) {
+		IJeiKeyMappingBuilder builder = new FabricJeiKeyMappingCategoryBuilder(CATEGORY)
+			.createMapping(description)
+			.setContext(JeiKeyConflictContext.UNIVERSAL);
+
+		if (type == InputConstants.Type.KEYSYM) {
+			return builder.buildKeyboardKey(keyCode);
+		}
+		if (type == InputConstants.Type.MOUSE) {
+			if (keyCode == InputConstants.MOUSE_BUTTON_LEFT) {
+				return builder.buildMouseLeft();
+			}
+			if (keyCode == InputConstants.MOUSE_BUTTON_RIGHT) {
+				return builder.buildMouseRight();
+			}
+			if (keyCode == InputConstants.MOUSE_BUTTON_MIDDLE) {
+				return builder.buildMouseMiddle();
+			}
+		}
+		throw new IllegalArgumentException("Unsupported test key type and code: " + type + " " + keyCode);
+	}
+
+	private static void assertRegistersKeyMapping(IJeiKeyMappingInternal jeiMapping) {
+		AtomicBoolean registered = new AtomicBoolean(false);
+		jeiMapping.register(keyMapping -> registered.set(true));
+		if (!registered.get()) {
+			throw new AssertionError("Expected Fabric JEI mapping to call its key mapping registration callback.");
+		}
+	}
+
 	private static void assertUnboundJeiKeyMappingRejectsInput() {
 		// Setup: build an unbound JEI mapping through the category builder, the same representation used for
 		// JEI controls that are intentionally not assigned to an input.
@@ -77,9 +100,7 @@ final class JeiFabricKeyMappingClientTests {
 			.createMapping("key.jei.test.fabricKeyMapping.unbound")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildUnbound();
-		jeiMapping.register(keyMapping -> {
-			throw new AssertionError("Expected this branch's Fabric JEI mapping to avoid vanilla keybinding registration.");
-		});
+		assertRegistersKeyMapping(jeiMapping);
 
 		// Operation and assertions: the unbound JEI mapping must reject vanilla mouse buttons.
 		if (!jeiMapping.isUnbound()) {
@@ -188,18 +209,19 @@ final class JeiFabricKeyMappingClientTests {
 			FabricClientTestInput.releaseModifier(modifier);
 		}
 
-		// Assertions: this branch's custom Fabric wrapper supports modifiers directly.
-		if (isUnbound) {
-			throw new AssertionError("Expected modified Fabric JEI key mapping to stay bound.");
+		// Assertions: without AMECS, this branch's Fabric builder cannot represent modified mappings and
+		// intentionally leaves them unbound.
+		if (!isUnbound) {
+			throw new AssertionError("Expected modified Fabric JEI key mapping to be unbound without AMECS.");
 		}
 		if (matchesWithoutModifier) {
-			throw new AssertionError("Expected modified Fabric JEI key mapping to reject input when its modifier is not held.");
+			throw new AssertionError("Expected unbound modified Fabric JEI key mapping to reject input without its modifier.");
 		}
-		if (!matchesWithModifier) {
-			throw new AssertionError("Expected modified Fabric JEI key mapping to match with its modifier held: " + mapping.boundKey().getName());
+		if (matchesWithModifier) {
+			throw new AssertionError("Expected unbound modified Fabric JEI key mapping to reject input with its modifier held: " + mapping.boundKey().getName());
 		}
 		if (matchesUnknownKey) {
-			throw new AssertionError("Expected modified Fabric JEI key mapping to reject the UNKNOWN key.");
+			throw new AssertionError("Expected unbound modified Fabric JEI key mapping to reject the UNKNOWN key.");
 		}
 	}
 
@@ -240,9 +262,7 @@ final class JeiFabricKeyMappingClientTests {
 		} else {
 			throw new IllegalArgumentException("Unsupported test mouse button: " + mouseButton);
 		}
-		jeiMapping.register(keyMapping -> {
-			throw new AssertionError("Expected this branch's Fabric JEI mapping to avoid vanilla keybinding registration.");
-		});
+		assertRegistersKeyMapping(jeiMapping);
 
 		if (jeiMapping.isUnbound()) {
 			throw new AssertionError("Expected bound Fabric JEI mouse mapping to report bound: " + mouseKey.getName());
@@ -258,9 +278,7 @@ final class JeiFabricKeyMappingClientTests {
 			.createMapping("key.jei.test.fabricKeyMapping.unboundMouse" + mouseButton)
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildUnbound();
-		jeiMapping.register(keyMapping -> {
-			throw new AssertionError("Expected this branch's Fabric JEI mapping to avoid vanilla keybinding registration.");
-		});
+		assertRegistersKeyMapping(jeiMapping);
 
 		if (!jeiMapping.isUnbound()) {
 			throw new AssertionError("Expected unbound Fabric JEI mouse mapping to report unbound: " + mouseKey.getName());
