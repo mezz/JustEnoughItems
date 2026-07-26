@@ -17,11 +17,13 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Helps with the implementation of GUIs.
  * Get the instance from {@link IJeiHelpers#getGuiHelper()}.
  */
+@ApiStatus.NonExtendable
 public interface IGuiHelper {
 	/**
 	 * Create a drawable from part of a standard 256x256 gui texture.
