@@ -61,9 +61,6 @@ public final class ClientConfig implements IClientConfig {
 	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
 	private final ConfigValue<List<RecipeSorterStage>> recipeSorterStages;
 
-	// recipes gui
-	private final Supplier<Boolean> showRecipeTransferErrors;
-
 	// tags
 	private final Supplier<Boolean> tagContentTooltipEnabled;
 	private final Supplier<Boolean> hideSingleTagContentTooltipEnabled;
@@ -105,7 +102,6 @@ public final class ClientConfig implements IClientConfig {
 		tagContentTooltipEnabled = tooltips.addBoolean("tagContentTooltipEnabled", true);
 		hideSingleTagContentTooltipEnabled = tooltips.addBoolean("hideSingleTagContentTooltipEnabled", true);
 		ingredientsSummaryEnabled = tooltips.addBoolean("enableRecipesGuiIngredientsSummary", false);
-		showRecipeTransferErrors = tooltips.addBoolean("showRecipeTransferErrors", false);
 
 		IConfigCategoryBuilder performance = schema.addCategory("performance");
 		lowMemorySlowSearchEnabled = performance.addBoolean("lowMemorySlowSearchEnabled", false);
@@ -349,10 +345,5 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isToastReflowEnabled() {
 		return toastReflowEnabled.get();
-	}
-
-	@Override
-	public boolean isShowRecipeTransferErrorsEnabled() {
-		return showRecipeTransferErrors.get();
 	}
 }

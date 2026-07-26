@@ -79,7 +79,7 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		recipeLayout.drawRecipe(guiGraphics, mouseX, mouseY);
 
-		if (shouldShowTransferError() && isMouseOverNonSlotLayout(mouseX, mouseY)) {
+		if (isMouseOverNonSlotLayout(mouseX, mouseY)) {
 			drawRecipeTransferError(guiGraphics, mouseX, mouseY);
 		}
 
@@ -92,12 +92,7 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 
 	private void drawRecipeTransferError(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		IRecipeTransferError recipeTransferError = transferButton.updateRecipeTransferError();
-		if (recipeTransferError == null) {
-			return;
-		}
-
-		IRecipeTransferError.Type type = recipeTransferError.getType();
-		if (type == IRecipeTransferError.Type.INTERNAL) {
+		if (recipeTransferError == null || !recipeTransferError.getType().allowsTransfer) {
 			return;
 		}
 
@@ -111,11 +106,6 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 	private boolean isMouseOverNonSlotLayout(int mouseX, int mouseY) {
 		return recipeLayout.isMouseOver(mouseX, mouseY) &&
 			recipeLayout.getSlotUnderMouse(mouseX, mouseY).isEmpty();
-	}
-
-	private boolean shouldShowTransferError() {
-		return Internal.getJeiClientConfigs().getClientConfig().isShowRecipeTransferErrorsEnabled() ||
-			transferButton.isShowTransferError();
 	}
 
 	private ImmutableRect2i getAbsoluteButtonArea(int buttonIndex) {
@@ -222,20 +212,17 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 		}
 
 		IRecipeTransferError recipeTransferError = transferButton.updateRecipeTransferError();
-		JeiTooltip tooltip = new JeiTooltip();
-		if (shouldShowTransferError() && recipeTransferError != null) {
-			recipeTransferError.getTooltip(tooltip);
-		} else {
-			tooltip.add(Component.translatable("jei.tooltip.transfer"));
+		if (recipeTransferError != null && !recipeTransferError.getType().allowsTransfer) {
+			return;
 		}
 
+		JeiTooltip tooltip = new JeiTooltip();
 		if (!transferRecipeGui.isUnbound()) {
 			tooltip.addKeyUsageComponent("jei.tooltip.recipesGui.tooltips.transfer.usage", transferRecipeGui);
 		}
 		if (!maxTransferRecipeGui.isUnbound()) {
 			tooltip.addKeyUsageComponent("jei.tooltip.recipesGui.tooltips.transfer.max.usage", maxTransferRecipeGui);
 		}
-
 		tooltip.draw(guiGraphics, mouseX, mouseY);
 	}
 
@@ -268,10 +255,6 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 				boolean transferOnce = input.is(keyMappings.getTransferRecipeGui());
 				boolean transferMax = input.is(keyMappings.getMaxTransferRecipeGui());
 				if (transferOnce || transferMax) {
-					IRecipeTransferError recipeTransferError = transferButton.updateRecipeTransferError();
-					boolean showError = recipeTransferError != null &&
-						recipeTransferError.getType() != IRecipeTransferError.Type.INTERNAL;
-					transferButton.setShowTransferError(showError);
 					transferButton.transferRecipe(transferMax, simulate);
 					return Optional.of(this);
 				}

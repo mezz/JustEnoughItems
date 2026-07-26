@@ -28,7 +28,6 @@ public class RecipeTransferButtonController implements IIconButtonController {
 	private final IRecipeLayoutDrawable<?> recipeLayout;
 	private final RecipesGui recipesGui;
 	private @Nullable IRecipeTransferError recipeTransferError;
-	private boolean showTransferError;
 
 	public RecipeTransferButtonController(IRecipeLayoutDrawable<?> recipeLayout, RecipesGui recipesGui) {
 		this.recipeLayout = recipeLayout;
@@ -153,14 +152,6 @@ public class RecipeTransferButtonController implements IIconButtonController {
 
 	public @Nullable IRecipeTransferError getRecipeTransferError() {
 		return this.recipeTransferError;
-	}
-
-	public boolean isShowTransferError() {
-		return this.showTransferError;
-	}
-
-	public void setShowTransferError(boolean showTransferError) {
-		this.showTransferError = showTransferError;
 	}
 
 	public int getMissingCountHint() {
