@@ -15,7 +15,7 @@ plugins {
 	id 'eclipse'
 	id 'idea'
 	id "maven-publish"
-	id 'com.matthewprenger.cursegradle' version '1.4.0'
+	id 'me.modmuss50.mod-publish-plugin' version '0.7.3'
 	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.79.0'
 	id 'com.modrinth.minotaur' version '2.+'
 }
@@ -136,14 +136,22 @@ task makeMarkdownChangelog(type: GitChangelogTask) {
 	templateContent = file('changelog-markdown.mustache').getText('UTF-8')
 }
 
-curseforge {
-	apiKey = project.findProperty('curseforge_apikey') ?: '0'
-	project {
-		id = curse_project_id
-		changelog = file('changelog.html')
-		changelogType = 'html'
-		releaseType = 'beta'
-		addGameVersion "${minecraft_version}"
+publishMods {
+	file.set(tasks.jar.archiveFile)
+	version.set(project.version.toString())
+	changelog.set(providers.provider { file('changelog.html').getText('UTF-8') })
+	type.set(BETA)
+	displayName.set("${project.version} for Forge ${minecraft_version}")
+	modLoaders.add('forge')
+
+	curseforge {
+		projectId.set(curse_project_id)
+		accessToken.set(project.findProperty('curseforge_apikey') ?: '0')
+		changelogType.set('html')
+		minecraftVersions.add(minecraft_version)
+		javaVersions.add(JavaVersion.VERSION_1_8)
+		clientRequired.set(true)
+		serverRequired.set(true)
 	}
 }
 
@@ -157,8 +165,14 @@ modrinth {
 tasks.modrinth.dependsOn(tasks.jar)
 tasks.modrinth.dependsOn(tasks.makeMarkdownChangelog)
 
-afterEvaluate {
-	tasks.curseforge238222.dependsOn makeChangelog
+tasks.named('publishCurseforge') {
+	dependsOn makeChangelog
+}
+
+tasks.register('curseforge') {
+	group = 'publishing'
+	description = 'Publishes JEI to CurseForge.'
+	dependsOn tasks.named('publishCurseforge')
 }
 
 jar {
