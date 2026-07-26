@@ -19,11 +19,13 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Helps with the implementation of GUIs.
  * Get the instance from {@link IJeiHelpers#getGuiHelper()}.
  */
+@ApiStatus.NonExtendable
 public interface IGuiHelper {
 	/**
 	 * Create a drawable from part of a standard 256x256 gui texture.
@@ -65,10 +67,7 @@ public interface IGuiHelper {
 	 *
 	 * @since 19.38.0
 	 */
-	@SuppressWarnings("deprecation")
-	default IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId, int width, int height) {
-		return createDrawableSprite(textureAtlas, spriteId);
-	}
+	IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId, int width, int height);
 
 	/**
 	 * Create a scalable drawable from a gui sprite.
