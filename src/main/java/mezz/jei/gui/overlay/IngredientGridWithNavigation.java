@@ -36,6 +36,8 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 	private static final int NAVIGATION_HEIGHT = 20;
 
 	private int firstItemIndex = 0;
+	@Nullable
+	private IIngredientListElement pageAnchorElement;
 	private final IPaged pageDelegate;
 	private final PageNavigation navigation;
 	private final GuiScreenHelper guiScreenHelper;
@@ -51,16 +53,63 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		this.navigation = new PageNavigation(this.pageDelegate, false);
 	}
 
-	public void updateLayout(boolean resetToFirstPage) {
-		if (resetToFirstPage) {
-			firstItemIndex = 0;
-		}
+	public void updateLayoutToFirstPage() {
+		this.firstItemIndex = 0;
+		this.pageAnchorElement = null;
+		updateGrid();
+	}
+
+	public void updateLayoutKeepingPageAnchorVisible() {
 		List<IIngredientListElement> ingredientList = ingredientSource.getIngredientList();
-		if (firstItemIndex >= ingredientList.size()) {
-			firstItemIndex = 0;
+		if (this.pageAnchorElement != null) {
+			int anchorIndex = findIndexOfIngredientElement(this.pageAnchorElement, ingredientList);
+			if (anchorIndex >= 0) {
+				this.firstItemIndex = getFirstItemIndexForValidPage(anchorIndex, ingredientList.size(), ingredientGrid.size());
+			} else {
+				this.pageAnchorElement = null;
+				this.firstItemIndex = getFirstItemIndexForValidPage(this.firstItemIndex, ingredientList.size(), ingredientGrid.size());
+			}
+		} else {
+			this.firstItemIndex = getFirstItemIndexForValidPage(this.firstItemIndex, ingredientList.size(), ingredientGrid.size());
 		}
-		this.ingredientGrid.guiIngredientSlots.set(firstItemIndex, ingredientList);
+		updateGrid();
+	}
+
+	private void updateForPageNavigation(int firstItemIndex) {
+		this.pageAnchorElement = null;
+		List<IIngredientListElement> ingredientList = ingredientSource.getIngredientList();
+		this.firstItemIndex = getFirstItemIndexForValidPage(firstItemIndex, ingredientList.size(), ingredientGrid.size());
+		updateGrid();
+	}
+
+	private void updateGrid() {
+		List<IIngredientListElement> ingredientList = ingredientSource.getIngredientList();
+		this.ingredientGrid.guiIngredientSlots.set(this.firstItemIndex, ingredientList);
 		this.navigation.updatePageState();
+		setPageAnchorToFirstVisible();
+	}
+
+	@Nullable
+	public IIngredientListElement getPageAnchorElement() {
+		List<IIngredientListElement> ingredientList = ingredientSource.getIngredientList();
+		if (this.pageAnchorElement != null) {
+			if (findIndexOfIngredientElement(this.pageAnchorElement, ingredientList) >= 0) {
+				return this.pageAnchorElement;
+			}
+			this.pageAnchorElement = null;
+		}
+		return null;
+	}
+
+	public void setPageAnchorElement(IIngredientListElement pageAnchorElement) {
+		this.pageAnchorElement = pageAnchorElement;
+	}
+
+	private void setPageAnchorToFirstVisible() {
+		List<IIngredientListElement> visibleElements = getVisibleElements();
+		if (!visibleElements.isEmpty()) {
+			this.pageAnchorElement = visibleElements.get(0);
+		}
 	}
 
 	public boolean updateBounds(Rectangle availableArea, Set<Rectangle> guiExclusionAreas, int minWidth) {
@@ -199,6 +248,39 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 		return visibleElements;
 	}
 
+	private static int getFirstItemIndexForValidPage(int firstItemIndex, int itemCount, int itemsPerPage) {
+		if (itemCount == 0 || itemsPerPage == 0) {
+			return 0;
+		}
+		int requestedPageStart = (Math.max(0, firstItemIndex) / itemsPerPage) * itemsPerPage;
+		int lastPageIndex = ((itemCount - 1) / itemsPerPage) * itemsPerPage;
+		return Math.min(requestedPageStart, lastPageIndex);
+	}
+
+	private static int findIndexOfIngredientElement(IIngredientListElement element, List<IIngredientListElement> ingredientList) {
+		if (element == null) {
+			return -1;
+		}
+		for (int i = 0; i < ingredientList.size(); i++) {
+			if (isSameIngredientElement(ingredientList.get(i), element)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Page anchors only need to find the same in-memory element after filtering or relayout.
+	 * A full UID comparison would call ingredient helpers and subtype interpreters for every candidate here,
+	 * which is slower and unnecessary for keeping the user's visible page stable.
+	 */
+	private static boolean isSameIngredientElement(IIngredientListElement first, IIngredientListElement second) {
+		if (first == second) {
+			return true;
+		}
+		return first.getIngredient() == second.getIngredient();
+	}
+
 	private class IngredientGridPaged implements IPaged {
 		@Override
 		public boolean nextPage() {
@@ -207,15 +289,14 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 			}
 			final int itemsCount = ingredientSource.size();
 			if (itemsCount > 0) {
-				firstItemIndex += ingredientGrid.size();
-				if (firstItemIndex >= itemsCount) {
-					firstItemIndex = 0;
+				int nextFirstItemIndex = firstItemIndex + ingredientGrid.size();
+				if (nextFirstItemIndex >= itemsCount) {
+					nextFirstItemIndex = 0;
 				}
-				updateLayout(false);
+				updateForPageNavigation(nextFirstItemIndex);
 				return true;
 			} else {
-				firstItemIndex = 0;
-				updateLayout(false);
+				updateForPageNavigation(0);
 				return false;
 			}
 		}
@@ -227,8 +308,7 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 			}
 			final int itemsPerPage = ingredientGrid.size();
 			if (itemsPerPage == 0) {
-				firstItemIndex = 0;
-				updateLayout(false);
+				updateForPageNavigation(0);
 				return false;
 			}
 			final int itemsCount = ingredientSource.size();
@@ -240,12 +320,12 @@ public class IngredientGridWithNavigation implements IShowsRecipeFocuses, IMouse
 				pageNum--;
 			}
 
-			firstItemIndex = itemsPerPage * pageNum;
-			if (firstItemIndex > 0 && firstItemIndex == itemsCount) {
+			int previousFirstItemIndex = itemsPerPage * pageNum;
+			if (previousFirstItemIndex > 0 && previousFirstItemIndex == itemsCount) {
 				pageNum--;
-				firstItemIndex = itemsPerPage * pageNum;
+				previousFirstItemIndex = itemsPerPage * pageNum;
 			}
-			updateLayout(false);
+			updateForPageNavigation(previousFirstItemIndex);
 			return true;
 		}
 

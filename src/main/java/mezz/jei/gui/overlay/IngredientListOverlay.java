@@ -110,9 +110,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 					displayArea.width,
 					displayArea.height - searchHeight
 				);
-				int legacySize = contents.size();
 				hasRoom = this.contents.updateBounds(availableContentsArea, guiExclusionAreas, 4 * BUTTON_SIZE);
-				boolean resetToFirstPage = legacySize != contents.size();
 
 				// update area to match contents size
 				Rectangle contentsArea = this.contents.getArea();
@@ -142,7 +140,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 					BUTTON_SIZE
 				));
 
-				updateLayout(resetToFirstPage);
+				updateLayout(false);
 			}
 		}
 		if (wasDisplayed && !isListDisplayed()) {
@@ -151,7 +149,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	}
 
 	public void updateLayout(boolean filterChanged) {
-		this.contents.updateLayout(filterChanged);
+		if (filterChanged) {
+			this.contents.updateLayoutToFirstPage();
+		} else {
+			this.contents.updateLayoutKeepingPageAnchorVisible();
+		}
 		this.searchField.update();
 	}
 
