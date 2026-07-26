@@ -1,5 +1,4 @@
-import net.darkhax.curseforgegradle.TaskPublishCurseForge
-import net.darkhax.curseforgegradle.Constants as CFG_Constants
+import me.modmuss50.mpp.PublishModTask
 
 repositories {
     maven("https://maven.parchmentmc.org")
@@ -10,7 +9,7 @@ plugins {
     idea
     `maven-publish`
     id("fabric-loom")
-    id("net.darkhax.curseforgegradle") version("1.0.8")
+    id("me.modmuss50.mod-publish-plugin")
 }
 
 // gradle.properties
@@ -197,23 +196,30 @@ tasks.named<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
 }
 
-tasks.register<TaskPublishCurseForge>("publishCurseForge") {
-    dependsOn(tasks.remapJar)
-    dependsOn(":Changelog:makeChangelog")
+publishMods {
+    file.set(tasks.remapJar.get().archiveFile)
+    changelog.set(provider { file("../Changelog/changelog.html").readText() })
+    type = BETA
+    modLoaders.add("fabric")
+    displayName.set("${project.version} for Fabric $minecraftVersion")
+    version.set(project.version.toString())
 
-    apiToken = project.findProperty("curseforge_apikey") ?: "0"
-
-    val mainFile = upload(curseProjectId, tasks.remapJar.get().archiveFile)
-    mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
-    mainFile.changelog = file("../Changelog/changelog.html")
-    mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
-    mainFile.addJavaVersion("Java $modJavaVersion")
-    mainFile.addGameVersion(minecraftVersion)
-    mainFile.addModLoader("Fabric")
-
-    doLast {
-        project.ext.set("curse_file_url", "${curseHomepageUrl}/files/${mainFile.curseFileId}")
+    curseforge {
+        projectId = curseProjectId
+        accessToken.set((project.findProperty("curseforge_apikey") as String?) ?: "0")
+        changelog.set(provider { file("../Changelog/changelog.html").readText() })
+        changelogType = "html"
+        minecraftVersions.add(minecraftVersion)
+        javaVersions.add(JavaVersion.toVersion(modJavaVersion))
+        clientRequired.set(true)
+        serverRequired.set(true)
     }
+}
+tasks.withType<PublishModTask> {
+    dependsOn(tasks.remapJar, ":Changelog:makeChangelog")
+}
+tasks.register("publishCurseForge") {
+    dependsOn(tasks.named("publishCurseforge"))
 }
 
 tasks.named<Test>("test") {

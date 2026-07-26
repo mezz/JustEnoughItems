@@ -1,5 +1,4 @@
-import net.darkhax.curseforgegradle.TaskPublishCurseForge
-import net.darkhax.curseforgegradle.Constants as CFG_Constants
+import me.modmuss50.mpp.PublishModTask
 
 plugins {
 	java
@@ -8,7 +7,7 @@ plugins {
 	`maven-publish`
 	id("net.minecraftforge.gradle") version("6.0.26")
 	id("org.parchmentmc.librarian.forgegradle") version("1.+")
-	id("net.darkhax.curseforgegradle") version("1.0.8")
+	id("me.modmuss50.mod-publish-plugin")
 }
 apply {
 	from("buildtools/AppleSiliconSupport.gradle")
@@ -147,23 +146,30 @@ val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 	archiveClassifier.set("sources")
 }
 
-tasks.register<TaskPublishCurseForge>("publishCurseForge") {
-	dependsOn(tasks.jar)
-	dependsOn(":Changelog:makeChangelog")
+publishMods {
+	file.set(tasks.jar.get().archiveFile)
+	changelog.set(provider { file("../Changelog/changelog.html").readText() })
+	type = BETA
+	modLoaders.add("forge")
+	displayName.set("${project.version} for Forge $minecraftVersion")
+	version.set(project.version.toString())
 
-	apiToken = project.findProperty("curseforge_apikey") ?: "0"
-
-	val mainFile = upload(curseProjectId, tasks.jar.get().archiveFile)
-	mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
-	mainFile.changelog = file("../Changelog/changelog.html")
-	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
-	mainFile.addJavaVersion("Java $modJavaVersion")
-	mainFile.addGameVersion(minecraftVersion)
-	mainFile.addModLoader("Forge")
-
-	doLast {
-		project.ext.set("curse_file_url", "${curseHomepageUrl}/files/${mainFile.curseFileId}")
+	curseforge {
+		projectId = curseProjectId
+		accessToken.set((project.findProperty("curseforge_apikey") as String?) ?: "0")
+		changelog.set(provider { file("../Changelog/changelog.html").readText() })
+		changelogType = "html"
+		minecraftVersions.add(minecraftVersion)
+		javaVersions.add(JavaVersion.toVersion(modJavaVersion))
+		clientRequired.set(true)
+		serverRequired.set(true)
 	}
+}
+tasks.withType<PublishModTask> {
+	dependsOn(tasks.jar, ":Changelog:makeChangelog")
+}
+tasks.register("publishCurseForge") {
+	dependsOn(tasks.named("publishCurseforge"))
 }
 
 tasks.named<Test>("test") {
