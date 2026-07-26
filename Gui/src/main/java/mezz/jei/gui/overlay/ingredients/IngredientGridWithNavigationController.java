@@ -93,13 +93,10 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 
 	@Nullable
 	public IElement<?> getPageAnchorElement() {
-		IElement<?> pageAnchorElement;
 		if (usesScrollbar()) {
-			pageAnchorElement = this.scrollController.getScrollAnchorElement();
-		} else {
-			List<IElement<?>> ingredientList = ingredientSource.getElements();
-			pageAnchorElement = this.pageState.getPageAnchorElement(ingredientList);
+			return this.scrollController.getScrollAnchorElement();
 		}
+		IElement<?> pageAnchorElement = this.pageState.getPageAnchorElement(ingredientSource.getElements());
 		if (pageAnchorElement != null) {
 			return pageAnchorElement;
 		}
@@ -119,8 +116,15 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 			List<IElement<?>> ingredientList = ingredientSource.getElements();
 			int renderFirstItemIndex = this.pageState.updateForPageNavigation(firstItemIndex, ingredientList.size(), ingredientGrid.size());
 			this.ingredientGrid.set(renderFirstItemIndex, ingredientList);
+			rememberFirstVisibleElementAsPageAnchor();
 		}
 		this.onLayoutChanged.run();
+	}
+
+	private void rememberFirstVisibleElementAsPageAnchor() {
+		this.ingredientGrid.getVisibleElements()
+			.findFirst()
+			.ifPresent(this.pageState::setPageAnchorElement);
 	}
 
 	@Override
