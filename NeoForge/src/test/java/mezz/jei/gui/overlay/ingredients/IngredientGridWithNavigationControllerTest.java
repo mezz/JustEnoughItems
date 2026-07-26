@@ -52,6 +52,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IngredientGridWithNavigationControllerTest {
@@ -193,6 +194,28 @@ public class IngredientGridWithNavigationControllerTest {
 	}
 
 	@Test
+	public void pagedModeKeepsNavigatedPageWhenOverlayReopensWithoutVisibleElements() {
+		// Setup: the user navigates to the second page, then the overlay closes so the grid no longer exposes
+		// visible elements as a fallback anchor.
+		Fixture fixture = Fixture.create(3, 7, true);
+		fixture.controller.updateLayoutToFirstPage();
+		assertTrue(fixture.controller.nextPage());
+		fixture.grid.hideVisibleElements();
+		fixture.clearLayoutChanges();
+
+		// Operation: reopen the overlay using the controller's page anchor.
+		IElement<?> pageAnchor = fixture.controller.getPageAnchorElement();
+		fixture.controller.updateLayoutKeepingPageAnchorVisible(pageAnchor);
+
+		// Assertions: the controller remembered the first element on the navigated-to page before the overlay
+		// closed, so reopening does not reset to the first page.
+		assertSame(fixture.source.getElements().get(3), pageAnchor);
+		assertEquals(1, fixture.layoutChanges);
+		assertEquals(3, fixture.grid.firstItemIndex);
+		assertEquals(1, fixture.controller.getPageNumber());
+	}
+
+	@Test
 	public void zeroScrollDeltaIsNotConsumed() {
 		// Setup: the mouse is over a grid with multiple pages.
 		Fixture fixture = Fixture.create(3, 7, true);
@@ -223,6 +246,29 @@ public class IngredientGridWithNavigationControllerTest {
 		assertEquals(1, fixture.layoutChanges);
 		assertEquals(1, fixture.controller.getPageNumber());
 		assertEquals(3, fixture.grid.firstItemIndex);
+		assertEquals(0, fixture.grid.scrollOffsetY);
+	}
+
+	@Test
+	public void scrollingModeKeepsScrolledRowWhenOverlayReopensWithoutVisibleElements() {
+		// Setup: the user scrolls down one row, then the overlay closes so the grid no longer exposes visible
+		// elements as a fallback anchor.
+		Fixture fixture = Fixture.create(3, 7, true, IngredientGridNavigationMode.SCROLLING);
+		fixture.controller.updateLayoutToFirstPage();
+		fixture.controller.setScrollOffsetY(0.5f);
+		fixture.grid.hideVisibleElements();
+		fixture.clearLayoutChanges();
+
+		// Operation: reopen the overlay using the controller's page anchor.
+		IElement<?> pageAnchor = fixture.controller.getPageAnchorElement();
+		fixture.controller.updateLayoutKeepingPageAnchorVisible(pageAnchor);
+
+		// Assertions: the scrollbar controller remembered the first visible element at the scrolled row before
+		// the overlay closed, so reopening does not reset to the top.
+		assertSame(fixture.source.getElements().get(3), pageAnchor);
+		assertEquals(1, fixture.layoutChanges);
+		assertEquals(3, fixture.grid.firstItemIndex);
+		assertEquals(1, fixture.controller.getPageNumber());
 		assertEquals(0, fixture.grid.scrollOffsetY);
 	}
 
@@ -489,6 +535,8 @@ public class IngredientGridWithNavigationControllerTest {
 		private int visibleSlotCount;
 		private int firstItemIndex;
 		private int scrollOffsetY;
+		private List<IElement<?>> visibleElements = List.of();
+		private boolean exposeVisibleElements = true;
 
 		private TestNavigationGrid(int slotCount) {
 			this(slotCount, 1);
@@ -508,6 +556,10 @@ public class IngredientGridWithNavigationControllerTest {
 
 		private void setVisibleSlotCount(int visibleSlotCount) {
 			this.visibleSlotCount = visibleSlotCount;
+		}
+
+		private void hideVisibleElements() {
+			this.exposeVisibleElements = false;
 		}
 
 		@Override
@@ -539,11 +591,17 @@ public class IngredientGridWithNavigationControllerTest {
 		public void set(int firstItemIndex, int scrollOffsetY, List<IElement<?>> ingredientList) {
 			this.firstItemIndex = firstItemIndex;
 			this.scrollOffsetY = scrollOffsetY;
+			int startIndex = Math.clamp(firstItemIndex, 0, ingredientList.size());
+			int endIndex = Math.min(startIndex + this.visibleSlotCount, ingredientList.size());
+			this.visibleElements = List.copyOf(ingredientList.subList(startIndex, endIndex));
 		}
 
 		@Override
 		public Stream<IElement<?>> getVisibleElements() {
-			return Stream.of();
+			if (!exposeVisibleElements) {
+				return Stream.empty();
+			}
+			return visibleElements.stream();
 		}
 
 		@Override
