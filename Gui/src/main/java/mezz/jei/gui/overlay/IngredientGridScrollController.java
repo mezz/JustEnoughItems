@@ -52,6 +52,7 @@ public final class IngredientGridScrollController {
 			visibleIngredientCount
 		);
 		updateGridFromScrollState(ingredientList);
+		rememberFirstVisibleElementAsScrollAnchor();
 	}
 
 	public void updateLayoutKeepingScrollAnchorVisible(@Nullable IElement<?> scrollAnchorElement) {
@@ -213,7 +214,16 @@ public final class IngredientGridScrollController {
 			ingredientGrid.size()
 		);
 		updateGridFromScrollState(ingredientList);
+		rememberFirstVisibleElementAsScrollAnchor();
 		return true;
+	}
+
+	private void rememberFirstVisibleElementAsScrollAnchor() {
+		if (!isSmoothScrolling()) {
+			this.ingredientGrid.getVisibleElements()
+				.findFirst()
+				.ifPresent(this::setScrollAnchorElement);
+		}
 	}
 
 	private void updateGridFromScrollState(List<IElement<?>> ingredientList) {
