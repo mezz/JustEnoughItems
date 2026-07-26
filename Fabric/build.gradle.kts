@@ -7,6 +7,7 @@ plugins {
     idea
     `maven-publish`
     id("fabric-loom")
+    id("net.mezzdev.modshade")
     id("me.modmuss50.mod-publish-plugin")
 }
 
@@ -42,6 +43,7 @@ val parchmentVersionFabric: String by extra
 val modrinthId: String by extra
 val amecsVersionFabric: String by extra
 val amecsMinecraftVersion: String by extra
+val bakedSubstringIndexVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -130,6 +132,9 @@ dependencies {
     )
     dependencyProjects.forEach {
         implementation(it)
+    }
+    modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
+        isTransitive = false
     }
 }
 
@@ -254,8 +259,11 @@ tasks.named<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
 }
 
+val shadedJar = modShade.shadeJar()
+val shadedSourcesJar = modShade.shadeSourcesJar()
+
 publishMods {
-    file.set(tasks.remapJar.get().archiveFile)
+    file.set(shadedJar.flatMap { it.archiveFile })
     changelog.set(provider { file("../Changelog/changelog.md").readText() })
     type = BETA
     modLoaders.add("fabric")
@@ -314,26 +322,8 @@ publishing {
             @Suppress("UnstableApiUsage")
             loom.disableDeprecatedPomGeneration(this)
             artifactId = baseArchivesName
-            artifact(tasks.remapJar)
-            artifact(tasks.remapSourcesJar)
-
-            val dependencyInfos = dependencyProjects.map {
-                mapOf(
-                    "groupId" to it.group,
-                    "artifactId" to it.dependencyProject.base.archivesName.get(),
-                    "version" to it.version
-                )
-            }
-
-            pom.withXml {
-                val dependenciesNode = asNode().appendNode("dependencies")
-                dependencyInfos.forEach {
-                    val dependencyNode = dependenciesNode.appendNode("dependency")
-                    it.forEach { (key, value) ->
-                        dependencyNode.appendNode(key, value)
-                    }
-                }
-            }
+            artifact(shadedJar)
+            artifact(shadedSourcesJar)
         }
     }
     repositories {

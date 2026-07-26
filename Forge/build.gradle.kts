@@ -10,6 +10,7 @@ plugins {
 	id("maven-publish")
 	id("net.neoforged.moddev.legacyforge")
 	id("me.modmuss50.mod-publish-plugin")
+	id("net.mezzdev.modshade")
 }
 
 // gradle.properties
@@ -25,6 +26,7 @@ val modJavaVersion: String by extra
 val parchmentMinecraftVersion: String by extra
 val parchmentVersionForge: String by extra
 val modrinthId: String by extra
+val bakedSubstringIndexVersion: String by extra
 
 val forgeArtifactVersion = "${minecraftVersion}-${forgeVersion}"
 
@@ -71,6 +73,9 @@ java {
 dependencies {
 	dependencyProjects.forEach {
 		implementation(it)
+	}
+	modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
+		isTransitive = false
 	}
 	testImplementation(
 		group = "org.junit.jupiter",
@@ -158,8 +163,11 @@ val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 
 val reobfJarTask = tasks.named<AbstractArchiveTask>("reobfJar")
 
+val shadedJar = modShade.shadeJar()
+val shadedSourcesJar = modShade.shadeSourcesJar()
+
 publishMods {
-	file.set(reobfJarTask.flatMap { it.archiveFile })
+	file.set(shadedJar.flatMap { it.archiveFile })
 	changelog.set(provider { file("../Changelog/changelog.md").readText() })
 	type = BETA
 	modLoaders.add("forge")
@@ -216,18 +224,8 @@ publishing {
 	publications {
 		register<MavenPublication>("forgeJar") {
 			artifactId = baseArchivesName
-			artifact(reobfJarTask)
-			artifact(sourcesJarTask.get())
-
-			pom.withXml {
-				val dependenciesNode = asNode().appendNode("dependencies")
-				dependencyProjects.forEach {
-					val dependencyNode = dependenciesNode.appendNode("dependency")
-					dependencyNode.appendNode("groupId", it.group)
-					dependencyNode.appendNode("artifactId", it.base.archivesName.get())
-					dependencyNode.appendNode("version", it.version)
-				}
-			}
+			artifact(shadedJar)
+			artifact(shadedSourcesJar)
 		}
 	}
 	repositories {
