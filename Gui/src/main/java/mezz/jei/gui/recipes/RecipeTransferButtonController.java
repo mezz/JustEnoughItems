@@ -28,6 +28,7 @@ public class RecipeTransferButtonController implements IIconButtonController {
 	private final IRecipeLayoutDrawable<?> recipeLayout;
 	private final RecipesGui recipesGui;
 	private @Nullable IRecipeTransferError recipeTransferError;
+	private boolean showTransferError;
 
 	public RecipeTransferButtonController(IRecipeLayoutDrawable<?> recipeLayout, RecipesGui recipesGui) {
 		this.recipeLayout = recipeLayout;
@@ -43,6 +44,11 @@ public class RecipeTransferButtonController implements IIconButtonController {
 
 	@Override
 	public void updateState(IButtonState state) {
+		IRecipeTransferError recipeTransferError = updateRecipeTransferError();
+		updateStateForTransferError(state, recipeTransferError);
+	}
+
+	public @Nullable IRecipeTransferError updateRecipeTransferError() {
 		Player player = Minecraft.getInstance().player;
 		AbstractContainerMenu parentContainer = recipesGui.getParentContainerMenu();
 		if (parentContainer != null && player != null) {
@@ -52,8 +58,7 @@ public class RecipeTransferButtonController implements IIconButtonController {
 		} else {
 			this.recipeTransferError = RecipeTransferErrorInternal.INSTANCE;
 		}
-
-		updateStateForTransferError(state, recipeTransferError);
+		return this.recipeTransferError;
 	}
 
 	static void updateStateForTransferError(IButtonState state, @Nullable IRecipeTransferError recipeTransferError) {
@@ -71,17 +76,30 @@ public class RecipeTransferButtonController implements IIconButtonController {
 
 	@Override
 	public boolean onPress(IJeiUserInput input) {
-		if (!input.isSimulate()) {
-			IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
-			Minecraft minecraft = Minecraft.getInstance();
-			boolean maxTransfer = minecraft.hasShiftDown();
-			LocalPlayer player = minecraft.player;
-			AbstractContainerMenu parentContainer = recipesGui.getParentContainerMenu();
-			if (parentContainer != null && player != null && RecipeTransferUtil.transferRecipe(recipeTransferManager, parentContainer, recipeLayout, player, maxTransfer)) {
-				recipesGui.onClose();
-			}
+		Minecraft minecraft = Minecraft.getInstance();
+		boolean maxTransfer = minecraft.hasShiftDown();
+		return transferRecipe(maxTransfer, input.isSimulate());
+	}
+
+	public boolean transferRecipe(boolean maxTransfer, boolean simulate) {
+		Minecraft minecraft = Minecraft.getInstance();
+		LocalPlayer player = minecraft.player;
+		AbstractContainerMenu parentContainer = recipesGui.getParentContainerMenu();
+		if (parentContainer == null || player == null) {
+			return false;
 		}
-		return true;
+
+		IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
+		if (simulate) {
+			IRecipeTransferError recipeTransferError = RecipeTransferUtil.getTransferRecipeError(recipeTransferManager, parentContainer, recipeLayout, player).orElse(null);
+			return recipeTransferError == null || recipeTransferError.getType().allowsTransfer;
+		}
+
+		if (RecipeTransferUtil.transferRecipe(recipeTransferManager, parentContainer, recipeLayout, player, maxTransfer)) {
+			recipesGui.onClose();
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -131,6 +149,18 @@ public class RecipeTransferButtonController implements IIconButtonController {
 		} finally {
 			poseStack.popMatrix();
 		}
+	}
+
+	public @Nullable IRecipeTransferError getRecipeTransferError() {
+		return this.recipeTransferError;
+	}
+
+	public boolean isShowTransferError() {
+		return this.showTransferError;
+	}
+
+	public void setShowTransferError(boolean showTransferError) {
+		this.showTransferError = showTransferError;
 	}
 
 	public int getMissingCountHint() {
