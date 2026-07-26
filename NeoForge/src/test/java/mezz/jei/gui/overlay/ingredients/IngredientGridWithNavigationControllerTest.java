@@ -52,7 +52,6 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IngredientGridWithNavigationControllerTest {
@@ -194,22 +193,19 @@ public class IngredientGridWithNavigationControllerTest {
 	}
 
 	@Test
-	public void pagedModeKeepsNavigatedPageWhenOverlayReopensWithoutVisibleElements() {
+	public void pagedModeKeepsNavigatedPageWhenOverlayReopens() {
 		// Setup: the user navigates to the second page, then the overlay closes so the grid no longer exposes
 		// visible elements as a fallback anchor.
 		Fixture fixture = Fixture.create(3, 7, true);
 		fixture.controller.updateLayoutToFirstPage();
 		assertTrue(fixture.controller.nextPage());
-		fixture.grid.hideVisibleElements();
-		fixture.clearLayoutChanges();
+		fixture.closeOverlay();
 
 		// Operation: reopen the overlay using the controller's page anchor.
-		IElement<?> pageAnchor = fixture.controller.getPageAnchorElement();
-		fixture.controller.updateLayoutKeepingPageAnchorVisible(pageAnchor);
+		fixture.reopenOverlay();
 
 		// Assertions: the controller remembered the first element on the navigated-to page before the overlay
 		// closed, so reopening does not reset to the first page.
-		assertSame(fixture.source.getElements().get(3), pageAnchor);
 		assertEquals(1, fixture.layoutChanges);
 		assertEquals(3, fixture.grid.firstItemIndex);
 		assertEquals(1, fixture.controller.getPageNumber());
@@ -250,25 +246,24 @@ public class IngredientGridWithNavigationControllerTest {
 	}
 
 	@Test
-	public void scrollingModeKeepsScrolledRowWhenOverlayReopensWithoutVisibleElements() {
-		// Setup: the user scrolls down one row, then the overlay closes so the grid no longer exposes visible
-		// elements as a fallback anchor.
-		Fixture fixture = Fixture.create(3, 7, true, IngredientGridNavigationMode.SCROLLING);
+	public void scrollingModeKeepsScrolledRowWhenOverlayReopensAfterGridSizeChanges() {
+		// Setup: the user scrolls down to the fourth row, then the overlay closes so the grid no longer exposes
+		// visible elements as a fallback anchor.
+		Fixture fixture = Fixture.create(3, 3, 30, true, IngredientGridNavigationMode.SCROLLING);
 		fixture.controller.updateLayoutToFirstPage();
-		fixture.controller.setScrollOffsetY(0.5f);
-		fixture.grid.hideVisibleElements();
-		fixture.clearLayoutChanges();
+		int hiddenRows = IngredientGridScrollState.getHiddenRows(30, 3, 3);
+		fixture.controller.setScrollOffsetY(3 / (float) hiddenRows);
+		fixture.closeOverlay();
 
-		// Operation: reopen the overlay using the controller's page anchor.
-		IElement<?> pageAnchor = fixture.controller.getPageAnchorElement();
-		fixture.controller.updateLayoutKeepingPageAnchorVisible(pageAnchor);
+		// Operation: reopen the overlay after its grid size changes.
+		fixture.grid.setGridSize(3, 5);
+		fixture.reopenOverlay();
 
 		// Assertions: the scrollbar controller remembered the first visible element at the scrolled row before
-		// the overlay closed, so reopening does not reset to the top.
-		assertSame(fixture.source.getElements().get(3), pageAnchor);
+		// the overlay closed, so reopening does not reset or drift to another row.
 		assertEquals(1, fixture.layoutChanges);
-		assertEquals(3, fixture.grid.firstItemIndex);
-		assertEquals(1, fixture.controller.getPageNumber());
+		assertEquals(9, fixture.grid.firstItemIndex);
+		assertEquals(3, fixture.controller.getPageNumber());
 		assertEquals(0, fixture.grid.scrollOffsetY);
 	}
 
@@ -472,6 +467,15 @@ public class IngredientGridWithNavigationControllerTest {
 		void clearLayoutChanges() {
 			this.layoutChanges = 0;
 		}
+
+		void closeOverlay() {
+			this.grid.clearVisibleElements();
+			clearLayoutChanges();
+		}
+
+		void reopenOverlay() {
+			this.controller.updateLayoutKeepingPageAnchorVisible(this.controller.getPageAnchorElement());
+		}
 	}
 
 	private record TestGridConfig(IngredientGridNavigationMode navigationMode) implements IIngredientGridConfig {
@@ -536,7 +540,6 @@ public class IngredientGridWithNavigationControllerTest {
 		private int firstItemIndex;
 		private int scrollOffsetY;
 		private List<IElement<?>> visibleElements = List.of();
-		private boolean exposeVisibleElements = true;
 
 		private TestNavigationGrid(int slotCount) {
 			this(slotCount, 1);
@@ -558,8 +561,8 @@ public class IngredientGridWithNavigationControllerTest {
 			this.visibleSlotCount = visibleSlotCount;
 		}
 
-		private void hideVisibleElements() {
-			this.exposeVisibleElements = false;
+		private void clearVisibleElements() {
+			this.visibleElements = List.of();
 		}
 
 		@Override
@@ -598,9 +601,6 @@ public class IngredientGridWithNavigationControllerTest {
 
 		@Override
 		public Stream<IElement<?>> getVisibleElements() {
-			if (!exposeVisibleElements) {
-				return Stream.empty();
-			}
 			return visibleElements.stream();
 		}
 
