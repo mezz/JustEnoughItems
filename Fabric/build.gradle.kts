@@ -13,6 +13,7 @@ plugins {
     idea
     `maven-publish`
     id("fabric-loom")
+    id("net.mezzdev.modshade")
     id("me.modmuss50.mod-publish-plugin")
 }
 
@@ -48,8 +49,6 @@ val dependencyProjects: List<Project> = vanillaDependencyProjects + loomDependen
 dependencyProjects.forEach {
     project.evaluationDependsOn(it.path)
 }
-
-val embeddedLibraries = configurations.create("embeddedLibraries")
 
 val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
     compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
@@ -156,10 +155,7 @@ dependencies {
         localRuntime(namedElements)
     }
     changelogHtml(project(":Changelog"))
-    add(
-        embeddedLibraries.name,
-        "net.mezzdev:baked-substring-index:$bakedSubstringIndexVersion"
-    ) {
+    modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
         isTransitive = false
     }
 }
@@ -287,11 +283,6 @@ tasks.jar {
     for (p in dependencyProjects) {
         from(p.sourceSets.main.get().output)
     }
-    from({
-        embeddedLibraries.map {
-            zipTree(it)
-        }
-    })
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
@@ -304,8 +295,11 @@ tasks.named<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
 }
 
+val shadedJar = modShade.shadeJar()
+val shadedSourcesJar = modShade.shadeSourcesJar()
+
 publishMods {
-    file.set(tasks.remapJar.flatMap { it.archiveFile })
+    file.set(shadedJar.flatMap { it.archiveFile })
     changelog.set(changelogHtml.singleFileContents())
     type = BETA
     modLoaders.add("fabric")
@@ -340,8 +334,8 @@ tasks.named<Test>("test") {
 }
 
 artifacts {
-    archives(tasks.remapJar)
-    archives(tasks.remapSourcesJar)
+    archives(shadedJar)
+    archives(shadedSourcesJar)
 }
 
 publishing {
@@ -350,8 +344,8 @@ publishing {
             @Suppress("UnstableApiUsage")
             loom.disableDeprecatedPomGeneration(this)
             artifactId = baseArchivesName
-            artifact(tasks.remapJar)
-            artifact(tasks.remapSourcesJar)
+            artifact(shadedJar)
+            artifact(shadedSourcesJar)
         }
     }
     repositories {

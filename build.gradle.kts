@@ -14,6 +14,7 @@ plugins {
     id("org.spongepowered.gradle.vanilla") version("0.2.2") apply(false)
     id("net.neoforged.moddev.legacyforge") version("2.0.144") apply(false)
     id("net.neoforged.jarcompatibilitychecker") version("0.1.19") apply(false)
+    id("net.mezzdev.modshade") version("0.7.0") apply(false)
 }
 
 javaFormatting {

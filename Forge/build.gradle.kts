@@ -7,6 +7,7 @@ plugins {
 	`maven-publish`
 	id("net.neoforged.moddev.legacyforge")
 	id("me.modmuss50.mod-publish-plugin")
+	id("net.mezzdev.modshade")
 }
 
 // gradle.properties
@@ -61,8 +62,6 @@ dependencyProjects.forEach {
 }
 project.evaluationDependsOn(":Changelog")
 
-val embeddedLibraries = configurations.create("embeddedLibraries")
-
 java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
@@ -93,10 +92,7 @@ dependencies {
 		add(gameTestSourceSet.implementationConfigurationName, it)
 	}
 	changelogHtml(project(":Changelog"))
-	add(
-		embeddedLibraries.name,
-		"net.mezzdev:baked-substring-index:$bakedSubstringIndexVersion"
-	) {
+	modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
 		isTransitive = false
 	}
 	testImplementation(
@@ -187,11 +183,6 @@ tasks.jar {
 	for (p in dependencyProjects) {
 		from(p.sourceSets.main.get().output)
 	}
-	from({
-		embeddedLibraries.map {
-			zipTree(it)
-		}
-	})
 
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
@@ -205,10 +196,11 @@ val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 	archiveClassifier.set("sources")
 }
 
+val shadedJar = modShade.shadeJar()
+val shadedSourcesJar = modShade.shadeSourcesJar()
 val reobfJarTask = tasks.named<AbstractArchiveTask>("reobfJar")
-
 publishMods {
-	file.set(reobfJarTask.flatMap { it.archiveFile })
+	file.set(shadedJar.flatMap { it.archiveFile })
 	changelog.set(changelogHtml.singleFileContents())
 	type = BETA
 	modLoaders.add("forge")
@@ -251,8 +243,8 @@ publishing {
 	publications {
 		register<MavenPublication>("forgeJar") {
 			artifactId = baseArchivesName
-			artifact(reobfJarTask)
-			artifact(sourcesJarTask.get())
+			artifact(shadedJar)
+			artifact(shadedSourcesJar)
 		}
 	}
 	repositories {
