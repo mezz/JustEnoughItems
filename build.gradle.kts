@@ -11,6 +11,8 @@ plugins {
     // https://projects.neoforged.net/neoforged/moddevgradle
     id("net.neoforged.moddev") version("2.0.142") apply(false)
 
+    id("net.mezzdev.modshade") version("0.2.0") apply(false)
+
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
     id("me.modmuss50.mod-publish-plugin") version("2.0.1") apply(false)
 

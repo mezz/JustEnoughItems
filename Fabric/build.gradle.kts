@@ -6,6 +6,7 @@ plugins {
     idea
     `maven-publish`
     id("fabric-loom")
+    id("net.mezzdev.modshade")
     id("me.modmuss50.mod-publish-plugin")
 }
 
@@ -65,13 +66,6 @@ val loomDependencyProjects: List<Project> = listOf(
 val dependencyProjects: List<Project> = vanillaDependencyProjects + loomDependencyProjects
 val debugProject = project(":Debug")
 
-val embeddedLibraries: Configuration by configurations.creating {
-    isCanBeConsumed = false
-    isCanBeResolved = true
-}
-configurations.implementation {
-    extendsFrom(embeddedLibraries)
-}
 val commonClientTestFixturesSource = project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java")
 val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
     java.srcDir(commonClientTestFixturesSource)
@@ -183,10 +177,10 @@ dependencies {
     loomDependencyProjects.forEach {
         implementation(project(it.path, "namedElements"))
     }
-    embeddedLibraries("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
+    modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
         isTransitive = false
     }
-    embeddedLibraries("net.mezzdev:suffixtree:${suffixtreeVersion}") {
+    modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
     }
     changelogHtml(project(":Changelog"))
@@ -382,12 +376,10 @@ tasks.matching { it.name in debugRunTasks }.configureEach {
 }
 
 tasks.jar {
-    dependsOn(embeddedLibraries)
     from(sourceSets.main.get().output)
     for (p in dependencyProjects) {
         from(p.sourceSets.main.get().output)
     }
-    from(embeddedLibraries.map(::zipTree))
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
@@ -400,8 +392,11 @@ tasks.named<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
 }
 
+val shadedJar = modShade.shadeJar()
+val shadedSourcesJar = modShade.shadeSourcesJar()
+
 publishMods {
-    file.set(tasks.remapJar.get().archiveFile)
+    file.set(shadedJar.flatMap { it.archiveFile })
     changelog.set(changelogMarkdown.singleFileContents())
     type = BETA
     modLoaders.add("fabric")
@@ -456,26 +451,8 @@ publishing {
             @Suppress("UnstableApiUsage")
             loom.disableDeprecatedPomGeneration(this)
             artifactId = baseArchivesName
-            artifact(tasks.remapJar)
-            artifact(tasks.remapSourcesJar)
-
-            val dependencyInfos = dependencyProjects.map {
-                mapOf(
-                    "groupId" to it.group,
-                    "artifactId" to it.base.archivesName.get(),
-                    "version" to it.version
-                )
-            }
-
-            pom.withXml {
-                val dependenciesNode = asNode().appendNode("dependencies")
-                dependencyInfos.forEach {
-                    val dependencyNode = dependenciesNode.appendNode("dependency")
-                    it.forEach { (key, value) ->
-                        dependencyNode.appendNode(key, value)
-                    }
-                }
-            }
+            artifact(shadedJar)
+            artifact(shadedSourcesJar)
         }
     }
     repositories {

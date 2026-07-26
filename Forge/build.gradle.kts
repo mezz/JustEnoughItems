@@ -11,6 +11,7 @@ plugins {
 	id("net.minecraftforge.gradle")
 	id("org.parchmentmc.librarian.forgegradle")
 	id("me.modmuss50.mod-publish-plugin")
+	id("net.mezzdev.modshade")
 }
 
 // gradle.properties
@@ -61,13 +62,6 @@ dependencyProjects.forEach {
 }
 project.evaluationDependsOn(debugProject.path)
 
-val embeddedLibraries: Configuration = project(":Common").configurations.detachedConfiguration(
-	project(":Common").dependencies.create("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}"),
-	project(":Common").dependencies.create("net.mezzdev:suffixtree:${suffixtreeVersion}")
-).apply {
-	isTransitive = false
-}
-
 java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
@@ -114,8 +108,12 @@ dependencies {
 	dependencyProjects.forEach {
 		compileOnly(it)
 	}
-	compileOnly(files(embeddedLibraries))
-	testCompileOnly(files(embeddedLibraries))
+	modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
+		isTransitive = false
+	}
+	modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
+		isTransitive = false
+	}
 	testImplementation(
 		group = "org.junit.jupiter",
 		name = "junit-jupiter",
@@ -201,9 +199,7 @@ tasks.withType<ProcessResources> {
 }
 
 tasks.jar {
-	dependsOn(embeddedLibraries)
 	from(sourceSets.main.get().output)
-	from(embeddedLibraries.map(::zipTree))
 
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
@@ -217,8 +213,11 @@ val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 	archiveClassifier.set("sources")
 }
 
+val shadedJar = modShade.shadeJar()
+val shadedSourcesJar = modShade.shadeSourcesJar()
+
 publishMods {
-	file.set(tasks.jar.get().archiveFile)
+	file.set(shadedJar.flatMap { it.archiveFile })
 	changelog.set(changelogMarkdown.singleFileContents())
 	type = BETA
 	modLoaders.add("forge")
@@ -271,8 +270,8 @@ publishing {
 	publications {
 		register<MavenPublication>("forgeJar") {
 			artifactId = baseArchivesName
-			artifact(tasks.jar.get())
-			artifact(sourcesJarTask.get())
+			artifact(shadedJar)
+			artifact(shadedSourcesJar)
 		}
 	}
 	repositories {

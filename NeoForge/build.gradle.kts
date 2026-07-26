@@ -11,6 +11,7 @@ plugins {
 	id("maven-publish")
 	id("me.modmuss50.mod-publish-plugin")
 	id("net.neoforged.moddev")
+	id("net.mezzdev.modshade")
 }
 
 // gradle.properties
@@ -71,13 +72,6 @@ dependencyProjects.forEach {
 }
 project.evaluationDependsOn(debugProject.path)
 
-val embeddedLibraries: Configuration by configurations.creating {
-	isCanBeConsumed = false
-	isCanBeResolved = true
-}
-configurations.implementation {
-	extendsFrom(embeddedLibraries)
-}
 configurations.named("gameTestImplementation") {
 	extendsFrom(configurations.implementation.get())
 }
@@ -153,10 +147,10 @@ dependencies {
 	dependencyProjects.forEach {
 		implementation(it)
 	}
-	embeddedLibraries("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
+	modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
 		isTransitive = false
 	}
-	embeddedLibraries("net.mezzdev:suffixtree:${suffixtreeVersion}") {
+	modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
 		isTransitive = false
 	}
 	"gameTestImplementation"("net.neoforged:testframework:${neoforgeVersion}") {
@@ -210,7 +204,6 @@ neoForge {
 		val jeiClientTestsMod = mods.named("jeiclienttests")
 
 		configureEach {
-			getAdditionalRuntimeClasspathConfiguration().extendsFrom(embeddedLibraries)
 			loadedMods.set(setOf(
 				jeiMod.get()
 			))
@@ -361,12 +354,10 @@ clientRecipeSyncRuns.forEach { (runName, _) ->
 }
 
 tasks.jar {
-	dependsOn(embeddedLibraries)
 	from(sourceSets.main.get().output)
 	for (p in dependencyProjects) {
 		from(p.sourceSets.main.get().output)
 	}
-	from(embeddedLibraries.map(::zipTree))
 
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
@@ -380,8 +371,11 @@ val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 	archiveClassifier.set("sources")
 }
 
+val shadedJar = modShade.shadeJar()
+val shadedSourcesJar = modShade.shadeSourcesJar()
+
 publishMods {
-	file.set(tasks.jar.get().archiveFile)
+	file.set(shadedJar.flatMap { it.archiveFile })
 	type = BETA
 	modLoaders.add("neoforge")
 	displayName.set("${project.version} for NeoForge $minecraftVersion")
@@ -436,8 +430,8 @@ publishing {
 	publications {
 		register<MavenPublication>("neoforgeJar") {
 			artifactId = baseArchivesName
-			artifact(tasks.jar.get())
-			artifact(sourcesJarTask.get())
+			artifact(shadedJar)
+			artifact(shadedSourcesJar)
 		}
 	}
 	repositories {
