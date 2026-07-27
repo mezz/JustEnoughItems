@@ -30,6 +30,7 @@ public class ElementPrefixParser {
 		ISearchStorageBuilderFactory limitedStringStorageBuilderFactory = createLimitedStringStorageBuilderFactory(searchStorageBuilderFactory);
 
 		this.noPrefix = new PrefixInfo<>(
+			"unprefixed",
 			'\0',
 			() -> SearchMode.ENABLED,
 			IListElementInfo::getNames,
@@ -37,36 +38,42 @@ public class ElementPrefixParser {
 		);
 
 		addPrefix(new PrefixInfo<>(
+			"mod_names",
 			'@',
 			config::getModNameSearchMode,
 			info -> info.getModNames(config),
 			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
+			"tags",
 			'#',
 			config::getTagSearchMode,
 			e -> e.getTagStrings(ingredientManager),
 			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
+			"tooltips",
 			'$',
 			config::getTooltipSearchMode,
 			e -> e.getTooltipStrings(config, ingredientManager),
 			searchStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
+			"creative_tabs",
 			'%',
 			config::getCreativeTabSearchMode,
 			e -> e.getCreativeTabsStrings(ingredientManager),
 			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
+			"colors",
 			'^',
 			config::getColorSearchMode,
 			e -> e.getColorNames(ingredientManager, colorHelper),
 			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
+			"identifiers",
 			'&',
 			config::getIdentifierSearchMode,
 			element -> List.of(element.getIdentifier().toString()),
@@ -81,6 +88,11 @@ public class ElementPrefixParser {
 			@Override
 			public <T> LimitedStringStorageBuilder<T> create() {
 				return new LimitedStringStorageBuilder<>(searchStorageBuilderFactory);
+			}
+
+			@Override
+			public <T> LimitedStringStorageBuilder<T> create(String id) {
+				return new LimitedStringStorageBuilder<>(searchStorageBuilderFactory, id);
 			}
 		};
 	}
