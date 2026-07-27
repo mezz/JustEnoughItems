@@ -1,6 +1,4 @@
 import com.gtnewhorizons.retrofuturagradle.mcp.DeobfuscateTask
-import net.darkhax.curseforgegradle.Constants as CFG_Constants
-import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
@@ -8,11 +6,10 @@ import java.io.ByteArrayOutputStream
 
 plugins {
 	id("com.gtnewhorizons.retrofuturagradle") version("1.4.9")
-	id("com.modrinth.minotaur") version("2.+")
 	id("eclipse")
 	id("java")
+	id("me.modmuss50.mod-publish-plugin") version("2.0.1")
 	id("maven-publish")
-	id("net.darkhax.curseforgegradle") version("1.0.8")
 	id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.7"
 	id("se.bjurr.gitchangelog.git-changelog-gradle-plugin") version("1.77.2")
 }
@@ -27,10 +24,14 @@ val modGroup: String by extra
 val modName: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val modrinthId: String by extra
 val specificationVersion: String by extra
 
+// set by ORG_GRADLE_PROJECT_curseforgeApikey or ORG_GRADLE_PROJECT_curseforge_apikey in Jenkinsfile
+val curseforgeApikey = providers.gradleProperty("curseforgeApikey")
+	.orElse(providers.gradleProperty("curseforge_apikey"))
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
-val modrinthToken: String? by project
+val modrinthToken = providers.gradleProperty("modrinthToken")
 
 group = modGroup
 val baseArchivesName = "${modId}_${minecraftVersion}"
@@ -172,41 +173,55 @@ tasks.register<GitChangelogTask>("makeMarkdownChangelog") {
 	templateContent = file("changelog-markdown.mustache").readText()
 }
 
-tasks.register<TaskPublishCurseForge>("publishCurseForge") {
-	dependsOn(tasks.reobfJar)
-	dependsOn(":makeChangelog")
+publishMods {
+	file.set(tasks.reobfJar.flatMap { it.archiveFile })
+	type = BETA
+	modLoaders.add("forge")
+	displayName.set("${project.version} for Forge $minecraftVersion")
+	version.set(project.version.toString())
+	dryRun.set(providers.provider {
+		!curseforgeApikey.isPresent && !modrinthToken.isPresent
+	})
 
-	// set by ORG_GRADLE_PROJECT_curseforge_apikey in Jenkinsfile
-	apiToken = project.findProperty("curseforge_apikey") ?: "0"
+	curseforge {
+		projectId = curseProjectId
+		accessToken.set(curseforgeApikey)
+		changelog.set(provider { file("changelog.html").readText() })
+		changelogType = "html"
+		minecraftVersions.add(minecraftVersion)
+		javaVersions.add(JavaVersion.toVersion(modJavaVersion))
+		client = true
+		server = true
+	}
 
-	val mainFile = upload(curseProjectId, tasks.reobfJar.get().archiveFile)
-	mainFile.changelogType = CFG_Constants.CHANGELOG_HTML
-	mainFile.changelog = file("changelog.html")
-	mainFile.releaseType = CFG_Constants.RELEASE_TYPE_BETA
-	mainFile.addJavaVersion("Java $modJavaVersion")
-	mainFile.addGameVersion(minecraftVersion)
-	mainFile.addModLoader("Forge")
-
-	doLast {
-		project.ext.set("curse_file_url", "${curseHomepageUrl}/files/${mainFile.curseFileId}")
+	modrinth {
+		projectId = modrinthId
+		accessToken.set(modrinthToken)
+		changelog.set(provider { file("changelog.md").readText() })
+		minecraftVersions.add(minecraftVersion)
 	}
 }
 
-modrinth {
-	token.set(modrinthToken ?: "0")
-	projectId.set("jei")
-	versionNumber.set("${project.version}")
-	versionName.set("${project.version} for Forge $minecraftVersion")
-	loaders.add("forge")
-	gameVersions.add(minecraftVersion)
-	versionType.set("beta")
-	uploadFile.set(tasks.reobfJar.get())
-	changelog.set(provider { file("changelog.md").readText() })
+tasks.named("publishCurseforge") {
+	dependsOn(tasks.reobfJar)
+	dependsOn(":makeChangelog")
 }
 
-tasks.modrinth {
+tasks.named("publishModrinth") {
 	dependsOn(tasks.reobfJar)
 	dependsOn(":makeMarkdownChangelog")
+}
+
+tasks.register("publishCurseForge") {
+	group = "publishing"
+	description = "Compatibility alias for publishCurseforge."
+	dependsOn(tasks.named("publishCurseforge"))
+}
+
+tasks.register("modrinth") {
+	group = "publishing"
+	description = "Compatibility alias for publishModrinth."
+	dependsOn(tasks.named("publishModrinth"))
 }
 
 tasks.withType<Javadoc> {
