@@ -6,23 +6,13 @@ import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.util.function.CachedSupplierTransformer;
 import mezz.jei.library.config.serializers.ChatFormattingSerializer;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.TooltipFlag;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Supplier;
 
 public class ModIdFormatConfig implements IModIdFormatConfig {
-	private static final Logger LOGGER = LogManager.getLogger();
 	protected static final List<ChatFormatting> defaultModNameFormat = List.of(ChatFormatting.BLUE, ChatFormatting.ITALIC);
 	public static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";
 
@@ -50,7 +40,7 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 
 	private Component getOverride() {
 		if (cachedOverride == null) {
-			cachedOverride = detectModNameTooltipFormatting();
+			cachedOverride = ModIdFormatDetectionHelper.detectModNameTooltipFormatting();
 		}
 		return cachedOverride;
 	}
@@ -67,22 +57,6 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 	@Override
 	public final boolean isModNameFormatOverrideActive() {
 		return !getOverride().getString().isEmpty();
-	}
-
-	private static Component detectModNameTooltipFormatting() {
-		Minecraft minecraft = Minecraft.getInstance();
-		LocalPlayer player = minecraft.player;
-		List<Component> tooltip = getTestTooltip(player, new ItemStack(Items.APPLE));
-		return detectModNameTooltipFormatting(tooltip);
-	}
-
-	private static List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack) {
-		try {
-			return itemStack.getTooltipLines(Item.TooltipContext.EMPTY, player, TooltipFlag.Default.NORMAL);
-		} catch (LinkageError | RuntimeException e) {
-			LOGGER.error("Error while Testing for mod name formatting", e);
-		}
-		return List.of();
 	}
 
 	public static Component detectModNameTooltipFormatting(List<Component> tooltip) {
