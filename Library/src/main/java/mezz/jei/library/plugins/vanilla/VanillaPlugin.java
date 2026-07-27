@@ -61,6 +61,7 @@ import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipeMaker;
 import mezz.jei.library.plugins.vanilla.gui.InventoryEffectRendererGuiHandler;
 import mezz.jei.library.plugins.vanilla.gui.RecipeBookGuiHandler;
 import mezz.jei.library.plugins.vanilla.gui.ToastGuiHandler;
+import mezz.jei.library.plugins.vanilla.ingredients.ItemStackCodecs;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackHelper;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackListFactory;
 import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidIngredientHelper;
@@ -183,7 +184,7 @@ public class VanillaPlugin implements IModPlugin {
 			itemStacks,
 			itemStackHelper,
 			itemStackRenderer,
-			ItemStack.STRICT_SINGLE_ITEM_CODEC
+			ItemStackCodecs.createStrictSingleItemCodec()
 		);
 
 		IPlatformFluidHelperInternal<?> platformFluidHelper = Services.PLATFORM.getFluidHelper();

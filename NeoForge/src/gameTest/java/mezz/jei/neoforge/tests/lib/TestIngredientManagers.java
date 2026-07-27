@@ -12,6 +12,7 @@ import mezz.jei.library.load.registration.IngredientManagerBuilder;
 import mezz.jei.library.load.registration.SubtypeRegistration;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
+import mezz.jei.library.plugins.vanilla.ingredients.ItemStackCodecs;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -70,7 +71,7 @@ public final class TestIngredientManagers {
 			itemStacks,
 			itemStackHelper,
 			new NoOpItemStackRenderer(),
-			ItemStack.CODEC
+			ItemStackCodecs.createStrictSingleItemCodec()
 		);
 		return builder.build();
 	}
