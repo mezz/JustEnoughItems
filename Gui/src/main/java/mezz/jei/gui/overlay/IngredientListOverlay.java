@@ -26,6 +26,7 @@ import mezz.jei.gui.input.handlers.NullDragHandler;
 import mezz.jei.gui.input.handlers.NullInputHandler;
 import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
+import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,6 +50,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IInternalKeyMappings keyBindings;
 	private final ScreenPropertiesCache screenPropertiesCache;
 	private final IFilterTextSource filterTextSource;
+	private String lastFilterText = "";
 
 	public IngredientListOverlay(
 		IIngredientGridSource ingredientGridSource,
@@ -68,9 +70,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.keyBindings = keyBindings;
 		this.filterTextSource = filterTextSource;
 		this.searchField.setValue(filterTextSource.getFilterText());
+		this.lastFilterText = filterTextSource.getFilterText();
 		this.searchField.setFocused(false);
 		this.searchField.setResponder(filterTextSource::setFilterText);
-		filterTextSource.addListener(this.searchField::setValue);
+		filterTextSource.addListener(this::onFilterTextChanged);
 
 		ingredientGridSource.addSourceListChangedListener(() -> {
 			Minecraft minecraft = Minecraft.getInstance();
@@ -116,8 +119,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		final boolean searchBarCentered = isSearchBarCentered(this.clientConfig, guiProperties);
 
 		final ImmutableRect2i availableContentsArea = getAvailableContentsArea(displayArea, searchBarCentered);
+		IElement<?> pageAnchorElement = this.contents.getPageAnchorElement();
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas, null);
-		this.contents.updateLayout(false);
+		this.contents.updateLayoutKeepingPageAnchorVisible(pageAnchorElement);
 
 		final ImmutableRect2i searchAndConfigArea = getSearchAndConfigArea(displayArea, searchBarCentered, guiProperties);
 		final ImmutableRect2i searchArea = searchAndConfigArea.cropRight(BUTTON_SIZE);
@@ -127,6 +131,14 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.searchField.updateBounds(searchArea);
 
 		this.configButton.updateBounds(configButtonArea);
+	}
+
+	private void onFilterTextChanged(String filterText) {
+		this.searchField.setValue(filterText);
+		if (!this.lastFilterText.isEmpty() && filterText.isEmpty()) {
+			this.contents.updateLayoutToFirstPage();
+		}
+		this.lastFilterText = filterText;
 	}
 
 	private static boolean isSearchBarCentered(IClientConfig clientConfig, IGuiProperties guiProperties) {
