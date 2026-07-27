@@ -18,7 +18,7 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 
 	@Override
 	public Optional<String> getCreatorModId(ItemStack stack) {
-		return Optional.empty();
+		return Optional.of(stack.getCreatorNamespace());
 	}
 
 	@Override
