@@ -9,6 +9,7 @@
     "AbstractContainerScreenMixin",
     "ChatListenerMixin",
     "ClientPacketListenerMixin",
+    "ContainerEventHandlerMixin",
     "EffectRenderingInventoryScreenMixin",
     "GameMixin",
     "KeyboardHandlerMixin",
