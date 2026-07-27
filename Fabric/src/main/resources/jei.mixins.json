@@ -10,6 +10,7 @@
     "AmecsKeyBindingManagerMixin",
     "ChatListenerMixin",
     "ClientPacketListenerMixin",
+    "ContainerEventHandlerMixin",
     "EffectRenderingInventoryScreenMixin",
     "GameMixin",
     "KeyMappingMixin",
