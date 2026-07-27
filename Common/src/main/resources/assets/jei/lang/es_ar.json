@@ -155,6 +155,8 @@
   "jei.config.client.bookmarks.description": "Opciones relacionadas con el guardado de ingredientes y recetas como favoritos.",
   "jei.config.client.bookmarks.addBookmarksToFrontEnabled": "Agregar Favoritos al Principio",
   "jei.config.client.bookmarks.addBookmarksToFrontEnabled.description": "Si está activado, los nuevos favoritos se agregan al inicio. Si no, al final.",
+  "jei.config.client.bookmarks.bookmarkOutputAsRecipe": "Marcar Resultado como Receta",
+  "jei.config.client.bookmarks.bookmarkOutputAsRecipe.description": "Si está activado, al presionar la tecla de marcador sobre el resultado de una receta, se marca la receta en vez del ingrediente.",
   "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled": "Arrastrar para Reordenar Favoritos",
   "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled.description": "Permite reordenar los favoritos arrastrándolos.",
 
@@ -301,6 +303,9 @@
   "jei.config.colors.colors.description": "Opciones relacionadas con la búsqueda por color de ítems en JEI.",
   "jei.config.colors.colors.searchColors": "Buscar por Color",
   "jei.config.colors.colors.searchColors.description": "Valores de color a buscar.",
+  
+  "_comment": "GUI",
+  "gui.jei.search": "Filtro de Ingredientes",
 
   "_comment": "Modo Ocultar Ingredientes",
   "gui.jei.editMode.description": "Modo de Ocultar Ingredientes de JEI:",
