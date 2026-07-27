@@ -104,11 +104,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 		this.ingredientSource.addSourceListChangedListener(() -> {
 			if (isActive()) {
-				if (clientConfig.isAddingBookmarksToFrontEnabled()) {
-					updateLayoutToFirstPage();
-				} else {
-					updateLayoutKeepingPageAnchorVisible(getPageAnchorElement());
-				}
+				updateLayoutKeepingPageAnchorVisible(getPageAnchorElement());
 			}
 		});
 	}
