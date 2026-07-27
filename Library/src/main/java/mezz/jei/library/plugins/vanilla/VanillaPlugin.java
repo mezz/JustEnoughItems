@@ -1,7 +1,6 @@
 package mezz.jei.library.plugins.vanilla;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
@@ -63,6 +62,7 @@ import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipeMaker;
 import mezz.jei.library.plugins.vanilla.gui.InventoryEffectRendererGuiHandler;
 import mezz.jei.library.plugins.vanilla.gui.RecipeBookGuiHandler;
 import mezz.jei.library.plugins.vanilla.gui.ToastGuiHandler;
+import mezz.jei.library.plugins.vanilla.ingredients.ItemStackCodecs;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackHelper;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackListFactory;
 import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidIngredientHelper;
@@ -89,7 +89,6 @@ import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Registry;
-import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -103,7 +102,6 @@ import net.minecraft.world.inventory.FurnaceMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.inventory.SmokerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionBrewing;
@@ -185,24 +183,11 @@ public class VanillaPlugin implements IModPlugin {
 			itemStacks,
 			itemStackHelper,
 			itemStackRenderer,
-			createStrictSingleItemCodec()
+			ItemStackCodecs.createStrictSingleItemCodec()
 		);
 
 		IPlatformFluidHelperInternal<?> platformFluidHelper = Services.PLATFORM.getFluidHelper();
 		registerFluidIngredients(registration, platformFluidHelper);
-	}
-
-	private static Codec<ItemStack> createStrictSingleItemCodec() {
-		return RecordCodecBuilder.<ItemStack>create((i) ->
-				i.group(
-					Item.CODEC.fieldOf("id")
-						.forGetter(ItemStack::typeHolder),
-					DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY)
-						.forGetter(ItemStack::getComponentsPatch)
-				)
-				.apply(i, (item, components) -> new ItemStack(item, 1, components))
-			)
-			.validate(ItemStack::validateStrict);
 	}
 
 	@Override
