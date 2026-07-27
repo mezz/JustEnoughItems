@@ -45,7 +45,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 		this.bookmarkList = bookmarkList;
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, guiHelper);
 		this.contents = new IngredientGridWithNavigation(bookmarkList, guiScreenHelper, GridAlignment.RIGHT);
-		bookmarkList.addListener(() -> contents.updateLayout(false));
+		bookmarkList.addListener(() -> contents.updateLayoutKeepingPageAnchorVisible());
 	}
 
 	public boolean isListDisplayed() {
@@ -100,9 +100,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 			displayArea.width,
 			displayArea.height - (BUTTON_SIZE + 4)
 		);
-		int legacySize = contents.size();
 		boolean contentsHasRoom = this.contents.updateBounds(availableContentsArea, guiExclusionAreas, minWidth);
-		boolean resetToFirstPage = legacySize != contents.size();
 
 		// update area to match contents size
 		Rectangle contentsArea = this.contents.getArea();
@@ -116,7 +114,7 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 			BUTTON_SIZE
 		));
 
-		this.contents.updateLayout(resetToFirstPage);
+		this.contents.updateLayoutKeepingPageAnchorVisible();
 
 		return contentsHasRoom;
 	}
