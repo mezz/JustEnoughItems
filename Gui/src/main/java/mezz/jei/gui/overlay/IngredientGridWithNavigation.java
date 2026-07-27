@@ -2,7 +2,9 @@ package mezz.jei.gui.overlay;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
@@ -15,6 +17,7 @@ import mezz.jei.common.util.MathUtil;
 import mezz.jei.core.config.IWorldConfig;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
+import mezz.jei.gui.input.DelegatingClickableIngredientInternal;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
@@ -28,6 +31,7 @@ import mezz.jei.gui.input.handlers.SameElementInputHandler;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.util.CommandUtil;
+import mezz.jei.gui.util.FocusUtil;
 import mezz.jei.gui.util.MaximalRectangle;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -51,7 +55,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	private static final int BORDER_PADDING = 5;
 	private static final int INNER_PADDING = 2;
 
-	private int firstItemIndex = 0;
+	private final IngredientGridPageState pageState = new IngredientGridPageState();
 	private final IngredientGridPaged pageDelegate;
 	private final PageNavigation navigation;
 	private final IIngredientGridConfig gridConfig;
@@ -100,8 +104,11 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 		this.ingredientSource.addSourceListChangedListener(() -> {
 			if (isActive()) {
-				boolean resetToFirstPage = clientConfig.isAddingBookmarksToFrontEnabled();
-				updateLayout(resetToFirstPage);
+				if (clientConfig.isAddingBookmarksToFrontEnabled()) {
+					updateLayoutToFirstPage();
+				} else {
+					updateLayoutKeepingPageAnchorVisible(getPageAnchorElement());
+				}
 			}
 		});
 	}
@@ -116,14 +123,54 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	public void updateLayout(boolean resetToFirstPage) {
 		if (resetToFirstPage) {
-			firstItemIndex = 0;
+			updateLayoutToFirstPage();
+		} else {
+			updateLayoutStartingAt(this.pageState.getFirstItemIndex());
 		}
+	}
+
+	public void updateLayoutToFirstPage() {
+		updateLayoutStartingAt(0);
+	}
+
+	public void updateLayoutKeepingPageAnchorVisible(@Nullable IElement<?> pageAnchorElement) {
 		List<IElement<?>> ingredientList = ingredientSource.getElements();
-		if (firstItemIndex >= ingredientList.size()) {
-			firstItemIndex = 0;
-		}
+		int firstItemIndex = this.pageState.updateKeepingPageAnchorVisible(pageAnchorElement, ingredientList, ingredientGrid.size());
 		this.ingredientGrid.set(firstItemIndex, ingredientList);
 		this.navigation.updatePageNumber();
+	}
+
+	@Nullable
+	public IElement<?> getPageAnchorElement() {
+		IElement<?> pageAnchorElement = this.pageState.getPageAnchorElement(ingredientSource.getElements());
+		if (pageAnchorElement != null) {
+			return pageAnchorElement;
+		}
+		return this.ingredientGrid.getSlots()
+			.map(IngredientListSlot::getOptionalElement)
+			.flatMap(Optional::stream)
+			.findFirst()
+			.orElse(null);
+	}
+
+	public <T> IClickableIngredientInternal<T> createPageAnchorIngredient(IClickableIngredientInternal<T> delegate) {
+		return new PageAnchorClickableIngredient<>(delegate);
+	}
+
+	private void updateLayoutStartingAt(int firstItemIndex) {
+		List<IElement<?>> ingredientList = ingredientSource.getElements();
+		int renderFirstItemIndex = this.pageState.updateForPageNavigation(firstItemIndex, ingredientList.size(), ingredientGrid.size());
+		this.ingredientGrid.set(renderFirstItemIndex, ingredientList);
+		this.navigation.updatePageNumber();
+		setAnchorToFirstVisible();
+	}
+
+	private void setAnchorToFirstVisible() {
+		this.ingredientGrid.getSlots()
+			.map(IngredientListSlot::getOptionalElement)
+			.flatMap(Optional::stream)
+			.findFirst()
+			.ifPresent(this.pageState::setPageAnchorElement);
 	}
 
 	private static ImmutableRect2i avoidExclusionAreas(
@@ -294,7 +341,8 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
-		return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY);
+		return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY)
+			.map(this::createPageAnchorIngredient);
 	}
 
 	@Override
@@ -335,15 +383,14 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			}
 			final int itemsCount = ingredientSource.getElements().size();
 			if (itemsCount > 0) {
-				firstItemIndex += ingredientGrid.size();
-				if (firstItemIndex >= itemsCount) {
-					firstItemIndex = 0;
+				int nextFirstItemIndex = pageState.getFirstItemIndex() + ingredientGrid.size();
+				if (nextFirstItemIndex >= itemsCount) {
+					nextFirstItemIndex = 0;
 				}
-				updateLayout(false);
+				updateLayoutStartingAt(nextFirstItemIndex);
 				return true;
 			} else {
-				firstItemIndex = 0;
-				updateLayout(false);
+				updateLayoutStartingAt(0);
 				return false;
 			}
 		}
@@ -356,25 +403,24 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 			final int itemsPerPage = ingredientGrid.size();
 			if (itemsPerPage == 0) {
-				firstItemIndex = 0;
-				updateLayout(false);
+				updateLayoutStartingAt(0);
 				return false;
 			}
 			final int itemsCount = ingredientSource.getElements().size();
 
-			int pageNum = firstItemIndex / itemsPerPage;
+			int pageNum = pageState.getFirstItemIndex() / itemsPerPage;
 			if (pageNum == 0) {
 				pageNum = itemsCount / itemsPerPage;
 			} else {
 				pageNum--;
 			}
 
-			firstItemIndex = itemsPerPage * pageNum;
-			if (firstItemIndex > 0 && firstItemIndex == itemsCount) {
+			int previousFirstItemIndex = itemsPerPage * pageNum;
+			if (previousFirstItemIndex > 0 && previousFirstItemIndex == itemsCount) {
 				pageNum--;
-				firstItemIndex = itemsPerPage * pageNum;
+				previousFirstItemIndex = itemsPerPage * pageNum;
 			}
-			updateLayout(false);
+			updateLayoutStartingAt(previousFirstItemIndex);
 			return true;
 		}
 
@@ -392,23 +438,27 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 		@Override
 		public int getPageCount() {
-			final int itemCount = ingredientSource.getElements().size();
-			final int stacksPerPage = ingredientGrid.size();
-			if (stacksPerPage == 0) {
-				return 1;
-			}
-			int pageCount = MathUtil.divideCeil(itemCount, stacksPerPage);
-			pageCount = Math.max(1, pageCount);
-			return pageCount;
+			return IngredientGridPageState.getPageCount(ingredientSource.getElements().size(), ingredientGrid.size());
 		}
 
 		@Override
 		public int getPageNumber() {
-			final int stacksPerPage = ingredientGrid.size();
-			if (stacksPerPage == 0) {
-				return 0;
+			return IngredientGridPageState.getPageNumberForFirstItemIndex(pageState.getFirstItemIndex(), ingredientGrid.size(), ingredientSource.getElements().size());
+		}
+	}
+
+	private class PageAnchorClickableIngredient<T> extends DelegatingClickableIngredientInternal<T> {
+		PageAnchorClickableIngredient(IClickableIngredientInternal<T> delegate) {
+			super(delegate);
+		}
+
+		@Override
+		public void show(IRecipesGui recipesGui, FocusUtil focusUtil, List<RecipeIngredientRole> roles) {
+			IElement<T> element = getElement();
+			if (element.isVisible()) {
+				pageState.setPageAnchorElement(element);
 			}
-			return firstItemIndex / stacksPerPage;
+			super.show(recipesGui, focusUtil, roles);
 		}
 	}
 
