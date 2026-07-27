@@ -214,7 +214,13 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 		if (isListDisplayed()) {
 			IClickedIngredient<?> clicked = this.contents.getIngredientUnderMouse(mouseX, mouseY);
 			if (clicked != null) {
-				clicked.setOnClickHandler(() -> setKeyboardFocus(false));
+				IIngredientListElement pageAnchorElement = this.contents.getElementUnderMouse(mouseX, mouseY);
+				clicked.setOnClickHandler(() -> {
+					if (pageAnchorElement != null) {
+						this.contents.setPageAnchorElement(pageAnchorElement);
+					}
+					setKeyboardFocus(false);
+				});
 				return clicked;
 			}
 		}

@@ -123,7 +123,14 @@ public class BookmarkOverlay implements IShowsRecipeFocuses, ILeftAreaContent, I
 	@Nullable
 	public IClickedIngredient<?> getIngredientUnderMouse(int mouseX, int mouseY) {
 		if (isListDisplayed()) {
-			return this.contents.getIngredientUnderMouse(mouseX, mouseY);
+			IClickedIngredient<?> clicked = this.contents.getIngredientUnderMouse(mouseX, mouseY);
+			if (clicked != null) {
+				IIngredientListElement pageAnchorElement = this.contents.getElementUnderMouse(mouseX, mouseY);
+				if (pageAnchorElement != null) {
+					clicked.setOnClickHandler(() -> this.contents.setPageAnchorElement(pageAnchorElement));
+				}
+				return clicked;
+			}
 		}
 		return null;
 	}

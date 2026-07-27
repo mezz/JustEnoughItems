@@ -173,7 +173,12 @@ public class IngredientGrid implements IShowsRecipeFocuses {
 
 	@Nullable
 	public IIngredientListElement getElementUnderMouse() {
-		IngredientRenderer hovered = guiIngredientSlots.getHovered(MouseHelper.getX(), MouseHelper.getY());
+		return getElementUnderMouse(MouseHelper.getX(), MouseHelper.getY());
+	}
+
+	@Nullable
+	public IIngredientListElement getElementUnderMouse(int mouseX, int mouseY) {
+		IngredientRenderer hovered = guiIngredientSlots.getHovered(mouseX, mouseY);
 		if (hovered != null) {
 			return hovered.getElement();
 		}
