@@ -129,10 +129,11 @@ public class PluginLoader {
 	}
 
 	public static ISearchStorageBuilderFactory createSearchStorageFactory(List<IModPlugin> plugins) {
-		AdvancedSearchRegistration searchRegistration = new AdvancedSearchRegistration();
+		ISearchStorageBuilderFactory defaultSearchStorageBuilderFactory = BakedSubstringIndexBuilder::new;
+		AdvancedSearchRegistration searchRegistration = new AdvancedSearchRegistration(defaultSearchStorageBuilderFactory);
 		PluginCaller.callOnPlugins("Registering advanced search", plugins, p -> p.registerAdvancedSearch(searchRegistration));
 		return searchRegistration.getSearchStorageBuilderFactoryOverride()
-			.orElse(BakedSubstringIndexBuilder::new);
+			.orElse(defaultSearchStorageBuilderFactory);
 	}
 
 	public RecipeManager createRecipeManager(
