@@ -1,5 +1,9 @@
 package mezz.jei.neoforge.tests.bookmarks;
 
+import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -10,9 +14,13 @@ import mezz.jei.library.helpers.CodecHelper;
 import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
 import mezz.jei.neoforge.tests.lib.TestIngredientManagers;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -104,6 +112,58 @@ public final class BookmarkFactoryGameTests {
 		helper.succeed();
 	}
 
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Item bookmark serialization preserves custom NBT number tag types.")
+	public static void itemBookmarkSerializationPreservesCustomNbtNumberTypes(JeiGameTestHelper helper) {
+		// Setup: CustomData uses raw NBT, where exact number tag types can be significant to mods.
+		CompoundTag customData = new CompoundTag();
+		customData.putByte("byte", (byte) 1);
+		customData.putShort("short", (short) 2);
+		customData.putInt("int", 3);
+		customData.putLong("long", 4L);
+		customData.putFloat("float", 5.5F);
+		customData.putDouble("double", 6.5D);
+
+		ItemStack stack = new ItemStack(Items.CHEST);
+		stack.set(DataComponents.CUSTOM_DATA, CustomData.of(customData));
+
+		IIngredientManager ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(List.of(stack));
+		CodecHelper codecHelper = new CodecHelper(ingredientManager, new FocusFactory(ingredientManager));
+		Codec<ITypedIngredient<?>> typedIngredientCodec = codecHelper.getTypedIngredientCodec().codec();
+		RegistryOps<JsonElement> registryOps = helper.getLevel().registryAccess().createSerializationContext(JsonOps.INSTANCE);
+
+		ITypedIngredient<ItemStack> typedIngredient = ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, stack, true)
+			.orElseThrow(() -> helper.createFailException("Failed to create typed ingredient for " + stack));
+
+		// Operation: round-trip through the real bookmark JSON codec path.
+		JsonElement encoded = typedIngredientCodec.encodeStart(registryOps, typedIngredient)
+			.result()
+			.orElseThrow(() -> helper.createFailException("Failed to encode typed ingredient"));
+		ITypedIngredient<?> decoded = typedIngredientCodec.decode(registryOps, encoded)
+			.result()
+			.map(Pair::getFirst)
+			.orElseThrow(() -> helper.createFailException("Failed to decode typed ingredient"));
+
+		// Assertions: the stack components still match and the custom NBT numbers keep their exact NBT ids.
+		ItemStack decodedStack = decoded.getItemStack()
+			.orElseThrow(() -> helper.createFailException("Decoded ingredient was not an item stack"));
+		helper.assertTrue(ItemStack.matches(stack, decodedStack), "Decoded item stack should match the original");
+
+		CustomData decodedCustomData = decodedStack.get(DataComponents.CUSTOM_DATA);
+		if (decodedCustomData == null) {
+			throw helper.createFailException("Decoded item stack is missing custom data");
+		}
+		CompoundTag decodedTag = decodedCustomData.copyTag();
+		assertTagId(helper, decodedTag, "byte", Tag.TAG_BYTE);
+		assertTagId(helper, decodedTag, "short", Tag.TAG_SHORT);
+		assertTagId(helper, decodedTag, "int", Tag.TAG_INT);
+		assertTagId(helper, decodedTag, "long", Tag.TAG_LONG);
+		assertTagId(helper, decodedTag, "float", Tag.TAG_FLOAT);
+		assertTagId(helper, decodedTag, "double", Tag.TAG_DOUBLE);
+		helper.succeed();
+	}
+
 	private static BookmarkFactory createBookmarkFactory(JeiGameTestHelper helper, IIngredientManager ingredientManager) {
 		CodecHelper codecHelper = new CodecHelper(ingredientManager, new FocusFactory(ingredientManager));
 		return new BookmarkFactory(codecHelper, helper.getLevel().registryAccess(), ingredientManager);
@@ -128,5 +188,13 @@ public final class BookmarkFactoryGameTests {
 		ITypedIngredient<ItemStack> typedIngredient = ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, stack, normalize)
 			.orElseThrow(() -> helper.createFailException("Failed to create typed ingredient for " + stack));
 		return bookmarkFactory.create(typedIngredient);
+	}
+
+	private static void assertTagId(JeiGameTestHelper helper, CompoundTag tag, String key, int expectedId) {
+		Tag value = tag.get(key);
+		if (value == null) {
+			throw helper.createFailException("Expected custom data to contain key: " + key);
+		}
+		helper.assertEquals((byte) expectedId, value.getId(), "Unexpected NBT tag type for key: " + key);
 	}
 }
