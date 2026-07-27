@@ -9,12 +9,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Screen.class)
 public class ScreenMixin {
 	@Inject(
-		method = "renderWithTooltip(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
+		method = "render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
 		at = @At(
 			value = "INVOKE",
 			target = "Lnet/minecraft/client/gui/screens/Screen;renderBackground(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
@@ -48,19 +47,6 @@ public class ScreenMixin {
 				graphics,
 				() -> JeiScreenEvents.DRAW_FOREGROUND.invoker().drawForeground(containerScreen, graphics, mouseX, mouseY)
 			);
-		}
-	}
-
-	@Inject(
-		method = "mouseDragged(DDIDD)Z",
-		at = @At("HEAD"),
-		cancellable = true
-	)
-	private void allowMouseDrag(double mouseX, double mouseY, int button, double dragX, double dragY, CallbackInfoReturnable<Boolean> ci) {
-		@SuppressWarnings("DataFlowIssue")
-		Screen screen = (Screen) (Object) this;
-		if (!JeiScreenEvents.ALLOW_MOUSE_DRAG.invoker().allowMouseDrag(screen, mouseX, mouseY, button, dragX, dragY)) {
-			ci.setReturnValue(true);
 		}
 	}
 

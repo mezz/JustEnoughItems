@@ -6,7 +6,9 @@
   "mixins": [
   ],
   "client": [
+    "AbstractContainerScreenMixin",
     "ClientPacketListenerRecipeUpdateMixin",
+    "ContainerEventHandlerMixin",
     "EffectRenderingInventoryScreenMixin",
     "KeyboardHandlerMixin",
     "MinecraftMixin",
