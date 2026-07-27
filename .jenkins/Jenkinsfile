@@ -38,22 +38,29 @@ pipeline {
 
         stage('Publish CurseForge') {
             steps {
-                sh "./gradlew :Fabric:publishCurseforge"
-                sh "./gradlew :Forge:publishCurseforge"
+                retry(3) {
+                    sh "./gradlew :Fabric:publishCurseforge"
+                }
+                retry(3) {
+                    sh "./gradlew :Forge:publishCurseforge"
+                }
             }
         }
 
         stage('Publish Modrinth') {
             steps {
-                sh "./gradlew :Fabric:publishModrinth"
-                sh "./gradlew :Forge:publishModrinth"
+                retry(3) {
+                    sh "./gradlew :Fabric:publishModrinth"
+                }
+                retry(3) {
+                    sh "./gradlew :Forge:publishModrinth"
+                }
             }
         }
-
-        stage('Archive') {
-            steps {
-                junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
-            }
+    }
+    post {
+        always {
+            junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
         }
     }
 }
