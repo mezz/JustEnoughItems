@@ -55,6 +55,7 @@ dependencies {
 		name = "junit",
 		version = jUnitVersion
 	)
+	testRuntimeOnly("org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209")
 	testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.8.2")
 }
 

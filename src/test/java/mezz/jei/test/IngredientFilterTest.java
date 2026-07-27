@@ -23,7 +23,6 @@ import mezz.jei.test.lib.TestPlugin;
 import net.minecraft.util.NonNullList;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.annotation.Nullable;
@@ -31,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Ignore
 public class IngredientFilterTest {
 	private static final int EXTRA_INGREDIENT_COUNT = 5;
 	@Nullable
