@@ -150,10 +150,9 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, mouseExclusionArea);
 			this.lookupHistoryOverlay.updateLayout();
 		}
-		int legacySize = contents.size();
+		IElement<?> pageAnchorElement = this.contents.getPageAnchorElement();
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas, mouseExclusionArea);
-		boolean resetToFirstPage = legacySize != contents.size();
-		this.contents.updateLayout(resetToFirstPage);
+		this.contents.updateLayoutKeepingPageAnchorVisible(pageAnchorElement);
 
 		if (contents.hasRoom()) {
 			ImmutableRect2i contentsArea = this.contents.getBackgroundArea();

@@ -29,6 +29,7 @@ import mezz.jei.gui.input.handlers.NullInputHandler;
 import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
+import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.Nullable;
@@ -54,6 +55,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IInternalKeyMappings keyBindings;
 	private final ScreenPropertiesCache screenPropertiesCache;
 	private final IFilterTextSource filterTextSource;
+	private String lastFilterText = "";
 
 
 	// these need to be stored as strong references here because listeners are weakly stored elsewhere
@@ -82,9 +84,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.keyBindings = keyBindings;
 		this.filterTextSource = filterTextSource;
 		this.searchField.setValue(filterTextSource.getFilterText());
+		this.lastFilterText = filterTextSource.getFilterText();
 		this.searchField.setFocused(false);
 		this.searchField.setResponder(filterTextSource::setFilterText);
-		filterTextSource.addListener(this.searchField::setValue);
+		filterTextSource.addListener(this::onFilterTextChanged);
 
 		ingredientGridSource.addSourceListChangedListener(() -> {
 			Minecraft minecraft = Minecraft.getInstance();
@@ -139,7 +142,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		ImmutableRect2i availableContentsArea = getAvailableContentsArea(displayArea, searchBarCentered);
 		if (clientConfig.isLookupHistoryEnabled() && lookupHistoryOverlay.isOnSide()) {
 			int historyRows = clientConfig.getMaxLookupHistoryRows();
-			availableContentsArea  = availableContentsArea.cropBottom(historyRows * LookupHistoryOverlay.SLOT_HEIGHT);
+			availableContentsArea = availableContentsArea.cropBottom(historyRows * LookupHistoryOverlay.SLOT_HEIGHT);
 			ImmutableRect2i historyArea = displayArea
 				.insetBy(BORDER_MARGIN)
 				.moveUp(BUTTON_SIZE + INNER_PADDING)
@@ -147,10 +150,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, null);
 			this.lookupHistoryOverlay.updateLayout();
 		}
-		int legacySize = contents.size();
+		IElement<?> pageAnchorElement = this.contents.getPageAnchorElement();
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas, null);
-		boolean resetToFirstPage = legacySize != contents.size();
-		this.contents.updateLayout(resetToFirstPage);
+		this.contents.updateLayoutKeepingPageAnchorVisible(pageAnchorElement);
 
 		final ImmutableRect2i searchAndConfigArea = getSearchAndConfigArea(displayArea, searchBarCentered, guiProperties);
 		final ImmutableRect2i searchArea = searchAndConfigArea.cropRight(BUTTON_SIZE);
@@ -160,6 +162,14 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.searchField.updateBounds(searchArea);
 
 		this.configButton.updateBounds(configButtonArea);
+	}
+
+	private void onFilterTextChanged(String filterText) {
+		this.searchField.setValue(filterText);
+		if (!this.lastFilterText.isEmpty() && filterText.isEmpty()) {
+			this.contents.updateLayoutToFirstPage();
+		}
+		this.lastFilterText = filterText;
 	}
 
 	private static boolean isSearchBarCentered(IClientConfig clientConfig, IGuiProperties guiProperties) {
