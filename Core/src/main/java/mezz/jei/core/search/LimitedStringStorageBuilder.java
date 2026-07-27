@@ -17,6 +17,10 @@ public class LimitedStringStorageBuilder<T> implements ISearchStorageBuilder<T> 
 		this.storageBuilder = factory.create();
 	}
 
+	public LimitedStringStorageBuilder(ISearchStorageBuilderFactory factory, String id) {
+		this.storageBuilder = factory.create(id);
+	}
+
 	@Override
 	public void put(String key, T value) {
 		boolean isNewKey = !multiMap.containsKey(key);

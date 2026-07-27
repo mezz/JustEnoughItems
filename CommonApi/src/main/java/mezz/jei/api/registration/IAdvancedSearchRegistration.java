@@ -14,6 +14,18 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.NonExtendable
 public interface IAdvancedSearchRegistration {
 	/**
+	 * Get JEI's default search storage builder factory.
+	 *
+	 * <p>
+	 * This allows plugins to wrap JEI's default search storage while preserving JEI's normal indexing and matching
+	 * behavior.
+	 * </p>
+	 *
+	 * @since 10.13.0
+	 */
+	ISearchStorageBuilderFactory getDefaultSearchStorageBuilderFactory();
+
+	/**
 	 * Replace JEI's default ingredient search storage with a custom implementation.
 	 *
 	 * <p>
