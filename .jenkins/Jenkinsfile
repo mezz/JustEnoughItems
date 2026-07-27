@@ -1,3 +1,32 @@
+def notifyDiscordBuild(String result) {
+    def buildResult = result ?: 'SUCCESS'
+    def branchName = env.BRANCH_NAME ?: env.GIT_BRANCH ?: 'unknown'
+    def description = [
+        "**Result:** ${buildResult}",
+        "**Branch:** ${branchName}",
+        "**Build:** #${env.BUILD_NUMBER}"
+    ].join('\n')
+
+    def args = [
+        description: description,
+        footer: 'JEI Jenkins',
+        link: env.BUILD_URL,
+        result: buildResult,
+        title: "${env.JOB_NAME} #${env.BUILD_NUMBER}",
+        webhookURL: env.DISCORD_WEBHOOK_URL
+    ]
+
+    discordSend(args)
+}
+
+def notifyDiscordBuildSafely(String result) {
+    try {
+        notifyDiscordBuild(result)
+    } catch (Throwable e) {
+        echo "Discord notification failed: ${e.getMessage()}"
+    }
+}
+
 pipeline {
     agent any
     tools {
@@ -8,6 +37,7 @@ pipeline {
       ORG_GRADLE_PROJECT_curseforgeApikey = credentials("jei-curseforge-key")
       ORG_GRADLE_PROJECT_modrinthToken = credentials("modrinth-auth-token")
       ORG_GRADLE_PROJECT_BUILD_NUMBER = "${env.BUILD_NUMBER}"
+      DISCORD_WEBHOOK_URL = credentials("jei-discord-webhook-url")
     }
     stages {
         stage('Clean') {
@@ -92,6 +122,9 @@ pipeline {
     post {
         always {
             junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
+            script {
+                notifyDiscordBuildSafely(currentBuild.currentResult)
+            }
         }
     }
 }
