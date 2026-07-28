@@ -3,35 +3,29 @@ package mezz.jei.library.plugins.vanilla.crafting;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
 import net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay;
 import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 public class CraftingCategoryExtension implements ICraftingCategoryExtension<CraftingRecipe> {
 	@Override
 	public int getWidth(RecipeHolder<CraftingRecipe> recipeHolder) {
-		CraftingRecipe recipe = recipeHolder.value();
-		if (recipe instanceof ShapedRecipe shapedRecipe) {
-			return shapedRecipe.getWidth();
-		}
-		if (recipe instanceof JeiShapedRecipe shapedRecipe) {
-			return shapedRecipe.getWidth();
+		RecipeDisplay display = getFirstDisplay(recipeHolder);
+		if (display instanceof ShapedCraftingRecipeDisplay shapedCraftingRecipeDisplay) {
+			return shapedCraftingRecipeDisplay.width();
 		}
 		return 0;
 	}
 
 	@Override
 	public int getHeight(RecipeHolder<CraftingRecipe> recipeHolder) {
-		CraftingRecipe recipe = recipeHolder.value();
-		if (recipe instanceof ShapedRecipe shapedRecipe) {
-			return shapedRecipe.getHeight();
-		}
-		if (recipe instanceof JeiShapedRecipe shapedRecipe) {
-			return shapedRecipe.getHeight();
+		RecipeDisplay display = getFirstDisplay(recipeHolder);
+		if (display instanceof ShapedCraftingRecipeDisplay shapedCraftingRecipeDisplay) {
+			return shapedCraftingRecipeDisplay.height();
 		}
 		return 0;
 	}
@@ -42,22 +36,29 @@ public class CraftingCategoryExtension implements ICraftingCategoryExtension<Cra
 		if (recipe.isSpecial()) {
 			return false;
 		}
-		List<RecipeDisplay> displays = recipe.display();
-		if (displays.isEmpty()) {
-			return false;
-		}
-		RecipeDisplay display = displays.getFirst();
+		RecipeDisplay display = getFirstDisplay(recipeHolder);
 		return display instanceof ShapelessCraftingRecipeDisplay ||
 			display instanceof ShapedCraftingRecipeDisplay;
 	}
 
 	@Override
 	public List<SlotDisplay> getIngredients(RecipeHolder<CraftingRecipe> recipeHolder) {
-		List<RecipeDisplay> displays = recipeHolder.value().display();
-		if (displays.isEmpty()) {
+		RecipeDisplay display = getFirstDisplay(recipeHolder);
+		if (display == null) {
 			return List.of();
 		}
-		RecipeDisplay display = displays.getFirst();
+		return getIngredients(display);
+	}
+
+	private static @Nullable RecipeDisplay getFirstDisplay(RecipeHolder<CraftingRecipe> recipeHolder) {
+		List<RecipeDisplay> displays = recipeHolder.value().display();
+		if (displays.isEmpty()) {
+			return null;
+		}
+		return displays.getFirst();
+	}
+
+	private static List<SlotDisplay> getIngredients(RecipeDisplay display) {
 		if (display instanceof ShapedCraftingRecipeDisplay shapedCraftingRecipeDisplay) {
 			return shapedCraftingRecipeDisplay.ingredients();
 		} else if (display instanceof ShapelessCraftingRecipeDisplay shapelessCraftingRecipeDisplay) {
