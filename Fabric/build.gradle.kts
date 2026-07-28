@@ -345,8 +345,7 @@ publishing {
     publications {
         register<MavenPublication>("fabricJar") {
             artifactId = baseArchivesName
-            artifact(shadedJar)
-            artifact(shadedSourcesJar)
+            from(components["modShade"])
         }
     }
     repositories {
