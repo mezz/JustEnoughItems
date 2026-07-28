@@ -198,7 +198,30 @@ def joinLimited(List files, int maxFiles) {
     return result.join(', ')
 }
 
+def shouldPublishAfterPreviousBuildFailure() {
+    def previousBuild = currentBuild.previousBuild
+    if (previousBuild == null) {
+        return false
+    }
+
+    def previousResult = previousBuild.result ?: ''
+    if (!previousResult) {
+        return false
+    }
+
+    if (previousResult != 'SUCCESS') {
+        echo "Publishing artifacts because the previous Jenkins build result was ${previousResult}."
+        return true
+    }
+
+    return false
+}
+
 def shouldPublishArtifacts() {
+    if (shouldPublishAfterPreviousBuildFailure()) {
+        return true
+    }
+
     def changedFiles = getChangedFiles()
     if (changedFiles == null) {
         echo 'Publishing artifacts because changed files could not be determined.'
