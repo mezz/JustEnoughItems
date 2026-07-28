@@ -262,12 +262,21 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
 			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(type);
 
-			List<T> ingredients = getIngredients(type).toList();
+			List<T> ingredients = getVisibleIngredients(type);
 
 			if (ingredients.size() > 1) {
 				tooltip.add(new TagContentTooltipComponent<>(renderer, ingredients));
 			}
 		}
+	}
+
+	private <T> List<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
+		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getJeiHelpers().getIngredientVisibility();
+		return getAllIngredients()
+			.filter(ingredientVisibility::isIngredientVisible)
+			.map(i -> i.getIngredient(ingredientType))
+			.flatMap(Optional::stream)
+			.toList();
 	}
 
 	private <T> IIngredientRenderer<T> getIngredientRenderer(IIngredientType<T> ingredientType) {
