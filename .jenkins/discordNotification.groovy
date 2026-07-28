@@ -77,6 +77,51 @@ def removeTrailingSlashes(String url) {
     return url.substring(0, valueEnd)
 }
 
+def getFirstLine(String text) {
+    if (!text) {
+        return ''
+    }
+
+    def valueEnd = text.length()
+    def newlineIndex = text.indexOf('\n')
+    if (newlineIndex >= 0 && newlineIndex < valueEnd) {
+        valueEnd = newlineIndex
+    }
+
+    def returnIndex = text.indexOf('\r')
+    if (returnIndex >= 0 && returnIndex < valueEnd) {
+        valueEnd = returnIndex
+    }
+
+    return text.substring(0, valueEnd).trim()
+}
+
+def truncateText(String text, int maxLength) {
+    if (!text || text.length() <= maxLength) {
+        return text
+    }
+
+    if (maxLength <= 1) {
+        return text.substring(0, maxLength)
+    }
+
+    return "${text.substring(0, maxLength - 1)}…"
+}
+
+def sanitizeDiscordText(String text) {
+    def result = ''
+    for (def index = 0; index < text.length(); index++) {
+        def character = text.substring(index, index + 1)
+        if (character == '@') {
+            result += '@'
+            result += '\u200B'
+        } else {
+            result += character
+        }
+    }
+    return result
+}
+
 def getBuildVersion() {
     def specificationVersion = getGradleProperty('specificationVersion')
     if (specificationVersion) {
@@ -138,6 +183,86 @@ def getArtifactLinks(boolean includeFallback) {
     return links
 }
 
+def formatCommitLink(String githubUrl, String commitId, String message) {
+    if (!commitId) {
+        return ''
+    }
+
+    def shortCommit = commitId.length() > 10 ? commitId.substring(0, 10) : commitId
+    def subject = sanitizeDiscordText(truncateText(getFirstLine(message), 100))
+    if (!subject) {
+        subject = '(no commit message)'
+    }
+    return "- [`${shortCommit}`](${githubUrl}/commit/${commitId}) ${subject}"
+}
+
+def getCommitLinksFromChangeSets(String githubUrl, int maxCommits) {
+    def links = []
+    def totalCommits = 0
+
+    for (def changeSet in currentBuild.changeSets) {
+        for (def item in changeSet.items) {
+            def commitId = item.commitId ?: ''
+            if (!commitId) {
+                continue
+            }
+
+            totalCommits++
+            if (links.size() < maxCommits) {
+                def commitLink = formatCommitLink(githubUrl, commitId, item.msg ?: '')
+                if (commitLink) {
+                    links.add(commitLink)
+                }
+            }
+        }
+    }
+
+    if (totalCommits > maxCommits) {
+        links.add("- …and ${totalCommits - maxCommits} more")
+    }
+
+    return links
+}
+
+def getHeadCommitLink(String githubUrl) {
+    def gitLog = sh(script: 'git log -1 --format=%H%x09%s', returnStdout: true).trim()
+    if (!gitLog) {
+        return []
+    }
+
+    def separatorIndex = gitLog.indexOf('\t')
+    if (separatorIndex < 0) {
+        return [formatCommitLink(githubUrl, gitLog, '')]
+    }
+
+    def commitId = gitLog.substring(0, separatorIndex)
+    def message = gitLog.substring(separatorIndex + 1)
+    return [formatCommitLink(githubUrl, commitId, message)]
+}
+
+def getCommitLinks() {
+    def githubUrl = removeTrailingSlashes(getGradleProperty('githubUrl'))
+    if (!githubUrl) {
+        return []
+    }
+
+    def links = getCommitLinksFromChangeSets(githubUrl, 10)
+    if (links) {
+        return links
+    }
+
+    return getHeadCommitLink(githubUrl)
+}
+
+def getCommitLinksSafely() {
+    try {
+        return getCommitLinks()
+    } catch (Throwable e) {
+        echo "Discord commit collection failed: ${e.getMessage()}"
+        return []
+    }
+}
+
 def notifyDiscordBuild(String result) {
     def buildResult = result ?: 'SUCCESS'
     def branchName = env.BRANCH_NAME ?: env.GIT_BRANCH ?: 'unknown'
@@ -150,6 +275,11 @@ def notifyDiscordBuild(String result) {
     def buildVersion = getBuildVersion()
     if (buildVersion) {
         descriptionLines.add("**Version:** ${buildVersion}")
+    }
+
+    def commitLinks = getCommitLinksSafely()
+    if (commitLinks) {
+        descriptionLines.add("**Commits:**\n${commitLinks.join('\n')}")
     }
 
     def artifactLinks = getArtifactLinks(buildResult == 'SUCCESS')
