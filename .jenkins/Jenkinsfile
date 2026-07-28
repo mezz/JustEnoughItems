@@ -8,6 +8,7 @@ pipeline {
       ORG_GRADLE_PROJECT_curseforgeApikey = credentials("jei-curseforge-key")
       ORG_GRADLE_PROJECT_modrinthToken = credentials("modrinth-auth-token")
       ORG_GRADLE_PROJECT_BUILD_NUMBER = "${env.BUILD_NUMBER}"
+      DISCORD_WEBHOOK_URL = credentials("jei-discord-webhook-url")
     }
     stages {
         stage('Checkout') {
@@ -67,6 +68,14 @@ pipeline {
             steps {
                 sh "./gradlew :Fabric:publishModrinth --no-daemon"
                 sh "./gradlew :Forge:publishModrinth --no-daemon"
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                def discordNotification = load '.jenkins/discordNotification.groovy'
+                discordNotification.notifyDiscordBuildSafely(currentBuild.currentResult)
             }
         }
     }
