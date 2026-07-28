@@ -272,8 +272,9 @@ publishMods {
             end = minecraftVersion
         }
         javaVersions.add(JavaVersion.toVersion(modJavaVersion))
-        clientRequired.set(true)
-        serverRequired.set(true)
+        client = true
+        server = true
+        dryRun = curseforgeApikey == null
     }
 
     modrinth {
@@ -283,6 +284,7 @@ publishMods {
             start = minecraftVersionRangeStart
             end = minecraftVersion
         }
+        dryRun = modrinthToken == null
     }
 }
 tasks.withType<PublishModTask> {

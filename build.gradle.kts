@@ -15,7 +15,7 @@ plugins {
     id("org.parchmentmc.librarian.forgegradle") version("1.2.0") apply(false)
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
-    id("me.modmuss50.mod-publish-plugin") version("0.7.3") apply(false)
+    id("me.modmuss50.mod-publish-plugin") version("2.0.1") apply(false)
 
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
     id("fabric-loom") version("1.8.0-alpha.16") apply(false)
