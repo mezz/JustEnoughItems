@@ -156,6 +156,7 @@ publishMods {
 
 	curseforge {
 		projectId = curseProjectId
+		projectSlug = curseHomepageUrl.substringAfterLast("/")
 		accessToken.set((project.findProperty("curseforge_apikey") as String?) ?: "0")
 		changelog.set(provider { file("../Changelog/changelog.html").readText() })
 		changelogType = "html"
