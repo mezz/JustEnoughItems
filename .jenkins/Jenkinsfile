@@ -43,7 +43,19 @@ pipeline {
             }
         }
 
+        stage('Check Publish Changes') {
+            steps {
+                script {
+                    def publishGuard = load '.jenkins/publishGuard.groovy'
+                    env.SHOULD_PUBLISH = publishGuard.shouldPublishArtifacts() ? 'true' : 'false'
+                }
+            }
+        }
+
         stage('Publish Maven') {
+            when {
+                expression { env.SHOULD_PUBLISH != 'false' }
+            }
             steps {
                 sh "./gradlew :Core:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
                 sh "./gradlew :Gui:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
@@ -58,6 +70,9 @@ pipeline {
         }
 
         stage('Publish CurseForge') {
+            when {
+                expression { env.SHOULD_PUBLISH != 'false' }
+            }
             steps {
                 sh "./gradlew :Fabric:publishCurseforge --no-daemon"
                 sh "./gradlew :Forge:publishCurseforge --no-daemon"
@@ -65,6 +80,9 @@ pipeline {
         }
 
         stage('Publish Modrinth') {
+            when {
+                expression { env.SHOULD_PUBLISH != 'false' }
+            }
             steps {
                 sh "./gradlew :Fabric:publishModrinth --no-daemon"
                 sh "./gradlew :Forge:publishModrinth --no-daemon"
