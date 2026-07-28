@@ -1,113 +1,3 @@
-import groovy.json.JsonSlurperClassic
-
-def getGradleProperty(String propertyName) {
-    def propertyPrefix = "${propertyName}="
-    for (def line in readFile(file: 'gradle.properties').readLines()) {
-        def trimmedLine = line.trim()
-        if (trimmedLine.startsWith(propertyPrefix)) {
-            return trimmedLine.substring(propertyPrefix.length()).trim()
-        }
-    }
-    return ''
-}
-
-def getBuildVersion() {
-    def specificationVersion = getGradleProperty('specificationVersion')
-    if (specificationVersion) {
-        return "${specificationVersion}.${env.BUILD_NUMBER}"
-    }
-    return ''
-}
-
-def getArtifactLinks(boolean includeFallback) {
-    def resultFiles = [
-        'Forge/build/publishMods/publishCurseforge.json',
-        'Forge/build/publishMods/publishModrinth.json',
-        'Fabric/build/publishMods/publishCurseforge.json',
-        'Fabric/build/publishMods/publishModrinth.json',
-        'NeoForge/build/publishMods/publishCurseforge.json',
-        'NeoForge/build/publishMods/publishModrinth.json'
-    ]
-
-    def links = []
-    def jsonSlurper = new JsonSlurperClassic()
-    def curseHomepageUrl = getGradleProperty('curseHomepageUrl')
-    def curseProjectSlug = curseHomepageUrl ? curseHomepageUrl.tokenize('/').last() : ''
-
-    for (def resultFile in resultFiles) {
-        if (!fileExists(resultFile)) {
-            continue
-        }
-
-        def publishResult = jsonSlurper.parseText(readFile(file: resultFile))
-        def moduleName = resultFile.tokenize('/')[0]
-        if (publishResult.type == 'curseforge' && publishResult.fileId) {
-            def projectSlug = publishResult.projectSlug ?: curseProjectSlug
-            if (projectSlug && projectSlug != 'dry-run') {
-                links.add("[${moduleName} CurseForge](https://www.curseforge.com/minecraft/mc-mods/${projectSlug}/files/${publishResult.fileId})")
-            }
-        } else if (publishResult.type == 'modrinth' && publishResult.projectId && publishResult.projectId != 'dry-run' && publishResult.id) {
-            links.add("[${moduleName} Modrinth](https://modrinth.com/mod/${publishResult.projectId}/version/${publishResult.id})")
-        }
-    }
-
-    if (links || !includeFallback) {
-        return links
-    }
-
-    // Fallback for branches or builds that do not generate mod-publish-plugin result files.
-    if (curseHomepageUrl) {
-        links.add("[CurseForge](${curseHomepageUrl.replaceAll('/+$', '')}/files)")
-    }
-
-    def modrinthId = getGradleProperty('modrinthId')
-    if (modrinthId) {
-        links.add("[Modrinth](https://modrinth.com/mod/${modrinthId}/versions)")
-    }
-    return links
-}
-
-def notifyDiscordBuild(String result) {
-    def buildResult = result ?: 'SUCCESS'
-    def branchName = env.BRANCH_NAME ?: env.GIT_BRANCH ?: 'unknown'
-    def descriptionLines = [
-        "**Result:** ${buildResult}",
-        "**Branch:** ${branchName}",
-        "**Build:** #${env.BUILD_NUMBER}"
-    ]
-
-    def buildVersion = getBuildVersion()
-    if (buildVersion) {
-        descriptionLines.add("**Version:** ${buildVersion}")
-    }
-
-    def artifactLinks = getArtifactLinks(buildResult == 'SUCCESS')
-    if (artifactLinks) {
-        descriptionLines.add("**Artifacts:** ${artifactLinks.join(' | ')}")
-    }
-
-    def description = descriptionLines.join('\n')
-
-    def args = [
-        description: description,
-        footer: 'JEI Jenkins',
-        link: env.BUILD_URL,
-        result: buildResult,
-        title: "${env.JOB_NAME} #${env.BUILD_NUMBER}",
-        webhookURL: env.DISCORD_WEBHOOK_URL
-    ]
-
-    discordSend(args)
-}
-
-def notifyDiscordBuildSafely(String result) {
-    try {
-        notifyDiscordBuild(result)
-    } catch (Throwable e) {
-        echo "Discord notification failed: ${e.getMessage()}"
-    }
-}
-
 pipeline {
     agent any
     tools {
@@ -204,7 +94,8 @@ pipeline {
         always {
             junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
             script {
-                notifyDiscordBuildSafely(currentBuild.currentResult)
+                def discordNotification = load '.jenkins/discordNotification.groovy'
+                discordNotification.notifyDiscordBuildSafely(currentBuild.currentResult)
             }
         }
     }
