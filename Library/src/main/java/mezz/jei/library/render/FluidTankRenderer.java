@@ -146,7 +146,6 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	) {
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 		Matrix4f matrix = guiGraphics.pose().last().pose();
-		setGLColorFromInt(color);
 
 		int scaledHeight = Math.toIntExact(scaledAmount);
 		posY = posY + tiledHeight - scaledHeight;
@@ -160,18 +159,19 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 			posY - yShift,
 			tiledWidth + xShift,
 			scaledHeight + yShift,
-			sprite
+			sprite,
+			color
 		);
 		guiGraphics.disableScissor();
 	}
 
-	private static void drawTiledSpriteUnclipped(Matrix4f matrix, int posX, int posY, int tiledWidth, int tiledHeight, TextureAtlasSprite sprite) {
+	private static void drawTiledSpriteUnclipped(Matrix4f matrix, int posX, int posY, int tiledWidth, int tiledHeight, TextureAtlasSprite sprite, int color) {
 		for (int x = 0; x < tiledWidth; x += TEXTURE_SIZE) {
 			for (int y = 0; y < tiledHeight; y += TEXTURE_SIZE) {
 				int width = Math.min(TEXTURE_SIZE, tiledWidth - x);
 				int height = Math.min(TEXTURE_SIZE, tiledHeight - y);
 				if (width > 0 && height > 0) {
-					drawTexture(matrix, posX + x, posY + y, sprite, width, height, 100);
+					drawTexture(matrix, posX + x, posY + y, sprite, width, height, color, 100);
 				}
 			}
 		}
@@ -199,16 +199,7 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		return TEXTURE_SIZE - remainder;
 	}
 
-	private static void setGLColorFromInt(int color) {
-		float red = (color >> 16 & 0xFF) / 255.0F;
-		float green = (color >> 8 & 0xFF) / 255.0F;
-		float blue = (color & 0xFF) / 255.0F;
-		float alpha = ((color >> 24) & 0xFF) / 255F;
-
-		RenderSystem.setShaderColor(red, green, blue, alpha);
-	}
-
-	private static void drawTexture(Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, int width, int height, float zLevel) {
+	private static void drawTexture(Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, int width, int height, int color, float zLevel) {
 		float uMin = textureSprite.getU0();
 		float uMax = textureSprite.getU1();
 		float vMin = textureSprite.getV0();
@@ -216,15 +207,20 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		uMax = uMin + (width / 16F * (uMax - uMin));
 		vMax = vMin + (height / 16F * (vMax - vMin));
 
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		float alpha = (color >> 24 & 0xFF) / 255F;
+		float red = (color >> 16 & 0xFF) / 255.0F;
+		float green = (color >> 8 & 0xFF) / 255.0F;
+		float blue = (color & 0xFF) / 255.0F;
+
+		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 
 		Tesselator tessellator = Tesselator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuilder();
-		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-		bufferBuilder.vertex(matrix, xCoord, yCoord + height, zLevel).uv(uMin, vMax).endVertex();
-		bufferBuilder.vertex(matrix, xCoord + width, yCoord + height, zLevel).uv(uMax, vMax).endVertex();
-		bufferBuilder.vertex(matrix, xCoord + width, yCoord, zLevel).uv(uMax, vMin).endVertex();
-		bufferBuilder.vertex(matrix, xCoord, yCoord, zLevel).uv(uMin, vMin).endVertex();
+		bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+		bufferBuilder.vertex(matrix, xCoord, yCoord + height, zLevel).uv(uMin, vMax).color(red, green, blue, alpha).endVertex();
+		bufferBuilder.vertex(matrix, xCoord + width, yCoord + height, zLevel).uv(uMax, vMax).color(red, green, blue, alpha).endVertex();
+		bufferBuilder.vertex(matrix, xCoord + width, yCoord, zLevel).uv(uMax, vMin).color(red, green, blue, alpha).endVertex();
+		bufferBuilder.vertex(matrix, xCoord, yCoord, zLevel).uv(uMin, vMin).color(red, green, blue, alpha).endVertex();
 		tessellator.end();
 	}
 
