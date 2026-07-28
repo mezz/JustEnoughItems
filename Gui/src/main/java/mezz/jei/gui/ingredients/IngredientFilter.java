@@ -16,10 +16,7 @@ import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
-import mezz.jei.gui.search.ElementPrefixParser;
-import mezz.jei.gui.search.ElementSearch;
-import mezz.jei.gui.search.ElementSearchLowMem;
-import mezz.jei.gui.search.IElementSearch;
+import mezz.jei.gui.search.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
@@ -44,6 +41,7 @@ public class IngredientFilter implements
 	IClientToggleState.IEditModeListener
 {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private final SearchTokenizer searchTokenizer = new SearchTokenizer();
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
@@ -270,25 +268,18 @@ public class IngredientFilter implements
 		if (filterText.isEmpty()) {
 			return searchTokens;
 		}
-		Matcher filterMatcher = FILTER_SPLIT_PATTERN.matcher(filterText);
-		while (filterMatcher.find()) {
-			String string = filterMatcher.group(1);
-			final boolean remove = string.startsWith("-");
-			if (remove) {
-				string = string.substring(1);
-			}
-			string = QUOTE_PATTERN.matcher(string).replaceAll("");
-			if (string.isEmpty()) {
-				continue;
-			}
-			this.elementPrefixParser.parseToken(string)
-				.ifPresent(result -> {
-					if (remove) {
-						searchTokens.toRemove.add(result);
-					} else {
-						searchTokens.toSearch.add(result);
-					}
-				});
+
+		List<Token> tokens = searchTokenizer.tokenize(filterText);
+		for (Token token : tokens) {
+			if (token.isEmpty()) {continue;}
+			this.elementPrefixParser.parseToken(token.text())
+					.ifPresent(result -> {
+						if (token.exclusion()) {
+							searchTokens.toRemove.add(result);
+						} else {
+							searchTokens.toSearch.add(result);
+						}
+					});
 		}
 		return searchTokens;
 	}
