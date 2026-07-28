@@ -224,8 +224,7 @@ publishing {
 	publications {
 		register<MavenPublication>("forgeJar") {
 			artifactId = baseArchivesName
-			artifact(shadedJar)
-			artifact(shadedSourcesJar)
+			from(components["modShade"])
 		}
 	}
 	repositories {
