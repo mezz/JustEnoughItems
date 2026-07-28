@@ -432,10 +432,14 @@ def notifyDiscordBuild(String result) {
         descriptionLines.add("**Commits:**\n${commitLinks.join('\n')}")
     }
 
-    def releaseLinkLines = getReleaseLinkLines(buildResult == 'SUCCESS')
-    for (def releaseLinkLine in releaseLinkLines) {
-        if (releaseLinkLine) {
-            descriptionLines.add(releaseLinkLine)
+    if (env.SHOULD_PUBLISH == 'false') {
+        descriptionLines.add('**Publish:** skipped (no code changes)')
+    } else {
+        def releaseLinkLines = getReleaseLinkLines(buildResult == 'SUCCESS')
+        for (def releaseLinkLine in releaseLinkLines) {
+            if (releaseLinkLine) {
+                descriptionLines.add(releaseLinkLine)
+            }
         }
     }
 

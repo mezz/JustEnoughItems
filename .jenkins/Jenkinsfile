@@ -36,13 +36,28 @@ pipeline {
             }
         }
 
+        stage('Check Publish Changes') {
+            steps {
+                script {
+                    def publishGuard = load '.jenkins/publishGuard.groovy'
+                    env.SHOULD_PUBLISH = publishGuard.shouldPublishArtifacts() ? 'true' : 'false'
+                }
+            }
+        }
+
         stage('Publish Maven') {
+            when {
+                expression { env.SHOULD_PUBLISH != 'false' }
+            }
             steps {
                 sh "./gradlew publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
             }
         }
 
         stage('Publish CurseForge') {
+            when {
+                expression { env.SHOULD_PUBLISH != 'false' }
+            }
             steps {
                 sh "./gradlew makeChangelog --no-daemon"
                 sh "./gradlew curseforge --no-daemon"
