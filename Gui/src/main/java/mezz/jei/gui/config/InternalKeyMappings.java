@@ -10,7 +10,6 @@ import mezz.jei.common.input.keys.JeiKeyModifier;
 import mezz.jei.common.input.keys.JeiMultiKeyMapping;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.Translator;
 import net.minecraft.client.KeyMapping;
 import org.lwjgl.glfw.GLFW;
 
@@ -71,29 +70,21 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 		IJeiKeyMapping cheatItemStack1;
 		IJeiKeyMapping cheatItemStack2;
 
-		String overlaysCategoryName = Translator.translateToLocal("jei.key.category.overlays");
-		IJeiKeyMappingCategoryBuilder overlay = inputHelper.createKeyMappingCategoryBuilder(overlaysCategoryName);
+		IJeiKeyMappingCategoryBuilder overlay = inputHelper.createKeyMappingCategoryBuilder("jei.key.category.overlays");
 
-		String mouseHoverCategoryName = Translator.translateToLocal("jei.key.category.mouse.hover");
-		IJeiKeyMappingCategoryBuilder mouseHover = inputHelper.createKeyMappingCategoryBuilder(mouseHoverCategoryName);
+		IJeiKeyMappingCategoryBuilder mouseHover = inputHelper.createKeyMappingCategoryBuilder("jei.key.category.mouse.hover");
 
-		String searchCategoryName = Translator.translateToLocal("jei.key.category.search");
-		IJeiKeyMappingCategoryBuilder search = inputHelper.createKeyMappingCategoryBuilder(searchCategoryName);
+		IJeiKeyMappingCategoryBuilder search = inputHelper.createKeyMappingCategoryBuilder("jei.key.category.search");
 
-		String cheatModeCategoryName = Translator.translateToLocal("jei.key.category.cheat.mode");
-		IJeiKeyMappingCategoryBuilder cheat = inputHelper.createKeyMappingCategoryBuilder(cheatModeCategoryName);
+		IJeiKeyMappingCategoryBuilder cheat = inputHelper.createKeyMappingCategoryBuilder("jei.key.category.cheat.mode");
 
-		String hoverConfigButtonCategoryName = Translator.translateToLocal("jei.key.category.hover.config.button");
-		IJeiKeyMappingCategoryBuilder hoverConfig = inputHelper.createKeyMappingCategoryBuilder(hoverConfigButtonCategoryName);
+		IJeiKeyMappingCategoryBuilder hoverConfig = inputHelper.createKeyMappingCategoryBuilder("jei.key.category.hover.config.button");
 
-		String editModeCategoryName = Translator.translateToLocal("jei.key.category.edit.mode");
-		IJeiKeyMappingCategoryBuilder editMode = inputHelper.createKeyMappingCategoryBuilder(editModeCategoryName);
+		IJeiKeyMappingCategoryBuilder editMode = inputHelper.createKeyMappingCategoryBuilder("jei.key.category.edit.mode");
 
-		String recipeCategoryName = Translator.translateToLocal("jei.key.category.recipe.gui");
-		IJeiKeyMappingCategoryBuilder recipeCategory = inputHelper.createKeyMappingCategoryBuilder(recipeCategoryName);
+		IJeiKeyMappingCategoryBuilder recipeCategory = inputHelper.createKeyMappingCategoryBuilder("jei.key.category.recipe.gui");
 
-		String devToolsCategoryName = Translator.translateToLocal("jei.key.category.dev.tools");
-		IJeiKeyMappingCategoryBuilder devTools = inputHelper.createKeyMappingCategoryBuilder(devToolsCategoryName);
+		IJeiKeyMappingCategoryBuilder devTools = inputHelper.createKeyMappingCategoryBuilder("jei.key.category.dev.tools");
 
 		// Overlay
 		toggleOverlay = overlay.createMapping("key.jei.toggleOverlay")
