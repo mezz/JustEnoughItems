@@ -28,3 +28,7 @@ changelog.html
 \.project
 \.settings/
 *.launch
+/**/build/
+/**/logs
+/**/runs/
+Changelog/changelog.md
