@@ -54,6 +54,15 @@ pipeline {
             }
         }
 
+        stage('Check Publish Changes') {
+            steps {
+                script {
+                    def publishGuard = load '.jenkins/publishGuard.groovy'
+                    env.SHOULD_PUBLISH = publishGuard.shouldPublishArtifacts() ? 'true' : 'false'
+                }
+            }
+        }
+
         stage('Publish Maven') {
             when {
                 expression { env.SHOULD_PUBLISH != 'false' }
