@@ -162,18 +162,18 @@ public final class AnvilRecipeMaker {
 	}
 
 	private static final class RepairData {
-		private final Holder.Reference<Item> item;
+		private final ItemStack baseStack;
 		private final boolean selfRepair;
 		private final HolderSet<Item> repairItems;
 
-		private RepairData(Holder.Reference<Item> item, boolean selfRepair, HolderSet<Item> repairItems) {
-			this.item = item;
+		private RepairData(ItemStack baseStack, boolean selfRepair, HolderSet<Item> repairItems) {
+			this.baseStack = baseStack;
 			this.selfRepair = selfRepair;
 			this.repairItems = repairItems;
 		}
 
-		public ItemStack getDefaultItemStack() {
-			return item.value().getDefaultInstance();
+		public ItemStack getBaseStack() {
+			return baseStack.copy();
 		}
 
 		public boolean isSelfRepair() {
@@ -193,10 +193,10 @@ public final class AnvilRecipeMaker {
 	private Stream<IJeiAnvilRecipe> getRepairRecipes() {
 		return getRepairableItems()
 			.mapMulti((repairData, consumer) -> {
-				ItemStack itemStack = repairData.getDefaultItemStack();
-				String uid = ingredientHelper.getIdentifier(itemStack).toString();
-				String ingredientIdPath = ResourceLocationUtil.sanitizePath(uid);
-				String itemModId = ingredientHelper.getIdentifier(itemStack).getNamespace();
+				ItemStack itemStack = repairData.getBaseStack();
+				Identifier itemId = ingredientHelper.getIdentifier(itemStack);
+				String ingredientIdPath = ResourceLocationUtil.sanitizePath(itemId.toString());
+				String itemModId = itemId.getNamespace();
 
 				ItemStack damaged = itemStack.copy();
 				damaged.setDamageValue(damaged.getMaxDamage() * 3 / 4);
@@ -236,12 +236,12 @@ public final class AnvilRecipeMaker {
 		return RegistryUtil.getRegistry(Registries.ITEM)
 			.listElements()
 			.mapMulti((item, consumer) -> {
-				ItemStack itemStack = item.value().getDefaultInstance();
+				ItemStack itemStack = new ItemStack(item);
 				boolean selfRepair = itemStack.isDamageableItem() && EnchantmentHelper.canStoreEnchantments(itemStack);
 				Repairable repairable = item.components().get(DataComponents.REPAIRABLE);
 				HolderSet<Item> repairItems = repairable == null ? HolderSet.empty() : repairable.items();
 				if (selfRepair || repairItems.size() > 0) {
-					RepairData repairData = new RepairData(item, selfRepair, repairItems);
+					RepairData repairData = new RepairData(itemStack, selfRepair, repairItems);
 					consumer.accept(repairData);
 				}
 			});

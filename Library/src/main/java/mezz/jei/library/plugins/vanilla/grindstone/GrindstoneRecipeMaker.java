@@ -64,7 +64,7 @@ public final class GrindstoneRecipeMaker {
 			Optional<ResourceKey<Enchantment>> enchantmentResourceLocation = registry.getResourceKey(enchantment);
 			String enchantmentPath = enchantmentResourceLocation.map(enchantmentResourceKey -> enchantmentResourceKey.identifier().getPath()).orElse(null);
 			for (Holder<Item> itemHolder : ingredientHelper.getSupportedItems(enchantmentHolder)) {
-				ItemStack stack = itemHolder.value().getDefaultInstance();
+				ItemStack stack = new ItemStack(itemHolder);
 				if (!stack.isEnchantable() ||
 					!platformHelper.isItemEnchantable(stack, enchantmentHolder)
 				) {
