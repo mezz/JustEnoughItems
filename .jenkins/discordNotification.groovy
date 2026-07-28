@@ -130,7 +130,28 @@ def getBuildVersion() {
     return ''
 }
 
-def getArtifactLinks(boolean includeFallback) {
+def getOrderedLoaderLinks(Map linksByModule) {
+    def links = []
+
+    def neoForgeLink = linksByModule['NeoForge']
+    if (neoForgeLink) {
+        links.add(neoForgeLink)
+    }
+
+    def fabricLink = linksByModule['Fabric']
+    if (fabricLink) {
+        links.add(fabricLink)
+    }
+
+    def forgeLink = linksByModule['Forge']
+    if (forgeLink) {
+        links.add(forgeLink)
+    }
+
+    return links
+}
+
+def getReleaseLinkLines(boolean includeFallback) {
     def resultFiles = [
         'Forge/build/publishMods/publishCurseforge.json',
         'Forge/build/publishMods/publishModrinth.json',
@@ -140,7 +161,8 @@ def getArtifactLinks(boolean includeFallback) {
         'NeoForge/build/publishMods/publishModrinth.json'
     ]
 
-    def links = []
+    def curseForgeLinksByModule = [:]
+    def modrinthLinksByModule = [:]
     def curseHomepageUrl = getGradleProperty('curseHomepageUrl')
     def curseProjectSlug = curseHomepageUrl ? getLastPathSegment(curseHomepageUrl) : ''
 
@@ -156,31 +178,45 @@ def getArtifactLinks(boolean includeFallback) {
             def fileId = getJsonValue(publishResult, 'fileId')
             def projectSlug = getJsonValue(publishResult, 'projectSlug') ?: curseProjectSlug
             if (fileId && projectSlug && projectSlug != 'dry-run') {
-                links.add("[${moduleName} CurseForge](https://www.curseforge.com/minecraft/mc-mods/${projectSlug}/files/${fileId})")
+                curseForgeLinksByModule[moduleName] = "[${moduleName}](https://www.curseforge.com/minecraft/mc-mods/${projectSlug}/files/${fileId})"
             }
         } else if (publishType == 'modrinth') {
             def projectId = getJsonValue(publishResult, 'projectId')
             def versionId = getJsonValue(publishResult, 'id')
             if (projectId && projectId != 'dry-run' && versionId) {
-                links.add("[${moduleName} Modrinth](https://modrinth.com/mod/${projectId}/version/${versionId})")
+                modrinthLinksByModule[moduleName] = "[${moduleName}](https://modrinth.com/mod/${projectId}/version/${versionId})"
             }
         }
     }
 
-    if (links || !includeFallback) {
-        return links
+    def releaseLinkLines = []
+
+    def curseForgeLinks = getOrderedLoaderLinks(curseForgeLinksByModule)
+    if (curseForgeLinks) {
+        releaseLinkLines.add("**CurseForge:** ${curseForgeLinks.join(' | ')}")
+    }
+
+    def modrinthLinks = getOrderedLoaderLinks(modrinthLinksByModule)
+    if (modrinthLinks) {
+        releaseLinkLines.add("**Modrinth:** ${modrinthLinks.join(' | ')}")
+    }
+
+    if (releaseLinkLines || !includeFallback) {
+        return releaseLinkLines
     }
 
     // Fallback for branches or builds that do not generate mod-publish-plugin result files.
     if (curseHomepageUrl) {
-        links.add("[CurseForge](${removeTrailingSlashes(curseHomepageUrl)}/files)")
+        def curseFilesUrl = "${removeTrailingSlashes(curseHomepageUrl)}/files"
+        releaseLinkLines.add("**CurseForge:** [NeoForge](${curseFilesUrl}) | [Fabric](${curseFilesUrl}) | [Forge](${curseFilesUrl})")
     }
 
     def modrinthId = getGradleProperty('modrinthId')
     if (modrinthId) {
-        links.add("[Modrinth](https://modrinth.com/mod/${modrinthId}/versions)")
+        def modrinthVersionsUrl = "https://modrinth.com/mod/${modrinthId}/versions"
+        releaseLinkLines.add("**Modrinth:** [NeoForge](${modrinthVersionsUrl}) | [Fabric](${modrinthVersionsUrl}) | [Forge](${modrinthVersionsUrl})")
     }
-    return links
+    return releaseLinkLines
 }
 
 def formatCommitLink(String githubUrl, String commitId, String message) {
@@ -282,9 +318,11 @@ def notifyDiscordBuild(String result) {
         descriptionLines.add("**Commits:**\n${commitLinks.join('\n')}")
     }
 
-    def artifactLinks = getArtifactLinks(buildResult == 'SUCCESS')
-    if (artifactLinks) {
-        descriptionLines.add("**Artifacts:** ${artifactLinks.join(' | ')}")
+    def releaseLinkLines = getReleaseLinkLines(buildResult == 'SUCCESS')
+    for (def releaseLinkLine in releaseLinkLines) {
+        if (releaseLinkLine) {
+            descriptionLines.add(releaseLinkLine)
+        }
     }
 
     def description = descriptionLines.join('\n')
