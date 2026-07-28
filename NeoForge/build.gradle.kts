@@ -430,8 +430,7 @@ publishing {
 	publications {
 		register<MavenPublication>("neoforgeJar") {
 			artifactId = baseArchivesName
-			artifact(shadedJar)
-			artifact(shadedSourcesJar)
+			from(components["modShade"])
 		}
 	}
 	repositories {
