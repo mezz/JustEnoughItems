@@ -179,7 +179,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	private <T> void addTagNameTooltip(ITooltipBuilder tooltip, IIngredientManager ingredientManager, ITypedIngredient<T> ingredient) {
 		IIngredientType<T> ingredientType = ingredient.getType();
-		List<T> ingredients = getIngredients(ingredientType).toList();
+		List<T> ingredients = getVisibleIngredients(ingredientType);
 		if (ingredients.isEmpty()) {
 			return;
 		}
@@ -201,6 +201,15 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 					tagName.copy().withStyle(ChatFormatting.GRAY)
 				);
 			});
+	}
+
+	private <T> List<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
+		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getIngredientVisibility();
+		return getAllIngredients()
+			.filter(ingredientVisibility::isIngredientVisible)
+			.map(i -> i.getIngredient(ingredientType))
+			.flatMap(Optional::stream)
+			.toList();
 	}
 
 	@Override
