@@ -4,9 +4,8 @@ import com.google.common.base.Preconditions;
 import mezz.jei.api.gui.drawable.TilingDirection;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
+import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
-import mezz.jei.common.platform.IPlatformRenderHelper;
-import mezz.jei.common.platform.Services;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.SpriteContents;
@@ -133,7 +132,6 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		int posX,
 		int posY
 	) {
-		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 		SpriteContents spriteContents = sprite.contents();
 		int spriteWidth = spriteContents.width();
 		int spriteHeight = spriteContents.height();
@@ -145,7 +143,7 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 
 		guiGraphics.enableScissor(posX, posY, posX + tiledWidth, posY + scaledAmount);
 		{
-			renderHelper.blitTiledSprite(
+			ScalableDrawable.blitTiledSpriteWithColor(
 				guiGraphics,
 				sprite,
 				tileScaling,

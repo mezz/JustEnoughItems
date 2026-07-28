@@ -78,36 +78,6 @@ public class RenderHelper implements IPlatformRenderHelper {
 	}
 
 	@Override
-	public void blitTiledSprite(GuiGraphics guiGraphics, TextureAtlasSprite sprite, GuiSpriteScaling.Tile scaling, int xOffset, int yOffset, int width, int height, int color) {
-		setColor(guiGraphics, color);
-		{
-			guiGraphics.blitTiledSprite(
-				sprite,
-				xOffset,
-				yOffset,
-				0,
-				width,
-				height,
-				0,
-				0,
-				scaling.width(),
-				scaling.height(),
-				scaling.width(),
-				scaling.height()
-			);
-		}
-		guiGraphics.setColor(1, 1, 1, 1);
-	}
-
-	private static void setColor(GuiGraphics guiGraphics, int color) {
-		float alpha = (color >> 24 & 0xFF) / 255F;
-		float red = (color >> 16 & 0xFF) / 255F;
-		float green = (color >> 8 & 0xFF) / 255F;
-		float blue = (color & 0xFF) / 255F;
-		guiGraphics.setColor(red, green, blue, alpha);
-	}
-
-	@Override
 	public Optional<NativeImage> getMainImage(TextureAtlasSprite sprite) {
 		SpriteContents contents = sprite.contents();
 		NativeImage[] frames = contents.byMipLevel;
