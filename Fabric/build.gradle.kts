@@ -20,6 +20,7 @@ repositories {
 }
 
 // gradle.properties
+val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
 val fabricApiVersion: String by extra
 val fabricLoaderVersion: String by extra
@@ -299,6 +300,7 @@ publishMods {
 
     curseforge {
         projectId = curseProjectId
+        projectSlug = curseHomepageUrl.substringAfterLast("/")
         accessToken.set(curseforgeApikey ?: "0")
         changelog.set(changelogHtml.singleFileContents())
         changelogType = "html"
