@@ -2,6 +2,11 @@ name: 'Build and Test'
 
 on:
   push:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -10,6 +15,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+          persist-credentials: false
 
       - name: Set up JDK 25
         uses: actions/setup-java@v5
@@ -24,7 +32,14 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: wrapper
-          cache-read-only: false
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
+
+      - name: Require tests for source changes
+        if: github.event_name == 'pull_request'
+        run: python3 .github/scripts/require_tests_for_source_changes.py
+
+      - name: Check style and tests
+        run: ./gradlew check --no-daemon
 
       - name: Build with Gradle
         run: |
@@ -50,6 +65,7 @@ jobs:
           fi
 
       - name: Copy together artifacts
+        if: github.event_name == 'push'
         shell: bash
         run: |
           mkdir dist
@@ -63,6 +79,7 @@ jobs:
           cp Library/build/libs/*.jar dist
 
       - uses: actions/upload-artifact@v7
+        if: github.event_name == 'push'
         with:
           if-no-files-found: error
           path: dist/*
