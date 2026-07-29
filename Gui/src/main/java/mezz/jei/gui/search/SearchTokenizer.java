@@ -2,11 +2,7 @@ package mezz.jei.gui.search;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-
 public class SearchTokenizer {
-
-	private static final Set<Character> PREFIXES = Set.of('@', '#', '$', '%', '^', '&');
 
 	public List<Token> tokenize(String filterText) {
 		List<Token> tokens = new ArrayList<>();
@@ -16,8 +12,7 @@ public class SearchTokenizer {
 		}
 
 		StringBuilder current = new StringBuilder();
-		int tokenStart = -1;
-		boolean insideQuotes = false;
+        boolean insideQuotes = false;
 		boolean exclusion = false;
 		boolean escaped = false;
 
@@ -32,9 +27,6 @@ public class SearchTokenizer {
 
 			if (c == '\\') {
 				escaped = true;
-				if (current.isEmpty()) {
-					tokenStart = i;
-				}
 				continue;
 			}
 
@@ -43,14 +35,9 @@ public class SearchTokenizer {
 					// Closing quote
 					addToken(tokens, current, exclusion);
 					current.setLength(0);
-					tokenStart = -1;
-					insideQuotes = false;
+                    insideQuotes = false;
 					exclusion = false;
 				} else {
-					// Opening quote - finish any previous unquoted token first
-					if (current.isEmpty()) {
-						tokenStart = i + 1;
-					}
 					insideQuotes = true;
 				}
 				continue;
@@ -60,8 +47,7 @@ public class SearchTokenizer {
 				if (!current.isEmpty()) {
 					addToken(tokens, current, exclusion);
 					current.setLength(0);
-					tokenStart = -1;
-				}
+                }
 				exclusion = false;
 				continue;
 			}
@@ -70,10 +56,6 @@ public class SearchTokenizer {
 			if (!insideQuotes && current.isEmpty() && c == '-') {
 				exclusion = true;
 				continue;
-			}
-
-			if (current.isEmpty()) {
-				tokenStart = i;
 			}
 			current.append(c);
 		}
