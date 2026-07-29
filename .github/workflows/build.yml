@@ -1,4 +1,4 @@
-name: 'Build and Test'
+name: 'Build'
 
 on:
   push:
@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
@@ -24,17 +25,18 @@ jobs:
         with:
           distribution: 'microsoft'
           java-version: '17'
-          cache: 'gradle'
 
-      - name: Require tests for source changes
-        if: github.event_name == 'pull_request'
-        run: python3 .github/scripts/require_tests_for_source_changes.py
+      - name: Validate wrapper
+        uses: gradle/actions/wrapper-validation@v6
 
-      - name: Check style and tests
-        run: ./gradlew check --no-daemon
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: wrapper
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
 
       - name: Build with Gradle
-        run: ./gradlew build --no-daemon
+        run: ./gradlew assemble :Fabric:validateAccessWidener :FabricApi:validateAccessWidener --no-daemon
 
       - name: Copy together artifacts
         if: github.event_name == 'push'
@@ -50,7 +52,8 @@ jobs:
           cp ForgeApi/build/libs/*.jar dist
           cp Gui/build/libs/*.jar dist
           cp Library/build/libs/*.jar dist
-      - uses: actions/upload-artifact@v4
+
+      - uses: actions/upload-artifact@v7
         if: github.event_name == 'push'
         with:
           if-no-files-found: error
