@@ -1,3 +1,23 @@
+def runExternalPublishTask(String gradleTask) {
+    def maxAttempts = 3
+
+    for (def attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            sh "./gradlew ${gradleTask} --no-daemon"
+            return
+        } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException e) {
+            throw e
+        } catch (Exception e) {
+            if (attempt >= maxAttempts) {
+                throw e
+            }
+
+            echo "External publish task '${gradleTask}' failed on attempt ${attempt}/${maxAttempts}; retrying in 2 minutes."
+            sleep time: 2, unit: 'MINUTES'
+        }
+    }
+}
+
 def shouldSkipApiCompatibility() {
     for (def changeSet in currentBuild.changeSets) {
         for (def entry in changeSet.items) {
@@ -136,8 +156,14 @@ pipeline {
                 expression { env.SHOULD_PUBLISH != 'false' }
             }
             steps {
-                sh "./gradlew :Fabric:publishCurseForge --no-daemon"
-                sh "./gradlew :Forge:publishCurseForge --no-daemon"
+                script {
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+                        runExternalPublishTask(':Fabric:publishCurseforge')
+                    }
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+                        runExternalPublishTask(':Forge:publishCurseforge')
+                    }
+                }
             }
         }
 
