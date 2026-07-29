@@ -1,3 +1,23 @@
+def runExternalPublishTask(String gradleTask) {
+    def maxAttempts = 3
+
+    for (def attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            sh "./gradlew ${gradleTask}"
+            return
+        } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException e) {
+            throw e
+        } catch (Exception e) {
+            if (attempt >= maxAttempts) {
+                throw e
+            }
+
+            echo "External publish task '${gradleTask}' failed on attempt ${attempt}/${maxAttempts}; retrying in 2 minutes."
+            sleep time: 2, unit: 'MINUTES'
+        }
+    }
+}
+
 pipeline {
     agent any
     tools {
@@ -98,9 +118,17 @@ pipeline {
                 expression { env.SHOULD_PUBLISH != 'false' }
             }
             steps {
-                sh "./gradlew :Fabric:publishCurseforge"
-                sh "./gradlew :Forge:publishCurseforge"
-                sh "./gradlew :NeoForge:publishCurseforge"
+                script {
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+                        runExternalPublishTask(':Fabric:publishCurseforge')
+                    }
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+                        runExternalPublishTask(':Forge:publishCurseforge')
+                    }
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+                        runExternalPublishTask(':NeoForge:publishCurseforge')
+                    }
+                }
             }
         }
 
@@ -109,9 +137,17 @@ pipeline {
                 expression { env.SHOULD_PUBLISH != 'false' }
             }
             steps {
-                sh "./gradlew :Fabric:publishModrinth"
-                sh "./gradlew :Forge:publishModrinth"
-                sh "./gradlew :NeoForge:publishModrinth"
+                script {
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+                        runExternalPublishTask(':Fabric:publishModrinth')
+                    }
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+                        runExternalPublishTask(':Forge:publishModrinth')
+                    }
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+                        runExternalPublishTask(':NeoForge:publishModrinth')
+                    }
+                }
             }
         }
 
