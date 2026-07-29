@@ -31,6 +31,12 @@ pipeline {
             }
         }
 
+        stage('API Compatibility') {
+            steps {
+                sh "./gradlew checkApiCompatibility"
+            }
+        }
+
         stage('Server GameTests') {
             steps {
                 sh "./gradlew :NeoForge:runGameTestServer"
