@@ -13,6 +13,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.Map;
  * Helper functions for implementing an {@link IRecipeTransferHandler}.
  * Get an instance from {@link IRecipeTransferRegistration#getTransferHelper()}.
  */
+@ApiStatus.NonExtendable
 public interface IRecipeTransferHandlerHelper {
 	/**
 	 * Create an error with {@link Type#INTERNAL}.

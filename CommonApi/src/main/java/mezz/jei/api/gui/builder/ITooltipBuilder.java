@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
  *
  * @since 19.5.4
  */
+@ApiStatus.NonExtendable
 public interface ITooltipBuilder {
 	/**
 	 * Add a {@link FormattedText} line to this tooltip

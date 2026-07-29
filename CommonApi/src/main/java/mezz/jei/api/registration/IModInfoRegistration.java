@@ -1,5 +1,7 @@
 package mezz.jei.api.registration;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.Collection;
 import java.util.Set;
 
@@ -8,6 +10,7 @@ import java.util.Set;
  *
  * @since 17.1.0
  */
+@ApiStatus.NonExtendable
 public interface IModInfoRegistration {
 	/**
 	 * Register alternative mod names, used for searching for a mod by a different name.

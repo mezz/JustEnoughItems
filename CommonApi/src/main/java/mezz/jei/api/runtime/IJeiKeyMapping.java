@@ -2,6 +2,7 @@ package mezz.jei.api.runtime;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A key mapping used by JEI.
@@ -11,6 +12,7 @@ import net.minecraft.network.chat.Component;
  *
  * @since 11.0.1
  */
+@ApiStatus.NonExtendable
 public interface IJeiKeyMapping {
 	/**
 	 * Returns true if the key mapping matches the key,

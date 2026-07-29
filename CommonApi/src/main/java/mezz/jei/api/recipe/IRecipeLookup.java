@@ -1,6 +1,7 @@
 package mezz.jei.api.recipe;
 
 import mezz.jei.api.recipe.types.IRecipeType;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 import java.util.stream.Stream;
@@ -12,6 +13,7 @@ import java.util.stream.Stream;
  *
  * @since 9.5.0
  */
+@ApiStatus.NonExtendable
 public interface IRecipeLookup<R> {
 	/**
 	 * Limit the results to only recipes matching the given focuses.

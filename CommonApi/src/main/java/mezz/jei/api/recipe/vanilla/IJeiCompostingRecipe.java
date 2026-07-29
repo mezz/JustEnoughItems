@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnegative;
 import java.util.List;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Recipes representing ingredients that can be composted in the composter.
@@ -15,6 +16,7 @@ import java.util.List;
  *
  * @since 9.5.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiCompostingRecipe {
 	/**
 	 * Get the inputs to this recipe.
