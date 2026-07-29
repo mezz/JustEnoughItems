@@ -139,7 +139,7 @@ def getChangedFiles() {
 }
 
 def isDocumentationChange(String fileName) {
-    if (fileName == 'README.md' || fileName == 'UNSUPPORTED_VERSIONS.md') {
+    if (fileName.endsWith('.md') || fileName.endsWith('.markdown')) {
         return true
     }
     if (fileName == 'LICENSE' || fileName == 'LICENSE.txt' || fileName == 'COPYING') {
@@ -154,11 +154,38 @@ def isDocumentationChange(String fileName) {
     return false
 }
 
+def isTestOnlyChange(String fileName) {
+    def testSourceSets = [
+        'test',
+        'testFixtures',
+        'clientTestFixtures',
+        'gameTest',
+        'gametest',
+        'clientGameTest',
+        'keyMappingGametest'
+    ]
+
+    for (def sourceSetName in testSourceSets) {
+        def sourceSetPath = "src/${sourceSetName}/"
+        if (fileName.startsWith(sourceSetPath)) {
+            return true
+        }
+        if (fileName.indexOf("/${sourceSetPath}") >= 0) {
+            return true
+        }
+    }
+
+    return false
+}
+
 def isCiOnlyChange(String fileName) {
     if (fileName.startsWith('.jenkins/')) {
         return true
     }
     if (fileName.startsWith('.github/')) {
+        return true
+    }
+    if (fileName == '.travis.yml') {
         return true
     }
     if (fileName == '.gitignore' || fileName == '.gitattributes') {
@@ -167,7 +194,44 @@ def isCiOnlyChange(String fileName) {
     return false
 }
 
-def isCodeChange(String fileName) {
+def isModuleLocalOutputChange(String fileName) {
+    def outputDirectories = ['build', 'out', 'logs', 'run']
+
+    for (def outputDirectory in outputDirectories) {
+        if (fileName == outputDirectory || fileName.startsWith("${outputDirectory}/")) {
+            return true
+        }
+
+        def moduleOutputPath = "/${outputDirectory}/"
+        def moduleOutputIndex = fileName.indexOf(moduleOutputPath)
+        if (moduleOutputIndex > 0) {
+            def prefix = fileName.substring(0, moduleOutputIndex)
+            if (prefix.indexOf('/') < 0) {
+                return true
+            }
+        }
+    }
+
+    return false
+}
+
+def isDevelopmentOnlyChange(String fileName) {
+    if (fileName.startsWith('Debug/')) {
+        return true
+    }
+    if (fileName.startsWith('.idea/') || fileName.startsWith('.run/') || fileName.startsWith('.vscode/')) {
+        return true
+    }
+    if (fileName.endsWith('.iml') || fileName.endsWith('.ipr') || fileName.endsWith('.iws')) {
+        return true
+    }
+    if (isModuleLocalOutputChange(fileName)) {
+        return true
+    }
+    return false
+}
+
+def isPublishableChange(String fileName) {
     if (!fileName) {
         return false
     }
@@ -175,6 +239,12 @@ def isCodeChange(String fileName) {
         return false
     }
     if (isDocumentationChange(fileName)) {
+        return false
+    }
+    if (isTestOnlyChange(fileName)) {
+        return false
+    }
+    if (isDevelopmentOnlyChange(fileName)) {
         return false
     }
     return true
@@ -218,10 +288,6 @@ def shouldPublishAfterPreviousBuildFailure() {
 }
 
 def shouldPublishArtifacts() {
-    if (shouldPublishAfterPreviousBuildFailure()) {
-        return true
-    }
-
     def changedFiles = getChangedFiles()
     if (changedFiles == null) {
         echo 'Publishing artifacts because changed files could not be determined.'
@@ -229,26 +295,33 @@ def shouldPublishArtifacts() {
     }
 
     if (!changedFiles) {
+        // Retry publishing when Jenkins rebuilds the same revision after a
+        // failure, but do not let that override the file classifier for
+        // non-publishing commits.
+        if (shouldPublishAfterPreviousBuildFailure()) {
+            return true
+        }
+
         echo 'Skipping artifact publishing because Jenkins reported no changed files.'
         return false
     }
 
-    def codeChanges = []
+    def publishableChanges = []
     def ignoredChanges = []
     for (def changedFile in changedFiles) {
-        if (isCodeChange(changedFile)) {
-            codeChanges.add(changedFile)
+        if (isPublishableChange(changedFile)) {
+            publishableChanges.add(changedFile)
         } else {
             ignoredChanges.add(changedFile)
         }
     }
 
-    if (codeChanges) {
-        echo "Publishing artifacts because code changes were detected: ${joinLimited(codeChanges, 20)}"
+    if (publishableChanges) {
+        echo "Publishing artifacts because publishable changes were detected: ${joinLimited(publishableChanges, 20)}"
         return true
     }
 
-    echo "Skipping artifact publishing because only CI/documentation changes were detected: ${joinLimited(ignoredChanges, 20)}"
+    echo "Skipping artifact publishing because only non-publishing changes were detected: ${joinLimited(ignoredChanges, 20)}"
     return false
 }
 
