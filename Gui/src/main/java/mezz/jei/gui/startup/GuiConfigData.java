@@ -1,7 +1,12 @@
 package mezz.jei.gui.startup;
 
 import mezz.jei.common.platform.Services;
-import mezz.jei.gui.config.*;
+import mezz.jei.gui.config.BookmarkConfig;
+import mezz.jei.gui.config.IBookmarkConfig;
+import mezz.jei.gui.config.ILookupHistoryConfig;
+import mezz.jei.gui.config.IngredientTypeSortingConfig;
+import mezz.jei.gui.config.LookupHistoryJsonConfig;
+import mezz.jei.gui.config.ModNameSortingConfig;
 
 import java.nio.file.Path;
 

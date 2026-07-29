@@ -28,7 +28,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static mezz.jei.gui.config.BookmarkConfig.*;
+import static mezz.jei.gui.config.BookmarkConfig.MARKER_INGREDIENT;
+import static mezz.jei.gui.config.BookmarkConfig.MARKER_RECIPE;
+import static mezz.jei.gui.config.BookmarkConfig.MARKER_STACK;
+import static mezz.jei.gui.config.BookmarkConfig.loadIngredientBookmark;
+import static mezz.jei.gui.config.BookmarkConfig.loadItemStackBookmark;
+import static mezz.jei.gui.config.BookmarkConfig.loadRecipeBookmark;
 
 public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
