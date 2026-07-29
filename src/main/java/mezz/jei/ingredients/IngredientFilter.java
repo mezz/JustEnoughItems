@@ -8,8 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -35,8 +33,7 @@ import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.Translator;
 
 public class IngredientFilter implements IIngredientFilter, IIngredientGridSource {
-	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
-	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
+	private final SearchTokenizer searchTokenizer = new SearchTokenizer();
 
 	private final IngredientBlacklistInternal blacklist;
 	/**
@@ -316,21 +313,12 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 
 	@Nullable
 	private IntSet getElements(String filterText) {
-		Matcher filterMatcher = FILTER_SPLIT_PATTERN.matcher(filterText);
-
 		IntSet matches = null;
 		IntSet removeMatches = null;
-		while (filterMatcher.find()) {
-			String token = filterMatcher.group(1);
-			final boolean remove = token.startsWith("-");
-			if (remove) {
-				token = token.substring(1);
-			}
-			token = QUOTE_PATTERN.matcher(token).replaceAll("");
-
-			IntSet searchResults = getSearchResults(token);
+		for (SearchToken token : searchTokenizer.tokenize(filterText)) {
+			IntSet searchResults = getSearchResults(token.getText());
 			if (searchResults != null) {
-				if (remove) {
+				if (token.isExclusion()) {
 					if (removeMatches == null) {
 						removeMatches = searchResults;
 					} else {
