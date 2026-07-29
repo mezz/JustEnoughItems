@@ -62,9 +62,14 @@ spotless {
 		trimTrailingWhitespace()
 		removeUnusedImports()
 		forbidWildcardImports()
-        leadingSpacesToTabs(4)
-        replaceRegex("class-level javadoc indentation fix", "^\\*", " *")
-        replaceRegex("method-level javadoc indentation fix", "\t\\*", "\t *")
+		replaceRegex(
+			"single-line if block formatting",
+			"""(?m)^([ \t]*)if[ \t]*(\([^{}\r\n]+\))[ \t]*\{[ \t]*([^{}\r\n]+?)[ \t]*}${'$'}""",
+			"${'$'}1if ${'$'}2 {\n${'$'}1\t${'$'}3\n${'$'}1}"
+		)
+		leadingSpacesToTabs(4)
+		replaceRegex("class-level javadoc indentation fix", "^\\*", " *")
+		replaceRegex("method-level javadoc indentation fix", "\t\\*", "\t *")
 	}
 }
 

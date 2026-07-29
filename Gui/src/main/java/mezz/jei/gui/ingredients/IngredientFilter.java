@@ -324,7 +324,9 @@ public class IngredientFilter implements
 
 		List<Token> tokens = searchTokenizer.tokenize(filterText);
 		for (Token token : tokens) {
-			if (token.isEmpty()) {continue;}
+			if (token.isEmpty()) {
+				continue;
+			}
 			this.elementPrefixParser.parseToken(token.text())
 					.ifPresent(result -> {
 						if (token.exclusion()) {
