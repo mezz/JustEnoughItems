@@ -1,0 +1,59 @@
+name: 'API Compatibility'
+
+on:
+  push:
+    branches:
+      - '1.12'
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api-compatibility:
+    name: API Compatibility
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up build JDKs
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'microsoft'
+          java-version: |
+            21
+            25
+
+      - name: Validate wrapper
+        uses: gradle/actions/wrapper-validation@v6
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: wrapper
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
+
+      - name: Check API compatibility
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          FIRST_COMMIT_SHA: ${{ github.event.commits[0].id || github.sha }}
+        run: |
+          if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+            # New branch pushes use an all-zero base SHA.
+            BASE_SHA="$FIRST_COMMIT_SHA^"
+          fi
+
+          if git log --format=%s "$BASE_SHA..HEAD" | grep -Fqi '[skip-api-check]'; then
+            echo "::notice::Skipping API compatibility because a commit title contains [skip-api-check]."
+            exit 0
+          fi
+
+          ./gradlew checkApiCompatibility --no-daemon

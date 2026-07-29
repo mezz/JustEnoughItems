@@ -6,6 +6,18 @@ library(
     ])
 )
 
+def shouldSkipApiCompatibility() {
+    for (def changeSet in currentBuild.changeSets) {
+        for (def entry in changeSet.items) {
+            def title = entry.msg?.readLines()?.getAt(0) ?: ''
+            if (title.toLowerCase().contains('[skip-api-check]')) {
+                return true
+            }
+        }
+    }
+    return false
+}
+
 pipeline {
     agent any
     options {
@@ -37,7 +49,19 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "./gradlew build --no-daemon"
+                sh "./gradlew build -x checkApiCompatibility --no-daemon"
+            }
+        }
+
+        stage('API Compatibility') {
+            steps {
+                script {
+                    if (shouldSkipApiCompatibility()) {
+                        echo 'Skipping API compatibility because a commit title contains [skip-api-check].'
+                    } else {
+                        sh "./gradlew checkApiCompatibility --no-daemon"
+                    }
+                }
             }
         }
 
