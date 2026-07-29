@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnegative;
 import java.util.List;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Fueling recipes represent items that can be used as fuel in the Furnace, Smoker, Blast Furnace, etc.
@@ -13,6 +14,7 @@ import java.util.List;
  *
  * @since 9.5.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiFuelingRecipe {
 	/**
 	 * @return the inputs that act as a fuel

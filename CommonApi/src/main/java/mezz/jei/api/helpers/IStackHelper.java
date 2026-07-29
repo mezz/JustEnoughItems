@@ -5,11 +5,13 @@ import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Helps get ItemStacks from common formats used in recipes.
  * Get the instance from {@link IJeiHelpers#getStackHelper()}.
  */
+@ApiStatus.NonExtendable
 public interface IStackHelper {
 	/**
 	 * Gets the unique identifier for a stack, ignoring NBT on items without subtypes, and uses the {@link ISubtypeManager}.

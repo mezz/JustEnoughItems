@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import java.util.List;
  * <p>
  * Use {@link IRecipeRegistration#addRecipes(IRecipeType, List)} to add the recipe.
  */
+@ApiStatus.NonExtendable
 public interface IVanillaRecipeFactory {
 	/**
 	 * Create an anvil recipe for the given inputs and output.

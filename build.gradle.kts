@@ -135,4 +135,4 @@ subprojects {
     }
 }
 
-apply(from = "gradle/api-compatibility.gradle.kts")
+apply(plugin = "mezz.jei.api-compatibility")

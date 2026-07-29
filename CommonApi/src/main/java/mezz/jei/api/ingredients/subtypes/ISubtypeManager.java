@@ -6,12 +6,14 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Gets subtype information from ingredients that have subtype interpreters.
  * <p>
  * Add subtypes for your ingredients with {@link ISubtypeRegistration#registerSubtypeInterpreter(IIngredientTypeWithSubtypes, Object, ISubtypeInterpreter)}.
  */
+@ApiStatus.NonExtendable
 public interface ISubtypeManager {
 	/**
 	 * Get the data from an ItemStack that is relevant to comparing and telling subtypes apart.

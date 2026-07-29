@@ -2,6 +2,7 @@ package mezz.jei.api.recipe.category.extensions.vanilla.smithing;
 
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import net.minecraft.world.item.crafting.SmithingRecipe;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Allows extending the vanilla smithing recipe category,
@@ -11,6 +12,7 @@ import net.minecraft.world.item.crafting.SmithingRecipe;
  *
  * @since 19.5.0
  */
+@ApiStatus.NonExtendable
 public interface IExtendableSmithingRecipeCategory {
 	/**
 	 * Add an extension that handles a subset of the recipes in the recipe category.

@@ -1,6 +1,7 @@
 package mezz.jei.api.runtime.config;
 
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Represents config value used by JEI.
@@ -12,6 +13,7 @@ import net.minecraft.network.chat.Component;
  *
  * @since 12.1.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiConfigValue<T> {
 	/**
 	 * Get the name of this config value.

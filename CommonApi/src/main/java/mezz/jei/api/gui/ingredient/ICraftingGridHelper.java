@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ import java.util.List;
  * {@link ICraftingCategoryExtension#createRecipeExtras(Object, IRecipeExtrasBuilder, ICraftingGridHelper, IFocusGroup)}
  * to help them override the default behavior.
  */
+@ApiStatus.NonExtendable
 public interface ICraftingGridHelper {
 	/**
 	 * Create and place input ingredients onto the crafting grid in a consistent way.

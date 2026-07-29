@@ -8,6 +8,7 @@ import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -17,6 +18,7 @@ import java.util.stream.Stream;
  * <p>
  * An instance is passed to your {@link IModPlugin}'s registration methods.
  */
+@ApiStatus.NonExtendable
 public interface IJeiHelpers {
 	/**
 	 * Helps with the implementation of GUIs.
