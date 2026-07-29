@@ -2,6 +2,7 @@ package mezz.jei.api.gui.builder;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  *
  * @since 11.7.0
  */
+@ApiStatus.NonExtendable
 public interface ITooltipBuilder {
 	/**
 	 * Add a {@link Component} line to this tooltip

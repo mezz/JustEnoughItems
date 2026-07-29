@@ -11,6 +11,7 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
@@ -21,6 +22,7 @@ import java.util.Optional;
  * An instance is passed to your plugin in {@link IModPlugin#registerRecipes} and it is accessible from
  * {@link IJeiHelpers#getIngredientManager()} and {@link IJeiRuntime#getIngredientManager()}.
  */
+@ApiStatus.NonExtendable
 public interface IIngredientManager {
 	/**
 	 * Returns an unmodifiable collection of all the ItemStacks known to JEI.

@@ -64,6 +64,12 @@ pipeline {
             }
         }
 
+        stage('API Compatibility') {
+            steps {
+                sh "./gradlew checkApiCompatibility"
+            }
+        }
+
         stage('Check Publish Changes') {
             steps {
                 script {
