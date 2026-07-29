@@ -30,7 +30,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class IngredientFilter implements
@@ -41,8 +40,6 @@ public class IngredientFilter implements
 {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final SearchTokenizer searchTokenizer = new SearchTokenizer();
-	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
-	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
 
 	private final IClientConfig clientConfig;
 	private final IFilterTextSource filterTextSource;
