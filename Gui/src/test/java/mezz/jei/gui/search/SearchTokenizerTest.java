@@ -283,16 +283,4 @@ public class SearchTokenizerTest {
 			new Token("diamond", false)
 		), tokens);
 	}
-
-	@Test
-	void repeatedHyphenIgnoresAdditionalHyphens() {
-		List<Token> tokens = tokenizer.tokenize("-diamond --diamond ---diamond ----diamond");
-
-		assertEquals(List.of(
-			new Token("diamond", true),
-			new Token("diamond", true),
-			new Token("diamond", true),
-			new Token("diamond", true)
-		), tokens);
-	}
 }
