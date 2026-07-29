@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SearchTokenizerTest {
@@ -16,68 +15,62 @@ public class SearchTokenizerTest {
 	void simpleWords() {
 		List<Token> tokens = tokenizer.tokenize("iron sword");
 
-		assertEquals(2, tokens.size());
-		assertEquals("iron", tokens.get(0).text());
-		assertEquals("sword", tokens.get(1).text());
-		assertFalse(tokens.get(0).quoted());
-		assertFalse(tokens.get(1).quoted());
+		assertEquals(List.of(
+			new Token("iron", 0, 4, false, false),
+			new Token("sword", 5, 10, false, false)
+		), tokens);
 	}
 
 	@Test
 	void quotedPhrase() {
 		List<Token> tokens = tokenizer.tokenize("\"iron sword\"");
 
-		assertEquals(1, tokens.size());
-		assertEquals("iron sword", tokens.get(0).text());
-		assertTrue(tokens.get(0).quoted());
+		assertEquals(List.of(
+			new Token("iron sword", 1, 11, true, false)
+		), tokens);
 	}
 
 	@Test
 	void unpairedOpeningQuote() {
 		List<Token> tokens = tokenizer.tokenize("\"iron sword");
 
-		assertEquals(1, tokens.size());
-		assertEquals("iron sword", tokens.get(0).text());
-		assertTrue(tokens.get(0).quoted());
+		assertEquals(List.of(
+			new Token("iron sword", 1, 11, true, false)
+		), tokens);
 	}
 
 	@Test
 	void exclusion() {
 		List<Token> tokens = tokenizer.tokenize("-diamond");
 
-		assertEquals(1, tokens.size());
-		assertEquals("diamond", tokens.get(0).text());
-		assertTrue(tokens.get(0).exclusion());
+		assertEquals(List.of(
+			new Token("diamond", 1, 8, false, true)
+		), tokens);
 	}
 
 	@Test
 	void quotedWithExclusion() {
 		List<Token> tokens = tokenizer.tokenize("-\"iron sword\"");
 
-		assertEquals(1, tokens.size());
-		assertEquals("iron sword", tokens.get(0).text());
-		assertTrue(tokens.get(0).quoted());
-		assertTrue(tokens.get(0).exclusion());
+		assertEquals(List.of(
+			new Token("iron sword", 2, 12, true, true)
+		), tokens);
 	}
 
 	@Test
 	void mixed() {
 		List<Token> tokens = tokenizer.tokenize("sword \"iron pick\" -wood");
 
-		assertEquals(3, tokens.size());
-
-		assertEquals("sword", tokens.get(0).text());
-		assertFalse(tokens.get(0).quoted());
-
-		assertEquals("iron pick", tokens.get(1).text());
-		assertTrue(tokens.get(1).quoted());
-
-		assertEquals("wood", tokens.get(2).text());
-		assertTrue(tokens.get(2).exclusion());
+		assertEquals(List.of(
+			new Token("sword", 0, 5, false, false),
+			new Token("iron pick", 7, 16, true, false),
+			new Token("wood", 19, 23, false, true)
+		), tokens);
 	}
 
 	@Test
 	void emptyAndWhitespace() {
+		assertTrue(tokenizer.tokenize(null).isEmpty());
 		assertTrue(tokenizer.tokenize("").isEmpty());
 		assertTrue(tokenizer.tokenize("   ").isEmpty());
 	}
@@ -85,6 +78,44 @@ public class SearchTokenizerTest {
 	@Test
 	void onlyQuotes() {
 		List<Token> tokens = tokenizer.tokenize("\"\"");
-		// Decide what your tokenizer should do here and assert it
+
+		assertTrue(tokens.isEmpty());
+	}
+
+	@Test
+	void prefixedQuotedPhrase() {
+		List<Token> tokens = tokenizer.tokenize("%\"redstone blocks\"");
+
+		assertEquals(List.of(
+			new Token("%redstone blocks", 0, 17, true, false)
+		), tokens);
+	}
+
+	@Test
+	void prefixedQuotedPhraseWithExclusion() {
+		List<Token> tokens = tokenizer.tokenize("-%\"redstone blocks\"");
+
+		assertEquals(List.of(
+			new Token("%redstone blocks", 1, 18, true, true)
+		), tokens);
+	}
+
+	@Test
+	void bareExclusionMarkerDoesNotExcludeNextToken() {
+		List<Token> tokens = tokenizer.tokenize("- diamond - \"iron sword\"");
+
+		assertEquals(List.of(
+			new Token("diamond", 2, 9, false, false),
+			new Token("iron sword", 13, 23, true, false)
+		), tokens);
+	}
+
+	@Test
+	void repeatedHyphenKeepsAdditionalHyphensInToken() {
+		List<Token> tokens = tokenizer.tokenize("--diamond");
+
+		assertEquals(List.of(
+			new Token("-diamond", 1, 9, false, true)
+		), tokens);
 	}
 }
