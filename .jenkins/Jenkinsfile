@@ -1,3 +1,23 @@
+def runExternalPublishTask(String gradleTask) {
+    def maxAttempts = 3
+
+    for (def attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            sh "./gradlew ${gradleTask}"
+            return
+        } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException e) {
+            throw e
+        } catch (Exception e) {
+            if (attempt >= maxAttempts) {
+                throw e
+            }
+
+            echo "External publish task '${gradleTask}' failed on attempt ${attempt}/${maxAttempts}; retrying in 2 minutes."
+            sleep time: 2, unit: 'MINUTES'
+        }
+    }
+}
+
 pipeline {
     agent any
     tools {
@@ -54,11 +74,13 @@ pipeline {
                 expression { env.SHOULD_PUBLISH != 'false' }
             }
             steps {
-                retry(3) {
-                    sh "./gradlew :Fabric:publishCurseforge"
-                }
-                retry(3) {
-                    sh "./gradlew :Forge:publishCurseforge"
+                script {
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+                        runExternalPublishTask(':Fabric:publishCurseforge')
+                    }
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+                        runExternalPublishTask(':Forge:publishCurseforge')
+                    }
                 }
             }
         }
@@ -68,11 +90,13 @@ pipeline {
                 expression { env.SHOULD_PUBLISH != 'false' }
             }
             steps {
-                retry(3) {
-                    sh "./gradlew :Fabric:publishModrinth"
-                }
-                retry(3) {
-                    sh "./gradlew :Forge:publishModrinth"
+                script {
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+                        runExternalPublishTask(':Fabric:publishModrinth')
+                    }
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+                        runExternalPublishTask(':Forge:publishModrinth')
+                    }
                 }
             }
         }
