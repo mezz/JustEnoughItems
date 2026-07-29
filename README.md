@@ -10,6 +10,8 @@ This means:
 
 ### [JEI Developer Wiki](https://github.com/mezz/JustEnoughItems/wiki)
 
+### [Contributing](CONTRIBUTING.md)
+
 # Latest Versions:
 
 ## 26.1.2
