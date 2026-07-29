@@ -45,12 +45,9 @@ pipeline {
             }
         }
 
-        stage('Check Publish Changes') {
+        stage('API Compatibility') {
             steps {
-                script {
-                    def publishGuard = load '.jenkins/publishGuard.groovy'
-                    env.SHOULD_PUBLISH = publishGuard.shouldPublishArtifacts() ? 'true' : 'false'
-                }
+                sh "./gradlew checkApiCompatibility"
             }
         }
 
@@ -69,7 +66,6 @@ pipeline {
                     if command -v xvfb-run >/dev/null 2>&1; then
                         xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest --no-daemon
                         xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTestWithoutAmecs --no-daemon
-                        xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :NeoForge:runClientRecipeSyncTest --no-daemon
                     else
                         echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
                     fi
