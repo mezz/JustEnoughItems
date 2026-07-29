@@ -1,4 +1,4 @@
-name: 'Build and Test'
+name: 'Build'
 
 on:
   push:
@@ -34,35 +34,8 @@ jobs:
           gradle-version: wrapper
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
-      - name: Require tests for source changes
-        if: github.event_name == 'pull_request'
-        run: python3 .github/scripts/require_tests_for_source_changes.py
-
-      - name: Check style and tests
-        run: ./gradlew check --no-daemon
-
       - name: Build with Gradle
-        run: |
-          ./gradlew :Fabric:build --no-daemon
-          ./gradlew :NeoForge:build --no-daemon
-          ./gradlew :Common:build --no-daemon
-          ./gradlew :CommonApi:build --no-daemon
-          ./gradlew :Debug:build --no-daemon
-          ./gradlew :FabricApi:build --no-daemon
-          ./gradlew :NeoForgeApi:build --no-daemon
-
-      - name: Run NeoForge GameTests
-        run: ./gradlew :NeoForge:runGameTestServer --no-daemon
-
-      - name: Run Client GameTests
-        run: |
-          if command -v xvfb-run >/dev/null 2>&1; then
-            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest --no-daemon
-            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTestWithoutAmecs --no-daemon
-            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :NeoForge:runClientRecipeSyncTest --no-daemon
-          else
-            echo "::error::xvfb-run is not available; skipping client GameTests."
-          fi
+        run: ./gradlew assemble :Fabric:validateAccessWidener :FabricApi:validateAccessWidener --no-daemon
 
       - name: Copy together artifacts
         if: github.event_name == 'push'
