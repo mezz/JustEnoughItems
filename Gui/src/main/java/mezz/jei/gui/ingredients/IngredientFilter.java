@@ -20,6 +20,8 @@ import mezz.jei.gui.search.ElementPrefixParser;
 import mezz.jei.gui.search.ElementSearch;
 import mezz.jei.gui.search.ElementSearchLowMem;
 import mezz.jei.gui.search.IElementSearch;
+import mezz.jei.gui.search.SearchTokenizer;
+import mezz.jei.gui.search.Token;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -33,8 +35,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class IngredientFilter implements
@@ -44,8 +44,7 @@ public class IngredientFilter implements
 	IWorldConfig.IEditModeListener
 {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
-	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
+	private final SearchTokenizer searchTokenizer = new SearchTokenizer();
 
 	private final IClientConfig clientConfig;
 	private final IFilterTextSource filterTextSource;
@@ -260,20 +259,15 @@ public class IngredientFilter implements
 		if (filterText.isEmpty()) {
 			return searchTokens;
 		}
-		Matcher filterMatcher = FILTER_SPLIT_PATTERN.matcher(filterText);
-		while (filterMatcher.find()) {
-			String string = filterMatcher.group(1);
-			final boolean remove = string.startsWith("-");
-			if (remove) {
-				string = string.substring(1);
-			}
-			string = QUOTE_PATTERN.matcher(string).replaceAll("");
-			if (string.isEmpty()) {
+
+		List<Token> tokens = searchTokenizer.tokenize(filterText);
+		for (Token token : tokens) {
+			if (token.isEmpty()) {
 				continue;
 			}
-			this.elementPrefixParser.parseToken(string)
+			this.elementPrefixParser.parseToken(token.text())
 				.ifPresent(result -> {
-					if (remove) {
+					if (token.exclusion()) {
 						searchTokens.toRemove.add(result);
 					} else {
 						searchTokens.toSearch.add(result);
