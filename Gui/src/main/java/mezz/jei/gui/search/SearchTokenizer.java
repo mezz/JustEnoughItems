@@ -8,7 +8,7 @@ public class SearchTokenizer {
 	public List<Token> tokenize(String filterText) {
 		List<Token> tokens = new ArrayList<>();
 
-		if (filterText == null || filterText.isEmpty()) {
+		if (filterText.isEmpty()) {
 			return tokens;
 		}
 
@@ -23,13 +23,13 @@ public class SearchTokenizer {
 			if (c == '"') {
 				if (insideQuotes) {
 					// Closing quote
-					addToken(tokens, current, tokenStart, i, true, exclusion);
+					addToken(tokens, current, exclusion);
 					current.setLength(0);
 					exclusion = false;
 				} else {
 					// Opening quote - finish any previous unquoted token first
 					if (!current.isEmpty()) {
-						addToken(tokens, current, tokenStart, i, false, exclusion);
+						addToken(tokens, current, exclusion);
 						current.setLength(0);
 						exclusion = false;
 					}
@@ -41,7 +41,7 @@ public class SearchTokenizer {
 
 			if (!insideQuotes && Character.isWhitespace(c)) {
 				if (!current.isEmpty()) {
-					addToken(tokens, current, tokenStart, i, false, exclusion);
+					addToken(tokens, current, exclusion);
 					current.setLength(0);
 					exclusion = false;
 				}
@@ -64,16 +64,16 @@ public class SearchTokenizer {
 
 		// Handle remaining text
 		if (!current.isEmpty() || insideQuotes) {
-			addToken(tokens, current, tokenStart, filterText.length(), insideQuotes, exclusion);
+			addToken(tokens, current, exclusion);
 		}
 
 		return tokens;
 	}
 
-	private void addToken(List<Token> tokens, StringBuilder content, int start, int end, boolean quoted, boolean exclusion) {
+	private void addToken(List<Token> tokens, StringBuilder content, boolean exclusion) {
 		String text = content.toString().trim();
 		if (!text.isEmpty()) {
-			tokens.add(new Token(text, start, end, quoted, exclusion));
+			tokens.add(new Token(text, exclusion));
 		}
 	}
 }
