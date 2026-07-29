@@ -12,7 +12,7 @@ public class SearchTokenizer {
 		}
 
 		StringBuilder current = new StringBuilder();
-        boolean insideQuotes = false;
+		boolean insideQuotes = false;
 		boolean exclusion = false;
 		boolean escaped = false;
 
@@ -35,7 +35,7 @@ public class SearchTokenizer {
 					// Closing quote
 					addToken(tokens, current, exclusion);
 					current.setLength(0);
-                    insideQuotes = false;
+					insideQuotes = false;
 					exclusion = false;
 				} else {
 					insideQuotes = true;
@@ -47,7 +47,7 @@ public class SearchTokenizer {
 				if (!current.isEmpty()) {
 					addToken(tokens, current, exclusion);
 					current.setLength(0);
-                }
+				}
 				exclusion = false;
 				continue;
 			}
