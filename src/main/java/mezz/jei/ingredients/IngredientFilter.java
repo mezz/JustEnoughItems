@@ -20,6 +20,8 @@ import mezz.jei.search.ElementPrefixParser;
 import mezz.jei.search.ElementSearch;
 import mezz.jei.search.ElementSearchLowMem;
 import mezz.jei.search.IElementSearch;
+import mezz.jei.search.SearchToken;
+import mezz.jei.search.SearchTokenizer;
 import mezz.jei.util.LoggedTimer;
 import mezz.jei.util.Translator;
 import net.minecraft.util.NonNullList;
@@ -37,14 +39,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class IngredientFilter implements IIngredientGridSource {
-	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
-	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
+	private final SearchTokenizer searchTokenizer = new SearchTokenizer();
 
 	private final IClientConfig clientConfig;
 	private final IngredientBlacklistInternal blacklist;
@@ -264,20 +263,10 @@ public class IngredientFilter implements IIngredientGridSource {
 		if (filterText.isEmpty()) {
 			return searchTokens;
 		}
-		Matcher filterMatcher = FILTER_SPLIT_PATTERN.matcher(filterText);
-		while (filterMatcher.find()) {
-			String string = filterMatcher.group(1);
-			final boolean remove = string.startsWith("-");
-			if (remove) {
-				string = string.substring(1);
-			}
-			string = QUOTE_PATTERN.matcher(string).replaceAll("");
-			if (string.isEmpty()) {
-				continue;
-			}
-			this.elementPrefixParser.parseToken(string)
+		for (SearchToken token : searchTokenizer.tokenize(filterText)) {
+			this.elementPrefixParser.parseToken(token.getText())
 					.ifPresent(result -> {
-						if (remove) {
+						if (token.isExclusion()) {
 							searchTokens.toRemove.add(result);
 						} else {
 							searchTokens.toSearch.add(result);
