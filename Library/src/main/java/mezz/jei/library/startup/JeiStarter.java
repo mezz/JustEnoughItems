@@ -250,8 +250,8 @@ public final class JeiStarter {
 			LOGGER.error(Translator.translateToLocal(key));
 		} else if (Internal.hasClientFallbackRecipes()) {
 			if (!serverConnection.isJeiOnServer() &&
-				serverConnection.isSameModLoader())
-			{
+				serverConnection.isSameModLoader()
+			) {
 				String key = "jei.message.server.recipe.sync.jei.missing";
 				String serverBrand = ClientConnectionHelper.getServerBrand();
 				if (showWarning) {

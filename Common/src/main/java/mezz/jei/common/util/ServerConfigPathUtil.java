@@ -28,10 +28,9 @@ public final class ServerConfigPathUtil {
 				Connection connection = clientPacketListener.getConnection();
 				if (connection.isMemoryConnection()) {
 					return Optional.ofNullable(minecraft.getSingleplayerServer())
-						.flatMap(minecraftServer ->
-							Services.PLATFORM.getWorldHelper().getLevelId(minecraftServer)
-								.map(PathUtil::sanitizePathName)
-								.map(name -> worldDirPath.resolve("local").resolve(name))
+						.flatMap(minecraftServer -> Services.PLATFORM.getWorldHelper().getLevelId(minecraftServer)
+							.map(PathUtil::sanitizePathName)
+							.map(name -> worldDirPath.resolve("local").resolve(name))
 						);
 				}
 				return Optional.ofNullable(minecraft.getCurrentServer())

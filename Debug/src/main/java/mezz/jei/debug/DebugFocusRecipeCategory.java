@@ -74,10 +74,13 @@ public class DebugFocusRecipeCategory<F> implements IRecipeCategory<DebugRecipe>
 		long bucketVolume = platformFluidHelper.bucketVolume();
 		IRecipeSlotBuilder outputSlot = builder.addOutputSlot(20, 0)
 			.add(ItemStack.EMPTY)
-			.addIngredients(platformFluidHelper.getFluidIngredientType(), List.of(
-				platformFluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume),
-				platformFluidHelper.create(Fluids.LAVA.defaultFluidState().holder(), bucketVolume)
-			))
+			.addIngredients(
+				platformFluidHelper.getFluidIngredientType(),
+				List.of(
+					platformFluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume),
+					platformFluidHelper.create(Fluids.LAVA.defaultFluidState().holder(), bucketVolume)
+				)
+			)
 			.addItemStacks(List.of(
 				new ItemStack(Items.SNOW_BLOCK),
 				new ItemStack(Items.AXOLOTL_SPAWN_EGG),

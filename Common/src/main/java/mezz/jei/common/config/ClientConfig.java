@@ -69,7 +69,7 @@ public final class ClientConfig implements IClientConfig {
 		boolean isDev = Services.PLATFORM.getModHelper().isInDev();
 
 		IConfigCategoryBuilder appearance = schema.addCategory("appearance");
-		centerSearchBarEnabled = appearance.addBoolean("centerSearch",			defaultCenterSearchBar		);
+		centerSearchBarEnabled = appearance.addBoolean("centerSearch", defaultCenterSearchBar);
 		maxRecipeGuiHeight = appearance.addInteger(
 			"recipeGuiHeight",
 			defaultRecipeGuiHeight,

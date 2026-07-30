@@ -47,17 +47,17 @@ public class GhostIngredientQuickMoveManager {
 		}
 
 		return source.getDraggableIngredientUnderMouse(input.getMouseX(), input.getMouseY())
-				.findFirst()
-				.flatMap(clicked -> {
-					ItemStack mouseItem = player.containerMenu.getCarried();
-					if (mouseItem.isEmpty()) {
-						if (quickMoveInternal(screen, input, clicked)) {
-							return Optional.of(true);
-						}
+			.findFirst()
+			.flatMap(clicked -> {
+				ItemStack mouseItem = player.containerMenu.getCarried();
+				if (mouseItem.isEmpty()) {
+					if (quickMoveInternal(screen, input, clicked)) {
+						return Optional.of(true);
 					}
-					return Optional.empty();
-				})
-				.isPresent();
+				}
+				return Optional.empty();
+			})
+			.isPresent();
 	}
 
 }

@@ -101,7 +101,10 @@ public final class RecipeTransferTestHelper extends JeiGameTestHelper {
 
 	public void assertTransferError(TransferResult<?> result, Class<? extends IRecipeTransferError> expectedErrorClass) {
 		if (result.transferError() == null || result.transferError().getClass() != expectedErrorClass) {
-			String actualError = result.transferError() == null ? "success" : result.transferError().getClass().getSimpleName();
+			String actualError = "success";
+			if (result.transferError() != null) {
+				actualError = result.transferError().getClass().getSimpleName();
+			}
 			throw createFailException("Expected recipe transfer to report %s, got %s".formatted(expectedErrorClass.getSimpleName(), actualError));
 		}
 	}
@@ -212,8 +215,7 @@ public final class RecipeTransferTestHelper extends JeiGameTestHelper {
 		AbstractContainerMenu menu,
 		IRecipeTransferHandlerHelper handlerHelper
 	) {
-		if (
-			menu instanceof AbstractCraftingMenu craftingMenu &&
+		if (menu instanceof AbstractCraftingMenu craftingMenu &&
 			recipe.recipe() instanceof RecipeHolder<?> recipeHolder &&
 			recipeHolder.value() instanceof CraftingRecipe
 		) {

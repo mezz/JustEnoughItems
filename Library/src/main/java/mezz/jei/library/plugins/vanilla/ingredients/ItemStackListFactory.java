@@ -57,21 +57,19 @@ public final class ItemStackListFactory {
 			.map(ClientPacketListener::enabledFeatures)
 			.orElse(FeatureFlagSet.of());
 
-		final boolean hasOperatorItemsTabPermissions =
-			showHidden ||
+		final boolean hasOperatorItemsTabPermissions = showHidden ||
 			minecraft.options.operatorItemsTab().get() ||
 			Optional.of(minecraft)
-			.map(m -> m.player)
-			.map(Player::canUseGameMasterBlocks)
-			.orElse(false);
+				.map(m -> m.player)
+				.map(Player::canUseGameMasterBlocks)
+				.orElse(false);
 
 		ClientLevel level = minecraft.level;
 		if (level == null) {
 			throw new NullPointerException("minecraft.level must be set before JEI fetches ingredients");
 		}
 		RegistryAccess registryAccess = level.registryAccess();
-		final CreativeModeTab.ItemDisplayParameters displayParameters =
-			new CreativeModeTab.ItemDisplayParameters(features, hasOperatorItemsTabPermissions, registryAccess);
+		final CreativeModeTab.ItemDisplayParameters displayParameters = new CreativeModeTab.ItemDisplayParameters(features, hasOperatorItemsTabPermissions, registryAccess);
 
 		registryAccess
 			.lookupOrThrow(Registries.CREATIVE_MODE_TAB)
@@ -99,22 +97,24 @@ public final class ItemStackListFactory {
 				} catch (RuntimeException | LinkageError e) {
 					LOGGER.error(
 						"Item Group crashed while building contents." +
-						"Items from this group will be missing from the JEI ingredient list: {}",
+							"Items from this group will be missing from the JEI ingredient list: {}",
 						tab.getDisplayName().getString(),
 						e
 					);
 					return;
 				}
 
-				@Unmodifiable Collection<ItemStack> displayItems;
-				@Unmodifiable Collection<ItemStack> searchTabDisplayItems;
+				@Unmodifiable
+				Collection<ItemStack> displayItems;
+				@Unmodifiable
+				Collection<ItemStack> searchTabDisplayItems;
 				try {
 					displayItems = tab.getDisplayItems();
 					searchTabDisplayItems = tab.getSearchTabDisplayItems();
 				} catch (RuntimeException | LinkageError e) {
 					LOGGER.error(
 						"Item Group crashed while getting search tab display items." +
-						"Some items from this group will be missing from the JEI ingredient list: {}",
+							"Some items from this group will be missing from the JEI ingredient list: {}",
 						tab.getDisplayName().getString(),
 						e
 					);
@@ -122,10 +122,13 @@ public final class ItemStackListFactory {
 				}
 
 				if (displayItems.isEmpty() && searchTabDisplayItems.isEmpty()) {
-					Level logLevel = isKnownEmptyTab(tab) ? Level.DEBUG : Level.WARN;
+					Level logLevel = Level.WARN;
+					if (isKnownEmptyTab(tab)) {
+						logLevel = Level.DEBUG;
+					}
 					LOGGER.log(logLevel,
 						"Item Group has no display items and no search tab display items. " +
-						"Items from this group will be missing from the JEI ingredient list. {}",
+							"Items from this group will be missing from the JEI ingredient list. {}",
 						tab.getDisplayName().getString()
 					);
 					return;
@@ -217,7 +220,10 @@ public final class ItemStackListFactory {
 			);
 		}
 		if (duplicateInTabCount > 0) {
-			Level level = Services.PLATFORM.getModHelper().isInDev() ? Level.WARN : Level.DEBUG;
+			Level level = Level.DEBUG;
+			if (Services.PLATFORM.getModHelper().isInDev()) {
+				level = Level.WARN;
+			}
 			LOGGER.log(level,
 				"""
 					{} duplicate items were found in '{}' creative tab's: {}

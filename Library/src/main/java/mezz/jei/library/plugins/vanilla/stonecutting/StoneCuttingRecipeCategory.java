@@ -40,7 +40,7 @@ public class StoneCuttingRecipeCategory extends AbstractRecipeCategory<RecipeHol
 				.setStandardSlotBackground()
 				.add(stonecutterRecipeDisplay.input());
 
-			builder.addOutputSlot(61,  9)
+			builder.addOutputSlot(61, 9)
 				.setOutputSlotBackground()
 				.add(stonecutterRecipeDisplay.result());
 		}

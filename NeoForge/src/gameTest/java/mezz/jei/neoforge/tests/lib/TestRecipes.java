@@ -43,7 +43,7 @@ public final class TestRecipes {
 		Identifier id = Identifier.fromNamespaceAndPath("jeitests", "recipe_transfer/" + idPath);
 		ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, id);
 		List<Optional<Ingredient>> ingredients = inputSlots.stream()
-			.map(slot -> slot.isEmpty() ? Optional.<Ingredient>empty() : Optional.of(slot.ingredient()))
+			.map(TestRecipes::getIngredient)
 			.toList();
 		CraftingRecipe recipe = new ShapedRecipe(
 			"",
@@ -53,6 +53,13 @@ public final class TestRecipes {
 			false
 		);
 		return new TransferRecipe<>(new RecipeHolder<>(resourceKey, recipe), inputSlots);
+	}
+
+	private static Optional<Ingredient> getIngredient(TestRecipeSlotView slot) {
+		if (slot.isEmpty()) {
+			return Optional.empty();
+		}
+		return Optional.of(slot.ingredient());
 	}
 
 	public static List<TestRecipeSlotView> grid(RecipeSlotPlacement... placements) {

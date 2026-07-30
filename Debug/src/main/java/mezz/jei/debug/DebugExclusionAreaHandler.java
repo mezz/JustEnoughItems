@@ -92,8 +92,7 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 			if (!renderables.contains(renderScheduler)) {
 				renderables.add(renderScheduler);
 			}
-		} catch (IllegalAccessException ignored) {
-		}
+		} catch (IllegalAccessException ignored) {}
 	}
 
 	private static Field findRenderablesField() {

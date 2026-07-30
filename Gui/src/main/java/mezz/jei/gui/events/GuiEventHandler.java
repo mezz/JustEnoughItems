@@ -85,7 +85,8 @@ public class GuiEventHandler {
 	 * Draws the JEI overlay backgrounds, before the screen contents are drawn.
 	 */
 	public void drawForScreenBackground(Screen screen, GuiGraphics guiGraphics) {
-		@Nullable IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
+		@Nullable
+		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
 		updateOverlayProperties(screen, guiProperties);
 		drawOverlayBackgrounds(guiGraphics);
 	}
@@ -94,7 +95,8 @@ public class GuiEventHandler {
 	 * Draws the JEI overlay foregrounds, after the screen contents and before deferred tooltips are extracted.
 	 */
 	public void drawForScreenForeground(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
-		@Nullable IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
+		@Nullable
+		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
 		boolean drawScreenForeground = screen instanceof AbstractContainerScreen<?>;
 		drawOverlayForegrounds(guiGraphics, mouseX, mouseY, drawScreenForeground);
 		drawPostForeground(screen, guiProperties, guiGraphics, mouseX, mouseY);

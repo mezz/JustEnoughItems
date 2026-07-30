@@ -59,23 +59,21 @@ public class EventRegistration {
 			handler.onKeyboardCharTypedPost(screen, characterEvent);
 		});
 
-		subscriptions.register(ScreenEvent.MouseButtonPressed.Pre.class, event ->
-			ForgeUserInput.fromEvent(event)
-				.ifPresent(input -> {
-					Screen screen = event.getScreen();
-					if (handler.onGuiMouseClicked(screen, input)) {
-						event.setCanceled(true);
-					}
-				})
+		subscriptions.register(ScreenEvent.MouseButtonPressed.Pre.class, event -> ForgeUserInput.fromEvent(event)
+			.ifPresent(input -> {
+				Screen screen = event.getScreen();
+				if (handler.onGuiMouseClicked(screen, input)) {
+					event.setCanceled(true);
+				}
+			})
 		);
-		subscriptions.register(ScreenEvent.MouseButtonReleased.Pre.class, event ->
-			ForgeUserInput.fromEvent(event)
-				.ifPresent(input -> {
-					Screen screen = event.getScreen();
-					if (handler.onGuiMouseReleased(screen, input)){
-						event.setCanceled(true);
-					}
-				})
+		subscriptions.register(ScreenEvent.MouseButtonReleased.Pre.class, event -> ForgeUserInput.fromEvent(event)
+			.ifPresent(input -> {
+				Screen screen = event.getScreen();
+				if (handler.onGuiMouseReleased(screen, input)) {
+					event.setCanceled(true);
+				}
+			})
 		);
 
 		subscriptions.register(ScreenEvent.MouseScrolled.Pre.class, event -> {

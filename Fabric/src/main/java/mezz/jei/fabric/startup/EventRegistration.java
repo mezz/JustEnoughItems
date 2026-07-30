@@ -39,9 +39,7 @@ public class EventRegistration {
 	}
 
 	private void registerEvents() {
-		ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) ->
-			registerScreenEvents(screen)
-		);
+		ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> registerScreenEvents(screen));
 		JeiCharTypedEvents.BEFORE_CHAR_TYPED.register(this::beforeCharTyped);
 		ScreenEvents.AFTER_INIT.register(this::afterInit);
 		JeiScreenEvents.DRAW_FOREGROUND.register(this::drawForeground);

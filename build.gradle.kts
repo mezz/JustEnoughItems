@@ -3,8 +3,7 @@ import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 plugins {
-    // https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-	id("com.diffplug.spotless") version("8.10.0")
+    id("net.mezzdev.java-formatting") version("0.4.0")
 
 	// https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
 	id("fabric-loom") version("1.17.20") apply(false)
@@ -23,30 +22,13 @@ plugins {
 
     id("net.neoforged.jarcompatibilitychecker") version("0.1.19") apply(false)
 }
-apply {
-	from("buildtools/ColoredOutput.gradle")
+
+javaFormatting {
+    all()
 }
 
 repositories {
     mavenCentral()
-}
-spotless {
-	java {
-		target("*/src/*/java/mezz/jei/**/*.java")
-
-		endWithNewline()
-		trimTrailingWhitespace()
-		removeUnusedImports()
-		forbidWildcardImports()
-		replaceRegex(
-			"single-line if block formatting",
-			"""(?m)^([ \t]*)if[ \t]*(\([^{}\r\n]+\))[ \t]*\{[ \t]*([^{}\r\n]+?)[ \t]*}${'$'}""",
-			"${'$'}1if ${'$'}2 {\n${'$'}1\t${'$'}3\n${'$'}1}"
-		)
-		leadingSpacesToTabs(4)
-		replaceRegex("class-level javadoc indentation fix", "^\\*", " *")
-		replaceRegex("method-level javadoc indentation fix", "\t\\*", "\t *")
-	}
 }
 
 val apiProjectPaths = listOf(":CommonApi", ":FabricApi", ":NeoForgeApi")

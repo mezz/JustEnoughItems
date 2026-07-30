@@ -98,7 +98,9 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 	) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		List<@Nullable ITypedIngredient<T>> results = new ArrayList<>(ingredients.size());
-		for (@Nullable T ingredient : ingredients) {
+		for (@Nullable
+			T ingredient : ingredients
+		) {
 			ITypedIngredient<T> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
 			results.add(result);
 		}

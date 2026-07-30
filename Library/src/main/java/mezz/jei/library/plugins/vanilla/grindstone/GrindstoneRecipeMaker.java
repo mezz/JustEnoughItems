@@ -47,10 +47,10 @@ public final class GrindstoneRecipeMaker {
 		GrindstoneMenu grindstoneMenu
 	) {
 		return Stream.concat(
-						getRepairRecipes(platformHelper, ingredientManager, grindstoneMenu),
-						getDisenchantRecipes(platformHelper, grindstoneMenu)
-				)
-				.toList();
+				getRepairRecipes(platformHelper, ingredientManager, grindstoneMenu),
+				getDisenchantRecipes(platformHelper, grindstoneMenu)
+			)
+			.toList();
 	}
 
 	private static Stream<IJeiGrindstoneRecipe> getDisenchantRecipes(IPlatformRecipeHelper platformHelper, GrindstoneMenu grindstoneMenu) {
@@ -108,20 +108,20 @@ public final class GrindstoneRecipeMaker {
 
 	private static Stream<IJeiGrindstoneRecipe> getRepairRecipes(IPlatformRecipeHelper platformHelper, IIngredientManager ingredientManager, GrindstoneMenu grindstoneMenu) {
 		return ingredientManager.getAllItemStacks()
-				.stream()
-				.filter(ItemStack::isDamageableItem)
-				.mapMulti((stack, consumer) -> {
-					stack.setDamageValue(stack.getMaxDamage() * 3 / 4);
-					ItemStack topInput = stack.copy();
-					ItemStack bottomInput = stack.copy();
-					String itemId = stack.getItem().getDescriptionId();
-					String rawPath = "grindstone.self_repair." + itemId;
-					String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
-					IJeiGrindstoneRecipe recipe = getGrindstoneRecipe(platformHelper, grindstoneMenu, topInput, bottomInput, Identifier.withDefaultNamespace(uidPath));
-					if (recipe != null) {
-						consumer.accept(recipe);
-					}
-				});
+			.stream()
+			.filter(ItemStack::isDamageableItem)
+			.mapMulti((stack, consumer) -> {
+				stack.setDamageValue(stack.getMaxDamage() * 3 / 4);
+				ItemStack topInput = stack.copy();
+				ItemStack bottomInput = stack.copy();
+				String itemId = stack.getItem().getDescriptionId();
+				String rawPath = "grindstone.self_repair." + itemId;
+				String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
+				IJeiGrindstoneRecipe recipe = getGrindstoneRecipe(platformHelper, grindstoneMenu, topInput, bottomInput, Identifier.withDefaultNamespace(uidPath));
+				if (recipe != null) {
+					consumer.accept(recipe);
+				}
+			});
 	}
 
 	@Nullable

@@ -169,7 +169,7 @@ public class JeiDebugPlugin implements IModPlugin {
 			new ItemStack(Blocks.JUNGLE_DOOR),
 			new ItemStack(Blocks.ACACIA_DOOR),
 			new ItemStack(Blocks.DARK_OAK_DOOR)
-			),
+		),
 			Component.translatable("description.jei.wooden.door.1"), // actually 2 lines
 			Component.translatable("description.jei.wooden.door.2"),
 			Component.translatable("description.jei.wooden.door.3")
@@ -194,15 +194,17 @@ public class JeiDebugPlugin implements IModPlugin {
 				Component.translatable("description.jei.debug.formatting.3", "various").withStyle(ChatFormatting.DARK_AQUA)
 			),
 			Component.translatable("description.jei.debug.formatting.2",
-				Component.literal("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
-				Component.literal("various").withStyle(ChatFormatting.RED)
-			).withStyle(ChatFormatting.BLUE),
+					Component.literal("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
+					Component.literal("various").withStyle(ChatFormatting.RED)
+				)
+				.withStyle(ChatFormatting.BLUE),
 			Component.translatable("description.jei.debug.formatting.1",
 				Component.translatable("description.jei.debug.formatting.3",
 					Component.translatable("description.jei.debug.formatting.2",
-						Component.literal("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
-						Component.literal("various").withStyle(ChatFormatting.RED)
-					).withStyle(ChatFormatting.DARK_AQUA)
+							Component.literal("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
+							Component.literal("various").withStyle(ChatFormatting.RED)
+						)
+						.withStyle(ChatFormatting.DARK_AQUA)
 				)
 			)
 		);

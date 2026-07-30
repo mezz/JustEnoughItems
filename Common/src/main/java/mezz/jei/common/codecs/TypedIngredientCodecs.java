@@ -61,8 +61,7 @@ public class TypedIngredientCodecs {
 		return ingredientCodec.flatXmap(
 			ingredient -> {
 				Optional<IIngredientType<T>> type = ingredientManager.getIngredientTypeChecked(ingredient);
-				return type.map(ingredientType ->
-						ingredientManager.createTypedIngredient(ingredientType, ingredient, false)
+				return type.map(ingredientType -> ingredientManager.createTypedIngredient(ingredientType, ingredient, false)
 						.map(DataResult::success)
 						.orElseGet(() -> {
 							return DataResult.error(() -> {

@@ -29,7 +29,10 @@ public final class JeiChatItemLinkRecipeLookup {
 		JeiChatItemLinks.IngredientLink link = optionalLink.get();
 		IJeiRuntime runtime = optionalRuntime.get();
 		boolean shown = showRecipeForIngredient(runtime, link);
-		return shown ? 1 : 0;
+		if (shown) {
+			return 1;
+		}
+		return 0;
 	}
 
 	public static boolean showRecipeForIngredient(IJeiRuntime runtime, JeiChatItemLinks.IngredientLink link) {

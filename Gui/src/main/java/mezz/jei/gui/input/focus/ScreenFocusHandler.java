@@ -36,8 +36,8 @@ public class ScreenFocusHandler implements IFocusHandler {
 	}
 
 	public ScreenFocusHandler(Screen screen,
-							@Nullable IFocusHandler focusedElement,
-							@Nullable GuiEventListener storedInScreenFocus
+		@Nullable IFocusHandler focusedElement,
+		@Nullable GuiEventListener storedInScreenFocus
 	) {
 		this.screen = screen;
 		this.focusedElement = focusedElement;

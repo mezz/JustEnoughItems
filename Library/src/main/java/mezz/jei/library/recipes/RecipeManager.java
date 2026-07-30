@@ -121,19 +121,10 @@ public class RecipeManager implements IRecipeManager {
 		}
 
 		IFocusGroup checkedFocusGroup = FocusGroup.checkOne(focusGroup, ingredientManager);
-		return RecipeLayout.create(
-			recipeCategory,
-			decorators,
-			recipe,
-			checkedFocusGroup,
-			ingredientManager,
-			recipeBackground,
-			borderPadding,
-			contextMap
-		)
-		.orElseGet(() -> {
-			return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, borderPadding);
-		});
+		return RecipeLayout.create(recipeCategory, decorators, recipe, checkedFocusGroup, ingredientManager, recipeBackground, borderPadding, contextMap)
+			.orElseGet(() -> {
+				return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, borderPadding);
+			});
 	}
 
 	@Override

@@ -146,7 +146,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 			.add(new ItemStack(Items.BUNDLE));
 
 		builder.addInputSlot(110, 0)
-				.addIngredientsUnsafe(Arrays.asList(new ItemStack(Items.RABBIT), null));
+			.addIngredientsUnsafe(Arrays.asList(new ItemStack(Items.RABBIT), null));
 
 		// FLUID type
 		long bucketVolume = platformFluidHelper.bucketVolume();
@@ -188,7 +188,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 			.addRichTooltipCallback((recipeSlotView, tooltip) -> {
 				switch (recipeSlotView.getRole()) {
 					case INPUT -> tooltip.add(Component.literal("Input DebugIngredient"));
-					case OUTPUT -> tooltip.add(Component.literal( "Output DebugIngredient"));
+					case OUTPUT -> tooltip.add(Component.literal("Output DebugIngredient"));
 					case CRAFTING_STATION -> tooltip.add(Component.literal("Crafting Station DebugIngredient"));
 				}
 			});

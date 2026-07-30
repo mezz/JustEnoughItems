@@ -239,7 +239,10 @@ public final class AnvilRecipeMaker {
 				ItemStack itemStack = new ItemStack(item);
 				boolean selfRepair = itemStack.isDamageableItem() && EnchantmentHelper.canStoreEnchantments(itemStack);
 				Repairable repairable = item.value().components().get(DataComponents.REPAIRABLE);
-				HolderSet<Item> repairItems = repairable == null ? HolderSet.empty() : repairable.items();
+				HolderSet<Item> repairItems = HolderSet.empty();
+				if (repairable != null) {
+					repairItems = repairable.items();
+				}
 				if (selfRepair || repairItems.size() > 0) {
 					RepairData repairData = new RepairData(itemStack, selfRepair, repairItems);
 					consumer.accept(repairData);

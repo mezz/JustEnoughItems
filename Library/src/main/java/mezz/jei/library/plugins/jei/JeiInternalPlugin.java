@@ -111,7 +111,7 @@ public class JeiInternalPlugin implements IModPlugin {
 						return;
 					}
 				}
-		});
+			});
 	}
 
 	private static IRecipeType<ITagInfoRecipe> createTagInfoRecipeType(Identifier id) {

@@ -91,7 +91,7 @@ public interface IIngredientHelper<V> {
 	 * @since 19.3.0
 	 */
 	default boolean hasSubtypes(V ingredient) {
-		return getIngredientType() instanceof IIngredientTypeWithSubtypes<?,?>;
+		return getIngredientType() instanceof IIngredientTypeWithSubtypes<?, ?>;
 	}
 
 	/**
@@ -110,7 +110,7 @@ public interface IIngredientHelper<V> {
 	 *
 	 * @since 19.4.0
 	 */
-	default long getAmount(V ingredient){
+	default long getAmount(V ingredient) {
 		return -1;
 	}
 

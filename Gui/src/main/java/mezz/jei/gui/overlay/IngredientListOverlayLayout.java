@@ -53,7 +53,10 @@ class IngredientListOverlayLayout {
 	}
 
 	private static ImmutableRect2i getLookupHistoryArea(ImmutableRect2i displayArea, boolean searchBarCentered, int lookupHistoryHeight) {
-		int bottomReservedHeight = searchBarCentered ? 0 : SEARCH_HEIGHT + LOOKUP_HISTORY_BOTTOM_PADDING;
+		int bottomReservedHeight = 0;
+		if (!searchBarCentered) {
+			bottomReservedHeight = SEARCH_HEIGHT + LOOKUP_HISTORY_BOTTOM_PADDING;
+		}
 		return displayArea
 			.insetBy(BORDER_MARGIN)
 			.cropBottom(bottomReservedHeight)

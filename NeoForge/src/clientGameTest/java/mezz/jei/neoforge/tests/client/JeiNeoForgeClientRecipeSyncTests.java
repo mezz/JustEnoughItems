@@ -161,14 +161,13 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 
 	private static void assertJeiClientStateCleared(String name) {
 		ClientTestUtil.waitUntil(
-			() -> ClientTestUtil.computeOnClient(client ->
-				!hasJeiRuntime() &&
-					!Internal.hasClientRecipes() &&
-					!Internal.hasClientSyncedRecipes() &&
-					!Internal.hasClientFallbackRecipes() &&
-					Internal.getClientSyncedRecipes().values().isEmpty() &&
-					!Internal.getServerConnection().isJeiOnServer() &&
-					!Internal.getServerConnection().isSameModLoader()),
+			() -> ClientTestUtil.computeOnClient(client -> !hasJeiRuntime() &&
+				!Internal.hasClientRecipes() &&
+				!Internal.hasClientSyncedRecipes() &&
+				!Internal.hasClientFallbackRecipes() &&
+				Internal.getClientSyncedRecipes().values().isEmpty() &&
+				!Internal.getServerConnection().isJeiOnServer() &&
+				!Internal.getServerConnection().isSameModLoader()),
 			ASSERTION_TIMEOUT,
 			() -> "Expected JEI client state to be cleared after disconnecting from " + name + ". " + describeJeiClientState()
 		);

@@ -147,12 +147,11 @@ public class CraftingStations implements IRecipeFocusSource {
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return getHovered(mouseX, mouseY)
-			.map(recipeSlot ->
-				recipeSlot.getDisplayedIngredient()
-					.map(i -> {
-						IElement<?> element = new IngredientElement<>(i);
-						return new ClickableIngredientInternal<>(element, recipeSlot::isMouseOver, false, true);
-					}))
+			.map(recipeSlot -> recipeSlot.getDisplayedIngredient()
+				.map(i -> {
+					IElement<?> element = new IngredientElement<>(i);
+					return new ClickableIngredientInternal<>(element, recipeSlot::isMouseOver, false, true);
+				}))
 			.flatMap(Optional::stream);
 	}
 

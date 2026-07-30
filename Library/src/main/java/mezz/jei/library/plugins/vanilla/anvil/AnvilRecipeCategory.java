@@ -76,7 +76,10 @@ public class AnvilRecipeCategory extends AbstractRecipeCategory<IJeiAnvilRecipe>
 
 		Integer cost = getCost(builder.getRecipeSlots());
 		if (cost != null) {
-			String costText = cost < 0 ? "err" : Integer.toString(cost);
+			String costText = "err";
+			if (cost >= 0) {
+				costText = Integer.toString(cost);
+			}
 			Component text = Component.translatable("container.repair.cost", costText);
 
 			Minecraft minecraft = Minecraft.getInstance();

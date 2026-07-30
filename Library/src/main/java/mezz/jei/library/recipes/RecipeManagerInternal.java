@@ -163,8 +163,8 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 
 		// hide the category if it has crafting stations, but they have all been hidden
 		if (getCraftingStations(recipeType, true).findAny().isPresent() &&
-			getCraftingStations(recipeType, false).findAny().isEmpty())
-		{
+			getCraftingStations(recipeType, false).findAny().isEmpty()
+		) {
 			return true;
 		}
 

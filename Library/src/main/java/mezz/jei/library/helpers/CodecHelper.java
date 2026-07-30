@@ -38,43 +38,43 @@ public class CodecHelper implements ICodecHelper {
 		RecipeMap recipes = Internal.getClientSyncedRecipes();
 
 		return Codec.either(
-			ResourceKey.codec(Registries.RECIPE),
-			TupleCodec.of(
 				ResourceKey.codec(Registries.RECIPE),
-				Recipe.CODEC
+				TupleCodec.of(
+					ResourceKey.codec(Registries.RECIPE),
+					Recipe.CODEC
+				)
 			)
-		)
-		.flatXmap(
-			either -> {
-				return either.map(
-					recipeKey -> {
-						RecipeHolder<?> recipeHolder = recipes.byKey(recipeKey);
-						if (recipeHolder == null) {
-							return DataResult.error(() -> "Could not find recipe for key: " + recipeKey);
+			.flatXmap(
+				either -> {
+					return either.map(
+						recipeKey -> {
+							RecipeHolder<?> recipeHolder = recipes.byKey(recipeKey);
+							if (recipeHolder == null) {
+								return DataResult.error(() -> "Could not find recipe for key: " + recipeKey);
+							}
+							return DataResult.success(recipeHolder);
+						},
+						pair -> {
+							ResourceKey<Recipe<?>> recipeKey = pair.getFirst();
+							Recipe<?> recipe = pair.getSecond();
+							if (recipe == null) {
+								return DataResult.error(() -> "Could not find recipe for key: " + recipeKey);
+							}
+							RecipeHolder<?> recipeHolder = new RecipeHolder<>(recipeKey, recipe);
+							return DataResult.success(recipeHolder);
 						}
-						return DataResult.success(recipeHolder);
-					},
-					pair -> {
-						ResourceKey<Recipe<?>> recipeKey = pair.getFirst();
-						Recipe<?> recipe = pair.getSecond();
-						if (recipe == null) {
-							return DataResult.error(() -> "Could not find recipe for key: " + recipeKey);
-						}
-						RecipeHolder<?> recipeHolder = new RecipeHolder<>(recipeKey, recipe);
-						return DataResult.success(recipeHolder);
+					);
+				},
+				recipeHolder -> {
+					ResourceKey<Recipe<?>> recipeKey = recipeHolder.id();
+					RecipeHolder<?> found = recipes.byKey(recipeKey);
+					if (recipeHolder.equals(found)) {
+						return DataResult.success(Either.left(recipeKey));
 					}
-				);
-			},
-			recipeHolder -> {
-				ResourceKey<Recipe<?>> recipeKey = recipeHolder.id();
-				RecipeHolder<?> found = recipes.byKey(recipeKey);
-				if (recipeHolder.equals(found)) {
-					return DataResult.success(Either.left(recipeKey));
+					Recipe<?> recipe = recipeHolder.value();
+					return DataResult.success(Either.right(Pair.of(recipeKey, recipe)));
 				}
-				Recipe<?> recipe = recipeHolder.value();
-				return DataResult.success(Either.right(Pair.of(recipeKey, recipe)));
-			}
-		);
+			);
 	});
 
 	private final IIngredientManager ingredientManager;
@@ -124,13 +124,14 @@ public class CodecHelper implements ICodecHelper {
 	private <T> Codec<T> createDefaultRecipeCategoryCodec(IRecipeManager recipeManager, IRecipeCategory<T> recipeCategory) {
 		Codec<Data> dataCodec = RecordCodecBuilder.create((builder) -> {
 			return builder.group(
-				Identifier.CODEC.fieldOf("registryId")
-					.forGetter(Data::registryId),
-				getTypedIngredientCodec().codec().fieldOf("ingredient")
-					.forGetter(Data::ingredient),
-				EnumCodec.create(RecipeIngredientRole.class).fieldOf("ingredient_role")
-					.forGetter(Data::ingredientRole)
-			).apply(builder, Data::new);
+					Identifier.CODEC.fieldOf("registryId")
+						.forGetter(Data::registryId),
+					getTypedIngredientCodec().codec().fieldOf("ingredient")
+						.forGetter(Data::ingredient),
+					EnumCodec.create(RecipeIngredientRole.class).fieldOf("ingredient_role")
+						.forGetter(Data::ingredientRole)
+				)
+				.apply(builder, Data::new);
 		});
 		return dataCodec.flatXmap(
 			data -> {

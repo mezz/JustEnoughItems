@@ -40,8 +40,7 @@ public final class ItemStackCodecs {
 	}
 
 	public static Codec<ItemStack> createStrictSingleItemCodec() {
-		return RecordCodecBuilder.<ItemStack>create((i) ->
-				i.group(
+		return RecordCodecBuilder.<ItemStack>create((i) -> i.group(
 					Item.CODEC.fieldOf("id")
 						.forGetter(ItemStack::getItemHolder),
 					NBT_PRESERVING_COMPONENT_PATCH_CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY)

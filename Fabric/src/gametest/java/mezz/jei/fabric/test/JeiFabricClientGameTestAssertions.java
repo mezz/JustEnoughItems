@@ -76,11 +76,10 @@ final class JeiFabricClientGameTestAssertions {
 	}
 
 	public static void assertClientRecipesCleared(ClientGameTestContext context, String name) {
-		context.waitFor(client ->
-			client.level == null &&
-				!hasJeiRuntime() &&
-				!Internal.hasClientRecipes() &&
-				Internal.getClientSyncedRecipes().values().isEmpty(),
+		context.waitFor(client -> client.level == null &&
+			!hasJeiRuntime() &&
+			!Internal.hasClientRecipes() &&
+			Internal.getClientSyncedRecipes().values().isEmpty(),
 			ClientGameTestContext.DEFAULT_TIMEOUT
 		);
 
