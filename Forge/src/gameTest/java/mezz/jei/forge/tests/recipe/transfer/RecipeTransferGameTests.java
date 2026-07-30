@@ -2850,5 +2850,4 @@ public final class RecipeTransferGameTests {
 		return stack;
 	}
 
-
 }

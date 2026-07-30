@@ -8,7 +8,6 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 
 import net.minecraft.client.renderer.Rect2i;
 
-
 public class RecipeLayoutInputHandler<T> implements IJeiInputHandler {
 	private final RecipeLayout<T> recipeLayout;
 

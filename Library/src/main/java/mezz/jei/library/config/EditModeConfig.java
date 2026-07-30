@@ -1,6 +1,5 @@
 package mezz.jei.library.config;
 
-
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;

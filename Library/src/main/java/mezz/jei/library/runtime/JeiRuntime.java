@@ -23,7 +23,6 @@ import mezz.jei.common.util.ErrorUtil;
 
 import java.util.Optional;
 
-
 public class JeiRuntime implements IJeiRuntime {
 	private final IRecipeManager recipeManager;
 	private final IRecipeTransferManager recipeTransferManager;

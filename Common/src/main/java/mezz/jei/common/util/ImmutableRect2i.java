@@ -210,16 +210,15 @@ public class ImmutableRect2i {
 	}
 
 	@Override
-	public boolean equals(Object obj){
+	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
 		if (obj instanceof ImmutableRect2i other) {
-			return
-				x == other.x &&
-					y == other.y &&
-					width == other.width &&
-					height == other.height;
+			return x == other.x &&
+				y == other.y &&
+				width == other.width &&
+				height == other.height;
 		}
 		return false;
 	}

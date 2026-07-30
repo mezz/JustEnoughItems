@@ -64,7 +64,8 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 		}
 
 		if (recipeTransferError == null ||
-			recipeTransferError.getType().allowsTransfer) {
+			recipeTransferError.getType().allowsTransfer
+		) {
 			this.button.active = true;
 			this.button.visible = true;
 		} else {

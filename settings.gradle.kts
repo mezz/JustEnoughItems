@@ -2,7 +2,13 @@ pluginManagement {
 	repositories {
 		maven("https://maven.minecraftforge.net")
 		maven("https://maven.parchmentmc.org")
-		maven("https://maven.blamejared.com")
+		exclusiveContent {
+			forRepository { maven("https://maven.blamejared.com/") }
+			filter {
+				includeGroup("net.mezzdev.java-formatting")
+				includeModule("net.mezzdev.gradle", "JavaFormatting")
+			}
+		}
 		gradlePluginPortal()
 		maven("https://maven.fabricmc.net/") {
 			name = "Fabric"

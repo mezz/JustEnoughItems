@@ -1,6 +1,5 @@
 package mezz.jei.common.config.file.serializers;
 
-
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 
 import java.util.Collection;

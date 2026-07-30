@@ -29,12 +29,11 @@ public final class ServerConfigPathUtil {
 				Connection connection = clientPacketListener.getConnection();
 				if (connection.isMemoryConnection()) {
 					return Optional.ofNullable(minecraft.getSingleplayerServer())
-						.flatMap(minecraftServer ->
-							reflectionUtil.getFieldWithClass(minecraftServer, LevelStorageSource.LevelStorageAccess.class)
-								.findFirst()
-								.map(LevelStorageSource.LevelStorageAccess::getLevelId)
-								.map(PathUtil::sanitizePathName)
-								.map(name -> worldDirPath.resolve("local").resolve(name))
+						.flatMap(minecraftServer -> reflectionUtil.getFieldWithClass(minecraftServer, LevelStorageSource.LevelStorageAccess.class)
+							.findFirst()
+							.map(LevelStorageSource.LevelStorageAccess::getLevelId)
+							.map(PathUtil::sanitizePathName)
+							.map(name -> worldDirPath.resolve("local").resolve(name))
 						);
 				}
 				return Optional.ofNullable(minecraft.getCurrentServer())

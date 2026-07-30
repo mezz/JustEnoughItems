@@ -60,7 +60,13 @@ public final class FabricClientTestInput {
 
 	private static void setModifier(JeiKeyModifier modifier, boolean pressed) {
 		switch (modifier) {
-			case CONTROL_OR_COMMAND -> setKey(Minecraft.ON_OSX ? GLFW.GLFW_KEY_LEFT_SUPER : GLFW.GLFW_KEY_LEFT_CONTROL, pressed);
+			case CONTROL_OR_COMMAND -> {
+				int key = GLFW.GLFW_KEY_LEFT_CONTROL;
+				if (Minecraft.ON_OSX) {
+					key = GLFW.GLFW_KEY_LEFT_SUPER;
+				}
+				setKey(key, pressed);
+			}
 			case SHIFT -> setKey(GLFW.GLFW_KEY_LEFT_SHIFT, pressed);
 			case ALT -> setKey(GLFW.GLFW_KEY_LEFT_ALT, pressed);
 			default -> throw new IllegalArgumentException("Unsupported test modifier: " + modifier);

@@ -128,11 +128,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		final int maxDimension = Math.max(availableArea.getWidth(), availableArea.getHeight());
 		final int samplingScale = Math.max(IngredientGrid.INGREDIENT_HEIGHT / 2, maxDimension / 25);
 
-		ImmutableRect2i largestSafeArea = MaximalRectangle.getLargestRectangles(
-				availableArea,
-				guiExclusionAreas,
-				samplingScale
-			)
+		ImmutableRect2i largestSafeArea = MaximalRectangle.getLargestRectangles(availableArea, guiExclusionAreas, samplingScale)
 			.max(Comparator.comparingInt((ImmutableRect2i rect) -> IngredientGrid.calculateSize(gridConfig, rect).getArea())
 				.thenComparing(r -> r.getWidth() * r.getHeight()))
 			.orElse(ImmutableRect2i.EMPTY);
@@ -168,12 +164,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 				estimatedNavigationArea.expandBy(BORDER_PADDING + INNER_PADDING);
 			}
 
-			availableGridArea = avoidExclusionAreas(
-				availableArea,
-				estimatedNavigationArea,
-				guiExclusionAreas,
-				gridConfig
-			)
+			availableGridArea = avoidExclusionAreas(availableArea, estimatedNavigationArea, guiExclusionAreas, gridConfig)
 				.insetBy(BORDER_MARGIN)
 				.cropTop(NAVIGATION_HEIGHT + INNER_PADDING);
 
@@ -188,15 +179,14 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
 		this.guiExclusionAreas = guiExclusionAreas;
 
-		final boolean navigationEnabled =
-			switch (this.gridConfig.getButtonNavigationVisibility()) {
-				case ENABLED -> true;
-				case DISABLED -> false;
-				case AUTO_HIDE -> {
-					updateGridBounds(availableArea, mouseExclusionPoint, false);
-					yield hasRoom() && this.pageDelegate.getPageCount() > 1;
-				}
-			};
+		final boolean navigationEnabled = switch (this.gridConfig.getButtonNavigationVisibility()) {
+			case ENABLED -> true;
+			case DISABLED -> false;
+			case AUTO_HIDE -> {
+				updateGridBounds(availableArea, mouseExclusionPoint, false);
+				yield hasRoom() && this.pageDelegate.getPageCount() > 1;
+			}
+		};
 		if (navigationEnabled) {
 			updateGridBounds(availableArea, mouseExclusionPoint, true);
 		}

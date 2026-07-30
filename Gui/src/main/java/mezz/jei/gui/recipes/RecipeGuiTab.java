@@ -33,7 +33,10 @@ public abstract class RecipeGuiTab implements IUserInputHandler {
 
 	public void draw(boolean selected, PoseStack poseStack, int mouseX, int mouseY) {
 		Textures textures = Internal.getTextures();
-		IDrawable tab = selected ? textures.getTabSelected() : textures.getTabUnselected();
+		IDrawable tab = textures.getTabUnselected();
+		if (selected) {
+			tab = textures.getTabSelected();
+		}
 
 		tab.draw(poseStack, x, y);
 	}

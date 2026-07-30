@@ -32,7 +32,10 @@ public final class StringUtil {
 
 	public static String removeChatFormatting(String string) {
 		String result = ChatFormatting.stripFormatting(string);
-		return result == null ? "" : result;
+		if (result == null) {
+			return "";
+		}
+		return result;
 	}
 
 	public static Component truncateStringToWidth(Component text, int width, Font fontRenderer) {
@@ -71,7 +74,6 @@ public final class StringUtil {
 			.map(i -> Integer.toString(i))
 			.collect(Collectors.joining(", "));
 	}
-
 
 	public static void drawCenteredStringWithShadow(PoseStack poseStack, Font font, String string, ImmutableRect2i area) {
 		ImmutableRect2i textArea = MathUtil.centerTextArea(area, font, string);

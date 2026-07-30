@@ -52,7 +52,14 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	}
 
 	public FluidTankRenderer(IPlatformFluidHelperInternal<T> fluidHelper, long capacity, boolean showCapacity, int width, int height) {
-		this(fluidHelper, capacity, showCapacity ? TooltipMode.SHOW_AMOUNT_AND_CAPACITY : TooltipMode.SHOW_AMOUNT, width, height);
+		this(fluidHelper, capacity, getTooltipMode(showCapacity), width, height);
+	}
+
+	private static TooltipMode getTooltipMode(boolean showCapacity) {
+		if (showCapacity) {
+			return TooltipMode.SHOW_AMOUNT_AND_CAPACITY;
+		}
+		return TooltipMode.SHOW_AMOUNT;
 	}
 
 	private FluidTankRenderer(IPlatformFluidHelperInternal<T> fluidHelper, long capacity, TooltipMode tooltipMode, int width, int height) {
@@ -115,8 +122,14 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 
 		for (int xTile = 0; xTile <= xTileCount; xTile++) {
 			for (int yTile = 0; yTile <= yTileCount; yTile++) {
-				int width = (xTile == xTileCount) ? xRemainder : TEXTURE_SIZE;
-				long height = (yTile == yTileCount) ? yRemainder : TEXTURE_SIZE;
+				int width = TEXTURE_SIZE;
+				if (xTile == xTileCount) {
+					width = xRemainder;
+				}
+				long height = TEXTURE_SIZE;
+				if (yTile == yTileCount) {
+					height = yRemainder;
+				}
 				int x = (xTile * TEXTURE_SIZE);
 				int y = yStart - ((yTile + 1) * TEXTURE_SIZE);
 				if (width > 0 && height > 0) {

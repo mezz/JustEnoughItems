@@ -7,7 +7,6 @@ import mezz.jei.core.util.function.CachedSupplier;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 
-
 public class PlatformHelper implements IPlatformHelper {
 	private final CachedSupplier<ItemStackHelper> itemStackHelper = new CachedSupplier<>(ItemStackHelper::new);
 	private final CachedSupplier<FluidHelper> fluidHelper = new CachedSupplier<>(FluidHelper::new);

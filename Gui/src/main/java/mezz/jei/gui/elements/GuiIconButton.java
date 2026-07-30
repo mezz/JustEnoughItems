@@ -54,11 +54,10 @@ public class GuiIconButton extends Button {
 	@Override
 	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		boolean hovered =
-			mouseX >= this.x &&
-				mouseY >= this.y &&
-				mouseX < this.x + this.width &&
-				mouseY < this.y + this.height;
+		boolean hovered = mouseX >= this.x &&
+			mouseY >= this.y &&
+			mouseX < this.x + this.width &&
+			mouseY < this.y + this.height;
 		RenderSystem.enableBlend();
 		RenderSystem.blendFuncSeparate(
 			GlStateManager.SourceFactor.SRC_ALPHA,

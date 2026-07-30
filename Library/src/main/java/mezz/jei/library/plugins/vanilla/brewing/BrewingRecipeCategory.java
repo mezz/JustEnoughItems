@@ -80,7 +80,10 @@ public class BrewingRecipeCategory implements RecipeCategoryWithType<IJeiBrewing
 		arrow.draw(poseStack, 42, 2);
 
 		int brewingSteps = recipe.getBrewingSteps();
-		String brewingStepsString = brewingSteps < Integer.MAX_VALUE ? Integer.toString(brewingSteps) : "?";
+		String brewingStepsString = "?";
+		if (brewingSteps < Integer.MAX_VALUE) {
+			brewingStepsString = Integer.toString(brewingSteps);
+		}
 		Component steps = new TranslatableComponent("gui.jei.category.brewing.steps", brewingStepsString);
 		Minecraft minecraft = Minecraft.getInstance();
 		minecraft.font.draw(poseStack, steps, 70, 28, 0xFF808080);

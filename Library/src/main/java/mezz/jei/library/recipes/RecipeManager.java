@@ -95,13 +95,8 @@ public class RecipeManager implements IRecipeManager {
 
 		RecipeType<T> recipeType = recipeCategory.getRecipeType();
 		Collection<IRecipeCategoryDecorator<T>> decorators = internal.getRecipeCategoryDecorators(recipeType);
-		return RecipeLayout.create(
-			recipeCategory,
-			decorators,
-			recipe,
-			focusGroup,
-			ingredientManager
-		).orElseThrow(() -> new NullPointerException("Recipe layout crashed during creation, see log."));
+		return RecipeLayout.create(recipeCategory, decorators, recipe, focusGroup, ingredientManager)
+			.orElseThrow(() -> new NullPointerException("Recipe layout crashed during creation, see log."));
 	}
 
 	@Override

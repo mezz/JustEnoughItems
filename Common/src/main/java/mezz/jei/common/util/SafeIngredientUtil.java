@@ -38,7 +38,10 @@ public final class SafeIngredientUtil {
 
 	public static <T> void getTooltip(ITooltipBuilder tooltip, IIngredientManager ingredientManager, IIngredientRenderer<T> ingredientRenderer, ITypedIngredient<T> typedIngredient) {
 		Minecraft minecraft = Minecraft.getInstance();
-		TooltipFlag.Default tooltipFlag = minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
+		TooltipFlag.Default tooltipFlag = TooltipFlag.Default.NORMAL;
+		if (minecraft.options.advancedItemTooltips) {
+			tooltipFlag = TooltipFlag.Default.ADVANCED;
+		}
 		getTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient, tooltipFlag);
 	}
 

@@ -200,12 +200,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			this.cachedRecipeCategory = recipeCategory;
 		}
 
-		final int recipeHeight =
-			this.cachedRecipeLayoutsWithButtons.findFirst()
-				.map(RecipeLayoutWithButtons::recipeLayout)
-				.map(IRecipeLayoutDrawable::getRectWithBorder)
-				.map(Rect2i::getHeight)
-				.orElseGet(recipeCategory::getHeight);
+		final int recipeHeight = this.cachedRecipeLayoutsWithButtons.findFirst()
+			.map(RecipeLayoutWithButtons::recipeLayout)
+			.map(IRecipeLayoutDrawable::getRectWithBorder)
+			.map(Rect2i::getHeight)
+			.orElseGet(recipeCategory::getHeight);
 
 		final int recipesPerPage = Math.max(1, 1 + ((availableHeight - recipeHeight) / (recipeHeight + minRecipePadding)));
 		this.state.setRecipesPerPage(recipesPerPage);
@@ -229,9 +228,8 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		List<T> brokenRecipes = new ArrayList<>();
 
 		List<RecipeLayoutWithButtons<T>> results = recipes.stream()
-			.<IRecipeLayoutDrawable>mapMulti((recipe, acceptor) ->
-				recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses())
-					.ifPresentOrElse(acceptor, () -> brokenRecipes.add(recipe))
+			.<IRecipeLayoutDrawable>mapMulti((recipe, acceptor) -> recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses())
+				.ifPresentOrElse(acceptor, () -> brokenRecipes.add(recipe))
 			)
 			.map(recipeLayout -> recipeLayoutFactory.<T>create(recipeLayout))
 			.toList();

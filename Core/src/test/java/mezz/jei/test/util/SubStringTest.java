@@ -220,7 +220,7 @@ public class SubStringTest {
 			new SubString("abcd", 0, 0),
 			new SubString("abcd", 1, 0)
 		);
-		for (SubString subString : subStrings){
+		for (SubString subString : subStrings) {
 			for (SubString emptyPrefix : emptyPrefixes) {
 				Assertions.assertTrue(subString.startsWith(emptyPrefix), subString + "\n" + emptyPrefix);
 				Assertions.assertFalse(emptyPrefix.startsWith(subString), subString + "\n" + emptyPrefix);

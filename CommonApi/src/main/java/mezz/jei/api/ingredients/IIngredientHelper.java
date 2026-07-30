@@ -77,7 +77,7 @@ public interface IIngredientHelper<V> {
 	 * @since 10.5.0
 	 */
 	default boolean hasSubtypes(V ingredient) {
-		return getIngredientType() instanceof IIngredientTypeWithSubtypes<?,?>;
+		return getIngredientType() instanceof IIngredientTypeWithSubtypes<?, ?>;
 	}
 
 	/**

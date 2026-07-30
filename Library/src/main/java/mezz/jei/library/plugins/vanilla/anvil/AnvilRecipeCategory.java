@@ -99,13 +99,19 @@ public class AnvilRecipeCategory implements RecipeCategoryWithType<IJeiAnvilReci
 		}
 
 		int cost = AnvilRecipeMaker.findLevelsCost(leftStack.get(), rightStack.get());
-		String costText = cost < 0 ? "err" : Integer.toString(cost);
+		String costText = "err";
+		if (cost >= 0) {
+			costText = Integer.toString(cost);
+		}
 		String text = I18n.get("container.repair.cost", costText);
 
 		Minecraft minecraft = Minecraft.getInstance();
 		LocalPlayer player = minecraft.player;
 		// Show red if the player doesn't have enough levels
-		int mainColor = playerHasEnoughLevels(player, cost) ? 0xFF80FF20 : 0xFFFF6060;
+		int mainColor = 0xFFFF6060;
+		if (playerHasEnoughLevels(player, cost)) {
+			mainColor = 0xFF80FF20;
+		}
 		drawRepairCost(minecraft, poseStack, text, mainColor);
 	}
 

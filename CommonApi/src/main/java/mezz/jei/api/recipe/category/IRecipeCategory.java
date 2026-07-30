@@ -138,7 +138,7 @@ public interface IRecipeCategory<T> {
 	 * Called when a player clicks the recipe.
 	 * Useful for implementing buttons, hyperlinks, and other interactions to your recipe.
 	 *
-
+	 *
 	 * @param recipe the currently hovered recipe
 	 * @param mouseX the X position of the mouse, relative to the recipe.
 	 * @param mouseY the Y position of the mouse, relative to the recipe.

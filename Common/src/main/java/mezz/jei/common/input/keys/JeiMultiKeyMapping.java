@@ -33,8 +33,7 @@ public class JeiMultiKeyMapping implements IJeiKeyMapping {
 			.filter(m -> !m.isUnbound())
 			.map(IJeiKeyMapping::getTranslatedKeyMessage)
 			.findFirst()
-			.orElseGet(() ->
-				this.mappings.stream()
+			.orElseGet(() -> this.mappings.stream()
 				.map(IJeiKeyMapping::getTranslatedKeyMessage)
 				.findFirst()
 				.orElseGet(() -> new TextComponent("error"))

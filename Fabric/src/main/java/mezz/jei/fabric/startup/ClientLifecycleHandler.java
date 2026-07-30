@@ -46,13 +46,12 @@ public class ClientLifecycleHandler {
 	}
 
 	public void registerEvents() {
-		JeiLifecycleEvents.GAME_START.register(() ->
-			JeiLifecycleEvents.AFTER_RECIPE_SYNC.register(() -> {
-				if (running) {
-					stopJei();
-				}
-				startJei();
-			})
+		JeiLifecycleEvents.GAME_START.register(() -> JeiLifecycleEvents.AFTER_RECIPE_SYNC.register(() -> {
+			if (running) {
+				stopJei();
+			}
+			startJei();
+		})
 		);
 		JeiLifecycleEvents.GAME_STOP.register(this::stopJei);
 	}

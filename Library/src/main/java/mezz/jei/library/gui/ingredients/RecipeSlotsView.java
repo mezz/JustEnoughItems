@@ -30,10 +30,9 @@ public class RecipeSlotsView implements IRecipeSlotsView {
 	@Override
 	public Optional<IRecipeSlotView> findSlotByName(String slotName) {
 		return this.slots.stream()
-			.filter(slot ->
-				slot.getSlotName()
-					.map(slotName::equals)
-					.orElse(false)
+			.filter(slot -> slot.getSlotName()
+				.map(slotName::equals)
+				.orElse(false)
 			)
 			.findFirst();
 	}

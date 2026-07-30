@@ -30,12 +30,11 @@ public class BrewingRecipeMaker {
 			.filter(VanillaBrewingRecipe.class::isInstance)
 			.map(VanillaBrewingRecipe.class::cast)
 			.findFirst()
-			.map(vanillaBrewingRecipe ->
-				BrewingRecipeMakerCommon.getVanillaBrewingRecipes(
-					vanillaRecipeFactory,
-					ingredientManager,
-					vanillaBrewingRecipe::getOutput
-				)
+			.map(vanillaBrewingRecipe -> BrewingRecipeMakerCommon.getVanillaBrewingRecipes(
+				vanillaRecipeFactory,
+				ingredientManager,
+				vanillaBrewingRecipe::getOutput
+			)
 			)
 			.orElseGet(HashSet::new);
 

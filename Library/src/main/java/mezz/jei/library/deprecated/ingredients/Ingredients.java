@@ -42,7 +42,9 @@ public class Ingredients implements IIngredients {
 	@Override
 	public <T> void setInputs(IIngredientType<T> ingredientType, List<@Nullable T> inputs) {
 		List<@Nullable List<@Nullable T>> expandedInputs = new ArrayList<>();
-		for (@Nullable T input : inputs) {
+		for (@Nullable
+			T input : inputs
+		) {
 			List<@Nullable T> expandedInput = Collections.singletonList(input);
 			expandedInputs.add(expandedInput);
 		}
@@ -57,7 +59,9 @@ public class Ingredients implements IIngredients {
 	@Override
 	public <T> void setOutputs(IIngredientType<T> ingredientType, List<@Nullable T> outputs) {
 		List<@Nullable List<@Nullable T>> expandedOutputs = new ArrayList<>();
-		for (@Nullable T output : outputs) {
+		for (@Nullable
+			T output : outputs
+		) {
 			List<@Nullable T> expandedOutput = Collections.singletonList(output);
 			expandedOutputs.add(expandedOutput);
 		}

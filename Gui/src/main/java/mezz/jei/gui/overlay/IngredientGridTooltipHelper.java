@@ -61,7 +61,7 @@ public final class IngredientGridTooltipHelper {
 		IngredientTooltipHelper.getIngredientTooltipSafe(tooltip, ingredient, ingredientRenderer);
 		IModIdHelper modIdHelper = Internal.getJeiRuntime().getJeiHelpers().getModIdHelper();
 		modIdHelper.getModNameForTooltip(typedIngredient)
-				.ifPresent(tooltip::add);
+			.ifPresent(tooltip::add);
 
 		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {
 			addColorSearchInfoToTooltip(tooltip, ingredient, ingredientHelper);
@@ -90,13 +90,15 @@ public final class IngredientGridTooltipHelper {
 			new TranslatableComponent("gui.jei.editMode.description")
 				.withStyle(ChatFormatting.DARK_GREEN),
 			new TranslatableComponent(
-				"gui.jei.editMode.description.hide",
-				keyBindings.getToggleHideIngredient().getTranslatedKeyMessage()
-			).withStyle(ChatFormatting.GRAY),
+					"gui.jei.editMode.description.hide",
+					keyBindings.getToggleHideIngredient().getTranslatedKeyMessage()
+				)
+				.withStyle(ChatFormatting.GRAY),
 			new TranslatableComponent(
-				"gui.jei.editMode.description.hide.wild",
-				keyBindings.getToggleWildcardHideIngredient().getTranslatedKeyMessage()
-			).withStyle(ChatFormatting.GRAY)
+					"gui.jei.editMode.description.hide.wild",
+					keyBindings.getToggleWildcardHideIngredient().getTranslatedKeyMessage()
+				)
+				.withStyle(ChatFormatting.GRAY)
 		);
 		tooltip.addAll(lines);
 	}

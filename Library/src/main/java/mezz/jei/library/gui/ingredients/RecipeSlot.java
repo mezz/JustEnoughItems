@@ -219,7 +219,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		int height = this.rect.getHeight();
 
 		RenderSystem.disableDepthTest();
-		GuiComponent.fill(poseStack, x, y, x + width, y + height , color);
+		GuiComponent.fill(poseStack, x, y, x + width, y + height, color);
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 	}
 

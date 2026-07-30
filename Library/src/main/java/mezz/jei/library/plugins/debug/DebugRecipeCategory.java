@@ -135,7 +135,7 @@ public class DebugRecipeCategory<F> implements RecipeCategoryWithType<DebugRecip
 			.addItemStack(new ItemStack(Items.BUNDLE));
 
 		builder.addSlot(RecipeIngredientRole.INPUT, 110, 0)
-				.addIngredientsUnsafe(Arrays.asList(new ItemStack(Items.LAVA_BUCKET), null));
+			.addIngredientsUnsafe(Arrays.asList(new ItemStack(Items.LAVA_BUCKET), null));
 
 		// FLUID type
 		long bucketVolume = platformFluidHelper.bucketVolume();
@@ -177,7 +177,7 @@ public class DebugRecipeCategory<F> implements RecipeCategoryWithType<DebugRecip
 			.addTooltipCallback((recipeSlotView, tooltip) -> {
 				switch (recipeSlotView.getRole()) {
 					case INPUT -> tooltip.add(new TextComponent("Input DebugIngredient"));
-					case OUTPUT -> tooltip.add(new TextComponent( "Output DebugIngredient"));
+					case OUTPUT -> tooltip.add(new TextComponent("Output DebugIngredient"));
 					case CATALYST -> tooltip.add(new TextComponent("Catalyst DebugIngredient"));
 				}
 			});

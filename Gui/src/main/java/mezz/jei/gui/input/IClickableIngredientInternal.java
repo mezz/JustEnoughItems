@@ -5,7 +5,6 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.world.item.ItemStack;
 
-
 public interface IClickableIngredientInternal<T> {
 	ITypedIngredient<T> getTypedIngredient();
 

@@ -45,8 +45,7 @@ final class FabricClientTestWorld implements AutoCloseable {
 			client.createLevel(levelId, levelSettings, registryAccess, worldGenSettings);
 		}, WORLD_LOAD_TIMEOUT);
 		ClientTestUtil.waitUntil(
-			() -> ClientTestUtil.computeOnClient(client ->
-				client.level != null &&
+			() -> ClientTestUtil.computeOnClient(client -> client.level != null &&
 				client.player != null &&
 				client.hasSingleplayerServer() &&
 				client.levelRenderer.isChunkCompiled(client.player.blockPosition())

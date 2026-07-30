@@ -97,7 +97,10 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 
 	@Override
 	public void init(int ingredientIndex, boolean input, int xPosition, int yPosition) {
-		RecipeIngredientRole role = input ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT;
+		RecipeIngredientRole role = RecipeIngredientRole.OUTPUT;
+		if (input) {
+			role = RecipeIngredientRole.INPUT;
+		}
 		IIngredientRenderer<T> ingredientRenderer = this.ingredientManager.getIngredientRenderer(this.ingredientType);
 		addSlot(ingredientIndex, role, ingredientRenderer, xPosition, yPosition, 16, 16, 0, 0);
 	}
@@ -106,7 +109,10 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	public void init(int ingredientIndex, boolean input, IIngredientRenderer<T> ingredientRenderer, int xPosition, int yPosition, int width, int height, int xInset, int yInset) {
 		ErrorUtil.checkNotNull(ingredientRenderer, "ingredientRenderer");
 
-		RecipeIngredientRole role = input ? RecipeIngredientRole.INPUT : RecipeIngredientRole.OUTPUT;
+		RecipeIngredientRole role = RecipeIngredientRole.OUTPUT;
+		if (input) {
+			role = RecipeIngredientRole.INPUT;
+		}
 		addSlot(ingredientIndex, role, ingredientRenderer, xPosition, yPosition, width, height, xInset, yInset);
 	}
 
@@ -161,13 +167,15 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 			IGuiIngredient<?> guiIngredient = guiIngredients.get(slotIndex);
 			if (guiIngredient.isInput()) {
 				if (inputIndex < inputs.size()) {
-					@Nullable List<@Nullable T> input = inputs.get(inputIndex);
+					@Nullable
+					List<@Nullable T> input = inputs.get(inputIndex);
 					inputIndex++;
 					set(slotIndex, input);
 				}
 			} else {
 				if (outputIndex < outputs.size()) {
-					@Nullable List<@Nullable T> output = outputs.get(outputIndex);
+					@Nullable
+					List<@Nullable T> output = outputs.get(outputIndex);
 					outputIndex++;
 					set(slotIndex, output);
 				}
@@ -184,7 +192,9 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 	public void set(int slotIndex, @Nullable List<@Nullable T> ingredients) {
 		if (ingredients != null) {
 			Class<? extends T> ingredientClass = ingredientType.getIngredientClass();
-			for (@Nullable T ingredient : ingredients) {
+			for (@Nullable
+				T ingredient : ingredients
+			) {
 				if (!ingredientClass.isInstance(ingredient) && ingredient != null) {
 					LOGGER.error(
 						"Received wrong type of ingredient. Expected {}, got {}",
@@ -243,14 +253,13 @@ public class RecipeSlotsGuiIngredientGroupAdapter<T> implements IGuiIngredientGr
 		String focusUid = ingredientHelper.getUniqueId(focusIngredient, UidContext.Ingredient);
 
 		return IntStream.range(0, ingredients.size())
-			.filter(i ->
-				ingredients.get(i)
-					.flatMap(typedIngredient -> typedIngredient.getIngredient(ingredientType))
-					.map(ingredient -> {
-						String uniqueId = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
-						return focusUid.equals(uniqueId);
-					})
-					.orElse(false)
+			.filter(i -> ingredients.get(i)
+				.flatMap(typedIngredient -> typedIngredient.getIngredient(ingredientType))
+				.map(ingredient -> {
+					String uniqueId = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+					return focusUid.equals(uniqueId);
+				})
+				.orElse(false)
 			)
 			.findFirst();
 	}

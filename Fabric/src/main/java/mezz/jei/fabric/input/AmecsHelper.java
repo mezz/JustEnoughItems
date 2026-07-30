@@ -44,10 +44,13 @@ public class AmecsHelper {
 		Component component = key.getDisplayName();
 		for (JeiKeyModifier modifier : getJeiModifiers(modifiers)) {
 			component = switch (modifier) {
-				case CONTROL_OR_COMMAND -> new TranslatableComponent(
-					Minecraft.ON_OSX ? "jei.key.combo.command" : "jei.key.combo.control",
-					component
-				);
+				case CONTROL_OR_COMMAND -> {
+					String translationKey = "jei.key.combo.control";
+					if (Minecraft.ON_OSX) {
+						translationKey = "jei.key.combo.command";
+					}
+					yield new TranslatableComponent(translationKey, component);
+				}
 				case SHIFT -> new TranslatableComponent("jei.key.combo.shift", component);
 				case ALT -> new TranslatableComponent("jei.key.combo.alt", component);
 				case NONE -> component;

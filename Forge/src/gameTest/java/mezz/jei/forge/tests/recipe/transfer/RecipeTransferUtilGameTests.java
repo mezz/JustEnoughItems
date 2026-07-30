@@ -207,7 +207,7 @@ public final class RecipeTransferUtilGameTests {
 
 	private record TestTransferHandler(
 		HandlerResult result
-		) implements IRecipeTransferHandler<TestMenu, Object> {
+	) implements IRecipeTransferHandler<TestMenu, Object> {
 		@Override
 		public Class<TestMenu> getContainerClass() {
 			return TestMenu.class;

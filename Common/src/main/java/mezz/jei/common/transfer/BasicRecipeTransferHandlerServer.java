@@ -158,7 +158,7 @@ public final class BasicRecipeTransferHandlerServer {
 			if (!inventorySlot.allowModification(player)) {
 				LOGGER.error(
 					"Tried to transfer recipe but was given an" +
-					" inventory slot that the player can't pickup from: {}" ,
+						" inventory slot that the player can't pickup from: {}",
 					inventorySlot.index
 				);
 				return null;
@@ -167,7 +167,7 @@ public final class BasicRecipeTransferHandlerServer {
 			if (slotStack.isEmpty()) {
 				LOGGER.error(
 					"Tried to transfer recipe but was given an" +
-					" empty inventory slot as an ingredient source: {}",
+						" empty inventory slot as an ingredient source: {}",
 					inventorySlot.index
 				);
 				return null;
@@ -252,9 +252,10 @@ public final class BasicRecipeTransferHandlerServer {
 				continue;
 			}
 			int requiredCount = getRequiredCount(requiredTransfers, recipeSlot);
-			int maxStackSize = recipeSlot.mayPlace(resultStack) ?
-				recipeSlot.getMaxStackSize(resultStack) :
-				Integer.MAX_VALUE;
+			int maxStackSize = Integer.MAX_VALUE;
+			if (recipeSlot.mayPlace(resultStack)) {
+				maxStackSize = recipeSlot.getMaxStackSize(resultStack);
+			}
 			if (resultStack.getCount() + requiredCount > maxStackSize) {
 				fullRecipeSlots.add(recipeSlot);
 			}

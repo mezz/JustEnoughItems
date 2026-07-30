@@ -62,7 +62,10 @@ public class GuiTextFieldFilter extends EditBox {
 		if (!filterText.equals(getValue())) {
 			super.setValue(filterText);
 		}
-		int color = filterEmpty.getAsBoolean() ? 0xFFFF0000 : 0xFFFFFFFF;
+		int color = 0xFFFFFFFF;
+		if (filterEmpty.getAsBoolean()) {
+			color = 0xFFFF0000;
+		}
 		setTextColor(color);
 	}
 

@@ -77,8 +77,7 @@ public class ItemStackHelper implements IngredientHelperWithResourceLocation<Ite
 
 		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
 		return itemStackHelper.getCreatorModId(ingredient)
-			.or(() ->
-				Services.PLATFORM
+			.or(() -> Services.PLATFORM
 				.getRegistry(Registry.ITEM_REGISTRY)
 				.getRegistryName(ingredient.getItem())
 				.map(ResourceLocation::getNamespace)

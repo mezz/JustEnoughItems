@@ -37,7 +37,6 @@ public interface IGuiItemStackGroup extends IGuiIngredientGroup<ItemStack> {
 	@Deprecated(forRemoval = true, since = "9.3.0")
 	void init(int ingredientIndex, boolean input, int xPosition, int yPosition);
 
-
 	@Override
 	@SuppressWarnings("removal")
 	@Deprecated(forRemoval = true, since = "9.3.0")

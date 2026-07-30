@@ -4,7 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 plugins {
-	id("com.diffplug.spotless") version("8.10.0")
+    id("net.mezzdev.java-formatting") version("0.4.0")
     id("com.dorongold.task-tree") version("4.0.2")
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
     id("me.modmuss50.mod-publish-plugin") version("2.2.0") apply(false)
@@ -15,6 +15,11 @@ plugins {
     id("net.neoforged.moddev.legacyforge") version("2.0.144") apply(false)
     id("net.neoforged.jarcompatibilitychecker") version("0.1.19") apply(false)
 }
+
+javaFormatting {
+    all()
+}
+
 apply {
 	from("buildtools/ColoredOutput.gradle")
 }
@@ -43,19 +48,6 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val modName: String by extra
 val specificationVersion: String by extra
-
-spotless {
-    java {
-        target("*/src/*/java/mezz/jei/**/*.java")
-
-        endWithNewline()
-        trimTrailingWhitespace()
-        removeUnusedImports()
-        leadingSpacesToTabs(4)
-        replaceRegex("class-level javadoc indentation fix", "^\\*", " *")
-        replaceRegex("method-level javadoc indentation fix", "\t\\*", "\t *")
-    }
-}
 
 subprojects {
     //adds the build number to the end of the version string if on a build server

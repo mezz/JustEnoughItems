@@ -95,8 +95,8 @@ public class ScreenPropertiesCache {
 			validate(errors, "guiYSize", 1, MAX_GUI_DIMENSION, guiProperties.getGuiYSize());
 			validate(errors, "screenWidth", 1, MAX_GUI_DIMENSION, guiProperties.getScreenWidth());
 			validate(errors, "screenHeight", 1, MAX_GUI_DIMENSION, guiProperties.getScreenHeight());
-			validate(errors,"guiLeft", MIN_GUI_DIMENSION, MAX_GUI_DIMENSION, guiProperties.getGuiLeft());
-			validate(errors,"guiTop", MIN_GUI_DIMENSION, MAX_GUI_DIMENSION, guiProperties.getGuiTop());
+			validate(errors, "guiLeft", MIN_GUI_DIMENSION, MAX_GUI_DIMENSION, guiProperties.getGuiLeft());
+			validate(errors, "guiTop", MIN_GUI_DIMENSION, MAX_GUI_DIMENSION, guiProperties.getGuiTop());
 			if (!errors.isEmpty()) {
 				LOGGER.error(
 					"Received invalid gui properties for screen: {}\n{}",

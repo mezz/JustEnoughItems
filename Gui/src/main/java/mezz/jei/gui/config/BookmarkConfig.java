@@ -87,9 +87,9 @@ public class BookmarkConfig implements IBookmarkConfig {
 				}
 
 				Collection<IIngredientType<?>> otherIngredientTypes = ingredientManager.getRegisteredIngredientTypes()
-						.stream()
-						.filter(i -> !i.equals(VanillaTypes.ITEM_STACK))
-						.toList();
+					.stream()
+					.filter(i -> !i.equals(VanillaTypes.ITEM_STACK))
+					.toList();
 
 				IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 

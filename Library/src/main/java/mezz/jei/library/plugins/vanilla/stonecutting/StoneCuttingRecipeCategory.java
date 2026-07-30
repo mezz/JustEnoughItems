@@ -57,7 +57,7 @@ public class StoneCuttingRecipeCategory implements RecipeCategoryWithType<Stonec
 		builder.addSlot(RecipeIngredientRole.INPUT, 1, 9)
 			.addIngredients(recipe.getIngredients().get(0));
 
-		builder.addSlot(RecipeIngredientRole.OUTPUT, 61,  9)
+		builder.addSlot(RecipeIngredientRole.OUTPUT, 61, 9)
 			.addItemStack(recipe.getResultItem());
 	}
 

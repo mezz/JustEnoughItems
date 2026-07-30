@@ -38,12 +38,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class IngredientFilter implements
-	IIngredientGridSource,
-	IIngredientManager.IIngredientListener,
-	IIngredientVisibility.IListener,
-	IWorldConfig.IEditModeListener
-{
+public class IngredientFilter
+	implements
+		IIngredientGridSource,
+		IIngredientManager.IIngredientListener,
+		IIngredientVisibility.IListener,
+		IWorldConfig.IEditModeListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern QUOTE_PATTERN = Pattern.compile("\"");
 	private static final Pattern FILTER_SPLIT_PATTERN = Pattern.compile("(-?\".*?(?:\"|$)|\\S+)");
