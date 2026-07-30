@@ -162,8 +162,8 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 
 		// hide the category if it has catalysts, but they have all been hidden
 		if (getRecipeCatalystStream(recipeType, true).findAny().isPresent() &&
-			getRecipeCatalystStream(recipeType, false).findAny().isEmpty())
-		{
+			getRecipeCatalystStream(recipeType, false).findAny().isEmpty()
+		) {
 			return true;
 		}
 

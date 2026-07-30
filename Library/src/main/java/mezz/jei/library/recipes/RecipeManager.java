@@ -45,8 +45,7 @@ public class RecipeManager implements IRecipeManager {
 	public RecipeManager(
 		RecipeManagerInternal internal,
 		IIngredientManager ingredientManager,
-		ImmutableListMultimap<RecipeType<?>,
-		IRecipeCategoryDecorator<?>> recipeCategoryDecorators,
+		ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators,
 		List<IRecipeButtonControllerFactory> recipeButtonControllerFactories
 	) {
 		this.internal = internal;
@@ -113,18 +112,10 @@ public class RecipeManager implements IRecipeManager {
 		}
 
 		IFocusGroup checkedFocusGroup = FocusGroup.checkOne(focusGroup, ingredientManager);
-		return RecipeLayout.create(
-			recipeCategory,
-			decorators,
-			recipe,
-			checkedFocusGroup,
-			ingredientManager,
-			recipeBackground,
-			borderPadding
-		)
-		.orElseGet(() -> {
-			return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, borderPadding);
-		});
+		return RecipeLayout.create(recipeCategory, decorators, recipe, checkedFocusGroup, ingredientManager, recipeBackground, borderPadding)
+			.orElseGet(() -> {
+				return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, borderPadding);
+			});
 	}
 
 	@Override

@@ -15,12 +15,9 @@ import java.util.stream.Stream;
 @Mixin(targets = "de.siphalor.amecs.key_modifiers.impl.AmecsKeyMappingManagerLayer", remap = false)
 public class AmecsKeyBindingManagerMixin {
 	@WrapOperation(
-		method = "getMappingsForInput",
-		at = @At(
-			value = "INVOKE",
-			target = "Ljava/util/Collection;stream()Ljava/util/stream/Stream;"
-		),
-		require = 2
+		method = "getMappingsForInput", at = @At(
+			value = "INVOKE", target = "Ljava/util/Collection;stream()Ljava/util/stream/Stream;"
+		), require = 2
 	)
 	private static Stream<KeyMapping> filterInactiveJeiMappings(Collection<KeyMapping> mappings, Operation<Stream<KeyMapping>> original) {
 		return original.call(mappings)

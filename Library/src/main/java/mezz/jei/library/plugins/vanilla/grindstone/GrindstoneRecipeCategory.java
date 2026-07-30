@@ -26,11 +26,11 @@ public class GrindstoneRecipeCategory extends AbstractRecipeCategory<IJeiGrindst
 
 	public GrindstoneRecipeCategory(IGuiHelper guiHelper) {
 		super(
-				RecipeTypes.GRINDSTONE,
-				Blocks.GRINDSTONE.getName(),
-				guiHelper.createDrawableItemLike(Blocks.GRINDSTONE),
-				125,
-				52
+			RecipeTypes.GRINDSTONE,
+			Blocks.GRINDSTONE.getName(),
+			guiHelper.createDrawableItemLike(Blocks.GRINDSTONE),
+			125,
+			52
 		);
 	}
 
@@ -41,20 +41,23 @@ public class GrindstoneRecipeCategory extends AbstractRecipeCategory<IJeiGrindst
 		List<ItemStack> outputs = recipe.getOutputs();
 
 		IRecipeSlotBuilder topInputSlot = builder.addInputSlot(1, 1)
-				.addItemStacks(topInputs)
-				.setStandardSlotBackground()
-				.setSlotName(topSlotName);
+			.addItemStacks(topInputs)
+			.setStandardSlotBackground()
+			.setSlotName(topSlotName);
 
 		IRecipeSlotBuilder bottomInputSlot = builder.addInputSlot(1, 24)
-				.addItemStacks(bottomInputs)
-				.setStandardSlotBackground()
-				.setSlotName(bottomSlotName);
+			.addItemStacks(bottomInputs)
+			.setStandardSlotBackground()
+			.setSlotName(bottomSlotName);
 
 		int outputSlotXPosition = 52;
 		int outputSlotYPosition = 13;
-		IRecipeSlotBuilder outputSlot = recipe.isOutputRenderOnly() ?
-				builder.addSlot(RecipeIngredientRole.RENDER_ONLY, outputSlotXPosition, outputSlotYPosition) :
-				builder.addOutputSlot(outputSlotXPosition, outputSlotYPosition);
+		IRecipeSlotBuilder outputSlot;
+		if (recipe.isOutputRenderOnly()) {
+			outputSlot = builder.addSlot(RecipeIngredientRole.RENDER_ONLY, outputSlotXPosition, outputSlotYPosition);
+		} else {
+			outputSlot = builder.addOutputSlot(outputSlotXPosition, outputSlotYPosition);
+		}
 		outputSlot.setOutputSlotBackground().addItemStacks(outputs);
 
 		if (topInputs.size() == bottomInputs.size()) {

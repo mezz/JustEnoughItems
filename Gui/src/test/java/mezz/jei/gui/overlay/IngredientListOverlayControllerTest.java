@@ -374,7 +374,8 @@ public class IngredientListOverlayControllerTest {
 	}
 
 	private static class TestGuiPropertiesCache implements IGuiPropertiesCache {
-		@Nullable IGuiProperties guiProperties;
+		@Nullable
+		IGuiProperties guiProperties;
 		Set<ImmutableRect2i> guiExclusionAreas = Set.of();
 
 		@Override

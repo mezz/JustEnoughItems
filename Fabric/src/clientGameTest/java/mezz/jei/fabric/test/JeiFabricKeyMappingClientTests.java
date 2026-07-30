@@ -109,8 +109,13 @@ final class JeiFabricKeyMappingClientTests {
 			ClientTestUtil.waitUntil(
 				() -> ClientTestUtil.computeOnClient(client -> client.screen instanceof InventoryScreen),
 				ASSERTION_TIMEOUT,
-				() -> ClientTestUtil.computeOnClient(client -> "Timed out opening the inventory; current screen: " +
-					(client.screen == null ? "none" : client.screen.getClass().getName()))
+				() -> ClientTestUtil.computeOnClient(client -> {
+					String screenName = "none";
+					if (client.screen != null) {
+						screenName = client.screen.getClass().getName();
+					}
+					return "Timed out opening the inventory; current screen: " + screenName;
+				})
 			);
 			ClientTestUtil.waitUntil(
 				() -> ClientTestUtil.computeOnClient(client -> Internal.getJeiRuntime().getIngredientListOverlay().isListDisplayed()),

@@ -110,9 +110,10 @@ public final class IngredientGridButtonNavigationLayout {
 			}
 		}
 
-		ImmutableRect2i backgroundNavigationArea = navigationArea.isEmpty() ?
-			ImmutableRect2i.EMPTY :
-			defaultNavigationArea;
+		ImmutableRect2i backgroundNavigationArea = ImmutableRect2i.EMPTY;
+		if (!navigationArea.isEmpty()) {
+			backgroundNavigationArea = defaultNavigationArea;
+		}
 		return IngredientGridWithNavigationLayout.fromGridArea(
 			gridConfig,
 			ingredientGridArea,
@@ -315,9 +316,10 @@ public final class IngredientGridButtonNavigationLayout {
 		Set<ImmutableRect2i> guiExclusionAreas,
 		IIngredientGridConfig gridConfig
 	) {
-		int padding = gridConfig.drawBackground().getValue() ?
-			IngredientGridWithNavigationLayout.BORDER_PADDING + IngredientGridWithNavigationLayout.INNER_PADDING :
-			0;
+		int padding = 0;
+		if (gridConfig.drawBackground().getValue()) {
+			padding = IngredientGridWithNavigationLayout.BORDER_PADDING + IngredientGridWithNavigationLayout.INNER_PADDING;
+		}
 		int stripTop = availableArea.y() + IngredientGridWithNavigationLayout.BORDER_MARGIN;
 		int stripHeight = IngredientGridWithNavigationLayout.NAVIGATION_HEIGHT +
 			IngredientGridWithNavigationLayout.INNER_PADDING +

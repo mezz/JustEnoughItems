@@ -37,7 +37,7 @@ public class RecipeTypeDataMap {
 		if (data == null) {
 			throw new IllegalStateException(
 				"There is no recipe category registered for: " + recipeType +
-				"\nA recipe category must be registered in order to use this recipe type."
+					"\nA recipe category must be registered in order to use this recipe type."
 			);
 		}
 		@SuppressWarnings("unchecked")

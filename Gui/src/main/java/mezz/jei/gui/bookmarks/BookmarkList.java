@@ -187,9 +187,9 @@ public class BookmarkList implements IIngredientGridSource, IBookmarkManager {
 	}
 
 	@Nullable
-	public <R> RecipeBookmark<R,?> getMatchingBookmark(RecipeType<R> recipeType, R recipe) {
+	public <R> RecipeBookmark<R, ?> getMatchingBookmark(RecipeType<R> recipeType, R recipe) {
 		for (IBookmark bookmark : bookmarksList) {
-			if (bookmark instanceof RecipeBookmark<?,?> recipeBookmark) {
+			if (bookmark instanceof RecipeBookmark<?, ?> recipeBookmark) {
 				if (recipeBookmark.isRecipe(recipeType, recipe)) {
 					@SuppressWarnings("unchecked")
 					RecipeBookmark<R, ?> castBookmark = (RecipeBookmark<R, ?>) recipeBookmark;

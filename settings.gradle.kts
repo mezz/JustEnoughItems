@@ -11,6 +11,13 @@ pluginManagement {
 			}
 		exclusiveMaven("https://maven.minecraftforge.net", "net.minecraftforge")
 		exclusiveMaven("https://maven.parchmentmc.org", "org.parchmentmc")
+		exclusiveContent {
+			forRepository { maven("https://maven.blamejared.com/") }
+			filter {
+				includeGroup("net.mezzdev.java-formatting")
+				includeModule("net.mezzdev.gradle", "JavaFormatting")
+			}
+		}
 		exclusiveMaven("https://maven.fabricmc.net/", "net.fabricmc", "fabric-loom")
 		exclusiveMaven("https://maven.neoforged.net/releases", "net.neoforged", "codechicken", "net.covers1624")
 		maven("https://repo.spongepowered.org/repository/maven-public/") {

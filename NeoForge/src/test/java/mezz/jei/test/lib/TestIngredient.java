@@ -18,7 +18,6 @@ public record TestIngredient(int number) {
 
 	public static final Codec<TestIngredient> CODEC = Codec.INT.xmap(TestIngredient::new, TestIngredient::number);
 
-
 	public TestIngredient copy() {
 		return new TestIngredient(number);
 	}

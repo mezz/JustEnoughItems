@@ -107,11 +107,10 @@ final class JeiFabricClientRecipeSyncTests {
 
 	private static void assertClientRecipesCleared(String name) {
 		ClientTestUtil.waitUntil(
-			() -> ClientTestUtil.computeOnClient(client ->
-				client.level == null &&
-					!hasJeiRuntime() &&
-					!Internal.hasClientRecipes() &&
-					Internal.getClientSyncedRecipes().isEmpty()),
+			() -> ClientTestUtil.computeOnClient(client -> client.level == null &&
+				!hasJeiRuntime() &&
+				!Internal.hasClientRecipes() &&
+				Internal.getClientSyncedRecipes().isEmpty()),
 			ASSERTION_TIMEOUT,
 			() -> "Expected JEI to clear client recipes after disconnecting from " + name + ". " + describeRecipeState()
 		);

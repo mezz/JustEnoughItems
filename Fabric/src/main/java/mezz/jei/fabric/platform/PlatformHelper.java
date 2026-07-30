@@ -6,7 +6,6 @@ import mezz.jei.common.util.function.LazySupplier;
 
 import java.util.function.Supplier;
 
-
 public class PlatformHelper implements IPlatformHelper {
 	private final Supplier<ItemStackHelper> itemStackHelper = new LazySupplier<>(ItemStackHelper::new);
 	private final Supplier<FluidHelper> fluidHelper = new LazySupplier<>(FluidHelper::new);

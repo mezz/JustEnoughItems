@@ -128,7 +128,10 @@ public final class ExternalServerProcess implements AutoCloseable {
 	}
 
 	public static String javaBinary() {
-		String executable = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win") ? "java.exe" : "java";
+		String executable = "java";
+		if (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win")) {
+			executable = "java.exe";
+		}
 		return Path.of(System.getProperty("java.home"), "bin", executable).toString();
 	}
 

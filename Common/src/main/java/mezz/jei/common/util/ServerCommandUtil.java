@@ -38,7 +38,8 @@ public final class ServerCommandUtil {
 
 	public static boolean hasPermissionForCheatMode(Player sender, IServerConfig serverConfig) {
 		if (serverConfig.isCheatModeEnabledForCreative() &&
-			sender.isCreative()) {
+			sender.isCreative()
+		) {
 			return true;
 		}
 

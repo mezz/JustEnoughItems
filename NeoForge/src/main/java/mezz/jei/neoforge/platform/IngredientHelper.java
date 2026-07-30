@@ -58,9 +58,9 @@ public class IngredientHelper implements IPlatformIngredientHelper {
 	@Override
 	public Stream<Ingredient> getPotionIngredients(PotionBrewing potionBrewing) {
 		return Stream.concat(
-			potionBrewing.containerMixes.stream(),
-			potionBrewing.potionMixes.stream()
-		)
+				potionBrewing.containerMixes.stream(),
+				potionBrewing.potionMixes.stream()
+			)
 			.map(PotionBrewing.Mix::ingredient);
 	}
 

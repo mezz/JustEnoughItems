@@ -89,23 +89,30 @@ public class JeiShapedRecipe implements CraftingRecipe {
 	public boolean isIncomplete() {
 		NonNullList<Ingredient> nonNullList = this.getIngredients();
 		return nonNullList.isEmpty() || nonNullList.stream().filter((ingredient) -> {
-			return !ingredient.isEmpty();
-		}).anyMatch((ingredient) -> {
-			return ingredient.getItems().length == 0;
-		});
+				return !ingredient.isEmpty();
+			})
+			.anyMatch((ingredient) -> {
+				return ingredient.getItems().length == 0;
+			});
 	}
 
 	public static class Serializer implements RecipeSerializer<JeiShapedRecipe> {
 		public static final MapCodec<JeiShapedRecipe> CODEC = RecordCodecBuilder.mapCodec((instance) -> {
-			return instance.group(Codec.STRING.optionalFieldOf("group", "").forGetter((shapedRecipe) -> {
-				return shapedRecipe.group;
-			}), CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter((shapedRecipe) -> {
-				return shapedRecipe.category;
-			}), ShapedRecipePattern.MAP_CODEC.forGetter((shapedRecipe) -> {
-				return shapedRecipe.pattern;
-			}), Codec.list(ItemStack.STRICT_CODEC).fieldOf("result").forGetter((shapedRecipe) -> {
-				return shapedRecipe.results;
-			})).apply(instance, JeiShapedRecipe::new);
+			return instance.group(
+					Codec.STRING.optionalFieldOf("group", "").forGetter((shapedRecipe) -> {
+						return shapedRecipe.group;
+					}),
+					CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter((shapedRecipe) -> {
+						return shapedRecipe.category;
+					}),
+					ShapedRecipePattern.MAP_CODEC.forGetter((shapedRecipe) -> {
+						return shapedRecipe.pattern;
+					}),
+					Codec.list(ItemStack.STRICT_CODEC).fieldOf("result").forGetter((shapedRecipe) -> {
+						return shapedRecipe.results;
+					})
+				)
+				.apply(instance, JeiShapedRecipe::new);
 		});
 		public static final StreamCodec<RegistryFriendlyByteBuf, JeiShapedRecipe> STREAM_CODEC = StreamCodec.of(Serializer::toNetwork, Serializer::fromNetwork);
 

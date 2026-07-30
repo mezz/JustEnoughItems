@@ -53,7 +53,7 @@ public final class TestIngredientManagers {
 		VanillaRecipeFactory vanillaRecipeFactory = createVanillaRecipeFactory();
 		return (IJeiHelpers) Proxy.newProxyInstance(
 			IJeiHelpers.class.getClassLoader(),
-			new Class<?>[] { IJeiHelpers.class },
+			new Class<?>[]{IJeiHelpers.class},
 			(proxy, method, args) -> switch (method.getName()) {
 				case "getVanillaRecipeFactory" -> vanillaRecipeFactory;
 				case "toString" -> "TestIngredientManagers.createJeiHelpers()";

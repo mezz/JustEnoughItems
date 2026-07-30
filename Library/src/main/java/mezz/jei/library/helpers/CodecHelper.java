@@ -41,41 +41,41 @@ public class CodecHelper implements ICodecHelper {
 		RecipeManager recipeManager = level.getRecipeManager();
 
 		return Codec.either(
-			ResourceLocation.CODEC,
-			TupleCodec.of(
 				ResourceLocation.CODEC,
-				Recipe.CODEC
+				TupleCodec.of(
+					ResourceLocation.CODEC,
+					Recipe.CODEC
+				)
 			)
-		)
-		.flatXmap(
-			either -> {
-				return either.map(
-					recipeHolderId -> {
-						return recipeManager.byKey(recipeHolderId)
-							.map(DataResult::success)
-							.orElseGet(() -> DataResult.error(() -> "Could not find recipe for key: " + recipeHolderId));
-					},
-					pair -> {
-						ResourceLocation recipeHolderId = pair.getFirst();
-						Recipe<?> recipe = pair.getSecond();
-						if (recipe == null) {
-							return DataResult.error(() -> "Could not find recipe for key: " + recipeHolderId);
+			.flatXmap(
+				either -> {
+					return either.map(
+						recipeHolderId -> {
+							return recipeManager.byKey(recipeHolderId)
+								.map(DataResult::success)
+								.orElseGet(() -> DataResult.error(() -> "Could not find recipe for key: " + recipeHolderId));
+						},
+						pair -> {
+							ResourceLocation recipeHolderId = pair.getFirst();
+							Recipe<?> recipe = pair.getSecond();
+							if (recipe == null) {
+								return DataResult.error(() -> "Could not find recipe for key: " + recipeHolderId);
+							}
+							RecipeHolder<?> recipeHolder = new RecipeHolder<>(recipeHolderId, recipe);
+							return DataResult.success(recipeHolder);
 						}
-						RecipeHolder<?> recipeHolder = new RecipeHolder<>(recipeHolderId, recipe);
-						return DataResult.success(recipeHolder);
+					);
+				},
+				recipeHolder -> {
+					ResourceLocation recipeHolderId = recipeHolder.id();
+					Optional<RecipeHolder<?>> found = recipeManager.byKey(recipeHolderId);
+					if (found.isPresent() && found.get().equals(recipeHolder)) {
+						return DataResult.success(Either.left(recipeHolderId));
 					}
-				);
-			},
-			recipeHolder -> {
-				ResourceLocation recipeHolderId = recipeHolder.id();
-				Optional<RecipeHolder<?>> found = recipeManager.byKey(recipeHolderId);
-				if (found.isPresent() && found.get().equals(recipeHolder)) {
-					return DataResult.success(Either.left(recipeHolderId));
+					Recipe<?> recipe = recipeHolder.value();
+					return DataResult.success(Either.right(Pair.of(recipeHolderId, recipe)));
 				}
-				Recipe<?> recipe = recipeHolder.value();
-				return DataResult.success(Either.right(Pair.of(recipeHolderId, recipe)));
-			}
-		);
+			);
 	});
 
 	private final IIngredientManager ingredientManager;
@@ -125,13 +125,14 @@ public class CodecHelper implements ICodecHelper {
 	private <T> Codec<T> createDefaultRecipeCategoryCodec(IRecipeManager recipeManager, IRecipeCategory<T> recipeCategory) {
 		Codec<Data> dataCodec = RecordCodecBuilder.create((builder) -> {
 			return builder.group(
-				ResourceLocation.CODEC.fieldOf("registryName")
-					.forGetter(Data::registryName),
-				getTypedIngredientCodec().codec().fieldOf("ingredient")
-					.forGetter(Data::ingredient),
-				EnumCodec.create(RecipeIngredientRole.class).fieldOf("ingredient_role")
-					.forGetter(Data::ingredientRole)
-			).apply(builder, Data::new);
+					ResourceLocation.CODEC.fieldOf("registryName")
+						.forGetter(Data::registryName),
+					getTypedIngredientCodec().codec().fieldOf("ingredient")
+						.forGetter(Data::ingredient),
+					EnumCodec.create(RecipeIngredientRole.class).fieldOf("ingredient_role")
+						.forGetter(Data::ingredientRole)
+				)
+				.apply(builder, Data::new);
 		});
 		Codec<T> codec = dataCodec.flatXmap(
 			data -> {
@@ -177,11 +178,12 @@ public class CodecHelper implements ICodecHelper {
 	private <T> Codec<T> createLegacyDefaultRecipeCategoryCodec(IRecipeManager recipeManager, IRecipeCategory<T> recipeCategory) {
 		Codec<Pair<ResourceLocation, ITypedIngredient<?>>> legacyPairCodec = RecordCodecBuilder.create((builder) -> {
 			return builder.group(
-				ResourceLocation.CODEC.fieldOf("registryName")
-					.forGetter(Pair::getFirst),
-				getTypedIngredientCodec().codec().fieldOf("output")
-					.forGetter(Pair::getSecond)
-			).apply(builder, Pair::new);
+					ResourceLocation.CODEC.fieldOf("registryName")
+						.forGetter(Pair::getFirst),
+					getTypedIngredientCodec().codec().fieldOf("output")
+						.forGetter(Pair::getSecond)
+				)
+				.apply(builder, Pair::new);
 		});
 
 		Codec<Pair<ResourceLocation, ITypedIngredient<?>>> tupleCodec = TupleCodec.of(
@@ -190,36 +192,36 @@ public class CodecHelper implements ICodecHelper {
 		);
 
 		return Codec.withAlternative(tupleCodec, legacyPairCodec)
-		.flatXmap(
-			pair -> {
-				ResourceLocation registryName = pair.getFirst();
-				ITypedIngredient<?> output = pair.getSecond();
-				IFocus<?> focus = focusFactory.createFocus(RecipeIngredientRole.OUTPUT, output);
+			.flatXmap(
+				pair -> {
+					ResourceLocation registryName = pair.getFirst();
+					ITypedIngredient<?> output = pair.getSecond();
+					IFocus<?> focus = focusFactory.createFocus(RecipeIngredientRole.OUTPUT, output);
 
-				RecipeType<T> recipeType = recipeCategory.getRecipeType();
+					RecipeType<T> recipeType = recipeCategory.getRecipeType();
 
-				return recipeManager.createRecipeLookup(recipeType)
-					.limitFocus(List.of(focus))
-					.get()
-					.filter(recipe -> registryName.equals(recipeCategory.getRegistryName(recipe)))
-					.findFirst()
-					.map(DataResult::success)
-					.orElseGet(() -> DataResult.error(() -> "No recipe found for registry name: " + registryName));
-			},
-			recipe -> {
-				ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
-				if (registryName == null) {
-					return DataResult.error(() -> "No registry name for recipe");
+					return recipeManager.createRecipeLookup(recipeType)
+						.limitFocus(List.of(focus))
+						.get()
+						.filter(recipe -> registryName.equals(recipeCategory.getRegistryName(recipe)))
+						.findFirst()
+						.map(DataResult::success)
+						.orElseGet(() -> DataResult.error(() -> "No recipe found for registry name: " + registryName));
+				},
+				recipe -> {
+					ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
+					if (registryName == null) {
+						return DataResult.error(() -> "No registry name for recipe");
+					}
+					IIngredientSupplier ingredients = recipeManager.getRecipeIngredients(recipeCategory, recipe);
+					List<ITypedIngredient<?>> outputs = ingredients.getIngredients(RecipeIngredientRole.OUTPUT);
+					if (outputs.isEmpty()) {
+						return DataResult.error(() -> "No outputs for recipe");
+					}
+					Pair<ResourceLocation, ITypedIngredient<?>> result = new Pair<>(registryName, outputs.getFirst());
+					return DataResult.success(result);
 				}
-				IIngredientSupplier ingredients = recipeManager.getRecipeIngredients(recipeCategory, recipe);
-				List<ITypedIngredient<?>> outputs = ingredients.getIngredients(RecipeIngredientRole.OUTPUT);
-				if (outputs.isEmpty()) {
-					return DataResult.error(() -> "No outputs for recipe");
-				}
-				Pair<ResourceLocation, ITypedIngredient<?>> result = new Pair<>(registryName, outputs.getFirst());
-				return DataResult.success(result);
-			}
-		);
+			);
 	}
 
 	@Override

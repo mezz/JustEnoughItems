@@ -54,10 +54,9 @@ public final class VanillaClientRecipeLoader {
 		}
 
 		List<RecipeHolder<?>> recipeHolders = new ArrayList<>(recipeJson.size());
-		recipeJson.forEach((id, json) ->
-			Recipe.CODEC.parse(registryAccess.createSerializationContext(JsonOps.INSTANCE), json)
-				.resultOrPartial(message -> LOGGER.error("Failed to parse vanilla recipe {} from client resources: {}", id, message))
-				.ifPresent(recipe -> recipeHolders.add(new RecipeHolder<>(id, recipe)))
+		recipeJson.forEach((id, json) -> Recipe.CODEC.parse(registryAccess.createSerializationContext(JsonOps.INSTANCE), json)
+			.resultOrPartial(message -> LOGGER.error("Failed to parse vanilla recipe {} from client resources: {}", id, message))
+			.ifPresent(recipe -> recipeHolders.add(new RecipeHolder<>(id, recipe)))
 		);
 
 		LOGGER.info("Loaded {} vanilla recipes from client resources.", recipeHolders.size());

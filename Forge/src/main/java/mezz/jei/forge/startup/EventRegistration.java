@@ -57,23 +57,21 @@ public class EventRegistration {
 			handler.onKeyboardCharTypedPost(screen, codePoint, modifiers);
 		});
 
-		subscriptions.register(ScreenEvent.MouseButtonPressed.Pre.class, event ->
-			ForgeUserInput.fromEvent(event)
-				.ifPresent(input -> {
-					Screen screen = event.getScreen();
-					if (handler.onGuiMouseClicked(screen, input)) {
-						event.setCanceled(true);
-					}
-				})
+		subscriptions.register(ScreenEvent.MouseButtonPressed.Pre.class, event -> ForgeUserInput.fromEvent(event)
+			.ifPresent(input -> {
+				Screen screen = event.getScreen();
+				if (handler.onGuiMouseClicked(screen, input)) {
+					event.setCanceled(true);
+				}
+			})
 		);
-		subscriptions.register(ScreenEvent.MouseButtonReleased.Pre.class, event ->
-			ForgeUserInput.fromEvent(event)
-				.ifPresent(input -> {
-					Screen screen = event.getScreen();
-					if (handler.onGuiMouseReleased(screen, input)){
-						event.setCanceled(true);
-					}
-				})
+		subscriptions.register(ScreenEvent.MouseButtonReleased.Pre.class, event -> ForgeUserInput.fromEvent(event)
+			.ifPresent(input -> {
+				Screen screen = event.getScreen();
+				if (handler.onGuiMouseReleased(screen, input)) {
+					event.setCanceled(true);
+				}
+			})
 		);
 
 		subscriptions.register(ScreenEvent.MouseScrolled.Pre.class, event -> {
@@ -108,18 +106,14 @@ public class EventRegistration {
 		subscriptions.register(ContainerScreenEvent.Render.Background.class, event -> {
 			AbstractContainerScreen<?> containerScreen = event.getContainerScreen();
 			var guiGraphics = event.getGuiGraphics();
-			runWithIdentityPose(guiGraphics, () ->
-				guiEventHandler.drawForScreenBackground(containerScreen, guiGraphics)
-			);
+			runWithIdentityPose(guiGraphics, () -> guiEventHandler.drawForScreenBackground(containerScreen, guiGraphics));
 		});
 		subscriptions.register(ContainerScreenEvent.Render.Foreground.class, event -> {
 			AbstractContainerScreen<?> containerScreen = event.getContainerScreen();
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			runWithIdentityPose(guiGraphics, () ->
-				guiEventHandler.drawForScreenForeground(containerScreen, guiGraphics, mouseX, mouseY)
-			);
+			runWithIdentityPose(guiGraphics, () -> guiEventHandler.drawForScreenForeground(containerScreen, guiGraphics, mouseX, mouseY));
 		});
 		subscriptions.register(ScreenEvent.Render.Post.class, event -> {
 			Screen screen = event.getScreen();

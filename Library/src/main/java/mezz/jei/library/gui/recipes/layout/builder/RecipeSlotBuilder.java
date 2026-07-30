@@ -281,7 +281,8 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 			focusedIngredients = new ArrayList<>();
 			for (Integer i : focusMatches) {
 				if (i < allIngredients.size()) {
-					@Nullable ITypedIngredient<?> ingredient = allIngredients.get(i);
+					@Nullable
+					ITypedIngredient<?> ingredient = allIngredients.get(i);
 					focusedIngredients.add(ingredient);
 				}
 			}

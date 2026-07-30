@@ -10,7 +10,6 @@ import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
 import net.minecraft.world.item.enchantment.Enchantment;
 
-
 public class RecipeHelper implements IPlatformRecipeHelper {
 	@Override
 	public Ingredient getBase(SmithingRecipe recipe) {

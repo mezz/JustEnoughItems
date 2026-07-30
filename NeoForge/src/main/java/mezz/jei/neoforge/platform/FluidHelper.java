@@ -89,7 +89,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 		if (tooltipFlag.isAdvanced()) {
 			Registry<Fluid> fluidRegistry = RegistryUtil.getRegistry(Registries.FLUID);
 			ResourceLocation resourceLocation = fluidRegistry.getKey(fluid);
-			if (resourceLocation != null &&  resourceLocation != BuiltInRegistries.FLUID.getDefaultKey()) {
+			if (resourceLocation != null && resourceLocation != BuiltInRegistries.FLUID.getDefaultKey()) {
 				MutableComponent advancedId = Component.literal(resourceLocation.toString())
 					.withStyle(ChatFormatting.DARK_GRAY);
 				tooltip.add(advancedId);

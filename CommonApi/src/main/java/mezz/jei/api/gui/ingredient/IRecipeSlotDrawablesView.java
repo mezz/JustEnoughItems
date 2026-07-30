@@ -50,10 +50,9 @@ public interface IRecipeSlotDrawablesView {
 	 */
 	default Optional<IRecipeSlotDrawable> findSlotByName(String slotName) {
 		return getSlots().stream()
-			.filter(slot ->
-				slot.getSlotName()
-					.map(slotName::equals)
-					.orElse(false)
+			.filter(slot -> slot.getSlotName()
+				.map(slotName::equals)
+				.orElse(false)
 			)
 			.findFirst();
 	}

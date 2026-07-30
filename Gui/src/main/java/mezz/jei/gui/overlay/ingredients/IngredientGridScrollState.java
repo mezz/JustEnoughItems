@@ -71,7 +71,8 @@ public final class IngredientGridScrollState {
 	private float getStoredScrollAnchorPositionY(@Nullable IElement<?> scrollAnchorElement) {
 		if (scrollAnchorElement != null &&
 			this.scrollAnchorElement != null &&
-			IngredientGridPageState.isSameIngredientElement(this.scrollAnchorElement, scrollAnchorElement)) {
+			IngredientGridPageState.isSameIngredientElement(this.scrollAnchorElement, scrollAnchorElement)
+		) {
 			return this.scrollAnchorPositionY;
 		}
 		return 0;

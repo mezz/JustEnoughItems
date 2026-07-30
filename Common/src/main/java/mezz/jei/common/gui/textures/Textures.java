@@ -216,10 +216,15 @@ public class Textures {
 		}
 
 		if (hovered) {
-			return pressed ? buttonPressedHighlight : buttonHighlight;
-		} else {
-			return pressed ? buttonPressed : buttonEnabled;
+			if (pressed) {
+				return buttonPressedHighlight;
+			}
+			return buttonHighlight;
 		}
+		if (pressed) {
+			return buttonPressed;
+		}
+		return buttonEnabled;
 	}
 
 	public JeiGuiSpriteManager getAtlasManager() {

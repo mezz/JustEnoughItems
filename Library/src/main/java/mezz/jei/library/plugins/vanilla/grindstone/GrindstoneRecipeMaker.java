@@ -59,10 +59,10 @@ public final class GrindstoneRecipeMaker {
 		GrindstoneMenu grindstoneMenu
 	) {
 		return Stream.concat(
-						getRepairRecipes(platformHelper, ingredientManager, grindstoneMenu),
-						getDisenchantRecipes(platformHelper, ingredientHelper, grindstoneMenu)
-				)
-				.toList();
+				getRepairRecipes(platformHelper, ingredientManager, grindstoneMenu),
+				getDisenchantRecipes(platformHelper, ingredientHelper, grindstoneMenu)
+			)
+			.toList();
 	}
 
 	private static Stream<IJeiGrindstoneRecipe> getDisenchantRecipes(
@@ -80,7 +80,10 @@ public final class GrindstoneRecipeMaker {
 			Enchantment enchantment = enchantmentHolder.value();
 			Optional<ResourceKey<Enchantment>> enchantmentResourceKey = registry.getResourceKey(enchantment);
 			ResourceLocation enchantmentId = enchantmentResourceKey.map(ResourceKey::location).orElse(null);
-			String enchantmentPath = enchantmentId == null ? null : enchantmentId.getPath();
+			String enchantmentPath = null;
+			if (enchantmentId != null) {
+				enchantmentPath = enchantmentId.getPath();
+			}
 			for (Holder<Item> itemHolder : ingredientHelper.getSupportedItems(enchantmentHolder)) {
 				ItemStack stack = new ItemStack(itemHolder);
 				if (!stack.isEnchantable() ||
@@ -124,18 +127,18 @@ public final class GrindstoneRecipeMaker {
 
 	private static Stream<IJeiGrindstoneRecipe> getRepairRecipes(IPlatformRecipeHelper platformHelper, IIngredientManager ingredientManager, GrindstoneMenu grindstoneMenu) {
 		return ingredientManager.getAllItemStacks()
-				.stream()
-				.filter(ItemStack::isDamageableItem)
-				.map(stack -> {
-					stack.setDamageValue(stack.getMaxDamage() * 3 / 4);
-					ItemStack topInput = stack.copy();
-					ItemStack bottomInput = stack.copy();
-					String itemId = stack.getItem().getDescriptionId();
-					String rawPath = "grindstone.self_repair." + itemId;
-					String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
-					return getGrindstoneRecipe(platformHelper, grindstoneMenu, topInput, bottomInput, ResourceLocation.withDefaultNamespace(uidPath));
-				})
-				.filter(Objects::nonNull);
+			.stream()
+			.filter(ItemStack::isDamageableItem)
+			.map(stack -> {
+				stack.setDamageValue(stack.getMaxDamage() * 3 / 4);
+				ItemStack topInput = stack.copy();
+				ItemStack bottomInput = stack.copy();
+				String itemId = stack.getItem().getDescriptionId();
+				String rawPath = "grindstone.self_repair." + itemId;
+				String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
+				return getGrindstoneRecipe(platformHelper, grindstoneMenu, topInput, bottomInput, ResourceLocation.withDefaultNamespace(uidPath));
+			})
+			.filter(Objects::nonNull);
 	}
 
 	@Nullable

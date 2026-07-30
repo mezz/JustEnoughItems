@@ -43,8 +43,7 @@ public class NetworkHandler {
 	}
 
 	public void registerPacketHandlers(PermanentEventSubscriptions subscriptions) {
-		subscriptions.register(RegisterPayloadHandlersEvent.class, ev ->
-			ev.registrar(this.protocolVersion)
+		subscriptions.register(RegisterPayloadHandlersEvent.class, ev -> ev.registrar(this.protocolVersion)
 			.executesOn(HandlerThread.MAIN)
 			.optional()
 			.playToServer(PacketDeletePlayerItem.TYPE, PacketDeletePlayerItem.STREAM_CODEC, wrapServerHandler(PacketDeletePlayerItem::process))

@@ -31,9 +31,8 @@ public class RecipeSortUtil {
 			return recipeCategories;
 		}
 
-		Comparator<IRecipeCategory<?>> comparator = Comparator.comparing((IRecipeCategory<?> r) ->
-			recipeTransferService.hasRecipeTransferHandler(openContainer, r)
-		)
+		Comparator<IRecipeCategory<?>> comparator = Comparator.comparing((IRecipeCategory<?> r) -> recipeTransferService.hasRecipeTransferHandler(openContainer, r)
+			)
 			.reversed();
 
 		return recipeCategories.stream()

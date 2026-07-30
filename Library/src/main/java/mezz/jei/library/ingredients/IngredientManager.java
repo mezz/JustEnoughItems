@@ -121,7 +121,7 @@ public class IngredientManager implements IIngredientManager, ITypedIngredientFa
 			String ingredientStrings = ingredients.stream()
 				.map(ingredientHelper::getResourceLocation)
 				.map(ResourceLocation::toString)
-				.collect(Collectors.joining(", ", "[","]"));
+				.collect(Collectors.joining(", ", "[", "]"));
 			LOGGER.debug("Ingredients added at runtime: {}", ingredientStrings);
 		}
 
@@ -186,7 +186,7 @@ public class IngredientManager implements IIngredientManager, ITypedIngredientFa
 			String ingredientStrings = ingredients.stream()
 				.map(ingredientHelper::getResourceLocation)
 				.map(ResourceLocation::toString)
-				.collect(Collectors.joining(", ", "[","]"));
+				.collect(Collectors.joining(", ", "[", "]"));
 			LOGGER.debug("Ingredients removed at runtime: {}", ingredientStrings);
 		}
 

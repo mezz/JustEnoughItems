@@ -35,8 +35,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<RecipeHolder<CraftingRecipe>> CRAFTING =
-		RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.CRAFTING);
+	public static final RecipeType<RecipeHolder<CraftingRecipe>> CRAFTING = RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.CRAFTING);
 
 	/**
 	 * The stonecutting recipe type.
@@ -45,8 +44,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<RecipeHolder<StonecutterRecipe>> STONECUTTING =
-		RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.STONECUTTING);
+	public static final RecipeType<RecipeHolder<StonecutterRecipe>> STONECUTTING = RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.STONECUTTING);
 
 	/**
 	 * The smelting recipe type.
@@ -55,8 +53,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<RecipeHolder<SmeltingRecipe>> SMELTING =
-		RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.SMELTING);
+	public static final RecipeType<RecipeHolder<SmeltingRecipe>> SMELTING = RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.SMELTING);
 
 	/**
 	 * The smoking recipe type.
@@ -65,8 +62,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<RecipeHolder<SmokingRecipe>> SMOKING =
-		RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.SMOKING);
+	public static final RecipeType<RecipeHolder<SmokingRecipe>> SMOKING = RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.SMOKING);
 
 	/**
 	 * The blasting recipe type.
@@ -75,8 +71,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<RecipeHolder<BlastingRecipe>> BLASTING =
-		RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.BLASTING);
+	public static final RecipeType<RecipeHolder<BlastingRecipe>> BLASTING = RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.BLASTING);
 
 	/**
 	 * The campfire cooking recipe type.
@@ -85,8 +80,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<RecipeHolder<CampfireCookingRecipe>> CAMPFIRE_COOKING =
-		RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.CAMPFIRE_COOKING);
+	public static final RecipeType<RecipeHolder<CampfireCookingRecipe>> CAMPFIRE_COOKING = RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.CAMPFIRE_COOKING);
 
 	/**
 	 * The fueling recipe type.
@@ -95,8 +89,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<IJeiFuelingRecipe> FUELING =
-		RecipeType.create(ModIds.MINECRAFT_ID, "fuel", IJeiFuelingRecipe.class);
+	public static final RecipeType<IJeiFuelingRecipe> FUELING = RecipeType.create(ModIds.MINECRAFT_ID, "fuel", IJeiFuelingRecipe.class);
 
 	/**
 	 * The brewing recipe type.
@@ -110,8 +103,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<IJeiBrewingRecipe> BREWING =
-		RecipeType.create(ModIds.MINECRAFT_ID, "brewing", IJeiBrewingRecipe.class);
+	public static final RecipeType<IJeiBrewingRecipe> BREWING = RecipeType.create(ModIds.MINECRAFT_ID, "brewing", IJeiBrewingRecipe.class);
 
 	/**
 	 * The anvil recipe type.
@@ -120,8 +112,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<IJeiAnvilRecipe> ANVIL =
-		RecipeType.create(ModIds.MINECRAFT_ID, "anvil", IJeiAnvilRecipe.class);
+	public static final RecipeType<IJeiAnvilRecipe> ANVIL = RecipeType.create(ModIds.MINECRAFT_ID, "anvil", IJeiAnvilRecipe.class);
 
 	/**
 	 * The grindstone recipe type.
@@ -130,8 +121,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 19.22.1
 	 */
-	public static final RecipeType<IJeiGrindstoneRecipe> GRINDSTONE =
-			RecipeType.create(ModIds.MINECRAFT_ID, "grindstone", IJeiGrindstoneRecipe.class);
+	public static final RecipeType<IJeiGrindstoneRecipe> GRINDSTONE = RecipeType.create(ModIds.MINECRAFT_ID, "grindstone", IJeiGrindstoneRecipe.class);
 
 	/**
 	 * The smithing recipe type.
@@ -141,8 +131,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<RecipeHolder<SmithingRecipe>> SMITHING =
-		RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.SMITHING);
+	public static final RecipeType<RecipeHolder<SmithingRecipe>> SMITHING = RecipeType.createFromVanilla(net.minecraft.world.item.crafting.RecipeType.SMITHING);
 
 	/**
 	 * The composting recipe type.
@@ -150,8 +139,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<IJeiCompostingRecipe> COMPOSTING =
-		RecipeType.create(ModIds.MINECRAFT_ID, "compostable", IJeiCompostingRecipe.class);
+	public static final RecipeType<IJeiCompostingRecipe> COMPOSTING = RecipeType.create(ModIds.MINECRAFT_ID, "compostable", IJeiCompostingRecipe.class);
 
 	/**
 	 * The JEI info recipe type.
@@ -160,8 +148,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final RecipeType<IJeiIngredientInfoRecipe> INFORMATION =
-		RecipeType.create(ModIds.JEI_ID, "information", IJeiIngredientInfoRecipe.class);
+	public static final RecipeType<IJeiIngredientInfoRecipe> INFORMATION = RecipeType.create(ModIds.JEI_ID, "information", IJeiIngredientInfoRecipe.class);
 
 	private RecipeTypes() {}
 }

@@ -25,7 +25,6 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-
 public class JsonArrayFileHelper {
 	private JsonArrayFileHelper() {}
 
@@ -45,9 +44,12 @@ public class JsonArrayFileHelper {
 		if (parent != null) {
 			Files.createDirectories(parent);
 		}
-		Path tempFile = parent == null ?
-			Files.createTempFile(null, null) :
-			Files.createTempFile(parent, null, null);
+		Path tempFile;
+		if (parent == null) {
+			tempFile = Files.createTempFile(null, null);
+		} else {
+			tempFile = Files.createTempFile(parent, null, null);
+		}
 		try {
 			try (BufferedWriter out = Files.newBufferedWriter(tempFile)) {
 				writeToWriter(

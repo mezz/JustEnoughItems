@@ -17,7 +17,10 @@ import java.util.List;
  */
 @Mixin(ClientPacketListener.class)
 public class ClientPacketListenerRecipeUpdateMixin {
-	@Inject(method = "handleUpdateRecipes", at = @At("RETURN"))
+	@Inject(
+		method = "handleUpdateRecipes",
+		at = @At("RETURN")
+	)
 	public void handleUpdateRecipes(ClientboundUpdateRecipesPacket packet, CallbackInfo ci) {
 		ClientPacketListener packetListener = (ClientPacketListener) (Object) this;
 		List<RecipeHolder<?>> recipes = List.copyOf(packetListener.getRecipeManager().getRecipes());
