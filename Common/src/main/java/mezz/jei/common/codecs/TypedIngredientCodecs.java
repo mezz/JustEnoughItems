@@ -61,8 +61,8 @@ public class TypedIngredientCodecs {
 		return ingredientCodec.flatXmap(
 			ingredient -> {
 				Optional<IIngredientType<T>> type = ingredientManager.getIngredientTypeChecked(ingredient);
-				return type.map(ingredientType ->
-						ingredientManager.createTypedIngredient(ingredientType, ingredient, false)
+				return type.map(ingredientType -> {
+					return ingredientManager.createTypedIngredient(ingredientType, ingredient, false)
 						.map(DataResult::success)
 						.orElseGet(() -> {
 							return DataResult.error(() -> {
@@ -70,8 +70,8 @@ public class TypedIngredientCodecs {
 								String errorInfo = ingredientHelper.getErrorInfo(ingredient);
 								return "Failed to create typed ingredient: " + errorInfo;
 							});
-						})
-					)
+						});
+				})
 					.orElseGet(() -> DataResult.error(() -> "Failed to find type for ingredient: " + ingredient.getClass()));
 			},
 			typedIngredient -> {

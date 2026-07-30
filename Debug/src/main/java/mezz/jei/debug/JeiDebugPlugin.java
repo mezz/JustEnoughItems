@@ -169,7 +169,7 @@ public class JeiDebugPlugin implements IModPlugin {
 			new ItemStack(Blocks.JUNGLE_DOOR),
 			new ItemStack(Blocks.ACACIA_DOOR),
 			new ItemStack(Blocks.DARK_OAK_DOOR)
-			),
+		),
 			Component.translatable("description.jei.wooden.door.1"), // actually 2 lines
 			Component.translatable("description.jei.wooden.door.2"),
 			Component.translatable("description.jei.wooden.door.3")
@@ -252,9 +252,9 @@ public class JeiDebugPlugin implements IModPlugin {
 
 		ItemStack ingredientDisplay = new ItemStack(Items.POISONOUS_POTATO, 3);
 		CraftingRecipe recipe = vanillaRecipeFactory.createShapedRecipeBuilder(
-				CraftingBookCategory.MISC,
-				new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(output))
-			)
+			CraftingBookCategory.MISC,
+			new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(output))
+		)
 			.pattern("p")
 			.define(
 				'p',

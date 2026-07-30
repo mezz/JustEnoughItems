@@ -118,9 +118,7 @@ public final class JeiChatItemLinks {
 
 	public static Optional<ITypedIngredient<?>> resolveTypedIngredient(IngredientLink link, IIngredientManager ingredientManager) {
 		return ingredientManager.getIngredientTypeForUid(link.ingredientTypeUid())
-			.flatMap(ingredientType ->
-				resolveTypedIngredient(ingredientType, link.ingredientUid(), ingredientManager)
-			);
+			.flatMap(ingredientType -> resolveTypedIngredient(ingredientType, link.ingredientUid(), ingredientManager));
 	}
 
 	public static String createCommandArgument(IngredientLink link) {

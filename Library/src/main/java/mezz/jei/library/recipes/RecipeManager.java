@@ -46,8 +46,7 @@ public class RecipeManager implements IRecipeManager {
 	public RecipeManager(
 		RecipeManagerInternal internal,
 		IIngredientManager ingredientManager,
-		ImmutableListMultimap<IRecipeType<?>,
-		IRecipeCategoryDecorator<?>> recipeCategoryDecorators,
+		ImmutableListMultimap<IRecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators,
 		List<IRecipeButtonControllerFactory> recipeButtonControllerFactories,
 		ContextMap contextMap
 	) {
@@ -131,9 +130,9 @@ public class RecipeManager implements IRecipeManager {
 			borderPadding,
 			contextMap
 		)
-		.orElseGet(() -> {
-			return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, borderPadding);
-		});
+			.orElseGet(() -> {
+				return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, borderPadding);
+			});
 	}
 
 	@Override

@@ -32,11 +32,13 @@ public class JeiMultiKeyMapping implements IJeiKeyMapping {
 			.filter(m -> !m.isUnbound())
 			.map(IJeiKeyMapping::getTranslatedKeyMessage)
 			.findFirst()
-			.orElseGet(() ->
-				this.mappings.stream()
-				.map(IJeiKeyMapping::getTranslatedKeyMessage)
-				.findFirst()
-				.orElseGet(() -> Component.literal("error"))
-			);
+			.orElseGet(this::getFallbackTranslatedKeyMessage);
+	}
+
+	private Component getFallbackTranslatedKeyMessage() {
+		return this.mappings.stream()
+			.map(IJeiKeyMapping::getTranslatedKeyMessage)
+			.findFirst()
+			.orElseGet(() -> Component.literal("error"));
 	}
 }

@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class IngredientListOverlayDummy implements IIngredientListOverlay{
+public class IngredientListOverlayDummy implements IIngredientListOverlay {
 	public static final IIngredientListOverlay INSTANCE = new IngredientListOverlayDummy();
 
 	private IngredientListOverlayDummy() {

@@ -93,7 +93,10 @@ public class IngredientGridScrollbar implements IUserInputHandler {
 		if (!input.isSimulate()) {
 			boolean wasDragging = this.dragOriginY >= 0;
 			this.dragOriginY = -1;
-			return wasDragging ? Optional.of(this) : Optional.empty();
+			if (wasDragging) {
+				return Optional.of(this);
+			}
+			return Optional.empty();
 		}
 
 		if (!this.area.contains(input.getMouseX(), input.getMouseY())) {

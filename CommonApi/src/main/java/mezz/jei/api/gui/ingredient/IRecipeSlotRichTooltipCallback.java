@@ -3,7 +3,6 @@ package mezz.jei.api.gui.ingredient;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 
-
 /**
  * Used to add tooltips to ingredients drawn on a recipe.
  *

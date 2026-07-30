@@ -39,7 +39,7 @@ public class BrewingRecipeCategory extends AbstractRecipeCategory<IJeiBrewingRec
 		Textures textures = Internal.getTextures();
 		background = textures.getBrewingStandBackground();
 
-		arrow = guiHelper.createAnimatedDrawable(textures.getBrewingStandArrow(),400, IDrawableAnimated.StartDirection.TOP, false);
+		arrow = guiHelper.createAnimatedDrawable(textures.getBrewingStandArrow(), 400, IDrawableAnimated.StartDirection.TOP, false);
 
 		ITickTimer bubblesTickTimer = new BrewingBubblesTickTimer(guiHelper);
 		bubbles = guiHelper.createAnimatedDrawable(textures.getBrewingStandBubbles(), bubblesTickTimer, IDrawableAnimated.StartDirection.BOTTOM);
@@ -58,7 +58,10 @@ public class BrewingRecipeCategory extends AbstractRecipeCategory<IJeiBrewingRec
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiBrewingRecipe recipe, IFocusGroup focuses) {
 		int brewingSteps = recipe.getBrewingSteps();
-		String brewingStepsString = brewingSteps < Integer.MAX_VALUE ? Integer.toString(brewingSteps) : "?";
+		String brewingStepsString = "?";
+		if (brewingSteps < Integer.MAX_VALUE) {
+			brewingStepsString = Integer.toString(brewingSteps);
+		}
 		Component steps = Component.translatable("gui.jei.category.brewing.steps", brewingStepsString);
 
 		builder.addText(steps, 42, 12)

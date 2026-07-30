@@ -65,7 +65,7 @@ public final class DelayedExecutor implements IDelayedExecutor {
 			if (!service.awaitTermination(shutdownTimeout.toMillis(), TimeUnit.MILLISECONDS)) {
 				forceShutdown("Timed out waiting for delayed tasks to finish.");
 			}
-		} catch (InterruptedException _) {
+		} catch (InterruptedException ignored) {
 			forceShutdown("Interrupted while waiting for delayed tasks to finish.");
 			Thread.currentThread().interrupt();
 		}

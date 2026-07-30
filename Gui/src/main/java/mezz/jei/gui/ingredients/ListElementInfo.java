@@ -151,7 +151,10 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	public final Set<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(value.getType());
-		TooltipFlag.Default tooltipFlag = config.getSearchAdvancedTooltips() ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
+		TooltipFlag.Default tooltipFlag = TooltipFlag.Default.NORMAL;
+		if (config.getSearchAdvancedTooltips()) {
+			tooltipFlag = TooltipFlag.Default.ADVANCED;
+		}
 		tooltipFlag = tooltipFlag.asCreative();
 
 		TooltipFlag searchTooltipFlag = Services.PLATFORM.getInputHelper()

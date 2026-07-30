@@ -100,7 +100,8 @@ public class BookmarkDragManager {
 				.flatMap(clicked -> {
 					ItemStack mouseItem = player.containerMenu.getCarried();
 					if (mouseItem.isEmpty() &&
-						handleClickIngredient(clicked, input)) {
+						handleClickIngredient(clicked, input)
+					) {
 						return Optional.of(this);
 					}
 					return Optional.empty();

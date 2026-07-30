@@ -37,12 +37,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class IngredientFilter implements
-	IIngredientGridSource,
-	IIngredientManager.IIngredientListener,
-	IIngredientVisibility.IListener,
-	IClientToggleState.IEditModeListener
-{
+public class IngredientFilter
+	implements
+		IIngredientGridSource,
+		IIngredientManager.IIngredientListener,
+		IIngredientVisibility.IListener,
+		IClientToggleState.IEditModeListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final SearchTokenizer searchTokenizer = new SearchTokenizer();
 
@@ -276,13 +276,13 @@ public class IngredientFilter implements
 				continue;
 			}
 			this.elementPrefixParser.parseToken(token.text())
-					.ifPresent(result -> {
-						if (token.exclusion()) {
-							searchTokens.toRemove.add(result);
-						} else {
-							searchTokens.toSearch.add(result);
-						}
-					});
+				.ifPresent(result -> {
+					if (token.exclusion()) {
+						searchTokens.toRemove.add(result);
+					} else {
+						searchTokens.toSearch.add(result);
+					}
+				});
 		}
 		return searchTokens;
 	}

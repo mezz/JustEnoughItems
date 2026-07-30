@@ -179,11 +179,11 @@ public interface IRecipeManager {
 	 * @since 19.4.0
 	 */
 	<T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(
-			IRecipeCategory<T> recipeCategory,
-			T recipe,
-			IFocusGroup focusGroup,
-			IScalableDrawable background,
-			int borderSize
+		IRecipeCategory<T> recipeCategory,
+		T recipe,
+		IFocusGroup focusGroup,
+		IScalableDrawable background,
+		int borderSize
 	);
 
 	/**

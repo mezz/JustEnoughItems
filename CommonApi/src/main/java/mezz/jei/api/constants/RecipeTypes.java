@@ -33,8 +33,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final IRecipeHolderType<CraftingRecipe> CRAFTING =
-		IRecipeHolderType.create(RecipeType.CRAFTING);
+	public static final IRecipeHolderType<CraftingRecipe> CRAFTING = IRecipeHolderType.create(RecipeType.CRAFTING);
 
 	/**
 	 * The stonecutting recipe type.
@@ -43,8 +42,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final IRecipeHolderType<StonecutterRecipe> STONECUTTING =
-		IRecipeHolderType.create(RecipeType.STONECUTTING);
+	public static final IRecipeHolderType<StonecutterRecipe> STONECUTTING = IRecipeHolderType.create(RecipeType.STONECUTTING);
 
 	/**
 	 * The smelting recipe type.
@@ -53,8 +51,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final IRecipeHolderType<SmeltingRecipe> SMELTING =
-		IRecipeHolderType.create(RecipeType.SMELTING);
+	public static final IRecipeHolderType<SmeltingRecipe> SMELTING = IRecipeHolderType.create(RecipeType.SMELTING);
 
 	/**
 	 * The smoking recipe type.
@@ -63,8 +60,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final IRecipeHolderType<SmokingRecipe> SMOKING =
-		IRecipeHolderType.create(RecipeType.SMOKING);
+	public static final IRecipeHolderType<SmokingRecipe> SMOKING = IRecipeHolderType.create(RecipeType.SMOKING);
 
 	/**
 	 * The blasting recipe type.
@@ -73,8 +69,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final IRecipeHolderType<BlastingRecipe> BLASTING =
-		IRecipeHolderType.create(RecipeType.BLASTING);
+	public static final IRecipeHolderType<BlastingRecipe> BLASTING = IRecipeHolderType.create(RecipeType.BLASTING);
 
 	/**
 	 * The campfire cooking recipe type.
@@ -83,8 +78,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final IRecipeHolderType<CampfireCookingRecipe> CAMPFIRE_COOKING =
-		IRecipeHolderType.create(RecipeType.CAMPFIRE_COOKING);
+	public static final IRecipeHolderType<CampfireCookingRecipe> CAMPFIRE_COOKING = IRecipeHolderType.create(RecipeType.CAMPFIRE_COOKING);
 
 	/**
 	 * The furnace fuel recipe type.
@@ -93,8 +87,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 20.0.0
 	 */
-	public static final IRecipeType<IJeiFuelingRecipe> SMELTING_FUEL =
-		IRecipeType.create(ModIds.MINECRAFT_ID, "smelting_fuel", IJeiFuelingRecipe.class);
+	public static final IRecipeType<IJeiFuelingRecipe> SMELTING_FUEL = IRecipeType.create(ModIds.MINECRAFT_ID, "smelting_fuel", IJeiFuelingRecipe.class);
 
 	/**
 	 * The blast furnace fuel recipe type.
@@ -103,8 +96,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 20.0.0
 	 */
-	public static final IRecipeType<IJeiFuelingRecipe> BLASTING_FUEL =
-		IRecipeType.create(ModIds.MINECRAFT_ID, "blasting_fuel", IJeiFuelingRecipe.class);
+	public static final IRecipeType<IJeiFuelingRecipe> BLASTING_FUEL = IRecipeType.create(ModIds.MINECRAFT_ID, "blasting_fuel", IJeiFuelingRecipe.class);
 
 	/**
 	 * The smoker fuel recipe type.
@@ -113,8 +105,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 20.0.0
 	 */
-	public static final IRecipeType<IJeiFuelingRecipe> SMOKING_FUEL =
-		IRecipeType.create(ModIds.MINECRAFT_ID, "smoking_fuel", IJeiFuelingRecipe.class);
+	public static final IRecipeType<IJeiFuelingRecipe> SMOKING_FUEL = IRecipeType.create(ModIds.MINECRAFT_ID, "smoking_fuel", IJeiFuelingRecipe.class);
 
 	/**
 	 * The brewing recipe type.
@@ -126,8 +117,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final IRecipeType<IJeiBrewingRecipe> BREWING =
-		IRecipeType.create(ModIds.MINECRAFT_ID, "brewing", IJeiBrewingRecipe.class);
+	public static final IRecipeType<IJeiBrewingRecipe> BREWING = IRecipeType.create(ModIds.MINECRAFT_ID, "brewing", IJeiBrewingRecipe.class);
 
 	/**
 	 * The anvil recipe type.
@@ -136,8 +126,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final IRecipeType<IJeiAnvilRecipe> ANVIL =
-		IRecipeType.create(ModIds.MINECRAFT_ID, "anvil", IJeiAnvilRecipe.class);
+	public static final IRecipeType<IJeiAnvilRecipe> ANVIL = IRecipeType.create(ModIds.MINECRAFT_ID, "anvil", IJeiAnvilRecipe.class);
 
 	/**
 	 * The grindstone recipe type.
@@ -146,8 +135,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 23.1.0
 	 */
-	public static final IRecipeType<IJeiGrindstoneRecipe> GRINDSTONE =
-			IRecipeType.create(ModIds.MINECRAFT_ID, "grindstone", IJeiGrindstoneRecipe.class);
+	public static final IRecipeType<IJeiGrindstoneRecipe> GRINDSTONE = IRecipeType.create(ModIds.MINECRAFT_ID, "grindstone", IJeiGrindstoneRecipe.class);
 
 	/**
 	 * The smithing recipe type.
@@ -165,8 +153,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final IRecipeType<IJeiCompostingRecipe> COMPOSTING =
-		IRecipeType.create(ModIds.MINECRAFT_ID, "compostable", IJeiCompostingRecipe.class);
+	public static final IRecipeType<IJeiCompostingRecipe> COMPOSTING = IRecipeType.create(ModIds.MINECRAFT_ID, "compostable", IJeiCompostingRecipe.class);
 
 	/**
 	 * The JEI info recipe type.
@@ -175,8 +162,7 @@ public final class RecipeTypes {
 	 *
 	 * @since 9.5.0
 	 */
-	public static final IRecipeType<IJeiIngredientInfoRecipe> INFORMATION =
-		IRecipeType.create(ModIds.JEI_ID, "information", IJeiIngredientInfoRecipe.class);
+	public static final IRecipeType<IJeiIngredientInfoRecipe> INFORMATION = IRecipeType.create(ModIds.JEI_ID, "information", IJeiIngredientInfoRecipe.class);
 
 	private RecipeTypes() {}
 }

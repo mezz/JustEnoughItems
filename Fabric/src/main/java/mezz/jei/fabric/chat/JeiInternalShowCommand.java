@@ -11,7 +11,7 @@ public final class JeiInternalShowCommand {
 	}
 
 	public static void register() {
-		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
+		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
 			dispatcher.register(
 				ClientCommands.literal(JeiChatItemLinks.SHOW_RECIPE_COMMAND)
 					.then(ClientCommands.argument(JeiChatItemLinks.LINK_ARGUMENT, StringArgumentType.greedyString())
@@ -20,7 +20,7 @@ public final class JeiInternalShowCommand {
 							return JeiChatItemLinkRecipeLookup.executeShowRecipeCommand(link);
 						})
 					)
-			)
-		);
+			);
+		});
 	}
 }

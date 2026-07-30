@@ -154,7 +154,7 @@ public class TextWidget implements ITextWidget, IRecipeWidget {
 		}
 
 		if (DebugConfig.isDebugGuisEnabled()) {
-			guiGraphics.fill(0,0, availableArea.width(), availableArea.height(), 0xAAAAAA00);
+			guiGraphics.fill(0, 0, availableArea.width(), availableArea.height(), 0xAAAAAA00);
 		}
 	}
 

@@ -17,7 +17,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -68,13 +68,13 @@ public class GuiEventHandler {
 	 * Draws after the screen contents and before deferred tooltips are extracted.
 	 */
 	public void drawForContainerScreen(AbstractContainerScreen<?> screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		@Nullable IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
+		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
 		drawOverlayForegrounds(guiGraphics, mouseX, mouseY, true);
 		drawPostForeground(screen, guiProperties, guiGraphics, mouseX, mouseY);
 	}
 
 	public void drawForScreen(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		@Nullable IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
+		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
 		updateOverlayProperties(screen, guiProperties);
 
 		drawOverlayBackgrounds(guiGraphics);

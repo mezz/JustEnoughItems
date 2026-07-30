@@ -175,7 +175,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		for (Slot slot : craftingSlots) {
 			if (slot.isFake()) {
 				LOGGER.error("Recipe Transfer helper {} does not work for container {}. " +
-						"The Recipe Transfer Helper references crafting slot index [{}] but it is a fake (output) slot, which is not allowed.",
+					"The Recipe Transfer Helper references crafting slot index [{}] but it is a fake (output) slot, which is not allowed.",
 					transferInfo.getClass(), container.getClass(), slot.index
 				);
 				return false;
@@ -184,7 +184,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		for (Slot slot : inventorySlots) {
 			if (slot.isFake()) {
 				LOGGER.error("Recipe Transfer helper {} does not work for container {}. " +
-						"The Recipe Transfer Helper references inventory slot index [{}] but it is a fake (output) slot, which is not allowed.",
+					"The Recipe Transfer Helper references inventory slot index [{}] but it is a fake (output) slot, which is not allowed.",
 					transferInfo.getClass(), container.getClass(), slot.index
 				);
 				return false;
@@ -196,7 +196,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 
 		if (!containerSlotIndexes.containsAll(craftingSlotIndexes)) {
 			LOGGER.error("Recipe Transfer helper {} does not work for container {}. " +
-					"The Recipes Transfer Helper references crafting slot indexes [{}] that are not found in the inventory container slots [{}]",
+				"The Recipes Transfer Helper references crafting slot indexes [{}] that are not found in the inventory container slots [{}]",
 				transferInfo.getClass(), container.getClass(), StringUtil.intsToString(craftingSlotIndexes), StringUtil.intsToString(containerSlotIndexes)
 			);
 			return false;
@@ -204,7 +204,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 
 		if (!containerSlotIndexes.containsAll(inventorySlotIndexes)) {
 			LOGGER.error("Recipe Transfer helper {} does not work for container {}. " +
-					"The Recipes Transfer Helper references inventory slot indexes [{}] that are not found in the inventory container slots [{}]",
+				"The Recipes Transfer Helper references inventory slot indexes [{}] that are not found in the inventory container slots [{}]",
 				transferInfo.getClass(), container.getClass(), StringUtil.intsToString(inventorySlotIndexes), StringUtil.intsToString(containerSlotIndexes)
 			);
 			return false;
@@ -221,7 +221,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 	) {
 		if (inputSlots.size() > craftingSlots.size()) {
 			LOGGER.error("Recipe View {} does not work for container {}. " +
-					"The Recipe View has more input slots ({}) than the number of inventory crafting slots ({})",
+				"The Recipe View has more input slots ({}) than the number of inventory crafting slots ({})",
 				transferInfo.getClass(), container.getClass(), inputSlots.size(), craftingSlots.size()
 			);
 			return false;
@@ -255,8 +255,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 			if (!stack.isEmpty()) {
 				if (!slot.allowModification(player)) {
 					LOGGER.error(
-						"Recipe Transfer helper {} does not work for container {}. " +
-							"The Player is not able to move items out of Crafting Slot number {}",
+						"Recipe Transfer helper {} does not work for container {}. The Player is not able to move items out of Crafting Slot number {}",
 						transferInfo.getClass(), container.getClass(), slot.index
 					);
 					return null;
@@ -271,8 +270,7 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 			if (!stack.isEmpty()) {
 				if (!slot.allowModification(player)) {
 					LOGGER.error(
-						"Recipe Transfer helper {} does not work for container {}. " +
-							"The Player is not able to move items out of Inventory Slot number {}",
+						"Recipe Transfer helper {} does not work for container {}. The Player is not able to move items out of Inventory Slot number {}",
 						transferInfo.getClass(), container.getClass(), slot.index
 					);
 					return null;

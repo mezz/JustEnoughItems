@@ -80,9 +80,8 @@ public final class JUnitXmlTestReporter {
 	private static Path getModuleDirectory() {
 		Path directory = Path.of(System.getProperty("user.dir")).toAbsolutePath();
 		while (directory != null) {
-			if (
-				Files.isRegularFile(directory.resolve("build.gradle.kts")) ||
-					Files.isRegularFile(directory.resolve("build.gradle"))
+			if (Files.isRegularFile(directory.resolve("build.gradle.kts")) ||
+				Files.isRegularFile(directory.resolve("build.gradle"))
 			) {
 				return directory;
 			}
@@ -108,7 +107,11 @@ public final class JUnitXmlTestReporter {
 			Element testSuite = document.createElement("testsuite");
 			testSuite.setAttribute("name", suiteName);
 			testSuite.setAttribute("tests", "1");
-			testSuite.setAttribute("failures", failure == null ? "0" : "1");
+			String failureCount = "0";
+			if (failure != null) {
+				failureCount = "1";
+			}
+			testSuite.setAttribute("failures", failureCount);
 			testSuite.setAttribute("errors", "0");
 			testSuite.setAttribute("skipped", "0");
 			testSuite.setAttribute("time", formatTime(timeSeconds));

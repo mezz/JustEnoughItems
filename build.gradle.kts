@@ -1,6 +1,5 @@
 plugins {
-    // https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-	id("com.diffplug.spotless") version("8.8.0")
+    id("net.mezzdev.java-formatting") version("0.1.1")
 
     // https://plugins.gradle.org/plugin/com.dorongold.task-tree
     id("com.dorongold.task-tree") version("4.0.1")
@@ -19,6 +18,10 @@ plugins {
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
     id("me.modmuss50.mod-publish-plugin") version("2.0.1") apply(false)
+}
+
+javaFormatting {
+    all()
 }
 
 repositories {
@@ -45,25 +48,6 @@ val fabricApiVersion: String by extra
 val fabricApiVersionRange: String by extra
 val fabricLoaderVersion: String by extra
 val fabricLoaderVersionRange: String by extra
-
-spotless {
-	java {
-		target("*/src/*/java/mezz/jei/**/*.java")
-
-		endWithNewline()
-		trimTrailingWhitespace()
-		removeUnusedImports()
-		forbidWildcardImports()
-		replaceRegex(
-			"single-line if block formatting",
-			"""(?m)^([ \t]*)if[ \t]*(\([^{}\r\n]+\))[ \t]*\{[ \t]*([^{}\r\n]+?)[ \t]*}${'$'}""",
-			"${'$'}1if ${'$'}2 {\n${'$'}1\t${'$'}3\n${'$'}1}"
-		)
-		leadingSpacesToTabs(4)
-		replaceRegex("class-level javadoc indentation fix", "^\\*", " *")
-		replaceRegex("method-level javadoc indentation fix", "\t\\*", "\t *")
-	}
-}
 
 subprojects {
     //adds the build number to the end of the version string if on a build server

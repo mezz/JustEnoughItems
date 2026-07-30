@@ -88,7 +88,7 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		List<@Nullable ITypedIngredient<T>> typedIngredients = TypedIngredient.createAndFilterInvalidList(this.ingredientManager, ingredientType, ingredients, false);
-		for (@Nullable ITypedIngredient<T> typedIngredientOptional : typedIngredients) {
+		for (ITypedIngredient<T> typedIngredientOptional : typedIngredients) {
 			if (typedIngredientOptional != null) {
 				this.ingredients.add(typedIngredientOptional);
 			}

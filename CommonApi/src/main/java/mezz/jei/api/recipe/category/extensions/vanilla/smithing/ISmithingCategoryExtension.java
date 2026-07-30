@@ -9,7 +9,6 @@ import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 
-
 /**
  * Implement this interface instead of just {@link IRecipeCategoryExtension}
  * to have your recipe extension work as part of {@link RecipeTypes#SMITHING} recipe.

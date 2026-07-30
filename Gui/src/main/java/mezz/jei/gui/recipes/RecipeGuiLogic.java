@@ -254,7 +254,10 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 		Set<RecipeSorterStage> recipeSorterStages = clientConfig.getRecipeSorterStages();
 
-		int containerId = container == null ? -1 : container.containerId;
+		int containerId = -1;
+		if (container != null) {
+			containerId = container.containerId;
+		}
 		if (!recipeSorterStages.equals(cachedSorterStages) ||
 			this.cachedRecipeLayoutsWithButtons == null ||
 			this.cachedRecipeCategory != recipeCategory ||
@@ -276,12 +279,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			this.cachedContainerId = containerId;
 		}
 
-		final int recipeHeight =
-			this.cachedRecipeLayoutsWithButtons.findFirst()
-				.map(IRecipeLayoutWithButtons::getRecipeLayout)
-				.map(IRecipeLayoutDrawable::getRectWithBorder)
-				.map(Rect2i::getHeight)
-				.orElseGet(recipeCategory::getHeight);
+		final int recipeHeight = this.cachedRecipeLayoutsWithButtons.findFirst()
+			.map(IRecipeLayoutWithButtons::getRecipeLayout)
+			.map(IRecipeLayoutDrawable::getRectWithBorder)
+			.map(Rect2i::getHeight)
+			.orElseGet(recipeCategory::getHeight);
 
 		final int recipesPerPage = Math.max(1, 1 + ((availableHeight - recipeHeight) / (recipeHeight + minRecipePadding)));
 		this.state.setRecipesPerPage(recipesPerPage);

@@ -14,7 +14,6 @@ import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.runtime.config.IJeiConfigManager;
 
-
 public class JeiRuntime implements IJeiRuntime {
 	private final IRecipeManager recipeManager;
 	private final IRecipeTransferManager recipeTransferManager;

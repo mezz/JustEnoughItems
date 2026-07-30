@@ -12,7 +12,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import mezz.jei.common.util.PathUtil;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-
 
 public class JsonArrayFileHelper {
 	private JsonArrayFileHelper() {}
@@ -45,9 +44,12 @@ public class JsonArrayFileHelper {
 		if (parent != null) {
 			Files.createDirectories(parent);
 		}
-		Path tempFile = parent == null ?
-			Files.createTempFile(null, null) :
-			Files.createTempFile(parent, null, null);
+		Path tempFile;
+		if (parent == null) {
+			tempFile = Files.createTempFile(null, null);
+		} else {
+			tempFile = Files.createTempFile(parent, null, null);
+		}
 		try {
 			try (BufferedWriter out = Files.newBufferedWriter(tempFile)) {
 				writeToWriter(
