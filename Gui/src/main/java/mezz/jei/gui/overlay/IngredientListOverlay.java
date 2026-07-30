@@ -194,7 +194,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	private static ImmutableRect2i getLookupHistoryArea(ImmutableRect2i displayArea, boolean searchBarCentered, int lookupHistoryHeight) {
-		int bottomReservedHeight = searchBarCentered ? 0 : SEARCH_HEIGHT + LOOKUP_HISTORY_BOTTOM_PADDING;
+		int bottomReservedHeight = SEARCH_HEIGHT + LOOKUP_HISTORY_BOTTOM_PADDING;
+		if (searchBarCentered) {
+			bottomReservedHeight = 0;
+		}
 		return displayArea
 			.insetBy(BORDER_MARGIN)
 			.cropBottom(bottomReservedHeight)

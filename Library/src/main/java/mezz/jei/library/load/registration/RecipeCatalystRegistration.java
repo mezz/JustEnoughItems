@@ -45,7 +45,8 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 
 		for (RecipeType<?> recipeType : recipeTypes) {
 			ErrorUtil.checkNotNull(recipeType, "recipeType");
-			@Nullable ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, true);
+			@Nullable
+			ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, true);
 			if (typedIngredient == null) {
 				throw new IllegalArgumentException("Recipe catalyst must be a valid ingredient");
 			}
@@ -60,7 +61,8 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 
 		for (ItemLike itemLike : ingredients) {
 			ItemStack itemStack = itemLike.asItem().getDefaultInstance();
-			@Nullable ITypedIngredient<ItemStack> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, VanillaTypes.ITEM_STACK, itemStack, true);
+			@Nullable
+			ITypedIngredient<ItemStack> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, VanillaTypes.ITEM_STACK, itemStack, true);
 			if (typedIngredient == null) {
 				throw new IllegalArgumentException("Recipe catalyst must be a valid ingredient");
 			}
@@ -75,7 +77,8 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 		ErrorUtil.checkNotNull(ingredients, "ingredients");
 
 		for (T ingredient : ingredients) {
-			@Nullable ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, true);
+			@Nullable
+			ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, true);
 			if (typedIngredient == null) {
 				throw new IllegalArgumentException("Recipe catalyst must be a valid ingredient");
 			}

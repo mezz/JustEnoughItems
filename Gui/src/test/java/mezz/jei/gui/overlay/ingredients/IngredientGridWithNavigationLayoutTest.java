@@ -257,7 +257,10 @@ public class IngredientGridWithNavigationLayoutTest {
 			true
 		);
 		ImmutableRect2i availableGridArea = IngredientGridWithNavigationLayout.getAvailableGridArea(gridConfig, availableArea);
-		int gridPadding = drawBackground ? IngredientGridWithNavigationLayout.INNER_PADDING : 0;
+		int gridPadding = 0;
+		if (drawBackground) {
+			gridPadding = IngredientGridWithNavigationLayout.INNER_PADDING;
+		}
 		int navigationToGridOffset = IngredientGridWithNavigationLayout.NAVIGATION_HEIGHT +
 			IngredientGridWithNavigationLayout.INNER_PADDING + gridPadding;
 		int rowsBelowTabs = (bottom(availableGridArea) - bottom(fifthTab) - navigationToGridOffset) /
@@ -509,8 +512,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			availableArea.getHeight()
 		);
 
-		IngredientGridWithNavigationLayout obstructedLayout = assertDoesNotThrow(() ->
-			IngredientGridButtonNavigationLayout.calculate(gridConfig, availableArea, Set.of(overTallExclusion), null, 0)
+		IngredientGridWithNavigationLayout obstructedLayout = assertDoesNotThrow(
+			() -> IngredientGridButtonNavigationLayout.calculate(gridConfig, availableArea, Set.of(overTallExclusion), null, 0)
 		);
 
 		assertEquals(ImmutableRect2i.EMPTY, obstructedLayout.ingredientGridArea());
@@ -576,8 +579,8 @@ public class IngredientGridWithNavigationLayoutTest {
 			availableArea.getHeight()
 		);
 
-		IngredientGridWithNavigationLayout obstructedLayout = assertDoesNotThrow(() ->
-			IngredientGridButtonNavigationLayout.calculate(gridConfig, availableArea, Set.of(overTallExclusion), null, 0)
+		IngredientGridWithNavigationLayout obstructedLayout = assertDoesNotThrow(
+			() -> IngredientGridButtonNavigationLayout.calculate(gridConfig, availableArea, Set.of(overTallExclusion), null, 0)
 		);
 
 		assertEquals(ImmutableRect2i.EMPTY, obstructedLayout.ingredientGridArea());

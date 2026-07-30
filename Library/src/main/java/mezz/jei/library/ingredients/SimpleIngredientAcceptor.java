@@ -53,7 +53,8 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		for (Object ingredient : ingredients) {
-			@Nullable ITypedIngredient<?> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient, false);
+			@Nullable
+			ITypedIngredient<?> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient, false);
 			if (typedIngredient != null) {
 				this.ingredients.add(typedIngredient);
 			}
@@ -69,7 +70,9 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 
 		List<@Nullable ITypedIngredient<T>> typedIngredients = TypedIngredient.createAndFilterInvalidList(this.ingredientManager, ingredientType, ingredients, false);
 
-		for (@Nullable ITypedIngredient<T> typedIngredient : typedIngredients) {
+		for (@Nullable
+			ITypedIngredient<T> typedIngredient : typedIngredients
+		) {
 			if (typedIngredient != null) {
 				this.ingredients.add(typedIngredient);
 			}
@@ -99,7 +102,8 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 	public <I> SimpleIngredientAcceptor addTypedIngredient(ITypedIngredient<I> typedIngredient) {
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
-		@Nullable ITypedIngredient<I> checkedIngredient = TypedIngredientUtil.checkAndValidateTypedIngredientFromApi(ingredientManager, typedIngredient);
+		@Nullable
+		ITypedIngredient<I> checkedIngredient = TypedIngredientUtil.checkAndValidateTypedIngredientFromApi(ingredientManager, typedIngredient);
 		if (checkedIngredient != null) {
 			this.ingredients.add(checkedIngredient);
 		}
@@ -163,7 +167,8 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 		if (ingredient == null) {
 			return;
 		}
-		@Nullable ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, false);
+		@Nullable
+		ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, false);
 		if (typedIngredient != null) {
 			this.ingredients.add(typedIngredient);
 		}

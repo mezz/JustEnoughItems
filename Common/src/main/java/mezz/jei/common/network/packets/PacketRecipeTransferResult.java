@@ -23,7 +23,11 @@ public class PacketRecipeTransferResult extends PacketJei {
 
 	public PacketRecipeTransferResult(int transferId, boolean successful) {
 		this.transferId = transferId;
-		this.result = successful ? RecipeTransferResult.SUCCESS : RecipeTransferResult.REJECTED;
+		if (successful) {
+			this.result = RecipeTransferResult.SUCCESS;
+		} else {
+			this.result = RecipeTransferResult.REJECTED;
+		}
 	}
 
 	public static void registerPendingRecipeTransfer(IRecipeTransferContext<?, ?> context) {

@@ -79,7 +79,7 @@ public interface IIngredientHelper<V> {
 	 * @since 11.7.0
 	 */
 	default boolean hasSubtypes(V ingredient) {
-		return getIngredientType() instanceof IIngredientTypeWithSubtypes<?,?>;
+		return getIngredientType() instanceof IIngredientTypeWithSubtypes<?, ?>;
 	}
 
 	/**

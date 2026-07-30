@@ -138,9 +138,8 @@ public class ForgeBrewingExtensionTest {
 		// Assertions: vanilla water and nether wart brewing is discovered through the extension.
 		assertTrue(
 			recipes.stream()
-				.anyMatch(recipe ->
-					recipe.getIngredients().stream().anyMatch(ingredient -> ingredient.is(Items.NETHER_WART)) &&
-						PotionUtils.getPotion(recipe.getPotionOutput()) == Potions.AWKWARD
+				.anyMatch(recipe -> recipe.getIngredients().stream().anyMatch(ingredient -> ingredient.is(Items.NETHER_WART)) &&
+					PotionUtils.getPotion(recipe.getPotionOutput()) == Potions.AWKWARD
 				)
 		);
 	}

@@ -17,7 +17,10 @@ public class IngredientTooltipHelper {
 	public static <V> void getIngredientTooltipSafe(ITooltipBuilder tooltip, V ingredient, IIngredientRenderer<V> ingredientRenderer) {
 		try {
 			Minecraft minecraft = Minecraft.getInstance();
-			TooltipFlag.Default tooltipFlag = minecraft.options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
+			TooltipFlag.Default tooltipFlag = TooltipFlag.Default.NORMAL;
+			if (minecraft.options.advancedItemTooltips) {
+				tooltipFlag = TooltipFlag.Default.ADVANCED;
+			}
 			tooltip.addAll(ingredientRenderer.getTooltip(ingredient, tooltipFlag));
 			return;
 		} catch (RuntimeException | LinkageError e) {

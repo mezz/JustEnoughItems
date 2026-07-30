@@ -50,9 +50,9 @@ public interface IGlobalGuiHandler {
 	@Nullable
 	default Object getIngredientUnderMouse(double mouseX, double mouseY) {
 		return getClickableIngredientUnderMouse(mouseX, mouseY)
-				.map(IClickableIngredient::getTypedIngredient)
-				.map(ITypedIngredient::getIngredient)
-				.orElse(null);
+			.map(IClickableIngredient::getTypedIngredient)
+			.map(ITypedIngredient::getIngredient)
+			.orElse(null);
 	}
 
 	/**

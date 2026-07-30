@@ -104,8 +104,8 @@ public final class VanillaClientRecipeLoader {
 	private static PackResources openVanillaServerDataPack() {
 		List<Pack> packs = new ArrayList<>();
 		ServerPacksSource source = new ServerPacksSource();
-		source.loadPacks(packs::add, (id, title, required, resources, metadata, position, packSource) ->
-			new Pack(id, title, required, resources, metadata, PackType.SERVER_DATA, position, packSource)
+		source.loadPacks(
+			packs::add, (id, title, required, resources, metadata, position, packSource) -> new Pack(id, title, required, resources, metadata, PackType.SERVER_DATA, position, packSource)
 		);
 		return packs.stream()
 			.filter(pack -> pack.getId().equals(ServerPacksSource.VANILLA_ID))

@@ -1,6 +1,5 @@
 package mezz.jei.common.config;
 
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -81,15 +81,14 @@ public class PacketRecipeTransferCounted extends PacketJei {
 		boolean requireCompleteSets = buf.readBoolean();
 
 		MinecraftServer server = player.server;
-		return server.submit(() ->
-			BasicRecipeTransferHandlerServer.setItems(
-				player,
-				transferOperations,
-				craftingSlots,
-				inventorySlots,
-				maxTransfer,
-				requireCompleteSets
-			)
+		return server.submit(() -> BasicRecipeTransferHandlerServer.setItems(
+			player,
+			transferOperations,
+			craftingSlots,
+			inventorySlots,
+			maxTransfer,
+			requireCompleteSets
+		)
 		);
 	}
 }

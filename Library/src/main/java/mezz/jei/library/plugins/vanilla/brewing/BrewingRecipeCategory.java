@@ -61,7 +61,10 @@ public class BrewingRecipeCategory extends AbstractRecipeCategory<IJeiBrewingRec
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiBrewingRecipe recipe, IFocusGroup focuses) {
 		int brewingSteps = recipe.getBrewingSteps();
-		String brewingStepsString = brewingSteps < Integer.MAX_VALUE ? Integer.toString(brewingSteps) : "?";
+		String brewingStepsString = "?";
+		if (brewingSteps < Integer.MAX_VALUE) {
+			brewingStepsString = Integer.toString(brewingSteps);
+		}
 		Component steps = Component.translatable("gui.jei.category.brewing.steps", brewingStepsString);
 
 		builder.addText(steps, 42, 12)

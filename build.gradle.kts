@@ -5,7 +5,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 plugins {
-	id("com.diffplug.spotless") version("8.10.0")
+	id("net.mezzdev.java-formatting") version("0.4.0")
     id("com.dorongold.task-tree") version("4.0.2")
     id("org.spongepowered.gradle.vanilla") version("0.2.2") apply(false)
 	id("net.neoforged.moddev.legacyforge") version("2.0.144") apply(false)
@@ -19,6 +19,11 @@ plugins {
 
 	id("net.neoforged.jarcompatibilitychecker") version("0.1.19") apply(false)
 }
+
+javaFormatting {
+	all()
+}
+
 apply {
 	from("buildtools/ColoredOutput.gradle")
 }
@@ -48,25 +53,6 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val modName: String by extra
 val specificationVersion: String by extra
-
-spotless {
-	java {
-		target("*/src/*/java/mezz/jei/**/*.java")
-
-		endWithNewline()
-		trimTrailingWhitespace()
-		removeUnusedImports()
-		forbidWildcardImports()
-		replaceRegex(
-			"single-line if block formatting",
-			"""(?m)^([ \t]*)if[ \t]*(\([^{}\r\n]+\))[ \t]*\{[ \t]*([^{}\r\n]+?)[ \t]*}${'$'}""",
-			"${'$'}1if ${'$'}2 {\n${'$'}1\t${'$'}3\n${'$'}1}"
-		)
-		leadingSpacesToTabs(4)
-		replaceRegex("class-level javadoc indentation fix", "^\\*", " *")
-		replaceRegex("method-level javadoc indentation fix", "\t\\*", "\t *")
-	}
-}
 
 subprojects {
     //adds the build number to the end of the version string if on a build server

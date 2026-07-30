@@ -70,11 +70,18 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		this(
 			fluidHelper,
 			capacity,
-			showCapacity ? TooltipMode.SHOW_AMOUNT_AND_CAPACITY : TooltipMode.SHOW_AMOUNT,
+			getTooltipMode(showCapacity),
 			width,
 			height,
 			tilingDirection
 		);
+	}
+
+	private static TooltipMode getTooltipMode(boolean showCapacity) {
+		if (showCapacity) {
+			return TooltipMode.SHOW_AMOUNT_AND_CAPACITY;
+		}
+		return TooltipMode.SHOW_AMOUNT;
 	}
 
 	private FluidTankRenderer(
@@ -163,11 +170,11 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	}
 
 	private static void drawTiledSpriteClipped(Matrix4f matrix, int posX, int posY, int tiledWidth, int tiledHeight, int xShift, int yShift, TextureAtlasSprite sprite, int color) {
-		for (int x = 0; x < tiledWidth; ) {
+		for (int x = 0; x < tiledWidth;) {
 			int uOffset = (x + xShift) % TEXTURE_SIZE;
 			int width = Math.min(TEXTURE_SIZE - uOffset, tiledWidth - x);
 
-			for (int y = 0; y < tiledHeight; ) {
+			for (int y = 0; y < tiledHeight;) {
 				int vOffset = (y + yShift) % TEXTURE_SIZE;
 				int height = Math.min(TEXTURE_SIZE - vOffset, tiledHeight - y);
 				drawTexture(matrix, posX + x, posY + y, sprite, uOffset, vOffset, width, height, color, 100);

@@ -73,9 +73,10 @@ public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneR
 
 		int outputSlotXPosition = 52;
 		int outputSlotYPosition = 13;
-		RecipeIngredientRole outputRole = recipe.isOutputRenderOnly() ?
-			RecipeIngredientRole.RENDER_ONLY :
-			RecipeIngredientRole.OUTPUT;
+		RecipeIngredientRole outputRole = RecipeIngredientRole.OUTPUT;
+		if (recipe.isOutputRenderOnly()) {
+			outputRole = RecipeIngredientRole.RENDER_ONLY;
+		}
 		IRecipeSlotBuilder outputSlot = builder.addSlot(outputRole, outputSlotXPosition, outputSlotYPosition)
 			.setOutputSlotBackground()
 			.addItemStacks(outputs);

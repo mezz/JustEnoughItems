@@ -46,9 +46,9 @@ public interface IGuiContainerHandler<T extends AbstractContainerScreen<?>> {
 	@Nullable
 	default Object getIngredientUnderMouse(T containerScreen, double mouseX, double mouseY) {
 		return getClickableIngredientUnderMouse(containerScreen, mouseX, mouseY)
-				.map(IClickableIngredient::getTypedIngredient)
-				.map(ITypedIngredient::getIngredient)
-				.orElse(null);
+			.map(IClickableIngredient::getTypedIngredient)
+			.map(ITypedIngredient::getIngredient)
+			.orElse(null);
 	}
 
 	/**

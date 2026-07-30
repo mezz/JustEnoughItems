@@ -125,8 +125,7 @@ public final class BrewingExtensionHelper implements IExtendableBrewingRecipeCat
 
 	private boolean hasMoreSpecificExtension(Class<?> recipeClass, Class<?> candidateClass) {
 		for (Class<?> otherClass : extensions.keySet()) {
-			if (
-				otherClass != candidateClass &&
+			if (otherClass != candidateClass &&
 				otherClass.isAssignableFrom(recipeClass) &&
 				candidateClass.isAssignableFrom(otherClass)
 			) {
@@ -139,8 +138,7 @@ public final class BrewingExtensionHelper implements IExtendableBrewingRecipeCat
 	private void logAmbiguousExtensions(Class<?> recipeClass) {
 		List<String> matchingClasses = new ArrayList<>();
 		for (Class<?> extensionClass : extensions.keySet()) {
-			if (
-				extensionClass.isAssignableFrom(recipeClass) &&
+			if (extensionClass.isAssignableFrom(recipeClass) &&
 				!hasMoreSpecificExtension(recipeClass, extensionClass)
 			) {
 				matchingClasses.add(extensionClass.getName());

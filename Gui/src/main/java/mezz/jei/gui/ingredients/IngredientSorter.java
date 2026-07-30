@@ -12,8 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class IngredientSorter {
-	private static final Comparator<IListElement<?>> COMPARE_SORT_INDEX =
-		Comparator.comparing(IListElement::getSortedIndex);
+	private static final Comparator<IListElement<?>> COMPARE_SORT_INDEX = Comparator.comparing(IListElement::getSortedIndex);
 
 	public static Comparator<IListElement<?>> sortIngredients(
 		IClientConfig clientConfig,

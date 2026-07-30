@@ -13,16 +13,15 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public class ItemStackBatchRendererCache {
-	private final LoadingCache<List<BatchRenderElement<ItemStack>>, ItemStackBatchRenderer> cache =
-		CacheBuilder.newBuilder()
-			.maximumSize(6)
-			.build(new CacheLoader<>() {
-				@Override
-				public ItemStackBatchRenderer load(List<BatchRenderElement<ItemStack>> elements) {
-					Minecraft minecraft = Minecraft.getInstance();
-					return new ItemStackBatchRenderer(minecraft, elements);
-				}
-			});
+	private final LoadingCache<List<BatchRenderElement<ItemStack>>, ItemStackBatchRenderer> cache = CacheBuilder.newBuilder()
+		.maximumSize(6)
+		.build(new CacheLoader<>() {
+			@Override
+			public ItemStackBatchRenderer load(List<BatchRenderElement<ItemStack>> elements) {
+				Minecraft minecraft = Minecraft.getInstance();
+				return new ItemStackBatchRenderer(minecraft, elements);
+			}
+		});
 
 	public void renderBatch(PoseStack poseStack, ItemStackRenderer itemStackRenderer, List<BatchRenderElement<ItemStack>> elements) {
 		ItemStackBatchRenderer batchData = cache.getUnchecked(elements);

@@ -66,7 +66,7 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	 * @param doTransfer if true, do the transfer. if false, check for errors but do not transfer any items
 	 * @return a recipe transfer error if the recipe can't be transferred. Return null on success.
 	 *
- * @since 11.62.0
+	 * @since 11.62.0
 	 */
 	@Nullable
 	default IRecipeTransferError transferRecipe(IRecipeTransferContext<R, C> context, boolean doTransfer) {

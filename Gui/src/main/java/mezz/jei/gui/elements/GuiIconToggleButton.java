@@ -41,7 +41,10 @@ public abstract class GuiIconToggleButton {
 			return;
 		}
 		boolean iconToggledOn = isIconToggledOn();
-		IDrawable icon = iconToggledOn ? this.onIcon : this.offIcon;
+		IDrawable icon = this.offIcon;
+		if (iconToggledOn) {
+			icon = this.onIcon;
+		}
 
 		this.button.setForcePressed(iconToggledOn);
 		this.button.setIcon(icon);

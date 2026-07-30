@@ -15,7 +15,6 @@ public record TestIngredient(int number) {
 		}
 	};
 
-
 	public TestIngredient copy() {
 		return new TestIngredient(number);
 	}

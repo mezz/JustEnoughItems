@@ -106,7 +106,10 @@ public class JeiShapedRecipeBuilder implements IJeiShapedRecipeBuilder {
 		for (int row = 0; row < pattern.length; row++) {
 			for (int column = 0; column < pattern[row].length(); column++) {
 				char symbol = pattern[row].charAt(column);
-				Ingredient ingredient = symbol == ' ' ? Ingredient.EMPTY : keys.get(symbol);
+				Ingredient ingredient = Ingredient.EMPTY;
+				if (symbol != ' ') {
+					ingredient = keys.get(symbol);
+				}
 				if (ingredient == null) {
 					throw new IllegalArgumentException("Pattern references symbol '" + symbol + "' but it's not defined in the key");
 				}

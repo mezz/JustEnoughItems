@@ -14,7 +14,7 @@ public interface IRecipeTransferListener {
 	 * Called once when JEI attempts a recipe transfer, immediately before JEI invokes the selected transfer handler.
 	 * This is not called while JEI is only checking whether a recipe can be transferred.
 	 *
- * @since 11.62.0
+	 * @since 11.62.0
 	 */
 	default void beforeRecipeTransfer(IRecipeTransferContext<?, ?> context) {
 
@@ -24,7 +24,7 @@ public interface IRecipeTransferListener {
 	 * Called after the selected recipe transfer handler reports that the transfer has finished.
 	 * The context is the same one passed to {@link #beforeRecipeTransfer(IRecipeTransferContext)}.
 	 *
- * @since 11.62.0
+	 * @since 11.62.0
 	 */
 	default void afterRecipeTransfer(IRecipeTransferContext<?, ?> context, RecipeTransferResult result) {
 

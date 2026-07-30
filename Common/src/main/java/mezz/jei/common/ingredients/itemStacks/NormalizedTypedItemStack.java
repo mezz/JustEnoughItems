@@ -53,6 +53,9 @@ final class NormalizedTypedItemStack extends TypedItemStack {
 
 	@Nullable
 	private static CompoundTag copyTag(@Nullable CompoundTag tag) {
-		return tag == null ? null : tag.copy();
+		if (tag == null) {
+			return null;
+		}
+		return tag.copy();
 	}
 }

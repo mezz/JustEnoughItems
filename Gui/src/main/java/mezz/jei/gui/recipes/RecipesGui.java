@@ -649,14 +649,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		RecipeBookmarkButton bookmarkButton;
 		if (recipeBookmark == null) {
-			bookmarkButton = RecipeBookmarkButton.create(
-				recipeLayoutDrawable,
-				ingredientManager,
-				recipeTransferService,
-				bookmarkList,
-				recipeManager,
-				guiHelper
-			).orElse(null);
+			bookmarkButton = RecipeBookmarkButton.create(recipeLayoutDrawable, ingredientManager, recipeTransferService, bookmarkList, recipeManager, guiHelper)
+				.orElse(null);
 		} else {
 			bookmarkButton = RecipeBookmarkButton.create(
 				recipeLayoutDrawable,
@@ -676,7 +670,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	@Nullable
 	private AbstractContainerMenu getParentContainerMenu() {
 		AbstractContainerScreen<?> parentContainerScreen = getParentContainerScreen();
-		return parentContainerScreen == null ? null : parentContainerScreen.getMenu();
+		if (parentContainerScreen == null) {
+			return null;
+		}
+		return parentContainerScreen.getMenu();
 	}
 
 	@Nullable

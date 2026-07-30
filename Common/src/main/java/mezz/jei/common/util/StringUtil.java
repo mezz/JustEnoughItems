@@ -31,7 +31,10 @@ public final class StringUtil {
 
 	public static String removeChatFormatting(String string) {
 		String result = ChatFormatting.stripFormatting(string);
-		return result == null ? "" : result;
+		if (result == null) {
+			return "";
+		}
+		return result;
 	}
 
 	public static FormattedText truncateStringToWidth(FormattedText text, int width, Font font) {

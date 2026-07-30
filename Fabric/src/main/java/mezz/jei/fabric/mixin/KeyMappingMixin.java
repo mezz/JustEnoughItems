@@ -23,10 +23,8 @@ public class KeyMappingMixin {
 		method = {
 			"click(Lcom/mojang/blaze3d/platform/InputConstants$Key;)V",
 			"set(Lcom/mojang/blaze3d/platform/InputConstants$Key;Z)V"
-		},
-		at = @At(
-			value = "INVOKE",
-			target = "Ljava/util/Map;get(Ljava/lang/Object;)Ljava/lang/Object;"
+		}, at = @At(
+			value = "INVOKE", target = "Ljava/util/Map;get(Ljava/lang/Object;)Ljava/lang/Object;"
 		)
 	)
 	private static @Nullable Object getActiveKeyMapping(Map<?, ?> mappings, Object key, Operation<Object> original) {

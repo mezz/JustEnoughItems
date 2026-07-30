@@ -48,9 +48,7 @@ public class GrindstoneRecipeMakerTest {
 			ResourceLocation.class
 		);
 		canEnchant.setAccessible(true);
-		Object result = Assertions.assertDoesNotThrow(() ->
-			canEnchant.invoke(null, platformHelper, stack, enchantment, enchantmentId)
-		);
+		Object result = Assertions.assertDoesNotThrow(() -> canEnchant.invoke(null, platformHelper, stack, enchantment, enchantmentId));
 
 		Assertions.assertEquals(false, result);
 	}

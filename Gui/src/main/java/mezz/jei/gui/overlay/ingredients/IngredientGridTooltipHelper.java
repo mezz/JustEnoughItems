@@ -110,13 +110,15 @@ public final class IngredientGridTooltipHelper {
 			Component.translatable("gui.jei.editMode.description")
 				.withStyle(ChatFormatting.DARK_GREEN),
 			Component.translatable(
-				"gui.jei.editMode.description.hide",
-				keyBindings.getToggleHideIngredient().getTranslatedKeyMessage()
-			).withStyle(ChatFormatting.GRAY),
+					"gui.jei.editMode.description.hide",
+					keyBindings.getToggleHideIngredient().getTranslatedKeyMessage()
+				)
+				.withStyle(ChatFormatting.GRAY),
 			Component.translatable(
-				"gui.jei.editMode.description.hide.wild",
-				keyBindings.getToggleWildcardHideIngredient().getTranslatedKeyMessage()
-			).withStyle(ChatFormatting.GRAY)
+					"gui.jei.editMode.description.hide.wild",
+					keyBindings.getToggleWildcardHideIngredient().getTranslatedKeyMessage()
+				)
+				.withStyle(ChatFormatting.GRAY)
 		);
 		tooltip.addAll(lines);
 	}

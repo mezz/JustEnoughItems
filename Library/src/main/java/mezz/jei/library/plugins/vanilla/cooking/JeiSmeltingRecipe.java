@@ -61,12 +61,14 @@ public class JeiSmeltingRecipe extends SmeltingRecipe {
 		@Override
 		public JeiSmeltingRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
 			Ingredient input = Ingredient.fromJson(json.get("ingredient"));
-			Ingredient fuel = json.has("fuel") ?
-				Ingredient.fromJson(json.get("fuel")) :
-				Ingredient.EMPTY;
-			ItemStack fuelOutput = json.has("fuel_output") ?
-				ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "fuel_output")) :
-				ItemStack.EMPTY;
+			Ingredient fuel = Ingredient.EMPTY;
+			if (json.has("fuel")) {
+				fuel = Ingredient.fromJson(json.get("fuel"));
+			}
+			ItemStack fuelOutput = ItemStack.EMPTY;
+			if (json.has("fuel_output")) {
+				fuelOutput = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "fuel_output"));
+			}
 			ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
 			float experience = GsonHelper.getAsFloat(json, "experience", 0.0F);
 			int cookingTime = GsonHelper.getAsInt(json, "cookingtime", 200);

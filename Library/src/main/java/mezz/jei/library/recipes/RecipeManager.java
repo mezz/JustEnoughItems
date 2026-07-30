@@ -88,13 +88,8 @@ public class RecipeManager implements IRecipeManager {
 
 		RecipeType<T> recipeType = recipeCategory.getRecipeType();
 		Collection<IRecipeCategoryDecorator<T>> decorators = internal.getRecipeCategoryDecorators(recipeType);
-		return RecipeLayout.create(
-			recipeCategory,
-			decorators,
-			recipe,
-			focusGroup,
-			ingredientManager
-		).orElseThrow(() -> new NullPointerException("Recipe layout crashed during creation, see log."));
+		return RecipeLayout.create(recipeCategory, decorators, recipe, focusGroup, ingredientManager)
+			.orElseThrow(() -> new NullPointerException("Recipe layout crashed during creation, see log."));
 	}
 
 	@Override
@@ -121,15 +116,7 @@ public class RecipeManager implements IRecipeManager {
 		}
 
 		IFocusGroup checkedFocusGroup = FocusGroup.checkOne(focusGroup, ingredientManager);
-		return RecipeLayout.create(
-			recipeCategory,
-			decorators,
-			recipe,
-			checkedFocusGroup,
-			ingredientManager,
-			recipeBackground,
-			borderPadding
-		)
+		return RecipeLayout.create(recipeCategory, decorators, recipe, checkedFocusGroup, ingredientManager, recipeBackground, borderPadding)
 			.orElseGet(() -> new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, borderPadding));
 	}
 

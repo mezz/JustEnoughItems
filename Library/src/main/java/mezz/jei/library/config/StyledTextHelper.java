@@ -71,7 +71,11 @@ public final class StyledTextHelper {
 				if (formatting != null) {
 					append(styledTexts, currentText.toString(), style);
 					currentText.setLength(0);
-					style = formatting == ChatFormatting.RESET ? Style.EMPTY : style.applyFormat(formatting);
+					if (formatting == ChatFormatting.RESET) {
+						style = Style.EMPTY;
+					} else {
+						style = style.applyFormat(formatting);
+					}
 					i++;
 					continue;
 				}
@@ -126,7 +130,10 @@ public final class StyledTextHelper {
 			}
 			index = styledTextEnd;
 		}
-		return commonStyle == null ? Style.EMPTY : commonStyle;
+		if (commonStyle == null) {
+			return Style.EMPTY;
+		}
+		return commonStyle;
 	}
 
 	private static String toLegacyFormattingString(Style style) {

@@ -53,7 +53,10 @@ public abstract sealed class TypedItemStack implements ITypedIngredient<ItemStac
 
 	@Nullable
 	private static CompoundTag copyTag(@Nullable CompoundTag tag) {
-		return tag == null ? null : tag.copy();
+		if (tag == null) {
+			return null;
+		}
+		return tag.copy();
 	}
 	@Override
 	public final ItemStack getIngredient() {

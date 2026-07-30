@@ -24,7 +24,8 @@ public class RecipeCategoryTitle {
 	public static RecipeCategoryTitle create(IRecipeCategory<?> recipeCategory, Font font, ImmutableRect2i availableArea) {
 		Component fullString = StringUtil.stripStyling(recipeCategory.getTitle());
 		FormattedCharSequence visibleString;
-		@Nullable Component tooltipString;
+		@Nullable
+		Component tooltipString;
 
 		final int availableTitleWidth = availableArea.getWidth();
 		if (font.width(fullString) > availableTitleWidth) {

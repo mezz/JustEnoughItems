@@ -95,7 +95,6 @@ public interface ICraftingGridHelper {
 		return createAndSetOutputs(builder, VanillaTypes.ITEM_STACK, outputs);
 	}
 
-
 	/**
 	 * Place output ingredients at the right location.
 	 *

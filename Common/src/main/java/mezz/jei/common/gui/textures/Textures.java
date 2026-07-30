@@ -223,9 +223,15 @@ public class Textures {
 		}
 
 		if (hovered) {
-			return pressed ? buttonPressedHighlight : buttonHighlight;
+			if (pressed) {
+				return buttonPressedHighlight;
+			}
+			return buttonHighlight;
 		}
-		return pressed ? buttonPressed : buttonEnabled;
+		if (pressed) {
+			return buttonPressed;
+		}
+		return buttonEnabled;
 	}
 
 	public DrawableNineSliceTexture getRecipeGuiBackground() {

@@ -122,7 +122,12 @@ public class RenderHelper implements IPlatformRenderHelper {
 		return event.getTooltipElements()
 			.stream()
 			.map(either -> either.map(
-				text -> ClientTooltipComponent.create(text instanceof Component component ? component.getVisualOrderText() : Language.getInstance().getVisualOrder(text)),
+				text -> {
+					if (text instanceof Component component) {
+						return ClientTooltipComponent.create(component.getVisualOrderText());
+					}
+					return ClientTooltipComponent.create(Language.getInstance().getVisualOrder(text));
+				},
 				ClientTooltipComponent::create
 			))
 			.toList();

@@ -76,7 +76,7 @@ public interface IRecipeTransferRegistration {
 	/**
 	 * Add a listener that observes attempts to transfer recipes through JEI.
 	 *
- * @since 11.62.0
+	 * @since 11.62.0
 	 */
 	void addRecipeTransferListener(IRecipeTransferListener recipeTransferListener);
 }

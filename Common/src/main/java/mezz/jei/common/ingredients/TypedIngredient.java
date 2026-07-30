@@ -115,7 +115,8 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		List<ITypedIngredient<T>> results = new ArrayList<>(ingredients.size());
 		for (T ingredient : ingredients) {
-			@Nullable ITypedIngredient<T> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
+			@Nullable
+			ITypedIngredient<T> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
 			if (result != null) {
 				results.add(result);
 			}
@@ -131,8 +132,11 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 	) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		List<@Nullable ITypedIngredient<T>> results = new ArrayList<>(ingredients.size());
-		for (@Nullable T ingredient : ingredients) {
-			@Nullable ITypedIngredient<T> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize, false);
+		for (@Nullable
+			T ingredient : ingredients
+		) {
+			@Nullable
+			ITypedIngredient<T> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize, false);
 			results.add(result);
 		}
 		return results;
@@ -148,7 +152,8 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 
 		List<@Nullable ITypedIngredient<ItemStack>> results = new ArrayList<>(itemStacks.length);
 		for (ItemStack itemStack : itemStacks) {
-			@Nullable ITypedIngredient<ItemStack> result = createAndFilterInvalid(ingredientHelper, VanillaTypes.ITEM_STACK, itemStack, normalize, false);
+			@Nullable
+			ITypedIngredient<ItemStack> result = createAndFilterInvalid(ingredientHelper, VanillaTypes.ITEM_STACK, itemStack, normalize, false);
 			results.add(result);
 		}
 		return results;
@@ -162,8 +167,11 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 	) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		List<@Nullable ITypedIngredient<T>> results = new ArrayList<>(ingredients.size());
-		for (@Nullable T ingredient : ingredients) {
-			@Nullable ITypedIngredient<T> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
+		for (@Nullable
+			T ingredient : ingredients
+		) {
+			@Nullable
+			ITypedIngredient<T> result = createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, normalize);
 			results.add(result);
 		}
 		return results;

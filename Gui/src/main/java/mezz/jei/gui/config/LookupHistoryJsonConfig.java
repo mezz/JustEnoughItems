@@ -172,5 +172,4 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 			.orElseGet(List::of);
 	}
 
-
 }

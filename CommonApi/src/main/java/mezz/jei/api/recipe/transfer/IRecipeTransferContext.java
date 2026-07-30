@@ -20,7 +20,7 @@ public interface IRecipeTransferContext<R, C extends AbstractContainerMenu> {
 	/**
 	 * An id that identifies this recipe transfer while its work is in progress.
 	 *
- * @since 11.62.0
+	 * @since 11.62.0
 	 */
 	int getTransferId();
 
@@ -30,56 +30,56 @@ public interface IRecipeTransferContext<R, C extends AbstractContainerMenu> {
 	 *
 	 * @param result the result of the transfer
 	 *
- * @since 11.62.0
+	 * @since 11.62.0
 	 */
 	void completeRecipeTransfer(RecipeTransferResult result);
 
 	/**
 	 * The recipe being transferred.
 	 *
- * @since 11.62.0
+	 * @since 11.62.0
 	 */
 	R getRecipe();
 
 	/**
 	 * The type of the recipe being transferred.
 	 *
- * @since 11.62.0
+	 * @since 11.62.0
 	 */
 	RecipeType<R> getRecipeType();
 
 	/**
 	 * The container that the recipe is being transferred into.
 	 *
- * @since 11.62.0
+	 * @since 11.62.0
 	 */
 	C getContainer();
 
 	/**
 	 * The screen for the container that the recipe is being transferred into.
 	 *
- * @since 11.62.0
+	 * @since 11.62.0
 	 */
 	AbstractContainerScreen<C> getScreen();
 
 	/**
 	 * A view of the recipe slots and their displayed ingredients.
 	 *
- * @since 11.62.0
+	 * @since 11.62.0
 	 */
 	IRecipeSlotsView getRecipeSlots();
 
 	/**
 	 * The player who requested the transfer.
 	 *
- * @since 11.62.0
+	 * @since 11.62.0
 	 */
 	Player getPlayer();
 
 	/**
 	 * Returns true when the player requested that as many recipe sets as possible are transferred.
 	 *
- * @since 11.62.0
+	 * @since 11.62.0
 	 */
 	boolean isMaxTransfer();
 }

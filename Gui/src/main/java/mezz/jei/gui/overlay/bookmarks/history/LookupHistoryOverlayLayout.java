@@ -14,9 +14,8 @@ public record LookupHistoryOverlayLayout(
 ) {
 	private static final int INGREDIENT_PADDING = 1;
 	public static final int SLOT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
-	private static final int BACKGROUND_PADDING =
-		IngredientGridWithNavigationLayout.BORDER_PADDING +
-			IngredientGridWithNavigationLayout.INNER_PADDING;
+	private static final int BACKGROUND_PADDING = IngredientGridWithNavigationLayout.BORDER_PADDING +
+		IngredientGridWithNavigationLayout.INNER_PADDING;
 
 	public static int getDisplayHeight(int maxRows, boolean drawBackground) {
 		int height = Math.max(0, maxRows) * SLOT_HEIGHT;

@@ -45,7 +45,11 @@ public class ScreenMixin {
 		JeiScreenEvents.AFTER_RENDER_BACKGROUND.invoker().afterRenderBackground(screen, poseStack);
 	}
 
-	@Inject(method = "renderComponentHoverEffect", at = @At("HEAD"), cancellable = true)
+	@Inject(
+		method = "renderComponentHoverEffect",
+		at = @At("HEAD"),
+		cancellable = true
+	)
 	private void jei$componentHoverEffect(PoseStack poseStack, Style hoveredStyle, int xMouse, int yMouse, CallbackInfo ci) {
 		if (ChatIngredientTooltip.setTooltipForHoveredText(poseStack, hoveredStyle, xMouse, yMouse)) {
 			ci.cancel();

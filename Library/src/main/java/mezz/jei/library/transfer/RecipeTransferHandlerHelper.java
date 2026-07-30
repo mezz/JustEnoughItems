@@ -110,9 +110,10 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 
 	@Override
 	public Map<Integer, Ingredient> getGuiSlotIndexToIngredientMap(CraftingRecipe recipe) {
-		ImmutableSize2i recipeSize = craftingRecipeCategory == null ?
-			ImmutableSize2i.EMPTY :
-			craftingRecipeCategory.getRecipeSize(recipe);
+		ImmutableSize2i recipeSize = ImmutableSize2i.EMPTY;
+		if (craftingRecipeCategory != null) {
+			recipeSize = craftingRecipeCategory.getRecipeSize(recipe);
+		}
 		return CraftingGridHelper.getGuiSlotToIngredientMap(recipe, recipeSize.width(), recipeSize.height());
 	}
 }

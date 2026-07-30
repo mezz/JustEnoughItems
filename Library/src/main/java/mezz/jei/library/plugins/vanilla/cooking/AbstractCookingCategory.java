@@ -52,13 +52,19 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	public void setRecipe(IRecipeLayoutBuilder builder, T recipe, IFocusGroup focuses) {
 		FuelDisplay fuelDisplay = FuelDisplay.create(recipe);
 		int outputX = getWidth() - 21;
-		int outputY = fuelDisplay.output().isEmpty() ? 19 : 5;
+		int outputY = 5;
+		if (fuelDisplay.output().isEmpty()) {
+			outputY = 19;
+		}
 
 		builder.addInputSlot(1, 1)
 			.setStandardSlotBackground()
 			.addIngredients(recipe.getIngredients().get(0));
 
-		RecipeIngredientRole fuelRole = fuelDisplay.isSpecific() ? RecipeIngredientRole.INPUT : RecipeIngredientRole.RENDER_ONLY;
+		RecipeIngredientRole fuelRole = RecipeIngredientRole.RENDER_ONLY;
+		if (fuelDisplay.isSpecific()) {
+			fuelRole = RecipeIngredientRole.INPUT;
+		}
 		var fuelSlot = builder.addSlot(fuelRole, 1, 37)
 			.setStandardSlotBackground();
 		if (fuelDisplay.isSpecific()) {
@@ -67,7 +73,12 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 			fuelSlot.addItemStacks(this.furnaceFuels);
 		}
 
-		ItemStack result = recipe instanceof JeiSmeltingRecipe jeiRecipe ? jeiRecipe.getResult() : recipe.getResultItem();
+		ItemStack result;
+		if (recipe instanceof JeiSmeltingRecipe jeiRecipe) {
+			result = jeiRecipe.getResult();
+		} else {
+			result = recipe.getResultItem();
+		}
 		builder.addOutputSlot(outputX, outputY)
 			.setOutputSlotBackground()
 			.addItemStack(result);

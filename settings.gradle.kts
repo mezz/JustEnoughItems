@@ -11,7 +11,13 @@ pluginManagement {
 			}
 		exclusiveMaven("https://maven.minecraftforge.net", "net.minecraftforge")
 		exclusiveMaven("https://maven.parchmentmc.org", "org.parchmentmc")
-		maven("https://maven.blamejared.com")
+		exclusiveContent {
+			forRepository { maven("https://maven.blamejared.com/") }
+			filter {
+				includeGroup("net.mezzdev.java-formatting")
+				includeModule("net.mezzdev.gradle", "JavaFormatting")
+			}
+		}
 		exclusiveMaven("https://maven.fabricmc.net/", "net.fabricmc", "fabric-loom")
 		maven("https://repo.spongepowered.org/repository/maven-public/") {
 			name = "Sponge Snapshots"

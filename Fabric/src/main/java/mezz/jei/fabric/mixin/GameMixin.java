@@ -9,12 +9,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Game.class)
 public class GameMixin {
-	@Inject(method = "onStartGameSession()V", at = @At("RETURN"))
+	@Inject(
+		method = "onStartGameSession()V",
+		at = @At("RETURN")
+	)
 	public void onStartGameSession(CallbackInfo ci) {
 		JeiLifecycleEvents.GAME_START.invoker().run();
 	}
 
-	@Inject(method = "onLeaveGameSession", at = @At("RETURN"))
+	@Inject(
+		method = "onLeaveGameSession",
+		at = @At("RETURN")
+	)
 	public void onLeaveGameSession(CallbackInfo ci) {
 		JeiLifecycleEvents.GAME_STOP.invoker().run();
 	}

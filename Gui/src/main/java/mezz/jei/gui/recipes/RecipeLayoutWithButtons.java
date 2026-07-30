@@ -206,7 +206,10 @@ public record RecipeLayoutWithButtons<R>(
 
 	@Override
 	public @Nullable RecipeBookmark<?, ?> getRecipeBookmark() {
-		return bookmarkButton == null ? null : bookmarkButton.getRecipeBookmark();
+		if (bookmarkButton == null) {
+			return null;
+		}
+		return bookmarkButton.getRecipeBookmark();
 	}
 
 	@Override

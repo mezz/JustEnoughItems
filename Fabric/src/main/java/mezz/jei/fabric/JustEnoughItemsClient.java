@@ -40,7 +40,7 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 				clientLifecycleHandler.registerEvents();
 
 				ResourceManagerHelper.get(PackType.SERVER_DATA)
-						.registerReloadListener(new JeiIdentifiableResourceReloadListener("lifecycle", clientLifecycleHandler.getReloadListener()));
+					.registerReloadListener(new JeiIdentifiableResourceReloadListener("lifecycle", clientLifecycleHandler.getReloadListener()));
 
 				ResourceManagerHelper.get(PackType.CLIENT_RESOURCES)
 					.registerReloadListener(new JeiIdentifiableResourceReloadListener("resources_reload", createReloadListener()));

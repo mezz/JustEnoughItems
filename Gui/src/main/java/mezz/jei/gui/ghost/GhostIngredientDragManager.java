@@ -168,7 +168,8 @@ public class GhostIngredientDragManager {
 				.flatMap(clicked -> {
 					ItemStack mouseItem = player.containerMenu.getCarried();
 					if (mouseItem.isEmpty() &&
-						handleClickGhostIngredient(screen, clicked, input)) {
+						handleClickGhostIngredient(screen, clicked, input)
+					) {
 						return Optional.of(this);
 					}
 					return Optional.empty();

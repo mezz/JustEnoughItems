@@ -54,7 +54,7 @@ public final class ItemStackListFactory {
 			} catch (RuntimeException | LinkageError e) {
 				LOGGER.error(
 					"Item Group crashed while getting items." +
-					"Items from this group will be missing from the JEI ingredient list: {}",
+						"Items from this group will be missing from the JEI ingredient list: {}",
 					tab.getDisplayName().getString(),
 					e
 				);
@@ -64,7 +64,7 @@ public final class ItemStackListFactory {
 			if (displayItems.isEmpty()) {
 				LOGGER.warn(
 					"Item Group has no display items. " +
-					"Items from this group will be missing from the JEI ingredient list. {}",
+						"Items from this group will be missing from the JEI ingredient list. {}",
 					tab.getDisplayName().getString()
 				);
 				continue;
@@ -141,7 +141,10 @@ public final class ItemStackListFactory {
 			);
 		}
 		if (duplicateInTabCount > 0) {
-			Level level = Services.PLATFORM.getModHelper().isInDev() ? Level.WARN : Level.DEBUG;
+			Level level = Level.DEBUG;
+			if (Services.PLATFORM.getModHelper().isInDev()) {
+				level = Level.WARN;
+			}
 			LOGGER.log(level,
 				"""
 					{} duplicate items were found in '{}' creative tab's: {}
