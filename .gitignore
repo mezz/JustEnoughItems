@@ -12,6 +12,8 @@
 hs_err_pid*
 
 .gradle
+.venv/
+__pycache__/
 run/
 *.iml
 *.ipr
