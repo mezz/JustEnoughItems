@@ -29,6 +29,7 @@ pipeline {
       ORG_GRADLE_PROJECT_modrinthToken = credentials("modrinth-auth-token")
       ORG_GRADLE_PROJECT_BUILD_NUMBER = "${env.BUILD_NUMBER}"
       DISCORD_WEBHOOK_URL = credentials("jei-discord-webhook-url")
+      GITHUB_RELEASE_COMMENT_TOKEN = credentials("github-release-comment-token")
     }
     stages {
         stage('Clean') {
@@ -127,6 +128,19 @@ pipeline {
                     }
                     catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
                         runExternalPublishTask(':NeoForge:publishModrinth')
+                    }
+                }
+            }
+        }
+
+        stage('Comment GitHub Release') {
+            when {
+                expression { env.SHOULD_PUBLISH != 'false' && env.GITHUB_RELEASE_COMMENT_TOKEN }
+            }
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                    withEnv(["GITHUB_TOKEN=${env.GITHUB_RELEASE_COMMENT_TOKEN}"]) {
+                        sh "python3 .jenkins/githubReleaseComments.py"
                     }
                 }
             }
