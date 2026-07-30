@@ -38,7 +38,10 @@ public final class ConnectionToServer implements IConnectionToServer {
 		}
 		if (jeiOnServerCacheValue == JeiServerState.UNKNOWN) {
 			boolean onServer = clientPacketListener.hasChannel(PacketDeletePlayerItem.TYPE);
-			jeiOnServerCacheValue = onServer ? JeiServerState.ON_SERVER : JeiServerState.NOT_ON_SERVER;
+			jeiOnServerCacheValue = JeiServerState.NOT_ON_SERVER;
+			if (onServer) {
+				jeiOnServerCacheValue = JeiServerState.ON_SERVER;
+			}
 		}
 		return jeiOnServerCacheValue == JeiServerState.ON_SERVER &&
 			clientPacketListener.hasChannel(packetType);

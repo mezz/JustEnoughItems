@@ -56,7 +56,8 @@ public class RecipeTransferButtonController implements IIconButtonController {
 
 	static void updateStateForTransferError(IButtonState state, @Nullable IRecipeTransferError recipeTransferError) {
 		if (recipeTransferError == null ||
-			recipeTransferError.getType().allowsTransfer) {
+			recipeTransferError.getType().allowsTransfer
+		) {
 			state.setActive(true);
 			state.setVisible(true);
 		} else {

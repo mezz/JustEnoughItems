@@ -49,11 +49,11 @@ public class IngredientInfoRecipeCategory extends AbstractRecipeCategory<IJeiIng
 		int yPos = 22;
 		int height = recipeHeight - yPos;
 		builder.addScrollBoxWidget(
-				recipeWidth,
-				height,
-				0,
-				yPos
-			)
+			recipeWidth,
+			height,
+			0,
+			yPos
+		)
 			.setContents(recipe.getDescription());
 	}
 

@@ -9,6 +9,13 @@ pluginManagement {
 					groupPrefixes.forEach(::includeGroupAndSubgroups)
 				}
 			}
+		exclusiveContent {
+			forRepository { maven("https://maven.blamejared.com/") }
+			filter {
+				includeGroup("net.mezzdev.java-formatting")
+				includeModule("net.mezzdev.gradle", "JavaFormatting")
+			}
+		}
 		exclusiveMaven("https://maven.fabricmc.net/", "net.fabricmc")
 		exclusiveMaven("https://maven.neoforged.net/releases", "net.neoforged", "codechicken", "net.covers1624")
 		maven("https://repo.spongepowered.org/repository/maven-public/") {

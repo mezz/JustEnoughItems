@@ -289,7 +289,6 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			historyButtonInputHandler
 		);
 
-
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
 			"BookmarkOverlay",
 			this.contents.createInputHandler(),
@@ -316,7 +315,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			if (isListDisplayed()) {
 				return combinedDragHandlers;
 			}
-			if (lookupHistoryOverlay.isListDisplayed()){
+			if (lookupHistoryOverlay.isListDisplayed()) {
 				return lookupHistoryDragHandler;
 			}
 			return NullDragHandler.INSTANCE;

@@ -168,7 +168,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			focusLinkedSlots.addAll(linkedSlots);
 		}
 
-		class LayoutSupplier implements Supplier<IRecipeLayoutDrawable<?>>{
+		class LayoutSupplier implements Supplier<IRecipeLayoutDrawable<?>> {
 			private @Nullable IRecipeLayoutDrawable<?> drawable;
 			@Override
 			public @Nullable IRecipeLayoutDrawable<?> get() {

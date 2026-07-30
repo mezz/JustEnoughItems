@@ -27,7 +27,7 @@ public class ConfigHelper implements IPlatformConfigHelper {
 		FabricLoader loader = FabricLoader.getInstance();
 		if (loader.isModLoaded("configured")) {
 			return loader.getModContainer(ModIds.JEI_ID)
-					.flatMap(ConfigHelper::getConfiguredConfigScreen);
+				.flatMap(ConfigHelper::getConfiguredConfigScreen);
 		}
 		return Optional.empty();
 	}

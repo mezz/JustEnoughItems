@@ -49,7 +49,7 @@ public final class ExternalServerClient {
 		assertClientReadyToConnect(clientAccess);
 		clientAccess.run(client -> {
 			client.gui.hud.getChat().clearMessages(false);
-			@Nullable Screen screen = client.gui.screen();
+			Screen screen = client.gui.screen();
 			if (screen == null) {
 				throw new AssertionError("Expected a parent screen before connecting to the external test server.");
 			}
@@ -184,7 +184,7 @@ public final class ExternalServerClient {
 	}
 
 	private static void assertClientReadyToConnect(ClientAccess clientAccess) {
-		@Nullable String notReadyReason = clientAccess.compute(ExternalServerClient::getClientNotReadyReason);
+		String notReadyReason = clientAccess.compute(ExternalServerClient::getClientNotReadyReason);
 		if (notReadyReason != null) {
 			throw new AssertionError("Expected client to be ready before connecting to the external test server: " + notReadyReason);
 		}
@@ -194,7 +194,7 @@ public final class ExternalServerClient {
 		if (!isClientDisconnected(client)) {
 			return "client is still connected: " + describeClientState(client);
 		}
-		@Nullable Screen screen = client.gui.screen();
+		Screen screen = client.gui.screen();
 		if (screen == null) {
 			return "client has no parent screen: " + describeClientState(client);
 		}
@@ -221,12 +221,16 @@ public final class ExternalServerClient {
 	}
 
 	private static String describeClientState(Minecraft client) {
-		@Nullable Screen screen = client.gui.screen();
+		Screen screen = client.gui.screen();
+		String screenName = "null";
+		if (screen != null) {
+			screenName = screen.getClass().getName();
+		}
 		return "useNativeTransport=" + client.options.useNativeTransport() +
 			", hasLevel=" + (client.level != null) +
 			", hasPlayer=" + (client.player != null) +
 			", hasConnection=" + (client.getConnection() != null) +
-			", screen=" + (screen == null ? "null" : screen.getClass().getName());
+			", screen=" + screenName;
 	}
 
 	private static String describeServerStatus(ServerData serverData) {

@@ -33,7 +33,10 @@ public final class IngredientGridScrollController {
 		int columnCount = ingredientGrid.getColumnCount();
 		int rowCount = ingredientGrid.getRowCount();
 		int visibleIngredientCount = ingredientGrid.size();
-		int firstRow = columnCount > 0 ? firstItemIndex / columnCount : 0;
+		int firstRow = 0;
+		if (columnCount > 0) {
+			firstRow = firstItemIndex / columnCount;
+		}
 		float scrollOffsetY = IngredientGridScrollState.getScrollOffsetYForFirstRow(
 			firstRow,
 			ingredientList.size(),

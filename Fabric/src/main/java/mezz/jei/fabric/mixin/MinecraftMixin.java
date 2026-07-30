@@ -33,7 +33,7 @@ public class MinecraftMixin {
 	)
 	public void beforeInitialResourceReload(GameConfig gameConfig, CallbackInfo ci) {
 		JeiLifecycleEvents.REGISTER_RESOURCE_RELOAD_LISTENER.invoker()
-				.registerResourceReloadListener(resourceManager, textureManager);
+			.registerResourceReloadListener(resourceManager, textureManager);
 	}
 
 	@Inject(

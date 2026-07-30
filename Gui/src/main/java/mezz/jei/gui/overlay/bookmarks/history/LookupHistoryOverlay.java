@@ -56,20 +56,20 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	private int rows;
 
 	public LookupHistoryOverlay(
-			IIngredientManager ingredientManager,
-			IIngredientGridSource lookupHistory,
-			IInternalKeyMappings keyMappings,
-			IIngredientGridConfig historyListConfig,
-			IIngredientFilterConfig ingredientFilterConfig,
-			ScalableDrawable background,
-			ScalableDrawable slotBackground,
-			ScalableDrawable exclusionAreaShadow,
-			IClientConfig clientConfig,
-			HistoryDisplaySide ownerDisplaySide,
-			IClientToggleState toggleState,
-			IScreenHelper screenHelper,
-			IConnectionToServer serverConnection,
-			IColorHelper colorHelper
+		IIngredientManager ingredientManager,
+		IIngredientGridSource lookupHistory,
+		IInternalKeyMappings keyMappings,
+		IIngredientGridConfig historyListConfig,
+		IIngredientFilterConfig ingredientFilterConfig,
+		ScalableDrawable background,
+		ScalableDrawable slotBackground,
+		ScalableDrawable exclusionAreaShadow,
+		IClientConfig clientConfig,
+		HistoryDisplaySide ownerDisplaySide,
+		IClientToggleState toggleState,
+		IScreenHelper screenHelper,
+		IConnectionToServer serverConnection,
+		IColorHelper colorHelper
 	) {
 		this.clientConfig = clientConfig;
 		this.lookupHistory = lookupHistory;
@@ -78,15 +78,15 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		this.slotBackground = slotBackground;
 		this.exclusionAreaShadow = exclusionAreaShadow;
 		this.contents = new IngredientGrid(
-				ingredientManager,
-				historyListConfig,
-				ingredientFilterConfig,
-				clientConfig,
-				toggleState,
-				serverConnection,
-				keyMappings,
-				colorHelper,
-				false
+			ingredientManager,
+			historyListConfig,
+			ingredientFilterConfig,
+			clientConfig,
+			toggleState,
+			serverConnection,
+			keyMappings,
+			colorHelper,
+			false
 		);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, screenHelper, ingredientManager, toggleState);
 		this.ownerDisplaySide = ownerDisplaySide;
@@ -95,8 +95,8 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 
 	public boolean isListDisplayed() {
 		return clientConfig.isLookupHistoryEnabled() &&
-				isDisplayedOnThisSide() &&
-				contents.hasRoom();
+			isDisplayedOnThisSide() &&
+			contents.hasRoom();
 	}
 
 	@Override
@@ -164,8 +164,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 				y,
 				(int) Mth.clamp(x, x1, x2),
 				y + height,
-				argbColor)
-			;
+				argbColor);
 		}
 	}
 

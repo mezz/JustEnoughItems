@@ -333,8 +333,7 @@ public class MMCQ {
 				total += sum;
 				partialsum[i] = total;
 			}
-		} else
-			/* maxw == bw */ {
+		} else { // maxw == bw
 			for (i = vbox.b1; i <= vbox.b2; i++) {
 				sum = 0;
 				for (j = vbox.r1; j <= vbox.r2; j++) {
@@ -355,9 +354,13 @@ public class MMCQ {
 		}
 
 		// determine the cut planes
-		return maxw == rw ? doCut('r', vbox, partialsum, lookaheadsum, total)
-			: maxw == gw ? doCut('g', vbox, partialsum, lookaheadsum, total)
-			: doCut('b', vbox, partialsum, lookaheadsum, total);
+		if (maxw == rw) {
+			return doCut('r', vbox, partialsum, lookaheadsum, total);
+		}
+		if (maxw == gw) {
+			return doCut('g', vbox, partialsum, lookaheadsum, total);
+		}
+		return doCut('b', vbox, partialsum, lookaheadsum, total);
 	}
 
 	private static VBox[] doCut(char color, VBox vbox, int[] partialsum, int[] lookaheadsum, int total) {
@@ -370,8 +373,7 @@ public class MMCQ {
 		} else if (color == 'g') {
 			vbox_dim1 = vbox.g1;
 			vbox_dim2 = vbox.g2;
-		} else
-			/* color == 'b' */ {
+		} else { // color == 'b'
 			vbox_dim1 = vbox.b1;
 			vbox_dim2 = vbox.b2;
 		}
@@ -412,8 +414,7 @@ public class MMCQ {
 				} else if (color == 'g') {
 					vbox1.g2 = d2;
 					vbox2.g1 = d2 + 1;
-				} else
-					/* color == 'b' */ {
+				} else { // color == 'b'
 					vbox1.b2 = d2;
 					vbox2.b1 = d2 + 1;
 				}

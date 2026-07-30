@@ -14,7 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
 public class PacketDeletePlayerItem extends PlayToServerPacket<PacketDeletePlayerItem> {
 	private static final Logger LOGGER = LogManager.getLogger();
 

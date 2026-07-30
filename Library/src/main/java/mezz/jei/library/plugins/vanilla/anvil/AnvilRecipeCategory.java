@@ -74,13 +74,19 @@ public class AnvilRecipeCategory extends AbstractRecipeCategory<IJeiAnvilRecipe>
 
 		Integer cost = getCost(builder.getRecipeSlots());
 		if (cost != null) {
-			String costText = cost < 0 ? "err" : Integer.toString(cost);
+			String costText = "err";
+			if (cost >= 0) {
+				costText = Integer.toString(cost);
+			}
 			Component text = Component.translatable("container.repair.cost", costText);
 
 			Minecraft minecraft = Minecraft.getInstance();
 			LocalPlayer player = minecraft.player;
 			// Show red if the player doesn't have enough levels
-			int textColor = playerHasEnoughLevels(player, cost) ? 0xFF80FF20 : 0xFFFF6060;
+			int textColor = 0xFFFF6060;
+			if (playerHasEnoughLevels(player, cost)) {
+				textColor = 0xFF80FF20;
+			}
 
 			builder.addText(text, getWidth() - 4, 10)
 				.setPosition(2, 27)

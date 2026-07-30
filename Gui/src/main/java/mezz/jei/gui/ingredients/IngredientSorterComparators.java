@@ -95,28 +95,21 @@ public class IngredientSorterComparators {
 	}
 
 	private static Comparator<IListElementInfo<?>> getMaxDurabilityComparator() {
-		Comparator<IListElementInfo<?>> maxDamage =
-			Comparator.comparing(o -> getItemStack(o).getMaxDamage());
+		Comparator<IListElementInfo<?>> maxDamage = Comparator.comparing(o -> getItemStack(o).getMaxDamage());
 		return maxDamage.reversed();
 	}
 
 	private Comparator<IListElementInfo<?>> getTagComparator() {
-		Comparator<IListElementInfo<?>> isTagged =
-			Comparator.comparing(this::hasTag);
-		Comparator<IListElementInfo<?>> tag =
-			Comparator.comparing(this::getTagForSorting);
+		Comparator<IListElementInfo<?>> isTagged = Comparator.comparing(this::hasTag);
+		Comparator<IListElementInfo<?>> tag = Comparator.comparing(this::getTagForSorting);
 		return isTagged.reversed().thenComparing(tag);
 	}
 
 	private static Comparator<IListElementInfo<?>> getArmorComparator() {
-		Comparator<IListElementInfo<?>> isArmorComp =
-			Comparator.comparing(o -> isArmor(getItemStack(o)));
-		Comparator<IListElementInfo<?>> armorSlot =
-			Comparator.comparing(o -> getArmorSlotIndex(getItemStack(o)));
-		Comparator<IListElementInfo<?>> armorDamage =
-			Comparator.comparing(o -> getArmorDamageReduce(getItemStack(o)));
-		Comparator<IListElementInfo<?>> maxDamage =
-			Comparator.comparing(o -> getArmorDurability(getItemStack(o)));
+		Comparator<IListElementInfo<?>> isArmorComp = Comparator.comparing(o -> isArmor(getItemStack(o)));
+		Comparator<IListElementInfo<?>> armorSlot = Comparator.comparing(o -> getArmorSlotIndex(getItemStack(o)));
+		Comparator<IListElementInfo<?>> armorDamage = Comparator.comparing(o -> getArmorDamageReduce(getItemStack(o)));
+		Comparator<IListElementInfo<?>> maxDamage = Comparator.comparing(o -> getArmorDurability(getItemStack(o)));
 		return isArmorComp.reversed()
 			.thenComparing(armorSlot.reversed())
 			.thenComparing(armorDamage.reversed())

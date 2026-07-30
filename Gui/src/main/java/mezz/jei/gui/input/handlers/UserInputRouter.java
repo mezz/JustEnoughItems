@@ -150,6 +150,6 @@ public class UserInputRouter {
 			"debugName='" + debugName + '\'' +
 			", combinedInputHandler=" + combinedInputHandler +
 			", pending=" + pendingString +
-		'}';
+			'}';
 	}
 }

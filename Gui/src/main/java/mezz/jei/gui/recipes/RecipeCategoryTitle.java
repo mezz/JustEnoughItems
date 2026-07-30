@@ -12,7 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.FormattedCharSequence;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class RecipeCategoryTitle {
 	private final FormattedCharSequence visibleString;
@@ -22,7 +22,7 @@ public class RecipeCategoryTitle {
 	public static RecipeCategoryTitle create(IRecipeCategory<?> recipeCategory, Font font, ImmutableRect2i availableArea) {
 		Component fullString = StringUtil.stripStyling(recipeCategory.getTitle());
 		FormattedCharSequence visibleString;
-		@Nullable Component tooltipString;
+		Component tooltipString;
 
 		final int availableTitleWidth = availableArea.getWidth();
 		if (font.width(fullString) > availableTitleWidth) {

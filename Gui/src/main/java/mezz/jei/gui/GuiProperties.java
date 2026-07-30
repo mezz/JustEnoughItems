@@ -35,5 +35,4 @@ public record GuiProperties(
 		Preconditions.checkArgument(screenHeight > 0, "screenHeight must be > 0");
 	}
 
-
 }

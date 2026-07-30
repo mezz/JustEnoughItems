@@ -50,11 +50,7 @@ public interface IRecipeSlotsView {
 	 */
 	default Optional<IRecipeSlotView> findSlotByName(String slotName) {
 		return getSlotViews().stream()
-			.filter(slot ->
-				slot.getSlotName()
-					.map(slotName::equals)
-					.orElse(false)
-			)
+			.filter(slot -> slot.getSlotName().map(slotName::equals).orElse(false))
 			.findFirst();
 	}
 }

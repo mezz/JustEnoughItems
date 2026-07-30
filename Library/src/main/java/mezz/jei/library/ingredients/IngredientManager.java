@@ -118,7 +118,7 @@ public class IngredientManager implements IIngredientManager {
 			String ingredientStrings = ingredients.stream()
 				.map(ingredientHelper::getIdentifier)
 				.map(Identifier::toString)
-				.collect(Collectors.joining(", ", "[","]"));
+				.collect(Collectors.joining(", ", "[", "]"));
 			LOGGER.debug("Ingredients added at runtime: {}", ingredientStrings);
 		}
 
@@ -183,7 +183,7 @@ public class IngredientManager implements IIngredientManager {
 			String ingredientStrings = ingredients.stream()
 				.map(ingredientHelper::getIdentifier)
 				.map(Identifier::toString)
-				.collect(Collectors.joining(", ", "[","]"));
+				.collect(Collectors.joining(", ", "[", "]"));
 			LOGGER.debug("Ingredients removed at runtime: {}", ingredientStrings);
 		}
 

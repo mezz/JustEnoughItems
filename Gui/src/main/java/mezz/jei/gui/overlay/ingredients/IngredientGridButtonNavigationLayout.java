@@ -124,9 +124,10 @@ public final class IngredientGridButtonNavigationLayout {
 		Set<ImmutableRect2i> guiExclusionAreas,
 		IIngredientGridConfig gridConfig
 	) {
-		int padding = gridConfig.drawBackground() ?
-			IngredientGridWithNavigationLayout.BORDER_PADDING + IngredientGridWithNavigationLayout.INNER_PADDING :
-			0;
+		int padding = 0;
+		if (gridConfig.drawBackground()) {
+			padding = IngredientGridWithNavigationLayout.BORDER_PADDING + IngredientGridWithNavigationLayout.INNER_PADDING;
+		}
 		int stripTop = availableArea.y() + IngredientGridWithNavigationLayout.BORDER_MARGIN;
 		int stripHeight = IngredientGridWithNavigationLayout.NAVIGATION_HEIGHT +
 			IngredientGridWithNavigationLayout.INNER_PADDING +

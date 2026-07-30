@@ -40,15 +40,15 @@ public final class ItemStackCodecs {
 	}
 
 	public static Codec<ItemStack> createStrictSingleItemCodec() {
-		return RecordCodecBuilder.<ItemStack>create((i) ->
-				i.group(
-					Item.CODEC.fieldOf("id")
-						.forGetter(ItemStack::typeHolder),
-					NBT_PRESERVING_COMPONENT_PATCH_CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY)
-						.forGetter(ItemStack::getComponentsPatch)
-				)
-				.apply(i, (item, components) -> new ItemStack(item, 1, components))
+		return RecordCodecBuilder.<ItemStack>create((i) -> i
+			.group(
+				Item.CODEC.fieldOf("id")
+					.forGetter(ItemStack::typeHolder),
+				NBT_PRESERVING_COMPONENT_PATCH_CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY)
+					.forGetter(ItemStack::getComponentsPatch)
 			)
+			.apply(i, (item, components) -> new ItemStack(item, 1, components))
+		)
 			.validate(ItemStack::validateStrict);
 	}
 

@@ -57,24 +57,24 @@ public class EventRegistration {
 			handler.onKeyboardCharTypedPost(screen, characterEvent);
 		});
 
-		subscriptions.register(ScreenEvent.MouseButtonPressed.Pre.class, event ->
+		subscriptions.register(ScreenEvent.MouseButtonPressed.Pre.class, event -> {
 			ForgeUserInput.fromEvent(event)
 				.ifPresent(input -> {
 					Screen screen = event.getScreen();
 					if (handler.onGuiMouseClicked(screen, input)) {
 						event.setCanceled(true);
 					}
-				})
-		);
-		subscriptions.register(ScreenEvent.MouseButtonReleased.Pre.class, event ->
+				});
+		});
+		subscriptions.register(ScreenEvent.MouseButtonReleased.Pre.class, event -> {
 			ForgeUserInput.fromEvent(event)
 				.ifPresent(input -> {
 					Screen screen = event.getScreen();
-					if (handler.onGuiMouseReleased(screen, input)){
+					if (handler.onGuiMouseReleased(screen, input)) {
 						event.setCanceled(true);
 					}
-				})
-		);
+				});
+		});
 
 		subscriptions.register(ScreenEvent.MouseScrolled.Pre.class, event -> {
 			double mouseX = event.getMouseX();
@@ -117,18 +117,18 @@ public class EventRegistration {
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
 			guiGraphics.nextStratum();
-			runWithIdentityPose(guiGraphics, () ->
-				guiEventHandler.drawForContainerScreen(containerScreen, guiGraphics, mouseX, mouseY)
-			);
+			runWithIdentityPose(guiGraphics, () -> {
+				guiEventHandler.drawForContainerScreen(containerScreen, guiGraphics, mouseX, mouseY);
+			});
 		});
 		subscriptions.register(EventPriority.HIGHEST, ScreenEvent.Render.Background.class, event -> {
 			Screen screen = event.getScreen();
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			runWithIdentityPose(guiGraphics, () ->
-				guiEventHandler.drawForScreen(screen, guiGraphics, mouseX, mouseY)
-			);
+			runWithIdentityPose(guiGraphics, () -> {
+				guiEventHandler.drawForScreen(screen, guiGraphics, mouseX, mouseY);
+			});
 		});
 		subscriptions.register(ScreenEvent.RenderInventoryMobEffects.class, event -> {
 			if (guiEventHandler.renderCompactPotionIndicators()) {

@@ -191,15 +191,15 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.register(registerMethod);
 
 		quickMove = mouseHover.createMapping("key.jei.quickMove")
-				.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
-				.setModifier(JeiKeyModifier.SHIFT)
-				.buildMouseLeft()
-				.register(registerMethod);
+			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
+			.setModifier(JeiKeyModifier.SHIFT)
+			.buildMouseLeft()
+			.register(registerMethod);
 
 		shareToChat = mouseHover.createMapping("key.jei.shareToChat")
-				.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
-				.buildUnbound()
-				.register(registerMethod);
+			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
+			.buildUnbound()
+			.register(registerMethod);
 
 		// Search Bar
 		hoveredClearSearchBar = search.createMapping("key.jei.clearSearchBar")

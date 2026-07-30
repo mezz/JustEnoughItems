@@ -95,7 +95,7 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 	@Override
 	public boolean set(T value) {
 		if (!serializer.isValid(value)) {
-			LOGGER.error("Tried to set invalid value : {}\n{}", value,  serializer.getValidValuesDescription());
+			LOGGER.error("Tried to set invalid value : {}\n{}", value, serializer.getValidValuesDescription());
 			return false;
 		}
 		if (!currentValue.equals(value)) {

@@ -39,11 +39,11 @@ public class ChatScreenHandler implements IScreenHandler<ChatScreen> {
 		double mouseY
 	) {
 		return JeiChatItemLinkHover.getHoveredText(chatScreen, mouseX, mouseY)
-			.flatMap(hoveredText ->
-				getIngredient(hoveredText.style())
+			.flatMap(hoveredText -> {
+				return getIngredient(hoveredText.style())
 					.flatMap(typedIngredient -> factory.createBuilder(typedIngredient)
-						.buildWithArea(hoveredText.area()))
-			);
+						.buildWithArea(hoveredText.area()));
+			});
 	}
 
 	private Optional<ITypedIngredient<?>> getIngredient(Style style) {

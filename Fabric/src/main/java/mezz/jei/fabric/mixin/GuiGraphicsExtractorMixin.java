@@ -11,7 +11,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiGraphicsExtractor.class)
 public class GuiGraphicsExtractorMixin {
-	@Inject(method = "componentHoverEffect", at = @At("HEAD"), cancellable = true)
+	@Inject(
+		method = "componentHoverEffect",
+		at = @At("HEAD"),
+		cancellable = true
+	)
 	private void jei$componentHoverEffect(Font font, Style hoveredStyle, int xMouse, int yMouse, CallbackInfo ci) {
 		@SuppressWarnings("DataFlowIssue")
 		GuiGraphicsExtractor guiGraphics = (GuiGraphicsExtractor) (Object) this;

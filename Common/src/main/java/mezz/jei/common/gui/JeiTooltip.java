@@ -212,7 +212,7 @@ public class JeiTooltip implements ITooltipBuilder {
 		return new TooltipRenderData(font, itemStack);
 	}
 
-	private <T> void addDebugInfo(IIngredientManager ingredientManager,  ITypedIngredient<T> typedIngredient) {
+	private <T> void addDebugInfo(IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
 		if (!DebugConfig.isDebugInfoTooltipsEnabled() || !Minecraft.getInstance().options.advancedItemTooltips) {
 			return;
 		}
@@ -230,8 +230,9 @@ public class JeiTooltip implements ITooltipBuilder {
 			Component.literal("• type: " + ingredientHelper.getIngredientType().getUid())
 				.withStyle(ChatFormatting.DARK_GRAY)
 		);
+		String hasSubtypes = Boolean.toString(ingredientHelper.hasSubtypes(ingredient));
 		add(
-			Component.literal("• has subtypes: " + (ingredientHelper.hasSubtypes(ingredient) ? "true" : "false"))
+			Component.literal("• has subtypes: " + hasSubtypes)
 				.withStyle(ChatFormatting.DARK_GRAY)
 		);
 		add(
@@ -245,10 +246,10 @@ public class JeiTooltip implements ITooltipBuilder {
 			RegistryAccess registryAccess = level.registryAccess();
 			RegistryOps<JsonElement> registryOps = registryAccess.createSerializationContext(JsonOps.INSTANCE);
 			String jsonResult = ingredientCodec.encodeStart(registryOps, ingredient)
-					.mapOrElse(
-						JsonElement::toString,
-						DataResult.Error::message
-					);
+				.mapOrElse(
+					JsonElement::toString,
+					DataResult.Error::message
+				);
 			add(
 				Component.literal("• json: " + jsonResult)
 					.withStyle(ChatFormatting.DARK_GRAY)
