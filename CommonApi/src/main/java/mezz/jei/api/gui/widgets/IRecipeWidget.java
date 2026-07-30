@@ -58,7 +58,7 @@ public interface IRecipeWidget {
 	 */
 	default void drawWidget(GuiGraphics guiGraphics, double mouseX, double mouseY) {
 		ScreenPosition position = getPosition();
-		draw(guiGraphics, mouseX + position.x(),  mouseY + position.y());
+		draw(guiGraphics, mouseX + position.x(), mouseY + position.y());
 	}
 
 	/**

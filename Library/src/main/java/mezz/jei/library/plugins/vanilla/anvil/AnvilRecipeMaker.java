@@ -84,7 +84,10 @@ public final class AnvilRecipeMaker {
 				.filter(enchantedBook -> itemStackHelper.isBookEnchantable(ingredient, enchantedBook))
 				.toList();
 			// avoid using copy of list if it contains the exact same items
-			return list.size() == enchantedBooks.size() ? enchantedBooks : list;
+			if (list.size() == enchantedBooks.size()) {
+				return enchantedBooks;
+			}
+			return list;
 		}
 
 		private boolean canEnchant(ItemStack ingredient) {

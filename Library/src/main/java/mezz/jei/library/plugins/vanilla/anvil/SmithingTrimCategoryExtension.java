@@ -53,7 +53,6 @@ public class SmithingTrimCategoryExtension extends SmithingCategoryExtension<Smi
 		}
 	}
 
-
 	private static Container createInput(ItemStack template, ItemStack base, ItemStack addition) {
 		Container container = new SimpleContainer(3);
 		container.setItem(0, template);

@@ -42,7 +42,8 @@ public final class ServerCommandUtil {
 		}
 
 		if (serverConfig.isCheatModeEnabledForOp() &&
-			Services.PLATFORM.getServerHelper().hasPermissionForCheatMode(sender)) {
+			Services.PLATFORM.getServerHelper().hasPermissionForCheatMode(sender)
+		) {
 			return true;
 		}
 

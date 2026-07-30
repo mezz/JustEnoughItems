@@ -134,7 +134,8 @@ public class IngredientVisibility implements IIngredientVisibility {
 		UidContext context
 	) {
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		@Nullable ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, false);
+		@Nullable
+		ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, false);
 		if (typedIngredient == null) {
 			return false;
 		}

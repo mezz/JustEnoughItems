@@ -60,7 +60,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IFilterTextSource filterTextSource;
 	private String lastFilterText = "";
 
-
 	public IngredientListOverlay(
 		IIngredientGridSource ingredientGridSource,
 		IFilterTextSource filterTextSource,
@@ -185,7 +184,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	private static ImmutableRect2i getLookupHistoryArea(ImmutableRect2i displayArea, boolean searchBarCentered, int lookupHistoryHeight) {
-		int bottomReservedHeight = searchBarCentered ? 0 : SEARCH_HEIGHT + LOOKUP_HISTORY_BOTTOM_PADDING;
+		int bottomReservedHeight = 0;
+		if (!searchBarCentered) {
+			bottomReservedHeight = SEARCH_HEIGHT + LOOKUP_HISTORY_BOTTOM_PADDING;
+		}
 		return displayArea
 			.insetBy(BORDER_MARGIN)
 			.cropBottom(bottomReservedHeight)

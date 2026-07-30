@@ -90,7 +90,7 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 		IJeiConfigValueSerializer.IDeserializeResult<T> deserializeResult = serializer.deserialize(value);
 		deserializeResult.getResult()
 			.ifPresent(t -> {
-				if (currentValue != t){
+				if (currentValue != t) {
 					currentValue = t;
 					if (listeners != null) {
 						listeners.forEach(listener -> listener.accept(currentValue));
@@ -103,7 +103,7 @@ public class ConfigValue<T> implements IJeiConfigValue<T>, Supplier<T> {
 	@Override
 	public boolean set(T value) {
 		if (!serializer.isValid(value)) {
-			LOGGER.error("Tried to set invalid value : {}\n{}", value,  serializer.getValidValuesDescription());
+			LOGGER.error("Tried to set invalid value : {}\n{}", value, serializer.getValidValuesDescription());
 			return false;
 		}
 		if (!currentValue.equals(value)) {

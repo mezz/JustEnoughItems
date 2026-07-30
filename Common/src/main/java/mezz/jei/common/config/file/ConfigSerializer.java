@@ -67,10 +67,10 @@ public final class ConfigSerializer {
 						'[%s]' is not a valid category name.
 						Valid names are: [%s]
 						Skipping all values until the first valid category is declared."""
-						.formatted(
-							categoryName,
-							String.join(", ", categoriesMap.keySet())
-						)
+							.formatted(
+								categoryName,
+								String.join(", ", categoriesMap.keySet())
+							)
 					));
 				}
 				continue;
@@ -94,10 +94,10 @@ public final class ConfigSerializer {
 						'%s' is not a valid config key for config category '%s'.
 						Valid keys: [%s]
 						Skipping this key."""
-						.formatted(
-							key, category.getName(),
-							String.join(", ", category.getValueNames())
-						)
+							.formatted(
+								key, category.getName(),
+								String.join(", ", category.getValueNames())
+							)
 					));
 				} else {
 					List<String> errors = configValue.get().setFromSerializedValue(value);

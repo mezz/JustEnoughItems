@@ -21,22 +21,20 @@ public class JeiScreenEvents {
 		}
 	);
 
-	public static final Event<DrawForeground> DRAW_FOREGROUND =
-		EventFactory.createArrayBacked(DrawForeground.class, callbacks -> (screen, guiGraphics, mouseX, mouseY) -> {
-			for (DrawForeground callback : callbacks) {
-				callback.drawForeground(screen, guiGraphics, mouseX, mouseY);
-			}
-		});
+	public static final Event<DrawForeground> DRAW_FOREGROUND = EventFactory.createArrayBacked(DrawForeground.class, callbacks -> (screen, guiGraphics, mouseX, mouseY) -> {
+		for (DrawForeground callback : callbacks) {
+			callback.drawForeground(screen, guiGraphics, mouseX, mouseY);
+		}
+	});
 
-	public static final Event<AllowMouseDrag> ALLOW_MOUSE_DRAG =
-		EventFactory.createArrayBacked(AllowMouseDrag.class, callbacks -> (screen, mouseX, mouseY, button, dragX, dragY) -> {
-			for (AllowMouseDrag callback : callbacks) {
-				if (!callback.allowMouseDrag(screen, mouseX, mouseY, button, dragX, dragY)) {
-					return false;
-				}
+	public static final Event<AllowMouseDrag> ALLOW_MOUSE_DRAG = EventFactory.createArrayBacked(AllowMouseDrag.class, callbacks -> (screen, mouseX, mouseY, button, dragX, dragY) -> {
+		for (AllowMouseDrag callback : callbacks) {
+			if (!callback.allowMouseDrag(screen, mouseX, mouseY, button, dragX, dragY)) {
+				return false;
 			}
-			return true;
-		});
+		}
+		return true;
+	});
 
 	@Environment(EnvType.CLIENT)
 	@FunctionalInterface

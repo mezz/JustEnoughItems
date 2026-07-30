@@ -108,8 +108,12 @@ public class GuiEventHandler {
 
 		boolean mouseOverInputLayer = this.inputLayers.stream()
 			.anyMatch(inputLayer -> inputLayer.isMouseOver(mouseX, mouseY));
-		int overlayMouseX = mouseOverInputLayer ? MOUSE_OUTSIDE_SCREEN : mouseX;
-		int overlayMouseY = mouseOverInputLayer ? MOUSE_OUTSIDE_SCREEN : mouseY;
+		int overlayMouseX = mouseX;
+		int overlayMouseY = mouseY;
+		if (mouseOverInputLayer) {
+			overlayMouseX = MOUSE_OUTSIDE_SCREEN;
+			overlayMouseY = MOUSE_OUTSIDE_SCREEN;
+		}
 
 		ingredientListOverlay.drawScreen(minecraft, guiGraphics, overlayMouseX, overlayMouseY, minecraft.getFrameTime());
 		bookmarkOverlay.drawScreen(minecraft, guiGraphics, overlayMouseX, overlayMouseY, minecraft.getFrameTime());

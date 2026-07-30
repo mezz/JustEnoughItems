@@ -123,8 +123,14 @@ public class DrawableNineSliceTexture implements IScalableDrawable {
 
 		for (int xTile = 0; xTile <= xTileCount; xTile++) {
 			for (int yTile = 0; yTile <= yTileCount; yTile++) {
-				int tileWidth = (xTile == xTileCount) ? xRemainder : width;
-				int tileHeight = (yTile == yTileCount) ? yRemainder : height;
+				int tileWidth = width;
+				if (xTile == xTileCount) {
+					tileWidth = xRemainder;
+				}
+				int tileHeight = height;
+				if (yTile == yTileCount) {
+					tileHeight = yRemainder;
+				}
 				int x = xOffset + (xTile * width);
 				int y = yStart - ((yTile + 1) * height);
 				if (tileWidth > 0 && tileHeight > 0) {

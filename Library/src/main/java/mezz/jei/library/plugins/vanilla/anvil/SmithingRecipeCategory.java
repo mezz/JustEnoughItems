@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class SmithingRecipeCategory extends AbstractRecipeCategory<SmithingRecipe> implements IExtendableSmithingRecipeCategory {
 	private final Map<Class<? extends SmithingRecipe>, ISmithingCategoryExtension<?>> extensions = new HashMap<>();
 

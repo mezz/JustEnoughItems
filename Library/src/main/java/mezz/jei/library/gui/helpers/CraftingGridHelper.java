@@ -80,7 +80,8 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 			int index = getCraftingIndex(i, width, height);
 			IRecipeSlotBuilder slot = slotBuilders.get(index);
 
-			@Nullable List<@Nullable T> ingredients = inputs.get(i);
+			@Nullable
+			List<@Nullable T> ingredients = inputs.get(i);
 			if (ingredients != null) {
 				slot.addIngredients(ingredientType, ingredients);
 			}
@@ -99,7 +100,8 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 			int index = getCraftingIndex(i, width, height);
 			IRecipeSlotBuilder slot = slotBuilders.get(index);
 
-			@Nullable Pair<String, List<@Nullable T>> value = namedInputs.get(i);
+			@Nullable
+			Pair<String, List<@Nullable T>> value = namedInputs.get(i);
 			if (value != null) {
 				slot.setSlotName(value.getFirst())
 					.addIngredients(ingredientType, value.getSecond());

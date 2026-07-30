@@ -69,11 +69,18 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		this(
 			fluidHelper,
 			capacity,
-			showCapacity ? TooltipMode.SHOW_AMOUNT_AND_CAPACITY : TooltipMode.SHOW_AMOUNT,
+			getTooltipMode(showCapacity),
 			width,
 			height,
 			tilingDirection
 		);
+	}
+
+	private static TooltipMode getTooltipMode(boolean showCapacity) {
+		if (showCapacity) {
+			return TooltipMode.SHOW_AMOUNT_AND_CAPACITY;
+		}
+		return TooltipMode.SHOW_AMOUNT;
 	}
 
 	private FluidTankRenderer(

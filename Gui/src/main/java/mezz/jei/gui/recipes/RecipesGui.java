@@ -672,7 +672,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	@Nullable
 	private AbstractContainerMenu getParentContainerMenu() {
 		AbstractContainerScreen<?> parentScreen = getParentContainerScreen();
-		return parentScreen == null ? null : parentScreen.getMenu();
+		if (parentScreen == null) {
+			return null;
+		}
+		return parentScreen.getMenu();
 	}
 
 	@Nullable

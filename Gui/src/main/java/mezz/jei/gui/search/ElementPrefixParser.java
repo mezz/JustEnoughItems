@@ -184,7 +184,7 @@ public class ElementPrefixParser {
 		);
 	}
 
-	private static String combineFirstLetters(String[] words, final int count){
+	private static String combineFirstLetters(String[] words, final int count) {
 		StringBuilder sb = new StringBuilder();
 		for (String word : words) {
 			int end = Math.min(count, word.length());

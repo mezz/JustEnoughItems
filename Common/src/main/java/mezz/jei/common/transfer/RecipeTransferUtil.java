@@ -79,7 +79,7 @@ public final class RecipeTransferUtil {
 			if (!invalidRecipeIndexes.isEmpty()) {
 				LOGGER.error(
 					"Transfer request has invalid slots for the destination of the recipe, " +
-					"the slots are not included in the list of crafting slots. {}",
+						"the slots are not included in the list of crafting slots. {}",
 					StringUtil.intsToString(invalidRecipeIndexes)
 				);
 				return false;
@@ -362,7 +362,9 @@ public final class RecipeTransferUtil {
 	private static Map<Object, Integer> calculateRequiredCountsByUid(IRecipeSlotView recipeSlotView, IStackHelper stackhelper) {
 		List<@Nullable ITypedIngredient<?>> allIngredientsList = recipeSlotView.getAllIngredientsList();
 		Map<Object, Integer> requiredCountsByUid = new HashMap<>(allIngredientsList.size());
-		for (@Nullable ITypedIngredient<?> typedIngredient : allIngredientsList) {
+		for (@Nullable
+			ITypedIngredient<?> typedIngredient : allIngredientsList
+		) {
 			if (typedIngredient == null) {
 				continue;
 			}

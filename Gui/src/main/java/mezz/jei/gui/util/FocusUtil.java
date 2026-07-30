@@ -37,9 +37,8 @@ public class FocusUtil {
 		}
 
 		return roles.stream()
-			.<IFocus<?>>flatMap(role ->
-				ingredients.stream()
-					.map(i -> focusFactory.createFocus(role, i))
+			.<IFocus<?>>flatMap(role -> ingredients.stream()
+				.map(i -> focusFactory.createFocus(role, i))
 			)
 			.toList();
 	}

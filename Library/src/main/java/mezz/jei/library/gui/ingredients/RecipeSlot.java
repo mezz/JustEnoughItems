@@ -217,9 +217,10 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	private Optional<TagKey<?>> calculateTagKey() {
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
-		List<ITypedIngredient<?>> candidates = ingredients.hasDisplayOverrides() ?
-			getDisplayedIngredients().toList() :
-			ingredients.getAllIngredients().toList();
+		List<ITypedIngredient<?>> candidates = ingredients.getAllIngredients().toList();
+		if (ingredients.hasDisplayOverrides()) {
+			candidates = getDisplayedIngredients().toList();
+		}
 		return getTagKeyEquivalent(ingredientManager, candidates);
 	}
 

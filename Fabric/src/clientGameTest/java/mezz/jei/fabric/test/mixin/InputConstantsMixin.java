@@ -9,7 +9,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(InputConstants.class)
 abstract class InputConstantsMixin {
-	@Inject(method = "isKeyDown", at = @At("HEAD"), cancellable = true)
+	@Inject(
+		method = "isKeyDown",
+		at = @At("HEAD"),
+		cancellable = true
+	)
 	private static void jei$isKeyDown(long window, int key, CallbackInfoReturnable<Boolean> cir) {
 		Boolean keyState = FabricClientTestInput.getKeyState(key);
 		if (keyState != null) {

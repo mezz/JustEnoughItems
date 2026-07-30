@@ -39,12 +39,12 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class IngredientFilter implements
-	IIngredientGridSource,
-	IIngredientManager.IIngredientListener,
-	IIngredientVisibility.IListener,
-	IClientToggleState.IEditModeListener
-{
+public class IngredientFilter
+	implements
+		IIngredientGridSource,
+		IIngredientManager.IIngredientListener,
+		IIngredientVisibility.IListener,
+		IClientToggleState.IEditModeListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final SearchTokenizer searchTokenizer = new SearchTokenizer();
 

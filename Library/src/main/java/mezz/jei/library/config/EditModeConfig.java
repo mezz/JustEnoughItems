@@ -1,6 +1,5 @@
 package mezz.jei.library.config;
 
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import mezz.jei.api.ingredients.IIngredientHelper;

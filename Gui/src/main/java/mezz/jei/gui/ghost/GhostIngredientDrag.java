@@ -157,8 +157,8 @@ public class GhostIngredientDrag<T> {
 				handler,
 				targets,
 				targets.stream()
-				.map(Target::getArea)
-				.toList()
+					.map(Target::getArea)
+					.toList()
 			);
 		}
 	}

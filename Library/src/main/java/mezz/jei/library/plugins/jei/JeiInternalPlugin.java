@@ -112,7 +112,7 @@ public class JeiInternalPlugin implements IModPlugin {
 						return;
 					}
 				}
-		});
+			});
 	}
 
 	private static RecipeType<ITagInfoRecipe> createTagInfoRecipeType(ResourceLocation registryLocation) {

@@ -9,7 +9,6 @@ import net.minecraft.resources.ResourceKey;
 
 import java.util.function.Supplier;
 
-
 public class PlatformHelper implements IPlatformHelper {
 	private final Supplier<ItemStackHelper> itemStackHelper = new LazySupplier<>(ItemStackHelper::new);
 	private final Supplier<FluidHelper> fluidHelper = new LazySupplier<>(FluidHelper::new);

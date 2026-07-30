@@ -176,7 +176,10 @@ public class JeiGameTestHelper {
 		// Expected stacks are indexed by the given slot list.
 		// Missing entries are expected to be empty.
 		for (int i = 0; i < slots.size(); i++) {
-			ItemStack expectedStack = i < expectedStacks.size() ? expectedStacks.get(i) : ItemStack.EMPTY;
+			ItemStack expectedStack = ItemStack.EMPTY;
+			if (i < expectedStacks.size()) {
+				expectedStack = expectedStacks.get(i);
+			}
 			Slot slot = slots.get(i);
 			if (expectedStack.isEmpty()) {
 				assertEmptySlot(slot);
@@ -225,7 +228,10 @@ public class JeiGameTestHelper {
 		CraftingMenu menu = createCraftingMenu();
 		List<Slot> inputSlots = getCraftingGridSlots(menu, getPlayer());
 		for (int i = 0; i < inputSlots.size(); i++) {
-			ItemStack input = i < inputs.size() ? inputs.get(i).copy() : ItemStack.EMPTY;
+			ItemStack input = ItemStack.EMPTY;
+			if (i < inputs.size()) {
+				input = inputs.get(i).copy();
+			}
 			inputSlots.get(i).set(input);
 		}
 		menu.slotsChanged(inputSlots.get(0).container);

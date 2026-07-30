@@ -126,7 +126,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 					jsonObject.addProperty(JSON_KEY_TYPE, JSON_TYPE_INGREDIENT);
 					jsonObject.addProperty(JSON_KEY_VALUE, ingredientSerializer.serialize(typedIngredient));
 				}
-			} else if (bookmark instanceof RecipeBookmark<?,?> recipeBookmark) {
+			} else if (bookmark instanceof RecipeBookmark<?, ?> recipeBookmark) {
 				jsonObject.addProperty(JSON_KEY_TYPE, JSON_TYPE_RECIPE);
 				jsonObject.addProperty(JSON_KEY_VALUE, recipeBookmarkSerializer.serialize(recipeBookmark));
 			} else {

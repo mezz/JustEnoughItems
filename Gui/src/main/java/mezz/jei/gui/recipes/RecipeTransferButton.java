@@ -130,7 +130,10 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 	}
 
 	public void update(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player) {
-		AbstractContainerScreen<?> parentScreen = parentContainer == null ? null : parentScreenSupplier.get();
+		AbstractContainerScreen<?> parentScreen = null;
+		if (parentContainer != null) {
+			parentScreen = parentScreenSupplier.get();
+		}
 		update(parentScreen, player);
 	}
 

@@ -16,8 +16,7 @@ public final class ServerNetworkHandler {
 	private static void registerServerPacketHandler(ResourceLocation channelId, ServerPacketRouter packetRouter) {
 		ServerPlayNetworking.registerGlobalReceiver(
 			channelId,
-			(server, player, handler, buf, responseSender) ->
-				packetRouter.onPacket(buf, player)
+			(server, player, handler, buf, responseSender) -> packetRouter.onPacket(buf, player)
 		);
 	}
 }

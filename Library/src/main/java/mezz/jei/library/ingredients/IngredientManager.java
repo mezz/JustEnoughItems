@@ -222,7 +222,8 @@ public class IngredientManager implements IIngredientManager, ITypedIngredientFa
 
 	@Override
 	public <V> Optional<ITypedIngredient<V>> createTypedIngredient(IIngredientType<V> ingredientType, V ingredient, boolean normalize) {
-		@Nullable ITypedIngredient<V> result = TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient, normalize);
+		@Nullable
+		ITypedIngredient<V> result = TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient, normalize);
 		return Optional.ofNullable(result);
 	}
 
@@ -249,7 +250,8 @@ public class IngredientManager implements IIngredientManager, ITypedIngredientFa
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		ErrorUtil.checkNotNull(area, "area");
-		@Nullable ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient, normalize);
+		@Nullable
+		ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(this, ingredientType, ingredient, normalize);
 		if (typedIngredient == null) {
 			return Optional.empty();
 		}
@@ -272,7 +274,8 @@ public class IngredientManager implements IIngredientManager, ITypedIngredientFa
 			.getIngredientInfo(ingredientType)
 			.getIngredientByUid(ingredientUuid)
 			.flatMap(i -> {
-				@Nullable ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(this, ingredientType, i, true);
+				@Nullable
+				ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(this, ingredientType, i, true);
 				return Optional.ofNullable(typedIngredient);
 			});
 	}

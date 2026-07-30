@@ -58,23 +58,21 @@ public class EventRegistration {
 			handler.onKeyboardCharTypedPost(screen, codePoint, modifiers);
 		});
 
-		subscriptions.register(ScreenEvent.MouseButtonPressed.Pre.class, event ->
-			ForgeUserInput.fromEvent(event)
-				.ifPresent(input -> {
-					Screen screen = event.getScreen();
-					if (handler.onGuiMouseClicked(screen, input)) {
-						event.setCanceled(true);
-					}
-				})
+		subscriptions.register(ScreenEvent.MouseButtonPressed.Pre.class, event -> ForgeUserInput.fromEvent(event)
+			.ifPresent(input -> {
+				Screen screen = event.getScreen();
+				if (handler.onGuiMouseClicked(screen, input)) {
+					event.setCanceled(true);
+				}
+			})
 		);
-		subscriptions.register(ScreenEvent.MouseButtonReleased.Pre.class, event ->
-			ForgeUserInput.fromEvent(event)
-				.ifPresent(input -> {
-					Screen screen = event.getScreen();
-					if (handler.onGuiMouseReleased(screen, input)){
-						event.setCanceled(true);
-					}
-				})
+		subscriptions.register(ScreenEvent.MouseButtonReleased.Pre.class, event -> ForgeUserInput.fromEvent(event)
+			.ifPresent(input -> {
+				Screen screen = event.getScreen();
+				if (handler.onGuiMouseReleased(screen, input)) {
+					event.setCanceled(true);
+				}
+			})
 		);
 
 		subscriptions.register(ScreenEvent.MouseScrolled.Pre.class, event -> {
@@ -116,18 +114,14 @@ public class EventRegistration {
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			runWithIdentityPose(guiGraphics, () ->
-				guiEventHandler.onDrawForegroundAtIdentity(guiGraphics, mouseX, mouseY)
-			);
+			runWithIdentityPose(guiGraphics, () -> guiEventHandler.onDrawForegroundAtIdentity(guiGraphics, mouseX, mouseY));
 		});
 		subscriptions.register(ScreenEvent.Render.Post.class, event -> {
 			Screen screen = event.getScreen();
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			runWithIdentityPose(guiGraphics, () ->
-				guiEventHandler.onDrawScreenPost(screen, guiGraphics, mouseX, mouseY)
-			);
+			runWithIdentityPose(guiGraphics, () -> guiEventHandler.onDrawScreenPost(screen, guiGraphics, mouseX, mouseY));
 		});
 		subscriptions.register(TickEvent.ClientTickEvent.class, event -> {
 			if (event.phase == TickEvent.Phase.START) {

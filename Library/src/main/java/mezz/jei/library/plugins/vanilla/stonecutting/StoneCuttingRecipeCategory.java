@@ -32,7 +32,7 @@ public class StoneCuttingRecipeCategory extends AbstractRecipeCategory<Stonecutt
 			.setStandardSlotBackground()
 			.addIngredients(recipe.getIngredients().get(0));
 
-		builder.addOutputSlot(61,  9)
+		builder.addOutputSlot(61, 9)
 			.setOutputSlotBackground()
 			.addItemStack(RecipeUtil.getResultItem(recipe));
 	}

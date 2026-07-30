@@ -97,7 +97,10 @@ public final class ModIdHelper implements IModIdHelper {
 
 	private static String removeChatFormatting(String string) {
 		String withoutFormattingCodes = ChatFormatting.stripFormatting(string);
-		return (withoutFormattingCodes == null) ? "" : withoutFormattingCodes;
+		if (withoutFormattingCodes == null) {
+			return "";
+		}
+		return withoutFormattingCodes;
 	}
 
 	@Override

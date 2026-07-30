@@ -10,7 +10,7 @@ import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import java.util.Collection;
 import java.util.Optional;
 
-public class TypedIngredientSerializer implements IJeiConfigValueSerializer<ITypedIngredient<?>>  {
+public class TypedIngredientSerializer implements IJeiConfigValueSerializer<ITypedIngredient<?>> {
 	private static final String SEPARATOR = "&";
 	private final IIngredientManager ingredientManager;
 

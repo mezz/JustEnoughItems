@@ -163,9 +163,8 @@ public class ForgeBrewingExtensionTest {
 
 		assertTrue(
 			recipes.stream()
-				.anyMatch(recipe ->
-					recipe.getIngredients().stream().anyMatch(ingredient -> ingredient.is(Items.NETHER_WART)) &&
-						PotionUtils.getPotion(recipe.getPotionOutput()) == Potions.AWKWARD
+				.anyMatch(recipe -> recipe.getIngredients().stream().anyMatch(ingredient -> ingredient.is(Items.NETHER_WART)) &&
+					PotionUtils.getPotion(recipe.getPotionOutput()) == Potions.AWKWARD
 				)
 		);
 	}
