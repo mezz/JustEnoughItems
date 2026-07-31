@@ -53,6 +53,8 @@ pipeline {
                 sh "./gradlew :Fabric:build --no-daemon"
                 sh "./gradlew :Common:build --no-daemon"
                 sh "./gradlew :CommonApi:build --no-daemon"
+                sh "./gradlew :Gui:build --no-daemon"
+                sh "./gradlew :Library:build --no-daemon"
                 sh "./gradlew :ForgeApi:build --no-daemon"
                 sh "./gradlew :Debug:build --no-daemon"
                 sh "./gradlew :FabricApi:build --no-daemon"
