@@ -7,6 +7,7 @@ import net.minecraft.client.gui.components.EditBox;
 public class EditBoxFocusHandler implements IFocusHandler {
 	private final EditBox editBox;
 	private final boolean canLoseFocus;
+	private boolean wasFocused;
 
 	public EditBoxFocusHandler(EditBox editBox) {
 		this.editBox = editBox;
@@ -16,21 +17,26 @@ public class EditBoxFocusHandler implements IFocusHandler {
 
 	@Override
 	public void unFocus() {
-		if (editBox.isFocused()) {
+		boolean focused = editBox.isFocused();
+		if (focused) {
 			if (!canLoseFocus) {
 				this.editBox.setCanLoseFocus(true);
 			}
 			this.editBox.setFocused(false);
 		}
+		this.wasFocused = focused;
 	}
 
 	@Override
 	public void focus() {
-		if (!editBox.isFocused()) {
-			this.editBox.setFocused(true);
+		if (this.wasFocused) {
+			if (!editBox.isFocused()) {
+				this.editBox.setFocused(true);
+			}
 			if (!canLoseFocus) {
 				this.editBox.setCanLoseFocus(false);
 			}
+			this.wasFocused = false;
 		}
 	}
 }
