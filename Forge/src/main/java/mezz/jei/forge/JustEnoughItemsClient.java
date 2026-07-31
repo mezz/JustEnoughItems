@@ -24,6 +24,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -31,6 +32,8 @@ public class JustEnoughItemsClient {
 	private final NetworkHandler networkHandler;
 	private final PermanentEventSubscriptions subscriptions;
 	private final IServerConfig serverConfig;
+	@Nullable
+	private JeiStarter jeiStarter;
 
 	public JustEnoughItemsClient(NetworkHandler networkHandler, PermanentEventSubscriptions subscriptions, IServerConfig serverConfig) {
 		this.networkHandler = networkHandler;
@@ -44,7 +47,14 @@ public class JustEnoughItemsClient {
 		JeiInternalShowCommand.register(subscriptions);
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 		subscriptions.register(RecipesUpdatedEvent.class, this::onRecipesUpdatedEvent);
-		Runtime.getRuntime().addShutdownHook(new Thread(Internal::onClientStopping, "JEI Client Shutdown"));
+		Runtime.getRuntime().addShutdownHook(new Thread(this::onGameShuttingDown, "JEI Client Shutdown"));
+	}
+
+	private void onGameShuttingDown() {
+		if (jeiStarter != null) {
+			jeiStarter.stop();
+		}
+		Internal.onClientStopping();
 	}
 
 	private void onRecipesUpdatedEvent(RecipesUpdatedEvent event) {
@@ -78,6 +88,7 @@ public class JustEnoughItemsClient {
 		);
 
 		JeiStarter jeiStarter = new JeiStarter(startData);
+		this.jeiStarter = jeiStarter;
 		StartEventObserver startEventObserver = new StartEventObserver(serverConnection, jeiStarter::start, jeiStarter::stop);
 		startEventObserver.register(subscriptions);
 		event.registerReloadListener(startEventObserver);
