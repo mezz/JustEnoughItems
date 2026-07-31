@@ -17,6 +17,7 @@ import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -99,23 +100,9 @@ public class BookmarkConfig implements IBookmarkConfig {
 				for (String ingredientJsonString : ingredientJsonStrings) {
 					if (ingredientJsonString.startsWith(MARKER_STACK)) {
 						String itemStackAsJson = ingredientJsonString.substring(MARKER_STACK.length());
-						try {
-							CompoundTag itemStackAsNbt = TagParser.parseTag(itemStackAsJson);
-							ItemStack itemStack = ItemStack.of(itemStackAsNbt);
-							if (!itemStack.isEmpty()) {
-								ItemStack normalized = itemStackHelper.normalizeIngredient(itemStack);
-								Optional<ITypedIngredient<ItemStack>> typedIngredient = ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, normalized);
-								if (typedIngredient.isEmpty()) {
-									LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
-								} else {
-									IngredientBookmark<ItemStack> bookmark = IngredientBookmark.create(typedIngredient.get(), ingredientManager);
-									bookmarkList.addToListWithoutNotifying(bookmark, false);
-								}
-							} else {
-								LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
-							}
-						} catch (CommandSyntaxException e) {
-							LOGGER.error("Failed to load bookmarked ItemStack from json string:\n{}", itemStackAsJson, e);
+						IBookmark bookmark = loadItemStackBookmark(itemStackHelper, ingredientManager, itemStackAsJson);
+						if (bookmark != null) {
+							bookmarkList.addToListWithoutNotifying(bookmark, false);
 						}
 					} else if (ingredientJsonString.startsWith(MARKER_OTHER)) {
 						String uid = ingredientJsonString.substring(MARKER_OTHER.length());
@@ -132,6 +119,31 @@ public class BookmarkConfig implements IBookmarkConfig {
 				}
 				bookmarkList.notifyListenersOfChange();
 			});
+	}
+
+	static @Nullable IBookmark loadItemStackBookmark(
+		IIngredientHelper<ItemStack> itemStackHelper,
+		IIngredientManager ingredientManager,
+		String itemStackAsJson
+	) {
+		try {
+			CompoundTag itemStackAsNbt = TagParser.parseTag(itemStackAsJson);
+			ItemStack itemStack = ItemStack.of(itemStackAsNbt);
+			if (!itemStack.isEmpty()) {
+				ItemStack normalized = itemStackHelper.normalizeIngredient(itemStack);
+				Optional<ITypedIngredient<ItemStack>> typedIngredient = ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, normalized);
+				if (typedIngredient.isEmpty()) {
+					LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item no longer exists:\n{}", itemStackAsJson);
+				} else {
+					return IngredientBookmark.create(typedIngredient.get(), ingredientManager);
+				}
+			} else {
+				LOGGER.warn("Failed to load bookmarked ItemStack from json string, the item is empty:\n{}", itemStackAsJson);
+			}
+		} catch (CommandSyntaxException e) {
+			LOGGER.error("Failed to load bookmarked ItemStack from json string:\n{}", itemStackAsJson, e);
+		}
+		return null;
 	}
 
 	private static <T> String getUid(IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
