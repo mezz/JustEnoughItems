@@ -9,6 +9,7 @@
     "AbstractContainerScreenMixin",
     "ClientPacketListenerMixin",
     "EffectRenderingInventoryScreenMixin",
+    "GuiGraphicsMixin",
     "KeyboardHandlerMixin",
     "MinecraftMixin",
     "ScreenMixin"

@@ -34,6 +34,7 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping toggleBookmarkOverlay;
 	private final IJeiKeyMapping transferRecipeBookmark;
 	private final IJeiKeyMapping maxTransferRecipeBookmark;
+	private final IJeiKeyMapping shareToChat;
 
 	private final IJeiKeyMapping showRecipe;
 	private final IJeiKeyMapping showUses;
@@ -151,6 +152,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
 			.buildMouseLeft()
 			.register(registerMethod);
+
+		shareToChat = mouseHover.createMapping("key.jei.shareToChat")
+				.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
+				.buildUnbound()
+				.register(registerMethod);
 
 		// Search Bar
 		hoveredClearSearchBar = search.createMapping("key.jei.clearSearchBar")
@@ -383,6 +389,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	@Override
 	public IJeiKeyMapping getMaxTransferRecipeBookmark() {
 		return maxTransferRecipeBookmark;
+	}
+
+	@Override
+	public IJeiKeyMapping getShareToChat() {
+		return shareToChat;
 	}
 
 	@Override

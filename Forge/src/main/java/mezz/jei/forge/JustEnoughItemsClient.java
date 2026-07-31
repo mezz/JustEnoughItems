@@ -3,8 +3,12 @@ package mezz.jei.forge;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IServerConfig;
+import mezz.jei.common.gui.IngredientTooltipComponent;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.ClientPacketRouter;
+import mezz.jei.forge.chat.JeiChatEventHandler;
+import mezz.jei.forge.chat.JeiChatTooltipEventHandler;
+import mezz.jei.forge.chat.JeiInternalShowCommand;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.network.ConnectionToServer;
 import mezz.jei.forge.network.NetworkHandler;
@@ -63,6 +67,9 @@ public class JustEnoughItemsClient {
 	}
 
 	public void register() {
+		JeiChatEventHandler.register(subscriptions);
+		JeiChatTooltipEventHandler.register(subscriptions);
+		JeiInternalShowCommand.register(subscriptions);
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 		subscriptions.register(RegisterClientTooltipComponentFactoriesEvent.class, this::onRegisterClientTooltipEvent);
 		subscriptions.register(GameShuttingDownEvent.class, e -> Internal.onClientStopping());
@@ -75,6 +82,7 @@ public class JustEnoughItemsClient {
 	}
 
 	private void onRegisterClientTooltipEvent(RegisterClientTooltipComponentFactoriesEvent event) {
+		event.register(IngredientTooltipComponent.class, Function.identity());
 		event.register(IngredientsTooltipComponent.class, Function.identity());
 		event.register(PreviewTooltipComponent.class, Function.identity());
 		event.register(TagContentTooltipComponent.class, Function.identity());

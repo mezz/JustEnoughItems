@@ -107,6 +107,10 @@ public final class Internal {
 		return jeiRuntime;
 	}
 
+	public static Optional<IJeiRuntime> getOptionalJeiRuntime() {
+		return Optional.ofNullable(jeiRuntime);
+	}
+
 	public static void onRuntimeStopped() {
 		if (jeiRuntime != null) {
 			jeiRuntime = null;
