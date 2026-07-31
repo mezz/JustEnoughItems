@@ -98,10 +98,13 @@ private fun Project.configureApiCompatibility() {
 		}
 
 		val jarTask = apiProject.tasks.named("jar", Jar::class.java)
-		val inputJar = jarTask.flatMap { it.archiveFile }
+		val apiInputJar = jarTask.flatMap { it.archiveFile }
 		val outputFile = layout.buildDirectory.file("reports/apiCompatibility/${module.artifactSuffix}.json")
 
-		val checkerTask = tasks.register("run${module.taskName.replaceFirstChar { it.uppercase() }}", JavaExec::class.java) {
+		val checkerTask = tasks.register("${module.taskName}WithJarCompatibilityChecker", JavaExec::class.java) {
+			group = LifecycleBasePlugin.VERIFICATION_GROUP
+			description = "Runs JarCompatibilityChecker for ${apiProject.path} against the latest published $artifactId API jar in the same major version."
+
 			dependsOn(jarTask)
 			classpath = apiCompatibilityChecker
 			mainClass.set("net.neoforged.jarcompatibilitychecker.ConsoleTool")
@@ -111,18 +114,18 @@ private fun Project.configureApiCompatibility() {
 
 			val checkerArguments = objects.newInstance(JarCompatibilityCheckerArgumentProvider::class.java)
 			checkerArguments.baselineJar.from(baselineConfiguration)
-			checkerArguments.inputJar.set(inputJar)
+			checkerArguments.inputJar.set(apiInputJar)
 			checkerArguments.outputFile.set(outputFile)
 			argumentProviders.add(checkerArguments)
 		}
 
-		tasks.register(module.taskName, ApiCompatibilityReportCheck::class.java) {
+		tasks.register(module.taskName, ValidateApiCompatibilityReport::class.java) {
 			group = LifecycleBasePlugin.VERIFICATION_GROUP
 			description = "Checks ${apiProject.path} against the latest published $artifactId API jar in the same major version."
 
 			dependsOn(checkerTask)
 			reportFile.set(outputFile)
-			apiSourceFiles.from(apiProject.layout.projectDirectory.dir("src/main/java").asFileTree.matching {
+			sourceFiles.from(apiProject.layout.projectDirectory.dir("src/main/java").asFileTree.matching {
 				include("**/*.java")
 			})
 		}
@@ -132,6 +135,10 @@ private fun Project.configureApiCompatibility() {
 		group = LifecycleBasePlugin.VERIFICATION_GROUP
 		description = "Checks all published JEI API jars for compatibility with the latest published API jars in the same major version."
 		dependsOn(apiCompatibilityCheckTasks)
+	}
+
+	tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME) {
+		dependsOn("checkApiCompatibility")
 	}
 }
 
@@ -163,179 +170,112 @@ private data class ApiCompatibilityModule(
 	val artifactSuffix: String,
 )
 
-abstract class ApiCompatibilityReportCheck : DefaultTask() {
+private data class ApiCompatibilityError(
+	val className: String,
+	val memberName: String?,
+	val message: String,
+) {
+	fun format(): String =
+		if (memberName == null) {
+			"$className: $message"
+		} else {
+			"$className: $memberName - $message"
+		}
+}
+
+abstract class ValidateApiCompatibilityReport : DefaultTask() {
+	companion object {
+		private const val ABSTRACT_METHOD_ERROR = "Method was made abstract"
+	}
+
 	private val nonExtendableAnnotation = Regex("""@\s*(?:ApiStatus\.)?NonExtendable\b""")
 
 	@get:InputFile
-	@get:PathSensitive(PathSensitivity.NONE)
+	@get:PathSensitive(PathSensitivity.RELATIVE)
 	abstract val reportFile: RegularFileProperty
 
 	@get:InputFiles
 	@get:PathSensitive(PathSensitivity.RELATIVE)
-	abstract val apiSourceFiles: ConfigurableFileCollection
+	abstract val sourceFiles: ConfigurableFileCollection
 
 	@TaskAction
-	fun checkReport() {
-		val report = reportFile.get().asFile
-		if (!report.isFile) {
-			throw GradleException("API compatibility report was not created: ${report.absolutePath}")
+	fun validateReport() {
+		val errors = collectApiCompatibilityErrors(reportFile.get().asFile)
+		val nonExtendableInterfaces = findNonExtendableInterfaces(errors)
+		val ignoredErrors = errors.filter { isIgnoredNonExtendableInterfaceError(it, nonExtendableInterfaces) }
+		val unexpectedErrors = errors.filterNot { isIgnoredNonExtendableInterfaceError(it, nonExtendableInterfaces) }
+
+		if (ignoredErrors.isNotEmpty()) {
+			logger.lifecycle("Ignored known API compatibility false positives:\n{}", ignoredErrors.joinToString("\n") { it.format() })
 		}
 
-		val reportText = report.readText().trim()
-		if (reportText.isEmpty() || reportText == "{}") {
-			return
+		if (unexpectedErrors.isNotEmpty()) {
+			throw GradleException("API compatibility check failed:\n${unexpectedErrors.joinToString("\n") { it.format() }}")
 		}
+	}
 
-		val reportData = JsonSlurper().parseText(reportText) as? Map<*, *>
-			?: throw GradleException("API compatibility report has an unexpected format: expected a JSON object.")
+	private fun collectApiCompatibilityErrors(reportFile: File): List<ApiCompatibilityError> {
+		val report = JsonSlurper().parse(reportFile) as? Map<*, *> ?: return emptyList()
+		val errors = mutableListOf<ApiCompatibilityError>()
 
-		val failures = mutableListOf<String>()
-		val allowedExceptions = mutableListOf<String>()
+		for ((classNameValue, classReportValue) in report) {
+			val className = classNameValue as? String ?: continue
+			val classReport = classReportValue as? Map<*, *> ?: continue
 
-		for ((classNameValue, incompatibilitiesValue) in reportData) {
-			val className = classNameValue.toString()
-			val incompatibilities = incompatibilitiesValue as? Map<*, *> ?: continue
-			val nonExtendableApi = isNonExtendableApi(className)
-
-			collectIncompatibilities(
-				failures,
-				allowedExceptions,
-				className,
-				"class",
-				null,
-				incompatibilities["classIncompatibilities"],
-				nonExtendableApi
-			)
-			collectMemberIncompatibilities(
-				failures,
-				allowedExceptions,
-				className,
-				"method",
-				incompatibilities["methodIncompatibilities"],
-				nonExtendableApi
-			)
-			collectMemberIncompatibilities(
-				failures,
-				allowedExceptions,
-				className,
-				"field",
-				incompatibilities["fieldIncompatibilities"],
-				nonExtendableApi
-			)
-		}
-
-		if (allowedExceptions.isNotEmpty()) {
-			logger.lifecycle("Allowed ${allowedExceptions.size} non-extensible API compatibility exception(s):")
-			allowedExceptions.forEach {
-				logger.lifecycle("  - $it")
-			}
-		}
-
-		if (failures.isNotEmpty()) {
-			throw GradleException(buildString {
-				appendLine("API compatibility check failed with ${failures.size} error(s):")
-				failures.forEach {
-					appendLine("  - $it")
+			fun collectErrors(memberName: String?, incompatibilitiesValue: Any?) {
+				val incompatibilities = incompatibilitiesValue as? Iterable<*> ?: return
+				for (incompatibilityValue in incompatibilities) {
+					val incompatibility = incompatibilityValue as? Map<*, *> ?: continue
+					if (incompatibility["isError"] == true) {
+						val message = incompatibility["message"] as? String ?: incompatibility.toString()
+						errors.add(ApiCompatibilityError(className, memberName, message))
+					}
 				}
-			})
-		}
-	}
-
-	private fun collectMemberIncompatibilities(
-		failures: MutableList<String>,
-		allowedExceptions: MutableList<String>,
-		className: String,
-		kind: String,
-		memberIncompatibilities: Any?,
-		nonExtendableApi: Boolean
-	) {
-		val members = memberIncompatibilities as? Map<*, *> ?: return
-		for ((memberNameValue, incompatibilitiesValue) in members) {
-			collectIncompatibilities(
-				failures,
-				allowedExceptions,
-				className,
-				kind,
-				memberNameValue?.toString(),
-				incompatibilitiesValue,
-				nonExtendableApi
-			)
-		}
-	}
-
-	private fun collectIncompatibilities(
-		failures: MutableList<String>,
-		allowedExceptions: MutableList<String>,
-		className: String,
-		kind: String,
-		memberName: String?,
-		incompatibilitiesValue: Any?,
-		nonExtendableApi: Boolean
-	) {
-		val incompatibilities = incompatibilitiesValue as? Iterable<*> ?: return
-		for (incompatibilityValue in incompatibilities) {
-			val incompatibility = incompatibilityValue as? Map<*, *> ?: continue
-			val message = incompatibility["message"]?.toString() ?: continue
-			val isError = incompatibility["isError"] as? Boolean ?: true
-			if (!isError) {
-				continue
 			}
 
-			val formattedMessage = formatIncompatibility(className, kind, memberName, message)
-			if (isAllowedNonExtensibleChange(kind, message, nonExtendableApi)) {
-				allowedExceptions.add(formattedMessage)
-			} else {
-				failures.add(formattedMessage)
-			}
-		}
-	}
+			collectErrors(null, classReport["classIncompatibilities"])
 
-	private fun isAllowedNonExtensibleChange(
-		kind: String,
-		message: String,
-		nonExtendableApi: Boolean
-	): Boolean {
-		if (!nonExtendableApi) {
-			return false
-		}
-
-		return when (kind) {
-			"class" -> message == "Class was made final"
-			"method" -> message == "Method was made abstract" || message == "Method was made final"
-			else -> false
-		}
-	}
-
-	private fun isNonExtendableApi(className: String): Boolean {
-		if ('$' in className) {
-			// Do not inherit @NonExtendable from a top-level type to nested types.
-			// Some nested API types, like listeners, are implemented by addons.
-			return false
-		}
-
-		val sourcePathSuffix = "$className.java"
-		return apiSourceFiles.files.any { sourceFile ->
-			val sourcePath = sourceFile.toPath().toString().replace(File.separatorChar, '/')
-			if (!sourcePath.endsWith(sourcePathSuffix)) {
-				return@any false
+			val methodIncompatibilities = classReport["methodIncompatibilities"] as? Map<*, *>
+			methodIncompatibilities?.forEach { (methodNameValue, incompatibilitiesValue) ->
+				collectErrors(methodNameValue as? String, incompatibilitiesValue)
 			}
 
-			val sourceText = sourceFile.readText()
-			nonExtendableAnnotation.containsMatchIn(sourceText)
+			val fieldIncompatibilities = classReport["fieldIncompatibilities"] as? Map<*, *>
+			fieldIncompatibilities?.forEach { (fieldNameValue, incompatibilitiesValue) ->
+				collectErrors(fieldNameValue as? String, incompatibilitiesValue)
+			}
 		}
+
+		return errors
 	}
 
-	private fun formatIncompatibility(
-		className: String,
-		kind: String,
-		memberName: String?,
-		message: String
-	): String {
-		val dottedClassName = className.replace('/', '.')
-		return if (memberName == null) {
-			"$dottedClassName: $message"
-		} else {
-			"$dottedClassName $kind $memberName: $message"
-		}
+	// TODO Remove this once JarCompatibilityChecker accounts for @ApiStatus.NonExtendable:
+	// https://github.com/neoforged/JarCompatibilityChecker/pull/5
+	// Adding abstract methods to non-extendable JEI API interfaces is safe because mods should not implement them.
+	private fun isIgnoredNonExtendableInterfaceError(
+		error: ApiCompatibilityError,
+		nonExtendableInterfaces: Set<String>,
+	): Boolean =
+		error.message == ABSTRACT_METHOD_ERROR &&
+			error.memberName != null &&
+			nonExtendableInterfaces.contains(error.className)
+
+	private fun findNonExtendableInterfaces(errors: List<ApiCompatibilityError>): Set<String> =
+		errors.asSequence()
+			.map(ApiCompatibilityError::className)
+			.distinct()
+			.filter(::isNonExtendableInterface)
+			.toSet()
+
+	private fun isNonExtendableInterface(className: String): Boolean {
+		val sourceFile = findSourceFile(className) ?: return false
+		val source = sourceFile.readText()
+		return nonExtendableAnnotation.containsMatchIn(source) &&
+			Regex("\\binterface\\s+${Regex.escape(sourceFile.nameWithoutExtension)}\\b").containsMatchIn(source)
+	}
+
+	private fun findSourceFile(className: String): File? {
+		val pathSuffix = className.replace('/', File.separatorChar) + ".java"
+		return sourceFiles.files.firstOrNull { it.path.endsWith(pathSuffix) }
 	}
 }
