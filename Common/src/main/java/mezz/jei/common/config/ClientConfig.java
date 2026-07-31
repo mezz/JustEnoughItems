@@ -55,6 +55,7 @@ public final class ClientConfig implements IClientConfig {
 	// input
 	private final Supplier<Integer> dragDelayMs;
 	private final Supplier<Integer> smoothScrollRate;
+	private final ConfigValue<Boolean> recipeSlotCyclingEnabled;
 
 	// sorting
 	private final ConfigValue<List<IngredientSortStage>> ingredientSorterStages;
@@ -129,6 +130,7 @@ public final class ClientConfig implements IClientConfig {
 			1,
 			50
 		);
+		recipeSlotCyclingEnabled = input.addBoolean("recipeSlotCyclingEnabled", false);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
 		ingredientSorterStages = sorting.addList(
@@ -245,6 +247,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public void addLookupHistoryDisplaySideListener(IConfigListener<HistoryDisplaySide> listener) {
 		lookupHistoryDisplaySide.addConfigListener(listener);
+	}
+
+	@Override
+	public ConfigValue<Boolean> recipeSlotCyclingEnabled() {
+		return recipeSlotCyclingEnabled;
 	}
 
 	@Override

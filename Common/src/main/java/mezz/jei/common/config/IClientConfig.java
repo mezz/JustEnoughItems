@@ -1,5 +1,6 @@
 package mezz.jei.common.config;
 
+import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.common.config.file.IConfigListener;
 
 import java.util.List;
@@ -44,6 +45,7 @@ public interface IClientConfig {
 	HistoryDisplaySide getLookupHistoryDisplaySide();
 
 	void addLookupHistoryDisplaySideListener(IConfigListener<HistoryDisplaySide> listener);
+	IJeiConfigValue<Boolean> recipeSlotCyclingEnabled();
 
 	boolean isIngredientsSummaryEnabled();
 

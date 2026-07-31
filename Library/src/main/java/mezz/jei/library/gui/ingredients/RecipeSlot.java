@@ -20,6 +20,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.OffsetDrawable;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
@@ -34,6 +35,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -138,7 +140,16 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	@Override
 	public Optional<ITypedIngredient<?>> getDisplayedIngredient() {
+		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		if (!clientConfig.recipeSlotCyclingEnabled().getValue()) {
+			return ingredients.getFirstDisplayedIngredient();
+		}
 		return ingredients.getDisplayedIngredient(cycler);
+	}
+
+	@Override
+	public Stream<ITypedIngredient<?>> getDisplayedIngredients() {
+		return ingredients.getDisplayedIngredients();
 	}
 
 	@Override
@@ -171,6 +182,12 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
 		addTagNameTooltip(tooltip, ingredientManager, typedIngredient);
 		addIngredientsToTooltip(tooltip, typedIngredient);
+		if (hasCandidates()) {
+			tooltip.addKeyUsageComponent(
+				"jei.tooltip.recipe.slot.candidates.display",
+				Internal.getKeyMappings().getShowRecipeSlotCandidates()
+			);
+		}
 		for (IRecipeSlotRichTooltipCallback tooltipCallback : this.tooltipCallbacks) {
 			tooltipCallback.onRichTooltip(this, tooltip);
 		}
@@ -243,6 +260,27 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		return ingredients.getVisibleIngredients(ingredientType);
 	}
 
+	private boolean hasCandidates() {
+		return ingredients.getDisplayedIngredients()
+			.limit(2)
+			.count() > 1;
+	}
+
+	private <T> Optional<TagKey<?>> getTagKey(ITypedIngredient<T> displayed) {
+		IIngredientType<T> ingredientType = displayed.getType();
+		List<T> displayGroup = ingredients.getDisplayedIngredients()
+			.map(ingredient -> ingredient.getIngredient(ingredientType))
+			.flatMap(Optional::stream)
+			.toList();
+		if (displayGroup.isEmpty()) {
+			return Optional.empty();
+		}
+		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		return ingredientHelper.getTagKeyEquivalent(displayGroup);
+	}
+
+	@SuppressWarnings("removal")
 	@Override
 	public void addTooltipCallback(mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback tooltipCallback) {
 		this.tooltipCallbacks.add(new LegacyTooltipCallbackAdapter(tooltipCallback));
@@ -317,8 +355,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 		RenderSystem.enableBlend();
 
-		getDisplayedIngredient()
-			.ifPresent(ingredient -> drawIngredient(poseStack, ingredient, x, y));
+		Optional<ITypedIngredient<?>> displayedIngredient = getDisplayedIngredient();
+		displayedIngredient.ifPresent(ingredient -> drawIngredient(poseStack, ingredient, x, y));
 
 		if (overlay != null) {
 			RenderSystem.enableBlend();
@@ -331,11 +369,26 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			poseStack.popPose();
 		}
 
+		displayedIngredient.ifPresent(ingredient -> drawCandidatesBadge(poseStack, ingredient));
+
 		if (hovered) {
 			drawHighlight(poseStack, 0x80FFFFFF);
 		}
 
 		RenderSystem.disableBlend();
+	}
+
+	private <T> void drawCandidatesBadge(PoseStack poseStack, ITypedIngredient<T> displayed) {
+		if (!hasCandidates()) {
+			return;
+		}
+		Textures textures = Internal.getTextures();
+		IDrawable badgeIcon = getTagKey(displayed)
+			.map(tagKey -> textures.getTagBadgeIcon())
+			.orElseGet(textures::getListBadgeIcon);
+		int badgeX = this.rect.getX() + this.rect.getWidth() - badgeIcon.getWidth() + 1;
+		int badgeY = this.rect.getY() + this.rect.getHeight() - badgeIcon.getHeight() + 1;
+		badgeIcon.draw(poseStack, badgeX, badgeY);
 	}
 
 	private <T> void drawIngredient(PoseStack poseStack, ITypedIngredient<T> typedIngredient, int xPos, int yPos) {

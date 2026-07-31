@@ -112,6 +112,14 @@ public class RecipeGuiLayouts {
 			.flatMap(Optional::stream);
 	}
 
+	public Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY) {
+		return this.recipeLayoutsWithButtons.stream()
+			.map(IRecipeLayoutWithButtons::getRecipeLayout)
+			.map(recipeLayout -> recipeLayout.getSlotUnderMouse(mouseX, mouseY))
+			.flatMap(Optional::stream)
+			.findFirst();
+	}
+
 	private static Optional<IClickableIngredientInternal<?>> getClickedIngredient(RecipeSlotUnderMouse slotUnderMouse) {
 		return slotUnderMouse.slot().getDisplayedIngredient()
 			.map(displayedIngredient -> {
