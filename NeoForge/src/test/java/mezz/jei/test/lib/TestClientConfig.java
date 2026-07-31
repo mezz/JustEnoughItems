@@ -159,6 +159,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isRecipeSlotCyclingEnabled() {
+		return false;
+	}
+
+	@Override
 	public int getMaxRecipeGuiHeight() {
 		return 500;
 	}
