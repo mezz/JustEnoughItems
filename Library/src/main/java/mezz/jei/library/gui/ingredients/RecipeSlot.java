@@ -19,6 +19,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.OffsetDrawable;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
@@ -54,7 +55,6 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private final @Nullable IDrawable overlay;
 	private final @Nullable String slotName;
 	private ImmutableRect2i rect;
-
 	public RecipeSlot(
 		IIngredientManagerInternal ingredientManager,
 		RecipeIngredientRole role,
@@ -110,7 +110,18 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			.map(SlotIngredient::typedIngredient);
 	}
 
+	@Override
+	public Stream<ITypedIngredient<?>> getDisplayedIngredients() {
+		return getDisplayedSlotIngredient()
+			.stream()
+			.flatMap(ingredients::getDisplayedIngredientsInGroup);
+	}
+
 	private Optional<SlotIngredient<?>> getDisplayedSlotIngredient() {
+		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		if (!clientConfig.isRecipeSlotCyclingEnabled()) {
+			return ingredients.getFirstDisplayedIngredient();
+		}
 		return ingredients.getDisplayedIngredient(cycler);
 	}
 
@@ -151,6 +162,12 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		addSlotDisplayTooltip(tooltip, slotIngredient);
 		addTagNameTooltip(tooltip, ingredientManager, slotIngredient);
 		addIngredientsToTooltip(tooltip, slotIngredient);
+		if (hasCandidates(slotIngredient)) {
+			tooltip.addKeyUsageComponent(
+				"jei.tooltip.recipe.slot.candidates.display",
+				Internal.getKeyMappings().getShowRecipeSlotCandidates()
+			);
+		}
 		for (IRecipeSlotRichTooltipCallback tooltipCallback : this.tooltipCallbacks) {
 			tooltipCallback.onRichTooltip(this, tooltip);
 		}
@@ -247,6 +264,22 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		return ingredients.getVisibleIngredientsInDisplayGroup(displayed);
 	}
 
+	private <T> boolean hasCandidates(SlotIngredient<T> displayed) {
+		return getVisibleIngredientsInDisplayGroup(displayed).size() > 1;
+	}
+
+	private <T> Optional<TagKey<?>> getTagKey(SlotIngredient<T> displayed) {
+		ITypedIngredient<T> ingredient = displayed.typedIngredient();
+		IIngredientType<T> ingredientType = ingredient.getType();
+		List<T> displayGroup = getVisibleIngredientsInDisplayGroup(displayed);
+		if (displayGroup.isEmpty()) {
+			return Optional.empty();
+		}
+		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		return getTagKeyEquivalent(ingredientHelper, displayGroup, displayed);
+	}
+
 	private <T> IIngredientRenderer<T> getIngredientRenderer(IIngredientType<T> ingredientType) {
 		return Optional.ofNullable(rendererOverrides)
 			.flatMap(r -> r.getIngredientRenderer(ingredientType))
@@ -276,7 +309,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			drawHighlight(guiGraphics, screenHelper.getSlotHighlightBackSprite());
 		}
 
-		getDisplayedSlotIngredient()
+		Optional<SlotIngredient<?>> displayedIngredient = getDisplayedSlotIngredient();
+		displayedIngredient
 			.map(SlotIngredient::typedIngredient)
 			.ifPresent(ingredient -> drawIngredient(guiGraphics, ingredient, x, y));
 
@@ -284,10 +318,25 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			overlay.draw(guiGraphics, x, y);
 		}
 
+		displayedIngredient.ifPresent(ingredient -> drawCandidatesBadge(guiGraphics, ingredient));
+
 		if (hovered) {
 			IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 			drawHighlight(guiGraphics, screenHelper.getSlotHighlightFrontSprite());
 		}
+	}
+
+	private <T> void drawCandidatesBadge(GuiGraphicsExtractor guiGraphics, SlotIngredient<T> displayed) {
+		if (!hasCandidates(displayed)) {
+			return;
+		}
+		Textures textures = Internal.getTextures();
+		IDrawable badgeIcon = getTagKey(displayed)
+			.map(tagKey -> textures.getTagBadgeIcon())
+			.orElseGet(textures::getListBadgeIcon);
+		int badgeX = this.rect.getX() + this.rect.getWidth() - badgeIcon.getWidth() + 1;
+		int badgeY = this.rect.getY() + this.rect.getHeight() - badgeIcon.getHeight() + 1;
+		badgeIcon.draw(guiGraphics, badgeX, badgeY);
 	}
 
 	@Override
