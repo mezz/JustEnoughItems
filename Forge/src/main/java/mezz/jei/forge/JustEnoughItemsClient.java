@@ -37,6 +37,7 @@ import java.util.function.Supplier;
 
 public class JustEnoughItemsClient {
 	private final PermanentEventSubscriptions subscriptions;
+	private final JeiStarter jeiStarter;
 
 	public JustEnoughItemsClient(
 		NetworkHandler networkHandler,
@@ -52,9 +53,9 @@ public class JustEnoughItemsClient {
 			serverConnection
 		);
 
-		JeiStarter jeiStarter = new JeiStarter(startData);
+		this.jeiStarter = new JeiStarter(startData);
 
-		StartEventObserver startEventObserver = new StartEventObserver(jeiStarter::start, jeiStarter::stop);
+		StartEventObserver startEventObserver = new StartEventObserver(this.jeiStarter::start, this.jeiStarter::stop);
 		startEventObserver.register(subscriptions);
 	}
 
@@ -62,7 +63,7 @@ public class JustEnoughItemsClient {
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 		subscriptions.register(RegisterClientTooltipComponentFactoriesEvent.class, this::onRegisterClientTooltipEvent);
 		subscriptions.register(RecipesUpdatedEvent.class, this::onRecipesUpdatedEvent);
-		subscriptions.register(GameShuttingDownEvent.class, e -> Internal.onClientStopping());
+		subscriptions.register(GameShuttingDownEvent.class, e -> onGameShuttingDown());
 		subscriptions.register(RegisterKeyMappingsEvent.class, e -> {
 			InternalKeyMappings keyMappings = new InternalKeyMappings(e::register);
 			Internal.setKeyMappings(keyMappings);
@@ -74,6 +75,11 @@ public class JustEnoughItemsClient {
 
 		Supplier<RecipeSerializer<?>> jeiShaped = deferredRegister.register("jei_shaped", JeiShapedRecipe.Serializer::new);
 		RecipeSerializers.register(jeiShaped);
+	}
+
+	private void onGameShuttingDown() {
+		jeiStarter.stop();
+		Internal.onClientStopping();
 	}
 
 	private void onRecipesUpdatedEvent(RecipesUpdatedEvent event) {

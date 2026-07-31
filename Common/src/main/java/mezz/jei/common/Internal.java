@@ -2,6 +2,7 @@ package mezz.jei.common;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.config.ClientToggleState;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IJeiClientConfigs;
@@ -14,6 +15,7 @@ import mezz.jei.common.util.IDelayedExecutor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.Connection;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.Nullable;
@@ -108,7 +110,7 @@ public final class Internal {
 	}
 
 	public static IJeiRuntime getJeiRuntime() {
-		Preconditions.checkState(jeiRuntime != null, "Jei Client Configs have not been created yet.");
+		Preconditions.checkState(jeiRuntime != null, "Jei Runtime has not been created yet.");
 
 		return jeiRuntime;
 	}
@@ -178,6 +180,8 @@ public final class Internal {
 	}
 
 	public static void onRuntimeStopped() {
+		closeRecipeGuiIfOpen();
+
 		if (clientRecipes != null) {
 			var connectionId = getRemoteConnectionId();
 			if (!clientRecipes.connectionId().equals(connectionId)) {
@@ -195,6 +199,21 @@ public final class Internal {
 		}
 		if (jeiRuntime != null) {
 			jeiRuntime = null;
+		}
+	}
+
+	private static void closeRecipeGuiIfOpen() {
+		IJeiRuntime jeiRuntime = Internal.jeiRuntime;
+		if (jeiRuntime == null) {
+			return;
+		}
+
+		IRecipesGui recipesGui = jeiRuntime.getRecipesGui();
+		if (recipesGui instanceof Screen recipesScreen) {
+			Minecraft minecraft = Minecraft.getInstance();
+			if (minecraft.screen == recipesScreen) {
+				recipesScreen.onClose();
+			}
 		}
 	}
 
