@@ -38,6 +38,7 @@ import java.util.function.Function;
 
 public class JustEnoughItemsClient {
 	private final PermanentEventSubscriptions subscriptions;
+	private final JeiStarter jeiStarter;
 
 	public JustEnoughItemsClient(
 		NetworkHandler networkHandler,
@@ -62,9 +63,9 @@ public class JustEnoughItemsClient {
 			keyMappings
 		);
 
-		JeiStarter jeiStarter = new JeiStarter(startData);
+		this.jeiStarter = new JeiStarter(startData);
 
-		StartEventObserver startEventObserver = new StartEventObserver(serverConnection, jeiStarter::start, jeiStarter::stop);
+		StartEventObserver startEventObserver = new StartEventObserver(serverConnection, this.jeiStarter::start, this.jeiStarter::stop);
 		startEventObserver.register(subscriptions);
 	}
 
@@ -75,7 +76,12 @@ public class JustEnoughItemsClient {
 		subscriptions.register(RegisterClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 		subscriptions.register(RegisterClientTooltipComponentFactoriesEvent.class, this::onRegisterClientTooltipEvent);
 		subscriptions.register(RecipesUpdatedEvent.class, this::onRecipesUpdatedEvent);
-		subscriptions.register(GameShuttingDownEvent.class, e -> Internal.onClientStopping());
+		subscriptions.register(GameShuttingDownEvent.class, e -> onGameShuttingDown());
+	}
+
+	private void onGameShuttingDown() {
+		jeiStarter.stop();
+		Internal.onClientStopping();
 	}
 
 	private void onRecipesUpdatedEvent(RecipesUpdatedEvent event) {
