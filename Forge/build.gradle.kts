@@ -263,6 +263,7 @@ publishMods {
 tasks.named<Test>("test") {
 	useJUnitPlatform()
 	include("mezz/jei/gui/config/**")
+	include("mezz/jei/gui/input/focus/**")
 	include("mezz/jei/test/**")
 	exclude("mezz/jei/test/lib/**")
 	outputs.upToDateWhen { false }
