@@ -49,6 +49,7 @@ import java.util.function.Supplier;
 
 public class JustEnoughItemsClient {
 	private final PermanentEventSubscriptions subscriptions;
+	private final JeiStarter jeiStarter;
 
 	public JustEnoughItemsClient(
 		NetworkHandler networkHandler,
@@ -63,9 +64,9 @@ public class JustEnoughItemsClient {
 			serverConnection
 		);
 
-		JeiStarter jeiStarter = new JeiStarter(startData);
+		this.jeiStarter = new JeiStarter(startData);
 
-		StartEventObserver startEventObserver = new StartEventObserver(serverConnection, jeiStarter::start, jeiStarter::stop);
+		StartEventObserver startEventObserver = new StartEventObserver(serverConnection, this.jeiStarter::start, this.jeiStarter::stop);
 		startEventObserver.register(subscriptions);
 	}
 
@@ -73,7 +74,7 @@ public class JustEnoughItemsClient {
 		subscriptions.register(AddClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 		subscriptions.register(RegisterClientTooltipComponentFactoriesEvent.class, this::onRegisterClientTooltipEvent);
 		subscriptions.register(RecipesReceivedEvent.class, this::onRecipesReceivedEvent);
-		subscriptions.register(ClientStoppingEvent.class, e -> Internal.onClientStopping());
+		subscriptions.register(ClientStoppingEvent.class, e -> onClientStopping());
 		subscriptions.register(RegisterKeyMappingsEvent.class, e -> {
 			InternalKeyMappings keyMappings = new InternalKeyMappings(e::register, id -> {
 				KeyMapping.Category category = new KeyMapping.Category(id);
@@ -94,6 +95,11 @@ public class JustEnoughItemsClient {
 		Supplier<RecipeSerializer<? extends CraftingRecipe>> jeiShaped = deferredRegister.register("jei_shaped", JeiShapedRecipe.Serializer::new);
 		Supplier<RecipeSerializer<? extends SmeltingRecipe>> jeiSmelting = deferredRegister.register("jei_smelting", () -> JeiSmeltingRecipe.SERIALIZER);
 		RecipeSerializers.register(jeiShaped, jeiSmelting);
+	}
+
+	private void onClientStopping() {
+		jeiStarter.stop();
+		Internal.onClientStopping();
 	}
 
 	private void onRecipesReceivedEvent(RecipesReceivedEvent event) {
