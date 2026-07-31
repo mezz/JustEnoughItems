@@ -32,6 +32,7 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping previousRecipePage;
 	private final IJeiKeyMapping nextRecipePage;
 	private final IJeiKeyMappingInternal pauseRecipeCycling;
+	private final IJeiKeyMapping showRecipeSlotCandidates;
 
 	private final IJeiKeyMapping previousPage;
 	private final IJeiKeyMapping nextPage;
@@ -290,6 +291,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.buildKeyboardKey(GLFW.GLFW_KEY_LEFT_SHIFT)
 			.register(registerMethod);
 
+		showRecipeSlotCandidates = recipeGui.createMapping("key.jei.showRecipeSlotCandidates")
+			.setContext(JeiKeyConflictContext.GUI)
+			.buildKeyboardKey(GLFW.GLFW_KEY_V)
+			.register(registerMethod);
+
 		previousCategory = recipeGui.createMapping("key.jei.previousCategory")
 			.setContext(JeiKeyConflictContext.GUI)
 			.setModifier(JeiKeyModifier.SHIFT)
@@ -397,6 +403,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	@Override
 	public IJeiKeyMappingInternal getPauseRecipeCycling() {
 		return pauseRecipeCycling;
+	}
+
+	@Override
+	public IJeiKeyMapping getShowRecipeSlotCandidates() {
+		return showRecipeSlotCandidates;
 	}
 
 	@Override

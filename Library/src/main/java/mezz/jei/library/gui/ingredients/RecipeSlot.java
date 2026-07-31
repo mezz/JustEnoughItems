@@ -18,6 +18,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.OffsetDrawable;
+import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
@@ -70,6 +71,9 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	@Nullable
 	private List<@Nullable ITypedIngredient<?>> displayIngredients;
 
+	private final boolean isTag;
+	private final boolean hasCandidates;
+
 	@Nullable
 	private DisplayIngredientAcceptor displayOverrides;
 
@@ -97,6 +101,11 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		this.cycler = cycler;
 		this.displayIngredients = focusedIngredients;
 		this.tooltipCallbacks = tooltipCallbacks;
+		List<ITypedIngredient<?>> ingredients = getAllIngredients().toList();
+		this.hasCandidates = ingredients.size() > 1;
+		this.isTag = ingredients.stream().findFirst()
+			.filter(this::isTagEquivalent)
+			.isPresent();
 	}
 
 	@Override
@@ -120,12 +129,34 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	public Optional<ITypedIngredient<?>> getDisplayedIngredient() {
 		if (this.displayOverrides != null) {
 			List<@Nullable ITypedIngredient<?>> overrides = this.displayOverrides.getAllIngredients();
-			return cycler.getCycled(overrides);
+			return getCycled(overrides);
 		}
 		if (this.displayIngredients == null) {
 			this.displayIngredients = calculateDisplayIngredients(this.allIngredients);
 		}
-		return cycler.getCycled(this.displayIngredients);
+		return getCycled(this.displayIngredients);
+	}
+
+	private Optional<ITypedIngredient<?>> getCycled(List<@Nullable ITypedIngredient<?>> ingredients) {
+		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		if (clientConfig.isRecipeSlotCyclingEnabled()) {
+			return cycler.getCycled(ingredients);
+		}
+		if (ingredients.isEmpty()) {
+			return Optional.empty();
+		}
+		return Optional.ofNullable(ingredients.getFirst());
+	}
+
+	private <T> boolean isTagEquivalent(ITypedIngredient<T> first) {
+		IIngredientType<T> ingredientType = first.getType();
+		List<T> ingredients = getIngredients(ingredientType).toList();
+		if (ingredients.isEmpty()) {
+			return false;
+		}
+		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		return ingredientHelper.getTagKeyEquivalent(ingredients).isPresent();
 	}
 
 	private static List<@Nullable ITypedIngredient<?>> calculateDisplayIngredients(List<@Nullable ITypedIngredient<?>> allIngredients) {
@@ -204,6 +235,12 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
 		addTagNameTooltip(tooltip, ingredientManager, typedIngredient);
 		addIngredientsToTooltip(tooltip, typedIngredient);
+		if (this.hasCandidates) {
+			tooltip.addKeyUsageComponent(
+				"jei.tooltip.recipe.slot.candidates.display",
+				Internal.getKeyMappings().getShowRecipeSlotCandidates()
+			);
+		}
 		for (IRecipeSlotRichTooltipCallback tooltipCallback : this.tooltipCallbacks) {
 			tooltipCallback.onRichTooltip(this, tooltip);
 		}
@@ -313,6 +350,19 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 		if (overlay != null) {
 			overlay.draw(guiGraphics, x, y);
+		}
+
+		if (this.hasCandidates) {
+			Textures textures = Internal.getTextures();
+			IDrawable badgeIcon;
+			if (this.isTag) {
+				badgeIcon = textures.getTagBadgeIcon();
+			} else {
+				badgeIcon = textures.getListBadgeIcon();
+			}
+			int badgeX = this.rect.getX() + this.rect.getWidth() - badgeIcon.getWidth() + 1;
+			int badgeY = this.rect.getY() + this.rect.getHeight() - badgeIcon.getHeight() + 1;
+			badgeIcon.draw(guiGraphics, badgeX, badgeY);
 		}
 
 		if (hovered) {

@@ -214,7 +214,8 @@ public class JeiGuiStarter {
 			bookmarkList,
 			lookupHistory,
 			guiHelper,
-			bookmarkFactory
+			bookmarkFactory,
+			ingredientVisibility
 		);
 		registration.setRecipesGui(recipesGui);
 
