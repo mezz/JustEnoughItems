@@ -64,6 +64,7 @@ public class JeiTooltip implements ITooltipBuilder {
 		this.typedIngredient = TypedIngredientUtil.checkTypedIngredientFromApi(typedIngredient);
 	}
 
+	@Override
 	public void addKeyUsageComponent(String translationKey, IJeiKeyMapping keyMapping) {
 		MutableComponent translatedKeyMessage = keyMapping.getTranslatedKeyMessage().copy();
 		addKeyUsageComponent(translationKey, translatedKeyMessage);

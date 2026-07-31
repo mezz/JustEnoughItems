@@ -1,17 +1,26 @@
 package mezz.jei.test.lib;
 
+import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.common.config.BookmarkTooltipFeature;
 import mezz.jei.common.config.GiveMode;
 import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IngredientSortStage;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.common.config.file.ConfigValue;
 import mezz.jei.common.config.file.IConfigListener;
+import mezz.jei.common.config.file.serializers.BooleanSerializer;
 
 import java.util.List;
 import java.util.Set;
 
 public class TestClientConfig implements IClientConfig {
+	private final IJeiConfigValue<Boolean> recipeSlotCyclingEnabled = new ConfigValue<>(
+		"test.recipeSlotCyclingEnabled",
+		"recipeSlotCyclingEnabled",
+		false,
+		BooleanSerializer.INSTANCE
+	);
 	private final boolean lowMemorySlowSearchEnabled;
 
 	public TestClientConfig(boolean lowMemorySlowSearchEnabled) {
@@ -156,6 +165,11 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public int getSmoothScrollRate() {
 		return 9;
+	}
+
+	@Override
+	public IJeiConfigValue<Boolean> recipeSlotCyclingEnabled() {
+		return recipeSlotCyclingEnabled;
 	}
 
 	@Override

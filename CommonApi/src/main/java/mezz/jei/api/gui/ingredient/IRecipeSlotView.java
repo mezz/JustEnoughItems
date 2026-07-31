@@ -62,6 +62,16 @@ public interface IRecipeSlotView {
 	Optional<ITypedIngredient<?>> getDisplayedIngredient();
 
 	/**
+	 * All ingredient candidates in the group that contains the currently displayed ingredient,
+	 * after applying focus and visibility.
+	 *
+	 * @since 15.52.0
+	 */
+	default Stream<ITypedIngredient<?>> getDisplayedIngredients() {
+		return getAllIngredients();
+	}
+
+	/**
 	 * Returns the type of focus that matches this ingredient.
 	 *
 	 * @since 9.3.0
