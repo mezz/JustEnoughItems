@@ -72,6 +72,7 @@ public final class JeiStarter {
 	private final ConfigManager configManager;
 	private final JeiClientConfigs jeiClientConfigs;
 	private final List<IStopCallback> stopCallbacks = new ArrayList<>();
+	private boolean running = false;
 
 	public JeiStarter(StartData data) {
 		ErrorUtil.checkNotEmpty(data.plugins(), "plugins");
@@ -112,6 +113,11 @@ public final class JeiStarter {
 	}
 
 	public void start() {
+		if (running) {
+			LOGGER.error("Failed to start JEI, it is already running.");
+			return;
+		}
+
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientLevel level = minecraft.level;
 		if (level == null) {
@@ -217,6 +223,7 @@ public final class JeiStarter {
 
 		PluginCaller.callOnPlugins("Sending Runtime", plugins, p -> p.onRuntimeAvailable(jeiRuntime));
 		Internal.setRuntime(jeiRuntime);
+		this.running = true;
 
 		totalTime.stop();
 
@@ -260,6 +267,11 @@ public final class JeiStarter {
 	}
 
 	public void stop() {
+		if (!running) {
+			return;
+		}
+		this.running = false;
+
 		LOGGER.info("Stopping JEI");
 
 		List<IModPlugin> plugins = data.plugins();
