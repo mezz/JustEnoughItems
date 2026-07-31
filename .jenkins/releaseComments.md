@@ -69,8 +69,8 @@ Useful overrides:
 ```sh
 python3 .jenkins/githubReleaseComments.py \
   --dry-run \
-  --version 29.21.0.1234 \
-  --minecraft-version 26.1.2 \
+  --version 19.43.0.1234 \
+  --minecraft-version 1.21.1 \
   --base <previous-release-commit> \
   --head <released-commit>
 ```
