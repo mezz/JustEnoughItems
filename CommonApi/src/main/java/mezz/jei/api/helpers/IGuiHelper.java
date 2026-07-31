@@ -207,7 +207,7 @@ public interface IGuiHelper {
 	 * Create a scroll box widget.
 	 * Handles displaying drawable contents in a scrolling area.
 	 *
-	 * @since 26.2.0
+	 * @since 27.0.0
 	 */
 	IScrollBoxWidget createScrollBoxWidget(int width, int height, int xPos, int yPos);
 
