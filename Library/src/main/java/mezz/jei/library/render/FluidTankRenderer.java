@@ -140,8 +140,10 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		posY = posY + tiledHeight - scaledAmount;
 		int xShift = getXShift(tilingDirection, tiledWidth, spriteWidth);
 		int yShift = getYShift(tilingDirection, scaledAmount, spriteHeight);
-
-		guiGraphics.enableScissor(posX, posY, posX + tiledWidth, posY + scaledAmount);
+		var poseStack = guiGraphics.pose();
+		poseStack.pushPose();
+		poseStack.setIdentity();
+		poseStack.popPose();
 		{
 			ScalableDrawable.blitTiledSpriteWithColor(
 				guiGraphics,
@@ -154,7 +156,6 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 				color
 			);
 		}
-		guiGraphics.disableScissor();
 	}
 
 	private static int getXShift(TilingDirection tilingDirection, int desiredWidth, int spriteWidth) {
