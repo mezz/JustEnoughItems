@@ -78,6 +78,11 @@ public class BookmarkList implements IIngredientGridSource {
 			});
 	}
 
+	public <T> boolean addIngredientBookmark(ITypedIngredient<T> ingredient) {
+		IBookmark bookmark = IngredientBookmark.create(ingredient, ingredientManager);
+		return add(bookmark);
+	}
+
 	public void toggleBookmark(IBookmark bookmark) {
 		if (remove(bookmark)) {
 			return;

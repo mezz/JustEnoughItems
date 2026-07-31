@@ -32,6 +32,7 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 
 	private final IJeiKeyMapping bookmark;
 	private final IJeiKeyMapping toggleBookmarkOverlay;
+	private final IJeiKeyMapping shareToChat;
 
 	private final IJeiKeyMapping showRecipe;
 	private final IJeiKeyMapping showUses;
@@ -136,6 +137,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 		showUses2 = mouseHover.createMapping("key.jei.showUses2")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
 			.buildMouseRight()
+			.register(registerMethod);
+
+		shareToChat = mouseHover.createMapping("key.jei.shareToChat")
+			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
+			.buildUnbound()
 			.register(registerMethod);
 
 		// Search Bar
@@ -359,6 +365,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	@Override
 	public IJeiKeyMapping getShowUses() {
 		return showUses;
+	}
+
+	@Override
+	public IJeiKeyMapping getShareToChat() {
+		return shareToChat;
 	}
 
 	@Override

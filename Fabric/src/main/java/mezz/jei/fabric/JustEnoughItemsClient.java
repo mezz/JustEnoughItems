@@ -4,6 +4,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.core.config.IServerConfig;
+import mezz.jei.fabric.chat.JeiInternalShowCommand;
 import mezz.jei.fabric.config.ServerConfig;
 import mezz.jei.fabric.events.JeiIdentifiableResourceReloadListener;
 import mezz.jei.fabric.events.JeiLifecycleEvents;
@@ -18,6 +19,8 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 public class JustEnoughItemsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+		JeiInternalShowCommand.register();
+
 		JeiLifecycleEvents.REGISTER_RESOURCE_RELOAD_LISTENER.register((resourceManager, textureManager) -> {
 			JeiSpriteUploader spriteUploader = new JeiSpriteUploader(textureManager);
 			resourceManager.registerReloadListener(new JeiIdentifiableResourceReloadListener("sprite_uploader", spriteUploader));
