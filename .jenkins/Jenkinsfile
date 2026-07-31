@@ -30,6 +30,7 @@ pipeline {
       ORG_GRADLE_PROJECT_BUILD_NUMBER = "${env.BUILD_NUMBER}"
       DISCORD_WEBHOOK_URL = credentials("jei-discord-webhook-url")
       GITHUB_RELEASE_COMMENT_TOKEN = credentials("github-release-comment-token")
+      GITHUB_RELEASE_COMMENT_EXPECTED_LOGIN = "mezz-bot"
     }
     stages {
         stage('Clean') {
