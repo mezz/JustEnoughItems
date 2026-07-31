@@ -5,6 +5,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 
 public class GuiEventListenerFocusHandler implements IFocusHandler {
 	private final GuiEventListener guiEventListener;
+	private boolean unfocused;
 
 	public static IFocusHandler create(GuiEventListener guiEventListener) {
 		if (guiEventListener instanceof EditBox editBox) {
@@ -19,15 +20,17 @@ public class GuiEventListenerFocusHandler implements IFocusHandler {
 
 	@Override
 	public void unFocus() {
-		if (guiEventListener.isFocused()) {
+		this.unfocused = guiEventListener.isFocused();
+		if (this.unfocused) {
 			guiEventListener.setFocused(false);
 		}
 	}
 
 	@Override
 	public void focus() {
-		if (!guiEventListener.isFocused()) {
+		if (this.unfocused && !guiEventListener.isFocused()) {
 			guiEventListener.setFocused(true);
 		}
+		this.unfocused = false;
 	}
 }

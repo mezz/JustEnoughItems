@@ -22,6 +22,7 @@ public class ScreenFocusHandler implements IFocusHandler {
 			storedInScreenFocus = focused;
 		} else {
 			EditBox editBox = reflectionUtil.getFieldWithClass(screen, EditBox.class)
+				.filter(EditBox::isFocused)
 				.findFirst()
 				.orElse(null);
 			if (editBox != null) {
