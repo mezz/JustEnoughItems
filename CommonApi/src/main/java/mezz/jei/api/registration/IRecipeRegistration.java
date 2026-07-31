@@ -10,9 +10,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
+@ApiStatus.NonExtendable
 public interface IRecipeRegistration {
 	/**
 	 * {@link IJeiHelpers} provides helpers and tools for addon mods.
