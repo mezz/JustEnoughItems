@@ -123,6 +123,22 @@ public final class RecipeSlotIngredients {
 		return cycler.getCycled(getDisplayIngredients());
 	}
 
+	public Optional<SlotIngredient<?>> getFirstDisplayedIngredient() {
+		List<@Nullable SlotIngredient<?>> displayIngredients = getDisplayIngredients();
+		if (displayIngredients.isEmpty()) {
+			return Optional.empty();
+		}
+		return Optional.ofNullable(displayIngredients.getFirst());
+	}
+
+	public Stream<ITypedIngredient<?>> getDisplayedIngredientsInGroup(SlotIngredient<?> displayed) {
+		SlotDisplayData<?> slotDisplayData = displayed.slotDisplayData();
+		return getDisplayIngredients().stream()
+			.filter(Objects::nonNull)
+			.filter(ingredient -> ingredient.slotDisplayData() == slotDisplayData)
+			.map(SlotIngredient::typedIngredient);
+	}
+
 	public <T> List<T> getVisibleIngredientsInDisplayGroup(SlotIngredient<T> displayed) {
 		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getJeiHelpers().getIngredientVisibility();
 		List<? extends @Nullable SlotIngredient<?>> displayGroupSource;
