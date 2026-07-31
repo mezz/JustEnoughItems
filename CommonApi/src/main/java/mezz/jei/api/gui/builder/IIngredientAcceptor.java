@@ -175,9 +175,7 @@ public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	 * @apiNote Use this when resolving {@link SlotDisplay}s directly.
 	 * If you add {@link SlotDisplay}s to this acceptor, JEI will resolve them with this context.
 	 */
-	default ContextMap getContextMap() {
-		throw new UnsupportedOperationException("This ingredient acceptor does not provide a ContextMap");
-	}
+	ContextMap getContextMap();
 
 	/**
 	 * Add one ingredient.

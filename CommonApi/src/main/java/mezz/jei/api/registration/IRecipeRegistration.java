@@ -10,9 +10,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
+@ApiStatus.NonExtendable
 public interface IRecipeRegistration {
 	/**
 	 * {@link IJeiHelpers} provides helpers and tools for addon mods.
@@ -34,9 +36,7 @@ public interface IRecipeRegistration {
 	 *
 	 * @since 27.13.0
 	 */
-	default ContextMap getContextMap() {
-		throw new UnsupportedOperationException("This recipe registration does not provide a ContextMap");
-	}
+	ContextMap getContextMap();
 
 	/**
 	 * Add the recipes provided by your plugin.
