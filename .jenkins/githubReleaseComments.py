@@ -151,6 +151,13 @@ class GitHubClient:
             raise RuntimeError(f"GitHub GraphQL failed: {json.dumps(errors)}")
         return response["data"]
 
+    def authenticated_user_login(self) -> str:
+        user, _ = self.request_json("GET", "/user")
+        login = user.get("login", "")
+        if not isinstance(login, str) or not login:
+            raise RuntimeError("GitHub API did not return an authenticated user login.")
+        return login
+
     def create_issue_comment(self, repo: str, number: int, body: str) -> None:
         if self.dry_run:
             print(f"[dry-run] Would comment on {repo}#{number}: {body.splitlines()[0]}")
@@ -657,6 +664,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--head", default="", help="Released commit. Defaults to GIT_COMMIT or HEAD.")
     parser.add_argument("--api-url", default="https://api.github.com", help="GitHub API base URL.")
     parser.add_argument("--token-env", default="GITHUB_TOKEN", help="Environment variable containing the token.")
+    parser.add_argument(
+        "--expected-token-login",
+        default=os.environ.get("GITHUB_RELEASE_COMMENT_EXPECTED_LOGIN", ""),
+        help=(
+            "If set, verify that the token authenticates as this GitHub user before posting comments. "
+            "Can also be set with GITHUB_RELEASE_COMMENT_EXPECTED_LOGIN."
+        ),
+    )
     parser.add_argument("--marker-prefix", default=DEFAULT_MARKER_PREFIX, help="Hidden marker prefix used to avoid duplicates.")
     parser.add_argument(
         "--loader-order",
@@ -750,6 +765,21 @@ def main() -> int:
         raise RuntimeError(f"{args.token_env} is required unless --dry-run is used.")
 
     client = GitHubClient(token, args.api_url, args.dry_run)
+    expected_token_login = args.expected_token_login.strip()
+    if expected_token_login and token:
+        actual_token_login = client.authenticated_user_login()
+        if actual_token_login.casefold() != expected_token_login.casefold():
+            raise RuntimeError(
+                f"{args.token_env} authenticates as '{actual_token_login}', "
+                f"but release comments must be posted by '{expected_token_login}'. "
+                "Update the Jenkins credential token or GITHUB_RELEASE_COMMENT_EXPECTED_LOGIN."
+            )
+        print(f"Authenticated GitHub release comment token as {actual_token_login}.")
+    elif expected_token_login:
+        print(
+            f"Skipping expected-token-login check for {expected_token_login!r} because no token was provided.",
+            file=sys.stderr,
+        )
 
     pull_requests: dict[int, PullRequest] = {}
     issue_to_pull_request: dict[int, int | None] = {}
