@@ -62,14 +62,30 @@ public final class RecipeSlotIngredients {
 	}
 
 	public Optional<ITypedIngredient<?>> getDisplayedIngredient(ICycler cycler) {
+		return cycler.getCycled(getDisplayIngredients());
+	}
+
+	public Optional<ITypedIngredient<?>> getFirstDisplayedIngredient() {
+		List<@Nullable ITypedIngredient<?>> displayIngredients = getDisplayIngredients();
+		if (displayIngredients.isEmpty()) {
+			return Optional.empty();
+		}
+		return Optional.ofNullable(displayIngredients.getFirst());
+	}
+
+	public Stream<ITypedIngredient<?>> getDisplayedIngredients() {
+		return getDisplayIngredients().stream()
+			.filter(Objects::nonNull);
+	}
+
+	private List<@Nullable ITypedIngredient<?>> getDisplayIngredients() {
 		if (this.displayOverrides != null) {
-			List<@Nullable ITypedIngredient<?>> overrides = this.displayOverrides.getAllIngredients();
-			return cycler.getCycled(overrides);
+			return this.displayOverrides.getAllIngredients();
 		}
 		if (this.displayIngredients == null) {
 			this.displayIngredients = calculateDisplayIngredients(this.allIngredients);
 		}
-		return cycler.getCycled(this.displayIngredients);
+		return this.displayIngredients;
 	}
 
 	public <T> List<T> getVisibleIngredients(IIngredientType<T> ingredientType) {

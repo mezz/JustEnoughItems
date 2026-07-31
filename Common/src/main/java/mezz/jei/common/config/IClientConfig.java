@@ -57,6 +57,8 @@ public interface IClientConfig {
 
 	IJeiConfigValue<Integer> smoothScrollRate();
 
+	IJeiConfigValue<Boolean> recipeSlotCyclingEnabled();
+
 	IJeiConfigValue<List<IngredientSortStage>> ingredientSorterStages();
 
 	IJeiConfigValue<List<RecipeSorterStage>> recipeSorterStages();

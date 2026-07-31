@@ -53,6 +53,8 @@ public class Textures {
 	private final IDrawableStatic recipePlusSign;
 	private final IDrawableStatic bookmarksFirst;
 	private final IDrawableStatic craftableFirst;
+	private final IDrawableStatic tagBadgeIcon;
+	private final IDrawableStatic listBadgeIcon;
 
 	private final IDrawableStatic brewingStandBackground;
 	private final IDrawableStatic brewingStandBlazeHeat;
@@ -112,6 +114,8 @@ public class Textures {
 		this.flameEmptyIcon = createGuiSprite("icons/flame_empty", 14, 14);
 		this.bookmarksFirst = createGuiSprite("icons/bookmarks_first", 16, 16);
 		this.craftableFirst = createGuiSprite("icons/craftable_first", 16, 16);
+		this.tagBadgeIcon = createGuiSprite("icons/tag_badge", 9, 9);
+		this.listBadgeIcon = createGuiSprite("icons/list_badge", 9, 9);
 	}
 
 	private ResourceLocation createSprite(String name) {
@@ -170,6 +174,14 @@ public class Textures {
 
 	public IDrawableStatic getCraftableFirst() {
 		return craftableFirst;
+	}
+
+	public IDrawableStatic getTagBadgeIcon() {
+		return tagBadgeIcon;
+	}
+
+	public IDrawableStatic getListBadgeIcon() {
+		return listBadgeIcon;
 	}
 
 	public IDrawableStatic getConfigButtonIcon() {
