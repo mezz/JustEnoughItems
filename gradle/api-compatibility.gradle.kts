@@ -1,8 +1,5 @@
 import groovy.json.JsonSlurper
-import java.io.BufferedInputStream
-import java.io.DataInputStream
 import java.io.File
-import java.util.jar.JarFile
 
 abstract class JarCompatibilityCheckerArgumentProvider : CommandLineArgumentProvider {
     @get:Classpath
@@ -44,12 +41,15 @@ abstract class JarCompatibilityCheckerArgumentProvider : CommandLineArgumentProv
 }
 
 abstract class ApiCompatibilityReportValidator : DefaultTask() {
-    @get:Classpath
-    abstract val baselineJar: ConfigurableFileCollection
+    private val nonExtendableAnnotation = Regex("""@\s*(?:ApiStatus\.)?NonExtendable\b""")
 
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val reportFile: RegularFileProperty
+
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val sourceFiles: ConfigurableFileCollection
 
     @TaskAction
     fun validateReport() {
@@ -58,8 +58,7 @@ abstract class ApiCompatibilityReportValidator : DefaultTask() {
             return
         }
 
-        val baseline = baselineJar.singleFile
-        val baselineMethodCache = mutableMapOf<String, Set<String>>()
+        val nonExtendableInterfaceCache = mutableMapOf<String, Boolean>()
         val allowedNewMethods = mutableListOf<String>()
         val disallowedIncompatibilities = mutableListOf<String>()
         val reportData = JsonSlurper().parse(report) as Map<*, *>
@@ -74,16 +73,16 @@ abstract class ApiCompatibilityReportValidator : DefaultTask() {
             val methodIncompatibilities = classReport["methodIncompatibilities"] as? Map<*, *> ?: emptyMap<Any, Any>()
             methodIncompatibilities.forEach { (methodSignatureValue, incompatibilitiesValue) ->
                 val methodSignature = methodSignatureValue.toString()
-                val baselineMethods = baselineMethodCache.getOrPut(className) {
-                    readMethodSignatures(baseline, className)
-                }
                 val incompatibilities = incompatibilitiesValue as? Iterable<*> ?: emptyList<Any>()
                 incompatibilities.forEach { incompatibility ->
                     val incompatibilityReport = incompatibility as Map<*, *>
                     val message = incompatibilityReport["message"].toString()
                     val isError = incompatibilityReport["isError"] as? Boolean ?: true
                     if (isError) {
-                        if (message == METHOD_MADE_ABSTRACT && methodSignature !in baselineMethods) {
+                        val isNonExtendableInterface = nonExtendableInterfaceCache.getOrPut(className) {
+                            isNonExtendableInterface(className)
+                        }
+                        if (message == METHOD_MADE_ABSTRACT && isNonExtendableInterface) {
                             allowedNewMethods.add("$className#$methodSignature")
                         } else {
                             disallowedIncompatibilities.add("$className#$methodSignature - $message")
@@ -94,7 +93,7 @@ abstract class ApiCompatibilityReportValidator : DefaultTask() {
         }
 
         if (allowedNewMethods.isNotEmpty()) {
-            logger.lifecycle("Allowed ${allowedNewMethods.size} new abstract API method additions in ${report.name}.")
+            logger.lifecycle("Allowed ${allowedNewMethods.size} abstract API method changes on non-extendable interfaces in ${report.name}.")
         }
 
         if (disallowedIncompatibilities.isNotEmpty()) {
@@ -131,94 +130,16 @@ abstract class ApiCompatibilityReportValidator : DefaultTask() {
         }
     }
 
-    private fun readMethodSignatures(jarFile: File, className: String): Set<String> {
-        JarFile(jarFile).use { jar ->
-            val classEntry = jar.getJarEntry("$className.class") ?: return emptySet()
-            jar.getInputStream(classEntry).use { inputStream ->
-                DataInputStream(BufferedInputStream(inputStream)).use { input ->
-                    val magic = input.readInt()
-                    check(magic == 0xCAFEBABE.toInt()) {
-                        "Invalid class file in $jarFile: $className"
-                    }
-
-                    input.readUnsignedShort()
-                    input.readUnsignedShort()
-
-                    val constantPool = readConstantPool(input)
-
-                    input.readUnsignedShort()
-                    input.readUnsignedShort()
-                    input.readUnsignedShort()
-
-                    repeat(input.readUnsignedShort()) {
-                        input.readUnsignedShort()
-                    }
-
-                    repeat(input.readUnsignedShort()) {
-                        skipMember(input)
-                    }
-
-                    val methods = mutableSetOf<String>()
-                    repeat(input.readUnsignedShort()) {
-                        input.readUnsignedShort()
-                        val name = constantPool[input.readUnsignedShort()]
-                        val descriptor = constantPool[input.readUnsignedShort()]
-                        if (name != null && descriptor != null) {
-                            methods.add(name + descriptor)
-                        }
-                        skipAttributes(input)
-                    }
-                    return methods
-                }
-            }
-        }
+    private fun isNonExtendableInterface(className: String): Boolean {
+        val sourceFile = findSourceFile(className) ?: return false
+        val source = sourceFile.readText()
+        return nonExtendableAnnotation.containsMatchIn(source) &&
+            Regex("\\binterface\\s+${Regex.escape(sourceFile.nameWithoutExtension)}\\b").containsMatchIn(source)
     }
 
-    private fun readConstantPool(input: DataInputStream): Array<String?> {
-        val constantPoolCount = input.readUnsignedShort()
-        val constantPool = arrayOfNulls<String>(constantPoolCount)
-        var index = 1
-        while (index < constantPoolCount) {
-            when (input.readUnsignedByte()) {
-                1 -> constantPool[index] = input.readUTF()
-                3, 4 -> skipFully(input, 4)
-                5, 6 -> {
-                    skipFully(input, 8)
-                    index++
-                }
-                7, 8, 16, 19, 20 -> skipFully(input, 2)
-                9, 10, 11, 12, 17, 18 -> skipFully(input, 4)
-                15 -> skipFully(input, 3)
-                else -> error("Unknown constant pool tag")
-            }
-            index++
-        }
-        return constantPool
-    }
-
-    private fun skipMember(input: DataInputStream) {
-        input.readUnsignedShort()
-        input.readUnsignedShort()
-        input.readUnsignedShort()
-        skipAttributes(input)
-    }
-
-    private fun skipAttributes(input: DataInputStream) {
-        repeat(input.readUnsignedShort()) {
-            input.readUnsignedShort()
-            skipFully(input, input.readInt())
-        }
-    }
-
-    private fun skipFully(input: DataInputStream, length: Int) {
-        var remaining = length
-        while (remaining > 0) {
-            val skipped = input.skipBytes(remaining)
-            check(skipped > 0) {
-                "Unexpected end of class file"
-            }
-            remaining -= skipped
-        }
+    private fun findSourceFile(className: String): File? {
+        val pathSuffix = className.replace('/', File.separatorChar) + ".java"
+        return sourceFiles.files.firstOrNull { it.path.endsWith(pathSuffix) }
     }
 
     companion object {
@@ -359,8 +280,10 @@ val apiCompatibilityCheckTasks = apiCompatibilityModules.map { module ->
         description = "Checks ${apiProject.path} against the latest published $artifactId API jar in the same major version."
 
         dependsOn(reportTask)
-        baselineJar.from(baselineConfiguration)
         reportFile.set(outputFile)
+        sourceFiles.from(apiProject.fileTree("src/main/java") {
+            include("**/*.java")
+        })
     }
 }
 

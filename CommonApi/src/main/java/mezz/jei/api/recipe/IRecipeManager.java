@@ -9,6 +9,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -20,6 +21,7 @@ import java.util.Set;
  * The {@link IRecipeManager} offers several functions for retrieving and handling recipes.
  * Get the instance from {@link IJeiRuntime#getRecipeManager()}.
  */
+@ApiStatus.NonExtendable
 public interface IRecipeManager {
 	/**
 	 * Create a recipe lookup for the given recipe type.
@@ -153,16 +155,14 @@ public interface IRecipeManager {
 	 * @param ingredientCycleOffset the starting index for cycling the list of ingredients when rendering.
 	 * @since 10.3.0
 	 */
-	default IRecipeSlotDrawable createRecipeSlotDrawable(
+	IRecipeSlotDrawable createRecipeSlotDrawable(
 		RecipeIngredientRole role,
 		List<Optional<ITypedIngredient<?>>> ingredients,
 		Set<Integer> focusedIngredients,
 		int xPos,
 		int yPos,
 		int ingredientCycleOffset
-	) {
-		throw new UnsupportedOperationException("Recipe slot drawable creation is not implemented by this recipe manager.");
-	}
+	);
 
 	/**
 	 * Get the registered recipe type for the given unique id.
@@ -173,9 +173,7 @@ public interface IRecipeManager {
 	 * @see RecipeType#getUid()
 	 * @since 10.3.0
 	 */
-	default Optional<RecipeType<?>> getRecipeType(ResourceLocation uid) {
-		return Optional.empty();
-	}
+	Optional<RecipeType<?>> getRecipeType(ResourceLocation uid);
 
 	/**
 	 * Hide an entire recipe category of recipes from JEI.

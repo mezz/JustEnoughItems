@@ -9,11 +9,13 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.config.IJeiConfigManager;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Gives access to JEI functions that are available once everything has loaded.
  * The IJeiRuntime instance is passed to your mod plugin in {@link IModPlugin#onRuntimeAvailable(IJeiRuntime)}.
  */
+@ApiStatus.NonExtendable
 public interface IJeiRuntime {
 	/**
 	 * The {@link IRecipeManager} offers several functions for retrieving and handling recipes.
@@ -70,9 +72,7 @@ public interface IJeiRuntime {
 	 *
 	 * @since 10.3.0
 	 */
-	default IJeiKeyMappings getKeyMappings() {
-		throw new UnsupportedOperationException("IJeiKeyMappings is not available from this runtime.");
-	}
+	IJeiKeyMappings getKeyMappings();
 
 	/**
 	 * Returns a new typed ingredient.
@@ -96,9 +96,7 @@ public interface IJeiRuntime {
 	 *
 	 * @since 10.3.0
 	 */
-	default IScreenHelper getScreenHelper() {
-		throw new UnsupportedOperationException("IScreenHelper is not available from this runtime.");
-	}
+	IScreenHelper getScreenHelper();
 
 	/**
 	 * Get a manager that holds all the registered recipe transfer handlers.
@@ -106,9 +104,7 @@ public interface IJeiRuntime {
 	 *
 	 * @since 10.3.0
 	 */
-	default IRecipeTransferManager getRecipeTransferManager() {
-		throw new UnsupportedOperationException("IRecipeTransferManager is not available from this runtime.");
-	}
+	IRecipeTransferManager getRecipeTransferManager();
 
 	/**
 	 * Get access to the edit-mode config, which lets users hide ingredients from JEI.
@@ -116,9 +112,7 @@ public interface IJeiRuntime {
 	 *
 	 * @since 10.3.0
 	 */
-	default IEditModeConfig getEditModeConfig() {
-		throw new UnsupportedOperationException("IEditModeConfig is not available from this runtime.");
-	}
+	IEditModeConfig getEditModeConfig();
 
 	/**
 	 * Get the config manager, used for displaying or updating JEI's config files.
@@ -128,7 +122,5 @@ public interface IJeiRuntime {
 	 *
 	 * @since 10.5.0
 	 */
-	default IJeiConfigManager getConfigManager() {
-		throw new UnsupportedOperationException("IJeiConfigManager is not available from this runtime.");
-	}
+	IJeiConfigManager getConfigManager();
 }

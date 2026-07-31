@@ -5,6 +5,7 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
  * <p>
  * An instance is passed to your {@link IModPlugin}'s registration methods.
  */
+@ApiStatus.NonExtendable
 public interface IJeiHelpers {
 	/**
 	 * Helps with the implementation of GUIs.
@@ -42,9 +44,7 @@ public interface IJeiHelpers {
 	 *
 	 * @since 10.3.0
 	 */
-	default IColorHelper getColorHelper() {
-		throw new UnsupportedOperationException("IColorHelper is not available from this helper.");
-	}
+	IColorHelper getColorHelper();
 
 	/**
 	 * Helps with handling fluid ingredients on multiple platforms (Forge and Fabric).
@@ -69,16 +69,12 @@ public interface IJeiHelpers {
 	 *
 	 * @since 10.6.0
 	 */
-	default Stream<RecipeType<?>> getAllRecipeTypes() {
-		return Stream.of();
-	}
+	Stream<RecipeType<?>> getAllRecipeTypes();
 
 	/**
 	 * The ingredient manager, with information about all registered ingredients.
 	 *
 	 * @since 10.3.0
 	 */
-	default IIngredientManager getIngredientManager() {
-		throw new UnsupportedOperationException("IIngredientManager is not available from this helper.");
-	}
+	IIngredientManager getIngredientManager();
 }
