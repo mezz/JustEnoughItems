@@ -76,11 +76,11 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends IRecipeTy
 		List<FormattedText> text = List.of(
 			tagName,
 			Component.literal(tag.location().toString())
-				.withStyle(style -> style.withColor(TextColor.fromRgb(JeiGuiColors.getColor(GuiColor.TAG_INFO_IDENTIFIER_TEXT) & 0xFFFFFF)))
+				.withStyle(style -> style.withColor(TextColor.fromRgb(JeiGuiColors.getColor(GuiColor.TAG_INFORMATION_IDENTIFIER_TEXT) & 0xFFFFFF)))
 		);
 		builder.addText(text, getWidth() - 22, 20)
 			.setPosition(22, 0)
-			.setColor(JeiGuiColors.getColor(GuiColor.TAG_INFO_TEXT))
+			.setColor(JeiGuiColors.getColor(GuiColor.TAG_INFORMATION_TEXT))
 			.setLineSpacing(0)
 			.setTextAlignment(VerticalAlignment.CENTER)
 			.setTextAlignment(HorizontalAlignment.CENTER);

@@ -319,20 +319,20 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			previousRecipeCategory.getY(),
 			nextRecipeCategory.getX(),
 			nextRecipeCategory.getY() + nextRecipeCategory.getHeight(),
-			JeiGuiColors.getColor(GuiColor.NAVIGATION_BACKGROUND)
+			JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_BACKGROUND)
 		);
 		guiGraphics.fill(
 			previousPage.getX() + previousPage.getWidth(),
 			previousPage.getY(),
 			nextPage.getX(),
 			nextPage.getY() + nextPage.getHeight(),
-			JeiGuiColors.getColor(GuiColor.NAVIGATION_BACKGROUND)
+			JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_BACKGROUND)
 		);
 
 		this.recipeCategoryTitle.draw(guiGraphics, font);
 
 		ImmutableRect2i pageArea = MathUtil.union(previousPage.getArea(), nextPage.getArea());
-		StringUtil.drawCenteredStringWithShadow(guiGraphics, font, pageString, pageArea, JeiGuiColors.getColor(GuiColor.NAVIGATION_TEXT));
+		StringUtil.drawCenteredStringWithShadow(guiGraphics, font, pageString, pageArea, JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_TEXT));
 
 		nextRecipeCategory.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		previousRecipeCategory.draw(guiGraphics, mouseX, mouseY, partialTicks);

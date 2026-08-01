@@ -97,14 +97,14 @@ public class PageNavigation {
 				backButton.getY(),
 				nextButton.getX(),
 				nextButton.getY() + nextButton.getHeight(),
-				JeiGuiColors.getColor(GuiColor.NAVIGATION_BACKGROUND)
+				JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_BACKGROUND)
 			);
 
 			int availableWidth = this.area.width() - backButton.getWidth() - nextButton.getWidth();
 			Font font = minecraft.font;
 			ImmutableRect2i centerArea = MathUtil.centerTextArea(this.area, font, this.pageNumDisplayString);
 			if (centerArea.width() <= availableWidth) {
-				guiGraphics.text(font, pageNumDisplayString, centerArea.getX(), centerArea.getY(), JeiGuiColors.getColor(GuiColor.NAVIGATION_TEXT));
+				guiGraphics.text(font, pageNumDisplayString, centerArea.getX(), centerArea.getY(), JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_TEXT));
 			}
 			nextButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 			backButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
