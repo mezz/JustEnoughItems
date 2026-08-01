@@ -9,6 +9,8 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
@@ -68,7 +70,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 			builder.addText(experienceString, getWidth() - 20, 10)
 				.setPosition(0, 0, getWidth(), getHeight(), HorizontalAlignment.RIGHT, VerticalAlignment.TOP)
 				.setTextAlignment(HorizontalAlignment.RIGHT)
-				.setColor(0xFF808080);
+				.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_INFO_TEXT));
 		}
 	}
 
@@ -84,7 +86,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 				.setPosition(0, 0, getWidth(), getHeight(), HorizontalAlignment.RIGHT, VerticalAlignment.BOTTOM)
 				.setTextAlignment(HorizontalAlignment.RIGHT)
 				.setTextAlignment(VerticalAlignment.BOTTOM)
-				.setColor(0xFF808080);
+				.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_INFO_TEXT));
 		}
 	}
 

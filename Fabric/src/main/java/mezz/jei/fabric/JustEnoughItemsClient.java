@@ -1,9 +1,10 @@
 package mezz.jei.fabric;
 
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.IServerConfig;
+import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.config.IServerConfig;
 import mezz.jei.fabric.chat.JeiInternalShowCommand;
 import mezz.jei.fabric.config.ServerConfig;
 import mezz.jei.fabric.events.JeiIdentifiableResourceReloadListener;
@@ -50,6 +51,7 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 
 	public ResourceManagerReloadListener createReloadListener() {
 		return (resourceManager) -> {
+			JeiGuiColors.onResourceManagerReload(resourceManager);
 			FabricGuiPlugin.getResourceReloadHandler()
 				.ifPresent(r -> r.onResourceManagerReload(resourceManager));
 		};

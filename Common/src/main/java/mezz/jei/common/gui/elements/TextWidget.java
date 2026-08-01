@@ -6,6 +6,8 @@ import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.ITextWidget;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.StringUtil;
@@ -28,7 +30,7 @@ public class TextWidget implements ITextWidget, IRecipeWidget {
 	private HorizontalAlignment horizontalAlignment;
 	private VerticalAlignment verticalAlignment;
 	private Font font;
-	private int color;
+	private @Nullable Integer colorOverride;
 	private boolean shadow;
 	private int lineSpacing;
 
@@ -39,7 +41,6 @@ public class TextWidget implements ITextWidget, IRecipeWidget {
 		this.availableArea = new ImmutableRect2i(xPos, yPos, maxWidth, maxHeight);
 		Minecraft minecraft = Minecraft.getInstance();
 		this.font = minecraft.font;
-		this.color = 0xFF000000;
 		this.text = text;
 		this.lineSpacing = 2;
 		this.horizontalAlignment = HorizontalAlignment.LEFT;
@@ -97,7 +98,7 @@ public class TextWidget implements ITextWidget, IRecipeWidget {
 
 	@Override
 	public ITextWidget setColor(int color) {
-		this.color = color;
+		this.colorOverride = color;
 		invalidateCachedValues();
 		return this;
 	}
@@ -147,6 +148,13 @@ public class TextWidget implements ITextWidget, IRecipeWidget {
 		final int lineHeight = getLineHeight();
 		List<FormattedText> lines = calculateWrappedText();
 		int yPos = getYPosStart(lineHeight, lines);
+		Integer colorOverride = this.colorOverride;
+		int color;
+		if (colorOverride == null) {
+			color = JeiGuiColors.getColor(GuiColor.TEXT_WIDGET_TEXT);
+		} else {
+			color = colorOverride;
+		}
 		for (FormattedText line : lines) {
 			FormattedCharSequence charSequence = language.getVisualOrder(line);
 			int xPos = getXPos(charSequence);
@@ -159,7 +167,7 @@ public class TextWidget implements ITextWidget, IRecipeWidget {
 		}
 
 		if (DebugConfig.isDebugGuisEnabled()) {
-			Screen.fill(poseStack, 0, 0, availableArea.width(), availableArea.height(), 0xAAAAAA00);
+			Screen.fill(poseStack, 0, 0, availableArea.width(), availableArea.height(), JeiGuiColors.getColor(GuiColor.DEBUG_WIDGET_AREA));
 		}
 	}
 

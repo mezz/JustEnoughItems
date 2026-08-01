@@ -12,6 +12,8 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiGrindstoneRecipe;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -102,7 +104,7 @@ public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneR
 			Component text = Component.translatable("gui.jei.category.grindstone.experience", minXpReward, maxXpReward);
 			Minecraft minecraft = Minecraft.getInstance();
 			int width = minecraft.font.width(text);
-			minecraft.font.drawShadow(poseStack, text, getWidth() - width, 43, 0xFF80FF20);
+			minecraft.font.drawShadow(poseStack, text, getWidth() - width, 43, JeiGuiColors.getColor(GuiColor.RECIPE_POSITIVE_TEXT));
 		}
 	}
 

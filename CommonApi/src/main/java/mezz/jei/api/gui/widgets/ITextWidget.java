@@ -28,7 +28,7 @@ public interface ITextWidget extends IPlaceable<ITextWidget> {
 
 	/**
 	 * Set the color used by this text widget when drawing text.
-	 * Defaults to black (0xFF000000)
+	 * Defaults to JEI's text widget color, which is black (0xFF000000) by default.
 	 *
 	 * @since 11.38.0
 	 */

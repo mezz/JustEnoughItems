@@ -3,6 +3,8 @@ package mezz.jei.gui.input;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -59,7 +61,10 @@ public class GuiTextFieldFilter extends EditBox {
 		if (!filterText.equals(getValue())) {
 			super.setValue(filterText);
 		}
-		int color = filterEmpty.getAsBoolean() ? 0xFFFF0000 : 0xFFFFFFFF;
+		int color = JeiGuiColors.getColor(GuiColor.SEARCH_TEXT);
+		if (filterEmpty.getAsBoolean()) {
+			color = JeiGuiColors.getColor(GuiColor.SEARCH_TEXT_ERROR);
+		}
 		setTextColor(color);
 	}
 
