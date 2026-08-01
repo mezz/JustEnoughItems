@@ -200,6 +200,7 @@ neoForge {
 
 	runs {
 		val jeiMod = mods.named("jei")
+		val jeiDebugMod = mods.named("jeidebug")
 		val jeiTestsMod = mods.named("jeitests")
 		val jeiClientTestsMod = mods.named("jeiclienttests")
 
@@ -210,18 +211,21 @@ neoForge {
 		}
 		create("client") {
 			client()
+			loadedMods.add(jeiDebugMod)
 			systemProperty("forge.logging.console.level", "debug")
 			gameDirectory = file("run/client/Dev")
 			logLevel = Level.DEBUG
 		}
 		create("client_01") {
 			client()
+			loadedMods.add(jeiDebugMod)
 			gameDirectory = file("run/client/Player01")
 			programArguments.addAll("--username", "Player01")
 			logLevel = Level.DEBUG
 		}
 		create("server") {
 			server()
+			loadedMods.add(jeiDebugMod)
 			systemProperty("forge.logging.console.level", "debug")
 			gameDirectory = file("run/server")
 			programArguments.addAll("nogui")

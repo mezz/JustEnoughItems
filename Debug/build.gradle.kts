@@ -57,6 +57,26 @@ tasks.withType<JavaCompile> {
 	}
 }
 
+val copyModMetadataToClasses = tasks.register<Copy>("copyModMetadataToClasses") {
+	// ModDevGradle exposes classes and resources as separate mod roots on this branch.
+	from(layout.buildDirectory.dir("resources/main/META-INF")) {
+		include("mods.toml", "neoforge.mods.toml")
+	}
+	into(layout.buildDirectory.dir("classes/java/main/META-INF"))
+	dependsOn(
+		tasks.named(sourceSets.main.get().compileJavaTaskName),
+		tasks.named(sourceSets.main.get().processResourcesTaskName)
+	)
+}
+
+tasks.named(sourceSets.main.get().classesTaskName) {
+	dependsOn(copyModMetadataToClasses)
+}
+
+tasks.named<Jar>("jar") {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 idea {
 	module {
 		for (fileName in listOf("build", "run", "out", "logs")) {
