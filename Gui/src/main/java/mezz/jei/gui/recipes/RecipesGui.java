@@ -253,7 +253,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			previousRecipeCategory.getY(),
 			nextRecipeCategory.getX(),
 			nextRecipeCategory.getY() + nextRecipeCategory.getHeight(),
-			JeiGuiColors.getColor(GuiColor.NAVIGATION_BACKGROUND)
+			JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_BACKGROUND)
 		);
 		GuiComponent.fill(
 			poseStack,
@@ -261,7 +261,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			previousPage.getY(),
 			nextPage.getX(),
 			nextPage.getY() + nextPage.getHeight(),
-			JeiGuiColors.getColor(GuiColor.NAVIGATION_BACKGROUND)
+			JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_BACKGROUND)
 		);
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -269,7 +269,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.recipeCategoryTitle.draw(poseStack, font);
 
 		ImmutableRect2i pageArea = MathUtil.union(previousPage.getArea(), nextPage.getArea());
-		StringUtil.drawCenteredStringWithShadow(poseStack, font, pageString, pageArea, JeiGuiColors.getColor(GuiColor.NAVIGATION_TEXT));
+		StringUtil.drawCenteredStringWithShadow(poseStack, font, pageString, pageArea, JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_TEXT));
 
 		nextRecipeCategory.render(poseStack, mouseX, mouseY, partialTicks);
 		previousRecipeCategory.render(poseStack, mouseX, mouseY, partialTicks);
