@@ -51,7 +51,7 @@ public class DrawableWrappedText implements IDrawable {
 		int yPos = 0;
 		for (FormattedText descriptionLine : descriptionLines) {
 			FormattedCharSequence charSequence = language.getVisualOrder(descriptionLine);
-			guiGraphics.drawString(font, charSequence, xOffset, yPos + yOffset, JeiGuiColors.getColor(GuiColor.SCROLL_BOX_TEXT), false);
+			guiGraphics.drawString(font, charSequence, xOffset, yPos + yOffset, JeiGuiColors.getColor(GuiColor.RECIPE_SCROLL_BOX_TEXT), false);
 			yPos += lineHeight;
 		}
 	}
