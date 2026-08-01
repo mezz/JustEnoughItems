@@ -1,6 +1,8 @@
 package mezz.jei.gui.input;
 
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -56,9 +58,9 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 		if (!filterText.equals(getValue())) {
 			super.setValue(filterText);
 		}
-		int color = 0xFFFFFFFF;
+		int color = JeiGuiColors.getColor(GuiColor.SEARCH_TEXT);
 		if (filterEmpty.getAsBoolean()) {
-			color = 0xFFFF0000;
+			color = JeiGuiColors.getColor(GuiColor.SEARCH_TEXT_ERROR);
 		}
 		setTextColor(color);
 	}

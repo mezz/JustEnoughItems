@@ -21,6 +21,8 @@ import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
@@ -317,20 +319,20 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			previousRecipeCategory.getY(),
 			nextRecipeCategory.getX(),
 			nextRecipeCategory.getY() + nextRecipeCategory.getHeight(),
-			0x30000000
+			JeiGuiColors.getColor(GuiColor.NAVIGATION_BACKGROUND)
 		);
 		guiGraphics.fill(
 			previousPage.getX() + previousPage.getWidth(),
 			previousPage.getY(),
 			nextPage.getX(),
 			nextPage.getY() + nextPage.getHeight(),
-			0x30000000
+			JeiGuiColors.getColor(GuiColor.NAVIGATION_BACKGROUND)
 		);
 
 		this.recipeCategoryTitle.draw(guiGraphics, font);
 
 		ImmutableRect2i pageArea = MathUtil.union(previousPage.getArea(), nextPage.getArea());
-		StringUtil.drawCenteredStringWithShadow(guiGraphics, font, pageString, pageArea);
+		StringUtil.drawCenteredStringWithShadow(guiGraphics, font, pageString, pageArea, JeiGuiColors.getColor(GuiColor.NAVIGATION_TEXT));
 
 		nextRecipeCategory.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		previousRecipeCategory.draw(guiGraphics, mouseX, mouseY, partialTicks);
@@ -368,7 +370,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 				idealArea.getY(),
 				idealArea.getX() + idealArea.getWidth(),
 				idealArea.getY() + idealArea.getHeight(),
-				0x4400FF00
+				JeiGuiColors.getColor(GuiColor.DEBUG_RECIPE_GUI_IDEAL_AREA)
 			);
 
 			guiGraphics.fill(
@@ -376,7 +378,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 				area.getY(),
 				area.getX() + area.getWidth(),
 				area.getY() + area.getHeight(),
-				0x44990044
+				JeiGuiColors.getColor(GuiColor.DEBUG_RECIPE_GUI_AREA)
 			);
 
 			ImmutableRect2i recipeLayoutsArea = getRecipeLayoutsArea();
@@ -385,7 +387,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 				recipeLayoutsArea.getY(),
 				recipeLayoutsArea.getX() + recipeLayoutsArea.getWidth(),
 				recipeLayoutsArea.getY() + recipeLayoutsArea.getHeight(),
-				0x44228844
+				JeiGuiColors.getColor(GuiColor.DEBUG_RECIPE_LAYOUTS_AREA)
 			);
 		}
 	}

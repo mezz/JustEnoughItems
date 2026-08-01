@@ -1,6 +1,8 @@
 package mezz.jei.common.gui.elements;
 
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.common.util.Pair;
 import net.minecraft.client.Minecraft;
@@ -49,7 +51,7 @@ public class DrawableWrappedText implements IDrawable {
 		int yPos = 0;
 		for (FormattedText descriptionLine : descriptionLines) {
 			FormattedCharSequence charSequence = language.getVisualOrder(descriptionLine);
-			guiGraphics.text(font, charSequence, xOffset, yPos + yOffset, 0xFF000000, false);
+			guiGraphics.text(font, charSequence, xOffset, yPos + yOffset, JeiGuiColors.getColor(GuiColor.SCROLL_BOX_TEXT), false);
 			yPos += lineHeight;
 		}
 	}

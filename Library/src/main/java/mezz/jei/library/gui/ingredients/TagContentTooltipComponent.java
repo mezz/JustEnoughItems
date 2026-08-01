@@ -1,6 +1,8 @@
 package mezz.jei.library.gui.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -38,7 +40,7 @@ public class TagContentTooltipComponent<T> implements ClientTooltipComponent, To
 				final int textWidth = font.width(countString);
 				final int textCenterX = x + (MAX_PER_LINE - 1) * INGREDIENT_SIZE + ((INGREDIENT_SIZE - textWidth) / 2);
 				final int textCenterY = y + (MAX_LINES - 1) * INGREDIENT_SIZE + ((INGREDIENT_SIZE - textHeight) / 2);
-				guiGraphics.text(font, countString, textCenterX, textCenterY, 0xFFAAAAAA);
+				guiGraphics.text(font, countString, textCenterX, textCenterY, JeiGuiColors.getColor(GuiColor.TAG_CONTENT_TOOLTIP_COUNT));
 			}
 		}
 	}

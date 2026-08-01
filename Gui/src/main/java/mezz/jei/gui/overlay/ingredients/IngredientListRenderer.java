@@ -8,6 +8,8 @@ import mezz.jei.api.ingredients.rendering.BatchRenderElement;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
@@ -23,9 +25,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public class IngredientListRenderer {
-	private static final int BLACKLIST_COLOR = 0xDDFF0000;
-	private static final int WILDCARD_BLACKLIST_COLOR = 0xDDFFA500;
-
 	private final List<IngredientListSlot> slots = new ArrayList<>();
 	private final ListMultiMap<IIngredientType<?>, BatchRenderElement<?>> renderElementsByType = new ListMultiMap<>();
 	private final List<IDrawable> renderOverlays = new ArrayList<>();
@@ -142,20 +141,22 @@ public class IngredientListRenderer {
 		if (!hideModes.isEmpty()) {
 			boolean wildcard = hideModes.contains(IEditModeConfig.HideMode.WILDCARD);
 			boolean single = hideModes.contains(IEditModeConfig.HideMode.SINGLE);
+			int wildcardColor = JeiGuiColors.getColor(GuiColor.EDIT_MODE_HIDDEN_WILDCARD);
+			int singleColor = JeiGuiColors.getColor(GuiColor.EDIT_MODE_HIDDEN_INGREDIENT);
 			if (wildcard && single) {
 				guiGraphics.fill(
 					area.getX() + padding,
 					area.getY() + padding,
 					area.getX() + 16 + padding,
 					area.getY() + 8 + padding,
-					WILDCARD_BLACKLIST_COLOR
+					wildcardColor
 				);
 				guiGraphics.fill(
 					area.getX() + padding,
 					area.getY() + 8 + padding,
 					area.getX() + 16 + padding,
 					area.getY() + 16 + padding,
-					BLACKLIST_COLOR
+					singleColor
 				);
 			} else if (wildcard) {
 				guiGraphics.fill(
@@ -163,7 +164,7 @@ public class IngredientListRenderer {
 					area.getY() + padding,
 					area.getX() + 16 + padding,
 					area.getY() + 16 + padding,
-					WILDCARD_BLACKLIST_COLOR
+					wildcardColor
 				);
 			} else if (single) {
 				guiGraphics.fill(
@@ -171,7 +172,7 @@ public class IngredientListRenderer {
 					area.getY() + padding,
 					area.getX() + 16 + padding,
 					area.getY() + 16 + padding,
-					BLACKLIST_COLOR
+					singleColor
 				);
 			}
 		}

@@ -6,6 +6,8 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.elements.DrawableText;
 import net.minecraft.network.chat.Component;
 
@@ -32,7 +34,7 @@ public class RecipeCategoryIconUtil {
 		} else {
 			Component title = recipeCategory.getTitle();
 			String text = title.getString().substring(0, 2);
-			return new DrawableText(text, 16, 16, 0xFFE0E0E0);
+			return new DrawableText(text, 16, 16, JeiGuiColors.getColor(GuiColor.RECIPE_CATEGORY_ICON_TEXT));
 		}
 	}
 }
