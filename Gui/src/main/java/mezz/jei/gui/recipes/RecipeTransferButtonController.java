@@ -9,6 +9,8 @@ import mezz.jei.api.gui.buttons.IIconButtonController;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.RecipeTransferUtil;
@@ -100,12 +102,16 @@ public class RecipeTransferButtonController implements IIconButtonController {
 		IRecipeTransferError recipeTransferError = this.recipeTransferError;
 		if (recipeTransferError != null) {
 			if (recipeTransferError.getType() == IRecipeTransferError.Type.COSMETIC) {
+				int color = recipeTransferError.getButtonHighlightColor();
+				if (color == IRecipeTransferError.DEFAULT_BUTTON_HIGHLIGHT_COLOR) {
+					color = JeiGuiColors.getColor(GuiColor.RECIPE_TRANSFER_BUTTON_HIGHLIGHT);
+				}
 				guiGraphics.fill(
 					buttonArea.getX(),
 					buttonArea.getY(),
 					buttonArea.getX() + buttonArea.getWidth(),
 					buttonArea.getY() + buttonArea.getHeight(),
-					recipeTransferError.getButtonHighlightColor()
+					color
 				);
 			}
 			if (buttonArea.contains(mouseX, mouseY)) {

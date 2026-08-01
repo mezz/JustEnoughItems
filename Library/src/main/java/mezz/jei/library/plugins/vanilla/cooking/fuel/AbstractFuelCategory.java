@@ -9,6 +9,8 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.vanilla.IJeiFuelingRecipe;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.textures.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -70,7 +72,7 @@ public abstract class AbstractFuelCategory extends AbstractRecipeCategory<IJeiFu
 			.setPosition(20, 0)
 			.setTextAlignment(HorizontalAlignment.CENTER)
 			.setTextAlignment(VerticalAlignment.CENTER)
-			.setColor(0xFF808080);
+			.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_INFO_TEXT));
 	}
 
 	public static Component createSmeltCountText(int burnTime) {

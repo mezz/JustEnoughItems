@@ -2,6 +2,7 @@ package mezz.jei.fabric;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.textures.JeiAtlasManager;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.MinecraftLocaleSupplier;
@@ -54,6 +55,7 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 
 	public ResourceManagerReloadListener createReloadListener() {
 		return (resourceManager) -> {
+			JeiGuiColors.onResourceManagerReload(resourceManager);
 			FabricGuiPlugin.getResourceReloadHandler()
 				.ifPresent(r -> r.onResourceManagerReload(resourceManager));
 		};

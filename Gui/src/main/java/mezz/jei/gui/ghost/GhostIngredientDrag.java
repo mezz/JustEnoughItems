@@ -6,6 +6,8 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.SafeIngredientUtil;
@@ -17,9 +19,6 @@ import net.minecraft.world.phys.Vec2;
 import java.util.List;
 
 public class GhostIngredientDrag<T> {
-	private static final int targetColor = 0x4013C90A;
-	private static final int hoverColor = 0x804CC919;
-
 	private final List<HandlerData<T>> handlersData;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final ITypedIngredient<T> ingredient;
@@ -91,9 +90,9 @@ public class GhostIngredientDrag<T> {
 		for (Rect2i area : targetAreas) {
 			int color;
 			if (MathUtil.contains(area, mouseX, mouseY)) {
-				color = hoverColor;
+				color = JeiGuiColors.getColor(GuiColor.GHOST_INGREDIENT_DRAG_HOVER);
 			} else {
-				color = targetColor;
+				color = JeiGuiColors.getColor(GuiColor.GHOST_INGREDIENT_DRAG_TARGET);
 			}
 			guiGraphics.fill(
 				area.getX(),
