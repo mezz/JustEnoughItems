@@ -25,7 +25,7 @@ public class RecipeTransferErrorMissingSlots extends RecipeTransferErrorTooltip 
 			poseStack.translate(recipeX, recipeY, 0);
 
 			for (IRecipeSlotView slot : slots) {
-				slot.drawHighlight(guiGraphics, JeiGuiColors.getColor(GuiColor.RECIPE_TRANSFER_MISSING_SLOTS));
+				slot.drawHighlight(guiGraphics, JeiGuiColors.getColor(GuiColor.RECIPE_TRANSFER_MISSING_SLOT_HIGHLIGHT));
 			}
 		}
 		poseStack.popPose();

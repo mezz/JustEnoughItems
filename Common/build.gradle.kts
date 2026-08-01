@@ -105,8 +105,9 @@ dependencies {
     dependencyProjects.forEach {
         implementation(it)
     }
-    testFixturesCompileOnly("org.jspecify:jspecify:1.0.0")
-    testImplementation(
+	testFixturesCompileOnly("org.jspecify:jspecify:1.0.0")
+	"datagenCompileOnly"("org.jspecify:jspecify:1.0.0")
+	testImplementation(
         group = "org.junit.jupiter",
         name = "junit-jupiter",
         version = jUnitVersion

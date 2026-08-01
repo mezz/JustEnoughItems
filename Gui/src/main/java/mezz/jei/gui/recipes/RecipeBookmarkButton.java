@@ -105,7 +105,7 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 				button.getY(),
 				button.getX() + button.getWidth(),
 				button.getY() + button.getHeight(),
-				JeiGuiColors.getColor(GuiColor.RECIPE_BOOKMARK_OVERLAY)
+				JeiGuiColors.getColor(GuiColor.BOOKMARKED_RECIPE_OVERLAY)
 			);
 		}
 	}

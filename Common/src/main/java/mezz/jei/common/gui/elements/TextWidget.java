@@ -150,7 +150,7 @@ public class TextWidget implements ITextWidget, IRecipeWidget {
 		Integer colorOverride = this.colorOverride;
 		int color;
 		if (colorOverride == null) {
-			color = JeiGuiColors.getColor(GuiColor.TEXT_WIDGET_TEXT);
+			color = JeiGuiColors.getColor(GuiColor.RECIPE_TEXT_WIDGET_TEXT);
 		} else {
 			color = colorOverride;
 		}

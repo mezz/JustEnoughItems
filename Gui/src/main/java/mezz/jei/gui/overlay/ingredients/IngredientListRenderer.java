@@ -145,8 +145,8 @@ public class IngredientListRenderer {
 		if (!hideModes.isEmpty()) {
 			boolean wildcard = hideModes.contains(IEditModeConfig.HideMode.WILDCARD);
 			boolean single = hideModes.contains(IEditModeConfig.HideMode.SINGLE);
-			int wildcardColor = JeiGuiColors.getColor(GuiColor.EDIT_MODE_HIDDEN_WILDCARD);
-			int singleColor = JeiGuiColors.getColor(GuiColor.EDIT_MODE_HIDDEN_INGREDIENT);
+			int wildcardColor = JeiGuiColors.getColor(GuiColor.EDIT_MODE_HIDDEN_WILDCARD_OVERLAY);
+			int singleColor = JeiGuiColors.getColor(GuiColor.EDIT_MODE_HIDDEN_INGREDIENT_OVERLAY);
 			if (wildcard && single) {
 				guiGraphics.fill(
 					RenderType.guiOverlay(),
