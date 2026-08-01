@@ -108,11 +108,18 @@ public final class IngredientGridButtonNavigationLayout {
 			}
 		}
 
+		ImmutableRect2i backgroundNavigationArea;
+		if (navigationArea.isEmpty()) {
+			backgroundNavigationArea = ImmutableRect2i.EMPTY;
+		} else {
+			backgroundNavigationArea = defaultNavigationArea;
+		}
 		return IngredientGridWithNavigationLayout.fromGridArea(
 			gridConfig,
 			ingredientGridArea,
 			availableSlotCount,
 			navigationArea,
+			backgroundNavigationArea,
 			navigationEnabled,
 			ImmutableRect2i.EMPTY,
 			false
@@ -229,18 +236,45 @@ public final class IngredientGridButtonNavigationLayout {
 
 		int originalX = defaultNavigationArea.x();
 		int originalWidth = defaultNavigationArea.width();
+		int originalRight = originalX + originalWidth;
 
+		ImmutableRect2i navigationArea = calculateNavigationAreaInGaps(
+			gaps,
+			originalX,
+			originalRight,
+			originalX,
+			originalWidth,
+			navigationStripArea.y(),
+			navigationStripArea.height()
+		);
+		if (!navigationArea.isEmpty()) {
+			return navigationArea;
+		}
+
+		return ImmutableRect2i.EMPTY;
+	}
+
+	private static ImmutableRect2i calculateNavigationAreaInGaps(
+		List<int[]> gaps,
+		int minX,
+		int maxX,
+		int originalX,
+		int originalWidth,
+		int y,
+		int height
+	) {
 		int bestGapStart = -1;
 		int bestGapWidth = 0;
 		int bestDistance = Integer.MAX_VALUE;
 		for (int[] gap : gaps) {
-			int gapStart = gap[0];
-			int gapWidth = gap[1] - gap[0];
+			int gapStart = Math.max(gap[0], minX);
+			int gapEnd = Math.min(gap[1], maxX);
+			int gapWidth = gapEnd - gapStart;
 			if (gapWidth < NAVIGATION_MIN_WIDTH) {
 				continue;
 			}
 			int navWidthInGap = Math.min(originalWidth, gapWidth);
-			int navStart = Math.clamp(originalX, gapStart, gap[1] - navWidthInGap);
+			int navStart = Math.clamp(originalX, gapStart, gapEnd - navWidthInGap);
 			int distance = Math.abs(navStart - originalX);
 			if (distance < bestDistance) {
 				bestGapStart = navStart;
@@ -255,9 +289,9 @@ public final class IngredientGridButtonNavigationLayout {
 
 		return new ImmutableRect2i(
 			bestGapStart,
-			navigationStripArea.y(),
+			y,
 			bestGapWidth,
-			navigationStripArea.height()
+			height
 		);
 	}
 
