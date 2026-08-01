@@ -25,17 +25,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
 
-public class SearchCompletionPopup {
+public class SearchCompletionOverlay {
 	private static final int LINE_HEIGHT = 11;
 	private static final int MIN_ROW_HEIGHT = 14;
 	private static final int ROW_SPACING = 2;
 	private static final int SYMBOL_COLUMN_WIDTH = 20;
 	private static final int PADDING = 3;
 	private static final int BORDER = 1;
-	private static final int MAX_POPUP_WIDTH = 200;
-	private static final int MAX_POPUP_WIDTH_DYNAMIC = 320;
+	private static final int MAX_OVERLAY_WIDTH = 200;
+	private static final int MAX_OVERLAY_WIDTH_DYNAMIC = 320;
 	private static final int MAX_VISIBLE_ROWS = 9;
 	private static final int MAX_DYNAMIC_CANDIDATES = 100;
 	private static final int SCREEN_MARGIN = 4;
@@ -54,12 +53,12 @@ public class SearchCompletionPopup {
 	private boolean visible = false;
 	private int selectedIndex = 0;
 	private int scrollOffset = 0;
-	private @Nullable ImmutableRect2i popupArea;
+	private @Nullable ImmutableRect2i overlayArea;
 	private @Nullable ImmutableRect2i searchFieldArea;
 
 	private final List<RowLayout> rowLayouts = new ArrayList<>();
 
-	public SearchCompletionPopup(ISearchCompletionProvider completionProvider, ScalableDrawable background) {
+	public SearchCompletionOverlay(ISearchCompletionProvider completionProvider, ScalableDrawable background) {
 		this.completionProvider = completionProvider;
 		this.background = background;
 	}
@@ -70,8 +69,9 @@ public class SearchCompletionPopup {
 	}
 
 	private void update(String text, int cursorPos) {
-		String currentToken = extractCurrentToken(text, cursorPos);
-		boolean hasPredicateBefore = hasPredicateBefore(text, cursorPos);
+		List<Token> tokens = SearchTokenizer.tokenize(text);
+		String currentToken = extractCurrentToken(tokens, text, cursorPos);
+		boolean hasPredicateBefore = hasPredicateBefore(tokens, cursorPos);
 		Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> prefixInfos = completionProvider.getAllPrefixInfos();
 		Collection<IListElementInfo<?>> elementInfos = completionProvider.getAllElementInfos();
 
@@ -133,15 +133,16 @@ public class SearchCompletionPopup {
 			}
 		}
 
-		addOperatorIfMatches("-", Component.translatable("jei.search.completion.operator.not"), currentToken);
-		if (hasPredicateBefore) {
-			addOperatorIfMatches("|", Component.translatable("jei.search.completion.operator.or"), currentToken);
+		addNotOperatorIfMatches(currentToken);
+		if (hasPredicateBefore && !currentToken.equals("|")) {
+			filteredCandidates.add(new CompletionCandidate("|", "|", Component.translatable("jei.search.completion.operator.or"), CandidateCategory.OPERATOR));
 		}
 	}
 
-	private void addOperatorIfMatches(String symbol, Component description, String currentToken) {
+	private void addNotOperatorIfMatches(String currentToken) {
+		String symbol = "-";
 		if (symbol.startsWith(currentToken)) {
-			filteredCandidates.add(new CompletionCandidate(symbol, symbol, description, CandidateCategory.OPERATOR));
+			filteredCandidates.add(new CompletionCandidate(symbol, symbol, Component.translatable("jei.search.completion.operator.not"), CandidateCategory.OPERATOR));
 		}
 	}
 
@@ -165,7 +166,12 @@ public class SearchCompletionPopup {
 				break;
 			}
 			if (s.toLowerCase(Locale.ENGLISH).startsWith(queryLower)) {
-				String insertion = quoteWrapper ? prefixStr + '"' + s + '"' : prefixStr + s;
+				String insertion;
+				if (quoteWrapper) {
+					insertion = prefixStr + '"' + s + '"';
+				} else {
+					insertion = prefixStr + s;
+				}
 				if (insertion.equals(currentToken)) {
 					continue;
 				}
@@ -184,8 +190,7 @@ public class SearchCompletionPopup {
 		String queryLower = query.toLowerCase(Locale.ENGLISH);
 		boolean quoteWrapper = currentToken.startsWith("\"");
 		Map<String, CompletionCandidate> uniqueCandidates = new TreeMap<>();
-		outer:
-		for (PrefixInfo<IListElementInfo<?>, IListElement<?>> info : prefixInfos) {
+		outer : for (PrefixInfo<IListElementInfo<?>, IListElement<?>> info : prefixInfos) {
 			if (info.getMode() != SearchMode.ENABLED || !info.supportsDynamicCompletion()) {
 				continue;
 			}
@@ -198,29 +203,36 @@ public class SearchCompletionPopup {
 					break outer;
 				}
 				if (s.toLowerCase(Locale.ENGLISH).startsWith(queryLower)) {
-					String insertion = quoteWrapper ? '"' + s + '"' : s;
-					uniqueCandidates.computeIfAbsent(s, k -> new CompletionCandidate(insertion, s, info.getDescription(), CandidateCategory.DYNAMIC));
+					String insertion;
+					if (quoteWrapper) {
+						insertion = '"' + s + '"';
+					} else {
+						insertion = s;
+					}
+					uniqueCandidates.computeIfAbsent(s, ignored -> new CompletionCandidate(insertion, s, info.getDescription(), CandidateCategory.DYNAMIC));
 				}
 			}
 		}
 		filteredCandidates.addAll(uniqueCandidates.values());
 	}
 
-	private static int findTokenBoundary(String text, int cursorPos, boolean start) {
-		Matcher matcher = SearchTokenizer.fullTokenMatcher(text);
-		while (matcher.find()) {
-			if (cursorPos >= matcher.start() && cursorPos <= matcher.end()) {
-				return start ? matcher.start() : matcher.end();
+	private static int findTokenBoundary(List<Token> tokens, int cursorPos, boolean start) {
+		for (Token token : tokens) {
+			if (cursorPos >= token.start() && cursorPos <= token.end()) {
+				if (start) {
+					return token.start();
+				}
+				return token.end();
 			}
 		}
 		return cursorPos;
 	}
 
-	private static String extractCurrentToken(String text, int cursorPos) {
+	private static String extractCurrentToken(List<Token> tokens, String text, int cursorPos) {
 		if (cursorPos <= 0) {
 			return "";
 		}
-		int start = findTokenBoundary(text, cursorPos, true);
+		int start = findTokenBoundary(tokens, cursorPos, true);
 		String token = text.substring(start, cursorPos);
 		if (token.startsWith("-") && token.length() > 1) {
 			token = token.substring(1);
@@ -228,19 +240,17 @@ public class SearchCompletionPopup {
 		return token;
 	}
 
-	private static boolean hasPredicateBefore(String text, int cursorPos) {
-		Matcher matcher = SearchTokenizer.fullTokenMatcher(text);
+	private static boolean hasPredicateBefore(List<Token> tokens, int cursorPos) {
 		boolean foundPredicate = false;
-		while (matcher.find()) {
-			if (cursorPos >= matcher.start() && cursorPos <= matcher.end()) {
+		for (Token token : tokens) {
+			if (cursorPos >= token.start() && cursorPos < token.end()) {
 				return foundPredicate;
 			}
-			String token = matcher.group();
-			if (!token.equals("|") && !token.equals("-")) {
+			if (!token.operator()) {
 				foundPredicate = true;
 			}
 		}
-		return false;
+		return foundPredicate;
 	}
 
 	private static String stripMatchingQuotes(String s) {
@@ -258,7 +268,7 @@ public class SearchCompletionPopup {
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return visible && popupArea != null && popupArea.contains(mouseX, mouseY);
+		return visible && overlayArea != null && overlayArea.contains(mouseX, mouseY);
 	}
 
 	public void close() {
@@ -281,15 +291,21 @@ public class SearchCompletionPopup {
 		String text = searchField.getValue();
 		int cursorPos = searchField.getCursorPosition();
 
-		int tokenStart = findTokenBoundary(text, cursorPos, true);
-		int tokenEnd = cursorPos;
-		if (candidate.category() != CandidateCategory.OPERATOR) {
-			tokenEnd = findTokenBoundary(text, cursorPos, false);
+		List<Token> tokens = SearchTokenizer.tokenize(text);
+		int tokenStart;
+		int tokenEnd;
+		if (candidate.category() == CandidateCategory.OPERATOR) {
+			tokenStart = cursorPos;
+			tokenEnd = cursorPos;
+		} else {
+			tokenStart = findTokenBoundary(tokens, cursorPos, true);
+			tokenEnd = findTokenBoundary(tokens, cursorPos, false);
 		}
 
 		String insertion = candidate.insertion();
 		if (candidate.category() != CandidateCategory.OPERATOR &&
-			tokenStart < text.length() && text.charAt(tokenStart) == '-') {
+			tokenStart < text.length() && text.charAt(tokenStart) == '-'
+		) {
 			insertion = "-" + insertion;
 		}
 
@@ -307,16 +323,16 @@ public class SearchCompletionPopup {
 	}
 
 	public boolean handleMouseClicked(double mouseX, double mouseY, GuiTextFieldFilter searchField) {
-		if (!visible || popupArea == null) {
+		if (!visible || overlayArea == null) {
 			return false;
 		}
-		if (!popupArea.contains(mouseX, mouseY)) {
+		if (!overlayArea.contains(mouseX, mouseY)) {
 			return false;
 		}
-		int popupY = popupArea.getY();
+		int overlayY = overlayArea.getY();
 		for (int i = 0; i < rowLayouts.size(); i++) {
 			RowLayout row = rowLayouts.get(i);
-			int rowY = popupY + BORDER + row.y();
+			int rowY = overlayY + BORDER + row.y();
 			if (mouseY >= rowY && mouseY < rowY + row.height()) {
 				selectedIndex = scrollOffset + i;
 				accept(searchField);
@@ -360,11 +376,21 @@ public class SearchCompletionPopup {
 		return font.getSplitter().splitLines(description, maxWidth, Style.EMPTY);
 	}
 
-	private int calculatePopupWidth(Font font, int screenWidth) {
-		int fieldWidth = searchFieldArea != null ? searchFieldArea.getWidth() : 120;
+	private int calculateOverlayWidth(Font font, int screenWidth) {
+		int fieldWidth;
+		if (searchFieldArea != null) {
+			fieldWidth = searchFieldArea.getWidth();
+		} else {
+			fieldWidth = 120;
+		}
 
 		boolean hasDynamic = filteredCandidates.stream().anyMatch(c -> c.category() == CandidateCategory.DYNAMIC);
-		int maxWidth = Math.min(hasDynamic ? MAX_POPUP_WIDTH_DYNAMIC : MAX_POPUP_WIDTH, screenWidth);
+		int maxWidth;
+		if (hasDynamic) {
+			maxWidth = Math.min(MAX_OVERLAY_WIDTH_DYNAMIC, screenWidth);
+		} else {
+			maxWidth = Math.min(MAX_OVERLAY_WIDTH, screenWidth);
+		}
 		int minContentWidth = fieldWidth;
 
 		for (CompletionCandidate candidate : filteredCandidates) {
@@ -383,7 +409,7 @@ public class SearchCompletionPopup {
 
 	private void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (!visible || searchFieldArea == null || filteredCandidates.isEmpty()) {
-			popupArea = null;
+			overlayArea = null;
 			rowLayouts.clear();
 			return;
 		}
@@ -393,8 +419,8 @@ public class SearchCompletionPopup {
 		int screenWidth = minecraft.getWindow().getGuiScaledWidth();
 		int screenHeight = minecraft.getWindow().getGuiScaledHeight();
 
-		int popupWidth = calculatePopupWidth(font, screenWidth);
-		int descAreaWidth = popupWidth - PADDING * 3 - SYMBOL_COLUMN_WIDTH;
+		int overlayWidth = calculateOverlayWidth(font, screenWidth);
+		int descAreaWidth = overlayWidth - PADDING * 3 - SYMBOL_COLUMN_WIDTH;
 
 		int availableHeightAbove = searchFieldArea.getY() - SCREEN_MARGIN;
 		int availableHeightBelow = screenHeight - (searchFieldArea.getY() + searchFieldArea.getHeight()) - SCREEN_MARGIN;
@@ -402,7 +428,7 @@ public class SearchCompletionPopup {
 		int maxRowsByHeight = (maxAvailableHeight - BORDER * 2) / MIN_ROW_HEIGHT;
 		int visibleRowCount = Math.min(Math.min(MAX_VISIBLE_ROWS, maxRowsByHeight), filteredCandidates.size());
 		if (visibleRowCount <= 0) {
-			popupArea = null;
+			overlayArea = null;
 			rowLayouts.clear();
 			return;
 		}
@@ -418,35 +444,35 @@ public class SearchCompletionPopup {
 		}
 
 		int totalHeight = calculateRowLayouts(visibleRowCount, descAreaWidth, font);
-		int popupHeight = totalHeight + BORDER * 2;
+		int overlayHeight = totalHeight + BORDER * 2;
 
 		int x = searchFieldArea.getX();
-		if (x + popupWidth > screenWidth - SCREEN_MARGIN) {
-			x = screenWidth - popupWidth - SCREEN_MARGIN;
+		if (x + overlayWidth > screenWidth - SCREEN_MARGIN) {
+			x = screenWidth - overlayWidth - SCREEN_MARGIN;
 		}
 		if (x < SCREEN_MARGIN) {
 			x = SCREEN_MARGIN;
 		}
 
-		int y = searchFieldArea.getY() - popupHeight;
+		int y = searchFieldArea.getY() - overlayHeight;
 		if (y < 0) {
 			y = searchFieldArea.getY() + searchFieldArea.getHeight();
-			if (y + popupHeight > screenHeight - SCREEN_MARGIN) {
+			if (y + overlayHeight > screenHeight - SCREEN_MARGIN) {
 				int availableBelow = screenHeight - SCREEN_MARGIN - y - BORDER * 2;
 				int fitRows = availableBelow / MIN_ROW_HEIGHT;
 				if (fitRows <= 0) {
-					popupArea = null;
+					overlayArea = null;
 					rowLayouts.clear();
 					return;
 				}
 				visibleRowCount = Math.min(fitRows, visibleRowCount);
 				totalHeight = calculateRowLayouts(visibleRowCount, descAreaWidth, font);
-				popupHeight = totalHeight + BORDER * 2;
+				overlayHeight = totalHeight + BORDER * 2;
 			}
 		}
 
-		popupArea = new ImmutableRect2i(x, y, popupWidth, popupHeight);
-		background.draw(guiGraphics, popupArea);
+		overlayArea = new ImmutableRect2i(x, y, overlayWidth, overlayHeight);
+		background.draw(guiGraphics, overlayArea);
 
 		for (int i = 0; i < rowLayouts.size(); i++) {
 			int candidateIndex = scrollOffset + i;
@@ -457,22 +483,27 @@ public class SearchCompletionPopup {
 			RowLayout row = rowLayouts.get(i);
 			int rowY = y + BORDER + row.y();
 			boolean selected = (candidateIndex == selectedIndex);
-			boolean hovered = popupArea.contains(mouseX, mouseY) &&
+			boolean hovered = overlayArea.contains(mouseX, mouseY) &&
 				mouseY >= rowY && mouseY < rowY + row.height();
 
 			if (selected || hovered) {
-				guiGraphics.fill(x + BORDER, rowY, x + popupWidth - BORDER, rowY + row.height(), SELECTED_COLOR);
+				guiGraphics.fill(x + BORDER, rowY, x + overlayWidth - BORDER, rowY + row.height(), SELECTED_COLOR);
 			}
 
 			String symbol = candidate.displayName();
 			int symbolY = rowY + (row.height() - LINE_HEIGHT) / 2 + 1;
-			int symbolColor = candidate.category() == CandidateCategory.DYNAMIC ? DYNAMIC_SYMBOL_COLOR : SYMBOL_COLOR;
-			int maxSymbolWidth = popupWidth - PADDING * 2;
+			int symbolColor;
+			if (candidate.category() == CandidateCategory.DYNAMIC) {
+				symbolColor = DYNAMIC_SYMBOL_COLOR;
+			} else {
+				symbolColor = SYMBOL_COLOR;
+			}
+			int maxSymbolWidth = overlayWidth - PADDING * 2;
 			String truncatedSymbol = font.plainSubstrByWidth(symbol, maxSymbolWidth);
 			guiGraphics.text(font, truncatedSymbol, x + PADDING, symbolY, symbolColor, true);
 
 			if (candidate.category() != CandidateCategory.DYNAMIC && !row.wrappedLines().isEmpty()) {
-				int rightEdge = x + popupWidth - PADDING;
+				int rightEdge = x + overlayWidth - PADDING;
 				Language language = Language.getInstance();
 				int descY = rowY + (row.height() - row.wrappedLines().size() * LINE_HEIGHT) / 2 + 1;
 				for (FormattedText line : row.wrappedLines()) {
@@ -486,9 +517,9 @@ public class SearchCompletionPopup {
 		}
 
 		if (filteredCandidates.size() > visibleRowCount) {
-			int scrollbarX = x + popupWidth - BORDER - SCROLLBAR_WIDTH;
+			int scrollbarX = x + overlayWidth - BORDER - SCROLLBAR_WIDTH;
 			int scrollbarY = y + BORDER;
-			int scrollbarH = popupHeight - BORDER * 2;
+			int scrollbarH = overlayHeight - BORDER * 2;
 			guiGraphics.fill(scrollbarX, scrollbarY, scrollbarX + SCROLLBAR_WIDTH, scrollbarY + scrollbarH, SCROLLBAR_TRACK_COLOR);
 			double ratio = (double) scrollOffset / (filteredCandidates.size() - visibleRowCount);
 			int thumbH = Math.max(MIN_ROW_HEIGHT, (int) ((double) scrollbarH * visibleRowCount / filteredCandidates.size()));

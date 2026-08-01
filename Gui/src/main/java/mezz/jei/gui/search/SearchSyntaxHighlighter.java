@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
 
 public class SearchSyntaxHighlighter {
 	private static final int PREFIX_COLOR = 0xFF55FFFF;
@@ -75,11 +74,16 @@ public class SearchSyntaxHighlighter {
 
 		int length = fullText.length();
 		int[] colors = new int[length];
-		Arrays.fill(colors, empty ? NO_MATCH_COLOR : DEFAULT_CONTENT_COLOR);
+		if (empty) {
+			Arrays.fill(colors, NO_MATCH_COLOR);
+		} else {
+			Arrays.fill(colors, DEFAULT_CONTENT_COLOR);
+		}
+
 		if (!empty) {
-			Matcher matcher = SearchTokenizer.fullTokenMatcher(fullText);
-			while (matcher.find()) {
-				colorToken(fullText, matcher.group(), matcher.start(), matcher.end(), colors, prefixes);
+			List<Token> tokens = SearchTokenizer.tokenize(fullText);
+			for (Token token : tokens) {
+				colorToken(fullText, token, colors, prefixes);
 			}
 		}
 
@@ -89,8 +93,10 @@ public class SearchSyntaxHighlighter {
 		return this.lastColors = colors;
 	}
 
-	private void colorToken(String fullText, String token, int start, int end, int[] colors, Set<Character> prefixes) {
-		if (token.equals("|")) {
+	private void colorToken(String fullText, Token token, int[] colors, Set<Character> prefixes) {
+		int start = token.start();
+		int end = token.end();
+		if (token.operator()) {
 			fill(colors, start, end, OPERATOR_COLOR);
 			return;
 		}
@@ -101,7 +107,12 @@ public class SearchSyntaxHighlighter {
 		}
 		if (pos < end && prefixes.contains(fullText.charAt(pos))) {
 			colors[pos++] = PREFIX_COLOR;
-			int color = (pos < end && fullText.charAt(pos) == '"') ? DEFAULT_CONTENT_COLOR : PREFIXED_CONTENT_COLOR;
+			int color;
+			if (pos < end && fullText.charAt(pos) == '"') {
+				color = DEFAULT_CONTENT_COLOR;
+			} else {
+				color = PREFIXED_CONTENT_COLOR;
+			}
 			fill(colors, pos, end, color);
 			return;
 		}

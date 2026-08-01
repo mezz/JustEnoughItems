@@ -70,11 +70,12 @@ public class TextFieldInputHandler implements IUserInputHandler {
 		if (textFieldFilter.isCompletionVisible()) {
 			if (input.ifMouseEvent((event, doubleClicked) -> {
 				if (input.isSimulate()) {
-					return textFieldFilter.isCompletionMouseOver(event.x(), event.y());
+				return textFieldFilter.isCompletionMouseOver(event.x(), event.y());
 				} else {
-					return textFieldFilter.handleCompletionClick(event.x(), event.y());
+				return textFieldFilter.handleCompletionClick(event.x(), event.y());
 				}
-			})) {
+				})
+			) {
 				if (!input.isSimulate()) {
 					handleSetFocused(input, true);
 				}

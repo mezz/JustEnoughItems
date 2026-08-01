@@ -12,10 +12,10 @@ import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.search.PrefixInfo;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
-import mezz.jei.common.search.PrefixInfo;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.search.ElementPrefixParser;
 import mezz.jei.gui.search.ElementSearch;
@@ -44,10 +44,8 @@ public class IngredientFilter
 		IIngredientManager.IIngredientListener,
 		IIngredientVisibility.IListener,
 		IClientToggleState.IEditModeListener,
-		ISearchCompletionProvider
-{
+		ISearchCompletionProvider {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final SearchTokenizer searchTokenizer = new SearchTokenizer();
 
 	private final IClientConfig clientConfig;
 	private final IFilterTextSource filterTextSource;
@@ -215,8 +213,8 @@ public class IngredientFilter
 	}
 
 	private Stream<ITypedIngredient<?>> getIngredientListUncached(String filterText) {
-		List<String> filters = SearchTokenizer.splitByOrOutsideQuotes(filterText);
-		List<SearchTokens> searchTokens = filters.stream()
+		List<Token> tokens = SearchTokenizer.tokenize(filterText);
+		List<SearchTokens> searchTokens = SearchTokenizer.splitByOperators(tokens).stream()
 			.map(this::parseSearchTokens)
 			.filter(s -> !s.isEmpty())
 			.toList();
@@ -272,14 +270,9 @@ public class IngredientFilter
 		}
 	}
 
-	private SearchTokens parseSearchTokens(String filterText) {
+	private SearchTokens parseSearchTokens(List<Token> tokens) {
 		SearchTokens searchTokens = new SearchTokens(new ArrayList<>(), new ArrayList<>());
 
-		if (filterText.isEmpty()) {
-			return searchTokens;
-		}
-
-		List<Token> tokens = searchTokenizer.tokenize(filterText);
 		for (Token token : tokens) {
 			if (token.isEmpty()) {
 				continue;

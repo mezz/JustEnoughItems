@@ -12,7 +12,7 @@ import mezz.jei.gui.input.focus.ScreenFocusHandler;
 import mezz.jei.gui.input.handlers.TextFieldInputHandler;
 import mezz.jei.gui.overlay.ISearchField;
 import mezz.jei.gui.search.ISearchCompletionProvider;
-import mezz.jei.gui.search.SearchCompletionPopup;
+import mezz.jei.gui.search.SearchCompletionOverlay;
 import mezz.jei.gui.search.SearchSyntaxHighlighter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -37,7 +37,7 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 
 	private @Nullable ScreenFocusHandler screenUnfocusHandler;
 
-	private final SearchCompletionPopup completionPopup;
+	private final SearchCompletionOverlay completionOverlay;
 
 	public GuiTextFieldFilter(BooleanSupplier filterEmpty, IClientConfig clientConfig, ISearchCompletionProvider searchCompletionProvider) {
 		super(Minecraft.getInstance().font, 0, 0, 0, 0, Component.translatable("gui.jei.search"));
@@ -48,7 +48,7 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 		this.area = ImmutableRect2i.EMPTY;
 		Textures textures = Internal.getTextures();
 		this.background = textures.getSearchBackground();
-		this.completionPopup = new SearchCompletionPopup(searchCompletionProvider, textures.getCompletionPopupBackground());
+		this.completionOverlay = new SearchCompletionOverlay(searchCompletionProvider, textures.getCompletionOverlayBackground());
 		this.backgroundBounds = ImmutableRect2i.EMPTY;
 		setBordered(false);
 		addFormatter(new SearchSyntaxHighlighter(filterEmpty, this::getValue, searchCompletionProvider)::format);
@@ -62,7 +62,7 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 		this.width = area.getWidth() - 12;
 		this.height = area.getHeight();
 		this.area = area;
-		this.completionPopup.updateBounds(area);
+		this.completionOverlay.updateBounds(area);
 	}
 
 	@Override
@@ -133,33 +133,33 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 	public void extractForegroundRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		super.extractWidgetRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 		if (clientConfig.isSearchCompletionEnabled() && isFocused()) {
-			completionPopup.render(guiGraphics, getValue(), getCursorPosition(), mouseX, mouseY);
+			completionOverlay.render(guiGraphics, getValue(), getCursorPosition(), mouseX, mouseY);
 		} else {
-			completionPopup.close();
+			completionOverlay.close();
 		}
 	}
 
 	public boolean isCompletionVisible() {
-		return isFocused() && completionPopup.isVisible();
+		return isFocused() && completionOverlay.isVisible();
 	}
 
 	public void moveCompletion(int delta) {
-		completionPopup.moveSelection(delta);
+		completionOverlay.moveSelection(delta);
 	}
 
 	public void acceptCompletion() {
-		completionPopup.accept(this);
+		completionOverlay.accept(this);
 	}
 
 	public void closeCompletion() {
-		completionPopup.close();
+		completionOverlay.close();
 	}
 
 	public boolean handleCompletionClick(double mouseX, double mouseY) {
-		return completionPopup.handleMouseClicked(mouseX, mouseY, this);
+		return completionOverlay.handleMouseClicked(mouseX, mouseY, this);
 	}
 
 	public boolean isCompletionMouseOver(double mouseX, double mouseY) {
-		return completionPopup.isMouseOver(mouseX, mouseY);
+		return completionOverlay.isMouseOver(mouseX, mouseY);
 	}
 }
