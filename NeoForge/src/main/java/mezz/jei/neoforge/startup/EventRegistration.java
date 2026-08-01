@@ -151,10 +151,12 @@ public class EventRegistration {
 		});
 	}
 
-	private static void runWithIdentityPose(GuiGraphics guiGraphics, Runnable runnable) {
-		PoseStack pose = guiGraphics.pose();
+	private static void runWithIdentityPose(GuiGraphics graphics, Runnable runnable) {
+		PoseStack pose = graphics.pose();
+		float z = pose.last().pose().m32();
 		pose.pushPose();
 		pose.setIdentity();
+		pose.translate(0, 0, z);
 		try {
 			runnable.run();
 		} finally {
