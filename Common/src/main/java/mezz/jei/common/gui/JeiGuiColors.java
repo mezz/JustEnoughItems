@@ -155,7 +155,7 @@ public final class JeiGuiColors {
 		String getDefaultColorString() {
 			return "0x%08X".formatted(defaultColor);
 		}
-		
+
 		public int getDefaultColor() {
 			return defaultColor;
 		}
