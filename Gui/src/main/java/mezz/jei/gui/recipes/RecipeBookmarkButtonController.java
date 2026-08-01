@@ -74,7 +74,7 @@ public class RecipeBookmarkButtonController implements IIconButtonController {
 				buttonArea.getY(),
 				buttonArea.getX() + buttonArea.getWidth(),
 				buttonArea.getY() + buttonArea.getHeight(),
-				JeiGuiColors.getColor(GuiColor.RECIPE_BOOKMARK_OVERLAY)
+				JeiGuiColors.getColor(GuiColor.BOOKMARKED_RECIPE_OVERLAY)
 			);
 		}
 	}

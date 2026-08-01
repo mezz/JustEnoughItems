@@ -77,10 +77,10 @@ public class GrindstoneRecipeCategory extends AbstractRecipeCategory<IJeiGrindst
 			int minXpReward = recipe.getMinXpReward();
 			Component text = Component.translatable("gui.jei.category.grindstone.experience", minXpReward, maxXpReward);
 			builder.addText(text, getWidth(), 10)
-					.setPosition(0, 43)
-					.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_POSITIVE_TEXT))
-					.setShadow(true)
-					.setTextAlignment(HorizontalAlignment.RIGHT);
+				.setPosition(0, 43)
+				.setColor(JeiGuiColors.getColor(GuiColor.GRINDSTONE_EXPERIENCE_REWARD_TEXT))
+				.setShadow(true)
+				.setTextAlignment(HorizontalAlignment.RIGHT);
 		}
 	}
 

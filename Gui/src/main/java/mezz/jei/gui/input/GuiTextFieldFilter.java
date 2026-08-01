@@ -59,9 +59,9 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 		if (!filterText.equals(getValue())) {
 			super.setValue(filterText);
 		}
-		int color = JeiGuiColors.getColor(GuiColor.SEARCH_TEXT);
+		int color = JeiGuiColors.getColor(GuiColor.SEARCH_FIELD_TEXT);
 		if (filterEmpty.getAsBoolean()) {
-			color = JeiGuiColors.getColor(GuiColor.SEARCH_TEXT_ERROR);
+			color = JeiGuiColors.getColor(GuiColor.SEARCH_FIELD_ERROR_TEXT);
 		}
 		setTextColor(color);
 	}

@@ -93,9 +93,9 @@ public class GhostIngredientDrag<T> {
 		for (Rect2i area : targetAreas) {
 			int color;
 			if (MathUtil.contains(area, mouseX, mouseY)) {
-				color = JeiGuiColors.getColor(GuiColor.GHOST_INGREDIENT_DRAG_HOVER);
+				color = JeiGuiColors.getColor(GuiColor.GHOST_INGREDIENT_DRAG_HOVER_HIGHLIGHT);
 			} else {
-				color = JeiGuiColors.getColor(GuiColor.GHOST_INGREDIENT_DRAG_TARGET);
+				color = JeiGuiColors.getColor(GuiColor.GHOST_INGREDIENT_DRAG_TARGET_HIGHLIGHT);
 			}
 			guiGraphics.fill(
 				RenderType.guiOverlay(),

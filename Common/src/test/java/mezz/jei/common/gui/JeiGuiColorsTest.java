@@ -34,17 +34,17 @@ public class JeiGuiColorsTest {
 	public void loadColorsFromResourcePack(@TempDir Path tempDir) throws IOException {
 		Path resourcePack = createResourcePack(tempDir, """
 			{
-			"textWidgetText": "0x112233",
-			"navigationBackground": "0x80224466"
+			"recipeTextWidgetText": "0x112233",
+			"pageNavigationBackground": "0x80224466"
 			}
 			""");
 		try (CloseableResourceManager resourceManager = createResourceManager(resourcePack)) {
 			JeiGuiColors.onResourceManagerReload(resourceManager);
 		}
 
-		Assertions.assertEquals(0xFF112233, JeiGuiColors.getColor(GuiColor.TEXT_WIDGET_TEXT));
-		Assertions.assertEquals(0x80224466, JeiGuiColors.getColor(GuiColor.NAVIGATION_BACKGROUND));
-		Assertions.assertEquals(GuiColor.RECIPE_ERROR_TEXT.getDefaultColor(), JeiGuiColors.getColor(GuiColor.RECIPE_ERROR_TEXT));
+		Assertions.assertEquals(0xFF112233, JeiGuiColors.getColor(GuiColor.RECIPE_TEXT_WIDGET_TEXT));
+		Assertions.assertEquals(0x80224466, JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_BACKGROUND));
+		Assertions.assertEquals(GuiColor.ANVIL_EXPERIENCE_COST_ERROR_TEXT.getDefaultColor(), JeiGuiColors.getColor(GuiColor.ANVIL_EXPERIENCE_COST_ERROR_TEXT));
 	}
 
 	@Test
@@ -74,21 +74,17 @@ public class JeiGuiColorsTest {
 	private static Path createResourcePack(Path tempDir, CharSequence overrides) throws IOException {
 		Path resourcePack = tempDir.resolve("jei-color-overrides");
 		Files.createDirectories(resourcePack.resolve("assets/jei/gui"));
-		var packFormat = DetectedVersion.BUILT_IN
-			.packVersion(PackType.CLIENT_RESOURCES);
+		int packFormat = DetectedVersion.BUILT_IN
+			.getPackVersion(PackType.CLIENT_RESOURCES);
 		Files.writeString(resourcePack.resolve("pack.mcmeta"), """
 			{
 			"pack": {
-				"pack_format": {
-				"major": %d,
-				"minor": %d
-				},
+				"pack_format": %d,
 				"description": "JEI GUI color override test"
 			}
 			}
 			""".formatted(
-			packFormat.major(),
-			packFormat.minor()
+			packFormat
 		));
 		Files.writeString(resourcePack.resolve("assets/jei/gui/colors.json"), overrides);
 		return resourcePack;

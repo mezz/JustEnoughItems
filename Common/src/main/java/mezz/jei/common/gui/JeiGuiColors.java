@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import mezz.jei.api.constants.ModIds;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +20,7 @@ import java.util.OptionalInt;
 
 public final class JeiGuiColors {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Identifier COLORS_RESOURCE = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "gui/colors.json");
+	private static final ResourceLocation COLORS_RESOURCE = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "gui/colors.json");
 	private static final long MAX_COLOR = 0xFFFFFFFFL;
 
 	private static volatile Map<GuiColor, Integer> colors = createDefaultColors();
@@ -108,28 +108,33 @@ public final class JeiGuiColors {
 	}
 
 	public enum GuiColor {
-		TEXT_WIDGET_TEXT("textWidgetText", 0xFF000000),
-		SCROLL_BOX_TEXT("scrollBoxText", 0xFF000000),
-		RECIPE_INFO_TEXT("recipeInfoText", 0xFF808080),
-		RECIPE_POSITIVE_TEXT("recipePositiveText", 0xFF80FF20),
-		RECIPE_ERROR_TEXT("recipeErrorText", 0xFFFF6060),
-		TAG_INFO_TEXT("tagInfoText", 0xFF505050),
-		TAG_INFO_IDENTIFIER_TEXT("tagInfoIdentifierText", 0xFFAAAAAA),
+		RECIPE_TEXT_WIDGET_TEXT("recipeTextWidgetText", 0xFF000000),
+		RECIPE_SCROLL_BOX_TEXT("recipeScrollBoxText", 0xFF000000),
+		ANVIL_EXPERIENCE_COST_TEXT("anvilExperienceCostText", 0xFF80FF20),
+		ANVIL_EXPERIENCE_COST_ERROR_TEXT("anvilExperienceCostErrorText", 0xFFFF6060),
+		GRINDSTONE_EXPERIENCE_REWARD_TEXT("grindstoneExperienceRewardText", 0xFF80FF20),
+		RECIPE_BREWING_STEPS_TEXT("recipeBrewingStepsText", 0xFF808080),
+		RECIPE_COMPOSTING_CHANCE_TEXT("recipeCompostingChanceText", 0xFF808080),
+		RECIPE_COOKING_EXPERIENCE_TEXT("recipeCookingExperienceText", 0xFF808080),
+		RECIPE_COOKING_TIME_TEXT("recipeCookingTimeText", 0xFF808080),
+		RECIPE_FUEL_SMELT_COUNT_TEXT("recipeFuelSmeltCountText", 0xFF808080),
+		TAG_INFORMATION_TEXT("tagInformationText", 0xFF505050),
+		TAG_INFORMATION_IDENTIFIER_TEXT("tagInformationIdentifierText", 0xFFAAAAAA),
 		RECIPE_CATEGORY_ICON_TEXT("recipeCategoryIconText", 0xFFE0E0E0),
 		RECIPE_CATEGORY_TITLE_TEXT("recipeCategoryTitleText", 0xFFFFFFFF),
-		SEARCH_TEXT("searchText", 0xFFFFFFFF),
-		SEARCH_TEXT_ERROR("searchTextError", 0xFFFF0000),
+		SEARCH_FIELD_TEXT("searchFieldText", 0xFFFFFFFF),
+		SEARCH_FIELD_ERROR_TEXT("searchFieldErrorText", 0xFFFF0000),
 		LOOKUP_HISTORY_LINE("lookupHistoryLine", 0xFF959595),
-		NAVIGATION_BACKGROUND("navigationBackground", 0x30000000),
-		NAVIGATION_TEXT("navigationText", 0xFFFFFFFF),
-		RECIPE_BOOKMARK_OVERLAY("recipeBookmarkOverlay", 0x1100FF00),
-		EDIT_MODE_HIDDEN_INGREDIENT("editModeHiddenIngredient", 0xDDFF0000),
-		EDIT_MODE_HIDDEN_WILDCARD("editModeHiddenWildcard", 0xDDFFA500),
-		GHOST_INGREDIENT_DRAG_TARGET("ghostIngredientDragTarget", 0x4013C90A),
-		GHOST_INGREDIENT_DRAG_HOVER("ghostIngredientDragHover", 0x804CC919),
-		TAG_CONTENT_TOOLTIP_COUNT("tagContentTooltipCount", 0xFFAAAAAA),
-		RENDER_ERROR_TEXT("renderErrorText", 0xFFFF0000),
-		RECIPE_TRANSFER_MISSING_SLOTS("recipeTransferMissingSlots", 0x66FF0000),
+		PAGE_NAVIGATION_BACKGROUND("pageNavigationBackground", 0x30000000),
+		PAGE_NAVIGATION_TEXT("pageNavigationText", 0xFFFFFFFF),
+		BOOKMARKED_RECIPE_OVERLAY("bookmarkedRecipeOverlay", 0x1100FF00),
+		EDIT_MODE_HIDDEN_INGREDIENT_OVERLAY("editModeHiddenIngredientOverlay", 0xDDFF0000),
+		EDIT_MODE_HIDDEN_WILDCARD_OVERLAY("editModeHiddenWildcardOverlay", 0xDDFFA500),
+		GHOST_INGREDIENT_DRAG_TARGET_HIGHLIGHT("ghostIngredientDragTargetHighlight", 0x4013C90A),
+		GHOST_INGREDIENT_DRAG_HOVER_HIGHLIGHT("ghostIngredientDragHoverHighlight", 0x804CC919),
+		TAG_CONTENT_TOOLTIP_COUNT_TEXT("tagContentTooltipCountText", 0xFFAAAAAA),
+		INGREDIENT_RENDER_ERROR_TEXT("ingredientRenderErrorText", 0xFFFF0000),
+		RECIPE_TRANSFER_MISSING_SLOT_HIGHLIGHT("recipeTransferMissingSlotHighlight", 0x66FF0000),
 		RECIPE_TRANSFER_BUTTON_HIGHLIGHT("recipeTransferButtonHighlight", 0x80FFA500),
 		DEBUG_WIDGET_AREA("debugWidgetArea", 0xAAAAAA00),
 		DEBUG_GUI_EXCLUSION_AREA("debugGuiExclusionArea", 0x44FF0000),

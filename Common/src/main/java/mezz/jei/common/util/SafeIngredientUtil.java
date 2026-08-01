@@ -191,7 +191,7 @@ public final class SafeIngredientUtil {
 	private static void renderError(GuiGraphics guiGraphics) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Font font = minecraft.font;
-		int color = JeiGuiColors.getColor(GuiColor.RENDER_ERROR_TEXT);
+		int color = JeiGuiColors.getColor(GuiColor.INGREDIENT_RENDER_ERROR_TEXT);
 		guiGraphics.drawString(font, "ERR", 0, 0, color, false);
 		guiGraphics.drawString(font, "OR", 0, 8, color, false);
 		RenderSystem.setShaderColor(1, 1, 1, 1);

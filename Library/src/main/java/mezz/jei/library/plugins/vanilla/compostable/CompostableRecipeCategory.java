@@ -42,7 +42,7 @@ public class CompostableRecipeCategory extends AbstractRecipeCategory<IJeiCompos
 			.setPosition(24, 0)
 			.setTextAlignment(HorizontalAlignment.CENTER)
 			.setTextAlignment(VerticalAlignment.CENTER)
-			.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_INFO_TEXT));
+			.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_COMPOSTING_CHANCE_TEXT));
 	}
 
 	@Override

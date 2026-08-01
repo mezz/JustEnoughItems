@@ -6,7 +6,7 @@ import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
@@ -25,7 +25,7 @@ public final class JeiGuiColorsDataGenerator {
 	}
 
 	private record JeiGuiColorsProvider(PackOutput.PathProvider pathProvider) implements DataProvider {
-		private static final Identifier COLORS = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "colors");
+		private static final ResourceLocation COLORS = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "colors");
 
 		private JeiGuiColorsProvider(PackOutput output) {
 			this(output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "gui"));
