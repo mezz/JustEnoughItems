@@ -1,5 +1,7 @@
 package mezz.jei.gui.overlay.ingredients;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.GuiGraphics;
@@ -33,10 +35,13 @@ public final class GuiExclusionAreaShadow {
 			backgroundArea.y() + backgroundArea.height()
 		);
 		try {
+			RenderSystem.enableBlend();
+			RenderSystem.defaultBlendFunc();
 			for (ImmutableRect2i shadowArea : shadowAreas) {
 				shadow.draw(guiGraphics, shadowArea);
 			}
 		} finally {
+			RenderSystem.disableBlend();
 			guiGraphics.disableScissor();
 		}
 	}
