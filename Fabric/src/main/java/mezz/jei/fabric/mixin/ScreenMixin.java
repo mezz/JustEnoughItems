@@ -52,8 +52,10 @@ public class ScreenMixin {
 
 	private static void runWithIdentityPose(GuiGraphics graphics, Runnable runnable) {
 		PoseStack pose = graphics.pose();
+		float z = pose.last().pose().m32();
 		pose.pushPose();
 		pose.setIdentity();
+		pose.translate(0, 0, z);
 		try {
 			runnable.run();
 		} finally {
