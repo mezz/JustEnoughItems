@@ -2,7 +2,7 @@ package mezz.jei.common.gui;
 
 import com.google.gson.JsonParser;
 import mezz.jei.common.gui.JeiGuiColors.GuiColor;
-import net.minecraft.SharedConstants;
+import net.minecraft.DetectedVersion;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
@@ -70,8 +70,7 @@ public class JeiGuiColorsTest {
 	private static Path createResourcePack(Path tempDir, CharSequence overrides) throws IOException {
 		Path resourcePack = tempDir.resolve("jei-color-overrides");
 		Files.createDirectories(resourcePack.resolve("assets/jei/gui"));
-		SharedConstants.tryDetectVersion();
-		int packFormat = SharedConstants.getCurrentVersion()
+		int packFormat = DetectedVersion.BUILT_IN
 			.getPackVersion(PackType.CLIENT_RESOURCES);
 		Files.writeString(resourcePack.resolve("pack.mcmeta"), """
 			{
