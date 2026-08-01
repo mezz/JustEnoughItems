@@ -3,6 +3,7 @@ package mezz.jei.neoforge;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.IngredientTooltipComponent;
 import mezz.jei.common.gui.IngredientsTooltipComponent;
 import mezz.jei.common.gui.textures.Textures;
@@ -111,6 +112,7 @@ public class JustEnoughItemsClient {
 
 	private ResourceManagerReloadListener createReloadListener() {
 		return (ResourceManager resourceManager) -> {
+			JeiGuiColors.onResourceManagerReload(resourceManager);
 			NeoForgeGuiPlugin.getResourceReloadHandler()
 				.ifPresent(r -> r.onResourceManagerReload(resourceManager));
 		};

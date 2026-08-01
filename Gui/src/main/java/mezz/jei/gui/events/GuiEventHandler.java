@@ -5,6 +5,8 @@ import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.DebugConfig;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.RectDebugger;
@@ -170,7 +172,7 @@ public class GuiEventHandler {
 					area.getY(),
 					area.getX() + area.getWidth(),
 					area.getY() + area.getHeight(),
-					0x44FF0000
+					JeiGuiColors.getColor(GuiColor.DEBUG_GUI_EXCLUSION_AREA)
 				);
 			}
 
@@ -181,7 +183,7 @@ public class GuiEventHandler {
 				guiProperties.guiTop(),
 				guiProperties.guiRight(),
 				guiProperties.guiBottom(),
-				0x22CCCC00
+				JeiGuiColors.getColor(GuiColor.DEBUG_GUI_AREA)
 			);
 
 			RenderSystem.setShaderColor(1f, 1f, 1f, 1f);

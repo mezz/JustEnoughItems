@@ -25,6 +25,8 @@ base {
     archivesName.set(baseArchivesName)
 }
 
+val generatedJeiGuiColorsResources = layout.buildDirectory.dir("generated/resources/jeiGuiColors")
+
 val dependencyProjects: List<Project> = listOf(
     project(":CommonApi"),
 )
@@ -47,7 +49,25 @@ neoForge {
 	}
 }
 
+val datagenSourceSet = sourceSets.create("datagen") {
+    compileClasspath += sourceSets.main.get().output.classesDirs
+    compileClasspath += sourceSets.main.get().compileClasspath
+    runtimeClasspath += output
+    runtimeClasspath += compileClasspath
+}
+
+val generateJeiGuiColors = tasks.register<JavaExec>("generateJeiGuiColors") {
+    dependsOn(tasks.named(datagenSourceSet.classesTaskName))
+    mainClass.set("mezz.jei.common.gui.JeiGuiColorsDataGenerator")
+    classpath = datagenSourceSet.runtimeClasspath
+    args(generatedJeiGuiColorsResources.get().asFile.absolutePath)
+    outputs.dir(generatedJeiGuiColorsResources)
+}
+
 sourceSets {
+    named("main") {
+        resources.srcDir(generateJeiGuiColors)
+    }
     named("test") {
         //The test module has no resources
         resources.setSrcDirs(emptyList<String>())
@@ -111,8 +131,7 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-    include("mezz/jei/common/gui/elements/**")
-    include("mezz/jei/common/gui/textures/**")
+    include("mezz/jei/common/gui/**")
     include("mezz/jei/test/**")
     include("mezz/jei/common/util/**")
     exclude("mezz/jei/test/lib/**")

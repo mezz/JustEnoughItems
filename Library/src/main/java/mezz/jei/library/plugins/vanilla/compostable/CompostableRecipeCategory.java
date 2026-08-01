@@ -9,6 +9,8 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
@@ -40,7 +42,7 @@ public class CompostableRecipeCategory extends AbstractRecipeCategory<IJeiCompos
 			.setPosition(24, 0)
 			.setTextAlignment(HorizontalAlignment.CENTER)
 			.setTextAlignment(VerticalAlignment.CENTER)
-			.setColor(0xFF808080);
+			.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_INFO_TEXT));
 	}
 
 	@Override

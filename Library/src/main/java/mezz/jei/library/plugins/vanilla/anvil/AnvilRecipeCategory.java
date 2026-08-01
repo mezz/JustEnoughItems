@@ -11,6 +11,8 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -80,7 +82,10 @@ public class AnvilRecipeCategory extends AbstractRecipeCategory<IJeiAnvilRecipe>
 			Minecraft minecraft = Minecraft.getInstance();
 			LocalPlayer player = minecraft.player;
 			// Show red if the player doesn't have enough levels
-			int textColor = playerHasEnoughLevels(player, cost) ? 0xFF80FF20 : 0xFFFF6060;
+			int textColor = JeiGuiColors.getColor(GuiColor.RECIPE_ERROR_TEXT);
+			if (playerHasEnoughLevels(player, cost)) {
+				textColor = JeiGuiColors.getColor(GuiColor.RECIPE_POSITIVE_TEXT);
+			}
 
 			builder.addText(text, getWidth() - 4, 10)
 				.setPosition(2, 27)
