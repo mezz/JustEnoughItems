@@ -64,23 +64,25 @@ public record IngredientGridWithNavigationLayout(
 			ingredientGridArea,
 			IngredientGridLayout.calculateAvailableSlotCount(ingredientGridArea, Set.of(), null),
 			navigationArea,
+			navigationArea,
 			navigationEnabled,
 			ImmutableRect2i.EMPTY,
 			false
 		);
 	}
 
-	public static IngredientGridWithNavigationLayout fromGridArea(
+	static IngredientGridWithNavigationLayout fromGridArea(
 		IIngredientGridConfig gridConfig,
 		ImmutableRect2i ingredientGridArea,
 		int availableSlotCount,
 		ImmutableRect2i navigationArea,
+		ImmutableRect2i backgroundNavigationArea,
 		boolean navigationEnabled,
 		ImmutableRect2i scrollbarArea,
 		boolean scrollbarEnabled
 	) {
 		ImmutableRect2i slotBackgroundArea = calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
-		ImmutableRect2i backgroundArea = MathUtil.union(MathUtil.union(slotBackgroundArea, navigationArea), scrollbarArea);
+		ImmutableRect2i backgroundArea = MathUtil.union(MathUtil.union(slotBackgroundArea, backgroundNavigationArea), scrollbarArea);
 		if (gridConfig.drawBackground().getValue() && !backgroundArea.isEmpty()) {
 			backgroundArea = backgroundArea.expandBy(BORDER_PADDING);
 		}
