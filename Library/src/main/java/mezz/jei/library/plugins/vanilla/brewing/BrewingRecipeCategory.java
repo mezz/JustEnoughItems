@@ -66,7 +66,7 @@ public class BrewingRecipeCategory extends AbstractRecipeCategory<IJeiBrewingRec
 
 		builder.addText(steps, 42, 12)
 			.setPosition(70, 28)
-			.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_INFO_TEXT));
+			.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_BREWING_STEPS_TEXT));
 	}
 
 	@Override

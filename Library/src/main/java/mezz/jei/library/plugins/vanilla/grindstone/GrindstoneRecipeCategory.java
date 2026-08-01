@@ -104,7 +104,7 @@ public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneR
 			Component text = Component.translatable("gui.jei.category.grindstone.experience", minXpReward, maxXpReward);
 			Minecraft minecraft = Minecraft.getInstance();
 			int width = minecraft.font.width(text);
-			minecraft.font.drawShadow(poseStack, text, getWidth() - width, 43, JeiGuiColors.getColor(GuiColor.RECIPE_POSITIVE_TEXT));
+			minecraft.font.drawShadow(poseStack, text, getWidth() - width, 43, JeiGuiColors.getColor(GuiColor.GRINDSTONE_EXPERIENCE_REWARD_TEXT));
 		}
 	}
 

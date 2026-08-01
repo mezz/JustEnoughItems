@@ -82,9 +82,9 @@ public class AnvilRecipeCategory extends AbstractRecipeCategory<IJeiAnvilRecipe>
 			Minecraft minecraft = Minecraft.getInstance();
 			LocalPlayer player = minecraft.player;
 			// Show red if the player doesn't have enough levels
-			int textColor = JeiGuiColors.getColor(GuiColor.RECIPE_ERROR_TEXT);
+			int textColor = JeiGuiColors.getColor(GuiColor.ANVIL_EXPERIENCE_COST_ERROR_TEXT);
 			if (playerHasEnoughLevels(player, cost)) {
-				textColor = JeiGuiColors.getColor(GuiColor.RECIPE_POSITIVE_TEXT);
+				textColor = JeiGuiColors.getColor(GuiColor.ANVIL_EXPERIENCE_COST_TEXT);
 			}
 
 			builder.addText(text, getWidth() - 4, 10)

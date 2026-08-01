@@ -222,7 +222,7 @@ public final class SafeIngredientUtil {
 	private static void renderError(PoseStack poseStack) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Font font = minecraft.font;
-		int color = JeiGuiColors.getColor(GuiColor.RENDER_ERROR_TEXT);
+		int color = JeiGuiColors.getColor(GuiColor.INGREDIENT_RENDER_ERROR_TEXT);
 		Screen.drawString(poseStack, font, "ERR", 0, 0, color);
 		Screen.drawString(poseStack, font, "OR", 0, 8, color);
 		RenderSystem.setShaderColor(1, 1, 1, 1);

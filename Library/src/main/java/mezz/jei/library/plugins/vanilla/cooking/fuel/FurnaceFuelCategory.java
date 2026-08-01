@@ -58,7 +58,7 @@ public class FurnaceFuelCategory extends AbstractRecipeCategory<IJeiFuelingRecip
 			.setPosition(20, 0)
 			.setTextAlignment(HorizontalAlignment.CENTER)
 			.setTextAlignment(VerticalAlignment.CENTER)
-			.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_INFO_TEXT));
+			.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_FUEL_SMELT_COUNT_TEXT));
 	}
 
 	public static Component createSmeltCountText(int burnTime) {

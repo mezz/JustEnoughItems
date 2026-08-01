@@ -70,7 +70,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 			builder.addText(experienceString, getWidth() - 20, 10)
 				.setPosition(0, 0, getWidth(), getHeight(), HorizontalAlignment.RIGHT, VerticalAlignment.TOP)
 				.setTextAlignment(HorizontalAlignment.RIGHT)
-				.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_INFO_TEXT));
+				.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_COOKING_EXPERIENCE_TEXT));
 		}
 	}
 
@@ -86,7 +86,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 				.setPosition(0, 0, getWidth(), getHeight(), HorizontalAlignment.RIGHT, VerticalAlignment.BOTTOM)
 				.setTextAlignment(HorizontalAlignment.RIGHT)
 				.setTextAlignment(VerticalAlignment.BOTTOM)
-				.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_INFO_TEXT));
+				.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_COOKING_TIME_TEXT));
 		}
 	}
 
