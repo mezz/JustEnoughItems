@@ -7,6 +7,8 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.platform.IPlatformInputHelper;
@@ -192,8 +194,9 @@ public final class SafeIngredientUtil {
 	private static void renderError(GuiGraphicsExtractor guiGraphics) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Font font = minecraft.font;
-		guiGraphics.text(font, "ERR", 0, 0, 0xFFFF0000, false);
-		guiGraphics.text(font, "OR", 0, 8, 0xFFFF0000, false);
+		int color = JeiGuiColors.getColor(GuiColor.RENDER_ERROR_TEXT);
+		guiGraphics.text(font, "ERR", 0, 0, color, false);
+		guiGraphics.text(font, "OR", 0, 8, color, false);
 	}
 
 }

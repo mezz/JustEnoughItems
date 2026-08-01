@@ -13,6 +13,8 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.textures.Textures;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
@@ -66,7 +68,7 @@ public class BrewingRecipeCategory extends AbstractRecipeCategory<IJeiBrewingRec
 
 		builder.addText(steps, 42, 12)
 			.setPosition(70, 28)
-			.setColor(0xFF808080);
+			.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_INFO_TEXT));
 	}
 
 	@Override
