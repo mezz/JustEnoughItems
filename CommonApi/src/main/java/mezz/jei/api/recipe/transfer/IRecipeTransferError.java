@@ -17,6 +17,11 @@ import java.util.List;
  * These errors are returned from {@link IRecipeTransferHandler#transferRecipe(AbstractContainerMenu, Object, IRecipeSlotsView, Player, boolean, boolean)}.
  */
 public interface IRecipeTransferError {
+	/**
+	 * @since 10.72.0
+	 */
+	int DEFAULT_BUTTON_HIGHLIGHT_COLOR = 0x80FFA500;
+
 	enum Type {
 		/**
 		 * Errors where the Transfer handler is broken or does not work.
@@ -57,7 +62,7 @@ public interface IRecipeTransferError {
 	 * @since 10.1.5
 	 */
 	default int getButtonHighlightColor() {
-		return 0x80FFA500;
+		return DEFAULT_BUTTON_HIGHLIGHT_COLOR;
 	}
 
 	/**
