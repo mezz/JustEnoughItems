@@ -67,25 +67,21 @@ public class GuiEventHandler {
 	}
 
 	/**
-	 * Draws after the screen contents and before deferred tooltips are extracted.
+	 * Draws the JEI overlay backgrounds, before the screen contents are drawn.
 	 */
-	public void drawForContainerScreen(AbstractContainerScreen<?> screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
-		drawOverlayForegrounds(guiGraphics, mouseX, mouseY, true);
-		drawPostForeground(screen, guiProperties, guiGraphics, mouseX, mouseY);
-	}
-
-	public void drawForScreen(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawForScreenBackground(Screen screen, GuiGraphicsExtractor guiGraphics) {
 		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
 		updateOverlayProperties(screen, guiProperties);
-
 		drawOverlayBackgrounds(guiGraphics);
+	}
 
-		if (screen instanceof AbstractContainerScreen<?>) {
-			return;
-		}
-
-		drawOverlayForegrounds(guiGraphics, mouseX, mouseY, false);
+	/**
+	 * Draws the JEI overlay foregrounds, after the screen contents and before deferred tooltips are extracted.
+	 */
+	public void drawForScreenForeground(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
+		boolean drawScreenForeground = screen instanceof AbstractContainerScreen<?>;
+		drawOverlayForegrounds(guiGraphics, mouseX, mouseY, drawScreenForeground);
 		drawPostForeground(screen, guiProperties, guiGraphics, mouseX, mouseY);
 	}
 

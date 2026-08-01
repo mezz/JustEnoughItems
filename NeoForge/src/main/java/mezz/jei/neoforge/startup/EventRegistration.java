@@ -9,11 +9,9 @@ import mezz.jei.neoforge.input.ForgeUserInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.CharacterEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.ContainerScreenEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import org.joml.Matrix3x2fStack;
 
@@ -111,23 +109,21 @@ public class EventRegistration {
 			Screen screen = event.getScreen();
 			guiEventHandler.onGuiOpen(screen);
 		});
-		subscriptions.register(EventPriority.LOWEST, ContainerScreenEvent.Render.Foreground.class, event -> {
-			AbstractContainerScreen<?> containerScreen = event.getContainerScreen();
+		subscriptions.register(EventPriority.LOWEST, ScreenEvent.Render.Foreground.class, event -> {
+			Screen screen = event.getScreen();
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
 			guiGraphics.nextStratum();
 			runWithIdentityPose(guiGraphics, () -> {
-				guiEventHandler.drawForContainerScreen(containerScreen, guiGraphics, mouseX, mouseY);
+				guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY);
 			});
 		});
 		subscriptions.register(EventPriority.HIGHEST, ScreenEvent.Render.Background.class, event -> {
 			Screen screen = event.getScreen();
 			var guiGraphics = event.getGuiGraphics();
-			int mouseX = event.getMouseX();
-			int mouseY = event.getMouseY();
 			runWithIdentityPose(guiGraphics, () -> {
-				guiEventHandler.drawForScreen(screen, guiGraphics, mouseX, mouseY);
+				guiEventHandler.drawForScreenBackground(screen, guiGraphics);
 			});
 		});
 		subscriptions.register(ScreenEvent.RenderInventoryMobEffects.class, event -> {
