@@ -4,6 +4,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IServerConfig;
+import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.IngredientTooltipComponent;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.ClientPacketRouter;
@@ -121,6 +122,7 @@ public class JustEnoughItemsClient {
 
 	private ResourceManagerReloadListener createReloadListener() {
 		return (ResourceManager resourceManager) -> {
+			JeiGuiColors.onResourceManagerReload(resourceManager);
 			ForgeGuiPlugin.getResourceReloadHandler()
 				.ifPresent(r -> r.onResourceManagerReload(resourceManager));
 		};

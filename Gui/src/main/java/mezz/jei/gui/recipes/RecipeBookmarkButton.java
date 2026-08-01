@@ -4,6 +4,8 @@ import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.gui.bookmarks.BookmarkList;
@@ -103,7 +105,7 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 				button.getY(),
 				button.getX() + button.getWidth(),
 				button.getY() + button.getHeight(),
-				0x1100FF00
+				JeiGuiColors.getColor(GuiColor.RECIPE_BOOKMARK_OVERLAY)
 			);
 		}
 	}

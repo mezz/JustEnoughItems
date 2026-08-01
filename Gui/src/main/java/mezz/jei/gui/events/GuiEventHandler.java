@@ -4,6 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.DebugConfig;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
@@ -145,7 +147,7 @@ public class GuiEventHandler {
 						area.getY(),
 						area.getX() + area.getWidth(),
 						area.getY() + area.getHeight(),
-						0x44FF0000
+						JeiGuiColors.getColor(GuiColor.DEBUG_GUI_EXCLUSION_AREA)
 					);
 				}
 
@@ -156,7 +158,7 @@ public class GuiEventHandler {
 					guiProperties.getGuiTop(),
 					guiProperties.getGuiLeft() + guiProperties.getGuiXSize(),
 					guiProperties.getGuiTop() + guiProperties.getGuiYSize(),
-					0x22CCCC00
+					JeiGuiColors.getColor(GuiColor.DEBUG_GUI_AREA)
 				);
 
 				RenderSystem.setShaderColor(1f, 1f, 1f, 1f);

@@ -106,13 +106,13 @@ public final class StringUtil {
 			.collect(Collectors.joining(", "));
 	}
 
-	public static void drawCenteredStringWithShadow(GuiGraphics guiGraphics, Font font, String string, ImmutableRect2i area) {
+	public static void drawCenteredStringWithShadow(GuiGraphics guiGraphics, Font font, String string, ImmutableRect2i area, int color) {
 		ImmutableRect2i textArea = MathUtil.centerTextArea(area, font, string);
-		guiGraphics.drawString(font, string, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
+		guiGraphics.drawString(font, string, textArea.getX(), textArea.getY(), color);
 	}
 
-	public static void drawCenteredStringWithShadow(GuiGraphics guiGraphics, Font font, FormattedCharSequence text, ImmutableRect2i area) {
+	public static void drawCenteredStringWithShadow(GuiGraphics guiGraphics, Font font, FormattedCharSequence text, ImmutableRect2i area, int color) {
 		ImmutableRect2i textArea = MathUtil.centerTextArea(area, font, text);
-		guiGraphics.drawString(font, text, textArea.getX(), textArea.getY(), 0xFFFFFFFF);
+		guiGraphics.drawString(font, text, textArea.getX(), textArea.getY(), color);
 	}
 }

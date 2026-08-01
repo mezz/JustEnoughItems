@@ -7,6 +7,8 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
@@ -111,13 +113,17 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 		IRecipeTransferError recipeTransferError = this.recipeTransferError;
 		if (recipeTransferError != null) {
 			if (recipeTransferError.getType() == IRecipeTransferError.Type.COSMETIC) {
+				int color = recipeTransferError.getButtonHighlightColor();
+				if (color == IRecipeTransferError.DEFAULT_BUTTON_HIGHLIGHT_COLOR) {
+					color = JeiGuiColors.getColor(GuiColor.RECIPE_TRANSFER_BUTTON_HIGHLIGHT);
+				}
 				guiGraphics.fill(
 					RenderType.guiOverlay(),
 					this.button.getX(),
 					this.button.getY(),
 					this.button.getX() + this.button.getWidth(),
 					this.button.getY() + this.button.getHeight(),
-					recipeTransferError.getButtonHighlightColor()
+					color
 				);
 			}
 			if (isMouseOver(mouseX, mouseY)) {

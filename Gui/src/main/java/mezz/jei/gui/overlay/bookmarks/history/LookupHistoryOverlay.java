@@ -14,6 +14,8 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
@@ -181,7 +183,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 				ImmutableRect2i area = this.contents.getArea();
 				int endX = area.getX() + area.getWidth();
 				int startY = area.getY() + area.getHeight() - rows * SLOT_HEIGHT - 3;
-				int color = 0xFF959595;
+				int color = JeiGuiColors.getColor(GuiColor.LOOKUP_HISTORY_LINE);
 				drawLine(guiGraphics.pose(), area.getX(), endX, startY, color);
 			}
 		}

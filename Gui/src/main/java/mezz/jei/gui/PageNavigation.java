@@ -1,16 +1,18 @@
 package mezz.jei.gui;
 
 import mezz.jei.common.Internal;
-import net.minecraft.client.gui.GuiGraphics;
-import mezz.jei.gui.elements.GuiIconButton;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
+import mezz.jei.gui.elements.GuiIconButton;
 import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
-import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 
 public class PageNavigation {
@@ -63,14 +65,14 @@ public class PageNavigation {
 				backButton.getY(),
 				nextButton.getX(),
 				nextButton.getY() + nextButton.getHeight(),
-				0x30000000
+				JeiGuiColors.getColor(GuiColor.NAVIGATION_BACKGROUND)
 			);
 
 			int availableWidth = this.area.width() - backButton.getWidth() - nextButton.getWidth();
 			Font font = minecraft.font;
 			ImmutableRect2i centerArea = MathUtil.centerTextArea(this.area, font, this.pageNumDisplayString);
 			if (centerArea.width() <= availableWidth) {
-				guiGraphics.drawString(font, pageNumDisplayString, centerArea.getX(), centerArea.getY(), 0xFFFFFFFF);
+				guiGraphics.drawString(font, pageNumDisplayString, centerArea.getX(), centerArea.getY(), JeiGuiColors.getColor(GuiColor.NAVIGATION_TEXT));
 			}
 			nextButton.render(guiGraphics, mouseX, mouseY, partialTicks);
 			backButton.render(guiGraphics, mouseX, mouseY, partialTicks);
