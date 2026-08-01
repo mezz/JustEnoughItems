@@ -34,17 +34,17 @@ public class JeiGuiColorsTest {
 	public void loadColorsFromResourcePack(@TempDir Path tempDir) throws IOException {
 		Path resourcePack = createResourcePack(tempDir, """
 			{
-			"textWidgetText": "0x112233",
-			"navigationBackground": "0x80224466"
+			"recipeTextWidgetText": "0x112233",
+			"pageNavigationBackground": "0x80224466"
 			}
 			""");
 		try (CloseableResourceManager resourceManager = createResourceManager(resourcePack)) {
 			JeiGuiColors.onResourceManagerReload(resourceManager);
 		}
 
-		Assertions.assertEquals(0xFF112233, JeiGuiColors.getColor(GuiColor.TEXT_WIDGET_TEXT));
-		Assertions.assertEquals(0x80224466, JeiGuiColors.getColor(GuiColor.NAVIGATION_BACKGROUND));
-		Assertions.assertEquals(GuiColor.RECIPE_ERROR_TEXT.getDefaultColor(), JeiGuiColors.getColor(GuiColor.RECIPE_ERROR_TEXT));
+		Assertions.assertEquals(0xFF112233, JeiGuiColors.getColor(GuiColor.RECIPE_TEXT_WIDGET_TEXT));
+		Assertions.assertEquals(0x80224466, JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_BACKGROUND));
+		Assertions.assertEquals(GuiColor.ANVIL_EXPERIENCE_COST_ERROR_TEXT.getDefaultColor(), JeiGuiColors.getColor(GuiColor.ANVIL_EXPERIENCE_COST_ERROR_TEXT));
 	}
 
 	@Test
