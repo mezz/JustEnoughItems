@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public final class ItemStackListFactory {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static List<ItemStack> create(StackHelper stackHelper) {
+	public static List<ItemStack> create(StackHelper stackHelper, ItemStackHelper itemStackHelper) {
 		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 		final boolean showHidden = clientConfig.isShowHiddenItemsEnabled();
@@ -117,6 +117,7 @@ public final class ItemStackListFactory {
 				"displayItems",
 				tab,
 				stackHelper,
+				itemStackHelper,
 				itemList,
 				itemUidSet
 			);
@@ -126,6 +127,7 @@ public final class ItemStackListFactory {
 					"searchTabDisplayItems",
 					tab,
 					stackHelper,
+					itemStackHelper,
 					itemList,
 					itemUidSet
 				);
@@ -144,6 +146,7 @@ public final class ItemStackListFactory {
 		String displayType,
 		CreativeModeTab tab,
 		StackHelper stackHelper,
+		ItemStackHelper itemStackHelper,
 		List<ItemStack> itemList,
 		Set<Object> itemUidSet
 	) {
@@ -153,20 +156,33 @@ public final class ItemStackListFactory {
 		int duplicateInTabCount = 0;
 		for (ItemStack itemStack : tabDisplayItems) {
 			if (itemStack.isEmpty()) {
-				LOGGER.error("Found an empty itemStack in '{}' creative tab's {}", tab, displayType);
-			} else {
-				Object itemKey = safeGetUid(stackHelper, itemStack);
-				if (itemKey != null) {
-					if (tabUidSet.contains(itemKey)) {
-						duplicateInTab.add(itemKey);
-						duplicateInTabCount++;
-					}
-					if (itemUidSet.add(itemKey)) {
-						tabUidSet.add(itemKey);
-						itemList.add(itemStack);
-						added++;
-					}
-				}
+				String errorInfo = itemStackHelper.getErrorInfo(itemStack);
+				LOGGER.error("Found an empty itemStack in '{}' creative tab's {}: {}", tab, displayType, errorInfo);
+				continue;
+			}
+			if (!itemStackHelper.isValidIngredient(itemStack)) {
+				String errorInfo = itemStackHelper.getErrorInfo(itemStack);
+				LOGGER.error("Ignoring ingredient in '{}' creative tab's {} that is considered invalid: {}", tab, displayType, errorInfo);
+				continue;
+			}
+			if (!itemStackHelper.isIngredientOnServer(itemStack)) {
+				String errorInfo = itemStackHelper.getErrorInfo(itemStack);
+				LOGGER.warn("Ignoring ingredient in '{}' creative tab's {} that isn't on the server: {}", tab, displayType, errorInfo);
+				continue;
+			}
+			Object itemKey = safeGetUid(stackHelper, itemStack);
+			if (itemKey == null) {
+				continue;
+			}
+
+			if (tabUidSet.contains(itemKey)) {
+				duplicateInTab.add(itemKey);
+				duplicateInTabCount++;
+			}
+			if (itemUidSet.add(itemKey)) {
+				tabUidSet.add(itemKey);
+				itemList.add(itemStack);
+				added++;
 			}
 		}
 		if (LOGGER.isDebugEnabled()) {

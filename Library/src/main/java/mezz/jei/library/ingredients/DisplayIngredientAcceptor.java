@@ -20,6 +20,7 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +48,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		for (Object ingredient : ingredients) {
-			@Nullable ITypedIngredient<?> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient, false);
+			@Nullable ITypedIngredient<?> typedIngredient = TypedIngredient.createAndFilterInvalidForDisplay(ingredientManager, ingredient, false);
 			this.ingredients.add(typedIngredient);
 		}
 
@@ -72,7 +73,17 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
-		List<@Nullable ITypedIngredient<T>> typedIngredients = TypedIngredient.createAndFilterInvalidList(this.ingredientManager, ingredientType, ingredients, false);
+		List<@Nullable ITypedIngredient<T>> typedIngredients = TypedIngredient.createAndFilterInvalidListForDisplay(this.ingredientManager, ingredientType, ingredients, false);
+		this.ingredients.addAll(typedIngredients);
+
+		return this;
+	}
+
+	@Override
+	public DisplayIngredientAcceptor addIngredients(Ingredient ingredient) {
+		Preconditions.checkNotNull(ingredient, "ingredient");
+
+		List<@Nullable ITypedIngredient<ItemStack>> typedIngredients = TypedIngredient.createAndFilterInvalidListForDisplay(ingredientManager, ingredient, false);
 		this.ingredients.addAll(typedIngredients);
 
 		return this;
@@ -91,7 +102,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	public <I> DisplayIngredientAcceptor addTypedIngredient(ITypedIngredient<I> typedIngredient) {
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
-		@Nullable ITypedIngredient<I> copy = TypedIngredient.defensivelyCopyTypedIngredientFromApi(ingredientManager, typedIngredient);
+		@Nullable ITypedIngredient<I> copy = TypedIngredient.defensivelyCopyTypedIngredientForDisplay(ingredientManager, typedIngredient);
 		this.ingredients.add(copy);
 
 		return this;
@@ -158,7 +169,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	}
 
 	private <T> void addIngredientInternal(IIngredientType<T> ingredientType, @Nullable T ingredient) {
-		@Nullable ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, false);
+		@Nullable ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalidForDisplay(this.ingredientManager, ingredientType, ingredient, false);
 		this.ingredients.add(typedIngredient);
 	}
 
