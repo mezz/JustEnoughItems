@@ -205,19 +205,19 @@ public class JeiTooltip implements ITooltipBuilder {
 				.withStyle(ChatFormatting.DARK_GRAY)
 		);
 		add(
-			Component.literal("* type: " + ingredientHelper.getIngredientType().getUid())
+			Component.literal("• type: " + ingredientHelper.getIngredientType().getUid())
 				.withStyle(ChatFormatting.DARK_GRAY)
 		);
 		add(
-			Component.literal("* has subtypes: " + (ingredientHelper.hasSubtypes(ingredient) ? "true" : "false"))
+			Component.literal("• has subtypes: " + (ingredientHelper.hasSubtypes(ingredient) ? "true" : "false"))
 				.withStyle(ChatFormatting.DARK_GRAY)
 		);
 		add(
-			Component.literal("* uid: " + ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient))
+			Component.literal("• uid: " + ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient))
 				.withStyle(ChatFormatting.DARK_GRAY)
 		);
 		add(
-			Component.literal("* extra info: " + ingredientHelper.getErrorInfo(ingredient))
+			Component.literal("• extra info: " + ingredientHelper.getErrorInfo(ingredient))
 				.withStyle(ChatFormatting.DARK_GRAY)
 		);
 		add(Component.empty());
