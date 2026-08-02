@@ -10,7 +10,6 @@ plugins {
 
 // gradle.properties
 val jUnitVersion: String by extra
-val mixinVersion: String by extra
 val minecraftVersion: String by extra
 val neoformVersionAndTimestamp: String by extra
 val modId: String by extra
@@ -42,7 +41,6 @@ sourceSets {
 }
 
 dependencies {
-    compileOnly("org.spongepowered:mixin:${mixinVersion}")
     dependencyProjects.forEach {
         implementation(it)
     }
