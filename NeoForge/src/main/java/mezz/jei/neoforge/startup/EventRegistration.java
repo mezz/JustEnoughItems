@@ -13,7 +13,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.CharacterEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.ContainerScreenEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import org.joml.Matrix3x2fStack;
 
@@ -111,8 +110,10 @@ public class EventRegistration {
 			Screen screen = event.getScreen();
 			guiEventHandler.onGuiOpen(screen);
 		});
-		subscriptions.register(EventPriority.LOWEST, ContainerScreenEvent.Render.Foreground.class, event -> {
-			AbstractContainerScreen<?> containerScreen = event.getContainerScreen();
+		subscriptions.register(EventPriority.LOWEST, ScreenEvent.Render.Foreground.class, event -> {
+			if (!(event.getScreen() instanceof AbstractContainerScreen<?> containerScreen)) {
+				return;
+			}
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
