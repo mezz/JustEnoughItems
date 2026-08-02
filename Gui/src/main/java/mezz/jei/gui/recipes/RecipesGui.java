@@ -14,6 +14,7 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -70,6 +71,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final BookmarkList bookmarks;
 	private final IFocusFactory focusFactory;
 	private final IIngredientManager ingredientManager;
+	private final List<IRecipeButtonControllerFactory> recipeButtonControllerFactories;
 
 	private int headerHeight;
 
@@ -123,6 +125,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		super(Component.literal("Recipes"));
 		this.bookmarks = bookmarks;
 		this.ingredientManager = ingredientManager;
+		this.recipeButtonControllerFactories = recipeManager.getRecipeButtonControllerFactories();
 		this.keyBindings = keyBindings;
 		this.logic = new RecipeGuiLogic(
 			recipeManager,
@@ -593,7 +596,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			);
 		}
 
-		return new RecipeLayoutWithButtons<>(recipeLayoutDrawable, transferButton, bookmarkButton);
+		return RecipeLayoutWithButtons.create(
+			recipeLayoutDrawable,
+			transferButton,
+			bookmarkButton,
+			recipeButtonControllerFactories
+		);
 	}
 
 	@Nullable

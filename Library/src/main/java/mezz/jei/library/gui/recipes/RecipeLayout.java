@@ -368,9 +368,24 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 
 	@Override
 	public Rect2i getRecipeBookmarkButtonArea() {
-		Rect2i area = getRecipeTransferButtonArea();
-		area.setPosition(area.getX(), area.getY() - area.getHeight() - RECIPE_BUTTON_SPACING);
-		return area;
+		return getSideButtonArea(1);
+	}
+
+	@Override
+	public Rect2i getSideButtonArea(int buttonIndex) {
+		Rect2i buttonArea = recipeTransferButtonArea.toMutable();
+		if (buttonIndex > 0) {
+			int maxRows = (getRectWithBorder().getHeight() + RECIPE_BUTTON_SPACING) / (buttonArea.getHeight() + RECIPE_BUTTON_SPACING);
+			maxRows = Math.max(1, maxRows);
+			int xIndex = buttonIndex / maxRows;
+			int yIndex = buttonIndex % maxRows;
+			int xOffset = xIndex * (buttonArea.getWidth() + RECIPE_BUTTON_SPACING);
+			int yOffset = yIndex * (buttonArea.getHeight() + RECIPE_BUTTON_SPACING);
+
+			buttonArea.setX(buttonArea.getX() + xOffset);
+			buttonArea.setY(buttonArea.getY() - yOffset);
+		}
+		return buttonArea;
 	}
 
 	@Override
