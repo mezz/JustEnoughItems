@@ -17,6 +17,11 @@ pluginManagement {
 			includeGroup("net.fabricmc")
 			includeGroup("fabric-loom")
 		}
+		exclusiveMaven("https://maven.neoforged.net/releases") {
+			includeGroupByRegex("net\\.neoforged.*")
+			includeGroup("codechicken")
+			includeGroupByRegex("net\\.covers1624.*")
+		}
 		maven("https://repo.spongepowered.org/repository/maven-public/") {
 			content {
 				includeGroupByRegex("org\\.spongepowered.*")
@@ -27,9 +32,6 @@ pluginManagement {
 	}
 	resolutionStrategy {
 		eachPlugin {
-			if (requested.id.id == "net.minecraftforge.gradle") {
-				useModule("${requested.id}:ForgeGradle:${requested.version}")
-			}
 			if (requested.id.id == "org.spongepowered.mixin") {
 				useModule("org.spongepowered:mixingradle:${requested.version}")
 			}

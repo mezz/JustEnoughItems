@@ -1,10 +1,7 @@
-import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
-
 plugins {
 	id("java")
 	id("maven-publish")
-	id("net.minecraftforge.gradle")
-	id("org.parchmentmc.librarian.forgegradle")
+	id("net.neoforged.moddev.legacyforge")
 }
 
 // gradle.properties
@@ -13,7 +10,10 @@ val minecraftVersion: String by extra
 val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val parchmentMinecraftVersion: String by extra
 val parchmentVersionForge: String by extra
+
+val forgeArtifactVersion = "${minecraftVersion}-${forgeVersion}"
 
 val baseArchivesName = "${modId}-${minecraftVersion}-forge-api"
 base {
@@ -51,36 +51,34 @@ java {
 }
 
 dependencies {
-	"minecraft"(
-		group = "net.minecraftforge",
-		name = "forge",
-		version = "${minecraftVersion}-${forgeVersion}"
-	)
 	dependencyProjects.forEach {
 		implementation(it)
 	}
 }
 
-minecraft {
-	mappings("parchment", parchmentVersionForge)
+legacyForge {
+	validateAccessTransformers = true
 
-	copyIdeResources.set(true)
+	setAccessTransformers("../Forge/src/main/resources/META-INF/accesstransformer.cfg")
 
-	// All minecraft configurations in the multi-project must be identical, including ATs,
-	// because of a ForgeGradle bug https://github.com/MinecraftForge/ForgeGradle/issues/844
-	accessTransformer(file("../Forge/src/main/resources/META-INF/accesstransformer.cfg"))
+	parchment {
+		minecraftVersion = parchmentMinecraftVersion
+		mappingsVersion = parchmentVersionForge.removeSuffix("-$parchmentMinecraftVersion")
+	}
+
+	enable {
+		setForgeVersion(forgeArtifactVersion)
+		setEnabledSourceSets(setOf(sourceSets.main.get(), sourceSets.test.get()))
+	}
 
 	// no runs are configured for API
 }
 
-tasks.jar {
-	finalizedBy("reobfJar")
-}
-
 val sourcesJar = tasks.named<Jar>("sourcesJar")
+val reobfJarTask = tasks.named<AbstractArchiveTask>("reobfJar")
 
 artifacts {
-	archives(tasks.jar.get())
+	archives(reobfJarTask)
 	archives(sourcesJar.get())
 }
 
@@ -88,7 +86,7 @@ publishing {
 	publications {
 		register<MavenPublication>("forgeApi") {
 			artifactId = baseArchivesName
-			artifact(tasks.jar)
+			artifact(reobfJarTask)
 			artifact(sourcesJar)
 
 			val dependencyInfos = dependencyProjects.map {
@@ -116,8 +114,4 @@ publishing {
 			maven(deployDir)
 		}
 	}
-}
-
-tasks.withType<DownloadMavenArtifact> {
-	notCompatibleWithConfigurationCache("uses Task.project at execution time")
 }

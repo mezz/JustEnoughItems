@@ -1,16 +1,14 @@
 import me.modmuss50.mpp.PublishModTask
-import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
-import net.minecraftforge.gradle.common.tasks.JarExec
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.slf4j.event.Level
 
 plugins {
 	id("java")
 	id("idea")
 	id("eclipse")
 	id("maven-publish")
-	id("net.minecraftforge.gradle")
-	id("org.parchmentmc.librarian.forgegradle")
+	id("net.neoforged.moddev.legacyforge")
 	id("me.modmuss50.mod-publish-plugin")
 }
 
@@ -24,8 +22,11 @@ val minecraftVersionRangeStart: String by extra
 val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val parchmentMinecraftVersion: String by extra
 val parchmentVersionForge: String by extra
 val modrinthId: String by extra
+
+val forgeArtifactVersion = "${minecraftVersion}-${forgeVersion}"
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -68,11 +69,6 @@ java {
 }
 
 dependencies {
-	"minecraft"(
-		group = "net.minecraftforge",
-		name = "forge",
-		version = "${minecraftVersion}-${forgeVersion}"
-	)
 	dependencyProjects.forEach {
 		implementation(it)
 	}
@@ -88,51 +84,56 @@ dependencies {
 	)
 }
 
-minecraft {
-	mappings("parchment", parchmentVersionForge)
+legacyForge {
+	validateAccessTransformers = true
+	setAccessTransformers("src/main/resources/META-INF/accesstransformer.cfg")
 
-	copyIdeResources.set(true)
+	parchment {
+		minecraftVersion = parchmentMinecraftVersion
+		mappingsVersion = parchmentVersionForge.removeSuffix("-$parchmentMinecraftVersion")
+	}
 
-	accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
+	enable {
+		setForgeVersion(forgeArtifactVersion)
+		setEnabledSourceSets(setOf(sourceSets.main.get(), sourceSets.test.get()))
+	}
+
+	mods {
+		create(modId) {
+			sourceSet(sourceSets.main.get())
+			for (p in dependencyProjects) {
+				sourceSet(p.sourceSets.main.get())
+			}
+		}
+	}
 
 	runs {
-		val client = create("client") {
-			taskName("runClientDev")
-			property("forge.logging.console.level", "debug")
-			workingDirectory(file("run/client/Dev"))
-			mods {
-				create(modId) {
-					source(sourceSets.main.get())
-					for (p in dependencyProjects) {
-						source(p.sourceSets.main.get())
-					}
-				}
-			}
+		create("clientDev") {
+			client()
+			systemProperty("forge.logging.console.level", "debug")
+			gameDirectory = file("run/client/Dev")
+			logLevel = Level.DEBUG
 		}
-		create("client_01") {
-			taskName("runClientPlayer01")
-			parent(client)
-			workingDirectory(file("run/client/Player01"))
-			args("--username", "Player01")
+		create("clientPlayer01") {
+			client()
+			systemProperty("forge.logging.console.level", "debug")
+			gameDirectory = file("run/client/Player01")
+			programArguments.addAll("--username", "Player01")
+			logLevel = Level.DEBUG
 		}
-		create("client_02") {
-			taskName("runClientPlayer02")
-			parent(client)
-			workingDirectory(file("run/client/Player02"))
-			args("--username", "Player02")
+		create("clientPlayer02") {
+			client()
+			systemProperty("forge.logging.console.level", "debug")
+			gameDirectory = file("run/client/Player02")
+			programArguments.addAll("--username", "Player02")
+			logLevel = Level.DEBUG
 		}
 		create("server") {
-			taskName("Server")
-			property("forge.logging.console.level", "debug")
-			workingDirectory(file("run/server"))
-			mods {
-				create(modId) {
-					source(sourceSets.main.get())
-					for (p in dependencyProjects) {
-						source(p.sourceSets.main.get())
-					}
-				}
-			}
+			server()
+			systemProperty("forge.logging.console.level", "debug")
+			gameDirectory = file("run/server")
+			programArguments.add("nogui")
+			logLevel = Level.DEBUG
 		}
 	}
 }
@@ -144,7 +145,6 @@ tasks.jar {
 	}
 
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	finalizedBy("reobfJar")
 }
 
 val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
@@ -156,8 +156,10 @@ val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 	archiveClassifier.set("sources")
 }
 
+val reobfJarTask = tasks.named<AbstractArchiveTask>("reobfJar")
+
 publishMods {
-	file.set(tasks.jar.get().archiveFile)
+	file.set(reobfJarTask.flatMap { it.archiveFile })
 	changelog.set(provider { file("../Changelog/changelog.md").readText() })
 	type = BETA
 	modLoaders.add("forge")
@@ -206,7 +208,7 @@ tasks.named<Test>("test") {
 }
 
 artifacts {
-	archives(tasks.jar.get())
+	archives(reobfJarTask)
 	archives(sourcesJarTask.get())
 }
 
@@ -214,7 +216,7 @@ publishing {
 	publications {
 		register<MavenPublication>("forgeJar") {
 			artifactId = baseArchivesName
-			artifact(tasks.jar.get())
+			artifact(reobfJarTask)
 			artifact(sourcesJarTask.get())
 
 			pom.withXml {
@@ -242,12 +244,4 @@ idea {
 			excludeDirs.add(file(fileName))
 		}
 	}
-}
-
-tasks.withType<DownloadMavenArtifact> {
-	notCompatibleWithConfigurationCache("uses Task.project at execution time")
-}
-
-tasks.withType<JarExec> {
-	notCompatibleWithConfigurationCache("uses external process at execution time")
 }

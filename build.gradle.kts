@@ -8,11 +8,8 @@ plugins {
     // https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/vanillagradle/
     id("org.spongepowered.gradle.vanilla") version("0.2.1-SNAPSHOT") apply(false)
 
-    // https://files.minecraftforge.net/net/minecraftforge/gradle/ForgeGradle/index.html
-    id("net.minecraftforge.gradle") version("6.0.26") apply(false)
-
-    // https://mvnrepository.com/artifact/org.parchmentmc.librarian.forgegradle/org.parchmentmc.librarian.forgegradle.gradle.plugin
-    id("org.parchmentmc.librarian.forgegradle") version("1.2.0") apply(false)
+    // https://projects.neoforged.net/neoforged/ModDevGradle
+    id("net.neoforged.moddev.legacyforge") version("2.0.143") apply(false)
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
     id("me.modmuss50.mod-publish-plugin") version("2.0.1") apply(false)
