@@ -63,9 +63,10 @@ public record TagInfoRecipeMaker<B, I>(
 		for (Holder<B> i : registry.getTagOrEmpty(tagKey)) {
 			B value = i.value();
 			I ingredient = baseToIngredient.apply(value);
-			TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false)
-				.filter(t -> !ingredientHelper.isHiddenFromRecipeViewersByTags(t.getIngredient()))
-				.ifPresent(ingredients::add);
+			ITypedIngredient<I> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false);
+			if (typedIngredient != null && !ingredientHelper.isHiddenFromRecipeViewersByTags(typedIngredient)) {
+				ingredients.add(typedIngredient);
+			}
 		}
 
 		return ingredients;
