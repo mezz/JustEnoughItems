@@ -2,6 +2,7 @@ package mezz.jei.api.gui.ingredient;
 
 import java.util.List;
 
+import com.mojang.datafixers.util.Pair;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
@@ -9,6 +10,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -19,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
  * {@link ICraftingCategoryExtension#setRecipe(IRecipeLayoutBuilder, ICraftingGridHelper, IFocusGroup)}
  * to help them override the default behavior.
  */
+@ApiStatus.NonExtendable
 public interface ICraftingGridHelper {
 	/**
 	 * Create and place input ingredients onto the crafting grid in a consistent way.
@@ -38,6 +41,24 @@ public interface ICraftingGridHelper {
 	 * @since 11.0.2
 	 */
 	<T> List<IRecipeSlotBuilder> createAndSetInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height);
+
+	/**
+	 * Create and place input ingredients onto the crafting grid in a consistent way.
+	 * For shapeless recipes, use a width and height of 0.
+	 *
+	 * @since 15.33.0
+	 */
+	default List<IRecipeSlotBuilder> createAndSetNamedInputs(IRecipeLayoutBuilder builder, List<@Nullable Pair<String, List<@Nullable ItemStack>>> namedInputs, int width, int height) {
+		return createAndSetNamedInputs(builder, VanillaTypes.ITEM_STACK, namedInputs, width, height);
+	}
+
+	/**
+	 * Create and place input ingredients onto the crafting grid in a consistent way.
+	 * For shapeless recipes, use a width and height of 0.
+	 *
+	 * @since 15.33.0
+	 */
+	<T> List<IRecipeSlotBuilder> createAndSetNamedInputs(IRecipeLayoutBuilder builder, IIngredientType<T> ingredientType, List<@Nullable Pair<String, List<@Nullable T>>> namedInputs, int width, int height);
 
 	/**
 	 * Place input ingredients onto the slot builders in a consistent way.
