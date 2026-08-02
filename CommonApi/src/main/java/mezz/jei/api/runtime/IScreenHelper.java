@@ -25,6 +25,7 @@ public interface IScreenHelper {
 	 * Get the ingredient under the mouse for the given screen.
 	 *
 	 * This uses information from plugins via {@link IGuiContainerHandler#getClickableIngredientUnderMouse}
+	 * and {@link IScreenHandler#getClickableIngredientUnderMouse}
 	 * and from {@link IGlobalGuiHandler#getClickableIngredientUnderMouse}
 	 * and from vanilla and JEI chat ingredient links.
 	 *

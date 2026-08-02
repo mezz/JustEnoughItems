@@ -73,7 +73,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	public boolean hasSubtypes(ItemStack ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
-		return subtypeManager.hasSubtypes(VanillaTypes.ITEM_STACK, ingredient);
+		return subtypeManager.hasSubtypes(ingredient);
 	}
 
 	@Override
