@@ -91,6 +91,7 @@ public final class IngredientGridScrollbarLayout {
 			ingredientGridArea,
 			availableSlotCount,
 			ImmutableRect2i.EMPTY,
+			ImmutableRect2i.EMPTY,
 			false,
 			calculateScrollbarArea(gridConfig, ingredientGridArea, slotBackgroundArea, scrollbarEnabled),
 			scrollbarEnabled
