@@ -171,7 +171,7 @@ public final class JeiChatItemLinks {
 	private static <T> String createLinkMarkerInternal(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		String ingredientUid = ingredientHelper.getUniqueId(typedIngredient.getIngredient(), UidContext.Ingredient);
+		String ingredientUid = ingredientHelper.getUniqueId(typedIngredient, UidContext.Ingredient);
 
 		IngredientLink link = new IngredientLink(ingredientType.getUid(), ingredientUid);
 		return createLinkMarker(link);

@@ -14,14 +14,12 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
-import mezz.jei.common.gui.elements.DrawableBlank;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IngredientBookmark;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
 import mezz.jei.gui.recipes.layouts.IRecipeLayoutList;
-import mezz.jei.gui.recipes.layouts.RecipeLayoutDrawableErrored;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import mezz.jei.gui.recipes.lookups.ILookupState;
 import mezz.jei.gui.recipes.lookups.IngredientLookupState;
@@ -31,7 +29,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
@@ -48,6 +45,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final Stack<ILookupState> stateHistory = new Stack<>();
 	private final LookupHistory lookupHistory;
 	private final IFocusFactory focusFactory;
+	private final BookmarkList bookmarks;
 	private final IRecipeLayoutWithButtonsFactory recipeLayoutFactory;
 	private @Nullable IRecipeCategory<?> cachedRecipeCategory;
 	private @Nullable IRecipeLayoutList cachedRecipeLayoutsWithButtons;
@@ -61,6 +59,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		IRecipeTransferManager recipeTransferManager,
 		IRecipeLogicStateListener stateListener,
 		IFocusFactory focusFactory,
+		BookmarkList bookmarks,
 		IRecipeLayoutWithButtonsFactory recipeLayoutFactory
 	) {
 		this.recipeManager = recipeManager;
@@ -69,6 +68,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		this.recipeTransferManager = recipeTransferManager;
 		this.stateListener = stateListener;
 		this.recipeLayoutFactory = recipeLayoutFactory;
+		this.bookmarks = bookmarks;
 		List<IRecipeCategory<?>> recipeCategories = recipeManager.createRecipeCategoryLookup()
 			.get()
 			.toList();
@@ -261,7 +261,14 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		) {
 			IFocusedRecipes<?> focusedRecipes = this.state.getFocusedRecipes();
 
-			this.cachedRecipeLayoutsWithButtons = createRecipeLayoutsWithButtons(recipeSorterStages, focusedRecipes);
+			this.cachedRecipeLayoutsWithButtons = IRecipeLayoutList.create(
+				recipeSorterStages,
+				focusedRecipes,
+				state.getFocuses(),
+				bookmarks,
+				recipeManager,
+				recipeLayoutFactory
+			);
 			this.cachedRecipeCategory = recipeCategory;
 			this.cachedSorterStages = Set.copyOf(recipeSorterStages);
 			this.cachedContainerId = containerId;
@@ -283,42 +290,6 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	@Override
 	public int getRecipesPerPage() {
 		return this.state.getRecipesPerPage();
-	}
-
-	@Unmodifiable
-	private <T> IRecipeLayoutList createRecipeLayoutsWithButtons(
-		Set<RecipeSorterStage> recipeSorterStages,
-		IFocusedRecipes<T> selectedRecipes
-	) {
-		IRecipeCategory<T> recipeCategory = selectedRecipes.getRecipeCategory();
-		List<T> recipes = selectedRecipes.getRecipes();
-		List<T> brokenRecipes = new ArrayList<>();
-
-		List<IRecipeLayoutWithButtons<T>> results = recipes.stream()
-			.map(recipe -> {
-				if (recipeCategory.needsRecipeBorder()) {
-					DrawableNineSliceTexture recipeBackground = Internal.getTextures().getRecipeBackground();
-					return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses(), recipeBackground, 4)
-						.orElseGet(() -> {
-							brokenRecipes.add(recipe);
-							return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, 4);
-						});
-				}
-				return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, state.getFocuses(), DrawableBlank.EMPTY, 0)
-					.orElseGet(() -> {
-						brokenRecipes.add(recipe);
-						return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, DrawableBlank.EMPTY, 0);
-					});
-			})
-			.map(recipeLayoutFactory::create)
-			.toList();
-
-		if (!brokenRecipes.isEmpty()) {
-			RecipeType<T> recipeType = recipeCategory.getRecipeType();
-			recipeManager.hideRecipes(recipeType, brokenRecipes);
-		}
-
-		return IRecipeLayoutList.create(recipeSorterStages, results);
 	}
 
 	@Override

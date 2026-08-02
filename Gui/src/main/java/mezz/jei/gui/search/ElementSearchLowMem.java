@@ -75,7 +75,7 @@ public class ElementSearchLowMem implements IElementSearch {
 	public <T> Optional<IListElement<T>> findElement(ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
 		T ingredient = typedIngredient.getIngredient();
 		IIngredientType<T> type = typedIngredient.getType();
-		Function<ITypedIngredient<T>, Object> uidFunction = (i) -> ingredientHelper.getUniqueId(i.getIngredient(), UidContext.Ingredient);
+		Function<ITypedIngredient<T>, Object> uidFunction = i -> ingredientHelper.getUniqueId(i, UidContext.Ingredient);
 		Object ingredientUid = uidFunction.apply(typedIngredient);
 		String lowercaseDisplayName = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
 		ElementPrefixParser.TokenInfo tokenInfo = new ElementPrefixParser.TokenInfo(lowercaseDisplayName, noPrefix);

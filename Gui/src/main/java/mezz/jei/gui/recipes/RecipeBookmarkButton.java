@@ -27,7 +27,14 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 		BookmarkList bookmarks
 	) {
 		RecipeBookmark<?, ?> recipeBookmark = RecipeBookmark.create(recipeLayout, ingredientManager);
+		return create(recipeLayout, bookmarks, recipeBookmark);
+	}
 
+	public static RecipeBookmarkButton create(
+		IRecipeLayoutDrawable<?> recipeLayout,
+		BookmarkList bookmarks,
+		@Nullable RecipeBookmark<?, ?> recipeBookmark
+	) {
 		Textures textures = Internal.getTextures();
 		IDrawable icon = textures.getRecipeBookmark();
 		Rect2i area = recipeLayout.getRecipeBookmarkButtonArea();

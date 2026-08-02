@@ -266,6 +266,17 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 	}
 
 	@Override
+	@Nullable
+	public <V> ITypedIngredient<V> cast(IIngredientType<V> ingredientType) {
+		if (getType().equals(ingredientType)) {
+			@SuppressWarnings("unchecked")
+			ITypedIngredient<V> cast = (ITypedIngredient<V>) this;
+			return cast;
+		}
+		return null;
+	}
+
+	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
 			.add("type", ingredientType)

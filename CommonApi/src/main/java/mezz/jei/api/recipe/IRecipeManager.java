@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Set;
  * The {@link IRecipeManager} offers several functions for retrieving and handling recipes.
  * Get the instance from {@link IJeiRuntime#getRecipeManager()}.
  */
+@ApiStatus.NonExtendable
 public interface IRecipeManager {
 	/**
 	 * Create a recipe lookup for the given recipe type.
@@ -116,6 +118,22 @@ public interface IRecipeManager {
 	 * @since 9.5.0
 	 */
 	void unhideRecipeCategory(RecipeType<?> recipeType);
+
+	/**
+	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.
+	 * If there is something wrong and the recipe layout crashes, JEI's implementation will display an error recipe instead.
+	 *
+	 * @param recipeCategory the recipe category that the recipe belongs to
+	 * @param recipe         the specific recipe to draw.
+	 * @param focusGroup     the focuses of the recipe layout.
+	 *
+	 * @since 15.35.0
+	 */
+	<T> IRecipeLayoutDrawable<T> createRecipeLayoutDrawableOrShowError(
+		IRecipeCategory<T> recipeCategory,
+		T recipe,
+		IFocusGroup focusGroup
+	);
 
 	/**
 	 * Returns a drawable recipe layout, for addons that want to draw the layouts somewhere.

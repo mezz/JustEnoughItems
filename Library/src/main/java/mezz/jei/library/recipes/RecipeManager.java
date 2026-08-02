@@ -14,10 +14,13 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.Internal;
+import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.core.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTimer;
 import mezz.jei.library.gui.recipes.RecipeLayout;
+import mezz.jei.library.gui.recipes.layout.RecipeLayoutDrawableErrored;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
 import net.minecraft.resources.ResourceLocation;
 
@@ -67,6 +70,41 @@ public class RecipeManager implements IRecipeManager {
 	}
 
 	@Override
+	public <T> IRecipeLayoutDrawable<T> createRecipeLayoutDrawableOrShowError(
+		IRecipeCategory<T> recipeCategory,
+		T recipe,
+		IFocusGroup focusGroup
+	) {
+		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
+		ErrorUtil.checkNotNull(recipe, "recipe");
+		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
+
+		RecipeType<T> recipeType = recipeCategory.getRecipeType();
+		Collection<IRecipeCategoryDecorator<T>> decorators = internal.getRecipeCategoryDecorators(recipeType);
+
+		IScalableDrawable recipeBackground;
+		int borderPadding;
+		if (recipeCategory.needsRecipeBorder()) {
+			recipeBackground = Internal.getTextures().getRecipeBackground();
+			borderPadding = 4;
+		} else {
+			recipeBackground = DrawableBlank.EMPTY;
+			borderPadding = 0;
+		}
+
+		return RecipeLayout.create(
+			recipeCategory,
+			decorators,
+			recipe,
+			focusGroup,
+			ingredientManager,
+			recipeBackground,
+			borderPadding
+		)
+			.orElseGet(() -> new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, borderPadding));
+	}
+
+	@Override
 	public <T> Optional<IRecipeLayoutDrawable<T>> createRecipeLayoutDrawable(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focusGroup) {
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 		ErrorUtil.checkNotNull(recipe, "recipe");
@@ -74,12 +112,23 @@ public class RecipeManager implements IRecipeManager {
 
 		RecipeType<T> recipeType = recipeCategory.getRecipeType();
 		Collection<IRecipeCategoryDecorator<T>> decorators = internal.getRecipeCategoryDecorators(recipeType);
+		IScalableDrawable recipeBackground;
+		int borderPadding;
+		if (recipeCategory.needsRecipeBorder()) {
+			recipeBackground = Internal.getTextures().getRecipeBackground();
+			borderPadding = 4;
+		} else {
+			recipeBackground = DrawableBlank.EMPTY;
+			borderPadding = 0;
+		}
 		return RecipeLayout.create(
 			recipeCategory,
 			decorators,
 			recipe,
 			focusGroup,
-			ingredientManager
+			ingredientManager,
+			recipeBackground,
+			borderPadding
 		);
 	}
 
