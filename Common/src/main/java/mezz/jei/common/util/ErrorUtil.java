@@ -1,9 +1,11 @@
 package mezz.jei.common.util;
 
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
@@ -227,5 +229,29 @@ public final class ErrorUtil {
 		sb.append("-- Stack Trace --\n\n");
 		sb.append(ExceptionUtils.getStackTrace(t));
 		return sb.toString();
+	}
+
+	public static <T> String getRecipeInfo(IRecipeLayoutDrawable<T> recipeLayoutDrawable) {
+		IRecipeCategory<T> recipeCategory = recipeLayoutDrawable.getRecipeCategory();
+		T recipe = recipeLayoutDrawable.getRecipe();
+		return getRecipeInfo(recipeCategory, recipe);
+	}
+
+	public static <T> String getRecipeInfo(IRecipeCategory<T> recipeCategory, T recipe) {
+		ResourceLocation recipeType = recipeCategory.getRecipeType().getUid();
+		ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
+		String recipeClass = recipe.getClass().toString();
+
+		String modName = "<unknown>";
+		if (registryName != null) {
+			String modId = registryName.getNamespace();
+			IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
+			modName = "%s (%s)".formatted(modHelper.getModNameForModId(modId), modId);
+		}
+
+		return "Recipe is from Mod: " + modName +
+			"\nRecipe Name: " + registryName +
+			"\nRecipe Class: " + recipeClass +
+			"\nRecipe Type: " + recipeType;
 	}
 }
