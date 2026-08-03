@@ -35,7 +35,7 @@ public final class ChatIngredientTooltip {
 
 	public static boolean setTooltipForHoveredText(
 		GuiGraphics guiGraphics,
-		Style hoveredStyle,
+		@Nullable Style hoveredStyle,
 		int mouseX,
 		int mouseY
 	) {
@@ -57,7 +57,7 @@ public final class ChatIngredientTooltip {
 			.flatMap(ChatIngredientTooltip::getTooltipForHoveredText);
 	}
 
-	public static Optional<IngredientTooltipData<?>> getTooltipForHoveredText(Style hoveredStyle) {
+	public static Optional<IngredientTooltipData<?>> getTooltipForHoveredText(@Nullable Style hoveredStyle) {
 		Optional<IngredientLink> optionalLink = JeiChatItemLinkHover.getIngredientLink(hoveredStyle);
 		if (optionalLink.isEmpty()) {
 			return Optional.empty();
