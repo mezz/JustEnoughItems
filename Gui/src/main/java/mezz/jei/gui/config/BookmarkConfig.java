@@ -1,5 +1,7 @@
 package mezz.jei.gui.config;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -10,6 +12,7 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer.IDeserializeResult;
+import mezz.jei.common.config.file.JsonArrayFileHelper;
 import mezz.jei.common.config.file.serializers.TypedIngredientSerializer;
 import mezz.jei.common.util.DeduplicatingRunner;
 import mezz.jei.common.util.PathUtil;
@@ -39,6 +42,13 @@ import java.util.Optional;
 public class BookmarkConfig implements IBookmarkConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Duration SAVE_DELAY_TIME = Duration.ofSeconds(5);
+	private static final int JSON_VERSION = 1;
+
+	private static final String JSON_KEY_TYPE = "type";
+	private static final String JSON_KEY_VALUE = "value";
+	private static final String JSON_TYPE_STACK = "item_stack";
+	private static final String JSON_TYPE_INGREDIENT = "ingredient";
+	private static final String JSON_TYPE_RECIPE = "recipe";
 
 	static final String MARKER_STACK = "T:";
 	static final String MARKER_INGREDIENT = "I:";
@@ -49,7 +59,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 	private final Path jeiConfigurationDir;
 	private final DeduplicatingRunner delayedSave = new DeduplicatingRunner(SAVE_DELAY_TIME);
 
-	private static Optional<Path> getPath(Path jeiConfigurationDir) {
+	private static Optional<Path> getPath(Path jeiConfigurationDir, String fileName) {
 		return ServerConfigPathUtil.getWorldPath(jeiConfigurationDir)
 			.flatMap(configPath -> {
 				try {
@@ -58,9 +68,17 @@ public class BookmarkConfig implements IBookmarkConfig {
 					LOGGER.error("Unable to create bookmark config folder: {}", configPath, e);
 					return Optional.empty();
 				}
-				Path path = configPath.resolve("bookmarks.ini");
+				Path path = configPath.resolve(fileName);
 				return Optional.of(path);
 			});
+	}
+
+	private static Optional<Path> getJsonPath(Path jeiConfigurationDir) {
+		return getPath(jeiConfigurationDir, "bookmarks.json");
+	}
+
+	private static Optional<Path> getLegacyPath(Path jeiConfigurationDir) {
+		return getPath(jeiConfigurationDir, "bookmarks.ini");
 	}
 
 	public BookmarkConfig(Path jeiConfigurationDir) {
@@ -77,7 +95,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 		Collection<IBookmark> bookmarks
 	) {
 		List<IBookmark> bookmarksSnapshot = List.copyOf(bookmarks);
-		getPath(jeiConfigurationDir)
+		getJsonPath(jeiConfigurationDir)
 			.ifPresent(path -> {
 				delayedSave.run(() -> {
 					save(path, recipeManager, focusFactory, ingredientManager, bookmarksSnapshot);
@@ -85,7 +103,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 			});
 	}
 
-	private static void save(
+	private static boolean save(
 		Path path,
 		IRecipeManager recipeManager,
 		IFocusFactory focusFactory,
@@ -95,27 +113,35 @@ public class BookmarkConfig implements IBookmarkConfig {
 		TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
 		RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, ingredientManager);
 
-		List<String> strings = new ArrayList<>();
+		List<JsonElement> jsonElements = new ArrayList<>();
 		for (IBookmark bookmark : bookmarks) {
+			JsonObject jsonObject = new JsonObject();
 			if (bookmark instanceof IngredientBookmark<?> ingredientBookmark) {
 				ITypedIngredient<?> typedIngredient = ingredientBookmark.getIngredient();
 				if (typedIngredient.getIngredient() instanceof ItemStack stack) {
-					strings.add(MARKER_STACK + stack.save(new CompoundTag()));
+					jsonObject.addProperty(JSON_KEY_TYPE, JSON_TYPE_STACK);
+					jsonObject.addProperty(JSON_KEY_VALUE, stack.save(new CompoundTag()).toString());
 				} else {
-					strings.add(MARKER_INGREDIENT + ingredientSerializer.serialize(typedIngredient));
+					jsonObject.addProperty(JSON_KEY_TYPE, JSON_TYPE_INGREDIENT);
+					jsonObject.addProperty(JSON_KEY_VALUE, ingredientSerializer.serialize(typedIngredient));
 				}
 			} else if (bookmark instanceof RecipeBookmark<?,?> recipeBookmark) {
-				strings.add(MARKER_RECIPE + recipeBookmarkSerializer.serialize(recipeBookmark));
+				jsonObject.addProperty(JSON_KEY_TYPE, JSON_TYPE_RECIPE);
+				jsonObject.addProperty(JSON_KEY_VALUE, recipeBookmarkSerializer.serialize(recipeBookmark));
 			} else {
 				LOGGER.error("Unknown IBookmark type, unable to save it: {}", bookmark.getClass());
+				continue;
 			}
+			jsonElements.add(jsonObject);
 		}
 
 		try {
-			PathUtil.writeUsingTempFile(path, strings);
+			JsonArrayFileHelper.write(path, JSON_VERSION, jsonElements);
 			LOGGER.debug("Saved bookmarks list to file {}", path);
+			return true;
 		} catch (RuntimeException | IOException e) {
 			LOGGER.error("Failed to save bookmarks list to file {}", path, e);
+			return false;
 		}
 	}
 
@@ -128,51 +154,194 @@ public class BookmarkConfig implements IBookmarkConfig {
 		RegistryAccess registryAccess,
 		BookmarkList bookmarkList
 	) {
-		getPath(jeiConfigurationDir)
+		List<IBookmark> bookmarks = new ArrayList<>();
+
+		getJsonPath(jeiConfigurationDir)
+			.ifPresent(path -> bookmarks.addAll(loadJsonBookmarks(recipeManager, focusFactory, ingredientManager, path)));
+
+		List<IBookmark> legacyBookmarks = loadLegacyBookmarks(recipeManager, focusFactory, ingredientManager);
+		if (!legacyBookmarks.isEmpty()) {
+			bookmarks.addAll(legacyBookmarks);
+			getJsonPath(jeiConfigurationDir)
+				.ifPresent(path -> {
+					if (save(path, recipeManager, focusFactory, ingredientManager, bookmarks)) {
+						backupLegacyBookmarkConfig();
+					}
+				});
+		}
+
+		for (IBookmark bookmark : bookmarks) {
+			bookmarkList.addToListWithoutNotifying(bookmark, false);
+		}
+		if (!bookmarks.isEmpty()) {
+			bookmarkList.notifyListenersOfChange();
+		}
+	}
+
+	private List<IBookmark> loadJsonBookmarks(
+		IRecipeManager recipeManager,
+		IFocusFactory focusFactory,
+		IIngredientManager ingredientManager,
+		Path path
+	) {
+		if (!Files.exists(path)) {
+			return List.of();
+		}
+
+		TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
+		RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, ingredientManager);
+		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
+
+		List<IBookmark> bookmarks = new ArrayList<>();
+		try {
+			List<JsonElement> jsonElements = JsonArrayFileHelper.read(path, JSON_VERSION, (element, error) -> {
+				LOGGER.error("Encountered error when loading the bookmark config from file {}\n{}\n{}", path, element, error);
+			});
+			for (JsonElement jsonElement : jsonElements) {
+				IBookmark bookmark = loadJsonBookmark(recipeBookmarkSerializer, ingredientSerializer, itemStackHelper, ingredientManager, path, jsonElement);
+				if (bookmark != null) {
+					bookmarks.add(bookmark);
+				}
+			}
+		} catch (RuntimeException | IOException e) {
+			LOGGER.error("Failed to load bookmarks from file {}", path, e);
+		}
+		return bookmarks;
+	}
+
+	private static @Nullable IBookmark loadJsonBookmark(
+		RecipeBookmarkSerializer recipeBookmarkSerializer,
+		TypedIngredientSerializer ingredientSerializer,
+		IIngredientHelper<ItemStack> itemStackHelper,
+		IIngredientManager ingredientManager,
+		Path path,
+		JsonElement jsonElement
+	) {
+		if (!jsonElement.isJsonObject()) {
+			LOGGER.error("Failed to load bookmark from file {}, expected an object:\n{}", path, jsonElement);
+			return null;
+		}
+
+		JsonObject jsonObject = jsonElement.getAsJsonObject();
+		String type = getString(jsonObject, JSON_KEY_TYPE);
+		String value = getString(jsonObject, JSON_KEY_VALUE);
+		if (type == null || value == null) {
+			LOGGER.error("Failed to load bookmark from file {}, expected string '{}' and '{}' fields:\n{}", path, JSON_KEY_TYPE, JSON_KEY_VALUE, jsonElement);
+			return null;
+		}
+
+		return switch (type) {
+			case JSON_TYPE_STACK -> loadItemStackBookmark(itemStackHelper, ingredientManager, value);
+			case JSON_TYPE_INGREDIENT -> loadIngredientBookmark(ingredientSerializer, ingredientManager, value);
+			case JSON_TYPE_RECIPE -> loadRecipeBookmark(recipeBookmarkSerializer, value);
+			default -> {
+				LOGGER.error("Failed to load unknown bookmark type from file {}:\n{}", path, jsonElement);
+				yield null;
+			}
+		};
+	}
+
+	private static @Nullable String getString(JsonObject jsonObject, String key) {
+		JsonElement element = jsonObject.get(key);
+		if (element == null || !element.isJsonPrimitive()) {
+			return null;
+		}
+		try {
+			return element.getAsString();
+		} catch (UnsupportedOperationException e) {
+			return null;
+		}
+	}
+
+	private List<IBookmark> loadLegacyBookmarks(
+		IRecipeManager recipeManager,
+		IFocusFactory focusFactory,
+		IIngredientManager ingredientManager
+	) {
+		return getLegacyPath(jeiConfigurationDir)
+			.<List<IBookmark>>map(path -> loadLegacyBookmarks(path, recipeManager, focusFactory, ingredientManager))
+			.orElseGet(List::of);
+	}
+
+	private static List<IBookmark> loadLegacyBookmarks(
+		Path path,
+		IRecipeManager recipeManager,
+		IFocusFactory focusFactory,
+		IIngredientManager ingredientManager
+	) {
+		if (!Files.exists(path)) {
+			return List.of();
+		}
+
+		List<String> lines;
+		try {
+			lines = Files.readAllLines(path);
+		} catch (IOException e) {
+			LOGGER.error("Failed to load legacy bookmarks from file {}", path, e);
+			return List.of();
+		}
+
+		TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
+		RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, ingredientManager);
+
+		Collection<IIngredientType<?>> otherIngredientTypes = ingredientManager.getRegisteredIngredientTypes()
+			.stream()
+			.filter(i -> !i.equals(VanillaTypes.ITEM_STACK))
+			.toList();
+
+		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
+
+		List<IBookmark> bookmarks = new ArrayList<>();
+		for (String line : lines) {
+			IBookmark bookmark = loadLegacyBookmarkLine(ingredientSerializer, recipeBookmarkSerializer, itemStackHelper, ingredientManager, otherIngredientTypes, line);
+			if (bookmark != null) {
+				bookmarks.add(bookmark);
+			}
+		}
+		return bookmarks;
+	}
+
+	private static @Nullable IBookmark loadLegacyBookmarkLine(
+		TypedIngredientSerializer ingredientSerializer,
+		RecipeBookmarkSerializer recipeBookmarkSerializer,
+		IIngredientHelper<ItemStack> itemStackHelper,
+		IIngredientManager ingredientManager,
+		Collection<IIngredientType<?>> otherIngredientTypes,
+		String line
+	) {
+		if (line.startsWith(MARKER_STACK)) {
+			String itemStackAsJson = line.substring(MARKER_STACK.length());
+			return loadItemStackBookmark(itemStackHelper, ingredientManager, itemStackAsJson);
+		}
+		if (line.startsWith(MARKER_INGREDIENT)) {
+			String serializedIngredient = line.substring(MARKER_INGREDIENT.length());
+			return loadIngredientBookmark(ingredientSerializer, ingredientManager, serializedIngredient);
+		}
+		if (line.startsWith(LEGACY_MARKER_OTHER)) {
+			String uid = line.substring(LEGACY_MARKER_OTHER.length());
+			return loadLegacyIngredientBookmark(otherIngredientTypes, ingredientManager, uid);
+		}
+		if (line.startsWith(MARKER_RECIPE)) {
+			String serializedRecipe = line.substring(MARKER_RECIPE.length());
+			return loadRecipeBookmark(recipeBookmarkSerializer, serializedRecipe);
+		}
+		LOGGER.error("Failed to load unknown legacy bookmark type:\n{}", line);
+		return null;
+	}
+
+	private void backupLegacyBookmarkConfig() {
+		getLegacyPath(jeiConfigurationDir)
 			.ifPresent(path -> {
 				if (!Files.exists(path)) {
 					return;
 				}
-				List<String> lines;
 				try {
-					lines = Files.readAllLines(path);
+					Path backupPath = path.resolveSibling(path.getFileName() + ".bak");
+					PathUtil.moveAtomicReplace(path, backupPath);
+					LOGGER.info("Backed up legacy bookmarks config file to '{}'", backupPath);
 				} catch (IOException e) {
-					LOGGER.error("Failed to load bookmarks from file {}", path, e);
-					return;
+					LOGGER.error("Failed to back up legacy bookmarks config file '{}'", path, e);
 				}
-
-				TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
-				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, ingredientManager);
-
-				Collection<IIngredientType<?>> otherIngredientTypes = ingredientManager.getRegisteredIngredientTypes()
-						.stream()
-						.filter(i -> !i.equals(VanillaTypes.ITEM_STACK))
-						.toList();
-
-				IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
-
-				for (String line : lines) {
-					IBookmark bookmark = null;
-					if (line.startsWith(MARKER_STACK)) {
-						String itemStackAsJson = line.substring(MARKER_STACK.length());
-						bookmark = loadItemStackBookmark(itemStackHelper, ingredientManager, itemStackAsJson);
-					} else if (line.startsWith(MARKER_INGREDIENT)) {
-						String serializedIngredient = line.substring(MARKER_INGREDIENT.length());
-						bookmark = loadIngredientBookmark(ingredientSerializer, ingredientManager, serializedIngredient);
-					} else if (line.startsWith(LEGACY_MARKER_OTHER)) {
-						String uid = line.substring(LEGACY_MARKER_OTHER.length());
-						bookmark = loadLegacyIngredientBookmark(otherIngredientTypes, ingredientManager, uid);
-					} else if (line.startsWith(MARKER_RECIPE)) {
-						String serializedRecipe = line.substring(MARKER_RECIPE.length());
-						bookmark = loadRecipeBookmark(recipeBookmarkSerializer, serializedRecipe);
-					} else {
-						LOGGER.error("Failed to load unknown bookmark type:\n{}", line);
-					}
-					if (bookmark != null){
-						bookmarkList.addToListWithoutNotifying(bookmark, false);
-					}
-				}
-				bookmarkList.notifyListenersOfChange();
 			});
 	}
 

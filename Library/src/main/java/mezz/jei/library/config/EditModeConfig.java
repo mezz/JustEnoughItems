@@ -1,12 +1,15 @@
 package mezz.jei.library.config;
 
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.config.file.JsonArrayFileHelper;
 import mezz.jei.common.util.PathUtil;
 import mezz.jei.library.ingredients.IngredientVisibility;
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +19,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +27,7 @@ import java.util.Set;
 
 public class EditModeConfig implements IEditModeConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final int JSON_VERSION = 1;
 
 	private final Set<String> blacklist = new HashSet<>();
 	private final ISerializer serializer;
@@ -151,9 +156,31 @@ public class EditModeConfig implements IEditModeConfig {
 
 	public static class FileSerializer implements ISerializer {
 		private final Path path;
+		private final Path legacyPath;
 
 		public FileSerializer(Path path) {
+			this(getJsonPath(path), getLegacyPath(path));
+		}
+
+		public FileSerializer(Path path, Path legacyPath) {
 			this.path = path;
+			this.legacyPath = legacyPath;
+		}
+
+		private static Path getJsonPath(Path path) {
+			String fileName = path.getFileName().toString();
+			if (fileName.endsWith(".cfg")) {
+				return path.resolveSibling(fileName.substring(0, fileName.length() - ".cfg".length()) + ".json");
+			}
+			return path;
+		}
+
+		private static Path getLegacyPath(Path path) {
+			String fileName = path.getFileName().toString();
+			if (fileName.endsWith(".json")) {
+				return path.resolveSibling(fileName.substring(0, fileName.length() - ".json".length()) + ".cfg");
+			}
+			return path;
 		}
 
 		@Override
@@ -166,7 +193,12 @@ public class EditModeConfig implements IEditModeConfig {
 		@Override
 		public void save(EditModeConfig config) {
 			try {
-				PathUtil.writeUsingTempFile(path, List.copyOf(config.blacklist));
+				List<JsonElement> values = config.blacklist.stream()
+					.sorted()
+					.map(JsonPrimitive::new)
+					.<JsonElement>map(JsonElement.class::cast)
+					.toList();
+				JsonArrayFileHelper.write(path, JSON_VERSION, values);
 				LOGGER.debug("Saved blacklist config to file: {}", path);
 			} catch (RuntimeException | IOException e) {
 				LOGGER.error("Failed to save blacklist config to file {}", path, e);
@@ -175,15 +207,70 @@ public class EditModeConfig implements IEditModeConfig {
 
 		@Override
 		public void load(EditModeConfig config) {
-			if (!Files.exists(path)) {
+			Set<String> loadedBlacklist = new HashSet<>();
+
+			if (Files.exists(path)) {
+				loadedBlacklist.addAll(loadJsonBlacklist());
+			}
+
+			if (Files.exists(legacyPath)) {
+				List<String> legacyBlacklist = loadLegacyBlacklist();
+				if (!legacyBlacklist.isEmpty()) {
+					loadedBlacklist.addAll(legacyBlacklist);
+					config.blacklist.clear();
+					config.blacklist.addAll(loadedBlacklist);
+					save(config);
+					backupLegacyConfig();
+					return;
+				}
+			}
+
+			config.blacklist.clear();
+			config.blacklist.addAll(loadedBlacklist);
+		}
+
+		private Set<String> loadJsonBlacklist() {
+			Set<String> blacklist = new HashSet<>();
+			try {
+				List<JsonElement> jsonElements = JsonArrayFileHelper.read(path, JSON_VERSION, (element, error) -> {
+					LOGGER.error("Encountered error when loading the blacklist config from file {}\n{}\n{}", path, element, error);
+				});
+				for (JsonElement jsonElement : jsonElements) {
+					if (jsonElement.isJsonPrimitive()) {
+						try {
+							blacklist.add(jsonElement.getAsString());
+							continue;
+						} catch (UnsupportedOperationException ignored) {
+
+						}
+					}
+					LOGGER.error("Failed to load blacklist entry from file {}, expected a string:\n{}", path, jsonElement);
+				}
+			} catch (RuntimeException | IOException e) {
+				LOGGER.error("Failed to load blacklist from file {}", path, e);
+			}
+			return blacklist;
+		}
+
+		private List<String> loadLegacyBlacklist() {
+			try {
+				return Files.readAllLines(legacyPath);
+			} catch (IOException e) {
+				LOGGER.error("Failed to load legacy blacklist from file {}", legacyPath, e);
+				return new ArrayList<>();
+			}
+		}
+
+		private void backupLegacyConfig() {
+			if (!Files.exists(legacyPath)) {
 				return;
 			}
 			try {
-				List<String> strings = Files.readAllLines(path);
-				config.blacklist.clear();
-				config.blacklist.addAll(strings);
+				Path backupPath = legacyPath.resolveSibling(legacyPath.getFileName() + ".bak");
+				PathUtil.moveAtomicReplace(legacyPath, backupPath);
+				LOGGER.info("Backed up legacy blacklist config file to '{}'", backupPath);
 			} catch (IOException e) {
-				LOGGER.error("Failed to load blacklist from file {}", path, e);
+				LOGGER.error("Failed to back up legacy blacklist config file '{}'", legacyPath, e);
 			}
 		}
 	}

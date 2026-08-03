@@ -142,7 +142,7 @@ public final class JeiStarter {
 		FocusFactory focusFactory = new FocusFactory(ingredientManager);
 
 		Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
-		EditModeConfig editModeConfig = new EditModeConfig(new EditModeConfig.FileSerializer(configDir.resolve("blacklist.cfg")), ingredientManager);
+		EditModeConfig editModeConfig = new EditModeConfig(new EditModeConfig.FileSerializer(configDir.resolve("blacklist.json"), configDir.resolve("blacklist.cfg")), ingredientManager);
 
 		JeiHelpers jeiHelpers = PluginLoader.createJeiHelpers(plugins, modIdFormatConfig, colorHelper, editModeConfig, focusFactory, ingredientManager, subtypeManager);
 		stopCallbacks.add(jeiHelpers::onRuntimeStopped);
