@@ -69,6 +69,8 @@ legacyForge {
 	enable {
 		setForgeVersion(forgeArtifactVersion)
 		setEnabledSourceSets(setOf(sourceSets.main.get(), sourceSets.test.get()))
+		// The default CI binary path keeps invalid Forge jar signatures that break unit tests.
+		setDisableRecompilation(false)
 	}
 
 	// no runs are configured for API
