@@ -53,6 +53,7 @@ final class JeiFabricKeyMappingClientTests {
 			assertCategoryBuilderJeiKeyMappingMatches(keyboardMapping("key.jei.test.categoryBuilder.keyboardU", GLFW.GLFW_KEY_U));
 			assertCategoryBuilderJeiKeyMappingMatches(mouseLeftMapping("key.jei.test.categoryBuilder.mouseLeft"));
 			assertCategoryBuilderJeiKeyMappingMatches(mouseRightMapping("key.jei.test.categoryBuilder.mouseRight"));
+			assertModifierKeyPollingMatchesEitherSide();
 		});
 		assertModifiedJeiKeyMappings();
 		assertJeiMouseMappingsDoNotHideVanillaMouseClicks();
@@ -81,9 +82,12 @@ final class JeiFabricKeyMappingClientTests {
 		boolean matchesUnknownKey = jeiMapping.isActiveAndMatches(InputConstants.UNKNOWN);
 
 		// Assertions: the Fabric helper sees the intentionally hidden parent key, while JEI still matches
-		// FabricKeyMapping's real key.
+		// and polls FabricKeyMapping's real key.
 		if (!fabricHelperKey.equals(InputConstants.UNKNOWN)) {
 			throw new AssertionError("Expected Fabric's key helper to see FabricKeyMapping as unbound: " + boundKey.getName());
+		}
+		if (!fabricMapping.getRealKey().equals(boundKey)) {
+			throw new AssertionError("Expected FabricKeyMapping to expose its real key: " + boundKey.getName());
 		}
 		if (!fabricMappingMatchesKey) {
 			throw new AssertionError("Expected FabricKeyMapping to match its real key: " + boundKey.getName());
@@ -97,6 +101,7 @@ final class JeiFabricKeyMappingClientTests {
 		if (matchesUnknownKey) {
 			throw new AssertionError("Expected FabricJeiKeyMapping to reject the unbound UNKNOWN key.");
 		}
+		assertKeyboardMappingIsDownWithPressedKey(jeiMapping, boundKey);
 	}
 
 	private static void assertCategoryBuilderJeiKeyMappingMatches(ModifiedMapping mapping) {
@@ -117,6 +122,75 @@ final class JeiFabricKeyMappingClientTests {
 		}
 		if (matchesUnknownKey) {
 			throw new AssertionError("Expected category-builder JEI key mapping to reject the UNKNOWN key.");
+		}
+		assertKeyboardMappingIsDownWithPressedKey(jeiMapping, mapping.boundKey());
+	}
+
+	private static void assertKeyboardMappingIsDownWithPressedKey(IJeiKeyMappingInternal jeiMapping, InputConstants.Key boundKey) {
+		if (boundKey.getType() != InputConstants.Type.KEYSYM) {
+			return;
+		}
+
+		FabricClientTestInput.releaseKey(boundKey.getValue());
+		boolean isDownWithoutKey = jeiMapping.isDown();
+		FabricClientTestInput.holdKey(boundKey.getValue());
+		boolean isDownWithKey;
+		try {
+			isDownWithKey = jeiMapping.isDown();
+		} finally {
+			FabricClientTestInput.releaseKey(boundKey.getValue());
+		}
+
+		if (isDownWithoutKey) {
+			throw new AssertionError("Expected JEI key mapping to reject a released key: " + boundKey.getName());
+		}
+		if (!isDownWithKey) {
+			throw new AssertionError("Expected JEI key mapping to poll its real key: " + boundKey.getName());
+		}
+	}
+
+	private static void assertModifierKeyPollingMatchesEitherSide() {
+		assertModifierKeyPollingMatchesEitherSide(GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT);
+		assertModifierKeyPollingMatchesEitherSide(GLFW.GLFW_KEY_LEFT_CONTROL, GLFW.GLFW_KEY_RIGHT_CONTROL);
+		assertModifierKeyPollingMatchesEitherSide(GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_RIGHT_ALT);
+		assertModifierKeyPollingMatchesEitherSide(GLFW.GLFW_KEY_LEFT_SUPER, GLFW.GLFW_KEY_RIGHT_SUPER);
+	}
+
+	private static void assertModifierKeyPollingMatchesEitherSide(int leftKeyValue, int rightKeyValue) {
+		InputConstants.Key leftKey = InputConstants.Type.KEYSYM.getOrCreate(leftKeyValue);
+		InputConstants.Key rightKey = InputConstants.Type.KEYSYM.getOrCreate(rightKeyValue);
+
+		FabricClientTestInput.releaseKey(leftKeyValue);
+		FabricClientTestInput.releaseKey(rightKeyValue);
+		if (IJeiKeyMappingInternal.isKeyDown(leftKey)) {
+			throw new AssertionError("Expected JEI modifier polling to reject a released key: " + leftKey.getName());
+		}
+		if (IJeiKeyMappingInternal.isKeyDown(rightKey)) {
+			throw new AssertionError("Expected JEI modifier polling to reject a released key: " + rightKey.getName());
+		}
+
+		FabricClientTestInput.holdKey(rightKeyValue);
+		try {
+			if (!IJeiKeyMappingInternal.isKeyDown(leftKey)) {
+				throw new AssertionError("Expected JEI modifier polling to accept the right-side key for: " + leftKey.getName());
+			}
+			if (!IJeiKeyMappingInternal.isKeyDown(rightKey)) {
+				throw new AssertionError("Expected JEI modifier polling to accept the right-side key for: " + rightKey.getName());
+			}
+		} finally {
+			FabricClientTestInput.releaseKey(rightKeyValue);
+		}
+
+		FabricClientTestInput.holdKey(leftKeyValue);
+		try {
+			if (!IJeiKeyMappingInternal.isKeyDown(leftKey)) {
+				throw new AssertionError("Expected JEI modifier polling to accept the left-side key for: " + leftKey.getName());
+			}
+			if (!IJeiKeyMappingInternal.isKeyDown(rightKey)) {
+				throw new AssertionError("Expected JEI modifier polling to accept the left-side key for: " + rightKey.getName());
+			}
+		} finally {
+			FabricClientTestInput.releaseKey(leftKeyValue);
 		}
 	}
 

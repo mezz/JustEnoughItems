@@ -24,6 +24,11 @@ public class AmecsJeiKeyMapping extends AbstractJeiKeyMapping {
 	}
 
 	@Override
+	protected InputConstants.Key getBoundKey() {
+		return this.amecsMapping.getRealKey();
+	}
+
+	@Override
 	public boolean isActiveAndMatches(InputConstants.Key key) {
 		if (isUnbound()) {
 			return false;

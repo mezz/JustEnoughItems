@@ -25,6 +25,14 @@ public final class FabricClientTestInput {
 		setModifier(modifier, false);
 	}
 
+	public static void holdKey(int key) {
+		setKey(key, true);
+	}
+
+	public static void releaseKey(int key) {
+		setKey(key, false);
+	}
+
 	public static void clear() {
 		KEY_STATES.clear();
 	}

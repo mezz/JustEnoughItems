@@ -17,11 +17,16 @@ public class FabricJeiKeyMapping extends AbstractJeiKeyMapping {
 	}
 
 	@Override
+	protected InputConstants.Key getBoundKey() {
+		return this.fabricMapping.getRealKey();
+	}
+
+	@Override
 	public boolean isActiveAndMatches(InputConstants.Key key) {
 		if (isUnbound()) {
 			return false;
 		}
-		if (!this.fabricMapping.realKey.equals(key)) {
+		if (!this.fabricMapping.getRealKey().equals(key)) {
 			return false;
 		}
 		return context.isActive();

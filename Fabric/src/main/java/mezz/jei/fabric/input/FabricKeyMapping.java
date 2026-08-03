@@ -84,6 +84,10 @@ public class FabricKeyMapping extends KeyMapping {
 		return this.realKey.getName();
 	}
 
+	public InputConstants.Key getRealKey() {
+		return this.realKey;
+	}
+
 	private void hideFromMinecraftClickDispatch() {
 		// Overwrite the parent's key variable and rebuild the static key map so hidden JEI mappings
 		// do not steal clicks from vanilla mappings like attack/use.
