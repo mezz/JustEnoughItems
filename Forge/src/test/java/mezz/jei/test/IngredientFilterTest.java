@@ -9,7 +9,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IClientConfig;
-import mezz.jei.core.search.BakedSubstringIndexBuilder;
+import mezz.jei.common.search.BakedSubstringIndexBuilder;
 import mezz.jei.gui.filter.FilterTextSource;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.ingredients.IListElementInfo;

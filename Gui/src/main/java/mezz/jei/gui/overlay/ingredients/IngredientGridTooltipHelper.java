@@ -10,7 +10,7 @@ import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.SafeIngredientUtil;
-import mezz.jei.core.search.SearchMode;
+import mezz.jei.common.search.SearchMode;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;

@@ -19,7 +19,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.core.util.Pair;
+import mezz.jei.common.util.Pair;
 import mezz.jei.library.gui.ingredients.ICycler;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RendererOverrides;

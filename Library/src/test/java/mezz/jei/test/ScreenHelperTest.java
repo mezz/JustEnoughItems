@@ -8,7 +8,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.common.ingredients.ITypedIngredientFactory;
-import mezz.jei.core.collect.ListMultiMap;
+import mezz.jei.common.collect.ListMultiMap;
 import mezz.jei.library.gui.GuiContainerHandlers;
 import mezz.jei.library.gui.helpers.ScreenHelper;
 import net.minecraft.client.gui.GuiGraphics;

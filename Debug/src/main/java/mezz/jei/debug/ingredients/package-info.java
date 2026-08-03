@@ -4,4 +4,4 @@ package mezz.jei.debug.ingredients;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import mezz.jei.core.FieldsAndMethodsAreNonnullByDefault;
+import mezz.jei.common.FieldsAndMethodsAreNonnullByDefault;
