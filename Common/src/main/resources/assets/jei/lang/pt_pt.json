@@ -1,5 +1,5 @@
 {
-  "_comment": "Tooltips",
+  "_comment": "Debug (for a debug mode, do not need translation)",
   "jei.tooltip.config": "Configuração do JEI",
   "jei.tooltip.show.recipes": "Mostrar Receitas",
   "jei.tooltip.show.all.recipes.hotkey": "%s para mostrar todas as Receitas",
@@ -18,7 +18,6 @@
   "jei.tooltip.not.enough.space": "Não há espaço suficiente para exibir a sobreposição da lista de ingredientes JEI aqui.",
   "jei.tooltip.ingredient.list.disabled": "As sobreposições JEI estão desativadas.",
   "jei.tooltip.ingredient.list.disabled.how.to.fix": "Pressionar \"%s\" para ativá-las.",
-  "jei.tooltip.bookmarks": "Marcadores JEI",
   "jei.tooltip.bookmarks.usage.nokey": "Adicionar um atalho de teclado para marcadores JEI nas Configurações de controlos.",
   "jei.tooltip.bookmarks.usage.key": "Passar o rato sobre um ingrediente e pressionar \"%s\" para marcá-lo.",
   "jei.tooltip.bookmarks.not.enough.space": "Não há espaço suficiente para exibir a sobreposição da lista de favoritos JEI aqui.",
@@ -33,14 +32,13 @@
   "jei.tooltip.recipe.sort.craftable.first.enabled": "Mostrar receitas que podem ser criadas primeiro (ativado)",
   "jei.tooltip.recipe.sort.craftable.first.disabled": "Mostrar receitas que podem ser criadas primeiro (desativado)",
 
-  "_comment": "Key Bindings",
+  "_comment": "Error Tooltips",
   "jei.key.category.overlays": "JEI (Sobreposições)",
   "key.jei.toggleOverlay": "Mostrar/Esconder JEI Sobreposições",
   "key.jei.focusSearch": "Selecionar Barra de Pesquisa",
   "key.jei.previousPage": "Página Anterior",
   "key.jei.nextPage": "Próxima Página",
   "key.jei.toggleBookmarkOverlay": "Mostrar/Esconder Ingredientes Marcados",
-
   "jei.key.category.recipe.gui": "JEI (Receitas)",
   "key.jei.recipeBack": "Receita Anterior",
   "key.jei.previousCategory": "Categoria da Receita Anterior",
@@ -48,7 +46,6 @@
   "key.jei.previousRecipePage": "Página da Receita Anterior",
   "key.jei.nextRecipePage": "Página da Próxima Receita",
   "key.jei.closeRecipeGui": "Fechar GUI das Receitas",
-
   "jei.key.category.mouse.hover": "JEI (Passar com o Rato)",
   "key.jei.bookmark": "Adicionar/Remover Marcador",
   "key.jei.showRecipe": "Mostrar Receita",
@@ -57,13 +54,10 @@
   "key.jei.showUses2": "Mostrar Utilizações",
   "key.jei.transferRecipeBookmark": "Criar Receita Marcada (1 vez)",
   "key.jei.maxTransferRecipeBookmark": "Criar Receita Marcada (valor máximo)",
-
   "jei.key.category.search": "JEI (Filtro de Pesquisa)",
   "key.jei.clearSearchBar": "Limpar Filtro de Pesquisa",
   "key.jei.previousSearch": "Pesquisa Anterior",
   "key.jei.nextSearch": "Próxima Pesquisa",
-
-  "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Criação",
   "gui.jei.category.stoneCutter": "Corte de pedra",
   "gui.jei.category.smelting": "Fundição",
@@ -82,14 +76,10 @@
   "gui.jei.category.tagInformation.block": "Bloco Etiquetas",
   "gui.jei.category.tagInformation.fluid": "Fluído Etiquetas",
   "gui.jei.category.tagInformation.item": "Item Etiquetas",
-
-  "_comment": "Key Names",
   "jei.key.combo.shift": "SHIFT + %s",
   "jei.key.combo.control": "CTRL + %s",
   "jei.key.combo.command": "CMD + %s",
   "jei.key.combo.alt": "ALT + %s",
-
-  "_comment": "Debug (for a debug mode, do not need translation)",
   "description.jei.wooden.door.1": "Wooden doors allow you to block monsters from entering your building.\\nTesting sentences.",
   "description.jei.wooden.door.2": "Clicking on a door changes its state from open to closed and vice versa.",
   "description.jei.wooden.door.3": "Wooden doors can be opened/closed via redstone circuits.",
@@ -97,5 +87,6 @@
   "description.jei.debug.formatting.2": "Testing %s %s formatting replacements.",
   "description.jei.debug.formatting.3": "%s nested",
   "jei.alias.panda.spawn.egg": "endangered",
-  "jei.alias.villager.spawn.egg": "HMMM"
+  "jei.alias.villager.spawn.egg": "HMMM",
+  "jei.tooltip.bookmarks": "Marcadores JEI"
 }
