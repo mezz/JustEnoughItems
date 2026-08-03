@@ -1,7 +1,6 @@
 package mezz.jei.core.search;
 
 import mezz.jei.api.search.ISearchStorage;
-import mezz.jei.core.search.suffixtree.GeneralizedSuffixTree;
 import net.mezzdev.bakedsubstring.BakedSubstringIndex;
 
 import java.util.Collection;
@@ -9,7 +8,7 @@ import java.util.function.Consumer;
 
 public class BakedSubstringIndexSearchStorage<T> implements ISearchStorage<T> {
 	private final BakedSubstringIndex<T> bakedStorage;
-	private final GeneralizedSuffixTree<T> mutableStorage = new GeneralizedSuffixTree<>();
+	private final ISearchStorage<T> mutableStorage = new GeneralizedSuffixTreeSearchStorage<>();
 
 	public BakedSubstringIndexSearchStorage(BakedSubstringIndex<T> bakedStorage) {
 		this.bakedStorage = bakedStorage;

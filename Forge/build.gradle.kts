@@ -27,6 +27,7 @@ val parchmentMinecraftVersion: String by extra
 val parchmentVersionForge: String by extra
 val modrinthId: String by extra
 val bakedSubstringIndexVersion: String by extra
+val suffixtreeVersion: String by extra
 
 val forgeArtifactVersion = "${minecraftVersion}-${forgeVersion}"
 
@@ -77,6 +78,9 @@ dependencies {
 		implementation(it)
 	}
 	modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
+		isTransitive = false
+	}
+	modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
 		isTransitive = false
 	}
 	testImplementation(

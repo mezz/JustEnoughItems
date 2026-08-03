@@ -44,6 +44,7 @@ val modrinthId: String by extra
 val amecsVersionFabric: String by extra
 val amecsMinecraftVersion: String by extra
 val bakedSubstringIndexVersion: String by extra
+val suffixtreeVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -137,6 +138,9 @@ dependencies {
         implementation(it)
     }
     modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
+        isTransitive = false
+    }
+    modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
     }
 }
