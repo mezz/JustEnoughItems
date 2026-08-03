@@ -3,6 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java
+    idea
     id("org.spongepowered.gradle.vanilla")
     `maven-publish`
 }
@@ -104,6 +105,14 @@ publishing {
         val deployDir = project.findProperty("DEPLOY_DIR")
         if (deployDir != null) {
             maven(deployDir)
+        }
+    }
+}
+
+idea {
+    module {
+        for (fileName in listOf("build", "run", "out", "logs")) {
+            excludeDirs.add(file(fileName))
         }
     }
 }
