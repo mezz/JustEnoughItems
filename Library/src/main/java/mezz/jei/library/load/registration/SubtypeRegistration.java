@@ -2,6 +2,7 @@ package mezz.jei.library.load.registration;
 
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
@@ -42,6 +43,20 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 	}
 
 	@Override
+	public <B, I> void registerSubtypeInterpreter(IIngredientTypeWithSubtypes<B, I> type, B base, ISubtypeInterpreter<I> interpreter) {
+		ErrorUtil.checkNotNull(type, "type");
+		ErrorUtil.checkNotNull(base, "base");
+		ErrorUtil.checkNotNull(interpreter, "interpreter");
+		Class<? extends B> ingredientBaseClass = type.getIngredientBaseClass();
+		if (!ingredientBaseClass.isInstance(base)) {
+			throw new IllegalArgumentException(String.format("base (%s) must be an instance of %s", base.getClass(), ingredientBaseClass));
+		}
+		if (!this.interpreters.addInterpreter(type, base, interpreter)) {
+			LOGGER.error("An interpreter is already registered for this: {}", base, new IllegalArgumentException());
+		}
+	}
+
+	@Override
 	public <B, I> void registerSubtypeInterpreter(IIngredientTypeWithSubtypes<B, I> type, B base, IIngredientSubtypeInterpreter<I> interpreter) {
 		ErrorUtil.checkNotNull(type, "type");
 		ErrorUtil.checkNotNull(base, "base");
@@ -59,14 +74,23 @@ public class SubtypeRegistration implements ISubtypeRegistration {
 		return interpreters;
 	}
 
-	private static class AllNbt implements IIngredientSubtypeInterpreter<ItemStack> {
+	private static class AllNbt implements ISubtypeInterpreter<ItemStack> {
 		public static final AllNbt INSTANCE = new AllNbt();
 
 		private AllNbt() {
 		}
 
 		@Override
-		public String apply(ItemStack itemStack, UidContext context) {
+		public Object getSubtypeData(ItemStack itemStack, UidContext context) {
+			CompoundTag nbtTagCompound = itemStack.getTag();
+			if (nbtTagCompound == null || nbtTagCompound.isEmpty()) {
+				return null;
+			}
+			return nbtTagCompound.copy();
+		}
+
+		@Override
+		public String getLegacyStringSubtypeInfo(ItemStack itemStack, UidContext context) {
 			CompoundTag nbtTagCompound = itemStack.getTag();
 			if (nbtTagCompound == null || nbtTagCompound.isEmpty()) {
 				return IIngredientSubtypeInterpreter.NONE;

@@ -70,6 +70,14 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		return stackHelper.getUniqueIdentifierForStack(ingredient, context);
 	}
 
+	@Override
+	public Object getUid(ItemStack ingredient, UidContext context) {
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		ErrorUtil.checkNotNull(context, "context");
+		return stackHelper.getUidForStack(ingredient, context);
+	}
+
+	@Override
 	public boolean hasSubtypes(ItemStack ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 		return subtypeManager.hasSubtypes(ingredient);

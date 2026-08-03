@@ -4,13 +4,40 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Gets subtype information from ingredients that have subtype interpreters.
  * <p>
- * Add subtypes for your ingredients with {@link ISubtypeRegistration#registerSubtypeInterpreter(IIngredientTypeWithSubtypes, Object, IIngredientSubtypeInterpreter)}.
+ * Add subtypes for your ingredients with {@link ISubtypeRegistration#registerSubtypeInterpreter(IIngredientTypeWithSubtypes, Object, ISubtypeInterpreter)}.
  */
 public interface ISubtypeManager {
+	/**
+	 * Get the data from an ItemStack that is relevant to comparing and telling subtypes apart.
+	 * Returns null if the ItemStack has no information used for subtypes.
+	 *
+	 * @since 15.49.0
+	 */
+	@Nullable
+	default Object getSubtypeData(ItemStack ingredient, UidContext context) {
+		return getSubtypeData(VanillaTypes.ITEM_STACK, ingredient, context);
+	}
+
+	/**
+	 * Get the data from an ingredient that is relevant to comparing and telling subtypes apart.
+	 * Returns null if the ingredient has no information used for subtypes.
+	 *
+	 * @since 15.49.0
+	 */
+	@Nullable
+	default <T> Object getSubtypeData(IIngredientTypeWithSubtypes<?, T> ingredientType, T ingredient, UidContext context) {
+		String subtypeInfo = getSubtypeInfo(ingredientType, ingredient, context);
+		if (subtypeInfo.isEmpty()) {
+			return null;
+		}
+		return subtypeInfo;
+	}
+
 	/**
 	 * Get the data from an ItemStack that is relevant to comparing and telling subtypes apart.
 	 * Returns {@link IIngredientSubtypeInterpreter#NONE} if the ItemStack has no information used for subtypes.
@@ -34,7 +61,7 @@ public interface ISubtypeManager {
 	 * For example in the vanilla game an enchanted book may have subtypes, but an apple does not.
 	 *
 	 * @see ISubtypeRegistration#registerSubtypeInterpreter
-	 * @see ISubtypeManager#getSubtypeInfo
+	 * @see ISubtypeManager#getSubtypeData
 	 *
 	 * @since 15.37.0
 	 */
@@ -47,7 +74,7 @@ public interface ISubtypeManager {
 	 * For example in the vanilla game an enchanted book may have subtypes, but an apple does not.
 	 *
 	 * @see ISubtypeRegistration#registerSubtypeInterpreter
-	 * @see ISubtypeManager#getSubtypeInfo
+	 * @see ISubtypeManager#getSubtypeData
 	 *
 	 * @since 15.6.0
 	 */

@@ -95,6 +95,6 @@ public class RecipeMap {
 			}
 		}
 
-		return ingredientHelper.getUniqueId(ingredient, UidContext.Recipe);
+		return ingredientHelper.getUid(ingredient, UidContext.Recipe);
 	}
 }

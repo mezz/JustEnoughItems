@@ -22,7 +22,7 @@ public class IngredientInfo<T> {
 	private final IIngredientHelper<T> ingredientHelper;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final TypedIngredientSet<T> ingredientSet;
-	private final ListMultiMap<String, String> aliases;
+	private final ListMultiMap<Object, String> aliases;
 	private final ListMultiMap<Object, String> baseAliases;
 
 	public IngredientInfo(
@@ -80,7 +80,7 @@ public class IngredientInfo<T> {
 
 	@Unmodifiable
 	public Collection<String> getIngredientAliases(ITypedIngredient<T> ingredient) {
-		String uid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+		Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
 		Collection<String> ingredientAliases = aliases.get(uid);
 		Collection<String> baseIngredientAliases = getBaseIngredientAliases(ingredient);
 		if (ingredientAliases.isEmpty()) {
@@ -97,7 +97,7 @@ public class IngredientInfo<T> {
 
 	@Unmodifiable
 	public Collection<String> getIngredientAliases(T ingredient) {
-		String uid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+		Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
 		Collection<String> ingredientAliases = aliases.get(uid);
 		Collection<String> baseIngredientAliases = getBaseIngredientAliases(ingredient);
 		if (ingredientAliases.isEmpty()) {
@@ -113,22 +113,22 @@ public class IngredientInfo<T> {
 	}
 
 	public void addIngredientAlias(T ingredient, String alias) {
-		String uid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+		Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
 		this.aliases.put(uid, alias);
 	}
 
 	public void addIngredientAlias(ITypedIngredient<T> ingredient, String alias) {
-		String uid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+		Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
 		this.aliases.put(uid, alias);
 	}
 
 	public void addIngredientAliases(T ingredient, Collection<String> aliases) {
-		String uid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+		Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
 		this.aliases.putAll(uid, aliases);
 	}
 
 	public void addIngredientAliases(ITypedIngredient<T> ingredient, Collection<String> aliases) {
-		String uid = ingredientHelper.getUniqueId(ingredient, UidContext.Ingredient);
+		Object uid = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
 		this.aliases.putAll(uid, aliases);
 	}
 

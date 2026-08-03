@@ -10,18 +10,18 @@ import net.minecraft.world.item.ItemStack;
 
 public class IngredientBookmark<T> implements IBookmark {
 	private final IElement<T> element;
-	private final String uid;
+	private final Object uid;
 	private final ITypedIngredient<T> typedIngredient;
 	private boolean visible = true;
 
 	public static <T> IngredientBookmark<T> create(ITypedIngredient<T> typedIngredient, IIngredientManager ingredientManager) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
 		typedIngredient = ingredientManager.normalizeTypedIngredient(typedIngredient);
-		String uniqueId = ingredientHelper.getUniqueId(typedIngredient, UidContext.Ingredient);
+		Object uniqueId = ingredientHelper.getUid(typedIngredient, UidContext.Ingredient);
 		return new IngredientBookmark<>(typedIngredient, uniqueId);
 	}
 
-	private IngredientBookmark(ITypedIngredient<T> typedIngredient, String uid) {
+	private IngredientBookmark(ITypedIngredient<T> typedIngredient, Object uid) {
 		this.typedIngredient = typedIngredient;
 		this.uid = uid;
 		this.element = new IngredientBookmarkElement<>(this);

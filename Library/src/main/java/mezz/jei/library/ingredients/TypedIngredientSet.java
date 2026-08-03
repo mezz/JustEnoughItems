@@ -21,7 +21,7 @@ public class TypedIngredientSet<T> extends AbstractSet<ITypedIngredient<T>> {
 
 	private final IIngredientHelper<T> ingredientHelper;
 	private final UidContext context;
-	private final Map<String, ITypedIngredient<T>> ingredients;
+	private final Map<Object, ITypedIngredient<T>> ingredients;
 
 	public TypedIngredientSet(IIngredientHelper<T> ingredientHelper, UidContext context) {
 		this.ingredientHelper = ingredientHelper;
@@ -30,9 +30,9 @@ public class TypedIngredientSet<T> extends AbstractSet<ITypedIngredient<T>> {
 	}
 
 	@Nullable
-	private String getUid(ITypedIngredient<T> typedIngredient) {
+	private Object getUid(ITypedIngredient<T> typedIngredient) {
 		try {
-			return ingredientHelper.getUniqueId(typedIngredient, context);
+			return ingredientHelper.getUid(typedIngredient, context);
 		} catch (RuntimeException e) {
 			try {
 				String ingredientInfo = ingredientHelper.getErrorInfo(typedIngredient.getIngredient());
@@ -46,7 +46,7 @@ public class TypedIngredientSet<T> extends AbstractSet<ITypedIngredient<T>> {
 
 	@Override
 	public boolean add(ITypedIngredient<T> value) {
-		String uid = getUid(value);
+		Object uid = getUid(value);
 		return uid != null && ingredients.put(uid, value) == null;
 	}
 
@@ -57,7 +57,7 @@ public class TypedIngredientSet<T> extends AbstractSet<ITypedIngredient<T>> {
 			if (this.ingredientHelper.getIngredientType().equals(type)) {
 				@SuppressWarnings("unchecked")
 				ITypedIngredient<T> cast = (ITypedIngredient<T>) typedIngredient;
-				String uid = getUid(cast);
+				Object uid = getUid(cast);
 				return uid != null && ingredients.remove(uid) != null;
 			}
 		}
@@ -91,7 +91,7 @@ public class TypedIngredientSet<T> extends AbstractSet<ITypedIngredient<T>> {
 			if (this.ingredientHelper.getIngredientType().equals(type)) {
 				@SuppressWarnings("unchecked")
 				ITypedIngredient<T> cast = (ITypedIngredient<T>) typedIngredient;
-				String uid = getUid(cast);
+				Object uid = getUid(cast);
 				return uid != null && ingredients.containsKey(uid);
 			}
 		}
@@ -100,7 +100,17 @@ public class TypedIngredientSet<T> extends AbstractSet<ITypedIngredient<T>> {
 
 	public Optional<ITypedIngredient<T>> getByUid(String uid) {
 		ITypedIngredient<T> v = ingredients.get(uid);
-		return Optional.ofNullable(v);
+		if (v != null) {
+			return Optional.of(v);
+		}
+
+		for (ITypedIngredient<T> typedIngredient : ingredients.values()) {
+			String legacyUid = ingredientHelper.getUniqueId(typedIngredient, context);
+			if (uid.equals(legacyUid)) {
+				return Optional.of(typedIngredient);
+			}
+		}
+		return Optional.empty();
 	}
 
 	@Override

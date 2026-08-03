@@ -194,13 +194,13 @@ public final class RecipeTransferUtil {
 	) {
 		RecipeTransferOperationsResult transferOperations = new RecipeTransferOperationsResult();
 		List<RequiredSlot> requiredSlots = new ArrayList<>();
-		Map<IRecipeSlotView, Map<String, Integer>> slotRequirementCache = new IdentityHashMap<>();
+		Map<IRecipeSlotView, Map<Object, Integer>> slotRequirementCache = new IdentityHashMap<>();
 		Map<Slot, Integer> availableCounts = new HashMap<>();
-		Map<Slot, String> availableUids = new HashMap<>();
+		Map<Slot, Object> availableUids = new HashMap<>();
 		availableItemStacks.forEach((slot, stack) -> {
 			if (!stack.isEmpty()) {
 				availableCounts.put(slot, stack.getCount());
-				availableUids.put(slot, stackhelper.getUniqueIdentifierForStack(stack, UidContext.Recipe));
+				availableUids.put(slot, stackhelper.getUidForStack(stack, UidContext.Recipe));
 			}
 		});
 
@@ -212,7 +212,7 @@ public final class RecipeTransferUtil {
 			}
 
 			Slot craftingSlot = craftingSlots.get(i);
-			Map<String, Integer> requiredCountsByUid = slotRequirementCache.computeIfAbsent(requiredItemStack, s -> calculateRequiredCountsByUid(s, stackhelper));
+			Map<Object, Integer> requiredCountsByUid = slotRequirementCache.computeIfAbsent(requiredItemStack, s -> calculateRequiredCountsByUid(s, stackhelper));
 			List<CandidateGroup> candidateGroups = getCandidateGroups(availableItemStacks, availableUids, requiredCountsByUid);
 
 			if (candidateGroups.isEmpty()) {
@@ -246,13 +246,13 @@ public final class RecipeTransferUtil {
 
 	private static List<CandidateGroup> getCandidateGroups(
 		Map<Slot, ItemStack> availableItemStacks,
-		Map<Slot, String> availableUids,
-		Map<String, Integer> requiredCountsByUid
+		Map<Slot, Object> availableUids,
+		Map<Object, Integer> requiredCountsByUid
 	) {
-		Map<String, List<CandidateSlot>> candidatesByUid = new HashMap<>();
+		Map<Object, List<CandidateSlot>> candidatesByUid = new HashMap<>();
 
 		availableItemStacks.forEach((slot, stack) -> {
-			String uid = availableUids.get(slot);
+			Object uid = availableUids.get(slot);
 			if (uid != null && requiredCountsByUid.containsKey(uid)) {
 				candidatesByUid.computeIfAbsent(uid, ignored -> new ArrayList<>())
 					.add(new CandidateSlot(slot, stack));
@@ -416,16 +416,16 @@ public final class RecipeTransferUtil {
 		return count;
 	}
 
-	private static Map<String, Integer> calculateRequiredCountsByUid(IRecipeSlotView recipeSlotView, IStackHelper stackhelper) {
+	private static Map<Object, Integer> calculateRequiredCountsByUid(IRecipeSlotView recipeSlotView, IStackHelper stackhelper) {
 		List<@Nullable ITypedIngredient<?>> allIngredientsList = recipeSlotView.getAllIngredientsList();
-		Map<String, Integer> requiredCountsByUid = new HashMap<>(allIngredientsList.size());
+		Map<Object, Integer> requiredCountsByUid = new HashMap<>(allIngredientsList.size());
 		for (@Nullable ITypedIngredient<?> typedIngredient : allIngredientsList) {
 			if (typedIngredient == null) {
 				continue;
 			}
 			ITypedIngredient<ItemStack> typedItemStack = typedIngredient.castToItemStackType();
 			if (typedItemStack != null) {
-				String uid = stackhelper.getUniqueIdentifierForStack(typedItemStack.getIngredient(), UidContext.Recipe);
+				Object uid = stackhelper.getUidForStack(typedItemStack.getIngredient(), UidContext.Recipe);
 				int count = Math.max(1, typedItemStack.getIngredient().getCount());
 				requiredCountsByUid.merge(uid, count, Math::max);
 			}
@@ -435,7 +435,7 @@ public final class RecipeTransferUtil {
 
 	private record RequiredSlot(int index, IRecipeSlotView recipeSlotView, Slot craftingSlot, List<CandidateGroup> candidateGroups) {}
 
-	private record CandidateGroup(String uid, int requiredCount, List<CandidateSlot> candidates, int totalCount) {
+	private record CandidateGroup(Object uid, int requiredCount, List<CandidateSlot> candidates, int totalCount) {
 		private int getFirstSlotIndex() {
 			return candidates.stream()
 				.mapToInt(candidate -> candidate.slot.index)
