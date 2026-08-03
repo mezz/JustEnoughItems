@@ -1,0 +1,121 @@
+package mezz.jei.neoforge.startup;
+
+import mezz.jei.gui.events.GuiEventHandler;
+import mezz.jei.neoforge.events.RuntimeEventSubscriptions;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.render.state.GuiRenderState;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import org.joml.Matrix3x2fStack;
+import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
+public class EventRegistrationTest {
+	@Test
+	public void nonContainerScreenPostDrawsJeiForeground() throws ReflectiveOperationException {
+		// Setup: capture the runtime event listeners registered for a plain screen like RecipesGui.
+		Map<Class<?>, Consumer<?>> listeners = new HashMap<>();
+		IEventBus eventBus = createRecordingEventBus(listeners);
+		RuntimeEventSubscriptions subscriptions = new RuntimeEventSubscriptions(eventBus);
+		TestGuiEventHandler guiEventHandler = new TestGuiEventHandler();
+		EventRegistration.registerGuiHandler(subscriptions, guiEventHandler);
+
+		Screen screen = allocateWithoutConstructor(TestScreen.class);
+		GuiGraphics guiGraphics = createGuiGraphics();
+		int mouseX = 13;
+		int mouseY = 17;
+
+		// Operation: fire the post-render event used by NeoForge 1.21.11 for non-container screens.
+		Consumer<ScreenEvent.Render.Post> listener = getListener(listeners, ScreenEvent.Render.Post.class);
+		listener.accept(new ScreenEvent.Render.Post(screen, guiGraphics, mouseX, mouseY, 0));
+
+		// Assertions: JEI's foreground path receives the original render context.
+		assertEquals(1, guiEventHandler.foregroundDrawCount);
+		assertSame(screen, guiEventHandler.screen);
+		assertSame(guiGraphics, guiEventHandler.guiGraphics);
+		assertEquals(mouseX, guiEventHandler.mouseX);
+		assertEquals(mouseY, guiEventHandler.mouseY);
+	}
+
+	private static IEventBus createRecordingEventBus(Map<Class<?>, Consumer<?>> listeners) {
+		return (IEventBus) Proxy.newProxyInstance(
+			IEventBus.class.getClassLoader(),
+			new Class<?>[]{IEventBus.class},
+			(proxy, method, args) -> {
+				if (method.getName().equals("addListener") && args != null && args.length == 4) {
+					listeners.put((Class<?>) args[2], (Consumer<?>) args[3]);
+				}
+				return null;
+			}
+		);
+	}
+
+	private static <T> T allocateWithoutConstructor(Class<T> type) throws ReflectiveOperationException {
+		Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
+		Field unsafeField = unsafeClass.getDeclaredField("theUnsafe");
+		unsafeField.setAccessible(true);
+		Object unsafe = unsafeField.get(null);
+		Method allocateInstance = unsafeClass.getMethod("allocateInstance", Class.class);
+		return type.cast(allocateInstance.invoke(unsafe, type));
+	}
+
+	private static GuiGraphics createGuiGraphics() throws ReflectiveOperationException {
+		GuiGraphics guiGraphics = allocateWithoutConstructor(GuiGraphics.class);
+		setField(guiGraphics, "pose", new Matrix3x2fStack(16));
+		setField(guiGraphics, "guiRenderState", new GuiRenderState());
+		return guiGraphics;
+	}
+
+	private static void setField(Object instance, String name, Object value) throws ReflectiveOperationException {
+		Field field = instance.getClass().getDeclaredField(name);
+		field.setAccessible(true);
+		field.set(instance, value);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T extends Event> Consumer<T> getListener(Map<Class<?>, Consumer<?>> listeners, Class<T> eventType) {
+		Consumer<?> listener = listeners.get(eventType);
+		assertNotNull(listener, () -> "Missing listener for " + eventType.getName());
+		return (Consumer<T>) listener;
+	}
+
+	private static class TestScreen extends Screen {
+		private TestScreen() {
+			super(Component.empty());
+		}
+	}
+
+	private static class TestGuiEventHandler extends GuiEventHandler {
+		private int foregroundDrawCount;
+		private Screen screen;
+		private GuiGraphics guiGraphics;
+		private int mouseX;
+		private int mouseY;
+
+		private TestGuiEventHandler() {
+			super(null, null, null);
+		}
+
+		@Override
+		public void drawForScreenForeground(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+			this.foregroundDrawCount++;
+			this.screen = screen;
+			this.guiGraphics = guiGraphics;
+			this.mouseX = mouseX;
+			this.mouseY = mouseY;
+		}
+	}
+}

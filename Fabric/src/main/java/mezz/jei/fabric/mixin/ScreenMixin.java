@@ -3,7 +3,6 @@ package mezz.jei.fabric.mixin;
 import mezz.jei.fabric.events.JeiScreenEvents;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.joml.Matrix3x2fStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,7 +25,7 @@ public class ScreenMixin {
 		Screen screen = (Screen) (Object) this;
 		runWithIdentityPose(
 			graphics,
-			() -> JeiScreenEvents.DRAW_BACKGROUND.invoker().drawBackground(screen, graphics, mouseX, mouseY, partialTicks)
+			() -> JeiScreenEvents.DRAW_BACKGROUND.invoker().drawBackground(screen, graphics)
 		);
 	}
 
@@ -42,12 +41,11 @@ public class ScreenMixin {
 	private void drawForeground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
 		@SuppressWarnings("DataFlowIssue")
 		Screen screen = (Screen) (Object) this;
-		if (screen instanceof AbstractContainerScreen<?> containerScreen) {
-			runWithIdentityPose(
-				graphics,
-				() -> JeiScreenEvents.DRAW_FOREGROUND.invoker().drawForeground(containerScreen, graphics, mouseX, mouseY)
-			);
-		}
+		graphics.nextStratum();
+		runWithIdentityPose(
+			graphics,
+			() -> JeiScreenEvents.DRAW_FOREGROUND.invoker().drawForeground(screen, graphics, mouseX, mouseY)
+		);
 	}
 
 	private static void runWithIdentityPose(GuiGraphics graphics, Runnable runnable) {
