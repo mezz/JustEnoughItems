@@ -1,9 +1,9 @@
 package mezz.jei.common.config;
 
 import mezz.jei.common.config.file.ConfigValue;
-import mezz.jei.common.util.HorizontalAlignment;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.common.util.NavigationVisibility;
-import mezz.jei.common.util.VerticalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 

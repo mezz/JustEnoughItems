@@ -2,10 +2,10 @@ package mezz.jei.gui.overlay.bookmarks.history;
 
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.IngredientGridNavigationMode;
-import mezz.jei.common.util.HorizontalAlignment;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.NavigationVisibility;
-import mezz.jei.common.util.VerticalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.gui.overlay.ingredients.IngredientGrid;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigationLayout;
 import org.junit.jupiter.api.Test;

@@ -2,10 +2,10 @@ package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.IngredientGridNavigationMode;
-import mezz.jei.common.util.HorizontalAlignment;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.NavigationVisibility;
-import mezz.jei.common.util.VerticalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
