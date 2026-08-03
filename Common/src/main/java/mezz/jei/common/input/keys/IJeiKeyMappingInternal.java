@@ -35,9 +35,28 @@ public interface IJeiKeyMappingInternal extends IJeiKeyMappingWithExtraModifiers
 		Minecraft minecraft = Minecraft.getInstance();
 		long windowHandle = minecraft.getWindow().getWindow();
 		return switch (key.getType()) {
-			case KEYSYM -> InputConstants.isKeyDown(windowHandle, key.getValue());
+			case KEYSYM -> isKeysymDown(windowHandle, key.getValue());
 			case MOUSE -> GLFW.glfwGetMouseButton(windowHandle, key.getValue()) == GLFW.GLFW_PRESS;
 			case SCANCODE -> false;
 		};
+	}
+
+	private static boolean isKeysymDown(long windowHandle, int keyValue) {
+		return switch (keyValue) {
+			case GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT ->
+				isEitherKeysymDown(windowHandle, GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT);
+			case GLFW.GLFW_KEY_LEFT_CONTROL, GLFW.GLFW_KEY_RIGHT_CONTROL ->
+				isEitherKeysymDown(windowHandle, GLFW.GLFW_KEY_LEFT_CONTROL, GLFW.GLFW_KEY_RIGHT_CONTROL);
+			case GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_RIGHT_ALT ->
+				isEitherKeysymDown(windowHandle, GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_RIGHT_ALT);
+			case GLFW.GLFW_KEY_LEFT_SUPER, GLFW.GLFW_KEY_RIGHT_SUPER ->
+				isEitherKeysymDown(windowHandle, GLFW.GLFW_KEY_LEFT_SUPER, GLFW.GLFW_KEY_RIGHT_SUPER);
+			default -> InputConstants.isKeyDown(windowHandle, keyValue);
+		};
+	}
+
+	private static boolean isEitherKeysymDown(long windowHandle, int leftKeyValue, int rightKeyValue) {
+		return InputConstants.isKeyDown(windowHandle, leftKeyValue) ||
+			InputConstants.isKeyDown(windowHandle, rightKeyValue);
 	}
 }
