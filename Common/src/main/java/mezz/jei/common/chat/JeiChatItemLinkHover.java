@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Style;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -37,7 +38,10 @@ public final class JeiChatItemLinkHover {
 			});
 	}
 
-	public static Optional<IngredientLink> getIngredientLink(Style style) {
+	public static Optional<IngredientLink> getIngredientLink(@Nullable Style style) {
+		if (style == null) {
+			return Optional.empty();
+		}
 		ClickEvent clickEvent = style.getClickEvent();
 		if (clickEvent == null || clickEvent.getAction() != ClickEvent.Action.RUN_COMMAND) {
 			return Optional.empty();

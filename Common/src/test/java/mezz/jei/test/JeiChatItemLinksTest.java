@@ -1,6 +1,7 @@
 package mezz.jei.test;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.common.chat.JeiChatItemLinkHover;
 import mezz.jei.common.chat.JeiChatItemLinks;
 import mezz.jei.common.chat.JeiChatItemLinks.IngredientLink;
 import net.minecraft.DetectedVersion;
@@ -171,6 +172,15 @@ public class JeiChatItemLinksTest {
 
 		// Assertions: chat screen input handlers can recover the linked ingredient from the style command.
 		assertEquals(Optional.of(link), parsedLink);
+	}
+
+	@Test
+	public void nullHoveredStyleIsIgnored() {
+		// Operation: check a missing hovered style, which can be passed by third-party GUI renderers.
+		Optional<IngredientLink> parsedLink = JeiChatItemLinkHover.getIngredientLink(null);
+
+		// Assertions: missing styles are not JEI links and should not crash hover rendering.
+		assertTrue(parsedLink.isEmpty());
 	}
 
 	@Test
