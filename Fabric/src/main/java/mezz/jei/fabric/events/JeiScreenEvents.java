@@ -6,7 +6,6 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 public class JeiScreenEvents {
 	public static final Event<DrawForeground> DRAW_FOREGROUND = createDrawForegroundEvent();
@@ -26,7 +25,7 @@ public class JeiScreenEvents {
 	@Environment(EnvType.CLIENT)
 	@FunctionalInterface
 	public interface DrawForeground {
-		void drawForeground(AbstractContainerScreen<?> screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
+		void drawForeground(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
 	}
 
 	public static final Event<DrawBackground> DRAW_BACKGROUND = createDrawBackgroundEvent();
@@ -36,9 +35,9 @@ public class JeiScreenEvents {
 	}
 
 	private static DrawBackground createDrawBackgroundInvoker(DrawBackground[] callbacks) {
-		return (screen, guiGraphics, mouseX, mouseY, partialTicks) -> {
+		return (screen, guiGraphics) -> {
 			for (DrawBackground callback : callbacks) {
-				callback.drawBackground(screen, guiGraphics, mouseX, mouseY, partialTicks);
+				callback.drawBackground(screen, guiGraphics);
 			}
 		};
 	}
@@ -46,6 +45,6 @@ public class JeiScreenEvents {
 	@Environment(EnvType.CLIENT)
 	@FunctionalInterface
 	public interface DrawBackground {
-		void drawBackground(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks);
+		void drawBackground(Screen screen, GuiGraphicsExtractor guiGraphics);
 	}
 }

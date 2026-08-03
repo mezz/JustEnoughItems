@@ -112,22 +112,34 @@ public class EventRegistration {
 			guiEventHandler.onGuiOpen(screen);
 		});
 		subscriptions.register(EventPriority.LOWEST, ContainerScreenEvent.Render.Foreground.class, event -> {
-			AbstractContainerScreen<?> containerScreen = event.getContainerScreen();
+			Screen screen = event.getContainerScreen();
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
 			guiGraphics.nextStratum();
 			runWithIdentityPose(guiGraphics, () -> {
-				guiEventHandler.drawForContainerScreen(containerScreen, guiGraphics, mouseX, mouseY);
+				guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY);
 			});
 		});
 		subscriptions.register(EventPriority.HIGHEST, ScreenEvent.Render.Background.class, event -> {
 			Screen screen = event.getScreen();
 			var guiGraphics = event.getGuiGraphics();
+			runWithIdentityPose(guiGraphics, () -> {
+				guiEventHandler.drawForScreenBackground(screen, guiGraphics);
+			});
+		});
+		subscriptions.register(EventPriority.LOWEST, ScreenEvent.Render.Post.class, event -> {
+			Screen screen = event.getScreen();
+			if (screen instanceof AbstractContainerScreen<?>) {
+				return;
+			}
+
+			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
+			guiGraphics.nextStratum();
 			runWithIdentityPose(guiGraphics, () -> {
-				guiEventHandler.drawForScreen(screen, guiGraphics, mouseX, mouseY);
+				guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY);
 			});
 		});
 		subscriptions.register(ScreenEvent.RenderInventoryMobEffects.class, event -> {

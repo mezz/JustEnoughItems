@@ -16,7 +16,6 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -131,15 +130,15 @@ public class EventRegistration {
 		}
 	}
 
-	private void drawForeground(AbstractContainerScreen<?> screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	private void drawForeground(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (guiEventHandler != null) {
-			guiEventHandler.drawForContainerScreen(screen, guiGraphics, mouseX, mouseY);
+			guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY);
 		}
 	}
 
-	private void drawBackground(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float tickDelta) {
+	private void drawBackground(Screen screen, GuiGraphicsExtractor guiGraphics) {
 		if (guiEventHandler != null) {
-			guiEventHandler.drawForScreen(screen, guiGraphics, mouseX, mouseY);
+			guiEventHandler.drawForScreenBackground(screen, guiGraphics);
 		}
 	}
 
