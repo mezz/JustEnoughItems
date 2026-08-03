@@ -55,6 +55,7 @@ final class JeiFabricKeyMappingClientTests {
 	private static void runTest() {
 		ClientTestUtil.runOnClient(client -> {
 			assertJeiResourcesAreLoaded(client);
+			assertModifierKeyPollingMatchesEitherSide();
 			assertFabricKeyMappingConflictContexts();
 			assertFabricJeiKeyMappingIsDiscoverableAndRebindable(
 				"key.jei.test.fabricKeyMapping.keyboardR",
@@ -84,6 +85,51 @@ final class JeiFabricKeyMappingClientTests {
 		assertModifiedJeiKeyMappings();
 		assertFocusSearchHotkeyDoesNotTypeItsCharacter();
 		assertJeiMouseMappingsDoNotHideVanillaMouseClicks();
+	}
+
+	private static void assertModifierKeyPollingMatchesEitherSide() {
+		assertModifierKeyPollingMatchesEitherSide(GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT);
+		assertModifierKeyPollingMatchesEitherSide(GLFW.GLFW_KEY_LEFT_CONTROL, GLFW.GLFW_KEY_RIGHT_CONTROL);
+		assertModifierKeyPollingMatchesEitherSide(GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_RIGHT_ALT);
+		assertModifierKeyPollingMatchesEitherSide(GLFW.GLFW_KEY_LEFT_SUPER, GLFW.GLFW_KEY_RIGHT_SUPER);
+	}
+
+	private static void assertModifierKeyPollingMatchesEitherSide(int leftKeyValue, int rightKeyValue) {
+		InputConstants.Key leftKey = InputConstants.Type.KEYSYM.getOrCreate(leftKeyValue);
+		InputConstants.Key rightKey = InputConstants.Type.KEYSYM.getOrCreate(rightKeyValue);
+
+		FabricClientTestInput.releaseKey(leftKeyValue);
+		FabricClientTestInput.releaseKey(rightKeyValue);
+		if (IJeiKeyMappingInternal.isKeyDown(leftKey)) {
+			throw new AssertionError("Expected JEI modifier polling to reject a released key: " + leftKey.getName());
+		}
+		if (IJeiKeyMappingInternal.isKeyDown(rightKey)) {
+			throw new AssertionError("Expected JEI modifier polling to reject a released key: " + rightKey.getName());
+		}
+
+		FabricClientTestInput.holdKey(rightKeyValue);
+		try {
+			if (!IJeiKeyMappingInternal.isKeyDown(leftKey)) {
+				throw new AssertionError("Expected JEI modifier polling to accept the right-side key for: " + leftKey.getName());
+			}
+			if (!IJeiKeyMappingInternal.isKeyDown(rightKey)) {
+				throw new AssertionError("Expected JEI modifier polling to accept the right-side key for: " + rightKey.getName());
+			}
+		} finally {
+			FabricClientTestInput.releaseKey(rightKeyValue);
+		}
+
+		FabricClientTestInput.holdKey(leftKeyValue);
+		try {
+			if (!IJeiKeyMappingInternal.isKeyDown(leftKey)) {
+				throw new AssertionError("Expected JEI modifier polling to accept the left-side key for: " + leftKey.getName());
+			}
+			if (!IJeiKeyMappingInternal.isKeyDown(rightKey)) {
+				throw new AssertionError("Expected JEI modifier polling to accept the left-side key for: " + rightKey.getName());
+			}
+		} finally {
+			FabricClientTestInput.releaseKey(leftKeyValue);
+		}
 	}
 
 	private static void assertJeiResourcesAreLoaded(Minecraft client) {
