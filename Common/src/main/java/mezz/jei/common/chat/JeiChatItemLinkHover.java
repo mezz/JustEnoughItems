@@ -65,7 +65,10 @@ public final class JeiChatItemLinkHover {
 		return finder.result();
 	}
 
-	public static Optional<IngredientLink> getIngredientLink(Style style) {
+	public static Optional<IngredientLink> getIngredientLink(@Nullable Style style) {
+		if (style == null) {
+			return Optional.empty();
+		}
 		ClickEvent clickEvent = style.getClickEvent();
 		if (clickEvent instanceof ClickEvent.RunCommand(String command)) {
 			return JeiChatItemLinks.parseShowRecipeCommand(command);
