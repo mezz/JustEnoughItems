@@ -1,4 +1,3 @@
-import me.modmuss50.mpp.PublishModTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.slf4j.event.Level
@@ -63,7 +62,6 @@ dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
 }
 project.evaluationDependsOn(debugProject.path)
-project.evaluationDependsOn(":Changelog")
 
 java {
 	toolchain {
@@ -71,6 +69,31 @@ java {
 	}
 	withSourcesJar()
 }
+
+val changelogHtml = configurations.create("changelogHtml") {
+	isCanBeConsumed = false
+	isCanBeResolved = true
+	isVisible = false
+	attributes {
+		attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogHtml"))
+	}
+}
+
+val changelogMarkdown = configurations.create("changelogMarkdown") {
+	isCanBeConsumed = false
+	isCanBeResolved = true
+	isVisible = false
+	attributes {
+		attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogMarkdown"))
+	}
+}
+
+fun Configuration.singleFileContents(): Provider<String> =
+	incoming
+		.files
+		.elements
+		.map { elements -> elements.single() }
+		.map { it.asFile.readText() }
 
 dependencies {
 	dependencyProjects.forEach {
@@ -82,6 +105,8 @@ dependencies {
 	modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
 		isTransitive = false
 	}
+	changelogHtml(project(":Changelog"))
+	changelogMarkdown(project(":Changelog"))
 	testImplementation(
 		group = "org.junit.jupiter",
 		name = "junit-jupiter-api",
@@ -178,7 +203,7 @@ val shadedSourcesJar = modShade.shadeSourcesJar()
 
 publishMods {
 	file.set(shadedJar.flatMap { it.archiveFile })
-	changelog.set(provider { file("../Changelog/changelog.md").readText() })
+	changelog.set(changelogMarkdown.singleFileContents())
 	type = BETA
 	modLoaders.add("forge")
 	displayName.set("${project.version} for Forge $minecraftVersion")
@@ -188,7 +213,7 @@ publishMods {
 		projectId = curseProjectId
 		projectSlug = curseHomepageUrl.substringAfterLast("/")
 		accessToken.set(curseforgeApikey ?: "0")
-		changelog.set(provider { file("../Changelog/changelog.html").readText() })
+		changelog.set(changelogHtml.singleFileContents())
 		changelogType = "html"
 		minecraftVersionRange {
 			start = minecraftVersionRangeStart
@@ -209,9 +234,6 @@ publishMods {
 		}
 		dryRun = modrinthToken == null
 	}
-}
-tasks.withType<PublishModTask> {
-	dependsOn(tasks.jar, ":Changelog:makeChangelog", ":Changelog:makeMarkdownChangelog")
 }
 
 tasks.named<Test>("test") {
