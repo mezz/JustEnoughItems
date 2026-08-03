@@ -2,7 +2,6 @@ package mezz.jei.common.util;
 
 import com.google.common.net.HostAndPort;
 import com.google.common.net.InetAddresses;
-import mezz.jei.common.util.ReflectionUtil;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
