@@ -12,8 +12,11 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
@@ -99,6 +102,7 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	@Override
 	public void render(GuiGraphics guiGraphics, T ingredient, int posX, int posY) {
 		RenderSystem.enableBlend();
+		RenderSystem.setShaderColor(1, 1, 1, 1);
 
 		drawFluid(guiGraphics, width, height, ingredient, posX, posY);
 
@@ -152,17 +156,22 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		int xShift = getXShift(tilingDirection, tiledWidth);
 		int yShift = getYShift(tilingDirection, scaledHeight);
 
-		guiGraphics.enableScissor(posX, posY, posX + tiledWidth, posY + scaledHeight);
-		drawTiledSpriteUnclipped(
-			matrix,
-			posX - xShift,
-			posY - yShift,
-			tiledWidth + xShift,
-			scaledHeight + yShift,
-			sprite,
-			color
-		);
-		guiGraphics.disableScissor();
+		ImmutableRect2i scissorRect = new ImmutableRect2i(posX, posY, tiledWidth, scaledHeight);
+		ScreenRectangle scissorArea = MathUtil.transform(scissorRect, matrix);
+		guiGraphics.enableScissor(scissorArea.left(), scissorArea.top(), scissorArea.right(), scissorArea.bottom());
+		try {
+			drawTiledSpriteUnclipped(
+				matrix,
+				posX - xShift,
+				posY - yShift,
+				tiledWidth + xShift,
+				scaledHeight + yShift,
+				sprite,
+				color
+			);
+		} finally {
+			guiGraphics.disableScissor();
+		}
 	}
 
 	private static void drawTiledSpriteUnclipped(Matrix4f matrix, int posX, int posY, int tiledWidth, int tiledHeight, TextureAtlasSprite sprite, int color) {
