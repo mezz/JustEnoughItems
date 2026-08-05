@@ -1,4 +1,5 @@
 import me.modmuss50.mpp.PublishModTask
+import java.util.function.Supplier
 
 plugins {
 	java
@@ -8,6 +9,7 @@ plugins {
 	id("net.minecraftforge.gradle")
 	id("org.parchmentmc.librarian.forgegradle")
 	id("me.modmuss50.mod-publish-plugin")
+	id("net.mezzdev.modshade")
 }
 
 // gradle.properties
@@ -56,8 +58,6 @@ dependencyProjects.forEach {
 }
 project.evaluationDependsOn(":Changelog")
 
-val embeddedLibraries = configurations.create("embeddedLibraries")
-
 java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
@@ -74,10 +74,7 @@ dependencies {
 	dependencyProjects.forEach {
 		implementation(it)
 	}
-	add(
-		embeddedLibraries.name,
-		"net.mezzdev:baked-substring-index:$bakedSubstringIndexVersion"
-	) {
+	modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
 		isTransitive = false
 	}
 	testImplementation(
@@ -92,6 +89,16 @@ dependencies {
 	)
 }
 
+val modShadeClasspath = configurations.named("modShadeClasspath")
+
+fun net.minecraftforge.gradle.common.util.RunConfig.addModShadeClasspathToMinecraftRun() {
+	lazyToken("minecraft_classpath", Supplier<String> {
+		modShadeClasspath.get()
+			.resolve()
+			.joinToString(File.pathSeparator) { it.absolutePath }
+	})
+}
+
 minecraft {
 	mappings("parchment", parchmentVersionForge)
 
@@ -102,6 +109,7 @@ minecraft {
 			taskName("runClientDev")
 			property("forge.logging.console.level", "debug")
 			workingDirectory(file("run/client/Dev"))
+			addModShadeClasspathToMinecraftRun()
 			mods {
 				create(modId) {
 					source(sourceSets.main.get())
@@ -116,17 +124,20 @@ minecraft {
 			parent(client)
 			workingDirectory(file("run/client/Player01"))
 			args("--username", "Player01")
+			addModShadeClasspathToMinecraftRun()
 		}
 		create("client_02") {
 			taskName("runClientPlayer02")
 			parent(client)
 			workingDirectory(file("run/client/Player02"))
 			args("--username", "Player02")
+			addModShadeClasspathToMinecraftRun()
 		}
 		create("server") {
 			taskName("Server")
 			property("forge.logging.console.level", "debug")
 			workingDirectory(file("run/server"))
+			addModShadeClasspathToMinecraftRun()
 			mods {
 				create(modId) {
 					source(sourceSets.main.get())
@@ -144,11 +155,6 @@ tasks.jar {
 	for (p in dependencyProjects) {
 		from(p.sourceSets.main.get().output)
 	}
-	from({
-		embeddedLibraries.map {
-			zipTree(it)
-		}
-	})
 
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	finalizedBy("reobfJar")
@@ -163,8 +169,11 @@ val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 	archiveClassifier.set("sources")
 }
 
+val shadedJar = modShade.shadeJar()
+val shadedSourcesJar = modShade.shadeSourcesJar()
+
 publishMods {
-	file.set(tasks.jar.get().archiveFile)
+	file.set(shadedJar.flatMap { it.archiveFile })
 	changelog.set(provider { file("../Changelog/changelog.md").readText() })
 	type = BETA
 	modLoaders.add("forge")
@@ -190,7 +199,7 @@ publishMods {
 	}
 }
 tasks.withType<PublishModTask> {
-	dependsOn(tasks.jar, ":Changelog:makeChangelog", ":Changelog:makeMarkdownChangelog")
+	dependsOn(shadedJar, ":Changelog:makeChangelog", ":Changelog:makeMarkdownChangelog")
 }
 
 tasks.named<Test>("test") {
@@ -201,26 +210,15 @@ tasks.named<Test>("test") {
 }
 
 artifacts {
-	archives(tasks.jar.get())
-	archives(sourcesJarTask.get())
+	archives(shadedJar)
+	archives(shadedSourcesJar)
 }
 
 publishing {
 	publications {
 		register<MavenPublication>("forgeJar") {
 			artifactId = baseArchivesName
-			artifact(tasks.jar.get())
-			artifact(sourcesJarTask.get())
-
-			pom.withXml {
-				val dependenciesNode = asNode().appendNode("dependencies")
-				dependencyProjects.forEach {
-					val dependencyNode = dependenciesNode.appendNode("dependency")
-					dependencyNode.appendNode("groupId", it.group)
-					dependencyNode.appendNode("artifactId", it.base.archivesName.get())
-					dependencyNode.appendNode("version", it.version)
-				}
-			}
+			from(components["modShade"])
 		}
 	}
 	repositories {

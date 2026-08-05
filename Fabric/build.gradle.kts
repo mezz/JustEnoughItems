@@ -15,6 +15,7 @@ plugins {
     idea
     `maven-publish`
     id("fabric-loom")
+    id("net.mezzdev.modshade")
     id("me.modmuss50.mod-publish-plugin")
 }
 
@@ -56,8 +57,6 @@ dependencyProjects.forEach {
     project.evaluationDependsOn(it.dependencyProject.path)
 }
 project.evaluationDependsOn(":Changelog")
-
-val embeddedLibraries = configurations.create("embeddedLibraries")
 
 val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
     compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
@@ -123,10 +122,7 @@ dependencies {
     dependencyProjects.forEach {
         implementation(it)
     }
-    add(
-        embeddedLibraries.name,
-        "net.mezzdev:baked-substring-index:$bakedSubstringIndexVersion"
-    ) {
+    modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
         isTransitive = false
     }
 }
@@ -224,11 +220,6 @@ tasks.jar {
     for (p in dependencyProjects) {
         from(p.dependencyProject.sourceSets.main.get().output)
     }
-    from({
-        embeddedLibraries.map {
-            zipTree(it)
-        }
-    })
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
@@ -241,8 +232,11 @@ tasks.named<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
 }
 
+val shadedJar = modShade.shadeJar()
+val shadedSourcesJar = modShade.shadeSourcesJar()
+
 publishMods {
-    file.set(tasks.remapJar.get().archiveFile)
+    file.set(shadedJar.flatMap { it.archiveFile })
     changelog.set(provider { file("../Changelog/changelog.md").readText() })
     type = BETA
     modLoaders.add("fabric")
@@ -268,7 +262,7 @@ publishMods {
     }
 }
 tasks.withType<PublishModTask> {
-    dependsOn(tasks.jar, ":Changelog:makeChangelog", ":Changelog:makeMarkdownChangelog")
+    dependsOn(shadedJar, ":Changelog:makeChangelog", ":Changelog:makeMarkdownChangelog")
 }
 
 tasks.named<Test>("test") {
@@ -279,8 +273,8 @@ tasks.named<Test>("test") {
 }
 
 artifacts {
-    archives(tasks.remapJar)
-    archives(tasks.remapSourcesJar)
+    archives(shadedJar)
+    archives(shadedSourcesJar)
 }
 
 publishing {
@@ -289,18 +283,7 @@ publishing {
             @Suppress("UnstableApiUsage")
             loom.disableDeprecatedPomGeneration(this)
             artifactId = baseArchivesName
-            artifact(tasks.remapJar)
-            artifact(tasks.remapSourcesJar)
-
-            pom.withXml {
-                val dependenciesNode = asNode().appendNode("dependencies")
-                dependencyProjects.forEach {
-                    val dependencyNode = dependenciesNode.appendNode("dependency")
-                    dependencyNode.appendNode("groupId", it.group)
-                    dependencyNode.appendNode("artifactId", it.dependencyProject.base.archivesName.get())
-                    dependencyNode.appendNode("version", it.version)
-                }
-            }
+            from(components["modShade"])
         }
     }
     repositories {
