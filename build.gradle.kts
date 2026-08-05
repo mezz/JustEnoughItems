@@ -2,7 +2,7 @@ plugins {
 	id("com.diffplug.spotless") version("8.8.0")
     id("com.dorongold.task-tree") version("2.1.0")
     id("org.spongepowered.gradle.vanilla") version("0.2.1-SNAPSHOT") apply(false)
-    id("net.minecraftforge.gradle") version("6.0.25") apply(false)
+    id("net.minecraftforge.gradle") version("6.0.54") apply(false)
     id("org.parchmentmc.librarian.forgegradle") version ("1.2.0") apply(false)
     id("net.mezzdev.modshade") version("0.3.0") apply(false)
     id("me.modmuss50.mod-publish-plugin") version("0.7.3") apply(false)
