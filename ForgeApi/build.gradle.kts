@@ -1,3 +1,4 @@
+import mezz.jei.gradle.gradleProperty
 plugins {
 	id("java")
 	id("idea")
@@ -6,13 +7,13 @@ plugins {
 }
 
 // gradle.properties
-val forgeVersion: String by extra
-val minecraftVersion: String by extra
-val modGroup: String by extra
-val modId: String by extra
-val modJavaVersion: String by extra
-val parchmentMinecraftVersion: String by extra
-val parchmentVersionForge: String by extra
+val forgeVersion = gradleProperty("forgeVersion")
+val minecraftVersion = gradleProperty("minecraftVersion")
+val modGroup = gradleProperty("modGroup")
+val modId = gradleProperty("modId")
+val modJavaVersion = gradleProperty("modJavaVersion")
+val parchmentMinecraftVersion = gradleProperty("parchmentMinecraftVersion")
+val parchmentVersionForge = gradleProperty("parchmentVersionForge")
 
 val forgeArtifactVersion = "${minecraftVersion}-${forgeVersion}"
 
