@@ -62,16 +62,16 @@ public class TypedIngredientCodecs {
 			ingredient -> {
 				Optional<IIngredientType<T>> type = ingredientManager.getIngredientTypeChecked(ingredient);
 				return type.map(ingredientType -> {
-					return ingredientManager.createTypedIngredient(ingredientType, ingredient, false)
-						.map(DataResult::success)
-						.orElseGet(() -> {
-							return DataResult.error(() -> {
-								IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-								String errorInfo = ingredientHelper.getErrorInfo(ingredient);
-								return "Failed to create typed ingredient: " + errorInfo;
+						return ingredientManager.createTypedIngredient(ingredientType, ingredient, false)
+							.map(DataResult::success)
+							.orElseGet(() -> {
+								return DataResult.error(() -> {
+									IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+									String errorInfo = ingredientHelper.getErrorInfo(ingredient);
+									return "Failed to create typed ingredient: " + errorInfo;
+								});
 							});
-						});
-				})
+					})
 					.orElseGet(() -> DataResult.error(() -> "Failed to find type for ingredient: " + ingredient.getClass()));
 			},
 			typedIngredient -> {

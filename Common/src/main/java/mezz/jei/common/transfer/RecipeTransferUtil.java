@@ -159,9 +159,9 @@ public final class RecipeTransferUtil {
 		// check that all slots are real (not output slots)
 		{
 			List<Integer> invalidFakeSlots = Stream.concat(
-				craftingSlots.stream(),
-				inventorySlots.stream()
-			)
+					craftingSlots.stream(),
+					inventorySlots.stream()
+				)
 				.filter(Slot::isFake)
 				.map(slot -> slot.index)
 				.toList();

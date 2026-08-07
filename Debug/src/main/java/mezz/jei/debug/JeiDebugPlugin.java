@@ -194,15 +194,17 @@ public class JeiDebugPlugin implements IModPlugin {
 				Component.translatable("description.jei.debug.formatting.3", "various").withStyle(ChatFormatting.DARK_AQUA)
 			),
 			Component.translatable("description.jei.debug.formatting.2",
-				Component.literal("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
-				Component.literal("various").withStyle(ChatFormatting.RED)
-			).withStyle(ChatFormatting.BLUE),
+					Component.literal("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
+					Component.literal("various").withStyle(ChatFormatting.RED)
+				)
+				.withStyle(ChatFormatting.BLUE),
 			Component.translatable("description.jei.debug.formatting.1",
 				Component.translatable("description.jei.debug.formatting.3",
 					Component.translatable("description.jei.debug.formatting.2",
-						Component.literal("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
-						Component.literal("various").withStyle(ChatFormatting.RED)
-					).withStyle(ChatFormatting.DARK_AQUA)
+							Component.literal("multiple").withStyle(ChatFormatting.GOLD).withStyle(ChatFormatting.ITALIC),
+							Component.literal("various").withStyle(ChatFormatting.RED)
+						)
+						.withStyle(ChatFormatting.DARK_AQUA)
 				)
 			)
 		);
@@ -252,9 +254,9 @@ public class JeiDebugPlugin implements IModPlugin {
 
 		ItemStack ingredientDisplay = new ItemStack(Items.POISONOUS_POTATO, 3);
 		CraftingRecipe recipe = vanillaRecipeFactory.createShapedRecipeBuilder(
-			CraftingBookCategory.MISC,
-			new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(output))
-		)
+				CraftingBookCategory.MISC,
+				new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(output))
+			)
 			.pattern("p")
 			.define(
 				'p',

@@ -72,9 +72,9 @@ public final class AnvilRecipeMaker {
 
 	public List<IJeiAnvilRecipe> getAnvilRecipes() {
 		return Stream.concat(
-			getRepairRecipes(),
-			getBookEnchantmentRecipes()
-		)
+				getRepairRecipes(),
+				getBookEnchantmentRecipes()
+			)
 			.toList();
 	}
 

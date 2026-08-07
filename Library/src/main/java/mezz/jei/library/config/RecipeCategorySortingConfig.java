@@ -17,9 +17,10 @@ public class RecipeCategorySortingConfig extends MappedSortingConfig<IRecipeType
 	@Override
 	protected Comparator<String> getDefaultSortOrder() {
 		Comparator<String> minecraftCraftingFirst = Comparator.comparing((String s) -> {
-			String vanillaCrafting = RecipeTypes.CRAFTING.getUid().toString();
-			return s.equals(vanillaCrafting);
-		}).reversed();
+				String vanillaCrafting = RecipeTypes.CRAFTING.getUid().toString();
+				return s.equals(vanillaCrafting);
+			})
+			.reversed();
 		Comparator<String> minecraftFirst = Comparator.comparing((String s) -> s.startsWith(ModIds.MINECRAFT_ID)).reversed();
 		Comparator<String> naturalOrder = Comparator.naturalOrder();
 		return minecraftCraftingFirst.thenComparing(minecraftFirst).thenComparing(naturalOrder);
