@@ -95,17 +95,23 @@ public class JeiShapedRecipe implements CraftingRecipe {
 	}
 
 	public static final MapCodec<JeiShapedRecipe> CODEC = RecordCodecBuilder.mapCodec((instance) -> {
-		return instance.group(Codec.STRING.optionalFieldOf("group", "").forGetter((shapedRecipe) -> {
-			return shapedRecipe.group;
-		}), CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter((shapedRecipe) -> {
-			return shapedRecipe.category;
-		}), ShapedRecipePattern.MAP_CODEC.forGetter((shapedRecipe) -> {
-			return shapedRecipe.pattern;
-		}), Codec.list(SlotDisplay.CODEC).fieldOf("display").forGetter((shapedRecipe) -> {
-			return shapedRecipe.displays;
-		}), ItemStackTemplate.CODEC.fieldOf("result").forGetter((shapedRecipe) -> {
-			return shapedRecipe.result;
-		}))
+		return instance.group(
+				Codec.STRING.optionalFieldOf("group", "").forGetter((shapedRecipe) -> {
+					return shapedRecipe.group;
+				}),
+				CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter((shapedRecipe) -> {
+					return shapedRecipe.category;
+				}),
+				ShapedRecipePattern.MAP_CODEC.forGetter((shapedRecipe) -> {
+					return shapedRecipe.pattern;
+				}),
+				Codec.list(SlotDisplay.CODEC).fieldOf("display").forGetter((shapedRecipe) -> {
+					return shapedRecipe.displays;
+				}),
+				ItemStackTemplate.CODEC.fieldOf("result").forGetter((shapedRecipe) -> {
+					return shapedRecipe.result;
+				})
+			)
 			.apply(instance, JeiShapedRecipe::new);
 	});
 	public static final StreamCodec<RegistryFriendlyByteBuf, JeiShapedRecipe> STREAM_CODEC = StreamCodec.of(JeiShapedRecipe::toNetwork, JeiShapedRecipe::fromNetwork);
