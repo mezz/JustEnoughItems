@@ -35,7 +35,7 @@ pluginManagement {
 	}
 }
 
-val minecraftVersion: String by settings
+val minecraftVersion = providers.gradleProperty("minecraftVersion").get()
 
 rootProject.name = "jei-${minecraftVersion}"
 include(

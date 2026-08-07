@@ -93,7 +93,7 @@ private fun Project.configureApiCompatibility() {
 				attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class.java, Bundling.EXTERNAL))
 			}
 		}
-		val inputDependency = dependencies.add(inputConfiguration.name, project(module.projectPath))
+		val inputDependency = dependencies.add(inputConfiguration.name, dependencies.project(module.projectPath))
 		if (inputDependency is ModuleDependency) {
 			inputDependency.isTransitive = false
 		}

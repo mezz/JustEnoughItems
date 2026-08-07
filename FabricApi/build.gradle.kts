@@ -6,12 +6,12 @@ plugins {
 }
 
 // gradle.properties
-val fabricApiVersion: String by extra
-val fabricLoaderVersion: String by extra
-val minecraftVersion: String by extra
-val modId: String by extra
-val modJavaVersion: String by extra
-val modGroup: String by extra
+val fabricApiVersion = providers.gradleProperty("fabricApiVersion").get()
+val fabricLoaderVersion = providers.gradleProperty("fabricLoaderVersion").get()
+val minecraftVersion = providers.gradleProperty("minecraftVersion").get()
+val modId = providers.gradleProperty("modId").get()
+val modJavaVersion = providers.gradleProperty("modJavaVersion").get()
+val modGroup = providers.gradleProperty("modGroup").get()
 
 val baseArchivesName = "${modId}-${minecraftVersion}-fabric-api"
 base {

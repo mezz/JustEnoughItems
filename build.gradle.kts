@@ -1,9 +1,6 @@
 plugins {
     id("net.mezzdev.java-formatting") version("0.1.1")
 
-    // https://plugins.gradle.org/plugin/com.dorongold.task-tree
-    id("com.dorongold.task-tree") version("4.0.1")
-
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
     id("net.fabricmc.fabric-loom") version("1.17.18") apply(false)
 
@@ -18,6 +15,8 @@ plugins {
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
     id("me.modmuss50.mod-publish-plugin") version("2.0.1") apply(false)
+
+    id("mezz.jei.api-compatibility")
 }
 
 javaFormatting {
@@ -27,5 +26,3 @@ javaFormatting {
 repositories {
     mavenCentral()
 }
-
-apply(plugin = "mezz.jei.api-compatibility")

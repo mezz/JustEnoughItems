@@ -11,14 +11,14 @@ plugins {
 }
 
 // gradle.properties
-val jUnitVersion: String by extra
-val minecraftVersion: String by extra
-val neoformVersionAndTimestamp: String by extra
-val modGroup: String by extra
-val modId: String by extra
-val modJavaVersion: String by extra
-val bakedSubstringIndexVersion: String by extra
-val suffixtreeVersion: String by extra
+val jUnitVersion = providers.gradleProperty("jUnitVersion").get()
+val minecraftVersion = providers.gradleProperty("minecraftVersion").get()
+val neoformVersionAndTimestamp = providers.gradleProperty("neoformVersionAndTimestamp").get()
+val modGroup = providers.gradleProperty("modGroup").get()
+val modId = providers.gradleProperty("modId").get()
+val modJavaVersion = providers.gradleProperty("modJavaVersion").get()
+val bakedSubstringIndexVersion = providers.gradleProperty("bakedSubstringIndexVersion").get()
+val suffixtreeVersion = providers.gradleProperty("suffixtreeVersion").get()
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
 base {

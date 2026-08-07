@@ -21,24 +21,24 @@ repositories {
 }
 
 // gradle.properties
-val curseHomepageUrl: String by extra
-val curseProjectId: String by extra
-val fabricApiVersion: String by extra
-val fabricLoaderVersion: String by extra
-val minecraftVersionRangeStart: String by extra
-val minecraftVersion: String by extra
-val modId: String by extra
-val modJavaVersion: String by extra
-val modrinthId: String by extra
-val amecsVersionFabric: String by extra
-val amecsMinecraftVersion: String by extra
-val bakedSubstringIndexVersion: String by extra
-val suffixtreeVersion: String by extra
+val curseHomepageUrl = providers.gradleProperty("curseHomepageUrl").get()
+val curseProjectId = providers.gradleProperty("curseProjectId").get()
+val fabricApiVersion = providers.gradleProperty("fabricApiVersion").get()
+val fabricLoaderVersion = providers.gradleProperty("fabricLoaderVersion").get()
+val minecraftVersionRangeStart = providers.gradleProperty("minecraftVersionRangeStart").get()
+val minecraftVersion = providers.gradleProperty("minecraftVersion").get()
+val modId = providers.gradleProperty("modId").get()
+val modJavaVersion = providers.gradleProperty("modJavaVersion").get()
+val modrinthId = providers.gradleProperty("modrinthId").get()
+val amecsVersionFabric = providers.gradleProperty("amecsVersionFabric").get()
+val amecsMinecraftVersion = providers.gradleProperty("amecsMinecraftVersion").get()
+val bakedSubstringIndexVersion = providers.gradleProperty("bakedSubstringIndexVersion").get()
+val suffixtreeVersion = providers.gradleProperty("suffixtreeVersion").get()
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
-val modrinthToken: String? by project
+val modrinthToken = providers.gradleProperty("modrinthToken").orNull
 // set by ORG_GRADLE_PROJECT_curseforgeApikey in Jenkinsfile
-val curseforgeApikey: String? by project
+val curseforgeApikey = providers.gradleProperty("curseforgeApikey").orNull
 
 val baseArchivesName = "${modId}-${minecraftVersion}-fabric"
 base {
@@ -68,7 +68,7 @@ java {
     withSourcesJar()
 }
 
-val changelogHtml: Configuration by configurations.creating {
+val changelogHtml = configurations.create("changelogHtml") {
     isCanBeConsumed = false
     isCanBeResolved = true
     attributes {
@@ -76,7 +76,7 @@ val changelogHtml: Configuration by configurations.creating {
     }
 }
 
-val changelogMarkdown: Configuration by configurations.creating {
+val changelogMarkdown = configurations.create("changelogMarkdown") {
     isCanBeConsumed = false
     isCanBeResolved = true
     attributes {
