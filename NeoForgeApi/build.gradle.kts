@@ -1,3 +1,5 @@
+import mezz.jei.gradle.gradleProperty
+
 plugins {
 	id("idea")
 	id("java")
@@ -6,11 +8,11 @@ plugins {
 }
 
 // gradle.properties
-val neoforgeVersion = providers.gradleProperty("neoforgeVersion").get()
-val minecraftVersion = providers.gradleProperty("minecraftVersion").get()
-val modGroup = providers.gradleProperty("modGroup").get()
-val modId = providers.gradleProperty("modId").get()
-val modJavaVersion = providers.gradleProperty("modJavaVersion").get()
+val neoforgeVersion = gradleProperty("neoforgeVersion")
+val minecraftVersion = gradleProperty("minecraftVersion")
+val modGroup = gradleProperty("modGroup")
+val modId = gradleProperty("modId")
+val modJavaVersion = gradleProperty("modJavaVersion")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-neoforge-api"
 base {

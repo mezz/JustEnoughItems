@@ -1,3 +1,5 @@
+import mezz.jei.gradle.gradleProperty
+
 plugins {
     id("idea")
     id("java")
@@ -7,10 +9,10 @@ plugins {
 
 
 // gradle.properties
-val minecraftVersion = providers.gradleProperty("minecraftVersion").get()
-val neoformVersionAndTimestamp = providers.gradleProperty("neoformVersionAndTimestamp").get()
-val modId = providers.gradleProperty("modId").get()
-val modJavaVersion = providers.gradleProperty("modJavaVersion").get()
+val minecraftVersion = gradleProperty("minecraftVersion")
+val neoformVersionAndTimestamp = gradleProperty("neoformVersionAndTimestamp")
+val modId = gradleProperty("modId")
+val modJavaVersion = gradleProperty("modJavaVersion")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common-api"
 base {

@@ -1,3 +1,4 @@
+import mezz.jei.gradle.gradleProperty
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.slf4j.event.Level
@@ -11,14 +12,14 @@ plugins {
 }
 
 // gradle.properties
-val jUnitVersion = providers.gradleProperty("jUnitVersion").get()
-val minecraftVersion = providers.gradleProperty("minecraftVersion").get()
-val neoformVersionAndTimestamp = providers.gradleProperty("neoformVersionAndTimestamp").get()
-val modGroup = providers.gradleProperty("modGroup").get()
-val modId = providers.gradleProperty("modId").get()
-val modJavaVersion = providers.gradleProperty("modJavaVersion").get()
-val bakedSubstringIndexVersion = providers.gradleProperty("bakedSubstringIndexVersion").get()
-val suffixtreeVersion = providers.gradleProperty("suffixtreeVersion").get()
+val jUnitVersion = gradleProperty("jUnitVersion")
+val minecraftVersion = gradleProperty("minecraftVersion")
+val neoformVersionAndTimestamp = gradleProperty("neoformVersionAndTimestamp")
+val modGroup = gradleProperty("modGroup")
+val modId = gradleProperty("modId")
+val modJavaVersion = gradleProperty("modJavaVersion")
+val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
+val suffixtreeVersion = gradleProperty("suffixtreeVersion")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
 base {
