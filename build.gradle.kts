@@ -6,7 +6,7 @@ plugins {
 
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom-companion/net.fabricmc.fabric-loom-companion.gradle.plugin/maven-metadata.xml
     // applying this to all projects allows loom projects to access the required data in a manner that follows Gradle's best practices.
-    id("net.fabricmc.fabric-loom-companion") version("1.18.0-alpha.10")
+    id("net.fabricmc.fabric-loom-companion") version("1.18.0-alpha.12")
 
     id("net.mezzdev.modshade") version("0.3.0") apply(false)
 
