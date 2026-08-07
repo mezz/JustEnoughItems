@@ -129,4 +129,8 @@ public final class GrindstoneRecipeMaker {
 		}
 		return GRINDSTONE_MENU;
 	}
+
+	public static void clearCache() {
+		GRINDSTONE_MENU = null;
+	}
 }

@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerStatusPinger;
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
@@ -13,8 +14,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.network.EventLoopGroupHolder;
 import org.jspecify.annotations.Nullable;
 
+import java.lang.ref.WeakReference;
 import java.net.UnknownHostException;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -66,6 +69,7 @@ public final class ExternalServerClient {
 	}
 
 	public static void disconnect(ClientAccess clientAccess) {
+		WeakReference<ClientLevel> clientLevelReference = clientAccess.compute(client -> new WeakReference<>(Objects.requireNonNull(client.level)));
 		clientAccess.run(client -> {
 			if (client.level != null) {
 				client.level.disconnect(Component.literal("Disconnecting"));
@@ -80,6 +84,21 @@ public final class ExternalServerClient {
 		clientAccess.waitFor(
 			client -> client.screen instanceof TitleScreen && isClientDisconnected(client),
 			() -> "Timed out returning to the title screen after disconnecting from external server. " + describeClientState(clientAccess)
+		);
+		// TODO MC-310862: Remove this workaround when Minecraft clears its extracted render data on disconnect.
+		// https://bugs.mojang.com/browse/MC/issues/MC-310862
+		// Until then, reset it here so the test only fails for references retained outside vanilla teardown.
+		clientAccess.run(client -> {
+			client.levelRenderer.setLevel(null);
+			var levelRenderState = client.gameRenderer.getGameRenderState().levelRenderState;
+			levelRenderState.reset();
+		});
+		clientAccess.waitFor(
+			client -> {
+				System.gc();
+				return clientLevelReference.refersTo(null);
+			},
+			() -> "Timed out waiting for the disconnected client level to be garbage collected. " + describeClientState(clientAccess)
 		);
 	}
 
