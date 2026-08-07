@@ -47,6 +47,8 @@ abstract class ValidateApiCompatibilityReport : DefaultTask() {
         private const val ABSTRACT_METHOD_ERROR = "Method was made abstract"
     }
 
+    private val nonExtendableAnnotation = Regex("""@\s*(?:ApiStatus\.)?NonExtendable\b""")
+
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val reportFile: RegularFileProperty
@@ -127,7 +129,7 @@ abstract class ValidateApiCompatibilityReport : DefaultTask() {
     private fun isNonExtendableInterface(className: String): Boolean {
         val sourceFile = findSourceFile(className) ?: return false
         val source = sourceFile.readText()
-        return source.contains("@ApiStatus.NonExtendable") &&
+        return nonExtendableAnnotation.containsMatchIn(source) &&
             Regex("\\binterface\\s+${Regex.escape(sourceFile.nameWithoutExtension)}\\b").containsMatchIn(source)
     }
 
