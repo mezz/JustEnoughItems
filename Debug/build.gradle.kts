@@ -4,6 +4,7 @@ plugins {
 }
 
 // gradle.properties
+val jUnitVersion: String by extra
 val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
@@ -32,6 +33,20 @@ dependencies {
 	dependencyProjects.forEach {
 		implementation(it)
 	}
+	testImplementation(
+		group = "org.junit.jupiter",
+		name = "junit-jupiter-api",
+		version = jUnitVersion
+	)
+	testRuntimeOnly(
+		group = "org.junit.jupiter",
+		name = "junit-jupiter-engine",
+		version = jUnitVersion
+	)
+}
+
+tasks.named<Test>("test") {
+	useJUnitPlatform()
 }
 
 java {
@@ -53,8 +68,12 @@ val copyModMetadataToClasses = tasks.register<Copy>("copyModMetadataToClasses") 
 	// Forge dev runs expose classes and resources as separate mod roots on this branch.
 	from(layout.buildDirectory.dir("resources/main/META-INF")) {
 		include("mods.toml")
+		into("META-INF")
 	}
-	into(layout.buildDirectory.dir("classes/java/main/META-INF"))
+	from(layout.buildDirectory.dir("resources/main")) {
+		include("pack.mcmeta")
+	}
+	into(layout.buildDirectory.dir("classes/java/main"))
 	dependsOn(
 		tasks.named(sourceSets.main.get().compileJavaTaskName),
 		tasks.named(sourceSets.main.get().processResourcesTaskName)

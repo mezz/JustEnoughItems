@@ -1,19 +1,21 @@
-package mezz.jei.test;
+package mezz.jei.debug;
 
-import mezz.jei.common.Constants;
 import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
-public class ConstantsTest {
+public class DebugResourcesTest {
 	@Test
-	public void debugTextureLocationExists() {
-		ResourceLocation location = Constants.LOCATION_JEI_DEBUG_TEXTURE;
+	public void backgroundTextureExists() {
+		ResourceLocation location = DebugRecipeCategory.BACKGROUND_TEXTURE;
 		String resourcePath = "/assets/%s/%s".formatted(location.getNamespace(), location.getPath());
 
-		URL resource = ConstantsTest.class.getResource(resourcePath);
+		URL resource = DebugResourcesTest.class.getResource(resourcePath);
 
 		Assertions.assertNotNull(resource, () -> "Missing debug texture at " + resourcePath);
 	}

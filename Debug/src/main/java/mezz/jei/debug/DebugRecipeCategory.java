@@ -27,7 +27,6 @@ import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
-import mezz.jei.common.Constants;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
@@ -53,6 +52,7 @@ import java.util.Optional;
 
 public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	public static final RecipeType<DebugRecipe> TYPE = RecipeType.create(ModIds.JEI_ID, "debug", DebugRecipe.class);
+	static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(ModIds.JEI_ID, "textures/gui/debug.png");
 	public static final int RECIPE_WIDTH = 160;
 	public static final int RECIPE_HEIGHT = 60;
 	private final IPlatformFluidHelper<F> platformFluidHelper;
@@ -69,9 +69,8 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 		this.ingredientManager = ingredientManager;
 		this.localizedName = Component.literal("debug");
 
-		ResourceLocation backgroundTexture = Constants.LOCATION_JEI_DEBUG_TEXTURE;
-		this.tankBackground = guiHelper.createDrawable(backgroundTexture, 220, 196, 18, 60);
-		this.tankOverlay = guiHelper.createDrawable(backgroundTexture, 238, 196, 18, 60);
+		this.tankBackground = guiHelper.createDrawable(BACKGROUND_TEXTURE, 220, 196, 18, 60);
+		this.tankOverlay = guiHelper.createDrawable(BACKGROUND_TEXTURE, 238, 196, 18, 60);
 		this.item = guiHelper.createDrawableItemStack(new ItemStack(Items.ACACIA_LEAVES));
 	}
 

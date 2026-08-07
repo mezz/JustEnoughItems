@@ -10,10 +10,10 @@ from pathlib import Path
 NO_TESTS_LABEL = os.environ.get("NO_TESTS_LABEL", "no-tests-needed")
 
 PRODUCTION_SOURCE_PATTERN = re.compile(
-    r"^(Common|CommonApi|Core|Fabric|FabricApi|Forge|ForgeApi|Gui|Library)/src/main/java/.+\.java$"
+    r"^(Common|CommonApi|Core|Debug|Fabric|FabricApi|Forge|ForgeApi|Gui|Library)/src/main/java/.+\.java$"
 )
 TEST_SOURCE_PATTERN = re.compile(
-    r"^(Common|CommonApi|Core|Fabric|FabricApi|Forge|ForgeApi|Gui|Library)/src/"
+    r"^(Common|CommonApi|Core|Debug|Fabric|FabricApi|Forge|ForgeApi|Gui|Library)/src/"
     r"(test|testFixtures|clientTestFixtures|gametest|keyMappingGametest|gameTest|clientGameTest)/.+"
 )
 
