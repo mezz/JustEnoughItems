@@ -14,15 +14,6 @@ plugins {
     id("me.modmuss50.mod-publish-plugin")
 }
 
-repositories {
-    maven("https://maven.siphalor.de/") {
-        // for optional AMECS integration
-        content {
-            includeGroupAndSubgroups("de.siphalor")
-        }
-    }
-}
-
 // gradle.properties
 val curseHomepageUrl = gradleProperty("curseHomepageUrl")
 val curseProjectId = gradleProperty("curseProjectId")
@@ -33,8 +24,6 @@ val minecraftVersion = gradleProperty("minecraftVersion")
 val modId = gradleProperty("modId")
 val modJavaVersion = gradleProperty("modJavaVersion")
 val modrinthId = gradleProperty("modrinthId")
-val amecsVersionFabric = gradleProperty("amecsVersionFabric")
-val amecsMinecraftVersion = gradleProperty("amecsMinecraftVersion")
 val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
 val suffixtreeVersion = gradleProperty("suffixtreeVersion")
 
@@ -52,10 +41,8 @@ val dependencyProjectPaths = listOf(":Common", ":CommonApi", ":Library", ":Gui",
 val commonProjectDirectory = isolatedProjectDirectory(":Common")
 val debugProjectDirectory = isolatedProjectDirectory(":Debug")
 
-val keyMappingGametestModId = "${modId}-key-mapping-test"
 val commonClientTestFixturesSource = commonProjectDirectory.dir("src/clientTestFixtures/java")
 val clientGameTestRunDirectory = layout.buildDirectory.dir("run/clientGameTest")
-val clientGameTestWithoutAmecsRunDirectory = layout.buildDirectory.dir("run/clientGameTestWithoutAmecs")
 
 val debugSourceSet = sourceSets.create("debug") {
     java.srcDir(debugProjectDirectory.dir("src/main/java"))
@@ -181,7 +168,6 @@ dependencies {
     modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
     }
-    implementation("de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric")
     changelogHtml(project(":Changelog"))
     changelogMarkdown(project(":Changelog"))
 }
@@ -194,12 +180,6 @@ fabricApi {
         enableClientGameTests = true
         eula = true
     }
-}
-
-val keyMappingGametestSourceSet = sourceSets.create("keyMappingGametest") {
-    val gametestSourceSet = sourceSets.named("gametest").get()
-    compileClasspath += sourceSets.main.get().output + gametestSourceSet.compileClasspath
-    runtimeClasspath += output + compileClasspath + gametestSourceSet.runtimeClasspath.minus(gametestSourceSet.output)
 }
 
 val includedFabricApiSourceSet = sourceSets.create("includedFabricApi") {
@@ -216,9 +196,6 @@ loom {
         create("jei") {
             sourceSet(sourceSets.main.get())
             sourceSet(includedFabricApiSourceSet)
-        }
-        create(keyMappingGametestModId) {
-            sourceSet(keyMappingGametestSourceSet)
         }
     }
 
@@ -266,31 +243,19 @@ loom {
             val gameTestJunitReportFile = layout.buildDirectory.file("test-results/gameTest/TEST-fabric-game-tests.xml")
             systemProperties.put("fabric-api.gametest.report-file", gameTestJunitReportFile.get().asFile.absolutePath)
         }
-        create("clientGameTestWithoutAmecs") {
-            inherit(named("clientGameTest").get())
-            displayName.set("Fabric Client GameTest Without AMECS")
-            runDirectory.set(clientGameTestWithoutAmecsRunDirectory.get().asFile)
-            systemProperties.put("jei.fabric.disableAmecsSupport", "true")
-            systemProperties.put("fabric.client.gametest.modid", keyMappingGametestModId)
-        }
     }
 
     accessWidenerPath.set(file("src/main/resources/jei.accesswidener"))
 }
 
 sourceSets {
+    named("main") {
+        java.exclude("**/Amecs*.java")
+        java.exclude("**/FabricAmecsSupport.java")
+    }
     named("gametest") {
         java.srcDir(commonClientTestFixturesSource)
-        runtimeClasspath += keyMappingGametestSourceSet.output
     }
-}
-
-tasks.named("runClientGameTest") {
-    dependsOn(keyMappingGametestSourceSet.classesTaskName)
-}
-
-tasks.named("runClientGameTestWithoutAmecs") {
-    dependsOn(keyMappingGametestSourceSet.classesTaskName)
 }
 
 fun registerWriteClientGameTestOptionsTask(name: String, runDirectory: Provider<Directory>) =
@@ -304,17 +269,8 @@ val writeClientGameTestOptions = registerWriteClientGameTestOptionsTask(
     "writeClientGameTestOptions",
     clientGameTestRunDirectory
 )
-val writeClientGameTestWithoutAmecsOptions = registerWriteClientGameTestOptionsTask(
-    "writeClientGameTestWithoutAmecsOptions",
-    clientGameTestWithoutAmecsRunDirectory
-)
-
 tasks.named("runClientGameTest") {
     dependsOn(writeClientGameTestOptions)
-}
-
-tasks.named("runClientGameTestWithoutAmecs") {
-    dependsOn(writeClientGameTestWithoutAmecsOptions)
 }
 
 val debugClassesTask = tasks.named(debugSourceSet.classesTaskName)

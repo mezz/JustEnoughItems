@@ -46,8 +46,6 @@ jobs:
           cp CommonApi/build/libs/*.jar dist
           cp Fabric/build/libs/*.jar dist
           cp FabricApi/build/libs/*.jar dist
-          cp NeoForge/build/libs/*.jar dist
-          cp NeoForgeApi/build/libs/*.jar dist
           cp Gui/build/libs/*.jar dist
           cp Library/build/libs/*.jar dist
 

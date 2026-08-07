@@ -26,6 +26,7 @@ public final class MinimalWorldGenServerProperties {
 		properties.setProperty("spawn-protection", "0");
 		properties.setProperty("sync-chunk-writes", "false");
 		properties.setProperty("view-distance", "2");
+		properties.setProperty("white-list", "false");
 		return properties;
 	}
 

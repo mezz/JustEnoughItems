@@ -17,13 +17,6 @@ pluginManagement {
 			}
 		}
 		exclusiveMaven("https://maven.fabricmc.net/", "net.fabricmc")
-		exclusiveMaven("https://maven.neoforged.net/releases", "net.neoforged", "codechicken", "net.covers1624")
-		maven("https://repo.spongepowered.org/repository/maven-public/") {
-			content {
-				includeGroupAndSubgroups("org.spongepowered")
-				includeGroupAndSubgroups("net.minecraftforge")
-			}
-		}
 		gradlePluginPortal()
 	}
 	resolutionStrategy {
@@ -42,7 +35,6 @@ include(
 	"Changelog",
 	"Common", "CommonApi",
 	"Fabric", "FabricApi",
-	"NeoForge", "NeoForgeApi",
 	"Library",
 	"Debug",
 	"Gui"

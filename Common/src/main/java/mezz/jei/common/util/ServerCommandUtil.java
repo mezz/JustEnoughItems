@@ -166,7 +166,7 @@ public final class ServerCommandUtil {
 		boolean flag = entityplayermp.getInventory().add(itemStack);
 		if (flag && itemStack.isEmpty()) {
 			itemStack.setCount(1);
-			ItemEntity entityitem = entityplayermp.drop(itemStack, false);
+			ItemEntity entityitem = entityplayermp.drop(itemStack, false, net.minecraft.util.Prediction.SERVER_ONLY);
 			if (entityitem != null) {
 				entityitem.makeFakeItem();
 			}
@@ -174,7 +174,7 @@ public final class ServerCommandUtil {
 			entityplayermp.level().playSound(null, entityplayermp.getX(), entityplayermp.getY(), entityplayermp.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F, ((entityplayermp.getRandom().nextFloat() - entityplayermp.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
 			entityplayermp.inventoryMenu.broadcastChanges();
 		} else {
-			ItemEntity entityitem = entityplayermp.drop(itemStack, false);
+			ItemEntity entityitem = entityplayermp.drop(itemStack, false, net.minecraft.util.Prediction.SERVER_ONLY);
 			if (entityitem != null) {
 				entityitem.setNoPickUpDelay();
 				entityitem.setTarget(entityplayermp.getUUID());

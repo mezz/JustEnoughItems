@@ -5,7 +5,6 @@ import mezz.jei.api.runtime.IJeiKeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Consumer;
 
@@ -28,12 +27,18 @@ public interface IJeiKeyMappingInternal extends IJeiKeyMapping {
 			return false;
 		}
 
-		Minecraft minecraft = Minecraft.getInstance();
-		long windowHandle = minecraft.getWindow().handle();
 		return switch (key.getType()) {
-			case KEYSYM -> InputConstants.isKeyDown(minecraft.getWindow(), key.getValue());
-			case MOUSE -> GLFW.glfwGetMouseButton(windowHandle, key.getValue()) == GLFW.GLFW_PRESS;
-			case SCANCODE -> false;
+			case KEYBOARD -> InputConstants.isKeyDown(key.getValue());
+			case MOUSE -> isMouseButtonDown(Minecraft.getInstance(), key.getValue());
+		};
+	}
+
+	private static boolean isMouseButtonDown(Minecraft minecraft, int mouseButton) {
+		return switch (mouseButton) {
+			case InputConstants.MOUSE_BUTTON_LEFT -> minecraft.mouseHandler.isLeftPressed();
+			case InputConstants.MOUSE_BUTTON_MIDDLE -> minecraft.mouseHandler.isMiddlePressed();
+			case InputConstants.MOUSE_BUTTON_RIGHT -> minecraft.mouseHandler.isRightPressed();
+			default -> false;
 		};
 	}
 }

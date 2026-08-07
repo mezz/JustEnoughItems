@@ -3,9 +3,7 @@
   "minVersion": "0.8",
   "package": "mezz.jei.fabric.mixin",
   "compatibilityLevel": "JAVA_25",
-  "mixins": [
-    "AmecsKeyModifiersEarlyInitMixin"
-  ],
+  "mixins": [],
   "client": [
     "ClientPacketListenerRecipeUpdateMixin",
     "EffectsInInventoryMixin",

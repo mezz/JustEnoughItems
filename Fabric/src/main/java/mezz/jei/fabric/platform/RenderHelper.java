@@ -1,8 +1,8 @@
 package mezz.jei.fabric.platform;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.datafixers.util.Either;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;

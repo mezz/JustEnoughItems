@@ -1,5 +1,6 @@
 package mezz.jei.gui.config;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -13,7 +14,6 @@ import mezz.jei.common.platform.Services;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -74,9 +74,9 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 
 	private static int getDefaultBookmarkTooltipFeaturesKey() {
 		if (InputQuirks.REPLACE_CTRL_KEY_WITH_CMD_KEY) {
-			return GLFW.GLFW_KEY_LEFT_SUPER;
+			return InputConstants.KEY_LGUI;
 		}
-		return GLFW.GLFW_KEY_LEFT_CONTROL;
+		return InputConstants.KEY_LCONTROL;
 	}
 
 	private record CategoryBuilderFactory(
@@ -123,13 +123,13 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 		toggleOverlay = overlay.createMapping("key.jei.toggleOverlay")
 			.setContext(JeiKeyConflictContext.GUI)
 			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
-			.buildKeyboardKey(GLFW.GLFW_KEY_O)
+			.buildKeyboardKey(InputConstants.KEY_O)
 			.register(registerMethod);
 
 		focusSearch = overlay.createMapping("key.jei.focusSearch")
 			.setContext(JeiKeyConflictContext.GUI)
 			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
-			.buildKeyboardKey(GLFW.GLFW_KEY_F)
+			.buildKeyboardKey(InputConstants.KEY_F)
 			.register(registerMethod);
 
 		previousPage = overlay.createMapping("key.jei.previousPage")
@@ -150,12 +150,12 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 		// Mouse Hover
 		bookmark = mouseHover.createMapping("key.jei.bookmark")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
-			.buildKeyboardKey(GLFW.GLFW_KEY_A)
+			.buildKeyboardKey(InputConstants.KEY_A)
 			.register(registerMethod);
 
 		showRecipe1 = mouseHover.createMapping("key.jei.showRecipe")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
-			.buildKeyboardKey(GLFW.GLFW_KEY_R)
+			.buildKeyboardKey(InputConstants.KEY_R)
 			.register(registerMethod);
 
 		showRecipe2 = mouseHover.createMapping("key.jei.showRecipe2")
@@ -165,7 +165,7 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 
 		showUses1 = mouseHover.createMapping("key.jei.showUses")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
-			.buildKeyboardKey(GLFW.GLFW_KEY_U)
+			.buildKeyboardKey(InputConstants.KEY_U)
 			.register(registerMethod);
 
 		showUses2 = mouseHover.createMapping("key.jei.showUses2")
@@ -209,12 +209,12 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 
 		previousSearch = search.createMapping("key.jei.previousSearch")
 			.setContext(JeiKeyConflictContext.GUI)
-			.buildKeyboardKey(GLFW.GLFW_KEY_UP)
+			.buildKeyboardKey(InputConstants.KEY_UP)
 			.register(registerMethod);
 
 		nextSearch = search.createMapping("key.jei.nextSearch")
 			.setContext(JeiKeyConflictContext.GUI)
-			.buildKeyboardKey(GLFW.GLFW_KEY_DOWN)
+			.buildKeyboardKey(InputConstants.KEY_DOWN)
 			.register(registerMethod);
 
 		// Cheat Mode
@@ -272,39 +272,39 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 		// Recipes
 		recipeBack = recipeGui.createMapping("key.jei.recipeBack")
 			.setContext(JeiKeyConflictContext.GUI)
-			.buildKeyboardKey(GLFW.GLFW_KEY_BACKSPACE)
+			.buildKeyboardKey(InputConstants.KEY_BACKSPACE)
 			.register(registerMethod);
 
 		previousRecipePage = recipeGui.createMapping("key.jei.previousRecipePage")
 			.setContext(JeiKeyConflictContext.GUI)
-			.buildKeyboardKey(GLFW.GLFW_KEY_PAGE_UP)
+			.buildKeyboardKey(InputConstants.KEY_PAGEUP)
 			.register(registerMethod);
 
 		nextRecipePage = recipeGui.createMapping("key.jei.nextRecipePage")
 			.setContext(JeiKeyConflictContext.GUI)
-			.buildKeyboardKey(GLFW.GLFW_KEY_PAGE_DOWN)
+			.buildKeyboardKey(InputConstants.KEY_PAGEDOWN)
 			.register(registerMethod);
 
 		pauseRecipeCycling = recipeGui.createMapping("key.jei.pauseRecipeCycling")
 			.setContext(JeiKeyConflictContext.GUI)
-			.buildKeyboardKey(GLFW.GLFW_KEY_LEFT_SHIFT)
+			.buildKeyboardKey(InputConstants.KEY_LSHIFT)
 			.register(registerMethod);
 
 		previousCategory = recipeGui.createMapping("key.jei.previousCategory")
 			.setContext(JeiKeyConflictContext.GUI)
 			.setModifier(JeiKeyModifier.SHIFT)
-			.buildKeyboardKey(GLFW.GLFW_KEY_PAGE_UP)
+			.buildKeyboardKey(InputConstants.KEY_PAGEUP)
 			.register(registerMethod);
 
 		nextCategory = recipeGui.createMapping("key.jei.nextCategory")
 			.setContext(JeiKeyConflictContext.GUI)
 			.setModifier(JeiKeyModifier.SHIFT)
-			.buildKeyboardKey(GLFW.GLFW_KEY_PAGE_DOWN)
+			.buildKeyboardKey(InputConstants.KEY_PAGEDOWN)
 			.register(registerMethod);
 
 		closeRecipeGui = recipeGui.createMapping("key.jei.closeRecipeGui")
 			.setContext(JeiKeyConflictContext.GUI)
-			.buildKeyboardKey(GLFW.GLFW_KEY_ESCAPE)
+			.buildKeyboardKey(InputConstants.KEY_ESCAPE)
 			.register(registerMethod);
 
 		// Dev Tools
@@ -323,7 +323,7 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 
 		escapeKey = jeiHidden.createMapping("key.jei.internal.escape.key")
 			.setContext(JeiKeyConflictContext.GUI)
-			.buildKeyboardKey(GLFW.GLFW_KEY_ESCAPE);
+			.buildKeyboardKey(InputConstants.KEY_ESCAPE);
 
 		leftClick = jeiHidden.createMapping("key.jei.internal.left.click")
 			.setContext(JeiKeyConflictContext.GUI)
@@ -336,11 +336,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 		enterKey = new JeiMultiKeyMapping(
 			jeiHidden.createMapping("key.jei.internal.enter.key")
 				.setContext(JeiKeyConflictContext.GUI)
-				.buildKeyboardKey(GLFW.GLFW_KEY_ENTER),
+				.buildKeyboardKey(InputConstants.KEY_RETURN),
 
 			jeiHidden.createMapping("key.jei.internal.enter.key2")
 				.setContext(JeiKeyConflictContext.GUI)
-				.buildKeyboardKey(GLFW.GLFW_KEY_KP_ENTER)
+				.buildKeyboardKey(InputConstants.KEY_NUMPADENTER)
 		);
 	}
 

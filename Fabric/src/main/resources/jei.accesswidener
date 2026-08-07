@@ -33,15 +33,10 @@ accessible field net/minecraft/world/item/crafting/ShieldDecorationRecipe banner
 accessible field net/minecraft/world/item/crafting/ShieldDecorationRecipe target Lnet/minecraft/world/item/crafting/Ingredient;
 accessible field net/minecraft/world/item/crafting/ShieldDecorationRecipe result Lnet/minecraft/world/item/ItemStackTemplate;
 
-accessible field net/minecraft/world/item/alchemy/PotionBrewing containers Ljava/util/List;
-accessible field net/minecraft/world/item/alchemy/PotionBrewing potionMixes Ljava/util/List;
-accessible field net/minecraft/world/item/alchemy/PotionBrewing containerMixes Ljava/util/List;
-accessible method net/minecraft/world/item/alchemy/PotionBrewing$Mix ingredient ()Lnet/minecraft/world/item/crafting/Ingredient;
-
 accessible method net/minecraft/client/gui/GuiGraphicsExtractor setTooltipForNextFrameInternal (Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;Z)V
-accessible method net/minecraft/client/gui/GuiGraphicsExtractor blitSprite (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;IIIIIIIII)V
-accessible method net/minecraft/client/gui/GuiGraphicsExtractor blitNineSlicedSprite (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;Lnet/minecraft/client/resources/metadata/gui/GuiSpriteScaling$NineSlice;IIIII)V
-accessible method net/minecraft/client/gui/GuiGraphicsExtractor blitTiledSprite (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;IIIIIIIIIII)V
+accessible method net/minecraft/client/gui/GuiGraphicsExtractor blitSprite (Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;IIIIIIIII)V
+accessible method net/minecraft/client/gui/GuiGraphicsExtractor blitNineSlicedSprite (Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;Lnet/minecraft/client/resources/metadata/gui/GuiSpriteScaling$NineSlice;IIIII)V
+accessible method net/minecraft/client/gui/GuiGraphicsExtractor blitTiledSprite (Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;IIIIIIIIIII)V
 
 accessible method net/minecraft/world/inventory/GrindstoneMenu computeResult (Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/ItemStack;
 

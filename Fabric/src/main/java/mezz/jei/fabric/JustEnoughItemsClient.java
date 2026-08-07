@@ -16,6 +16,8 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.recipe.v1.sync.ClientRecipeSynchronizedEvent;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -29,7 +31,14 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler();
 
 		ClientRecipeSynchronizedEvent.EVENT.register((minecraft, synchronizedRecipes) -> {
-			Internal.setClientSyncedRecipes(RecipeMap.create(synchronizedRecipes.recipes()));
+			var recipeRegistries = new RegistrySetBuilder()
+				.add(
+					Registries.RECIPE,
+					context -> synchronizedRecipes.recipes()
+						.forEach(recipe -> context.register(recipe.id(), recipe.value()))
+				)
+				.build(minecraft.level.registryAccess());
+			Internal.setClientSyncedRecipes(RecipeMap.create(recipeRegistries.lookupOrThrow(Registries.RECIPE)));
 		});
 
 		JeiChatEventHandler.register();

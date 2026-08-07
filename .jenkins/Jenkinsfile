@@ -44,14 +44,12 @@ pipeline {
         stage('Build') {
             steps {
                 sh "./gradlew :Fabric:build"
-                sh "./gradlew :NeoForge:build"
                 sh "./gradlew :Common:build"
                 sh "./gradlew :CommonApi:build"
                 sh "./gradlew :Gui:build"
                 sh "./gradlew :Library:build"
                 sh "./gradlew :Debug:build"
                 sh "./gradlew :FabricApi:build"
-                sh "./gradlew :NeoForgeApi:build"
             }
         }
 
@@ -63,7 +61,7 @@ pipeline {
 
         stage('Server GameTests') {
             steps {
-                sh "./gradlew :NeoForge:runGameTestServer"
+                sh "./gradlew :Fabric:runGameTest"
             }
         }
 
@@ -71,7 +69,7 @@ pipeline {
             steps {
                 sh '''
                     if command -v xvfb-run >/dev/null 2>&1; then
-                        xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs :NeoForge:runClientRecipeSyncTest --no-daemon --no-parallel
+                        xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest --no-daemon --no-parallel
                     else
                         echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
                     fi
@@ -96,11 +94,9 @@ pipeline {
                 sh "./gradlew :Gui:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :Library:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :Fabric:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :NeoForge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :Common:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :CommonApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
                 sh "./gradlew :FabricApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :NeoForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
             }
         }
 
@@ -112,9 +108,6 @@ pipeline {
                 script {
                     catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
                         runExternalPublishTask(':Fabric:publishCurseforge')
-                    }
-                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
-                        runExternalPublishTask(':NeoForge:publishCurseforge')
                     }
                 }
             }
@@ -128,9 +121,6 @@ pipeline {
                 script {
                     catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
                         runExternalPublishTask(':Fabric:publishModrinth')
-                    }
-                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
-                        runExternalPublishTask(':NeoForge:publishModrinth')
                     }
                 }
             }

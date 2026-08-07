@@ -40,8 +40,5 @@
     "fabricloader": "${fabricLoaderVersionRange}",
     "fabric-api": "${fabricApiVersionRange}",
     "java": ">=${modJavaVersion}"
-  },
-  "suggests": {
-    "amecs_key_modifiers": "*"
   }
 }

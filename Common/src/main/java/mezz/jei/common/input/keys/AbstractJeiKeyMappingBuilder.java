@@ -1,7 +1,6 @@
 package mezz.jei.common.input.keys;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import org.lwjgl.glfw.GLFW;
 
 public abstract class AbstractJeiKeyMappingBuilder implements IJeiKeyMappingBuilder {
 	protected abstract IJeiKeyMappingInternal buildMouse(int mouseButton);
@@ -23,6 +22,6 @@ public abstract class AbstractJeiKeyMappingBuilder implements IJeiKeyMappingBuil
 
 	@Override
 	public final IJeiKeyMappingInternal buildUnbound() {
-		return buildKeyboardKey(GLFW.GLFW_KEY_UNKNOWN);
+		return buildKeyboardKey(InputConstants.UNKNOWN.getValue());
 	}
 }

@@ -41,7 +41,7 @@ public class CodecHelper implements ICodecHelper {
 				ResourceKey.codec(Registries.RECIPE),
 				TupleCodec.of(
 					ResourceKey.codec(Registries.RECIPE),
-					Recipe.CODEC
+					Recipe.DIRECT_CODEC
 				)
 			)
 			.flatXmap(

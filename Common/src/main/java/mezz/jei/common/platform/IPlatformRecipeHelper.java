@@ -8,12 +8,14 @@ import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.alchemy.PotionBrewing;
+import net.minecraft.world.item.crafting.BrewingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.enchantment.Enchantment;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +28,7 @@ public interface IPlatformRecipeHelper {
 
 	ItemStack getGrindstoneResult(GrindstoneMenu grindstoneMenu, ItemStack input1, ItemStack input2);
 
-	List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory, PotionBrewing potionBrewing, ContextMap contextMap);
+	List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory, Collection<RecipeHolder<BrewingRecipe>> brewingRecipes, ContextMap contextMap);
 
 	String[] shrinkShapedRecipePattern(List<String> pattern);
 

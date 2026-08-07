@@ -105,7 +105,6 @@ import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.inventory.SmokerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -289,9 +288,11 @@ public class VanillaPlugin implements IModPlugin {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientLevel level = minecraft.level;
 		ErrorUtil.checkNotNull(level, "minecraft.level");
-		PotionBrewing potionBrewing = level.potionBrewing();
-		List<IJeiBrewingRecipe> brewingRecipes = recipeHelper.getBrewingRecipes(ingredientManager, vanillaRecipeFactory, potionBrewing, contextMap);
-		brewingRecipes.sort(Comparator.comparingInt(IJeiBrewingRecipe::getBrewingSteps));
+		var vanillaBrewingRecipes = clientSyncedRecipes.byType(RecipeType.BREWING);
+		List<IJeiBrewingRecipe> brewingRecipes = recipeHelper.getBrewingRecipes(ingredientManager, vanillaRecipeFactory, vanillaBrewingRecipes, contextMap)
+			.stream()
+			.sorted(Comparator.comparingInt(IJeiBrewingRecipe::getBrewingSteps))
+			.toList();
 		registration.addRecipes(RecipeTypes.BREWING, brewingRecipes);
 		registration.addRecipes(RecipeTypes.GRINDSTONE, GrindstoneRecipeMaker.getGrindstoneRecipes(ingredientManager, recipeHelper));
 	}

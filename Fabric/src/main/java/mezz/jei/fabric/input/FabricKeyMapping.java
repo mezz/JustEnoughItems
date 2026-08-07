@@ -51,14 +51,8 @@ public class FabricKeyMapping extends KeyMapping {
 
 	@Override
 	public boolean matches(KeyEvent keyEvent) {
-		int keyCode = keyEvent.key();
-		if (keyCode != InputConstants.UNKNOWN.getValue()) {
-			return this.realKey.getType() == InputConstants.Type.KEYSYM &&
-				this.realKey.getValue() == keyCode;
-		} else {
-			return this.realKey.getType() == InputConstants.Type.SCANCODE &&
-				this.realKey.getValue() == keyEvent.scancode();
-		}
+		return this.realKey.getType() == InputConstants.Type.KEYBOARD &&
+			this.realKey.getValue() == keyEvent.key();
 	}
 
 	@Override

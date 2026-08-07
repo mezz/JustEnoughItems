@@ -1,20 +1,19 @@
+import mezz.jei.gradle.addFabricMinecraftDependencies
 import mezz.jei.gradle.gradleProperty
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.slf4j.event.Level
 
 plugins {
     id("idea")
     id("java")
     id("java-test-fixtures")
-    id("net.neoforged.moddev")
+    id("net.fabricmc.fabric-loom")
     id("maven-publish")
 }
 
 // gradle.properties
 val jUnitVersion = gradleProperty("jUnitVersion")
 val minecraftVersion = gradleProperty("minecraftVersion")
-val neoformVersionAndTimestamp = gradleProperty("neoformVersionAndTimestamp")
 val modGroup = gradleProperty("modGroup")
 val modId = gradleProperty("modId")
 val modJavaVersion = gradleProperty("modJavaVersion")
@@ -30,20 +29,7 @@ val generatedJeiGuiColorsResources = layout.buildDirectory.dir("generated/resour
 
 val dependencyProjectPaths = listOf(":CommonApi")
 
-neoForge {
-    neoFormVersion = neoformVersionAndTimestamp
-    addModdingDependenciesTo(sourceSets.test.get())
-
-    runs {
-        create("vanillaServer") {
-            server()
-            gameDirectory = file("run/vanillaServer")
-            programArguments.addAll("nogui")
-            logLevel = Level.INFO
-            disableIdeRun()
-        }
-    }
-}
+addFabricMinecraftDependencies()
 
 val datagenSourceSet = sourceSets.create("datagen") {
     compileClasspath += sourceSets.main.get().output.classesDirs

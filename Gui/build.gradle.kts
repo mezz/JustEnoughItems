@@ -1,3 +1,4 @@
+import mezz.jei.gradle.addFabricMinecraftDependencies
 import mezz.jei.gradle.gradleProperty
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -5,14 +6,13 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
     id("idea")
     id("java")
-    id("net.neoforged.moddev")
+    id("net.fabricmc.fabric-loom")
     id("maven-publish")
 }
 
 // gradle.properties
 val jUnitVersion = gradleProperty("jUnitVersion")
 val minecraftVersion = gradleProperty("minecraftVersion")
-val neoformVersionAndTimestamp = gradleProperty("neoformVersionAndTimestamp")
 val modId = gradleProperty("modId")
 val modJavaVersion = gradleProperty("modJavaVersion")
 
@@ -23,9 +23,7 @@ base {
 
 val dependencyProjectPaths = listOf(":Common", ":CommonApi")
 
-neoForge {
-    neoFormVersion = neoformVersionAndTimestamp
-}
+addFabricMinecraftDependencies()
 
 sourceSets {
     named("test") {

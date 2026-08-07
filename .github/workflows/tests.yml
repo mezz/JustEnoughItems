@@ -34,14 +34,12 @@ jobs:
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
       - name: Run unit tests and server GameTests
-        run: ./gradlew test :Fabric:runGameTest :NeoForge:runGameTestServer --no-daemon
+        run: ./gradlew test :Fabric:runGameTest --no-daemon
 
       - name: Run Client GameTests
         run: |
           if command -v xvfb-run >/dev/null 2>&1; then
             xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest --no-daemon
-            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTestWithoutAmecs --no-daemon
-            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :NeoForge:runClientRecipeSyncTest --no-daemon
           else
             echo "::error::xvfb-run is not available; skipping client GameTests."
           fi

@@ -44,6 +44,8 @@ private fun Project.configureApiCompatibility() {
 	}
 
 	val minecraftVersion = property("minecraftVersion").toString()
+	val apiCompatibilityMinecraftVersion = providers.gradleProperty("apiCompatibilityMinecraftVersion")
+		.orElse(minecraftVersion)
 	val modGroup = property("modGroup").toString()
 	val modId = property("modId").toString()
 	val specificationVersion = property("specificationVersion").toString()
@@ -79,11 +81,10 @@ private fun Project.configureApiCompatibility() {
 	val apiCompatibilityModules = listOf(
 		ApiCompatibilityModule(":CommonApi", "checkCommonApiCompatibility", "common-api"),
 		ApiCompatibilityModule(":FabricApi", "checkFabricApiCompatibility", "fabric-api"),
-		ApiCompatibilityModule(":NeoForgeApi", "checkNeoForgeApiCompatibility", "neoforge-api"),
 	)
 
 	val apiCompatibilityCheckTasks = apiCompatibilityModules.map { module ->
-		val artifactId = "$modId-$minecraftVersion-${module.artifactSuffix}"
+		val artifactId = "$modId-${apiCompatibilityMinecraftVersion.get()}-${module.artifactSuffix}"
 		val inputConfiguration = configurations.create("${module.taskName}Input") {
 			description = "Current ${module.projectPath} API jar for compatibility checks."
 			isCanBeConsumed = false

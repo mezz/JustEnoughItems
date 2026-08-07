@@ -8,7 +8,6 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
-import org.lwjgl.glfw.GLFW;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -116,8 +115,7 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 	private void pollMouse() {
 		Minecraft minecraft = Minecraft.getInstance();
 
-		long windowHandle = minecraft.getWindow().handle();
-		boolean leftButtonDown = GLFW.glfwGetMouseButton(windowHandle, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
+		boolean leftButtonDown = minecraft.mouseHandler.isLeftPressed();
 
 		double mouseX = getScaledMouseX(minecraft);
 		double mouseY = getScaledMouseY(minecraft);
