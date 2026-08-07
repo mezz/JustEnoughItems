@@ -1,5 +1,6 @@
 import mezz.jei.gradle.UnpackArchives
 import mezz.jei.gradle.gradleProperty
+import mezz.jei.gradle.isolatedProjectDirectory
 import mezz.jei.gradle.optionalGradleProperty
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -57,8 +58,8 @@ base {
 }
 
 val dependencyProjectPaths = listOf(":Common", ":CommonApi", ":Library", ":Gui", ":FabricApi")
-val commonProjectDirectory = project(":Common").isolated.projectDirectory
-val debugProjectDirectory = project(":Debug").isolated.projectDirectory
+val commonProjectDirectory = isolatedProjectDirectory(":Common")
+val debugProjectDirectory = isolatedProjectDirectory(":Debug")
 
 val keyMappingGametestModId = "${modId}-key-mapping-test"
 val commonClientTestFixturesSource = commonProjectDirectory.dir("src/clientTestFixtures/java")
