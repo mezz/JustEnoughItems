@@ -125,4 +125,8 @@ public final class GrindstoneRecipeMaker {
 		}
 		return new GrindstoneRecipe(List.of(topInput), List.of(bottomInput), List.of(output), -1, -1, uid);
 	}
+
+	public static void clearCache() {
+		GrindstoneHelper.clearCache();
+	}
 }

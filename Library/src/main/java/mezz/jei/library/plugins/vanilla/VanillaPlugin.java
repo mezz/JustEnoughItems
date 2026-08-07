@@ -38,6 +38,7 @@ import mezz.jei.common.recipes.BrewingExtensionHelper;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.common.util.StackHelper;
+import mezz.jei.library.plugins.vanilla.anvil.AnvilHelper;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.library.plugins.vanilla.anvil.SmithingRecipeCategory;
@@ -368,6 +369,12 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipeCatalyst(Blocks.GRINDSTONE, RecipeTypes.GRINDSTONE);
 		registration.addRecipeCatalyst(Blocks.SMITHING_TABLE, RecipeTypes.SMITHING);
 		registration.addRecipeCatalyst(Blocks.COMPOSTER, RecipeTypes.COMPOSTING);
+	}
+
+	@Override
+	public void onRuntimeUnavailable() {
+		AnvilHelper.clearCache();
+		GrindstoneRecipeMaker.clearCache();
 	}
 
 	public Optional<CraftingRecipeCategory> getCraftingCategory() {

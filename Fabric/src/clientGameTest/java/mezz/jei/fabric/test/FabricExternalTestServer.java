@@ -8,6 +8,7 @@ import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.Minecraft;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -46,12 +47,36 @@ final class FabricExternalTestServer implements AutoCloseable {
 				timeoutMessage
 			);
 		}
+
+		@Override
+		public void clearPlatformClientLevelReferences(Minecraft client) {
+			clearFabricWorldRenderContext(client);
+		}
 	};
 
 	private final ExternalServerProcess server;
 
 	private FabricExternalTestServer(ExternalServerProcess server) {
 		this.server = server;
+	}
+
+	private static void clearFabricWorldRenderContext(Minecraft client) {
+		// Fabric API 0.116 retains the last ClientLevel here and does not expose a teardown method.
+		for (Field field : client.levelRenderer.getClass().getDeclaredFields()) {
+			if (field.getType().getName().equals("net.fabricmc.fabric.impl.client.rendering.WorldRenderContextImpl")) {
+				try {
+					field.setAccessible(true);
+					Object context = field.get(client.levelRenderer);
+					Field worldField = field.getType().getDeclaredField("world");
+					worldField.setAccessible(true);
+					worldField.set(context, null);
+					return;
+				} catch (ReflectiveOperationException e) {
+					throw new AssertionError("Failed to clear Fabric's cached client level render context.", e);
+				}
+			}
+		}
+		throw new AssertionError("Failed to find Fabric's cached client level render context.");
 	}
 
 	public static FabricExternalTestServer startFabricWithJei() {
