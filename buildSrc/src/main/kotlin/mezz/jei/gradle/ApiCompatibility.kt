@@ -18,7 +18,6 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
-import org.gradle.jvm.tasks.Jar
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.process.CommandLineArgumentProvider
 import java.io.File
@@ -84,10 +83,23 @@ private fun Project.configureApiCompatibility() {
 	)
 
 	val apiCompatibilityCheckTasks = apiCompatibilityModules.map { module ->
-		val apiProject = evaluationDependsOn(module.projectPath)
 		val artifactId = "$modId-$minecraftVersion-${module.artifactSuffix}"
+		val inputConfiguration = configurations.create("${module.taskName}Input") {
+			description = "Current ${module.projectPath} API jar for compatibility checks."
+			isCanBeConsumed = false
+			isCanBeResolved = true
+			attributes {
+				attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage::class.java, Usage.JAVA_RUNTIME))
+				attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class.java, Bundling.EXTERNAL))
+			}
+		}
+		val inputDependency = dependencies.add(inputConfiguration.name, project(module.projectPath))
+		if (inputDependency is ModuleDependency) {
+			inputDependency.isTransitive = false
+		}
+
 		val baselineConfiguration = configurations.create("${module.taskName}Baseline") {
-			description = "Published baseline artifact for ${apiProject.path} API compatibility checks."
+			description = "Published baseline artifact for ${module.projectPath} API compatibility checks."
 			isCanBeConsumed = false
 			isCanBeResolved = true
 			resolutionStrategy.cacheDynamicVersionsFor(0, TimeUnit.SECONDS)
@@ -97,15 +109,13 @@ private fun Project.configureApiCompatibility() {
 			baselineDependency.isTransitive = false
 		}
 
-		val jarTask = apiProject.tasks.named("jar", Jar::class.java)
-		val apiInputJar = jarTask.flatMap { it.archiveFile }
+		val apiInputJar = inputConfiguration.incoming.files.elements.map { it.single().asFile }
 		val outputFile = layout.buildDirectory.file("reports/apiCompatibility/${module.artifactSuffix}.json")
 
 		val checkerTask = tasks.register("${module.taskName}WithJarCompatibilityChecker", JavaExec::class.java) {
 			group = LifecycleBasePlugin.VERIFICATION_GROUP
-			description = "Runs JarCompatibilityChecker for ${apiProject.path} against the latest published $artifactId API jar in the same major version."
+			description = "Runs JarCompatibilityChecker for ${module.projectPath} against the latest published $artifactId API jar in the same major version."
 
-			dependsOn(jarTask)
 			classpath = apiCompatibilityChecker
 			mainClass.set("net.neoforged.jarcompatibilitychecker.ConsoleTool")
 
@@ -114,18 +124,19 @@ private fun Project.configureApiCompatibility() {
 
 			val checkerArguments = objects.newInstance(JarCompatibilityCheckerArgumentProvider::class.java)
 			checkerArguments.baselineJar.from(baselineConfiguration)
-			checkerArguments.inputJar.set(apiInputJar)
+			checkerArguments.inputJar.fileProvider(apiInputJar)
 			checkerArguments.outputFile.set(outputFile)
 			argumentProviders.add(checkerArguments)
 		}
 
 		tasks.register(module.taskName, ValidateApiCompatibilityReport::class.java) {
 			group = LifecycleBasePlugin.VERIFICATION_GROUP
-			description = "Checks ${apiProject.path} against the latest published $artifactId API jar in the same major version."
+			description = "Checks ${module.projectPath} against the latest published $artifactId API jar in the same major version."
 
 			dependsOn(checkerTask)
 			reportFile.set(outputFile)
-			sourceFiles.from(apiProject.layout.projectDirectory.dir("src/main/java").asFileTree.matching {
+			val apiProjectDirectory = project(module.projectPath).isolated.projectDirectory
+			sourceFiles.from(apiProjectDirectory.dir("src/main/java").asFileTree.matching {
 				include("**/*.java")
 			})
 		}

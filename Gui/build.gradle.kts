@@ -20,14 +20,7 @@ base {
     archivesName.set(baseArchivesName)
 }
 
-val dependencyProjects: List<Project> = listOf(
-    project(":Common"),
-    project(":CommonApi"),
-)
-
-dependencyProjects.forEach {
-    project.evaluationDependsOn(it.path)
-}
+val dependencyProjectPaths = listOf(":Common", ":CommonApi")
 
 neoForge {
     neoFormVersion = neoformVersionAndTimestamp
@@ -41,8 +34,8 @@ sourceSets {
 }
 
 dependencies {
-    dependencyProjects.forEach {
-        implementation(it)
+    dependencyProjectPaths.forEach {
+        implementation(project(it))
     }
     testCompileOnly("org.jspecify:jspecify:1.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")

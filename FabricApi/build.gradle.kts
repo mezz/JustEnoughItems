@@ -18,13 +18,7 @@ base {
     archivesName.set(baseArchivesName)
 }
 
-val dependencyProjects: List<Project> = listOf(
-    project(":CommonApi"),
-)
-
-dependencyProjects.forEach {
-    project.evaluationDependsOn(it.path)
-}
+val dependencyProjectPaths = listOf(":CommonApi")
 
 java {
     toolchain {
@@ -52,8 +46,8 @@ dependencies {
     minecraft("com.mojang:minecraft:${minecraftVersion}")
     implementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
     implementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
-    dependencyProjects.forEach {
-        implementation(it)
+    dependencyProjectPaths.forEach {
+        implementation(project(it))
     }
 }
 
@@ -81,11 +75,11 @@ publishing {
             artifact(tasks.jar)
             artifact(tasks.named("sourcesJar"))
 
-            val dependencyInfos = dependencyProjects.map {
+            val dependencyInfos = listOf("common-api").map {
                 mapOf(
-                    "groupId" to it.group,
-                    "artifactId" to it.base.archivesName.get(),
-                    "version" to it.version
+                    "groupId" to modGroup,
+                    "artifactId" to "${modId}-${minecraftVersion}-$it",
+                    "version" to project.version
                 )
             }
 
