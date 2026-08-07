@@ -5,6 +5,7 @@ import de.siphalor.amecs.key_modifiers.api.AmecsKeyModifierCombination;
 import de.siphalor.amecs.key_modifiers.api.AmecsKeyModifiersApi;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 
@@ -28,7 +29,7 @@ public class AmecsJeiKeyMapping extends AbstractJeiKeyMapping {
 		if (isUnbound()) {
 			return false;
 		}
-		if (!this.amecsMapping.getRealKey().equals(key)) {
+		if (!KeyMappingHelper.getBoundKeyOf(this.amecsMapping).equals(key)) {
 			return false;
 		}
 		if (!context.isActive()) {
@@ -47,7 +48,8 @@ public class AmecsJeiKeyMapping extends AbstractJeiKeyMapping {
 
 	@Override
 	public Component getTranslatedKeyMessage() {
+		InputConstants.Key key = KeyMappingHelper.getBoundKeyOf(this.amecsMapping);
 		AmecsKeyModifierCombination combination = AmecsKeyModifiersApi.getBoundModifiers(this.amecsMapping);
-		return AmecsHelper.getCombinedName(combination, this.amecsMapping.getRealKey());
+		return AmecsHelper.getCombinedName(combination, key);
 	}
 }
