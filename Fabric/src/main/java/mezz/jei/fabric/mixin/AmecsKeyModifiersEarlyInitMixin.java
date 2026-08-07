@@ -24,6 +24,7 @@ public class AmecsKeyModifiersEarlyInitMixin {
 		require = 0
 	)
 	private static void onInit(CallbackInfo ci) {
+		AmecsHelper.initKeyMappingManagerLayer();
 		if (FabricAmecsSupport.isEnabled()) {
 			AmecsHelper.init();
 		}

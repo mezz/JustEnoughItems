@@ -139,6 +139,11 @@ val keyMappingGametestSourceSet = sourceSets.create("keyMappingGametest") {
     compileClasspath += sourceSets.main.get().output + gametestSourceSet.compileClasspath
     runtimeClasspath += output + compileClasspath + gametestSourceSet.runtimeClasspath.minus(gametestSourceSet.output)
 }
+val keyMappingGametestWithoutAmecsSourceSet = sourceSets.create("keyMappingGametestWithoutAmecs") {
+    runtimeClasspath += keyMappingGametestSourceSet.runtimeClasspath.filter {
+        !it.name.startsWith("amecs-key-modifiers-")
+    }
+}
 
 dependencies {
     "gametestImplementation"(testFixtures(project(":Common")))
@@ -204,8 +209,8 @@ loom {
         create("clientGameTestWithoutAmecs") {
             inherit(named("clientGameTest").get())
             displayName.set("Fabric Client GameTest Without AMECS")
+            sourceSet.set(keyMappingGametestWithoutAmecsSourceSet.name)
             runDirectory.set(clientGameTestWithoutAmecsRunDirectory.get().asFile)
-            systemProperties.put("jei.fabric.disableAmecsSupport", "true")
             systemProperties.put("fabric.client.gametest.modid", keyMappingGametestModId)
         }
     }
