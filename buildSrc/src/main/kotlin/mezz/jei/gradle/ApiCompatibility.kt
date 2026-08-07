@@ -135,7 +135,7 @@ private fun Project.configureApiCompatibility() {
 
 			dependsOn(checkerTask)
 			reportFile.set(outputFile)
-			val apiProjectDirectory = project(module.projectPath).isolated.projectDirectory
+			val apiProjectDirectory = isolatedProjectDirectory(module.projectPath)
 			sourceFiles.from(apiProjectDirectory.dir("src/main/java").asFileTree.matching {
 				include("**/*.java")
 			})

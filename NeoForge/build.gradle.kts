@@ -1,4 +1,5 @@
 import mezz.jei.gradle.gradleProperty
+import mezz.jei.gradle.isolatedProjectDirectory
 import mezz.jei.gradle.optionalGradleProperty
 import net.neoforged.moddevgradle.dsl.ModModel
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -42,9 +43,9 @@ base {
 
 val gameTestJunitResultsDir = layout.buildDirectory.dir("test-results/gameTest")
 val dependencyProjectPaths = listOf(":Common", ":CommonApi", ":Library", ":Gui", ":NeoForgeApi")
-val dependencyProjectDirectories = dependencyProjectPaths.map { project(it).isolated.projectDirectory }
-val commonProjectDirectory = project(":Common").isolated.projectDirectory
-val debugProjectDirectory = project(":Debug").isolated.projectDirectory
+val dependencyProjectDirectories = dependencyProjectPaths.map { isolatedProjectDirectory(it) }
+val commonProjectDirectory = isolatedProjectDirectory(":Common")
+val debugProjectDirectory = isolatedProjectDirectory(":Debug")
 val commonClientTestFixturesSource = commonProjectDirectory.dir("src/clientTestFixtures/java")
 
 sourceSets {
