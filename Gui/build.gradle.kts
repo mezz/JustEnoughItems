@@ -1,3 +1,5 @@
+import mezz.jei.gradle.gradleProperty
+
 plugins {
     java
     idea
@@ -13,11 +15,11 @@ repositories {
 }
 
 // gradle.properties
-val jUnitVersion: String by extra
-val minecraftVersion: String by extra
-val modId: String by extra
-val modJavaVersion: String by extra
-val deduplicatingRunnerVersion: String by extra
+val jUnitVersion = gradleProperty("jUnitVersion")
+val minecraftVersion = gradleProperty("minecraftVersion")
+val modId = gradleProperty("modId")
+val modJavaVersion = gradleProperty("modJavaVersion")
+val deduplicatingRunnerVersion = gradleProperty("deduplicatingRunnerVersion")
 val mezzConfigApiDependency: String by rootProject.extra
 val mezzConfigGuiApiDependency: String by rootProject.extra
 val mezzConfigForgeDependency: String by rootProject.extra

@@ -1,3 +1,4 @@
+import mezz.jei.gradle.gradleProperty
 import org.slf4j.event.Level
 
 plugins {
@@ -17,26 +18,26 @@ repositories {
 }
 
 // gradle.properties
-val curseHomepageUrl: String by extra
-val curseProjectId: String by extra
-val forgeVersion: String by extra
-val jUnitVersion: String by extra
-val minecraftVersion: String by extra
-val modGroup: String by extra
-val modId: String by extra
-val modJavaVersion: String by extra
-val bakedSubstringIndexVersion: String by extra
-val suffixtreeVersion: String by extra
-val parchmentVersionForge: String by extra
-val modrinthId: String by extra
-val mezzConfigCurseForgeProjectSlug: String by extra
-val mezzConfigModrinthProjectId: String by extra
-val parchmentMinecraftVersion: String by extra
-val mezzConfigGuiCurseForgeProjectSlug: String by extra
-val mezzConfigGuiModrinthProjectId: String by extra
-val deduplicatingRunnerVersion: String by extra
-val mezzConfigVersion: String by extra
-val mezzConfigVersionRange: String by extra
+val curseHomepageUrl = gradleProperty("curseHomepageUrl")
+val curseProjectId = gradleProperty("curseProjectId")
+val forgeVersion = gradleProperty("forgeVersion")
+val jUnitVersion = gradleProperty("jUnitVersion")
+val minecraftVersion = gradleProperty("minecraftVersion")
+val modGroup = gradleProperty("modGroup")
+val modId = gradleProperty("modId")
+val modJavaVersion = gradleProperty("modJavaVersion")
+val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
+val suffixtreeVersion = gradleProperty("suffixtreeVersion")
+val parchmentVersionForge = gradleProperty("parchmentVersionForge")
+val modrinthId = gradleProperty("modrinthId")
+val mezzConfigCurseForgeProjectSlug = gradleProperty("mezzConfigCurseForgeProjectSlug")
+val mezzConfigModrinthProjectId = gradleProperty("mezzConfigModrinthProjectId")
+val parchmentMinecraftVersion = gradleProperty("parchmentMinecraftVersion")
+val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForgeProjectSlug")
+val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
+val deduplicatingRunnerVersion = gradleProperty("deduplicatingRunnerVersion")
+val mezzConfigVersion = gradleProperty("mezzConfigVersion")
+val mezzConfigVersionRange = gradleProperty("mezzConfigVersionRange")
 val mezzConfigApiDependency: String by rootProject.extra
 val mezzConfigForgeDependency: String by rootProject.extra
 val mezzConfigGuiApiDependency: String by rootProject.extra

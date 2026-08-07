@@ -1,3 +1,4 @@
+import mezz.jei.gradle.gradleProperty
 import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -40,34 +41,34 @@ repositories {
 }
 
 // gradle.properties
-val curseHomepageUrl: String by extra
-val curseProjectId: String by extra
-val configModId: String by extra
-val configGuiModId: String by extra
-val configModGroup: String by extra
-val amecsKeyModifiersVersionFabric: String by extra
-val amecsVersionFabric: String by extra
-val fabricApiVersion: String by extra
-val fabricLoaderVersion: String by extra
-val forgeVersion: String by extra
-val forgeVersionRange: String by extra
-val forgeLoaderVersionRange: String by extra
-val githubUrl: String by extra
-val parchmentVersionForge: String by extra
-val minecraftVersion: String by extra
-val minecraftVersionRange: String by extra
-val modAuthor: String by extra
-val modDescription: String by extra
-val modGroup: String by extra
-val modId: String by extra
-val modJavaVersion: String by extra
-val modName: String by extra
-val mezzConfigVersion: String by extra
-val mezzConfigVersionRange: String by extra
-val mezzConfigFabricVersionRange: String by extra
-val mezzConfigGuiVersion: String by extra
-val mezzConfigGuiMinimumVersion: String by extra
-val specificationVersion: String by extra
+val curseHomepageUrl = gradleProperty("curseHomepageUrl")
+val curseProjectId = gradleProperty("curseProjectId")
+val configModId = gradleProperty("configModId")
+val configGuiModId = gradleProperty("configGuiModId")
+val configModGroup = gradleProperty("configModGroup")
+val amecsKeyModifiersVersionFabric = gradleProperty("amecsKeyModifiersVersionFabric")
+val amecsVersionFabric = gradleProperty("amecsVersionFabric")
+val fabricApiVersion = gradleProperty("fabricApiVersion")
+val fabricLoaderVersion = gradleProperty("fabricLoaderVersion")
+val forgeVersion = gradleProperty("forgeVersion")
+val forgeVersionRange = gradleProperty("forgeVersionRange")
+val forgeLoaderVersionRange = gradleProperty("forgeLoaderVersionRange")
+val githubUrl = gradleProperty("githubUrl")
+val parchmentVersionForge = gradleProperty("parchmentVersionForge")
+val minecraftVersion = gradleProperty("minecraftVersion")
+val minecraftVersionRange = gradleProperty("minecraftVersionRange")
+val modAuthor = gradleProperty("modAuthor")
+val modDescription = gradleProperty("modDescription")
+val modGroup = gradleProperty("modGroup")
+val modId = gradleProperty("modId")
+val modJavaVersion = gradleProperty("modJavaVersion")
+val modName = gradleProperty("modName")
+val mezzConfigVersion = gradleProperty("mezzConfigVersion")
+val mezzConfigVersionRange = gradleProperty("mezzConfigVersionRange")
+val mezzConfigFabricVersionRange = gradleProperty("mezzConfigFabricVersionRange")
+val mezzConfigGuiVersion = gradleProperty("mezzConfigGuiVersion")
+val mezzConfigGuiMinimumVersion = gradleProperty("mezzConfigGuiMinimumVersion")
+val specificationVersion = gradleProperty("specificationVersion")
 
 val mezzConfigApiDependency = "$configModGroup:${configModId}-${minecraftVersion}-config-api:$mezzConfigVersion"
 extra["mezzConfigApiDependency"] = mezzConfigApiDependency
