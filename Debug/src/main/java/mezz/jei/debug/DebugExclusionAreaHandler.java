@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
+import org.lwjgl.sdl.SDLMouse;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -115,7 +116,8 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 	private void pollMouse() {
 		Minecraft minecraft = Minecraft.getInstance();
 
-		boolean leftButtonDown = minecraft.mouseHandler.isLeftPressed();
+		// MouseHandler only tracks held buttons while no screen or overlay is open.
+		boolean leftButtonDown = (SDLMouse.SDL_GetMouseState(null, null) & SDLMouse.SDL_BUTTON_LMASK) != 0;
 
 		double mouseX = getScaledMouseX(minecraft);
 		double mouseY = getScaledMouseY(minecraft);
