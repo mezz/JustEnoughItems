@@ -1,5 +1,5 @@
 plugins {
-    id("net.mezzdev.java-formatting") version("0.2.1")
+    id("net.mezzdev.java-formatting") version("0.3.5")
 
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
     id("net.fabricmc.fabric-loom") version("1.17.18") apply(false)

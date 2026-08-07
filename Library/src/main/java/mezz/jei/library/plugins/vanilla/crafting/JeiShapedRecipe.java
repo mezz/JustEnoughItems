@@ -105,7 +105,8 @@ public class JeiShapedRecipe implements CraftingRecipe {
 			return shapedRecipe.displays;
 		}), ItemStackTemplate.CODEC.fieldOf("result").forGetter((shapedRecipe) -> {
 			return shapedRecipe.result;
-		})).apply(instance, JeiShapedRecipe::new);
+		}))
+			.apply(instance, JeiShapedRecipe::new);
 	});
 	public static final StreamCodec<RegistryFriendlyByteBuf, JeiShapedRecipe> STREAM_CODEC = StreamCodec.of(JeiShapedRecipe::toNetwork, JeiShapedRecipe::fromNetwork);
 	public static final RecipeSerializer<JeiShapedRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);

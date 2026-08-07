@@ -120,16 +120,7 @@ public class RecipeManager implements IRecipeManager {
 			borderPadding = 0;
 		}
 
-		return RecipeLayout.create(
-			recipeCategory,
-			decorators,
-			recipe,
-			focusGroup,
-			ingredientManager,
-			recipeBackground,
-			borderPadding,
-			contextMap
-		)
+		return RecipeLayout.create(recipeCategory, decorators, recipe, focusGroup, ingredientManager, recipeBackground, borderPadding, contextMap)
 			.orElseGet(() -> {
 				return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, borderPadding);
 			});

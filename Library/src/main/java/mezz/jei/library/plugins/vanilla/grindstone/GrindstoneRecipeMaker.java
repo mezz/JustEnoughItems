@@ -45,9 +45,9 @@ public final class GrindstoneRecipeMaker {
 		GrindstoneMenu grindstoneMenu
 	) {
 		return Stream.concat(
-			getRepairRecipes(platformHelper, ingredientManager, grindstoneMenu),
-			getDisenchantRecipes(platformHelper, grindstoneMenu)
-		)
+				getRepairRecipes(platformHelper, ingredientManager, grindstoneMenu),
+				getDisenchantRecipes(platformHelper, grindstoneMenu)
+			)
 			.toList();
 	}
 

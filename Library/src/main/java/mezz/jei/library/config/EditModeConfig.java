@@ -179,13 +179,14 @@ public class EditModeConfig implements IEditModeConfig {
 			this.path = path;
 			this.codec = RecordCodecBuilder.create(builder -> {
 				return builder.group(
-					EnumCodec.create(HideMode.class)
-						.fieldOf("hide_mode")
-						.forGetter(Pair::getFirst),
-					codecHelper.getTypedIngredientCodec().codec()
-						.fieldOf("ingredient")
-						.forGetter(Pair::getSecond)
-				).apply(builder, Pair::new);
+						EnumCodec.create(HideMode.class)
+							.fieldOf("hide_mode")
+							.forGetter(Pair::getFirst),
+						codecHelper.getTypedIngredientCodec().codec()
+							.fieldOf("ingredient")
+							.forGetter(Pair::getSecond)
+					)
+					.apply(builder, Pair::new);
 			});
 			this.registryOps = registryAccess.createSerializationContext(JsonOps.INSTANCE);
 		}
