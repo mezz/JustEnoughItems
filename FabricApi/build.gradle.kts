@@ -1,5 +1,6 @@
 import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RemapSourcesJarTask
+import mezz.jei.gradle.gradleProperty
 
 plugins {
     java
@@ -20,14 +21,14 @@ repositories {
 }
 
 // gradle.properties
-val fabricApiVersion = providers.gradleProperty("fabricApiVersion").get()
-val fabricLoaderVersion = providers.gradleProperty("fabricLoaderVersion").get()
-val parchmentVersionFabric = providers.gradleProperty("parchmentVersionFabric").get()
-val parchmentMinecraftVersion = providers.gradleProperty("parchmentMinecraftVersion").get()
-val minecraftVersion = providers.gradleProperty("minecraftVersion").get()
-val modId = providers.gradleProperty("modId").get()
-val modJavaVersion = providers.gradleProperty("modJavaVersion").get()
-val modGroup = providers.gradleProperty("modGroup").get()
+val fabricApiVersion = gradleProperty("fabricApiVersion")
+val fabricLoaderVersion = gradleProperty("fabricLoaderVersion")
+val parchmentVersionFabric = gradleProperty("parchmentVersionFabric")
+val parchmentMinecraftVersion = gradleProperty("parchmentMinecraftVersion")
+val minecraftVersion = gradleProperty("minecraftVersion")
+val modId = gradleProperty("modId")
+val modJavaVersion = gradleProperty("modJavaVersion")
+val modGroup = gradleProperty("modGroup")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-fabric-api"
 base {

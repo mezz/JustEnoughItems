@@ -1,6 +1,8 @@
+import mezz.jei.gradle.UnpackArchives
+import mezz.jei.gradle.gradleProperty
+import mezz.jei.gradle.optionalGradleProperty
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import mezz.jei.gradle.UnpackArchives
 
 plugins {
     java
@@ -28,26 +30,26 @@ repositories {
     }
 }
 // gradle.properties
-val curseHomepageUrl = providers.gradleProperty("curseHomepageUrl").get()
-val curseProjectId = providers.gradleProperty("curseProjectId").get()
-val fabricApiVersion = providers.gradleProperty("fabricApiVersion").get()
-val fabricLoaderVersion = providers.gradleProperty("fabricLoaderVersion").get()
-val minecraftVersionRangeStart = providers.gradleProperty("minecraftVersionRangeStart").get()
-val minecraftVersion = providers.gradleProperty("minecraftVersion").get()
-val modId = providers.gradleProperty("modId").get()
-val modJavaVersion = providers.gradleProperty("modJavaVersion").get()
-val parchmentMinecraftVersion = providers.gradleProperty("parchmentMinecraftVersion").get()
-val parchmentVersionFabric = providers.gradleProperty("parchmentVersionFabric").get()
-val modrinthId = providers.gradleProperty("modrinthId").get()
-val amecsVersionFabric = providers.gradleProperty("amecsVersionFabric").get()
-val amecsMinecraftVersion = providers.gradleProperty("amecsMinecraftVersion").get()
-val bakedSubstringIndexVersion = providers.gradleProperty("bakedSubstringIndexVersion").get()
-val suffixtreeVersion = providers.gradleProperty("suffixtreeVersion").get()
+val curseHomepageUrl = gradleProperty("curseHomepageUrl")
+val curseProjectId = gradleProperty("curseProjectId")
+val fabricApiVersion = gradleProperty("fabricApiVersion")
+val fabricLoaderVersion = gradleProperty("fabricLoaderVersion")
+val minecraftVersionRangeStart = gradleProperty("minecraftVersionRangeStart")
+val minecraftVersion = gradleProperty("minecraftVersion")
+val modId = gradleProperty("modId")
+val modJavaVersion = gradleProperty("modJavaVersion")
+val parchmentMinecraftVersion = gradleProperty("parchmentMinecraftVersion")
+val parchmentVersionFabric = gradleProperty("parchmentVersionFabric")
+val modrinthId = gradleProperty("modrinthId")
+val amecsVersionFabric = gradleProperty("amecsVersionFabric")
+val amecsMinecraftVersion = gradleProperty("amecsMinecraftVersion")
+val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
+val suffixtreeVersion = gradleProperty("suffixtreeVersion")
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
-val modrinthToken = providers.gradleProperty("modrinthToken").orNull
+val modrinthToken = optionalGradleProperty("modrinthToken")
 // set by ORG_GRADLE_PROJECT_curseforgeApikey in Jenkinsfile
-val curseforgeApikey = providers.gradleProperty("curseforgeApikey").orNull
+val curseforgeApikey = optionalGradleProperty("curseforgeApikey")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-fabric"
 base {
