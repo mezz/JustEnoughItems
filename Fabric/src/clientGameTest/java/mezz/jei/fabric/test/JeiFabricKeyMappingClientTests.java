@@ -87,6 +87,13 @@ final class JeiFabricKeyMappingClientTests {
 	}
 
 	private static void assertJeiResourcesAreLoaded(Minecraft client) {
+		ResourceLocation slotId = ResourceLocation.fromNamespaceAndPath("jei", "slot");
+		if (!client.getGuiSprites().getSprite(slotId).contents().name().equals(slotId)) {
+			int resourceCount = client.getResourceManager()
+				.listResources("textures/gui/sprites", id -> id.getPath().endsWith(".png"))
+				.size();
+			throw new AssertionError("Expected JEI's slot texture to be stitched in Minecraft's GUI atlas; found " + resourceCount + " source textures.");
+		}
 		if (client.getResourceManager().getResource(GUI_BACKGROUND_TEXTURE).isEmpty()) {
 			throw new AssertionError("Expected the Fabric development mod to include JEI's Common textures.");
 		}
