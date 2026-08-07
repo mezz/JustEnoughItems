@@ -20,11 +20,6 @@ public class TestIngredientFilterConfig implements IIngredientFilterConfig {
 	}
 
 	@Override
-	public SearchMode getCreativeTabSearchMode() {
-		return SearchMode.ENABLED;
-	}
-
-	@Override
 	public SearchMode getColorSearchMode() {
 		return SearchMode.REQUIRE_PREFIX;
 	}

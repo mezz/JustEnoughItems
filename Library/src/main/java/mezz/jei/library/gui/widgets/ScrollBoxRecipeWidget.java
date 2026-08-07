@@ -15,7 +15,6 @@ import mezz.jei.common.gui.elements.DrawableWrappedText;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.FormattedText;
 
 import java.util.List;
