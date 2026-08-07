@@ -34,12 +34,10 @@ base {
     archivesName.set(baseArchivesName)
 }
 
-val commonApi: Project = project(":CommonApi")
+val commonApiProjectPath = ":CommonApi"
 val commonApiIntermediaryBaseArchivesName = provider {
-    commonApi.base.archivesName.get() + "-intermediary"
+    "${modId}-${minecraftVersion}-common-api-intermediary"
 }
-
-project.evaluationDependsOn(commonApi.path)
 
 java {
     toolchain {
@@ -48,24 +46,34 @@ java {
     withSourcesJar()
 }
 
-val commonApiIntermediaryJar = tasks.register<RemapJarTask>("commonApiIntermediaryJar") {
-    val commonApiJarTask = commonApi.tasks.jar.get()
-    commonApiJarTask.manifest {
-        attributes["Fabric-Loom-Remap"] = true
+val commonApiJar = configurations.create("commonApiJar") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.JAR))
     }
-    val commonApiJar = commonApiJarTask.archiveFile
-    inputFile.set(commonApiJar)
+}
+
+val commonApiSourcesJar = configurations.create("commonApiSourcesJar") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.DOCUMENTATION))
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+        attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType.SOURCES))
+    }
+}
+
+val commonApiIntermediaryJar = tasks.register<RemapJarTask>("commonApiIntermediaryJar") {
+    inputFile.set(layout.file(commonApiJar.elements.map { it.single().asFile }))
     archiveBaseName.set(commonApiIntermediaryBaseArchivesName)
     group = modGroup
 }
 
 val commonApiIntermediarySourcesJar = tasks.register<RemapSourcesJarTask>("commonApiIntermediarySourcesJar") {
-    val commonApiSourcesJarTask = commonApi.tasks.named<Jar>("sourcesJar").get()
-    commonApiSourcesJarTask.manifest {
-        attributes["Fabric-Loom-Remap"] = true
-    }
-    val commonSourcesJar = commonApiSourcesJarTask.archiveFile
-    inputFile.set(commonSourcesJar)
+    inputFile.set(layout.file(commonApiSourcesJar.elements.map { it.single().asFile }))
     archiveBaseName.set(commonApiIntermediaryBaseArchivesName)
     archiveClassifier.set("sources")
     group = modGroup
@@ -95,7 +103,13 @@ dependencies {
     })
     modImplementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
-    implementation(commonApi)
+    implementation(project(commonApiProjectPath))
+    commonApiJar(project(commonApiProjectPath)) {
+        isTransitive = false
+    }
+    commonApiSourcesJar(project(commonApiProjectPath)) {
+        isTransitive = false
+    }
 }
 
 sourceSets {
@@ -135,7 +149,7 @@ publishing {
             val dependencyInfo = mapOf(
                 "groupId" to modGroup,
                 "artifactId" to commonApiIntermediaryBaseArchivesName.get(),
-                "version" to commonApi.version
+                "version" to project.version
             )
 
             pom.withXml {

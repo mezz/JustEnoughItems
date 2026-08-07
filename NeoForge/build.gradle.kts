@@ -39,9 +39,20 @@ base {
 }
 
 val gameTestJunitResultsDir = layout.buildDirectory.dir("test-results/gameTest")
-val commonClientTestFixturesSource = project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java")
+val dependencyProjectPaths = listOf(":Common", ":CommonApi", ":Library", ":Gui", ":NeoForgeApi")
+val dependencyProjectDirectories = dependencyProjectPaths.map { project(it).isolated.projectDirectory }
+val commonProjectDirectory = project(":Common").isolated.projectDirectory
+val debugProjectDirectory = project(":Debug").isolated.projectDirectory
+val commonClientTestFixturesSource = commonProjectDirectory.dir("src/clientTestFixtures/java")
 
 sourceSets {
+	named("main") {
+		java {
+			dependencyProjectDirectories.forEach {
+				srcDir(it.dir("src/main/java"))
+			}
+		}
+	}
 	named("test") {
 		resources {
 			//The test module has no resources
@@ -57,37 +68,18 @@ sourceSets {
 	}
 }
 
-val dependencyProjects: List<Project> = listOf(
-	project(":Common"),
-	project(":CommonApi"),
-	project(":Library"),
-	project(":Gui"),
-	project(":NeoForgeApi"),
-)
-val debugProject = project(":Debug")
-
-dependencyProjects.forEach {
-	project.evaluationDependsOn(it.path)
+val debugSourceSet = sourceSets.create("debug") {
+	java.srcDir(debugProjectDirectory.dir("src/main/java"))
+	resources.srcDir(debugProjectDirectory.dir("src/main/resources"))
+	compileClasspath += sourceSets.main.get().compileClasspath
+	runtimeClasspath += output + compileClasspath
 }
-project.evaluationDependsOn(debugProject.path)
 
 configurations.named("gameTestImplementation") {
 	extendsFrom(configurations.implementation.get())
 }
 configurations.named("clientGameTestImplementation") {
 	extendsFrom(configurations.implementation.get())
-}
-
-tasks.named<JavaCompile>(sourceSets.main.get().compileJavaTaskName) {
-    dependencyProjects.forEach {
-        source(it.sourceSets.main.get().allSource)
-    }
-}
-
-tasks.named<ProcessResources>(sourceSets.main.get().processResourcesTaskName) {
-    dependencyProjects.forEach {
-        from(it.sourceSets.main.get().resources)
-    }
 }
 
 java {
@@ -143,8 +135,8 @@ fun Configuration.singleFileContents(): Provider<String> =
 		.map { it.asFile.readText() }
 
 dependencies {
-	dependencyProjects.forEach {
-		implementation(it)
+	dependencyProjectPaths.forEach {
+		implementation(project(it))
 	}
 	modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
 		isTransitive = false
@@ -175,12 +167,9 @@ neoForge {
 	mods {
 		create("jei") {
 			sourceSet(sourceSets.main.get())
-			for (dependencyProject in dependencyProjects) {
-				sourceSet(dependencyProject.sourceSets.main.get())
-			}
 		}
 		create("jeidebug") {
-			sourceSet(debugProject.sourceSets.main.get())
+			sourceSet(debugSourceSet)
 		}
 		create("jeitests") {
 			sourceSet(sourceSets.named("gameTest").get())
@@ -269,7 +258,7 @@ fun modFoldersProperty(vararg mods: ModModel): String =
 		.joinToString(File.pathSeparator)
 
 fun vanillaServerRunFile(suffix: String): File =
-	project(":Common").layout.buildDirectory.file("moddev/$vanillaServerRunName$suffix").get().asFile
+	commonProjectDirectory.file("build/moddev/$vanillaServerRunName$suffix").asFile
 
 val writeExternalServerLaunchProperties = tasks.register<WriteProperties>("writeExternalServerLaunchProperties") {
 	destinationFile.set(layout.buildDirectory.file("generated/externalServerLaunch/resources/jei-external-server-launch.properties"))
@@ -333,20 +322,22 @@ clientRecipeSyncRuns.forEach { (runName, _) ->
 
 tasks.jar {
 	from(sourceSets.main.get().output)
-	for (p in dependencyProjects) {
-		from(p.sourceSets.main.get().output)
-	}
-
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 	from(sourceSets.main.get().allJava)
-	for (p in dependencyProjects) {
-		from(p.sourceSets.main.get().allJava)
-	}
+	exclude("**/Readme.md")
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	archiveClassifier.set("sources")
+}
+
+tasks.named<ProcessResources>(sourceSets.main.get().processResourcesTaskName) {
+	dependsOn(":Common:generateJeiGuiColors")
+	dependencyProjectDirectories.forEach {
+		from(it.dir("src/main/resources"))
+	}
+	from(commonProjectDirectory.dir("build/generated/resources/jeiGuiColors"))
 }
 
 val shadedJar = modShade.shadeJar()

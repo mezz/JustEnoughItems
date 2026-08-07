@@ -41,3 +41,9 @@ include(
 	"Debug",
 	"Gui"
 )
+
+gradle.lifecycle.beforeProject {
+	if (path != ":") {
+		pluginManager.apply("mezz.jei.project")
+	}
+}

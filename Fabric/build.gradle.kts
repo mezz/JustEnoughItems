@@ -1,5 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import mezz.jei.gradle.UnpackArchives
 
 plugins {
     java
@@ -53,28 +54,21 @@ base {
     archivesName.set(baseArchivesName)
 }
 
-val vanillaDependencyProjects: List<Project> = listOf(
-    project(":Common"),
-    project(":CommonApi"),
-    project(":Library"),
-    project(":Gui"),
-)
-val loomDependencyProjects: List<Project> = listOf(
-    project(":FabricApi"),
-)
-val dependencyProjects = vanillaDependencyProjects + loomDependencyProjects
-val debugProject = project(":Debug")
+val dependencyProjectPaths = listOf(":Common", ":CommonApi", ":Library", ":Gui", ":FabricApi")
+val commonProjectDirectory = project(":Common").isolated.projectDirectory
+val debugProjectDirectory = project(":Debug").isolated.projectDirectory
 
 val keyMappingGametestModId = "${modId}-key-mapping-test"
-val commonClientTestFixturesSource = project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java")
+val commonClientTestFixturesSource = commonProjectDirectory.dir("src/clientTestFixtures/java")
 val clientGameTestRunDirectory = layout.buildDirectory.dir("run/clientGameTest")
 val clientGameTestWithoutAmecsRunDirectory = layout.buildDirectory.dir("run/clientGameTestWithoutAmecs")
 
-dependencyProjects.forEach {
-    project.evaluationDependsOn(it.path)
+val debugSourceSet = sourceSets.create("debug") {
+    java.srcDir(debugProjectDirectory.dir("src/main/java"))
+    resources.srcDir(debugProjectDirectory.dir("src/main/resources"))
+    compileClasspath += sourceSets.main.get().compileClasspath
+    runtimeClasspath += output + compileClasspath
 }
-project.evaluationDependsOn(debugProject.path)
-val debugSourceSet = debugProject.sourceSets.main.get()
 
 java {
     toolchain {
@@ -96,6 +90,56 @@ val changelogMarkdown: Configuration by configurations.creating {
     isCanBeResolved = true
     attributes {
         attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogMarkdown"))
+    }
+}
+
+val dependencyClasses = configurations.create("dependencyClasses") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.CLASSES))
+    }
+}
+
+val dependencyResources = configurations.create("dependencyResources") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.RESOURCES))
+    }
+}
+
+val dependencySources = configurations.create("dependencySources") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.DOCUMENTATION))
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+        attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType.SOURCES))
+    }
+}
+
+val fabricApiClasses = configurations.create("fabricApiClasses") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.CLASSES))
+    }
+}
+
+val fabricApiResources = configurations.create("fabricApiResources") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.RESOURCES))
     }
 }
 
@@ -124,11 +168,23 @@ dependencies {
     })
     modImplementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
-    vanillaDependencyProjects.forEach {
-        implementation(it)
+    dependencyProjectPaths.forEach {
+        implementation(project(it))
+        dependencyClasses(project(it)) {
+            isTransitive = false
+        }
+        dependencyResources(project(it)) {
+            isTransitive = false
+        }
+        dependencySources(project(it)) {
+            isTransitive = false
+        }
     }
-    loomDependencyProjects.forEach {
-        implementation(project(it.path, "namedElements"))
+    fabricApiClasses(project(":FabricApi")) {
+        isTransitive = false
+    }
+    fabricApiResources(project(":FabricApi")) {
+        isTransitive = false
     }
     modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
         isTransitive = false
@@ -164,6 +220,11 @@ val keyMappingGametestWithoutAmecsSourceSet = sourceSets.create("keyMappingGamet
     }
 }
 
+val includedFabricApiSourceSet = sourceSets.create("includedFabricApi") {
+    output.dir(fabricApiClasses)
+    output.dir(fabricApiResources)
+}
+
 dependencies {
     "gametestImplementation"(testFixtures(project(":Common")))
 }
@@ -172,9 +233,7 @@ loom {
     mods {
         create("jei") {
             sourceSet(sourceSets.main.get())
-            for (dependencyProject in dependencyProjects) {
-                sourceSet(dependencyProject.sourceSets.main.get())
-            }
+            sourceSet(includedFabricApiSourceSet)
         }
         create(keyMappingGametestModId) {
             sourceSet(keyMappingGametestSourceSet)
@@ -242,11 +301,7 @@ loom {
 
 sourceSets {
     named("main") {
-        resources {
-            for (p in dependencyProjects) {
-                srcDir(p.sourceSets.main.get().resources)
-            }
-        }
+        resources.srcDir(dependencyResources)
     }
     named("gametest") {
         java.srcDir(commonClientTestFixturesSource)
@@ -286,8 +341,8 @@ tasks.named("runClientGameTestWithoutAmecs") {
     dependsOn(writeClientGameTestWithoutAmecsOptions)
 }
 
-val debugClassesTask = debugProject.tasks.named(debugSourceSet.classesTaskName)
-val debugModPath = debugProject.layout.buildDirectory.dir("resources/main").get().asFile.absolutePath
+val debugClassesTask = tasks.named(debugSourceSet.classesTaskName)
+val debugModPath = layout.buildDirectory.dir("resources/${debugSourceSet.name}").get().asFile.absolutePath
 val debugRunTasks = setOf("runClient", "runServer", "runClientDebug", "runServerDebug")
 tasks.matching { it.name in debugRunTasks }.configureEach {
     dependsOn(debugClassesTask)
@@ -299,17 +354,21 @@ tasks.matching { it.name in debugRunTasks }.configureEach {
 
 tasks.jar {
     from(sourceSets.main.get().output)
-    for (p in dependencyProjects) {
-        from(p.sourceSets.main.get().output)
-    }
+    from(dependencyClasses)
+    from(dependencyResources)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+val unpackDependencySources = tasks.register<UnpackArchives>("unpackDependencySources") {
+    archives.from(dependencySources)
+    excludedPatterns.add("META-INF/MANIFEST.MF")
+    outputDirectory.set(layout.buildDirectory.dir("generated/dependencySources"))
 }
 
 tasks.named<Jar>("sourcesJar") {
     from(sourceSets.main.get().allJava)
-    for (p in dependencyProjects) {
-        from(p.sourceSets.main.get().allJava)
-    }
+    from(unpackDependencySources)
+    exclude("**/Readme.md")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveClassifier.set("sources")
 }
