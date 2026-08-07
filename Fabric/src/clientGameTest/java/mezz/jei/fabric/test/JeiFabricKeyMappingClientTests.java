@@ -2,6 +2,7 @@ package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.Internal;
+import mezz.jei.common.Constants;
 import mezz.jei.common.util.ReflectionUtil;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
@@ -17,6 +18,7 @@ import mezz.jei.fabric.input.FabricKeyMapping;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
@@ -137,6 +139,17 @@ final class JeiFabricKeyMappingClientTests {
 	}
 
 	private static void assertJeiResourcesAreLoaded(Minecraft client) {
+		ResourceLocation slotId = new ResourceLocation("jei", "gui/sprites/slot");
+		var texture = client.getTextureManager().getTexture(Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS);
+		if (!(texture instanceof TextureAtlas atlas)) {
+			throw new AssertionError("Expected JEI's GUI texture atlas to be loaded");
+		}
+		if (!atlas.getSprite(slotId).getName().equals(slotId)) {
+			int resourceCount = client.getResourceManager()
+				.listResources("textures/gui/sprites", id -> id.getPath().endsWith(".png"))
+				.size();
+			throw new AssertionError("Expected JEI's slot texture to be stitched in JEI's GUI atlas; found " + resourceCount + " source textures.");
+		}
 		if (client.getResourceManager().getResource(GUI_BACKGROUND_TEXTURE).isEmpty()) {
 			throw new AssertionError("Expected the Fabric development mod to include JEI's Common textures.");
 		}

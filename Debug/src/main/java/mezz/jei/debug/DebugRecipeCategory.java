@@ -53,7 +53,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 	private final IPlatformFluidHelper<F> platformFluidHelper;
 	private final IIngredientManager ingredientManager;
 	private final Component localizedName;
-	private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(ModIds.JEI_ID, "textures/gui/sprites/debug.png");
+	static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(ModIds.JEI_ID, "textures/gui/debug.png");
 	private final IDrawable tankBackground;
 	private final IDrawable tankOverlay;
 	private final IDrawable item;
