@@ -1,3 +1,5 @@
+import mezz.jei.gradle.optionalGradleProperty
+import mezz.jei.gradle.gradleProperty
 import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -15,34 +17,34 @@ plugins {
 }
 
 // gradle.properties
-val curseHomepageUrl: String by extra
-val curseProjectId: String by extra
-val forgeVersion: String by extra
-val jUnitVersion: String by extra
-val minecraftVersion: String by extra
-val minecraftVersionRangeStart: String by extra
-val modGroup: String by extra
-val modId: String by extra
-val modJavaVersion: String by extra
-val modrinthId: String by extra
-val mezzConfigCurseForgeProjectSlug: String by extra
-val mezzConfigModrinthProjectId: String by extra
-val mezzConfigGuiCurseForgeProjectSlug: String by extra
-val mezzConfigGuiModrinthProjectId: String by extra
-val bakedSubstringIndexVersion: String by extra
-val suffixtreeVersion: String by extra
-val deduplicatingRunnerVersion: String by extra
-val mezzConfigVersion: String by extra
-val mezzConfigVersionRange: String by extra
+val curseHomepageUrl = gradleProperty("curseHomepageUrl")
+val curseProjectId = gradleProperty("curseProjectId")
+val forgeVersion = gradleProperty("forgeVersion")
+val jUnitVersion = gradleProperty("jUnitVersion")
+val minecraftVersion = gradleProperty("minecraftVersion")
+val minecraftVersionRangeStart = gradleProperty("minecraftVersionRangeStart")
+val modGroup = gradleProperty("modGroup")
+val modId = gradleProperty("modId")
+val modJavaVersion = gradleProperty("modJavaVersion")
+val modrinthId = gradleProperty("modrinthId")
+val mezzConfigCurseForgeProjectSlug = gradleProperty("mezzConfigCurseForgeProjectSlug")
+val mezzConfigModrinthProjectId = gradleProperty("mezzConfigModrinthProjectId")
+val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForgeProjectSlug")
+val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
+val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
+val suffixtreeVersion = gradleProperty("suffixtreeVersion")
+val deduplicatingRunnerVersion = gradleProperty("deduplicatingRunnerVersion")
+val mezzConfigVersion = gradleProperty("mezzConfigVersion")
+val mezzConfigVersionRange = gradleProperty("mezzConfigVersionRange")
 val mezzConfigApiDependency: String by rootProject.extra
 val mezzConfigForgeDependency: String by rootProject.extra
 val mezzConfigGuiApiDependency: String by rootProject.extra
 val mezzConfigGuiForgeDependency: String by rootProject.extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
-val modrinthToken: String? by project
+val modrinthToken = optionalGradleProperty("modrinthToken")
 // set by ORG_GRADLE_PROJECT_curseforgeApikey in Jenkinsfile
-val curseforgeApikey: String? by project
+val curseforgeApikey = optionalGradleProperty("curseforgeApikey")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-forge"
 val apiArchivesName = "${modId}-${minecraftVersion}-forge-api"

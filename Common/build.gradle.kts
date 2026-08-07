@@ -1,3 +1,4 @@
+import mezz.jei.gradle.gradleProperty
 import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -12,16 +13,16 @@ plugins {
 }
 
 // gradle.properties
-val jUnitVersion: String by extra
-val minecraftVersion: String by extra
-val neoformTimestamp: String by extra
-val modId: String by extra
-val modJavaVersion: String by extra
-val mixinVersion: String by extra
-val bakedSubstringIndexVersion: String by extra
-val suffixtreeVersion: String by extra
+val jUnitVersion = gradleProperty("jUnitVersion")
+val minecraftVersion = gradleProperty("minecraftVersion")
+val neoformTimestamp = gradleProperty("neoformTimestamp")
+val modId = gradleProperty("modId")
+val modJavaVersion = gradleProperty("modJavaVersion")
+val mixinVersion = gradleProperty("mixinVersion")
+val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
+val suffixtreeVersion = gradleProperty("suffixtreeVersion")
 val neoformVersionAndTimestamp = "$minecraftVersion-$neoformTimestamp"
-val deduplicatingRunnerVersion: String by extra
+val deduplicatingRunnerVersion = gradleProperty("deduplicatingRunnerVersion")
 val mezzConfigApiDependency: String by rootProject.extra
 val mezzConfigNeoForgeDependency: String by rootProject.extra
 
