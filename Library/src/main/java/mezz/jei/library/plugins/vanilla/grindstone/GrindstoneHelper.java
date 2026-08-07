@@ -24,4 +24,8 @@ final class GrindstoneHelper {
 		}
 		return GRINDSTONE_MENU;
 	}
+
+	public static void clearCache() {
+		GRINDSTONE_MENU = null;
+	}
 }

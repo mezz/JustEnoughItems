@@ -36,6 +36,10 @@ public class AnvilHelper {
 		return ANVIL_MENU;
 	}
 
+	public static void clearCache() {
+		ANVIL_MENU = null;
+	}
+
 	@Nullable
 	public static AnvilMenu setAnvilMenu(AnvilMenu anvilMenu, ItemStack leftStack, ItemStack rightStack) {
 		try {
