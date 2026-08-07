@@ -1,6 +1,8 @@
+import mezz.jei.gradle.gradleProperty
+import mezz.jei.gradle.optionalGradleProperty
+import net.neoforged.moddevgradle.dsl.ModModel
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import net.neoforged.moddevgradle.dsl.ModModel
 import org.slf4j.event.Level
 import java.io.File
 
@@ -15,23 +17,23 @@ plugins {
 }
 
 // gradle.properties
-val curseHomepageUrl = providers.gradleProperty("curseHomepageUrl").get()
-val curseProjectId = providers.gradleProperty("curseProjectId").get()
-val neoforgeVersion = providers.gradleProperty("neoforgeVersion").get()
-val jUnitVersion = providers.gradleProperty("jUnitVersion").get()
-val minecraftVersion = providers.gradleProperty("minecraftVersion").get()
-val minecraftVersionRangeStart = providers.gradleProperty("minecraftVersionRangeStart").get()
-val modGroup = providers.gradleProperty("modGroup").get()
-val modId = providers.gradleProperty("modId").get()
-val modJavaVersion = providers.gradleProperty("modJavaVersion").get()
-val modrinthId = providers.gradleProperty("modrinthId").get()
-val bakedSubstringIndexVersion = providers.gradleProperty("bakedSubstringIndexVersion").get()
-val suffixtreeVersion = providers.gradleProperty("suffixtreeVersion").get()
+val curseHomepageUrl = gradleProperty("curseHomepageUrl")
+val curseProjectId = gradleProperty("curseProjectId")
+val neoforgeVersion = gradleProperty("neoforgeVersion")
+val jUnitVersion = gradleProperty("jUnitVersion")
+val minecraftVersion = gradleProperty("minecraftVersion")
+val minecraftVersionRangeStart = gradleProperty("minecraftVersionRangeStart")
+val modGroup = gradleProperty("modGroup")
+val modId = gradleProperty("modId")
+val modJavaVersion = gradleProperty("modJavaVersion")
+val modrinthId = gradleProperty("modrinthId")
+val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
+val suffixtreeVersion = gradleProperty("suffixtreeVersion")
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
-val modrinthToken = providers.gradleProperty("modrinthToken").orNull
+val modrinthToken = optionalGradleProperty("modrinthToken")
 // set by ORG_GRADLE_PROJECT_curseforgeApikey in Jenkinsfile
-val curseforgeApikey = providers.gradleProperty("curseforgeApikey").orNull
+val curseforgeApikey = optionalGradleProperty("curseforgeApikey")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-neoforge"
 base {

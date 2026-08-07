@@ -1,3 +1,4 @@
+import mezz.jei.gradle.gradleProperty
 import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
 
 plugins {
@@ -6,7 +7,7 @@ plugins {
 }
 
 // gradle.properties
-val specificationVersion = providers.gradleProperty("specificationVersion").get()
+val specificationVersion = gradleProperty("specificationVersion")
 val changelogUntaggedName = "Current release $specificationVersion"
 
 val makeHtmlChangelog = tasks.register<GitChangelogTask>("makeHtmlChangelog") {
