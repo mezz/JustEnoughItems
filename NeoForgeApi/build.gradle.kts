@@ -17,13 +17,7 @@ base {
 	archivesName.set(baseArchivesName)
 }
 
-val dependencyProjects: List<Project> = listOf(
-	project(":CommonApi"),
-)
-
-dependencyProjects.forEach {
-	project.evaluationDependsOn(it.path)
-}
+val dependencyProjectPaths = listOf(":CommonApi")
 
 sourceSets {
 	main {
@@ -48,8 +42,8 @@ java {
 }
 
 dependencies {
-	dependencyProjects.forEach {
-		implementation(it)
+	dependencyProjectPaths.forEach {
+		implementation(project(it))
 	}
 }
 
@@ -72,11 +66,11 @@ publishing {
 			artifact(tasks.jar)
 			artifact(sourcesJar)
 
-			val dependencyInfos = dependencyProjects.map {
+			val dependencyInfos = listOf("common-api").map {
 				mapOf(
-					"groupId" to it.group,
-					"artifactId" to it.base.archivesName.get(),
-					"version" to it.version
+					"groupId" to modGroup,
+					"artifactId" to "${modId}-${minecraftVersion}-$it",
+					"version" to project.version
 				)
 			}
 

@@ -14,6 +14,7 @@ plugins {
 val jUnitVersion: String by extra
 val minecraftVersion: String by extra
 val neoformVersionAndTimestamp: String by extra
+val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 val bakedSubstringIndexVersion: String by extra
@@ -26,13 +27,7 @@ base {
 
 val generatedJeiGuiColorsResources = layout.buildDirectory.dir("generated/resources/jeiGuiColors")
 
-val dependencyProjects: List<Project> = listOf(
-    project(":CommonApi"),
-)
-
-dependencyProjects.forEach {
-    project.evaluationDependsOn(it.path)
-}
+val dependencyProjectPaths = listOf(":CommonApi")
 
 neoForge {
     neoFormVersion = neoformVersionAndTimestamp
@@ -85,8 +80,8 @@ dependencies {
     implementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
     }
-    dependencyProjects.forEach {
-        implementation(it)
+    dependencyProjectPaths.forEach {
+        implementation(project(it))
     }
     testFixturesCompileOnly("org.jspecify:jspecify:1.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
@@ -129,11 +124,11 @@ publishing {
             artifact(tasks.jar)
             artifact(tasks.named("sourcesJar"))
 
-            val dependencyInfos = dependencyProjects.map {
+            val dependencyInfos = listOf("common-api").map {
                 mapOf(
-                    "groupId" to it.group,
-                    "artifactId" to it.base.archivesName.get(),
-                    "version" to it.version
+                    "groupId" to modGroup,
+                    "artifactId" to "${modId}-${minecraftVersion}-$it",
+                    "version" to project.version
                 )
             }
 

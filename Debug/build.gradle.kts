@@ -15,13 +15,7 @@ base {
 	archivesName.set(baseArchivesName)
 }
 
-val dependencyProjects: List<Project> = listOf(
-	project(":CommonApi"),
-)
-
-dependencyProjects.forEach {
-	project.evaluationDependsOn(it.path)
-}
+val dependencyProjectPaths = listOf(":CommonApi")
 
 neoForge {
 	neoFormVersion = neoformVersionAndTimestamp
@@ -35,8 +29,8 @@ sourceSets {
 }
 
 dependencies {
-	dependencyProjects.forEach {
-		implementation(it)
+	dependencyProjectPaths.forEach {
+		implementation(project(it))
 	}
 }
 
