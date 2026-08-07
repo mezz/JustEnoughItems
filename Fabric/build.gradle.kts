@@ -104,26 +104,6 @@ val dependencySources = configurations.create("dependencySources") {
     }
 }
 
-val fabricApiClasses = configurations.create("fabricApiClasses") {
-    isCanBeConsumed = false
-    isCanBeResolved = true
-    attributes {
-        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
-        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
-        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.CLASSES))
-    }
-}
-
-val fabricApiResources = configurations.create("fabricApiResources") {
-    isCanBeConsumed = false
-    isCanBeResolved = true
-    attributes {
-        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
-        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
-        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.RESOURCES))
-    }
-}
-
 fun Configuration.singleFileContents(): Provider<String> =
     incoming
         .files
@@ -156,12 +136,6 @@ dependencies {
             isTransitive = false
         }
     }
-    fabricApiClasses(project(":FabricApi")) {
-        isTransitive = false
-    }
-    fabricApiResources(project(":FabricApi")) {
-        isTransitive = false
-    }
     modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
         isTransitive = false
     }
@@ -182,11 +156,6 @@ fabricApi {
     }
 }
 
-val includedFabricApiSourceSet = sourceSets.create("includedFabricApi") {
-    output.dir(fabricApiClasses)
-    output.dir(fabricApiResources)
-}
-
 dependencies {
     "gametestImplementation"(testFixtures(project(":Common")))
 }
@@ -195,7 +164,6 @@ loom {
     mods {
         create("jei") {
             sourceSet(sourceSets.main.get())
-            sourceSet(includedFabricApiSourceSet)
         }
     }
 
@@ -287,6 +255,11 @@ tasks.matching { it.name in debugRunTasks }.configureEach {
 tasks.jar {
     from(sourceSets.main.get().output)
     from(dependencyClasses)
+    from(dependencyResources)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.processResources {
     from(dependencyResources)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

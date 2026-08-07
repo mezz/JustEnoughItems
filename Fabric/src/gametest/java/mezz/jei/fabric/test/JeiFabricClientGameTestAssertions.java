@@ -20,6 +20,7 @@ final class JeiFabricClientGameTestAssertions {
 
 	public static void assertJeiStartedWithSyncedRecipes(ClientGameTestContext context) {
 		context.waitFor(client -> hasJeiRuntime(), ClientGameTestContext.DEFAULT_TIMEOUT);
+		assertJeiTexturesLoaded(context);
 
 		boolean hasSyncedRecipes = context.computeOnClient(client -> Internal.hasClientSyncedRecipes());
 		if (!hasSyncedRecipes) {
@@ -32,6 +33,7 @@ final class JeiFabricClientGameTestAssertions {
 
 	public static void assertJeiStartedWithFallbackRecipes(ClientGameTestContext context) {
 		context.waitFor(client -> hasJeiRuntime(), ClientGameTestContext.DEFAULT_TIMEOUT);
+		assertJeiTexturesLoaded(context);
 
 		boolean hasSyncedRecipes = context.computeOnClient(client -> Internal.hasClientSyncedRecipes());
 		if (hasSyncedRecipes) {
@@ -108,6 +110,24 @@ final class JeiFabricClientGameTestAssertions {
 		}
 		if (recipeMap.byKey(CRAFTING_TABLE_RECIPE_KEY) == null) {
 			throw new AssertionError(message);
+		}
+	}
+
+	private static void assertJeiTexturesLoaded(ClientGameTestContext context) {
+		String error = context.computeOnClient(client -> {
+			var atlas = Internal.getTextures().getAtlasManager().getAtlas();
+			Identifier slotId = Identifier.fromNamespaceAndPath("jei", "slot");
+			if (atlas.getSprite(slotId) != atlas.missingSprite()) {
+				return null;
+			}
+
+			int resourceCount = client.getResourceManager()
+				.listResources("textures/jei/atlas/gui", id -> id.getPath().endsWith(".png"))
+				.size();
+			return "Expected the JEI slot texture to be stitched; found " + resourceCount + " source textures.";
+		});
+		if (error != null) {
+			throw new AssertionError(error);
 		}
 	}
 
