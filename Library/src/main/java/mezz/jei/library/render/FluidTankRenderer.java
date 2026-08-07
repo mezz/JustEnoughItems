@@ -103,6 +103,7 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	@Override
 	public void render(PoseStack poseStack, T ingredient, int posX, int posY) {
 		RenderSystem.enableBlend();
+		RenderSystem.setShaderColor(1, 1, 1, 1);
 
 		drawFluid(poseStack, width, height, ingredient, posX, posY);
 

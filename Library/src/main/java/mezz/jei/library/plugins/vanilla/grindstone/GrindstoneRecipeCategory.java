@@ -64,10 +64,12 @@ public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneR
 
 		IRecipeSlotBuilder topInputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
 			.addItemStacks(topInputs)
+			.setStandardSlotBackground()
 			.setSlotName(topSlotName);
 
 		IRecipeSlotBuilder bottomInputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 1, 24)
 			.addItemStacks(bottomInputs)
+			.setStandardSlotBackground()
 			.setSlotName(bottomSlotName);
 
 		int outputSlotXPosition = 52;
@@ -76,6 +78,7 @@ public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneR
 			RecipeIngredientRole.RENDER_ONLY :
 			RecipeIngredientRole.OUTPUT;
 		IRecipeSlotBuilder outputSlot = builder.addSlot(outputRole, outputSlotXPosition, outputSlotYPosition)
+			.setOutputSlotBackground()
 			.addItemStacks(outputs);
 
 		if (topInputs.size() == bottomInputs.size()) {
