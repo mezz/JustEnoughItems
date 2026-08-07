@@ -6,11 +6,11 @@ plugins {
 }
 
 // gradle.properties
-val neoforgeVersion: String by extra
-val minecraftVersion: String by extra
-val modGroup: String by extra
-val modId: String by extra
-val modJavaVersion: String by extra
+val neoforgeVersion = providers.gradleProperty("neoforgeVersion").get()
+val minecraftVersion = providers.gradleProperty("minecraftVersion").get()
+val modGroup = providers.gradleProperty("modGroup").get()
+val modId = providers.gradleProperty("modId").get()
+val modJavaVersion = providers.gradleProperty("modJavaVersion").get()
 
 val baseArchivesName = "${modId}-${minecraftVersion}-neoforge-api"
 base {

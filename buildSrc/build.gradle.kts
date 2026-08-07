@@ -12,5 +12,9 @@ gradlePlugin {
 			id = "mezz.jei.project"
 			implementationClass = "mezz.jei.gradle.JeiProjectPlugin"
 		}
+		create("apiCompatibility") {
+			id = "mezz.jei.api-compatibility"
+			implementationClass = "mezz.jei.gradle.ApiCompatibilityPlugin"
+		}
 	}
 }

@@ -5,10 +5,10 @@ plugins {
 }
 
 // gradle.properties
-val minecraftVersion: String by extra
-val modId: String by extra
-val modJavaVersion: String by extra
-val neoformVersionAndTimestamp: String by extra
+val minecraftVersion = providers.gradleProperty("minecraftVersion").get()
+val modId = providers.gradleProperty("modId").get()
+val modJavaVersion = providers.gradleProperty("modJavaVersion").get()
+val neoformVersionAndTimestamp = providers.gradleProperty("neoformVersionAndTimestamp").get()
 
 val baseArchivesName = "${modId}-${minecraftVersion}-debug"
 base {

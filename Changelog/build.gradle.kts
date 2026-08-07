@@ -6,7 +6,7 @@ plugins {
 }
 
 // gradle.properties
-val specificationVersion: String by extra
+val specificationVersion = providers.gradleProperty("specificationVersion").get()
 val changelogUntaggedName = "Current release $specificationVersion"
 
 val makeHtmlChangelog = tasks.register<GitChangelogTask>("makeHtmlChangelog") {
@@ -41,7 +41,7 @@ tasks.withType<GitChangelogTask> {
 	outputs.upToDateWhen { false } // Always run
 }
 
-val changelogHtml: Configuration by configurations.creating {
+val changelogHtml = configurations.create("changelogHtml") {
 	isCanBeConsumed = true
 	isCanBeResolved = false
 	attributes {
@@ -52,7 +52,7 @@ val changelogHtml: Configuration by configurations.creating {
 	}
 }
 
-val changelogMarkdown: Configuration by configurations.creating {
+val changelogMarkdown = configurations.create("changelogMarkdown") {
 	isCanBeConsumed = true
 	isCanBeResolved = false
 	attributes {
