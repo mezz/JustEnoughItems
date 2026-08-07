@@ -16,14 +16,23 @@ import java.util.List;
 
 public class AmecsHelper {
 	public static AmecsKeyModifier COMMAND = new AmecsJeiKeyModifier("jei.key.combo.command", null, GLFW.GLFW_KEY_LEFT_SUPER, GLFW.GLFW_KEY_RIGHT_SUPER);
-	private static boolean initialized = false;
+	private static boolean keyMappingManagerLayerInitialized = false;
+	private static boolean modifiersInitialized = false;
 
-	public static void init() {
-		if (initialized) {
+	public static void initKeyMappingManagerLayer() {
+		if (keyMappingManagerLayerInitialized) {
 			return;
 		}
-		initialized = true;
+		keyMappingManagerLayerInitialized = true;
 		AmecsKeyMappingManager.prependLayer(new AmecsJeiKeyMappingManagerLayer());
+	}
+
+	public static void init() {
+		initKeyMappingManagerLayer();
+		if (modifiersInitialized) {
+			return;
+		}
+		modifiersInitialized = true;
 		AmecsKeyModifiers.register(COMMAND);
 	}
 
