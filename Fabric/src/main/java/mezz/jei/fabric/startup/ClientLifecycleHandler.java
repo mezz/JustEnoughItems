@@ -13,7 +13,6 @@ import mezz.jei.fabric.network.ClientNetworkHandler;
 import mezz.jei.fabric.network.ConnectionToServer;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -29,12 +28,9 @@ public class ClientLifecycleHandler {
 	private final JeiStarter jeiStarter;
 	private boolean running;
 
-	public ClientLifecycleHandler(Textures textures, IServerConfig serverConfig) {
+	public ClientLifecycleHandler(Textures textures, IServerConfig serverConfig, InternalKeyMappings keyMappings) {
 		IConnectionToServer serverConnection = new ConnectionToServer();
 		Internal.setServerConnection(serverConnection);
-
-		InternalKeyMappings keyMappings = new InternalKeyMappings(KeyBindingHelper::registerKeyBinding);
-		Internal.setKeyMappings(keyMappings);
 
 		IWorldConfig worldConfig = Internal.getWorldConfig();
 		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig, worldConfig);

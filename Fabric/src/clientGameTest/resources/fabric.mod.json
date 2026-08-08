@@ -16,5 +16,8 @@
     "fabricloader": "*",
     "fabric-api": "*",
     "jei": "*"
+  },
+  "suggests": {
+    "amecsapi": "*"
   }
 }
