@@ -1,6 +1,7 @@
 package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.common.Internal;
 import mezz.jei.common.input.keys.IJeiKeyMappingBuilder;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
@@ -17,6 +18,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
@@ -76,9 +78,58 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 					}
 				});
 				assertModifiedJeiKeyMappings(context);
+				assertFocusSearchHotkeyDoesNotTypeItsCharacter(context);
 				assertJeiMouseMappingsDoNotHideVanillaMouseClicks(context);
 			}
 		);
+	}
+
+	private static void assertFocusSearchHotkeyDoesNotTypeItsCharacter(ClientGameTestContext context) {
+		try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
+			singleplayer.getClientWorld().waitForChunksRender();
+			context.waitFor(
+				client -> Internal.getOptionalJeiRuntime().isPresent(),
+				ClientGameTestContext.DEFAULT_TIMEOUT
+			);
+
+			context.getInput().pressKey(options -> options.keyInventory);
+			context.waitFor(
+				client -> client.screen instanceof InventoryScreen &&
+					Internal.getJeiRuntime().getIngredientListOverlay().isListDisplayed(),
+				ClientGameTestContext.DEFAULT_TIMEOUT
+			);
+			context.runOnClient(client -> {
+				KeyMapping focusSearch = KeyMapping.get("key.jei.focusSearch");
+				if (focusSearch == null) {
+					throw new AssertionError("Expected the focus-search key mapping to be registered.");
+				}
+				// Match the controls screen, which unbinds the selected mapping before recording its new key.
+				focusSearch.setKey(InputConstants.UNKNOWN);
+				focusSearch.setKey(InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_F));
+				KeyMapping.resetMapping();
+				Internal.getJeiRuntime().getIngredientFilter().setFilterText("");
+			});
+
+			TestInput input = context.getInput();
+			input.pressKey(GLFW.GLFW_KEY_F);
+			context.waitFor(
+				client -> Internal.getJeiRuntime().getIngredientListOverlay().hasKeyboardFocus(),
+				ClientGameTestContext.DEFAULT_TIMEOUT
+			);
+
+			input.typeChar('f');
+			String filterText = context.computeOnClient(client -> Internal.getJeiRuntime().getIngredientFilter().getFilterText());
+			if (!filterText.isEmpty()) {
+				throw new AssertionError("Expected the focus-search hotkey character to be consumed, got: " + filterText);
+			}
+
+			input.pressKey(GLFW.GLFW_KEY_X);
+			input.typeChar('x');
+			filterText = context.computeOnClient(client -> Internal.getJeiRuntime().getIngredientFilter().getFilterText());
+			if (!filterText.equals("x")) {
+				throw new AssertionError("Expected normal typing to resume after the focus-search character, got: " + filterText);
+			}
+		}
 	}
 
 	private static void assertFabricKeyMappingConflictContexts() {
