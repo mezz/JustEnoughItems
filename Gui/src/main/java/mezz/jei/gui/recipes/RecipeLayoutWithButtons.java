@@ -98,8 +98,8 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 
 		Rect2i recipeRect = recipeLayout.getRect();
 		IRecipeSlotsView recipeSlotsView = recipeLayout.getRecipeSlotsView();
-		RecipeTransferButtonController.runWithRestoredPose(guiGraphics.pose(), () ->
-			recipeTransferError.showError(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY())
+		RecipeTransferButtonController.runWithRestoredPose(
+			guiGraphics.pose(), () -> recipeTransferError.showError(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY())
 		);
 	}
 
@@ -218,10 +218,10 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 
 		JeiTooltip tooltip = new JeiTooltip();
 		if (!transferRecipeGui.isUnbound()) {
-			tooltip.addKeyUsageComponent("jei.tooltip.recipesGui.tooltips.transfer.usage", transferRecipeGui);
+			tooltip.addKeyUsageComponent("jei.tooltip.transfer.usage", transferRecipeGui);
 		}
 		if (!maxTransferRecipeGui.isUnbound()) {
-			tooltip.addKeyUsageComponent("jei.tooltip.recipesGui.tooltips.transfer.max.usage", maxTransferRecipeGui);
+			tooltip.addKeyUsageComponent("jei.tooltip.transfer.max.usage", maxTransferRecipeGui);
 		}
 		tooltip.draw(guiGraphics, mouseX, mouseY);
 	}

@@ -242,7 +242,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 				IJeiKeyMapping transferRecipeBookmark = keyMappings.getTransferRecipeBookmark();
 				if (!transferRecipeBookmark.isUnbound()) {
 					results.addKeyUsageComponent(
-						"jei.tooltip.bookmarks.tooltips.transfer.usage",
+						"jei.tooltip.transfer.usage",
 						transferRecipeBookmark
 					);
 				}
@@ -250,7 +250,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 				IJeiKeyMapping maxTransferRecipeBookmark = keyMappings.getMaxTransferRecipeBookmark();
 				if (!maxTransferRecipeBookmark.isUnbound()) {
 					results.addKeyUsageComponent(
-						"jei.tooltip.bookmarks.tooltips.transfer.max.usage",
+						"jei.tooltip.transfer.max.usage",
 						maxTransferRecipeBookmark
 					);
 				}
