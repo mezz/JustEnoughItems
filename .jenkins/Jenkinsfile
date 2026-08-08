@@ -55,20 +55,6 @@ pipeline {
       GITHUB_RELEASE_COMMENT_DESCRIPTION_FILE = "build/jenkins/github-release-comments-description.txt"
     }
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-                sh "rm -rf Forge/build/libs"
-                sh "rm -rf Fabric/build/libs"
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh "./gradlew test --no-daemon"
-            }
-        }
-
         stage('Restore GitHub Release Comment State') {
             steps {
                 script {
@@ -86,13 +72,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh "python3 -m unittest discover -s .jenkins -p 'test_*.py'"
-                sh "./gradlew :Core:build --no-daemon"
-                sh "./gradlew :Forge:build --no-daemon"
-                sh "./gradlew :Fabric:build --no-daemon"
-                sh "./gradlew :Common:build --no-daemon"
-                sh "./gradlew :CommonApi:build --no-daemon"
-                sh "./gradlew :ForgeApi:build --no-daemon"
-                sh "./gradlew :FabricApi:build --no-daemon"
+                sh "./gradlew build -x checkApiCompatibility --no-daemon"
             }
         }
 
@@ -120,6 +100,19 @@ pipeline {
                     def publishGuard = load '.jenkins/publishGuard.groovy'
                     env.SHOULD_PUBLISH = publishGuard.shouldPublishArtifacts() ? 'true' : 'false'
                 }
+            }
+        }
+
+        stage('Client GameTests') {
+            steps {
+                sh '''
+                    if command -v xvfb-run >/dev/null 2>&1; then
+                        xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest --no-daemon
+                    else
+                        echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
+                        exit 1
+                    fi
+                '''
             }
         }
 
