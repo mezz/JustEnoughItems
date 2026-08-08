@@ -284,6 +284,9 @@ loom {
 }
 
 sourceSets {
+    named("main") {
+        resources.srcDir(dependencyResources)
+    }
     named("gametest") {
         java.srcDir(commonClientTestFixturesSource)
         runtimeClasspath += keyMappingGametestSourceSet.output
