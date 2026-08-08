@@ -61,8 +61,11 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 
 	private static void runTests() {
 		int exitCode = 0;
-		String testName = TestCase.fromSystemPropertyId();
+		String testName = "NeoForge client resources";
 		try {
+			JeiNeoForgeClientResourceTests.run();
+			LOGGER.info("JEI NeoForge client resource test passed");
+			testName = TestCase.fromSystemPropertyId();
 			for (TestCase currentTestCase : TestCase.fromSystemProperty()) {
 				testName = currentTestCase.displayName;
 				JUnitXmlTestReporter.runAndReport(
