@@ -18,7 +18,9 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.locale.Language;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
@@ -37,6 +39,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @SuppressWarnings("UnstableApiUsage")
 public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 	private static final KeyMapping.Category CATEGORY = new KeyMapping.Category(Identifier.fromNamespaceAndPath("jei-test", "key_mapping"));
+	private static final Identifier GUI_BACKGROUND_TEXTURE = Identifier.fromNamespaceAndPath("jei", "textures/jei/atlas/gui/gui_background.png");
+	private static final String FOCUS_SEARCH_TRANSLATION_KEY = "key.jei.focusSearch";
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
@@ -51,6 +55,7 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 			getClass().getSimpleName(),
 			() -> {
 				context.runOnClient(client -> {
+					assertJeiResourcesAreLoaded(client);
 					assertFabricKeyMappingConflictContexts();
 					assertFabricJeiKeyMappingIsDiscoverableAndRebindable(
 						"key.jei.test.fabricKeyMapping.keyboardR",
@@ -82,6 +87,15 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 				assertJeiMouseMappingsDoNotHideVanillaMouseClicks(context);
 			}
 		);
+	}
+
+	private static void assertJeiResourcesAreLoaded(Minecraft client) {
+		if (client.getResourceManager().getResource(GUI_BACKGROUND_TEXTURE).isEmpty()) {
+			throw new AssertionError("Expected the Fabric development mod to include JEI's Common textures.");
+		}
+		if (!Language.getInstance().has(FOCUS_SEARCH_TRANSLATION_KEY)) {
+			throw new AssertionError("Expected the Fabric development mod to include JEI's Common translations.");
+		}
 	}
 
 	private static void assertFocusSearchHotkeyDoesNotTypeItsCharacter(ClientGameTestContext context) {
