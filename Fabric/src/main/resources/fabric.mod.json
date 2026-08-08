@@ -42,5 +42,8 @@
     "fabric": "*",
     "minecraft": "${minecraftVersion}",
     "java": ">=${modJavaVersion}"
+  },
+  "suggests": {
+    "amecsapi": "*"
   }
 }

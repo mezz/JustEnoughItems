@@ -9,8 +9,10 @@ import mezz.jei.fabric.events.JeiIdentifiableResourceReloadListener;
 import mezz.jei.fabric.events.JeiLifecycleEvents;
 import mezz.jei.fabric.plugins.fabric.FabricGuiPlugin;
 import mezz.jei.fabric.startup.ClientLifecycleHandler;
+import mezz.jei.gui.config.InternalKeyMappings;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -18,6 +20,9 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 public class JustEnoughItemsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+		InternalKeyMappings keyMappings = new InternalKeyMappings(KeyBindingHelper::registerKeyBinding);
+		Internal.setKeyMappings(keyMappings);
+
 		JeiLifecycleEvents.REGISTER_RESOURCE_RELOAD_LISTENER.register((resourceManager, textureManager) -> {
 			JeiSpriteUploader spriteUploader = new JeiSpriteUploader(textureManager);
 			resourceManager.registerReloadListener(new JeiIdentifiableResourceReloadListener("sprite_uploader", spriteUploader));
@@ -27,7 +32,7 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 
 			ClientLifecycleEvents.CLIENT_STARTED.register(event -> {
 				IServerConfig serverConfig = ServerConfig.getInstance();
-				ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(textures, serverConfig);
+				ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(textures, serverConfig, keyMappings);
 				clientLifecycleHandler.registerEvents();
 
 				ResourceManagerHelper.get(PackType.SERVER_DATA)

@@ -2,6 +2,12 @@ import me.modmuss50.mpp.PublishModTask
 
 repositories {
     maven("https://maven.parchmentmc.org")
+    maven("https://maven.siphalor.de/") {
+        // for optional AMECS integration
+        content {
+            includeGroupByRegex("de\\.siphalor.*")
+        }
+    }
 }
 
 plugins {
@@ -22,6 +28,8 @@ val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 val parchmentVersionFabric: String by extra
+val amecsVersionFabric: String by extra
+val amecsMinecraftVersion: String by extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-fabric"
 base {
@@ -44,6 +52,11 @@ project.evaluationDependsOn(":Changelog")
 val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
     compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
     runtimeClasspath += output + sourceSets.main.get().runtimeClasspath
+}
+val clientGameTestWithoutAmecsSourceSet = sourceSets.create("clientGameTestWithoutAmecs") {
+    runtimeClasspath += clientGameTestSourceSet.runtimeClasspath.filter {
+        !it.name.startsWith("amecsapi-")
+    }
 }
 configurations.named(clientGameTestSourceSet.runtimeOnlyConfigurationName) {
     extendsFrom(configurations.runtimeOnly.get())
@@ -90,6 +103,13 @@ dependencies {
         name = "fabric-api",
         version = fabricApiVersion,
     )
+    modImplementation(
+        group = "de.siphalor",
+        name = "amecsapi-${amecsMinecraftVersion}",
+        version = amecsVersionFabric
+    ) {
+        exclude(group = "de.siphalor", module = "nmuk-${amecsMinecraftVersion}")
+    }
     implementation(
         group = "com.google.code.findbugs",
         name = "jsr305",
@@ -145,9 +165,25 @@ loom {
             ideConfigGenerated(false)
             runDir("run/clientKeyMappingTest")
             property("jei.fabric.clientTest", "keyMapping")
-            vmArgs("-Dfabric.log.level=info")
-            vmArgs("-Dfabric.classPathGroups=${classPathGroupsString}")
-            programArgs("--username", "JeiClientTest")
+            vmArgs(
+                "-Dfabric.log.level=info",
+                "-Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient",
+                "-Dfabric.classPathGroups=${classPathGroupsString}"
+            )
+            programArgs("--username", "JeiClientTest", "--width", "1280", "--height", "720")
+        }
+        create("clientKeyMappingTestWithoutAmecs") {
+            client()
+            source(clientGameTestWithoutAmecsSourceSet)
+            configName = "Fabric Client Key Mapping Test Without AMECS"
+            runDir("run/clientKeyMappingTestWithoutAmecs")
+            property("jei.fabric.clientTest", "keyMapping")
+            vmArgs(
+                "-Dfabric.log.level=info",
+                "-Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient",
+                "-Dfabric.classPathGroups=${classPathGroupsString}"
+            )
+            programArgs("--username", "JeiClientTest", "--width", "1280", "--height", "720")
         }
     }
 
@@ -169,8 +205,34 @@ tasks.register<Copy>("writeClientKeyMappingTestOptions") {
     into(clientTestGameDirectory("clientKeyMappingTest"))
 }
 
-tasks.named("runClientKeyMappingTest") {
+tasks.register<Copy>("writeClientKeyMappingTestWithoutAmecsOptions") {
+    from(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
+    into(clientTestGameDirectory("clientKeyMappingTestWithoutAmecs"))
+}
+
+tasks.named<JavaExec>("runClientKeyMappingTest") {
     dependsOn("writeClientKeyMappingTestOptions")
+    if (System.getProperty("os.name").contains("Mac")) {
+        jvmArgs("-XstartOnFirstThread")
+    }
+    jvmArgs("-Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient")
+    jvmArgs("-Dfabric.dli.env=client")
+    jvmArgs("-Dfabric.dli.config=${project.projectDir.resolve(".gradle/loom-cache/launch.cfg").absolutePath}")
+    jvmArgs("-Dfabric.log.level=info")
+    jvmArgs("-Djei.fabric.clientTest=keyMapping")
+}
+
+tasks.named<JavaExec>("runClientKeyMappingTestWithoutAmecs") {
+    dependsOn("writeClientKeyMappingTestWithoutAmecsOptions")
+    mustRunAfter("runClientKeyMappingTest")
+    if (System.getProperty("os.name").contains("Mac")) {
+        jvmArgs("-XstartOnFirstThread")
+    }
+    jvmArgs("-Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient")
+    jvmArgs("-Dfabric.dli.env=client")
+    jvmArgs("-Dfabric.dli.config=${project.projectDir.resolve(".gradle/loom-cache/launch.cfg").absolutePath}")
+    jvmArgs("-Dfabric.log.level=info")
+    jvmArgs("-Djei.fabric.clientTest=keyMapping")
 }
 
 tasks.register("runClientGameTest") {
@@ -179,6 +241,11 @@ tasks.register("runClientGameTest") {
     dependsOn("runClientKeyMappingTest")
 }
 
+tasks.register("runClientGameTestWithoutAmecs") {
+    group = "mod development"
+    description = "Runs JEI Fabric client tests without AMECS on the runtime classpath."
+    dependsOn("runClientKeyMappingTestWithoutAmecs")
+}
 tasks.jar {
     from(sourceSets.main.get().output)
     for (p in dependencyProjects) {

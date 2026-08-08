@@ -7,9 +7,11 @@
   ],
   "client": [
     "AbstractContainerScreenMixin",
+    "AmecsKeyBindingManagerMixin",
     "ClientPacketListenerMixin",
     "EffectRenderingInventoryScreenMixin",
     "GameMixin",
+    "KeyMappingMixin",
     "KeyboardHandlerMixin",
     "MinecraftMixin",
     "ScreenMixin"

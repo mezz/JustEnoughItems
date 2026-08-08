@@ -26,12 +26,9 @@ public class ClientLifecycleHandler {
 	private final JeiStarter jeiStarter;
 	private boolean running;
 
-	public ClientLifecycleHandler(Textures textures, IServerConfig serverConfig) {
+	public ClientLifecycleHandler(Textures textures, IServerConfig serverConfig, InternalKeyMappings keyMappings) {
 		IConnectionToServer serverConnection = new ConnectionToServer();
 		Internal.setServerConnection(serverConnection);
-
-		InternalKeyMappings keyMappings = new InternalKeyMappings(keyMapping -> {});
-		Internal.setKeyMappings(keyMappings);
 
 		IWorldConfig worldConfig = Internal.getWorldConfig();
 		ClientPacketRouter packetRouter = new ClientPacketRouter(serverConnection, serverConfig, worldConfig);

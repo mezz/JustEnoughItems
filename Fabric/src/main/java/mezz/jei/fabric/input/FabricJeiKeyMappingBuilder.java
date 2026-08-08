@@ -6,11 +6,12 @@ import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.IJeiKeyMappingBuilder;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
+import org.lwjgl.glfw.GLFW;
 
 public class FabricJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
-	private final String category;
-	private final String description;
-	private JeiKeyConflictContext context = JeiKeyConflictContext.UNIVERSAL;
+	protected final String category;
+	protected final String description;
+	protected JeiKeyConflictContext context = JeiKeyConflictContext.UNIVERSAL;
 	private JeiKeyModifier modifier = JeiKeyModifier.NONE;
 
 	public FabricJeiKeyMappingBuilder(String category, String description) {
@@ -32,25 +33,37 @@ public class FabricJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
 
 	@Override
 	protected IJeiKeyMappingInternal buildMouse(int mouseButton) {
-		return new FabricJeiKeyMapping(
-			category,
+		if (hasUnsupportedModifier()) {
+			return buildKeyboardKey(GLFW.GLFW_KEY_UNKNOWN);
+		}
+
+		FabricKeyMapping keyMapping = new FabricKeyMapping(
 			description,
-			context,
-			modifier,
 			InputConstants.Type.MOUSE,
-			mouseButton
+			mouseButton,
+			category,
+			context
 		);
+		return new FabricJeiKeyMapping(keyMapping, context);
 	}
 
 	@Override
 	public IJeiKeyMappingInternal buildKeyboardKey(int key) {
-		return new FabricJeiKeyMapping(
-			category,
+		if (hasUnsupportedModifier()) {
+			key = GLFW.GLFW_KEY_UNKNOWN;
+		}
+
+		FabricKeyMapping keyMapping = new FabricKeyMapping(
 			description,
-			context,
-			modifier,
 			InputConstants.Type.KEYSYM,
-			key
+			key,
+			category,
+			context
 		);
+		return new FabricJeiKeyMapping(keyMapping, context);
+	}
+
+	private boolean hasUnsupportedModifier() {
+		return modifier != JeiKeyModifier.NONE;
 	}
 }
