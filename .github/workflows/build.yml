@@ -36,7 +36,16 @@ jobs:
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
       - name: Build with Gradle
-        run: ./gradlew assemble :Fabric:validateAccessWidener :FabricApi:validateAccessWidener --no-daemon
+        run: ./gradlew build --no-daemon
+
+      - name: Run Client GameTests
+        run: |
+          if command -v xvfb-run >/dev/null 2>&1; then
+            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest --no-daemon
+          else
+            echo "::error::xvfb-run is not available; skipping client GameTests."
+            exit 1
+          fi
 
       - name: Copy together artifacts
         if: github.event_name == 'push'

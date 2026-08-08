@@ -35,28 +35,13 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh "./gradlew :Core:build"
-                sh "./gradlew :Forge:build"
-                sh "./gradlew :Fabric:build"
-                sh "./gradlew :Common:build"
-                sh "./gradlew :CommonApi:build"
-                sh "./gradlew :Gui:build"
-                sh "./gradlew :Library:build"
-                sh "./gradlew :ForgeApi:build"
-                sh "./gradlew :Debug:build"
-                sh "./gradlew :FabricApi:build"
+                sh "./gradlew build --no-daemon"
             }
         }
 
         stage('Archive') {
             steps {
                 junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
-            }
-        }
-
-        stage('API Compatibility') {
-            steps {
-                sh "./gradlew checkApiCompatibility"
             }
         }
 
@@ -73,9 +58,10 @@ pipeline {
             steps {
                 sh '''
                     if command -v xvfb-run >/dev/null 2>&1; then
-                        xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest
+                        xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest --no-daemon
                     else
                         echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
+                        exit 1
                     fi
                 '''
             }
