@@ -15,7 +15,9 @@
   "depends": {
     "fabricloader": "*",
     "fabric-api": "*",
-    "jei": "*",
+    "jei": "*"
+  },
+  "suggests": {
     "amecsapi": "*"
   }
 }

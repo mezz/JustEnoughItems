@@ -1,6 +1,9 @@
 package mezz.jei.fabric.test;
 
 import mezz.jei.common.input.keys.JeiKeyModifier;
+import mezz.jei.fabric.test.mixin.KeyboardHandlerAccessor;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
@@ -37,6 +40,28 @@ public final class FabricClientTestInput {
 		KEY_STATES.clear();
 	}
 
+	public static void pressKey(KeyMapping keyMapping) {
+		var key = KeyBindingHelper.getBoundKeyOf(keyMapping);
+		if (key.getType() != com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM) {
+			throw new IllegalArgumentException("Expected a keyboard mapping, got: " + key.getName());
+		}
+		pressKey(key.getValue());
+	}
+
+	public static void pressKey(int key) {
+		ClientTestUtil.runOnClient(client -> {
+			invokeKeyPress(client, key, GLFW.GLFW_PRESS);
+			invokeKeyPress(client, key, GLFW.GLFW_RELEASE);
+		});
+	}
+
+	public static void typeChar(char codepoint) {
+		ClientTestUtil.runOnClient(client -> {
+			long window = client.getWindow().getWindow();
+			((KeyboardHandlerAccessor) client.keyboardHandler).jei$invokeCharTyped(window, codepoint, 0);
+		});
+	}
+
 	public static Boolean getKeyState(int key) {
 		return KEY_STATES.get(key);
 	}
@@ -56,5 +81,10 @@ public final class FabricClientTestInput {
 		} else {
 			KEY_STATES.remove(key);
 		}
+	}
+
+	private static void invokeKeyPress(Minecraft client, int key, int action) {
+		long window = client.getWindow().getWindow();
+		((KeyboardHandlerAccessor) client.keyboardHandler).jei$invokeKeyPress(window, key, 0, action, 0);
 	}
 }

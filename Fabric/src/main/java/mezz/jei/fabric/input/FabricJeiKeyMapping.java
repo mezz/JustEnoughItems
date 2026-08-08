@@ -2,6 +2,7 @@ package mezz.jei.fabric.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 
 public class FabricJeiKeyMapping extends AbstractJeiKeyMapping {
 	protected final FabricKeyMapping fabricMapping;
@@ -18,7 +19,7 @@ public class FabricJeiKeyMapping extends AbstractJeiKeyMapping {
 
 	@Override
 	protected InputConstants.Key getBoundKey() {
-		return this.fabricMapping.getRealKey();
+		return KeyBindingHelper.getBoundKeyOf(this.fabricMapping);
 	}
 
 	@Override
@@ -26,7 +27,7 @@ public class FabricJeiKeyMapping extends AbstractJeiKeyMapping {
 		if (isUnbound()) {
 			return false;
 		}
-		if (!this.fabricMapping.getRealKey().equals(key)) {
+		if (!KeyBindingHelper.getBoundKeyOf(this.fabricMapping).equals(key)) {
 			return false;
 		}
 		return context.isActive();

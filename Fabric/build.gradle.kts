@@ -73,6 +73,11 @@ val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
     compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
     runtimeClasspath += output + sourceSets.main.get().runtimeClasspath
 }
+val clientGameTestWithoutAmecsSourceSet = sourceSets.create("clientGameTestWithoutAmecs") {
+    runtimeClasspath += clientGameTestSourceSet.runtimeClasspath.filter {
+        !it.name.startsWith("amecsapi-")
+    }
+}
 configurations.named(clientGameTestSourceSet.runtimeOnlyConfigurationName) {
     extendsFrom(configurations.runtimeOnly.get())
 }
@@ -218,14 +223,21 @@ loom {
             ideConfigGenerated(false)
             runDir(loomRunDir.resolve("clientKeyMappingTest").toString())
             property("jei.fabric.clientTest", "keyMapping")
-            vmArgs("-Dfabric.log.level=info")
-            programArgs("--username", "JeiClientTest")
+            vmArgs(
+                "-Dfabric.log.level=info"
+            )
+            programArgs("--username", "JeiClientTest", "--width", "1280", "--height", "720")
         }
         create("clientKeyMappingTestWithoutAmecs") {
-            inherit(named("clientKeyMappingTest").get())
+            client()
+            source(clientGameTestWithoutAmecsSourceSet)
             configName = "Fabric Client Key Mapping Test Without AMECS"
             runDir(loomRunDir.resolve("clientKeyMappingTestWithoutAmecs").toString())
-            property("jei.fabric.disableAmecsSupport", "true")
+            property("jei.fabric.clientTest", "keyMapping")
+            vmArgs(
+                "-Dfabric.log.level=info"
+            )
+            programArgs("--username", "JeiClientTest", "--width", "1280", "--height", "720")
         }
     }
 
@@ -269,7 +281,7 @@ tasks.register("runClientGameTest") {
 
 tasks.register("runClientGameTestWithoutAmecs") {
     group = "mod development"
-    description = "Runs JEI Fabric client tests with AMECS support disabled."
+    description = "Runs JEI Fabric client tests without AMECS on the runtime classpath."
     dependsOn("runClientKeyMappingTestWithoutAmecs")
 }
 

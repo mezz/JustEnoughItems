@@ -29,7 +29,7 @@ final class FabricClientTestWorld implements AutoCloseable {
 		ClientTestUtil.runOnClient(client -> {
 			LevelSettings levelSettings = new LevelSettings(
 				"JEI Fabric Client Test",
-				GameType.CREATIVE,
+				GameType.SURVIVAL,
 				false,
 				Difficulty.NORMAL,
 				true,
@@ -40,9 +40,14 @@ final class FabricClientTestWorld implements AutoCloseable {
 				.createFreshLevel(levelId, levelSettings, WorldOptions.defaultWithRandomSeed(), WorldPresets::createNormalWorldDimensions);
 		}, WORLD_LOAD_TIMEOUT);
 		ClientTestUtil.waitUntil(
-			() -> ClientTestUtil.computeOnClient(client -> client.level != null && client.hasSingleplayerServer()),
+			() -> ClientTestUtil.computeOnClient(client ->
+				client.level != null &&
+				client.player != null &&
+				client.hasSingleplayerServer() &&
+				client.levelRenderer.isChunkCompiled(client.player.blockPosition())
+			),
 			ASSERTION_TIMEOUT,
-			() -> "Timed out creating integrated Fabric test world: " + levelId
+			() -> "Timed out rendering the integrated Fabric test world: " + levelId
 		);
 		return new FabricClientTestWorld(levelId);
 	}
