@@ -3,6 +3,7 @@ package mezz.jei.fabric.test;
 import mezz.jei.fabric.input.FabricAmecsSupport;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,10 +34,11 @@ final class FabricClientTestRunner {
 		int exitCode = 0;
 		try {
 			waitForClientStartup();
-			JUnitXmlTestReporter.runAndReportWithBooleanVariant(
+			if (!FabricLoader.getInstance().isModLoaded(FabricAmecsSupport.AMECS_MOD_ID)) {
+				suiteName += "-without-amecs";
+			}
+			JUnitXmlTestReporter.runAndReport(
 				suiteName,
-				FabricAmecsSupport.DISABLE_AMECS_SUPPORT_PROPERTY,
-				"without-amecs",
 				testName,
 				test
 			);

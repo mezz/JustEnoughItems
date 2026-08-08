@@ -4,7 +4,8 @@
   "package": "mezz.jei.fabric.test.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "InputConstantsMixin"
+    "InputConstantsMixin",
+    "KeyboardHandlerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,7 +1,9 @@
 package mezz.jei.fabric.startup;
 
+import mezz.jei.common.Internal;
 import mezz.jei.fabric.events.JeiCharTypedEvents;
 import mezz.jei.fabric.events.JeiScreenEvents;
+import mezz.jei.fabric.input.KeyboardHandlerExtension;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.gui.input.InputType;
@@ -76,10 +78,15 @@ public class EventRegistration {
 
 	private boolean allowKeyPress(Screen screen, int key, int scancode, int modifiers) {
 		if (clientInputHandler == null) {
+			getKeyboardHandlerExtension().jei$setConsumeNextCharTyped(false);
 			return true;
 		}
+		boolean hadKeyboardFocus = hasJeiKeyboardFocus();
 		UserInput userInput = UserInput.fromVanilla(key, scancode, modifiers, InputType.IMMEDIATE);
-		return !clientInputHandler.onKeyboardKeyPressedPre(screen, userInput);
+		boolean consumed = clientInputHandler.onKeyboardKeyPressedPre(screen, userInput);
+		boolean acquiredKeyboardFocus = !hadKeyboardFocus && hasJeiKeyboardFocus();
+		getKeyboardHandlerExtension().jei$setConsumeNextCharTyped(consumed && acquiredKeyboardFocus);
+		return !consumed;
 	}
 
 	private boolean allowMouseScroll(Screen screen, double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
@@ -131,5 +138,16 @@ public class EventRegistration {
 	public void clear() {
 		this.clientInputHandler = null;
 		this.guiEventHandler = null;
+		getKeyboardHandlerExtension().jei$setConsumeNextCharTyped(false);
+	}
+
+	private static KeyboardHandlerExtension getKeyboardHandlerExtension() {
+		return (KeyboardHandlerExtension) Minecraft.getInstance().keyboardHandler;
+	}
+
+	private static boolean hasJeiKeyboardFocus() {
+		return Internal.getOptionalJeiRuntime()
+			.map(runtime -> runtime.getIngredientListOverlay().hasKeyboardFocus())
+			.orElse(false);
 	}
 }
