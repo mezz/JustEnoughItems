@@ -112,6 +112,30 @@ public class RecipeTransferIntegrationTest {
 	}
 
 	@Test
+	public void doesNotInsertIntoRejectingSlot() {
+		PlayerEntity player = mock(PlayerEntity.class);
+		TestContainer container = new TestContainer(player, 1, 1, new TargetSlotFactory() {
+			@Override
+			public Slot create(TestContainer testContainer, PlayerEntity testPlayer, int index) {
+				return new Slot(new Inventory(1), 0, 0, 0) {
+					@Override
+					public boolean mayPlace(ItemStack stack) {
+						return false;
+					}
+				};
+			}
+		});
+		TestContext context = new TestContext(player, container);
+		context.setInventory(0, Items.OAK_PLANKS, 1);
+
+		transfer(context, recipe(ingredient(Items.OAK_PLANKS)), false, true);
+
+		assertTrue(context.targetSlots.get(0).getItem().isEmpty());
+		assertStack(context.inventorySlots.get(0), Items.OAK_PLANKS, 1);
+		assertEquals(1, totalItemCount(context));
+	}
+
+	@Test
 	public void doesNotInsertIntoCraftingResultSlot() {
 		PlayerEntity player = mock(PlayerEntity.class);
 		TestContainer container = new TestContainer(player, 1, 1, new TargetSlotFactory() {
@@ -247,6 +271,48 @@ public class RecipeTransferIntegrationTest {
 	}
 
 	@Test
+	public void maxTransferStopsAtLowStackLimitIngredient() {
+		TestContext context = createContext(2, 3);
+		context.setInventory(0, Items.ENDER_PEARL, 16);
+		context.setInventory(1, Items.ENDER_PEARL, 4);
+		context.setInventory(2, Items.OAK_PLANKS, 20);
+
+		transfer(
+			context,
+			recipe(ingredient(Items.ENDER_PEARL), ingredient(Items.OAK_PLANKS)),
+			true,
+			true
+		);
+
+		assertStack(context.targetSlots.get(0), Items.ENDER_PEARL, 16);
+		assertStack(context.targetSlots.get(1), Items.OAK_PLANKS, 16);
+		assertEquals(4, inventoryCount(context, Items.ENDER_PEARL));
+		assertEquals(4, inventoryCount(context, Items.OAK_PLANKS));
+		assertEquals(40, totalItemCount(context));
+	}
+
+	@Test
+	public void maxTransferStopsAtNonStackableIngredientInMultiIngredientRecipe() {
+		TestContext context = createContext(2, 3);
+		context.setInventory(0, Items.DIAMOND_SWORD, 1);
+		context.setInventory(1, Items.DIAMOND_SWORD, 1);
+		context.setInventory(2, Items.OAK_PLANKS, 10);
+
+		transfer(
+			context,
+			recipe(ingredient(Items.DIAMOND_SWORD), ingredient(Items.OAK_PLANKS)),
+			true,
+			true
+		);
+
+		assertStack(context.targetSlots.get(0), Items.DIAMOND_SWORD, 1);
+		assertStack(context.targetSlots.get(1), Items.OAK_PLANKS, 1);
+		assertEquals(1, inventoryCount(context, Items.DIAMOND_SWORD));
+		assertEquals(9, inventoryCount(context, Items.OAK_PLANKS));
+		assertEquals(12, totalItemCount(context));
+	}
+
+	@Test
 	public void stowsDisplacedCraftingItemInInventory() {
 		TestContext context = createContext(2, 3);
 		context.setTarget(0, Items.DIRT, 1);
@@ -259,6 +325,88 @@ public class RecipeTransferIntegrationTest {
 		assertStack(context.targetSlots.get(1), Items.STICK, 1);
 		assertEquals(1, inventoryCount(context, Items.DIRT));
 		assertEquals(3, totalItemCount(context));
+	}
+
+	@Test
+	public void stowsDisplacedCraftingItemIntoMatchingInventoryStack() {
+		TestContext context = createContext(1, 2);
+		context.setTarget(0, Items.DIRT, 1);
+		context.setInventory(0, Items.OAK_PLANKS, 1);
+		context.setInventory(1, Items.DIRT, 63);
+
+		transfer(context, recipe(ingredient(Items.OAK_PLANKS)), false, true);
+
+		assertStack(context.targetSlots.get(0), Items.OAK_PLANKS, 1);
+		assertTrue(context.inventorySlots.get(0).getItem().isEmpty());
+		assertStack(context.inventorySlots.get(1), Items.DIRT, 64);
+		assertEquals(65, totalItemCount(context));
+	}
+
+	@Test
+	public void doesNotStowDisplacedItemIntoRejectingInventorySlot() {
+		PlayerEntity player = mock(PlayerEntity.class);
+		final Inventory inventory = new Inventory(2);
+		TestContainer container = new TestContainer(player, 1, 2, normalTargetFactory(), new InventorySlotFactory() {
+			@Override
+			public Slot create(int index) {
+				if (index == 0) {
+					return new Slot(inventory, index, 0, 0) {
+						@Override
+						public boolean mayPlace(ItemStack stack) {
+							return stack.getItem() != Items.DIRT;
+						}
+					};
+				}
+				return new Slot(inventory, index, 0, 0);
+			}
+		});
+		TestContext context = new TestContext(player, container);
+		context.setTarget(0, Items.DIRT, 1);
+		context.setInventory(0, Items.OAK_PLANKS, 1);
+
+		transfer(context, recipe(ingredient(Items.OAK_PLANKS)), false, true);
+
+		assertStack(context.targetSlots.get(0), Items.OAK_PLANKS, 1);
+		assertTrue(context.inventorySlots.get(0).getItem().isEmpty());
+		assertStack(context.inventorySlots.get(1), Items.DIRT, 1);
+		assertEquals(2, totalItemCount(context));
+	}
+
+	@Test
+	public void transfersIngredientAlreadyInTargetSlot() {
+		TestContext context = createContext(1, 1);
+		context.setTarget(0, Items.OAK_PLANKS, 1);
+
+		transfer(context, recipe(ingredient(Items.OAK_PLANKS)), false, true);
+
+		assertStack(context.targetSlots.get(0), Items.OAK_PLANKS, 1);
+		assertTrue(context.inventorySlots.get(0).getItem().isEmpty());
+		assertEquals(1, totalItemCount(context));
+	}
+
+	@Test
+	public void doesNotOverwriteLockedOccupiedTargetSlot() {
+		PlayerEntity player = mock(PlayerEntity.class);
+		TestContainer container = new TestContainer(player, 1, 1, new TargetSlotFactory() {
+			@Override
+			public Slot create(TestContainer testContainer, PlayerEntity testPlayer, int index) {
+				return new Slot(new Inventory(1), 0, 0, 0) {
+					@Override
+					public boolean mayPickup(PlayerEntity player) {
+						return false;
+					}
+				};
+			}
+		});
+		TestContext context = new TestContext(player, container);
+		context.setTarget(0, Items.DIRT, 1);
+		context.setInventory(0, Items.OAK_PLANKS, 1);
+
+		transfer(context, recipe(ingredient(Items.OAK_PLANKS)), false, true);
+
+		assertStack(context.targetSlots.get(0), Items.DIRT, 1);
+		assertStack(context.inventorySlots.get(0), Items.OAK_PLANKS, 1);
+		assertEquals(2, totalItemCount(context));
 	}
 
 	@Test
@@ -342,6 +490,29 @@ public class RecipeTransferIntegrationTest {
 	}
 
 	@Test
+	public void ignoresPacketWithInvalidAllowedSlotId() {
+		TestContext context = createContext(1, 1);
+		context.setInventory(0, Items.OAK_PLANKS, 1);
+		List<Integer> craftingSlots = Arrays.asList(
+			context.targetSlots.get(0).index,
+			context.container.slots.size()
+		);
+
+		sendPacket(
+			context,
+			Collections.singletonMap(0, context.inventorySlots.get(0).index),
+			craftingSlots,
+			slotIndexes(context.inventorySlots),
+			false,
+			true
+		);
+
+		assertTrue(context.targetSlots.get(0).getItem().isEmpty());
+		assertStack(context.inventorySlots.get(0), Items.OAK_PLANKS, 1);
+		assertEquals(1, totalItemCount(context));
+	}
+
+	@Test
 	public void ignoresPacketWithOversizedSlotList() {
 		TestContext context = createContext(1, 1);
 		context.setInventory(0, Items.OAK_PLANKS, 1);
@@ -396,6 +567,34 @@ public class RecipeTransferIntegrationTest {
 		assertTrue(context.targetSlots.get(0).getItem().isEmpty());
 		assertTrue(context.targetSlots.get(1).getItem().isEmpty());
 		assertStack(context.inventorySlots.get(0), Items.OAK_PLANKS, 1);
+		assertEquals(1, totalItemCount(context));
+	}
+
+	@Test
+	public void maliciousPartialMaxTransferCannotDuplicateSingleItemAcrossTargets() {
+		TestContext context = createContext(2, 1);
+		context.setInventory(0, Items.OAK_PLANKS, 1);
+		Map<Integer, Integer> recipeMap = new LinkedHashMap<>();
+		recipeMap.put(0, context.inventorySlots.get(0).index);
+		recipeMap.put(1, context.inventorySlots.get(0).index);
+
+		sendPacket(context, recipeMap, slotIndexes(context.targetSlots), slotIndexes(context.inventorySlots), true, false);
+
+		assertStack(context.targetSlots.get(0), Items.OAK_PLANKS, 1);
+		assertTrue(context.targetSlots.get(1).getItem().isEmpty());
+		assertTrue(context.inventorySlots.get(0).getItem().isEmpty());
+		assertEquals(1, totalItemCount(context));
+	}
+
+	@Test
+	public void maxTransferUsingTargetAsSourceDoesNotDuplicateItem() {
+		TestContext context = createContext(1, 0);
+		context.setTarget(0, Items.OAK_PLANKS, 1);
+		Map<Integer, Integer> recipeMap = Collections.singletonMap(0, context.targetSlots.get(0).index);
+
+		sendPacket(context, recipeMap, slotIndexes(context.targetSlots), Collections.<Integer>emptyList(), true, false);
+
+		assertStack(context.targetSlots.get(0), Items.OAK_PLANKS, 1);
 		assertEquals(1, totalItemCount(context));
 	}
 
