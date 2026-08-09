@@ -36,6 +36,19 @@ public final class BasicRecipeTransferHandlerServer {
 			slotMap.put(entry.getKey(), stack);
 		}
 
+		for (Integer craftingSlotNumber : craftingSlots) {
+			Slot craftingSlot = container.getSlot(craftingSlotNumber);
+			if (craftingSlot.hasItem() && (!craftingSlot.mayPickup(player) || !craftingSlot.mayPlace(craftingSlot.getItem()))) {
+				return;
+			}
+		}
+		for (Map.Entry<Integer, ItemStack> entry : slotMap.entrySet()) {
+			Slot craftingSlot = container.getSlot(craftingSlots.get(entry.getKey()));
+			if (!craftingSlot.mayPlace(entry.getValue())) {
+				return;
+			}
+		}
+
 		// Transfer as many items as possible only if it has been explicitly requested by the implementation
 		// and a max-transfer operation has been requested by the player.
 		boolean transferAsCompleteSets = requireCompleteSets || !maxTransfer;
@@ -88,7 +101,7 @@ public final class BasicRecipeTransferHandlerServer {
 
 		// put cleared items back into the inventory
 		for (ItemStack oldCraftingItem : clearedCraftingItems) {
-			int added = addStack(container, inventorySlots, oldCraftingItem);
+			int added = addStack(player, container, inventorySlots, oldCraftingItem);
 			if (added < oldCraftingItem.getCount()) {
 				oldCraftingItem.shrink(added);
 				if (!player.inventory.add(oldCraftingItem)) {
@@ -207,12 +220,15 @@ public final class BasicRecipeTransferHandlerServer {
 		return slot;
 	}
 
-	private static int addStack(Container container, Collection<Integer> slotIndexes, ItemStack stack) {
+	private static int addStack(PlayerEntity player, Container container, Collection<Integer> slotIndexes, ItemStack stack) {
 		int added = 0;
 		// Add to existing stacks first
 		for (final Integer slotIndex : slotIndexes) {
 			if (slotIndex >= 0 && slotIndex < container.slots.size()) {
 				final Slot slot = container.getSlot(slotIndex);
+				if (!slot.mayPickup(player) || !slot.mayPlace(stack)) {
+					continue;
+				}
 				final ItemStack inventoryStack = slot.getItem();
 				// Check that the slot's contents are stackable with this stack
 				if (!inventoryStack.isEmpty() &&
@@ -247,6 +263,9 @@ public final class BasicRecipeTransferHandlerServer {
 		for (final Integer slotIndex : slotIndexes) {
 			if (slotIndex >= 0 && slotIndex < container.slots.size()) {
 				final Slot slot = container.getSlot(slotIndex);
+				if (!slot.mayPickup(player) || !slot.mayPlace(stack)) {
+					continue;
+				}
 				final ItemStack inventoryStack = slot.getItem();
 				if (inventoryStack.isEmpty()) {
 					ItemStack stackToAdd = stack.copy();
