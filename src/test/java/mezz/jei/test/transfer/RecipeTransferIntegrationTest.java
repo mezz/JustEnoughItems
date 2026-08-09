@@ -159,6 +159,239 @@ public class RecipeTransferIntegrationTest {
 	}
 
 	@Test
+	public void transfersStackedIngredientFromSingleStack() {
+		TestContext context = createContext(1, 1);
+		context.setInventory(0, Items.PAPER, 6);
+
+		transfer(context, recipe(countedIngredient(4, Items.PAPER)), false, true);
+
+		assertStack(context.targetSlots.get(0), Items.PAPER, 4);
+		assertStack(context.inventorySlots.get(0), Items.PAPER, 2);
+		assertEquals(6, totalItemCount(context));
+	}
+
+	@Test
+	public void transfersStackedIngredientFromSplitStacks() {
+		TestContext context = createContext(1, 2);
+		context.setInventory(0, Items.PAPER, 2);
+		context.setInventory(1, Items.PAPER, 1);
+
+		StackHelper.MatchingItemsResult result = transfer(
+			context,
+			recipe(countedIngredient(3, Items.PAPER)),
+			false,
+			true
+		);
+
+		assertTrue(result.missingItems.isEmpty());
+		assertStack(context.targetSlots.get(0), Items.PAPER, 3);
+		assertAllOtherSlotsEmpty(context, context.targetSlots.get(0));
+		assertEquals(3, totalItemCount(context));
+	}
+
+	@Test
+	public void transfersStackedIngredientFromSparseInventorySlots() {
+		TestContext context = createContext(1, 8);
+		context.setInventory(0, Items.FLINT, 11);
+		context.setInventory(2, Items.PAPER, 2);
+		context.setInventory(5, Items.STICK, 5);
+		context.setInventory(7, Items.PAPER, 1);
+
+		transfer(context, recipe(countedIngredient(3, Items.PAPER)), false, true);
+
+		assertStack(context.targetSlots.get(0), Items.PAPER, 3);
+		assertStack(context.inventorySlots.get(0), Items.FLINT, 11);
+		assertStack(context.inventorySlots.get(5), Items.STICK, 5);
+		assertTrue(context.inventorySlots.get(2).getStack().isEmpty());
+		assertTrue(context.inventorySlots.get(7).getStack().isEmpty());
+		assertEquals(19, totalItemCount(context));
+	}
+
+	@Test
+	public void fillsStackedIngredientAlreadyInTargetSlot() {
+		TestContext context = createContext(1, 1);
+		context.setTarget(0, Items.PAPER, 2);
+		context.setInventory(0, Items.PAPER, 1);
+
+		transfer(context, recipe(countedIngredient(3, Items.PAPER)), false, true);
+
+		assertStack(context.targetSlots.get(0), Items.PAPER, 3);
+		assertTrue(context.inventorySlots.get(0).getStack().isEmpty());
+		assertEquals(3, totalItemCount(context));
+	}
+
+	@Test
+	public void transfersStackedIngredientsToMultipleSlotsFromSharedStacks() {
+		TestContext context = createContext(2, 2);
+		context.setInventory(0, Items.PAPER, 3);
+		context.setInventory(1, Items.PAPER, 1);
+
+		transfer(
+			context,
+			recipe(countedIngredient(2, Items.PAPER), countedIngredient(2, Items.PAPER)),
+			false,
+			true
+		);
+
+		assertStack(context.targetSlots.get(0), Items.PAPER, 2);
+		assertStack(context.targetSlots.get(1), Items.PAPER, 2);
+		assertAllOtherSlotsEmpty(context, context.targetSlots.get(0), context.targetSlots.get(1));
+		assertEquals(4, totalItemCount(context));
+	}
+
+	@Test
+	public void movesStackedIngredientFromWrongCraftingSlot() {
+		TestContext context = createContext(2, 1);
+		context.setTarget(0, Items.PAPER, 2);
+		context.setInventory(0, Items.PAPER, 1);
+
+		transfer(context, recipe(emptyIngredient(), countedIngredient(3, Items.PAPER)), false, true);
+
+		assertTrue(context.targetSlots.get(0).getStack().isEmpty());
+		assertStack(context.targetSlots.get(1), Items.PAPER, 3);
+		assertTrue(context.inventorySlots.get(0).getStack().isEmpty());
+		assertEquals(3, totalItemCount(context));
+	}
+
+	@Test
+	public void reportsMissingStackedIngredientCount() {
+		TestContext context = createContext(1, 2);
+		context.setInventory(0, Items.PAPER, 1);
+		context.setInventory(1, Items.PAPER, 1);
+
+		StackHelper.MatchingItemsResult result = transfer(
+			context,
+			recipe(countedIngredient(3, Items.PAPER)),
+			false,
+			true
+		);
+
+		assertEquals(Collections.singletonList(0), result.missingItems);
+		assertTrue(context.targetSlots.get(0).getStack().isEmpty());
+		assertStack(context.inventorySlots.get(0), Items.PAPER, 1);
+		assertStack(context.inventorySlots.get(1), Items.PAPER, 1);
+		assertEquals(2, totalItemCount(context));
+	}
+
+	@Test
+	public void transfersAlternativeStackedIngredientWithDifferentCounts() {
+		TestContext context = createContext(1, 2);
+		context.setInventory(0, Items.PAPER, 2);
+		context.setInventory(1, Items.STRING, 2);
+
+		StackHelper.MatchingItemsResult result = transfer(
+			context,
+			recipe(ingredientStacks(new ItemStack(Items.PAPER, 3), new ItemStack(Items.STRING, 2))),
+			false,
+			true
+		);
+
+		assertTrue(result.missingItems.isEmpty());
+		assertStack(context.targetSlots.get(0), Items.STRING, 2);
+		assertStack(context.inventorySlots.get(0), Items.PAPER, 2);
+		assertTrue(context.inventorySlots.get(1).getStack().isEmpty());
+		assertEquals(4, totalItemCount(context));
+	}
+
+	@Test
+	public void reportsMissingAlternativeStackedIngredientCount() {
+		TestContext context = createContext(1, 2);
+		context.setInventory(0, Items.PAPER, 2);
+		context.setInventory(1, Items.STRING, 1);
+
+		StackHelper.MatchingItemsResult result = transfer(
+			context,
+			recipe(ingredientStacks(new ItemStack(Items.PAPER, 3), new ItemStack(Items.STRING, 2))),
+			false,
+			true
+		);
+
+		assertEquals(Collections.singletonList(0), result.missingItems);
+		assertTrue(context.targetSlots.get(0).getStack().isEmpty());
+		assertStack(context.inventorySlots.get(0), Items.PAPER, 2);
+		assertStack(context.inventorySlots.get(1), Items.STRING, 1);
+		assertEquals(3, totalItemCount(context));
+	}
+
+	@Test
+	public void maxTransferMovesStackedIngredientCompleteSets() {
+		TestContext context = createContext(2, 2);
+		context.setInventory(0, Items.PAPER, 5);
+		context.setInventory(1, Items.STICK, 3);
+
+		transfer(
+			context,
+			recipe(countedIngredient(2, Items.PAPER), ingredient(Items.STICK)),
+			true,
+			true
+		);
+
+		assertStack(context.targetSlots.get(0), Items.PAPER, 4);
+		assertStack(context.targetSlots.get(1), Items.STICK, 2);
+		assertStack(context.inventorySlots.get(0), Items.PAPER, 1);
+		assertStack(context.inventorySlots.get(1), Items.STICK, 1);
+		assertEquals(8, totalItemCount(context));
+	}
+
+	@Test
+	public void maxTransferStackedIngredientStopsAtSlotLimit() {
+		TestContext context = createContext(1, 1);
+		context.setInventory(0, Items.PAPER, 64);
+
+		transfer(context, recipe(countedIngredient(3, Items.PAPER)), true, true);
+
+		assertStack(context.targetSlots.get(0), Items.PAPER, 63);
+		assertStack(context.inventorySlots.get(0), Items.PAPER, 1);
+		assertEquals(64, totalItemCount(context));
+	}
+
+	@Test
+	public void stowsDisplacedCountedCraftingStackIntoInventory() {
+		TestContext context = createContext(1, 3);
+		context.setTarget(0, Items.FLINT, 24);
+		context.setInventory(0, Items.PAPER, 3);
+		context.setInventory(1, Items.FLINT, 40);
+		context.setInventory(2, Items.STICK, 64);
+
+		transfer(context, recipe(countedIngredient(3, Items.PAPER)), false, true);
+
+		assertStack(context.targetSlots.get(0), Items.PAPER, 3);
+		assertStack(context.inventorySlots.get(1), Items.FLINT, 64);
+		assertStack(context.inventorySlots.get(2), Items.STICK, 64);
+		assertTrue(context.inventorySlots.get(0).getStack().isEmpty());
+		assertEquals(131, totalItemCount(context));
+	}
+
+	@Test
+	public void rollsBackIncompleteCountedCompleteSet() {
+		TestContext context = createContext(2, 2);
+		context.setInventory(0, Items.PAPER, 5);
+		context.setInventory(1, Items.STICK, 1);
+		Map<Integer, Integer> recipeMap = new LinkedHashMap<>();
+		recipeMap.put(0, context.inventorySlots.get(0).slotNumber);
+		recipeMap.put(1, context.inventorySlots.get(1).slotNumber);
+		Map<Integer, Integer> recipeCountMap = new LinkedHashMap<>();
+		recipeCountMap.put(0, 2);
+		recipeCountMap.put(1, 1);
+
+		sendPacket(
+			context,
+			recipeMap,
+			recipeCountMap,
+			slotIndexes(context.targetSlots),
+			slotIndexes(context.inventorySlots),
+			true,
+			true
+		);
+
+		assertStack(context.targetSlots.get(0), Items.PAPER, 2);
+		assertStack(context.targetSlots.get(1), Items.STICK, 1);
+		assertStack(context.inventorySlots.get(0), Items.PAPER, 3);
+		assertTrue(context.inventorySlots.get(1).getStack().isEmpty());
+		assertEquals(6, totalItemCount(context));
+	}
+
+	@Test
 	public void transfersAlternativeIngredient() {
 		TestContext context = createContext(1, 1);
 		context.setInventory(0, Items.STRING, 1);
@@ -510,6 +743,14 @@ public class RecipeTransferIntegrationTest {
 			stacks.add(new ItemStack(item));
 		}
 		return new TestGuiIngredient(stacks);
+	}
+
+	private static TestGuiIngredient countedIngredient(int count, Item item) {
+		return ingredientStacks(new ItemStack(item, count));
+	}
+
+	private static TestGuiIngredient ingredientStacks(ItemStack... stacks) {
+		return new TestGuiIngredient(Arrays.asList(stacks));
 	}
 
 	private static TestGuiIngredient emptyIngredient() {
