@@ -205,7 +205,7 @@ public final class AnvilRecipeMaker {
 			repair.inventorySlots.get(0).putStack(leftStack);
 			repair.inventorySlots.get(1).putStack(rightStack);
 			return repair.maximumCost;
-		} catch (RuntimeException e) {
+		} catch (RuntimeException | LinkageError e) {
 			String left = ErrorUtil.getItemStackInfo(leftStack);
 			String right = ErrorUtil.getItemStackInfo(rightStack);
 			Log.get().error("Could not get anvil level cost for: ({} and {}).", left, right, e);
