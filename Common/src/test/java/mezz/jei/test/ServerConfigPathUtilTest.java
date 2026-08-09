@@ -113,6 +113,19 @@ public class ServerConfigPathUtilTest {
 	}
 
 	@Test
+	public void testGetRealmsServerPathUsesName() {
+		// Setup: Realms connection addresses are temporary, but the realm name is stable.
+		String serverName = "Test Realm: 1";
+
+		// Operation:
+		Path path = ServerConfigPathUtil.getRealmsServerPath(serverName);
+
+		// Assertions: the realm name and connection type are used for the path.
+		Path expectedPath = getServerPath("Test Realm_ 1 (Realms)");
+		Assertions.assertEquals(expectedPath, path);
+	}
+
+	@Test
 	public void testGetServerPathUsesNameForLanServer() {
 		// Setup: the server is a LAN-discovered server with a literal address and dynamic port.
 		String serverName = "LAN Server";
