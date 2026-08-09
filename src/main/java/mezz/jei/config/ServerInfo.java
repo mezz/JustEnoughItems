@@ -66,6 +66,10 @@ public final class ServerInfo {
 		} else {
 			ServerData serverData = minecraft.getCurrentServer();
 			if (serverData != null) {
+				if (minecraft.isConnectedToRealms()) {
+					String name = String.format("%s (Realms)", serverData.name);
+					return worldDirPath.resolve("server").resolve(sanitizePathName(name));
+				}
 				int ipHash = serverData.ip.hashCode();
 				String ipHashHex = Integer.toHexString(ipHash);
 				String name = String.format("%s_%s", serverData.name, ipHashHex);
