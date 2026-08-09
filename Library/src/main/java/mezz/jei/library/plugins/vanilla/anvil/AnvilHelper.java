@@ -54,7 +54,7 @@ public class AnvilHelper {
 				rightSlot.set(rightStack);
 			}
 			return anvilMenu;
-		} catch (RuntimeException e) {
+		} catch (RuntimeException | LinkageError e) {
 			String left = ErrorUtil.getItemStackInfo(leftStack);
 			String right = ErrorUtil.getItemStackInfo(rightStack);
 			LOGGER.error("Could not set anvil recipe for: ({} and {}).", left, right, e);
