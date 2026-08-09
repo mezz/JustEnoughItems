@@ -37,9 +37,14 @@ public final class ServerInfo {
 					worldUid = minecraftServer.getFolderName();
 				}
 			} else {
-				ServerData serverData = Minecraft.getMinecraft().getCurrentServerData();
+				Minecraft minecraft = Minecraft.getMinecraft();
+				ServerData serverData = minecraft.getCurrentServerData();
 				if (serverData != null) {
-					worldUid = serverData.serverIP + ' ' + serverData.serverName;
+					if (minecraft.isConnectedToRealms()) {
+						worldUid = serverData.serverName + " Realms";
+					} else {
+						worldUid = serverData.serverIP + ' ' + serverData.serverName;
+					}
 				}
 			}
 
