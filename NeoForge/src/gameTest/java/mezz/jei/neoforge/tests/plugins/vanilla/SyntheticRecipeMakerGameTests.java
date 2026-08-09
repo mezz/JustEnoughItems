@@ -1,10 +1,7 @@
 package mezz.jei.neoforge.tests.plugins.vanilla;
 
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
-import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IJeiGrindstoneRecipe;
-import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.util.ImmutableSize2i;
@@ -438,11 +435,6 @@ public final class SyntheticRecipeMakerGameTests {
 		@Override
 		public ItemStack getGrindstoneResult(GrindstoneMenu grindstoneMenu, ItemStack input1, ItemStack input2) {
 			return grindstoneMenu.computeResult(input1, input2);
-		}
-
-		@Override
-		public List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory, PotionBrewing potionBrewing) {
-			throw new UnsupportedOperationException();
 		}
 
 		@Override

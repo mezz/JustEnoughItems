@@ -1,6 +1,8 @@
 package mezz.jei.api.constants;
 
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.category.extensions.vanilla.brewing.IBrewingCategoryExtension;
+import mezz.jei.api.recipe.category.extensions.vanilla.brewing.IExtendableBrewingRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IJeiCompostingRecipe;
@@ -9,6 +11,7 @@ import mezz.jei.api.recipe.vanilla.IJeiGrindstoneRecipe;
 import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -98,10 +101,12 @@ public final class RecipeTypes {
 	/**
 	 * The brewing recipe type.
 	 *
-	 * JEI automatically tries to generate all potion variations from the basic ingredients,
-	 * and also automatically adds modded potions from the Forge BrewingRecipeRegistry
+	 * JEI automatically tries to generate all potion variations from the basic ingredients
+	 * and adds platform brewing recipes that expose their inputs and outputs.
 	 *
 	 * @see IVanillaRecipeFactory#createBrewingRecipe to create new brewing recipes in JEI.
+	 * @see IVanillaCategoryExtensionRegistration#getBrewingCategory()
+	 * @see IExtendableBrewingRecipeCategory#addExtension(Class, IBrewingCategoryExtension)
 	 *
 	 * @since 9.5.0
 	 */

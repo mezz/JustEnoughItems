@@ -119,8 +119,8 @@ public interface IModPlugin {
 	}
 
 	/**
-	 * Register modded extensions to the vanilla crafting recipe category.
-	 * Custom crafting recipes for your mod should use this to tell JEI how they work.
+	 * Register modded extensions to vanilla recipe categories.
+	 * Custom crafting, smithing, and brewing recipes can use this to tell JEI how they work.
 	 */
 	default void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
 
