@@ -29,6 +29,11 @@ base {
 	archivesName.set(baseArchivesName)
 }
 
+val gameTestSourceSet = sourceSets.create("gameTest") {
+	compileClasspath += sourceSets.main.get().output
+	runtimeClasspath += sourceSets.main.get().output
+}
+
 sourceSets {
 	named("test") {
 		resources {
@@ -36,6 +41,10 @@ sourceSets {
 			setSrcDirs(emptyList<String>())
 		}
 	}
+}
+
+configurations.named(gameTestSourceSet.implementationConfigurationName) {
+	extendsFrom(configurations.implementation.get())
 }
 
 val dependencyProjects: List<Project> = listOf(
@@ -124,7 +133,30 @@ minecraft {
 				}
 			}
 		}
+		create("gameTestServer") {
+			taskName("runGameTestServer")
+			property("forge.enabledGameTestNamespaces", modId)
+			workingDirectory(file("run/gameTestServer-$minecraftVersion"))
+			mods {
+				create(modId) {
+					source(sourceSets.main.get())
+					source(gameTestSourceSet)
+					for (p in dependencyProjects) {
+						source(p.sourceSets.main.get())
+					}
+				}
+			}
+		}
 	}
+}
+
+val copyGameTestStructures = tasks.register<Copy>("copyGameTestStructures") {
+	from(layout.projectDirectory.dir("src/gameTest/resources/gameteststructures"))
+	into(layout.projectDirectory.dir("run/gameTestServer-$minecraftVersion/gameteststructures"))
+}
+
+tasks.matching { it.name == "runGameTestServer" }.configureEach {
+	dependsOn(copyGameTestStructures)
 }
 
 tasks.jar {
