@@ -41,7 +41,6 @@ public final class TestConnectionToServer implements IConnectionToServer {
 		return true;
 	}
 
-	@Override
 	public boolean isSameModLoader() {
 		return sameModLoader;
 	}
@@ -64,7 +63,6 @@ public final class TestConnectionToServer implements IConnectionToServer {
 		PACKET_ROUTER.onPacket(packetData, player);
 	}
 
-	@Override
 	public void onRuntimeStopped() {
 		clearPlayer();
 	}

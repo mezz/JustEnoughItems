@@ -3,11 +3,13 @@ package mezz.jei.forge.tests.recipe.transfer;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IGuiIngredientGroup;
+import mezz.jei.api.gui.ingredient.IGuiItemStackGroup;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
-import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -17,10 +19,12 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.RecipeTransferUtil;
 import mezz.jei.forge.tests.lib.JeiGameTestHelper;
+import mezz.jei.forge.tests.lib.TestRecipeSlotsView;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,7 +34,6 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Optional;
 
 @GameTestHolder("jei")
@@ -204,9 +207,9 @@ public final class RecipeTransferUtilGameTests {
 
 	private record TestTransferHandler(
 		HandlerResult result
-	) implements IRecipeTransferHandler<TestMenu, Object> {
+		) implements IRecipeTransferHandler<TestMenu, Object> {
 		@Override
-		public Class<? extends TestMenu> getContainerClass() {
+		public Class<TestMenu> getContainerClass() {
 			return TestMenu.class;
 		}
 
@@ -216,8 +219,8 @@ public final class RecipeTransferUtilGameTests {
 		}
 
 		@Override
-		public RecipeType<Object> getRecipeType() {
-			return RECIPE_TYPE;
+		public Class<Object> getRecipeClass() {
+			return Object.class;
 		}
 
 		@Override
@@ -237,7 +240,8 @@ public final class RecipeTransferUtilGameTests {
 		}
 	}
 
-	private static class TestRecipeLayout implements IRecipeLayoutDrawable<Object> {
+	@SuppressWarnings("removal")
+	private static class TestRecipeLayout implements IRecipeLayoutDrawable {
 		@Override
 		public void setPosition(int posX, int posY) {
 
@@ -259,13 +263,8 @@ public final class RecipeTransferUtilGameTests {
 		}
 
 		@Override
-		public <T> Optional<T> getIngredientUnderMouse(int mouseX, int mouseY, IIngredientType<T> ingredientType) {
-			return Optional.empty();
-		}
-
-		@Override
-		public Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY) {
-			return Optional.empty();
+		public <T> @Nullable T getIngredientUnderMouse(int mouseX, int mouseY, IIngredientType<T> ingredientType) {
+			return null;
 		}
 
 		@Override
@@ -289,13 +288,8 @@ public final class RecipeTransferUtilGameTests {
 		}
 
 		@Override
-		public Rect2i getRecipeBookmarkButtonArea() {
-			return new Rect2i(0, 0, 13, 13);
-		}
-
-		@Override
 		public IRecipeSlotsView getRecipeSlotsView() {
-			return () -> List.of();
+			return new TestRecipeSlotsView(java.util.List.of());
 		}
 
 		@Override
@@ -317,6 +311,31 @@ public final class RecipeTransferUtilGameTests {
 		public void tick() {
 
 		}
+
+		@Override
+		public IGuiItemStackGroup getItemStacks() {
+			throw new UnsupportedOperationException("Not needed for this test");
+		}
+
+		@Override
+		public <T> IGuiIngredientGroup<T> getIngredientsGroup(IIngredientType<T> ingredientType) {
+			throw new UnsupportedOperationException("Not needed for this test");
+		}
+
+		@Override
+		public <T> @Nullable IFocus<T> getFocus(IIngredientType<T> ingredientType) {
+			return null;
+		}
+
+		@Override
+		public void moveRecipeTransferButton(int posX, int posY) {
+
+		}
+
+		@Override
+		public void setShapeless() {
+
+		}
 	}
 
 	private static class TestRecipeCategory implements IRecipeCategory<Object> {
@@ -327,7 +346,12 @@ public final class RecipeTransferUtilGameTests {
 
 		@Override
 		public net.minecraft.network.chat.Component getTitle() {
-			return net.minecraft.network.chat.Component.literal("Test Recipe Transfer");
+			return new TextComponent("Test Recipe Transfer");
+		}
+
+		@Override
+		public IDrawable getBackground() {
+			throw new UnsupportedOperationException("Not needed for this test");
 		}
 
 		@Override

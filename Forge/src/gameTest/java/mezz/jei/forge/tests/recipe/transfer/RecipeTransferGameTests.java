@@ -1745,5 +1745,3 @@ public final class RecipeTransferGameTests {
 
 
 }
-
-

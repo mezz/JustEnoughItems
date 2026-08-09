@@ -2,6 +2,7 @@ package mezz.jei.forge.tests.lib;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.library.ingredients.TypedIngredient;
@@ -58,9 +59,27 @@ public record TestRecipeSlotView(RecipeIngredientRole role, List<@Nullable IType
 	}
 
 	@Override
+	public <T> Stream<T> getIngredients(IIngredientType<T> ingredientType) {
+		return getAllIngredients()
+			.map(ingredient -> ingredient.getIngredient(ingredientType))
+			.flatMap(Optional::stream);
+	}
+
+	@Override
 	public Stream<ITypedIngredient<?>> getAllIngredients() {
 		return ingredients.stream()
 			.filter(Objects::nonNull);
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return ingredients.isEmpty();
+	}
+
+	@Override
+	public <T> Optional<T> getDisplayedIngredient(IIngredientType<T> ingredientType) {
+		return getDisplayedIngredient()
+			.flatMap(ingredient -> ingredient.getIngredient(ingredientType));
 	}
 
 	@Override

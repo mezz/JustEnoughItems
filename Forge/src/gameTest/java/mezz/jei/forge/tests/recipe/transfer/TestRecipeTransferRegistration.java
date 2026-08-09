@@ -5,11 +5,11 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
-import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.library.transfer.RecipeTransferHandlerHelper;
 import mezz.jei.forge.tests.lib.TestStackHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.Nullable;
@@ -34,6 +34,18 @@ final class TestRecipeTransferRegistration implements IRecipeTransferRegistratio
 	@Override
 	public IRecipeTransferHandlerHelper getTransferHelper() {
 		return handlerHelper;
+	}
+
+	@Override
+	public <C extends AbstractContainerMenu, R> void addRecipeTransferHandler(
+		Class<C> containerClass,
+		RecipeType<R> recipeType,
+		int recipeSlotStart,
+		int recipeSlotCount,
+		int inventorySlotStart,
+		int inventorySlotCount
+	) {
+		addRecipeTransferHandler(containerClass, null, recipeType, recipeSlotStart, recipeSlotCount, inventorySlotStart, inventorySlotCount);
 	}
 
 	@Override
@@ -63,13 +75,29 @@ final class TestRecipeTransferRegistration implements IRecipeTransferRegistratio
 	}
 
 	@Override
-	public <C extends AbstractContainerMenu> void addUniversalRecipeTransferHandler(IUniversalRecipeTransferHandler<C> universalRecipeTransferHandler) {
+	public <C extends AbstractContainerMenu, R> void addUniversalRecipeTransferHandler(IRecipeTransferHandler<C, R> recipeTransferHandler) {
 		throw new UnsupportedOperationException();
 	}
 
 	@SuppressWarnings("removal")
 	@Override
-	public <C extends AbstractContainerMenu, R> void addUniversalRecipeTransferHandler(IRecipeTransferHandler<C, R> recipeTransferHandler) {
+	public <C extends AbstractContainerMenu> void addRecipeTransferHandler(
+		Class<C> containerClass,
+		ResourceLocation recipeCategoryUid,
+		int recipeSlotStart,
+		int recipeSlotCount,
+		int inventorySlotStart,
+		int inventorySlotCount
+	) {
+		throw new UnsupportedOperationException();
+	}
+
+	@SuppressWarnings("removal")
+	@Override
+	public <C extends AbstractContainerMenu, R> void addRecipeTransferHandler(
+		IRecipeTransferHandler<C, R> recipeTransferHandler,
+		ResourceLocation recipeCategoryUid
+	) {
 		throw new UnsupportedOperationException();
 	}
 
