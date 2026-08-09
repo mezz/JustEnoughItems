@@ -990,10 +990,52 @@ public final class RecipeTransferGameTests {
 	}
 
 	@GameTest(template = "empty")
+	public static void transfersWhenUnrelatedInventorySlotIsLocked(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: an unrelated dirt stack is locked, while a movable plank can satisfy the recipe.
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		Slot lockedSlot = replaceSlot(
+			menu,
+			inventorySlots.get(0),
+			lockedSlot(inventorySlots.get(0))
+		);
+		lockedSlot.set(new ItemStack(Items.DIRT));
+		inventorySlots = helper.getStandardInventorySlots(menu);
+		inventorySlots.get(1).set(new ItemStack(Items.OAK_PLANKS));
+
+		TransferRecipe<TestRecipe> recipe = basicRecipe("unrelated_locked_inventory_slot", Items.OAK_PLANKS);
+		// Operation: transfer normally through planning, validation, the packet, and the server executor.
+		var result = helper.transfer(
+			RecipeTypes.CRAFTING,
+			recipe,
+			menu
+		);
+
+		// Assertions: the unrelated locked stack is ignored and the movable ingredient is transferred.
+		helper.assertTransferSucceeded(result);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, Items.OAK_PLANKS)
+				)
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, Items.DIRT))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
 	public static void transfersFromMovableInventorySlotWhenMatchingSlotIsLocked(GameTestHelper gameTestHelper) {
 		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
 		// Setup: the first matching plank stack cannot be moved, but another matching stack is available.
-		ServerPlayer player = helper.getPlayer();
 		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
 		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
 		Slot lockedSlot = replaceSlot(
@@ -1003,27 +1045,19 @@ public final class RecipeTransferGameTests {
 		);
 		lockedSlot.set(new ItemStack(Items.OAK_PLANKS));
 		inventorySlots = helper.getStandardInventorySlots(menu);
-		Slot sourceSlot = inventorySlots.get(1);
-		sourceSlot.set(new ItemStack(Items.OAK_PLANKS));
+		inventorySlots.get(1).set(new ItemStack(Items.OAK_PLANKS));
 
-		List<Slot> craftingSlots = getCraftingInputSlots(menu);
-		List<TransferOperation> operations = List.of(
-			new TransferOperation(sourceSlot.index, craftingSlots.get(CRAFTING_GRID_TOP_LEFT).index)
+		TransferRecipe<TestRecipe> recipe = basicRecipe("matching_locked_inventory_slot", Items.OAK_PLANKS);
+		// Operation: transfer normally through planning, validation, the packet, and the server executor.
+		var result = helper.transfer(
+			RecipeTypes.CRAFTING,
+			recipe,
+			menu
 		);
 
-		// Operation: call the server transfer with the movable slot as the source.
-		// The normal helper rejects any non-empty locked inventory slot before sending a packet.
-		BasicRecipeTransferHandlerServer.setItems(
-			player,
-			operations,
-			craftingSlots,
-			inventorySlots,
-			false,
-			true
-		);
-
-		// Assertions: the locked stack remains untouched and no duplicate plank appears in inventory.
-		helper.createMenuChecker(menu)
+		// Assertions: the movable stack is transferred while the matching locked stack remains untouched.
+		helper.assertTransferSucceeded(result);
+		helper.createMenuChecker(result.menu())
 			.assertResults(
 				RecipeTransferGameTests::getCraftingResultSlots,
 				List.of()
@@ -1063,7 +1097,7 @@ public final class RecipeTransferGameTests {
 		);
 
 		// Assertions: the transfer fails before moving the locked source item.
-		helper.assertTransferError(result, RecipeTransferErrorInternal.class);
+		helper.assertTransferError(result, RecipeTransferErrorMissingSlots.class);
 		helper.createMenuChecker(result.menu())
 			.assertResults(
 				RecipeTransferGameTests::getCraftingResultSlots,
@@ -1606,6 +1640,668 @@ public final class RecipeTransferGameTests {
 		return packetData;
 	}
 
+	@GameTest(template = "empty")
+	public static void transfersStackedIngredientFromSingleStack(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: one recipe slot requires four planks, and one inventory stack has more than enough.
+		TransferRecipe<CraftingRecipe> recipe = stackedPlanksRecipe("stacked_planks_single_stack", 4);
+		var menu = helper.openMenu(CraftingMenu::new, new ItemStack(Items.OAK_PLANKS, 6));
+
+		// Operation: transfer one recipe set into an empty crafting table.
+		var result = helper.transfer(RecipeTypes.CRAFTING, recipe, menu, false);
+
+		// Assertions: four planks move into the grid and the original stack keeps the remainder.
+		helper.assertSuccessfulTransfer(result, helper::getCraftingGridSlots);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, new ItemStack(Items.OAK_PLANKS, 4))
+				)
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, new ItemStack(Items.OAK_PLANKS, 2)))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void transfersUncountedRecipeWithoutCountedTransferPacket(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: a normal one-item-per-slot recipe is available, and counted transfer packets are unsupported.
+		TransferRecipe<?> recipe = craftingTableRecipe();
+		var serverConnection = helper.createConnectionWithoutCountedTransferPacket();
+		var menu = helper.openMenu(RecipeTransferGameTests::createCraftingMenu, new ItemStack(Items.OAK_PLANKS, 4));
+
+		// Operation: transfer through the uncounted packet path.
+		var result = helper.transfer(RecipeTypes.CRAFTING, recipe, menu, false, serverConnection);
+
+		// Assertions: ordinary recipe transfer still succeeds without counted packet support.
+		helper.assertSuccessfulTransfer(result, helper::getCraftingGridSlots);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of(stackAt(0, Items.CRAFTING_TABLE))
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_TOP_CENTER, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_MIDDLE_LEFT, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_CENTER, Items.OAK_PLANKS)
+				)
+			)
+			.assertPlayerInventory(
+				List.of()
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void expandsCountedTransferIntoLegacyPacket(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: counted transfer is unavailable, so 1.20 expands the count into legacy operations.
+		TransferRecipe<CraftingRecipe> recipe = stackedPlanksRecipe("uncounted_packet_counted_transfer", 3);
+		var serverConnection = helper.createConnectionWithoutCountedTransferPacket();
+		var menu = helper.openMenu(CraftingMenu::new, new ItemStack(Items.OAK_PLANKS, 3));
+
+		// Operation: transfer through the uncounted packet path.
+		var result = helper.transfer(RecipeTypes.CRAFTING, recipe, menu, false, serverConnection);
+
+		// Assertions: all three legacy operations move the required count without a counted packet.
+		helper.assertTransferSucceeded(result);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(stackAt(CRAFTING_GRID_TOP_LEFT, new ItemStack(Items.OAK_PLANKS, 3)))
+			)
+			.assertPlayerInventory(
+				List.of()
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void transfersStackedIngredientFromSplitStacks(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: the three required planks are split across two inventory stacks.
+		TransferRecipe<CraftingRecipe> recipe = stackedPlanksRecipe("stacked_planks_split_stacks", 3);
+		var menu = helper.openMenu(CraftingMenu::new, new ItemStack(Items.OAK_PLANKS, 2), new ItemStack(Items.OAK_PLANKS));
+
+		// Operation: transfer one recipe set into an empty crafting table.
+		var result = helper.transfer(RecipeTypes.CRAFTING, recipe, menu, false);
+
+		// Assertions: both source stacks are consumed and the target slot receives the combined count.
+		helper.assertSuccessfulTransfer(result, helper::getCraftingGridSlots);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, new ItemStack(Items.OAK_PLANKS, 3))
+				)
+			)
+			.assertPlayerInventory(
+				List.of()
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void transfersStackedIngredientFromSparseInventorySlots(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: source planks are separated by unrelated stacks, including a source in the last hotbar slot.
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		inventorySlots.get(4).set(new ItemStack(Items.DIRT, 11));
+		inventorySlots.get(14).set(new ItemStack(Items.OAK_PLANKS, 2));
+		inventorySlots.get(28).set(new ItemStack(Items.COBBLESTONE, 5));
+		inventorySlots.get(34).set(new ItemStack(Items.TORCH, 8));
+		inventorySlots.get(Inventory.INVENTORY_SIZE - 1).set(new ItemStack(Items.OAK_PLANKS));
+
+		TransferRecipe<CraftingRecipe> recipe = stackedPlanksRecipe("stacked_planks_sparse_inventory", 3);
+		// Operation: transfer one counted recipe slot from the open menu.
+		var result = helper.transfer(
+			RecipeTypes.CRAFTING,
+			recipe,
+			menu
+		);
+
+		// Assertions: both plank stacks are consumed, sparse unrelated stacks stay put, and no new stacks appear.
+		helper.assertTransferSucceeded(result);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, new ItemStack(Items.OAK_PLANKS, 3))
+				)
+			)
+			.assertPlayerInventory(
+				List.of(
+					stackAt(4, new ItemStack(Items.DIRT, 11)),
+					stackAt(28, new ItemStack(Items.COBBLESTONE, 5)),
+					stackAt(34, new ItemStack(Items.TORCH, 8))
+				)
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void fillsStackedIngredientAlreadyInTargetSlot(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: the correct target slot already contains part of the required counted stack.
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		List<Slot> craftingSlots = getCraftingInputSlots(menu);
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		craftingSlots.get(CRAFTING_GRID_TOP_LEFT).set(new ItemStack(Items.OAK_PLANKS, 2));
+		inventorySlots.get(0).set(new ItemStack(Items.OAK_PLANKS));
+
+		TransferRecipe<CraftingRecipe> recipe = stackedPlanksRecipe("stacked_planks_partly_in_target", 3);
+		// Operation: transfer from the open menu so the existing grid contents are considered.
+		var result = helper.transfer(
+			RecipeTypes.CRAFTING,
+			recipe,
+			menu
+		);
+
+		// Assertions: the existing two planks are reused, one more plank is added, and inventory is empty.
+		helper.assertTransferSucceeded(result);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, new ItemStack(Items.OAK_PLANKS, 3))
+				)
+			)
+			.assertPlayerInventory(
+				List.of()
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void transfersStackedIngredientsToMultipleSlotsFromSharedStacks(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: two recipe slots each need two planks, but the inventory is split as 3 + 1.
+		TransferRecipe<CraftingRecipe> recipe = craftingRecipe(
+			"stacked_planks_multiple_slots",
+			new ItemStack(Items.STICK),
+			grid(
+				ingredient(CRAFTING_GRID_TOP_LEFT, TestRecipeSlotView.item(new ItemStack(Items.OAK_PLANKS, 2))),
+				ingredient(CRAFTING_GRID_TOP_CENTER, TestRecipeSlotView.item(new ItemStack(Items.OAK_PLANKS, 2)))
+			)
+		);
+		var menu = helper.openMenu(
+			CraftingMenu::new,
+			new ItemStack(Items.OAK_PLANKS, 3),
+			new ItemStack(Items.OAK_PLANKS)
+		);
+
+		// Operation: transfer one recipe set that must split the first stack across recipe slots.
+		var result = helper.transfer(RecipeTypes.CRAFTING, recipe, menu, false);
+
+		// Assertions: both recipe slots receive two planks and no planks remain in inventory.
+		helper.assertSuccessfulTransfer(result, helper::getCraftingGridSlots);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, new ItemStack(Items.OAK_PLANKS, 2)),
+					stackAt(CRAFTING_GRID_TOP_CENTER, new ItemStack(Items.OAK_PLANKS, 2))
+				)
+			)
+			.assertPlayerInventory(
+				List.of()
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void transfersCountedSubtypeIngredient(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: both stacks are tipped arrows, but only the water-arrow stack matches the recipe.
+		ItemStack waterArrows = tippedArrow(Potions.WATER, 3);
+		ItemStack healingArrows = tippedArrow(Potions.HEALING, 3);
+		TransferRecipe<CraftingRecipe> recipe = craftingRecipe(
+			"counted_tipped_arrows",
+			new ItemStack(Items.ARROW),
+			grid(
+				ingredient(CRAFTING_GRID_TOP_LEFT, TestRecipeSlotView.item(waterArrows))
+			)
+		);
+		var menu = helper.openMenu(CraftingMenu::new, healingArrows, waterArrows);
+
+		// Operation: transfer the counted subtype ingredient.
+		var result = helper.transfer(RecipeTypes.CRAFTING, recipe, menu, false);
+
+		// Assertions: the matching water arrows move, and the healing arrows are untouched.
+		helper.assertSuccessfulTransfer(result, helper::getCraftingGridSlots);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, waterArrows)
+				)
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, healingArrows))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void movesStackedIngredientFromWrongCraftingGridSlot(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: two matching planks are in the grid but in the wrong slot; one more is in inventory.
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		List<Slot> craftingSlots = getCraftingInputSlots(menu);
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		craftingSlots.get(CRAFTING_GRID_TOP_LEFT).set(new ItemStack(Items.OAK_PLANKS, 2));
+		inventorySlots.get(0).set(new ItemStack(Items.OAK_PLANKS));
+
+		TransferRecipe<CraftingRecipe> recipe = craftingRecipe(
+			"stacked_planks_wrong_grid_slot",
+			new ItemStack(Items.STICK),
+			grid(
+				ingredient(CRAFTING_GRID_TOP_CENTER, TestRecipeSlotView.item(new ItemStack(Items.OAK_PLANKS, 3)))
+			)
+		);
+		// Operation: transfer from the open menu so the wrong grid slot can be used as a source.
+		var result = helper.transfer(
+			RecipeTypes.CRAFTING,
+			recipe,
+			menu
+		);
+
+		// Assertions: the wrong slot is cleared, the target slot has all three planks, and inventory is empty.
+		helper.assertTransferSucceeded(result);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_CENTER, new ItemStack(Items.OAK_PLANKS, 3))
+				)
+			)
+			.assertPlayerInventory(
+				List.of()
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void reportsMissingStackedIngredientCount(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: one recipe slot needs three planks, but inventory only has two split planks.
+		TransferRecipe<CraftingRecipe> recipe = stackedPlanksRecipe("missing_stacked_planks", 3);
+		var menu = helper.openMenu(CraftingMenu::new, new ItemStack(Items.OAK_PLANKS), new ItemStack(Items.OAK_PLANKS));
+
+		// Operation: attempt to transfer the counted recipe into a crafting table.
+		var result = helper.transfer(RecipeTypes.CRAFTING, recipe, menu, false);
+
+		// Assertions: the transfer fails with the missing-slots error and does not move items.
+		helper.assertFailedTransfer(result, helper::getCraftingGridSlots, RecipeTransferErrorMissingSlots.class);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of()
+			)
+			.assertPlayerInventory(
+				List.of(
+					stackAt(0, Items.OAK_PLANKS),
+					stackAt(1, Items.OAK_PLANKS)
+				)
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void transfersAlternativeStackedIngredientWithDifferentCounts(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: oak would need three items, but only the birch alternative has its required count.
+		TransferRecipe<CraftingRecipe> recipe = craftingRecipe(
+			"alternative_stacked_plank_counts",
+			new ItemStack(Items.STICK),
+			grid(
+				ingredient(CRAFTING_GRID_TOP_LEFT, TestRecipeSlotView.items(
+					new ItemStack(Items.OAK_PLANKS, 3),
+					new ItemStack(Items.BIRCH_PLANKS, 2)
+				))
+			)
+		);
+		var menu = helper.openMenu(
+			CraftingMenu::new,
+			new ItemStack(Items.OAK_PLANKS, 2),
+			new ItemStack(Items.BIRCH_PLANKS, 2)
+		);
+
+		// Operation: transfer the recipe with both alternatives present.
+		var result = helper.transfer(RecipeTypes.CRAFTING, recipe, menu, false);
+
+		// Assertions: birch is chosen, and the insufficient oak stack is not consumed.
+		helper.assertSuccessfulTransfer(result, helper::getCraftingGridSlots);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, new ItemStack(Items.BIRCH_PLANKS, 2))
+				)
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, new ItemStack(Items.OAK_PLANKS, 2)))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void reportsMissingAlternativeStackedIngredientCount(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: neither the oak nor birch alternative has enough items for the counted ingredient.
+		TransferRecipe<CraftingRecipe> recipe = craftingRecipe(
+			"missing_alternative_stacked_plank_counts",
+			new ItemStack(Items.STICK),
+			grid(
+				ingredient(CRAFTING_GRID_TOP_LEFT, TestRecipeSlotView.items(
+					new ItemStack(Items.OAK_PLANKS, 3),
+					new ItemStack(Items.BIRCH_PLANKS, 2)
+				))
+			)
+		);
+		var menu = helper.openMenu(
+			CraftingMenu::new,
+			new ItemStack(Items.OAK_PLANKS, 2),
+			new ItemStack(Items.BIRCH_PLANKS)
+		);
+
+		// Operation: attempt to transfer the alternative counted recipe.
+		var result = helper.transfer(RecipeTypes.CRAFTING, recipe, menu, false);
+
+		// Assertions: the transfer fails because every alternative is short.
+		helper.assertFailedTransfer(result, helper::getCraftingGridSlots, RecipeTransferErrorMissingSlots.class);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of()
+			)
+			.assertPlayerInventory(
+				List.of(
+					stackAt(0, new ItemStack(Items.OAK_PLANKS, 2)),
+					stackAt(1, Items.BIRCH_PLANKS)
+				)
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void maxTransferMovesStackedIngredientCompleteSets(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: each complete recipe set needs two planks and one stick.
+		TransferRecipe<CraftingRecipe> recipe = craftingRecipe(
+			"max_transfer_stacked_planks",
+			new ItemStack(Items.STICK),
+			grid(
+				ingredient(CRAFTING_GRID_TOP_LEFT, TestRecipeSlotView.item(new ItemStack(Items.OAK_PLANKS, 2))),
+				ingredient(CRAFTING_GRID_TOP_CENTER, Items.STICK)
+			)
+		);
+		var menu = helper.openMenu(
+			CraftingMenu::new,
+			new ItemStack(Items.OAK_PLANKS, 5),
+			new ItemStack(Items.STICK, 3)
+		);
+
+		// Operation: max transfer should move only complete sets, limited here by the planks.
+		var result = helper.transfer(RecipeTypes.CRAFTING, recipe, menu, true);
+
+		// Assertions: two complete sets move, with one plank and one stick left in inventory.
+		helper.assertTransferSucceeded(result);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, new ItemStack(Items.OAK_PLANKS, 4)),
+					stackAt(CRAFTING_GRID_TOP_CENTER, new ItemStack(Items.STICK, 2))
+				)
+			)
+			.assertPlayerInventory(
+				List.of(
+					stackAt(0, Items.OAK_PLANKS),
+					stackAt(1, Items.STICK)
+				)
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void maxTransferStackedIngredientStopsAtSlotLimit(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: one recipe slot needs three planks per set and one inventory stack is full.
+		TransferRecipe<CraftingRecipe> recipe = stackedPlanksRecipe(
+			"max_transfer_stacked_planks_slot_limit",
+			3
+		);
+		var menu = helper.openMenu(CraftingMenu::new, new ItemStack(Items.OAK_PLANKS, 64));
+
+		// Operation: max transfer should stop before the target slot would exceed 64.
+		var result = helper.transfer(RecipeTypes.CRAFTING, recipe, menu, true);
+
+		// Assertions: 21 complete sets move to the grid and one plank remains.
+		helper.assertTransferSucceeded(result);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, new ItemStack(Items.OAK_PLANKS, 63))
+				)
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, Items.OAK_PLANKS))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void reportsInventoryFullForSparseCraftingRecipeWithFullGrid(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: the recipe only uses one grid slot, but all nine grid slots would need clearing.
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		fillSlots(inventorySlots, new ItemStack(Items.DIRT, 64));
+		inventorySlots.get(0).set(new ItemStack(Items.OAK_PLANKS, 3));
+		fillSlots(getCraftingInputSlots(menu), new ItemStack(Items.DIRT));
+
+		TransferRecipe<CraftingRecipe> recipe = stackedPlanksRecipe(
+			"full_inventory_sparse_counted_crafting_failure",
+			3
+		);
+		// Operation: attempt a sparse counted transfer with no space for displaced items.
+		var result = helper.transfer(
+			RecipeTypes.CRAFTING,
+			recipe,
+			menu
+		);
+
+		// Assertions: this must fail before clearing the grid, otherwise dirt could be dropped or deleted.
+		helper.assertTransferError(result, RecipeTransferErrorTooltip.class);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				allSlots(getCraftingInputSlots(menu), new ItemStack(Items.DIRT))
+			)
+			.assertPlayerInventory(
+				filledInventory(
+					new ItemStack(Items.DIRT, 64),
+					List.of(stackAt(0, new ItemStack(Items.OAK_PLANKS, 3)))
+				)
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void stowsDisplacedCountedCraftingStackIntoInventory(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: the target slot contains 24 dirt, and only one inventory dirt stack has room for it.
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		List<Slot> craftingSlots = getCraftingInputSlots(menu);
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		fillSlots(inventorySlots, new ItemStack(Items.COBBLESTONE, 64));
+		inventorySlots.get(0).set(new ItemStack(Items.OAK_PLANKS, 3));
+		inventorySlots.get(1).set(new ItemStack(Items.DIRT, 40));
+		craftingSlots.get(CRAFTING_GRID_TOP_LEFT).set(new ItemStack(Items.DIRT, 24));
+
+		TransferRecipe<CraftingRecipe> recipe = stackedPlanksRecipe("stow_displaced_counted_grid_stack", 3);
+		// Operation: transfer the counted plank recipe into the occupied target slot.
+		var result = helper.transfer(
+			RecipeTypes.CRAFTING,
+			recipe,
+			menu
+		);
+
+		// Assertions: planks replace the grid stack, dirt is stowed into the partial stack, and no cobble moves.
+		helper.assertTransferSucceeded(result);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, new ItemStack(Items.OAK_PLANKS, 3))
+				)
+			)
+			.assertPlayerInventory(
+				filledInventory(
+					new ItemStack(Items.COBBLESTONE, 64),
+					List.of(
+						stackAt(0, ItemStack.EMPTY),
+						stackAt(1, new ItemStack(Items.DIRT, 64))
+					)
+				)
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void rollsBackIncompleteCountedCompleteSet(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: max transfer can start a second counted plank set, but not a second stick.
+		ServerPlayer player = helper.getPlayer();
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+
+		Slot planksSlot = helper.getStandardInventorySlots(menu).get(0);
+		Slot sticksSlot = helper.getStandardInventorySlots(menu).get(1);
+		planksSlot.set(new ItemStack(Items.OAK_PLANKS, 5));
+		sticksSlot.set(new ItemStack(Items.STICK, 1));
+
+		List<Slot> craftingSlots = getCraftingInputSlots(menu);
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		List<TransferOperation> operations = List.of(
+			new TransferOperation(planksSlot.index, craftingSlots.get(CRAFTING_GRID_TOP_LEFT).index, 2),
+			new TransferOperation(sticksSlot.index, craftingSlots.get(CRAFTING_GRID_TOP_CENTER).index)
+		);
+
+		// Operation: call the server transfer directly with counted operations and complete-set rollback.
+		BasicRecipeTransferHandlerServer.setItems(
+			player,
+			operations,
+			craftingSlots,
+			inventorySlots,
+			true,
+			true
+		);
+
+		// Assertions: only one complete set is transferred, and the extra counted plank attempt is restored.
+		helper.createMenuChecker(menu)
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, new ItemStack(Items.OAK_PLANKS, 2)),
+					stackAt(CRAFTING_GRID_TOP_CENTER, Items.STICK)
+				)
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, new ItemStack(Items.OAK_PLANKS, 3)))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
 	private static void assertSinglePlankUnmoved(RecipeTransferTestHelper helper, CraftingMenu menu) {
 		helper.createMenuChecker(menu)
 			.assertResults(RecipeTransferGameTests::getCraftingResultSlots, List.of())
@@ -1620,6 +2316,12 @@ public final class RecipeTransferGameTests {
 			ingredient(CRAFTING_GRID_TOP_CENTER, Items.OAK_PLANKS),
 			ingredient(CRAFTING_GRID_MIDDLE_LEFT, Items.OAK_PLANKS),
 			ingredient(CRAFTING_GRID_CENTER, Items.OAK_PLANKS)
+		));
+	}
+
+	private static TransferRecipe<CraftingRecipe> stackedPlanksRecipe(String idPath, int count) {
+		return craftingRecipe(idPath, new ItemStack(Items.STICK), grid(
+			ingredient(CRAFTING_GRID_TOP_LEFT, TestRecipeSlotView.item(new ItemStack(Items.OAK_PLANKS, count)))
 		));
 	}
 
