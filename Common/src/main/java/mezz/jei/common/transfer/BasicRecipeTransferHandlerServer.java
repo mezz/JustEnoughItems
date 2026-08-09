@@ -100,7 +100,7 @@ public final class BasicRecipeTransferHandlerServer {
 	private static List<ItemStack> clearCraftingGrid(List<Slot> craftingSlots, Player player) {
 		List<ItemStack> clearedCraftingItems = new ArrayList<>();
 		for (Slot craftingSlot : craftingSlots) {
-			if (!craftingSlot.allowModification(player)) {
+			if (!craftingSlot.mayPickup(player)) {
 				continue;
 			}
 
