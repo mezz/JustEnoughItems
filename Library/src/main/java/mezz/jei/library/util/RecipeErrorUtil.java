@@ -7,16 +7,15 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformModHelper;
-import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.ingredients.IIngredientSupplier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 public final class RecipeErrorUtil {
@@ -85,26 +84,22 @@ public final class RecipeErrorUtil {
 	}
 
 	public static String getNameForRecipe(Object recipe) {
-		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
-
-		return Optional.of(recipe)
-			.filter(Recipe.class::isInstance)
-			.map(Recipe.class::cast)
-			.flatMap(recipeHelper::getRegistryNameForRecipe)
-			.map(registryName -> {
+		if (recipe instanceof Recipe<?> minecraftRecipe) {
+			ResourceLocation registryName = minecraftRecipe.getId();
+			if (registryName != null) {
 				IPlatformModHelper modHelper = Services.PLATFORM.getModHelper();
 				String modId = registryName.getNamespace();
 				String modName = modHelper.getModNameForModId(modId);
 				return modName + " " + registryName + " " + recipe.getClass();
-			})
-			.orElseGet(() -> {
-				try {
-					return recipe.toString();
-				} catch (RuntimeException e) {
-					LOGGER.error("Failed recipe.toString", e);
-					return recipe.getClass().toString();
-				}
-			});
+			}
+		}
+
+		try {
+			return recipe.toString();
+		} catch (RuntimeException e) {
+			LOGGER.error("Failed recipe.toString", e);
+			return recipe.getClass().toString();
+		}
 	}
 
 	private static Stream<String> truncatedStream(Stream<String> stream, int size, int limit) {
