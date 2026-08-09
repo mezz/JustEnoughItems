@@ -22,9 +22,18 @@ import java.util.List;
 
 public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper {
 	private final IStackHelper stackHelper;
+	private final IConnectionToServer serverConnection;
 
 	public RecipeTransferHandlerHelper(IStackHelper stackHelper) {
+		this(stackHelper, Internal.getServerConnection());
+	}
+
+	public RecipeTransferHandlerHelper(
+		IStackHelper stackHelper,
+		IConnectionToServer serverConnection
+	) {
 		this.stackHelper = stackHelper;
+		this.serverConnection = serverConnection;
 	}
 
 	@Override
@@ -57,7 +66,6 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 	@Override
 	public <C extends AbstractContainerMenu, R> IRecipeTransferHandler<C, R> createUnregisteredRecipeTransferHandler(IRecipeTransferInfo<C, R> recipeTransferInfo) {
 		ErrorUtil.checkNotNull(recipeTransferInfo, "recipeTransferInfo");
-		IConnectionToServer serverConnection = Internal.getServerConnection();
 		return new BasicRecipeTransferHandler<>(serverConnection, stackHelper, this, recipeTransferInfo);
 
 	}
@@ -77,7 +85,6 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 
 	@Override
 	public boolean recipeTransferHasServerSupport() {
-		IConnectionToServer serverConnection = Internal.getServerConnection();
 		return serverConnection.isJeiOnServer();
 	}
 }
