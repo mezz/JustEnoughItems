@@ -38,9 +38,18 @@ public final class ServerConfigPathUtil {
 						);
 				}
 				return Optional.ofNullable(minecraft.getCurrentServer())
-					.map(serverData -> getServerPath(basePath, serverData.name, serverData.ip, serverData.isLan()));
+					.map(serverData -> {
+						if (minecraft.isConnectedToRealms()) {
+							return getRealmsServerPath(serverData.name);
+						}
+						return getServerPath(basePath, serverData.name, serverData.ip, serverData.isLan());
+					});
 			})
 			.map(basePath::resolve);
+	}
+
+	public static Path getRealmsServerPath(String serverName) {
+		return getNamedServerPath("%s (Realms)".formatted(serverName));
 	}
 
 	public static Path getServerPath(String serverName, String serverAddress) {
