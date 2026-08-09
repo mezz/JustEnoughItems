@@ -73,6 +73,7 @@ public final class JeiStarter {
 		ErrorUtil.checkNotEmpty(data.plugins(), "plugins");
 		this.data = data;
 		this.plugins = data.plugins();
+		PluginHelper.removePluginsWithCrashingUids(plugins);
 		this.vanillaPlugin = PluginHelper.getPluginWithClass(VanillaPlugin.class, plugins)
 			.orElseThrow(() -> new IllegalStateException("vanilla plugin not found"));
 		JeiInternalPlugin jeiInternalPlugin = PluginHelper.getPluginWithClass(JeiInternalPlugin.class, plugins)
