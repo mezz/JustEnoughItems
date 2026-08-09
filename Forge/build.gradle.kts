@@ -40,6 +40,11 @@ base {
 	archivesName.set(baseArchivesName)
 }
 
+val gameTestSourceSet = sourceSets.create("gameTest") {
+	compileClasspath += sourceSets.main.get().output
+	runtimeClasspath += sourceSets.main.get().output
+}
+
 sourceSets {
 	named("test") {
 		resources {
@@ -47,6 +52,10 @@ sourceSets {
 			setSrcDirs(emptyList<String>())
 		}
 	}
+}
+
+configurations.named(gameTestSourceSet.implementationConfigurationName) {
+	extendsFrom(configurations.implementation.get())
 }
 
 val dependencyProjects: List<Project> = listOf(
@@ -130,7 +139,7 @@ legacyForge {
 
 	enable {
 		setForgeVersion(forgeArtifactVersion)
-		setEnabledSourceSets(setOf(sourceSets.main.get(), sourceSets.test.get()))
+		setEnabledSourceSets(setOf(sourceSets.main.get(), sourceSets.test.get(), gameTestSourceSet))
 		// The default CI binary path keeps invalid Forge jar signatures that break unit tests.
 		setDisableRecompilation(false)
 	}
@@ -138,6 +147,7 @@ legacyForge {
 	mods {
 		create(modId) {
 			sourceSet(sourceSets.main.get())
+			sourceSet(gameTestSourceSet)
 			for (p in dependencyProjects) {
 				sourceSet(p.sourceSets.main.get())
 			}
@@ -175,7 +185,22 @@ legacyForge {
 			programArguments.add("nogui")
 			logLevel = Level.DEBUG
 		}
+		create("gameTestServer") {
+			type.set("gameTestServer")
+			systemProperty("forge.enabledGameTestNamespaces", modId)
+			gameDirectory = file("run/gameTestServer-$minecraftVersion")
+			logLevel = Level.INFO
+		}
 	}
+}
+
+val copyGameTestStructures = tasks.register<Copy>("copyGameTestStructures") {
+	from(layout.projectDirectory.dir("src/gameTest/resources/gameteststructures"))
+	into(layout.projectDirectory.dir("run/gameTestServer-$minecraftVersion/gameteststructures"))
+}
+
+tasks.named("runGameTestServer") {
+	dependsOn(copyGameTestStructures)
 }
 
 tasks.jar {
