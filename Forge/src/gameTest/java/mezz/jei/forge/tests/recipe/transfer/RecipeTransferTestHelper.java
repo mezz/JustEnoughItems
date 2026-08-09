@@ -121,14 +121,23 @@ public final class RecipeTransferTestHelper extends JeiGameTestHelper {
 			throw createFailException("Expected %s to be a crafting menu".formatted(result.menu()));
 		}
 		List<Integer> playerGridIndexes = gridIndexes(result.recipe(), craftingMenu.getGridWidth(), craftingMenu.getGridHeight());
-		boolean hasIngredientOutsidePlayerGrid = result.recipe().inputSlots()
-			.stream()
-			.anyMatch(slot -> !slot.isEmpty() && !playerGridIndexes.contains(result.recipe().inputSlots().indexOf(slot)));
+		List<TestRecipeSlotView> inputSlots = result.recipe().inputSlots();
+		boolean hasIngredientOutsidePlayerGrid = false;
+		for (int i = 0; i < inputSlots.size(); i++) {
+			if (!inputSlots.get(i).isEmpty() && !playerGridIndexes.contains(i)) {
+				hasIngredientOutsidePlayerGrid = true;
+				break;
+			}
+		}
 		if (!hasIngredientOutsidePlayerGrid) {
 			throw createFailException("Expected crafting recipe %s to have ingredients outside the player 2x2 grid".formatted(
 				result.recipe().recipe()
 			));
 		}
+	}
+
+	public TestConnectionToServer createConnectionWithoutCountedTransferPacket() {
+		return new TestConnectionToServer(false);
 	}
 
 	private static TestRecipeTransferRegistration createTransferRegistration(TestConnectionToServer serverConnection) {
