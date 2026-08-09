@@ -1,20 +1,13 @@
 package mezz.jei.neoforge.platform;
 
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.ingredients.IIngredientHelper;
+import mezz.jei.api.recipe.category.extensions.vanilla.brewing.IBrewingCategoryExtension;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PotionSubtypeInterpreter;
+import mezz.jei.common.recipes.BrewingExtensionHelper;
 import mezz.jei.library.util.BrewingRecipeMakerCommon;
-import mezz.jei.library.util.ResourceLocationUtil;
-import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionBrewing;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.display.SlotDisplay;
-import net.neoforged.neoforge.common.brewing.BrewingRecipe;
 import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,7 +26,8 @@ public class BrewingRecipeMaker {
 		IIngredientManager ingredientManager,
 		IVanillaRecipeFactory vanillaRecipeFactory,
 		PotionBrewing potionBrewing,
-		ContextMap contextMap
+		ContextMap contextMap,
+		BrewingExtensionHelper brewingExtensionHelper
 	) {
 		Collection<IBrewingRecipe> brewingRecipes = potionBrewing.getRecipes();
 
@@ -44,14 +38,12 @@ public class BrewingRecipeMaker {
 			contextMap
 		);
 
-		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
-
 		addModdedBrewingRecipes(
 			vanillaRecipeFactory,
-			itemStackHelper,
 			brewingRecipes,
 			recipes,
-			contextMap
+			contextMap,
+			brewingExtensionHelper
 		);
 
 		List<IJeiBrewingRecipe> recipeList = new ArrayList<>(recipes);
@@ -62,41 +54,36 @@ public class BrewingRecipeMaker {
 
 	public static void addModdedBrewingRecipes(
 		IVanillaRecipeFactory vanillaRecipeFactory,
-		IIngredientHelper<ItemStack> itemStackHelper,
 		Collection<IBrewingRecipe> brewingRecipes,
 		Collection<IJeiBrewingRecipe> recipes,
-		ContextMap contextMap
+		ContextMap contextMap,
+		BrewingExtensionHelper brewingExtensionHelper
 	) {
 		Set<Class<?>> unhandledRecipeClasses = new HashSet<>();
 		for (IBrewingRecipe iBrewingRecipe : brewingRecipes) {
-			if (iBrewingRecipe instanceof BrewingRecipe brewingRecipe) {
-				List<ItemStack> ingredients = brewingRecipe.getIngredient().display().resolveForStacks(contextMap);
-				if (!ingredients.isEmpty()) {
-					Ingredient inputIngredient = brewingRecipe.getInput();
-					ItemStack output = brewingRecipe.getOutput();
-					SlotDisplay slotDisplay = inputIngredient.display();
-					List<ItemStack> inputs = slotDisplay.resolve(contextMap, SlotDisplay.ItemStackContentsFactory.INSTANCE)
-						.filter(i -> !i.isEmpty())
-						.toList();
-					if (!output.isEmpty() && !inputs.isEmpty()) {
-						String outputModId = itemStackHelper.getIdentifier(output).getNamespace();
-						String outputUid = PotionSubtypeInterpreter.INSTANCE.getStringName(output);
-						String uidPath = ResourceLocationUtil.sanitizePath(outputUid);
-						IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(
-							ingredients,
-							inputs,
-							output,
-							Identifier.fromNamespaceAndPath(outputModId, uidPath)
-						);
-						recipes.add(recipe);
-					}
+			IBrewingCategoryExtension<? super IBrewingRecipe> extension = brewingExtensionHelper.getRecipeExtension(iBrewingRecipe);
+			if (extension != null) {
+				try {
+					List<IJeiBrewingRecipe> extensionRecipes = extension.getBrewingRecipes(
+						iBrewingRecipe,
+						vanillaRecipeFactory,
+						contextMap
+					);
+					recipes.addAll(extensionRecipes);
+				} catch (RuntimeException | LinkageError e) {
+					LOGGER.error(
+						"Failed to handle custom brewing recipe class {} with extension {}",
+						iBrewingRecipe.getClass(),
+						extension.getClass(),
+						e
+					);
 				}
-			} else {
-				Class<?> recipeClass = iBrewingRecipe.getClass();
-				if (!unhandledRecipeClasses.contains(recipeClass)) {
-					unhandledRecipeClasses.add(recipeClass);
-					LOGGER.debug("Can't handle brewing recipe class: {}", recipeClass);
-				}
+				continue;
+			}
+
+			Class<?> recipeClass = iBrewingRecipe.getClass();
+			if (unhandledRecipeClasses.add(recipeClass)) {
+				LOGGER.debug("Can't handle brewing recipe class: {}", recipeClass);
 			}
 		}
 	}
