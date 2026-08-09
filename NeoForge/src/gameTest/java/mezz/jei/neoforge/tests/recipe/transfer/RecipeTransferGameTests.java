@@ -49,6 +49,8 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -112,6 +114,44 @@ public final class RecipeTransferGameTests {
 					stackAt(CRAFTING_GRID_MIDDLE_LEFT, Items.OAK_PLANKS),
 					stackAt(CRAFTING_GRID_CENTER, Items.OAK_PLANKS)
 				)
+			)
+			.assertPlayerInventory(
+				List.of()
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Transfers recipe ingredients into an empty item-handler slot.")
+	@SuppressWarnings("removal")
+	public static void transfersIntoEmptyItemHandlerSlot(RecipeTransferTestHelper helper) {
+		// Setup: the target is a real NeoForge item-handler slot whose empty contents cannot be modified.
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		List<Slot> craftingSlots = getCraftingInputSlots(menu);
+		Slot targetSlot = replaceSlot(
+			menu,
+			craftingSlots.get(CRAFTING_GRID_TOP_LEFT),
+			itemHandlerSlot(craftingSlots.get(CRAFTING_GRID_TOP_LEFT), new ItemStackHandler(1))
+		);
+		helper.getStandardInventorySlots(menu).getFirst().set(new ItemStack(Items.OAK_PLANKS));
+		helper.assertTrue(!targetSlot.allowModification(helper.getPlayer()), "Expected the empty item-handler slot to reject content modification");
+
+		TransferRecipe<TestRecipe> recipe = basicRecipe("empty_item_handler_slot", Items.OAK_PLANKS);
+		// Operation: transfer through the normal client and server recipe-transfer path.
+		var result = helper.transfer(RecipeTypes.CRAFTING, recipe, menu);
+
+		// Assertions: the ingredient moves from inventory into the item handler.
+		helper.assertTransferSucceeded(result);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(stackAt(CRAFTING_GRID_TOP_LEFT, Items.OAK_PLANKS))
 			)
 			.assertPlayerInventory(
 				List.of()
@@ -1886,20 +1926,27 @@ public final class RecipeTransferGameTests {
 
 	@GameTest
 	@EmptyTemplate
-	@TestHolder(description = "Does not delete items when a crafting slot refuses the ingredient.")
-	public static void doesNotDeleteItemWhenCraftingSlotRejectsIngredient(RecipeTransferTestHelper helper) {
-		// Setup: the target crafting slot refuses items, but it is still registered as a recipe slot.
+	@TestHolder(description = "Does not insert into an item-handler slot that refuses the ingredient.")
+	@SuppressWarnings("removal")
+	public static void doesNotInsertIntoRejectingItemHandlerSlot(RecipeTransferTestHelper helper) {
+		// Setup: the target is a real item-handler slot configured to reject every ingredient.
 		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
 		List<Slot> craftingSlots = getCraftingInputSlots(menu);
 		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		ItemStackHandler rejectingItemHandler = new ItemStackHandler(1) {
+			@Override
+			public boolean isItemValid(int slot, ItemStack stack) {
+				return false;
+			}
+		};
 		replaceSlot(
 			menu,
 			craftingSlots.get(CRAFTING_GRID_TOP_LEFT),
-			rejectingSlot(craftingSlots.get(CRAFTING_GRID_TOP_LEFT))
+			itemHandlerSlot(craftingSlots.get(CRAFTING_GRID_TOP_LEFT), rejectingItemHandler)
 		);
 		inventorySlots.get(0).set(new ItemStack(Items.OAK_PLANKS));
 
-		TransferRecipe<TestRecipe> recipe = basicRecipe("rejecting_crafting_slot", Items.OAK_PLANKS);
+		TransferRecipe<TestRecipe> recipe = basicRecipe("rejecting_item_handler_slot", Items.OAK_PLANKS);
 		// Operation: transfer through the normal helper path so the server receives the generated packet.
 		var result = helper.transfer(
 			RecipeTypes.CRAFTING,
@@ -1910,6 +1957,45 @@ public final class RecipeTransferGameTests {
 		// Assertions: the target remains empty and the source item is returned to inventory.
 		helper.assertTransferSucceeded(result);
 		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of()
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, Items.OAK_PLANKS))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Does not insert recipe ingredients into a crafting result slot.")
+	public static void doesNotInsertIntoCraftingResultSlot(RecipeTransferTestHelper helper) {
+		// Setup: a server transfer operation maliciously names the crafting output as its destination.
+		ServerPlayer player = helper.getPlayer();
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		Slot sourceSlot = inventorySlots.getFirst();
+		Slot resultSlot = getCraftingResultSlots(menu).getFirst();
+		sourceSlot.set(new ItemStack(Items.OAK_PLANKS));
+
+		// Operation: execute the invalid transfer through the complete server transfer path.
+		BasicRecipeTransferHandlerServer.setItems(
+			player,
+			List.of(new TransferOperation(sourceSlot.index, resultSlot.index)),
+			List.of(resultSlot),
+			inventorySlots,
+			false,
+			true
+		);
+
+		// Assertions: the output remains empty and the source ingredient is untouched.
+		helper.createMenuChecker(menu)
 			.assertResults(
 				RecipeTransferGameTests::getCraftingResultSlots,
 				List.of()
@@ -2356,13 +2442,9 @@ public final class RecipeTransferGameTests {
 		};
 	}
 
-	private static Slot rejectingSlot(Slot slot) {
-		return new Slot(slot.container, slot.getContainerSlot(), slot.x, slot.y) {
-			@Override
-			public boolean mayPlace(ItemStack stack) {
-				return false;
-			}
-		};
+	@SuppressWarnings("removal")
+	private static Slot itemHandlerSlot(Slot slot, ItemStackHandler itemHandler) {
+		return new SlotItemHandler(itemHandler, 0, slot.x, slot.y);
 	}
 
 	private static List<Slot> getCraftingInputSlots(RecipeBookMenu<?, ?> menu) {
