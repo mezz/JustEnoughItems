@@ -36,7 +36,8 @@ public class BrewingRecipeMakerCommon {
 
 	public static Set<IJeiBrewingRecipe> getVanillaBrewingRecipes(
 		IVanillaRecipeFactory recipeFactory,
-		IIngredientManager ingredientManager
+		IIngredientManager ingredientManager,
+		IVanillaPotionOutputSupplier vanillaOutputSupplier
 	) {
 		Set<IJeiBrewingRecipe> recipes = new HashSet<>();
 		IPlatformRegistry<Potion> potionRegistry = Services.PLATFORM.getRegistry(Registries.POTION);
@@ -55,6 +56,7 @@ public class BrewingRecipeMakerCommon {
 				itemStackHelper,
 				knownPotions,
 				potionReagents,
+				vanillaOutputSupplier,
 				recipes
 			);
 			foundNewPotions = !newPotions.isEmpty();
@@ -102,6 +104,7 @@ public class BrewingRecipeMakerCommon {
 		IIngredientHelper<ItemStack> itemStackHelper,
 		Collection<ItemStack> knownPotions,
 		Collection<ItemStack> potionReagents,
+		IVanillaPotionOutputSupplier vanillaOutputSupplier,
 		Collection<IJeiBrewingRecipe> recipes
 	) {
 		List<ItemStack> newPotions = new ArrayList<>();
@@ -111,7 +114,7 @@ public class BrewingRecipeMakerCommon {
 
 			for (ItemStack potionReagent : potionReagents) {
 				ItemStack potionInputCopy = potionInput.copy();
-				ItemStack potionOutput = getOutput(potionInputCopy, potionReagent);
+				ItemStack potionOutput = getOutput(vanillaOutputSupplier, potionInputCopy, potionReagent);
 				if (potionOutput.isEmpty()) {
 					continue;
 				}
@@ -166,12 +169,14 @@ public class BrewingRecipeMakerCommon {
 		return newPotions;
 	}
 
-	private static ItemStack getOutput(ItemStack potion, ItemStack itemStack) {
+	@FunctionalInterface
+	public interface IVanillaPotionOutputSupplier {
+		ItemStack getOutput(ItemStack input, ItemStack ingredient);
+	}
+
+	private static ItemStack getOutput(IVanillaPotionOutputSupplier vanillaOutputSupplier, ItemStack potion, ItemStack itemStack) {
 		try {
-			ItemStack result = PotionBrewing.mix(itemStack, potion);
-			if (result != itemStack) {
-				return result;
-			}
+			return vanillaOutputSupplier.getOutput(potion, itemStack);
 		} catch (RuntimeException e) {
 			String potionInfo = ErrorUtil.getItemStackInfo(potion);
 			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
