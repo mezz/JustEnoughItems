@@ -1,26 +1,15 @@
 package mezz.jei.fabric.platform;
 
-import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
-import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.UpgradeRecipe;
 import net.minecraft.world.item.enchantment.Enchantment;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
 public class RecipeHelper implements IPlatformRecipeHelper {
-	private final List<Class<? extends UpgradeRecipe>> supportedSmithingRecipeClasses = List.of(UpgradeRecipe.class);
-
 	@Override
 	public <T extends CraftingRecipe> int getWidth(T recipe) {
 		if (recipe instanceof ShapedRecipe shapedRecipe) {
@@ -48,28 +37,11 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 	}
 
 	@Override
-	public Collection<Class<? extends UpgradeRecipe>> getSupportedSmithingRecipeClasses() {
-		return supportedSmithingRecipeClasses;
-	}
-
-	@SuppressWarnings("DataFlowIssue")
-	@Override
-	public Optional<ResourceLocation> getRegistryNameForRecipe(Recipe<?> recipe) {
-		ResourceLocation id = recipe.getId();
-		return Optional.ofNullable(id);
-	}
-
-	@Override
 	public ItemStack getGrindstoneResult(GrindstoneMenu grindstoneMenu, ItemStack input1, ItemStack input2) {
 		grindstoneMenu.slots.get(0).set(input1.copy());
 		grindstoneMenu.slots.get(1).set(input2.copy());
 		grindstoneMenu.createResult();
 		return grindstoneMenu.slots.get(2).getItem().copy();
-	}
-
-	@Override
-	public List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory) {
-		return BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory);
 	}
 
 	@Override
