@@ -58,6 +58,7 @@ public class JeiStarter {
 		IIngredientSorter ingredientSorter
 	) {
 		ErrorUtil.checkNotEmpty(plugins, "plugins");
+		PluginHelper.removePluginsWithCrashingUids(plugins);
 		LoggedTimer totalTime = new LoggedTimer();
 		totalTime.start("Starting JEI");
 
