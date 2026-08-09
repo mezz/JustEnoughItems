@@ -140,9 +140,9 @@ public final class BasicRecipeTransferHandlerServer {
 				final ItemStack requiredStack = entry.getValue().copy();
 
 				// Locate a slot that has what we need.
-				final Slot slot = getSlotWithStack(container, requiredStack, craftingSlots, inventorySlots);
+				final Slot slot = getSlotWithStack(container, requiredStack, craftingSlots, inventorySlots, player);
 
-				boolean itemFound = (slot != null) && !slot.getItem().isEmpty() && slot.mayPickup(player) && slot.mayPlace(slot.getItem());
+				boolean itemFound = (slot != null) && !slot.getItem().isEmpty();
 				ItemStack resultItemStack = result.get(entry.getKey());
 				boolean resultItemStackLimitReached = (resultItemStack != null) && (resultItemStack.getCount() == resultItemStack.getMaxStackSize());
 
@@ -198,10 +198,10 @@ public final class BasicRecipeTransferHandlerServer {
 	}
 
 	@Nullable
-	private static Slot getSlotWithStack(Container container, ItemStack stack, List<Integer> craftingSlots, List<Integer> inventorySlots) {
-		Slot slot = getSlotWithStack(container, craftingSlots, stack);
+	private static Slot getSlotWithStack(Container container, ItemStack stack, List<Integer> craftingSlots, List<Integer> inventorySlots, PlayerEntity player) {
+		Slot slot = getSlotWithStack(container, craftingSlots, stack, player);
 		if (slot == null) {
-			slot = getSlotWithStack(container, inventorySlots, stack);
+			slot = getSlotWithStack(container, inventorySlots, stack, player);
 		}
 
 		return slot;
@@ -269,12 +269,17 @@ public final class BasicRecipeTransferHandlerServer {
 	 * @return the slot that contains the itemStack. returns null if no slot contains the itemStack.
 	 */
 	@Nullable
-	private static Slot getSlotWithStack(Container container, Iterable<Integer> slotNumbers, ItemStack itemStack) {
+	private static Slot getSlotWithStack(Container container, Iterable<Integer> slotNumbers, ItemStack itemStack, PlayerEntity player) {
 		for (Integer slotNumber : slotNumbers) {
 			if (slotNumber >= 0 && slotNumber < container.slots.size()) {
 				Slot slot = container.getSlot(slotNumber);
 				ItemStack slotStack = slot.getItem();
-				if (ItemStack.isSame(itemStack, slotStack) && ItemStack.tagMatches(itemStack, slotStack)) {
+				if (
+					ItemStack.isSame(itemStack, slotStack) &&
+					ItemStack.tagMatches(itemStack, slotStack) &&
+					slot.mayPickup(player) &&
+					slot.mayPlace(slotStack)
+				) {
 					return slot;
 				}
 			}

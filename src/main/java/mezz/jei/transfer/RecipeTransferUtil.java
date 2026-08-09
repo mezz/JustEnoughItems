@@ -2,12 +2,13 @@ package mezz.jei.transfer;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Set;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -77,9 +78,10 @@ public final class RecipeTransferUtil {
 	 */
 	public static MatchingItemsResult getMatchingItems(IStackHelper stackhelper, Map<Integer, ItemStack> availableItemStacks, Map<Integer, ? extends IGuiIngredient<ItemStack>> ingredientsMap) {
 		MatchingItemsResult matchingItemResult = new MatchingItemsResult();
-
+		List<RequiredIngredient> requiredIngredients = new ArrayList<>();
 		int recipeSlotNumber = -1;
-		SortedSet<Integer> keys = new TreeSet<>(ingredientsMap.keySet());
+		List<Integer> keys = new ArrayList<>(ingredientsMap.keySet());
+		Collections.sort(keys);
 		for (Integer key : keys) {
 			IGuiIngredient<ItemStack> ingredient = ingredientsMap.get(key);
 			if (!ingredient.isInput()) {
@@ -92,20 +94,125 @@ public final class RecipeTransferUtil {
 				continue;
 			}
 
-			Integer matching = containsAnyStackIndexed(stackhelper, availableItemStacks, requiredStacks);
-			if (matching == null) {
-				matchingItemResult.missingItems.add(key);
-			} else {
-				ItemStack matchingStack = availableItemStacks.get(matching);
-				matchingStack.shrink(1);
-				if (matchingStack.getCount() == 0) {
-					availableItemStacks.remove(matching);
+			List<Integer> candidateSlots = new ArrayList<>();
+			for (Map.Entry<Integer, ItemStack> availableEntry : availableItemStacks.entrySet()) {
+				for (ItemStack requiredStack : requiredStacks) {
+					if (stackhelper.isEquivalent(requiredStack, availableEntry.getValue(), UidContext.Recipe)) {
+						candidateSlots.add(availableEntry.getKey());
+						break;
+					}
 				}
-				matchingItemResult.matchingItems.put(recipeSlotNumber, matching);
+			}
+			Collections.sort(candidateSlots, (first, second) -> {
+				int compare = Integer.compare(availableItemStacks.get(first).getCount(), availableItemStacks.get(second).getCount());
+				return compare == 0 ? Integer.compare(first, second) : compare;
+			});
+			requiredIngredients.add(new RequiredIngredient(recipeSlotNumber, key, candidateSlots));
+		}
+
+		Map<Integer, Integer> availableCounts = new HashMap<>();
+		for (Map.Entry<Integer, ItemStack> entry : availableItemStacks.entrySet()) {
+			availableCounts.put(entry.getKey(), entry.getValue().getCount());
+		}
+
+		Map<Integer, Integer> assignments = new HashMap<>();
+		Map<Integer, Integer> bestAssignments = new HashMap<>();
+		assignRequiredIngredients(
+			requiredIngredients,
+			availableCounts,
+			new HashSet<Integer>(),
+			assignments,
+			bestAssignments
+		);
+
+		for (int i = 0; i < requiredIngredients.size(); i++) {
+			RequiredIngredient requiredIngredient = requiredIngredients.get(i);
+			Integer matchingSlot = bestAssignments.get(i);
+			if (matchingSlot == null) {
+				matchingItemResult.missingItems.add(requiredIngredient.guiSlotNumber);
+			} else {
+				matchingItemResult.matchingItems.put(requiredIngredient.recipeSlotNumber, matchingSlot);
 			}
 		}
 
 		return matchingItemResult;
+	}
+
+	private static boolean assignRequiredIngredients(
+		List<RequiredIngredient> requiredIngredients,
+		Map<Integer, Integer> availableCounts,
+		Set<Integer> processedIndexes,
+		Map<Integer, Integer> assignments,
+		Map<Integer, Integer> bestAssignments
+	) {
+		if (assignments.size() > bestAssignments.size()) {
+			bestAssignments.clear();
+			bestAssignments.putAll(assignments);
+		}
+
+		if (processedIndexes.size() == requiredIngredients.size()) {
+			return assignments.size() == requiredIngredients.size();
+		}
+
+		int requiredIndex = getMostConstrainedIngredient(requiredIngredients, availableCounts, processedIndexes);
+		processedIndexes.add(requiredIndex);
+		RequiredIngredient requiredIngredient = requiredIngredients.get(requiredIndex);
+		for (Integer candidateSlot : requiredIngredient.candidateSlots) {
+			int availableCount = availableCounts.getOrDefault(candidateSlot, 0);
+			if (availableCount <= 0) {
+				continue;
+			}
+
+			availableCounts.put(candidateSlot, availableCount - 1);
+			assignments.put(requiredIndex, candidateSlot);
+			if (assignRequiredIngredients(requiredIngredients, availableCounts, processedIndexes, assignments, bestAssignments)) {
+				return true;
+			}
+			assignments.remove(requiredIndex);
+			availableCounts.put(candidateSlot, availableCount);
+		}
+
+		assignRequiredIngredients(requiredIngredients, availableCounts, processedIndexes, assignments, bestAssignments);
+		processedIndexes.remove(requiredIndex);
+		return false;
+	}
+
+	private static int getMostConstrainedIngredient(
+		List<RequiredIngredient> requiredIngredients,
+		Map<Integer, Integer> availableCounts,
+		Set<Integer> processedIndexes
+	) {
+		int bestIndex = -1;
+		int bestCandidateCount = Integer.MAX_VALUE;
+		for (int i = 0; i < requiredIngredients.size(); i++) {
+			if (processedIndexes.contains(i)) {
+				continue;
+			}
+
+			int candidateCount = 0;
+			for (Integer candidateSlot : requiredIngredients.get(i).candidateSlots) {
+				if (availableCounts.getOrDefault(candidateSlot, 0) > 0) {
+					candidateCount++;
+				}
+			}
+			if (candidateCount < bestCandidateCount) {
+				bestIndex = i;
+				bestCandidateCount = candidateCount;
+			}
+		}
+		return bestIndex;
+	}
+
+	private static final class RequiredIngredient {
+		private final int recipeSlotNumber;
+		private final int guiSlotNumber;
+		private final List<Integer> candidateSlots;
+
+		private RequiredIngredient(int recipeSlotNumber, int guiSlotNumber, List<Integer> candidateSlots) {
+			this.recipeSlotNumber = recipeSlotNumber;
+			this.guiSlotNumber = guiSlotNumber;
+			this.candidateSlots = candidateSlots;
+		}
 	}
 
 	@Nullable

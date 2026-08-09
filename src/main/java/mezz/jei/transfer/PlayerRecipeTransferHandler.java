@@ -130,7 +130,9 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Playe
 		for (Slot slot : inventorySlots.values()) {
 			final ItemStack stack = slot.getItem();
 			if (!stack.isEmpty()) {
-				availableItemStacks.put(slot.index, stack.copy());
+				if (slot.mayPickup(player)) {
+					availableItemStacks.put(slot.index, stack.copy());
+				}
 			} else {
 				emptySlotCount++;
 			}
