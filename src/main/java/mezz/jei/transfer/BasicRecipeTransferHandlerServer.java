@@ -29,7 +29,7 @@ public final class BasicRecipeTransferHandlerServer {
 			Slot slot = container.getSlot(entry.getValue());
 			final ItemStack slotStack = slot.getStack();
 			int count = Math.max(1, slotCountMap.getOrDefault(entry.getKey(), 1));
-			if (slotStack.isEmpty() || slotStack.getCount() < count) {
+			if (slotStack.isEmpty()) {
 				return;
 			}
 			ItemStack stack = slotStack.copy();
@@ -142,12 +142,20 @@ public final class BasicRecipeTransferHandlerServer {
 			for (Map.Entry<Integer, ItemStack> entry : required.entrySet()) { // for each item in set
 				final ItemStack requiredStack = entry.getValue().copy();
 
-				// Locate a slot that has what we need.
-				final Slot slot = getSlotWithStack(player, container, requiredStack, craftingSlots, inventorySlots);
-
-				boolean itemFound = (slot != null) && !slot.getStack().isEmpty();
 				ItemStack resultItemStack = result.get(entry.getKey());
 				boolean resultItemStackLimitReached = (resultItemStack != null) && (resultItemStack.getCount() + requiredStack.getCount() > resultItemStack.getMaxStackSize());
+				ItemStack removedItemStack = ItemStack.EMPTY;
+				if (!resultItemStackLimitReached) {
+					removedItemStack = removeRequiredStack(
+						player,
+						container,
+						requiredStack,
+						craftingSlots,
+						inventorySlots,
+						originalSlotContents
+					);
+				}
+				boolean itemFound = !removedItemStack.isEmpty();
 
 				if (!itemFound || resultItemStackLimitReached) {
 					// We can't find any more items to fulfill the requirements or the maximum stack size for this item
@@ -164,14 +172,6 @@ public final class BasicRecipeTransferHandlerServer {
 					}
 
 				} else { // the item was found and the stack limit has not been reached
-
-					// Keep a copy of the slot's original contents in case we need to roll back.
-					if (originalSlotContents != null && !originalSlotContents.containsKey(slot)) {
-						originalSlotContents.put(slot, slot.getStack().copy());
-					}
-
-					// Reduce the size of the found slot.
-					ItemStack removedItemStack = slot.decrStackSize(requiredStack.getCount());
 					foundItemsInSet.put(entry.getKey(), removedItemStack);
 
 					noItemsFound = false;
@@ -198,6 +198,69 @@ public final class BasicRecipeTransferHandlerServer {
 		}
 
 		return result;
+	}
+
+	private static ItemStack removeRequiredStack(
+		EntityPlayer player,
+		Container container,
+		ItemStack requiredStack,
+		List<Integer> craftingSlots,
+		List<Integer> inventorySlots,
+		@Nullable Map<Slot, ItemStack> originalSlotContents
+	) {
+		Map<Slot, ItemStack> changedSlots = new HashMap<>();
+		ItemStack removedStack = requiredStack.copy();
+		removedStack.setCount(0);
+		int remaining = requiredStack.getCount();
+		remaining = removeRequiredStack(player, container, requiredStack, craftingSlots, changedSlots, removedStack, remaining);
+		if (remaining > 0) {
+			remaining = removeRequiredStack(player, container, requiredStack, inventorySlots, changedSlots, removedStack, remaining);
+		}
+
+		if (remaining > 0) {
+			for (Map.Entry<Slot, ItemStack> entry : changedSlots.entrySet()) {
+				entry.getKey().putStack(entry.getValue());
+			}
+			return ItemStack.EMPTY;
+		}
+
+		if (originalSlotContents != null) {
+			for (Map.Entry<Slot, ItemStack> entry : changedSlots.entrySet()) {
+				originalSlotContents.putIfAbsent(entry.getKey(), entry.getValue());
+			}
+		}
+		return removedStack;
+	}
+
+	private static int removeRequiredStack(
+		EntityPlayer player,
+		Container container,
+		ItemStack requiredStack,
+		Iterable<Integer> slotNumbers,
+		Map<Slot, ItemStack> changedSlots,
+		ItemStack removedStack,
+		int remaining
+	) {
+		for (Integer slotNumber : slotNumbers) {
+			if (slotNumber < 0 || slotNumber >= container.inventorySlots.size()) {
+				continue;
+			}
+			Slot slot = container.getSlot(slotNumber);
+			ItemStack slotStack = slot.getStack();
+			if (!slot.canTakeStack(player) || !ItemStack.areItemsEqual(requiredStack, slotStack) || !ItemStack.areItemStackTagsEqual(requiredStack, slotStack)) {
+				continue;
+			}
+
+			changedSlots.putIfAbsent(slot, slotStack.copy());
+			int count = Math.min(remaining, slotStack.getCount());
+			ItemStack taken = slot.decrStackSize(count);
+			removedStack.grow(taken.getCount());
+			remaining -= taken.getCount();
+			if (remaining == 0) {
+				return 0;
+			}
+		}
+		return remaining;
 	}
 
 	@Nullable

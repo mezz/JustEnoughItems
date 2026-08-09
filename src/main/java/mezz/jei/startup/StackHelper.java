@@ -81,7 +81,7 @@ public class StackHelper implements IStackHelper {
 	 */
 	public MatchingItemsResult getMatchingItems(Map<Integer, ItemStack> availableItemStacks, Map<Integer, ? extends IGuiIngredient<ItemStack>> ingredientsMap) {
 		MatchingItemsResult matchingItemResult = new MatchingItemsResult();
-
+		List<RequiredIngredient> requiredIngredients = new ArrayList<>();
 		int recipeSlotNumber = -1;
 		SortedSet<Integer> keys = new TreeSet<>(ingredientsMap.keySet());
 		for (Integer key : keys) {
@@ -96,38 +96,127 @@ public class StackHelper implements IStackHelper {
 				continue;
 			}
 
-			MatchingItem matching = getMatchingItem(availableItemStacks, requiredStacks);
-			if (matching == null) {
-				matchingItemResult.missingItems.add(key);
-			} else {
-				ItemStack matchingStack = availableItemStacks.get(matching.slotIndex);
-				matchingStack.shrink(matching.count);
-				if (matchingStack.getCount() == 0) {
-					availableItemStacks.remove(matching.slotIndex);
-				}
-				matchingItemResult.matchingItems.put(recipeSlotNumber, matching.slotIndex);
-				matchingItemResult.matchingItemCounts.put(recipeSlotNumber, matching.count);
-			}
+			List<CandidateGroup> candidateGroups = getCandidateGroups(availableItemStacks, requiredStacks);
+			requiredIngredients.add(new RequiredIngredient(key, recipeSlotNumber, candidateGroups));
 		}
 
+		Map<Integer, Integer> availableCounts = new HashMap<>();
+		for (Map.Entry<Integer, ItemStack> entry : availableItemStacks.entrySet()) {
+			availableCounts.put(entry.getKey(), entry.getValue().getCount());
+		}
+
+		MatchingItem[] assignments = new MatchingItem[requiredIngredients.size()];
+		MatchingItem[] bestAssignments = new MatchingItem[requiredIngredients.size()];
+		findAssignments(requiredIngredients, 0, availableCounts, assignments, bestAssignments);
+
+		for (int i = 0; i < requiredIngredients.size(); i++) {
+			RequiredIngredient requiredIngredient = requiredIngredients.get(i);
+			MatchingItem matching = bestAssignments[i];
+			if (matching == null) {
+				matchingItemResult.missingItems.add(requiredIngredient.ingredientIndex);
+			} else {
+				matchingItemResult.matchingItems.put(requiredIngredient.recipeSlotNumber, matching.slotIndex);
+				matchingItemResult.matchingItemCounts.put(requiredIngredient.recipeSlotNumber, matching.count);
+			}
+		}
 		return matchingItemResult;
 	}
 
-	@Nullable
-	private MatchingItem getMatchingItem(Map<Integer, ItemStack> stacks, Iterable<ItemStack> contains) {
-		for (ItemStack requiredStack : contains) {
+	private List<CandidateGroup> getCandidateGroups(Map<Integer, ItemStack> availableItemStacks, List<ItemStack> requiredStacks) {
+		List<CandidateGroup> candidateGroups = new ArrayList<>();
+		for (ItemStack requiredStack : requiredStacks) {
 			if (requiredStack == null || requiredStack.isEmpty()) {
 				continue;
 			}
-			int requiredCount = Math.max(1, requiredStack.getCount());
-			for (Map.Entry<Integer, ItemStack> entry : stacks.entrySet()) {
-				ItemStack availableStack = entry.getValue();
-				if (availableStack.getCount() >= requiredCount && isEquivalent(requiredStack, availableStack)) {
-					return new MatchingItem(entry.getKey(), requiredCount);
+
+			CandidateGroup matchingGroup = null;
+			for (CandidateGroup candidateGroup : candidateGroups) {
+				if (isEquivalent(candidateGroup.requiredStack, requiredStack)) {
+					matchingGroup = candidateGroup;
+					break;
 				}
 			}
+
+			if (matchingGroup == null) {
+				matchingGroup = new CandidateGroup(requiredStack.copy());
+				candidateGroups.add(matchingGroup);
+			} else {
+				matchingGroup.requiredCount = Math.max(matchingGroup.requiredCount, Math.max(1, requiredStack.getCount()));
+			}
 		}
-		return null;
+
+		for (CandidateGroup candidateGroup : candidateGroups) {
+			for (Map.Entry<Integer, ItemStack> entry : availableItemStacks.entrySet()) {
+				if (isEquivalent(candidateGroup.requiredStack, entry.getValue())) {
+					candidateGroup.slotIndexes.add(entry.getKey());
+				}
+			}
+			Collections.sort(candidateGroup.slotIndexes);
+		}
+
+		return candidateGroups;
+	}
+
+	private static void findAssignments(
+		List<RequiredIngredient> requiredIngredients,
+		int index,
+		Map<Integer, Integer> availableCounts,
+		MatchingItem[] assignments,
+		MatchingItem[] bestAssignments
+	) {
+		if (countAssignments(assignments) > countAssignments(bestAssignments)) {
+			System.arraycopy(assignments, 0, bestAssignments, 0, assignments.length);
+		}
+		if (index >= requiredIngredients.size()) {
+			return;
+		}
+
+		RequiredIngredient requiredIngredient = requiredIngredients.get(index);
+		for (CandidateGroup candidateGroup : requiredIngredient.candidateGroups) {
+			if (!candidateGroup.hasEnoughItems(availableCounts)) {
+				continue;
+			}
+
+			Map<Integer, Integer> reservedCounts = reserve(candidateGroup, availableCounts);
+			assignments[index] = new MatchingItem(candidateGroup.slotIndexes.get(0), candidateGroup.requiredCount);
+			findAssignments(requiredIngredients, index + 1, availableCounts, assignments, bestAssignments);
+			assignments[index] = null;
+			restore(reservedCounts, availableCounts);
+		}
+
+		findAssignments(requiredIngredients, index + 1, availableCounts, assignments, bestAssignments);
+	}
+
+	private static int countAssignments(MatchingItem[] assignments) {
+		int count = 0;
+		for (MatchingItem assignment : assignments) {
+			if (assignment != null) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	private static Map<Integer, Integer> reserve(CandidateGroup candidateGroup, Map<Integer, Integer> availableCounts) {
+		Map<Integer, Integer> reservedCounts = new HashMap<>();
+		int remaining = candidateGroup.requiredCount;
+		for (Integer slotIndex : candidateGroup.slotIndexes) {
+			int available = availableCounts.getOrDefault(slotIndex, 0);
+			int taken = Math.min(available, remaining);
+			availableCounts.put(slotIndex, available - taken);
+			reservedCounts.put(slotIndex, taken);
+			remaining -= taken;
+			if (remaining == 0) {
+				return reservedCounts;
+			}
+		}
+		return reservedCounts;
+	}
+
+	private static void restore(Map<Integer, Integer> reservedCounts, Map<Integer, Integer> availableCounts) {
+		for (Map.Entry<Integer, Integer> entry : reservedCounts.entrySet()) {
+			availableCounts.put(entry.getKey(), availableCounts.getOrDefault(entry.getKey(), 0) + entry.getValue());
+		}
 	}
 
 	public boolean containsSameStacks(Collection<ItemStack> stacks, Collection<ItemStack> contains) {
@@ -482,6 +571,40 @@ public class StackHelper implements IStackHelper {
 		public final Map<Integer, Integer> matchingItems = new HashMap<>();
 		public final Map<Integer, Integer> matchingItemCounts = new HashMap<>();
 		public final List<Integer> missingItems = new ArrayList<>();
+	}
+
+	private static class RequiredIngredient {
+		public final int ingredientIndex;
+		public final int recipeSlotNumber;
+		public final List<CandidateGroup> candidateGroups;
+
+		public RequiredIngredient(int ingredientIndex, int recipeSlotNumber, List<CandidateGroup> candidateGroups) {
+			this.ingredientIndex = ingredientIndex;
+			this.recipeSlotNumber = recipeSlotNumber;
+			this.candidateGroups = candidateGroups;
+		}
+	}
+
+	private static class CandidateGroup {
+		public final ItemStack requiredStack;
+		public final List<Integer> slotIndexes = new ArrayList<>();
+		public int requiredCount;
+
+		public CandidateGroup(ItemStack requiredStack) {
+			this.requiredStack = requiredStack;
+			this.requiredCount = Math.max(1, requiredStack.getCount());
+		}
+
+		public boolean hasEnoughItems(Map<Integer, Integer> availableCounts) {
+			int total = 0;
+			for (Integer slotIndex : slotIndexes) {
+				total += availableCounts.getOrDefault(slotIndex, 0);
+				if (total >= requiredCount) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 
 	private static class MatchingItem {
