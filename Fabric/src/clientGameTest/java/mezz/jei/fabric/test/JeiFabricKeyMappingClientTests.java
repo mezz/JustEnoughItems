@@ -34,8 +34,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * <p>This test class is run by two Fabric client launches:
  * <ul>
  *     <li>{@code :Fabric:runClientGameTest} includes this test with AMECS and its JEI integration enabled.</li>
- *     <li>{@code :Fabric:runClientGameTestWithoutAmecs} removes AMECS from the runtime classpath and runs only this
- *     test to exercise JEI's plain Fabric key-mapping path.</li>
+ *     <li>{@code :Fabric:runClientGameTestWithoutAmecs} removes AMECS from the runtime classpath and includes this
+ *     key-mapping coverage to exercise JEI's plain Fabric key-mapping path.</li>
  * </ul>
  */
 final class JeiFabricKeyMappingClientTests {

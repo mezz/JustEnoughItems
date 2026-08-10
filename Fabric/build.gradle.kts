@@ -261,10 +261,8 @@ loom {
             it.absoluteFile.toString()
         }
 
-        // loom 1.11 runDir takes a directory relative to the root directory
-        val loomRunDir = project.projectDir
-            .relativeTo(project.rootDir)
-            .resolve("run")
+        // Loom resolves run directories relative to this loader project.
+        val loomRunDir = File("run")
 
         named("client") {
             client()
@@ -354,6 +352,8 @@ fun registerWriteClientTestOptionsTask(name: String, runName: String) =
     tasks.register<Copy>(name) {
         from(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
         into(clientTestGameDirectory(runName))
+        // The client saves changed pack selections to this file during the test.
+        outputs.upToDateWhen { false }
     }
 
 val writeClientGameTestOptions = registerWriteClientTestOptionsTask(
@@ -365,8 +365,23 @@ val writeClientGameTestWithoutAmecsOptions = registerWriteClientTestOptionsTask(
     "clientGameTestWithoutAmecs"
 )
 
+fun registerCopyClientResourcePackTask(name: String, runName: String) =
+    tasks.register<Sync>(name) {
+        from(layout.projectDirectory.file("src/clientGameTest/templates/resourcepacks/jei-client-test-pack/pack.mcmeta"))
+        // A larger replacement texture catches stale sprite dimensions after a resource reload.
+        from(project(":Common").layout.projectDirectory.file("src/main/resources/assets/jei/textures/gui/sprites/gui_background.png")) {
+            into("assets/jei/textures/gui/sprites/icons")
+            rename { "config_button.png" }
+        }
+        into(clientTestGameDirectory(runName).dir("resourcepacks/jei-client-test-pack"))
+    }
+
+val copyClientGameTestResourcePack = registerCopyClientResourcePackTask("copyClientGameTestResourcePack", "clientGameTest")
+val copyClientGameTestWithoutAmecsResourcePack = registerCopyClientResourcePackTask("copyClientGameTestWithoutAmecsResourcePack", "clientGameTestWithoutAmecs")
+
 val cleanClientGameTestResults = tasks.register<Delete>("cleanClientGameTestResults") {
     delete(
+        layout.buildDirectory.dir("test-results/fabric-client-resources"),
         layout.buildDirectory.dir("test-results/fabric-client-config-screen"),
         layout.buildDirectory.dir("test-results/fabric-client-recipe-sync"),
         layout.buildDirectory.dir("test-results/fabric-client-fluid-ingredients"),
@@ -377,17 +392,18 @@ val cleanClientGameTestResults = tasks.register<Delete>("cleanClientGameTestResu
 }
 val cleanClientGameTestWithoutAmecsResults = tasks.register<Delete>("cleanClientGameTestWithoutAmecsResults") {
     delete(
+        layout.buildDirectory.dir("test-results/fabric-client-resources-without-amecs"),
         layout.buildDirectory.dir("test-results/fabric-client-key-mapping-without-amecs"),
         layout.buildDirectory.dir("test-results/fabric-client-gametest-without-amecs")
     )
 }
 
 tasks.named("runClientGameTest") {
-    dependsOn(cleanClientGameTestResults, writeClientGameTestOptions)
+    dependsOn(cleanClientGameTestResults, writeClientGameTestOptions, copyClientGameTestResourcePack)
 }
 
 tasks.named("runClientGameTestWithoutAmecs") {
-    dependsOn(cleanClientGameTestWithoutAmecsResults, writeClientGameTestWithoutAmecsOptions)
+    dependsOn(cleanClientGameTestWithoutAmecsResults, writeClientGameTestWithoutAmecsOptions, copyClientGameTestWithoutAmecsResourcePack)
     mustRunAfter("runClientGameTest")
 }
 

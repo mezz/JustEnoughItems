@@ -8,3 +8,5 @@ soundCategory_master:0.0
 soundCategory_music:0.0
 useNativeTransport:false
 tutorialStep:none
+resourcePacks:["Fabric Mods","file/jei-client-test-pack"]
+incompatibleResourcePacks:[]
