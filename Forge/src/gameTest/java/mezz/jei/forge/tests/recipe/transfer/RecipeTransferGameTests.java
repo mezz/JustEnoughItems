@@ -990,10 +990,52 @@ public final class RecipeTransferGameTests {
 	}
 
 	@GameTest(template = "empty")
+	public static void transfersWhenUnrelatedInventorySlotIsLocked(GameTestHelper gameTestHelper) {
+		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
+		// Setup: an unrelated dirt stack is locked, while a movable plank can satisfy the recipe.
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		Slot lockedSlot = replaceSlot(
+			menu,
+			inventorySlots.get(0),
+			lockedSlot(inventorySlots.get(0))
+		);
+		lockedSlot.set(new ItemStack(Items.DIRT));
+		inventorySlots = helper.getStandardInventorySlots(menu);
+		inventorySlots.get(1).set(new ItemStack(Items.OAK_PLANKS));
+
+		TransferRecipe<TestRecipe> recipe = basicRecipe("unrelated_locked_inventory_slot", Items.OAK_PLANKS);
+		// Operation: transfer normally through planning, validation, the packet, and the server executor.
+		var result = helper.transfer(
+			RecipeTypes.CRAFTING,
+			recipe,
+			menu
+		);
+
+		// Assertions: the unrelated locked stack is ignored and the movable ingredient is transferred.
+		helper.assertTransferSucceeded(result);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				RecipeTransferGameTests::getCraftingInputSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, Items.OAK_PLANKS)
+				)
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, Items.DIRT))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
 	public static void transfersFromMovableInventorySlotWhenMatchingSlotIsLocked(GameTestHelper gameTestHelper) {
 		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
 		// Setup: the first matching plank stack cannot be moved, but another matching stack is available.
-		ServerPlayer player = helper.getPlayer();
 		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
 		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
 		Slot lockedSlot = replaceSlot(
@@ -1003,27 +1045,19 @@ public final class RecipeTransferGameTests {
 		);
 		lockedSlot.set(new ItemStack(Items.OAK_PLANKS));
 		inventorySlots = helper.getStandardInventorySlots(menu);
-		Slot sourceSlot = inventorySlots.get(1);
-		sourceSlot.set(new ItemStack(Items.OAK_PLANKS));
+		inventorySlots.get(1).set(new ItemStack(Items.OAK_PLANKS));
 
-		List<Slot> craftingSlots = getCraftingInputSlots(menu);
-		List<TransferOperation> operations = List.of(
-			new TransferOperation(sourceSlot.index, craftingSlots.get(CRAFTING_GRID_TOP_LEFT).index)
+		TransferRecipe<TestRecipe> recipe = basicRecipe("matching_locked_inventory_slot", Items.OAK_PLANKS);
+		// Operation: transfer normally through planning, validation, the packet, and the server executor.
+		var result = helper.transfer(
+			RecipeTypes.CRAFTING,
+			recipe,
+			menu
 		);
 
-		// Operation: call the server transfer with the movable slot as the source.
-		// The normal helper rejects any non-empty locked inventory slot before sending a packet.
-		BasicRecipeTransferHandlerServer.setItems(
-			player,
-			operations,
-			craftingSlots,
-			inventorySlots,
-			false,
-			true
-		);
-
-		// Assertions: the locked stack remains untouched and no duplicate plank appears in inventory.
-		helper.createMenuChecker(menu)
+		// Assertions: the movable stack is transferred while the matching locked stack remains untouched.
+		helper.assertTransferSucceeded(result);
+		helper.createMenuChecker(result.menu())
 			.assertResults(
 				RecipeTransferGameTests::getCraftingResultSlots,
 				List.of()
@@ -1063,7 +1097,7 @@ public final class RecipeTransferGameTests {
 		);
 
 		// Assertions: the transfer fails before moving the locked source item.
-		helper.assertTransferError(result, RecipeTransferErrorInternal.class);
+		helper.assertTransferError(result, RecipeTransferErrorMissingSlots.class);
 		helper.createMenuChecker(result.menu())
 			.assertResults(
 				RecipeTransferGameTests::getCraftingResultSlots,
