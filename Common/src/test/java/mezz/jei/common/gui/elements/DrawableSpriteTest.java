@@ -7,6 +7,8 @@ import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public class DrawableSpriteTest {
 	@Test
 	public void usesSpriteSizeByDefault() {
@@ -24,6 +26,20 @@ public class DrawableSpriteTest {
 
 		Assertions.assertEquals(18, drawable.getWidth());
 		Assertions.assertEquals(21, drawable.getHeight());
+	}
+
+	@Test
+	public void refreshesSpriteFromSupplier() {
+		AtomicReference<TextureAtlasSprite> sprite = new AtomicReference<>(createSprite(18, 21));
+		DrawableSprite drawable = new DrawableSprite(sprite::get);
+
+		Assertions.assertEquals(18, drawable.getWidth());
+		Assertions.assertEquals(21, drawable.getHeight());
+
+		sprite.set(createSprite(36, 42));
+
+		Assertions.assertEquals(36, drawable.getWidth());
+		Assertions.assertEquals(42, drawable.getHeight());
 	}
 
 	@Test

@@ -11,6 +11,8 @@ val jUnitVersion: String by extra
 val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val isAppleSilicon = System.getProperty("os.name").startsWith("Mac") &&
+    System.getProperty("os.arch") in setOf("aarch64", "arm64")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
 base {
@@ -58,10 +60,22 @@ dependencies {
         name = "junit-platform-launcher",
         version = jUnitVersion
     )
+    if (isAppleSilicon) {
+        testRuntimeOnly(files(rootProject.configurations.named("appleSiliconLwjglTestRuntime")))
+    }
+}
+
+configurations.named("testRuntimeClasspath") {
+    if (isAppleSilicon) {
+        exclude(group = "org.lwjgl", module = "lwjgl")
+    } else {
+        extendsFrom(configurations.named("minecraftNatives").get())
+    }
 }
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+    systemProperty("org.lwjgl.system.SharedLibraryExtractPath", temporaryDir.resolve("lwjgl"))
     include("mezz/jei/common/gui/elements/**")
     include("mezz/jei/test/**")
     include("mezz/jei/common/util/**")
