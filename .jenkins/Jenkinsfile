@@ -95,7 +95,11 @@ pipeline {
             steps {
                 sh '''
                     if command -v xvfb-run >/dev/null 2>&1; then
-                        xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs :NeoForge:runClientRecipeSyncTest --no-daemon --no-parallel
+                        JEI_JVM_DIAGNOSTIC_DELAY_SECONDS=600 \
+                        JEI_JVM_DIAGNOSTIC_FILE="$WORKSPACE/Fabric/build/reports/client-gametest-diagnostics.txt" \
+                            python3 .jenkins/runWithJvmDiagnostics.py \
+                            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
+                            ./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs :NeoForge:runClientRecipeSyncTest --no-daemon --no-parallel
                     else
                         echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
                     fi
@@ -177,6 +181,7 @@ pipeline {
     post {
         always {
             junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
+            archiveArtifacts allowEmptyArchive: true, artifacts: 'Fabric/build/reports/client-gametest-diagnostics.txt'
             script {
                 def discordNotification = load '.jenkins/discordNotification.groovy'
                 discordNotification.notifyDiscordBuildSafely(currentBuild.currentResult)
