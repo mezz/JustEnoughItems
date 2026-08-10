@@ -17,7 +17,6 @@ def runExternalPublishTask(String gradleTask) {
         }
     }
 }
-
 def releaseCommentStatePrefix() {
     return 'jenkins-github-release-comments-state:v1:'
 }
@@ -117,6 +116,9 @@ pipeline {
         }
 
         stage('Client GameTests') {
+            options {
+                timeout(time: 15, unit: 'MINUTES')
+            }
             steps {
                 sh '''
                     if command -v xvfb-run >/dev/null 2>&1; then
