@@ -57,7 +57,8 @@ public final class RecipeTransferTestHelper extends JeiGameTestHelper {
 			throw createFailException("Expected the transfer menu to be the player's open menu");
 		}
 		List<ItemStack> initialInventoryStacks = copyInventoryStacks(menu, player);
-		return executeTransfer(recipeType, recipe, menu, initialInventoryStacks, maxTransfer, serverConnection);
+		List<ItemStack> initialMenuStacks = copyMenuStacks(menu);
+		return executeTransfer(recipeType, recipe, menu, initialInventoryStacks, initialMenuStacks, maxTransfer, serverConnection);
 	}
 
 	private <M extends AbstractContainerMenu> TransferResult<M> executeTransfer(
@@ -65,6 +66,7 @@ public final class RecipeTransferTestHelper extends JeiGameTestHelper {
 		TransferRecipe<?> recipe,
 		M menu,
 		List<ItemStack> initialInventoryStacks,
+		List<ItemStack> initialMenuStacks,
 		boolean maxTransfer,
 		TestConnectionToServer serverConnection
 	) {
@@ -76,7 +78,15 @@ public final class RecipeTransferTestHelper extends JeiGameTestHelper {
 			connection -> transferHandler.transferRecipe(menu, recipe.recipe(), recipe.slotsView(), player, maxTransfer, true)
 		);
 
-		return new TransferResult<>(player, menu, recipe, initialInventoryStacks, transferRegistration.getTransferHelper(), transferError);
+		return new TransferResult<>(
+			player,
+			menu,
+			recipe,
+			initialInventoryStacks,
+			initialMenuStacks,
+			transferRegistration.getTransferHelper(),
+			transferError
+		);
 	}
 
 	public void assertTransferSucceeded(TransferResult<?> result) {
@@ -96,9 +106,7 @@ public final class RecipeTransferTestHelper extends JeiGameTestHelper {
 		assertTransferSucceeded(result);
 		List<Slot> actualTargetSlots = targetSlots.get(result.menu(), result.player());
 		assertRecipeTransferred(actualTargetSlots, result.recipe(), result.menu());
-		// Reconcile every inventory slot against the items placed in the recipe slots.
-		// This catches transfers that duplicate items into any previously empty inventory slot.
-		assertInventoryUpdated(result.menu(), result.initialInventoryStacks(), actualTargetSlots);
+		assertMenuItemsConserved(result.menu(), result.initialMenuStacks(), actualTargetSlots);
 	}
 
 	public <M extends AbstractContainerMenu> void assertFailedTransfer(
@@ -149,6 +157,12 @@ public final class RecipeTransferTestHelper extends JeiGameTestHelper {
 	private static List<ItemStack> copyInventoryStacks(AbstractContainerMenu menu, Player player) {
 		return JeiGameTestHelper.getStandardInventorySlots(menu, player)
 			.stream()
+			.map(slot -> slot.getItem().copy())
+			.toList();
+	}
+
+	private static List<ItemStack> copyMenuStacks(AbstractContainerMenu menu) {
+		return menu.slots.stream()
 			.map(slot -> slot.getItem().copy())
 			.toList();
 	}
@@ -254,50 +268,44 @@ public final class RecipeTransferTestHelper extends JeiGameTestHelper {
 		}
 	}
 
-	private void assertInventoryUpdated(AbstractContainerMenu menu, List<ItemStack> initialInventoryStacks, List<Slot> targetSlots) {
-		List<Slot> inventorySlots = getStandardInventorySlots(menu);
-		if (inventorySlots.size() != initialInventoryStacks.size()) {
-			throw createFailException("Expected %s inventory slots, got %s".formatted(initialInventoryStacks.size(), inventorySlots.size()));
+	private void assertMenuItemsConserved(AbstractContainerMenu menu, List<ItemStack> initialMenuStacks, List<Slot> targetSlots) {
+		if (menu.slots.size() != initialMenuStacks.size()) {
+			throw createFailException("Expected %s menu slots, got %s".formatted(initialMenuStacks.size(), menu.slots.size()));
 		}
 
-		List<Integer> expectedCounts = initialInventoryStacks.stream()
-			.map(ItemStack::getCount)
+		List<Slot> relevantSlots = new ArrayList<>(getStandardInventorySlots(menu));
+		relevantSlots.addAll(targetSlots);
+		List<ItemStack> remainingInitialStacks = relevantSlots.stream()
+			.map(slot -> initialMenuStacks.get(slot.index).copy())
 			.collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
 
-		// Treat each item placed in a target slot as having been removed from the captured inventory.
-		for (Slot targetSlot : targetSlots) {
-			ItemStack targetStack = targetSlot.getItem();
-			for (int i = 0; i < targetStack.getCount(); i++) {
-				int sourceIndex = findInventoryStack(initialInventoryStacks, expectedCounts, targetStack);
-				if (sourceIndex < 0) {
-					throw createFailException("Transferred unexpected stack %s into slot %s".formatted(targetStack, targetSlot.index));
+		for (Slot slot : relevantSlots) {
+
+			ItemStack unexplainedStack = slot.getItem().copy();
+			for (ItemStack initialStack : remainingInitialStacks) {
+				if (unexplainedStack.isEmpty()) {
+					break;
 				}
-				expectedCounts.set(sourceIndex, expectedCounts.get(sourceIndex) - 1);
+				if (ItemStack.isSameItemSameTags(initialStack, unexplainedStack)) {
+					int matchedCount = Math.min(initialStack.getCount(), unexplainedStack.getCount());
+					initialStack.shrink(matchedCount);
+					unexplainedStack.shrink(matchedCount);
+				}
+			}
+			if (!unexplainedStack.isEmpty()) {
+				throw createFailException("Recipe transfer created an unexpected stack in slot %s: %s".formatted(
+					slot.index,
+					unexplainedStack
+				));
 			}
 		}
 
-		// Every current inventory slot must now match the remaining expected count.
-		for (int i = 0; i < inventorySlots.size(); i++) {
-			Slot inventorySlot = inventorySlots.get(i);
-			ItemStack initialInventoryStack = initialInventoryStacks.get(i);
-			int expectedCount = expectedCounts.get(i);
-			if (expectedCount == 0) {
-				assertEmptySlot(inventorySlot);
-			} else {
-				ItemStack expectedStack = initialInventoryStack.copy();
-				expectedStack.setCount(expectedCount);
-				assertSlot(inventorySlot, expectedStack);
-			}
+		List<ItemStack> missingStacks = remainingInitialStacks.stream()
+			.filter(stack -> !stack.isEmpty())
+			.toList();
+		if (!missingStacks.isEmpty()) {
+			throw createFailException("Recipe transfer lost menu items: %s".formatted(missingStacks));
 		}
-	}
-
-	private static int findInventoryStack(List<ItemStack> inventoryStacks, List<Integer> expectedCounts, ItemStack transferredStack) {
-		for (int i = 0; i < inventoryStacks.size(); i++) {
-			if (expectedCounts.get(i) > 0 && ItemStack.isSameItemSameTags(inventoryStacks.get(i), transferredStack)) {
-				return i;
-			}
-		}
-		return -1;
 	}
 
 	public record TransferResult<M extends AbstractContainerMenu>(
@@ -305,6 +313,7 @@ public final class RecipeTransferTestHelper extends JeiGameTestHelper {
 		M menu,
 		TransferRecipe<?> recipe,
 		List<ItemStack> initialInventoryStacks,
+		List<ItemStack> initialMenuStacks,
 		IRecipeTransferHandlerHelper handlerHelper,
 		@Nullable IRecipeTransferError transferError
 	) {
