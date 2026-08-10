@@ -402,6 +402,42 @@ public class RecipeTransferIntegrationTest {
 	}
 
 	@Test
+	public void transfersWhenUnrelatedInventorySlotIsLocked() {
+		PlayerEntity player = mock(PlayerEntity.class);
+		final Inventory inventory = new Inventory(2);
+		TestContainer container = new TestContainer(player, 1, 2, normalTargetFactory(), new InventorySlotFactory() {
+			@Override
+			public Slot create(int index) {
+				if (index == 0) {
+					return new Slot(inventory, index, 0, 0) {
+						@Override
+						public boolean mayPickup(PlayerEntity testPlayer) {
+							return false;
+						}
+					};
+				}
+				return new Slot(inventory, index, 0, 0);
+			}
+		});
+		TestContext context = new TestContext(player, container);
+		context.setInventory(0, Items.DIRT, 1);
+		context.setInventory(1, Items.OAK_PLANKS, 1);
+
+		RecipeTransferUtil.MatchingItemsResult result = transfer(
+			context,
+			recipe(ingredient(Items.OAK_PLANKS)),
+			false,
+			true
+		);
+
+		assertTrue(result.missingItems.isEmpty());
+		assertStack(context.targetSlots.get(0), Items.OAK_PLANKS, 1);
+		assertStack(context.inventorySlots.get(0), Items.DIRT, 1);
+		assertTrue(context.inventorySlots.get(1).getItem().isEmpty());
+		assertEquals(2, totalItemCount(context));
+	}
+
+	@Test
 	public void doesNotOverwriteLockedOccupiedTargetSlot() {
 		PlayerEntity player = mock(PlayerEntity.class);
 		TestContainer container = new TestContainer(player, 1, 1, new TargetSlotFactory() {
