@@ -16,6 +16,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
@@ -35,13 +36,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class RecipeTransferIntegrationTest {
-	private static final StackHelper STACK_HELPER = new StackHelper(mock(ISubtypeRegistry.class));
+	private static final ISubtypeRegistry SUBTYPE_REGISTRY = mock(ISubtypeRegistry.class);
+	private static final StackHelper STACK_HELPER = new StackHelper(SUBTYPE_REGISTRY);
 
 	@BeforeClass
 	public static void bootstrapMinecraft() {
+		when(SUBTYPE_REGISTRY.getSubtypeInfo(any(ItemStack.class))).thenAnswer(invocation -> {
+			ItemStack stack = invocation.getArgument(0);
+			return stack.hasTagCompound() ? stack.getTagCompound().toString() : null;
+		});
 		if (!Bootstrap.isRegistered()) {
 			Bootstrap.register();
 		}
@@ -424,6 +432,22 @@ public class RecipeTransferIntegrationTest {
 
 		assertStack(context.targetSlots.get(0), Items.STRING, 1);
 		assertAllOtherSlotsEmpty(context, context.targetSlots.get(0));
+	}
+
+	@Test
+	public void transfersExactSubtypeIngredient() {
+		TestContext context = createContext(1, 2);
+		ItemStack requiredPotion = taggedStack(Items.POTIONITEM, "minecraft:water");
+		ItemStack otherPotion = taggedStack(Items.POTIONITEM, "minecraft:healing");
+		context.setInventory(0, otherPotion);
+		context.setInventory(1, requiredPotion);
+
+		transfer(context, recipe(ingredientStacks(requiredPotion)), false, true);
+
+		assertTrue(ItemStack.areItemStacksEqual(requiredPotion, context.targetSlots.get(0).getStack()));
+		assertTrue(ItemStack.areItemStacksEqual(otherPotion, context.inventorySlots.get(0).getStack()));
+		assertTrue(context.inventorySlots.get(1).getStack().isEmpty());
+		assertEquals(2, totalItemCount(context));
 	}
 
 	@Test
@@ -952,6 +976,14 @@ public class RecipeTransferIntegrationTest {
 		return new TestGuiIngredient(Arrays.asList(stacks));
 	}
 
+	private static ItemStack taggedStack(Item item, String subtype) {
+		ItemStack stack = new ItemStack(item);
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setString("Potion", subtype);
+		stack.setTagCompound(tag);
+		return stack;
+	}
+
 	private static TestGuiIngredient emptyIngredient() {
 		return new TestGuiIngredient(Collections.<ItemStack>emptyList());
 	}
@@ -1016,6 +1048,10 @@ public class RecipeTransferIntegrationTest {
 
 		private void setInventory(int index, Item item, int count) {
 			inventorySlots.get(index).putStack(new ItemStack(item, count));
+		}
+
+		private void setInventory(int index, ItemStack stack) {
+			inventorySlots.get(index).putStack(stack.copy());
 		}
 	}
 
