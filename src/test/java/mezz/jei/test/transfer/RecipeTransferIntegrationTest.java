@@ -76,6 +76,30 @@ public class RecipeTransferIntegrationTest {
 	}
 
 	@Test
+	public void transfersRequestedCountIntoCountSensitiveSlot() {
+		EntityPlayer player = mock(EntityPlayer.class);
+		TestContainer container = new TestContainer(player, 1, 1, new TargetSlotFactory() {
+			@Override
+			public Slot create(TestContainer testContainer, EntityPlayer testPlayer, int index) {
+				return new Slot(new InventoryBasic("test", false, 1), 0, 0, 0) {
+					@Override
+					public boolean isItemValid(ItemStack stack) {
+						return stack.getCount() == 2;
+					}
+				};
+			}
+		});
+		TestContext context = new TestContext(player, container);
+		context.setInventory(0, Items.PAPER, 4);
+
+		transfer(context, recipe(countedIngredient(2, Items.PAPER)), false, true);
+
+		assertStack(context.targetSlots.get(0), Items.PAPER, 2);
+		assertStack(context.inventorySlots.get(0), Items.PAPER, 2);
+		assertEquals(4, totalItemCount(context));
+	}
+
+	@Test
 	public void transfersIntoEmptyItemHandlerSlot() {
 		EntityPlayer player = mock(EntityPlayer.class);
 		TestContainer container = new TestContainer(player, 1, 1, new TargetSlotFactory() {
@@ -771,6 +795,149 @@ public class RecipeTransferIntegrationTest {
 	}
 
 	@Test
+	public void maliciousPacketCannotPartiallyTransferAroundLockedCraftingItem() {
+		EntityPlayer player = mock(EntityPlayer.class);
+		TestContainer container = new TestContainer(player, 2, 1, new TargetSlotFactory() {
+			@Override
+			public Slot create(TestContainer testContainer, EntityPlayer testPlayer, int index) {
+				if (index == 0) {
+					return new Slot(new InventoryBasic("test", false, 1), 0, 0, 0) {
+						@Override
+						public boolean canTakeStack(EntityPlayer containerPlayer) {
+							return false;
+						}
+					};
+				}
+				return new Slot(new InventoryBasic("test", false, 1), 0, 0, 0);
+			}
+		});
+		TestContext context = new TestContext(player, container);
+		context.setTarget(0, Items.FLINT, 1);
+		context.setInventory(0, Items.PAPER, 1);
+		Map<Integer, Integer> recipeMap = Collections.singletonMap(1, context.inventorySlots.get(0).slotNumber);
+
+		sendPacket(context, recipeMap, slotIndexes(context.targetSlots), slotIndexes(context.inventorySlots), false, true);
+
+		assertStack(context.targetSlots.get(0), Items.FLINT, 1);
+		assertTrue(context.targetSlots.get(1).getStack().isEmpty());
+		assertStack(context.inventorySlots.get(0), Items.PAPER, 1);
+		assertEquals(2, totalItemCount(context));
+	}
+
+	@Test
+	public void maliciousPacketCannotPartiallyTransferIntoRejectingRecipeSlot() {
+		EntityPlayer player = mock(EntityPlayer.class);
+		final ItemStackHandler rejectingItemHandler = new ItemStackHandler(1) {
+			@Override
+			public boolean isItemValid(int slot, ItemStack stack) {
+				return false;
+			}
+		};
+		TestContainer container = new TestContainer(player, 2, 1, new TargetSlotFactory() {
+			@Override
+			public Slot create(TestContainer testContainer, EntityPlayer testPlayer, int index) {
+				if (index == 0) {
+					return new SlotItemHandler(rejectingItemHandler, 0, 0, 0);
+				}
+				return new Slot(new InventoryBasic("test", false, 1), 0, 0, 0);
+			}
+		});
+		TestContext context = new TestContext(player, container);
+		context.setInventory(0, Items.PAPER, 2);
+		Map<Integer, Integer> recipeMap = new LinkedHashMap<>();
+		recipeMap.put(0, context.inventorySlots.get(0).slotNumber);
+		recipeMap.put(1, context.inventorySlots.get(0).slotNumber);
+
+		sendPacket(context, recipeMap, slotIndexes(context.targetSlots), slotIndexes(context.inventorySlots), false, true);
+
+		assertTrue(context.targetSlots.get(0).getStack().isEmpty());
+		assertTrue(context.targetSlots.get(1).getStack().isEmpty());
+		assertStack(context.inventorySlots.get(0), Items.PAPER, 2);
+		assertEquals(2, totalItemCount(context));
+	}
+
+	@Test
+	public void maliciousPacketCannotMergeDifferentItemsIntoOneTarget() {
+		TestContext context = createContext(1, 2);
+		context.setInventory(0, Items.PAPER, 1);
+		context.setInventory(1, Items.FLINT, 1);
+		Map<Integer, Integer> recipeMap = new LinkedHashMap<>();
+		recipeMap.put(0, context.inventorySlots.get(0).slotNumber);
+		recipeMap.put(1, context.inventorySlots.get(1).slotNumber);
+		List<Integer> duplicateTargetSlots = Arrays.asList(
+			context.targetSlots.get(0).slotNumber,
+			context.targetSlots.get(0).slotNumber
+		);
+
+		sendPacket(context, recipeMap, duplicateTargetSlots, slotIndexes(context.inventorySlots), false, true);
+
+		assertTrue(context.targetSlots.get(0).getStack().isEmpty());
+		assertStack(context.inventorySlots.get(0), Items.PAPER, 1);
+		assertStack(context.inventorySlots.get(1), Items.FLINT, 1);
+		assertEquals(2, totalItemCount(context));
+	}
+
+	@Test
+	public void maliciousPacketCannotMergeDifferentSubtypesIntoOneTarget() {
+		TestContext context = createContext(1, 2);
+		ItemStack waterPotion = taggedStack(Items.POTIONITEM, "minecraft:water");
+		ItemStack healingPotion = taggedStack(Items.POTIONITEM, "minecraft:healing");
+		context.setInventory(0, waterPotion);
+		context.setInventory(1, healingPotion);
+		Map<Integer, Integer> recipeMap = new LinkedHashMap<>();
+		recipeMap.put(0, context.inventorySlots.get(0).slotNumber);
+		recipeMap.put(1, context.inventorySlots.get(1).slotNumber);
+		List<Integer> duplicateTargetSlots = Arrays.asList(
+			context.targetSlots.get(0).slotNumber,
+			context.targetSlots.get(0).slotNumber
+		);
+
+		sendPacket(context, recipeMap, duplicateTargetSlots, slotIndexes(context.inventorySlots), false, true);
+
+		assertTrue(context.targetSlots.get(0).getStack().isEmpty());
+		assertTrue(ItemStack.areItemStacksEqual(waterPotion, context.inventorySlots.get(0).getStack()));
+		assertTrue(ItemStack.areItemStacksEqual(healingPotion, context.inventorySlots.get(1).getStack()));
+		assertEquals(2, totalItemCount(context));
+	}
+
+	@Test
+	public void maliciousPacketCannotTakeCraftingResultAsSource() {
+		EntityPlayer player = mock(EntityPlayer.class);
+		TestContainer container = new TestContainer(player, 2, 0, new TargetSlotFactory() {
+			@Override
+			public Slot create(TestContainer testContainer, EntityPlayer testPlayer, int index) {
+				if (index == 0) {
+					return new SlotCrafting(
+						testPlayer,
+						new InventoryCrafting(testContainer, 1, 1),
+						new InventoryCraftResult(),
+						0,
+						0,
+						0
+					);
+				}
+				return new Slot(new InventoryBasic("test", false, 1), 0, 0, 0);
+			}
+		});
+		TestContext context = new TestContext(player, container);
+		context.setTarget(0, Items.DIAMOND, 1);
+		Map<Integer, Integer> recipeMap = Collections.singletonMap(0, context.targetSlots.get(0).slotNumber);
+
+		sendPacket(
+			context,
+			recipeMap,
+			Collections.singletonList(context.targetSlots.get(1).slotNumber),
+			Collections.singletonList(context.targetSlots.get(0).slotNumber),
+			false,
+			true
+		);
+
+		assertStack(context.targetSlots.get(0), Items.DIAMOND, 1);
+		assertTrue(context.targetSlots.get(1).getStack().isEmpty());
+		assertEquals(1, totalItemCount(context));
+	}
+
+	@Test
 	public void ignoresPacketWithInvalidSourceSlotId() {
 		TestContext context = createContext(1, 1);
 		context.setInventory(0, Items.PAPER, 1);
@@ -862,6 +1029,33 @@ public class RecipeTransferIntegrationTest {
 		assertTrue(context.targetSlots.get(1).getStack().isEmpty());
 		assertStack(context.inventorySlots.get(0), Items.PAPER, 1);
 		assertEquals(1, totalItemCount(context));
+	}
+
+	@Test
+	public void maliciousCountedPacketCannotDuplicateStackAcrossTargets() {
+		TestContext context = createContext(2, 1);
+		context.setInventory(0, Items.PAPER, 3);
+		Map<Integer, Integer> recipeMap = new LinkedHashMap<>();
+		recipeMap.put(0, context.inventorySlots.get(0).slotNumber);
+		recipeMap.put(1, context.inventorySlots.get(0).slotNumber);
+		Map<Integer, Integer> recipeCountMap = new LinkedHashMap<>();
+		recipeCountMap.put(0, 2);
+		recipeCountMap.put(1, 2);
+
+		sendPacket(
+			context,
+			recipeMap,
+			recipeCountMap,
+			slotIndexes(context.targetSlots),
+			slotIndexes(context.inventorySlots),
+			false,
+			true
+		);
+
+		assertTrue(context.targetSlots.get(0).getStack().isEmpty());
+		assertTrue(context.targetSlots.get(1).getStack().isEmpty());
+		assertStack(context.inventorySlots.get(0), Items.PAPER, 3);
+		assertEquals(3, totalItemCount(context));
 	}
 
 	@Test
