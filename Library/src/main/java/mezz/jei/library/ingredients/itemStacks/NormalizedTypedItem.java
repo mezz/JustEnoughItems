@@ -1,5 +1,6 @@
 package mezz.jei.library.ingredients.itemStacks;
 
+import mezz.jei.api.ingredients.IIngredientHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +18,7 @@ final class NormalizedTypedItem extends TypedItemStack {
 	}
 
 	@Override
-	public TypedItemStack getNormalized() {
+	public TypedItemStack normalize(IIngredientHelper<ItemStack> ingredientHelper) {
 		return this;
 	}
 

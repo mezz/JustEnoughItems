@@ -32,26 +32,10 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		}
 	}
 
-	public static <T> ITypedIngredient<T> normalize(ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
-		IIngredientType<T> type = typedIngredient.getType();
-
-		if (type == VanillaTypes.ITEM_STACK) {
-			@SuppressWarnings("unchecked")
-			ITypedIngredient<ItemStack> cast = (ITypedIngredient<ItemStack>) typedIngredient;
-			ITypedIngredient<ItemStack> normalized = TypedItemStack.normalize(cast);
-			@SuppressWarnings("unchecked")
-			ITypedIngredient<T> castNormalized = (ITypedIngredient<T>) normalized;
-			return castNormalized;
-		}
-
-		T ingredient = typedIngredient.getIngredient();
-		T normalized = ingredientHelper.normalizeIngredient(ingredient);
-		return createUnvalidated(type, normalized);
-	}
-
 	public static <T> ITypedIngredient<T> createUnvalidated(IIngredientType<T> ingredientType, T ingredient) {
-		if (ingredientType == VanillaTypes.ITEM_STACK) {
-			ITypedIngredient<ItemStack> typedIngredient = TypedItemStack.create((ItemStack) ingredient);
+		ItemStack itemStack = VanillaTypes.ITEM_STACK.getCastIngredient(ingredient);
+		if (itemStack != null) {
+			ITypedIngredient<ItemStack> typedIngredient = TypedItemStack.create(itemStack);
 			@SuppressWarnings("unchecked")
 			ITypedIngredient<T> castIngredient = (ITypedIngredient<T>) typedIngredient;
 			return castIngredient;
@@ -253,6 +237,12 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		checkParameters(ingredientType, ingredient);
 		this.ingredientType = ingredientType;
 		this.ingredient = ingredient;
+	}
+
+	@Override
+	public ITypedIngredient<T> normalize(IIngredientHelper<T> ingredientHelper) {
+		T normalized = ingredientHelper.normalizeIngredient(ingredient);
+		return createUnvalidated(ingredientType, normalized);
 	}
 
 	@Override

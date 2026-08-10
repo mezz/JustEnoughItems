@@ -332,6 +332,7 @@ public interface IIngredientManager {
 	 * Normalize a typed ingredient.
 	 *
 	 * @see IIngredientHelper#normalizeIngredient
+	 * @see ITypedIngredient#normalize
 	 *
 	 * @since 11.7.0
 	 */
