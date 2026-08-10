@@ -68,6 +68,30 @@ public class RecipeTransferIntegrationTest {
 	}
 
 	@Test
+	public void transfersRequestedCountIntoCountSensitiveSlot() {
+		PlayerEntity player = mock(PlayerEntity.class);
+		TestContainer container = new TestContainer(player, 1, 1, new TargetSlotFactory() {
+			@Override
+			public Slot create(TestContainer testContainer, PlayerEntity testPlayer, int index) {
+				return new Slot(new Inventory(1), 0, 0, 0) {
+					@Override
+					public boolean mayPlace(ItemStack stack) {
+						return stack.getCount() == 1;
+					}
+				};
+			}
+		});
+		TestContext context = new TestContext(player, container);
+		context.setInventory(0, Items.OAK_PLANKS, 4);
+
+		transfer(context, recipe(ingredient(Items.OAK_PLANKS)), false, true);
+
+		assertStack(context.targetSlots.get(0), Items.OAK_PLANKS, 1);
+		assertStack(context.inventorySlots.get(0), Items.OAK_PLANKS, 3);
+		assertEquals(4, totalItemCount(context));
+	}
+
+	@Test
 	public void transfersIntoEmptyItemHandlerSlot() {
 		PlayerEntity player = mock(PlayerEntity.class);
 		TestContainer container = new TestContainer(player, 1, 1, new TargetSlotFactory() {
@@ -526,6 +550,146 @@ public class RecipeTransferIntegrationTest {
 
 		assertTrue(context.targetSlots.get(0).getItem().isEmpty());
 		assertStack(context.inventorySlots.get(0), Items.OAK_PLANKS, 1);
+		assertEquals(1, totalItemCount(context));
+	}
+
+	@Test
+	public void maliciousPacketCannotPartiallyTransferAroundLockedCraftingItem() {
+		PlayerEntity player = mock(PlayerEntity.class);
+		TestContainer container = new TestContainer(player, 2, 1, new TargetSlotFactory() {
+			@Override
+			public Slot create(TestContainer testContainer, PlayerEntity testPlayer, int index) {
+				return new Slot(new Inventory(1), 0, 0, 0) {
+					@Override
+					public boolean mayPickup(PlayerEntity containerPlayer) {
+						return index != 0;
+					}
+				};
+			}
+		});
+		TestContext context = new TestContext(player, container);
+		context.setTarget(0, Items.DIRT, 1);
+		context.setInventory(0, Items.OAK_PLANKS, 1);
+		Map<Integer, Integer> recipeMap = Collections.singletonMap(1, context.inventorySlots.get(0).index);
+
+		sendPacket(context, recipeMap, slotIndexes(context.targetSlots), slotIndexes(context.inventorySlots), false, true);
+
+		assertStack(context.targetSlots.get(0), Items.DIRT, 1);
+		assertTrue(context.targetSlots.get(1).getItem().isEmpty());
+		assertStack(context.inventorySlots.get(0), Items.OAK_PLANKS, 1);
+		assertEquals(2, totalItemCount(context));
+	}
+
+	@Test
+	public void maliciousPacketCannotPartiallyTransferIntoRejectingRecipeSlot() {
+		PlayerEntity player = mock(PlayerEntity.class);
+		final ItemStackHandler rejectingItemHandler = new ItemStackHandler(1) {
+			@Override
+			public boolean isItemValid(int slot, ItemStack stack) {
+				return false;
+			}
+		};
+		TestContainer container = new TestContainer(player, 2, 1, new TargetSlotFactory() {
+			@Override
+			public Slot create(TestContainer testContainer, PlayerEntity testPlayer, int index) {
+				if (index == 0) {
+					return new SlotItemHandler(rejectingItemHandler, 0, 0, 0);
+				}
+				return new Slot(new Inventory(1), 0, 0, 0);
+			}
+		});
+		TestContext context = new TestContext(player, container);
+		context.setInventory(0, Items.OAK_PLANKS, 2);
+		Map<Integer, Integer> recipeMap = new LinkedHashMap<>();
+		recipeMap.put(0, context.inventorySlots.get(0).index);
+		recipeMap.put(1, context.inventorySlots.get(0).index);
+
+		sendPacket(context, recipeMap, slotIndexes(context.targetSlots), slotIndexes(context.inventorySlots), false, true);
+
+		assertTrue(context.targetSlots.get(0).getItem().isEmpty());
+		assertTrue(context.targetSlots.get(1).getItem().isEmpty());
+		assertStack(context.inventorySlots.get(0), Items.OAK_PLANKS, 2);
+		assertEquals(2, totalItemCount(context));
+	}
+
+	@Test
+	public void maliciousPacketCannotMergeDifferentItemsIntoOneTarget() {
+		TestContext context = createContext(1, 2);
+		context.setInventory(0, Items.DIAMOND, 1);
+		context.setInventory(1, Items.DIRT, 1);
+		Map<Integer, Integer> recipeMap = new LinkedHashMap<>();
+		recipeMap.put(0, context.inventorySlots.get(0).index);
+		recipeMap.put(1, context.inventorySlots.get(1).index);
+		List<Integer> duplicateTargetSlots = Arrays.asList(
+			context.targetSlots.get(0).index,
+			context.targetSlots.get(0).index
+		);
+
+		sendPacket(context, recipeMap, duplicateTargetSlots, slotIndexes(context.inventorySlots), false, true);
+
+		assertTrue(context.targetSlots.get(0).getItem().isEmpty());
+		assertStack(context.inventorySlots.get(0), Items.DIAMOND, 1);
+		assertStack(context.inventorySlots.get(1), Items.DIRT, 1);
+		assertEquals(2, totalItemCount(context));
+	}
+
+	@Test
+	public void maliciousPacketCannotMergeDifferentSubtypesIntoOneTarget() {
+		TestContext context = createContext(1, 2);
+		ItemStack waterPotion = taggedStack(Items.POTION, "minecraft:water");
+		ItemStack healingPotion = taggedStack(Items.POTION, "minecraft:healing");
+		context.setInventory(0, waterPotion);
+		context.setInventory(1, healingPotion);
+		Map<Integer, Integer> recipeMap = new LinkedHashMap<>();
+		recipeMap.put(0, context.inventorySlots.get(0).index);
+		recipeMap.put(1, context.inventorySlots.get(1).index);
+		List<Integer> duplicateTargetSlots = Arrays.asList(
+			context.targetSlots.get(0).index,
+			context.targetSlots.get(0).index
+		);
+
+		sendPacket(context, recipeMap, duplicateTargetSlots, slotIndexes(context.inventorySlots), false, true);
+
+		assertTrue(context.targetSlots.get(0).getItem().isEmpty());
+		assertTrue(ItemStack.matches(waterPotion, context.inventorySlots.get(0).getItem()));
+		assertTrue(ItemStack.matches(healingPotion, context.inventorySlots.get(1).getItem()));
+		assertEquals(2, totalItemCount(context));
+	}
+
+	@Test
+	public void maliciousPacketCannotTakeCraftingResultAsSource() {
+		PlayerEntity player = mock(PlayerEntity.class);
+		TestContainer container = new TestContainer(player, 2, 0, new TargetSlotFactory() {
+			@Override
+			public Slot create(TestContainer testContainer, PlayerEntity testPlayer, int index) {
+				if (index == 0) {
+					return new CraftingResultSlot(
+						testPlayer,
+						new CraftingInventory(testContainer, 1, 1),
+						new CraftResultInventory(),
+						0,
+						0,
+						0
+					);
+				}
+				return new Slot(new Inventory(1), 0, 0, 0);
+			}
+		});
+		TestContext context = new TestContext(player, container);
+		context.setTarget(0, Items.CRAFTING_TABLE, 1);
+		Map<Integer, Integer> recipeMap = Collections.singletonMap(0, context.targetSlots.get(0).index);
+
+		sendPacket(
+			context,
+			recipeMap,
+			Collections.singletonList(context.targetSlots.get(1).index),
+			Collections.singletonList(context.targetSlots.get(0).index),
+			false,
+			true
+		);
+
+		assertStack(context.targetSlots.get(0), Items.CRAFTING_TABLE, 1);
+		assertTrue(context.targetSlots.get(1).getItem().isEmpty());
 		assertEquals(1, totalItemCount(context));
 	}
 

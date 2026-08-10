@@ -25,14 +25,30 @@ public final class BasicRecipeTransferHandlerServer {
 
 		// grab items from slots
 		Map<Integer, ItemStack> slotMap = new HashMap<>(slotIdMap.size());
+		Map<Slot, ItemStack> targetSlotStacks = new HashMap<>();
 		for (Map.Entry<Integer, Integer> entry : slotIdMap.entrySet()) {
-			Slot slot = container.getSlot(entry.getValue());
+			int sourceSlotNumber = entry.getValue();
+			if (!craftingSlots.contains(sourceSlotNumber) && !inventorySlots.contains(sourceSlotNumber)) {
+				return;
+			}
+			Slot slot = container.getSlot(sourceSlotNumber);
 			final ItemStack slotStack = slot.getItem();
 			if (slotStack.isEmpty()) {
 				return;
 			}
 			ItemStack stack = slotStack.copy();
 			stack.setCount(1);
+			Slot targetSlot = container.getSlot(craftingSlots.get(entry.getKey()));
+			if (!targetSlot.mayPlace(stack)) {
+				return;
+			}
+			ItemStack previousTargetStack = targetSlotStacks.putIfAbsent(targetSlot, stack);
+			if (
+				previousTargetStack != null &&
+				(!previousTargetStack.sameItem(stack) || !ItemStack.tagMatches(previousTargetStack, stack))
+			) {
+				return;
+			}
 			slotMap.put(entry.getKey(), stack);
 		}
 
@@ -42,13 +58,6 @@ public final class BasicRecipeTransferHandlerServer {
 				return;
 			}
 		}
-		for (Map.Entry<Integer, ItemStack> entry : slotMap.entrySet()) {
-			Slot craftingSlot = container.getSlot(craftingSlots.get(entry.getKey()));
-			if (!craftingSlot.mayPlace(entry.getValue())) {
-				return;
-			}
-		}
-
 		// Transfer as many items as possible only if it has been explicitly requested by the implementation
 		// and a max-transfer operation has been requested by the player.
 		boolean transferAsCompleteSets = requireCompleteSets || !maxTransfer;
