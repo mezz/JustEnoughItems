@@ -208,6 +208,10 @@ public class Textures {
 		}
 	}
 
+	public JeiGuiSpriteManager getAtlasManager() {
+		return guiSpriteManager;
+	}
+
 	public ScalableDrawable getRecipeGuiBackground() {
 		return recipeGuiBackground;
 	}
