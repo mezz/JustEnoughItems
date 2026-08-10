@@ -28,6 +28,10 @@ public class GuiAreaInputHandler implements IUserInputHandler {
 	public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
 		if (input.is(keyBindings.getLeftClick())) {
 			if (screen instanceof AbstractContainerScreen<?> guiContainer) {
+				if (!guiContainer.getMenu().getCarried().isEmpty()) {
+					return Optional.empty();
+				}
+
 				final int guiLeft = guiProperties.guiLeft();
 				final int guiTop = guiProperties.guiTop();
 				final double guiMouseX = input.getMouseX() - guiLeft;
