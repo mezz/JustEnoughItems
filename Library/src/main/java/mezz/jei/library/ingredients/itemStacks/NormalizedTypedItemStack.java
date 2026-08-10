@@ -1,5 +1,6 @@
 package mezz.jei.library.ingredients.itemStacks;
 
+import mezz.jei.api.ingredients.IIngredientHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -32,7 +33,7 @@ final class NormalizedTypedItemStack extends TypedItemStack {
 	}
 
 	@Override
-	public TypedItemStack getNormalized() {
+	public TypedItemStack normalize(IIngredientHelper<ItemStack> ingredientHelper) {
 		return this;
 	}
 
