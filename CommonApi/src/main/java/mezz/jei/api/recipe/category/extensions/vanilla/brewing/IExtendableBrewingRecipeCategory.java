@@ -1,12 +1,7 @@
 package mezz.jei.api.recipe.category.extensions.vanilla.brewing;
 
-import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
-import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 /**
  * Allows extending the vanilla brewing recipe category,
@@ -22,6 +17,15 @@ import java.util.List;
 public interface IExtendableBrewingRecipeCategory {
 	/**
 	 * Add an extension that handles a subset of the recipes in the brewing category.
+	 * An extension registered for the recipe's exact runtime class is preferred.
+	 * Otherwise, JEI uses the unique most-specific registered supertype.
+	 * Recipes with multiple unrelated matching extensions are not handled.
+	 *
+	 * <p>
+	 * Brewing extensions are used on platforms that expose custom brewing recipe objects.
+	 * Platforms that register brewing mixtures directly, without recipe objects, are detected automatically
+	 * and do not use these extensions.
+	 * </p>
 	 *
 	 * @param recipeClass the subset class of brewing recipes to handle
 	 * @param extension an extension for handling these recipes
@@ -31,21 +35,5 @@ public interface IExtendableBrewingRecipeCategory {
 	<R> void addExtension(
 		Class<? extends R> recipeClass,
 		IBrewingCategoryExtension<R> extension
-	);
-
-	/**
-	 * Convert a platform brewing recipe with its registered extension.
-	 *
-	 * @param recipe the platform brewing recipe
-	 * @param vanillaRecipeFactory factory for creating JEI brewing recipes
-	 * @return the converted recipes, or null when no extension is registered for the recipe
-	 * @param <R> the platform brewing recipe type
-	 * @since 11.39.0
-	 */
-	@ApiStatus.Internal
-	@Nullable
-	<R> List<IJeiBrewingRecipe> getBrewingRecipes(
-		R recipe,
-		IVanillaRecipeFactory vanillaRecipeFactory
 	);
 }

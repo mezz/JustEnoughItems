@@ -14,6 +14,8 @@ public interface IPlatformHelper {
 
 	IPlatformRecipeHelper getRecipeHelper();
 
+	IPlatformBrewingHelper getBrewingHelper();
+
 	IPlatformConfigHelper getConfigHelper();
 
 	IPlatformInputHelper getInputHelper();

@@ -7,15 +7,11 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import mezz.jei.api.recipe.category.extensions.vanilla.brewing.IBrewingCategoryExtension;
-import mezz.jei.api.recipe.category.extensions.vanilla.brewing.IExtendableBrewingRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
-import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.recipes.BrewingExtensionHelper;
+import mezz.jei.forge.platform.BrewingHelper;
 import mezz.jei.forge.platform.BrewingRecipeCategoryExtension;
-import mezz.jei.forge.platform.BrewingRecipeMaker;
-import mezz.jei.forge.plugins.forge.ForgeBrewingPlugin;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
@@ -40,7 +36,6 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BrewingRecipeMakerTest {
+public class ForgeBrewingExtensionTest {
 	private static final IIngredientHelper<ItemStack> ITEM_STACK_HELPER = new TestItemStackHelper();
 
 	@BeforeAll
@@ -63,7 +58,7 @@ public class BrewingRecipeMakerTest {
 		// Setup: a mod exposes a custom Forge brewing recipe and registers an extension for its class.
 		IBrewingRecipe brewingRecipe = new CustomBrewingRecipe();
 		BrewingExtensionHelper extensionHelper = new BrewingExtensionHelper();
-		extensionHelper.addRecipeExtension(
+		extensionHelper.addExtension(
 			CustomBrewingRecipe.class,
 			(recipe, vanillaRecipeFactory) -> List.of(
 				vanillaRecipeFactory.createBrewingRecipe(
@@ -80,14 +75,10 @@ public class BrewingRecipeMakerTest {
 				)
 			)
 		);
-		List<IJeiBrewingRecipe> recipes = new ArrayList<>();
-
 		// Operation: JEI converts the custom recipe through the registered extension.
-		BrewingRecipeMaker.addModdedBrewingRecipes(
-			createRecipeFactory(),
+		List<IJeiBrewingRecipe> recipes = extensionHelper.getBrewingRecipes(
 			List.of(brewingRecipe),
-			recipes,
-			new TestBrewingRecipeCategory(extensionHelper)
+			createRecipeFactory()
 		);
 
 		// Assertions: every JEI recipe returned by the extension is added.
@@ -114,18 +105,14 @@ public class BrewingRecipeMakerTest {
 			new ItemStack(Items.DIAMOND)
 		);
 		BrewingExtensionHelper extensionHelper = new BrewingExtensionHelper();
-		extensionHelper.addRecipeExtension(BrewingRecipe.class, new BrewingRecipeCategoryExtension(ITEM_STACK_HELPER));
-		extensionHelper.addRecipeExtension(CustomBrewingRecipe.class, (recipe, vanillaRecipeFactory) -> {
+		extensionHelper.addExtension(BrewingRecipe.class, new BrewingRecipeCategoryExtension(ITEM_STACK_HELPER));
+		extensionHelper.addExtension(CustomBrewingRecipe.class, (recipe, vanillaRecipeFactory) -> {
 			throw new IllegalStateException("test failure");
 		});
-		List<IJeiBrewingRecipe> recipes = new ArrayList<>();
-
 		// Operation: JEI processes both recipes while isolating the failed extension.
-		BrewingRecipeMaker.addModdedBrewingRecipes(
-			createRecipeFactory(),
+		List<IJeiBrewingRecipe> recipes = extensionHelper.getBrewingRecipes(
 			List.of(brokenRecipe, validRecipe),
-			recipes,
-			new TestBrewingRecipeCategory(extensionHelper)
+			createRecipeFactory()
 		);
 
 		// Assertions: the valid recipe remains available.
@@ -138,15 +125,14 @@ public class BrewingRecipeMakerTest {
 		// Setup: Forge exposes its vanilla brewing dispatcher and JEI registers the matching internal extension.
 		IIngredientManager ingredientManager = createIngredientManager();
 		BrewingExtensionHelper extensionHelper = new BrewingExtensionHelper();
-		ForgeBrewingPlugin.registerCategoryExtensions(
-			new TestBrewingRecipeCategory(extensionHelper),
-			ingredientManager
-		);
+		BrewingHelper brewingHelper = new BrewingHelper();
+		brewingHelper.registerCategoryExtensions(extensionHelper, ingredientManager);
 
-		// Operation: Forge's recipe maker sends its registry through the generic extension dispatcher.
-		List<IJeiBrewingRecipe> recipes = BrewingRecipeMaker.getBrewingRecipes(
+		// Operation: Forge's brewing registry is converted through the generic extension dispatcher.
+		List<IJeiBrewingRecipe> recipes = brewingHelper.getBrewingRecipes(
+			ingredientManager,
 			createRecipeFactory(),
-			new TestBrewingRecipeCategory(extensionHelper)
+			extensionHelper
 		);
 
 		// Assertions: vanilla water and nether wart brewing is discovered through the extension.
@@ -157,6 +143,32 @@ public class BrewingRecipeMakerTest {
 						PotionUtils.getPotion(recipe.getPotionOutput()) == Potions.AWKWARD
 				)
 		);
+	}
+
+	@Test
+	public void standardRecipesWithTheSameOutputHaveUniqueIds() {
+		// Setup: two standard Forge recipes have the same input and output but different ingredients.
+		BrewingRecipe firstRecipe = new BrewingRecipe(
+			Ingredient.of(Items.POTION),
+			Ingredient.of(Items.NETHER_WART),
+			new ItemStack(Items.DIAMOND)
+		);
+		BrewingRecipe secondRecipe = new BrewingRecipe(
+			Ingredient.of(Items.POTION),
+			Ingredient.of(Items.REDSTONE),
+			new ItemStack(Items.DIAMOND)
+		);
+		BrewingExtensionHelper extensionHelper = new BrewingExtensionHelper();
+		extensionHelper.addExtension(BrewingRecipe.class, new BrewingRecipeCategoryExtension(ITEM_STACK_HELPER));
+		// Operation: JEI converts both recipes through the standard Forge extension.
+		List<IJeiBrewingRecipe> recipes = extensionHelper.getBrewingRecipes(
+			List.of(firstRecipe, secondRecipe),
+			createRecipeFactory()
+		);
+
+		// Assertions: both recipes remain distinct when JEI de-duplicates them by UID.
+		assertEquals(2, recipes.size());
+		assertTrue(recipes.stream().allMatch(recipe -> recipe.getUid().getPath().length() == 72));
 	}
 
 	private static IIngredientManager createIngredientManager() {
@@ -237,27 +249,4 @@ public class BrewingRecipeMakerTest {
 		}
 	}
 
-	private record TestBrewingRecipeCategory(
-		BrewingExtensionHelper extensionHelper
-	) implements IExtendableBrewingRecipeCategory {
-		@Override
-		public <R> void addExtension(
-			Class<? extends R> recipeClass,
-			IBrewingCategoryExtension<R> extension
-		) {
-			extensionHelper.addRecipeExtension(recipeClass, extension);
-		}
-
-		@Override
-		public <R> @Nullable List<IJeiBrewingRecipe> getBrewingRecipes(
-			R recipe,
-			IVanillaRecipeFactory vanillaRecipeFactory
-		) {
-			IBrewingCategoryExtension<? super R> extension = extensionHelper.getRecipeExtension(recipe);
-			if (extension == null) {
-				return null;
-			}
-			return extension.getBrewingRecipes(recipe, vanillaRecipeFactory);
-		}
-	}
 }

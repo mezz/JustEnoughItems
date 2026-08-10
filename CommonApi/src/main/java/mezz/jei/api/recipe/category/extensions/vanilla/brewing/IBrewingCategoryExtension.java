@@ -29,6 +29,9 @@ public interface IBrewingCategoryExtension<R> {
 	 * <p>
 	 * A single platform recipe may return multiple JEI recipes when its output depends on the input,
 	 * such as a recipe that preserves regular, splash, and lingering potion containers.
+	 * Return an empty list when the platform recipe should not be displayed.
+	 * The returned list and its elements must not be null.
+	 * Each returned recipe must have a UID that uniquely identifies its displayed inputs, ingredients, and output.
 	 * </p>
 	 *
 	 * @param recipe the custom platform brewing recipe

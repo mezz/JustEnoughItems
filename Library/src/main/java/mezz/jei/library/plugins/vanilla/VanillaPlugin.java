@@ -13,9 +13,11 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
+import mezz.jei.api.recipe.category.extensions.vanilla.brewing.IExtendableBrewingRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.IExtendableSmithingRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
+import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModInfoRegistration;
@@ -29,12 +31,14 @@ import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.platform.IPlatformBrewingHelper;
 import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidIngredientHelper;
 import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidStackListFactory;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.recipes.BrewingExtensionHelper;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeCategory;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.library.plugins.vanilla.anvil.SmithingCategoryExtension;
@@ -116,6 +120,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -139,7 +144,7 @@ public class VanillaPlugin implements IModPlugin {
 	@Nullable
 	private SmithingRecipeCategory smithingCategory;
 	@Nullable
-	private BrewingRecipeCategory brewingCategory;
+	private BrewingExtensionHelper brewingExtensionHelper;
 
 	@Override
 	public ResourceLocation getPluginUid() {
@@ -197,6 +202,7 @@ public class VanillaPlugin implements IModPlugin {
 		Textures textures = Internal.getTextures();
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+		brewingExtensionHelper = new BrewingExtensionHelper();
 		registration.addRecipeCategories(
 			craftingCategory = new CraftingRecipeCategory(guiHelper),
 			stonecuttingCategory = new StoneCuttingRecipeCategory(guiHelper),
@@ -207,7 +213,7 @@ public class VanillaPlugin implements IModPlugin {
 			smithingCategory = new SmithingRecipeCategory(guiHelper),
 			new CompostableRecipeCategory(guiHelper),
 			new FurnaceFuelCategory(textures),
-			brewingCategory = new BrewingRecipeCategory(guiHelper),
+			new BrewingRecipeCategory(guiHelper),
 			new AnvilRecipeCategory(guiHelper),
 			new GrindstoneRecipeCategory(guiHelper)
 		);
@@ -221,6 +227,13 @@ public class VanillaPlugin implements IModPlugin {
 		IExtendableSmithingRecipeCategory smithingCategory = registration.getSmithingCategory();
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		smithingCategory.addExtension(UpgradeRecipe.class, new SmithingCategoryExtension<>(recipeHelper));
+
+		IExtendableBrewingRecipeCategory brewingCategory = registration.getBrewingCategory();
+		IPlatformBrewingHelper brewingHelper = Services.PLATFORM.getBrewingHelper();
+		brewingHelper.registerCategoryExtensions(
+			brewingCategory,
+			registration.getJeiHelpers().getIngredientManager()
+		);
 	}
 
 	@Override
@@ -232,6 +245,7 @@ public class VanillaPlugin implements IModPlugin {
 		ErrorUtil.checkNotNull(blastingCategory, "blastingCategory");
 		ErrorUtil.checkNotNull(campfireCategory, "campfireCategory");
 		ErrorUtil.checkNotNull(smithingCategory, "smithingCategory");
+		ErrorUtil.checkNotNull(brewingExtensionHelper, "brewingExtensionHelper");
 
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
@@ -256,6 +270,14 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipes(RecipeTypes.ANVIL, AnvilRecipeMaker.getAnvilRecipes(vanillaRecipeFactory, ingredientManager));
 		registration.addRecipes(RecipeTypes.SMITHING, vanillaRecipes.getSmithingRecipes(smithingCategory));
 		registration.addRecipes(RecipeTypes.COMPOSTING, CompostingRecipeMaker.getRecipes(ingredientManager));
+		IPlatformBrewingHelper brewingHelper = Services.PLATFORM.getBrewingHelper();
+		List<IJeiBrewingRecipe> brewingRecipes = brewingHelper.getBrewingRecipes(
+			ingredientManager,
+			vanillaRecipeFactory,
+			brewingExtensionHelper
+		);
+		brewingRecipes.sort(Comparator.comparingInt(IJeiBrewingRecipe::getBrewingSteps));
+		registration.addRecipes(RecipeTypes.BREWING, brewingRecipes);
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		registration.addRecipes(RecipeTypes.GRINDSTONE, GrindstoneRecipeMaker.getGrindstoneRecipes(ingredientManager, recipeHelper));
 	}
@@ -330,8 +352,8 @@ public class VanillaPlugin implements IModPlugin {
 		return Optional.ofNullable(smithingCategory);
 	}
 
-	public Optional<BrewingRecipeCategory> getBrewingCategory() {
-		return Optional.ofNullable(brewingCategory);
+	public Optional<BrewingExtensionHelper> getBrewingExtensionHelper() {
+		return Optional.ofNullable(brewingExtensionHelper);
 	}
 
 	/**
