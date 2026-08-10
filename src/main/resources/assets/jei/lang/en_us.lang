@@ -82,6 +82,12 @@ config.jei.search.colorSearchMode.comment=Search mode for colors (prefix: ^).
 config.jei.search.resourceIdSearchMode=&ResourceId
 config.jei.search.resourceIdSearchMode.comment=Search mode for resource IDs (prefix: &).
 config.jei.search.searchAdvancedTooltips=Search in Advanced Tooltips
+config.jei.search.searchAdvancedTooltips.comment=Search in advanced tooltips (visible with F3 + H).
+
+config.jei.searchColors=Search Colors
+config.jei.searchColors.comment=Config options related to searching for colors of items in JEI.
+config.jei.searchColors.searchColors=Search Colors
+config.jei.searchColors.searchColors.comment=Color values to search for.
 
 config.jei.advanced=Advanced
 config.jei.advanced.comment=Advanced config options to change the way JEI functions.

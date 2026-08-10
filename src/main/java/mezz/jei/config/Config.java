@@ -367,6 +367,7 @@ public final class Config {
 
 		config.addCategory(CATEGORY_SEARCH);
 		config.addCategory(CATEGORY_ADVANCED);
+		migrateSearchAdvancedTooltipsConfig(config);
 
 		ConfigCategory modeCategory = config.getCategory("mode");
 		if (modeCategory != null) {
@@ -409,7 +410,7 @@ public final class Config {
 			needsReload = true;
 		}
 
-		values.searchAdvancedTooltips = config.getBoolean("searchAdvancedTooltips", CATEGORY_SEARCH, defaultValues.searchAdvancedTooltips);
+		values.searchAdvancedTooltips = config.getBoolean(CATEGORY_SEARCH, "searchAdvancedTooltips", defaultValues.searchAdvancedTooltips);
 
 		ConfigCategory categoryAdvanced = config.getCategory(CATEGORY_ADVANCED);
 		categoryAdvanced.remove("nbtKeyIgnoreList");
@@ -445,6 +446,27 @@ public final class Config {
 			config.save();
 		}
 		return needsReload;
+	}
+
+	static void migrateSearchAdvancedTooltipsConfig(Configuration config) {
+		String legacyCategoryName = "searchAdvancedTooltips";
+		String legacyPropertyName = CATEGORY_SEARCH;
+		String propertyName = "searchAdvancedTooltips";
+		if (!config.hasCategory(legacyCategoryName)) {
+			return;
+		}
+
+		ConfigCategory legacyCategory = config.getCategory(legacyCategoryName);
+		if (legacyCategory.containsKey(legacyPropertyName)) {
+			if (config.hasKey(CATEGORY_SEARCH, propertyName)) {
+				legacyCategory.remove(legacyPropertyName);
+			} else if (config.moveProperty(legacyCategoryName, legacyPropertyName, CATEGORY_SEARCH)) {
+				config.renameProperty(CATEGORY_SEARCH, legacyPropertyName, propertyName);
+			}
+		}
+		if (legacyCategory.isEmpty()) {
+			config.removeCategory(legacyCategory);
+		}
 	}
 
 	private static void updateModNameFormat(LocalizedConfiguration config) {
