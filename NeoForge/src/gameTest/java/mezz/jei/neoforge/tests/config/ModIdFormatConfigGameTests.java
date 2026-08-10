@@ -3,6 +3,7 @@ package mezz.jei.neoforge.tests.config;
 import com.google.common.collect.ImmutableSetMultimap;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.library.config.IModIdFormatConfig;
@@ -396,6 +397,12 @@ public final class ModIdFormatConfigGameTests {
 	}
 
 	private record TestTypedIngredient<T>(IIngredientType<T> type, T ingredient) implements ITypedIngredient<T> {
+		@Override
+		public ITypedIngredient<T> normalize(IIngredientHelper<T> ingredientHelper) {
+			T normalized = ingredientHelper.normalizeIngredient(ingredient);
+			return new TestTypedIngredient<>(type, normalized);
+		}
+
 		@Override
 		public IIngredientType<T> getType() {
 			return type;

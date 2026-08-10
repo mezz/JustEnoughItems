@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.util.ImmutablePoint2i;
@@ -356,6 +357,11 @@ public class IngredientListOverlayControllerTest {
 	}
 
 	private record TestTypedIngredient<T>(IIngredientType<T> type, T ingredient) implements ITypedIngredient<T> {
+		@Override
+		public ITypedIngredient<T> normalize(IIngredientHelper<T> ingredientHelper) {
+			return this;
+		}
+
 		@Override
 		public IIngredientType<T> getType() {
 			return type;

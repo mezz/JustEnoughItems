@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay.ingredients;
 
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.gui.overlay.elements.IElement;
@@ -242,6 +243,11 @@ public class IngredientGridScrollStateTest {
 	}
 
 	private record TestTypedIngredient(Integer ingredient) implements ITypedIngredient<Integer> {
+		@Override
+		public ITypedIngredient<Integer> normalize(IIngredientHelper<Integer> ingredientHelper) {
+			return this;
+		}
+
 		@Override
 		public IIngredientType<Integer> getType() {
 			return INTEGER_TYPE;

@@ -2,6 +2,7 @@ package mezz.jei.neoforge.tests.lib;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -88,6 +89,12 @@ public record TestRecipeSlotView(RecipeIngredientRole role, List<@Nullable IType
 	}
 
 	private record TestTypedIngredient<T>(IIngredientType<T> type, T ingredient) implements ITypedIngredient<T> {
+		@Override
+		public ITypedIngredient<T> normalize(IIngredientHelper<T> ingredientHelper) {
+			T normalized = ingredientHelper.normalizeIngredient(ingredient);
+			return new TestTypedIngredient<>(type, normalized);
+		}
+
 		@Override
 		public IIngredientType<T> getType() {
 			return type;
