@@ -146,6 +146,10 @@ public class InputHandler {
 		}
 
 		if (guiScreen instanceof GuiContainer) {
+			Minecraft minecraft = guiScreen.mc;
+			if (minecraft != null && minecraft.player != null && !minecraft.player.inventory.getItemStack().isEmpty()) {
+				return false;
+			}
 			GuiContainer guiContainer = (GuiContainer) guiScreen;
 			RecipeClickableArea clickableArea = recipeRegistry.getRecipeClickableArea(guiContainer, mouseX - guiContainer.getGuiLeft(), mouseY - guiContainer.getGuiTop());
 			if (clickableArea != null) {
