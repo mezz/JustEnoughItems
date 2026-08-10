@@ -4,7 +4,6 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.common.gui.textures.JeiGuiSpriteManager;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.function.LazySupplier;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -13,7 +12,8 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.function.Supplier;
 
 public class DrawableSprite implements IDrawableStatic {
-	private final LazySupplier<TextureAtlasSprite> spriteSupplier;
+	// Texture atlases replace their sprites on resource reload, so this must not be cached.
+	private final Supplier<TextureAtlasSprite> spriteSupplier;
 	private final int width;
 	private final int height;
 
@@ -41,7 +41,7 @@ public class DrawableSprite implements IDrawableStatic {
 		if (width < 0 || height < 0 || (width == 0) != (height == 0)) {
 			throw new IllegalArgumentException("DrawableSprite size must be positive, or both dimensions must be 0 to use the sprite size");
 		}
-		this.spriteSupplier = new LazySupplier<>(spriteSupplier);
+		this.spriteSupplier = spriteSupplier;
 		this.width = width;
 		this.height = height;
 	}

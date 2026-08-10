@@ -11,7 +11,6 @@ import mezz.jei.common.gui.textures.JeiGuiSpriteManager;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.function.LazySupplier;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.SpriteContents;
@@ -26,7 +25,8 @@ import org.joml.Matrix4f;
 import java.util.function.Supplier;
 
 public class ScalableDrawable implements IScalableDrawable {
-	private final LazySupplier<TextureAtlasSprite> spriteSupplier;
+	// Texture atlases replace their sprites on resource reload, so this must not be cached.
+	private final Supplier<TextureAtlasSprite> spriteSupplier;
 
 	public ScalableDrawable(JeiGuiSpriteManager spriteManager, ResourceLocation spriteId) {
 		this(() -> spriteManager.getSprite(spriteId));
@@ -37,7 +37,7 @@ public class ScalableDrawable implements IScalableDrawable {
 	}
 
 	private ScalableDrawable(Supplier<TextureAtlasSprite> spriteSupplier) {
-		this.spriteSupplier = new LazySupplier<>(spriteSupplier);
+		this.spriteSupplier = spriteSupplier;
 	}
 
 	public void draw(GuiGraphics guiGraphics, ImmutableRect2i area) {
