@@ -269,16 +269,10 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		for (Slot slot : inventorySlots) {
 			final ItemStack stack = slot.getItem();
 			if (!stack.isEmpty()) {
-				if (!slot.allowModification(player)) {
-					LOGGER.error(
-						"Recipe Transfer helper {} does not work for container {}. " +
-							"The Player is not able to move items out of Inventory Slot number {}",
-						transferInfo.getClass(), container.getClass(), slot.index
-					);
-					return null;
+				if (slot.allowModification(player)) {
+					availableItemStacks.put(slot, stack.copy());
 				}
-				availableItemStacks.put(slot, stack.copy());
-			} else {
+			} else if (slot.allowModification(player)) {
 				emptySlotCount++;
 			}
 		}
