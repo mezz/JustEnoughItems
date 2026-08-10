@@ -20,6 +20,9 @@ def runExternalPublishTask(String gradleTask) {
 
 pipeline {
     agent any
+    options {
+        timeout(time: 1, unit: 'HOURS')
+    }
     tools {
         jdk "jdk-25"
     }
@@ -68,6 +71,9 @@ pipeline {
         }
 
         stage('Client GameTests') {
+            options {
+                timeout(time: 15, unit: 'MINUTES')
+            }
             steps {
                 sh '''
                     if command -v xvfb-run >/dev/null 2>&1; then
