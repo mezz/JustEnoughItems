@@ -17,7 +17,6 @@ def runExternalPublishTask(String gradleTask) {
         }
     }
 }
-
 def shouldSkipApiCompatibility() {
     for (def changeSet in currentBuild.changeSets) {
         for (def entry in changeSet.items) {
@@ -133,6 +132,9 @@ pipeline {
         }
 
         stage('Client GameTests') {
+            options {
+                timeout(time: 15, unit: 'MINUTES')
+            }
             steps {
                 sh '''
                     if command -v xvfb-run >/dev/null 2>&1; then
