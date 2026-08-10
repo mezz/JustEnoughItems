@@ -37,6 +37,9 @@ public final class BasicRecipeTransferHandlerServer {
 		if (!RecipeTransferUtil.validateSlots(player, transferOperations, craftingSlots, inventorySlots)) {
 			return;
 		}
+		if (!canClearCraftingSlots(player, craftingSlots)) {
+			return;
+		}
 
 		List<RequiredTransfer> requiredTransfers = calculateRequiredTransfers(transferOperations, player);
 		if (requiredTransfers == null) {
@@ -73,6 +76,21 @@ public final class BasicRecipeTransferHandlerServer {
 
 		AbstractContainerMenu container = player.containerMenu;
 		container.broadcastChanges();
+	}
+
+	private static boolean canClearCraftingSlots(Player player, List<Slot> craftingSlots) {
+		for (Slot craftingSlot : craftingSlots) {
+			ItemStack stack = craftingSlot.getItem();
+			if (!stack.isEmpty() && (!craftingSlot.mayPickup(player) || !craftingSlot.mayPlace(stack))) {
+				LOGGER.error(
+					"Tried to transfer recipe but crafting slot {} contains an item that cannot be moved: {}",
+					craftingSlot.index,
+					stack
+				);
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private static int getSlotStackLimit(
@@ -132,6 +150,7 @@ public final class BasicRecipeTransferHandlerServer {
 	@Nullable
 	private static List<RequiredTransfer> calculateRequiredTransfers(List<TransferOperation> transferOperations, Player player) {
 		List<RequiredTransfer> requiredTransfers = new ArrayList<>(transferOperations.size());
+		Map<Slot, ItemStack> targetSlotStacks = new HashMap<>();
 		for (TransferOperation transferOperation : transferOperations) {
 			Slot recipeSlot = transferOperation.craftingSlot(player.containerMenu);
 			Slot inventorySlot = transferOperation.inventorySlot(player.containerMenu);
@@ -154,6 +173,24 @@ public final class BasicRecipeTransferHandlerServer {
 			}
 			ItemStack stack = slotStack.copy();
 			stack.setCount(transferOperation.count());
+			if (!recipeSlot.mayPlace(stack)) {
+				LOGGER.error(
+					"Tried to transfer recipe but crafting slot {} does not accept ingredient: {}",
+					recipeSlot.index,
+					stack
+				);
+				return null;
+			}
+			ItemStack targetSlotStack = targetSlotStacks.putIfAbsent(recipeSlot, stack);
+			if (targetSlotStack != null && !ItemStack.isSameItemSameComponents(targetSlotStack, stack)) {
+				LOGGER.error(
+					"Tried to transfer different ingredients into the same crafting slot {}: {} and {}",
+					recipeSlot.index,
+					targetSlotStack,
+					stack
+				);
+				return null;
+			}
 			requiredTransfers.add(new RequiredTransfer(recipeSlot, inventorySlot, stack));
 		}
 		return requiredTransfers;
