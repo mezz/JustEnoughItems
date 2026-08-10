@@ -5,6 +5,8 @@ import mezz.jei.gui.Focus;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.input.IMouseHandler;
 import mezz.jei.util.MathUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 
@@ -24,6 +26,10 @@ public class GuiAreaClickHandler implements IMouseHandler {
 	@Override
 	@Nullable
 	public IMouseHandler handleClick(Screen screen, double mouseX, double mouseY, int mouseButton, MouseClickState clickState) {
+		ClientPlayerEntity player = Minecraft.getInstance().player;
+		if (player != null && !player.inventory.getCarried().isEmpty()) {
+			return null;
+		}
 		if (!MathUtil.contains(clickableArea.getArea(), mouseX - guiContainer.getGuiLeft(), mouseY - guiContainer.getGuiTop())) {
 			return null;
 		}
