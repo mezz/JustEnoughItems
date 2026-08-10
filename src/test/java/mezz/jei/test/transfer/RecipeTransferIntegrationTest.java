@@ -16,6 +16,7 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.registry.Bootstrap;
 import net.minecraftforge.items.ItemStackHandler;
@@ -190,6 +191,22 @@ public class RecipeTransferIntegrationTest {
 
 		assertStack(context.targetSlots.get(0), Items.BIRCH_PLANKS, 1);
 		assertAllOtherSlotsEmpty(context, context.targetSlots.get(0));
+	}
+
+	@Test
+	public void transfersExactSubtypeIngredient() {
+		TestContext context = createContext(1, 2);
+		ItemStack requiredPotion = taggedStack(Items.POTION, "minecraft:water");
+		ItemStack otherPotion = taggedStack(Items.POTION, "minecraft:healing");
+		context.setInventory(0, otherPotion);
+		context.setInventory(1, requiredPotion);
+
+		transfer(context, recipe(ingredientStacks(requiredPotion)), false, true);
+
+		assertTrue(ItemStack.matches(requiredPotion, context.targetSlots.get(0).getItem()));
+		assertTrue(ItemStack.matches(otherPotion, context.inventorySlots.get(0).getItem()));
+		assertTrue(context.inventorySlots.get(1).getItem().isEmpty());
+		assertEquals(2, totalItemCount(context));
 	}
 
 	@Test
@@ -696,6 +713,18 @@ public class RecipeTransferIntegrationTest {
 		return new TestGuiIngredient(stacks);
 	}
 
+	private static TestGuiIngredient ingredientStacks(ItemStack... stacks) {
+		return new TestGuiIngredient(Arrays.asList(stacks));
+	}
+
+	private static ItemStack taggedStack(Item item, String subtype) {
+		ItemStack stack = new ItemStack(item);
+		CompoundNBT tag = new CompoundNBT();
+		tag.putString("Potion", subtype);
+		stack.setTag(tag);
+		return stack;
+	}
+
 	private static TestGuiIngredient emptyIngredient() {
 		return new TestGuiIngredient(Collections.<ItemStack>emptyList());
 	}
@@ -760,6 +789,10 @@ public class RecipeTransferIntegrationTest {
 
 		private void setInventory(int index, Item item, int count) {
 			inventorySlots.get(index).set(new ItemStack(item, count));
+		}
+
+		private void setInventory(int index, ItemStack stack) {
+			inventorySlots.get(index).set(stack.copy());
 		}
 	}
 
