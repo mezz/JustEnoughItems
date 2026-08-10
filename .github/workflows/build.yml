@@ -38,6 +38,9 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
 
+      - name: Run server GameTests
+        run: ./gradlew :Forge:runGameTestServer --no-daemon
+
       - name: Run Client GameTests
         run: |
           if command -v xvfb-run >/dev/null 2>&1; then
