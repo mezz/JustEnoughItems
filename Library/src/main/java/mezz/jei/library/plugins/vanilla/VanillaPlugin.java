@@ -30,9 +30,11 @@ import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.platform.IPlatformBrewingHelper;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.recipes.BrewingExtensionHelper;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.common.util.StackHelper;
@@ -148,7 +150,7 @@ public class VanillaPlugin implements IModPlugin {
 	@Nullable
 	private SmithingRecipeCategory smithingCategory;
 	@Nullable
-	private BrewingRecipeCategory brewingCategory;
+	private BrewingExtensionHelper brewingExtensionHelper;
 
 	@Override
 	public Identifier getPluginUid() {
@@ -217,6 +219,7 @@ public class VanillaPlugin implements IModPlugin {
 		Textures textures = Internal.getTextures();
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+		brewingExtensionHelper = new BrewingExtensionHelper();
 		registration.addRecipeCategories(
 			craftingCategory = new CraftingRecipeCategory(guiHelper),
 			stonecuttingCategory = new StoneCuttingRecipeCategory(guiHelper),
@@ -229,7 +232,7 @@ public class VanillaPlugin implements IModPlugin {
 			new SmeltingFuelCategory(guiHelper, textures),
 			new SmokingFuelCategory(guiHelper, textures),
 			new BlastingFuelCategory(guiHelper, textures),
-			brewingCategory = new BrewingRecipeCategory(guiHelper),
+			new BrewingRecipeCategory(guiHelper),
 			new AnvilRecipeCategory(guiHelper),
 			new GrindstoneRecipeCategory(guiHelper)
 		);
@@ -246,8 +249,11 @@ public class VanillaPlugin implements IModPlugin {
 		smithingCategory.addExtension(SmithingTrimRecipe.class, new SmithingTrimCategoryExtension(recipeHelper));
 
 		IExtendableBrewingRecipeCategory brewingCategory = registration.getBrewingCategory();
-		IIngredientManager ingredientManager = registration.getJeiHelpers().getIngredientManager();
-		recipeHelper.registerBrewingCategoryExtensions(brewingCategory, ingredientManager);
+		IPlatformBrewingHelper brewingHelper = Services.PLATFORM.getBrewingHelper();
+		brewingHelper.registerCategoryExtensions(
+			brewingCategory,
+			registration.getJeiHelpers().getIngredientManager()
+		);
 	}
 
 	@Override
@@ -264,7 +270,7 @@ public class VanillaPlugin implements IModPlugin {
 		ErrorUtil.checkNotNull(blastingCategory, "blastingCategory");
 		ErrorUtil.checkNotNull(campfireCategory, "campfireCategory");
 		ErrorUtil.checkNotNull(smithingCategory, "smithingCategory");
-		ErrorUtil.checkNotNull(brewingCategory, "brewingCategory");
+		ErrorUtil.checkNotNull(brewingExtensionHelper, "brewingExtensionHelper");
 
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
@@ -298,12 +304,13 @@ public class VanillaPlugin implements IModPlugin {
 		ClientLevel level = minecraft.level;
 		ErrorUtil.checkNotNull(level, "minecraft.level");
 		PotionBrewing potionBrewing = level.potionBrewing();
-		List<IJeiBrewingRecipe> brewingRecipes = recipeHelper.getBrewingRecipes(
+		IPlatformBrewingHelper brewingHelper = Services.PLATFORM.getBrewingHelper();
+		List<IJeiBrewingRecipe> brewingRecipes = brewingHelper.getBrewingRecipes(
 			ingredientManager,
 			vanillaRecipeFactory,
 			potionBrewing,
 			contextMap,
-			brewingCategory.getExtensionHelper()
+			brewingExtensionHelper
 		);
 		brewingRecipes.sort(Comparator.comparingInt(IJeiBrewingRecipe::getBrewingSteps));
 		registration.addRecipes(RecipeTypes.BREWING, brewingRecipes);
@@ -387,8 +394,8 @@ public class VanillaPlugin implements IModPlugin {
 		return Optional.ofNullable(smithingCategory);
 	}
 
-	public Optional<BrewingRecipeCategory> getBrewingCategory() {
-		return Optional.ofNullable(brewingCategory);
+	public Optional<BrewingExtensionHelper> getBrewingExtensionHelper() {
+		return Optional.ofNullable(brewingExtensionHelper);
 	}
 
 	/**

@@ -8,7 +8,6 @@ import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.common.recipes.BrewingExtensionHelper;
 import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.neoforge.platform.BrewingRecipeCategoryExtension;
-import mezz.jei.neoforge.platform.BrewingRecipeMaker;
 import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.Holder;
@@ -153,7 +152,7 @@ public final class BrewingRecipeMakerGameTests {
 		// Setup: a mod registers an extension for a custom brewing recipe class that JEI cannot inspect directly.
 		IBrewingRecipe brewingRecipe = new UnsupportedBrewingRecipe();
 		BrewingExtensionHelper extensionHelper = createBrewingExtensionHelper();
-		extensionHelper.addRecipeExtension(
+		extensionHelper.addExtension(
 			UnsupportedBrewingRecipe.class,
 			(recipe, vanillaRecipeFactory, contextMap) -> List.of(
 				vanillaRecipeFactory.createBrewingRecipe(
@@ -203,7 +202,7 @@ public final class BrewingRecipeMakerGameTests {
 			new ItemStack(Items.DIAMOND)
 		);
 		BrewingExtensionHelper extensionHelper = createBrewingExtensionHelper();
-		extensionHelper.addRecipeExtension(UnsupportedBrewingRecipe.class, (recipe, vanillaRecipeFactory, contextMap) -> {
+		extensionHelper.addExtension(UnsupportedBrewingRecipe.class, (recipe, vanillaRecipeFactory, contextMap) -> {
 			throw new IllegalStateException("test failure");
 		});
 		List<IJeiBrewingRecipe> recipes = new ArrayList<>();
@@ -260,6 +259,39 @@ public final class BrewingRecipeMakerGameTests {
 		helper.succeed();
 	}
 
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "NeoForge brewing recipes with the same output have distinct compact UIDs.")
+	public static void standardRecipesWithTheSameOutputHaveUniqueIds(JeiGameTestHelper helper) {
+		// Setup: two standard recipes have the same input and output but different ingredients.
+		BrewingRecipe firstRecipe = new BrewingRecipe(
+			Ingredient.of(Items.POTION),
+			Ingredient.of(Items.NETHER_WART),
+			new ItemStack(Items.DIAMOND)
+		);
+		BrewingRecipe secondRecipe = new BrewingRecipe(
+			Ingredient.of(Items.POTION),
+			Ingredient.of(Items.REDSTONE),
+			new ItemStack(Items.DIAMOND)
+		);
+		List<IJeiBrewingRecipe> recipes = new ArrayList<>();
+
+		// Operation: JEI converts both recipes through the standard NeoForge extension.
+		addModdedBrewingRecipes(List.of(firstRecipe, secondRecipe), recipes);
+
+		// Assertions: both recipes remain distinct, with fixed-size digest identifiers.
+		helper.assertEquals(2, recipes.size(), "Expected both brewing recipes to remain distinct");
+		Set<Identifier> uids = recipes.stream()
+			.map(IJeiBrewingRecipe::getUid)
+			.collect(java.util.stream.Collectors.toSet());
+		helper.assertEquals(2, uids.size(), "Expected a unique UID for each displayed recipe");
+		helper.assertTrue(
+			uids.stream().allMatch(uid -> uid.getPath().startsWith("brewing/") && uid.getPath().length() == 72),
+			"Expected compact SHA-256 brewing recipe UIDs"
+		);
+		helper.succeed();
+	}
+
 	private static void addModdedBrewingRecipes(Collection<IBrewingRecipe> brewingRecipes, Collection<IJeiBrewingRecipe> recipes) {
 		addModdedBrewingRecipes(brewingRecipes, recipes, DEFAULT_BREWING_EXTENSIONS);
 	}
@@ -269,12 +301,12 @@ public final class BrewingRecipeMakerGameTests {
 		Collection<IJeiBrewingRecipe> recipes,
 		BrewingExtensionHelper brewingExtensionHelper
 	) {
-		BrewingRecipeMaker.addModdedBrewingRecipes(
-			createRecipeFactory(),
-			brewingRecipes,
-			recipes,
-			ContextMap.EMPTY,
-			brewingExtensionHelper
+		recipes.addAll(
+			brewingExtensionHelper.getBrewingRecipes(
+				brewingRecipes,
+				createRecipeFactory(),
+				ContextMap.EMPTY
+			)
 		);
 	}
 
@@ -284,7 +316,7 @@ public final class BrewingRecipeMakerGameTests {
 
 	private static BrewingExtensionHelper createBrewingExtensionHelper() {
 		BrewingExtensionHelper extensionHelper = new BrewingExtensionHelper();
-		extensionHelper.addRecipeExtension(
+		extensionHelper.addExtension(
 			BrewingRecipe.class,
 			new BrewingRecipeCategoryExtension(ITEM_STACK_HELPER)
 		);

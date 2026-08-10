@@ -17,6 +17,15 @@ import org.jetbrains.annotations.ApiStatus;
 public interface IExtendableBrewingRecipeCategory {
 	/**
 	 * Add an extension that handles a subset of the recipes in the brewing category.
+	 * An extension registered for the recipe's exact runtime class is preferred.
+	 * Otherwise, JEI uses the unique most-specific registered supertype.
+	 * Recipes with multiple unrelated matching extensions are not handled.
+	 *
+	 * <p>
+	 * Brewing extensions are used on platforms that expose custom brewing recipe objects.
+	 * Platforms that register brewing mixtures directly, without recipe objects, are detected automatically
+	 * and do not use these extensions.
+	 * </p>
 	 *
 	 * @param recipeClass the subset class of brewing recipes to handle
 	 * @param extension an extension for handling these recipes

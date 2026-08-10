@@ -4,6 +4,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -63,7 +64,9 @@ public interface IVanillaRecipeFactory {
 
 	/**
 	 * Create a new brewing recipe.
-	 * By default, all brewing recipes are already detected and added by JEI.
+	 * JEI automatically detects supported brewing mixtures.
+	 * Custom platform brewing recipe types must register an extension with
+	 * {@link IVanillaCategoryExtensionRegistration#getBrewingCategory()}.
 	 *
 	 * @param ingredients  the ingredients added to a potion to create a new one.
 	 *                     Normally one ingredient, but a list will display several in rotation.
@@ -77,7 +80,9 @@ public interface IVanillaRecipeFactory {
 
 	/**
 	 * Create a new brewing recipe.
-	 * By default, all brewing recipes are already detected and added by JEI.
+	 * JEI automatically detects supported brewing mixtures.
+	 * Custom platform brewing recipe types must register an extension with
+	 * {@link IVanillaCategoryExtensionRegistration#getBrewingCategory()}.
 	 *
 	 * @param ingredients  the ingredients added to a potion to create a new one.
 	 *                     Normally one ingredient, but a list will display several in rotation.

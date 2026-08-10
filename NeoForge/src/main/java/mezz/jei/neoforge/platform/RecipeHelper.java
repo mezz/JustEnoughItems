@@ -1,19 +1,10 @@
 package mezz.jei.neoforge.platform;
 
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.recipe.category.extensions.vanilla.brewing.IExtendableBrewingRecipeCategory;
-import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
-import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.IPlatformRecipeHelper.ShieldDecorationRecipeData;
-import mezz.jei.common.recipes.BrewingExtensionHelper;
 import net.minecraft.core.Holder;
-import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
@@ -21,21 +12,11 @@ import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.neoforged.neoforge.common.brewing.BrewingRecipe;
 
 import java.util.List;
 import java.util.Optional;
 
 public class RecipeHelper implements IPlatformRecipeHelper {
-	@Override
-	public void registerBrewingCategoryExtensions(
-		IExtendableBrewingRecipeCategory brewingCategory,
-		IIngredientManager ingredientManager
-	) {
-		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
-		brewingCategory.addExtension(BrewingRecipe.class, new BrewingRecipeCategoryExtension(itemStackHelper));
-	}
-
 	@Override
 	public Ingredient getBase(SmithingRecipe recipe) {
 		if (recipe instanceof SmithingTransformRecipe transformRecipe) {
@@ -77,23 +58,6 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 	@Override
 	public ItemStack getGrindstoneResult(GrindstoneMenu grindstoneMenu, ItemStack input1, ItemStack input2) {
 		return grindstoneMenu.computeResult(input1, input2);
-	}
-
-	@Override
-	public List<IJeiBrewingRecipe> getBrewingRecipes(
-		IIngredientManager ingredientManager,
-		IVanillaRecipeFactory vanillaRecipeFactory,
-		PotionBrewing potionBrewing,
-		ContextMap contextMap,
-		BrewingExtensionHelper brewingExtensionHelper
-	) {
-		return BrewingRecipeMaker.getBrewingRecipes(
-			ingredientManager,
-			vanillaRecipeFactory,
-			potionBrewing,
-			contextMap,
-			brewingExtensionHelper
-		);
 	}
 
 	@Override

@@ -11,15 +11,13 @@ import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
-import mezz.jei.api.recipe.category.extensions.vanilla.brewing.IBrewingCategoryExtension;
-import mezz.jei.api.recipe.category.extensions.vanilla.brewing.IExtendableBrewingRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.recipes.BrewingExtensionHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -27,12 +25,11 @@ import net.minecraft.world.level.block.Blocks;
 
 import java.util.List;
 
-public class BrewingRecipeCategory extends AbstractRecipeCategory<IJeiBrewingRecipe> implements IExtendableBrewingRecipeCategory {
+public class BrewingRecipeCategory extends AbstractRecipeCategory<IJeiBrewingRecipe> {
 	private final IDrawable background;
 	private final IDrawableAnimated arrow;
 	private final IDrawableAnimated bubbles;
 	private final IDrawableStatic blazeHeat;
-	private final BrewingExtensionHelper extensionHelper = new BrewingExtensionHelper();
 
 	public BrewingRecipeCategory(IGuiHelper guiHelper) {
 		super(
@@ -99,18 +96,6 @@ public class BrewingRecipeCategory extends AbstractRecipeCategory<IJeiBrewingRec
 	@Override
 	public Identifier getIdentifier(IJeiBrewingRecipe recipe) {
 		return recipe.getUid();
-	}
-
-	@Override
-	public <R> void addExtension(
-		Class<? extends R> recipeClass,
-		IBrewingCategoryExtension<R> extension
-	) {
-		extensionHelper.addRecipeExtension(recipeClass, extension);
-	}
-
-	public BrewingExtensionHelper getExtensionHelper() {
-		return extensionHelper;
 	}
 
 	private static class BrewingBubblesTickTimer implements ITickTimer {

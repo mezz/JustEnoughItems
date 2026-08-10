@@ -1,16 +1,9 @@
 package mezz.jei.common.platform;
 
-import mezz.jei.api.recipe.category.extensions.vanilla.brewing.IExtendableBrewingRecipeCategory;
-import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
-import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
-import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.recipes.BrewingExtensionHelper;
 import net.minecraft.core.Holder;
-import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
 import net.minecraft.world.item.crafting.SmithingRecipe;
@@ -20,13 +13,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IPlatformRecipeHelper {
-	default void registerBrewingCategoryExtensions(
-		IExtendableBrewingRecipeCategory brewingCategory,
-		IIngredientManager ingredientManager
-	) {
-
-	}
-
 	Ingredient getBase(SmithingRecipe recipe);
 	Optional<Ingredient> getAddition(SmithingRecipe recipe);
 	Optional<Ingredient> getTemplate(SmithingRecipe recipe);
@@ -34,14 +20,6 @@ public interface IPlatformRecipeHelper {
 	ShieldDecorationRecipeData getShieldDecorationRecipeData(ShieldDecorationRecipe recipe);
 
 	ItemStack getGrindstoneResult(GrindstoneMenu grindstoneMenu, ItemStack input1, ItemStack input2);
-
-	List<IJeiBrewingRecipe> getBrewingRecipes(
-		IIngredientManager ingredientManager,
-		IVanillaRecipeFactory vanillaRecipeFactory,
-		PotionBrewing potionBrewing,
-		ContextMap contextMap,
-		BrewingExtensionHelper brewingExtensionHelper
-	);
 
 	String[] shrinkShapedRecipePattern(List<String> pattern);
 

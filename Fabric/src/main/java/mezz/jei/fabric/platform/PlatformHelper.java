@@ -11,6 +11,7 @@ public class PlatformHelper implements IPlatformHelper {
 	private final Supplier<FluidHelper> fluidHelper = new LazySupplier<>(FluidHelper::new);
 	private final Supplier<RenderHelper> renderHelper = new LazySupplier<>(RenderHelper::new);
 	private final Supplier<RecipeHelper> recipeHelper = new LazySupplier<>(RecipeHelper::new);
+	private final Supplier<BrewingHelper> brewingHelper = new LazySupplier<>(BrewingHelper::new);
 	private final Supplier<ConfigHelper> configHelper = new LazySupplier<>(ConfigHelper::new);
 	private final Supplier<InputHelper> inputHelper = new LazySupplier<>(InputHelper::new);
 	private final Supplier<ScreenHelper> screenHelper = new LazySupplier<>(ScreenHelper::new);
@@ -37,6 +38,11 @@ public class PlatformHelper implements IPlatformHelper {
 	@Override
 	public RecipeHelper getRecipeHelper() {
 		return recipeHelper.get();
+	}
+
+	@Override
+	public BrewingHelper getBrewingHelper() {
+		return brewingHelper.get();
 	}
 
 	@Override
