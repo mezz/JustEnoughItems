@@ -17,7 +17,6 @@ def runExternalPublishTask(String gradleTask) {
         }
     }
 }
-
 def shouldSkipApiCompatibility() {
     for (def changeSet in currentBuild.changeSets) {
         for (def entry in changeSet.items) {
@@ -124,10 +123,17 @@ pipeline {
         }
 
         stage('Client GameTests') {
+            options {
+                timeout(time: 15, unit: 'MINUTES')
+            }
             steps {
                 sh '''
                     if command -v xvfb-run >/dev/null 2>&1; then
-                        xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest --no-daemon
+                        JEI_JVM_DIAGNOSTIC_DELAY_SECONDS=600 \
+                        JEI_JVM_DIAGNOSTIC_FILE="$WORKSPACE/Fabric/build/reports/client-gametest-diagnostics.txt" \
+                            python3 .jenkins/runWithJvmDiagnostics.py \
+                            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
+                            ./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs --no-daemon --no-parallel
                     else
                         echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
                         exit 1
@@ -198,6 +204,7 @@ pipeline {
     }
     post {
         always {
+            archiveArtifacts allowEmptyArchive: true, artifacts: 'Fabric/build/reports/client-gametest-diagnostics.txt'
             script {
                 def discordNotification = load '.jenkins/discordNotification.groovy'
                 discordNotification.notifyDiscordBuildSafely(currentBuild.currentResult)
