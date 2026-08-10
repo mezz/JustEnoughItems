@@ -42,6 +42,7 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Duration ASSERTION_TIMEOUT = Duration.ofSeconds(60);
 	private static final Duration WORLD_LOAD_TIMEOUT = Duration.ofSeconds(120);
+	private static final Duration CLIENT_SHUTDOWN_TIMEOUT = Duration.ofSeconds(30);
 	private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 	private static final ResourceKey<Recipe<?>> CRAFTING_TABLE_RECIPE_KEY = ResourceKey.create(Registries.RECIPE, Identifier.withDefaultNamespace("crafting_table"));
 
@@ -226,9 +227,24 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 			exitCode = 1;
 			LOGGER.error("Failed to stop Minecraft after JEI NeoForge client recipe sync tests.", t);
 		}
+		startClientShutdownWatchdog();
 		if (exitCode != 0) {
 			System.exit(exitCode);
 		}
+	}
+
+	private static void startClientShutdownWatchdog() {
+		Thread watchdog = new Thread(() -> {
+			try {
+				Thread.sleep(CLIENT_SHUTDOWN_TIMEOUT);
+			} catch (InterruptedException ignored) {
+				return;
+			}
+			System.err.println("Minecraft client did not exit within " + CLIENT_SHUTDOWN_TIMEOUT + "; failing the client test JVM.");
+			Runtime.getRuntime().halt(1);
+		}, "JEI NeoForge Client Test Shutdown Watchdog");
+		watchdog.setDaemon(true);
+		watchdog.start();
 	}
 
 	private enum TestCase {
