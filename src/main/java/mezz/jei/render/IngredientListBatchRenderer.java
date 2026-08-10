@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.ingredients.ISlowRenderItem;
+import mezz.jei.compat.Optifine;
 import mezz.jei.gui.ingredients.IIngredientListElement;
 import mezz.jei.input.ClickedIngredient;
 import mezz.jei.util.ErrorUtil;
@@ -79,7 +80,7 @@ public class IngredientListBatchRenderer {
 		ingredientListSlot.clear();
 
 		V ingredient = element.getIngredient();
-		if (ingredient instanceof ItemStack) {
+		if (ingredient instanceof ItemStack && !Optifine.isPresent()) {
 			//noinspection unchecked
 			IIngredientListElement<ItemStack> itemStackElement = (IIngredientListElement<ItemStack>) element;
 			ItemStack itemStack = itemStackElement.getIngredient();
