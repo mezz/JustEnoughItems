@@ -5,6 +5,7 @@ import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.IPlatformRecipeHelper.ShieldDecorationRecipeData;
+import mezz.jei.common.recipes.BrewingExtensionHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.inventory.GrindstoneMenu;
@@ -66,7 +67,13 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 	}
 
 	@Override
-	public List<IJeiBrewingRecipe> getBrewingRecipes(IIngredientManager ingredientManager, IVanillaRecipeFactory vanillaRecipeFactory, PotionBrewing potionBrewing, ContextMap contextMap) {
+	public List<IJeiBrewingRecipe> getBrewingRecipes(
+		IIngredientManager ingredientManager,
+		IVanillaRecipeFactory vanillaRecipeFactory,
+		PotionBrewing potionBrewing,
+		ContextMap contextMap,
+		BrewingExtensionHelper brewingExtensionHelper
+	) {
 		return BrewingRecipeMaker.getBrewingRecipes(ingredientManager, vanillaRecipeFactory, potionBrewing, contextMap);
 	}
 
