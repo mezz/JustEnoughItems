@@ -16,8 +16,8 @@ public class BrewingExtensionHelperTest {
 		BrewingExtensionHelper helper = new BrewingExtensionHelper();
 		IBrewingCategoryExtension<BaseRecipe> baseExtension = (recipe, factory) -> List.of();
 		IBrewingCategoryExtension<CustomRecipe> customExtension = (recipe, factory) -> List.of();
-		helper.addRecipeExtension(BaseRecipe.class, baseExtension);
-		helper.addRecipeExtension(CustomRecipe.class, customExtension);
+		helper.addExtension(BaseRecipe.class, baseExtension);
+		helper.addExtension(CustomRecipe.class, customExtension);
 
 		IBrewingCategoryExtension<? super CustomRecipe> result = helper.getRecipeExtension(new CustomRecipe());
 
@@ -28,7 +28,7 @@ public class BrewingExtensionHelperTest {
 	public void superclassExtensionHandlesSubclass() {
 		BrewingExtensionHelper helper = new BrewingExtensionHelper();
 		IBrewingCategoryExtension<BaseRecipe> baseExtension = (recipe, factory) -> List.of();
-		helper.addRecipeExtension(BaseRecipe.class, baseExtension);
+		helper.addExtension(BaseRecipe.class, baseExtension);
 
 		IBrewingCategoryExtension<? super CustomRecipe> result = helper.getRecipeExtension(new CustomRecipe());
 
@@ -38,12 +38,36 @@ public class BrewingExtensionHelperTest {
 	@Test
 	public void registeringDuplicateRecipeClassFails() {
 		BrewingExtensionHelper helper = new BrewingExtensionHelper();
-		helper.addRecipeExtension(BaseRecipe.class, (recipe, factory) -> List.of());
+		helper.addExtension(BaseRecipe.class, (recipe, factory) -> List.of());
 
 		assertThrows(
 			IllegalArgumentException.class,
-			() -> helper.addRecipeExtension(BaseRecipe.class, (recipe, factory) -> List.of())
+			() -> helper.addExtension(BaseRecipe.class, (recipe, factory) -> List.of())
 		);
+	}
+
+	@Test
+	public void mostSpecificExtensionIsIndependentOfRegistrationOrder() {
+		BrewingExtensionHelper helper = new BrewingExtensionHelper();
+		IBrewingCategoryExtension<BaseRecipe> baseExtension = (recipe, factory) -> List.of();
+		IBrewingCategoryExtension<IntermediateRecipe> intermediateExtension = (recipe, factory) -> List.of();
+		helper.addExtension(IntermediateRecipe.class, intermediateExtension);
+		helper.addExtension(BaseRecipe.class, baseExtension);
+
+		IBrewingCategoryExtension<? super CustomRecipe> result = helper.getRecipeExtension(new CustomRecipe());
+
+		assertSame(intermediateExtension, result);
+	}
+
+	@Test
+	public void unrelatedMatchingExtensionsAreAmbiguous() {
+		BrewingExtensionHelper helper = new BrewingExtensionHelper();
+		helper.addExtension(FirstRecipeType.class, (recipe, factory) -> List.of());
+		helper.addExtension(SecondRecipeType.class, (recipe, factory) -> List.of());
+
+		IBrewingCategoryExtension<? super AmbiguousRecipe> result = helper.getRecipeExtension(new AmbiguousRecipe());
+
+		assertNull(result);
 	}
 
 	@Test
@@ -56,6 +80,18 @@ public class BrewingExtensionHelperTest {
 	private static class BaseRecipe {
 	}
 
-	private static class CustomRecipe extends BaseRecipe {
+	private static class IntermediateRecipe extends BaseRecipe {
+	}
+
+	private static class CustomRecipe extends IntermediateRecipe {
+	}
+
+	private interface FirstRecipeType {
+	}
+
+	private interface SecondRecipeType {
+	}
+
+	private static class AmbiguousRecipe implements FirstRecipeType, SecondRecipeType {
 	}
 }

@@ -5,13 +5,16 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.category.extensions.vanilla.brewing.IBrewingCategoryExtension;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
-import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.brewing.BrewingRecipe;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HexFormat;
 import java.util.List;
 
 public class BrewingRecipeCategoryExtension implements IBrewingCategoryExtension<BrewingRecipe> {
@@ -47,8 +50,7 @@ public class BrewingRecipeCategoryExtension implements IBrewingCategoryExtension
 		}
 
 		String outputModId = itemStackHelper.getResourceLocation(output).getNamespace();
-		String outputUid = itemStackHelper.getUniqueId(output, UidContext.Recipe);
-		String uidPath = ResourceLocationUtil.sanitizePath(outputUid);
+		String uidPath = getUidPath(inputs, ingredients, output);
 		IJeiBrewingRecipe recipe = vanillaRecipeFactory.createBrewingRecipe(
 			ingredients,
 			inputs,
@@ -56,5 +58,43 @@ public class BrewingRecipeCategoryExtension implements IBrewingCategoryExtension
 			new ResourceLocation(outputModId, uidPath)
 		);
 		return List.of(recipe);
+	}
+
+	private String getUidPath(List<ItemStack> inputs, List<ItemStack> ingredients, ItemStack output) {
+		MessageDigest digest = createDigest();
+		updateStackUids(digest, inputs);
+		updateStackUids(digest, ingredients);
+		updateString(digest, itemStackHelper.getUniqueId(output, UidContext.Recipe));
+		return "brewing/" + HexFormat.of().formatHex(digest.digest());
+	}
+
+	private void updateStackUids(MessageDigest digest, List<ItemStack> itemStacks) {
+		List<String> stackUids = itemStacks.stream()
+			.map(itemStack -> itemStackHelper.getUniqueId(itemStack, UidContext.Recipe))
+			.sorted()
+			.toList();
+		updateInt(digest, stackUids.size());
+		stackUids.forEach(uid -> updateString(digest, uid));
+	}
+
+	private static void updateString(MessageDigest digest, String value) {
+		byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
+		updateInt(digest, bytes.length);
+		digest.update(bytes);
+	}
+
+	private static void updateInt(MessageDigest digest, int value) {
+		digest.update((byte) (value >>> 24));
+		digest.update((byte) (value >>> 16));
+		digest.update((byte) (value >>> 8));
+		digest.update((byte) value);
+	}
+
+	private static MessageDigest createDigest() {
+		try {
+			return MessageDigest.getInstance("SHA-256");
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalStateException("SHA-256 is not available", e);
+		}
 	}
 }
