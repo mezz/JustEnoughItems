@@ -360,6 +360,12 @@ public class ElementSearchIngredientsTest {
 		TestIngredient ingredient
 	) implements ITypedIngredient<TestIngredient> {
 		@Override
+		public ITypedIngredient<TestIngredient> normalize(IIngredientHelper<TestIngredient> ingredientHelper) {
+			TestIngredient normalized = ingredientHelper.normalizeIngredient(ingredient);
+			return new TestTypedIngredient(type, normalized);
+		}
+
+		@Override
 		public IIngredientType<TestIngredient> getType() {
 			return type;
 		}

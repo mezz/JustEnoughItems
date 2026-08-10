@@ -215,6 +215,7 @@ public interface IIngredientManager {
 	 * Normalize a typed ingredient.
 	 *
 	 * @see IIngredientHelper#normalizeIngredient
+	 * @see ITypedIngredient#normalize
 	 *
 	 * @since 15.5.0
 	 */

@@ -228,7 +228,7 @@ public class IngredientManager implements IIngredientManager {
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 		IIngredientType<V> type = typedIngredient.getType();
 		IIngredientHelper<V> ingredientHelper = getIngredientHelper(type);
-		return TypedIngredient.normalize(typedIngredient, ingredientHelper);
+		return typedIngredient.normalize(ingredientHelper);
 	}
 
 	@Override
