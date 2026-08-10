@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -62,18 +63,13 @@ public abstract class TypedItemStack implements ITypedIngredient<ItemStack> {
 		return new NormalizedTypedItem(itemHolder);
 	}
 
-	public static ITypedIngredient<ItemStack> normalize(ITypedIngredient<ItemStack> typedIngredient) {
-		if (typedIngredient instanceof TypedItemStack typedItemStack) {
-			return typedItemStack.getNormalized();
-		}
-		ItemStack itemStack = typedIngredient.getIngredient();
-		return NormalizedTypedItemStack.create(itemStack.typeHolder(), itemStack.getComponentsPatch());
-	}
-
 	@Override
 	public final ItemStack getIngredient() {
 		return CACHE.getUnchecked(this);
 	}
+
+	@Override
+	public abstract TypedItemStack normalize(IIngredientHelper<ItemStack> ingredientHelper);
 
 	@Override
 	public final Optional<ItemStack> getItemStack() {
@@ -93,8 +89,6 @@ public abstract class TypedItemStack implements ITypedIngredient<ItemStack> {
 	}
 
 	protected abstract Item getItem();
-
-	protected abstract TypedItemStack getNormalized();
 
 	protected abstract ItemStack createItemStackUncached();
 }

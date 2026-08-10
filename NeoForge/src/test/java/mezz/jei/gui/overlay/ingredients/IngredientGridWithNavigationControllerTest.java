@@ -5,6 +5,7 @@ import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
@@ -711,9 +712,15 @@ public class IngredientGridWithNavigationControllerTest {
 		return List.copyOf(elements);
 	}
 
-	private record TestTypedIngredient(TestIngredient ingredient) implements mezz.jei.api.ingredients.ITypedIngredient<TestIngredient> {
+	private record TestTypedIngredient(TestIngredient ingredient) implements ITypedIngredient<TestIngredient> {
 		@Override
-		public mezz.jei.api.ingredients.IIngredientType<TestIngredient> getType() {
+		public ITypedIngredient<TestIngredient> normalize(IIngredientHelper<TestIngredient> ingredientHelper) {
+			TestIngredient normalized = ingredientHelper.normalizeIngredient(ingredient);
+			return new TestTypedIngredient(normalized);
+		}
+
+		@Override
+		public IIngredientType<TestIngredient> getType() {
 			return TestIngredient.TYPE;
 		}
 
