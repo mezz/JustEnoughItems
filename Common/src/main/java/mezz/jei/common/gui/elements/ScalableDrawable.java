@@ -13,17 +13,29 @@ import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.resources.Identifier;
 
+import java.util.function.Function;
+
 public class ScalableDrawable implements IScalableDrawable {
 	private final TextureAtlas textureAtlas;
 	private final Identifier spriteId;
+	private final Function<TextureAtlasSprite, GuiSpriteScaling> scalingSupplier;
 
 	public ScalableDrawable(JeiAtlasManager atlasManager, Identifier spriteId) {
-		this(atlasManager.getAtlas(), spriteId);
+		this(atlasManager.getAtlas(), spriteId, atlasManager::getSpriteScaling);
 	}
 
 	public ScalableDrawable(TextureAtlas textureAtlas, Identifier spriteId) {
+		this(textureAtlas, spriteId, ScalableDrawable::getSpriteScaling);
+	}
+
+	private ScalableDrawable(
+		TextureAtlas textureAtlas,
+		Identifier spriteId,
+		Function<TextureAtlasSprite, GuiSpriteScaling> scalingSupplier
+	) {
 		this.textureAtlas = textureAtlas;
 		this.spriteId = spriteId;
+		this.scalingSupplier = scalingSupplier;
 	}
 
 	public void draw(GuiGraphicsExtractor guiGraphics, ImmutableRect2i area) {
@@ -33,10 +45,7 @@ public class ScalableDrawable implements IScalableDrawable {
 	@Override
 	public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset, int width, int height) {
 		TextureAtlasSprite sprite = textureAtlas.getSprite(spriteId);
-		GuiSpriteScaling scaling = sprite.contents()
-			.getAdditionalMetadata(GuiMetadataSection.TYPE)
-			.orElse(GuiMetadataSection.DEFAULT)
-			.scaling();
+		GuiSpriteScaling scaling = scalingSupplier.apply(sprite);
 
 		switch (scaling) {
 			case GuiSpriteScaling.Tile tileScaling -> {
@@ -77,5 +86,12 @@ public class ScalableDrawable implements IScalableDrawable {
 				);
 			}
 		}
+	}
+
+	private static GuiSpriteScaling getSpriteScaling(TextureAtlasSprite sprite) {
+		return sprite.contents()
+			.getAdditionalMetadata(GuiMetadataSection.TYPE)
+			.orElse(GuiMetadataSection.DEFAULT)
+			.scaling();
 	}
 }
