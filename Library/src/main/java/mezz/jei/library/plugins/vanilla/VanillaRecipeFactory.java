@@ -10,11 +10,18 @@ import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipe;
 import mezz.jei.library.plugins.vanilla.brewing.BrewingRecipeUtil;
 import mezz.jei.library.plugins.vanilla.brewing.JeiBrewingRecipe;
 import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipeBuilder;
+import mezz.jei.library.plugins.vanilla.cooking.JeiSmeltingRecipe;
 import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipe;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import org.jspecify.annotations.Nullable;
 
@@ -55,6 +62,37 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotEmpty(outputs, "outputs");
 
 		return new GrindstoneRecipe(List.copyOf(topInputs), List.copyOf(bottomInputs), List.copyOf(outputs), minXp, maxXp, uid);
+	}
+
+	@Override
+	public RecipeHolder<SmeltingRecipe> createSmeltingRecipe(
+		Ingredient input,
+		SlotDisplay fuel,
+		ItemStack output,
+		int cookingTime,
+		float experience,
+		Identifier uid
+	) {
+		ErrorUtil.checkNotNull(input, "input");
+		ErrorUtil.checkNotNull(fuel, "fuel");
+		ErrorUtil.checkNotEmpty(output, "output");
+		if (cookingTime <= 0) {
+			throw new IllegalArgumentException("cookingTime must be greater than 0");
+		}
+		if (!Float.isFinite(experience) || experience < 0) {
+			throw new IllegalArgumentException("experience must be greater than or equal to 0");
+		}
+		ErrorUtil.checkNotNull(uid, "uid");
+
+		ResourceKey<Recipe<?>> recipeKey = ResourceKey.create(Registries.RECIPE, uid);
+		SmeltingRecipe recipe = new JeiSmeltingRecipe(
+			input,
+			fuel,
+			output.copy(),
+			experience,
+			cookingTime
+		);
+		return new RecipeHolder<>(recipeKey, recipe);
 	}
 
 	@Override

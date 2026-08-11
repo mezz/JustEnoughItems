@@ -49,6 +49,8 @@ import mezz.jei.library.plugins.vanilla.compostable.CompostableRecipeCategory;
 import mezz.jei.library.plugins.vanilla.compostable.CompostingRecipeMaker;
 import mezz.jei.library.plugins.vanilla.cooking.BlastingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.CampfireCookingCategory;
+import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeMaker;
+import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeTransferInfo;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceSmeltingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.SmokingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.fuel.BlastingFuelCategory;
@@ -291,6 +293,7 @@ public class VanillaPlugin implements IModPlugin {
 
 		registration.addRecipes(RecipeTypes.STONECUTTING, vanillaRecipes.getStonecuttingRecipes(stonecuttingCategory));
 		registration.addRecipes(RecipeTypes.SMELTING, vanillaRecipes.getFurnaceRecipes(furnaceCategory));
+		registration.addRecipes(RecipeTypes.SMELTING, FurnaceRecipeMaker.getRecipes(vanillaRecipeFactory, clientSyncedRecipes));
 		registration.addRecipes(RecipeTypes.SMOKING, vanillaRecipes.getSmokingRecipes(smokingCategory));
 		registration.addRecipes(RecipeTypes.BLASTING, vanillaRecipes.getBlastingRecipes(blastingCategory));
 		registration.addRecipes(RecipeTypes.CAMPFIRE_COOKING, vanillaRecipes.getCampfireCookingRecipes(campfireCategory));
@@ -342,7 +345,7 @@ public class VanillaPlugin implements IModPlugin {
 	public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
 		registration.addRecipeTransferHandler(CraftingMenu.class, MenuType.CRAFTING, RecipeTypes.CRAFTING, 1, 9, 10, 36);
 		registration.addRecipeTransferHandler(CrafterMenu.class, MenuType.CRAFTER_3x3, RecipeTypes.CRAFTING, 0, 9, 9, 36);
-		registration.addRecipeTransferHandler(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING, 0, 1, 3, 36);
+		registration.addRecipeTransferHandler(new FurnaceRecipeTransferInfo());
 		registration.addRecipeTransferHandler(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING_FUEL, 1, 1, 3, 36);
 		registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.SMOKING, 0, 1, 3, 36);
 		registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.SMOKING_FUEL, 1, 1, 3, 36);

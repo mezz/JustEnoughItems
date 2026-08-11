@@ -7,6 +7,7 @@ import mezz.jei.fabric.config.ServerConfig;
 import mezz.jei.fabric.network.ConnectionToClient;
 import mezz.jei.fabric.network.ServerNetworkHandler;
 import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipe;
+import mezz.jei.library.plugins.vanilla.cooking.JeiSmeltingRecipe;
 import mezz.jei.library.recipes.RecipeSerializers;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
@@ -30,7 +31,9 @@ public class JustEnoughItems implements ModInitializer {
 		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "jei_shaped");
 		var recipeSerializer = new JeiShapedRecipe.Serializer();
 		var registered = Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, id, recipeSerializer);
-		RecipeSerializers.register(() -> registered);
+		Identifier smeltingId = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "jei_smelting");
+		var smeltingRegistered = Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, smeltingId, JeiSmeltingRecipe.SERIALIZER);
+		RecipeSerializers.register(() -> registered, () -> smeltingRegistered);
 
 		// Run through vanilla recipe serializers and sync them
 		for (var entry : BuiltInRegistries.RECIPE_SERIALIZER.entrySet()) {
