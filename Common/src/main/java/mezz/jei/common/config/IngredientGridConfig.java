@@ -20,6 +20,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	private static final VerticalAlignment defaultVerticalAlignment = VerticalAlignment.TOP;
 	private static final NavigationVisibility defaultNavigationVisibility = NavigationVisibility.ENABLED;
 	private static final boolean defaultDrawBackground = false;
+	private static final IngredientGridLayoutMode defaultLayoutMode = IngredientGridLayoutMode.RECTANGULAR;
 	private static final IngredientGridNavigationMode defaultNavigationMode = IngredientGridNavigationMode.PAGED;
 
 	private final Supplier<Integer> maxRows;
@@ -28,6 +29,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	private final Supplier<VerticalAlignment> verticalAlignment;
 	private final Supplier<NavigationVisibility> navigationVisibility;
 	private final Supplier<Boolean> drawBackground;
+	private final Supplier<IngredientGridLayoutMode> layoutMode;
 	private final Supplier<IngredientGridNavigationMode> navigationMode;
 
 	public IngredientGridConfig(String categoryName, IConfigSchemaBuilder builder, HorizontalAlignment defaultHorizontalAlignment) {
@@ -48,6 +50,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 		verticalAlignment = category.addEnum("verticalAlignment", defaultVerticalAlignment);
 		navigationVisibility = category.addEnum("navigationVisibility", defaultNavigationVisibility);
 		drawBackground = category.addBoolean("drawBackground", defaultDrawBackground);
+		layoutMode = category.addEnum("layoutMode", defaultLayoutMode);
 		navigationMode = category.addEnum("navigationMode", defaultNavigationMode);
 	}
 
@@ -74,6 +77,11 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	@Override
 	public boolean drawBackground() {
 		return drawBackground.get();
+	}
+
+	@Override
+	public IngredientGridLayoutMode getLayoutMode() {
+		return layoutMode.get();
 	}
 
 	@Override
