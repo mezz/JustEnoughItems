@@ -9,7 +9,7 @@ import mezz.jei.api.helpers.IGuiHelper;
 
 public class FurnaceSmeltingCategory extends AbstractCookingCategory<FurnaceRecipe> {
 	public FurnaceSmeltingCategory(IGuiHelper guiHelper) {
-		super(guiHelper, Blocks.FURNACE, "gui.jei.category.smelting", 200);
+		super(guiHelper, Blocks.FURNACE, "gui.jei.category.smelting", 200, 116);
 	}
 
 	@Override

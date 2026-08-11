@@ -20,6 +20,10 @@ import net.minecraft.item.crafting.AbstractCookingRecipe;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> extends FurnaceVariantCategory<T> {
 	private final IDrawable background;
 	private final int regularCookTime;
@@ -28,8 +32,14 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 	private final LoadingCache<Integer, IDrawableAnimated> cachedArrows;
 
 	public AbstractCookingCategory(IGuiHelper guiHelper, Block icon, String translationKey, int regularCookTime) {
+		this(guiHelper, icon, translationKey, regularCookTime, 82);
+	}
+
+	protected AbstractCookingCategory(IGuiHelper guiHelper, Block icon, String translationKey, int regularCookTime, int width) {
 		super(guiHelper);
-		this.background = guiHelper.createDrawable(Constants.RECIPE_GUI_VANILLA, 0, 114, 82, 54);
+		this.background = guiHelper.drawableBuilder(Constants.RECIPE_GUI_VANILLA, 0, 114, 82, 54)
+			.addPadding(0, 0, 0, width - 82)
+			.build();
 		this.regularCookTime = regularCookTime;
 		this.icon = guiHelper.createDrawableIngredient(new ItemStack(icon));
 		this.localizedName = new TranslationTextComponent(translationKey);
@@ -64,8 +74,17 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 
 	@Override
 	public void setIngredients(T recipe, IIngredients ingredients) {
-		ingredients.setInputIngredients(recipe.getIngredients());
-		ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem());
+		if (recipe instanceof JeiFurnaceRecipe) {
+			JeiFurnaceRecipe jeiRecipe = (JeiFurnaceRecipe) recipe;
+			List<List<ItemStack>> inputs = new ArrayList<>();
+			inputs.add(Arrays.asList(recipe.getIngredients().get(0).getItems()));
+			inputs.add(Arrays.asList(jeiRecipe.getFuel().getItems()));
+			ingredients.setInputLists(VanillaTypes.ITEM, inputs);
+			ingredients.setOutputs(VanillaTypes.ITEM, Arrays.asList(recipe.getResultItem(), jeiRecipe.getFuelOutput()));
+		} else {
+			ingredients.setInputIngredients(recipe.getIngredients());
+			ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem());
+		}
 	}
 
 	@Override
@@ -73,10 +92,41 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		animatedFlame.draw(matrixStack, 1, 20);
 
 		IDrawableAnimated arrow = getArrow(recipe);
-		arrow.draw(matrixStack, 24, 18);
+		int arrowX = background.getWidth() == 82 ? 24 : 44;
+		arrow.draw(matrixStack, arrowX, 18);
 
-		drawExperience(recipe, matrixStack, 0);
-		drawCookTime(recipe, matrixStack, 45);
+		boolean hasFuelOutput = recipe instanceof JeiFurnaceRecipe && !((JeiFurnaceRecipe) recipe).getFuelOutput().isEmpty();
+		if (hasFuelOutput) {
+			drawExperienceCentered(recipe, matrixStack, 0);
+			drawCookTimeCentered(recipe, matrixStack, 45);
+		} else {
+			drawExperience(recipe, matrixStack, 0);
+			drawCookTime(recipe, matrixStack, 45);
+		}
+	}
+
+	private void drawExperienceCentered(T recipe, MatrixStack matrixStack, int y) {
+		float experience = recipe.getExperience();
+		if (experience > 0) {
+			TranslationTextComponent text = new TranslationTextComponent("gui.jei.category.smelting.experience", experience);
+			drawCenteredInMiddle(matrixStack, text, y);
+		}
+	}
+
+	private void drawCookTimeCentered(T recipe, MatrixStack matrixStack, int y) {
+		int cookTime = recipe.getCookingTime();
+		if (cookTime > 0) {
+			TranslationTextComponent text = new TranslationTextComponent("gui.jei.category.smelting.time.seconds", cookTime / 20);
+			drawCenteredInMiddle(matrixStack, text, y);
+		}
+	}
+
+	private void drawCenteredInMiddle(MatrixStack matrixStack, ITextComponent text, int y) {
+		FontRenderer fontRenderer = Minecraft.getInstance().font;
+		int middleStart = 20;
+		int middleWidth = background.getWidth() - 42;
+		int x = middleStart + (middleWidth - fontRenderer.width(text)) / 2;
+		fontRenderer.draw(matrixStack, text, x, y, 0xFF808080);
 	}
 
 	protected void drawExperience(T recipe, MatrixStack matrixStack, int y) {
@@ -118,7 +168,14 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
 
 		guiItemStacks.init(inputSlot, true, 0, 0);
-		guiItemStacks.init(outputSlot, false, 60, 18);
+		if (background.getWidth() == 82) {
+			guiItemStacks.init(outputSlot, false, 60, 18);
+		} else {
+			boolean hasFuelOutput = recipe instanceof JeiFurnaceRecipe && !((JeiFurnaceRecipe) recipe).getFuelOutput().isEmpty();
+			guiItemStacks.init(1, true, 0, 36);
+			guiItemStacks.init(2, false, 94, hasFuelOutput ? 4 : 18);
+			guiItemStacks.init(3, false, 94, 32);
+		}
 
 		guiItemStacks.set(ingredients);
 	}

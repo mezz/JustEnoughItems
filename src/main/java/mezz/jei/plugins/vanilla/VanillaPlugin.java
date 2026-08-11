@@ -38,6 +38,7 @@ import mezz.jei.plugins.vanilla.compostable.CompostableRecipeMaker;
 import mezz.jei.plugins.vanilla.cooking.BlastingCategory;
 import mezz.jei.plugins.vanilla.cooking.CampfireCategory;
 import mezz.jei.plugins.vanilla.cooking.FurnaceSmeltingCategory;
+import mezz.jei.plugins.vanilla.cooking.FurnaceRecipeMaker;
 import mezz.jei.plugins.vanilla.cooking.SmokingCategory;
 import mezz.jei.plugins.vanilla.cooking.fuel.FuelRecipeMaker;
 import mezz.jei.plugins.vanilla.cooking.fuel.FurnaceFuelCategory;
@@ -226,7 +227,9 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipes(specialCraftingRecipes, VanillaRecipeCategoryUid.CRAFTING);
 
 		registration.addRecipes(vanillaRecipes.getStonecuttingRecipes(stonecuttingCategory), VanillaRecipeCategoryUid.STONECUTTING);
-		registration.addRecipes(vanillaRecipes.getFurnaceRecipes(furnaceCategory), VanillaRecipeCategoryUid.FURNACE);
+		List<FurnaceRecipe> furnaceRecipes = vanillaRecipes.getFurnaceRecipes(furnaceCategory);
+		furnaceRecipes.addAll(FurnaceRecipeMaker.getRecipes(vanillaRecipes.getRecipeManager()));
+		registration.addRecipes(furnaceRecipes, VanillaRecipeCategoryUid.FURNACE);
 		registration.addRecipes(vanillaRecipes.getSmokingRecipes(smokingCategory), VanillaRecipeCategoryUid.SMOKING);
 		registration.addRecipes(vanillaRecipes.getBlastingRecipes(blastingCategory), VanillaRecipeCategoryUid.BLASTING);
 		registration.addRecipes(vanillaRecipes.getCampfireCookingRecipes(campfireCategory), VanillaRecipeCategoryUid.CAMPFIRE);
@@ -261,7 +264,7 @@ public class VanillaPlugin implements IModPlugin {
 		IStackHelper stackHelper = jeiHelpers.getStackHelper();
 		registration.addRecipeTransferHandler(WorkbenchContainer.class, VanillaRecipeCategoryUid.CRAFTING, 1, 9, 10, 36);
 		registration.addRecipeTransferHandler(new PlayerRecipeTransferHandler(stackHelper, transferHelper), VanillaRecipeCategoryUid.CRAFTING);
-		registration.addRecipeTransferHandler(FurnaceContainer.class, VanillaRecipeCategoryUid.FURNACE, 0, 1, 3, 36);
+		registration.addRecipeTransferHandler(FurnaceContainer.class, VanillaRecipeCategoryUid.FURNACE, 0, 2, 3, 36);
 		registration.addRecipeTransferHandler(FurnaceContainer.class, VanillaRecipeCategoryUid.FUEL, 1, 1, 3, 36);
 		registration.addRecipeTransferHandler(SmokerContainer.class, VanillaRecipeCategoryUid.SMOKING, 0, 1, 3, 36);
 		registration.addRecipeTransferHandler(SmokerContainer.class, VanillaRecipeCategoryUid.FUEL, 1, 1, 3, 36);

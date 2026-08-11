@@ -52,6 +52,10 @@ public final class VanillaRecipes {
 		return getValidHandledRecipes(recipeManager, IRecipeType.SMELTING, validator);
 	}
 
+	public RecipeManager getRecipeManager() {
+		return recipeManager;
+	}
+
 	public List<SmokingRecipe> getSmokingRecipes(IRecipeCategory<SmokingRecipe> smokingCategory) {
 		CategoryRecipeValidator<SmokingRecipe> validator = new CategoryRecipeValidator<>(smokingCategory, 1);
 		return getValidHandledRecipes(recipeManager, IRecipeType.SMOKING, validator);
