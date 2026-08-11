@@ -16,6 +16,7 @@ import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.codecs.EnumCodec;
 import mezz.jei.common.config.file.JsonArrayFileHelper;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
 import mezz.jei.library.ingredients.IngredientVisibility;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
@@ -130,33 +131,37 @@ public class EditModeConfig implements IEditModeConfig {
 
 	@Override
 	public <V> boolean isIngredientHiddenUsingConfigFile(ITypedIngredient<V> ingredient) {
-		IIngredientType<V> type = ingredient.getType();
+		ITypedIngredient<V> checkedIngredient = TypedIngredientUtil.checkTypedIngredientFromApi(ingredientManager, ingredient);
+		IIngredientType<V> type = checkedIngredient.getType();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(type);
-		return isIngredientOnConfigBlacklist(ingredient, ingredientHelper);
+		return isIngredientOnConfigBlacklist(checkedIngredient, ingredientHelper);
 	}
 
 	@Override
 	public <V> Set<HideMode> getIngredientHiddenUsingConfigFile(ITypedIngredient<V> ingredient) {
-		IIngredientType<V> type = ingredient.getType();
+		ITypedIngredient<V> checkedIngredient = TypedIngredientUtil.checkTypedIngredientFromApi(ingredientManager, ingredient);
+		IIngredientType<V> type = checkedIngredient.getType();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(type);
-		return getIngredientOnConfigBlacklist(ingredient, ingredientHelper);
+		return getIngredientOnConfigBlacklist(checkedIngredient, ingredientHelper);
 	}
 
 	@Override
 	public <V> void hideIngredientUsingConfigFile(ITypedIngredient<V> ingredient, HideMode hideMode) {
-		IIngredientType<V> type = ingredient.getType();
+		ITypedIngredient<V> checkedIngredient = TypedIngredientUtil.checkTypedIngredientFromApi(ingredientManager, ingredient);
+		IIngredientType<V> type = checkedIngredient.getType();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(type);
-		addIngredientToConfigBlacklist(ingredient, hideMode, ingredientHelper);
+		addIngredientToConfigBlacklist(checkedIngredient, hideMode, ingredientHelper);
 	}
 
 	@Override
 	public <V> void showIngredientUsingConfigFile(ITypedIngredient<V> ingredient, HideMode hideMode) {
-		IIngredientType<V> type = ingredient.getType();
+		ITypedIngredient<V> checkedIngredient = TypedIngredientUtil.checkTypedIngredientFromApi(ingredientManager, ingredient);
+		IIngredientType<V> type = checkedIngredient.getType();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(type);
-		final Object blacklistUid = getIngredientUid(ingredient, hideMode, ingredientHelper);
+		final Object blacklistUid = getIngredientUid(checkedIngredient, hideMode, ingredientHelper);
 		if (blacklist.remove(blacklistUid) != null) {
 			serializer.save(this);
-			notifyListenersOfVisibilityChange(ingredient, true);
+			notifyListenersOfVisibilityChange(checkedIngredient, true);
 		}
 	}
 

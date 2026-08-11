@@ -9,8 +9,10 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
+import mezz.jei.common.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.itemStacks.TypedItemStack;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.util.context.ContextMap;
@@ -147,9 +149,9 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 	public <I> SimpleIngredientAcceptor add(ITypedIngredient<I> typedIngredient) {
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
-		ITypedIngredient<I> copy = TypedIngredient.defensivelyCopyTypedIngredientFromApi(ingredientManager, typedIngredient);
-		if (copy != null) {
-			this.ingredients.add(copy);
+		ITypedIngredient<I> checkedIngredient = TypedIngredientUtil.checkAndValidateTypedIngredientFromApi(ingredientManager, typedIngredient);
+		if (checkedIngredient != null) {
+			this.ingredients.add(checkedIngredient);
 		}
 
 		return this;
@@ -211,7 +213,7 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 
 		for (Optional<ITypedIngredient<?>> optionalTypedIngredient : ingredients) {
 			if (optionalTypedIngredient.isPresent()) {
-				this.ingredients.add(optionalTypedIngredient.get());
+				this.add(optionalTypedIngredient.get());
 			}
 		}
 		return this;
