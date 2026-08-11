@@ -1,9 +1,12 @@
 package mezz.jei.plugins.vanilla.furnace;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 
@@ -35,6 +38,18 @@ public final class SmeltingRecipeMaker {
 				SmeltingRecipe recipe = new SmeltingRecipe(inputs, output);
 				recipes.add(recipe);
 			}
+		}
+
+		ItemStack wetSponge = new ItemStack(Blocks.SPONGE, 1, 1);
+		ItemStack sponge = furnaceRecipes.getSmeltingResult(wetSponge);
+		if (!sponge.isEmpty()) {
+			SmeltingRecipe spongeWithBucket = new SmeltingRecipe(
+				Collections.singletonList(wetSponge),
+				Collections.singletonList(new ItemStack(Items.BUCKET)),
+				sponge,
+				new ItemStack(Items.WATER_BUCKET)
+			);
+			recipes.add(spongeWithBucket);
 		}
 
 		return recipes;
