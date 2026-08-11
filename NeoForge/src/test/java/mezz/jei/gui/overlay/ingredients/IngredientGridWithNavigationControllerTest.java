@@ -16,6 +16,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PlayToServerPacket;
@@ -502,6 +503,11 @@ public class IngredientGridWithNavigationControllerTest {
 		@Override
 		public boolean drawBackground() {
 			return false;
+		}
+
+		@Override
+		public IngredientGridLayoutMode getLayoutMode() {
+			return IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE;
 		}
 
 		@Override

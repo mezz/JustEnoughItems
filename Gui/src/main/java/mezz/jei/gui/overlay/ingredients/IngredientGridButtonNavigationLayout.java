@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import org.jspecify.annotations.Nullable;
@@ -81,7 +82,7 @@ public final class IngredientGridButtonNavigationLayout {
 
 		ImmutableRect2i slotBackgroundArea = IngredientGridWithNavigationLayout.calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
 		ImmutableRect2i defaultNavigationArea = IngredientGridWithNavigationLayout.calculateNavigationArea(slotBackgroundArea, navigationEnabled);
-		ImmutableRect2i navigationArea = calculateNavigationAreaAvoidingExclusions(
+		ImmutableRect2i navigationArea = calculateNavigationArea(
 			defaultNavigationArea, slotBackgroundArea, guiExclusionAreas, gridConfig
 		);
 
@@ -101,7 +102,7 @@ public final class IngredientGridButtonNavigationLayout {
 				);
 				slotBackgroundArea = IngredientGridWithNavigationLayout.calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
 				defaultNavigationArea = IngredientGridWithNavigationLayout.calculateNavigationArea(slotBackgroundArea, navigationEnabled);
-				navigationArea = calculateNavigationAreaAvoidingExclusions(
+				navigationArea = calculateNavigationArea(
 					defaultNavigationArea, slotBackgroundArea, guiExclusionAreas, gridConfig
 				);
 			}
@@ -115,6 +116,29 @@ public final class IngredientGridButtonNavigationLayout {
 			navigationEnabled,
 			ImmutableRect2i.EMPTY,
 			false
+		);
+	}
+
+	private static ImmutableRect2i calculateNavigationArea(
+		ImmutableRect2i defaultNavigationArea,
+		ImmutableRect2i slotBackgroundArea,
+		Set<ImmutableRect2i> guiExclusionAreas,
+		IIngredientGridConfig gridConfig
+	) {
+		if (gridConfig.getLayoutMode() == IngredientGridLayoutMode.RECTANGULAR) {
+			boolean blocked = guiExclusionAreas.stream()
+				.anyMatch(defaultNavigationArea::intersects);
+			if (blocked) {
+				return ImmutableRect2i.EMPTY;
+			}
+			return defaultNavigationArea;
+		}
+
+		return calculateNavigationAreaAvoidingExclusions(
+			defaultNavigationArea,
+			slotBackgroundArea,
+			guiExclusionAreas,
+			gridConfig
 		);
 	}
 

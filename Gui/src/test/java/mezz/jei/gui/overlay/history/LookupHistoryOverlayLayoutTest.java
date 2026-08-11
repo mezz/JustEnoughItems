@@ -3,6 +3,7 @@ package mezz.jei.gui.overlay.history;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.NavigationVisibility;
@@ -307,6 +308,11 @@ public class LookupHistoryOverlayLayoutTest {
 		@Override
 		public boolean drawBackground() {
 			return drawBackground;
+		}
+
+		@Override
+		public IngredientGridLayoutMode getLayoutMode() {
+			return IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE;
 		}
 
 		@Override
