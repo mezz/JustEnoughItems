@@ -1,4 +1,4 @@
-package mezz.jei.library.ingredients.itemStacks;
+package mezz.jei.common.ingredients.itemStacks;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -18,7 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import java.time.Duration;
 import java.util.Optional;
 
-public abstract class TypedItemStack implements ITypedIngredient<ItemStack> {
+public abstract sealed class TypedItemStack implements ITypedIngredient<ItemStack>
+	permits FullTypedItemStack, NormalizedTypedItem, NormalizedTypedItemStack {
 	private static final LoadingCache<TypedItemStack, ItemStack> CACHE = CacheBuilder.newBuilder()
 		.expireAfterAccess(Duration.ofSeconds(1))
 		.concurrencyLevel(1)

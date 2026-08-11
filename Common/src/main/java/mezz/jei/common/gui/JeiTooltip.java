@@ -13,6 +13,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.SafeIngredientUtil;
@@ -60,7 +61,7 @@ public class JeiTooltip implements ITooltipBuilder {
 
 	@Override
 	public void setIngredient(ITypedIngredient<?> typedIngredient) {
-		this.typedIngredient = typedIngredient;
+		this.typedIngredient = TypedIngredientUtil.checkTypedIngredientFromApi(typedIngredient);
 	}
 
 	public void addKeyUsageComponent(String translationKey, IJeiKeyMapping keyMapping) {
