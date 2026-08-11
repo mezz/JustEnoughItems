@@ -128,7 +128,7 @@ public class Textures {
 
 	private ScalableDrawable createScalableGuiSprite(String name) {
 		Identifier id = createSpriteId(name);
-		return new ScalableDrawable(jeiAtlasManager.getAtlas(), id);
+		return new ScalableDrawable(jeiAtlasManager, id);
 	}
 
 	public IDrawableStatic getSlot() {
