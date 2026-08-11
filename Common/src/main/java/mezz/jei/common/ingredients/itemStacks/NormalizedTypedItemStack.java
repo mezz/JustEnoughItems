@@ -1,4 +1,4 @@
-package mezz.jei.library.ingredients.itemStacks;
+package mezz.jei.common.ingredients.itemStacks;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import net.minecraft.core.Holder;
@@ -6,29 +6,33 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-final class FullTypedItemStack extends TypedItemStack {
+final class NormalizedTypedItemStack extends TypedItemStack {
 	private final Holder<Item> itemHolder;
 	private final DataComponentPatch dataComponentPatch;
-	private final int count;
 
-	public FullTypedItemStack(
+	public NormalizedTypedItemStack(
 		Holder<Item> itemHolder,
-		DataComponentPatch dataComponentPatch,
-		int count
+		DataComponentPatch dataComponentPatch
 	) {
 		this.itemHolder = itemHolder;
 		this.dataComponentPatch = dataComponentPatch;
-		this.count = count;
+	}
+
+	static TypedItemStack create(Holder<Item> itemHolder, DataComponentPatch dataComponentPatch) {
+		if (dataComponentPatch.isEmpty()) {
+			return new NormalizedTypedItem(itemHolder);
+		}
+		return new NormalizedTypedItemStack(itemHolder, dataComponentPatch);
 	}
 
 	@Override
 	protected ItemStack createItemStackUncached() {
-		return new ItemStack(itemHolder, count, dataComponentPatch);
+		return new ItemStack(itemHolder, 1, dataComponentPatch);
 	}
 
 	@Override
 	public TypedItemStack normalize(IIngredientHelper<ItemStack> ingredientHelper) {
-		return NormalizedTypedItemStack.create(itemHolder, dataComponentPatch);
+		return this;
 	}
 
 	@Override
@@ -38,10 +42,9 @@ final class FullTypedItemStack extends TypedItemStack {
 
 	@Override
 	public String toString() {
-		return "TypedItemStack{" +
+		return "NormalizedTypedItemStack{" +
 			"itemHolder=" + itemHolder +
 			", dataComponentPatch=" + dataComponentPatch +
-			", count=" + count +
 			'}';
 	}
 }

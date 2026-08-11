@@ -23,6 +23,7 @@ import mezz.jei.common.gui.RecipeLayoutDrawableErrored;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.Pair;
+import mezz.jei.library.focus.FocusGroup;
 import mezz.jei.library.gui.ingredients.CycleTimer;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
@@ -120,7 +121,8 @@ public class RecipeManager implements IRecipeManager {
 			borderPadding = 0;
 		}
 
-		return RecipeLayout.create(recipeCategory, decorators, recipe, focusGroup, ingredientManager, recipeBackground, borderPadding, contextMap)
+		IFocusGroup checkedFocusGroup = FocusGroup.checkOne(focusGroup, ingredientManager);
+		return RecipeLayout.create(recipeCategory, decorators, recipe, checkedFocusGroup, ingredientManager, recipeBackground, borderPadding, contextMap)
 			.orElseGet(() -> {
 				return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, borderPadding);
 			});
@@ -145,11 +147,12 @@ public class RecipeManager implements IRecipeManager {
 			borderPadding = 0;
 		}
 
+		IFocusGroup checkedFocusGroup = FocusGroup.checkOne(focusGroup, ingredientManager);
 		return RecipeLayout.create(
 			recipeCategory,
 			decorators,
 			recipe,
-			focusGroup,
+			checkedFocusGroup,
 			ingredientManager,
 			recipeBackground,
 			borderPadding,
@@ -172,11 +175,12 @@ public class RecipeManager implements IRecipeManager {
 
 		IRecipeType<T> recipeType = recipeCategory.getRecipeType();
 		Collection<IRecipeCategoryDecorator<T>> decorators = getRecipeCategoryDecorators(recipeType);
+		IFocusGroup checkedFocusGroup = FocusGroup.checkOne(focusGroup, ingredientManager);
 		return RecipeLayout.create(
 			recipeCategory,
 			decorators,
 			recipe,
-			focusGroup,
+			checkedFocusGroup,
 			ingredientManager,
 			background,
 			borderSize,
