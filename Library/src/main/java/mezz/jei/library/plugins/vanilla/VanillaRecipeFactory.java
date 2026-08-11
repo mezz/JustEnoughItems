@@ -9,10 +9,13 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipe;
 import mezz.jei.library.plugins.vanilla.brewing.BrewingRecipeUtil;
 import mezz.jei.library.plugins.vanilla.brewing.JeiBrewingRecipe;
+import mezz.jei.library.plugins.vanilla.cooking.JeiSmeltingRecipe;
 import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipe;
 import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -69,6 +72,39 @@ public class VanillaRecipeFactory implements IVanillaRecipeFactory {
 		ErrorUtil.checkNotNull(uid, "uid");
 
 		return new GrindstoneRecipe(List.copyOf(topInputs), List.copyOf(bottomInputs), List.copyOf(outputs), minXp, maxXp, uid);
+	}
+
+	@Override
+	public SmeltingRecipe createSmeltingRecipe(
+		Ingredient input,
+		Ingredient fuel,
+		ItemStack fuelOutput,
+		ItemStack output,
+		int cookingTime,
+		float experience,
+		ResourceLocation uid
+	) {
+		ErrorUtil.checkNotNull(input, "input");
+		ErrorUtil.checkNotNull(fuel, "fuel");
+		ErrorUtil.checkNotNull(fuelOutput, "fuelOutput");
+		ErrorUtil.checkNotEmpty(output, "output");
+		if (cookingTime <= 0) {
+			throw new IllegalArgumentException("cookingTime must be greater than 0");
+		}
+		if (!Float.isFinite(experience) || experience < 0) {
+			throw new IllegalArgumentException("experience must be greater than or equal to 0");
+		}
+		ErrorUtil.checkNotNull(uid, "uid");
+
+		return new JeiSmeltingRecipe(
+			uid,
+			input,
+			fuel,
+			fuelOutput.copy(),
+			output.copy(),
+			experience,
+			cookingTime
+		);
 	}
 
 	@Override

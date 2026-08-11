@@ -48,6 +48,8 @@ import mezz.jei.library.plugins.vanilla.compostable.CompostableRecipeCategory;
 import mezz.jei.library.plugins.vanilla.compostable.CompostingRecipeMaker;
 import mezz.jei.library.plugins.vanilla.cooking.BlastingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.CampfireCookingCategory;
+import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeMaker;
+import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeTransferInfo;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceSmeltingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.SmokingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.fuel.FuelRecipeMaker;
@@ -79,6 +81,7 @@ import mezz.jei.library.render.ItemStackRenderer;
 import mezz.jei.library.transfer.PlayerRecipeTransferHandler;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.StackHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.client.gui.screens.inventory.BlastFurnaceScreen;
@@ -90,6 +93,7 @@ import net.minecraft.client.gui.screens.inventory.GrindstoneScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AnvilMenu;
@@ -201,13 +205,16 @@ public class VanillaPlugin implements IModPlugin {
 		Textures textures = Internal.getTextures();
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+		List<ItemStack> furnaceFuels = FuelRecipeMaker.getFuelRecipes(jeiHelpers.getIngredientManager()).stream()
+			.flatMap(recipe -> recipe.getInputs().stream())
+			.toList();
 		brewingExtensionHelper = new BrewingExtensionHelper();
 		registration.addRecipeCategories(
 			craftingCategory = new CraftingRecipeCategory(guiHelper),
 			stonecuttingCategory = new StoneCuttingRecipeCategory(guiHelper),
-			furnaceCategory = new FurnaceSmeltingCategory(guiHelper),
-			smokingCategory = new SmokingCategory(guiHelper),
-			blastingCategory = new BlastingCategory(guiHelper),
+			furnaceCategory = new FurnaceSmeltingCategory(guiHelper, furnaceFuels),
+			smokingCategory = new SmokingCategory(guiHelper, furnaceFuels),
+			blastingCategory = new BlastingCategory(guiHelper, furnaceFuels),
 			campfireCategory = new CampfireCookingCategory(guiHelper),
 			smithingCategory = new SmithingRecipeCategory(guiHelper),
 			new CompostableRecipeCategory(guiHelper),
@@ -249,6 +256,9 @@ public class VanillaPlugin implements IModPlugin {
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+		Minecraft minecraft = Minecraft.getInstance();
+		ClientLevel level = minecraft.level;
+		ErrorUtil.checkNotNull(level, "minecraft.level");
 		VanillaRecipes vanillaRecipes = new VanillaRecipes(ingredientManager);
 
 		Map<Boolean, List<CraftingRecipe>> craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
@@ -261,6 +271,7 @@ public class VanillaPlugin implements IModPlugin {
 
 		registration.addRecipes(RecipeTypes.STONECUTTING, vanillaRecipes.getStonecuttingRecipes(stonecuttingCategory));
 		registration.addRecipes(RecipeTypes.SMELTING, vanillaRecipes.getFurnaceRecipes(furnaceCategory));
+		registration.addRecipes(RecipeTypes.SMELTING, FurnaceRecipeMaker.getRecipes(vanillaRecipeFactory, level.getRecipeManager()));
 		registration.addRecipes(RecipeTypes.SMOKING, vanillaRecipes.getSmokingRecipes(smokingCategory));
 		registration.addRecipes(RecipeTypes.BLASTING, vanillaRecipes.getBlastingRecipes(blastingCategory));
 		registration.addRecipes(RecipeTypes.CAMPFIRE_COOKING, vanillaRecipes.getCampfireCookingRecipes(campfireCategory));
@@ -302,7 +313,7 @@ public class VanillaPlugin implements IModPlugin {
 	@Override
 	public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
 		registration.addRecipeTransferHandler(CraftingMenu.class, MenuType.CRAFTING, RecipeTypes.CRAFTING, 1, 9, 10, 36);
-		registration.addRecipeTransferHandler(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING, 0, 1, 3, 36);
+		registration.addRecipeTransferHandler(new FurnaceRecipeTransferInfo());
 		registration.addRecipeTransferHandler(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.FUELING, 1, 1, 3, 36);
 		registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.SMOKING, 0, 1, 3, 36);
 		registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.FUELING, 1, 1, 3, 36);

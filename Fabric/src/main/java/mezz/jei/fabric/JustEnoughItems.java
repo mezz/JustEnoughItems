@@ -8,6 +8,7 @@ import mezz.jei.fabric.config.ServerConfig;
 import mezz.jei.fabric.network.ConnectionToClient;
 import mezz.jei.fabric.network.ServerNetworkHandler;
 import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipe;
+import mezz.jei.library.plugins.vanilla.cooking.JeiSmeltingRecipe;
 import mezz.jei.library.recipes.RecipeSerializers;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.core.Registry;
@@ -24,6 +25,9 @@ public class JustEnoughItems implements ModInitializer {
 		ResourceLocation resourceLocation = new ResourceLocation(ModIds.JEI_ID, "jei_shaped");
 		var recipeSerializer = new JeiShapedRecipe.Serializer();
 		Registry.register(Registry.RECIPE_SERIALIZER, resourceLocation, recipeSerializer);
-		RecipeSerializers.register(() -> recipeSerializer);
+
+		ResourceLocation smeltingResourceLocation = new ResourceLocation(ModIds.JEI_ID, "jei_smelting");
+		Registry.register(Registry.RECIPE_SERIALIZER, smeltingResourceLocation, JeiSmeltingRecipe.SERIALIZER);
+		RecipeSerializers.register(() -> recipeSerializer, () -> JeiSmeltingRecipe.SERIALIZER);
 	}
 }
