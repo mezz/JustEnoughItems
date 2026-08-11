@@ -1,4 +1,4 @@
-package mezz.jei.library.ingredients.itemStacks;
+package mezz.jei.common.ingredients.itemStacks;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import net.minecraft.core.Holder;

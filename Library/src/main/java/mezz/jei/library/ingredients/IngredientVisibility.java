@@ -6,6 +6,8 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
 import mezz.jei.library.config.EditModeConfig;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,9 +39,10 @@ public class IngredientVisibility implements IIngredientVisibility {
 
 	@Override
 	public <V> boolean isIngredientVisible(ITypedIngredient<V> typedIngredient) {
-		IIngredientType<V> ingredientType = typedIngredient.getType();
+		ITypedIngredient<V> checkedIngredient = TypedIngredientUtil.checkTypedIngredientFromApi(ingredientManager, typedIngredient);
+		IIngredientType<V> ingredientType = checkedIngredient.getType();
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		return isIngredientVisible(typedIngredient, ingredientHelper);
+		return isIngredientVisible(checkedIngredient, ingredientHelper);
 	}
 
 	@Override

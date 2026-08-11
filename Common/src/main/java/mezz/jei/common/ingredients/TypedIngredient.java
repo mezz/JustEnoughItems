@@ -1,4 +1,4 @@
-package mezz.jei.library.ingredients;
+package mezz.jei.common.ingredients;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
@@ -7,7 +7,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
+import mezz.jei.common.ingredients.itemStacks.TypedItemStack;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.apache.logging.log4j.LogManager;
@@ -169,6 +169,16 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		return results;
 	}
 
+	public static List<@Nullable ITypedIngredient<ItemStack>> createAndFilterInvalidList(IIngredientManager ingredientManager, Ingredient ingredient, boolean normalize) {
+		ItemStack[] itemStacks = ingredient.getItems();
+		IIngredientHelper<ItemStack> ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
+		List<@Nullable ITypedIngredient<ItemStack>> results = new ArrayList<>(itemStacks.length);
+		for (ItemStack itemStack : itemStacks) {
+			ITypedIngredient<ItemStack> result = createAndFilterInvalid(ingredientHelper, VanillaTypes.ITEM_STACK, itemStack, normalize);
+			results.add(result);
+		}
+		return results;
+	}
 	@Nullable
 	public static <T> ITypedIngredient<T> createAndFilterInvalid(
 		IIngredientHelper<T> ingredientHelper,
@@ -208,26 +218,6 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		}
 
 		return createUnvalidated(ingredientType, ingredient);
-	}
-
-	@Nullable
-	public static <T> ITypedIngredient<T> defensivelyCopyTypedIngredientFromApi(IIngredientManager ingredientManager, ITypedIngredient<T> value) {
-		if (value instanceof TypedItemStack || value instanceof TypedIngredient) {
-			return value;
-		}
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
-		T ingredient = ingredientHelper.copyIngredient(value.getIngredient());
-		return createAndFilterInvalid(ingredientHelper, value.getType(), ingredient, false);
-	}
-
-	@Nullable
-	public static <T> ITypedIngredient<T> defensivelyCopyTypedIngredientForDisplay(IIngredientManager ingredientManager, ITypedIngredient<T> value) {
-		if (value instanceof TypedItemStack || value instanceof TypedIngredient) {
-			return value;
-		}
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
-		T ingredient = ingredientHelper.copyIngredient(value.getIngredient());
-		return TypedIngredient.createAndFilterInvalidForDisplay(ingredientManager, value.getType(), ingredient, false);
 	}
 
 	private final IIngredientType<T> ingredientType;

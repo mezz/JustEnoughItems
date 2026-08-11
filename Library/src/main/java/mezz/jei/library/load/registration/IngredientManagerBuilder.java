@@ -13,11 +13,12 @@ import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.ingredients.IngredientInfo;
 import mezz.jei.library.ingredients.IngredientManager;
 import mezz.jei.library.ingredients.RegisteredIngredients;
-import mezz.jei.library.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.TypedIngredient;
 import net.minecraft.world.level.material.Fluid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -120,7 +121,9 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(alias, "alias");
 
 		IngredientInfo<I> ingredientInfo = getIngredientInfo(typedIngredient.getType());
-		ingredientInfo.addIngredientAlias(typedIngredient, alias);
+		IIngredientHelper<I> ingredientHelper = ingredientInfo.getIngredientHelper();
+		ITypedIngredient<I> checkedIngredient = TypedIngredientUtil.checkTypedIngredientFromApi(ingredientHelper, typedIngredient);
+		ingredientInfo.addIngredientAlias(checkedIngredient, alias);
 	}
 
 	@Override
@@ -161,7 +164,9 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(aliases, "aliases");
 
 		IngredientInfo<I> ingredientInfo = getIngredientInfo(typedIngredient.getType());
-		ingredientInfo.addIngredientAliases(typedIngredient, aliases);
+		IIngredientHelper<I> ingredientHelper = ingredientInfo.getIngredientHelper();
+		ITypedIngredient<I> checkedIngredient = TypedIngredientUtil.checkTypedIngredientFromApi(ingredientHelper, typedIngredient);
+		ingredientInfo.addIngredientAliases(checkedIngredient, aliases);
 	}
 
 	@Override
@@ -182,13 +187,8 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(typedIngredients, "typedIngredients");
 		ErrorUtil.checkNotNull(alias, "alias");
 
-		IngredientInfo<I> ingredientInfo = null;
 		for (ITypedIngredient<I> typedIngredient : typedIngredients) {
-			IIngredientType<I> ingredientType = typedIngredient.getType();
-			if (ingredientInfo == null) {
-				ingredientInfo = getIngredientInfo(ingredientType);
-			}
-			ingredientInfo.addIngredientAlias(typedIngredient, alias);
+			addAlias(typedIngredient, alias);
 		}
 	}
 
@@ -210,13 +210,8 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(typedIngredients, "typedIngredients");
 		ErrorUtil.checkNotNull(aliases, "aliases");
 
-		IngredientInfo<I> ingredientInfo = null;
 		for (ITypedIngredient<I> typedIngredient : typedIngredients) {
-			IIngredientType<I> ingredientType = typedIngredient.getType();
-			if (ingredientInfo == null) {
-				ingredientInfo = getIngredientInfo(ingredientType);
-			}
-			ingredientInfo.addIngredientAliases(typedIngredient, aliases);
+			addAliases(typedIngredient, aliases);
 		}
 	}
 
