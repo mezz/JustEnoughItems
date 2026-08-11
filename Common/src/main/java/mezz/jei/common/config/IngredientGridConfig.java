@@ -18,6 +18,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 
 	private static final VerticalAlignment defaultVerticalAlignment = VerticalAlignment.TOP;
 	private static final NavigationVisibility defaultNavigationVisibility = NavigationVisibility.ENABLED;
+	private static final IngredientGridLayoutMode defaultLayoutMode = IngredientGridLayoutMode.RECTANGULAR;
 	private static final IngredientGridNavigationMode defaultNavigationMode = IngredientGridNavigationMode.PAGED;
 	private static final boolean defaultDrawBackground = false;
 
@@ -26,6 +27,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	private final ConfigValue<HorizontalAlignment> horizontalAlignment;
 	private final ConfigValue<VerticalAlignment> verticalAlignment;
 	private final ConfigValue<NavigationVisibility> navigationVisibility;
+	private final ConfigValue<IngredientGridLayoutMode> layoutMode;
 	private final ConfigValue<IngredientGridNavigationMode> navigationMode;
 	private final ConfigValue<Boolean> drawBackground;
 
@@ -46,8 +48,9 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 		horizontalAlignment = category.addEnum("horizontalAlignment", defaultHorizontalAlignment);
 		verticalAlignment = category.addEnum("verticalAlignment", defaultVerticalAlignment);
 		navigationVisibility = category.addEnum("navigationVisibility", defaultNavigationVisibility);
-		navigationMode = category.addEnum("navigationMode", defaultNavigationMode);
 		drawBackground = category.addBoolean("drawBackground", defaultDrawBackground);
+		layoutMode = category.addEnum("layoutMode", defaultLayoutMode);
+		navigationMode = category.addEnum("navigationMode", defaultNavigationMode);
 	}
 
 	@Override
@@ -73,6 +76,11 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	@Override
 	public boolean drawBackground() {
 		return drawBackground.get();
+	}
+
+	@Override
+	public IngredientGridLayoutMode getLayoutMode() {
+		return layoutMode.get();
 	}
 
 	@Override
@@ -102,6 +110,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 		horizontalAlignment.addListener(v -> listener.run());
 		verticalAlignment.addListener(v -> listener.run());
 		navigationVisibility.addListener(v -> listener.run());
+		layoutMode.addListener(v -> listener.run());
 		navigationMode.addListener(v -> listener.run());
 		drawBackground.addListener(v -> listener.run());
 	}

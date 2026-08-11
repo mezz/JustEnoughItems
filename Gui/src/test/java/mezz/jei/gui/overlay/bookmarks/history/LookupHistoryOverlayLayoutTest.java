@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay.bookmarks.history;
 
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -138,6 +139,11 @@ public class LookupHistoryOverlayLayoutTest {
 		@Override
 		public boolean drawBackground() {
 			return drawBackground;
+		}
+
+		@Override
+		public IngredientGridLayoutMode getLayoutMode() {
+			return IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE;
 		}
 
 		@Override
