@@ -22,6 +22,7 @@ import mezz.jei.forge.startup.ForgePluginFinder;
 import mezz.jei.forge.startup.StartEventObserver;
 import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
 import mezz.jei.library.gui.ingredients.TagContentTooltipComponent;
+import mezz.jei.library.plugins.vanilla.cooking.JeiSmeltingRecipe;
 import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipe;
 import mezz.jei.library.recipes.RecipeSerializers;
 import mezz.jei.library.startup.JeiStarter;
@@ -76,7 +77,11 @@ public class JustEnoughItemsClient {
 			"jei_shaped",
 			() -> new ForgeRecipeSerializer<>(new JeiShapedRecipe.Serializer())
 		);
-		RecipeSerializers.register(jeiShaped);
+		Supplier<RecipeSerializer<?>> jeiSmelting = deferredRegister.register(
+			"jei_smelting",
+			() -> new ForgeRecipeSerializer<>(JeiSmeltingRecipe.SERIALIZER)
+		);
+		RecipeSerializers.register(jeiShaped, jeiSmelting);
 	}
 
 	private static class ForgeRecipeSerializer<T extends Recipe<?>> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {

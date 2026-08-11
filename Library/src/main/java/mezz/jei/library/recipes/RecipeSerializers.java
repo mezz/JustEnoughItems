@@ -9,13 +9,21 @@ public class RecipeSerializers {
 	private static @Nullable RecipeSerializers INSTANCE;
 
 	private final Supplier<RecipeSerializer<?>> jeiShapedRecipeSerializer;
+	private final Supplier<RecipeSerializer<?>> jeiSmeltingRecipeSerializer;
 
-	public static void register(Supplier<RecipeSerializer<?>> jeiShapedRecipeSerializer) {
-		INSTANCE = new RecipeSerializers(jeiShapedRecipeSerializer);
+	public static void register(
+		Supplier<RecipeSerializer<?>> jeiShapedRecipeSerializer,
+		Supplier<RecipeSerializer<?>> jeiSmeltingRecipeSerializer
+	) {
+		INSTANCE = new RecipeSerializers(jeiShapedRecipeSerializer, jeiSmeltingRecipeSerializer);
 	}
 
-	private RecipeSerializers(Supplier<RecipeSerializer<?>> jeiShapedRecipeSerializer) {
+	private RecipeSerializers(
+		Supplier<RecipeSerializer<?>> jeiShapedRecipeSerializer,
+		Supplier<RecipeSerializer<?>> jeiSmeltingRecipeSerializer
+	) {
 		this.jeiShapedRecipeSerializer = jeiShapedRecipeSerializer;
+		this.jeiSmeltingRecipeSerializer = jeiSmeltingRecipeSerializer;
 	}
 
 	public static RecipeSerializer<?> getJeiShapedRecipeSerializer() {
@@ -23,5 +31,12 @@ public class RecipeSerializers {
 			throw new IllegalStateException("Recipe serializer not yet initialized");
 		}
 		return INSTANCE.jeiShapedRecipeSerializer.get();
+	}
+
+	public static RecipeSerializer<?> getJeiSmeltingRecipeSerializer() {
+		if (INSTANCE == null) {
+			throw new IllegalStateException("Recipe serializer not yet initialized");
+		}
+		return INSTANCE.jeiSmeltingRecipeSerializer.get();
 	}
 }
