@@ -22,22 +22,25 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceMetadata;
 import org.joml.Matrix4f;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ScalableDrawable implements IScalableDrawable {
 	// Texture atlases replace their sprites on resource reload, so this must not be cached.
 	private final Supplier<TextureAtlasSprite> spriteSupplier;
+	private final Function<TextureAtlasSprite, GuiSpriteScaling> scalingSupplier;
 
 	public ScalableDrawable(JeiGuiSpriteManager spriteManager, ResourceLocation spriteId) {
-		this(() -> spriteManager.getSprite(spriteId));
+		this(() -> spriteManager.getSprite(spriteId), spriteManager::getSpriteScaling);
 	}
 
 	public ScalableDrawable(TextureAtlas textureAtlas, ResourceLocation spriteId) {
-		this(() -> textureAtlas.getSprite(spriteId));
+		this(() -> textureAtlas.getSprite(spriteId), ScalableDrawable::getSpriteScaling);
 	}
 
-	private ScalableDrawable(Supplier<TextureAtlasSprite> spriteSupplier) {
+	private ScalableDrawable(Supplier<TextureAtlasSprite> spriteSupplier, Function<TextureAtlasSprite, GuiSpriteScaling> scalingSupplier) {
 		this.spriteSupplier = spriteSupplier;
+		this.scalingSupplier = scalingSupplier;
 	}
 
 	public void draw(GuiGraphics guiGraphics, ImmutableRect2i area) {
@@ -47,7 +50,7 @@ public class ScalableDrawable implements IScalableDrawable {
 	@Override
 	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, int width, int height) {
 		TextureAtlasSprite sprite = spriteSupplier.get();
-		GuiSpriteScaling scaling = getSpriteScaling(sprite);
+		GuiSpriteScaling scaling = scalingSupplier.apply(sprite);
 
 		switch (scaling) {
 			case GuiSpriteScaling.Tile tileScaling -> {
@@ -75,13 +78,14 @@ public class ScalableDrawable implements IScalableDrawable {
 				);
 			}
 			default -> {
-				SpriteContents contents = sprite.contents();
 				IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+				// Using the sprite's pixel size here would make larger draws sample past its edges.
+				// Using the draw size instead stretches the full sprite to the requested area.
 				renderHelper.blitSprite(
 					guiGraphics,
 					sprite,
-					contents.width(),
-					contents.height(),
+					width,
+					height,
 					0,
 					0,
 					xOffset,

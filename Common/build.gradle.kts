@@ -112,6 +112,7 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
     include("mezz/jei/common/gui/elements/**")
+    include("mezz/jei/common/gui/textures/**")
     include("mezz/jei/test/**")
     include("mezz/jei/common/util/**")
     exclude("mezz/jei/test/lib/**")
