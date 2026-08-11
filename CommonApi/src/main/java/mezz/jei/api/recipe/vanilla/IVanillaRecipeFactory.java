@@ -7,6 +7,9 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import org.jspecify.annotations.Nullable;
@@ -16,7 +19,7 @@ import java.util.List;
 
 /**
  * The {@link IVanillaRecipeFactory} allows creation of vanilla recipes.
- * Get the instance from {@link IJeiHelpers#getStackHelper()} or {@link IRecipeRegistration#getVanillaRecipeFactory()}.
+ * Get the instance from {@link IJeiHelpers#getVanillaRecipeFactory()} or {@link IRecipeRegistration#getVanillaRecipeFactory()}.
  * <p>
  * Use {@link IRecipeRegistration#addRecipes(IRecipeType, List)} to add the recipe.
  */
@@ -61,6 +64,52 @@ public interface IVanillaRecipeFactory {
 	 * @since 23.1.0
 	 */
 	IJeiGrindstoneRecipe createGrindstoneRecipe(List<ItemStack> topInputs, List<ItemStack> bottomInputs, List<ItemStack> outputs, int minXp, int maxXp, Identifier uid);
+
+	/**
+	 * Create a smelting recipe that accepts any normal furnace fuel.
+	 *
+	 * @param input       The ingredient placed in the furnace input slot.
+	 * @param output      The resulting item stack placed in the furnace result slot.
+	 * @param cookingTime The cooking time in ticks. Must be greater than 0.
+	 * @param experience  The experience granted by the recipe. Must be greater than or equal to 0.
+	 * @param uid         The unique ID for this recipe.
+	 *
+	 * @since 30.19.0
+	 */
+	default RecipeHolder<SmeltingRecipe> createSmeltingRecipe(
+		Ingredient input,
+		ItemStack output,
+		int cookingTime,
+		float experience,
+		Identifier uid
+	) {
+		return createSmeltingRecipe(input, SlotDisplay.AnyFuel.INSTANCE, output, cookingTime, experience, uid);
+	}
+
+	/**
+	 * Create a smelting recipe with a custom fuel-slot display.
+	 * <p>
+	 * Use {@link SlotDisplay.AnyFuel#INSTANCE} to accept all normal furnace fuels.
+	 * For a fuel-slot item that transforms when cooking completes, use a
+	 * {@link SlotDisplay.WithRemainder} containing its input and output displays.
+	 *
+	 * @param input       The ingredient placed in the furnace input slot.
+	 * @param fuel        The ingredient placed in the furnace fuel slot.
+	 * @param output      The resulting item stack placed in the furnace result slot.
+	 * @param cookingTime The cooking time in ticks. Must be greater than 0.
+	 * @param experience  The experience granted by the recipe. Must be greater than or equal to 0.
+	 * @param uid         The unique ID for this recipe.
+	 *
+	 * @since 30.19.0
+	 */
+	RecipeHolder<SmeltingRecipe> createSmeltingRecipe(
+		Ingredient input,
+		SlotDisplay fuel,
+		ItemStack output,
+		int cookingTime,
+		float experience,
+		Identifier uid
+	);
 
 	/**
 	 * Create a new brewing recipe.
