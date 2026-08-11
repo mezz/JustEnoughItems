@@ -5,7 +5,8 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 
 import java.util.Optional;
 
-@FunctionalInterface
 public interface ITypedIngredientFactory {
 	<T> Optional<ITypedIngredient<T>> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient, boolean normalize);
+
+	<T> ITypedIngredient<T> checkTypedIngredientFromApi(ITypedIngredient<T> typedIngredient);
 }

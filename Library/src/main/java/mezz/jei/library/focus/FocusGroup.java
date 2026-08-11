@@ -5,6 +5,7 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.util.ErrorUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -38,6 +39,17 @@ public class FocusGroup implements IFocusGroup {
 			return EMPTY;
 		}
 		return new FocusGroup(checkedFocuses);
+	}
+
+	/**
+	 * Make sure any IFocusGroup coming in through API calls is validated.
+	 */
+	public static IFocusGroup checkOne(IFocusGroup focusGroup, IIngredientManager ingredientManager) {
+		ErrorUtil.checkNotNull(focusGroup, "focusGroup");
+		if (focusGroup instanceof FocusGroup) {
+			return focusGroup;
+		}
+		return create(focusGroup.getAllFocuses(), ingredientManager);
 	}
 
 	private final List<IFocus<?>> focuses;

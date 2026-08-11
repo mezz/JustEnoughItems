@@ -9,8 +9,10 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
+import mezz.jei.common.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.itemStacks.TypedItemStack;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -101,9 +103,9 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
 		@Nullable
-		ITypedIngredient<I> copy = TypedIngredient.defensivelyCopyTypedIngredientFromApi(ingredientManager, typedIngredient);
-		if (copy != null) {
-			this.ingredients.add(copy);
+		ITypedIngredient<I> checkedIngredient = TypedIngredientUtil.checkAndValidateTypedIngredientFromApi(ingredientManager, typedIngredient);
+		if (checkedIngredient != null) {
+			this.ingredients.add(checkedIngredient);
 		}
 
 		return this;
@@ -150,7 +152,7 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 
 		for (Optional<ITypedIngredient<?>> optionalTypedIngredient : ingredients) {
 			if (optionalTypedIngredient.isPresent()) {
-				this.ingredients.add(optionalTypedIngredient.get());
+				this.addTypedIngredient(optionalTypedIngredient.get());
 			}
 		}
 		return this;

@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.ingredients.ITypedIngredientFactory;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.renderer.Rect2i;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +23,21 @@ public class ClickableIngredientFactory implements IClickableIngredientFactory {
 	}
 
 	public ClickableIngredientFactory(IIngredientManager ingredientManager) {
-		this(ingredientManager::createTypedIngredient, ingredientManager::createTypedIngredient);
+		this(createTypedIngredientFactory(ingredientManager), ingredientManager::createTypedIngredient);
+	}
+
+	private static ITypedIngredientFactory createTypedIngredientFactory(IIngredientManager ingredientManager) {
+		return new ITypedIngredientFactory() {
+			@Override
+			public <T> Optional<ITypedIngredient<T>> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient, boolean normalize) {
+				return ingredientManager.createTypedIngredient(ingredientType, ingredient, normalize);
+			}
+
+			@Override
+			public <T> ITypedIngredient<T> checkTypedIngredientFromApi(ITypedIngredient<T> typedIngredient) {
+				return TypedIngredientUtil.checkTypedIngredientFromApi(ingredientManager, typedIngredient);
+			}
+		};
 	}
 
 	private ClickableIngredientFactory(
@@ -35,7 +50,8 @@ public class ClickableIngredientFactory implements IClickableIngredientFactory {
 
 	@Override
 	public <T> IBuilder<T> createBuilder(ITypedIngredient<T> value) {
-		return new WithIngredient<>(value);
+		ITypedIngredient<T> checkedValue = typedIngredientFactory.checkTypedIngredientFromApi(value);
+		return new WithIngredient<>(checkedValue);
 	}
 
 	@Override

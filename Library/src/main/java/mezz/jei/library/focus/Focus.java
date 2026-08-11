@@ -6,8 +6,9 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.library.ingredients.TypedIngredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -64,17 +65,14 @@ public final class Focus<V> implements IFocus<V>, IFocusGroup {
 	 * Make sure any IFocus coming in through API calls is validated and turned into JEI's Focus.
 	 */
 	public static <V> Focus<V> checkOne(IFocus<V> focus, IIngredientManager ingredientManager) {
-		if (focus instanceof Focus) {
-			return (Focus<V>) focus;
-		}
 		ErrorUtil.checkNotNull(focus, "focus");
+		ITypedIngredient<V> value = focus.getTypedValue();
+		ErrorUtil.checkNotNull(value, "focus typed value");
 
-		@SuppressWarnings("removal")
-		V value = focus.getValue();
-		ErrorUtil.checkNotNull(value, "focus value");
+		RecipeIngredientRole role = focus.getRole();
+		ErrorUtil.checkNotNull(role, "focus typed value role");
 
-		IIngredientType<V> ingredientType = ingredientManager.getIngredientType(value);
-		return createFromApi(ingredientManager, focus.getRole(), ingredientType, value);
+		return createFromApi(ingredientManager, role, value);
 	}
 
 	public static <V> Focus<V> createFromApi(IIngredientManager ingredientManager, RecipeIngredientRole role, IIngredientType<V> ingredientType, V value) {
@@ -87,13 +85,18 @@ public final class Focus<V> implements IFocus<V>, IFocusGroup {
 		return new Focus<>(role, typedIngredient);
 	}
 
-	public static <V> Focus<V> createFromApi(IIngredientManager ingredientManager, RecipeIngredientRole role, ITypedIngredient<V> typedIngredient) {
-		@Nullable
-		ITypedIngredient<V> typedIngredientCopy = TypedIngredient.defensivelyCopyTypedIngredientFromApi(ingredientManager, typedIngredient);
-		if (typedIngredientCopy == null) {
-			throw new IllegalArgumentException("Focus value is invalid: " + ErrorUtil.getIngredientInfo(typedIngredient.getIngredient(), typedIngredient.getType(), ingredientManager));
+	public static <V> Focus<V> createFromApi(
+		IIngredientManager ingredientManager,
+		RecipeIngredientRole role,
+		ITypedIngredient<V> typedIngredient
+	) {
+		ITypedIngredient<V> checkedIngredient = TypedIngredientUtil.checkAndValidateTypedIngredientFromApi(ingredientManager, typedIngredient);
+		if (checkedIngredient == null) {
+			throw new IllegalArgumentException(
+				"Focus value is invalid: " + ErrorUtil.getIngredientInfo(typedIngredient.getIngredient(), typedIngredient.getType(), ingredientManager)
+			);
 		}
-		return new Focus<>(role, typedIngredientCopy);
+		return new Focus<>(role, checkedIngredient);
 	}
 
 	@Override

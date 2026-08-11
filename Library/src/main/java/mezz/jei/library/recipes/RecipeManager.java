@@ -139,7 +139,8 @@ public class RecipeManager implements IRecipeManager {
 			borderPadding = 0;
 		}
 
-		return RecipeLayout.create(recipeCategory, decorators, recipe, focusGroup, ingredientManager, recipeBackground, borderPadding)
+		IFocusGroup checkedFocusGroup = FocusGroup.checkOne(focusGroup, ingredientManager);
+		return RecipeLayout.create(recipeCategory, decorators, recipe, checkedFocusGroup, ingredientManager, recipeBackground, borderPadding)
 			.orElseGet(() -> new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, borderPadding));
 	}
 
@@ -160,11 +161,12 @@ public class RecipeManager implements IRecipeManager {
 			recipeBackground = DrawableBlank.EMPTY;
 			borderPadding = 0;
 		}
+		IFocusGroup checkedFocusGroup = FocusGroup.checkOne(focusGroup, ingredientManager);
 		return RecipeLayout.create(
 			recipeCategory,
 			decorators,
 			recipe,
-			focusGroup,
+			checkedFocusGroup,
 			ingredientManager,
 			recipeBackground,
 			borderPadding
@@ -186,11 +188,12 @@ public class RecipeManager implements IRecipeManager {
 
 		RecipeType<T> recipeType = recipeCategory.getRecipeType();
 		Collection<IRecipeCategoryDecorator<T>> decorators = internal.getRecipeCategoryDecorators(recipeType);
+		IFocusGroup checkedFocusGroup = FocusGroup.checkOne(focusGroup, ingredientManager);
 		return RecipeLayout.create(
 			recipeCategory,
 			decorators,
 			recipe,
-			focusGroup,
+			checkedFocusGroup,
 			ingredientManager,
 			background,
 			borderSize
