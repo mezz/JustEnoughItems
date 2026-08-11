@@ -3,13 +3,13 @@ package mezz.jei.neoforge.tests.config;
 import com.google.common.collect.ImmutableSetMultimap;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.config.IModIdFormatConfig;
 import mezz.jei.library.config.ModIdFormatConfig;
 import mezz.jei.library.helpers.ModIdHelper;
 import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
+import mezz.jei.neoforge.tests.lib.TestIngredientManagers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -319,8 +319,10 @@ public final class ModIdFormatConfigGameTests {
 	@TestHolder(description = "Uses the injected display-mod-id function when formatting tooltip mod names.")
 	public static void modIdHelperUsesDisplayModIdFunctionForTooltipModName(JeiGameTestHelper helper) {
 		// Setup: a typed item stack and a ModIdHelper with an injected display-mod-id function.
-		ModIdHelper modIdHelper = createModIdHelper(helper);
-		ITypedIngredient<ItemStack> typedIngredient = new TestTypedIngredient<>(VanillaTypes.ITEM_STACK, new ItemStack(Items.APPLE));
+		IIngredientManager ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(List.of(new ItemStack(Items.APPLE)));
+		ModIdHelper modIdHelper = createModIdHelper(helper, ingredientManager);
+		ITypedIngredient<ItemStack> typedIngredient = ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.APPLE), false)
+			.orElseThrow(() -> helper.createFailException("Expected a typed ingredient for the apple"));
 
 		// Operation: request the formatted mod-name component for a tooltip.
 		Component tooltipModName = modIdHelper.getModNameForTooltip(typedIngredient)
@@ -335,12 +337,18 @@ public final class ModIdFormatConfigGameTests {
 	}
 
 	private static ModIdHelper createModIdHelper(JeiGameTestHelper helper) {
+		IIngredientManager ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(List.of(new ItemStack(Items.APPLE)));
+		return createModIdHelper(helper, ingredientManager);
+	}
+
+	private static ModIdHelper createModIdHelper(JeiGameTestHelper helper, IIngredientManager ingredientManager) {
 		Component modNameFormat = Component.empty()
 			.append(Component.literal("Mod: ").withStyle(ChatFormatting.RED))
 			.append(Component.literal(MOD_NAME_FORMAT_CODE).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
 		IModIdFormatConfig config = new TestModIdFormatConfig(modNameFormat);
 		return new ModIdHelper(
 			config,
+			ingredientManager,
 			typedIngredient -> {
 				helper.assertEquals(VanillaTypes.ITEM_STACK, typedIngredient.getType(), "ModIdHelper should pass the typed ingredient to the display mod id function");
 				return ModIds.MINECRAFT_ID;
@@ -396,21 +404,4 @@ public final class ModIdFormatConfigGameTests {
 		}
 	}
 
-	private record TestTypedIngredient<T>(IIngredientType<T> type, T ingredient) implements ITypedIngredient<T> {
-		@Override
-		public ITypedIngredient<T> normalize(IIngredientHelper<T> ingredientHelper) {
-			T normalized = ingredientHelper.normalizeIngredient(ingredient);
-			return new TestTypedIngredient<>(type, normalized);
-		}
-
-		@Override
-		public IIngredientType<T> getType() {
-			return type;
-		}
-
-		@Override
-		public T getIngredient() {
-			return ingredient;
-		}
-	}
 }

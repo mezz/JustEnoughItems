@@ -125,6 +125,7 @@ public final class PluginLoader {
 		GuiHelper guiHelper = new GuiHelper(ingredientManager);
 		IModIdHelper modIdHelper = new ModIdHelper(
 			modIdFormatConfig,
+			ingredientManager,
 			typedIngredient -> getDisplayModId(ingredientManager, typedIngredient),
 			modAliases
 		);
@@ -172,10 +173,10 @@ public final class PluginLoader {
 		return recipeCategoryRegistration.getRecipeCategories();
 	}
 
-	public static IScreenHelper createGuiScreenHelper(List<IModPlugin> plugins, IJeiHelpers jeiHelpers, IIngredientManager ingredientManager) {
+	public static IScreenHelper createGuiScreenHelper(List<IModPlugin> plugins, IJeiHelpers jeiHelpers, IngredientManager ingredientManager) {
 		GuiHandlerRegistration guiHandlerRegistration = new GuiHandlerRegistration(jeiHelpers);
 		PluginCaller.callOnPlugins("Registering gui handlers", plugins, p -> p.registerGuiHandlers(guiHandlerRegistration));
-		return guiHandlerRegistration.createGuiScreenHelper(ingredientManager::createTypedIngredient);
+		return guiHandlerRegistration.createGuiScreenHelper(ingredientManager);
 	}
 
 	public static IRecipeTransferManager createRecipeTransferManager(

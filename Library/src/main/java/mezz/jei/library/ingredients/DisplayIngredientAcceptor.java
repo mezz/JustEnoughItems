@@ -16,8 +16,10 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
+import mezz.jei.common.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.itemStacks.TypedItemStack;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
@@ -103,7 +105,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	public <I> DisplayIngredientAcceptor addTypedIngredient(ITypedIngredient<I> typedIngredient) {
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
-		@Nullable ITypedIngredient<I> copy = TypedIngredient.defensivelyCopyTypedIngredientFromApi(ingredientManager, typedIngredient);
+		@Nullable ITypedIngredient<I> copy = TypedIngredientUtil.checkAndValidateTypedIngredientFromApi(ingredientManager, typedIngredient);
 		this.ingredients.add(copy);
 
 		return this;

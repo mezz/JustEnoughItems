@@ -6,6 +6,8 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.library.config.IModIdFormatConfig;
@@ -23,11 +25,18 @@ import java.util.function.Function;
 
 public final class ModIdHelper implements IModIdHelper {
 	private final IModIdFormatConfig modIdFormattingConfig;
+	private final IIngredientManager ingredientManager;
 	private final Function<ITypedIngredient<?>, String> getDisplayModId;
 	private final ImmutableSetMultimap<String, String> modAliases;
 
-	public ModIdHelper(IModIdFormatConfig modIdFormattingConfig, Function<ITypedIngredient<?>, String> getDisplayModId, ImmutableSetMultimap<String, String> modAliases) {
+	public ModIdHelper(
+		IModIdFormatConfig modIdFormattingConfig,
+		IIngredientManager ingredientManager,
+		Function<ITypedIngredient<?>, String> getDisplayModId,
+		ImmutableSetMultimap<String, String> modAliases
+	) {
 		this.modIdFormattingConfig = modIdFormattingConfig;
+		this.ingredientManager = ingredientManager;
 		this.getDisplayModId = getDisplayModId;
 		this.modAliases = modAliases;
 	}
@@ -54,18 +63,20 @@ public final class ModIdHelper implements IModIdHelper {
 
 	@Override
 	public <T> Optional<Component> getModNameForTooltip(ITypedIngredient<T> typedIngredient) {
+		ITypedIngredient<T> checkedIngredient = TypedIngredientUtil.checkTypedIngredientFromApi(ingredientManager, typedIngredient);
+
 		if (!isDisplayingModNameEnabled()) {
 			return Optional.empty();
 		}
 
-		IIngredientType<T> type = typedIngredient.getType();
+		IIngredientType<T> type = checkedIngredient.getType();
 
 		if (modIdFormattingConfig.isModNameFormatOverrideActive() && type == VanillaTypes.ITEM_STACK) {
 			// we detected that another mod is adding the mod name already
 			return Optional.empty();
 		}
 
-		String modId = getDisplayModId.apply(typedIngredient);
+		String modId = getDisplayModId.apply(checkedIngredient);
 		return Optional.of(getFormattedModNameComponentForModId(modId));
 	}
 
