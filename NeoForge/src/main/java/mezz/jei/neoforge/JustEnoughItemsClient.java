@@ -12,6 +12,7 @@ import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
 import mezz.jei.library.gui.ingredients.TagContentTooltipComponent;
 import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipe;
+import mezz.jei.library.plugins.vanilla.cooking.JeiSmeltingRecipe;
 import mezz.jei.library.recipes.RecipeSerializers;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
@@ -31,6 +32,7 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
@@ -88,7 +90,8 @@ public class JustEnoughItemsClient {
 		deferredRegister.register(modEventBus);
 
 		Supplier<RecipeSerializer<? extends CraftingRecipe>> jeiShaped = deferredRegister.register("jei_shaped", () -> JeiShapedRecipe.SERIALIZER);
-		RecipeSerializers.register(jeiShaped);
+		Supplier<RecipeSerializer<? extends SmeltingRecipe>> jeiSmelting = deferredRegister.register("jei_smelting", () -> JeiSmeltingRecipe.SERIALIZER);
+		RecipeSerializers.register(jeiShaped, jeiSmelting);
 	}
 
 	private void onRecipesReceivedEvent(RecipesReceivedEvent event) {
