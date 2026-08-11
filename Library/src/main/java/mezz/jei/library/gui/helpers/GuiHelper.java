@@ -21,6 +21,7 @@ import mezz.jei.common.gui.elements.DrawableIngredient;
 import mezz.jei.common.gui.elements.DrawableSprite;
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.TickTimer;
 import mezz.jei.library.gui.elements.DrawableBuilder;
@@ -160,9 +161,10 @@ public class GuiHelper implements IGuiHelper {
 	@Override
 	public <V> IDrawable createDrawableIngredient(ITypedIngredient<V> ingredient) {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
-		IIngredientType<V> type = ingredient.getType();
+		ITypedIngredient<V> checkedIngredient = TypedIngredientUtil.checkTypedIngredientFromApi(ingredientManager, ingredient);
+		IIngredientType<V> type = checkedIngredient.getType();
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
-		return new DrawableIngredient<>(ingredient, ingredientRenderer);
+		return new DrawableIngredient<>(checkedIngredient, ingredientRenderer);
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package mezz.jei.library.ingredients;
+package mezz.jei.common.ingredients;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
@@ -7,7 +7,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
+import mezz.jei.common.ingredients.itemStacks.TypedItemStack;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -105,13 +105,24 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		return results;
 	}
 
-	public static Stream<@Nullable ITypedIngredient<?>> createAndFilterInvalidList(IIngredientManager ingredientManager, ContextMap contextMap, SlotDisplay slotDisplay, boolean normalize) {
+	public static Stream<@Nullable ITypedIngredient<?>> createAndFilterInvalidList(
+		IIngredientManager ingredientManager,
+		ContextMap contextMap,
+		SlotDisplay slotDisplay,
+		boolean normalize
+	) {
 		return ingredientManager.getRegisteredIngredientTypes()
 			.stream()
 			.flatMap(ingredientType -> createAndFilterInvalidList(ingredientManager, ingredientType, contextMap, slotDisplay, normalize));
 	}
 
-	public static <T> Stream<@Nullable ITypedIngredient<T>> createAndFilterInvalidList(IIngredientManager ingredientManager, IIngredientType<T> ingredientType, ContextMap contextMap, SlotDisplay slotDisplay, boolean normalize) {
+	public static <T> Stream<@Nullable ITypedIngredient<T>> createAndFilterInvalidList(
+		IIngredientManager ingredientManager,
+		IIngredientType<T> ingredientType,
+		ContextMap contextMap,
+		SlotDisplay slotDisplay,
+		boolean normalize
+	) {
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 
 		return ingredientHelper.getDisplayContentsFactory()
@@ -143,16 +154,6 @@ public final class TypedIngredient<T> implements ITypedIngredient<T> {
 		}
 
 		return createUnvalidated(ingredientType, ingredient);
-	}
-
-	@Nullable
-	public static <T> ITypedIngredient<T> defensivelyCopyTypedIngredientFromApi(IIngredientManager ingredientManager, ITypedIngredient<T> value) {
-		if (value instanceof TypedItemStack || value instanceof TypedIngredient) {
-			return value;
-		}
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
-		T ingredient = ingredientHelper.copyIngredient(value.getIngredient());
-		return TypedIngredient.createAndFilterInvalid(ingredientManager, value.getType(), ingredient, false);
 	}
 
 	private final IIngredientType<T> ingredientType;

@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
 import org.jspecify.annotations.Nullable;
 
 public class SubtypeManager implements ISubtypeManager {
@@ -34,13 +35,14 @@ public class SubtypeManager implements ISubtypeManager {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 		ErrorUtil.checkNotNull(context, "type");
+		ITypedIngredient<T> checkedIngredient = TypedIngredientUtil.checkTypedIngredientFromApi(typedIngredient);
 
-		B ingredientBase = typedIngredient.getBaseIngredient(ingredientType);
+		B ingredientBase = checkedIngredient.getBaseIngredient(ingredientType);
 		ISubtypeInterpreter<T> interpreter = interpreters.getFromBase(ingredientType, ingredientBase);
 		if (interpreter == null) {
 			return null;
 		}
-		T ingredient = typedIngredient.getIngredient();
+		T ingredient = checkedIngredient.getIngredient();
 		return interpreter.getSubtypeData(ingredient, context);
 	}
 
