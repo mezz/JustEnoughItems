@@ -3,6 +3,7 @@ package mezz.jei.gui.overlay.ingredients;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.util.HorizontalAlignment;
 import mezz.jei.common.util.NavigationVisibility;
@@ -108,6 +109,11 @@ public class IngredientGridScrollControllerTest {
 		@Override
 		public boolean drawBackground() {
 			return false;
+		}
+
+		@Override
+		public IngredientGridLayoutMode getLayoutMode() {
+			return IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE;
 		}
 
 		@Override
