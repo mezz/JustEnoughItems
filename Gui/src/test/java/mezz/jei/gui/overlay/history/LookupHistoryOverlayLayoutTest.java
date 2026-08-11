@@ -5,6 +5,7 @@ import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.NavigationVisibility;
@@ -251,6 +252,7 @@ public class LookupHistoryOverlayLayoutTest {
 		private final TestConfigValue<Integer> maxColumns = value("maxColumns", 9);
 		private final TestConfigValue<Integer> maxRows = value("maxRows", 6);
 		private final TestConfigValue<Boolean> drawBackground = value("drawBackground", true);
+		private final TestConfigValue<IngredientGridLayoutMode> layoutMode = value("layoutMode", IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE);
 		private final TestConfigValue<IngredientGridNavigationMode> navigationMode = value("navigationMode", IngredientGridNavigationMode.PAGED);
 		private final TestConfigValue<HorizontalAlignment> horizontalAlignment = value("horizontalAlignment", HorizontalAlignment.LEFT);
 		private final TestConfigValue<VerticalAlignment> verticalAlignment = value("verticalAlignment", VerticalAlignment.TOP);
@@ -311,6 +313,11 @@ public class LookupHistoryOverlayLayoutTest {
 		@Override
 		public IJeiConfigValue<Boolean> drawBackground() {
 			return drawBackground;
+		}
+
+		@Override
+		public IJeiConfigValue<IngredientGridLayoutMode> layoutMode() {
+			return layoutMode;
 		}
 
 		@Override

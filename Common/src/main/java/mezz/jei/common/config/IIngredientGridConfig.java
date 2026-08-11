@@ -16,6 +16,8 @@ public interface IIngredientGridConfig {
 
 	IJeiConfigValue<Boolean> drawBackground();
 
+	IJeiConfigValue<IngredientGridLayoutMode> layoutMode();
+
 	IJeiConfigValue<IngredientGridNavigationMode> navigationMode();
 
 	IJeiConfigValue<HorizontalAlignment> horizontalAlignment();

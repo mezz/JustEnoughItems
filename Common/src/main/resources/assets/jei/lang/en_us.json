@@ -241,6 +241,8 @@
   "jei.config.client.ingredientList.navigationVisibility.description": "Visibility of navigation controls like page buttons and scroll bars. Use AUTO_HIDE to only show them when the list overflows.",
   "jei.config.client.ingredientList.drawBackground": "Draw GUI Background",
   "jei.config.client.ingredientList.drawBackground.description": "Enable this to draw a background texture behind the ingredient list.",
+  "jei.config.client.ingredientList.layoutMode": "Layout Mode",
+  "jei.config.client.ingredientList.layoutMode.description": "RECTANGULAR keeps page navigation aligned to the ingredient grid while still allowing excluded grid slots to be cut out. MAXIMIZE_AVAILABLE_SPACE can resize and shift page navigation around excluded areas.",
   "jei.config.client.ingredientList.navigationMode": "Navigation Mode",
   "jei.config.client.ingredientList.navigationMode.description": "Choose PAGED for page buttons, SCROLLING for a row-stepped scroll bar, or SMOOTH_SCROLLING for a smooth scroll bar.",
 
@@ -258,6 +260,8 @@
   "jei.config.client.bookmarkList.navigationVisibility.description": "Visibility of navigation controls like page buttons and scroll bars. Use AUTO_HIDE to only show them when the list overflows.",
   "jei.config.client.bookmarkList.drawBackground": "Draw GUI Background",
   "jei.config.client.bookmarkList.drawBackground.description": "Enable this to draw a background texture behind the bookmark list.",
+  "jei.config.client.bookmarkList.layoutMode": "Layout Mode",
+  "jei.config.client.bookmarkList.layoutMode.description": "RECTANGULAR keeps page navigation aligned to the bookmark grid while still allowing excluded grid slots to be cut out. MAXIMIZE_AVAILABLE_SPACE can resize and shift page navigation around excluded areas.",
   "jei.config.client.bookmarkList.navigationMode": "Navigation Mode",
   "jei.config.client.bookmarkList.navigationMode.description": "Choose PAGED for page buttons, SCROLLING for a row-stepped scroll bar, or SMOOTH_SCROLLING for a smooth scroll bar.",
 

@@ -108,6 +108,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		gridConfig.maxColumns().addListener(v -> markLayoutDirty());
 		gridConfig.maxRows().addListener(v -> markLayoutDirty());
 		gridConfig.drawBackground().addListener(v -> markLayoutDirty());
+		gridConfig.layoutMode().addListener(v -> markLayoutDirty());
 		gridConfig.horizontalAlignment().addListener(v -> markLayoutDirty());
 		gridConfig.verticalAlignment().addListener(v -> markLayoutDirty());
 		gridConfig.navigationVisibility().addListener(v -> markLayoutDirty());
