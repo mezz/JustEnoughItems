@@ -1,9 +1,9 @@
 package mezz.jei.library.recipes.collect;
 
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeType;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,20 +11,20 @@ import java.util.Map;
 public class RecipeIngredientTable {
 	private final Map<RecipeType<?>, IngredientToRecipesMap<?>> map = new HashMap<>();
 
-	public <V> void add(V recipe, RecipeType<V> recipeType, Collection<Object> ingredientUids) {
+	public <V> void addExact(V recipe, RecipeType<V> recipeType, IIngredientType<?> ingredientType, Object uid) {
 		@SuppressWarnings("unchecked")
 		IngredientToRecipesMap<V> ingredientToRecipesMap = (IngredientToRecipesMap<V>) this.map.computeIfAbsent(recipeType, k -> new IngredientToRecipesMap<>());
-		ingredientToRecipesMap.add(recipe, ingredientUids);
+		ingredientToRecipesMap.addExact(recipe, ingredientType, uid);
 	}
 
 	@UnmodifiableView
-	public <V> List<V> get(RecipeType<V> recipeType, Object ingredientUid) {
+	public <V> List<V> get(RecipeType<V> recipeType, IIngredientType<?> ingredientType, Object uid) {
 		@SuppressWarnings("unchecked")
 		IngredientToRecipesMap<V> ingredientToRecipesMap = (IngredientToRecipesMap<V>) this.map.get(recipeType);
 		if (ingredientToRecipesMap == null) {
 			return List.of();
 		}
-		return ingredientToRecipesMap.get(ingredientUid);
+		return ingredientToRecipesMap.get(ingredientType, uid);
 	}
 
 	public void compact() {

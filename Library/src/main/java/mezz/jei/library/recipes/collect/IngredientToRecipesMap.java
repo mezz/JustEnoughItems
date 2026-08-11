@@ -1,34 +1,34 @@
 package mezz.jei.library.recipes.collect;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import mezz.jei.api.ingredients.IIngredientType;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class IngredientToRecipesMap<R> {
-	private final Map<Object, ArrayList<R>> uidToRecipes = new Object2ObjectOpenHashMap<>();
+	private final IngredientUidIndex<ArrayList<R>> recipes = new IngredientUidIndex<>();
 
-	public void add(R recipe, Collection<Object> ingredientUids) {
-		for (Object uid : ingredientUids) {
-			List<R> recipes = uidToRecipes.computeIfAbsent(uid, k -> new ArrayList<>());
-			recipes.add(recipe);
-		}
+	public void addExact(R recipe, IIngredientType<?> ingredientType, Object uid) {
+		recipes.computeExactIfAbsent(ingredientType, uid, ArrayList::new)
+			.add(recipe);
 	}
 
 	@UnmodifiableView
-	public List<R> get(Object ingredientUid) {
-		List<R> recipes = uidToRecipes.get(ingredientUid);
-		if (recipes == null) {
+	public List<R> get(IIngredientType<?> ingredientType, Object uid) {
+		List<R> recipesForIngredient = recipes.get(ingredientType, uid).exact();
+		if (recipesForIngredient == null) {
 			return Collections.emptyList();
 		}
-		return Collections.unmodifiableList(recipes);
+		return Collections.unmodifiableList(recipesForIngredient);
 	}
 
 	public void compact() {
-		uidToRecipes.values().forEach(ArrayList::trimToSize);
+		recipes.forEach((ingredientType, uid, buckets) -> {
+			if (buckets.exact() != null) {
+				buckets.exact().trimToSize();
+			}
+		});
 	}
 }
