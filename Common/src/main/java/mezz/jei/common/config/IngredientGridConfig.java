@@ -18,6 +18,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 
 	private static final VerticalAlignment defaultVerticalAlignment = VerticalAlignment.TOP;
 	private static final NavigationVisibility defaultNavigationVisibility = NavigationVisibility.ENABLED;
+	private static final IngredientGridLayoutMode defaultLayoutMode = IngredientGridLayoutMode.RECTANGULAR;
 	private static final IngredientGridNavigationMode defaultNavigationMode = IngredientGridNavigationMode.PAGED;
 	private static final boolean defaultDrawBackground = false;
 
@@ -26,6 +27,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	private final ConfigValue<HorizontalAlignment> horizontalAlignment;
 	private final ConfigValue<VerticalAlignment> verticalAlignment;
 	private final ConfigValue<NavigationVisibility> navigationVisibility;
+	private final ConfigValue<IngredientGridLayoutMode> layoutMode;
 	private final ConfigValue<IngredientGridNavigationMode> navigationMode;
 	private final ConfigValue<Boolean> drawBackground;
 
@@ -60,15 +62,20 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 			defaultNavigationVisibility,
 			"Visibility of navigation controls like page buttons and scroll bars. Use AUTO_HIDE to only show them when the list overflows."
 		);
-		navigationMode = category.addEnum(
-			"NavigationMode",
-			defaultNavigationMode,
-			"Choose PAGED for page buttons, SCROLLING for a row-stepped scroll bar, or SMOOTH_SCROLLING for a smooth scroll bar."
-		);
 		drawBackground = category.addBoolean(
 			"DrawBackground",
 			defaultDrawBackground,
 			"Enable this to draw a background texture behind the GUI."
+		);
+		layoutMode = category.addEnum(
+			"LayoutMode",
+			defaultLayoutMode,
+			"RECTANGULAR keeps page navigation aligned to the grid while still allowing excluded grid slots to be cut out. MAXIMIZE_AVAILABLE_SPACE can resize and shift page navigation around excluded areas."
+		);
+		navigationMode = category.addEnum(
+			"NavigationMode",
+			defaultNavigationMode,
+			"Choose PAGED for page buttons, SCROLLING for a row-stepped scroll bar, or SMOOTH_SCROLLING for a smooth scroll bar."
 		);
 	}
 
@@ -98,6 +105,11 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	}
 
 	@Override
+	public IngredientGridLayoutMode getLayoutMode() {
+		return layoutMode.get();
+	}
+
+	@Override
 	public int getMaxColumns() {
 		return maxColumns.get();
 	}
@@ -124,6 +136,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 		horizontalAlignment.addListener(v -> listener.run());
 		verticalAlignment.addListener(v -> listener.run());
 		navigationVisibility.addListener(v -> listener.run());
+		layoutMode.addListener(v -> listener.run());
 		navigationMode.addListener(v -> listener.run());
 		drawBackground.addListener(v -> listener.run());
 	}

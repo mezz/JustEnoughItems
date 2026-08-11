@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.util.HorizontalAlignment;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -110,6 +111,7 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(false)
+			.layoutMode(IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig, availableArea, Set.of(), null, 0
@@ -130,6 +132,79 @@ public class IngredientGridWithNavigationLayoutTest {
 		assertFalse(obstructedLayout.navigationArea().intersects(leftHalfExclusion));
 		assertEquals(unobstructedLayout.ingredientGridArea(), obstructedLayout.ingredientGridArea());
 		assertTrue(obstructedLayout.navigationArea().getX() >= navigationArea.getX() + navigationArea.getWidth() / 2);
+	}
+
+	@Test
+	public void rectangularLayoutWithoutBackgroundMovesBelowPartialNavigationExclusion() {
+		assertRectangularLayoutMovesBelowPartialNavigationExclusion(false);
+	}
+
+	@Test
+	public void rectangularLayoutWithBackgroundMovesBelowPartialNavigationExclusion() {
+		assertRectangularLayoutMovesBelowPartialNavigationExclusion(true);
+	}
+
+	private static void assertRectangularLayoutMovesBelowPartialNavigationExclusion(boolean drawBackground) {
+		// Setup: a left-side exclusion leaves enough horizontal room for smaller navigation controls.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.maxColumns(4)
+			.maxRows(3)
+			.drawBackground(drawBackground)
+			.layoutMode(IngredientGridLayoutMode.RECTANGULAR)
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
+			gridConfig, availableArea, Set.of(), null, 0
+		);
+		ImmutableRect2i leftHalfExclusion = unobstructedLayout.navigationArea()
+			.keepLeft(unobstructedLayout.navigationArea().getWidth() / 2);
+
+		// Operation: recalculate with the original navigation partly obstructed.
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
+			gridConfig, availableArea, Set.of(leftHalfExclusion), null, 0
+		);
+
+		// Assertions: the whole layout moves down and navigation retains the grid's width and alignment.
+		ImmutableRect2i expectedNavigationArea = IngredientGridWithNavigationLayout.calculateNavigationArea(
+			obstructedLayout.slotBackgroundArea(),
+			true
+		);
+		assertEquals(expectedNavigationArea, obstructedLayout.navigationArea());
+		assertFalse(obstructedLayout.navigationArea().intersects(leftHalfExclusion));
+		assertTrue(obstructedLayout.navigationArea().getY() >= bottom(leftHalfExclusion));
+		assertTrue(obstructedLayout.ingredientGridArea().getY() > unobstructedLayout.ingredientGridArea().getY());
+	}
+
+	@Test
+	public void rectangularLayoutStillAllowsGridSlotCutouts() {
+		// Setup: rectangular navigation is unobstructed, but one ingredient slot is excluded.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.maxColumns(4)
+			.maxRows(3)
+			.drawBackground(false)
+			.layoutMode(IngredientGridLayoutMode.RECTANGULAR)
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
+			gridConfig, availableArea, Set.of(), null, 0
+		);
+		ImmutableRect2i gridArea = unobstructedLayout.ingredientGridArea();
+		ImmutableRect2i firstSlotExclusion = new ImmutableRect2i(
+			gridArea.getX() + IngredientGrid.INGREDIENT_WIDTH / 2,
+			gridArea.getY() + IngredientGrid.INGREDIENT_HEIGHT / 2,
+			1,
+			1
+		);
+
+		// Operation: recalculate with one ingredient slot obstructed.
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
+			gridConfig, availableArea, Set.of(firstSlotExclusion), null, 0
+		);
+
+		// Assertions: the rectangular bounds stay fixed and only the intersecting slot is unavailable.
+		assertEquals(unobstructedLayout.ingredientGridArea(), obstructedLayout.ingredientGridArea());
+		assertEquals(unobstructedLayout.navigationArea(), obstructedLayout.navigationArea());
+		assertEquals(unobstructedLayout.availableSlotCount() - 1, obstructedLayout.availableSlotCount());
 	}
 
 	@Test
@@ -614,6 +689,7 @@ public class IngredientGridWithNavigationLayoutTest {
 		private int maxRows = 16;
 		private int minRows = 1;
 		private boolean drawBackground;
+		private IngredientGridLayoutMode layoutMode = IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE;
 		private HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
 		private VerticalAlignment verticalAlignment = VerticalAlignment.TOP;
 		private NavigationVisibility navigationVisibility = NavigationVisibility.ENABLED;
@@ -641,6 +717,11 @@ public class IngredientGridWithNavigationLayoutTest {
 
 		TestGridConfig drawBackground(boolean drawBackground) {
 			this.drawBackground = drawBackground;
+			return this;
+		}
+
+		TestGridConfig layoutMode(IngredientGridLayoutMode layoutMode) {
+			this.layoutMode = layoutMode;
 			return this;
 		}
 
@@ -677,6 +758,11 @@ public class IngredientGridWithNavigationLayoutTest {
 		@Override
 		public boolean drawBackground() {
 			return drawBackground;
+		}
+
+		@Override
+		public IngredientGridLayoutMode getLayoutMode() {
+			return layoutMode;
 		}
 
 		@Override
