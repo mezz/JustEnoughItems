@@ -7,6 +7,8 @@ import mezz.jei.common.platform.IPlatformRenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.BlockStateModelSet;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
@@ -24,6 +26,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.common.Tags;
@@ -63,6 +66,27 @@ public class RenderHelper implements IPlatformRenderHelper {
 	@Override
 	public void renderTooltip(GuiGraphicsExtractor guiGraphics, List<Either<FormattedText, TooltipComponent>> elements, int x, int y, Font font, ItemStack stack) {
 		guiGraphics.setComponentTooltipFromElementsForNextFrame(font, elements, x, y, stack, stack.get(DataComponents.TOOLTIP_STYLE));
+	}
+
+	@Override
+	public void renderTooltip(
+		GuiGraphicsExtractor guiGraphics,
+		List<Either<FormattedText, TooltipComponent>> elements,
+		int x,
+		int y,
+		Font font,
+		ItemStack stack,
+		ClientTooltipPositioner positioner
+	) {
+		List<ClientTooltipComponent> components = ClientHooks.gatherTooltipComponentsFromElements(
+			stack,
+			elements,
+			x,
+			guiGraphics.guiWidth(),
+			guiGraphics.guiHeight(),
+			font
+		);
+		guiGraphics.tooltip(font, components, x, y, positioner, stack.get(DataComponents.TOOLTIP_STYLE), stack);
 	}
 
 	@Override

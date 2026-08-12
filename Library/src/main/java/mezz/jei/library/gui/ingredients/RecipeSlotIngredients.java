@@ -132,8 +132,15 @@ public final class RecipeSlotIngredients {
 	}
 
 	public Stream<ITypedIngredient<?>> getDisplayedIngredientsInGroup(SlotIngredient<?> displayed) {
+		return getDisplayedIngredientsInGroup(getDisplayIngredients(), displayed);
+	}
+
+	public static Stream<ITypedIngredient<?>> getDisplayedIngredientsInGroup(
+		List<? extends @Nullable SlotIngredient<?>> displayIngredients,
+		SlotIngredient<?> displayed
+	) {
 		SlotDisplayData<?> slotDisplayData = displayed.slotDisplayData();
-		return getDisplayIngredients().stream()
+		return displayIngredients.stream()
 			.filter(Objects::nonNull)
 			.filter(ingredient -> ingredient.slotDisplayData() == slotDisplayData)
 			.map(SlotIngredient::typedIngredient);

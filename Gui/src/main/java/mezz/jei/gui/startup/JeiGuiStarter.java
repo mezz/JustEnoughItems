@@ -207,6 +207,8 @@ public class JeiGuiStarter {
 			ingredientListOverlay
 		);
 
+		FocusUtil focusUtil = new FocusUtil(focusFactory, clientConfig, ingredientManager);
+
 		RecipesGui recipesGui = new RecipesGui(
 			recipeManager,
 			ingredientManager,
@@ -216,7 +218,8 @@ public class JeiGuiStarter {
 			bookmarkList,
 			lookupHistory,
 			guiHelper,
-			bookmarkFactory
+			bookmarkFactory,
+			focusUtil
 		);
 		registration.setRecipesGui(recipesGui);
 
@@ -230,8 +233,6 @@ public class JeiGuiStarter {
 		List<ICharTypedHandler> charTypedHandlers = List.of(
 			ingredientListOverlay
 		);
-
-		FocusUtil focusUtil = new FocusUtil(focusFactory, clientConfig, ingredientManager);
 
 		UserInputRouter userInputRouter = new UserInputRouter(
 			"JEIGlobal",

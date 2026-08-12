@@ -62,6 +62,37 @@ public class RecipeSlotIngredientGroupingTest {
 	}
 
 	@Test
+	void displayedCandidatesUseOnlyTheCurrentExpandedGroup() {
+		// Setup: two expanded display groups contribute visible candidates to the same recipe slot.
+		ITypedIngredient<String> firstA = createIngredient("first a");
+		ITypedIngredient<String> secondA = createIngredient("second a");
+		ITypedIngredient<String> firstB = createIngredient("first b");
+		SlotDisplayData<String> groupA = new SlotDisplayData<>(
+			List.of(firstA, secondA),
+			SlotDisplayInfo.EMPTY
+		);
+		SlotDisplayData<String> groupB = new SlotDisplayData<>(
+			List.of(firstB),
+			SlotDisplayInfo.EMPTY
+		);
+		SlotIngredient<String> displayed = new SlotIngredient<>(secondA, groupA);
+		List<SlotIngredient<?>> displayIngredients = List.of(
+			new SlotIngredient<>(firstA, groupA),
+			displayed,
+			new SlotIngredient<>(firstB, groupB)
+		);
+
+		// Operation: get candidates for the group containing the currently displayed ingredient.
+		List<String> candidates = RecipeSlotIngredients.getDisplayedIngredientsInGroup(displayIngredients, displayed)
+			.map(ingredient -> ingredient.getIngredient(INGREDIENT_TYPE))
+			.flatMap(Optional::stream)
+			.toList();
+
+		// Assertions: the candidate browser does not mix in ingredients from another display group.
+		assertEquals(List.of("first a", "second a"), candidates);
+	}
+
+	@Test
 	void displayFilteringAppliesVisibilityAndLimitTogether() {
 		// Setup: a recipe slot has more visible ingredients than JEI's display limit.
 		List<SlotIngredient<?>> ingredients = IntStream.range(0, 110)

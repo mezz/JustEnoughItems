@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -129,16 +130,24 @@ public class RecipeGuiLayouts {
 	private Optional<IClickableIngredientInternal<?>> getClickedIngredient(RecipeSlotUnderMouse slotUnderMouse) {
 		return slotUnderMouse.slot().getDisplayedIngredient()
 			.map(displayedIngredient -> {
-				IElement<?> element = slotUnderMouse.slot().getTagKey()
-					.<IElement<?>>map(tagKey -> new TagIngredientElement<>(
-						displayedIngredient,
-						tagKey,
-						recipeManager,
-						isRecipeCyclingPaused
-					))
-					.orElseGet(() -> new IngredientElement<>(displayedIngredient));
+				IElement<?> element = createElement(slotUnderMouse, displayedIngredient);
 				return new ClickableIngredientInternal<>(element, slotUnderMouse::isMouseOver, false, true);
 			});
+	}
+
+	private IElement<?> createElement(RecipeSlotUnderMouse slotUnderMouse, ITypedIngredient<?> displayedIngredient) {
+		RecipeSlotNavigation.Action action = RecipeSlotNavigation.getAction(slotUnderMouse.slot(), isRecipeCyclingPaused.getAsBoolean());
+		if (action == RecipeSlotNavigation.Action.TAG_RECIPE) {
+			return slotUnderMouse.slot().getTagKey()
+				.<IElement<?>>map(tagKey -> new TagIngredientElement<>(
+					displayedIngredient,
+					tagKey,
+					recipeManager,
+					isRecipeCyclingPaused
+				))
+				.orElseGet(() -> new IngredientElement<>(displayedIngredient));
+		}
+		return new IngredientElement<>(displayedIngredient);
 	}
 
 	public boolean mouseDragged(double mouseX, double mouseY, InputConstants.Key input, double dragX, double dragY) {

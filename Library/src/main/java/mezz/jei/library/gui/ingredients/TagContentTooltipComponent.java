@@ -3,6 +3,7 @@ package mezz.jei.library.gui.ingredients;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.JeiGuiColors.GuiColor;
+import mezz.jei.common.gui.IIngredientGridTooltipComponent;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -11,7 +12,7 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
 import java.util.List;
 
-public class TagContentTooltipComponent<T> implements ClientTooltipComponent, TooltipComponent {
+public class TagContentTooltipComponent<T> implements ClientTooltipComponent, TooltipComponent, IIngredientGridTooltipComponent {
 	private static final int MAX_PER_LINE = 10;
 	private static final int MAX_LINES = 3;
 	private static final int MAX_INGREDIENTS = MAX_PER_LINE * MAX_LINES;

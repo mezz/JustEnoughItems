@@ -163,8 +163,12 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		addTagNameTooltip(tooltip, ingredientManager, slotIngredient);
 		addIngredientsToTooltip(tooltip, slotIngredient);
 		if (hasCandidates(slotIngredient)) {
+			String translationKey = "jei.tooltip.recipe.slot.candidates.display";
+			if (getTagKeyEquivalent(ingredientManager, slotIngredient).isEmpty()) {
+				translationKey = "jei.tooltip.recipe.slot.candidates.display_group";
+			}
 			tooltip.addKeyUsageComponent(
-				"jei.tooltip.recipe.slot.candidates.display",
+				translationKey,
 				Internal.getKeyMappings().getShowRecipeSlotCandidates()
 			);
 		}
@@ -280,8 +284,10 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		return ingredients.getVisibleIngredientsInDisplayGroup(displayed);
 	}
 
-	private <T> boolean hasCandidates(SlotIngredient<T> displayed) {
-		return getVisibleIngredientsInDisplayGroup(displayed).size() > 1;
+	private boolean hasCandidates(SlotIngredient<?> displayed) {
+		return ingredients.getDisplayedIngredientsInGroup(displayed)
+			.limit(2)
+			.count() > 1;
 	}
 
 	private <T> IIngredientRenderer<T> getIngredientRenderer(IIngredientType<T> ingredientType) {
