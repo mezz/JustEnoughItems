@@ -17,16 +17,16 @@ import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.recipe.types.IRecipeType;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.RecipeLayoutDrawableErrored;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.Pair;
-import mezz.jei.library.focus.FocusGroup;
 import mezz.jei.library.gui.ingredients.CycleTimer;
+import mezz.jei.library.focus.FocusGroup;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
+import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.util.IngredientSupplierHelper;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
@@ -39,16 +39,15 @@ import java.util.Set;
 
 public class RecipeManager implements IRecipeManager {
 	private final RecipeManagerInternal internal;
-	private final IIngredientManager ingredientManager;
+	private final IIngredientManagerInternal ingredientManager;
 	private final ImmutableListMultimap<IRecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators;
 	private final List<IRecipeButtonControllerFactory> recipeButtonControllerFactories;
 	private final ContextMap contextMap;
 
 	public RecipeManager(
 		RecipeManagerInternal internal,
-		IIngredientManager ingredientManager,
-		ImmutableListMultimap<IRecipeType<?>,
-		IRecipeCategoryDecorator<?>> recipeCategoryDecorators,
+		IIngredientManagerInternal ingredientManager,
+		ImmutableListMultimap<IRecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators,
 		List<IRecipeButtonControllerFactory> recipeButtonControllerFactories,
 		ContextMap contextMap
 	) {
@@ -203,7 +202,7 @@ public class RecipeManager implements IRecipeManager {
 		RecipeSlotBuilder builder = new RecipeSlotBuilder(ingredientManager, contextMap, 0, role);
 		builder.addOptionalTypedIngredients(ingredients);
 		CycleTimer cycleTimer = CycleTimer.create(ingredientCycleOffset);
-		Pair<Integer, IRecipeSlotDrawable> result = builder.build(focusedIngredients, cycleTimer);
+		Pair<Integer, IRecipeSlotDrawable> result = builder.build(focusedIngredients, FocusGroup.EMPTY, cycleTimer);
 		return result.second();
 	}
 

@@ -217,7 +217,8 @@ public class JeiDebugPlugin implements IModPlugin {
 		));
 
 		registration.addRecipes(RecipeTypes.CRAFTING, List.of(
-			createCountedIngredientTransferRecipe(registration.getVanillaRecipeFactory())
+			createCountedIngredientTransferRecipe(registration.getVanillaRecipeFactory()),
+			createAnyPotionDisplayRecipe(registration.getVanillaRecipeFactory())
 		));
 
 		Identifier testRecipeWithoutTemplateId = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "test_recipe_without_template");
@@ -263,6 +264,24 @@ public class JeiDebugPlugin implements IModPlugin {
 			.build();
 
 		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "counted_ingredient_transfer_test");
+		ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, id);
+		return new RecipeHolder<>(resourceKey, recipe);
+	}
+
+	/**
+	 * Adds a debug-only crafting recipe with an item-only potion ingredient.
+	 * The ingredient accepts every potion, but its resolved item stack would normally be shown as an uncraftable potion.
+	 */
+	private static RecipeHolder<CraftingRecipe> createAnyPotionDisplayRecipe(IVanillaRecipeFactory vanillaRecipeFactory) {
+		CraftingRecipe recipe = vanillaRecipeFactory.createShapedRecipeBuilder(
+				CraftingBookCategory.MISC,
+				new SlotDisplay.ItemSlotDisplay(Items.GLASS_BOTTLE)
+			)
+			.pattern("p")
+			.define('p', Ingredient.of(Items.POTION))
+			.build();
+
+		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "any_potion_display_test");
 		ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, id);
 		return new RecipeHolder<>(resourceKey, recipe);
 	}

@@ -6,7 +6,7 @@ import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.ingredients.TypedIngredientUtil;
@@ -35,13 +35,15 @@ import java.util.Optional;
  */
 @SuppressWarnings("OptionalIsPresent")
 public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngredientAcceptor> {
-	private final IIngredientManager ingredientManager;
+	private final IIngredientManagerInternal ingredientManager;
 	private final ContextMap contextMap;
-	private final List<ITypedIngredient<?>> ingredients = new ArrayList<>();
+	private final RecipeIngredientRole role;
+	private final List<SlotIngredient<?>> ingredients = new ArrayList<>();
 
-	public SimpleIngredientAcceptor(IIngredientManager ingredientManager, ContextMap contextMap) {
+	public SimpleIngredientAcceptor(IIngredientManagerInternal ingredientManager, ContextMap contextMap, RecipeIngredientRole role) {
 		this.ingredientManager = ingredientManager;
 		this.contextMap = contextMap;
+		this.role = role;
 	}
 
 	@Override
@@ -54,7 +56,7 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 		Preconditions.checkNotNull(itemLike, "itemLike");
 
 		ITypedIngredient<ItemStack> ingredient = TypedItemStack.create(itemLike);
-		this.ingredients.add(ingredient);
+		this.ingredients.add(new SlotIngredient<>(ingredient));
 
 		return this;
 	}
@@ -66,7 +68,7 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 		for (Object ingredient : ingredients) {
 			ITypedIngredient<?> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient, false);
 			if (typedIngredient != null) {
-				this.ingredients.add(typedIngredient);
+				this.ingredients.add(new SlotIngredient<>(typedIngredient));
 			}
 		}
 
@@ -81,7 +83,7 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 		List<@Nullable ITypedIngredient<T>> typedIngredients = TypedIngredient.createAndFilterInvalidList(this.ingredientManager, ingredientType, ingredients, false);
 		for (@Nullable ITypedIngredient<T> typedIngredientOptional : typedIngredients) {
 			if (typedIngredientOptional != null) {
-				this.ingredients.add(typedIngredientOptional);
+				this.ingredients.add(new SlotIngredient<>(typedIngredientOptional));
 			}
 		}
 
@@ -92,12 +94,8 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 	public SimpleIngredientAcceptor add(SlotDisplay slotDisplay) {
 		ErrorUtil.checkNotNull(slotDisplay, "slotDisplay");
 
-		TypedIngredient.createAndFilterInvalidList(ingredientManager, contextMap, slotDisplay, false)
-			.forEach(typedIngredient -> {
-				if (typedIngredient != null) {
-					this.add(typedIngredient);
-				}
-			});
+		ingredientManager.resolveSlotDisplay(contextMap, role, slotDisplay)
+			.forEach(this.ingredients::add);
 
 		return this;
 	}
@@ -107,12 +105,8 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
 		ErrorUtil.checkNotNull(slotDisplay, "slotDisplay");
 
-		TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredientType, contextMap, slotDisplay, false)
-			.forEach(typedIngredient -> {
-				if (typedIngredient != null) {
-					this.add(typedIngredient);
-				}
-			});
+		ingredientManager.resolveSlotDisplay(ingredientType, contextMap, role, slotDisplay)
+			.forEach(this.ingredients::add);
 
 		return this;
 	}
@@ -140,7 +134,7 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 
 		ITypedIngredient<I> checkedIngredient = TypedIngredientUtil.checkAndValidateTypedIngredientFromApi(ingredientManager, typedIngredient);
 		if (checkedIngredient != null) {
-			this.ingredients.add(checkedIngredient);
+			this.ingredients.add(new SlotIngredient<>(checkedIngredient));
 		}
 
 		return this;
@@ -219,12 +213,12 @@ public class SimpleIngredientAcceptor implements IIngredientAcceptor<SimpleIngre
 		}
 		ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, false);
 		if (typedIngredient != null) {
-			this.ingredients.add(typedIngredient);
+			this.ingredients.add(new SlotIngredient<>(typedIngredient));
 		}
 	}
 
 	@UnmodifiableView
-	public List<ITypedIngredient<?>> getAllIngredients() {
+	public List<SlotIngredient<?>> getAllSlotIngredients() {
 		return Collections.unmodifiableList(this.ingredients);
 	}
 }

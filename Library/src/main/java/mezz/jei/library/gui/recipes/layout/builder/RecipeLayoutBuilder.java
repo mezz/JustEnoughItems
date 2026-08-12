@@ -15,11 +15,11 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.recipe.types.IRecipeType;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTicker;
+import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.gui.recipes.IngredientsTooltipCallback;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.gui.recipes.RecipeLayout;
@@ -43,7 +43,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	private final List<RecipeSlotBuilder> visibleSlots = new ArrayList<>();
 	private final List<List<RecipeSlotBuilder>> focusLinkedSlots = new ArrayList<>();
 
-	private final IIngredientManager ingredientManager;
+	private final IIngredientManagerInternal ingredientManager;
 	private final ContextMap contextMap;
 	private final IRecipeCategory<T> recipeCategory;
 	private final T recipe;
@@ -55,7 +55,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	private int recipeTransferY = -1;
 	private int nextSlotIndex = 0;
 
-	public RecipeLayoutBuilder(IRecipeCategory<T> recipeCategory, T recipe, IIngredientManager ingredientManager, ContextMap contextMap) {
+	public RecipeLayoutBuilder(IRecipeCategory<T> recipeCategory, T recipe, IIngredientManagerInternal ingredientManager, ContextMap contextMap) {
 		this.recipeCategory = recipeCategory;
 		this.recipe = recipe;
 		this.ingredientManager = ingredientManager;
@@ -162,7 +162,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 				if (!visibleSlots.contains(slotBuilder)) {
 					continue;
 				}
-				Pair<Integer, IRecipeSlotDrawable> slotDrawable = slotBuilder.build(focusMatches, cycleTicker);
+				Pair<Integer, IRecipeSlotDrawable> slotDrawable = slotBuilder.build(focusMatches, focuses, cycleTicker);
 				slots.add(slotDrawable);
 			}
 			focusLinkedSlots.addAll(linkedSlots);

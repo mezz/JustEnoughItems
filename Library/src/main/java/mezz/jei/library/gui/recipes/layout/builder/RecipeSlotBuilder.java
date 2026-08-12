@@ -15,7 +15,6 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
@@ -27,6 +26,8 @@ import mezz.jei.library.gui.ingredients.ICycler;
 import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.ingredients.RendererOverrides;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
+import mezz.jei.library.ingredients.IIngredientManagerInternal;
+import mezz.jei.library.ingredients.SlotIngredient;
 import mezz.jei.library.render.FluidTankRenderer;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.util.context.ContextMap;
@@ -43,6 +44,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public class RecipeSlotBuilder implements IRecipeSlotBuilder {
+	private final IIngredientManagerInternal ingredientManager;
 	private final DisplayIngredientAcceptor ingredients;
 	private final RecipeIngredientRole role;
 	private final List<IRecipeSlotRichTooltipCallback> tooltipCallbacks = new ArrayList<>();
@@ -53,8 +55,9 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	private @Nullable IDrawable overlay;
 	private @Nullable String slotName;
 
-	public RecipeSlotBuilder(IIngredientManager ingredientManager, ContextMap contextMap, int slotIndex, RecipeIngredientRole role) {
-		this.ingredients = new DisplayIngredientAcceptor(ingredientManager, contextMap);
+	public RecipeSlotBuilder(IIngredientManagerInternal ingredientManager, ContextMap contextMap, int slotIndex, RecipeIngredientRole role) {
+		this.ingredientManager = ingredientManager;
+		this.ingredients = new DisplayIngredientAcceptor(ingredientManager, contextMap, role);
 		this.rect = new ImmutableRect2i(0, 0, 16, 16);
 		this.role = role;
 		this.slotIndex = slotIndex;
@@ -279,31 +282,33 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 
 	public Pair<Integer, IRecipeSlotDrawable> build(IFocusGroup focusGroup, ICycler cycler) {
 		Set<Integer> focusMatches = getMatches(focusGroup);
-		return build(focusMatches, cycler);
+		return build(focusMatches, focusGroup, cycler);
 	}
 
-	public Pair<Integer, IRecipeSlotDrawable> build(Set<Integer> focusMatches, ICycler cycler) {
-		List<@Nullable ITypedIngredient<?>> allIngredients = this.ingredients.getAllIngredients();
+	public Pair<Integer, IRecipeSlotDrawable> build(Set<Integer> focusMatches, IFocusGroup focusGroup, ICycler cycler) {
+		List<@Nullable SlotIngredient<?>> allIngredients = this.ingredients.getAllSlotIngredients();
 
-		List<@Nullable ITypedIngredient<?>> focusedIngredients = null;
+		List<@Nullable SlotIngredient<?>> focusedIngredients = null;
 
 		if (!focusMatches.isEmpty()) {
 			focusedIngredients = new ArrayList<>();
 			for (Integer i : focusMatches) {
 				if (i < allIngredients.size()) {
-					ITypedIngredient<?> ingredient = allIngredients.get(i);
+					SlotIngredient<?> ingredient = allIngredients.get(i);
 					focusedIngredients.add(ingredient);
 				}
 			}
 		}
 
 		RecipeSlot recipeSlot = new RecipeSlot(
+			ingredientManager,
 			role,
 			rect,
 			cycler,
 			tooltipCallbacks,
 			allIngredients,
 			focusedIngredients,
+			focusGroup,
 			background,
 			overlay,
 			slotName,

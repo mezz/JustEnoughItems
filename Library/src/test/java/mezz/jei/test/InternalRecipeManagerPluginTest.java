@@ -5,7 +5,6 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
@@ -15,6 +14,8 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.focus.Focus;
+import mezz.jei.library.ingredients.RecipeIngredientSupplier;
+import mezz.jei.library.ingredients.SlotIngredient;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
@@ -29,9 +30,11 @@ import net.minecraft.world.item.TooltipFlag;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -141,12 +144,9 @@ public class InternalRecipeManagerPluginTest {
 				false
 			)
 			.orElseThrow();
-		IIngredientSupplier ingredientSupplier = role -> {
-			if (role == RecipeIngredientRole.INPUT) {
-				return List.of(input);
-			}
-			return List.of();
-		};
+		RecipeIngredientSupplier ingredientSupplier = new RecipeIngredientSupplier(
+			Map.of(RecipeIngredientRole.INPUT, List.of(new SlotIngredient<>(input)))
+		);
 		roleMap.addRecipe(RECIPE_TYPE, FIRST_RECIPE, ingredientSupplier);
 
 		assertEquals(List.of(), roleMap.getRecipes(RECIPE_TYPE, otherInput));
@@ -162,15 +162,26 @@ public class InternalRecipeManagerPluginTest {
 		ITypedIngredient<TestIngredient> input = typedIngredient(ingredientManager, INPUT);
 		ITypedIngredient<TestIngredient> equalTypeInput = ingredientManager.createTypedIngredient(equalButDistinctType, INPUT, false)
 			.orElseThrow();
-		IIngredientSupplier ingredientSupplier = role -> {
-			if (role == RecipeIngredientRole.INPUT) {
-				return List.of(input);
-			}
-			return List.of();
-		};
+		RecipeIngredientSupplier ingredientSupplier = new RecipeIngredientSupplier(
+			Map.of(RecipeIngredientRole.INPUT, List.of(new SlotIngredient<>(input)))
+		);
 		roleMap.addRecipe(RECIPE_TYPE, FIRST_RECIPE, ingredientSupplier);
 
 		assertEquals(List.of(FIRST_RECIPE), roleMap.getRecipes(RECIPE_TYPE, equalTypeInput));
+	}
+
+	@Test
+	public void equalExactAndGroupingUidsRemainSeparateLookupNamespaces() {
+		IIngredientManager ingredientManager = createIngredientManager();
+		RecipeIngredientRoleMap roleMap = createRoleMaps(ingredientManager).get(RecipeIngredientRole.INPUT);
+		ITypedIngredient<TestIngredient> catalyst = typedIngredient(ingredientManager, CATALYST);
+		ITypedIngredient<TestIngredient> input = typedIngredient(ingredientManager, INPUT);
+		RecipeIngredientSupplier ingredientSupplier = new RecipeIngredientSupplier(
+			Map.of(RecipeIngredientRole.INPUT, List.of(new SlotIngredient<>(catalyst)))
+		);
+		roleMap.addRecipe(RECIPE_TYPE, FIRST_RECIPE, ingredientSupplier);
+
+		assertEquals(List.of(), roleMap.getRecipes(RECIPE_TYPE, input));
 	}
 
 	private static PluginFixture createFixture(List<String> recipes, List<TestIngredient> catalysts) {
@@ -242,12 +253,10 @@ public class InternalRecipeManagerPluginTest {
 
 		@SafeVarargs
 		private final void addRecipeIngredients(String recipe, RecipeIngredientRole role, ITypedIngredient<?>... ingredients) {
-			IIngredientSupplier ingredientSupplier = queriedRole -> {
-				if (queriedRole == role) {
-					return List.of(ingredients);
-				}
-				return List.of();
-			};
+			List<SlotIngredient<?>> slotIngredients = Arrays.stream(ingredients)
+				.<SlotIngredient<?>>map(SlotIngredient::new)
+				.toList();
+			RecipeIngredientSupplier ingredientSupplier = new RecipeIngredientSupplier(Map.of(role, slotIngredients));
 			roleMaps.get(role).addRecipe(RECIPE_TYPE, recipe, ingredientSupplier);
 		}
 
@@ -284,6 +293,11 @@ public class InternalRecipeManagerPluginTest {
 		@Override
 		public Object getUid(TestIngredient ingredient, UidContext context) {
 			return ingredient.number();
+		}
+
+		@Override
+		public Object getGroupingUid(TestIngredient ingredient) {
+			return CATALYST.number();
 		}
 
 		@Override

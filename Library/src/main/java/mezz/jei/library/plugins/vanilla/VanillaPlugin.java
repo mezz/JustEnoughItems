@@ -26,6 +26,7 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
+import mezz.jei.api.registration.ISlotDisplayInterpreterRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
@@ -123,6 +124,7 @@ import net.minecraft.world.item.crafting.SmithingTrimRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.item.crafting.TippedArrowRecipe;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import org.apache.logging.log4j.LogManager;
@@ -197,6 +199,15 @@ public class VanillaPlugin implements IModPlugin {
 
 		IPlatformFluidHelperInternal<?> platformFluidHelper = Services.PLATFORM.getFluidHelper();
 		registerFluidIngredients(registration, platformFluidHelper);
+	}
+
+	@Override
+	public void registerSlotDisplayInterpreters(ISlotDisplayInterpreterRegistration registration) {
+		registration.registerUniversal(SlotDisplay.Composite.TYPE, VanillaSlotDisplayInterpreters::interpretComposite);
+		registration.register(SlotDisplay.ItemSlotDisplay.TYPE, VanillaSlotDisplayInterpreters::interpretItem);
+		registration.register(SlotDisplay.TagSlotDisplay.TYPE, VanillaSlotDisplayInterpreters::interpretTag);
+		registration.register(SlotDisplay.AnyFuel.TYPE, VanillaSlotDisplayInterpreters::interpretAnyFuel);
+		registration.register(SlotDisplay.WithRemainder.TYPE, VanillaSlotDisplayInterpreters::interpretWithRemainder);
 	}
 
 	@Override
