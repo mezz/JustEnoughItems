@@ -79,6 +79,7 @@ tasks.named<Test>("test") {
     useJUnitPlatform()
     systemProperty("org.lwjgl.system.SharedLibraryExtractPath", temporaryDir.resolve("lwjgl"))
     include("mezz/jei/test/**")
+    include("mezz/jei/library/**")
     exclude("mezz/jei/test/lib/**")
     outputs.upToDateWhen { false }
 }

@@ -21,7 +21,7 @@ public class IngredientInfo<T> {
 	private final IIngredientType<T> ingredientType;
 	private final IIngredientHelper<T> ingredientHelper;
 	private final IIngredientRenderer<T> ingredientRenderer;
-	private final TypedIngredientSet<T> ingredientSet;
+	private final RegisteredIngredientIndex<T> ingredientIndex;
 	private final ListMultiMap<Object, String> aliases;
 	private final ListMultiMap<Object, String> baseAliases;
 
@@ -35,8 +35,8 @@ public class IngredientInfo<T> {
 		this.ingredientHelper = ingredientHelper;
 		this.ingredientRenderer = ingredientRenderer;
 
-		this.ingredientSet = new TypedIngredientSet<>(ingredientHelper, UidContext.Ingredient);
-		this.ingredientSet.addAll(ingredients);
+		this.ingredientIndex = new RegisteredIngredientIndex<>(ingredientHelper);
+		this.ingredientIndex.addAll(ingredients);
 
 		this.aliases = new ListMultiMap<>();
 		this.baseAliases = new ListMultiMap<>(new IdentityHashMap<>(), ArrayList::new);
@@ -56,25 +56,31 @@ public class IngredientInfo<T> {
 
 	@Unmodifiable
 	public Collection<ITypedIngredient<T>> getAllTypedIngredients() {
-		return Collections.unmodifiableCollection(ingredientSet);
+		return ingredientIndex.getAllIngredients();
 	}
 
 	@Unmodifiable
 	public Collection<T> getAllIngredients() {
-		Collection<T> transform = Collections2.transform(ingredientSet, ITypedIngredient::getIngredient);
+		Collection<T> transform = Collections2.transform(ingredientIndex.getAllIngredients(), ITypedIngredient::getIngredient);
 		return Collections.unmodifiableCollection(transform);
 	}
 
 	public void addIngredients(Collection<ITypedIngredient<T>> ingredients) {
-		this.ingredientSet.addAll(ingredients);
+		this.ingredientIndex.addAll(ingredients);
 	}
 
 	public void removeIngredients(Collection<ITypedIngredient<T>> ingredients) {
-		this.ingredientSet.removeAll(ingredients);
+		this.ingredientIndex.removeAll(ingredients);
+	}
+
+	@Unmodifiable
+	public List<ITypedIngredient<T>> getGroupedIngredients(ITypedIngredient<T> ingredient) {
+		Object groupingUid = ingredientHelper.getGroupingUid(ingredient);
+		return ingredientIndex.getIngredientsByGroupingUid(groupingUid);
 	}
 
 	public Optional<T> getIngredientByUid(String uid) {
-		return ingredientSet.getByUid(uid)
+		return ingredientIndex.getByUid(uid)
 			.map(ITypedIngredient::getIngredient);
 	}
 
