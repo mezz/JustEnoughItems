@@ -3,7 +3,7 @@ package mezz.jei.neoforge.tests.plugins.vanilla;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeMaker;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeTransferInfo;
@@ -80,7 +80,7 @@ public final class FurnaceRecipeGameTests {
 		assertStacks(helper, List.of(new ItemStack(Items.BUCKET)), fuel.input().resolveForStacks(ContextMap.EMPTY), "Fuel-slot inputs");
 		assertStacks(helper, List.of(new ItemStack(Items.WATER_BUCKET)), fuel.remainder().resolveForStacks(ContextMap.EMPTY), "Fuel-slot outputs");
 
-		IIngredientManager ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel());
+		IIngredientManagerInternal ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel());
 		FurnaceSmeltingCategory recipeCategory = new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE);
 		IIngredientSupplier ingredients = IngredientSupplierHelper.getIngredientSupplier(
 			recipeHolder,

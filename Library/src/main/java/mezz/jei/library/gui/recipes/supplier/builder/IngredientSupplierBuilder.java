@@ -3,13 +3,14 @@ package mezz.jei.library.gui.recipes.supplier.builder;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
-import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.library.gui.recipes.RecipeLayoutIngredientSupplier;
+import mezz.jei.library.ingredients.IIngredientManagerInternal;
+import mezz.jei.library.ingredients.RecipeIngredientSupplier;
+import mezz.jei.library.ingredients.SlotIngredient;
 import net.minecraft.util.context.ContextMap;
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,11 +18,11 @@ import java.util.Map;
  * but doesn't bother building real slots or anything else for drawing on screen.
  */
 public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
-	private final IIngredientManager ingredientManager;
+	private final IIngredientManagerInternal ingredientManager;
 	private final ContextMap contextMap;
 	private final Map<RecipeIngredientRole, IngredientSlotBuilder> ingredientSlotBuilders;
 
-	public IngredientSupplierBuilder(IIngredientManager ingredientManager, ContextMap contextMap) {
+	public IngredientSupplierBuilder(IIngredientManagerInternal ingredientManager, ContextMap contextMap) {
 		this.ingredientManager = ingredientManager;
 		this.contextMap = contextMap;
 		this.ingredientSlotBuilders = new EnumMap<>(RecipeIngredientRole.class);
@@ -36,7 +37,7 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role) {
 		IngredientSlotBuilder slot = ingredientSlotBuilders.get(role);
 		if (slot == null) {
-			slot = new IngredientSlotBuilder(ingredientManager, contextMap);
+			slot = new IngredientSlotBuilder(ingredientManager, contextMap, role);
 			ingredientSlotBuilders.put(role, slot);
 		}
 		return slot;
@@ -67,7 +68,11 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 
 	}
 
-	public IIngredientSupplier buildIngredientSupplier() {
-		return new RecipeLayoutIngredientSupplier(this.ingredientSlotBuilders);
+	public RecipeIngredientSupplier buildIngredientSupplier() {
+		Map<RecipeIngredientRole, List<SlotIngredient<?>>> ingredientsByRole = new EnumMap<>(RecipeIngredientRole.class);
+		ingredientSlotBuilders.forEach(
+			(role, builder) -> ingredientsByRole.put(role, builder.getAllSlotIngredients())
+		);
+		return new RecipeIngredientSupplier(ingredientsByRole);
 	}
 }

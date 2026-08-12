@@ -4,9 +4,10 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.registration.ISlotDisplayInterpreterRegistration;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
+import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
 import mezz.jei.library.load.registration.SubtypeRegistration;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
@@ -24,6 +25,7 @@ import net.minecraft.world.item.TooltipFlag;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 public final class TestIngredientManagers {
 	private TestIngredientManagers() {
@@ -33,7 +35,7 @@ public final class TestIngredientManagers {
 		return new VanillaRecipeFactory(createVanillaItemStackHelper(), contextMap);
 	}
 
-	public static IIngredientManager createVanillaItemStackIngredientManager(ServerLevel level) {
+	public static IIngredientManagerInternal createVanillaItemStackIngredientManager(ServerLevel level) {
 		List<ItemStack> itemStacks = level.registryAccess()
 			.lookupOrThrow(Registries.ITEM)
 			.filterFeatures(level.enabledFeatures())
@@ -44,7 +46,17 @@ public final class TestIngredientManagers {
 		return createVanillaItemStackIngredientManager(itemStacks);
 	}
 
-	public static IIngredientManager createVanillaItemStackIngredientManager(Collection<ItemStack> itemStacks) {
+	public static IIngredientManagerInternal createVanillaItemStackIngredientManager(Collection<ItemStack> itemStacks) {
+		return createVanillaItemStackIngredientManager(
+			itemStacks,
+			registration -> new VanillaPlugin().registerSlotDisplayInterpreters(registration)
+		);
+	}
+
+	public static IIngredientManagerInternal createVanillaItemStackIngredientManager(
+		Collection<ItemStack> itemStacks,
+		Consumer<ISlotDisplayInterpreterRegistration> registerSlotDisplayInterpreters
+	) {
 		SubtypeManager subtypeManager = createVanillaSubtypeManager();
 		IColorHelper colorHelper = new NoOpColorHelper();
 		IngredientManagerBuilder builder = new IngredientManagerBuilder(subtypeManager, colorHelper);
@@ -56,6 +68,7 @@ public final class TestIngredientManagers {
 			new NoOpItemStackRenderer(),
 			ItemStackCodecs.createStrictSingleItemCodec()
 		);
+		registerSlotDisplayInterpreters.accept(builder.getSlotDisplayInterpreterRegistration());
 		return builder.build();
 	}
 
