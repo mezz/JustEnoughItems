@@ -203,8 +203,6 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	}
 
 	private <T> void addTagNameTooltip(ITooltipBuilder tooltip, IIngredientManager ingredientManager, SlotIngredient<T> slotIngredient) {
-		ITypedIngredient<T> ingredient = slotIngredient.typedIngredient();
-		IIngredientType<T> ingredientType = ingredient.getType();
 		List<T> ingredients = getVisibleIngredientsInDisplayGroup(slotIngredient);
 		if (ingredients.isEmpty()) {
 			return;
@@ -215,8 +213,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			return;
 		}
 
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		getTagKeyEquivalent(ingredientHelper, ingredients, slotIngredient)
+		getTagKeyEquivalent(ingredientManager, ingredients, slotIngredient)
 			.ifPresent(tagKeyEquivalent -> {
 				tooltip.add(
 					Component.translatable("jei.tooltip.recipe.tag", "")
@@ -230,11 +227,30 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			});
 	}
 
+	@Override
+	public Optional<TagKey<?>> getTagKey() {
+		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
+		return getDisplayedSlotIngredient()
+			.flatMap(ingredient -> getTagKeyEquivalent(ingredientManager, ingredient));
+	}
+
+	private <T> Optional<TagKey<?>> getTagKeyEquivalent(IIngredientManager ingredientManager, SlotIngredient<T> ingredient) {
+		List<T> ingredients = getVisibleIngredientsInDisplayGroup(ingredient);
+		return getTagKeyEquivalent(ingredientManager, ingredients, ingredient);
+	}
+
 	private static <T> Optional<TagKey<?>> getTagKeyEquivalent(
-		IIngredientHelper<T> ingredientHelper,
+		IIngredientManager ingredientManager,
 		List<T> ingredients,
 		SlotIngredient<T> ingredient
 	) {
+		if (ingredients.isEmpty()) {
+			return Optional.empty();
+		}
+
+		ITypedIngredient<T> typedIngredient = ingredient.typedIngredient();
+		IIngredientType<T> ingredientType = typedIngredient.getType();
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		SlotDisplayData<T> slotDisplayData = ingredient.slotDisplayData();
 		if (slotDisplayData == null) {
 			return ingredientHelper.getTagKeyEquivalent(ingredients);
@@ -266,18 +282,6 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	private <T> boolean hasCandidates(SlotIngredient<T> displayed) {
 		return getVisibleIngredientsInDisplayGroup(displayed).size() > 1;
-	}
-
-	private <T> Optional<TagKey<?>> getTagKey(SlotIngredient<T> displayed) {
-		ITypedIngredient<T> ingredient = displayed.typedIngredient();
-		IIngredientType<T> ingredientType = ingredient.getType();
-		List<T> displayGroup = getVisibleIngredientsInDisplayGroup(displayed);
-		if (displayGroup.isEmpty()) {
-			return Optional.empty();
-		}
-		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		return getTagKeyEquivalent(ingredientHelper, displayGroup, displayed);
 	}
 
 	private <T> IIngredientRenderer<T> getIngredientRenderer(IIngredientType<T> ingredientType) {
@@ -331,7 +335,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			return;
 		}
 		Textures textures = Internal.getTextures();
-		IDrawable badgeIcon = getTagKey(displayed)
+		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
+		IDrawable badgeIcon = getTagKeyEquivalent(ingredientManager, displayed)
 			.map(tagKey -> textures.getTagBadgeIcon())
 			.orElseGet(textures::getListBadgeIcon);
 		int badgeX = this.rect.getX() + this.rect.getWidth() - badgeIcon.getWidth() + 1;

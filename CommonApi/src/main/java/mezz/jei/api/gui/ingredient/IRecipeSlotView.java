@@ -9,6 +9,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -68,6 +69,15 @@ public interface IRecipeSlotView {
 	 */
 	default Stream<ITypedIngredient<?>> getDisplayedIngredients() {
 		return getAllIngredients();
+	}
+
+	/**
+	 * The tag represented by the currently displayed ingredient group, if there is one.
+	 *
+	 * @since 30.21.0
+	 */
+	default Optional<TagKey<?>> getTagKey() {
+		return Optional.empty();
 	}
 
 	/**

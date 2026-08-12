@@ -143,7 +143,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, recipeManager, guiHelper);
 		this.optionButtons = new RecipeOptionButtons(this.logic::goToFirstPage);
 		this.focusFactory = focusFactory;
-		this.layouts = new RecipeGuiLayouts();
+		this.layouts = new RecipeGuiLayouts(recipeManager, keyBindings.getPauseRecipeCycling()::isDown);
 
 		Textures textures = Internal.getTextures();
 		IDrawableStatic arrowNext = textures.getArrowNext();
