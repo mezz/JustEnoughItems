@@ -17,6 +17,7 @@ import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.registration.ISlotDisplayInterpreterRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.api.runtime.IScreenHelper;
@@ -40,6 +41,7 @@ import mezz.jei.library.helpers.CodecHelper;
 import mezz.jei.library.helpers.ModIdHelper;
 import mezz.jei.library.ingredients.IngredientBlacklistInternal;
 import mezz.jei.library.ingredients.IngredientManager;
+import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.ingredients.IngredientVisibility;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
@@ -94,6 +96,13 @@ public final class PluginLoader {
 		if (ingredientFilterConfig.getSearchIngredientAliases()) {
 			PluginCaller.callOnPlugins("Registering search ingredient aliases", plugins, p -> p.registerIngredientAliases(ingredientManagerBuilder));
 		}
+
+		ISlotDisplayInterpreterRegistration slotDisplayInterpreterRegistration = ingredientManagerBuilder.getSlotDisplayInterpreterRegistration();
+		PluginCaller.callOnPlugins(
+			"Registering slot display interpreters",
+			plugins,
+			p -> p.registerSlotDisplayInterpreters(slotDisplayInterpreterRegistration)
+		);
 		return ingredientManagerBuilder.build();
 	}
 
@@ -185,7 +194,7 @@ public final class PluginLoader {
 		return recipeCategoryRegistration.getRecipeCategories();
 	}
 
-	public static IScreenHelper createGuiScreenHelper(List<IModPlugin> plugins, IJeiHelpers jeiHelpers, IngredientManager ingredientManager) {
+	public static IScreenHelper createGuiScreenHelper(List<IModPlugin> plugins, IJeiHelpers jeiHelpers, IIngredientManagerInternal ingredientManager) {
 		GuiHandlerRegistration guiHandlerRegistration = new GuiHandlerRegistration(jeiHelpers);
 		PluginCaller.callOnPlugins("Registering gui handlers", plugins, p -> p.registerGuiHandlers(guiHandlerRegistration));
 		return guiHandlerRegistration.createGuiScreenHelper(ingredientManager);
@@ -219,7 +228,7 @@ public final class PluginLoader {
 		VanillaPlugin vanillaPlugin,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
 		JeiHelpers jeiHelpers,
-		IIngredientManager ingredientManager,
+		IIngredientManagerInternal ingredientManager,
 		ContextMap contextMap
 	) {
 		List<IRecipeCategory<?>> recipeCategories = createRecipeCategories(plugins, vanillaPlugin, jeiHelpers);

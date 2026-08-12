@@ -17,14 +17,20 @@ public class RecipeIngredientTable {
 		ingredientToRecipesMap.addExact(recipe, ingredientType, uid);
 	}
 
+	public <V> void addGrouping(V recipe, IRecipeType<V> recipeType, IIngredientType<?> ingredientType, Object uid) {
+		@SuppressWarnings("unchecked")
+		IngredientToRecipesMap<V> ingredientToRecipesMap = (IngredientToRecipesMap<V>) this.map.computeIfAbsent(recipeType, k -> new IngredientToRecipesMap<>());
+		ingredientToRecipesMap.addGrouping(recipe, ingredientType, uid);
+	}
+
 	@UnmodifiableView
-	public <V> List<V> get(IRecipeType<V> recipeType, IIngredientType<?> ingredientType, Object uid) {
+	public <V> List<V> get(IRecipeType<V> recipeType, IIngredientType<?> ingredientType, Object exactUid, Object groupingUid) {
 		@SuppressWarnings("unchecked")
 		IngredientToRecipesMap<V> ingredientToRecipesMap = (IngredientToRecipesMap<V>) this.map.get(recipeType);
 		if (ingredientToRecipesMap == null) {
 			return List.of();
 		}
-		return ingredientToRecipesMap.get(ingredientType, uid);
+		return ingredientToRecipesMap.get(ingredientType, exactUid, groupingUid);
 	}
 
 	public void compact() {

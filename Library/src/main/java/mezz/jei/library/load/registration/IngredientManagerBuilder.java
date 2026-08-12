@@ -12,6 +12,7 @@ import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.api.registration.ISlotDisplayInterpreterRegistration;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.ingredients.TypedIngredientUtil;
@@ -36,6 +37,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 	private final SequencedMap<IIngredientType<?>, IngredientInfo<?>> ingredientInfos = new LinkedHashMap<>();
 	private final ISubtypeManager subtypeManager;
 	private final IColorHelper colorHelper;
+	private final SlotDisplayInterpreterRegistration slotDisplayInterpreterRegistration = new SlotDisplayInterpreterRegistration();
 
 	public IngredientManagerBuilder(ISubtypeManager subtypeManager, IColorHelper colorHelper) {
 		this.subtypeManager = subtypeManager;
@@ -278,8 +280,15 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		return colorHelper;
 	}
 
+	public ISlotDisplayInterpreterRegistration getSlotDisplayInterpreterRegistration() {
+		return slotDisplayInterpreterRegistration;
+	}
+
 	public IngredientManager build() {
 		RegisteredIngredients registeredIngredients = new RegisteredIngredients(ingredientInfos);
-		return new IngredientManager(registeredIngredients);
+		return new IngredientManager(
+			registeredIngredients,
+			slotDisplayInterpreterRegistration.createRegistry()
+		);
 	}
 }

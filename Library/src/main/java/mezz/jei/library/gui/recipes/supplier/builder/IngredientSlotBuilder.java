@@ -9,9 +9,11 @@ import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
+import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.ingredients.SimpleIngredientAcceptor;
+import mezz.jei.library.ingredients.SlotIngredient;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
@@ -32,8 +34,8 @@ import java.util.Optional;
 public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 	private final SimpleIngredientAcceptor ingredients;
 
-	public IngredientSlotBuilder(IIngredientManager ingredientManager, ContextMap contextMap) {
-		this.ingredients = new SimpleIngredientAcceptor(ingredientManager, contextMap);
+	public IngredientSlotBuilder(IIngredientManagerInternal ingredientManager, ContextMap contextMap, RecipeIngredientRole role) {
+		this.ingredients = new SimpleIngredientAcceptor(ingredientManager, contextMap, role);
 	}
 
 	@Override
@@ -215,7 +217,7 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 		return this;
 	}
 
-	public List<ITypedIngredient<?>> getAllIngredients() {
-		return this.ingredients.getAllIngredients();
+	public List<SlotIngredient<?>> getAllSlotIngredients() {
+		return this.ingredients.getAllSlotIngredients();
 	}
 }

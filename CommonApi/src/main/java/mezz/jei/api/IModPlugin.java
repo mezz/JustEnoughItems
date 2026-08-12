@@ -14,11 +14,13 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
+import mezz.jei.api.registration.ISlotDisplayInterpreterRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.config.IJeiConfigManager;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 
 /**
  * The main class to implement to create a JEI plugin.
@@ -68,6 +70,24 @@ public interface IModPlugin {
 	 * Register special ingredients, beyond the basic ItemStack and FluidStack.
 	 */
 	default void registerIngredients(IModIngredientRegistration registration) {
+
+	}
+
+	/**
+	 * Tell JEI how slot displays used by your mod should be matched and described.
+	 * <p>
+	 * Use this when resolving a {@link SlotDisplay} does not give JEI enough information to understand
+	 * the recipe slot. For example, a display may resolve a tag into stacks without preserving the tag name.
+	 * <p>
+	 * A registered interpreter can tell JEI to match all subtypes, show a more accurate tooltip,
+	 * or show the tag represented by the display.
+	 * You do not need to register anything here when the resolved ingredients already describe the slot accurately.
+	 *
+	 * @param registration used to register slot display interpreters
+	 *
+	 * @since 29.25.0
+	 */
+	default void registerSlotDisplayInterpreters(ISlotDisplayInterpreterRegistration registration) {
 
 	}
 

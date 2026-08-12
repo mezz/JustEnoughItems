@@ -23,7 +23,6 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.DrawableAnimated;
@@ -38,6 +37,7 @@ import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.LimitedLogger;
 import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
+import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
 import mezz.jei.library.gui.widgets.ScrollGridRecipeWidget;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -95,7 +95,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		Collection<IRecipeCategoryDecorator<T>> decorators,
 		T recipe,
 		IFocusGroup focuses,
-		IIngredientManager ingredientManager,
+		IIngredientManagerInternal ingredientManager,
 		IScalableDrawable recipeBackground,
 		int recipeBorderPadding,
 		ContextMap contextMap

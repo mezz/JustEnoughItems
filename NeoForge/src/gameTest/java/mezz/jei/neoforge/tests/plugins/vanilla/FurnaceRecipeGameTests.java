@@ -80,7 +80,7 @@ public final class FurnaceRecipeGameTests {
 		assertStacks(helper, List.of(new ItemStack(Items.BUCKET)), fuel.input().resolveForStacks(ContextMap.EMPTY), "Fuel-slot inputs");
 		assertStacks(helper, List.of(new ItemStack(Items.WATER_BUCKET)), fuel.remainder().resolveForStacks(ContextMap.EMPTY), "Fuel-slot outputs");
 
-		IIngredientManager ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel());
+		IIngredientManagerInternal ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel());
 		FurnaceSmeltingCategory recipeCategory = new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE);
 		IIngredientSupplier ingredients = IngredientSupplierHelper.getIngredientSupplier(
 			recipeHolder,
