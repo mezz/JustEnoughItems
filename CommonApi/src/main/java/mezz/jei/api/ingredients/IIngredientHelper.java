@@ -71,7 +71,10 @@ public interface IIngredientHelper<V> {
 
 	/**
 	 * Unique ID for use in grouping ingredients together.
-	 * This is used for hiding groups of ingredients together at once.
+	 * <p>
+	 * Ingredients with the same grouping UID are variants of the same base ingredient. JEI uses this for operations
+	 * that apply to a whole group, including hiding ingredients together and matching recipe displays that accept
+	 * all subtypes.
 	 *
 	 * @since 19.13.0
 	 */
@@ -81,7 +84,10 @@ public interface IIngredientHelper<V> {
 
 	/**
 	 * Unique ID for use in grouping ingredients together.
-	 * This is used for hiding groups of ingredients together at once.
+	 * <p>
+	 * Ingredients with the same grouping UID are variants of the same base ingredient. JEI uses this for operations
+	 * that apply to a whole group, including hiding ingredients together and matching recipe displays that accept
+	 * all subtypes.
 	 *
 	 * @since 19.19.5
 	 */
