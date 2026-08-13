@@ -17,6 +17,7 @@ import java.util.function.BooleanSupplier;
 public final class RecipeSlotCandidatesTooltipComponent implements ClientTooltipComponent, TooltipComponent {
 	private final FormattedCharSequence text;
 	private final BooleanSupplier hidden;
+	private boolean forceVisible;
 
 	public RecipeSlotCandidatesTooltipComponent(String translationKey, IJeiKeyMapping keyMapping, BooleanSupplier hidden) {
 		MutableComponent translatedKeyMessage = keyMapping.getTranslatedKeyMessage().copy();
@@ -40,8 +41,12 @@ public final class RecipeSlotCandidatesTooltipComponent implements ClientTooltip
 
 	@Override
 	public void extractText(GuiGraphicsExtractor guiGraphics, Font font, int x, int y) {
-		if (!this.hidden.getAsBoolean()) {
+		if (this.forceVisible || !this.hidden.getAsBoolean()) {
 			guiGraphics.text(font, this.text, x, y, -1, true);
 		}
+	}
+
+	public void forceVisible() {
+		this.forceVisible = true;
 	}
 }

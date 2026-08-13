@@ -3,12 +3,15 @@ package mezz.jei.gui.recipes;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.mojang.datafixers.util.Either;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.common.Internal;
 import mezz.jei.common.gui.IIngredientGridTooltipComponent;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.RecipeSlotCandidatesTooltipComponent;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.ClickableIngredientInternal;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.overlay.elements.IElement;
@@ -25,8 +28,11 @@ import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
 public class InteractiveIngredientTooltip {
+	private static final int NAVIGATION_BACKGROUND_PADDING = 2;
+
 	private final IRecipeManager recipeManager;
 	private final BooleanSupplier isRecipeCyclingPaused;
+	private final IScalableDrawable navigationBackground;
 
 	private boolean visible;
 	private @Nullable RecipeSlotUnderMouse sourceSlot;
@@ -39,6 +45,7 @@ public class InteractiveIngredientTooltip {
 	public InteractiveIngredientTooltip(IRecipeManager recipeManager, BooleanSupplier isRecipeCyclingPaused) {
 		this.recipeManager = recipeManager;
 		this.isRecipeCyclingPaused = isRecipeCyclingPaused;
+		this.navigationBackground = Internal.getTextures().getButtonPressedHighlight();
 	}
 
 	public boolean isVisible() {
@@ -106,7 +113,7 @@ public class InteractiveIngredientTooltip {
 			return false;
 		}
 		RecipeSlotTooltipPositioner positioner = this.positioner;
-		return positioner != null && positioner.getTooltipArea().contains(mouseX, mouseY);
+		return positioner != null && getNavigationArea(positioner).contains(mouseX, mouseY);
 	}
 
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
@@ -204,14 +211,25 @@ public class InteractiveIngredientTooltip {
 
 		JeiTooltip tooltip = new JeiTooltip();
 		sourceSlot.slot().getTooltip(tooltip);
-		removeCandidateInstruction(tooltip);
+		showCandidateInstruction(tooltip);
 		replaceIngredientGrid(tooltip, candidateComponent);
 		candidateComponent.setMousePosition(mouseX, mouseY);
 
+		ImmutableRect2i navigationArea = getNavigationArea(positioner);
+		guiGraphics.nextStratum();
+		if (!navigationArea.isEmpty()) {
+			this.navigationBackground.draw(
+				guiGraphics,
+				navigationArea.x(),
+				navigationArea.y(),
+				navigationArea.width(),
+				navigationArea.height()
+			);
+		}
 		guiGraphics.nextStratum();
 		tooltip.draw(guiGraphics, this.anchorX, this.anchorY, positioner);
 
-		if (positioner.getTooltipArea().contains(mouseX, mouseY)) {
+		if (getNavigationArea(positioner).contains(mouseX, mouseY)) {
 			if (candidateComponent.isDraggingScrollbar()) {
 				guiGraphics.requestCursor(CursorTypes.RESIZE_NS);
 			} else if (candidateComponent.getTypedIngredientUnderMouse(mouseX, mouseY).isPresent() ||
@@ -224,10 +242,21 @@ public class InteractiveIngredientTooltip {
 		}
 	}
 
-	private static void removeCandidateInstruction(ITooltipBuilder tooltip) {
-		tooltip.getLines().removeIf(line -> line.right()
+	private static ImmutableRect2i getNavigationArea(RecipeSlotTooltipPositioner positioner) {
+		ImmutableRect2i tooltipArea = positioner.getTooltipArea();
+		if (tooltipArea.isEmpty()) {
+			return ImmutableRect2i.EMPTY;
+		}
+		return tooltipArea.expandBy(NAVIGATION_BACKGROUND_PADDING);
+	}
+
+	private static void showCandidateInstruction(ITooltipBuilder tooltip) {
+		tooltip.getLines().stream()
+			.map(line -> line.right())
+			.flatMap(Optional::stream)
 			.filter(RecipeSlotCandidatesTooltipComponent.class::isInstance)
-			.isPresent());
+			.map(RecipeSlotCandidatesTooltipComponent.class::cast)
+			.forEach(RecipeSlotCandidatesTooltipComponent::forceVisible);
 	}
 
 	private static void replaceIngredientGrid(ITooltipBuilder tooltip, TooltipComponent candidateComponent) {
