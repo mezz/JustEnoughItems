@@ -17,6 +17,7 @@ import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
+import net.minecraft.ChatFormatting;
 import net.minecraft.DetectedVersion;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.GuiGraphics;
@@ -41,6 +42,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SlotDisplayIngredientResolverTest {
 	private static final IIngredientType<TestIngredient> INGREDIENT_TYPE = () -> TestIngredient.class;
@@ -91,6 +93,17 @@ class SlotDisplayIngredientResolverTest {
 		);
 		List<SlotIngredient<?>> expanded = SlotDisplayIngredientExpander.expandForDisplay(ingredientManager, resolved);
 
+		// Assertions: subtype wildcard handling adds wildcard matching and a generic heading before expansion.
+		SlotDisplayData<TestIngredient> displayData = resolved.getFirst().slotDisplayData();
+		assertNotNull(displayData);
+		assertTrue(displayData.info().matchesAllSubtypes());
+		assertEquals(
+			Component.translatable("jei.tooltip.recipe.any", "1")
+				.withStyle(ChatFormatting.GOLD)
+				.withStyle(ChatFormatting.ITALIC),
+			displayData.info().tooltipHeader().orElseThrow()
+		);
+
 		// Assertions: visible rotation is capped, while explicit expansion can still access the complete group.
 		assertEquals(100, displayed.size());
 		assertEquals(110, expanded.size());
@@ -116,9 +129,10 @@ class SlotDisplayIngredientResolverTest {
 			TestSlotDisplay.TYPE,
 			INGREDIENT_TYPE,
 			(display, context, interpretationBuilder) -> {
-				interpretationBuilder.setTooltipHeader(CHILD_HEADER);
 				if (matchesAllSubtypes) {
-					interpretationBuilder.setMatchesAllSubtypes(true);
+					interpretationBuilder.setWildcardForSubtypes(true);
+				} else {
+					interpretationBuilder.setTooltipHeader(CHILD_HEADER);
 				}
 			}
 		);
@@ -187,6 +201,11 @@ class SlotDisplayIngredientResolverTest {
 		@Override
 		public Object getGroupingUid(TestIngredient ingredient) {
 			return TestIngredient.class;
+		}
+
+		@Override
+		public boolean hasSubtypes(TestIngredient ingredient) {
+			return true;
 		}
 
 		@Override

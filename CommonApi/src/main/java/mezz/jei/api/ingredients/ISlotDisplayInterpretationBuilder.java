@@ -65,8 +65,28 @@ public interface ISlotDisplayInterpretationBuilder {
 	 * @return this builder, for chaining calls
 	 *
 	 * @since 27.26.0
+	 * @deprecated use {@link #setWildcardForSubtypes(boolean)} to describe the slot display's subtype semantics
 	 */
+	@Deprecated(since = "27.27.0", forRemoval = true)
 	ISlotDisplayInterpretationBuilder setMatchesAllSubtypes(boolean matchesAllSubtypes);
+
+	/**
+	 * Set whether each resolved ingredient is a wildcard, representing every subtype with the same
+	 * {@link IIngredientHelper#getGroupingUid grouping UID}.
+	 * <p>
+	 * When enabled, JEI matches all subtypes for input slots whose resolved ingredients can have subtypes according to
+	 * their ingredient helper. JEI also adds its standard "Any &lt;ingredient&gt;" tooltip heading unless this display has
+	 * a tag or an explicitly set or cleared tooltip heading.
+	 * <p>
+	 * The default is false.
+	 * Calling this method with false suppresses wildcard behavior of wrapped or child displays.
+	 *
+	 * @param wildcardForSubtypes true if resolved ingredients represent every subtype, false to disable wildcard behavior
+	 * @return this builder, for chaining calls
+	 *
+	 * @since 27.27.0
+	 */
+	ISlotDisplayInterpretationBuilder setWildcardForSubtypes(boolean wildcardForSubtypes);
 
 	/**
 	 * Set the tag represented by the slot display so JEI can show it in recipe slot tooltips.

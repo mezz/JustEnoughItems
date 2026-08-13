@@ -8,6 +8,8 @@ import mezz.jei.api.ingredients.ISlotDisplayInterpreter;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 
@@ -83,7 +85,27 @@ public final class SlotDisplayIngredientResolver {
 		private Stream<SlotIngredient<T>> resolveRoot(SlotDisplay rootDisplay) {
 			List<ResolvedGroup<T>> groups = resolve(rootDisplay);
 			return groups.stream()
+				.map(this::resolveWildcardForSubtypes)
 				.flatMap(SlotDisplayIngredientResolver::createSlotIngredients);
+		}
+
+		private ResolvedGroup<T> resolveWildcardForSubtypes(ResolvedGroup<T> group) {
+			boolean hasSubtypes = role == RecipeIngredientRole.INPUT && group.ingredients()
+				.stream()
+				.map(ITypedIngredient::getIngredient)
+				.anyMatch(ingredientHelper::hasSubtypes);
+			SlotDisplayInfo resolvedInfo = group.info().resolveWildcardForSubtypes(
+				hasSubtypes,
+				() -> createAnySubtypeTooltipHeader(group.ingredients().getFirst())
+			);
+			return new ResolvedGroup<>(group.ingredients(), resolvedInfo);
+		}
+
+		private Component createAnySubtypeTooltipHeader(ITypedIngredient<T> ingredient) {
+			String displayName = ingredientHelper.getDisplayName(ingredient.getIngredient());
+			return Component.translatable("jei.tooltip.recipe.any", displayName)
+				.withStyle(ChatFormatting.GOLD)
+				.withStyle(ChatFormatting.ITALIC);
 		}
 
 		private List<ResolvedGroup<T>> resolve(SlotDisplay slotDisplay) {

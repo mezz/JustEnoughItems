@@ -12,6 +12,7 @@ import java.util.Optional;
 
 final class SlotDisplayInterpretationBuilder implements ISlotDisplayInterpretationBuilder {
 	private SlotDisplayInfo.Value<Boolean> matchesAllSubtypes = SlotDisplayInfo.Value.unspecified();
+	private SlotDisplayInfo.Value<Boolean> wildcardForSubtypes = SlotDisplayInfo.Value.unspecified();
 	private SlotDisplayInfo.Value<TagKey<?>> tagKey = SlotDisplayInfo.Value.unspecified();
 	private SlotDisplayInfo.Value<Component> tooltipHeader = SlotDisplayInfo.Value.unspecified();
 	private @Nullable List<SlotDisplay> childDisplays;
@@ -72,6 +73,7 @@ final class SlotDisplayInterpretationBuilder implements ISlotDisplayInterpretati
 	SlotDisplayInfo buildInfo() {
 		return new SlotDisplayInfo(
 			matchesAllSubtypes,
+			wildcardForSubtypes,
 			tagKey,
 			tooltipHeader
 		);
