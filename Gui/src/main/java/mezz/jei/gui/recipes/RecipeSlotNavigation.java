@@ -17,20 +17,26 @@ final class RecipeSlotNavigation {
 		if (recipeCyclingPaused) {
 			return Action.DISPLAYED_INGREDIENT;
 		}
-		if (slot.getTagKey().isPresent()) {
-			return Action.TAG_RECIPE;
-		}
+		boolean wholeSlotTag = slot.getTagKey().isPresent();
+		boolean tagHasMultipleIngredients = wholeSlotTag && slot.getAllIngredients()
+			.limit(2)
+			.count() > 1;
 		boolean hasCandidates = slot.getDisplayedIngredients()
 			.limit(2)
 			.count() > 1;
-		return getAction(false, hasCandidates, false);
+		return getAction(wholeSlotTag, tagHasMultipleIngredients, hasCandidates, false);
 	}
 
-	static Action getAction(boolean wholeSlotTag, boolean hasCandidates, boolean recipeCyclingPaused) {
+	static Action getAction(
+		boolean wholeSlotTag,
+		boolean tagHasMultipleIngredients,
+		boolean hasCandidates,
+		boolean recipeCyclingPaused
+	) {
 		if (recipeCyclingPaused) {
 			return Action.DISPLAYED_INGREDIENT;
 		}
-		if (wholeSlotTag) {
+		if (wholeSlotTag && tagHasMultipleIngredients) {
 			return Action.TAG_RECIPE;
 		}
 		if (hasCandidates) {

@@ -61,7 +61,7 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends IRecipeTy
 			.addTypedIngredients(recipe.getTypedIngredients());
 
 		for (ITypedIngredient<?> stack : recipe.getTypedIngredients()) {
-			builder.addOutputSlot()
+			builder.addSlot(RecipeIngredientRole.RENDER_ONLY)
 				.add(stack);
 		}
 	}
@@ -85,9 +85,9 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends IRecipeTy
 			.setTextAlignment(HorizontalAlignment.CENTER);
 
 		IRecipeSlotDrawablesView recipeSlots = builder.getRecipeSlots();
-		List<IRecipeSlotDrawable> outputSlots = recipeSlots.getSlots(RecipeIngredientRole.OUTPUT);
+		List<IRecipeSlotDrawable> ingredientSlots = recipeSlots.getSlots(RecipeIngredientRole.RENDER_ONLY);
 
-		IScrollGridWidget scrollGridWidget = builder.addScrollGridWidget(outputSlots, 7, 5);
+		IScrollGridWidget scrollGridWidget = builder.addScrollGridWidget(ingredientSlots, 7, 5);
 		scrollGridWidget.setPosition(0, 0, getWidth(), getHeight(), HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM);
 	}
 
