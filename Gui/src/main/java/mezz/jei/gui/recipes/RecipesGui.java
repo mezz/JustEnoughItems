@@ -519,6 +519,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		logic.back();
 	}
 
+	public void forward() {
+		logic.forward();
+	}
+
 	private void updateLayout() {
 		if (!init) {
 			return;
@@ -671,6 +675,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			} else if (input.is(keyBindings.getRecipeBack())) {
 				if (!input.isSimulate()) {
 					recipesGui.back();
+				}
+				return Optional.of(this);
+			} else if (input.is(keyBindings.getRecipeForward())) {
+				if (!input.isSimulate()) {
+					recipesGui.forward();
 				}
 				return Optional.of(this);
 			} else if (input.is(keyBindings.getNextCategory())) {

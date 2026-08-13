@@ -13,6 +13,7 @@ public interface IInternalKeyMappings extends IJeiKeyMappings {
 	IJeiKeyMapping getToggleCheatModeConfigButton();
 
 	IJeiKeyMapping getRecipeBack();
+	IJeiKeyMapping getRecipeForward();
 	IJeiKeyMapping getPreviousCategory();
 	IJeiKeyMapping getNextCategory();
 	IJeiKeyMapping getPreviousRecipePage();
