@@ -67,6 +67,7 @@
 
   "jei.key.category.recipe.gui": "JEI (Recipes)",
   "key.jei.recipeBack": "Previous Recipe",
+  "key.jei.recipeForward": "Next Recipe",
   "key.jei.previousCategory": "Previous Recipe Category",
   "key.jei.nextCategory": "Next Recipe Category",
   "key.jei.previousRecipePage": "Previous Recipe Page",
