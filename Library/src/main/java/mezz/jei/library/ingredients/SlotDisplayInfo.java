@@ -11,19 +11,23 @@ public final class SlotDisplayInfo {
 	public static final SlotDisplayInfo EMPTY = new SlotDisplayInfo(
 		Value.unspecified(),
 		Value.unspecified(),
+		Value.unspecified(),
 		Value.unspecified()
 	);
 
 	private final Value<Boolean> matchesAllSubtypes;
+	private final Value<Boolean> wildcardForSubtypes;
 	private final Value<TagKey<?>> tagKey;
 	private final Value<Component> tooltipHeader;
 
 	SlotDisplayInfo(
 		Value<Boolean> matchesAllSubtypes,
+		Value<Boolean> wildcardForSubtypes,
 		Value<TagKey<?>> tagKey,
 		Value<Component> tooltipHeader
 	) {
 		this.matchesAllSubtypes = Objects.requireNonNull(matchesAllSubtypes);
+		this.wildcardForSubtypes = Objects.requireNonNull(wildcardForSubtypes);
 		this.tagKey = Objects.requireNonNull(tagKey);
 		this.tooltipHeader = Objects.requireNonNull(tooltipHeader);
 	}
@@ -48,16 +52,51 @@ public final class SlotDisplayInfo {
 		return tooltipHeader.value();
 	}
 
+	SlotDisplayInfo resolveWildcardForSubtypes(
+		boolean hasSubtypes,
+		Supplier<Component> automaticTooltipHeader
+	) {
+		if (!wildcardForSubtypes.value().orElse(false)) {
+			return this;
+		}
+
+		Value<Boolean> resolvedMatchesAllSubtypes;
+		if (matchesAllSubtypes.specified()) {
+			resolvedMatchesAllSubtypes = matchesAllSubtypes;
+		} else {
+			resolvedMatchesAllSubtypes = Value.of(hasSubtypes);
+		}
+		Value<Component> resolvedTooltipHeader = tooltipHeader;
+		if (hasSubtypes &&
+			resolvedMatchesAllSubtypes.value().orElse(false) &&
+			!tooltipHeader.specified() &&
+			tagKey.value().isEmpty()
+		) {
+			resolvedTooltipHeader = Value.of(automaticTooltipHeader.get());
+		}
+
+		return new SlotDisplayInfo(
+			resolvedMatchesAllSubtypes,
+			wildcardForSubtypes,
+			tagKey,
+			resolvedTooltipHeader
+		);
+	}
+
 	SlotDisplayInfo overlayOn(SlotDisplayInfo childInfo) {
 		return new SlotDisplayInfo(
 			matchesAllSubtypes.overlayOn(childInfo.matchesAllSubtypes),
+			wildcardForSubtypes.overlayOn(childInfo.wildcardForSubtypes),
 			tagKey.overlayOn(childInfo.tagKey),
 			tooltipHeader.overlayOn(childInfo.tooltipHeader)
 		);
 	}
 
 	public boolean isEmpty() {
-		return !matchesAllSubtypes.specified() && !tagKey.specified() && !tooltipHeader.specified();
+		return !matchesAllSubtypes.specified() &&
+			!wildcardForSubtypes.specified() &&
+			!tagKey.specified() &&
+			!tooltipHeader.specified();
 	}
 
 	record Value<T>(boolean specified, Optional<T> value) {

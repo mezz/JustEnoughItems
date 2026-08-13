@@ -111,6 +111,7 @@ public final class SlotDisplayIngredientGameTests {
 
 		// Assertions: the item-only input is a wildcard group with one initial rotation entry.
 		helper.assertTrue(getInfo(anyPotion).matchesAllSubtypes(), "Expected every potion subtype to match");
+		helper.assertTrue(getInfo(anyPotion).tooltipHeader().isPresent(), "Expected an any-subtype heading");
 		helper.assertEquals(1, initialRotation.size(), "Expected the initial registered potion subtype");
 
 		// Operation: add another potion subtype at runtime and expand the wildcard group again.
@@ -153,7 +154,7 @@ public final class SlotDisplayIngredientGameTests {
 			List.of(waterPotion, healingPotion),
 			registration -> registration.register(
 				MultiPotionSlotDisplay.TYPE,
-				(display, context, infoBuilder) -> infoBuilder.setMatchesAllSubtypes(true)
+				(display, context, infoBuilder) -> infoBuilder.setWildcardForSubtypes(true)
 			)
 		);
 
@@ -424,7 +425,7 @@ public final class SlotDisplayIngredientGameTests {
 				registration.register(
 					CountingSlotDisplay.TYPE,
 					(display, context, infoBuilder) -> infoBuilder
-						.setMatchesAllSubtypes(true)
+						.setWildcardForSubtypes(true)
 						.setTagKey(ItemTags.PLANKS)
 						.setTooltipHeader(Component.literal("Inherited Header"))
 				);
@@ -432,7 +433,7 @@ public final class SlotDisplayIngredientGameTests {
 					WrappingSlotDisplay.TYPE,
 					(display, context, infoBuilder) -> infoBuilder
 						.setWrappedDisplay(CountingSlotDisplay.INSTANCE)
-						.setMatchesAllSubtypes(false)
+						.setWildcardForSubtypes(false)
 						.clearTagKey()
 						.clearTooltipHeader()
 				);
