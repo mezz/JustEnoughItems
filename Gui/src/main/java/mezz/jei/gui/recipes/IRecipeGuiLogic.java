@@ -44,6 +44,8 @@ public interface IRecipeGuiLogic {
 
 	boolean back();
 
+	boolean forward();
+
 	void clearHistory();
 
 	boolean showAllRecipes();

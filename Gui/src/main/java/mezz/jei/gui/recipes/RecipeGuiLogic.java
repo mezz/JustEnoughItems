@@ -31,7 +31,6 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 import java.util.stream.Stream;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
@@ -43,7 +42,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	private boolean initialState = true;
 	private ILookupState state;
-	private final Stack<ILookupState> history = new Stack<>();
+	private final NavigationHistory<ILookupState> stateHistory = new NavigationHistory<>();
 	private final IFocusFactory focusFactory;
 	private final BookmarkList bookmarks;
 	private final IRecipeLayoutWithButtonsFactory recipeLayoutFactory;
@@ -150,19 +149,21 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean back() {
-		if (history.empty()) {
-			return false;
-		}
-		final ILookupState state = history.pop();
-		setState(state, false);
-		return true;
+		return stateHistory.goBack(state)
+			.map(previousState -> setState(previousState, false))
+			.orElse(false);
+	}
+
+	@Override
+	public boolean forward() {
+		return stateHistory.goForward(state)
+			.map(nextState -> setState(nextState, false))
+			.orElse(false);
 	}
 
 	@Override
 	public void clearHistory() {
-		while (!history.empty()) {
-			history.pop();
-		}
+		stateHistory.clear();
 	}
 
 	private boolean setState(ILookupState state, boolean saveHistory) {
@@ -172,7 +173,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 
 		if (saveHistory && !initialState) {
-			history.push(this.state);
+			stateHistory.record(this.state);
 		}
 		this.state = state;
 		this.initialState = false;
