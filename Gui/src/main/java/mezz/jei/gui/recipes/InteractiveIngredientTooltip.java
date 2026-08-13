@@ -28,6 +28,7 @@ import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
 public class InteractiveIngredientTooltip {
+	private static final int SCREEN_DIM_COLOR = 0x40000000;
 	private static final int NAVIGATION_BACKGROUND_PADDING = 2;
 
 	private final IRecipeManager recipeManager;
@@ -216,6 +217,8 @@ public class InteractiveIngredientTooltip {
 		candidateComponent.setMousePosition(mouseX, mouseY);
 
 		ImmutableRect2i navigationArea = getNavigationArea(positioner);
+		guiGraphics.nextStratum();
+		guiGraphics.fill(0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), SCREEN_DIM_COLOR);
 		guiGraphics.nextStratum();
 		if (!navigationArea.isEmpty()) {
 			this.navigationBackground.draw(
