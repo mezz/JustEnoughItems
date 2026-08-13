@@ -72,7 +72,8 @@ public interface IRecipeSlotView {
 	}
 
 	/**
-	 * The tag represented by the currently displayed ingredient group, if there is one.
+	 * The tag represented by every ingredient in this slot, if there is one.
+	 * Slots that rotate between multiple tags or groups do not have one tag key.
 	 *
 	 * @since 30.21.0
 	 */

@@ -26,11 +26,11 @@ final class RecipeSlotNavigation {
 		return getAction(false, hasCandidates, false);
 	}
 
-	static Action getAction(boolean tag, boolean hasCandidates, boolean recipeCyclingPaused) {
+	static Action getAction(boolean wholeSlotTag, boolean hasCandidates, boolean recipeCyclingPaused) {
 		if (recipeCyclingPaused) {
 			return Action.DISPLAYED_INGREDIENT;
 		}
-		if (tag) {
+		if (wholeSlotTag) {
 			return Action.TAG_RECIPE;
 		}
 		if (hasCandidates) {

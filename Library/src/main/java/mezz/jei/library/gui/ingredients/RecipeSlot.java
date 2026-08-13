@@ -18,6 +18,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.gui.RecipeSlotCandidatesTooltipComponent;
 import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.platform.IPlatformRenderHelper;
@@ -55,6 +56,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private final @Nullable IDrawable overlay;
 	private final @Nullable String slotName;
 	private ImmutableRect2i rect;
+	private @Nullable ITypedIngredient<?> displayedIngredientOverride;
+
 	public RecipeSlot(
 		IIngredientManagerInternal ingredientManager,
 		RecipeIngredientRole role,
@@ -118,11 +121,22 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	}
 
 	private Optional<SlotIngredient<?>> getDisplayedSlotIngredient() {
+		if (this.displayedIngredientOverride != null) {
+			Optional<SlotIngredient<?>> displayedIngredient = ingredients.getDisplayedIngredient(this.displayedIngredientOverride);
+			if (displayedIngredient.isPresent()) {
+				return displayedIngredient;
+			}
+		}
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
 		if (!clientConfig.isRecipeSlotCyclingEnabled()) {
 			return ingredients.getFirstDisplayedIngredient();
 		}
 		return ingredients.getDisplayedIngredient(cycler);
+	}
+
+	@Override
+	public void setDisplayedIngredientOverride(@Nullable ITypedIngredient<?> ingredient) {
+		this.displayedIngredientOverride = ingredient;
 	}
 
 	@Override
@@ -164,13 +178,15 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		addIngredientsToTooltip(tooltip, slotIngredient);
 		if (hasCandidates(slotIngredient)) {
 			String translationKey = "jei.tooltip.recipe.slot.candidates.display";
-			if (getTagKeyEquivalent(ingredientManager, slotIngredient).isEmpty()) {
+			if (getTagKey().isEmpty()) {
 				translationKey = "jei.tooltip.recipe.slot.candidates.display_group";
 			}
-			tooltip.addKeyUsageComponent(
+			var pauseRecipeCycling = Internal.getKeyMappings().getPauseRecipeCycling();
+			tooltip.add(new RecipeSlotCandidatesTooltipComponent(
 				translationKey,
-				Internal.getKeyMappings().getShowRecipeSlotCandidates()
-			);
+				pauseRecipeCycling,
+				pauseRecipeCycling::isDown
+			));
 		}
 		for (IRecipeSlotRichTooltipCallback tooltipCallback : this.tooltipCallbacks) {
 			tooltipCallback.onRichTooltip(this, tooltip);
@@ -234,8 +250,28 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	@Override
 	public Optional<TagKey<?>> getTagKey() {
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
-		return getDisplayedSlotIngredient()
-			.flatMap(ingredient -> getTagKeyEquivalent(ingredientManager, ingredient));
+		List<ITypedIngredient<?>> allIngredients = ingredients.getAllIngredients().toList();
+		return ingredients.getSingleDisplayGroupTagKey(() -> allIngredients.stream()
+			.findFirst()
+			.flatMap(first -> getTagKeyEquivalent(ingredientManager, allIngredients, first))
+		);
+	}
+
+	private static <T> Optional<TagKey<?>> getTagKeyEquivalent(
+		IIngredientManager ingredientManager,
+		List<ITypedIngredient<?>> allIngredients,
+		ITypedIngredient<T> first
+	) {
+		IIngredientType<T> ingredientType = first.getType();
+		List<T> ingredients = allIngredients.stream()
+			.map(ingredient -> ingredient.getIngredient(ingredientType))
+			.flatMap(Optional::stream)
+			.toList();
+		if (ingredients.size() != allIngredients.size()) {
+			return Optional.empty();
+		}
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		return ingredientHelper.getTagKeyEquivalent(ingredients);
 	}
 
 	private <T> Optional<TagKey<?>> getTagKeyEquivalent(IIngredientManager ingredientManager, SlotIngredient<T> ingredient) {
@@ -341,8 +377,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			return;
 		}
 		Textures textures = Internal.getTextures();
-		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
-		IDrawable badgeIcon = getTagKeyEquivalent(ingredientManager, displayed)
+		IDrawable badgeIcon = getTagKey()
 			.map(tagKey -> textures.getTagBadgeIcon())
 			.orElseGet(textures::getListBadgeIcon);
 		int badgeX = this.rect.getX() + this.rect.getWidth() - badgeIcon.getWidth() + 1;

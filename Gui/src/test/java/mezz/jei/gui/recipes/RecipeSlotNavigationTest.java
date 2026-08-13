@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RecipeSlotNavigationTest {
 	@Test
-	void tagNavigationTakesPriorityOverCandidateGroupNavigation() {
+	void wholeSlotTagNavigationTakesPriorityOverCandidateGroupNavigation() {
 		RecipeSlotNavigation.Action action = RecipeSlotNavigation.getAction(true, true, false);
 
 		assertEquals(RecipeSlotNavigation.Action.TAG_RECIPE, action);

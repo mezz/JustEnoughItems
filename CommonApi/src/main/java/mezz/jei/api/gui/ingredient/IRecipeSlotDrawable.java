@@ -4,12 +4,14 @@ import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -74,6 +76,17 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 * @since 21.1.0
 	 */
 	void drawTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
+
+	/**
+	 * Temporarily force this slot to display one of the ingredients returned by
+	 * {@link #getDisplayedIngredients()} without changing the slot's candidates.
+	 * Pass {@code null} to resume normal ingredient cycling.
+	 *
+	 * @param ingredient the displayed ingredient override, or null to clear it
+	 * @since 30.21.0
+	 */
+	default void setDisplayedIngredientOverride(@Nullable ITypedIngredient<?> ingredient) {
+	}
 
 	/**
 	 * Return true if the mouse is over the slot.

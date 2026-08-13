@@ -11,8 +11,8 @@
   "jei.tooltip.recipe.any": "Any %s",
   "jei.tooltip.recipe.any_fuel": "Any Fuel",
   "jei.tooltip.recipe.tag": "Accepts Tag: %s",
-  "jei.tooltip.recipe.slot.candidates.display": "Press %s to show all candidates.",
-  "jei.tooltip.recipe.slot.candidates.display_group": "Click the slot or press %s to show all candidates.",
+  "jei.tooltip.recipe.slot.candidates.display": "Hold %s to browse all candidates.",
+  "jei.tooltip.recipe.slot.candidates.display_group": "Hold %s to browse all candidates.",
   "jei.tooltip.item.colors": "Colors: %s",
   "jei.tooltip.item.search.aliases": "Search Aliases:",
   "jei.tooltip.shapeless.recipe": "Shapeless Recipe",
@@ -76,7 +76,6 @@
   "key.jei.previousRecipePage": "Previous Recipe Page",
   "key.jei.nextRecipePage": "Next Recipe Page",
   "key.jei.pauseRecipeCycling": "Pause Recipe Ingredient Cycling",
-  "key.jei.showRecipeSlotCandidates": "Show All Slot Candidates",
   "key.jei.closeRecipeGui": "Close Recipes GUI",
 
   "key.category.jei.cheat.mode": "JEI (Cheat Mode)",

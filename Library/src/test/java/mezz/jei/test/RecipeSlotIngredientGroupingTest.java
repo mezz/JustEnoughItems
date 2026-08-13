@@ -19,6 +19,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class RecipeSlotIngredientGroupingTest {
 	private static final IIngredientType<String> INGREDIENT_TYPE = () -> String.class;
@@ -90,6 +91,42 @@ public class RecipeSlotIngredientGroupingTest {
 
 		// Assertions: the candidate browser does not mix in ingredients from another display group.
 		assertEquals(List.of("first a", "second a"), candidates);
+	}
+
+	@Test
+	void displayedIngredientCanBeTemporarilySelectedFromTheCurrentCandidates() {
+		ITypedIngredient<String> first = createIngredient("first");
+		ITypedIngredient<String> hovered = createIngredient("hovered");
+		SlotIngredient<String> hoveredSlotIngredient = new SlotIngredient<>(hovered);
+		List<SlotIngredient<?>> displayIngredients = List.of(
+			new SlotIngredient<>(first),
+			hoveredSlotIngredient
+		);
+
+		Optional<SlotIngredient<?>> selected = RecipeSlotIngredients.getDisplayedIngredient(displayIngredients, hovered);
+
+		assertSame(hoveredSlotIngredient, selected.orElseThrow());
+	}
+
+	@Test
+	void multipleDisplayGroupsAreNotTreatedAsOneTag() {
+		ITypedIngredient<String> firstA = createIngredient("first a");
+		ITypedIngredient<String> firstB = createIngredient("first b");
+		SlotDisplayData<String> groupA = new SlotDisplayData<>(List.of(firstA), SlotDisplayInfo.EMPTY);
+		SlotDisplayData<String> groupB = new SlotDisplayData<>(List.of(firstB), SlotDisplayInfo.EMPTY);
+		List<SlotIngredient<?>> slotIngredients = List.of(
+			new SlotIngredient<>(firstA, groupA),
+			new SlotIngredient<>(firstB, groupB)
+		);
+
+		Optional<?> tagKey = RecipeSlotIngredients.getSingleDisplayGroupTagKey(
+			slotIngredients,
+			() -> {
+				throw new AssertionError("multiple groups must not use a whole-slot tag fallback");
+			}
+		);
+
+		assertEquals(Optional.empty(), tagKey);
 	}
 
 	@Test

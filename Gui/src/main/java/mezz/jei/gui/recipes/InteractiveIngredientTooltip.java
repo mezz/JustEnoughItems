@@ -1,5 +1,6 @@
 package mezz.jei.gui.recipes;
 
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import com.mojang.datafixers.util.Either;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
@@ -7,15 +8,13 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.common.gui.IIngredientGridTooltipComponent;
 import mezz.jei.common.gui.JeiTooltip;
-import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.MathUtil;
+import mezz.jei.common.gui.RecipeSlotCandidatesTooltipComponent;
 import mezz.jei.gui.input.ClickableIngredientInternal;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
 import mezz.jei.gui.overlay.elements.TagIngredientElement;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jspecify.annotations.Nullable;
@@ -25,17 +24,19 @@ import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
-public class IngredientCandidateOverlay {
+public class InteractiveIngredientTooltip {
 	private final IRecipeManager recipeManager;
 	private final BooleanSupplier isRecipeCyclingPaused;
 
 	private boolean visible;
 	private @Nullable RecipeSlotUnderMouse sourceSlot;
-	private ImmutableRect2i sourceArea = ImmutableRect2i.EMPTY;
 	private @Nullable RecipeSlotTooltipPositioner positioner;
-	private @Nullable IngredientCandidateTooltipComponent candidateComponent;
+	private @Nullable InteractiveIngredientGridTooltipComponent candidateComponent;
+	private boolean sourceIngredientForced;
+	private int anchorX;
+	private int anchorY;
 
-	public IngredientCandidateOverlay(IRecipeManager recipeManager, BooleanSupplier isRecipeCyclingPaused) {
+	public InteractiveIngredientTooltip(IRecipeManager recipeManager, BooleanSupplier isRecipeCyclingPaused) {
 		this.recipeManager = recipeManager;
 		this.isRecipeCyclingPaused = isRecipeCyclingPaused;
 	}
@@ -45,14 +46,14 @@ public class IngredientCandidateOverlay {
 	}
 
 	public void hide() {
+		clearSourceIngredientOverride();
 		this.visible = false;
 		this.sourceSlot = null;
-		this.sourceArea = ImmutableRect2i.EMPTY;
 		this.positioner = null;
 		this.candidateComponent = null;
 	}
 
-	public boolean show(RecipeSlotUnderMouse slotUnderMouse) {
+	public boolean show(RecipeSlotUnderMouse slotUnderMouse, double mouseX, double mouseY) {
 		List<ITypedIngredient<?>> displayedIngredients = slotUnderMouse.slot()
 			.getDisplayedIngredients()
 			.toList();
@@ -60,36 +61,44 @@ public class IngredientCandidateOverlay {
 			return false;
 		}
 
-		Rect2i relativeArea = slotUnderMouse.slot().getAreaIncludingBackground();
-		this.sourceArea = new ImmutableRect2i(
-			slotUnderMouse.offset().x() + relativeArea.getX(),
-			slotUnderMouse.offset().y() + relativeArea.getY(),
-			relativeArea.getWidth(),
-			relativeArea.getHeight()
-		);
 		this.sourceSlot = slotUnderMouse;
-		this.positioner = new RecipeSlotTooltipPositioner(this.sourceArea);
-		this.candidateComponent = new IngredientCandidateTooltipComponent(this.recipeManager, displayedIngredients);
+		this.positioner = new RecipeSlotTooltipPositioner();
+		this.candidateComponent = new InteractiveIngredientGridTooltipComponent(this.recipeManager, displayedIngredients);
+		this.anchorX = (int) mouseX;
+		this.anchorY = (int) mouseY;
 		this.visible = true;
 		return true;
 	}
 
-	public void updateVisibility(double mouseX, double mouseY) {
-		if (!this.visible || isMouseOver(mouseX, mouseY)) {
+	public void update(double mouseX, double mouseY) {
+		if (!this.visible) {
 			return;
 		}
-		hide();
+		updateSourceIngredient(mouseX, mouseY);
 	}
 
-	public boolean isMouseOver(double mouseX, double mouseY) {
-		if (!this.visible) {
-			return false;
+	private void updateSourceIngredient(double mouseX, double mouseY) {
+		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
+		RecipeSlotUnderMouse sourceSlot = this.sourceSlot;
+		if (candidateComponent == null || sourceSlot == null) {
+			return;
 		}
-		if (this.sourceArea.contains(mouseX, mouseY)) {
-			return true;
+		ITypedIngredient<?> ingredient = candidateComponent
+			.getTypedIngredientUnderMouse(mouseX, mouseY)
+			.orElse(null);
+		if (ingredient == null) {
+			clearSourceIngredientOverride();
+		} else {
+			sourceSlot.slot().setDisplayedIngredientOverride(ingredient);
+			this.sourceIngredientForced = true;
 		}
-		RecipeSlotTooltipPositioner positioner = this.positioner;
-		return positioner != null && MathUtil.union(this.sourceArea, positioner.getTooltipArea()).contains(mouseX, mouseY);
+	}
+
+	private void clearSourceIngredientOverride() {
+		if (this.sourceIngredientForced && this.sourceSlot != null) {
+			this.sourceSlot.slot().setDisplayedIngredientOverride(null);
+		}
+		this.sourceIngredientForced = false;
 	}
 
 	public boolean isMouseOverTooltip(double mouseX, double mouseY) {
@@ -104,7 +113,7 @@ public class IngredientCandidateOverlay {
 		if (!this.visible) {
 			return Stream.empty();
 		}
-		IngredientCandidateTooltipComponent candidateComponent = this.candidateComponent;
+		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
 		if (candidateComponent != null) {
 			Optional<IClickableIngredientInternal<?>> candidate = candidateComponent
 				.getIngredientUnderMouse(mouseX, mouseY)
@@ -153,26 +162,72 @@ public class IngredientCandidateOverlay {
 	}
 
 	public boolean mouseScrolled(double scrollDeltaY) {
-		IngredientCandidateTooltipComponent candidateComponent = this.candidateComponent;
+		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
 		return this.visible && candidateComponent != null && candidateComponent.mouseScrolled(scrollDeltaY);
+	}
+
+	public boolean isMouseOverGrid(double mouseX, double mouseY) {
+		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
+		return this.visible && candidateComponent != null && candidateComponent.isMouseOver(mouseX, mouseY);
+	}
+
+	public boolean startScrollbarDrag(double mouseX, double mouseY) {
+		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
+		return this.visible && candidateComponent != null && candidateComponent.startScrollbarDrag(mouseX, mouseY);
+	}
+
+	public boolean mouseDragged(double mouseY) {
+		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
+		return this.visible && candidateComponent != null && candidateComponent.mouseDragged(mouseY);
+	}
+
+	public boolean isDraggingScrollbar() {
+		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
+		return this.visible && candidateComponent != null && candidateComponent.isDraggingScrollbar();
+	}
+
+	public void stopScrollbarDrag() {
+		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
+		if (candidateComponent != null) {
+			candidateComponent.stopScrollbarDrag();
+		}
 	}
 
 	@SuppressWarnings("removal")
 	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		RecipeSlotUnderMouse sourceSlot = this.sourceSlot;
 		RecipeSlotTooltipPositioner positioner = this.positioner;
-		IngredientCandidateTooltipComponent candidateComponent = this.candidateComponent;
+		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
 		if (!this.visible || sourceSlot == null || positioner == null || candidateComponent == null) {
 			return;
 		}
 
 		JeiTooltip tooltip = new JeiTooltip();
 		sourceSlot.slot().getTooltip(tooltip);
+		removeCandidateInstruction(tooltip);
 		replaceIngredientGrid(tooltip, candidateComponent);
 		candidateComponent.setMousePosition(mouseX, mouseY);
 
 		guiGraphics.nextStratum();
-		tooltip.draw(guiGraphics, positioner.getAnchorX(), positioner.getAnchorY(), positioner);
+		tooltip.draw(guiGraphics, this.anchorX, this.anchorY, positioner);
+
+		if (positioner.getTooltipArea().contains(mouseX, mouseY)) {
+			if (candidateComponent.isDraggingScrollbar()) {
+				guiGraphics.requestCursor(CursorTypes.RESIZE_NS);
+			} else if (candidateComponent.getTypedIngredientUnderMouse(mouseX, mouseY).isPresent() ||
+				candidateComponent.isMouseOverScrollbar(mouseX, mouseY)
+			) {
+				guiGraphics.requestCursor(CursorTypes.POINTING_HAND);
+			} else {
+				guiGraphics.requestCursor(CursorTypes.ARROW);
+			}
+		}
+	}
+
+	private static void removeCandidateInstruction(ITooltipBuilder tooltip) {
+		tooltip.getLines().removeIf(line -> line.right()
+			.filter(RecipeSlotCandidatesTooltipComponent.class::isInstance)
+			.isPresent());
 	}
 
 	private static void replaceIngredientGrid(ITooltipBuilder tooltip, TooltipComponent candidateComponent) {
@@ -186,10 +241,4 @@ public class IngredientCandidateOverlay {
 		);
 	}
 
-	public void drawTooltips(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		IngredientCandidateTooltipComponent candidateComponent = this.candidateComponent;
-		if (this.visible && candidateComponent != null) {
-			candidateComponent.drawTooltip(guiGraphics, mouseX, mouseY);
-		}
-	}
 }

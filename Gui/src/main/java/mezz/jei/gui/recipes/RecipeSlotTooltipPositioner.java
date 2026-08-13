@@ -2,20 +2,16 @@ package mezz.jei.gui.recipes;
 
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
+import org.jspecify.annotations.Nullable;
 
 final class RecipeSlotTooltipPositioner implements ClientTooltipPositioner {
-	private final ImmutableRect2i sourceArea;
-	private final int anchorX;
-	private final int anchorY;
-	private ImmutableRect2i tooltipArea = ImmutableRect2i.EMPTY;
+	private static final int TOOLTIP_MARGIN = 4;
 
-	public RecipeSlotTooltipPositioner(ImmutableRect2i sourceArea) {
-		this.sourceArea = sourceArea;
-		this.anchorX = sourceArea.getX() + sourceArea.getWidth();
-		this.anchorY = sourceArea.getY();
-	}
+	private ImmutableRect2i tooltipArea = ImmutableRect2i.EMPTY;
+	private @Nullable Vector2i position;
 
 	@Override
 	public Vector2ic positionTooltip(
@@ -26,27 +22,24 @@ final class RecipeSlotTooltipPositioner implements ClientTooltipPositioner {
 		int tooltipWidth,
 		int tooltipHeight
 	) {
-		int offsetX = x - this.anchorX;
-		int offsetY = y - this.anchorY;
-		RecipeSlotTooltipLayout.Result layout = RecipeSlotTooltipLayout.create(
-			screenWidth,
-			screenHeight,
-			this.sourceArea,
-			tooltipWidth,
-			tooltipHeight,
-			offsetX,
-			offsetY
+		if (this.position == null) {
+			Vector2ic defaultPosition = DefaultTooltipPositioner.INSTANCE.positionTooltip(
+				screenWidth,
+				screenHeight,
+				x,
+				y,
+				tooltipWidth,
+				tooltipHeight
+			);
+			this.position = new Vector2i(defaultPosition);
+		}
+		this.tooltipArea = new ImmutableRect2i(
+			this.position.x() - TOOLTIP_MARGIN,
+			this.position.y() - TOOLTIP_MARGIN,
+			tooltipWidth + (2 * TOOLTIP_MARGIN),
+			tooltipHeight + (2 * TOOLTIP_MARGIN)
 		);
-		this.tooltipArea = layout.area();
-		return new Vector2i(layout.x(), layout.y());
-	}
-
-	public int getAnchorX() {
-		return this.anchorX;
-	}
-
-	public int getAnchorY() {
-		return this.anchorY;
+		return new Vector2i(this.position);
 	}
 
 	public ImmutableRect2i getTooltipArea() {

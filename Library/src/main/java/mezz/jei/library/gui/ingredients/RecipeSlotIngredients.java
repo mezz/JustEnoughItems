@@ -13,6 +13,7 @@ import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.ingredients.SlotDisplayData;
 import mezz.jei.library.ingredients.SlotDisplayIngredientExpander;
 import mezz.jei.library.ingredients.SlotIngredient;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.context.ContextMap;
 import org.jetbrains.annotations.Unmodifiable;
 import org.jspecify.annotations.Nullable;
@@ -104,6 +105,33 @@ public final class RecipeSlotIngredients {
 			.filter(Objects::nonNull);
 	}
 
+	public Optional<TagKey<?>> getSingleDisplayGroupTagKey(Supplier<Optional<TagKey<?>>> fallback) {
+		return getSingleDisplayGroupTagKey(this.sourceSlotIngredients, fallback);
+	}
+
+	public static Optional<TagKey<?>> getSingleDisplayGroupTagKey(
+		List<? extends @Nullable SlotIngredient<?>> sourceSlotIngredients,
+		Supplier<Optional<TagKey<?>>> fallback
+	) {
+		List<SlotIngredient<?>> sourceIngredients = sourceSlotIngredients.stream()
+			.filter(Objects::nonNull)
+			.<SlotIngredient<?>>map(ingredient -> ingredient)
+			.toList();
+		if (sourceIngredients.isEmpty()) {
+			return Optional.empty();
+		}
+		SlotDisplayData<?> firstDisplayData = sourceIngredients.getFirst().slotDisplayData();
+		boolean hasMultipleDisplayGroups = sourceIngredients.stream()
+			.anyMatch(ingredient -> ingredient.slotDisplayData() != firstDisplayData);
+		if (hasMultipleDisplayGroups) {
+			return Optional.empty();
+		}
+		if (firstDisplayData == null) {
+			return fallback.get();
+		}
+		return firstDisplayData.info().tagKeyOrElse(fallback);
+	}
+
 	@Unmodifiable
 	public List<@Nullable ITypedIngredient<?>> getAllIngredientsList() {
 		if (this.allIngredients == null) {
@@ -121,6 +149,21 @@ public final class RecipeSlotIngredients {
 
 	public Optional<SlotIngredient<?>> getDisplayedIngredient(ICycler cycler) {
 		return cycler.getCycled(getDisplayIngredients());
+	}
+
+	public Optional<SlotIngredient<?>> getDisplayedIngredient(ITypedIngredient<?> displayedIngredient) {
+		return getDisplayedIngredient(getDisplayIngredients(), displayedIngredient);
+	}
+
+	public static Optional<SlotIngredient<?>> getDisplayedIngredient(
+		List<? extends @Nullable SlotIngredient<?>> displayIngredients,
+		ITypedIngredient<?> displayedIngredient
+	) {
+		return displayIngredients.stream()
+			.filter(Objects::nonNull)
+			.filter(ingredient -> ingredient.typedIngredient() == displayedIngredient)
+			.<SlotIngredient<?>>map(ingredient -> ingredient)
+			.findFirst();
 	}
 
 	public Optional<SlotIngredient<?>> getFirstDisplayedIngredient() {

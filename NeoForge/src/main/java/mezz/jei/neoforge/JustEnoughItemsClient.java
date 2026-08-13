@@ -4,13 +4,14 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.RecipeSlotCandidatesTooltipComponent;
 import mezz.jei.common.gui.IngredientTooltipComponent;
 import mezz.jei.common.gui.IngredientsTooltipComponent;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
-import mezz.jei.gui.recipes.IngredientCandidateTooltipComponent;
+import mezz.jei.gui.recipes.InteractiveIngredientGridTooltipComponent;
 import mezz.jei.library.gui.ingredients.TagContentTooltipComponent;
 import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipe;
 import mezz.jei.library.plugins.vanilla.cooking.JeiSmeltingRecipe;
@@ -112,8 +113,9 @@ public class JustEnoughItemsClient {
 		event.register(IngredientTooltipComponent.class, Function.identity());
 		event.register(IngredientsTooltipComponent.class, Function.identity());
 		event.register(PreviewTooltipComponent.class, Function.identity());
+		event.register(RecipeSlotCandidatesTooltipComponent.class, Function.identity());
 		event.register(TagContentTooltipComponent.class, Function.identity());
-		event.register(IngredientCandidateTooltipComponent.class, Function.identity());
+		event.register(InteractiveIngredientGridTooltipComponent.class, Function.identity());
 	}
 
 	private ResourceManagerReloadListener createReloadListener() {
