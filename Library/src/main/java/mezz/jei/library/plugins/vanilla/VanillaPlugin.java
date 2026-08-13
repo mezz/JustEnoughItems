@@ -10,6 +10,7 @@ import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.brewing.IExtendableBrewingRecipeCategory;
@@ -81,6 +82,7 @@ import mezz.jei.library.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.library.render.FluidTankRenderer;
 import mezz.jei.library.render.ItemStackRenderer;
 import mezz.jei.library.transfer.PlayerRecipeTransferHandler;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
@@ -98,6 +100,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.inventory.AnvilMenu;
@@ -202,12 +205,42 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void registerSlotDisplayInterpreters(ISlotDisplayInterpreterRegistration registration) {
-		registration.registerUniversal(SlotDisplay.Composite.TYPE, VanillaSlotDisplayInterpreters::interpretComposite);
-		registration.register(SlotDisplay.ItemSlotDisplay.TYPE, VanillaSlotDisplayInterpreters::interpretItem);
-		registration.register(SlotDisplay.TagSlotDisplay.TYPE, VanillaSlotDisplayInterpreters::interpretTag);
-		registration.register(SlotDisplay.AnyFuel.TYPE, VanillaSlotDisplayInterpreters::interpretAnyFuel);
-		registration.register(SlotDisplay.WithAnyPotion.TYPE, VanillaSlotDisplayInterpreters::interpretWithAnyPotion);
-		registration.register(SlotDisplay.WithRemainder.TYPE, VanillaSlotDisplayInterpreters::interpretWithRemainder);
+		registration.registerUniversal(SlotDisplay.Composite.TYPE, (slotDisplay, interpretationBuilder) -> {
+			interpretationBuilder.setChildDisplays(slotDisplay.contents());
+		});
+		registration.register(SlotDisplay.ItemSlotDisplay.TYPE, (ignoredSlotDisplay, ignoredContext, interpretationBuilder) -> {
+			interpretationBuilder.setWildcardForSubtypes(true);
+		});
+		registration.register(SlotDisplay.TagSlotDisplay.TYPE, (slotDisplay, ignoredContext, interpretationBuilder) -> {
+			interpretationBuilder
+				.setTagKey(slotDisplay.tag())
+				.setWildcardForSubtypes(true);
+		});
+		registration.register(SlotDisplay.AnyFuel.TYPE, (ignoredSlotDisplay1, ignoredContext, interpretationBuilder) -> {
+			interpretationBuilder
+				.setTooltipHeader(
+					Component.translatable("jei.tooltip.recipe.any_fuel")
+						.withStyle(ChatFormatting.GOLD)
+						.withStyle(ChatFormatting.ITALIC)
+				)
+				.setWildcardForSubtypes(true);
+		});
+		registration.register(SlotDisplay.WithAnyPotion.TYPE, (ignoredSlotDisplay, context, interpretationBuilder) -> {
+			List<ITypedIngredient<ItemStack>> ingredients = context.getIngredients();
+			if (ingredients.isEmpty()) {
+				return;
+			}
+			ItemStack itemStack = ingredients.getFirst().getIngredient();
+			Component itemName = Component.translatable(itemStack.getItem().getDescriptionId());
+			interpretationBuilder.setTooltipHeader(
+				Component.translatable("jei.tooltip.recipe.any", itemName)
+					.withStyle(ChatFormatting.GOLD)
+					.withStyle(ChatFormatting.ITALIC)
+			);
+		});
+		registration.register(SlotDisplay.WithRemainder.TYPE, (slotDisplay, ignoredContext, interpretationBuilder) -> {
+			interpretationBuilder.setWrappedDisplay(slotDisplay.input());
+		});
 	}
 
 	@Override
