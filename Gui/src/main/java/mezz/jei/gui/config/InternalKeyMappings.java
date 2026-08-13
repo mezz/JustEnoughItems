@@ -24,6 +24,7 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping toggleCheatModeConfigButton;
 
 	private final IJeiKeyMapping recipeBack;
+	private final IJeiKeyMapping recipeForward;
 	private final IJeiKeyMapping previousCategory;
 	private final IJeiKeyMapping nextCategory;
 	private final IJeiKeyMapping previousRecipePage;
@@ -255,6 +256,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.buildKeyboardKey(GLFW.GLFW_KEY_BACKSPACE)
 			.register(registerMethod);
 
+		recipeForward = recipeCategory.createMapping("key.jei.recipeForward")
+			.setContext(JeiKeyConflictContext.GUI)
+			.buildUnbound()
+			.register(registerMethod);
+
 		previousRecipePage = recipeCategory.createMapping("key.jei.previousRecipePage")
 			.setContext(JeiKeyConflictContext.GUI)
 			.buildKeyboardKey(GLFW.GLFW_KEY_PAGE_UP)
@@ -352,6 +358,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	@Override
 	public IJeiKeyMapping getRecipeBack() {
 		return recipeBack;
+	}
+
+	@Override
+	public IJeiKeyMapping getRecipeForward() {
+		return recipeForward;
 	}
 
 	@Override
