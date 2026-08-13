@@ -29,6 +29,7 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRegistry;
@@ -40,6 +41,8 @@ import mezz.jei.debug.ingredients.DebugIngredientHelper;
 import mezz.jei.debug.ingredients.DebugIngredientListFactory;
 import mezz.jei.debug.ingredients.DebugIngredientRenderer;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.Registry;
@@ -63,6 +66,7 @@ import java.util.List;
 @JeiPlugin
 public class JeiDebugPlugin implements IModPlugin {
 	private @Nullable DebugRecipeCategory<?> debugRecipeCategory;
+	private @Nullable IScreenHelper screenHelper;
 
 	@Override
 	public ResourceLocation getPluginUid() {
@@ -277,6 +281,8 @@ public class JeiDebugPlugin implements IModPlugin {
 
 		registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>(ingredientManager));
 		registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandlerTwo<>(ingredientManager));
+
+		registration.addGlobalGuiHandler(new DebugExclusionAreaHandler(this::screenHasGuiProperties));
 	}
 	@Override
 	public <T> void registerFluidSubtypes(ISubtypeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
@@ -361,10 +367,26 @@ public class JeiDebugPlugin implements IModPlugin {
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 		ErrorUtil.assertMainThread();
+		this.screenHelper = jeiRuntime.getScreenHelper();
 		if (debugRecipeCategory != null) {
 			debugRecipeCategory.setRuntime(jeiRuntime);
 		}
 		IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
 		ingredientManager.addIngredientsAtRuntime(DebugIngredient.TYPE, DebugIngredientListFactory.create(10, 20));
+	}
+
+	@Override
+	public void onRuntimeUnavailable() {
+		this.screenHelper = null;
+	}
+
+	private boolean screenHasGuiProperties() {
+		IScreenHelper screenHelper = this.screenHelper;
+		if (screenHelper == null) {
+			return false;
+		}
+		Screen screen = Minecraft.getInstance().screen;
+		return screen != null && screenHelper.getGuiProperties(screen)
+			.isPresent();
 	}
 }
