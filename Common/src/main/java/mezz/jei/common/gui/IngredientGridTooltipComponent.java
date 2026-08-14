@@ -22,6 +22,7 @@ public abstract class IngredientGridTooltipComponent<T> implements ClientTooltip
 	private static final int MIN_SCROLL_MARKER_HEIGHT = 14;
 	private static final int MAX_COLUMNS = 10;
 	private static final int MAX_ROWS = 4;
+	private static final int MAX_WIDTH = (2 * GRID_PADDING) + (MAX_COLUMNS * CELL_SIZE) + SCROLLBAR_GAP + SCROLLBAR_WIDTH;
 
 	private final ScalableDrawable scrollbarBackground;
 	private final ScalableDrawable scrollbarMarker;
@@ -62,6 +63,10 @@ public abstract class IngredientGridTooltipComponent<T> implements ClientTooltip
 		this.scrollbarBackground = textures.getScrollbarBackground();
 		this.scrollbarMarker = textures.getScrollbarMarker();
 		this.slotBackground = textures.getSlot();
+	}
+
+	static int getMaximumWidth() {
+		return MAX_WIDTH;
 	}
 
 	@Override

@@ -10,38 +10,51 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
+import java.util.List;
 import java.util.function.BooleanSupplier;
 
 public final class RecipeSlotCandidatesTooltipComponent implements ClientTooltipComponent, TooltipComponent {
-	private final FormattedCharSequence text;
+	private static final int LINE_HEIGHT = 10;
+
+	private final Component text;
 	private final BooleanSupplier hideText;
 	private boolean forceVisible;
 
-	public RecipeSlotCandidatesTooltipComponent(String translationKey, IJeiKeyMapping keyMapping, BooleanSupplier hideText) {
+	public RecipeSlotCandidatesTooltipComponent(IJeiKeyMapping keyMapping, BooleanSupplier hideText) {
 		MutableComponent translatedKeyMessage = keyMapping.getTranslatedKeyMessage().copy();
 		Component boldKeyMapping = translatedKeyMessage.withStyle(ChatFormatting.BOLD);
-		this.text = Component.translatable(translationKey, boldKeyMapping)
+		this.text = Component.translatable("jei.tooltip.recipe.slot.options", boldKeyMapping)
 			.withStyle(ChatFormatting.ITALIC)
-			.withStyle(ChatFormatting.GRAY)
-			.getVisualOrderText();
+			.withStyle(ChatFormatting.GRAY);
 		this.hideText = hideText;
+	}
+
+	private List<FormattedCharSequence> getLines(Font font) {
+		return font.split(this.text, IngredientGridTooltipComponent.getMaximumWidth());
 	}
 
 	@Override
 	public int getHeight(Font font) {
 		// Always reserve the text dimensions so holding the key does not resize or move the tooltip.
-		return 10;
+		return getLines(font).size() * LINE_HEIGHT;
 	}
 
 	@Override
 	public int getWidth(Font font) {
-		return font.width(this.text);
+		return getLines(font).stream()
+			.mapToInt(font::width)
+			.max()
+			.orElse(0);
 	}
 
 	@Override
 	public void extractText(GuiGraphicsExtractor guiGraphics, Font font, int x, int y) {
 		if (this.forceVisible || !this.hideText.getAsBoolean()) {
-			guiGraphics.text(font, this.text, x, y, -1, true);
+			List<FormattedCharSequence> lines = getLines(font);
+			for (int i = 0; i < lines.size(); i++) {
+				FormattedCharSequence line = lines.get(i);
+				guiGraphics.text(font, line, x, y + (i * LINE_HEIGHT), -1, true);
+			}
 		}
 	}
 

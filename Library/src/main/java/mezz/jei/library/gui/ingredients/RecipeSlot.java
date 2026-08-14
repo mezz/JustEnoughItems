@@ -169,13 +169,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		addTagNameTooltip(tooltip, ingredientManager, slotIngredient, visibleCandidates);
 		addIngredientGridToTooltip(tooltip, ingredientManager, ingredientType, visibleCandidates);
 		if (visibleCandidates.size() > 1) {
-			String translationKey = "jei.tooltip.recipe.slot.candidates.display";
-			if (getTagKey().isEmpty()) {
-				translationKey = "jei.tooltip.recipe.slot.candidates.display_group";
-			}
 			var pauseRecipeCycling = Internal.getKeyMappings().getPauseRecipeCycling();
 			tooltip.add(new RecipeSlotCandidatesTooltipComponent(
-				translationKey,
 				pauseRecipeCycling,
 				pauseRecipeCycling::isDown
 			));
