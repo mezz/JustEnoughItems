@@ -13,7 +13,7 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
 import java.util.List;
 
-public abstract class IngredientGridTooltipComponent<T> implements ClientTooltipComponent, TooltipComponent, IIngredientGridTooltipComponent {
+public abstract class IngredientGridTooltipComponent<T> implements ClientTooltipComponent, TooltipComponent {
 	private static final int CELL_SIZE = 18;
 	private static final int GRID_PADDING = 1;
 	private static final int BOTTOM_PADDING = 2;
