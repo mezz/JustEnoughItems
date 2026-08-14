@@ -13,6 +13,8 @@ abstract class JarCompatibilityCheckerArgumentProvider : CommandLineArgumentProv
 
     override fun asArguments(): Iterable<String> = listOf(
         "--api",
+        "--non-extendable-api-check-mode",
+        "SKIP",
         "--base-jar",
         baselineJar.singleFile.absolutePath,
         "--input-jar",
@@ -155,8 +157,7 @@ val modGroup: String by extra
 val modId: String by extra
 val specificationVersion: String by extra
 
-val apiCompatibilityCheckerVersion = "0.1.15"
-val apiCompatibilityAsmVersion = "9.10.1"
+val apiCompatibilityCheckerVersion = "0.1.18"
 val apiCompatibilityMajorVersion = specificationVersion.substringBefore('.').toInt()
 val apiCompatibilityBaselineVersion = providers.gradleProperty("apiCompatibilityBaselineVersion")
     .orElse("[$apiCompatibilityMajorVersion.0.0,${apiCompatibilityMajorVersion + 1}.0.0)")
@@ -169,20 +170,10 @@ val apiCompatibilityChecker: Configuration by configurations.creating {
         attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
         attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling.EXTERNAL))
     }
-    resolutionStrategy.eachDependency {
-        if (requested.group == "org.ow2.asm") {
-            useVersion(apiCompatibilityAsmVersion)
-            because("ASM 9.7 cannot read Java 25 class files.")
-        }
-    }
 }
 
 dependencies {
     apiCompatibilityChecker("net.neoforged:jarcompatibilitychecker:$apiCompatibilityCheckerVersion")
-    apiCompatibilityChecker("org.ow2.asm:asm:$apiCompatibilityAsmVersion")
-    apiCompatibilityChecker("org.ow2.asm:asm-analysis:$apiCompatibilityAsmVersion")
-    apiCompatibilityChecker("org.ow2.asm:asm-commons:$apiCompatibilityAsmVersion")
-    apiCompatibilityChecker("org.ow2.asm:asm-tree:$apiCompatibilityAsmVersion")
 }
 
 fun optionalApiCompatibilityModule(
