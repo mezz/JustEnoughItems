@@ -27,6 +27,7 @@ public class Textures {
 	private final DrawableNineSliceTexture ingredientListBackground;
 	private final DrawableNineSliceTexture bookmarkListBackground;
 	private final DrawableNineSliceTexture recipeBackground;
+	private final DrawableNineSliceTexture interactiveIngredientTooltipBackground;
 	private final DrawableNineSliceTexture recipePreviewBackground;
 	private final DrawableNineSliceTexture searchBackground;
 	private final DrawableNineSliceTexture scrollbarBackground;
@@ -80,6 +81,7 @@ public class Textures {
 		this.ingredientListBackground = createNineSliceGuiSprite("ingredient_list_background", 64, 64, 16, 16, 16, 16);
 		this.bookmarkListBackground = createNineSliceGuiSprite("bookmark_list_background", 64, 64, 16, 16, 16, 16);
 		this.recipeBackground = createNineSliceGuiSprite("single_recipe_background", 64, 64, 16, 16, 16, 16);
+		this.interactiveIngredientTooltipBackground = createNineSliceGuiSprite("interactive_ingredient_tooltip_background", 64, 64, 16, 16, 16, 16);
 		this.recipePreviewBackground = createNineSliceGuiSprite("recipe_preview_background", 64, 64, 16, 16, 16, 16);
 		this.searchBackground = createNineSliceGuiSprite("search_background", 20, 20, 6, 6, 6, 6);
 		this.scrollbarBackground = createNineSliceGuiSprite("scrollbar_background", 14, 50, 6, 6, 6, 6);
@@ -232,6 +234,10 @@ public class Textures {
 
 	public DrawableNineSliceTexture getRecipeBackground() {
 		return recipeBackground;
+	}
+
+	public DrawableNineSliceTexture getInteractiveIngredientTooltipBackground() {
+		return interactiveIngredientTooltipBackground;
 	}
 
 	public DrawableNineSliceTexture getRecipePreviewBackground() {

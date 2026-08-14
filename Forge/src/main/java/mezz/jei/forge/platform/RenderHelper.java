@@ -11,6 +11,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -144,6 +145,29 @@ public class RenderHelper implements IPlatformRenderHelper {
 		}
 
 		return font.split(text, maxWidth).stream().map(ClientTooltipComponent::create);
+	}
+
+	@Override
+	public void renderTooltip(
+		GuiGraphics guiGraphics,
+		List<Either<FormattedText, TooltipComponent>> elements,
+		int x,
+		int y,
+		Font font,
+		ItemStack stack,
+		ClientTooltipPositioner positioner
+	) {
+		Screen screen = Minecraft.getInstance().screen;
+		if (screen == null) {
+			return;
+		}
+		guiGraphics.tooltipStack = stack;
+		try {
+			List<ClientTooltipComponent> components = gatherTooltipComponents(stack, elements, x, screen.width, screen.height, font);
+			guiGraphics.renderTooltipInternal(font, components, x, y, positioner);
+		} finally {
+			guiGraphics.tooltipStack = ItemStack.EMPTY;
+		}
 	}
 
 	@Override

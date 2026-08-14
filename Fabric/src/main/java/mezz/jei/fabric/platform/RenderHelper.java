@@ -10,6 +10,7 @@ import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -63,14 +64,32 @@ public class RenderHelper implements IPlatformRenderHelper {
 
 	@Override
 	public void renderTooltip(GuiGraphics guiGraphics, List<Either<FormattedText, TooltipComponent>> elements, int x, int y, Font font, ItemStack stack) {
+		List<ClientTooltipComponent> components = createClientTooltipComponents(elements, font);
+		guiGraphics.renderTooltipInternal(font, components, x, y, DefaultTooltipPositioner.INSTANCE);
+	}
+
+	@Override
+	public void renderTooltip(
+		GuiGraphics guiGraphics,
+		List<Either<FormattedText, TooltipComponent>> elements,
+		int x,
+		int y,
+		Font font,
+		ItemStack stack,
+		ClientTooltipPositioner positioner
+	) {
+		List<ClientTooltipComponent> components = createClientTooltipComponents(elements, font);
+		guiGraphics.renderTooltipInternal(font, components, x, y, positioner);
+	}
+
+	private List<ClientTooltipComponent> createClientTooltipComponents(List<Either<FormattedText, TooltipComponent>> elements, Font font) {
 		List<ClientTooltipComponent> components = elements.stream()
 			.flatMap(e -> e.map(
 				text -> font.split(text, 400).stream().map(ClientTooltipComponent::create),
 				tooltipComponent -> Stream.of(createClientTooltipComponent(tooltipComponent))
 			))
 			.collect(Collectors.toCollection(ArrayList::new));
-
-		guiGraphics.renderTooltipInternal(font, components, x, y, DefaultTooltipPositioner.INSTANCE);
+		return components;
 	}
 
 	@Override

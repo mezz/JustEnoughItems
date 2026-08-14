@@ -57,12 +57,11 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends RecipeTyp
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, R recipe, IFocusGroup focuses) {
-		builder.addInputSlot()
-			.addTypedIngredients(recipe.getTypedIngredients())
-			.setStandardSlotBackground();
+		builder.addInvisibleIngredients(RecipeIngredientRole.INPUT)
+			.addTypedIngredients(recipe.getTypedIngredients());
 
 		for (ITypedIngredient<?> stack : recipe.getTypedIngredients()) {
-			builder.addOutputSlot()
+			builder.addSlot(RecipeIngredientRole.RENDER_ONLY)
 				.addTypedIngredient(stack);
 		}
 	}
@@ -78,22 +77,18 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends RecipeTyp
 			Component.literal(tag.location().toString())
 				.withStyle(style -> style.withColor(TextColor.fromRgb(JeiGuiColors.getColor(GuiColor.TAG_INFORMATION_IDENTIFIER_TEXT) & 0xFFFFFF)))
 		);
-		builder.addText(text, getWidth() - 22, 20)
-			.setPosition(22, 0)
+		builder.addText(text, getWidth(), 20)
+			.setPosition(0, 0)
 			.setColor(JeiGuiColors.getColor(GuiColor.TAG_INFORMATION_TEXT))
 			.setLineSpacing(0)
 			.setTextAlignment(VerticalAlignment.CENTER)
 			.setTextAlignment(HorizontalAlignment.CENTER);
 
 		IRecipeSlotDrawablesView recipeSlots = builder.getRecipeSlots();
-		List<IRecipeSlotDrawable> outputSlots = recipeSlots.getSlots(RecipeIngredientRole.OUTPUT);
+		List<IRecipeSlotDrawable> ingredientSlots = recipeSlots.getSlots(RecipeIngredientRole.RENDER_ONLY);
 
-		IScrollGridWidget scrollGridWidget = builder.addScrollGridWidget(outputSlots, 7, 5);
+		IScrollGridWidget scrollGridWidget = builder.addScrollGridWidget(ingredientSlots, 7, 5);
 		scrollGridWidget.setPosition(0, 0, getWidth(), getHeight(), HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM);
-
-		IRecipeSlotDrawable inputSlot = recipeSlots.getSlots(RecipeIngredientRole.INPUT)
-			.get(0);
-		inputSlot.setPosition(scrollGridWidget.getScreenRectangle().position().x() + 1, 1);
 	}
 
 	@Override

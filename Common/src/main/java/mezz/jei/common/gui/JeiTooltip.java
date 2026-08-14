@@ -16,11 +16,14 @@ import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.ingredients.TypedIngredientUtil;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.SafeIngredientUtil;
+import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.ChatFormatting;
+import net.minecraft.CrashReport;
+import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
@@ -36,6 +39,9 @@ import java.util.stream.Collectors;
 public class JeiTooltip implements ITooltipBuilder {
 	private final List<Either<FormattedText, TooltipComponent>> lines = new ArrayList<>();
 	private @Nullable ITypedIngredient<?> typedIngredient;
+
+	public record TooltipRenderData(Font font, ItemStack itemStack) {
+	}
 
 	@Override
 	public void add(@Nullable FormattedText formattedText) {
@@ -150,8 +156,12 @@ public class JeiTooltip implements ITooltipBuilder {
 	}
 
 	public void draw(GuiGraphics guiGraphics, int x, int y) {
+		draw(guiGraphics, x, y, null);
+	}
+
+	public void draw(GuiGraphics guiGraphics, int x, int y, @Nullable ClientTooltipPositioner positioner) {
 		if (typedIngredient != null) {
-			draw(guiGraphics, x, y, typedIngredient);
+			draw(guiGraphics, x, y, typedIngredient, positioner);
 			return;
 		}
 		if (isEmpty()) {
@@ -161,23 +171,83 @@ public class JeiTooltip implements ITooltipBuilder {
 		Font font = minecraft.font;
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 		try {
-			renderHelper.renderTooltip(guiGraphics, lines, x, y, font, ItemStack.EMPTY);
+			renderTooltip(renderHelper, guiGraphics, x, y, font, ItemStack.EMPTY, positioner);
 		} catch (RuntimeException e) {
 			throw new RuntimeException("Crashed when rendering tooltip:\n" + this, e);
 		}
 	}
 
-	private <T> void draw(GuiGraphics guiGraphics, int x, int y, ITypedIngredient<T> typedIngredient) {
+	private <T> void draw(
+		GuiGraphics guiGraphics,
+		int x,
+		int y,
+		ITypedIngredient<T> typedIngredient,
+		@Nullable ClientTooltipPositioner positioner
+	) {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
-		draw(guiGraphics, x, y, typedIngredient, ingredientRenderer, ingredientManager);
+		draw(guiGraphics, x, y, typedIngredient, ingredientRenderer, ingredientManager, positioner);
 	}
 
 	public <T> void draw(
 		GuiGraphics guiGraphics,
 		int x,
 		int y,
+		ITypedIngredient<T> typedIngredient,
+		IIngredientRenderer<T> ingredientRenderer,
+		IIngredientManager ingredientManager
+	) {
+		draw(guiGraphics, x, y, typedIngredient, ingredientRenderer, ingredientManager, null);
+	}
+
+	private <T> void draw(
+		GuiGraphics guiGraphics,
+		int x,
+		int y,
+		ITypedIngredient<T> typedIngredient,
+		IIngredientRenderer<T> ingredientRenderer,
+		IIngredientManager ingredientManager,
+		@Nullable ClientTooltipPositioner positioner
+	) {
+		TooltipRenderData renderData = prepareForIngredientTooltip(typedIngredient, ingredientRenderer, ingredientManager);
+		if (isEmpty()) {
+			return;
+		}
+		try {
+			IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+			renderTooltip(renderHelper, guiGraphics, x, y, renderData.font(), renderData.itemStack(), positioner);
+		} catch (RuntimeException e) {
+			CrashReport crashReport = ErrorUtil.createIngredientCrashReport(
+				e,
+				"Rendering ingredient tooltip",
+				ingredientManager,
+				typedIngredient.getType(),
+				typedIngredient.getIngredient()
+			);
+			crashReport.addCategory("tooltip")
+				.setDetail("value", this);
+			throw new ReportedException(crashReport);
+		}
+	}
+
+	private void renderTooltip(
+		IPlatformRenderHelper renderHelper,
+		GuiGraphics guiGraphics,
+		int x,
+		int y,
+		Font font,
+		ItemStack itemStack,
+		@Nullable ClientTooltipPositioner positioner
+	) {
+		if (positioner == null) {
+			renderHelper.renderTooltip(guiGraphics, lines, x, y, font, itemStack);
+		} else {
+			renderHelper.renderTooltip(guiGraphics, lines, x, y, font, itemStack, positioner);
+		}
+	}
+
+	public <T> TooltipRenderData prepareForIngredientTooltip(
 		ITypedIngredient<T> typedIngredient,
 		IIngredientRenderer<T> ingredientRenderer,
 		IIngredientManager ingredientManager
@@ -200,20 +270,7 @@ public class JeiTooltip implements ITooltipBuilder {
 		modIdHelper.getModNameForTooltip(typedIngredient)
 			.ifPresent(this::add);
 
-		if (isEmpty()) {
-			return;
-		}
-
-		SafeIngredientUtil.renderTooltip(
-			guiGraphics,
-			this,
-			x,
-			y,
-			font,
-			itemStack,
-			typedIngredient,
-			ingredientManager
-		);
+		return new TooltipRenderData(font, itemStack);
 	}
 
 	private <T> void addDebugInfo(IIngredientManager ingredientManager,  ITypedIngredient<T> typedIngredient) {
