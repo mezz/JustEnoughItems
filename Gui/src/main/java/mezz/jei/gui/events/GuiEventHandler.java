@@ -9,9 +9,9 @@ import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.RectDebugger;
+import mezz.jei.gui.input.IGuiInputLayer;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
-import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -21,6 +21,8 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 
 import org.jspecify.annotations.Nullable;
+
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,15 +30,18 @@ public class GuiEventHandler {
 	private final IngredientListOverlay ingredientListOverlay;
 	private final IScreenHelper screenHelper;
 	private final BookmarkOverlay bookmarkOverlay;
+	private final List<IGuiInputLayer> inputLayers;
 
 	public GuiEventHandler(
 		IScreenHelper screenHelper,
 		BookmarkOverlay bookmarkOverlay,
-		IngredientListOverlay ingredientListOverlay
+		IngredientListOverlay ingredientListOverlay,
+		IGuiInputLayer... inputLayers
 	) {
 		this.screenHelper = screenHelper;
 		this.bookmarkOverlay = bookmarkOverlay;
 		this.ingredientListOverlay = ingredientListOverlay;
+		this.inputLayers = List.of(inputLayers);
 	}
 
 	public void onGuiInit(Screen screen) {
@@ -121,14 +126,10 @@ public class GuiEventHandler {
 
 	private void drawPostForeground(Screen screen, @Nullable IGuiProperties guiProperties, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getInstance();
-		RecipesGui recipesGui = null;
-		if (screen instanceof RecipesGui currentRecipesGui) {
-			recipesGui = currentRecipesGui;
-		}
-		boolean mouseOverInteractiveTooltip = recipesGui != null &&
-			recipesGui.isMouseOverInteractiveIngredientTooltip(mouseX, mouseY);
+		boolean mouseOverInputLayer = this.inputLayers.stream()
+			.anyMatch(inputLayer -> inputLayer.isMouseOver(mouseX, mouseY));
 
-		if (!mouseOverInteractiveTooltip && guiProperties != null && screen instanceof AbstractContainerScreen<?> guiContainer) {
+		if (!mouseOverInputLayer && guiProperties != null && screen instanceof AbstractContainerScreen<?> guiContainer) {
 			int guiLeft = guiProperties.guiLeft();
 			int guiTop = guiProperties.guiTop();
 			this.screenHelper.getGuiClickableArea(guiContainer, mouseX - guiLeft, mouseY - guiTop)
@@ -144,13 +145,13 @@ public class GuiEventHandler {
 				});
 		}
 
-		if (!mouseOverInteractiveTooltip) {
+		if (!mouseOverInputLayer) {
 			ingredientListOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 			bookmarkOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		}
 
-		if (recipesGui != null) {
-			recipesGui.drawInteractiveIngredientTooltip(guiGraphics, mouseX, mouseY);
+		for (int i = this.inputLayers.size() - 1; i >= 0; i--) {
+			this.inputLayers.get(i).draw(guiGraphics, mouseX, mouseY);
 		}
 
 		if (DebugConfig.isDebugGuisEnabled()) {

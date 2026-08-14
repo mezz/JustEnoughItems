@@ -201,12 +201,6 @@ public class JeiGuiStarter {
 		);
 		registration.setBookmarkOverlay(bookmarkOverlay);
 
-		GuiEventHandler guiEventHandler = new GuiEventHandler(
-			screenHelper,
-			bookmarkOverlay,
-			ingredientListOverlay
-		);
-
 		FocusUtil focusUtil = new FocusUtil(focusFactory, clientConfig, ingredientManager);
 
 		RecipesGui recipesGui = new RecipesGui(
@@ -222,6 +216,14 @@ public class JeiGuiStarter {
 			focusUtil
 		);
 		registration.setRecipesGui(recipesGui);
+		var interactiveIngredientTooltipInputLayer = recipesGui.getInteractiveIngredientTooltipInputLayer();
+
+		GuiEventHandler guiEventHandler = new GuiEventHandler(
+			screenHelper,
+			bookmarkOverlay,
+			ingredientListOverlay,
+			interactiveIngredientTooltipInputLayer
+		);
 
 		CombinedRecipeFocusSource recipeFocusSource = new CombinedRecipeFocusSource(
 			recipesGui,
@@ -236,7 +238,7 @@ public class JeiGuiStarter {
 
 		UserInputRouter userInputRouter = new UserInputRouter(
 			"JEIGlobal",
-			recipesGui.getInteractiveIngredientTooltipInputHandler(),
+			interactiveIngredientTooltipInputLayer,
 			new EditInputHandler(recipeFocusSource, toggleState, editModeConfig),
 			ingredientListOverlay.createInputHandler(),
 			bookmarkOverlay.createInputHandler(),
