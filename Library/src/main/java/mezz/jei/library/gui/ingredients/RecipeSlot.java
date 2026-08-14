@@ -17,7 +17,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
-import mezz.jei.common.gui.RecipeSlotCandidatesTooltipComponent;
+import mezz.jei.common.gui.RecipeSlotOptionsTooltipComponent;
 import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.platform.IPlatformRenderHelper;
@@ -170,10 +170,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		addIngredientGridToTooltip(tooltip, ingredientManager, ingredientType, visibleCandidates);
 		if (visibleCandidates.size() > 1) {
 			var pauseRecipeCycling = Internal.getKeyMappings().getPauseRecipeCycling();
-			tooltip.add(new RecipeSlotCandidatesTooltipComponent(
-				pauseRecipeCycling,
-				pauseRecipeCycling::isDown
-			));
+			tooltip.add(new RecipeSlotOptionsTooltipComponent(pauseRecipeCycling));
 		}
 		for (IRecipeSlotRichTooltipCallback tooltipCallback : this.tooltipCallbacks) {
 			tooltipCallback.onRichTooltip(this, tooltip);

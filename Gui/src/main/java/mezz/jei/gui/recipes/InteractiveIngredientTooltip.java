@@ -16,7 +16,6 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.IngredientGridTooltipComponent;
 import mezz.jei.common.gui.JeiTooltip;
-import mezz.jei.common.gui.RecipeSlotCandidatesTooltipComponent;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
@@ -50,7 +49,6 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 	private final RecipeSlotClickTargetFactory clickTargetFactory;
 	private final IScalableDrawable navigationBackground;
 
-	private boolean visible;
 	private @Nullable RecipeSlotUnderMouse sourceSlot;
 	private @Nullable RecipeSlotTooltipPositioner positioner;
 	private @Nullable InteractiveIngredientGridTooltipComponent candidateComponent;
@@ -73,11 +71,10 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 	}
 
 	public boolean isVisible() {
-		return this.visible;
+		return this.sourceSlot != null;
 	}
 
 	public void hide() {
-		this.visible = false;
 		this.sourceSlot = null;
 		this.positioner = null;
 		this.candidateComponent = null;
@@ -96,13 +93,12 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		this.candidateComponent = new InteractiveIngredientGridTooltipComponent(this.recipeManager, displayedIngredients);
 		this.anchorX = (int) mouseX;
 		this.anchorY = (int) mouseY;
-		this.visible = true;
 		return true;
 	}
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		if (!this.recipesGui.isOpen() || !this.visible) {
+		if (!this.recipesGui.isOpen()) {
 			return false;
 		}
 		RecipeSlotTooltipPositioner positioner = this.positioner;
@@ -110,9 +106,6 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 	}
 
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
-		if (!this.visible) {
-			return Stream.empty();
-		}
 		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
 		if (candidateComponent != null) {
 			Optional<IClickableIngredientInternal<?>> candidate = candidateComponent
@@ -130,29 +123,19 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		return Stream.empty();
 	}
 
-	private boolean scrollCandidates(double scrollDeltaY) {
-		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
-		return this.visible && candidateComponent != null && candidateComponent.mouseScrolled(scrollDeltaY);
-	}
-
-	private boolean isMouseOverGrid(double mouseX, double mouseY) {
-		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
-		return this.visible && candidateComponent != null && candidateComponent.isMouseOver(mouseX, mouseY);
-	}
-
 	private boolean startScrollbarDrag(double mouseX, double mouseY) {
 		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
-		return this.visible && candidateComponent != null && candidateComponent.startScrollbarDrag(mouseX, mouseY);
+		return candidateComponent != null && candidateComponent.startScrollbarDrag(mouseX, mouseY);
 	}
 
 	private boolean dragScrollbar(double mouseY) {
 		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
-		return this.visible && candidateComponent != null && candidateComponent.mouseDragged(mouseY);
+		return candidateComponent != null && candidateComponent.mouseDragged(mouseY);
 	}
 
 	private boolean isDraggingScrollbar() {
 		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
-		return this.visible && candidateComponent != null && candidateComponent.isDraggingScrollbar();
+		return candidateComponent != null && candidateComponent.isDraggingScrollbar();
 	}
 
 	private void stopScrollbarDrag() {
@@ -171,13 +154,12 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		RecipeSlotUnderMouse sourceSlot = this.sourceSlot;
 		RecipeSlotTooltipPositioner positioner = this.positioner;
 		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
-		if (!this.visible || sourceSlot == null || positioner == null || candidateComponent == null) {
+		if (sourceSlot == null || positioner == null || candidateComponent == null) {
 			return;
 		}
 
 		JeiTooltip tooltip = new JeiTooltip();
 		sourceSlot.slot().getTooltip(tooltip);
-		showCandidateInstruction(tooltip);
 		replaceIngredientGrid(tooltip, candidateComponent);
 		candidateComponent.setMousePosition(mouseX, mouseY);
 
@@ -234,15 +216,6 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		return tooltipArea.expandBy(NAVIGATION_BACKGROUND_PADDING);
 	}
 
-	private static void showCandidateInstruction(ITooltipBuilder tooltip) {
-		tooltip.getLines().stream()
-			.map(line -> line.right())
-			.flatMap(Optional::stream)
-			.filter(RecipeSlotCandidatesTooltipComponent.class::isInstance)
-			.map(RecipeSlotCandidatesTooltipComponent.class::cast)
-			.forEach(RecipeSlotCandidatesTooltipComponent::forceVisible);
-	}
-
 	private static void replaceIngredientGrid(ITooltipBuilder tooltip, TooltipComponent candidateComponent) {
 		List<Either<FormattedText, TooltipComponent>> lines = tooltip.getLines();
 		Either<FormattedText, TooltipComponent> replacement = Either.right(candidateComponent);
@@ -275,7 +248,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		UserInput input,
 		IInternalKeyMappings keyBindings
 	) {
-		if (!this.recipesGui.isOpen() || !this.visible) {
+		if (!this.recipesGui.isOpen() || !isVisible()) {
 			return Optional.empty();
 		}
 
@@ -329,12 +302,13 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		double scrollDeltaX,
 		double scrollDeltaY
 	) {
-		if (this.recipesGui.isOpen() && isMouseOverGrid(mouseX, mouseY)) {
+		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
+		if (this.recipesGui.isOpen() && candidateComponent != null && candidateComponent.isMouseOver(mouseX, mouseY)) {
 			double scrollDelta = scrollDeltaY;
 			if (Math.abs(scrollDeltaX) > Math.abs(scrollDeltaY)) {
 				scrollDelta = scrollDeltaX;
 			}
-			scrollCandidates(scrollDelta);
+			candidateComponent.mouseScrolled(scrollDelta);
 			return Optional.of(this);
 		}
 		return Optional.empty();

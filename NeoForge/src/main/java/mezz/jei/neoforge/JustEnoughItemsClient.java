@@ -4,7 +4,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiGuiColors;
-import mezz.jei.common.gui.RecipeSlotCandidatesTooltipComponent;
+import mezz.jei.common.gui.RecipeSlotOptionsTooltipComponent;
 import mezz.jei.common.gui.IngredientTooltipComponent;
 import mezz.jei.common.gui.IngredientsTooltipComponent;
 import mezz.jei.common.gui.textures.Textures;
@@ -113,7 +113,7 @@ public class JustEnoughItemsClient {
 		event.register(IngredientTooltipComponent.class, Function.identity());
 		event.register(IngredientsTooltipComponent.class, Function.identity());
 		event.register(PreviewTooltipComponent.class, Function.identity());
-		event.register(RecipeSlotCandidatesTooltipComponent.class, Function.identity());
+		event.register(RecipeSlotOptionsTooltipComponent.class, Function.identity());
 		event.register(TagContentTooltipComponent.class, Function.identity());
 		event.register(InteractiveIngredientGridTooltipComponent.class, Function.identity());
 	}
