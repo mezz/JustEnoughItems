@@ -9,6 +9,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
@@ -61,14 +62,20 @@ public interface IRecipeSlotView {
 	Optional<ITypedIngredient<?>> getDisplayedIngredient();
 
 	/**
-	 * All ingredient candidates in the group that contains the currently displayed ingredient,
-	 * after applying focus and visibility.
+	 * All visible ingredient candidates in the group that contains the currently displayed ingredient.
+	 * This includes the complete group, even when the slot's normal rotation is limited for performance.
 	 *
 	 * @since 27.28.0
 	 */
-	default Stream<ITypedIngredient<?>> getDisplayedIngredients() {
-		return getAllIngredients();
-	}
+	Stream<ITypedIngredient<?>> getDisplayedIngredients();
+
+	/**
+	 * The tag represented by every ingredient in this slot, if there is one.
+	 * Slots that rotate between multiple tags or groups do not have one tag key.
+	 *
+	 * @since 27.29.0
+	 */
+	Optional<TagKey<?>> getTagKey();
 
 	/**
 	 * Returns the type of focus that matches this ingredient.

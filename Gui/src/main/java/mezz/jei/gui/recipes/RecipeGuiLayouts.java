@@ -3,17 +3,13 @@ package mezz.jei.gui.recipes;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
-import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.input.ClickableIngredientInternal;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import mezz.jei.gui.input.handlers.NullInputHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
-import mezz.jei.gui.overlay.elements.IElement;
-import mezz.jei.gui.overlay.elements.IngredientElement;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -30,11 +26,13 @@ import java.util.stream.Stream;
 public class RecipeGuiLayouts {
 	private static final Logger LOGGER = LogManager.getLogger();
 
+	private final RecipeSlotClickTargetFactory clickTargetFactory;
 	private final List<IRecipeLayoutWithButtons<?>> recipeLayoutsWithButtons = new ArrayList<>();
 	@Nullable
 	private IUserInputHandler cachedInputHandler;
 
-	public RecipeGuiLayouts() {
+	RecipeGuiLayouts(RecipeSlotClickTargetFactory clickTargetFactory) {
+		this.clickTargetFactory = clickTargetFactory;
 		this.cachedInputHandler = NullInputHandler.INSTANCE;
 	}
 
@@ -105,7 +103,7 @@ public class RecipeGuiLayouts {
 			.map(IRecipeLayoutWithButtons::getRecipeLayout)
 			.map(recipeLayout -> recipeLayout.getSlotUnderMouse(mouseX, mouseY))
 			.flatMap(Optional::stream)
-			.map(RecipeGuiLayouts::getClickedIngredient)
+			.map(this.clickTargetFactory::create)
 			.flatMap(Optional::stream);
 	}
 
@@ -117,14 +115,6 @@ public class RecipeGuiLayouts {
 			}
 		}
 		return Optional.empty();
-	}
-
-	private static Optional<IClickableIngredientInternal<?>> getClickedIngredient(RecipeSlotUnderMouse slotUnderMouse) {
-		return slotUnderMouse.slot().getDisplayedIngredient()
-			.map(displayedIngredient -> {
-				IElement<?> element = new IngredientElement<>(displayedIngredient);
-				return new ClickableIngredientInternal<>(element, slotUnderMouse::isMouseOver, false, true);
-			});
 	}
 
 	public boolean mouseDragged(double mouseX, double mouseY, InputConstants.Key input, double dragX, double dragY) {
