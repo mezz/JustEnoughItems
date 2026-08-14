@@ -83,7 +83,7 @@ public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	 * Pass {@code null} to resume normal ingredient cycling.
 	 *
 	 * @param ingredient the displayed ingredient override, or null to clear it
-	 * @since 30.21.0
+	 * @since 30.22.0
 	 */
 	default void setDisplayedIngredientOverride(@Nullable ITypedIngredient<?> ingredient) {
 	}

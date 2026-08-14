@@ -65,7 +65,7 @@ public interface IRecipeSlotView {
 	 * All ingredient candidates in the group that contains the currently displayed ingredient,
 	 * after applying focus and visibility.
 	 *
-	 * @since 30.21.0
+	 * @since 30.22.0
 	 */
 	default Stream<ITypedIngredient<?>> getDisplayedIngredients() {
 		return getAllIngredients();
@@ -75,7 +75,7 @@ public interface IRecipeSlotView {
 	 * The tag represented by every ingredient in this slot, if there is one.
 	 * Slots that rotate between multiple tags or groups do not have one tag key.
 	 *
-	 * @since 30.21.0
+	 * @since 30.22.0
 	 */
 	default Optional<TagKey<?>> getTagKey() {
 		return Optional.empty();
