@@ -20,8 +20,6 @@ public interface IInternalKeyMappings extends IJeiKeyMappings {
 	IJeiKeyMapping getNextRecipePage();
 	IJeiKeyMappingInternal getPauseRecipeCycling();
 
-	IJeiKeyMapping getShowRecipeSlotCandidates();
-
 	IJeiKeyMapping getPreviousPage();
 	IJeiKeyMapping getNextPage();
 

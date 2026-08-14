@@ -146,7 +146,7 @@ public final class ClientConfig implements IClientConfig {
 			1,
 			50
 		);
-		recipeSlotCyclingEnabled = input.addBoolean("recipeSlotCyclingEnabled", false);
+		recipeSlotCyclingEnabled = input.addBoolean("recipeSlotCyclingEnabled", true);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
 		ingredientSorterStages = sorting.addList(

@@ -127,6 +127,7 @@ public final class JeiGuiColors {
 		LOOKUP_HISTORY_LINE("lookupHistoryLine", 0xFF959595),
 		PAGE_NAVIGATION_BACKGROUND("pageNavigationBackground", 0x30000000),
 		PAGE_NAVIGATION_TEXT("pageNavigationText", 0xFFFFFFFF),
+		INTERACTIVE_INGREDIENT_TOOLTIP_SCREEN_DIM("interactiveIngredientTooltipScreenDim", 0x40000000),
 		BOOKMARKED_RECIPE_OVERLAY("bookmarkedRecipeOverlay", 0x1100FF00),
 		EDIT_MODE_HIDDEN_INGREDIENT_OVERLAY("editModeHiddenIngredientOverlay", 0xDDFF0000),
 		EDIT_MODE_HIDDEN_WILDCARD_OVERLAY("editModeHiddenWildcardOverlay", 0xDDFFA500),

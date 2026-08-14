@@ -7,6 +7,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
@@ -21,6 +23,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
 import net.neoforged.neoforge.client.model.data.ModelData;
@@ -71,6 +74,27 @@ public class RenderHelper implements IPlatformRenderHelper {
 	@Override
 	public void renderTooltip(GuiGraphics guiGraphics, List<Either<FormattedText, TooltipComponent>> elements, int x, int y, Font font, ItemStack stack) {
 		guiGraphics.renderComponentTooltipFromElements(font, elements, x, y, stack);
+	}
+
+	@Override
+	public void renderTooltip(
+		GuiGraphics guiGraphics,
+		List<Either<FormattedText, TooltipComponent>> elements,
+		int x,
+		int y,
+		Font font,
+		ItemStack stack,
+		ClientTooltipPositioner positioner
+	) {
+		List<ClientTooltipComponent> components = ClientHooks.gatherTooltipComponentsFromElements(
+			stack,
+			elements,
+			x,
+			guiGraphics.guiWidth(),
+			guiGraphics.guiHeight(),
+			font
+		);
+		guiGraphics.renderTooltipInternal(font, components, x, y, positioner);
 	}
 
 	@Override
