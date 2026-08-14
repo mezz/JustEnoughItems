@@ -19,7 +19,6 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class RecipeSlotIngredientGroupingTest {
 	private static final IIngredientType<String> INGREDIENT_TYPE = () -> String.class;
@@ -60,52 +59,6 @@ public class RecipeSlotIngredientGroupingTest {
 
 		// Assertions: only ingredients declared by the displayed ingredient's group are returned.
 		assertEquals(List.of("first a", "second a"), displayGroup);
-	}
-
-	@Test
-	void displayedCandidatesUseOnlyTheCurrentExpandedGroup() {
-		// Setup: two expanded display groups contribute visible candidates to the same recipe slot.
-		ITypedIngredient<String> firstA = createIngredient("first a");
-		ITypedIngredient<String> secondA = createIngredient("second a");
-		ITypedIngredient<String> firstB = createIngredient("first b");
-		SlotDisplayData<String> groupA = new SlotDisplayData<>(
-			List.of(firstA, secondA),
-			SlotDisplayInfo.EMPTY
-		);
-		SlotDisplayData<String> groupB = new SlotDisplayData<>(
-			List.of(firstB),
-			SlotDisplayInfo.EMPTY
-		);
-		SlotIngredient<String> displayed = new SlotIngredient<>(secondA, groupA);
-		List<SlotIngredient<?>> displayIngredients = List.of(
-			new SlotIngredient<>(firstA, groupA),
-			displayed,
-			new SlotIngredient<>(firstB, groupB)
-		);
-
-		// Operation: get candidates for the group containing the currently displayed ingredient.
-		List<String> candidates = RecipeSlotIngredients.getDisplayedIngredientsInGroup(displayIngredients, displayed)
-			.map(ingredient -> ingredient.getIngredient(INGREDIENT_TYPE))
-			.flatMap(Optional::stream)
-			.toList();
-
-		// Assertions: the candidate browser does not mix in ingredients from another display group.
-		assertEquals(List.of("first a", "second a"), candidates);
-	}
-
-	@Test
-	void displayedIngredientCanBeTemporarilySelectedFromTheCurrentCandidates() {
-		ITypedIngredient<String> first = createIngredient("first");
-		ITypedIngredient<String> hovered = createIngredient("hovered");
-		SlotIngredient<String> hoveredSlotIngredient = new SlotIngredient<>(hovered);
-		List<SlotIngredient<?>> displayIngredients = List.of(
-			new SlotIngredient<>(first),
-			hoveredSlotIngredient
-		);
-
-		Optional<SlotIngredient<?>> selected = RecipeSlotIngredients.getDisplayedIngredient(displayIngredients, hovered);
-
-		assertSame(hoveredSlotIngredient, selected.orElseThrow());
 	}
 
 	@Test

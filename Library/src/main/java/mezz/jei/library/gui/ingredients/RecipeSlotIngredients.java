@@ -151,38 +151,12 @@ public final class RecipeSlotIngredients {
 		return cycler.getCycled(getDisplayIngredients());
 	}
 
-	public static Optional<SlotIngredient<?>> getDisplayedIngredient(
-		List<? extends @Nullable SlotIngredient<?>> displayIngredients,
-		ITypedIngredient<?> displayedIngredient
-	) {
-		return displayIngredients.stream()
-			.filter(Objects::nonNull)
-			.filter(ingredient -> ingredient.typedIngredient() == displayedIngredient)
-			.<SlotIngredient<?>>map(ingredient -> ingredient)
-			.findFirst();
-	}
-
 	public Optional<SlotIngredient<?>> getFirstDisplayedIngredient() {
 		List<@Nullable SlotIngredient<?>> displayIngredients = getDisplayIngredients();
 		if (displayIngredients.isEmpty()) {
 			return Optional.empty();
 		}
 		return Optional.ofNullable(displayIngredients.getFirst());
-	}
-
-	public Stream<ITypedIngredient<?>> getDisplayedIngredientsInGroup(SlotIngredient<?> displayed) {
-		return getDisplayedIngredientsInGroup(getDisplayIngredients(), displayed);
-	}
-
-	public static Stream<ITypedIngredient<?>> getDisplayedIngredientsInGroup(
-		List<? extends @Nullable SlotIngredient<?>> displayIngredients,
-		SlotIngredient<?> displayed
-	) {
-		SlotDisplayData<?> slotDisplayData = displayed.slotDisplayData();
-		return displayIngredients.stream()
-			.filter(Objects::nonNull)
-			.filter(ingredient -> ingredient.slotDisplayData() == slotDisplayData)
-			.map(SlotIngredient::typedIngredient);
 	}
 
 	public Stream<SlotIngredient<?>> getVisibleSlotIngredientsInDisplayGroup(SlotIngredient<?> displayed) {
