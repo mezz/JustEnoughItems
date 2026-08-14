@@ -8,8 +8,7 @@ import org.gradle.api.attributes.Usage
 import org.gradle.api.provider.Provider
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 
-private const val CHECKER_VERSION = "0.1.16"
-private const val ASM_VERSION = "9.10.1"
+private const val CHECKER_VERSION = "0.1.18"
 private const val BASELINE_REPOSITORY = "https://maven.blamejared.com"
 
 private val API_MODULES = listOf(
@@ -66,12 +65,6 @@ private fun Project.createCheckerClasspath(): Configuration {
 		attributes {
 			attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage::class.java, Usage.JAVA_RUNTIME))
 			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class.java, Bundling.EXTERNAL))
-		}
-		resolutionStrategy.eachDependency {
-			if (requested.group == "org.ow2.asm") {
-				useVersion(ASM_VERSION)
-					because("ASM 9.7 cannot read Java 25 class files.")
-			}
 		}
 	}
 
