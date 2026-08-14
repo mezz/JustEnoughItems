@@ -15,6 +15,8 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.IngredientGridTooltipComponent;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -37,7 +39,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 final class InteractiveIngredientTooltip implements IGuiInputLayer {
-	private static final int SCREEN_DIM_COLOR = 0x40000000;
 	private static final int NAVIGATION_BACKGROUND_PADDING = 2;
 	private static final InputConstants.Key LEFT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_LEFT);
 	private static final InputConstants.Key RIGHT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_RIGHT);
@@ -165,7 +166,13 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 
 		ImmutableRect2i navigationArea = getNavigationArea(positioner);
 		guiGraphics.nextStratum();
-		guiGraphics.fill(0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight(), SCREEN_DIM_COLOR);
+		guiGraphics.fill(
+			0,
+			0,
+			guiGraphics.guiWidth(),
+			guiGraphics.guiHeight(),
+			JeiGuiColors.getColor(GuiColor.INTERACTIVE_INGREDIENT_TOOLTIP_SCREEN_DIM)
+		);
 		guiGraphics.nextStratum();
 		if (!navigationArea.isEmpty()) {
 			this.navigationBackground.draw(
