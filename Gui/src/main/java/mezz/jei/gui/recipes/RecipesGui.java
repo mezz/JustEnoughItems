@@ -100,7 +100,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final IconButton previousRecipeCategory;
 	private final IconButton nextPage;
 	private final IconButton previousPage;
-	private final InteractiveIngredientTooltip interactiveIngredientTooltip;
+	private final InteractiveIngredientTooltipController interactiveIngredientTooltipController;
 
 	private @Nullable Screen parentScreen;
 	/**
@@ -153,7 +153,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			keyBindings.getPauseRecipeCycling()::isDown
 		);
 		this.layouts = new RecipeGuiLayouts(clickTargetFactory);
-		this.interactiveIngredientTooltip = new InteractiveIngredientTooltip(
+		this.interactiveIngredientTooltipController = new InteractiveIngredientTooltipController(
 			this,
 			focusUtil,
 			recipeManager,
@@ -252,7 +252,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		inputHandler = new UserInputRouter(
 			"RecipesGui",
-			this.interactiveIngredientTooltip,
+			this.interactiveIngredientTooltipController,
 			layouts.createInputHandler(),
 			new UserInputHandler(this),
 			optionButtons.createInputHandler(),
@@ -366,7 +366,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		recipeGuiTabs.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 
-		if (!interactiveIngredientTooltip.isVisible()) {
+		if (!interactiveIngredientTooltipController.isVisible()) {
 			this.layouts.drawTooltips(guiGraphics, mouseX, mouseY);
 
 			optionButtons.drawTooltips(guiGraphics, mouseX, mouseY);
@@ -378,7 +378,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			});
 		}
 
-		if (!interactiveIngredientTooltip.isVisible() && recipeCategoryTitle.isMouseOver(mouseX, mouseY)) {
+		if (!interactiveIngredientTooltipController.isVisible() && recipeCategoryTitle.isMouseOver(mouseX, mouseY)) {
 			JeiTooltip tooltip = new JeiTooltip();
 			recipeCategoryTitle.getTooltip(tooltip);
 			if (!logic.hasAllCategories()) {
@@ -456,8 +456,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isOpen()) {
-			if (interactiveIngredientTooltip.isVisible()) {
-				return interactiveIngredientTooltip.getIngredientUnderMouse(mouseX, mouseY);
+			if (interactiveIngredientTooltipController.isVisible()) {
+				return interactiveIngredientTooltipController.getIngredientUnderMouse(mouseX, mouseY);
 			}
 			return Stream.concat(
 				craftingStations.getIngredientUnderMouse(mouseX, mouseY),
@@ -480,16 +480,16 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	private void updateInteractiveIngredientTooltip(double mouseX, double mouseY) {
 		if (!keyBindings.getPauseRecipeCycling().isDown()) {
-			interactiveIngredientTooltip.hide();
+			interactiveIngredientTooltipController.hide();
 			return;
 		}
-		if (!interactiveIngredientTooltip.isVisible()) {
+		if (!interactiveIngredientTooltipController.isVisible()) {
 			openInteractiveIngredientTooltip(mouseX, mouseY);
 		}
 	}
 
 	public IGuiInputLayer getForegroundInputLayer() {
-		return this.interactiveIngredientTooltip;
+		return this.interactiveIngredientTooltipController;
 	}
 
 	@Override
@@ -627,7 +627,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		if (slotUnderMouse.isEmpty()) {
 			return false;
 		}
-		return interactiveIngredientTooltip.show(slotUnderMouse.get(), mouseX, mouseY);
+		return interactiveIngredientTooltipController.show(slotUnderMouse.get(), mouseX, mouseY);
 	}
 
 	private Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY) {
@@ -640,7 +640,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			return;
 		}
 
-		this.interactiveIngredientTooltip.hide();
+		this.interactiveIngredientTooltipController.hide();
 
 		ImmutableRect2i titleArea = MathUtil.union(previousRecipeCategory.getArea(), nextRecipeCategory.getArea())
 			.cropLeft(previousRecipeCategory.getWidth() + titleInnerPadding)

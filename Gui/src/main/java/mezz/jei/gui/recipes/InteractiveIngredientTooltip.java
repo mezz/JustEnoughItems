@@ -31,7 +31,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.ListIterator;
@@ -43,58 +42,70 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 	private static final InputConstants.Key LEFT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_LEFT);
 	private static final InputConstants.Key RIGHT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_RIGHT);
 
+	private final InteractiveIngredientTooltipController controller;
 	private final RecipesGui recipesGui;
 	private final FocusUtil focusUtil;
-	private final IRecipeManager recipeManager;
 	private final IIngredientManager ingredientManager;
 	private final RecipeSlotClickTargetFactory clickTargetFactory;
-	private final IScalableDrawable navigationBackground;
+	private final IScalableDrawable background;
+	private final RecipeSlotUnderMouse sourceSlot;
+	private final RecipeSlotTooltipPositioner positioner;
+	private final InteractiveIngredientGridTooltipComponent ingredientGrid;
+	private final int anchorX;
+	private final int anchorY;
 
-	private @Nullable RecipeSlotUnderMouse sourceSlot;
-	private @Nullable RecipeSlotTooltipPositioner positioner;
-	private @Nullable InteractiveIngredientGridTooltipComponent candidateComponent;
-	private int anchorX;
-	private int anchorY;
-
-	InteractiveIngredientTooltip(
+	static Optional<InteractiveIngredientTooltip> create(
+		InteractiveIngredientTooltipController controller,
 		RecipesGui recipesGui,
 		FocusUtil focusUtil,
 		IRecipeManager recipeManager,
 		IIngredientManager ingredientManager,
-		RecipeSlotClickTargetFactory clickTargetFactory
+		RecipeSlotClickTargetFactory clickTargetFactory,
+		RecipeSlotUnderMouse sourceSlot,
+		double mouseX,
+		double mouseY
 	) {
-		this.recipesGui = recipesGui;
-		this.focusUtil = focusUtil;
-		this.recipeManager = recipeManager;
-		this.ingredientManager = ingredientManager;
-		this.clickTargetFactory = clickTargetFactory;
-		this.navigationBackground = Internal.getTextures().getButtonPressedHighlight();
-	}
-
-	public boolean isVisible() {
-		return this.sourceSlot != null;
-	}
-
-	public void hide() {
-		this.sourceSlot = null;
-		this.positioner = null;
-		this.candidateComponent = null;
-	}
-
-	public boolean show(RecipeSlotUnderMouse slotUnderMouse, double mouseX, double mouseY) {
-		List<ITypedIngredient<?>> displayedIngredients = slotUnderMouse.slot()
+		List<ITypedIngredient<?>> displayedIngredients = sourceSlot.slot()
 			.getDisplayedIngredients()
 			.toList();
 		if (displayedIngredients.size() <= 1) {
-			return false;
+			return Optional.empty();
 		}
+		return Optional.of(new InteractiveIngredientTooltip(
+			controller,
+			recipesGui,
+			focusUtil,
+			ingredientManager,
+			clickTargetFactory,
+			sourceSlot,
+			new InteractiveIngredientGridTooltipComponent(recipeManager, displayedIngredients),
+			(int) mouseX,
+			(int) mouseY
+		));
+	}
 
-		this.sourceSlot = slotUnderMouse;
+	private InteractiveIngredientTooltip(
+		InteractiveIngredientTooltipController controller,
+		RecipesGui recipesGui,
+		FocusUtil focusUtil,
+		IIngredientManager ingredientManager,
+		RecipeSlotClickTargetFactory clickTargetFactory,
+		RecipeSlotUnderMouse sourceSlot,
+		InteractiveIngredientGridTooltipComponent ingredientGrid,
+		int anchorX,
+		int anchorY
+	) {
+		this.controller = controller;
+		this.recipesGui = recipesGui;
+		this.focusUtil = focusUtil;
+		this.ingredientManager = ingredientManager;
+		this.clickTargetFactory = clickTargetFactory;
+		this.background = Internal.getTextures().getRecipeBackground();
+		this.sourceSlot = sourceSlot;
 		this.positioner = new RecipeSlotTooltipPositioner();
-		this.candidateComponent = new InteractiveIngredientGridTooltipComponent(this.recipeManager, displayedIngredients);
-		this.anchorX = (int) mouseX;
-		this.anchorY = (int) mouseY;
-		return true;
+		this.ingredientGrid = ingredientGrid;
+		this.anchorX = anchorX;
+		this.anchorY = anchorY;
 	}
 
 	@Override
@@ -102,48 +113,37 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		if (!this.recipesGui.isOpen()) {
 			return false;
 		}
-		RecipeSlotTooltipPositioner positioner = this.positioner;
-		return positioner != null && getNavigationArea(positioner).contains(mouseX, mouseY);
+		return getNavigationArea().contains(mouseX, mouseY);
 	}
 
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
-		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
-		if (candidateComponent != null) {
-			Optional<IClickableIngredientInternal<?>> candidate = candidateComponent
-				.getIngredientUnderMouse(mouseX, mouseY)
-				.findFirst();
-			if (candidate.isPresent()) {
-				return candidate.stream();
-			}
+		Optional<IClickableIngredientInternal<?>> ingredient = this.ingredientGrid
+			.getIngredientUnderMouse(mouseX, mouseY)
+			.findFirst();
+		if (ingredient.isPresent()) {
+			return ingredient.stream();
 		}
-		RecipeSlotUnderMouse sourceSlot = this.sourceSlot;
-		if (sourceSlot != null && sourceSlot.isMouseOver(mouseX, mouseY)) {
-			return this.clickTargetFactory.create(sourceSlot)
+		if (this.sourceSlot.isMouseOver(mouseX, mouseY)) {
+			return this.clickTargetFactory.create(this.sourceSlot)
 				.stream();
 		}
 		return Stream.empty();
 	}
 
 	private boolean startScrollbarDrag(double mouseX, double mouseY) {
-		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
-		return candidateComponent != null && candidateComponent.startScrollbarDrag(mouseX, mouseY);
+		return this.ingredientGrid.startScrollbarDrag(mouseX, mouseY);
 	}
 
 	private boolean dragScrollbar(double mouseY) {
-		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
-		return candidateComponent != null && candidateComponent.mouseDragged(mouseY);
+		return this.ingredientGrid.mouseDragged(mouseY);
 	}
 
 	private boolean isDraggingScrollbar() {
-		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
-		return candidateComponent != null && candidateComponent.isDraggingScrollbar();
+		return this.ingredientGrid.isDraggingScrollbar();
 	}
 
 	private void stopScrollbarDrag() {
-		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
-		if (candidateComponent != null) {
-			candidateComponent.stopScrollbarDrag();
-		}
+		this.ingredientGrid.stopScrollbarDrag();
 	}
 
 	@SuppressWarnings("removal")
@@ -152,19 +152,12 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		if (!this.recipesGui.isOpen()) {
 			return;
 		}
-		RecipeSlotUnderMouse sourceSlot = this.sourceSlot;
-		RecipeSlotTooltipPositioner positioner = this.positioner;
-		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
-		if (sourceSlot == null || positioner == null || candidateComponent == null) {
-			return;
-		}
-
 		JeiTooltip tooltip = new JeiTooltip();
-		sourceSlot.slot().getTooltip(tooltip);
-		replaceIngredientGrid(tooltip, candidateComponent);
-		candidateComponent.setMousePosition(mouseX, mouseY);
+		this.sourceSlot.slot().getTooltip(tooltip);
+		replaceIngredientGrid(tooltip, this.ingredientGrid);
+		this.ingredientGrid.setMousePosition(mouseX, mouseY);
 
-		ImmutableRect2i navigationArea = getNavigationArea(positioner);
+		ImmutableRect2i navigationArea = getNavigationArea();
 		guiGraphics.nextStratum();
 		guiGraphics.fill(
 			0,
@@ -175,7 +168,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		);
 		guiGraphics.nextStratum();
 		if (!navigationArea.isEmpty()) {
-			this.navigationBackground.draw(
+			this.background.draw(
 				guiGraphics,
 				navigationArea.x(),
 				navigationArea.y(),
@@ -184,15 +177,15 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 			);
 		}
 		guiGraphics.nextStratum();
-		tooltip.draw(guiGraphics, this.anchorX, this.anchorY, positioner);
-		candidateComponent.getTypedIngredientUnderMouse(mouseX, mouseY)
+		tooltip.draw(guiGraphics, this.anchorX, this.anchorY, this.positioner);
+		this.ingredientGrid.getTypedIngredientUnderMouse(mouseX, mouseY)
 			.ifPresent(ingredient -> drawIngredientTooltip(guiGraphics, mouseX, mouseY, ingredient));
 
-		if (getNavigationArea(positioner).contains(mouseX, mouseY)) {
-			if (candidateComponent.isDraggingScrollbar()) {
+		if (getNavigationArea().contains(mouseX, mouseY)) {
+			if (this.ingredientGrid.isDraggingScrollbar()) {
 				guiGraphics.requestCursor(CursorTypes.RESIZE_NS);
-			} else if (candidateComponent.getTypedIngredientUnderMouse(mouseX, mouseY).isPresent() ||
-				candidateComponent.isMouseOverScrollbar(mouseX, mouseY)
+			} else if (this.ingredientGrid.getTypedIngredientUnderMouse(mouseX, mouseY).isPresent() ||
+				this.ingredientGrid.isMouseOverScrollbar(mouseX, mouseY)
 			) {
 				guiGraphics.requestCursor(CursorTypes.POINTING_HAND);
 			} else {
@@ -215,8 +208,8 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		tooltip.draw(guiGraphics, mouseX, mouseY, ingredient, ingredientRenderer, this.ingredientManager);
 	}
 
-	private static ImmutableRect2i getNavigationArea(RecipeSlotTooltipPositioner positioner) {
-		ImmutableRect2i tooltipArea = positioner.getTooltipArea();
+	private ImmutableRect2i getNavigationArea() {
+		ImmutableRect2i tooltipArea = this.positioner.getTooltipArea();
 		if (tooltipArea.isEmpty()) {
 			return ImmutableRect2i.EMPTY;
 		}
@@ -255,13 +248,13 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		UserInput input,
 		IInternalKeyMappings keyBindings
 	) {
-		if (!this.recipesGui.isOpen() || !isVisible()) {
+		if (!this.controller.isActive(this) || !this.recipesGui.isOpen()) {
 			return Optional.empty();
 		}
 
 		if (input.is(keyBindings.getCloseRecipeGui())) {
 			if (!input.isSimulate()) {
-				hide();
+				this.controller.hide(this);
 			}
 			return Optional.of(this);
 		}
@@ -309,13 +302,12 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		double scrollDeltaX,
 		double scrollDeltaY
 	) {
-		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
-		if (this.recipesGui.isOpen() && candidateComponent != null && candidateComponent.isMouseOver(mouseX, mouseY)) {
+		if (this.controller.isActive(this) && this.recipesGui.isOpen() && this.ingredientGrid.isMouseOver(mouseX, mouseY)) {
 			double scrollDelta = scrollDeltaY;
 			if (Math.abs(scrollDeltaX) > Math.abs(scrollDeltaY)) {
 				scrollDelta = scrollDeltaX;
 			}
-			candidateComponent.mouseScrolled(scrollDelta);
+			this.ingredientGrid.mouseScrolled(scrollDelta);
 			return Optional.of(this);
 		}
 		return Optional.empty();
@@ -329,7 +321,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		double dragX,
 		double dragY
 	) {
-		if (this.recipesGui.isOpen() && mouseKey.equals(LEFT_MOUSE_BUTTON) && dragScrollbar(mouseY)) {
+		if (this.controller.isActive(this) && this.recipesGui.isOpen() && mouseKey.equals(LEFT_MOUSE_BUTTON) && dragScrollbar(mouseY)) {
 			return Optional.of(this);
 		}
 		return Optional.empty();
