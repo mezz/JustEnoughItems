@@ -18,8 +18,10 @@ import mezz.jei.forge.network.NetworkHandler;
 import mezz.jei.forge.startup.ForgePluginFinder;
 import mezz.jei.forge.startup.StartEventObserver;
 import mezz.jei.gui.config.InternalKeyMappings;
+import mezz.jei.common.gui.RecipeSlotOptionsTooltipComponent;
 import mezz.jei.common.gui.IngredientsTooltipComponent;
 import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
+import mezz.jei.gui.recipes.InteractiveIngredientGridTooltipComponent;
 import mezz.jei.library.gui.ingredients.TagContentTooltipComponent;
 import mezz.jei.library.plugins.vanilla.cooking.JeiSmeltingRecipe;
 import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipe;
@@ -134,7 +136,9 @@ public class JustEnoughItemsClient {
 		event.register(IngredientTooltipComponent.class, Function.identity());
 		event.register(IngredientsTooltipComponent.class, Function.identity());
 		event.register(PreviewTooltipComponent.class, Function.identity());
+		event.register(RecipeSlotOptionsTooltipComponent.class, Function.identity());
 		event.register(TagContentTooltipComponent.class, Function.identity());
+		event.register(InteractiveIngredientGridTooltipComponent.class, Function.identity());
 	}
 
 	private static InternalKeyMappings createKeyMappings(PermanentEventSubscriptions subscriptions) {

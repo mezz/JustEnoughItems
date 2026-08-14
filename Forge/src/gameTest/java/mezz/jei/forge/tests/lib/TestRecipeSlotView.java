@@ -4,8 +4,9 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.library.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.TypedIngredient;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -66,6 +67,16 @@ public record TestRecipeSlotView(RecipeIngredientRole role, List<@Nullable IType
 	@Override
 	public Optional<ITypedIngredient<?>> getDisplayedIngredient() {
 		return getAllIngredients().findFirst();
+	}
+
+	@Override
+	public Stream<ITypedIngredient<?>> getDisplayedIngredients() {
+		return getAllIngredients();
+	}
+
+	@Override
+	public Optional<TagKey<?>> getTagKey() {
+		return Optional.empty();
 	}
 
 	@Override

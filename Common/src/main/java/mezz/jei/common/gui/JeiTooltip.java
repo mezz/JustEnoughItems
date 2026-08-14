@@ -40,6 +40,9 @@ public class JeiTooltip implements ITooltipBuilder {
 	private final List<Either<FormattedText, TooltipComponent>> elements = new ArrayList<>();
 	private @Nullable ITypedIngredient<?> typedIngredient;
 
+	public record TooltipRenderData(Font font, ItemStack itemStack) {
+	}
+
 	@Override
 	public void add(@Nullable Component formattedText) {
 		if (formattedText == null) {
@@ -211,11 +214,35 @@ public class JeiTooltip implements ITooltipBuilder {
 		IIngredientRenderer<T> ingredientRenderer,
 		IIngredientManager ingredientManager
 	) {
+		TooltipRenderData renderData = prepareForIngredientTooltip(typedIngredient, ingredientRenderer, ingredientManager);
+		if (isEmpty()) {
+			return;
+		}
+
 		Minecraft minecraft = Minecraft.getInstance();
 		Screen screen = minecraft.screen;
 		if (screen == null) {
 			return;
 		}
+		SafeIngredientUtil.renderTooltip(
+			screen,
+			poseStack,
+			this,
+			x,
+			y,
+			renderData.font(),
+			renderData.itemStack(),
+			typedIngredient,
+			ingredientManager
+		);
+	}
+
+	public <T> TooltipRenderData prepareForIngredientTooltip(
+		ITypedIngredient<T> typedIngredient,
+		IIngredientRenderer<T> ingredientRenderer,
+		IIngredientManager ingredientManager
+	) {
+		Minecraft minecraft = Minecraft.getInstance();
 		T ingredient = typedIngredient.getIngredient();
 		Font font = ingredientRenderer.getFontRenderer(minecraft, ingredient);
 		ItemStack itemStack = typedIngredient.getItemStack().orElse(ItemStack.EMPTY);
@@ -229,22 +256,7 @@ public class JeiTooltip implements ITooltipBuilder {
 		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
 		modIdHelper.getModNameForTooltip(typedIngredient)
 			.ifPresent(this::add);
-
-		if (isEmpty()) {
-			return;
-		}
-
-		SafeIngredientUtil.renderTooltip(
-			screen,
-			poseStack,
-			this,
-			x,
-			y,
-			font,
-			itemStack,
-			typedIngredient,
-			ingredientManager
-		);
+		return new TooltipRenderData(font, itemStack);
 	}
 
 	private <T> void addDebugInfo(IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
