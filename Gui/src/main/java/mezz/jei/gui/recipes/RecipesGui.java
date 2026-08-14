@@ -152,7 +152,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.optionButtons = new RecipeOptionButtons(this.logic::goToFirstPage);
 		this.focusFactory = focusFactory;
 		this.layouts = new RecipeGuiLayouts(recipeManager, keyBindings.getPauseRecipeCycling()::isDown);
-		this.interactiveIngredientTooltip = new InteractiveIngredientTooltip(recipeManager, keyBindings.getPauseRecipeCycling()::isDown);
+		this.interactiveIngredientTooltip = new InteractiveIngredientTooltip(
+			recipeManager,
+			ingredientManager,
+			keyBindings.getPauseRecipeCycling()::isDown
+		);
 
 		Textures textures = Internal.getTextures();
 		IDrawableStatic arrowNext = textures.getArrowNext();
@@ -480,7 +484,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		if (!interactiveIngredientTooltip.isVisible()) {
 			openInteractiveIngredientTooltip(mouseX, mouseY);
 		}
-		interactiveIngredientTooltip.update(mouseX, mouseY);
 	}
 
 	public IGuiInputLayer getInteractiveIngredientTooltipInputLayer() {
@@ -895,7 +898,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		@Override
 		public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
 			if (recipesGui.isOpen() && recipesGui.interactiveIngredientTooltip.isMouseOverGrid(mouseX, mouseY)) {
-				recipesGui.interactiveIngredientTooltip.mouseScrolled(scrollDeltaY);
+				double scrollDelta = scrollDeltaY;
+				if (Math.abs(scrollDeltaX) > Math.abs(scrollDeltaY)) {
+					scrollDelta = scrollDeltaX;
+				}
+				recipesGui.interactiveIngredientTooltip.mouseScrolled(scrollDelta);
 				return Optional.of(this);
 			}
 

@@ -5,13 +5,17 @@ import com.mojang.datafixers.util.Either;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.IIngredientGridTooltipComponent;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.RecipeSlotCandidatesTooltipComponent;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.input.ClickableIngredientInternal;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.overlay.elements.IElement;
@@ -32,6 +36,7 @@ public class InteractiveIngredientTooltip {
 	private static final int NAVIGATION_BACKGROUND_PADDING = 2;
 
 	private final IRecipeManager recipeManager;
+	private final IIngredientManager ingredientManager;
 	private final BooleanSupplier isRecipeCyclingPaused;
 	private final IScalableDrawable navigationBackground;
 
@@ -39,12 +44,16 @@ public class InteractiveIngredientTooltip {
 	private @Nullable RecipeSlotUnderMouse sourceSlot;
 	private @Nullable RecipeSlotTooltipPositioner positioner;
 	private @Nullable InteractiveIngredientGridTooltipComponent candidateComponent;
-	private boolean sourceIngredientForced;
 	private int anchorX;
 	private int anchorY;
 
-	public InteractiveIngredientTooltip(IRecipeManager recipeManager, BooleanSupplier isRecipeCyclingPaused) {
+	public InteractiveIngredientTooltip(
+		IRecipeManager recipeManager,
+		IIngredientManager ingredientManager,
+		BooleanSupplier isRecipeCyclingPaused
+	) {
 		this.recipeManager = recipeManager;
+		this.ingredientManager = ingredientManager;
 		this.isRecipeCyclingPaused = isRecipeCyclingPaused;
 		this.navigationBackground = Internal.getTextures().getButtonPressedHighlight();
 	}
@@ -54,7 +63,6 @@ public class InteractiveIngredientTooltip {
 	}
 
 	public void hide() {
-		clearSourceIngredientOverride();
 		this.visible = false;
 		this.sourceSlot = null;
 		this.positioner = null;
@@ -76,37 +84,6 @@ public class InteractiveIngredientTooltip {
 		this.anchorY = (int) mouseY;
 		this.visible = true;
 		return true;
-	}
-
-	public void update(double mouseX, double mouseY) {
-		if (!this.visible) {
-			return;
-		}
-		updateSourceIngredient(mouseX, mouseY);
-	}
-
-	private void updateSourceIngredient(double mouseX, double mouseY) {
-		InteractiveIngredientGridTooltipComponent candidateComponent = this.candidateComponent;
-		RecipeSlotUnderMouse sourceSlot = this.sourceSlot;
-		if (candidateComponent == null || sourceSlot == null) {
-			return;
-		}
-		ITypedIngredient<?> ingredient = candidateComponent
-			.getTypedIngredientUnderMouse(mouseX, mouseY)
-			.orElse(null);
-		if (ingredient == null) {
-			clearSourceIngredientOverride();
-		} else {
-			sourceSlot.slot().setDisplayedIngredientOverride(ingredient);
-			this.sourceIngredientForced = true;
-		}
-	}
-
-	private void clearSourceIngredientOverride() {
-		if (this.sourceIngredientForced && this.sourceSlot != null) {
-			this.sourceSlot.slot().setDisplayedIngredientOverride(null);
-		}
-		this.sourceIngredientForced = false;
 	}
 
 	public boolean isMouseOverTooltip(double mouseX, double mouseY) {
@@ -228,6 +205,8 @@ public class InteractiveIngredientTooltip {
 		}
 		guiGraphics.nextStratum();
 		tooltip.draw(guiGraphics, this.anchorX, this.anchorY, positioner);
+		candidateComponent.getTypedIngredientUnderMouse(mouseX, mouseY)
+			.ifPresent(ingredient -> drawIngredientTooltip(guiGraphics, mouseX, mouseY, ingredient));
 
 		if (getNavigationArea(positioner).contains(mouseX, mouseY)) {
 			if (candidateComponent.isDraggingScrollbar()) {
@@ -240,6 +219,20 @@ public class InteractiveIngredientTooltip {
 				guiGraphics.requestCursor(CursorTypes.ARROW);
 			}
 		}
+	}
+
+	private <T> void drawIngredientTooltip(
+		GuiGraphicsExtractor guiGraphics,
+		int mouseX,
+		int mouseY,
+		ITypedIngredient<T> ingredient
+	) {
+		IIngredientType<T> ingredientType = ingredient.getType();
+		IIngredientRenderer<T> ingredientRenderer = this.ingredientManager.getIngredientRenderer(ingredientType);
+		JeiTooltip tooltip = new JeiTooltip();
+		SafeIngredientUtil.getRichTooltip(tooltip, this.ingredientManager, ingredientRenderer, ingredient);
+		guiGraphics.nextStratum();
+		tooltip.draw(guiGraphics, mouseX, mouseY, ingredient, ingredientRenderer, this.ingredientManager);
 	}
 
 	private static ImmutableRect2i getNavigationArea(RecipeSlotTooltipPositioner positioner) {
