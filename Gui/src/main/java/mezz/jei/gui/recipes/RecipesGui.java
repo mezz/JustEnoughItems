@@ -620,6 +620,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		logic.back();
 	}
 
+	public void forward() {
+		logic.forward();
+	}
+
 	private boolean openInteractiveIngredientTooltip(double mouseX, double mouseY) {
 		Optional<RecipeSlotUnderMouse> slotUnderMouse = getSlotUnderMouse(mouseX, mouseY);
 		if (slotUnderMouse.isEmpty()) {
@@ -761,6 +765,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			} else if (input.is(keyBindings.getRecipeBack())) {
 				if (!input.isSimulate()) {
 					recipesGui.back();
+				}
+				return Optional.of(this);
+			} else if (input.is(keyBindings.getRecipeForward())) {
+				if (!input.isSimulate()) {
+					recipesGui.forward();
 				}
 				return Optional.of(this);
 			} else if (input.is(keyBindings.getNextCategory())) {
