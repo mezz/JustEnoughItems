@@ -84,7 +84,7 @@ public final class ClientConfig implements IClientConfig {
 		giveMode = cheating.addEnum("giveMode", GiveMode.defaultGiveMode);
 		cheatToHotbarUsingHotkeysEnabled = cheating.addBoolean("cheatToHotbarUsingHotkeysEnabled", false);
 		showHiddenIngredients = cheating.addBoolean("showHiddenIngredients", false);
-		showTagRecipesEnabled = cheating.addBoolean("showTagRecipesEnabled", isDev);
+		showTagRecipesEnabled = cheating.addBoolean("showTagRecipesEnabled", true);
 
 		IConfigCategoryBuilder bookmarks = schema.addCategory("bookmarks");
 		addBookmarksToFrontEnabled = bookmarks.addBoolean("addBookmarksToFrontEnabled", false);
