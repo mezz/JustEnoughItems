@@ -7,7 +7,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.gui.IngredientTooltipComponent;
 import mezz.jei.common.gui.IngredientsTooltipComponent;
-import mezz.jei.gui.config.InternalKeyMappings;
+import mezz.jei.common.gui.RecipeSlotOptionsTooltipComponent;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.ClientPacketRouter;
@@ -20,7 +20,9 @@ import mezz.jei.forge.network.ConnectionToServer;
 import mezz.jei.forge.network.NetworkHandler;
 import mezz.jei.forge.startup.ForgePluginFinder;
 import mezz.jei.forge.startup.StartEventObserver;
+import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
+import mezz.jei.gui.recipes.InteractiveIngredientGridTooltipComponent;
 import mezz.jei.library.gui.ingredients.TagContentTooltipComponent;
 import mezz.jei.library.plugins.vanilla.cooking.JeiSmeltingRecipe;
 import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipe;
@@ -163,7 +165,9 @@ public class JustEnoughItemsClient {
 		MinecraftForgeClient.registerTooltipComponentFactory(IngredientTooltipComponent.class, Function.identity());
 		MinecraftForgeClient.registerTooltipComponentFactory(IngredientsTooltipComponent.class, Function.identity());
 		MinecraftForgeClient.registerTooltipComponentFactory(PreviewTooltipComponent.class, Function.identity());
+		MinecraftForgeClient.registerTooltipComponentFactory(RecipeSlotOptionsTooltipComponent.class, Function.identity());
 		MinecraftForgeClient.registerTooltipComponentFactory(TagContentTooltipComponent.class, Function.identity());
+		MinecraftForgeClient.registerTooltipComponentFactory(InteractiveIngredientGridTooltipComponent.class, Function.identity());
 	}
 
 	private static InternalKeyMappings createKeyMappings(PermanentEventSubscriptions subscriptions) {

@@ -9,8 +9,7 @@
   "jei.tooltip.liquid.flowing": "%s (流动中)",
   "jei.tooltip.transfer": "转移物品",
   "jei.tooltip.recipe.tag": "接受标签：%s",
-  "jei.tooltip.recipe.slot.candidates.display": "按下 %s 查看全部候选。",
-  "jei.tooltip.recipe.slot.candidates.title": "全部候选（%s）",
+  "jei.tooltip.recipe.slot.options": "按住 %s 固定此工具提示，然后点击一种原料查看配方。",
   "jei.tooltip.item.colors": "颜色：%s",
   "jei.tooltip.item.search.aliases": "搜索别名：",
   "jei.tooltip.shapeless.recipe": "无序配方",
@@ -73,7 +72,6 @@
   "key.jei.previousRecipePage": "上一配方页",
   "key.jei.nextRecipePage": "下一配方页",
   "key.jei.pauseRecipeCycling": "暂停配方原料循环",
-  "key.jei.showRecipeSlotCandidates": "显示槽位全部候选",
   "key.jei.closeRecipeGui": "关闭配方界面",
 
   "jei.key.category.cheat.mode": "JEI（作弊模式）",
