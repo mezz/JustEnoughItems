@@ -67,9 +67,7 @@ public interface IRecipeSlotView {
 	 *
 	 * @since 30.22.0
 	 */
-	default Stream<ITypedIngredient<?>> getDisplayedIngredients() {
-		return getAllIngredients();
-	}
+	Stream<ITypedIngredient<?>> getDisplayedIngredients();
 
 	/**
 	 * The tag represented by every ingredient in this slot, if there is one.
@@ -77,9 +75,7 @@ public interface IRecipeSlotView {
 	 *
 	 * @since 30.22.0
 	 */
-	default Optional<TagKey<?>> getTagKey() {
-		return Optional.empty();
-	}
+	Optional<TagKey<?>> getTagKey();
 
 	/**
 	 * Returns the type of focus that matches this ingredient.
