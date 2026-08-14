@@ -100,7 +100,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		this.focusUtil = focusUtil;
 		this.ingredientManager = ingredientManager;
 		this.clickTargetFactory = clickTargetFactory;
-		this.background = Internal.getTextures().getRecipeBackground();
+		this.background = Internal.getTextures().getInteractiveIngredientTooltipBackground();
 		this.sourceSlot = sourceSlot;
 		this.positioner = new RecipeSlotTooltipPositioner();
 		this.ingredientGrid = ingredientGrid;
