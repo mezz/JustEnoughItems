@@ -136,9 +136,6 @@ public class InteractiveIngredientTooltip {
 				sourceSlot.slot(),
 				this.isRecipeCyclingPaused.getAsBoolean()
 			);
-			if (action == RecipeSlotNavigation.Action.CANDIDATE_GROUP) {
-				return Stream.empty();
-			}
 			return sourceSlot.slot()
 				.getDisplayedIngredient()
 				.<IClickableIngredientInternal<?>>map(ingredient -> createSourceIngredient(ingredient, sourceSlot, action))

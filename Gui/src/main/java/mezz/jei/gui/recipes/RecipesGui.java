@@ -848,18 +848,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			double mouseX = input.getMouseX();
 			double mouseY = input.getMouseY();
 			if (!recipesGui.interactiveIngredientTooltip.isVisible()) {
-				Optional<RecipeSlotUnderMouse> groupUnderMouse = recipesGui.getSlotUnderMouse(mouseX, mouseY)
-					.filter(slot -> RecipeSlotNavigation.getAction(
-						slot.slot(),
-						keyBindings.getPauseRecipeCycling().isDown()
-					) == RecipeSlotNavigation.Action.CANDIDATE_GROUP);
-				if (input.is(keyBindings.getLeftClick()) && groupUnderMouse.isPresent()) {
-					RecipeSlotUnderMouse clickedSlot = groupUnderMouse.get();
-					return Optional.of(new SameElementInputHandler(
-						this,
-						clickedSlot::isMouseOver
-					));
-				}
 				return Optional.empty();
 			}
 

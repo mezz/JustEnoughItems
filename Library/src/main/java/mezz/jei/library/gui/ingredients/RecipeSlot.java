@@ -117,21 +117,25 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	public Stream<ITypedIngredient<?>> getDisplayedIngredients() {
 		return getDisplayedSlotIngredient()
 			.stream()
-			.flatMap(ingredients::getDisplayedIngredientsInGroup);
+			.flatMap(ingredients::getVisibleTypedIngredientsInDisplayGroup);
 	}
 
 	private Optional<SlotIngredient<?>> getDisplayedSlotIngredient() {
-		if (this.displayedIngredientOverride != null) {
-			Optional<SlotIngredient<?>> displayedIngredient = ingredients.getDisplayedIngredient(this.displayedIngredientOverride);
-			if (displayedIngredient.isPresent()) {
-				return displayedIngredient;
-			}
-		}
+		Optional<SlotIngredient<?>> displayedIngredient;
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
 		if (!clientConfig.isRecipeSlotCyclingEnabled()) {
-			return ingredients.getFirstDisplayedIngredient();
+			displayedIngredient = ingredients.getFirstDisplayedIngredient();
+		} else {
+			displayedIngredient = ingredients.getDisplayedIngredient(cycler);
 		}
-		return ingredients.getDisplayedIngredient(cycler);
+		if (this.displayedIngredientOverride == null) {
+			return displayedIngredient;
+		}
+		return displayedIngredient.stream()
+			.flatMap(ingredients::getVisibleSlotIngredientsInDisplayGroup)
+			.filter(ingredient -> ingredient.typedIngredient() == this.displayedIngredientOverride)
+			.findFirst()
+			.or(() -> displayedIngredient);
 	}
 
 	@Override
@@ -321,7 +325,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	}
 
 	private boolean hasCandidates(SlotIngredient<?> displayed) {
-		return ingredients.getDisplayedIngredientsInGroup(displayed)
+		return ingredients.getVisibleTypedIngredientsInDisplayGroup(displayed)
 			.limit(2)
 			.count() > 1;
 	}

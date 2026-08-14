@@ -62,8 +62,8 @@ public interface IRecipeSlotView {
 	Optional<ITypedIngredient<?>> getDisplayedIngredient();
 
 	/**
-	 * All ingredient candidates in the group that contains the currently displayed ingredient,
-	 * after applying focus and visibility.
+	 * All visible ingredient candidates in the group that contains the currently displayed ingredient.
+	 * This includes the complete group, even when the slot's normal rotation is limited for performance.
 	 *
 	 * @since 30.22.0
 	 */
