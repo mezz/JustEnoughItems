@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.renderer.block.BlockStateModelSet;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
@@ -99,14 +100,32 @@ public class RenderHelper implements IPlatformRenderHelper {
 
 	@Override
 	public void renderTooltip(GuiGraphicsExtractor guiGraphics, List<Either<FormattedText, TooltipComponent>> elements, int x, int y, Font font, ItemStack stack) {
+		List<ClientTooltipComponent> components = createClientTooltipComponents(elements, font);
+		guiGraphics.setTooltipForNextFrameInternal(font, components, x, y, DefaultTooltipPositioner.INSTANCE, stack.get(DataComponents.TOOLTIP_STYLE), true);
+	}
+
+	@Override
+	public void renderTooltip(
+		GuiGraphicsExtractor guiGraphics,
+		List<Either<FormattedText, TooltipComponent>> elements,
+		int x,
+		int y,
+		Font font,
+		ItemStack stack,
+		ClientTooltipPositioner positioner
+	) {
+		List<ClientTooltipComponent> components = createClientTooltipComponents(elements, font);
+		guiGraphics.tooltip(font, components, x, y, positioner, stack.get(DataComponents.TOOLTIP_STYLE));
+	}
+
+	private List<ClientTooltipComponent> createClientTooltipComponents(List<Either<FormattedText, TooltipComponent>> elements, Font font) {
 		List<ClientTooltipComponent> components = elements.stream()
 			.flatMap(e -> e.map(
 				text -> font.split(text, 400).stream().map(ClientTooltipComponent::create),
 				tooltipComponent -> Stream.of(createClientTooltipComponent(tooltipComponent))
 			))
 			.collect(Collectors.toCollection(ArrayList::new));
-
-		guiGraphics.setTooltipForNextFrameInternal(font, components, x, y, DefaultTooltipPositioner.INSTANCE, stack.get(DataComponents.TOOLTIP_STYLE), true);
+		return components;
 	}
 
 	@Override

@@ -23,6 +23,7 @@ public class Textures {
 	private final ScalableDrawable bookmarkListBackground;
 	private final ScalableDrawable exclusionAreaShadow;
 	private final ScalableDrawable recipeBackground;
+	private final ScalableDrawable interactiveIngredientTooltipBackground;
 	private final ScalableDrawable recipePreviewBackground;
 	private final ScalableDrawable searchBackground;
 	private final ScalableDrawable scrollbarBackground;
@@ -75,6 +76,7 @@ public class Textures {
 		this.bookmarkListBackground = createScalableGuiSprite("bookmark_list_background");
 		this.exclusionAreaShadow = createScalableGuiSprite("exclusion_area_shadow");
 		this.recipeBackground = createScalableGuiSprite("single_recipe_background");
+		this.interactiveIngredientTooltipBackground = createScalableGuiSprite("interactive_ingredient_tooltip_background");
 		this.recipePreviewBackground = createScalableGuiSprite("recipe_preview_background");
 		this.searchBackground = createScalableGuiSprite("search_background");
 		this.scrollbarBackground = createScalableGuiSprite("scrollbar_background");
@@ -223,6 +225,10 @@ public class Textures {
 
 	public ScalableDrawable getRecipeBackground() {
 		return recipeBackground;
+	}
+
+	public ScalableDrawable getInteractiveIngredientTooltipBackground() {
+		return interactiveIngredientTooltipBackground;
 	}
 
 	public ScalableDrawable getRecipePreviewBackground() {

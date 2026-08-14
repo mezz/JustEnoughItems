@@ -62,6 +62,27 @@ public class RecipeSlotIngredientGroupingTest {
 	}
 
 	@Test
+	void multipleDisplayGroupsAreNotTreatedAsOneTag() {
+		ITypedIngredient<String> firstA = createIngredient("first a");
+		ITypedIngredient<String> firstB = createIngredient("first b");
+		SlotDisplayData<String> groupA = new SlotDisplayData<>(List.of(firstA), SlotDisplayInfo.EMPTY);
+		SlotDisplayData<String> groupB = new SlotDisplayData<>(List.of(firstB), SlotDisplayInfo.EMPTY);
+		List<SlotIngredient<?>> slotIngredients = List.of(
+			new SlotIngredient<>(firstA, groupA),
+			new SlotIngredient<>(firstB, groupB)
+		);
+
+		Optional<?> tagKey = RecipeSlotIngredients.getSingleDisplayGroupTagKey(
+			slotIngredients,
+			() -> {
+				throw new AssertionError("multiple groups must not use a whole-slot tag fallback");
+			}
+		);
+
+		assertEquals(Optional.empty(), tagKey);
+	}
+
+	@Test
 	void displayFilteringAppliesVisibilityAndLimitTogether() {
 		// Setup: a recipe slot has more visible ingredients than JEI's display limit.
 		List<SlotIngredient<?>> ingredients = IntStream.range(0, 110)
