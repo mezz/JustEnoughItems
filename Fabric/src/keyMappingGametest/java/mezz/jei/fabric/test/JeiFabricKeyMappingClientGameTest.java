@@ -100,7 +100,6 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 
 	private static void assertFocusSearchHotkeyDoesNotTypeItsCharacter(ClientGameTestContext context) {
 		try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
-			singleplayer.getClientLevel().waitForChunksRender();
 			context.waitFor(
 				client -> Internal.getOptionalJeiRuntime().isPresent(),
 				ClientGameTestContext.DEFAULT_TIMEOUT
@@ -279,7 +278,6 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 
 	private static void assertJeiMouseMappingsDoNotHideVanillaMouseClicks(ClientGameTestContext context) {
 		try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
-			singleplayer.getClientLevel().waitForChunksRender();
 			context.runOnClient(client -> client.gui.setScreen(null));
 			context.waitFor(
 				client -> client.level != null &&

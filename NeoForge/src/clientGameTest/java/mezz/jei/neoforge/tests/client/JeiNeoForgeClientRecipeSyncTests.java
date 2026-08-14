@@ -250,7 +250,10 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 		SINGLEPLAYER("singleplayer", "NeoForge singleplayer") {
 			@Override
 			public void run() {
-				runSingleplayerTestCase(displayName(), JeiNeoForgeClientRecipeSyncTests::assertSyncedRecipesFromSingleplayer);
+				runSingleplayerTestCase(displayName(), () -> {
+					assertSyncedRecipesFromSingleplayer();
+					JeiNeoForgeClientTextInputTests.run();
+				});
 			}
 		},
 		NEOFORGE_SERVER_WITH_JEI("neoforgeServerWithJei", "NeoForge server with JEI") {
