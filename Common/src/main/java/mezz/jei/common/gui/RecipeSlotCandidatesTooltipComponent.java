@@ -9,11 +9,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.BooleanSupplier;
 
-@ApiStatus.Internal
 public final class RecipeSlotCandidatesTooltipComponent implements ClientTooltipComponent, TooltipComponent {
 	private final FormattedCharSequence text;
 	private final BooleanSupplier hidden;

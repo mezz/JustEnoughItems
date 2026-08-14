@@ -10,11 +10,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
-@ApiStatus.Internal
 public abstract class IngredientGridTooltipComponent<T> implements ClientTooltipComponent, TooltipComponent, IIngredientGridTooltipComponent {
 	private static final int CELL_SIZE = 18;
 	private static final int GRID_PADDING = 1;
