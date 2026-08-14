@@ -12,6 +12,7 @@ import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.search.PrefixInfo;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
@@ -20,6 +21,7 @@ import mezz.jei.gui.search.ElementPrefixParser;
 import mezz.jei.gui.search.ElementSearch;
 import mezz.jei.gui.search.ElementSearchLowMem;
 import mezz.jei.gui.search.IElementSearch;
+import mezz.jei.gui.search.ISearchCompletionProvider;
 import mezz.jei.gui.search.SearchTokenizer;
 import mezz.jei.gui.search.Token;
 import org.apache.logging.log4j.LogManager;
@@ -27,7 +29,6 @@ import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,9 +43,9 @@ public class IngredientFilter
 		IIngredientGridSource,
 		IIngredientManager.IIngredientListener,
 		IIngredientVisibility.IListener,
-		IClientToggleState.IEditModeListener {
+		IClientToggleState.IEditModeListener,
+		ISearchCompletionProvider {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final SearchTokenizer searchTokenizer = new SearchTokenizer();
 
 	private final IClientConfig clientConfig;
 	private final IFilterTextSource filterTextSource;
@@ -59,6 +60,9 @@ public class IngredientFilter
 	@Nullable
 	private List<IElement<?>> ingredientListCached;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
+
+	@Nullable
+	private List<IListElementInfo<?>> elementInfoCache;
 
 	public IngredientFilter(
 		IFilterTextSource filterTextSource,
@@ -116,6 +120,7 @@ public class IngredientFilter
 		this.elementSearch.add(info, ingredientManager);
 
 		invalidateCache();
+		invalidateCandidateCache();
 	}
 
 	public void invalidateCache() {
@@ -124,6 +129,7 @@ public class IngredientFilter
 
 	public void rebuildItemFilter() {
 		this.invalidateCache();
+		invalidateCandidateCache();
 		Collection<IListElement<?>> ingredients = this.elementSearch.getAllIngredients();
 		List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, modIdHelper);
 		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser, elementInfos, ingredientManager);
@@ -207,8 +213,8 @@ public class IngredientFilter
 	}
 
 	private Stream<ITypedIngredient<?>> getIngredientListUncached(String filterText) {
-		String[] filters = filterText.split("\\|");
-		List<SearchTokens> searchTokens = Arrays.stream(filters)
+		List<Token> tokens = SearchTokenizer.tokenize(filterText);
+		List<SearchTokens> searchTokens = SearchTokenizer.splitByOperators(tokens).stream()
 			.map(this::parseSearchTokens)
 			.filter(s -> !s.isEmpty())
 			.toList();
@@ -250,6 +256,7 @@ public class IngredientFilter
 			}
 		}
 		invalidateCache();
+		invalidateCandidateCache();
 	}
 
 	@Override
@@ -263,14 +270,9 @@ public class IngredientFilter
 		}
 	}
 
-	private SearchTokens parseSearchTokens(String filterText) {
+	private SearchTokens parseSearchTokens(List<Token> tokens) {
 		SearchTokens searchTokens = new SearchTokens(new ArrayList<>(), new ArrayList<>());
 
-		if (filterText.isEmpty()) {
-			return searchTokens;
-		}
-
-		List<Token> tokens = searchTokenizer.tokenize(filterText);
 		for (Token token : tokens) {
 			if (token.isEmpty()) {
 				continue;
@@ -342,4 +344,25 @@ public class IngredientFilter
 			listener.onSourceListChanged();
 		}
 	}
+
+	@Override
+	public Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> getAllPrefixInfos() {
+		return elementPrefixParser.allPrefixInfos();
+	}
+
+	@Override
+	public Collection<IListElementInfo<?>> getAllElementInfos() {
+		if (elementInfoCache != null) {
+			return elementInfoCache;
+		}
+		Collection<IListElement<?>> elements = this.elementSearch.getAllIngredients();
+		List<IListElementInfo<?>> infos = IngredientListElementFactory.rebuildList(ingredientManager, elements, modIdHelper);
+		elementInfoCache = infos;
+		return infos;
+	}
+
+	private void invalidateCandidateCache() {
+		elementInfoCache = null;
+	}
+
 }

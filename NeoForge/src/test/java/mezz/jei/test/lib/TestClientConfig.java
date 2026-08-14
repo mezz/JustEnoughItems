@@ -164,6 +164,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isSearchCompletionEnabled() {
+		return true;
+	}
+
+	@Override
 	public List<IngredientSortStage> getIngredientSorterStages() {
 		return List.of();
 	}

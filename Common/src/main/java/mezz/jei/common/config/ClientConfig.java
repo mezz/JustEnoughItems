@@ -56,6 +56,7 @@ public final class ClientConfig implements IClientConfig {
 	// input
 	private final Supplier<Integer> dragDelayMs;
 	private final Supplier<Integer> smoothScrollRate;
+	private final Supplier<Boolean> searchCompletionEnabled;
 
 	// sorting
 	private final Supplier<List<IngredientSortStage>> ingredientSorterStages;
@@ -149,6 +150,7 @@ public final class ClientConfig implements IClientConfig {
 			1,
 			50
 		);
+		searchCompletionEnabled = input.addBoolean("searchCompletionEnabled", true);
 
 		IConfigCategoryBuilder sorting = schema.addCategory("sorting");
 		ingredientSorterStages = sorting.addList(
@@ -345,5 +347,10 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isToastReflowEnabled() {
 		return toastReflowEnabled.get();
+	}
+
+	@Override
+	public boolean isSearchCompletionEnabled() {
+		return searchCompletionEnabled.get();
 	}
 }

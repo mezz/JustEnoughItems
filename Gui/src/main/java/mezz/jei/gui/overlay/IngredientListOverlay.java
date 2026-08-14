@@ -26,6 +26,7 @@ import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.ingredients.IIngredientListOverlayContents;
+import mezz.jei.gui.search.ISearchCompletionProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -53,7 +54,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		LookupHistoryOverlay lookupHistoryOverlay,
 		IClientConfig clientConfig,
 		IClientToggleState toggleState,
-		IInternalKeyMappings keyBindings
+		IInternalKeyMappings keyBindings,
+		ISearchCompletionProvider searchCompletionProvider
 	) {
 		GuiPropertiesCache<Screen> guiPropertiesCache = new GuiPropertiesCache<>(
 			screen -> screenHelper.getGuiProperties(screen)
@@ -63,7 +65,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.lookupHistoryOverlay = lookupHistoryOverlay;
 		this.toggleState = toggleState;
 
-		this.searchField = new GuiTextFieldFilter(contents::isEmpty);
+		this.searchField = new GuiTextFieldFilter(contents::isEmpty, clientConfig, searchCompletionProvider);
 		this.configButton = new IconButton(new ConfigButtonController(this::isListDisplayed, toggleState, keyBindings));
 		this.controller = IngredientListOverlayController.create(
 			guiPropertiesCache,
@@ -107,8 +109,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	public void drawBackground(GuiGraphicsExtractor guiGraphics) {
 		if (isListDisplayed()) {
-			this.searchField.extractBackgroundRenderState(guiGraphics);
 			this.contents.drawBackground(guiGraphics);
+			this.searchField.extractBackgroundRenderState(guiGraphics);
 		}
 		if (this.controller.hasValidScreen() && toggleState.isOverlayEnabled()) {
 			this.lookupHistoryOverlay.drawBackground(guiGraphics);
@@ -117,8 +119,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	public void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
-			this.searchField.extractForegroundRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 			this.contents.drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+			this.searchField.extractForegroundRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (this.controller.hasValidScreen()) {
 			this.configButton.draw(guiGraphics, mouseX, mouseY, partialTicks);

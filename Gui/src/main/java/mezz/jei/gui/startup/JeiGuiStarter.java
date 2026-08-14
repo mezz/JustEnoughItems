@@ -178,7 +178,8 @@ public class JeiGuiStarter {
 			serverConnection,
 			ingredientFilterConfig,
 			textures,
-			colorHelper
+			colorHelper,
+			ingredientFilter
 		);
 		registration.setIngredientListOverlay(ingredientListOverlay);
 
