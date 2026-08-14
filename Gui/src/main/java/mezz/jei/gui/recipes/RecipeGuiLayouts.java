@@ -3,20 +3,13 @@ package mezz.jei.gui.recipes;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
-import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
-import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.input.ClickableIngredientInternal;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import mezz.jei.gui.input.handlers.NullInputHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
-import mezz.jei.gui.overlay.elements.IElement;
-import mezz.jei.gui.overlay.elements.IngredientElement;
-import mezz.jei.gui.overlay.elements.TagIngredientElement;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -27,22 +20,19 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class RecipeGuiLayouts {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final IRecipeManager recipeManager;
-	private final BooleanSupplier isRecipeCyclingPaused;
+	private final RecipeSlotClickTargetFactory clickTargetFactory;
 	private final List<IRecipeLayoutWithButtons<?>> recipeLayoutsWithButtons = new ArrayList<>();
 	@Nullable
 	private IUserInputHandler cachedInputHandler;
 
-	public RecipeGuiLayouts(IRecipeManager recipeManager, BooleanSupplier isRecipeCyclingPaused) {
-		this.recipeManager = recipeManager;
-		this.isRecipeCyclingPaused = isRecipeCyclingPaused;
+	RecipeGuiLayouts(RecipeSlotClickTargetFactory clickTargetFactory) {
+		this.clickTargetFactory = clickTargetFactory;
 		this.cachedInputHandler = NullInputHandler.INSTANCE;
 	}
 
@@ -113,7 +103,7 @@ public class RecipeGuiLayouts {
 			.map(IRecipeLayoutWithButtons::getRecipeLayout)
 			.map(recipeLayout -> recipeLayout.getSlotUnderMouse(mouseX, mouseY))
 			.flatMap(Optional::stream)
-			.map(this::getClickedIngredient)
+			.map(this.clickTargetFactory::create)
 			.flatMap(Optional::stream);
 	}
 
@@ -125,29 +115,6 @@ public class RecipeGuiLayouts {
 			}
 		}
 		return Optional.empty();
-	}
-
-	private Optional<IClickableIngredientInternal<?>> getClickedIngredient(RecipeSlotUnderMouse slotUnderMouse) {
-		return slotUnderMouse.slot().getDisplayedIngredient()
-			.map(displayedIngredient -> {
-				IElement<?> element = createElement(slotUnderMouse, displayedIngredient);
-				return new ClickableIngredientInternal<>(element, slotUnderMouse::isMouseOver, false, true);
-			});
-	}
-
-	private IElement<?> createElement(RecipeSlotUnderMouse slotUnderMouse, ITypedIngredient<?> displayedIngredient) {
-		RecipeSlotNavigation.Action action = RecipeSlotNavigation.getAction(slotUnderMouse.slot(), isRecipeCyclingPaused.getAsBoolean());
-		if (action == RecipeSlotNavigation.Action.TAG_RECIPE) {
-			return slotUnderMouse.slot().getTagKey()
-				.<IElement<?>>map(tagKey -> new TagIngredientElement<>(
-					displayedIngredient,
-					tagKey,
-					recipeManager,
-					isRecipeCyclingPaused
-				))
-				.orElseGet(() -> new IngredientElement<>(displayedIngredient));
-		}
-		return new IngredientElement<>(displayedIngredient);
 	}
 
 	public boolean mouseDragged(double mouseX, double mouseY, InputConstants.Key input, double dragX, double dragY) {

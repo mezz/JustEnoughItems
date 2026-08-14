@@ -14,7 +14,6 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
-import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.recipe.types.IRecipeType;
@@ -48,7 +47,6 @@ import mezz.jei.gui.input.InputType;
 import mezz.jei.gui.input.MouseUserInput;
 import mezz.jei.gui.input.MouseUtil;
 import mezz.jei.gui.input.UserInput;
-import mezz.jei.gui.input.handlers.SameElementInputHandler;
 import mezz.jei.gui.input.handlers.UserInputRouter;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
@@ -97,7 +95,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final RecipeGuiTabs recipeGuiTabs;
 	private final RecipeOptionButtons optionButtons;
 	private final UserInputRouter inputHandler;
-	private final IGuiInputLayer interactiveIngredientTooltipInputLayer;
 
 	private final IconButton nextRecipeCategory;
 	private final IconButton previousRecipeCategory;
@@ -151,11 +148,17 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, recipeManager, guiHelper);
 		this.optionButtons = new RecipeOptionButtons(this.logic::goToFirstPage);
 		this.focusFactory = focusFactory;
-		this.layouts = new RecipeGuiLayouts(recipeManager, keyBindings.getPauseRecipeCycling()::isDown);
+		RecipeSlotClickTargetFactory clickTargetFactory = new RecipeSlotClickTargetFactory(
+			recipeManager,
+			keyBindings.getPauseRecipeCycling()::isDown
+		);
+		this.layouts = new RecipeGuiLayouts(clickTargetFactory);
 		this.interactiveIngredientTooltip = new InteractiveIngredientTooltip(
+			this,
+			focusUtil,
 			recipeManager,
 			ingredientManager,
-			keyBindings.getPauseRecipeCycling()::isDown
+			clickTargetFactory
 		);
 
 		Textures textures = Internal.getTextures();
@@ -247,10 +250,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		background = textures.getRecipeGuiBackground();
 
-		this.interactiveIngredientTooltipInputLayer = new InteractiveIngredientTooltipInputLayer(this);
 		inputHandler = new UserInputRouter(
 			"RecipesGui",
-			this.interactiveIngredientTooltipInputLayer,
+			this.interactiveIngredientTooltip,
 			layouts.createInputHandler(),
 			new UserInputHandler(this),
 			optionButtons.createInputHandler(),
@@ -486,8 +488,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 	}
 
-	public IGuiInputLayer getInteractiveIngredientTooltipInputLayer() {
-		return this.interactiveIngredientTooltipInputLayer;
+	public IGuiInputLayer getForegroundInputLayer() {
+		return this.interactiveIngredientTooltip;
 	}
 
 	@Override
@@ -820,106 +822,4 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 	}
 
-	private static class InteractiveIngredientTooltipInputLayer implements IGuiInputLayer {
-		private static final InputConstants.Key LEFT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_LEFT);
-		private static final InputConstants.Key RIGHT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_RIGHT);
-
-		private final RecipesGui recipesGui;
-
-		private InteractiveIngredientTooltipInputLayer(RecipesGui recipesGui) {
-			this.recipesGui = recipesGui;
-		}
-
-		@Override
-		public boolean isMouseOver(double mouseX, double mouseY) {
-			return recipesGui.isOpen() &&
-				recipesGui.interactiveIngredientTooltip.isMouseOverTooltip(mouseX, mouseY);
-		}
-
-		@Override
-		public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-			if (recipesGui.isOpen()) {
-				recipesGui.interactiveIngredientTooltip.draw(guiGraphics, mouseX, mouseY);
-			}
-		}
-
-		@Override
-		public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
-			if (!recipesGui.isOpen()) {
-				return Optional.empty();
-			}
-			double mouseX = input.getMouseX();
-			double mouseY = input.getMouseY();
-			if (!recipesGui.interactiveIngredientTooltip.isVisible()) {
-				return Optional.empty();
-			}
-
-			if (input.is(keyBindings.getCloseRecipeGui())) {
-				if (!input.isSimulate()) {
-					recipesGui.interactiveIngredientTooltip.hide();
-				}
-				return Optional.of(this);
-			}
-
-			boolean leftClick = input.getKey().equals(LEFT_MOUSE_BUTTON);
-			boolean rightClick = input.getKey().equals(RIGHT_MOUSE_BUTTON);
-			if (leftClick || rightClick) {
-				if (leftClick && recipesGui.interactiveIngredientTooltip.isDraggingScrollbar()) {
-					if (!input.isSimulate()) {
-						recipesGui.interactiveIngredientTooltip.stopScrollbarDrag();
-					}
-					return Optional.of(this);
-				}
-				if (leftClick && input.isSimulate() && recipesGui.interactiveIngredientTooltip.startScrollbarDrag(mouseX, mouseY)) {
-					return Optional.of(this);
-				}
-				Optional<IClickableIngredientInternal<?>> clicked = recipesGui.interactiveIngredientTooltip
-					.getIngredientUnderMouse(mouseX, mouseY)
-					.findFirst();
-				if (clicked.isPresent()) {
-					IClickableIngredientInternal<?> ingredient = clicked.get();
-					if (!input.isSimulate()) {
-						List<RecipeIngredientRole> roles;
-						if (leftClick) {
-							roles = List.of(RecipeIngredientRole.OUTPUT);
-						} else {
-							roles = List.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.CRAFTING_STATION);
-						}
-						ingredient.show(recipesGui, recipesGui.focusUtil, roles);
-					}
-					return Optional.of(new SameElementInputHandler(this, ingredient::isMouseOver));
-				}
-				return Optional.empty();
-			}
-
-			return Optional.empty();
-		}
-
-		@Override
-		public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
-			if (recipesGui.isOpen() && recipesGui.interactiveIngredientTooltip.isMouseOverGrid(mouseX, mouseY)) {
-				double scrollDelta = scrollDeltaY;
-				if (Math.abs(scrollDeltaX) > Math.abs(scrollDeltaY)) {
-					scrollDelta = scrollDeltaX;
-				}
-				recipesGui.interactiveIngredientTooltip.mouseScrolled(scrollDelta);
-				return Optional.of(this);
-			}
-
-			return Optional.empty();
-		}
-
-		@Override
-		public Optional<IUserInputHandler> handleMouseDragged(double mouseX, double mouseY, InputConstants.Key mouseKey, double dragX, double dragY) {
-			if (recipesGui.isOpen() && mouseKey.equals(LEFT_MOUSE_BUTTON) && recipesGui.interactiveIngredientTooltip.mouseDragged(mouseY)) {
-				return Optional.of(this);
-			}
-			return Optional.empty();
-		}
-
-		@Override
-		public void unfocus() {
-			recipesGui.interactiveIngredientTooltip.stopScrollbarDrag();
-		}
-	}
 }
