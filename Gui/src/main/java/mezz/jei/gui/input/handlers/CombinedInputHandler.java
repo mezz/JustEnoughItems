@@ -3,6 +3,7 @@ package mezz.jei.gui.input.handlers;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.gui.input.IGuiInputLayer;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
@@ -42,7 +43,10 @@ public class CombinedInputHandler implements IUserInputHandler {
 	 * 2. every mouse handler that never got a chance to handleClick because something else handled it first.
 	 */
 	private Optional<IUserInputHandler> handleClickInternal(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
-		return handleClickInternal(this.inputHandlers, inputHandler -> inputHandler.handleUserInput(screen, guiProperties, input, keyBindings));
+		return handleClickInternal(this.inputHandlers, inputHandler -> inputHandler
+			.handleUserInput(screen, guiProperties, input, keyBindings)
+			.or(() -> getInputLayerUnderMouse(inputHandler, input))
+		);
 	}
 
 	static Optional<IUserInputHandler> handleClickInternal(
@@ -73,15 +77,37 @@ public class CombinedInputHandler implements IUserInputHandler {
 	@Override
 	public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
 		return inputHandlers.stream()
-			.flatMap(inputHandler -> inputHandler.handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY).stream())
+			.flatMap(inputHandler -> inputHandler
+				.handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY)
+				.or(() -> getInputLayerUnderMouse(inputHandler, mouseX, mouseY))
+				.stream()
+			)
 			.findFirst();
 	}
 
 	@Override
 	public Optional<IUserInputHandler> handleMouseDragged(double mouseX, double mouseY, InputConstants.Key mouseKey, double dragX, double dragY) {
 		return inputHandlers.stream()
-			.flatMap(inputHandler -> inputHandler.handleMouseDragged(mouseX, mouseY, mouseKey, dragX, dragY).stream())
+			.flatMap(inputHandler -> inputHandler
+				.handleMouseDragged(mouseX, mouseY, mouseKey, dragX, dragY)
+				.or(() -> getInputLayerUnderMouse(inputHandler, mouseX, mouseY))
+				.stream()
+			)
 			.findFirst();
+	}
+
+	private static Optional<IUserInputHandler> getInputLayerUnderMouse(IUserInputHandler inputHandler, UserInput input) {
+		return input.getEvent().map(
+			eventData -> getInputLayerUnderMouse(inputHandler, eventData.event().x(), eventData.event().y()),
+			keyEvent -> Optional.empty()
+		);
+	}
+
+	private static Optional<IUserInputHandler> getInputLayerUnderMouse(IUserInputHandler inputHandler, double mouseX, double mouseY) {
+		if (inputHandler instanceof IGuiInputLayer inputLayer && inputLayer.isMouseOver(mouseX, mouseY)) {
+			return Optional.of(inputLayer);
+		}
+		return Optional.empty();
 	}
 
 	@Override

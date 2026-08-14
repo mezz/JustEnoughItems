@@ -11,7 +11,6 @@ import mezz.jei.library.focus.FocusGroup;
 import mezz.jei.library.gui.ingredients.RecipeSlotIngredients;
 import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.ingredients.SlotDisplayData;
-import mezz.jei.library.ingredients.SlotDisplayIngredientExpander;
 import mezz.jei.library.ingredients.SlotIngredient;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
@@ -91,7 +90,14 @@ class SlotDisplayIngredientResolverTest {
 			RecipeIngredientRole.INPUT,
 			ingredient -> true
 		);
-		List<SlotIngredient<?>> expanded = SlotDisplayIngredientExpander.expandForDisplay(ingredientManager, resolved);
+		SlotIngredient<?> displayedIngredient = displayed.getFirst();
+		List<SlotIngredient<?>> candidates = RecipeSlotIngredients.getVisibleSlotIngredientsInDisplayGroup(
+				resolved,
+				displayedIngredient,
+				ingredientManager,
+				ingredient -> true
+			)
+			.toList();
 
 		// Assertions: subtype wildcard handling adds wildcard matching and a generic heading before expansion.
 		SlotDisplayData<TestIngredient> displayData = resolved.getFirst().slotDisplayData();
@@ -104,9 +110,9 @@ class SlotDisplayIngredientResolverTest {
 			displayData.info().tooltipHeader().orElseThrow()
 		);
 
-		// Assertions: visible rotation is capped, while explicit expansion can still access the complete group.
+		// Assertions: visible rotation is capped, while candidate browsing can still access the complete group.
 		assertEquals(100, displayed.size());
-		assertEquals(110, expanded.size());
+		assertEquals(110, candidates.size());
 	}
 
 	private static IIngredientManagerInternal createIngredientManager(
