@@ -2,6 +2,7 @@ package mezz.jei.api.gui.buttons;
 
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Mutable visual and interaction state for a button.
@@ -13,6 +14,7 @@ import mezz.jei.api.gui.inputs.IJeiUserInput;
  *
  * @since 19.27.0
  */
+@ApiStatus.NonExtendable
 public interface IButtonState {
 	/**
 	 * Sets the icon used to render the button.

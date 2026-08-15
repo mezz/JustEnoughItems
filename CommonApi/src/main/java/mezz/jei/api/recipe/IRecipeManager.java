@@ -1,5 +1,7 @@
 package mezz.jei.api.recipe;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.buttons.IIconButtonController;
@@ -22,6 +24,7 @@ import java.util.Set;
  * The {@link IRecipeManager} offers several functions for retrieving and handling recipes.
  * Get the instance from {@link IJeiRuntime#getRecipeManager()}.
  */
+@ApiStatus.NonExtendable
 public interface IRecipeManager {
 	/**
 	 * Create a recipe lookup for the given recipe type.

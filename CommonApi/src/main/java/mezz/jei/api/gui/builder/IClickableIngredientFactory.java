@@ -9,6 +9,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Optional;
 
@@ -22,6 +23,7 @@ import java.util.Optional;
  *
  * @since 19.23.0
  */
+@ApiStatus.NonExtendable
 public interface IClickableIngredientFactory {
 	/**
 	 * Create a clickable ingredient builder with the given ItemStack.

@@ -11,10 +11,12 @@ import mezz.jei.api.recipe.advanced.IRecipeManagerPluginHelper;
 import mezz.jei.api.recipe.advanced.ISimpleRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IJeiFeatures;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * The IAdvancedRegistration instance is passed to your mod plugin in {@link IModPlugin#registerAdvanced(IAdvancedRegistration)}.
  */
+@ApiStatus.NonExtendable
 public interface IAdvancedRegistration {
 	/**
 	 * {@link IJeiHelpers} provides helpers and tools for addon mods.

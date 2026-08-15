@@ -4,6 +4,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 import java.util.Set;
@@ -20,6 +21,7 @@ import java.util.Set;
  *
  * @since 11.5.0
  */
+@ApiStatus.NonExtendable
 public interface IEditModeConfig {
 	/**
 	 * Returns true if the given ingredient is hidden because it is configured to be hidden by the player.

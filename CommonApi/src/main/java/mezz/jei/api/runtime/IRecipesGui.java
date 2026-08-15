@@ -1,5 +1,7 @@
 package mezz.jei.api.runtime;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
 
@@ -17,6 +19,7 @@ import net.minecraft.client.gui.screens.Screen;
  * JEI's gui for displaying recipes. Use this interface to open recipes.
  * Get the instance from {@link IJeiRuntime#getRecipesGui()}.
  */
+@ApiStatus.NonExtendable
 public interface IRecipesGui {
 	/**
 	 * Show recipes for an {@link IFocus}.

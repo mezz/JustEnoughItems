@@ -8,12 +8,14 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Helper for getting codecs related to JEI and recipes.
  *
  * @since 19.9.0
  */
+@ApiStatus.NonExtendable
 public interface ICodecHelper {
 	/**
 	 * @return a codec for {@link IIngredientType}.

@@ -1,5 +1,7 @@
 package mezz.jei.api.recipe.vanilla;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -11,6 +13,7 @@ import net.minecraft.world.item.crafting.Ingredient;
  *
  * @since 19.15.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiShapedRecipeBuilder {
 
 	/**

@@ -5,6 +5,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
@@ -13,6 +14,7 @@ import java.util.Optional;
  * Use this interface to get information from it.
  * Get the instance from {@link IJeiRuntime#getBookmarkOverlay()}.
  */
+@ApiStatus.NonExtendable
 public interface IBookmarkOverlay {
 	/**
 	 * @return the ingredient that's currently under the mouse.

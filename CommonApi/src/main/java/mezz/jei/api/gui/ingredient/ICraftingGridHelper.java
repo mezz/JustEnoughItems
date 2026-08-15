@@ -12,6 +12,7 @@ import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategor
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -22,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
  * {@link ICraftingCategoryExtension#setRecipe(RecipeHolder, IRecipeLayoutBuilder, ICraftingGridHelper, IFocusGroup)}
  * to help them override the default behavior.
  */
+@ApiStatus.NonExtendable
 public interface ICraftingGridHelper {
 	/**
 	 * Create and place input ingredients onto the crafting grid in a consistent way.

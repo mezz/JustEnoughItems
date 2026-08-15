@@ -1,5 +1,7 @@
 package mezz.jei.api.helpers;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import com.mojang.serialization.Codec;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.IFocusFactory;
@@ -17,6 +19,7 @@ import java.util.stream.Stream;
  * <p>
  * An instance is passed to your {@link IModPlugin}'s registration methods.
  */
+@ApiStatus.NonExtendable
 public interface IJeiHelpers {
 	/**
 	 * Helps with the implementation of GUIs.

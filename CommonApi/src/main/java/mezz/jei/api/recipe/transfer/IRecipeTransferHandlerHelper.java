@@ -12,6 +12,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -22,6 +23,7 @@ import java.util.Map;
  * Helper functions for implementing an {@link IRecipeTransferHandler}.
  * Get an instance from {@link IRecipeTransferRegistration#getTransferHelper()}.
  */
+@ApiStatus.NonExtendable
 public interface IRecipeTransferHandlerHelper {
 	/**
 	 * Create an error with {@link Type#INTERNAL}.

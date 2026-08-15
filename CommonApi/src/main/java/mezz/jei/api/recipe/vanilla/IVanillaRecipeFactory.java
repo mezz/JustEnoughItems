@@ -8,6 +8,7 @@ import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
  * <p>
  * Use {@link IRecipeRegistration#addRecipes(RecipeType, List)} to add the recipe.
  */
+@ApiStatus.NonExtendable
 public interface IVanillaRecipeFactory {
 	/**
 	 * Create an anvil recipe for the given inputs and output.

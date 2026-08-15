@@ -1,5 +1,7 @@
 package mezz.jei.api.registration;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
@@ -13,6 +15,7 @@ import net.minecraft.world.item.Item;
  * If your ingredient has subtypes that depend on Components or capabilities,
  * use this so JEI can tell those subtypes apart.
  */
+@ApiStatus.NonExtendable
 public interface ISubtypeRegistration {
 
 	/**
