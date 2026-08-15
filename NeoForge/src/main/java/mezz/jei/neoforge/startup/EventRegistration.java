@@ -4,12 +4,12 @@ import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.startup.JeiEventHandlers;
+import mezz.jei.neoforge.events.JeiScreenRenderForegroundEvent;
 import mezz.jei.neoforge.events.RuntimeEventSubscriptions;
 import mezz.jei.neoforge.input.ForgeUserInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.CharacterEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -128,19 +128,12 @@ public class EventRegistration {
 				guiEventHandler.drawForScreenBackground(screen, guiGraphics);
 			});
 		});
-		subscriptions.register(EventPriority.LOWEST, ScreenEvent.Render.Post.class, event -> {
+		subscriptions.register(EventPriority.LOWEST, JeiScreenRenderForegroundEvent.class, event -> {
 			Screen screen = event.getScreen();
-			if (screen instanceof AbstractContainerScreen<?>) {
-				return;
-			}
-
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			guiGraphics.nextStratum();
-			runWithIdentityPose(guiGraphics, () -> {
-				guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY);
-			});
+			guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY);
 		});
 		subscriptions.register(ScreenEvent.RenderInventoryMobEffects.class, event -> {
 			if (guiEventHandler.renderCompactPotionIndicators()) {

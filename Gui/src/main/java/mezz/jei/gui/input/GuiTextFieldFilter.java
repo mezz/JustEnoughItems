@@ -81,33 +81,36 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 
 	@Override
 	public void setFocused(boolean keyboardFocus) {
-		final boolean previousFocus = isFocused();
-		super.setFocused(keyboardFocus);
+		if (isFocused() == keyboardFocus) {
+			return;
+		}
 
-		if (previousFocus != keyboardFocus) {
-			Minecraft minecraft = Minecraft.getInstance();
-			Screen screen = minecraft.screen;
-			if (keyboardFocus) {
-				if (screen != null) {
-					screenUnfocusHandler = ScreenFocusHandler.create(screen);
-					if (screenUnfocusHandler != null) {
-						screenUnfocusHandler.unFocus();
-					}
-					screen.setFocused(this);
-				}
-			} else {
-				if (screen != null && screen.getFocused() == this) {
-					screen.setFocused(null);
-				}
+		Minecraft minecraft = Minecraft.getInstance();
+		Screen screen = minecraft.screen;
+		if (keyboardFocus) {
+			if (screen != null) {
+				screenUnfocusHandler = ScreenFocusHandler.create(screen);
 				if (screenUnfocusHandler != null) {
-					screenUnfocusHandler.focus();
-					screenUnfocusHandler = null;
+					screenUnfocusHandler.unFocus();
 				}
 			}
-
-			String text = getValue();
-			history.add(text);
+			super.setFocused(true);
+			if (screen != null) {
+				screen.setFocused(this);
+			}
+		} else {
+			super.setFocused(false);
+			if (screen != null && screen.getFocused() == this) {
+				screen.setFocused(null);
+			}
+			if (screenUnfocusHandler != null) {
+				screenUnfocusHandler.focus();
+				screenUnfocusHandler = null;
+			}
 		}
+
+		String text = getValue();
+		history.add(text);
 	}
 
 	@Override
