@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -23,6 +24,7 @@ import java.util.stream.Stream;
  *
  * @since 9.3.0
  */
+@ApiStatus.NonExtendable
 public interface IRecipeSlotView {
 	/**
 	 * All ingredient variations of the given type that can be shown.

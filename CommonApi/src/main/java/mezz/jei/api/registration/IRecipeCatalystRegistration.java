@@ -7,7 +7,9 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.NonExtendable
 public interface IRecipeCatalystRegistration {
 	/**
 	 * The {@link IIngredientManager} has some useful functions related to recipe ingredients.

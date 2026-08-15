@@ -1,5 +1,6 @@
 package mezz.jei.api.runtime.config;
 
+import org.jetbrains.annotations.ApiStatus;
 /**
  * Represents config value used by JEI.
  * Config values can be read or updated by mods that display in-game config files to players.
@@ -10,6 +11,7 @@ package mezz.jei.api.runtime.config;
  *
  * @since 10.5.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiConfigValue<T> {
 	/**
 	 * Get the name of this config value.

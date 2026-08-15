@@ -3,6 +3,7 @@ package mezz.jei.api.runtime;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  * Use this interface to get information from and interact with it.
  * Get the instance from {@link IJeiRuntime#getIngredientFilter()}.
  */
+@ApiStatus.NonExtendable
 public interface IIngredientFilter {
 	/**
 	 * Set the search filter string for the ingredient list.

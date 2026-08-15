@@ -4,6 +4,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  *
  * Use {@link IRecipeRegistration#addRecipes(RecipeType, List)} to add the recipe.
  */
+@ApiStatus.NonExtendable
 public interface IVanillaRecipeFactory {
 	/**
 	 * Create an anvil recipe for the given inputs and output.

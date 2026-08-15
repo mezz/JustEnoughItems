@@ -3,6 +3,7 @@ package mezz.jei.api.gui.ingredient;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  *
  * @since 10.3.0
  */
+@ApiStatus.NonExtendable
 public interface IRecipeSlotDrawable extends IRecipeSlotView {
 	/**
 	 * Get the position and size of the recipe slot drawable relative to its parent element.

@@ -9,6 +9,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.runtime.IIngredientManager;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Allows registration of new types of ingredients, beyond the basic ItemStack and FluidStack.
@@ -16,6 +17,7 @@ import mezz.jei.api.runtime.IIngredientManager;
  *
  * This is given to your {@link IModPlugin#registerIngredients(IModIngredientRegistration)}.
  */
+@ApiStatus.NonExtendable
 public interface IModIngredientRegistration {
 	ISubtypeManager getSubtypeManager();
 

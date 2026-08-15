@@ -11,12 +11,14 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Allows mods to override the runtime classes for JEI with their own implementation.
  *
  * @since 10.3.2
  */
+@ApiStatus.NonExtendable
 public interface IRuntimeRegistration {
 	/**
 	 * Set the ingredient list overlay.

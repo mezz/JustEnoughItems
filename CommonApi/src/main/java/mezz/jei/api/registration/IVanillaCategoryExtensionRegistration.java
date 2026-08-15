@@ -5,6 +5,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * This allows you to register extensions to vanilla recipe categories, to customize their behavior.
@@ -12,6 +13,7 @@ import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategor
  * An instance of this is passed to you mod's plugin in
  * {@link IModPlugin#registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration)}
  */
+@ApiStatus.NonExtendable
 public interface IVanillaCategoryExtensionRegistration {
 	/**
 	 * Get the vanilla crafting category, to extend it with your own mod's crafting category extensions.

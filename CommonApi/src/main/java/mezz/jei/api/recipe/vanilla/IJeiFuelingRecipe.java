@@ -3,6 +3,7 @@ package mezz.jei.api.recipe.vanilla;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnegative;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
  *
  * @since 9.5.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiFuelingRecipe {
 	/**
 	 * @return the inputs that act as a fuel

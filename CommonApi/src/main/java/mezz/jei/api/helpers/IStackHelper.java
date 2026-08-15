@@ -1,5 +1,6 @@
 package mezz.jei.api.helpers;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import mezz.jei.api.ingredients.subtypes.UidContext;
@@ -11,6 +12,7 @@ import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
  * Helps get ItemStacks from common formats used in recipes.
  * Get the instance from {@link IJeiHelpers#getStackHelper()}.
  */
+@ApiStatus.NonExtendable
 public interface IStackHelper {
 	/**
 	 * Similar to ItemStack.areItemStacksEqual but ignores NBT on items without subtypes, and uses the {@link ISubtypeManager}

@@ -1,5 +1,7 @@
 package mezz.jei.api.recipe;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -14,6 +16,7 @@ import java.util.stream.Stream;
  *
  * @since 9.5.0
  */
+@ApiStatus.NonExtendable
 public interface IRecipeCatalystLookup {
 	/**
 	 * By default, hidden results are not returned.

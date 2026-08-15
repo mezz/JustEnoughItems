@@ -1,3 +1,15 @@
+def shouldSkipApiCompatibility() {
+    for (def changeSet in currentBuild.changeSets) {
+        for (def entry in changeSet.items) {
+            def title = entry.msg?.readLines()?.getAt(0) ?: ''
+            if (title.toLowerCase().contains('[skip-api-check]')) {
+                return true
+            }
+        }
+    }
+    return false
+}
+
 def releaseCommentStatePrefix() {
     return 'jenkins-github-release-comments-state:v1:'
 }
@@ -81,6 +93,18 @@ pipeline {
                 sh "./gradlew :CommonApi:build --no-daemon"
                 sh "./gradlew :ForgeApi:build --no-daemon"
                 sh "./gradlew :FabricApi:build --no-daemon"
+            }
+        }
+
+        stage('API Compatibility') {
+            steps {
+                script {
+                    if (shouldSkipApiCompatibility()) {
+                        echo 'Skipping API compatibility because a commit title contains [skip-api-check].'
+                    } else {
+                        sh "./gradlew checkApiCompatibility"
+                    }
+                }
             }
         }
 

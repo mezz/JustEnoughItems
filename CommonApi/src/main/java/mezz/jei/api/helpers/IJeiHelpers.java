@@ -1,5 +1,6 @@
 package mezz.jei.api.helpers;
 
+import org.jetbrains.annotations.ApiStatus;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;

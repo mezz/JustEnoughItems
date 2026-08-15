@@ -1,6 +1,7 @@
 package mezz.jei.api.runtime.config;
 
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 
@@ -10,6 +11,7 @@ import java.util.Collection;
  *
  * @since 10.5.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiConfigCategory {
 	/**
 	 * The name of the category.

@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.Optional;
  *
  * @since 9.3.0
  */
+@ApiStatus.NonExtendable
 public interface IIngredientAcceptor<THIS extends IIngredientAcceptor<THIS>> {
 	/**
 	 * Add an ordered list of ingredients.

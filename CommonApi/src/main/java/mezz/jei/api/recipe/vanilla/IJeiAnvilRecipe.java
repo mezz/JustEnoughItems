@@ -2,6 +2,7 @@ package mezz.jei.api.recipe.vanilla;
 
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  *
  * Create your own with {@link IVanillaRecipeFactory#createAnvilRecipe}
  */
+@ApiStatus.NonExtendable
 public interface IJeiAnvilRecipe {
 	/**
 	 * Get the inputs that go into the left slot of the Anvil.

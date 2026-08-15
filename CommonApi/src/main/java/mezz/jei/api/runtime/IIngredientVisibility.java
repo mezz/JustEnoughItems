@@ -4,6 +4,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IRecipeRegistration;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * The {@link IIngredientVisibility} allows mod plugins to do advanced filtering of
@@ -16,6 +17,7 @@ import mezz.jei.api.registration.IRecipeRegistration;
  *
  * @since JEI 9.3.0
  */
+@ApiStatus.NonExtendable
 public interface IIngredientVisibility {
 	/**
 	 * Returns true if the given ingredient is visible in JEI's ingredient list.

@@ -3,6 +3,7 @@ package mezz.jei.api.recipe;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -15,6 +16,7 @@ import java.util.stream.Stream;
  *
  * @since 9.4.0
  */
+@ApiStatus.NonExtendable
 public interface IFocusGroup {
 	/**
 	 * When the player is looking at all recipes in a category,

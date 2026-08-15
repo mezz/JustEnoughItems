@@ -2,6 +2,7 @@ package mezz.jei.api.fabric.ingredients.fluids;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Optional;
 
@@ -10,6 +11,7 @@ import java.util.Optional;
  *
  * @since 10.1.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiFluidIngredient {
 	/**
 	 * @return the fluid represented by this ingredient.

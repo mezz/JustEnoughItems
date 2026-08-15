@@ -1,5 +1,7 @@
 package mezz.jei.api.runtime.config;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +15,7 @@ import java.util.Optional;
  *
  * @since 10.5.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiConfigValueSerializer<T> {
 	/**
 	 * Serialize the config value to a string.
