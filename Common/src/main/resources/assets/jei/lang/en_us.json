@@ -11,6 +11,7 @@
   "jei.tooltip.recipe.any": "Any %s",
   "jei.tooltip.recipe.any_fuel": "Any Fuel",
   "jei.tooltip.recipe.tag": "Accepts Tag: %s",
+  "jei.tooltip.recipe.slot.options": "Hold %s to pin this tooltip, then click an ingredient to view recipes.",
   "jei.tooltip.item.colors": "Colors: %s",
   "jei.tooltip.item.search.aliases": "Search Aliases:",
   "jei.tooltip.shapeless.recipe": "Shapeless Recipe",
@@ -201,6 +202,8 @@
   "jei.config.client.input.dragDelayInMilliseconds.description": "Number of milliseconds before a long mouse click is considered dragging the mouse.",
   "jei.config.client.input.smoothScrollRate": "Smooth Scroll Rate",
   "jei.config.client.input.smoothScrollRate.description": "Scroll rate for scrolling the mouse wheel in smooth-scrolling scroll boxes. Measured in pixels.",
+  "jei.config.client.input.recipeSlotCyclingEnabled": "Recipe Slot Cycling",
+  "jei.config.client.input.recipeSlotCyclingEnabled.description": "Automatically cycle through ingredients in recipe slots over time.",
 
   "jei.config.client.performance": "Performance",
   "jei.config.client.performance.description": "Config options related to performance optimizations in JEI.",
