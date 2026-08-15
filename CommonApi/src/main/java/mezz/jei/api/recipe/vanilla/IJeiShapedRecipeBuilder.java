@@ -5,6 +5,7 @@ import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Builds a serializable ShapedRecipe that isn't registered with the vanilla game.
@@ -12,6 +13,7 @@ import net.minecraft.world.item.crafting.display.SlotDisplay;
  *
  * @since 19.15.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiShapedRecipeBuilder {
 
 	/**

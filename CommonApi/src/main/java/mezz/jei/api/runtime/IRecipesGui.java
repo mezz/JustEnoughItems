@@ -7,6 +7,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.gui.screens.Screen;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,7 @@ import java.util.Optional;
  * JEI's gui for displaying recipes. Use this interface to open recipes.
  * Get the instance from {@link IJeiRuntime#getRecipesGui()}.
  */
+@ApiStatus.NonExtendable
 public interface IRecipesGui {
 	/**
 	 * Show recipes for an {@link IFocus}.

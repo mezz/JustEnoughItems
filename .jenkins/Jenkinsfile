@@ -18,6 +18,18 @@ def runExternalPublishTask(String gradleTask) {
     }
 }
 
+def shouldSkipApiCompatibility() {
+    for (def changeSet in currentBuild.changeSets) {
+        for (def entry in changeSet.items) {
+            def title = entry.msg?.readLines()?.getAt(0) ?: ''
+            if (title.toLowerCase().contains('[skip-api-check]')) {
+                return true
+            }
+        }
+    }
+    return false
+}
+
 pipeline {
     agent any
     tools {
@@ -57,7 +69,13 @@ pipeline {
 
         stage('API Compatibility') {
             steps {
-                sh "./gradlew checkApiCompatibility"
+                script {
+                    if (shouldSkipApiCompatibility()) {
+                        echo 'Skipping API compatibility because a commit title contains [skip-api-check].'
+                    } else {
+                        sh "./gradlew checkApiCompatibility"
+                    }
+                }
             }
         }
 

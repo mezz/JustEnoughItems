@@ -2,6 +2,7 @@ package mezz.jei.api.helpers;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  *
  * @since 7.6.3
  */
+@ApiStatus.NonExtendable
 public interface IColorHelper {
 
 	/**

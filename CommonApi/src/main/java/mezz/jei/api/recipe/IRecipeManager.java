@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.Set;
  * The {@link IRecipeManager} offers several functions for retrieving and handling recipes.
  * Get the instance from {@link IJeiRuntime#getRecipeManager()}.
  */
+@ApiStatus.NonExtendable
 public interface IRecipeManager {
 	/**
 	 * Create a recipe lookup for the given recipe type.
