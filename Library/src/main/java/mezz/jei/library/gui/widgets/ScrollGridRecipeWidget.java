@@ -8,9 +8,9 @@ import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.gui.widgets.IScrollGridWidget;
 import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.GridScrollMath;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
-import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.renderer.Rect2i;
 
 import java.util.List;
@@ -44,8 +44,7 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 
 		this.columns = columns;
 		this.visibleRows = visibleRows;
-		int totalRows = MathUtil.divideCeil(slots.size(), columns);
-		this.hiddenRows = Math.max(totalRows - visibleRows, 0);
+		this.hiddenRows = GridScrollMath.getHiddenRows(slots.size(), columns, visibleRows);
 	}
 
 	@Override
@@ -77,7 +76,7 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 	@Override
 	protected void drawContents(PoseStack poseStack, double mouseX, double mouseY, float scrollOffsetY) {
 		final int totalSlots = slots.size();
-		final int firstRow = getRowIndexForScroll(hiddenRows, scrollOffsetY);
+		final int firstRow = GridScrollMath.getFirstRowForScrollOffset(hiddenRows, getScrollOffsetY());
 		final int firstIndex = columns * firstRow;
 
 		final int slotWidth = slotBackground.getWidth();
@@ -100,7 +99,7 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 
 	@Override
 	public Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY) {
-		final int firstRow = getRowIndexForScroll(hiddenRows, getScrollOffsetY());
+		final int firstRow = GridScrollMath.getFirstRowForScrollOffset(hiddenRows, getScrollOffsetY());
 		final int startIndex = firstRow * columns;
 		final int endIndex = Math.min(startIndex + (visibleRows * columns), slots.size());
 		for (int i = startIndex; i < endIndex; i++) {
@@ -111,11 +110,6 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 			}
 		}
 		return Optional.empty();
-	}
-
-	private int getRowIndexForScroll(int hiddenRows, float scrollOffset) {
-		int rowIndex = (int) ((double) (scrollOffset * (float) hiddenRows) + 0.5D);
-		return Math.max(rowIndex, 0);
 	}
 
 	@Override
