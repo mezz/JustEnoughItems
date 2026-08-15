@@ -5,6 +5,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.stream.Stream;
 
@@ -18,6 +19,7 @@ import java.util.stream.Stream;
  */
 @SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
 @Deprecated(forRemoval = true, since = "20.0.0")
+@ApiStatus.NonExtendable
 public interface IRecipeCatalystLookup {
 	/**
 	 * By default, hidden results are not returned.

@@ -6,6 +6,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Identifies a type of recipe, (i.e. Crafting Table Recipe, Furnace Recipe).
@@ -21,6 +22,7 @@ import net.minecraft.world.item.crafting.RecipeType;
  *
  * @apiNote Replaces RecipeType in 20.0.0 to avoid naming collision with the vanilla {@link RecipeType}
  */
+@ApiStatus.NonExtendable
 public interface IRecipeType<T> {
 	/**
 	 * The unique id of this recipe type.

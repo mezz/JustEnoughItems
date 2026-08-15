@@ -16,6 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Set up JDK 21
@@ -34,4 +35,18 @@ jobs:
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
       - name: Check API compatibility
-        run: ./gradlew checkApiCompatibility --no-daemon
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          FIRST_COMMIT_SHA: ${{ github.event.commits[0].id || github.sha }}
+        run: |
+          if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+            # New branch pushes use an all-zero base SHA.
+            BASE_SHA="$FIRST_COMMIT_SHA^"
+          fi
+
+          if git log --format=%s "$BASE_SHA..HEAD" | grep -Fqi '[skip-api-check]'; then
+            echo "::notice::Skipping API compatibility because a commit title contains [skip-api-check]."
+            exit 0
+          fi
+
+          ./gradlew checkApiCompatibility --no-daemon

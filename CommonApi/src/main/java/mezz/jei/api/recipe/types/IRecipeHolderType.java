@@ -6,6 +6,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Supplier;
 
@@ -16,6 +17,7 @@ import java.util.function.Supplier;
  *
  * @since 20.0.0
  */
+@ApiStatus.NonExtendable
 public interface IRecipeHolderType<T extends Recipe<?>> extends IRecipeType<RecipeHolder<T>> {
 	/**
 	 * Create a JEI RecipeType from a Vanilla RecipeType.

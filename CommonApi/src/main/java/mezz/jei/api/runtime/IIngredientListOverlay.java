@@ -3,6 +3,7 @@ package mezz.jei.api.runtime;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import java.util.Optional;
  * Use this interface to get information from and interact with it.
  * Get the instance from {@link IJeiRuntime#getIngredientListOverlay()}.
  */
+@ApiStatus.NonExtendable
 public interface IIngredientListOverlay {
 	/**
 	 * @return the ingredient that's currently under the mouse.

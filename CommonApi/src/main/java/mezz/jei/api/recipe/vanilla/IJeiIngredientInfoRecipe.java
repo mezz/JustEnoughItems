@@ -4,6 +4,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.network.chat.FormattedText;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
  *
  * @since 9.5.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiIngredientInfoRecipe {
 	/**
 	 * The input ingredients for the recipe.

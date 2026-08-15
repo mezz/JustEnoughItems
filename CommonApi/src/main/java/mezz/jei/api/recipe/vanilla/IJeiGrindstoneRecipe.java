@@ -4,6 +4,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * Create your own with {@link IVanillaRecipeFactory#createGrindstoneRecipe}
  * @since 23.1.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiGrindstoneRecipe {
 	/**
 	 * Get the inputs that go into the top slot of the Grindstone.

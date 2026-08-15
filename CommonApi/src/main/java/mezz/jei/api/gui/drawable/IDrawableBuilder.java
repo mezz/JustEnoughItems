@@ -3,11 +3,13 @@ package mezz.jei.api.gui.drawable;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.helpers.IGuiHelper;
 import net.minecraft.resources.Identifier;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Builder for creating drawables from a resource location.
  * Create an instance with {@link IGuiHelper#drawableBuilder(Identifier, int, int, int, int)}
  */
+@ApiStatus.NonExtendable
 public interface IDrawableBuilder {
 	/**
 	 * For textures that are not 256x256, specify the size.
