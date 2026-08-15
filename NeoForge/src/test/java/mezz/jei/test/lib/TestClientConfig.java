@@ -30,6 +30,7 @@ public class TestClientConfig implements IClientConfig {
 	private final IJeiConfigValue<Boolean> ingredientsSummaryEnabled = value("ingredientsSummaryEnabled", true);
 	private final IJeiConfigValue<Boolean> lowMemorySlowSearchEnabled;
 	private final IJeiConfigValue<Boolean> catchRenderErrorsEnabled = value("catchRenderErrorsEnabled", false);
+	private final IJeiConfigValue<Boolean> recipeSyncWarningEnabled = value("recipeSyncWarningEnabled", true);
 	private final IJeiConfigValue<Boolean> lookupFluidContentsEnabled = value("lookupFluidContentsEnabled", false);
 	private final IJeiConfigValue<Boolean> lookupBlockTagsEnabled = value("lookupBlockTagsEnabled", false);
 	private final IJeiConfigValue<Boolean> showCreativeTabNamesEnabled = value("showCreativeTabNamesEnabled", false);
@@ -137,6 +138,11 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public IJeiConfigValue<Boolean> catchRenderErrorsEnabled() {
 		return catchRenderErrorsEnabled;
+	}
+
+	@Override
+	public IJeiConfigValue<Boolean> recipeSyncWarningEnabled() {
+		return recipeSyncWarningEnabled;
 	}
 
 	@Override
