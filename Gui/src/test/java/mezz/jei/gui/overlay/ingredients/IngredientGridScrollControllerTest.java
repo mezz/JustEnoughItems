@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
+import mezz.jei.common.gui.GridScrollMath;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.common.util.NavigationVisibility;
 import mezz.jei.api.gui.placement.VerticalAlignment;
@@ -39,7 +40,7 @@ public class IngredientGridScrollControllerTest {
 			null
 		);
 		controller.updateLayoutStartingAt(0);
-		int hiddenRows = IngredientGridScrollState.getHiddenRows(elements.size(), grid.getColumnCount(), grid.getRowCount());
+		int hiddenRows = GridScrollMath.getHiddenRows(elements.size(), grid.getColumnCount(), grid.getRowCount());
 		assertTrue(controller.setScrollOffsetY(3 / (float) hiddenRows));
 		grid.clearVisibleElements();
 
