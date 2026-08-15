@@ -1,3 +1,6 @@
+import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
+import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 plugins {
 	id("com.diffplug.spotless") version("8.10.0")
     id("com.dorongold.task-tree") version("4.0.2")
@@ -8,6 +11,7 @@ plugins {
     // https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/gradle/vanilla/org.spongepowered.gradle.vanilla.gradle.plugin/
     id("org.spongepowered.gradle.vanilla") version("0.2.2") apply(false)
     id("net.neoforged.moddev.legacyforge") version("2.0.144") apply(false)
+    id("net.neoforged.jarcompatibilitychecker") version("0.1.19") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
@@ -119,4 +123,39 @@ subprojects {
     }
 }
 
-apply(from = "gradle/api-compatibility.gradle.kts")
+val apiProjectPaths = listOf(":CommonApi", ":FabricApi", ":ForgeApi")
+val commonApiJar = evaluationDependsOn(":CommonApi").tasks.named<AbstractArchiveTask>("jar")
+apiProjectPaths.forEach { apiProjectPath ->
+    val apiProject = project(apiProjectPath)
+    apiProject.pluginManager.apply("net.neoforged.jarcompatibilitychecker")
+    apiProject.pluginManager.withPlugin("java") {
+        apiProject.tasks.named<CompatibilityTask>("checkJarCompatibility") {
+            group = LifecycleBasePlugin.VERIFICATION_GROUP
+            description = "Checks $apiProjectPath against the latest published API jar in the same major version."
+            mavens.set(listOf("https://maven.blamejared.com"))
+            // Match the previous CLI check and avoid loading the full Minecraft compile classpath.
+            if (apiProjectPath == ":CommonApi") {
+                libraries.setFrom(emptyList<Any>())
+            } else {
+                // Loader-specific API jars extend CommonApi types, which are checked separately.
+                libraries.setFrom(commonApiJar.flatMap { it.archiveFile })
+            }
+            nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
+            fail.set(true)
+            if (apiProjectPath == ":FabricApi") {
+                val remapJar = apiProject.tasks.named<AbstractArchiveTask>("remapJar")
+                inputJar.set(remapJar.flatMap { it.archiveFile })
+            }
+        }
+    }
+}
+
+val checkApiCompatibility = tasks.register("checkApiCompatibility") {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = "Checks all published JEI API jars for compatibility with the latest published API jars in the same major version."
+    dependsOn(apiProjectPaths.map { "$it:checkJarCompatibility" })
+}
+
+tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME) {
+    dependsOn(checkApiCompatibility)
+}
