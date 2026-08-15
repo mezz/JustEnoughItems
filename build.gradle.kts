@@ -1,14 +1,23 @@
+import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
+import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 plugins {
 	id("com.diffplug.spotless") version("8.10.0")
     id("com.dorongold.task-tree") version("4.0.2")
     id("org.spongepowered.gradle.vanilla") version("0.2.2") apply(false)
-    id("net.neoforged.moddev.legacyforge") version("2.0.144") apply(false)
-    id("net.mezzdev.modshade") version("0.7.0") apply(false)
-    id("me.modmuss50.mod-publish-plugin") version("2.2.0") apply(false)
-    id("fabric-loom") version("1.17.20") apply(false)
+	id("net.neoforged.moddev.legacyforge") version("2.0.144") apply(false)
+	id("net.mezzdev.modshade") version("0.7.0") apply(false)
+
+	// https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
+	id("me.modmuss50.mod-publish-plugin") version("2.2.0") apply(false)
+
+	// https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
+	id("fabric-loom") version("1.17.20") apply(false)
+
+	id("net.neoforged.jarcompatibilitychecker") version("0.1.19") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
@@ -134,4 +143,33 @@ subprojects {
     }
 }
 
-apply(from = "gradle/api-compatibility.gradle.kts")
+val apiProjectPaths = listOf(":CommonApi", ":FabricApi", ":ForgeApi")
+apiProjectPaths.forEach { apiProjectPath ->
+    val apiProject = project(apiProjectPath)
+    apiProject.pluginManager.apply("net.neoforged.jarcompatibilitychecker")
+    apiProject.pluginManager.withPlugin("java") {
+        apiProject.tasks.named<CompatibilityTask>("checkJarCompatibility") {
+            group = LifecycleBasePlugin.VERIFICATION_GROUP
+            description = "Checks $apiProjectPath against the latest published API jar in the same major version."
+            mavens.set(listOf("https://maven.blamejared.com"))
+            // Match the previous CLI check and avoid loading the full Minecraft compile classpath.
+            libraries.setFrom(emptyList<Any>())
+            nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
+            fail.set(true)
+            if (apiProjectPath == ":FabricApi") {
+                val remapJar = apiProject.tasks.named<AbstractArchiveTask>("remapJar")
+                inputJar.set(remapJar.flatMap { it.archiveFile })
+            }
+        }
+    }
+}
+
+val checkApiCompatibility = tasks.register("checkApiCompatibility") {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = "Checks all published JEI API jars for compatibility with the latest published API jars in the same major version."
+    dependsOn(apiProjectPaths.map { "$it:checkJarCompatibility" })
+}
+
+tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME) {
+    dependsOn(checkApiCompatibility)
+}
