@@ -5,8 +5,7 @@ import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.elements.ScalableDrawable;
-import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.gui.elements.Scrollbar;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenPosition;
@@ -15,18 +14,16 @@ import net.minecraft.util.Mth;
 
 public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHandler {
 	private static final int SCROLLBAR_PADDING = 2;
-	private static final int SCROLLBAR_WIDTH = 14;
-	private static final int MIN_SCROLL_MARKER_HEIGHT = 14;
 
 	public static int getScrollBoxScrollbarExtraWidth() {
-		return SCROLLBAR_WIDTH + SCROLLBAR_PADDING;
+		return Scrollbar.WIDTH + SCROLLBAR_PADDING;
 	}
 
 	protected static ImmutableRect2i calculateScrollArea(int width, int height) {
 		return new ImmutableRect2i(
-			width - SCROLLBAR_WIDTH,
+			width - Scrollbar.WIDTH,
 			0,
-			SCROLLBAR_WIDTH,
+			Scrollbar.WIDTH,
 			height
 		);
 	}
@@ -34,13 +31,7 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 	protected ImmutableRect2i area;
 	protected final ImmutableRect2i contentsArea;
 
-	private final ImmutableRect2i scrollArea;
-	private final ScalableDrawable scrollbarMarker;
-	private final ScalableDrawable scrollbarBackground;
-	/**
-	 * Position of the mouse on the scroll marker when dragging.
-	 */
-	private double dragOriginY = -1;
+	private final Scrollbar scrollbar;
 	/**
 	 * Amount scrolled in percent, (0 = top, 1 = bottom)
 	 */
@@ -48,29 +39,12 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 
 	public AbstractScrollWidget(ImmutableRect2i area) {
 		this.area = area;
-		this.scrollArea = calculateScrollArea(area.width(), area.height());
-		Textures textures = Internal.getTextures();
-		this.scrollbarMarker = textures.getScrollbarMarker();
-		this.scrollbarBackground = textures.getScrollbarBackground();
+		this.scrollbar = new Scrollbar(calculateScrollArea(area.width(), area.height()));
 		this.contentsArea = new ImmutableRect2i(
 			0,
 			0,
 			area.width() - getScrollBoxScrollbarExtraWidth(),
 			area.height()
-		);
-	}
-
-	protected ImmutableRect2i calculateScrollbarMarkerArea() {
-		int totalSpace = scrollArea.height() - 2;
-		int scrollMarkerWidth = scrollArea.width() - 2;
-		int scrollMarkerHeight = Math.round(totalSpace * (getVisibleAmount() / (float) (getVisibleAmount() + getHiddenAmount())));
-		scrollMarkerHeight = Math.max(scrollMarkerHeight, MIN_SCROLL_MARKER_HEIGHT);
-		int scrollbarMarkerY = Math.round((totalSpace - scrollMarkerHeight) * scrollOffsetY);
-		return new ImmutableRect2i(
-			scrollArea.getX() + 1,
-			scrollArea.getY() + 1 + scrollbarMarkerY,
-			scrollMarkerWidth,
-			scrollMarkerHeight
 		);
 	}
 
@@ -94,11 +68,7 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 
 	@Override
 	public final void drawWidget(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		scrollbarBackground.draw(guiGraphics, scrollArea);
-
-		ImmutableRect2i scrollbarMarkerArea = calculateScrollbarMarkerArea();
-		scrollbarMarker.draw(guiGraphics, scrollbarMarkerArea);
-
+		this.scrollbar.draw(guiGraphics, getVisibleAmount(), getHiddenAmount(), scrollOffsetY);
 		drawContents(guiGraphics, mouseX, mouseY, scrollOffsetY);
 	}
 
@@ -108,21 +78,23 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 			return false;
 		}
 		if (!userInput.isSimulate()) {
-			dragOriginY = -1;
+			this.scrollbar.stopDrag();
 		}
 
-		if (scrollArea.contains(mouseX, mouseY)) {
+		if (this.scrollbar.isMouseOver(mouseX, mouseY)) {
 			if (getHiddenAmount() == 0) {
 				return false;
 			}
 
 			if (userInput.isSimulate()) {
-				ImmutableRect2i scrollMarkerArea = calculateScrollbarMarkerArea();
-				if (!scrollMarkerArea.contains(mouseX, mouseY)) {
-					moveScrollbarCenterTo(scrollMarkerArea, mouseY);
-					scrollMarkerArea = calculateScrollbarMarkerArea();
-				}
-				dragOriginY = mouseY - scrollMarkerArea.y();
+				Scrollbar.ScrollResult result = this.scrollbar.startDrag(
+					mouseX,
+					mouseY,
+					getVisibleAmount(),
+					getHiddenAmount(),
+					this.scrollOffsetY
+				);
+				this.scrollOffsetY = result.scrollOffsetY();
 			}
 			return true;
 		}
@@ -142,29 +114,17 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 
 	@Override
 	public final boolean handleMouseDragged(double mouseX, double mouseY, InputConstants.Key mouseKey, double dragX, double dragY) {
-		if (dragOriginY < 0 || mouseKey.getValue() != InputConstants.MOUSE_BUTTON_LEFT) {
+		if (mouseKey.getValue() != InputConstants.MOUSE_BUTTON_LEFT) {
 			return false;
 		}
-
-		ImmutableRect2i scrollbarMarkerArea = calculateScrollbarMarkerArea();
-
-		double topY = mouseY - dragOriginY;
-		moveScrollbarTo(scrollbarMarkerArea, topY);
-		return true;
-	}
-
-	private void moveScrollbarCenterTo(ImmutableRect2i scrollMarkerArea, double centerY) {
-		double topY = centerY - (scrollMarkerArea.height() / 2.0);
-		moveScrollbarTo(scrollMarkerArea, topY);
-	}
-
-	private void moveScrollbarTo(ImmutableRect2i scrollMarkerArea, double topY) {
-		int minY = scrollArea.y();
-		int maxY = scrollArea.y() + scrollArea.height() - scrollMarkerArea.height();
-		double relativeY = topY - minY;
-		int totalSpace = maxY - minY;
-		scrollOffsetY = (float) (relativeY / (float) totalSpace);
-		scrollOffsetY = Mth.clamp(scrollOffsetY, 0.0F, 1.0F);
+		Scrollbar.ScrollResult result = this.scrollbar.dragTo(
+			mouseY,
+			getVisibleAmount(),
+			getHiddenAmount(),
+			this.scrollOffsetY
+		);
+		this.scrollOffsetY = result.scrollOffsetY();
+		return result.handled();
 	}
 
 	protected abstract float calculateScrollAmount(double scrollDeltaY);

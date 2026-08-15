@@ -2,6 +2,7 @@ package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.gui.GridScrollMath;
 import mezz.jei.gui.overlay.elements.IElement;
 import org.jspecify.annotations.Nullable;
 
@@ -34,7 +35,7 @@ public final class IngredientGridScrollController {
 		int rowCount = ingredientGrid.getRowCount();
 		int visibleIngredientCount = ingredientGrid.size();
 		int firstRow = columnCount > 0 ? firstItemIndex / columnCount : 0;
-		float scrollOffsetY = IngredientGridScrollState.getScrollOffsetYForFirstRow(
+		float scrollOffsetY = GridScrollMath.getScrollOffsetYForFirstRow(
 			firstRow,
 			ingredientList.size(),
 			columnCount,
@@ -83,7 +84,7 @@ public final class IngredientGridScrollController {
 	}
 
 	public int getHiddenScrollRows() {
-		return IngredientGridScrollState.getHiddenRows(
+		return GridScrollMath.getHiddenRows(
 			ingredientSource.getElements().size(),
 			ingredientGrid.getColumnCount(),
 			ingredientGrid.getRowCount(),
@@ -141,7 +142,7 @@ public final class IngredientGridScrollController {
 		}
 		List<IElement<?>> ingredientList = ingredientSource.getElements();
 		int firstRow = getFirstVisibleScrollRow() + rows;
-		float scrollOffsetY = IngredientGridScrollState.getScrollOffsetYForFirstRow(
+		float scrollOffsetY = GridScrollMath.getScrollOffsetYForFirstRow(
 			firstRow,
 			ingredientList.size(),
 			ingredientGrid.getColumnCount(),
@@ -153,17 +154,17 @@ public final class IngredientGridScrollController {
 
 	public int getFirstVisibleScrollRow() {
 		if (isSmoothScrolling()) {
-			int scrollPixelOffset = IngredientGridScrollState.getSmoothScrollPixelOffset(
+			int scrollPixelOffset = GridScrollMath.getSmoothScrollPixelOffset(
 				getHiddenScrollRows(),
 				IngredientGridLayout.INGREDIENT_HEIGHT,
 				this.scrollState.getScrollOffsetY()
 			);
-			return IngredientGridScrollState.getFirstRowForSmoothScrollPixelOffset(
+			return GridScrollMath.getFirstRowForSmoothScrollPixelOffset(
 				scrollPixelOffset,
 				IngredientGridLayout.INGREDIENT_HEIGHT
 			);
 		}
-		return IngredientGridScrollState.getFirstRowForScrollOffset(getHiddenScrollRows(), this.scrollState.getScrollOffsetY());
+		return GridScrollMath.getFirstRowForScrollOffset(getHiddenScrollRows(), this.scrollState.getScrollOffsetY());
 	}
 
 	private boolean isSmoothScrolling() {
@@ -191,7 +192,7 @@ public final class IngredientGridScrollController {
 		List<IElement<?>> ingredientList = ingredientSource.getElements();
 		int columnCount = ingredientGrid.getColumnCount();
 		int rowCount = ingredientGrid.getRowCount();
-		float validScrollOffsetY = IngredientGridScrollState.getValidScrollOffsetY(
+		float validScrollOffsetY = GridScrollMath.getValidScrollOffsetY(
 			scrollOffsetY,
 			ingredientList.size(),
 			columnCount,
@@ -231,20 +232,20 @@ public final class IngredientGridScrollController {
 		int columnCount = ingredientGrid.getColumnCount();
 		int rowCount = ingredientGrid.getRowCount();
 		int visibleIngredientCount = ingredientGrid.size();
-		int hiddenRows = IngredientGridScrollState.getHiddenRows(ingredientList.size(), columnCount, rowCount, visibleIngredientCount);
+		int hiddenRows = GridScrollMath.getHiddenRows(ingredientList.size(), columnCount, rowCount, visibleIngredientCount);
 		float scrollOffsetY = this.scrollState.getScrollOffsetY();
 		if (isSmoothScrolling()) {
-			int scrollPixelOffset = IngredientGridScrollState.getSmoothScrollPixelOffset(
+			int scrollPixelOffset = GridScrollMath.getSmoothScrollPixelOffset(
 				hiddenRows,
 				IngredientGridLayout.INGREDIENT_HEIGHT,
 				scrollOffsetY
 			);
-			int firstRow = IngredientGridScrollState.getFirstRowForSmoothScrollPixelOffset(
+			int firstRow = GridScrollMath.getFirstRowForSmoothScrollPixelOffset(
 				scrollPixelOffset,
 				IngredientGridLayout.INGREDIENT_HEIGHT
 			);
-			int firstItemIndex = IngredientGridScrollState.getFirstItemIndexForRow(firstRow, ingredientList.size(), columnCount);
-			int maxFirstItemIndex = IngredientGridScrollState.getMaxFirstItemIndex(
+			int firstItemIndex = GridScrollMath.getFirstItemIndexForRow(firstRow, ingredientList.size(), columnCount);
+			int maxFirstItemIndex = GridScrollMath.getMaxFirstItemIndex(
 				ingredientList.size(),
 				columnCount,
 				rowCount,
@@ -255,14 +256,14 @@ public final class IngredientGridScrollController {
 			} else {
 				firstItemIndex = Math.min(firstItemIndex, maxFirstItemIndex);
 			}
-			int rowPixelOffset = IngredientGridScrollState.getRowPixelOffset(
+			int rowPixelOffset = GridScrollMath.getRowPixelOffset(
 				scrollPixelOffset,
 				IngredientGridLayout.INGREDIENT_HEIGHT
 			);
 			return new ScrollRenderPosition(firstItemIndex, rowPixelOffset);
 		}
 
-		int firstItemIndex = IngredientGridScrollState.getFirstItemIndexForScrollOffset(
+		int firstItemIndex = GridScrollMath.getFirstItemIndexForScrollOffset(
 			scrollOffsetY,
 			ingredientList.size(),
 			columnCount,
@@ -273,7 +274,7 @@ public final class IngredientGridScrollController {
 	}
 
 	private int getTotalScrollRows() {
-		return IngredientGridScrollState.getTotalRows(
+		return GridScrollMath.getTotalRows(
 			ingredientSource.getElements().size(),
 			ingredientGrid.getColumnCount()
 		);
@@ -298,16 +299,16 @@ public final class IngredientGridScrollController {
 	private int getCurrentScrollPixelOffset(List<IElement<?>> ingredientList) {
 		int columnCount = ingredientGrid.getColumnCount();
 		int rowCount = ingredientGrid.getRowCount();
-		int hiddenRows = IngredientGridScrollState.getHiddenRows(ingredientList.size(), columnCount, rowCount, ingredientGrid.size());
+		int hiddenRows = GridScrollMath.getHiddenRows(ingredientList.size(), columnCount, rowCount, ingredientGrid.size());
 		float scrollOffsetY = this.scrollState.getScrollOffsetY();
 		if (isSmoothScrolling()) {
-			return IngredientGridScrollState.getSmoothScrollPixelOffset(
+			return GridScrollMath.getSmoothScrollPixelOffset(
 				hiddenRows,
 				IngredientGridLayout.INGREDIENT_HEIGHT,
 				scrollOffsetY
 			);
 		}
-		int firstRow = IngredientGridScrollState.getFirstRowForScrollOffset(hiddenRows, scrollOffsetY);
+		int firstRow = GridScrollMath.getFirstRowForScrollOffset(hiddenRows, scrollOffsetY);
 		return firstRow * IngredientGridLayout.INGREDIENT_HEIGHT;
 	}
 
