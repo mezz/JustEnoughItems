@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
  *
  * Create your own with {@link IVanillaRecipeFactory#createBrewingRecipe}
  */
+@ApiStatus.NonExtendable
 public interface IJeiBrewingRecipe {
 	/**
 	 * Get the input potion, that is used to create a new one.

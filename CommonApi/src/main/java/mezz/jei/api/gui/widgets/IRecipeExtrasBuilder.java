@@ -9,6 +9,7 @@ import mezz.jei.api.gui.placement.IPlaceable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.FormattedText;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ import java.util.List;
  *
  * @since 15.9.0
  */
+@ApiStatus.NonExtendable
 public interface IRecipeExtrasBuilder {
 
 	/**

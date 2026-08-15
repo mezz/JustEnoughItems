@@ -3,6 +3,7 @@ package mezz.jei.api.gui.ingredient;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Optional;
  *
  * @since 15.20.0
  */
+@ApiStatus.NonExtendable
 public interface IRecipeSlotDrawablesView {
 	/**
 	 * Get all slots for a recipe.

@@ -1,6 +1,7 @@
 package mezz.jei.api.runtime.config;
 
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
  *
  * @since 12.1.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiConfigFile {
 	/**
 	 * Get the path of this config file.

@@ -3,6 +3,7 @@ package mezz.jei.api.gui.widgets;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import net.minecraft.network.chat.FormattedText;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  *
  * @since 15.11.0
  */
+@ApiStatus.NonExtendable
 public interface IScrollBoxWidget extends IRecipeWidget, IJeiInputHandler {
 	/**
 	 * Get the width available for displaying contents in the scroll box.

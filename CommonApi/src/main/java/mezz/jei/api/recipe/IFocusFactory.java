@@ -3,6 +3,7 @@ package mezz.jei.api.recipe;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 
@@ -10,6 +11,7 @@ import java.util.Collection;
  * {@link IFocusFactory} helps with creating {@link IFocus} for JEI.
  * Get an instance from {@link IJeiHelpers#getFocusFactory()}.
  */
+@ApiStatus.NonExtendable
 public interface IFocusFactory {
 	/**
 	 * Returns a new focus.

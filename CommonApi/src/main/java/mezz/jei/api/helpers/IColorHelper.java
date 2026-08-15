@@ -3,6 +3,7 @@ package mezz.jei.api.helpers;
 import java.util.List;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Helper class for getting colors for sprites for purposes of implementing {@link mezz.jei.api.ingredients.IIngredientHelper#getColors(Object)}.
@@ -10,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
  *
  * @since 7.6.3
  */
+@ApiStatus.NonExtendable
 public interface IColorHelper {
 
 	/**

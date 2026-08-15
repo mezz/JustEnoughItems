@@ -1,10 +1,13 @@
 package mezz.jei.api.gui.placement;
 
+import org.jetbrains.annotations.ApiStatus;
+
 /**
  * Interface for things that can have their position set, and be aligned vertically and horizontally in an area.
  *
  * @since 15.20.0
  */
+@ApiStatus.NonExtendable
 public interface IPlaceable<THIS extends IPlaceable<THIS>> {
 	/**
 	 * Place this element at the given position.

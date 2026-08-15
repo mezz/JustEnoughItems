@@ -3,6 +3,7 @@ package mezz.jei.api.helpers;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
  * @param <T> the type of Fluid ingredient for the current platform.
  * @since 10.1.0
  */
+@ApiStatus.NonExtendable
 public interface IPlatformFluidHelper<T> {
 	/**
 	 * Returns the type of Fluid ingredients on the current platform.

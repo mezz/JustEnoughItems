@@ -1,5 +1,7 @@
 package mezz.jei.api.gui.inputs;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.api.runtime.IJeiKeyMappings;
@@ -11,6 +13,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
  *
  * @since 15.9.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiUserInput {
 	/**
 	 * Vanilla information about a click or key press.

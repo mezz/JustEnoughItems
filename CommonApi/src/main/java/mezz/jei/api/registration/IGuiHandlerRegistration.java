@@ -1,5 +1,7 @@
 package mezz.jei.api.registration;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -14,6 +16,7 @@ import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 
+@ApiStatus.NonExtendable
 public interface IGuiHandlerRegistration {
 	/**
 	 * {@link IJeiHelpers} provides helpers and tools for addon mods.

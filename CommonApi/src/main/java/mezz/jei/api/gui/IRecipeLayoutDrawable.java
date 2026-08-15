@@ -12,6 +12,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Optional;
 
@@ -22,6 +23,7 @@ import java.util.Optional;
  *
  * @since 3.13.2
  */
+@ApiStatus.NonExtendable
 public interface IRecipeLayoutDrawable<R> {
 	/**
 	 * Set the position of the recipe layout in screen coordinates.
