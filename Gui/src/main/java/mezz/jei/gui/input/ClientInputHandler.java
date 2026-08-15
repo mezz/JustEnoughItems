@@ -55,7 +55,8 @@ public class ClientInputHandler {
 			return true;
 		}
 
-		if (!isContainerTextFieldFocused(screen)) {
+		// Focus-search explicitly transfers focus, including from the creative inventory's always-focused search box.
+		if (input.is(keybindings.getFocusSearch()) || !isContainerTextFieldFocused(screen)) {
 			IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
 			if (guiProperties != null) {
 				return this.inputRouter.handleUserInput(screen, guiProperties, input, keybindings);
