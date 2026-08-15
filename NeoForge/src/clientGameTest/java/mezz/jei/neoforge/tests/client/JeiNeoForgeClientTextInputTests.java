@@ -44,7 +44,8 @@ public final class JeiNeoForgeClientTextInputTests {
 			if (client.player == null) {
 				throw new AssertionError("Expected a client player for the text input test.");
 			}
-			client.setScreen(new PreeditBlockingContainerScreen(client.player));
+			PreeditBlockingContainerScreen testScreen = new PreeditBlockingContainerScreen(client.player);
+			client.setScreen(testScreen);
 
 			IngredientListOverlay ingredientListOverlay = (IngredientListOverlay) Internal.getJeiRuntime()
 				.getIngredientListOverlay();
@@ -52,15 +53,23 @@ public final class JeiNeoForgeClientTextInputTests {
 				throw new AssertionError("Expected JEI's ingredient list to be displayed on the inventory screen.");
 			}
 			Internal.getJeiRuntime().getIngredientFilter().setFilterText("");
-			focusSearchWithHotkey(client.keyboardHandler, client.getWindow().handle());
-			if (!ingredientListOverlay.hasKeyboardFocus()) {
-				throw new AssertionError("Expected the focus-search hotkey to focus JEI's search field.");
-			}
 
 			ReflectionUtil reflectionUtil = new ReflectionUtil();
 			GuiTextFieldFilter searchField = reflectionUtil.getFieldWithClass(ingredientListOverlay, GuiTextFieldFilter.class)
 				.findFirst()
 				.orElseThrow(() -> new AssertionError("Expected JEI's ingredient overlay to contain a search field."));
+
+			ImeTextInputTestUtil.assertContainerTextInputFocused(client, testScreen);
+			searchField.setFocused(true);
+			ImeTextInputTestUtil.assertSearchFieldTookTextInputFocus(client, testScreen, searchField);
+			searchField.setFocused(false);
+			testScreen.setFocused(null);
+
+			focusSearchWithHotkey(client.keyboardHandler, client.getWindow().handle());
+			if (!ingredientListOverlay.hasKeyboardFocus()) {
+				throw new AssertionError("Expected the focus-search hotkey to focus JEI's search field.");
+			}
+
 			try {
 				if (client.screen.getFocused() != searchField) {
 					throw new AssertionError("Expected JEI's search field to own the screen focus.");
@@ -70,6 +79,8 @@ public final class JeiNeoForgeClientTextInputTests {
 				}
 
 				ImeTextInputTestUtil.typeKoreanText(client.keyboardHandler, client.getWindow().handle(), searchField);
+				ImeTextInputTestUtil.assertScreenCleanupKeepsChatTextInputEnabled(client, ingredientListOverlay, searchField);
+				ImeTextInputTestUtil.assertRedundantUnfocusKeepsChatTextInputEnabled(client, searchField);
 			} finally {
 				client.setScreen(null);
 			}
