@@ -1,17 +1,19 @@
 package mezz.jei.api.helpers;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.ApiStatus;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Helper class for getting mod names from their modIds.
  * Get an instance from {@link IJeiHelpers#getModIdHelper()}
  */
+@ApiStatus.NonExtendable
 public interface IModIdHelper {
 	/**
 	 * Get the mod name for its modId

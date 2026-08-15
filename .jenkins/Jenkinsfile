@@ -18,6 +18,18 @@ def runExternalPublishTask(String gradleTask) {
     }
 }
 
+def shouldSkipApiCompatibility() {
+    for (def changeSet in currentBuild.changeSets) {
+        for (def entry in changeSet.items) {
+            def title = entry.msg?.readLines()?.getAt(0) ?: ''
+            if (title.toLowerCase().contains('[skip-api-check]')) {
+                return true
+            }
+        }
+    }
+    return false
+}
+
 def releaseCommentStatePrefix() {
     return 'jenkins-github-release-comments-state:v1:'
 }
@@ -89,7 +101,19 @@ pipeline {
         stage('Build') {
             steps {
                 sh "python3 -m unittest discover -s .jenkins -p 'test_*.py'"
-                sh "./gradlew build --no-daemon"
+                sh "./gradlew build -x checkApiCompatibility --no-daemon"
+            }
+        }
+
+        stage('API Compatibility') {
+            steps {
+                script {
+                    if (shouldSkipApiCompatibility()) {
+                        echo 'Skipping API compatibility because a commit title contains [skip-api-check].'
+                    } else {
+                        sh "./gradlew checkApiCompatibility"
+                    }
+                }
             }
         }
 

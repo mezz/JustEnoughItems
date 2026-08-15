@@ -4,6 +4,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 
@@ -18,6 +19,7 @@ import java.util.Collection;
  *
  * @since 11.10.0
  */
+@ApiStatus.NonExtendable
 public interface IExtraIngredientRegistration {
 	/**
 	 * Add extra ItemStacks that are not already in the creative menu.

@@ -1,5 +1,7 @@
 package mezz.jei.api.runtime;
 
+import org.jetbrains.annotations.ApiStatus;
+
 /**
  * Gives access to key mappings used by JEI.
  * This can be used by mods that want to use the same keys that players bind for JEI.
@@ -8,6 +10,7 @@ package mezz.jei.api.runtime;
  *
  * @since 11.0.1
  */
+@ApiStatus.NonExtendable
 public interface IJeiKeyMappings {
 	/**
 	 * @return the key mapping to show recipes.

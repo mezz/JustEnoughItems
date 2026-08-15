@@ -1,5 +1,7 @@
 package mezz.jei.api.recipe;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import mezz.jei.api.recipe.category.IRecipeCategory;
 
 import java.util.Collection;
@@ -12,6 +14,7 @@ import java.util.stream.Stream;
  *
  * @since 9.5.0
  */
+@ApiStatus.NonExtendable
 public interface IRecipeCategoriesLookup {
 	/**
 	 * Limit the results to only recipe categories for the given types.

@@ -1,5 +1,7 @@
 package mezz.jei.api.runtime.config;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.List;
 
 /**
@@ -7,6 +9,7 @@ import java.util.List;
  *
  * @since 11.7.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiConfigListValueSerializer<T> extends IJeiConfigValueSerializer<List<T>> {
 	/**
 	 * Get the serializer for each value in the list.

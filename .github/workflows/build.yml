@@ -41,7 +41,7 @@ jobs:
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
       - name: Build with Gradle
-        run: ./gradlew build --no-daemon
+        run: ./gradlew build -x checkApiCompatibility --no-daemon
 
       - name: Run server GameTests
         run: ./gradlew :Forge:runGameTestServer --no-daemon

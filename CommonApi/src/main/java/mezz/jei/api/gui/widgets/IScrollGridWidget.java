@@ -2,6 +2,7 @@ package mezz.jei.api.gui.widgets;
 
 import mezz.jei.api.gui.placement.IPlaceable;
 import net.minecraft.client.renderer.Rect2i;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A scrolling area for ingredients with a scrollbar.
@@ -10,6 +11,7 @@ import net.minecraft.client.renderer.Rect2i;
  * Create one with {@link IRecipeExtrasBuilder#addScrollGridWidget}.
  * @since 11.38.0
  */
+@ApiStatus.NonExtendable
 public interface IScrollGridWidget extends ISlottedRecipeWidget, IPlaceable<IScrollGridWidget> {
 	/**
 	 * Get the position and size of this widget, relative to its parent element.
