@@ -10,6 +10,7 @@ import mezz.jei.test.client.PreeditBlockingContainerScreen;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import org.apache.logging.log4j.LogManager;
@@ -63,6 +64,14 @@ public final class JeiNeoForgeClientTextInputTests {
 			searchField.setFocused(true);
 			ImeTextInputTestUtil.assertSearchFieldTookTextInputFocus(client, testScreen, searchField);
 			searchField.setFocused(false);
+			testScreen.setFocused(null);
+
+			CreativeModeInventoryScreen creativeScreen = ImeTextInputTestUtil.openCreativeSearchWithTextInputFocused(client, searchField);
+			focusSearchWithHotkey(client.keyboardHandler, client.getWindow().handle());
+			ImeTextInputTestUtil.assertSearchFieldTookCreativeSearchFocus(client, creativeScreen, searchField);
+			ImeTextInputTestUtil.assertCreativeSearchFocusRestored(client, creativeScreen, searchField);
+
+			client.gui.setScreen(testScreen);
 			testScreen.setFocused(null);
 
 			focusSearchWithHotkey(client.keyboardHandler, client.getWindow().handle());
