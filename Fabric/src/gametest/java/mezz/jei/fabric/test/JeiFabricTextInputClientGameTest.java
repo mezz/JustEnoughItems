@@ -51,7 +51,8 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 				if (client.player == null) {
 					throw new AssertionError("Expected a client player for the text input test.");
 				}
-				client.gui.setScreen(new PreeditBlockingContainerScreen(client.player));
+				PreeditBlockingContainerScreen testScreen = new PreeditBlockingContainerScreen(client.player);
+				client.gui.setScreen(testScreen);
 
 				IngredientListOverlay ingredientListOverlay = (IngredientListOverlay) Internal.getJeiRuntime()
 					.getIngredientListOverlay();
@@ -59,15 +60,23 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 					throw new AssertionError("Expected JEI's ingredient list to be displayed on the inventory screen.");
 				}
 				Internal.getJeiRuntime().getIngredientFilter().setFilterText("");
-				focusSearchWithHotkey(client.keyboardHandler, client.getWindow().handle());
-				if (!ingredientListOverlay.hasKeyboardFocus()) {
-					throw new AssertionError("Expected the focus-search hotkey to focus JEI's search field.");
-				}
 
 				ReflectionUtil reflectionUtil = new ReflectionUtil();
 				GuiTextFieldFilter searchField = reflectionUtil.getFieldWithClass(ingredientListOverlay, GuiTextFieldFilter.class)
 					.findFirst()
 					.orElseThrow(() -> new AssertionError("Expected JEI's ingredient overlay to contain a search field."));
+
+				ImeTextInputTestUtil.assertContainerTextInputFocused(client, testScreen);
+				searchField.setFocused(true);
+				ImeTextInputTestUtil.assertSearchFieldTookTextInputFocus(client, testScreen, searchField);
+				searchField.setFocused(false);
+				testScreen.setFocused(null);
+
+				focusSearchWithHotkey(client.keyboardHandler, client.getWindow().handle());
+				if (!ingredientListOverlay.hasKeyboardFocus()) {
+					throw new AssertionError("Expected the focus-search hotkey to focus JEI's search field.");
+				}
+
 				try {
 					if (client.gui.screen().getFocused() != searchField) {
 						throw new AssertionError("Expected JEI's search field to own the screen focus.");
@@ -77,6 +86,8 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 					}
 
 					ImeTextInputTestUtil.typeKoreanText(client.keyboardHandler, client.getWindow().handle(), searchField);
+					ImeTextInputTestUtil.assertScreenCleanupKeepsChatTextInputEnabled(client, ingredientListOverlay, searchField);
+					ImeTextInputTestUtil.assertRedundantUnfocusKeepsChatTextInputEnabled(client, searchField);
 				} finally {
 					client.gui.setScreen(null);
 				}
