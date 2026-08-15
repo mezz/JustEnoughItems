@@ -17,6 +17,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import org.lwjgl.glfw.GLFW;
@@ -70,6 +71,14 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 				searchField.setFocused(true);
 				ImeTextInputTestUtil.assertSearchFieldTookTextInputFocus(client, testScreen, searchField);
 				searchField.setFocused(false);
+				testScreen.setFocused(null);
+
+				CreativeModeInventoryScreen creativeScreen = ImeTextInputTestUtil.openCreativeSearchWithTextInputFocused(client, searchField);
+				focusSearchWithHotkey(client.keyboardHandler, client.getWindow().handle());
+				ImeTextInputTestUtil.assertSearchFieldTookCreativeSearchFocus(client, creativeScreen, searchField);
+				ImeTextInputTestUtil.assertCreativeSearchFocusRestored(client, creativeScreen, searchField);
+
+				client.setScreen(testScreen);
 				testScreen.setFocused(null);
 
 				focusSearchWithHotkey(client.keyboardHandler, client.getWindow().handle());
