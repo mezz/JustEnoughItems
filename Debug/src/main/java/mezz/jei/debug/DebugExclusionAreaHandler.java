@@ -11,6 +11,7 @@ import net.minecraft.util.Mth;
 import org.lwjgl.glfw.GLFW;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -27,6 +28,10 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 	private static final int INITIAL_Y = 30;
 	private static final int INITIAL_WIDTH = 80;
 	private static final int INITIAL_HEIGHT = 80;
+	private static final int SMALL_AREA_SIZE = 20;
+	private static final int SMALL_AREA_SPACING = 4;
+	private static final int SMALL_AREA_OFFSET = 20;
+	private static final int SMALL_AREA_COUNT = 5;
 	private static final Field RENDERABLES_FIELD = findRenderablesField();
 
 	private int x = INITIAL_X;
@@ -60,7 +65,7 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 
 		pollMouse();
 		installRenderer();
-		return List.of(getArea());
+		return getAreas();
 	}
 
 	private void draw(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
@@ -68,10 +73,12 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 			return;
 		}
 
-		Rect2i area = getArea();
-		guiGraphics.fill(area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), BACKGROUND_COLOR);
-		drawOutline(guiGraphics, area);
-		drawLabel(guiGraphics, area);
+		List<Rect2i> areas = getAreas();
+		for (Rect2i area : areas) {
+			guiGraphics.fill(area.getX(), area.getY(), area.getX() + area.getWidth(), area.getY() + area.getHeight(), BACKGROUND_COLOR);
+			drawOutline(guiGraphics, area);
+		}
+		drawLabel(guiGraphics, areas.getFirst());
 	}
 
 	private void installRenderer() {
@@ -109,6 +116,18 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 
 	private Rect2i getArea() {
 		return new Rect2i(x, y, width, height);
+	}
+
+	private List<Rect2i> getAreas() {
+		List<Rect2i> areas = new ArrayList<>(SMALL_AREA_COUNT + 1);
+		areas.add(getArea());
+
+		int smallAreaX = x + width + SMALL_AREA_OFFSET;
+		for (int i = 0; i < SMALL_AREA_COUNT; i++) {
+			int smallAreaY = y + i * (SMALL_AREA_SIZE + SMALL_AREA_SPACING);
+			areas.add(new Rect2i(smallAreaX, smallAreaY, SMALL_AREA_SIZE, SMALL_AREA_SIZE));
+		}
+		return List.copyOf(areas);
 	}
 
 	private static void drawOutline(GuiGraphics guiGraphics, Rect2i area) {
