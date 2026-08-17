@@ -77,6 +77,11 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	}
 
 	@Override
+	public boolean isValidIngredient(T ingredient) {
+		return !platformFluidHelper.isEmpty(ingredient);
+	}
+
+	@Override
 	public T copyWithAmount(T ingredient, long amount) {
 		return platformFluidHelper.copyWithAmount(ingredient, amount);
 	}
