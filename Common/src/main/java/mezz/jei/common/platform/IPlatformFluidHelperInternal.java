@@ -21,6 +21,8 @@ public interface IPlatformFluidHelperInternal<T> extends IPlatformFluidHelper<T>
 
 	long getAmount(T ingredient);
 
+	boolean isEmpty(T ingredient);
+
 	DataComponentPatch getComponentsPatch(T ingredient);
 
 	void getTooltip(List<Component> tooltip, T ingredient, TooltipFlag tooltipFlag);

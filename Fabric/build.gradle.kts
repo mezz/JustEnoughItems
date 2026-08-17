@@ -309,6 +309,18 @@ loom {
             )
             programArgs("--username", "JeiClientTest", "--width", "1280", "--height", "720")
         }
+        create("clientFluidIngredientTest") {
+            client()
+            source(clientGameTestSourceSet)
+            configName = "Fabric Client Fluid Ingredient Test"
+            ideConfigGenerated(false)
+            runDir(loomRunDir.resolve("clientFluidIngredientTest").toString())
+            property("jei.fabric.clientTest", "fluidIngredients")
+            vmArgs(
+                "-Dfabric.log.level=info"
+            )
+            programArgs("--username", "JeiClientTest", "--width", "1280", "--height", "720")
+        }
         create("clientCreativeInventoryTestWithoutAmecs") {
             client()
             source(clientGameTestWithoutAmecsSourceSet)
@@ -364,6 +376,7 @@ val writeClientTestOptionsTasks = (
         listOf(
             "clientCreativeInventoryTest",
             "clientCreativeInventoryTestWithoutAmecs",
+            "clientFluidIngredientTest",
             "clientKeyMappingTest",
             "clientKeyMappingTestWithoutAmecs"
         )
@@ -396,6 +409,10 @@ tasks.named("runClientCreativeInventoryTestWithoutAmecs") {
     dependsOn(writeClientTestOptionsTasks.getValue("clientCreativeInventoryTestWithoutAmecs"))
 }
 
+tasks.named("runClientFluidIngredientTest") {
+    dependsOn(writeClientTestOptionsTasks.getValue("clientFluidIngredientTest"))
+}
+
 val clientRecipeSyncTestRunTasks = clientRecipeSyncTestCases.map { (runName, _) ->
     tasks.named("run${capitalizedRunName(runName)}")
 }
@@ -406,7 +423,7 @@ clientRecipeSyncTestRunTasks.zipWithNext().forEach { (previousTask, nextTask) ->
 }
 
 tasks.named("runClientKeyMappingTest") {
-    mustRunAfter("runClientCreativeInventoryTest")
+    mustRunAfter("runClientCreativeInventoryTest", "runClientFluidIngredientTest")
 }
 
 tasks.named("runClientKeyMappingTestWithoutAmecs") {
@@ -421,6 +438,10 @@ tasks.named("runClientCreativeInventoryTestWithoutAmecs") {
     mustRunAfter("runClientCreativeInventoryTest", "runClientKeyMappingTest")
 }
 
+tasks.named("runClientFluidIngredientTest") {
+    mustRunAfter("runClientCreativeInventoryTest")
+}
+
 tasks.register("runClientRecipeSyncTest") {
     group = "mod development"
     description = "Runs all JEI Fabric client recipe-sync test scenarios."
@@ -430,7 +451,7 @@ tasks.register("runClientRecipeSyncTest") {
 tasks.register("runClientGameTest") {
     group = "mod development"
     description = "Runs JEI Fabric client tests with AMECS support enabled."
-    dependsOn(clientRecipeSyncTestRunTasks, "runClientCreativeInventoryTest", "runClientKeyMappingTest")
+    dependsOn(clientRecipeSyncTestRunTasks, "runClientCreativeInventoryTest", "runClientFluidIngredientTest", "runClientKeyMappingTest")
 }
 
 tasks.register("runClientGameTestWithoutAmecs") {
