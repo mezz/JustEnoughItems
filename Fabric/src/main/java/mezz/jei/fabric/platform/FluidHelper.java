@@ -93,6 +93,11 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	}
 
 	@Override
+	public boolean isEmpty(IJeiFluidIngredient ingredient) {
+		return ingredient.getAmount() <= 0 || ingredient.getFluidVariant().isBlank();
+	}
+
+	@Override
 	public DataComponentPatch getComponentsPatch(IJeiFluidIngredient ingredient) {
 		FluidVariant fluid = ingredient.getFluidVariant();
 		return fluid.getComponentsPatch();
@@ -144,6 +149,9 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 
 	@Override
 	public IJeiFluidIngredient copyWithAmount(IJeiFluidIngredient ingredient, long amount) {
+		if (isEmpty(ingredient)) {
+			return new JeiFluidIngredient(FluidVariant.blank(), 0);
+		}
 		return new JeiFluidIngredient(ingredient.getFluidVariant(), amount);
 	}
 
