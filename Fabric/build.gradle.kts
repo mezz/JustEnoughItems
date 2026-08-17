@@ -58,6 +58,7 @@ base {
 }
 
 val dependencyProjectPaths = listOf(":Common", ":CommonApi", ":Library", ":Gui", ":FabricApi")
+val fabricApiProjectPath = ":FabricApi"
 val commonProjectDirectory = isolatedProjectDirectory(":Common")
 val debugProjectDirectory = isolatedProjectDirectory(":Debug")
 
@@ -172,10 +173,8 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
     dependencyProjectPaths.forEach { dependencyProjectPath ->
-        implementation(project(dependencyProjectPath)) {
-            if (dependencyProjectPath == ":FabricApi") {
-                isTransitive = false
-            }
+        if (dependencyProjectPath != fabricApiProjectPath) {
+            implementation(project(dependencyProjectPath))
         }
         dependencyClasses(project(dependencyProjectPath)) {
             isTransitive = false
@@ -187,10 +186,16 @@ dependencies {
             isTransitive = false
         }
     }
-    fabricApiClasses(project(":FabricApi")) {
+    implementation(project(fabricApiProjectPath)) {
+        isTransitive = false
+        attributes {
+            attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.CLASSES))
+        }
+    }
+    fabricApiClasses(project(fabricApiProjectPath)) {
         isTransitive = false
     }
-    fabricApiResources(project(":FabricApi")) {
+    fabricApiResources(project(fabricApiProjectPath)) {
         isTransitive = false
     }
     modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
