@@ -53,13 +53,21 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	}
 
 	@Override
+	public boolean isEmpty(FluidStack ingredient) {
+		return ingredient.isEmpty();
+	}
+
+	@Override
 	public Optional<CompoundTag> getTag(FluidStack ingredient) {
 		return Optional.ofNullable(ingredient.getTag());
 	}
 
 	@Override
 	public FluidStack copyWithAmount(FluidStack ingredient, long amount) {
-		FluidStack copy = ingredient.copy();
+		if (ingredient.getRawFluid() == Fluids.EMPTY) {
+			return FluidStack.EMPTY;
+		}
+		FluidStack copy = this.copy(ingredient);
 		int intAmount = Math.toIntExact(amount);
 		copy.setAmount(intAmount);
 		return copy;
