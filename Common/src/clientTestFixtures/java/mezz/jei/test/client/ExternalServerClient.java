@@ -89,8 +89,10 @@ public final class ExternalServerClient {
 		// Until then, reset it here so the test only fails for references retained outside vanilla teardown.
 		clientAccess.run(client -> {
 			client.levelRenderer.setLevel(null);
+			client.gameRenderer.getMainCamera().reset();
 			var levelRenderState = client.gameRenderer.getLevelRenderState();
 			levelRenderState.reset();
+			clientAccess.clearAdditionalClientLevelReferences(client);
 		});
 		clientAccess.waitFor(
 			client -> {
@@ -270,5 +272,9 @@ public final class ExternalServerClient {
 		<T> T compute(Function<Minecraft, T> task);
 
 		void waitFor(Predicate<Minecraft> predicate, Supplier<String> timeoutMessage);
+
+		default void clearAdditionalClientLevelReferences(Minecraft client) {
+
+		}
 	}
 }

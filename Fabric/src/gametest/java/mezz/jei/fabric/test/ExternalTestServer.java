@@ -79,7 +79,28 @@ final class ExternalTestServer implements AutoCloseable {
 					throw new AssertionError(timeoutMessage.get(), e);
 				}
 			}
+
+			@Override
+			public void clearAdditionalClientLevelReferences(Minecraft client) {
+				clearFabricRenderingLevelReference(client);
+			}
 		};
+	}
+
+	private static void clearFabricRenderingLevelReference(Minecraft client) {
+		// Fabric Rendering API 16.2.6 keeps the last ClientLevel in this context until another level renders.
+		// There is no public reset hook in this version, so clear its test-only internal state before checking for leaks.
+		try {
+			var contextField = client.levelRenderer.getClass().getDeclaredField("extractionContext");
+			contextField.setAccessible(true);
+			Object extractionContext = contextField.get(client.levelRenderer);
+
+			var worldField = extractionContext.getClass().getDeclaredField("world");
+			worldField.setAccessible(true);
+			worldField.set(extractionContext, null);
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException("Failed to clear Fabric's retained client level", e);
+		}
 	}
 
 	@Override
