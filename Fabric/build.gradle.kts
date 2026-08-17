@@ -22,6 +22,7 @@ val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
 val fabricApiVersion: String by extra
 val fabricLoaderVersion: String by extra
+val jUnitVersion: String by extra
 val minecraftVersion: String by extra
 val modGroup: String by extra
 val modId: String by extra
@@ -165,6 +166,16 @@ dependencies {
     modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
     }
+    testImplementation(
+        group = "org.junit.jupiter",
+        name = "junit-jupiter",
+        version = jUnitVersion
+    )
+    testRuntimeOnly(
+        group = "org.junit.platform",
+        name = "junit-platform-launcher",
+        version = jUnitVersion
+    )
 }
 
 loom {

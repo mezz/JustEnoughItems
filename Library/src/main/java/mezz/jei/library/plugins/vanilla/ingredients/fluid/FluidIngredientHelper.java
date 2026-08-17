@@ -32,7 +32,6 @@ public class FluidIngredientHelper<T> implements IngredientHelperWithResourceLoc
 	private final ISubtypeManager subtypeManager;
 	private final IColorHelper colorHelper;
 	private final IPlatformFluidHelperInternal<T> platformFluidHelper;
-	private final IPlatformRegistry<Fluid> registry;
 	private final IIngredientTypeWithSubtypes<Fluid, T> fluidType;
 	private final TagKey<Fluid> hiddenFromRecipeViewers;
 
@@ -40,7 +39,6 @@ public class FluidIngredientHelper<T> implements IngredientHelperWithResourceLoc
 		this.subtypeManager = subtypeManager;
 		this.colorHelper = colorHelper;
 		this.platformFluidHelper = platformFluidHelper;
-		this.registry = Services.PLATFORM.getRegistry(Registry.FLUID_REGISTRY);
 		this.fluidType = platformFluidHelper.getFluidIngredientType();
 		this.hiddenFromRecipeViewers = TagKey.create(Registry.FLUID_REGISTRY, Tags.HIDDEN_FROM_RECIPE_VIEWERS);
 	}
@@ -97,6 +95,11 @@ public class FluidIngredientHelper<T> implements IngredientHelperWithResourceLoc
 	}
 
 	@Override
+	public boolean isValidIngredient(T ingredient) {
+		return !platformFluidHelper.isEmpty(ingredient);
+	}
+
+	@Override
 	public T copyWithAmount(T ingredient, long amount) {
 		return platformFluidHelper.copyWithAmount(ingredient, amount);
 	}
@@ -130,6 +133,7 @@ public class FluidIngredientHelper<T> implements IngredientHelperWithResourceLoc
 	}
 
 	private ResourceLocation getRegistryName(T ingredient, Fluid fluid) {
+		IPlatformRegistry<Fluid> registry = Services.PLATFORM.getRegistry(Registry.FLUID_REGISTRY);
 		return registry.getRegistryName(fluid)
 			.orElseThrow(() -> {
 				String ingredientInfo = getErrorInfo(ingredient);
@@ -209,6 +213,7 @@ public class FluidIngredientHelper<T> implements IngredientHelperWithResourceLoc
 	@Override
 	public boolean isIngredientOnServer(T ingredient) {
 		Fluid fluid = fluidType.getBase(ingredient);
+		IPlatformRegistry<Fluid> registry = Services.PLATFORM.getRegistry(Registry.FLUID_REGISTRY);
 		return registry.contains(fluid);
 	}
 }

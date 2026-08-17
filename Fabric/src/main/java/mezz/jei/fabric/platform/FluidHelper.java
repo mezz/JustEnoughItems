@@ -22,6 +22,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -82,6 +83,11 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 	@Override
 	public long getAmount(IJeiFluidIngredient ingredient) {
 		return ingredient.getAmount();
+	}
+
+	@Override
+	public boolean isEmpty(IJeiFluidIngredient ingredient) {
+		return ingredient.getAmount() <= 0 || ingredient.getFluid().isSame(Fluids.EMPTY);
 	}
 
 	@Override
