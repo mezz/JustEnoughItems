@@ -20,6 +20,7 @@ public final class JeiFabricClientTests implements ClientModInitializer {
 
 		switch (testSuite) {
 			case "all" -> registerAllTests();
+			case "fluidIngredients" -> FluidIngredientGameTests.register();
 			case "recipeSync" -> JeiFabricClientRecipeSyncTests.register();
 			case "creativeInventory" -> JeiFabricCreativeInventoryClientGameTest.register();
 			case "keyMapping" -> JeiFabricKeyMappingClientTests.register();
@@ -43,6 +44,7 @@ public final class JeiFabricClientTests implements ClientModInitializer {
 		testCases.add(IngredientNavigationClientTest.getTestCase());
 		testCases.add(RecipeButtonsClientTest.getTestCase());
 		testCases.addAll(JeiFabricClientRecipeSyncTests.getTestCases());
+		testCases.add(FluidIngredientGameTests.getTestCase());
 		testCases.add(JeiFabricCreativeInventoryClientGameTest.getTestCase());
 		testCases.add(JeiFabricKeyMappingClientTests.getTestCase());
 		FabricClientTestRunner.register(testCases);
