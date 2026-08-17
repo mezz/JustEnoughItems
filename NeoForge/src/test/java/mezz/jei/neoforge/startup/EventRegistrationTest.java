@@ -1,6 +1,7 @@
 package mezz.jei.neoforge.startup;
 
 import mezz.jei.gui.events.GuiEventHandler;
+import mezz.jei.neoforge.events.JeiScreenRenderForegroundEvent;
 import mezz.jei.neoforge.events.RuntimeEventSubscriptions;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.render.state.GuiRenderState;
@@ -20,12 +21,13 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class EventRegistrationTest {
 	@Test
-	public void nonContainerScreenPostDrawsJeiForeground() throws ReflectiveOperationException {
+	public void nonContainerScreenForegroundEventDrawsJeiForeground() throws ReflectiveOperationException {
 		// Setup: capture the runtime event listeners registered for a plain screen like RecipesGui.
 		Map<Class<?>, Consumer<?>> listeners = new HashMap<>();
 		IEventBus eventBus = createRecordingEventBus(listeners);
@@ -38,9 +40,9 @@ public class EventRegistrationTest {
 		int mouseX = 13;
 		int mouseY = 17;
 
-		// Operation: fire the post-render event used by NeoForge 1.21.11 for non-container screens.
-		Consumer<ScreenEvent.Render.Post> listener = getListener(listeners, ScreenEvent.Render.Post.class);
-		listener.accept(new ScreenEvent.Render.Post(screen, guiGraphics, mouseX, mouseY, 0));
+		// Operation: fire the event bridged between screen contents and deferred tooltips.
+		Consumer<JeiScreenRenderForegroundEvent> listener = getListener(listeners, JeiScreenRenderForegroundEvent.class);
+		listener.accept(new JeiScreenRenderForegroundEvent(screen, guiGraphics, mouseX, mouseY));
 
 		// Assertions: JEI's foreground path receives the original render context.
 		assertEquals(1, guiEventHandler.foregroundDrawCount);
@@ -48,6 +50,7 @@ public class EventRegistrationTest {
 		assertSame(guiGraphics, guiEventHandler.guiGraphics);
 		assertEquals(mouseX, guiEventHandler.mouseX);
 		assertEquals(mouseY, guiEventHandler.mouseY);
+		assertFalse(listeners.containsKey(ScreenEvent.Render.Post.class));
 	}
 
 	private static IEventBus createRecordingEventBus(Map<Class<?>, Consumer<?>> listeners) {
