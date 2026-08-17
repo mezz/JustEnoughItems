@@ -171,15 +171,19 @@ dependencies {
     })
     modImplementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
-    dependencyProjectPaths.forEach {
-        implementation(project(it))
-        dependencyClasses(project(it)) {
+    dependencyProjectPaths.forEach { dependencyProjectPath ->
+        implementation(project(dependencyProjectPath)) {
+            if (dependencyProjectPath == ":FabricApi") {
+                isTransitive = false
+            }
+        }
+        dependencyClasses(project(dependencyProjectPath)) {
             isTransitive = false
         }
-        dependencyResources(project(it)) {
+        dependencyResources(project(dependencyProjectPath)) {
             isTransitive = false
         }
-        dependencySources(project(it)) {
+        dependencySources(project(dependencyProjectPath)) {
             isTransitive = false
         }
     }
