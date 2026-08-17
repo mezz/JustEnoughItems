@@ -996,6 +996,64 @@ public class IngredientGridConfigTest {
 		assertTrue(obstructedLayout.ingredientGridArea().y() > unobstructedLayout.ingredientGridArea().y());
 	}
 
+	@ParameterizedTest
+	@ValueSource(booleans = {false, true})
+	public void rectangularLayoutChoosesMoreSlotsOverMovingBelowStackedExclusions(boolean drawBackground) {
+		// Setup: stacked tabs leave more room beside them than below them.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.maxColumns(100)
+			.maxRows(100)
+			.drawBackground(drawBackground)
+			.layoutMode(IngredientGridLayoutMode.RECTANGULAR)
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
+			gridConfig, availableArea, Set.of(), null, 0
+		);
+		ImmutableRect2i navigationArea = unobstructedLayout.navigationArea();
+		int tabWidth = 21;
+		int tabHeight = 24;
+		int tabSpacing = 1;
+		ImmutableRect2i firstTab = new ImmutableRect2i(
+			navigationArea.x(), navigationArea.y(), tabWidth, tabHeight
+		);
+		ImmutableRect2i secondTab = firstTab.moveDown(tabHeight + tabSpacing);
+		ImmutableRect2i thirdTab = secondTab.moveDown(tabHeight + tabSpacing);
+		ImmutableRect2i fourthTab = thirdTab.moveDown(tabHeight + tabSpacing);
+		ImmutableRect2i fifthTab = fourthTab.moveDown(tabHeight + tabSpacing);
+		Set<ImmutableRect2i> tabs = Set.of(firstTab, secondTab, thirdTab, fourthTab, fifthTab);
+
+		// Operation: recalculate with a vertical stack of narrow navigation exclusions.
+		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
+			gridConfig, availableArea, tabs, null, 0
+		);
+
+		// Assertions: the grid narrows beside the tabs because that preserves more slots than moving below them.
+		ImmutableRect2i expectedNavigationArea = IngredientGridWithNavigationLayout.calculateNavigationArea(
+			obstructedLayout.slotBackgroundArea(),
+			true
+		);
+		ImmutableRect2i availableGridArea = IngredientGridWithNavigationLayout.getAvailableGridArea(gridConfig, availableArea);
+		int gridPadding = 0;
+		if (drawBackground) {
+			gridPadding = IngredientGridWithNavigationLayout.INNER_PADDING;
+		}
+		int navigationToGridOffset = IngredientGridWithNavigationLayout.NAVIGATION_HEIGHT +
+			IngredientGridWithNavigationLayout.INNER_PADDING + gridPadding;
+		int rowsBelowTabs = (bottom(availableGridArea) - bottom(fifthTab) - navigationToGridOffset) /
+			IngredientGridLayout.INGREDIENT_HEIGHT;
+		int columnsBeforeNarrowing = unobstructedLayout.ingredientGridArea().width() /
+			IngredientGridLayout.INGREDIENT_WIDTH;
+		int maximumSlotsBelowTabs = rowsBelowTabs * columnsBeforeNarrowing;
+
+		assertEquals(expectedNavigationArea, obstructedLayout.navigationArea());
+		assertTrue(obstructedLayout.hasRoom());
+		assertEquals(unobstructedLayout.ingredientGridArea().y(), obstructedLayout.ingredientGridArea().y());
+		assertTrue(obstructedLayout.ingredientGridArea().width() < unobstructedLayout.ingredientGridArea().width());
+		assertTrue(obstructedLayout.availableSlotCount() > maximumSlotsBelowTabs);
+		assertTrue(tabs.stream().noneMatch(obstructedLayout.navigationArea()::intersects));
+	}
+
 	@Test
 	public void rectangularLayoutStillAllowsGridSlotCutouts() {
 		// Setup: rectangular navigation is unobstructed, but one ingredient slot is excluded.
