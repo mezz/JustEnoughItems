@@ -3,7 +3,7 @@ def runExternalPublishTask(String gradleTask) {
 
     for (def attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
-            sh "./gradlew ${gradleTask} --no-daemon"
+            sh "./gradlew ${gradleTask}"
             return
         } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException e) {
             throw e
@@ -17,6 +17,7 @@ def runExternalPublishTask(String gradleTask) {
         }
     }
 }
+
 def shouldSkipApiCompatibility() {
     for (def changeSet in currentBuild.changeSets) {
         for (def entry in changeSet.items) {
@@ -57,7 +58,7 @@ def persistReleaseCommentState(String stateFile) {
 pipeline {
     agent any
     options {
-        disableConcurrentBuilds()
+        disableConcurrentBuilds(abortPrevious: true)
         timeout(time: 1, unit: 'HOURS')
     }
     tools {
@@ -91,7 +92,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh "python3 -m unittest discover -s .jenkins -p 'test_*.py'"
-                sh "./gradlew build -x checkApiCompatibility --no-daemon"
+                sh "./gradlew build -x checkApiCompatibility"
             }
         }
 
@@ -132,8 +133,8 @@ pipeline {
                         JEI_JVM_DIAGNOSTIC_DELAY_SECONDS=600 \
                         JEI_JVM_DIAGNOSTIC_FILE="$WORKSPACE/Fabric/build/reports/client-gametest-diagnostics.txt" \
                             python3 .jenkins/runWithJvmDiagnostics.py \
-                            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
-                            ./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs --no-daemon --no-parallel
+							xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
+							./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs --no-parallel
                     else
                         echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
                         exit 1
@@ -147,14 +148,26 @@ pipeline {
                 expression { env.SHOULD_PUBLISH != 'false' }
             }
             steps {
-                sh "./gradlew :Core:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "./gradlew :Forge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "./gradlew :Fabric:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "./gradlew :Common:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "./gradlew :CommonApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "./gradlew :ForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
-                sh "./gradlew :FabricApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR} --no-daemon"
+                sh '''
+                    ./gradlew \
+                        :Core:publish \
+                        :Gui:publish \
+                        :Library:publish \
+                        :Forge:publish \
+                        :Fabric:publish \
+                        :Common:publish \
+                        :CommonApi:publish \
+                        :ForgeApi:publish \
+                        :FabricApi:publish \
+                        -PDEPLOY_DIR="$MAVEN_DEPLOY_DIR"
+                '''
             }
+        }
+
+        stage('Create Changelogs') {
+            steps {
+                sh "./gradlew :Changelog:makeHtmlChangelog"
+			}
         }
 
         stage('Publish CurseForge') {
