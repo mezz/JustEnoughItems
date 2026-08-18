@@ -9,6 +9,7 @@
       "mezz.jei.fabric.test.FluidIngredientGameTests"
     ],
     "fabric-client-gametest": [
+      "mezz.jei.fabric.test.JeiFabricCreativeInventoryClientGameTest",
       "mezz.jei.fabric.test.JeiFabricSingleplayerClientGameTest",
       "mezz.jei.fabric.test.JeiFabricTextInputClientGameTest",
       "mezz.jei.fabric.test.JeiFabricServerWithJeiClientGameTest",
