@@ -150,8 +150,8 @@ public final class CommandUtilServer {
 		if (giveCount > 0) {
 			itemStackCopy.setCount(giveCount);
 			notifyGive(sender, itemStackCopy);
-			sender.inventoryMenu.broadcastChanges();
 			if (sender instanceof ServerPlayerEntity) {
+				sender.inventoryMenu.broadcastChanges();
 				((ServerPlayerEntity) sender).broadcastCarriedItem();
 			}
 		}
