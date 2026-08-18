@@ -18,9 +18,35 @@ def runExternalPublishTask(String gradleTask) {
     }
 }
 
+def releaseCommentStatePrefix() {
+    return 'jenkins-github-release-comments-state:v1:'
+}
+
+def findPreviousReleaseCommentState() {
+    def previousBuild = currentBuild.previousBuild
+    while (previousBuild != null) {
+        def description = previousBuild.description ?: ''
+        if (description.startsWith(releaseCommentStatePrefix())) {
+            return description
+        }
+        previousBuild = previousBuild.previousBuild
+    }
+    return ''
+}
+
+def persistReleaseCommentState(String stateFile) {
+    def description = sh(
+        script: "python3 .jenkins/githubReleaseComments.py --state-file ${stateFile} --describe-state",
+        returnStdout: true
+    ).trim()
+    currentBuild.description = description
+    env.HAS_PENDING_RELEASE_COMMENTS = description.startsWith("${releaseCommentStatePrefix()}pending:") ? 'true' : 'false'
+}
+
 pipeline {
     agent any
     options {
+        disableConcurrentBuilds()
         timeout(time: 1, unit: 'HOURS')
     }
     tools {
@@ -34,6 +60,8 @@ pipeline {
       DISCORD_WEBHOOK_URL = credentials("jei-discord-webhook-url")
       GITHUB_RELEASE_COMMENT_TOKEN = credentials("github-release-comment-token")
       GITHUB_RELEASE_COMMENT_EXPECTED_LOGIN = "mezz-bot"
+      GITHUB_RELEASE_COMMENT_STATE_FILE = "build/jenkins/github-release-comments-state.json"
+      GITHUB_RELEASE_COMMENT_DESCRIPTION_FILE = "build/jenkins/github-release-comments-description.txt"
     }
     stages {
         stage('Clean') {
@@ -44,8 +72,23 @@ pipeline {
             }
         }
 
+        stage('Restore GitHub Release Comment State') {
+            steps {
+                script {
+                    sh 'mkdir -p build/jenkins'
+                    def previousState = findPreviousReleaseCommentState()
+                    if (previousState) {
+                        writeFile file: env.GITHUB_RELEASE_COMMENT_DESCRIPTION_FILE, text: previousState
+                        sh "python3 .jenkins/githubReleaseComments.py --state-file ${env.GITHUB_RELEASE_COMMENT_STATE_FILE} --restore-state-description-file ${env.GITHUB_RELEASE_COMMENT_DESCRIPTION_FILE}"
+                    }
+                    persistReleaseCommentState(env.GITHUB_RELEASE_COMMENT_STATE_FILE)
+                }
+            }
+        }
+
         stage('Build') {
             steps {
+                sh "python3 -m unittest discover -s .jenkins -p 'test_*.py'"
                 sh "./gradlew :Fabric:build"
                 sh "./gradlew :NeoForge:build"
                 sh "./gradlew :Common:build"
@@ -146,14 +189,30 @@ pipeline {
             }
         }
 
+        stage('Queue GitHub Release Comment') {
+            when {
+                expression { env.SHOULD_PUBLISH != 'false' && currentBuild.currentResult == 'SUCCESS' }
+            }
+            steps {
+                sh "python3 .jenkins/githubReleaseComments.py --state-file ${env.GITHUB_RELEASE_COMMENT_STATE_FILE} --queue-release"
+                script {
+                    persistReleaseCommentState(env.GITHUB_RELEASE_COMMENT_STATE_FILE)
+                }
+            }
+        }
+
         stage('Comment GitHub Release') {
             when {
-                expression { env.SHOULD_PUBLISH != 'false' && env.GITHUB_RELEASE_COMMENT_TOKEN }
+                expression { env.HAS_PENDING_RELEASE_COMMENTS == 'true' && env.GITHUB_RELEASE_COMMENT_TOKEN }
             }
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                    withEnv(["GITHUB_TOKEN=${env.GITHUB_RELEASE_COMMENT_TOKEN}"]) {
-                        sh "python3 .jenkins/githubReleaseComments.py"
+                    script {
+                        try {
+                            sh "python3 .jenkins/githubReleaseComments.py --token-env GITHUB_RELEASE_COMMENT_TOKEN --state-file ${env.GITHUB_RELEASE_COMMENT_STATE_FILE}"
+                        } finally {
+                            persistReleaseCommentState(env.GITHUB_RELEASE_COMMENT_STATE_FILE)
+                        }
                     }
                 }
             }
