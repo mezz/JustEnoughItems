@@ -58,7 +58,7 @@ def persistReleaseCommentState(String stateFile) {
 pipeline {
     agent any
     options {
-        disableConcurrentBuilds()
+        disableConcurrentBuilds(abortPrevious: true)
         timeout(time: 1, unit: 'HOURS')
     }
     tools {
@@ -76,23 +76,13 @@ pipeline {
       GITHUB_RELEASE_COMMENT_DESCRIPTION_FILE = "build/jenkins/github-release-comments-description.txt"
     }
     stages {
-        stage('Clean') {
-            steps {
-                echo 'Cleaning Project'
-                sh 'chmod +x gradlew'
-                sh './gradlew clean'
-            }
-        }
-
         stage('Restore GitHub Release Comment State') {
             steps {
                 script {
                     sh 'mkdir -p build/jenkins'
                     def previousState = findPreviousReleaseCommentState()
-                    if (previousState) {
-                        writeFile file: env.GITHUB_RELEASE_COMMENT_DESCRIPTION_FILE, text: previousState
-                        sh "python3 .jenkins/githubReleaseComments.py --state-file ${env.GITHUB_RELEASE_COMMENT_STATE_FILE} --restore-state-description-file ${env.GITHUB_RELEASE_COMMENT_DESCRIPTION_FILE}"
-                    }
+                    writeFile file: env.GITHUB_RELEASE_COMMENT_DESCRIPTION_FILE, text: previousState
+                    sh "python3 .jenkins/githubReleaseComments.py --state-file ${env.GITHUB_RELEASE_COMMENT_STATE_FILE} --restore-state-description-file ${env.GITHUB_RELEASE_COMMENT_DESCRIPTION_FILE}"
                     persistReleaseCommentState(env.GITHUB_RELEASE_COMMENT_STATE_FILE)
                 }
             }
@@ -101,15 +91,18 @@ pipeline {
         stage('Build') {
             steps {
                 sh "python3 -m unittest discover -s .jenkins -p 'test_*.py'"
-                sh "./gradlew :Fabric:build"
-                sh "./gradlew :NeoForge:build"
-                sh "./gradlew :Common:build"
-                sh "./gradlew :CommonApi:build"
-                sh "./gradlew :Gui:build"
-                sh "./gradlew :Library:build"
-                sh "./gradlew :Debug:build"
-                sh "./gradlew :FabricApi:build"
-                sh "./gradlew :NeoForgeApi:build"
+                sh '''
+                    ./gradlew \
+                        :Fabric:build \
+                        :NeoForge:build \
+                        :Common:build \
+                        :CommonApi:build \
+                        :Gui:build \
+                        :Library:build \
+                        :Debug:build \
+                        :FabricApi:build \
+                        :NeoForgeApi:build
+                '''
             }
         }
 
@@ -142,7 +135,7 @@ pipeline {
                         JEI_JVM_DIAGNOSTIC_FILE="$WORKSPACE/Fabric/build/reports/client-gametest-diagnostics.txt" \
                             python3 .jenkins/runWithJvmDiagnostics.py \
                             xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
-                            ./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs :NeoForge:runClientRecipeSyncTest --no-daemon --no-parallel
+                            ./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs :NeoForge:runClientRecipeSyncTest --no-parallel
                     else
                         echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
                     fi
@@ -164,14 +157,18 @@ pipeline {
                 expression { env.SHOULD_PUBLISH != 'false' }
             }
             steps {
-                sh "./gradlew :Gui:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :Library:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :Fabric:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :NeoForge:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :Common:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :CommonApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :FabricApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
-                sh "./gradlew :NeoForgeApi:publish -PDEPLOY_DIR=${env.MAVEN_DEPLOY_DIR}"
+                sh '''
+                    ./gradlew \
+                        :Gui:publish \
+                        :Library:publish \
+                        :Fabric:publish \
+                        :NeoForge:publish \
+                        :Common:publish \
+                        :CommonApi:publish \
+                        :FabricApi:publish \
+                        :NeoForgeApi:publish \
+                        -PDEPLOY_DIR="$MAVEN_DEPLOY_DIR"
+                '''
             }
         }
 
