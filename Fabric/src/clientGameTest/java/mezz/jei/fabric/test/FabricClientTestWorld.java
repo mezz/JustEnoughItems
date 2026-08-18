@@ -25,11 +25,15 @@ final class FabricClientTestWorld implements AutoCloseable {
 	}
 
 	public static FabricClientTestWorld create() {
+		return create(GameType.SURVIVAL);
+	}
+
+	public static FabricClientTestWorld create(GameType gameType) {
 		String levelId = "jei-fabric-client-test-" + UUID.randomUUID();
 		ClientTestUtil.runOnClient(client -> {
 			LevelSettings levelSettings = new LevelSettings(
 				"JEI Fabric Client Test",
-				GameType.SURVIVAL,
+				gameType,
 				false,
 				Difficulty.NORMAL,
 				true,
