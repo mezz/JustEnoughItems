@@ -17,13 +17,14 @@ public final class JeiFabricClientTests implements ClientModInitializer {
 
 		switch (testSuite) {
 			case "recipeSync" -> JeiFabricClientRecipeSyncTests.register();
+			case "creativeInventory" -> JeiFabricCreativeInventoryClientGameTest.register();
 			case "keyMapping" -> JeiFabricKeyMappingClientTests.register();
 			default -> FabricClientTestRunner.register(
 				"fabric-client-tests",
 				"unknown-test-suite",
 				() -> {
 					throw new IllegalArgumentException(
-						"Unknown JEI Fabric client test suite '" + testSuite + "'. Expected one of: recipeSync, keyMapping"
+						"Unknown JEI Fabric client test suite '" + testSuite + "'. Expected one of: recipeSync, creativeInventory, keyMapping"
 					);
 				}
 			);
