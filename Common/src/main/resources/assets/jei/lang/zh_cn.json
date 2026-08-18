@@ -39,6 +39,8 @@
   "jei.tooltip.recipe.sort.bookmarks.first.disabled": "优先显示书签配方 (已禁用)",
   "jei.tooltip.recipe.sort.craftable.first.enabled": "优先显示可合成的配方 (已启用)",
   "jei.tooltip.recipe.sort.craftable.first.disabled": "优先显示可合成的配方 (已禁用)",
+  "jei.config.client.appearance.toastReflowEnabled": "弹窗重排",
+  "jei.config.client.appearance.toastReflowEnabled.description": "为弹窗通知预留空间，防止它们与JEI界面重叠。",
 
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "缺少物品",
@@ -55,7 +57,6 @@
   "jei.chat.error.no.cheat.permission.creative": "处于创造模式的玩家",
   "jei.chat.error.no.cheat.permission.op": "拥有管理员身份的玩家（/op）",
   "jei.chat.error.no.cheat.permission.give": "可以使用“/give”命令的玩家",
-
   "_comment": "Key Bindings",
   "jei.key.category.overlays": "JEI（叠加层）",
   "key.jei.toggleOverlay": "显示/隐藏JEI叠加层",
@@ -70,6 +71,7 @@
   "key.jei.nextCategory": "下一配方类别",
   "key.jei.previousRecipePage": "上一配方页",
   "key.jei.nextRecipePage": "下一配方页",
+  "key.jei.pauseRecipeCycling": "暂停配方原料循环",
   "key.jei.closeRecipeGui": "关闭配方界面",
 
   "jei.key.category.cheat.mode": "JEI（作弊模式）",
@@ -95,6 +97,9 @@
   "key.jei.showUses2": "显示用途",
   "key.jei.transferRecipeBookmark": "合成书签配方 (一次)",
   "key.jei.maxTransferRecipeBookmark": "合成书签配方 (最大数量)",
+  "key.jei.showBookmarkTooltipFeatures": "显示书签详情",
+  "key.jei.quickMove": "快速移动幽灵物品",
+  "key.jei.shareToChat": "分享物品到聊天栏",
 
   "jei.key.category.search": "JEI（搜索过滤器）",
   "key.jei.clearSearchBar": "清除搜索过滤器",
@@ -221,11 +226,11 @@
   "jei.config.client.search.searchShortModNames.description": "搜索模组名称的首字母缩写。",
   "jei.config.client.search.searchIngredientAliases": "搜索原料别名",
   "jei.config.client.search.searchIngredientAliases.description": "除原料名称外，还搜索由插件添加的原料别名（替代名称）。",
+
   "jei.config.client.ingredientList": "原料列表",
   "jei.config.client.ingredientList.description": "与原料列表（屏幕右侧的原料列表）相关的配置选项",
   "jei.config.client.ingredientList.maxRows": "最大行数",
   "jei.config.client.ingredientList.maxRows.description": "显示的最大行数。",
-
   "jei.config.client.ingredientList.maxColumns": "最大列数",
   "jei.config.client.ingredientList.maxColumns.description": "显示的最大列数。",
   "jei.config.client.ingredientList.horizontalAlignment": "水平对齐",
@@ -236,11 +241,15 @@
   "jei.config.client.ingredientList.navigationVisibility.description": "顶部翻页按钮的可见性。AUTO_HIDE：仅在存在多页时显示按钮。",
   "jei.config.client.ingredientList.drawBackground": "绘制界面背景",
   "jei.config.client.ingredientList.drawBackground.description": "启用该项以在原料列表后绘制背景纹理。",
+  "jei.config.client.ingredientList.layoutMode": "布局模式",
+  "jei.config.client.ingredientList.layoutMode.description": "RECTANGULAR：翻页按钮与原料网格对齐，允许裁切被排除的网格槽位。MAXIMIZE_AVAILABLE_SPACE：可调整翻页按钮的大小和位置以绕开被排除的区域。",
+  "jei.config.client.ingredientList.navigationMode": "导航模式",
+  "jei.config.client.ingredientList.navigationMode.description": "选择PAGED（翻页按钮）、SCROLLING（逐行滚动条）或SMOOTH_SCROLLING（平滑滚动条）。",
+
   "jei.config.client.bookmarkList": "书签列表",
   "jei.config.client.bookmarkList.description": "与书签列表（屏幕左侧的所收藏原料列表）相关的配置选项",
   "jei.config.client.bookmarkList.maxRows": "最大行数",
   "jei.config.client.bookmarkList.maxRows.description": "显示的最大行数。",
-
   "jei.config.client.bookmarkList.maxColumns": "最大列数",
   "jei.config.client.bookmarkList.maxColumns.description": "显示的最大列数。",
   "jei.config.client.bookmarkList.horizontalAlignment": "水平对齐",
@@ -251,6 +260,10 @@
   "jei.config.client.bookmarkList.navigationVisibility.description": "顶部翻页按钮的可见性。AUTO_HIDE：仅在存在多页时显示按钮。",
   "jei.config.client.bookmarkList.drawBackground": "绘制界面背景",
   "jei.config.client.bookmarkList.drawBackground.description": "启用该项以在书签列表后绘制背景纹理。",
+  "jei.config.client.bookmarkList.layoutMode": "布局模式",
+  "jei.config.client.bookmarkList.layoutMode.description": "RECTANGULAR：翻页按钮与原料网格对齐，允许裁切被排除的网格槽位。MAXIMIZE_AVAILABLE_SPACE：可调整翻页按钮的大小和位置以绕开被排除的区域。",
+  "jei.config.client.bookmarkList.navigationMode": "导航模式",
+  "jei.config.client.bookmarkList.navigationMode.description": "选择PAGED（翻页按钮）、SCROLLING（逐行滚动条）或SMOOTH_SCROLLING（平滑滚动条）。",
 
 
   "jei.config.modIdFormat.modName": "模组名称",
@@ -260,6 +273,8 @@
 
   "jei.config.debug.debug": "调试",
   "jei.config.debug.debug.description": "JEI中帮助开发者调试问题的配置选项",
+  "jei.config.debug.debug.debugIngredientsEnabled": "调试原料",
+  "jei.config.debug.debug.debugIngredientsEnabled.description": "在JEI的原料过滤器中记录已添加和已更新的原料信息。",
   "jei.config.debug.debug.debugGuis": "调试界面",
   "jei.config.debug.debug.debugGuis.description": "启用调试界面模式",
   "jei.config.debug.debug.debugInputs": "调试输入",
@@ -273,6 +288,9 @@
   "jei.config.colors.colors.description": "JEI中与搜索物品颜色相关的配置选项",
   "jei.config.colors.colors.searchColors": "搜索颜色",
   "jei.config.colors.colors.searchColors.description": "用于搜索的颜色值。",
+
+  "_comment": "GUI",
+  "gui.jei.search": "原料过滤器",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI隐藏原料模式：",
@@ -308,6 +326,10 @@
   "jei.message.config.folder": "或点击此处打开JEI配置文件夹",
   "jei.message.copy.recipe.id.success": "已复制配方ID到剪贴板：%s",
   "jei.message.copy.recipe.id.failure": "复制配方ID到剪贴板失败，配方ID未知",
+  "jei.message.server.recipe.sync.error": "该服务器向JEI发送了配方数据，但没有任何配方可用。JEI无法显示该服务器的配方。请检查服务器的JEI设置、数据包和配方模组。",
+  "jei.message.server.recipe.sync.vanilla": "这是原版服务器。JEI正在显示来自客户端的默认配方，如果服务器使用了数据包，则可能与实际配方不同。请在服务器上安装Forge、NeoForge或Fabric，并同时安装JEI，以正确显示服务器的配方。",
+  "jei.message.server.recipe.sync.unavailable": "该%s服务器未向JEI提供配方。JEI正在显示来自客户端的默认配方，可能与服务器上的实际配方不同。",
+  "jei.message.server.recipe.sync.jei.missing": "该%s服务器未安装JEI。JEI正在显示来自客户端的默认配方，可能与服务器上的实际配方不同。请在服务器上安装JEI以正确显示服务器的配方。",
 
   "_comment": "Key Names",
   "jei.key.combo.shift": "SHIFT+%s",
