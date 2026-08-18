@@ -55,6 +55,31 @@ def shouldSkipApiCompatibility() {
     return false
 }
 
+def releaseCommentStatePrefix() {
+    return 'jenkins-github-release-comments-state:v1:'
+}
+
+def findPreviousReleaseCommentState() {
+    def previousBuild = currentBuild.previousBuild
+    while (previousBuild != null) {
+        def description = previousBuild.description ?: ''
+        if (description.startsWith(releaseCommentStatePrefix())) {
+            return description
+        }
+        previousBuild = previousBuild.previousBuild
+    }
+    return ''
+}
+
+def persistReleaseCommentState(String stateFile) {
+    def description = sh(
+        script: "python3 .jenkins/githubReleaseComments.py --state-file ${stateFile} --describe-state",
+        returnStdout: true
+    ).trim()
+    currentBuild.description = description
+    env.HAS_PENDING_RELEASE_COMMENTS = description.startsWith("${releaseCommentStatePrefix()}pending:") ? 'true' : 'false'
+}
+
 pipeline {
     agent any
     options {
@@ -100,8 +125,8 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "python3 -m unittest discover -s .jenkins -p 'test_*.py'"
-                sh "./gradlew :Forge:build"
+				sh "python3 -m unittest discover -s .jenkins -p 'test_*.py'"
+				sh "./gradlew :Forge:build"
                 sh "./gradlew :Fabric:build"
                 sh "./gradlew :NeoForge:build"
                 sh "./gradlew :Common:build"
