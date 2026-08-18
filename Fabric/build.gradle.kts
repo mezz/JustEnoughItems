@@ -183,6 +183,33 @@ loom {
             runDir(loomRunDir.resolve("server").toString())
             vmArgs("-Dfabric.classPathGroups=${classPathGroupsString}")
         }
+        create("clientCreativeInventoryTest") {
+            client()
+            source(clientGameTestSourceSet)
+            configName = "Fabric Client Creative Inventory Test"
+            ideConfigGenerated(false)
+            runDir(loomRunDir.resolve("clientCreativeInventoryTest").toString())
+            property("jei.fabric.clientTest", "creativeInventory")
+            vmArgs(
+                "-Dfabric.log.level=info",
+                "-Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient",
+                "-Dfabric.classPathGroups=${classPathGroupsString}"
+            )
+            programArgs("--username", "JeiClientTest", "--width", "1280", "--height", "720")
+        }
+        create("clientCreativeInventoryTestWithoutAmecs") {
+            client()
+            source(clientGameTestWithoutAmecsSourceSet)
+            configName = "Fabric Client Creative Inventory Test Without AMECS"
+            runDir(loomRunDir.resolve("clientCreativeInventoryTestWithoutAmecs").toString())
+            property("jei.fabric.clientTest", "creativeInventory")
+            vmArgs(
+                "-Dfabric.log.level=info",
+                "-Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient",
+                "-Dfabric.classPathGroups=${classPathGroupsString}"
+            )
+            programArgs("--username", "JeiClientTest", "--width", "1280", "--height", "720")
+        }
         create("clientKeyMappingTest") {
             client()
             source(clientGameTestSourceSet)
@@ -235,8 +262,44 @@ tasks.register<Copy>("writeClientKeyMappingTestWithoutAmecsOptions") {
     into(clientTestGameDirectory("clientKeyMappingTestWithoutAmecs"))
 }
 
+tasks.register<Copy>("writeClientCreativeInventoryTestOptions") {
+    from(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
+    into(clientTestGameDirectory("clientCreativeInventoryTest"))
+}
+
+tasks.register<Copy>("writeClientCreativeInventoryTestWithoutAmecsOptions") {
+    from(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
+    into(clientTestGameDirectory("clientCreativeInventoryTestWithoutAmecs"))
+}
+
+tasks.named<JavaExec>("runClientCreativeInventoryTest") {
+    dependsOn("writeClientCreativeInventoryTestOptions")
+    if (System.getProperty("os.name").contains("Mac")) {
+        jvmArgs("-XstartOnFirstThread")
+    }
+    jvmArgs("-Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient")
+    jvmArgs("-Dfabric.dli.env=client")
+    jvmArgs("-Dfabric.dli.config=${project.projectDir.resolve(".gradle/loom-cache/launch.cfg").absolutePath}")
+    jvmArgs("-Dfabric.log.level=info")
+    jvmArgs("-Djei.fabric.clientTest=creativeInventory")
+}
+
+tasks.named<JavaExec>("runClientCreativeInventoryTestWithoutAmecs") {
+    dependsOn("writeClientCreativeInventoryTestWithoutAmecsOptions")
+    mustRunAfter("runClientCreativeInventoryTest", "runClientKeyMappingTest")
+    if (System.getProperty("os.name").contains("Mac")) {
+        jvmArgs("-XstartOnFirstThread")
+    }
+    jvmArgs("-Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient")
+    jvmArgs("-Dfabric.dli.env=client")
+    jvmArgs("-Dfabric.dli.config=${project.projectDir.resolve(".gradle/loom-cache/launch.cfg").absolutePath}")
+    jvmArgs("-Dfabric.log.level=info")
+    jvmArgs("-Djei.fabric.clientTest=creativeInventory")
+}
+
 tasks.named<JavaExec>("runClientKeyMappingTest") {
     dependsOn("writeClientKeyMappingTestOptions")
+    mustRunAfter("runClientCreativeInventoryTest")
     if (System.getProperty("os.name").contains("Mac")) {
         jvmArgs("-XstartOnFirstThread")
     }
@@ -249,7 +312,7 @@ tasks.named<JavaExec>("runClientKeyMappingTest") {
 
 tasks.named<JavaExec>("runClientKeyMappingTestWithoutAmecs") {
     dependsOn("writeClientKeyMappingTestWithoutAmecsOptions")
-    mustRunAfter("runClientKeyMappingTest")
+    mustRunAfter("runClientCreativeInventoryTestWithoutAmecs")
     if (System.getProperty("os.name").contains("Mac")) {
         jvmArgs("-XstartOnFirstThread")
     }
@@ -263,13 +326,13 @@ tasks.named<JavaExec>("runClientKeyMappingTestWithoutAmecs") {
 tasks.register("runClientGameTest") {
     group = "mod development"
     description = "Runs JEI Fabric client tests."
-    dependsOn("runClientKeyMappingTest")
+    dependsOn("runClientCreativeInventoryTest", "runClientKeyMappingTest")
 }
 
 tasks.register("runClientGameTestWithoutAmecs") {
     group = "mod development"
     description = "Runs JEI Fabric client tests without AMECS on the runtime classpath."
-    dependsOn("runClientKeyMappingTestWithoutAmecs")
+    dependsOn("runClientCreativeInventoryTestWithoutAmecs", "runClientKeyMappingTestWithoutAmecs")
 }
 val debugClassesTask = debugProject.tasks.named(debugSourceSet.classesTaskName)
 val debugModPath = debugProject.layout.buildDirectory.dir("resources/main").get().asFile.absolutePath
