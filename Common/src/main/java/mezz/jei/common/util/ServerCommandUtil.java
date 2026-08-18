@@ -143,8 +143,8 @@ public final class ServerCommandUtil {
 			itemStackCopy.setCount(giveCount);
 			if (sender instanceof ServerPlayer serverPlayer) {
 				notifyGive(serverPlayer, itemStackCopy);
+				containerMenu.broadcastChanges();
 			}
-			containerMenu.broadcastChanges();
 		}
 	}
 
