@@ -837,7 +837,11 @@ def create_release(
         raise RuntimeError("Could not determine the GitHub repository. Pass --repo owner/name.")
 
     version = infer_version(args.version, properties)
-    minecraft_version = args.minecraft_version or properties.get("minecraftVersion", "")
+    minecraft_version = (
+        args.minecraft_version
+        or properties.get("minecraftVersion", "")
+        or properties.get("minecraft_version", "")
+    )
     project_name = args.project_name or properties.get("modName") or repo.split("/", 1)[1]
     head = resolve_head(args.head, project_root)
     base = resolve_base(args.base)
@@ -937,6 +941,14 @@ def infer_version(explicit_version: str, properties: dict[str, str]) -> str:
         return explicit_version
 
     specification_version = properties.get("specificationVersion", "")
+    if not specification_version:
+        legacy_version_parts = (
+            properties.get("version_major", ""),
+            properties.get("version_minor", ""),
+            properties.get("version_patch", ""),
+        )
+        if all(legacy_version_parts):
+            specification_version = ".".join(legacy_version_parts)
     build_number = os.environ.get("BUILD_NUMBER", "")
     if specification_version and build_number:
         return f"{specification_version}.{build_number}"

@@ -141,5 +141,19 @@ class NotificationStateTest(unittest.TestCase):
             self.assertEqual(completed, githubReleaseComments.state_from_description(completed_description))
 
 
+class LegacyGradlePropertiesTest(unittest.TestCase):
+    def test_infers_version_from_legacy_snake_case_properties(self) -> None:
+        properties = {
+            "version_major": "7",
+            "version_minor": "8",
+            "version_patch": "1",
+        }
+
+        with patch.dict(githubReleaseComments.os.environ, {"BUILD_NUMBER": "1028"}, clear=True):
+            version = githubReleaseComments.infer_version("", properties)
+
+        self.assertEqual("7.8.1.1028", version)
+
+
 if __name__ == "__main__":
     unittest.main()

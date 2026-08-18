@@ -123,7 +123,7 @@ pipeline {
                 expression { env.SHOULD_PUBLISH != 'false' && currentBuild.currentResult == 'SUCCESS' }
             }
             steps {
-                sh "python3 .jenkins/githubReleaseComments.py --state-file ${env.GITHUB_RELEASE_COMMENT_STATE_FILE} --queue-release"
+                sh "python3 .jenkins/githubReleaseComments.py --state-file ${env.GITHUB_RELEASE_COMMENT_STATE_FILE} --loaders Forge --queue-release"
                 script {
                     persistReleaseCommentState(env.GITHUB_RELEASE_COMMENT_STATE_FILE)
                 }
