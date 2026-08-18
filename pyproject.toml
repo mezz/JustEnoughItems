@@ -8,6 +8,7 @@ dependencies = []
 pythonVersion = "3.10"
 include = [
     ".jenkins/githubReleaseComments.py",
+    ".jenkins/test_githubReleaseComments.py",
 ]
 exclude = [
     "**/build",

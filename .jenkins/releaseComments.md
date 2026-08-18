@@ -38,23 +38,50 @@ Issue comments thank the reporter by default. If the issue has the
 
 4. Ensure the Jenkins agent has Python 3.10 or newer available as `python3`.
 
-The Jenkinsfile stage is opt-in and skipped unless
-`GITHUB_RELEASE_COMMENT_TOKEN` is set:
+Jenkins keeps a separate release-comment checkpoint in each branch job's build
+description. The checkpoint contains no credentials. It records the last
+successfully notified commit and a queue of published releases that still need
+comments. Each queued release snapshots its original version, commit range,
+and download links.
+
+Every build restores the newest checkpoint before building. A successfully
+published release is added to the queue, and the comment stage runs whenever
+the queue is non-empty, even when the current build has no artifacts to
+publish. The checkpoint advances only after every target for a queued release
+has either received its comment or already contains the matching hidden
+marker. Jenkins serializes builds within each branch job so two builds cannot
+race while reading and advancing the checkpoint. If the checkpoint commit is
+missing from the checkout or is no longer an ancestor of the release, the
+notifier fails and leaves the queue intact instead of silently scanning only
+part of the release range.
+
+Transient GitHub API reads are retried in the same build. A persistent failure
+leaves the release in the checkpoint and marks only the comment stage unstable;
+the overall build may remain successful. The next build can therefore retry
+the original notification without republishing artifacts or replacing the
+original release version and links:
 
 ```groovy
 stage('Comment GitHub Release') {
     when {
-        expression { env.SHOULD_PUBLISH != 'false' && env.GITHUB_RELEASE_COMMENT_TOKEN }
+        expression { env.HAS_PENDING_RELEASE_COMMENTS == 'true' && env.GITHUB_RELEASE_COMMENT_TOKEN }
     }
     steps {
         catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-            withEnv(["GITHUB_TOKEN=${env.GITHUB_RELEASE_COMMENT_TOKEN}"]) {
-                sh "python3 .jenkins/githubReleaseComments.py"
-            }
+            sh "python3 .jenkins/githubReleaseComments.py \
+                --token-env GITHUB_RELEASE_COMMENT_TOKEN \
+                --state-file build/jenkins/github-release-comments-state.json"
         }
     }
 }
 ```
+
+If a build fails before publishing, no release is queued and Jenkins' normal
+last-successful-commit range causes the source changes to be reconsidered on a
+later build. If publishing succeeds but Jenkins stops before the release can be
+queued, that build is not successful, so the same fallback also preserves the
+range. Once the queue is written into the build description, it is independent
+of workspace cleanup and of later artifact publishing decisions.
 
 ## Local dry run
 
