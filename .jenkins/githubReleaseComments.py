@@ -195,6 +195,9 @@ def state_description(state: NotificationState) -> str:
 
 
 def state_from_description(description: str) -> NotificationState:
+    if not description:
+        return NotificationState("", ())
+
     complete_prefix = f"{STATE_DESCRIPTION_PREFIX}complete:"
     pending_prefix = f"{STATE_DESCRIPTION_PREFIX}pending:"
     if description.startswith(complete_prefix):
@@ -962,7 +965,10 @@ def parse_args() -> argparse.Namespace:
     )
     state_mode.add_argument(
         "--restore-state-description-file",
-        help="Restore --state-file from a Jenkins build description stored in this file.",
+        help=(
+            "Restore --state-file from a Jenkins build description stored in this file, "
+            "or initialize empty state when the description is blank."
+        ),
     )
     parser.add_argument("--repo", help="GitHub repository, for example mezz/JustEnoughItems")
     parser.add_argument("--version", help="Released version. Defaults to specificationVersion.BUILD_NUMBER.")
