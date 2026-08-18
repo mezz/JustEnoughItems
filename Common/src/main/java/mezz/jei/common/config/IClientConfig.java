@@ -23,6 +23,8 @@ public interface IClientConfig {
 
 	boolean isCatchRenderErrorsEnabled();
 
+	boolean isRecipeSyncWarningEnabled();
+
 	boolean isCheatToHotbarUsingHotkeysEnabled();
 
 	boolean isAddingBookmarksToFrontEnabled();

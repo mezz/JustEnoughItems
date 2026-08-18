@@ -58,6 +58,11 @@ public class TestClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public boolean isRecipeSyncWarningEnabled() {
+		return true;
+	}
+
+	@Override
 	public boolean isCheatToHotbarUsingHotkeysEnabled() {
 		return false;
 	}
