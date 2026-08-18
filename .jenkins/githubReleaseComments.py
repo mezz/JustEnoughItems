@@ -16,15 +16,17 @@ GitHub CLI install or Python packages.
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import os
 import re
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -38,6 +40,10 @@ DEFAULT_MARKER_PREFIX = "jenkins-github-release-notifier"
 DEFAULT_LOADER_ORDER = ("Fabric", "Forge")
 DEFAULT_DOWNLOAD_PLATFORMS = ("curseforge", "modrinth")
 DEFAULT_ENHANCEMENT_LABELS = ("enhancement",)
+DEFAULT_RETRY_DELAYS_SECONDS = (5.0, 15.0, 45.0)
+RETRYABLE_HTTP_STATUS_CODES = frozenset({429, 500, 502, 503, 504})
+STATE_DESCRIPTION_PREFIX = "jenkins-github-release-comments-state:v1:"
+STATE_SCHEMA_VERSION = 1
 DEFAULT_REVIEW_DELAY_NOTE = (
     "_Note: CurseForge and Modrinth links may take a little time to work while "
     "new files are reviewed._"
@@ -77,11 +83,148 @@ class CommentTarget:
         return f"{self.visible_body}\n\n<!-- {self.marker} -->"
 
 
+@dataclass(frozen=True)
+class Release:
+    repo: str
+    project_name: str
+    version: str
+    minecraft_version: str
+    base: str
+    head: str
+    release_link_lines: tuple[str, ...]
+    marker_prefix: str
+    enhancement_labels: tuple[str, ...]
+    review_delay_note: str
+    skip_pr_comments: bool
+    skip_issue_comments: bool
+
+
+@dataclass(frozen=True)
+class NotificationState:
+    last_notified_head: str
+    releases: tuple[Release, ...]
+
+
+def release_to_json(release: Release) -> dict[str, Any]:
+    return {
+        "repo": release.repo,
+        "projectName": release.project_name,
+        "version": release.version,
+        "minecraftVersion": release.minecraft_version,
+        "base": release.base,
+        "head": release.head,
+        "releaseLinkLines": list(release.release_link_lines),
+        "markerPrefix": release.marker_prefix,
+        "enhancementLabels": list(release.enhancement_labels),
+        "reviewDelayNote": release.review_delay_note,
+        "skipPrComments": release.skip_pr_comments,
+        "skipIssueComments": release.skip_issue_comments,
+    }
+
+
+def release_from_json(value: dict[str, Any]) -> Release:
+    return Release(
+        repo=str(value["repo"]),
+        project_name=str(value["projectName"]),
+        version=str(value["version"]),
+        minecraft_version=str(value["minecraftVersion"]),
+        base=str(value["base"]),
+        head=str(value["head"]),
+        release_link_lines=tuple(str(line) for line in value["releaseLinkLines"]),
+        marker_prefix=str(value["markerPrefix"]),
+        enhancement_labels=tuple(str(label) for label in value["enhancementLabels"]),
+        review_delay_note=str(value["reviewDelayNote"]),
+        skip_pr_comments=bool(value["skipPrComments"]),
+        skip_issue_comments=bool(value["skipIssueComments"]),
+    )
+
+
+def notification_state_to_text(state: NotificationState) -> str:
+    value = {
+        "schemaVersion": STATE_SCHEMA_VERSION,
+        "lastNotifiedHead": state.last_notified_head,
+        "releases": [release_to_json(release) for release in state.releases],
+    }
+    return json.dumps(value, indent=2, sort_keys=True) + "\n"
+
+
+def notification_state_from_text(text: str) -> NotificationState:
+    value = json.loads(text)
+    if value.get("schemaVersion") != STATE_SCHEMA_VERSION:
+        raise RuntimeError(f"Unsupported release comment state schema: {value.get('schemaVersion')!r}")
+
+    releases = tuple(release_from_json(release) for release in value.get("releases", []))
+    return NotificationState(str(value.get("lastNotifiedHead", "")), releases)
+
+
+def read_notification_state(path: Path) -> NotificationState:
+    if not path.exists():
+        return NotificationState("", ())
+    return notification_state_from_text(path.read_text(encoding="utf-8"))
+
+
+def write_notification_state(path: Path, state: NotificationState) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path = path.with_suffix(f"{path.suffix}.tmp")
+    temporary_path.write_text(notification_state_to_text(state), encoding="utf-8")
+    temporary_path.replace(path)
+
+
+def queue_release(state: NotificationState, release: Release) -> NotificationState:
+    release_id = (release.repo.casefold(), release.version, release.minecraft_version)
+    for queued_release in state.releases:
+        queued_id = (queued_release.repo.casefold(), queued_release.version, queued_release.minecraft_version)
+        if queued_id == release_id:
+            return state
+
+    base = state.releases[-1].head if state.releases else state.last_notified_head
+    if not base:
+        base = release.base
+    last_notified_head = state.last_notified_head or release.base
+    queued_release = replace(release, base=base)
+    return NotificationState(last_notified_head, (*state.releases, queued_release))
+
+
+def state_description(state: NotificationState) -> str:
+    if not state.releases:
+        return f"{STATE_DESCRIPTION_PREFIX}complete:{state.last_notified_head}"
+
+    payload = notification_state_to_text(state).encode("utf-8")
+    encoded = base64.urlsafe_b64encode(payload).decode("ascii")
+    return f"{STATE_DESCRIPTION_PREFIX}pending:{encoded}"
+
+
+def state_from_description(description: str) -> NotificationState:
+    complete_prefix = f"{STATE_DESCRIPTION_PREFIX}complete:"
+    pending_prefix = f"{STATE_DESCRIPTION_PREFIX}pending:"
+    if description.startswith(complete_prefix):
+        return NotificationState(description.removeprefix(complete_prefix), ())
+    if description.startswith(pending_prefix):
+        encoded = description.removeprefix(pending_prefix)
+        try:
+            payload = base64.urlsafe_b64decode(encoded.encode("ascii")).decode("utf-8")
+        except (ValueError, UnicodeDecodeError) as error:
+            raise RuntimeError("Invalid Jenkins release comment state description") from error
+        return notification_state_from_text(payload)
+    raise RuntimeError("Jenkins build description does not contain release comment state")
+
+
 class GitHubClient:
-    def __init__(self, token: str, api_url: str, dry_run: bool):
+    def __init__(
+        self,
+        token: str,
+        api_url: str,
+        dry_run: bool,
+        retry_delays_seconds: tuple[float, ...] = DEFAULT_RETRY_DELAYS_SECONDS,
+    ):
         self.token = token
         self.api_url = api_url.rstrip("/")
         self.dry_run = dry_run
+        self.retry_delays_seconds = retry_delays_seconds
+
+    @staticmethod
+    def is_safe_to_retry(method: str, path_or_url: str) -> bool:
+        return method == "GET" or path_or_url == "/graphql"
 
     def request_json(
         self,
@@ -111,15 +254,39 @@ class GitHubClient:
             headers["Authorization"] = f"Bearer {self.token}"
 
         request = urllib.request.Request(url, data=data, headers=headers, method=method)
-        try:
-            with urllib.request.urlopen(request, timeout=30) as response:
-                body = response.read().decode("utf-8")
-                response_headers = {key: value for key, value in response.headers.items()}
-        except urllib.error.HTTPError as error:
-            detail = error.read().decode("utf-8", errors="replace")
-            raise RuntimeError(
-                f"GitHub API {method} {url} failed with HTTP {error.code}: {detail[:1000]}"
-            ) from error
+        safe_to_retry = self.is_safe_to_retry(method, path_or_url)
+        for attempt in range(len(self.retry_delays_seconds) + 1):
+            try:
+                with urllib.request.urlopen(request, timeout=30) as response:
+                    body = response.read().decode("utf-8")
+                    response_headers = {key: value for key, value in response.headers.items()}
+                break
+            except urllib.error.HTTPError as error:
+                detail = error.read().decode("utf-8", errors="replace")
+                retryable = safe_to_retry and error.code in RETRYABLE_HTTP_STATUS_CODES
+                if retryable and attempt < len(self.retry_delays_seconds):
+                    delay = self.retry_delays_seconds[attempt]
+                    print(
+                        f"GitHub API {method} {url} failed with HTTP {error.code}; "
+                        f"retrying in {delay:g} seconds.",
+                        file=sys.stderr,
+                    )
+                    time.sleep(delay)
+                    continue
+                raise RuntimeError(
+                    f"GitHub API {method} {url} failed with HTTP {error.code}: {detail[:1000]}"
+                ) from error
+            except urllib.error.URLError as error:
+                if safe_to_retry and attempt < len(self.retry_delays_seconds):
+                    delay = self.retry_delays_seconds[attempt]
+                    print(
+                        f"GitHub API {method} {url} failed: {error.reason}; "
+                        f"retrying in {delay:g} seconds.",
+                        file=sys.stderr,
+                    )
+                    time.sleep(delay)
+                    continue
+                raise RuntimeError(f"GitHub API {method} {url} failed: {error.reason}") from error
 
         if not body:
             if allow_empty:
@@ -438,13 +605,28 @@ def commit_exists(sha: str, project_root: Path) -> bool:
 
 
 def released_commits(base: str, head: str, project_root: Path) -> list[str]:
-    if base and base != head and commit_exists(base, project_root) and commit_exists(head, project_root):
+    if not commit_exists(head, project_root):
+        raise RuntimeError(f"Released head commit is not available locally: {head}")
+
+    if base and not commit_exists(base, project_root):
+        raise RuntimeError(f"Release comment checkpoint is not available locally: {base}")
+
+    if base and base != head:
+        ancestor = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", base, head],
+            cwd=project_root,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
+        if ancestor.returncode != 0:
+            raise RuntimeError(f"Release comment checkpoint {base} is not an ancestor of {head}")
         try:
             commits = git(["rev-list", "--reverse", f"{base}..{head}"], project_root).splitlines()
             if commits:
                 return commits
         except subprocess.CalledProcessError as error:
-            print(f"Could not inspect commit range {base}..{head}: {error}", file=sys.stderr)
+            raise RuntimeError(f"Could not inspect release commit range {base}..{head}") from error
 
     return [head]
 
@@ -638,6 +820,116 @@ def build_targets(
     return targets
 
 
+def create_release(
+    args: argparse.Namespace,
+    properties: dict[str, str],
+    project_root: Path,
+    loader_order: list[str],
+    explicit_loaders: list[str],
+    publish_result_files: list[PublishResultFile],
+    download_platforms: set[str],
+    enhancement_labels: set[str],
+) -> Release:
+    repo = args.repo or os.environ.get("GITHUB_REPOSITORY", "") or repo_from_github_url(properties.get("githubUrl", ""))
+    if not repo:
+        raise RuntimeError("Could not determine the GitHub repository. Pass --repo owner/name.")
+
+    version = infer_version(args.version, properties)
+    minecraft_version = args.minecraft_version or properties.get("minecraftVersion", "")
+    project_name = args.project_name or properties.get("modName") or repo.split("/", 1)[1]
+    head = resolve_head(args.head, project_root)
+    base = resolve_base(args.base)
+    curseforge_homepage_url = args.curseforge_homepage_url or properties.get("curseHomepageUrl", "")
+    modrinth_id = args.modrinth_id or properties.get("modrinthId", "")
+    release_link_lines = get_release_link_lines(
+        properties,
+        project_root,
+        loader_order,
+        explicit_loaders,
+        publish_result_files,
+        curseforge_homepage_url,
+        modrinth_id,
+        download_platforms,
+        include_fallback=not args.no_download_link_fallback,
+    )
+    return Release(
+        repo=repo,
+        project_name=project_name,
+        version=version,
+        minecraft_version=minecraft_version,
+        base=base,
+        head=head,
+        release_link_lines=tuple(release_link_lines),
+        marker_prefix=args.marker_prefix,
+        enhancement_labels=tuple(sorted(enhancement_labels)),
+        review_delay_note=args.review_delay_note,
+        skip_pr_comments=args.skip_pr_comments,
+        skip_issue_comments=args.skip_issue_comments,
+    )
+
+
+def notify_release(client: GitHubClient, release: Release, project_root: Path) -> None:
+    commits = released_commits(release.base, release.head, project_root)
+    pull_requests: dict[int, PullRequest] = {}
+    issue_to_pull_request: dict[int, int | None] = {}
+    issue_labels: dict[int, set[str]] = {}
+
+    print(f"Inspecting {len(commits)} released commit(s) for {release.repo} version {release.version}.")
+    for sha in commits:
+        for number in issue_numbers_from_text(commit_message(sha, project_root)):
+            issue_to_pull_request.setdefault(number, None)
+
+        for pull_request in list_pull_requests_for_commit(client, release.repo, sha):
+            pull_requests.setdefault(pull_request.number, pull_request)
+
+    if not release.skip_issue_comments:
+        for pr_number in sorted(pull_requests):
+            for issue_number in fixed_issues_for_pull_request(client, release.repo, pr_number):
+                if issue_to_pull_request.get(issue_number) is None:
+                    issue_to_pull_request[issue_number] = pr_number
+
+        for issue_number in sorted(issue_to_pull_request):
+            issue_labels[issue_number] = get_issue_labels_safely(client, release.repo, issue_number)
+
+    targets = build_targets(
+        release.project_name,
+        release.version,
+        release.minecraft_version,
+        pull_requests,
+        issue_to_pull_request,
+        issue_labels,
+        list(release.release_link_lines),
+        release.marker_prefix,
+        set(release.enhancement_labels),
+        release.review_delay_note,
+        skip_pr_comments=release.skip_pr_comments,
+        skip_issue_comments=release.skip_issue_comments,
+    )
+    if not targets:
+        print(f"No merged PRs or fixed issues found for {release.repo} version {release.version}.")
+        return
+
+    for target in targets:
+        if existing_release_comment(client, release.repo, target):
+            print(f"Skipping {release.repo}#{target.number}; release comment already exists.")
+            continue
+        client.create_issue_comment(release.repo, target.number, target.body)
+
+
+def notify_pending_releases(
+    client: GitHubClient,
+    project_root: Path,
+    state_path: Path,
+    state: NotificationState,
+) -> NotificationState:
+    while state.releases:
+        release = state.releases[0]
+        notify_release(client, release, project_root)
+        state = NotificationState(release.head, state.releases[1:])
+        write_notification_state(state_path, state)
+    return state
+
+
 def infer_version(explicit_version: str, properties: dict[str, str]) -> str:
     if explicit_version:
         return explicit_version
@@ -656,6 +948,22 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", default=".", help="Project checkout root. Defaults to the current directory.")
     parser.add_argument("--gradle-properties", help="Path to gradle.properties. Defaults to <project-root>/gradle.properties.")
+    parser.add_argument("--state-file", help="Durable pending-release state file used by Jenkins.")
+    state_mode = parser.add_mutually_exclusive_group()
+    state_mode.add_argument(
+        "--queue-release",
+        action="store_true",
+        help="Append the current published release to --state-file without contacting GitHub.",
+    )
+    state_mode.add_argument(
+        "--describe-state",
+        action="store_true",
+        help="Print a Jenkins build-description checkpoint for --state-file.",
+    )
+    state_mode.add_argument(
+        "--restore-state-description-file",
+        help="Restore --state-file from a Jenkins build description stored in this file.",
+    )
     parser.add_argument("--repo", help="GitHub repository, for example mezz/JustEnoughItems")
     parser.add_argument("--version", help="Released version. Defaults to specificationVersion.BUILD_NUMBER.")
     parser.add_argument("--minecraft-version", help="Minecraft version. Defaults to minecraftVersion in gradle.properties.")
@@ -723,6 +1031,22 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     project_root = Path(args.project_root).resolve()
+    state_path = resolve_project_path(project_root, args.state_file) if args.state_file else None
+
+    if args.describe_state:
+        if state_path is None:
+            raise RuntimeError("--describe-state requires --state-file")
+        print(state_description(read_notification_state(state_path)))
+        return 0
+
+    if args.restore_state_description_file:
+        if state_path is None:
+            raise RuntimeError("--restore-state-description-file requires --state-file")
+        description_path = resolve_project_path(project_root, args.restore_state_description_file)
+        description = description_path.read_text(encoding="utf-8").strip()
+        write_notification_state(state_path, state_from_description(description))
+        return 0
+
     gradle_properties_path = (
         resolve_project_path(project_root, args.gradle_properties)
         if args.gradle_properties
@@ -736,8 +1060,6 @@ def main() -> int:
         args.publish_result_file,
         include_defaults=not args.no_default_publish_result_files,
     )
-    curseforge_homepage_url = args.curseforge_homepage_url or properties.get("curseHomepageUrl", "")
-    modrinth_id = args.modrinth_id or properties.get("modrinthId", "")
     download_platforms = parse_download_platforms(args.download_platforms)
     enhancement_labels = {
         label.casefold()
@@ -745,20 +1067,50 @@ def main() -> int:
         for label in parse_csv(value)
     }
 
-    repo = args.repo or os.environ.get("GITHUB_REPOSITORY", "") or repo_from_github_url(properties.get("githubUrl", ""))
-    if not repo:
-        raise RuntimeError("Could not determine the GitHub repository. Pass --repo owner/name.")
-
-    version = infer_version(args.version, properties)
-    minecraft_version = args.minecraft_version or properties.get("minecraftVersion", "")
-    project_name = args.project_name or properties.get("modName") or repo.split("/", 1)[1]
-    if args.skip_pr_comments and args.skip_issue_comments:
-        print("Skipping release comment discovery because both PR and issue comments are disabled.")
+    if args.queue_release:
+        if state_path is None:
+            raise RuntimeError("--queue-release requires --state-file")
+        release = create_release(
+            args,
+            properties,
+            project_root,
+            loader_order,
+            explicit_loaders,
+            publish_result_files,
+            download_platforms,
+            enhancement_labels,
+        )
+        previous_state = read_notification_state(state_path)
+        state = queue_release(previous_state, release)
+        write_notification_state(state_path, state)
+        if state == previous_state:
+            print(f"Release {release.repo} version {release.version} is already queued for release comments.")
+        else:
+            print(f"Queued {release.repo} version {release.version} at {release.head} for release comments.")
         return 0
 
-    head = resolve_head(args.head, project_root)
-    base = resolve_base(args.base)
-    commits = released_commits(base, head, project_root)
+    if state_path is not None:
+        state = read_notification_state(state_path)
+        if not state.releases:
+            print("No pending GitHub release comments.")
+            return 0
+        releases = state.releases
+    else:
+        release = create_release(
+            args,
+            properties,
+            project_root,
+            loader_order,
+            explicit_loaders,
+            publish_result_files,
+            download_platforms,
+            enhancement_labels,
+        )
+        if release.skip_pr_comments and release.skip_issue_comments:
+            print("Skipping release comment discovery because both PR and issue comments are disabled.")
+            return 0
+        state = NotificationState(release.base, (release,))
+        releases = state.releases
 
     token = os.environ.get(args.token_env, "")
     if not token and not args.dry_run:
@@ -781,61 +1133,11 @@ def main() -> int:
             file=sys.stderr,
         )
 
-    pull_requests: dict[int, PullRequest] = {}
-    issue_to_pull_request: dict[int, int | None] = {}
-    issue_labels: dict[int, set[str]] = {}
-    release_link_lines = get_release_link_lines(
-        properties,
-        project_root,
-        loader_order,
-        explicit_loaders,
-        publish_result_files,
-        curseforge_homepage_url,
-        modrinth_id,
-        download_platforms,
-        include_fallback=not args.no_download_link_fallback,
-    )
-
-    print(f"Inspecting {len(commits)} released commit(s) for {repo} version {version}.")
-    for sha in commits:
-        for number in issue_numbers_from_text(commit_message(sha, project_root)):
-            issue_to_pull_request.setdefault(number, None)
-
-        for pull_request in list_pull_requests_for_commit(client, repo, sha):
-            pull_requests.setdefault(pull_request.number, pull_request)
-
-    if not args.skip_issue_comments:
-        for pr_number in sorted(pull_requests):
-            for issue_number in fixed_issues_for_pull_request(client, repo, pr_number):
-                if issue_to_pull_request.get(issue_number) is None:
-                    issue_to_pull_request[issue_number] = pr_number
-
-        for issue_number in sorted(issue_to_pull_request):
-            issue_labels[issue_number] = get_issue_labels_safely(client, repo, issue_number)
-
-    targets = build_targets(
-        project_name,
-        version,
-        minecraft_version,
-        pull_requests,
-        issue_to_pull_request,
-        issue_labels,
-        release_link_lines,
-        args.marker_prefix,
-        enhancement_labels,
-        args.review_delay_note,
-        skip_pr_comments=args.skip_pr_comments,
-        skip_issue_comments=args.skip_issue_comments,
-    )
-    if not targets:
-        print("No merged PRs or fixed issues found for this release.")
-        return 0
-
-    for target in targets:
-        if existing_release_comment(client, repo, target):
-            print(f"Skipping {repo}#{target.number}; release comment already exists.")
-            continue
-        client.create_issue_comment(repo, target.number, target.body)
+    if state_path is not None and not args.dry_run:
+        notify_pending_releases(client, project_root, state_path, state)
+    else:
+        for release in releases:
+            notify_release(client, release, project_root)
 
     return 0
 
