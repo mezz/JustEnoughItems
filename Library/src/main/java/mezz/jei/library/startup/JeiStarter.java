@@ -229,10 +229,13 @@ public final class JeiStarter {
 	private void verifyClientRecipes(Minecraft minecraft) {
 		IConnectionToServer serverConnection = data.serverConnection();
 		List<Recipe<?>> clientRecipes = Internal.getClientSyncedRecipes();
+		boolean showWarning = jeiClientConfigs.getClientConfig().isRecipeSyncWarningEnabled();
 
 		if (Internal.hasClientSyncedRecipes() && clientRecipes.isEmpty()) {
 			String key = "jei.message.server.recipe.sync.error";
-			writeChatMessage(minecraft, new TranslatableComponent(key).withStyle(ChatFormatting.RED));
+			if (showWarning) {
+				writeChatMessage(minecraft, new TranslatableComponent(key).withStyle(ChatFormatting.RED));
+			}
 			LOGGER.error(Translator.translateToLocal(key));
 		} else if (Internal.hasClientFallbackRecipes()) {
 			if (!serverConnection.isJeiOnServer() &&
@@ -240,16 +243,22 @@ public final class JeiStarter {
 			) {
 				String key = "jei.message.server.recipe.sync.jei.missing";
 				String serverBrand = ClientConnectionHelper.getServerBrand();
-				writeChatMessage(minecraft, new TranslatableComponent(key, serverBrand).withStyle(ChatFormatting.RED));
+				if (showWarning) {
+					writeChatMessage(minecraft, new TranslatableComponent(key, serverBrand).withStyle(ChatFormatting.RED));
+				}
 				LOGGER.warn(Translator.translateToLocalFormatted(key, serverBrand));
 			} else if (ClientConnectionHelper.hasServerBrand(VANILLA_SERVER_BRAND)) {
 				String key = "jei.message.server.recipe.sync.vanilla";
-				writeChatMessage(minecraft, new TranslatableComponent(key).withStyle(ChatFormatting.YELLOW));
+				if (showWarning) {
+					writeChatMessage(minecraft, new TranslatableComponent(key).withStyle(ChatFormatting.YELLOW));
+				}
 				LOGGER.warn(Translator.translateToLocal(key));
 			} else {
 				String key = "jei.message.server.recipe.sync.unavailable";
 				String serverBrand = ClientConnectionHelper.getServerBrand();
-				writeChatMessage(minecraft, new TranslatableComponent(key, serverBrand).withStyle(ChatFormatting.RED));
+				if (showWarning) {
+					writeChatMessage(minecraft, new TranslatableComponent(key, serverBrand).withStyle(ChatFormatting.RED));
+				}
 				LOGGER.warn(Translator.translateToLocalFormatted(key, serverBrand));
 			}
 		}

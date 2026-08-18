@@ -24,6 +24,8 @@ public interface IClientConfig {
 
 	boolean isCatchRenderErrorsEnabled();
 
+	boolean isRecipeSyncWarningEnabled();
+
 	boolean isCheatToHotbarUsingHotkeysEnabled();
 
 	GiveMode getGiveMode();

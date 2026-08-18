@@ -48,6 +48,7 @@ public final class ClientConfig implements IClientConfig {
 	// advanced
 	private final ConfigValue<Boolean> lowMemorySlowSearchEnabled;
 	private final Supplier<Boolean> catchRenderErrorsEnabled;
+	private final Supplier<Boolean> recipeSyncWarningEnabled;
 	private final Supplier<Boolean> lookupFluidContentsEnabled;
 	private final Supplier<Boolean> showTagRecipesEnabled;
 	private final Supplier<Boolean> showCreativeTabNamesEnabled;
@@ -116,6 +117,7 @@ public final class ClientConfig implements IClientConfig {
 
 		IConfigCategoryBuilder advanced = schema.addCategory("advanced");
 		catchRenderErrorsEnabled = advanced.addBoolean("catchRenderErrorsEnabled", !isDev);
+		recipeSyncWarningEnabled = advanced.addBoolean("recipeSyncWarningEnabled", true);
 
 		IConfigCategoryBuilder input = schema.addCategory("input");
 		dragDelayMs = input.addInteger(
@@ -182,6 +184,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public boolean isCatchRenderErrorsEnabled() {
 		return catchRenderErrorsEnabled.get();
+	}
+
+	@Override
+	public boolean isRecipeSyncWarningEnabled() {
+		return recipeSyncWarningEnabled.get();
 	}
 
 	@Override
