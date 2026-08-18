@@ -77,6 +77,30 @@ def removeTrailingSlashes(String url) {
     return url.substring(0, valueEnd)
 }
 
+def getGithubUrl() {
+    def githubUrl = getGradleProperty('githubUrl')
+    if (!githubUrl) {
+        githubUrl = 'https://github.com/mezz/JustEnoughItems'
+    }
+    return removeTrailingSlashes(githubUrl)
+}
+
+def getCurseHomepageUrl() {
+    def curseHomepageUrl = getGradleProperty('curseHomepageUrl')
+    if (!curseHomepageUrl) {
+        curseHomepageUrl = 'https://www.curseforge.com/minecraft/mc-mods/jei'
+    }
+    return removeTrailingSlashes(curseHomepageUrl)
+}
+
+def getModrinthId() {
+    def modrinthId = getGradleProperty('modrinthId')
+    if (!modrinthId) {
+        modrinthId = 'jei'
+    }
+    return modrinthId
+}
+
 def getFirstLine(String text) {
     if (!text) {
         return ''
@@ -130,93 +154,178 @@ def getBuildVersion() {
     return ''
 }
 
-def getOrderedLoaderLinks(Map linksByModule) {
-    def links = []
-
-    def neoForgeLink = linksByModule['NeoForge']
-    if (neoForgeLink) {
-        links.add(neoForgeLink)
+def getReleaseLoaders() {
+    def loaders = []
+    if (fileExists('NeoForge/build.gradle') || fileExists('NeoForge/build.gradle.kts')) {
+        loaders.add('NeoForge')
     }
-
-    def fabricLink = linksByModule['Fabric']
-    if (fabricLink) {
-        links.add(fabricLink)
+    if (fileExists('Fabric/build.gradle') || fileExists('Fabric/build.gradle.kts')) {
+        loaders.add('Fabric')
     }
-
-    def forgeLink = linksByModule['Forge']
-    if (forgeLink) {
-        links.add(forgeLink)
+    if (fileExists('Forge/build.gradle') || fileExists('Forge/build.gradle.kts')) {
+        loaders.add('Forge')
     }
-
-    return links
+    if (!loaders) {
+        loaders.add('Forge')
+    }
+    return loaders
 }
 
-def getReleaseLinkLines(boolean includeFallback) {
+def hasLoader(String loaderName, List loaders) {
+    for (def loader in loaders) {
+        if (loader == loaderName) {
+            return true
+        }
+    }
+    return false
+}
+
+def hasText(String fileName, String text) {
+    if (!fileExists(fileName)) {
+        return false
+    }
+    return readFile(file: fileName).indexOf(text) >= 0
+}
+
+def hasModrinthPublishing() {
+    if (getGradleProperty('modrinthId')) {
+        return true
+    }
+    if (hasText('.jenkins/Jenkinsfile', 'modrinth')) {
+        return true
+    }
+    if (hasText('build.gradle', 'modrinth')) {
+        return true
+    }
+    if (hasText('build.gradle.kts', 'modrinth')) {
+        return true
+    }
+    if (hasText('Fabric/build.gradle', 'modrinth')) {
+        return true
+    }
+    if (hasText('Fabric/build.gradle.kts', 'modrinth')) {
+        return true
+    }
+    if (hasText('Forge/build.gradle', 'modrinth')) {
+        return true
+    }
+    if (hasText('Forge/build.gradle.kts', 'modrinth')) {
+        return true
+    }
+    if (hasText('NeoForge/build.gradle', 'modrinth')) {
+        return true
+    }
+    if (hasText('NeoForge/build.gradle.kts', 'modrinth')) {
+        return true
+    }
+    return false
+}
+
+def getReleaseLinkEntries(boolean includeFallback) {
     def resultFiles = [
-        'Forge/build/publishMods/publishCurseforge.json',
-        'Forge/build/publishMods/publishModrinth.json',
-        'Fabric/build/publishMods/publishCurseforge.json',
-        'Fabric/build/publishMods/publishModrinth.json',
-        'NeoForge/build/publishMods/publishCurseforge.json',
-        'NeoForge/build/publishMods/publishModrinth.json'
+        [module: 'Forge', service: 'curseforge', file: 'Forge/build/publishMods/publishCurseforge.json'],
+        [module: 'Forge', service: 'modrinth', file: 'Forge/build/publishMods/publishModrinth.json'],
+        [module: 'Fabric', service: 'curseforge', file: 'Fabric/build/publishMods/publishCurseforge.json'],
+        [module: 'Fabric', service: 'modrinth', file: 'Fabric/build/publishMods/publishModrinth.json'],
+        [module: 'NeoForge', service: 'curseforge', file: 'NeoForge/build/publishMods/publishCurseforge.json'],
+        [module: 'NeoForge', service: 'modrinth', file: 'NeoForge/build/publishMods/publishModrinth.json'],
+        [module: 'Forge', service: 'curseforge', file: 'build/publishMods/publishCurseforge.json'],
+        [module: 'Forge', service: 'modrinth', file: 'build/publishMods/publishModrinth.json']
     ]
 
+    def releaseLoaders = getReleaseLoaders()
     def curseForgeLinksByModule = [:]
     def modrinthLinksByModule = [:]
-    def curseHomepageUrl = getGradleProperty('curseHomepageUrl')
-    def curseProjectSlug = curseHomepageUrl ? getLastPathSegment(curseHomepageUrl) : ''
+    def curseHomepageUrl = getCurseHomepageUrl()
+    def curseProjectSlug = getLastPathSegment(curseHomepageUrl)
 
     for (def resultFile in resultFiles) {
-        if (!fileExists(resultFile)) {
+        def resultFileName = resultFile['file']
+        if (!fileExists(resultFileName)) {
             continue
         }
 
-        def publishResult = readFile(file: resultFile)
-        def moduleName = resultFile.substring(0, resultFile.indexOf('/'))
+        def moduleName = resultFile['module']
+        if (!hasLoader(moduleName, releaseLoaders)) {
+            continue
+        }
+
+        def publishResult = readFile(file: resultFileName)
         def publishType = getJsonValue(publishResult, 'type')
         if (publishType == 'curseforge') {
             def fileId = getJsonValue(publishResult, 'fileId')
             def projectSlug = getJsonValue(publishResult, 'projectSlug') ?: curseProjectSlug
             if (fileId && projectSlug && projectSlug != 'dry-run') {
-                curseForgeLinksByModule[moduleName] = "[${moduleName}](https://www.curseforge.com/minecraft/mc-mods/${projectSlug}/files/${fileId})"
+                curseForgeLinksByModule[moduleName] = "https://www.curseforge.com/minecraft/mc-mods/${projectSlug}/files/${fileId}"
             }
         } else if (publishType == 'modrinth') {
             def projectId = getJsonValue(publishResult, 'projectId')
             def versionId = getJsonValue(publishResult, 'id')
             if (projectId && projectId != 'dry-run' && versionId) {
-                modrinthLinksByModule[moduleName] = "[${moduleName}](https://modrinth.com/mod/${projectId}/version/${versionId})"
+                modrinthLinksByModule[moduleName] = "https://modrinth.com/mod/${projectId}/version/${versionId}"
             }
         }
     }
 
+    def releaseLinkEntries = []
+
+    for (def loader in releaseLoaders) {
+        def curseForgeUrl = curseForgeLinksByModule[loader]
+        if (curseForgeUrl) {
+            releaseLinkEntries.add([platform: 'CurseForge', loader: loader, url: curseForgeUrl])
+        }
+    }
+
+    for (def loader in releaseLoaders) {
+        def modrinthUrl = modrinthLinksByModule[loader]
+        if (modrinthUrl) {
+            releaseLinkEntries.add([platform: 'Modrinth', loader: loader, url: modrinthUrl])
+        }
+    }
+
+    if (releaseLinkEntries || !includeFallback) {
+        return releaseLinkEntries
+    }
+
+    def curseForgeUrl = "${curseHomepageUrl}/files"
+    for (def loader in releaseLoaders) {
+        releaseLinkEntries.add([
+            platform: 'CurseForge',
+            loader: loader,
+            url: curseForgeUrl
+        ])
+    }
+
+    if (hasModrinthPublishing()) {
+        def modrinthUrl = "https://modrinth.com/mod/${getModrinthId()}/versions"
+        for (def loader in releaseLoaders) {
+            releaseLinkEntries.add([
+                platform: 'Modrinth',
+                loader: loader,
+                url: modrinthUrl
+            ])
+        }
+    }
+
+    return releaseLinkEntries
+}
+
+def getReleaseLinkLines(boolean includeFallback) {
+    def entries = getReleaseLinkEntries(includeFallback)
     def releaseLinkLines = []
-
-    def curseForgeLinks = getOrderedLoaderLinks(curseForgeLinksByModule)
-    if (curseForgeLinks) {
-        releaseLinkLines.add("**CurseForge:** ${curseForgeLinks.join(' | ')}")
-    }
-
-    def modrinthLinks = getOrderedLoaderLinks(modrinthLinksByModule)
-    if (modrinthLinks) {
-        releaseLinkLines.add("**Modrinth:** ${modrinthLinks.join(' | ')}")
-    }
-
-    if (releaseLinkLines || !includeFallback) {
-        return releaseLinkLines
-    }
-
-    // Fallback for branches or builds that do not generate mod-publish-plugin result files.
-    if (curseHomepageUrl) {
-        def curseFilesUrl = "${removeTrailingSlashes(curseHomepageUrl)}/files"
-        releaseLinkLines.add("**CurseForge:** [NeoForge](${curseFilesUrl}) | [Fabric](${curseFilesUrl}) | [Forge](${curseFilesUrl})")
-    }
-
-    def modrinthId = getGradleProperty('modrinthId')
-    if (modrinthId) {
-        def modrinthVersionsUrl = "https://modrinth.com/mod/${modrinthId}/versions"
-        releaseLinkLines.add("**Modrinth:** [NeoForge](${modrinthVersionsUrl}) | [Fabric](${modrinthVersionsUrl}) | [Forge](${modrinthVersionsUrl})")
+    for (def platform in ['CurseForge', 'Modrinth']) {
+        def links = entries.findAll { it.platform == platform }.collect { "[${it.loader}](${it.url})" }
+        if (links) {
+            releaseLinkLines.add("**${platform}:** ${links.join(' | ')}")
+        }
     }
     return releaseLinkLines
+}
+
+def getReleaseLinks(boolean includeFallback) {
+    return getReleaseLinkEntries(includeFallback).collect { entry ->
+        return [label: "${entry.platform} (${entry.loader})", url: entry.url]
+    }
 }
 
 def formatCommitLink(String githubUrl, String commitId, String message) {
@@ -277,7 +386,7 @@ def getHeadCommitLink(String githubUrl) {
 }
 
 def getCommitLinks() {
-    def githubUrl = removeTrailingSlashes(getGradleProperty('githubUrl'))
+    def githubUrl = getGithubUrl()
     if (!githubUrl) {
         return []
     }
