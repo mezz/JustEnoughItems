@@ -140,6 +140,9 @@ class NotificationStateTest(unittest.TestCase):
             completed_description = githubReleaseComments.state_description(completed)
             self.assertEqual(completed, githubReleaseComments.state_from_description(completed_description))
 
+            initialized = githubReleaseComments.state_from_description("")
+            self.assertEqual(githubReleaseComments.NotificationState("", ()), initialized)
+
 
 if __name__ == "__main__":
     unittest.main()
