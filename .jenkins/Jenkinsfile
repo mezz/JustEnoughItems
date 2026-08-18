@@ -40,6 +40,8 @@ pipeline {
       DISCORD_WEBHOOK_URL = credentials("jei-discord-webhook-url")
       GITHUB_RELEASE_COMMENT_TOKEN = credentials("github-release-comment-token")
       GITHUB_RELEASE_COMMENT_EXPECTED_LOGIN = "mezz-bot"
+      GITHUB_RELEASE_COMMENT_REPOSITORY = "mezz/JustEnoughItems"
+      GITHUB_RELEASE_COMMENT_LOADERS = "Forge"
       GITHUB_RELEASE_COMMENT_STATE_FILE = "build/jenkins/github-release-comments-state.json"
       GITHUB_RELEASE_COMMENT_DESCRIPTION_FILE = "build/jenkins/github-release-comments-description.txt"
     }
@@ -122,7 +124,7 @@ pipeline {
                 expression { env.SHOULD_PUBLISH != 'false' && currentBuild.currentResult == 'SUCCESS' }
             }
             steps {
-                sh "python3 .jenkins/githubReleaseComments.py --state-file ${env.GITHUB_RELEASE_COMMENT_STATE_FILE} --queue-release"
+                sh "python3 .jenkins/githubReleaseComments.py --state-file ${env.GITHUB_RELEASE_COMMENT_STATE_FILE} --repo ${env.GITHUB_RELEASE_COMMENT_REPOSITORY} --loaders ${env.GITHUB_RELEASE_COMMENT_LOADERS} --queue-release"
                 script {
                     persistReleaseCommentState(env.GITHUB_RELEASE_COMMENT_STATE_FILE)
                 }
