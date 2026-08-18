@@ -24,7 +24,10 @@ public final class ServerConfig implements IServerConfig {
 	private ServerConfig(ForgeConfigSpec.Builder builder) {
 		builder.push("cheat mode");
 		{
-			builder.comment("Enable the cheat mode for players who have an operator status (/op).");
+			builder.comment(
+				"Enable the cheat mode for players who have an operator status (/op).",
+				"Permission providers may override this with the jei.cheat permission."
+			);
 			enableCheatModeForOp = builder.define("enableCheatModeForOp", true);
 
 			builder.comment("Enable the cheat mode for players who are in the creative mode.");

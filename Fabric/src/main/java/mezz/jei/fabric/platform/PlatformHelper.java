@@ -20,6 +20,7 @@ public class PlatformHelper implements IPlatformHelper {
 	private final Supplier<ScreenHelper> screenHelper = new LazySupplier<>(ScreenHelper::new);
 	private final Supplier<IngredientHelper> ingredientHelper = new LazySupplier<>(IngredientHelper::new);
 	private final Supplier<ModHelper> modHelper = new LazySupplier<>(ModHelper::new);
+	private final Supplier<ServerHelper> serverHelper = new LazySupplier<>(ServerHelper::new);
 
 	@Override
 	public <T> IPlatformRegistry<T> getRegistry(ResourceKey<? extends Registry<T>> key) {
@@ -74,5 +75,10 @@ public class PlatformHelper implements IPlatformHelper {
 	@Override
 	public ModHelper getModHelper() {
 		return modHelper.get();
+	}
+
+	@Override
+	public ServerHelper getServerHelper() {
+		return serverHelper.get();
 	}
 }
