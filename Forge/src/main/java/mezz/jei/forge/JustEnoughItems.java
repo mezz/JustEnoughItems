@@ -8,6 +8,7 @@ import mezz.jei.common.util.Translator;
 import mezz.jei.forge.config.ServerConfig;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.network.NetworkHandler;
+import mezz.jei.forge.platform.ServerHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -23,6 +24,7 @@ public class JustEnoughItems {
 		IEventBus eventBus = MinecraftForge.EVENT_BUS;
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		PermanentEventSubscriptions subscriptions = new PermanentEventSubscriptions(eventBus, modEventBus);
+		ServerHelper.register(subscriptions);
 
 		ModLoadingContext modLoadingContext = ModLoadingContext.get();
 		IServerConfig serverConfig = ServerConfig.register(modLoadingContext);
