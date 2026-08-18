@@ -17,29 +17,17 @@ def runExternalPublishTask(String gradleTask) {
         }
     }
 }
-def releaseCommentStatePrefix() {
-    return 'jenkins-github-release-comments-state:v1:'
-}
-
-def findPreviousReleaseCommentState() {
+def findPreviousReleaseCommit() {
+    def descriptionPrefix = 'jenkins-release-notifier-source:v1:'
     def previousBuild = currentBuild.previousBuild
     while (previousBuild != null) {
         def description = previousBuild.description ?: ''
-        if (description.startsWith(releaseCommentStatePrefix())) {
-            return description
+        if (description.startsWith(descriptionPrefix)) {
+            return description.substring(descriptionPrefix.length())
         }
         previousBuild = previousBuild.previousBuild
     }
-    return ''
-}
-
-def persistReleaseCommentState(String stateFile) {
-    def description = sh(
-        script: "python3 .jenkins/githubReleaseComments.py --state-file ${stateFile} --describe-state",
-        returnStdout: true
-    ).trim()
-    currentBuild.description = description
-    env.HAS_PENDING_RELEASE_COMMENTS = description.startsWith("${releaseCommentStatePrefix()}pending:") ? 'true' : 'false'
+    return env.GIT_PREVIOUS_SUCCESSFUL_COMMIT
 }
 
 pipeline {
@@ -57,27 +45,10 @@ pipeline {
       ORG_GRADLE_PROJECT_modrinthToken = credentials("modrinth-auth-token")
       ORG_GRADLE_PROJECT_BUILD_NUMBER = "${env.BUILD_NUMBER}"
       DISCORD_WEBHOOK_URL = credentials("jei-discord-webhook-url")
-      GITHUB_RELEASE_COMMENT_TOKEN = credentials("github-release-comment-token")
-      GITHUB_RELEASE_COMMENT_EXPECTED_LOGIN = "mezz-bot"
-      GITHUB_RELEASE_COMMENT_STATE_FILE = "build/jenkins/github-release-comments-state.json"
-      GITHUB_RELEASE_COMMENT_DESCRIPTION_FILE = "build/jenkins/github-release-comments-description.txt"
     }
     stages {
-        stage('Restore GitHub Release Comment State') {
+        stage('Build') {
             steps {
-                script {
-                    sh 'mkdir -p build/jenkins'
-                    def previousState = findPreviousReleaseCommentState()
-                    writeFile file: env.GITHUB_RELEASE_COMMENT_DESCRIPTION_FILE, text: previousState
-                    sh "python3 .jenkins/githubReleaseComments.py --state-file ${env.GITHUB_RELEASE_COMMENT_STATE_FILE} --restore-state-description-file ${env.GITHUB_RELEASE_COMMENT_DESCRIPTION_FILE}"
-                    persistReleaseCommentState(env.GITHUB_RELEASE_COMMENT_STATE_FILE)
-                }
-            }
-        }
-
-		stage('Build') {
-			steps {
-				sh "python3 -m unittest discover -s .jenkins -p 'test_*.py'"
 				sh '''
 					./gradlew \
 						:Forge:build \
@@ -186,31 +157,35 @@ pipeline {
             }
         }
 
-        stage('Queue GitHub Release Comment') {
+        stage('Notify Released Issues') {
             when {
                 expression { env.SHOULD_PUBLISH != 'false' && currentBuild.currentResult == 'SUCCESS' }
             }
             steps {
-                sh "python3 .jenkins/githubReleaseComments.py --state-file ${env.GITHUB_RELEASE_COMMENT_STATE_FILE} --queue-release"
                 script {
-                    persistReleaseCommentState(env.GITHUB_RELEASE_COMMENT_STATE_FILE)
-                }
-            }
-        }
+                    library(
+                        identifier: 'jenkins-release-notifier@v0.1.1',
+                        retriever: modernSCM([
+                            $class: 'GitSCMSource',
+                            remote: 'https://github.com/mezz/jenkins-release-notifier.git'
+                        ])
+                    )
 
-        stage('Comment GitHub Release') {
-            when {
-                expression { env.HAS_PENDING_RELEASE_COMMENTS == 'true' && env.GITHUB_RELEASE_COMMENT_TOKEN }
-            }
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                    script {
-                        try {
-                            sh "python3 .jenkins/githubReleaseComments.py --token-env GITHUB_RELEASE_COMMENT_TOKEN --state-file ${env.GITHUB_RELEASE_COMMENT_STATE_FILE}"
-                        } finally {
-                            persistReleaseCommentState(env.GITHUB_RELEASE_COMMENT_STATE_FILE)
-                        }
-                    }
+                    def discordNotification = load '.jenkins/discordNotification.groovy'
+                    def minecraftVersion = discordNotification.getGradleProperty('minecraftVersion')
+                    releaseNotifier(
+                        workerJob: '/mezz/release-notifier-worker',
+                        repository: 'mezz/JustEnoughItems',
+                        channel: minecraftVersion,
+                        projectName: discordNotification.getGradleProperty('modName'),
+                        version: discordNotification.getBuildVersion(),
+                        baseCommit: findPreviousReleaseCommit(),
+                        headCommit: env.GIT_COMMIT,
+                        releaseLinks: discordNotification.getReleaseLinks(true),
+                        minecraftVersions: [minecraftVersion],
+                        modLoaders: discordNotification.getReleaseLoaders()
+                    )
+                    currentBuild.description = "jenkins-release-notifier-source:v1:${env.GIT_COMMIT}"
                 }
             }
         }
