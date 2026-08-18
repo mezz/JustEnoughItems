@@ -9,11 +9,11 @@ import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.packets.PacketCheatPermission;
 import mezz.jei.common.config.GiveMode;
 import mezz.jei.common.config.IServerConfig;
+import mezz.jei.common.platform.Services;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -44,16 +44,14 @@ public final class ServerCommandUtil {
 			return true;
 		}
 
-		CommandSourceStack commandSource = sender.createCommandSourceStack();
-		if (serverConfig.isCheatModeEnabledForOp()) {
-			MinecraftServer minecraftServer = sender.getServer();
-			if (minecraftServer != null) {
-				int opPermissionLevel = minecraftServer.getOperatorUserPermissionLevel();
-				return commandSource.hasPermission(opPermissionLevel);
-			}
+		if (serverConfig.isCheatModeEnabledForOp() &&
+			Services.PLATFORM.getServerHelper().hasPermissionForCheatMode(sender)
+		) {
+			return true;
 		}
 
 		if (serverConfig.isCheatModeEnabledForGive()) {
+			CommandSourceStack commandSource = sender.createCommandSourceStack();
 			return getGiveCommand(sender)
 				.map(giveCommand -> giveCommand.canUse(commandSource))
 				.orElse(false);
