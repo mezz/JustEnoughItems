@@ -180,41 +180,6 @@ def hasLoader(String loaderName, List loaders) {
     return false
 }
 
-def getOrderedLoaderLinks(Map linksByModule, List loaders) {
-    def links = []
-
-    if (hasLoader('NeoForge', loaders)) {
-        def neoForgeLink = linksByModule['NeoForge']
-        if (neoForgeLink) {
-            links.add(neoForgeLink)
-        }
-    }
-
-    if (hasLoader('Fabric', loaders)) {
-        def fabricLink = linksByModule['Fabric']
-        if (fabricLink) {
-            links.add(fabricLink)
-        }
-    }
-
-    if (hasLoader('Forge', loaders)) {
-        def forgeLink = linksByModule['Forge']
-        if (forgeLink) {
-            links.add(forgeLink)
-        }
-    }
-
-    return links
-}
-
-def getFallbackLoaderLinks(String url, List loaders) {
-    def links = []
-    for (def loader in loaders) {
-        links.add("[${loader}](${url})")
-    }
-    return links
-}
-
 def hasText(String fileName, String text) {
     if (!fileExists(fileName)) {
         return false
@@ -256,7 +221,7 @@ def hasModrinthPublishing() {
     return false
 }
 
-def getReleaseLinkLines(boolean includeFallback) {
+def getReleaseLinkEntries(boolean includeFallback) {
     def resultFiles = [
         [module: 'Forge', service: 'curseforge', file: 'Forge/build/publishMods/publishCurseforge.json'],
         [module: 'Forge', service: 'modrinth', file: 'Forge/build/publishMods/publishModrinth.json'],
@@ -291,46 +256,76 @@ def getReleaseLinkLines(boolean includeFallback) {
             def fileId = getJsonValue(publishResult, 'fileId')
             def projectSlug = getJsonValue(publishResult, 'projectSlug') ?: curseProjectSlug
             if (fileId && projectSlug && projectSlug != 'dry-run') {
-                curseForgeLinksByModule[moduleName] = "[${moduleName}](https://www.curseforge.com/minecraft/mc-mods/${projectSlug}/files/${fileId})"
+                curseForgeLinksByModule[moduleName] = "https://www.curseforge.com/minecraft/mc-mods/${projectSlug}/files/${fileId}"
             }
         } else if (publishType == 'modrinth') {
             def projectId = getJsonValue(publishResult, 'projectId')
             def versionId = getJsonValue(publishResult, 'id')
             if (projectId && projectId != 'dry-run' && versionId) {
-                modrinthLinksByModule[moduleName] = "[${moduleName}](https://modrinth.com/mod/${projectId}/version/${versionId})"
+                modrinthLinksByModule[moduleName] = "https://modrinth.com/mod/${projectId}/version/${versionId}"
             }
         }
     }
 
-    def releaseLinkLines = []
+    def releaseLinkEntries = []
 
-    def curseForgeLinks = getOrderedLoaderLinks(curseForgeLinksByModule, releaseLoaders)
-    if (curseForgeLinks) {
-        releaseLinkLines.add("**CurseForge:** ${curseForgeLinks.join(' | ')}")
-    }
-
-    def modrinthLinks = getOrderedLoaderLinks(modrinthLinksByModule, releaseLoaders)
-    if (modrinthLinks) {
-        releaseLinkLines.add("**Modrinth:** ${modrinthLinks.join(' | ')}")
-    }
-
-    if (releaseLinkLines || !includeFallback) {
-        return releaseLinkLines
-    }
-
-    def fallbackCurseForgeLinks = getFallbackLoaderLinks("${curseHomepageUrl}/files", releaseLoaders)
-    if (fallbackCurseForgeLinks) {
-        releaseLinkLines.add("**CurseForge:** ${fallbackCurseForgeLinks.join(' | ')}")
-    }
-
-    if (hasModrinthPublishing()) {
-        def fallbackModrinthLinks = getFallbackLoaderLinks("https://modrinth.com/mod/${getModrinthId()}/versions", releaseLoaders)
-        if (fallbackModrinthLinks) {
-            releaseLinkLines.add("**Modrinth:** ${fallbackModrinthLinks.join(' | ')}")
+    for (def loader in releaseLoaders) {
+        def curseForgeUrl = curseForgeLinksByModule[loader]
+        if (curseForgeUrl) {
+            releaseLinkEntries.add([platform: 'CurseForge', loader: loader, url: curseForgeUrl])
         }
     }
 
+    for (def loader in releaseLoaders) {
+        def modrinthUrl = modrinthLinksByModule[loader]
+        if (modrinthUrl) {
+            releaseLinkEntries.add([platform: 'Modrinth', loader: loader, url: modrinthUrl])
+        }
+    }
+
+    if (releaseLinkEntries || !includeFallback) {
+        return releaseLinkEntries
+    }
+
+    def curseForgeUrl = "${curseHomepageUrl}/files"
+    for (def loader in releaseLoaders) {
+        releaseLinkEntries.add([
+            platform: 'CurseForge',
+            loader: loader,
+            url: curseForgeUrl
+        ])
+    }
+
+    if (hasModrinthPublishing()) {
+        def modrinthUrl = "https://modrinth.com/mod/${getModrinthId()}/versions"
+        for (def loader in releaseLoaders) {
+            releaseLinkEntries.add([
+                platform: 'Modrinth',
+                loader: loader,
+                url: modrinthUrl
+            ])
+        }
+    }
+
+    return releaseLinkEntries
+}
+
+def getReleaseLinkLines(boolean includeFallback) {
+    def entries = getReleaseLinkEntries(includeFallback)
+    def releaseLinkLines = []
+    for (def platform in ['CurseForge', 'Modrinth']) {
+        def links = entries.findAll { it.platform == platform }.collect { "[${it.loader}](${it.url})" }
+        if (links) {
+            releaseLinkLines.add("**${platform}:** ${links.join(' | ')}")
+        }
+    }
     return releaseLinkLines
+}
+
+def getReleaseLinks(boolean includeFallback) {
+    return getReleaseLinkEntries(includeFallback).collect { entry ->
+        return [label: "${entry.platform} (${entry.loader})", url: entry.url]
+    }
 }
 
 def formatCommitLink(String githubUrl, String commitId, String message) {
