@@ -47,6 +47,8 @@ public interface IClientConfig {
 
 	IJeiConfigValue<Boolean> catchRenderErrorsEnabled();
 
+	IJeiConfigValue<Boolean> recipeSyncWarningEnabled();
+
 	IJeiConfigValue<Boolean> lookupFluidContentsEnabled();
 
 	IJeiConfigValue<Boolean> lookupBlockTagsEnabled();

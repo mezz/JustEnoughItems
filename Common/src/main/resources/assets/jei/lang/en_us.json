@@ -198,6 +198,8 @@
   "jei.config.client.advanced.description": "Advanced config options to change the way JEI functions.",
   "jei.config.client.advanced.catchRenderErrorsEnabled": "Catch Render Errors",
   "jei.config.client.advanced.catchRenderErrorsEnabled.description": "Catch render errors from modded ingredients and attempt to recover from them instead of crashing.",
+  "jei.config.client.advanced.recipeSyncWarningEnabled": "Recipe Sync Warning",
+  "jei.config.client.advanced.recipeSyncWarningEnabled.description": "Show a chat warning when the server doesn't provide synced recipes to JEI (e.g. vanilla servers, or servers without JEI installed).",
 
   "jei.config.client.sorting": "Sorting",
   "jei.config.client.sorting.description": "Config options related to how JEI sorts recipes and ingredients.",
