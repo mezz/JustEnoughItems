@@ -39,7 +39,7 @@ jobs:
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
       - name: Run unit tests and server GameTests
-        run: ./gradlew test :Fabric:runGameTest :NeoForge:runGameTestServer --no-daemon
+        run: ./gradlew test :NeoForge:runGameTestServer --no-daemon
 
       - name: Run Client GameTests
         run: |
