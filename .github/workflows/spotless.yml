@@ -2,11 +2,16 @@ name: 'Spotless'
 
 on:
   push:
+    branches:
+      - '1.21.11'
   pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   spotless:
