@@ -34,6 +34,21 @@ public interface ITypedIngredient<T> {
 	T getIngredient();
 
 	/**
+	 * Returns this ingredient in the standard form JEI uses for comparison and storage.
+	 * <p>
+	 * {@link IIngredientManager#normalizeTypedIngredient} is a convenience method to call this.
+	 *
+	 * @param ingredientHelper the helper returned for this ingredient's {@link #getType() type}
+	 * @return the normalized typed ingredient, which may be this instance when no changes are needed
+	 *
+	 * @see IIngredientManager#normalizeTypedIngredient
+	 * @see IIngredientHelper#normalizeIngredient
+	 *
+	 * @since 30.18.0
+	 */
+	ITypedIngredient<T> normalize(IIngredientHelper<T> ingredientHelper);
+
+	/**
 	 * @return the ingredient wrapped by this instance, only if it matches the given type.
 	 * This is useful when handling a wildcard generic instance of `ITypedIngredient<?>`.
 	 *

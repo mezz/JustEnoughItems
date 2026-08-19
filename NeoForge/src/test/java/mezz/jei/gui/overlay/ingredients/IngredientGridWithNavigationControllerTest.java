@@ -5,6 +5,7 @@ import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
@@ -15,7 +16,10 @@ import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.gui.GridScrollMath;
+import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PlayToServerPacket;
@@ -37,6 +41,7 @@ import mezz.jei.test.lib.TestClientConfig;
 import mezz.jei.test.lib.TestClientToggleState;
 import mezz.jei.test.lib.TestColorHelper;
 import mezz.jei.test.lib.TestIngredient;
+import mezz.jei.test.lib.TestJeiConfigValue;
 import mezz.jei.test.lib.TestPlugin;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -251,7 +256,7 @@ public class IngredientGridWithNavigationControllerTest {
 		// visible elements as a fallback anchor.
 		Fixture fixture = Fixture.create(3, 3, 30, true, IngredientGridNavigationMode.SCROLLING);
 		fixture.controller.updateLayoutToFirstPage();
-		int hiddenRows = IngredientGridScrollState.getHiddenRows(30, 3, 3);
+		int hiddenRows = GridScrollMath.getHiddenRows(30, 3, 3);
 		fixture.controller.setScrollOffsetY(3 / (float) hiddenRows);
 		fixture.closeOverlay();
 
@@ -392,7 +397,7 @@ public class IngredientGridWithNavigationControllerTest {
 		// Setup: a clicked ingredient is one row down in a ten-row viewport.
 		Fixture fixture = Fixture.create(10, 10, 1000, true, IngredientGridNavigationMode.SCROLLING);
 		fixture.controller.updateLayoutToFirstPage();
-		int hiddenRows = IngredientGridScrollState.getHiddenRows(1000, 10, 10);
+		int hiddenRows = GridScrollMath.getHiddenRows(1000, 10, 10);
 		fixture.controller.setScrollOffsetY(20 / (float) hiddenRows);
 		IElement<?> clickedElement = fixture.source.getElements().get(210);
 		IClickableIngredientInternal<?> clickableIngredient = fixture.controller.createPageAnchorIngredient(
@@ -478,10 +483,10 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 	}
 
-	private record TestGridConfig(IngredientGridNavigationMode navigationMode) implements IIngredientGridConfig {
+	private record TestGridConfig(IngredientGridNavigationMode navigationModeValue) implements IIngredientGridConfig {
 		@Override
-		public int getMaxColumns() {
-			return 9;
+		public IJeiConfigValue<Integer> maxColumns() {
+			return value("maxColumns", 9);
 		}
 
 		@Override
@@ -490,8 +495,8 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		@Override
-		public int getMaxRows() {
-			return 16;
+		public IJeiConfigValue<Integer> maxRows() {
+			return value("maxRows", 16);
 		}
 
 		@Override
@@ -500,28 +505,37 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		@Override
-		public boolean drawBackground() {
-			return false;
+		public IJeiConfigValue<Boolean> drawBackground() {
+			return value("drawBackground", false);
 		}
 
 		@Override
-		public IngredientGridNavigationMode getNavigationMode() {
-			return navigationMode;
+		public IJeiConfigValue<IngredientGridLayoutMode> layoutMode() {
+			return value("layoutMode", IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE);
 		}
 
 		@Override
-		public HorizontalAlignment getHorizontalAlignment() {
-			return HorizontalAlignment.RIGHT;
+		public IJeiConfigValue<IngredientGridNavigationMode> navigationMode() {
+			return value("navigationMode", navigationModeValue);
 		}
 
 		@Override
-		public VerticalAlignment getVerticalAlignment() {
-			return VerticalAlignment.TOP;
+		public IJeiConfigValue<HorizontalAlignment> horizontalAlignment() {
+			return value("horizontalAlignment", HorizontalAlignment.RIGHT);
 		}
 
 		@Override
-		public NavigationVisibility getNavigationVisibility() {
-			return NavigationVisibility.ENABLED;
+		public IJeiConfigValue<VerticalAlignment> verticalAlignment() {
+			return value("verticalAlignment", VerticalAlignment.TOP);
+		}
+
+		@Override
+		public IJeiConfigValue<NavigationVisibility> navigationVisibility() {
+			return value("navigationVisibility", NavigationVisibility.ENABLED);
+		}
+
+		private static <T> IJeiConfigValue<T> value(String name, T value) {
+			return new TestJeiConfigValue<>(name, value);
 		}
 	}
 
@@ -705,9 +719,15 @@ public class IngredientGridWithNavigationControllerTest {
 		return List.copyOf(elements);
 	}
 
-	private record TestTypedIngredient(TestIngredient ingredient) implements mezz.jei.api.ingredients.ITypedIngredient<TestIngredient> {
+	private record TestTypedIngredient(TestIngredient ingredient) implements ITypedIngredient<TestIngredient> {
 		@Override
-		public mezz.jei.api.ingredients.IIngredientType<TestIngredient> getType() {
+		public ITypedIngredient<TestIngredient> normalize(IIngredientHelper<TestIngredient> ingredientHelper) {
+			TestIngredient normalized = ingredientHelper.normalizeIngredient(ingredient);
+			return new TestTypedIngredient(normalized);
+		}
+
+		@Override
+		public IIngredientType<TestIngredient> getType() {
 			return TestIngredient.TYPE;
 		}
 

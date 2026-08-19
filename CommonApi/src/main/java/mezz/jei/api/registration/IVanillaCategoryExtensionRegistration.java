@@ -2,6 +2,7 @@ package mezz.jei.api.registration;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.recipe.category.extensions.vanilla.brewing.IExtendableBrewingRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.IExtendableCraftingRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.IExtendableSmithingRecipeCategory;
 import org.jetbrains.annotations.ApiStatus;
@@ -31,4 +32,10 @@ public interface IVanillaCategoryExtensionRegistration {
 	 * @since 19.5.0
 	 */
 	IExtendableSmithingRecipeCategory getSmithingCategory();
+
+	/**
+	 * Get the vanilla brewing category, to extend it with custom platform brewing recipe extensions.
+	 * @since 30.17.0
+	 */
+	IExtendableBrewingRecipeCategory getBrewingCategory();
 }

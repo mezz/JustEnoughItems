@@ -67,7 +67,7 @@ public class BookmarkInputHandler implements IUserInputHandler {
 
 		IRecipeLayoutDrawable<?> layout = recipeLayoutWithButtons.getRecipeLayout();
 		Optional<RecipeSlotUnderMouse> slotUnderMouse = layout.getSlotUnderMouse(mouseX, mouseY);
-		if (!shouldBookmarkRecipe(slotUnderMouse, clientConfig.isBookmarkOutputAsRecipeEnabled())) {
+		if (!shouldBookmarkRecipe(slotUnderMouse, clientConfig.bookmarkOutputAsRecipeEnabled().getValue())) {
 			return Optional.empty();
 		}
 

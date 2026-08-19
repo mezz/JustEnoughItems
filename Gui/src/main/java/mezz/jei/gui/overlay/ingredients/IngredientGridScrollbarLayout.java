@@ -20,7 +20,7 @@ public final class IngredientGridScrollbarLayout {
 		@Nullable ImmutablePoint2i mouseExclusionPoint,
 		int ingredientCount
 	) {
-		return switch (gridConfig.getNavigationVisibility()) {
+		return switch (gridConfig.navigationVisibility().getValue()) {
 			case ENABLED -> calculateForScrollbar(gridConfig, availableArea, guiExclusionAreas, mouseExclusionPoint, true);
 			case DISABLED -> calculateForScrollbar(gridConfig, availableArea, guiExclusionAreas, mouseExclusionPoint, false);
 			case AUTO_HIDE -> calculateAutoHideScrollbar(
@@ -118,8 +118,8 @@ public final class IngredientGridScrollbarLayout {
 		return AlignmentUtil.align(
 			ingredientGridSize,
 			availableAreaWithoutScrollbar,
-			gridConfig.getHorizontalAlignment(),
-			gridConfig.getVerticalAlignment()
+			gridConfig.horizontalAlignment().getValue(),
+			gridConfig.verticalAlignment().getValue()
 		);
 	}
 
@@ -129,14 +129,14 @@ public final class IngredientGridScrollbarLayout {
 
 	private static int calculateScrollbarReservedGridWidth(IIngredientGridConfig gridConfig) {
 		int reservedGridWidth = calculateScrollbarExtraWidth(gridConfig);
-		if (gridConfig.drawBackground()) {
+		if (gridConfig.drawBackground().getValue()) {
 			return reservedGridWidth - IngredientGridWithNavigationLayout.INNER_PADDING;
 		}
 		return reservedGridWidth;
 	}
 
 	private static int calculateScrollbarOffsetFromGrid(IIngredientGridConfig gridConfig) {
-		if (gridConfig.drawBackground()) {
+		if (gridConfig.drawBackground().getValue()) {
 			return 2 * IngredientGridWithNavigationLayout.INNER_PADDING;
 		}
 		return 0;

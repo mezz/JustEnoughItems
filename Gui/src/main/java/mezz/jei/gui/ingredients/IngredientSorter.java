@@ -27,7 +27,7 @@ public final class IngredientSorter {
 
 		IngredientSorterComparators comparators = new IngredientSorterComparators(ingredientManager, modNameSortingConfig, ingredientTypeSortingConfig, modNames);
 
-		List<IngredientSortStage> ingredientSorterStages = clientConfig.getIngredientSorterStages();
+		List<IngredientSortStage> ingredientSorterStages = clientConfig.ingredientSorterStages().getValue();
 
 		Comparator<IListElementInfo<?>> completeComparator = comparators.getComparator(ingredientSorterStages);
 

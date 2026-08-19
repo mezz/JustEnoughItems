@@ -16,6 +16,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.recipes.TagRecipeUtil;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.plugins.jei.info.IngredientInfoRecipeCategory;
 import mezz.jei.library.plugins.jei.tags.ITagInfoRecipe;
@@ -50,7 +51,7 @@ public class JeiInternalPlugin implements IModPlugin {
 		tagInfoRecipeMakers.clear();
 		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-		if (clientConfig.isShowTagRecipesEnabled()) {
+		if (clientConfig.showTagRecipesEnabled().getValue()) {
 			RegistryUtil.getRegistryAccess()
 				.registries()
 				.forEach(entry -> {
@@ -64,7 +65,7 @@ public class JeiInternalPlugin implements IModPlugin {
 	public void registerRecipes(IRecipeRegistration registration) {
 		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-		if (clientConfig.isShowTagRecipesEnabled()) {
+		if (clientConfig.showTagRecipesEnabled().getValue()) {
 			for (TagInfoRecipeMaker<?, ?> data : tagInfoRecipeMakers) {
 				data.addRecipes(registration);
 			}
@@ -114,7 +115,8 @@ public class JeiInternalPlugin implements IModPlugin {
 	}
 
 	private static IRecipeType<ITagInfoRecipe> createTagInfoRecipeType(Identifier id) {
-		return IRecipeType.create(id.getNamespace(), "tag_recipes/" + id.getPath(), ITagInfoRecipe.class);
+		Identifier recipeTypeUid = TagRecipeUtil.getRecipeTypeUid(id);
+		return IRecipeType.create(recipeTypeUid, ITagInfoRecipe.class);
 	}
 
 	private static <B, I> boolean createAndRegisterTagCategory(

@@ -93,7 +93,7 @@ public class IngredientFilterTest {
 			clientConfig,
 			ingredientFilterConfig,
 			ingredientManager,
-			Comparator.comparingInt(Object::hashCode),
+			ingredients -> Comparator.comparingInt(Object::hashCode),
 			baseList,
 			modIdHelper,
 			ingredientVisibility,

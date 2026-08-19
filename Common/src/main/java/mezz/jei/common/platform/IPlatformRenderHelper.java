@@ -6,6 +6,7 @@ import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.network.chat.Component;
@@ -28,6 +29,16 @@ public interface IPlatformRenderHelper {
 	Optional<NativeImage> getMainImage(TextureAtlasSprite sprite);
 
 	void renderTooltip(GuiGraphicsExtractor guiGraphics, List<Either<FormattedText, TooltipComponent>> elements, int x, int y, Font font, ItemStack stack);
+
+	void renderTooltip(
+		GuiGraphicsExtractor guiGraphics,
+		List<Either<FormattedText, TooltipComponent>> elements,
+		int x,
+		int y,
+		Font font,
+		ItemStack stack,
+		ClientTooltipPositioner positioner
+	);
 
 	Component getName(TagKey<?> tagKey);
 

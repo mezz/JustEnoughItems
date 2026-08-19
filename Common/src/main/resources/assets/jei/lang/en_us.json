@@ -8,7 +8,10 @@
   "jei.tooltip.liquid.amount": "%s mB",
   "jei.tooltip.liquid.flowing": "%s (Flowing)",
   "jei.tooltip.transfer": "Move Items",
+  "jei.tooltip.recipe.any": "Any %s",
+  "jei.tooltip.recipe.any_fuel": "Any Fuel",
   "jei.tooltip.recipe.tag": "Accepts Tag: %s",
+  "jei.tooltip.recipe.slot.options": "Hold %s to pin this tooltip, then click an ingredient to view recipes.",
   "jei.tooltip.item.colors": "Colors: %s",
   "jei.tooltip.item.search.aliases": "Search Aliases:",
   "jei.tooltip.shapeless.recipe": "Shapeless Recipe",
@@ -67,6 +70,7 @@
 
   "key.category.jei.recipe.gui": "JEI (Recipes)",
   "key.jei.recipeBack": "Previous Recipe",
+  "key.jei.recipeForward": "Next Recipe",
   "key.jei.previousCategory": "Previous Recipe Category",
   "key.jei.nextCategory": "Next Recipe Category",
   "key.jei.previousRecipePage": "Previous Recipe Page",
@@ -198,6 +202,8 @@
   "jei.config.client.input.dragDelayInMilliseconds.description": "Number of milliseconds before a long mouse click is considered dragging the mouse.",
   "jei.config.client.input.smoothScrollRate": "Smooth Scroll Rate",
   "jei.config.client.input.smoothScrollRate.description": "Scroll rate for scrolling the mouse wheel in smooth-scrolling scroll boxes. Measured in pixels.",
+  "jei.config.client.input.recipeSlotCyclingEnabled": "Recipe Slot Cycling",
+  "jei.config.client.input.recipeSlotCyclingEnabled.description": "Automatically cycle through ingredients in recipe slots over time.",
 
   "jei.config.client.performance": "Performance",
   "jei.config.client.performance.description": "Config options related to performance optimizations in JEI.",
@@ -255,6 +261,8 @@
   "jei.config.client.ingredientList.navigationVisibility.description": "Visibility of navigation controls like page buttons and scroll bars. Use AUTO_HIDE to only show them when the list overflows.",
   "jei.config.client.ingredientList.drawBackground": "Draw GUI Background",
   "jei.config.client.ingredientList.drawBackground.description": "Enable this to draw a background texture behind the ingredient list.",
+  "jei.config.client.ingredientList.layoutMode": "Layout Mode",
+  "jei.config.client.ingredientList.layoutMode.description": "RECTANGULAR keeps page navigation aligned to the ingredient grid while still allowing excluded grid slots to be cut out. MAXIMIZE_AVAILABLE_SPACE can resize and shift page navigation around excluded areas.",
   "jei.config.client.ingredientList.navigationMode": "Navigation Mode",
   "jei.config.client.ingredientList.navigationMode.description": "Choose PAGED for page buttons, SCROLLING for a row-stepped scroll bar, or SMOOTH_SCROLLING for a smooth scroll bar.",
 
@@ -272,6 +280,8 @@
   "jei.config.client.bookmarkList.navigationVisibility.description": "Visibility of navigation controls like page buttons and scroll bars. Use AUTO_HIDE to only show them when the list overflows.",
   "jei.config.client.bookmarkList.drawBackground": "Draw GUI Background",
   "jei.config.client.bookmarkList.drawBackground.description": "Enable this to draw a background texture behind the bookmark list.",
+  "jei.config.client.bookmarkList.layoutMode": "Layout Mode",
+  "jei.config.client.bookmarkList.layoutMode.description": "RECTANGULAR keeps page navigation aligned to the bookmark grid while still allowing excluded grid slots to be cut out. MAXIMIZE_AVAILABLE_SPACE can resize and shift page navigation around excluded areas.",
   "jei.config.client.bookmarkList.navigationMode": "Navigation Mode",
   "jei.config.client.bookmarkList.navigationMode.description": "Choose PAGED for page buttons, SCROLLING for a row-stepped scroll bar, or SMOOTH_SCROLLING for a smooth scroll bar.",
 

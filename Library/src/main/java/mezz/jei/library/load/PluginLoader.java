@@ -17,6 +17,7 @@ import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.registration.ISlotDisplayInterpreterRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.api.runtime.IScreenHelper;
@@ -27,6 +28,7 @@ import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.recipes.BrewingExtensionHelper;
 import mezz.jei.common.search.BakedSubstringIndexBuilder;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.common.util.StackHelper;
@@ -39,6 +41,7 @@ import mezz.jei.library.helpers.CodecHelper;
 import mezz.jei.library.helpers.ModIdHelper;
 import mezz.jei.library.ingredients.IngredientBlacklistInternal;
 import mezz.jei.library.ingredients.IngredientManager;
+import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.ingredients.IngredientVisibility;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
@@ -90,9 +93,16 @@ public final class PluginLoader {
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(ingredientManagerBuilder));
 		PluginCaller.callOnPlugins("Registering extra ingredients", plugins, p -> p.registerExtraIngredients(ingredientManagerBuilder));
 
-		if (ingredientFilterConfig.getSearchIngredientAliases()) {
+		if (ingredientFilterConfig.searchIngredientAliases().getValue()) {
 			PluginCaller.callOnPlugins("Registering search ingredient aliases", plugins, p -> p.registerIngredientAliases(ingredientManagerBuilder));
 		}
+
+		ISlotDisplayInterpreterRegistration slotDisplayInterpreterRegistration = ingredientManagerBuilder.getSlotDisplayInterpreterRegistration();
+		PluginCaller.callOnPlugins(
+			"Registering slot display interpreters",
+			plugins,
+			p -> p.registerSlotDisplayInterpreters(slotDisplayInterpreterRegistration)
+		);
 		return ingredientManagerBuilder.build();
 	}
 
@@ -101,7 +111,7 @@ public final class PluginLoader {
 		IIngredientFilterConfig ingredientFilterConfig
 	) {
 		List<IModPlugin> plugins = data.plugins();
-		if (!ingredientFilterConfig.getSearchModAliases()) {
+		if (!ingredientFilterConfig.searchModAliases().getValue()) {
 			return ImmutableSetMultimap.of();
 		}
 		ModInfoRegistration modInfoRegistration = new ModInfoRegistration();
@@ -126,6 +136,7 @@ public final class PluginLoader {
 		GuiHelper guiHelper = new GuiHelper(ingredientManager);
 		IModIdHelper modIdHelper = new ModIdHelper(
 			modIdFormatConfig,
+			ingredientManager,
 			typedIngredient -> getDisplayModId(ingredientManager, typedIngredient),
 			modAliases
 		);
@@ -160,22 +171,33 @@ public final class PluginLoader {
 	}
 
 	@Unmodifiable
-	private static List<IRecipeCategory<?>> createRecipeCategories(List<IModPlugin> plugins, VanillaPlugin vanillaPlugin, JeiHelpers jeiHelpers) {
+	private static List<IRecipeCategory<?>> createRecipeCategories(
+		List<IModPlugin> plugins,
+		VanillaPlugin vanillaPlugin,
+		JeiHelpers jeiHelpers
+	) {
 		RecipeCategoryRegistration recipeCategoryRegistration = new RecipeCategoryRegistration(jeiHelpers);
 		PluginCaller.callOnPlugins("Registering categories", plugins, p -> p.registerCategories(recipeCategoryRegistration));
 		CraftingRecipeCategory craftingCategory = vanillaPlugin.getCraftingCategory()
 			.orElseThrow(() -> new NullPointerException("vanilla crafting category"));
 		SmithingRecipeCategory smithingCategory = vanillaPlugin.getSmithingCategory()
 			.orElseThrow(() -> new NullPointerException("vanilla smithing category"));
-		VanillaCategoryExtensionRegistration vanillaCategoryExtensionRegistration = new VanillaCategoryExtensionRegistration(craftingCategory, smithingCategory, jeiHelpers);
+		BrewingExtensionHelper brewingExtensionHelper = vanillaPlugin.getBrewingExtensionHelper()
+			.orElseThrow(() -> new NullPointerException("vanilla brewing extension helper"));
+		VanillaCategoryExtensionRegistration vanillaCategoryExtensionRegistration = new VanillaCategoryExtensionRegistration(
+			craftingCategory,
+			smithingCategory,
+			brewingExtensionHelper,
+			jeiHelpers
+		);
 		PluginCaller.callOnPlugins("Registering vanilla category extensions", plugins, p -> p.registerVanillaCategoryExtensions(vanillaCategoryExtensionRegistration));
 		return recipeCategoryRegistration.getRecipeCategories();
 	}
 
-	public static IScreenHelper createGuiScreenHelper(List<IModPlugin> plugins, IJeiHelpers jeiHelpers, IIngredientManager ingredientManager) {
+	public static IScreenHelper createGuiScreenHelper(List<IModPlugin> plugins, IJeiHelpers jeiHelpers, IIngredientManagerInternal ingredientManager) {
 		GuiHandlerRegistration guiHandlerRegistration = new GuiHandlerRegistration(jeiHelpers);
 		PluginCaller.callOnPlugins("Registering gui handlers", plugins, p -> p.registerGuiHandlers(guiHandlerRegistration));
-		return guiHandlerRegistration.createGuiScreenHelper(ingredientManager::createTypedIngredient);
+		return guiHandlerRegistration.createGuiScreenHelper(ingredientManager);
 	}
 
 	public static IRecipeTransferManager createRecipeTransferManager(
@@ -206,7 +228,7 @@ public final class PluginLoader {
 		VanillaPlugin vanillaPlugin,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
 		JeiHelpers jeiHelpers,
-		IIngredientManager ingredientManager,
+		IIngredientManagerInternal ingredientManager,
 		ContextMap contextMap
 	) {
 		List<IRecipeCategory<?>> recipeCategories = createRecipeCategories(plugins, vanillaPlugin, jeiHelpers);

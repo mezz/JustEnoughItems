@@ -7,15 +7,19 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IClickableIngredient;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.input.ClickableIngredient;
 import mezz.jei.common.input.ClickableIngredientFactory;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
+import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.Translator;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextMap;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
@@ -26,15 +30,21 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class IngredientManager implements IIngredientManager {
+public class IngredientManager implements IIngredientManagerInternal {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final RegisteredIngredients registeredIngredients;
+	private final SlotDisplayInterpreterRegistry slotDisplayInterpreterRegistry;
 	private final List<IIngredientListener> listeners = new ArrayList<>();
 
-	public IngredientManager(RegisteredIngredients registeredIngredients) {
+	public IngredientManager(
+		RegisteredIngredients registeredIngredients,
+		SlotDisplayInterpreterRegistry slotDisplayInterpreterRegistry
+	) {
 		this.registeredIngredients = registeredIngredients;
+		this.slotDisplayInterpreterRegistry = slotDisplayInterpreterRegistry;
 	}
 
 	@Override
@@ -71,6 +81,32 @@ public class IngredientManager implements IIngredientManager {
 		return this.registeredIngredients
 			.getIngredientInfo(ingredientType)
 			.getIngredientHelper();
+	}
+
+	@Override
+	public Stream<SlotIngredient<?>> resolveSlotDisplay(
+		ContextMap contextMap,
+		RecipeIngredientRole role,
+		SlotDisplay slotDisplay
+	) {
+		return SlotDisplayIngredientResolver.resolve(this, slotDisplayInterpreterRegistry, contextMap, role, slotDisplay);
+	}
+
+	@Override
+	public <T> Stream<SlotIngredient<T>> resolveSlotDisplay(
+		IIngredientType<T> ingredientType,
+		ContextMap contextMap,
+		RecipeIngredientRole role,
+		SlotDisplay slotDisplay
+	) {
+		return SlotDisplayIngredientResolver.resolve(this, slotDisplayInterpreterRegistry, ingredientType, contextMap, role, slotDisplay);
+	}
+
+	@Override
+	public <T> List<ITypedIngredient<T>> getGroupedIngredients(ITypedIngredient<T> ingredient) {
+		return registeredIngredients
+			.getIngredientInfo(ingredient.getType())
+			.getGroupedIngredients(ingredient);
 	}
 
 	@Override
@@ -206,7 +242,7 @@ public class IngredientManager implements IIngredientManager {
 
 	@Override
 	public IClickableIngredientFactory getClickableIngredientFactory() {
-		return new ClickableIngredientFactory(this::createTypedIngredient);
+		return new ClickableIngredientFactory(this);
 	}
 
 	@Override
@@ -216,11 +252,16 @@ public class IngredientManager implements IIngredientManager {
 	}
 
 	@Override
+	public <V> ITypedIngredient<V> checkTypedIngredientFromApi(ITypedIngredient<V> typedIngredient) {
+		return TypedIngredientUtil.checkTypedIngredientFromApi(this, typedIngredient);
+	}
+
+	@Override
 	public <V> ITypedIngredient<V> normalizeTypedIngredient(ITypedIngredient<V> typedIngredient) {
-		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
-		IIngredientType<V> type = typedIngredient.getType();
+		ITypedIngredient<V> checkedIngredient = checkTypedIngredientFromApi(typedIngredient);
+		IIngredientType<V> type = checkedIngredient.getType();
 		IIngredientHelper<V> ingredientHelper = getIngredientHelper(type);
-		return TypedIngredient.normalize(typedIngredient, ingredientHelper);
+		return checkedIngredient.normalize(ingredientHelper);
 	}
 
 	@SuppressWarnings("removal")
@@ -248,7 +289,12 @@ public class IngredientManager implements IIngredientManager {
 
 	@Override
 	public Collection<String> getIngredientAliases(ITypedIngredient<?> ingredient) {
-		return getIngredientAliasesInternal(ingredient);
+		return getIngredientAliasesChecked(ingredient);
+	}
+
+	private <T> Collection<String> getIngredientAliasesChecked(ITypedIngredient<T> typedIngredient) {
+		ITypedIngredient<T> checkedIngredient = checkTypedIngredientFromApi(typedIngredient);
+		return getIngredientAliasesInternal(checkedIngredient);
 	}
 
 	private <T> Collection<String> getIngredientAliasesInternal(ITypedIngredient<T> typedIngredient) {

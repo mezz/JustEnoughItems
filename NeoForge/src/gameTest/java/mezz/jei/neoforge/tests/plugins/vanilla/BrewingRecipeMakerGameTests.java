@@ -5,8 +5,9 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
+import mezz.jei.common.recipes.BrewingExtensionHelper;
 import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
-import mezz.jei.neoforge.platform.BrewingRecipeMaker;
+import mezz.jei.neoforge.platform.BrewingRecipeCategoryExtension;
 import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.Holder;
@@ -35,6 +36,7 @@ import java.util.stream.Stream;
 @ForEachTest(groups = "synthetic_recipes")
 public final class BrewingRecipeMakerGameTests {
 	private static final TestItemStackHelper ITEM_STACK_HELPER = new TestItemStackHelper();
+	private static final BrewingExtensionHelper DEFAULT_BREWING_EXTENSIONS = createBrewingExtensionHelper();
 
 	private BrewingRecipeMakerGameTests() {
 	}
@@ -145,6 +147,80 @@ public final class BrewingRecipeMakerGameTests {
 
 	@GameTest
 	@EmptyTemplate
+	@TestHolder(description = "Registered brewing recipe extensions convert custom NeoForge recipes.")
+	public static void addModdedBrewingRecipesUsesRegisteredExtension(JeiGameTestHelper helper) {
+		// Setup: a mod registers an extension for a custom brewing recipe class that JEI cannot inspect directly.
+		IBrewingRecipe brewingRecipe = new UnsupportedBrewingRecipe();
+		BrewingExtensionHelper extensionHelper = createBrewingExtensionHelper();
+		extensionHelper.addExtension(
+			UnsupportedBrewingRecipe.class,
+			(recipe, vanillaRecipeFactory, contextMap) -> List.of(
+				vanillaRecipeFactory.createBrewingRecipe(
+					List.of(new ItemStack(Items.NETHER_WART)),
+					new ItemStack(Items.POTION),
+					new ItemStack(Items.DIAMOND),
+					Identifier.fromNamespaceAndPath("test", "custom_regular")
+				),
+				vanillaRecipeFactory.createBrewingRecipe(
+					List.of(new ItemStack(Items.NETHER_WART)),
+					new ItemStack(Items.SPLASH_POTION),
+					new ItemStack(Items.EMERALD),
+					Identifier.fromNamespaceAndPath("test", "custom_splash")
+				)
+			)
+		);
+		List<IJeiBrewingRecipe> recipes = new ArrayList<>();
+
+		// Operation: JEI converts the custom recipe through the registered extension.
+		addModdedBrewingRecipes(List.of(brewingRecipe), recipes, extensionHelper);
+
+		// Assertions: every JEI recipe returned by the extension is added.
+		helper.assertEquals(2, recipes.size(), "Expected both recipes returned by the brewing extension");
+		Set<Identifier> uids = recipes.stream()
+			.map(IJeiBrewingRecipe::getUid)
+			.collect(java.util.stream.Collectors.toSet());
+		helper.assertEquals(
+			Set.of(
+				Identifier.fromNamespaceAndPath("test", "custom_regular"),
+				Identifier.fromNamespaceAndPath("test", "custom_splash")
+			),
+			uids,
+			"Expected custom brewing recipe identifiers"
+		);
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "A failing brewing recipe extension does not stop other recipe processing.")
+	public static void addModdedBrewingRecipesSkipsFailingExtension(JeiGameTestHelper helper) {
+		// Setup: a mod registers a broken extension for its custom brewing recipe class.
+		IBrewingRecipe brewingRecipe = new UnsupportedBrewingRecipe();
+		BrewingRecipe validRecipe = new BrewingRecipe(
+			Ingredient.of(Items.POTION),
+			Ingredient.of(Items.NETHER_WART),
+			new ItemStack(Items.DIAMOND)
+		);
+		BrewingExtensionHelper extensionHelper = createBrewingExtensionHelper();
+		extensionHelper.addExtension(UnsupportedBrewingRecipe.class, (recipe, vanillaRecipeFactory, contextMap) -> {
+			throw new IllegalStateException("test failure");
+		});
+		List<IJeiBrewingRecipe> recipes = new ArrayList<>();
+
+		// Operation: JEI tries to convert the recipe through the failing extension.
+		addModdedBrewingRecipes(List.of(brewingRecipe, validRecipe), recipes, extensionHelper);
+
+		// Assertions: the broken extension is isolated and the valid recipe is still converted.
+		helper.assertEquals(1, recipes.size(), "Expected the valid brewing recipe to remain");
+		helper.assertTrue(
+			ItemStack.isSameItemSameComponents(new ItemStack(Items.DIAMOND), recipes.getFirst().getPotionOutput()),
+			"Expected the valid brewing recipe output"
+		);
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
 	@TestHolder(description = "Valid NeoForge brewing recipes are kept when invalid recipes are skipped.")
 	public static void addModdedBrewingRecipesKeepsExistingRecipesWhenSkippingInvalidOnes(JeiGameTestHelper helper) {
 		// Setup: the target collection already contains a recipe, and the source collection has one invalid
@@ -183,18 +259,68 @@ public final class BrewingRecipeMakerGameTests {
 		helper.succeed();
 	}
 
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "NeoForge brewing recipes with the same output have distinct compact UIDs.")
+	public static void standardRecipesWithTheSameOutputHaveUniqueIds(JeiGameTestHelper helper) {
+		// Setup: two standard recipes have the same input and output but different ingredients.
+		BrewingRecipe firstRecipe = new BrewingRecipe(
+			Ingredient.of(Items.POTION),
+			Ingredient.of(Items.NETHER_WART),
+			new ItemStack(Items.DIAMOND)
+		);
+		BrewingRecipe secondRecipe = new BrewingRecipe(
+			Ingredient.of(Items.POTION),
+			Ingredient.of(Items.REDSTONE),
+			new ItemStack(Items.DIAMOND)
+		);
+		List<IJeiBrewingRecipe> recipes = new ArrayList<>();
+
+		// Operation: JEI converts both recipes through the standard NeoForge extension.
+		addModdedBrewingRecipes(List.of(firstRecipe, secondRecipe), recipes);
+
+		// Assertions: both recipes remain distinct, with fixed-size digest identifiers.
+		helper.assertEquals(2, recipes.size(), "Expected both brewing recipes to remain distinct");
+		Set<Identifier> uids = recipes.stream()
+			.map(IJeiBrewingRecipe::getUid)
+			.collect(java.util.stream.Collectors.toSet());
+		helper.assertEquals(2, uids.size(), "Expected a unique UID for each displayed recipe");
+		helper.assertTrue(
+			uids.stream().allMatch(uid -> uid.getPath().startsWith("brewing/") && uid.getPath().length() == 72),
+			"Expected compact SHA-256 brewing recipe UIDs"
+		);
+		helper.succeed();
+	}
+
 	private static void addModdedBrewingRecipes(Collection<IBrewingRecipe> brewingRecipes, Collection<IJeiBrewingRecipe> recipes) {
-		BrewingRecipeMaker.addModdedBrewingRecipes(
-			createRecipeFactory(),
-			ITEM_STACK_HELPER,
-			brewingRecipes,
-			recipes,
-			ContextMap.EMPTY
+		addModdedBrewingRecipes(brewingRecipes, recipes, DEFAULT_BREWING_EXTENSIONS);
+	}
+
+	private static void addModdedBrewingRecipes(
+		Collection<IBrewingRecipe> brewingRecipes,
+		Collection<IJeiBrewingRecipe> recipes,
+		BrewingExtensionHelper brewingExtensionHelper
+	) {
+		recipes.addAll(
+			brewingExtensionHelper.getBrewingRecipes(
+				brewingRecipes,
+				createRecipeFactory(),
+				ContextMap.EMPTY
+			)
 		);
 	}
 
 	private static VanillaRecipeFactory createRecipeFactory() {
 		return new VanillaRecipeFactory(ITEM_STACK_HELPER, ContextMap.EMPTY);
+	}
+
+	private static BrewingExtensionHelper createBrewingExtensionHelper() {
+		BrewingExtensionHelper extensionHelper = new BrewingExtensionHelper();
+		extensionHelper.addExtension(
+			BrewingRecipe.class,
+			new BrewingRecipeCategoryExtension(ITEM_STACK_HELPER)
+		);
+		return extensionHelper;
 	}
 
 	private static Ingredient emptyIngredient() {

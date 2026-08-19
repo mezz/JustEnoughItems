@@ -53,7 +53,7 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 
 	@Override
 	public Collection<Rect2i> getGuiExtraAreas() {
-		if (!screenHasGuiProperties()) {
+		if (!isActive()) {
 			stopInteraction();
 			return List.of();
 		}
@@ -64,7 +64,7 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 	}
 
 	private void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-		if (!screenHasGuiProperties()) {
+		if (!isActive()) {
 			return;
 		}
 
@@ -100,6 +100,10 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 
 	private boolean screenHasGuiProperties() {
 		return screenHasGuiProperties.getAsBoolean();
+	}
+
+	private boolean isActive() {
+		return DebugConfig.isDebugGuisEnabled() && screenHasGuiProperties();
 	}
 
 	private Rect2i getArea() {

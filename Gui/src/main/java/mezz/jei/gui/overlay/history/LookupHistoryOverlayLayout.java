@@ -33,7 +33,7 @@ public record LookupHistoryOverlayLayout(
 			historyListConfig
 		);
 		ImmutableRect2i backgroundArea;
-		if (historyListConfig.drawBackground() && !slotBackgroundArea.isEmpty()) {
+		if (historyListConfig.drawBackground().getValue() && !slotBackgroundArea.isEmpty()) {
 			backgroundArea = slotBackgroundArea.expandBy(IngredientGridWithNavigationLayout.BORDER_PADDING);
 		} else {
 			backgroundArea = slotBackgroundArea;
@@ -48,7 +48,7 @@ public record LookupHistoryOverlayLayout(
 	}
 
 	private static ImmutableRect2i getAvailableGridArea(IIngredientGridConfig historyListConfig, ImmutableRect2i availableArea) {
-		if (historyListConfig.drawBackground()) {
+		if (historyListConfig.drawBackground().getValue()) {
 			return availableArea.insetBy(BACKGROUND_PADDING);
 		}
 		return availableArea;

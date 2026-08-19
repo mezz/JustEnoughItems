@@ -10,8 +10,10 @@ import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.extensions.vanilla.brewing.IExtendableBrewingRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.IExtendableCraftingRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.IExtendableSmithingRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
@@ -25,13 +27,16 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
+import mezz.jei.api.registration.ISlotDisplayInterpreterRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.platform.IPlatformBrewingHelper;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.recipes.BrewingExtensionHelper;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.common.util.StackHelper;
@@ -46,6 +51,8 @@ import mezz.jei.library.plugins.vanilla.compostable.CompostableRecipeCategory;
 import mezz.jei.library.plugins.vanilla.compostable.CompostingRecipeMaker;
 import mezz.jei.library.plugins.vanilla.cooking.BlastingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.CampfireCookingCategory;
+import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeMaker;
+import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeTransferInfo;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceSmeltingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.SmokingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.fuel.BlastingFuelCategory;
@@ -75,7 +82,7 @@ import mezz.jei.library.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.library.render.FluidTankRenderer;
 import mezz.jei.library.render.ItemStackRenderer;
 import mezz.jei.library.transfer.PlayerRecipeTransferHandler;
-import net.minecraft.client.Minecraft;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
@@ -88,10 +95,10 @@ import net.minecraft.client.gui.screens.inventory.GrindstoneScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.inventory.AnvilMenu;
@@ -116,6 +123,7 @@ import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.minecraft.world.item.crafting.SmithingTrimRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import org.apache.logging.log4j.LogManager;
@@ -145,6 +153,8 @@ public class VanillaPlugin implements IModPlugin {
 	private IRecipeCategory<RecipeHolder<CampfireCookingRecipe>> campfireCategory;
 	@Nullable
 	private SmithingRecipeCategory smithingCategory;
+	@Nullable
+	private BrewingExtensionHelper brewingExtensionHelper;
 
 	@Override
 	public Identifier getPluginUid() {
@@ -191,6 +201,47 @@ public class VanillaPlugin implements IModPlugin {
 	}
 
 	@Override
+	public void registerSlotDisplayInterpreters(ISlotDisplayInterpreterRegistration registration) {
+		registration.registerUniversal(SlotDisplay.Composite.TYPE, (slotDisplay, interpretationBuilder) -> {
+			interpretationBuilder.setChildDisplays(slotDisplay.contents());
+		});
+		registration.register(SlotDisplay.ItemSlotDisplay.TYPE, (ignoredSlotDisplay, ignoredContext, interpretationBuilder) -> {
+			interpretationBuilder.setWildcardForSubtypes(true);
+		});
+		registration.register(SlotDisplay.TagSlotDisplay.TYPE, (slotDisplay, ignoredContext, interpretationBuilder) -> {
+			slotDisplay.tag()
+				.unwrapKey()
+				.ifPresent(interpretationBuilder::setTagKey);
+			interpretationBuilder.setWildcardForSubtypes(true);
+		});
+		registration.register(SlotDisplay.AnyFuel.TYPE, (ignoredSlotDisplay1, ignoredContext, interpretationBuilder) -> {
+			interpretationBuilder
+				.setTooltipHeader(
+					Component.translatable("jei.tooltip.recipe.any_fuel")
+						.withStyle(ChatFormatting.GOLD)
+						.withStyle(ChatFormatting.ITALIC)
+				)
+				.setWildcardForSubtypes(true);
+		});
+		registration.register(SlotDisplay.WithAnyPotion.TYPE, (ignoredSlotDisplay, context, interpretationBuilder) -> {
+			List<ITypedIngredient<ItemStack>> ingredients = context.getIngredients();
+			if (ingredients.isEmpty()) {
+				return;
+			}
+			ItemStack itemStack = ingredients.getFirst().getIngredient();
+			Component itemName = Component.translatable(itemStack.getItem().getDescriptionId());
+			interpretationBuilder.setTooltipHeader(
+				Component.translatable("jei.tooltip.recipe.any", itemName)
+					.withStyle(ChatFormatting.GOLD)
+					.withStyle(ChatFormatting.ITALIC)
+			);
+		});
+		registration.register(SlotDisplay.WithRemainder.TYPE, (slotDisplay, ignoredContext, interpretationBuilder) -> {
+			interpretationBuilder.setWrappedDisplay(slotDisplay.input());
+		});
+	}
+
+	@Override
 	public void registerModInfo(IModInfoRegistration registration) {
 		registration.addModAliases(ModIds.MINECRAFT_ID, "mc");
 	}
@@ -213,6 +264,7 @@ public class VanillaPlugin implements IModPlugin {
 		Textures textures = Internal.getTextures();
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+		brewingExtensionHelper = new BrewingExtensionHelper();
 		registration.addRecipeCategories(
 			craftingCategory = new CraftingRecipeCategory(guiHelper),
 			stonecuttingCategory = new StoneCuttingRecipeCategory(guiHelper),
@@ -240,6 +292,13 @@ public class VanillaPlugin implements IModPlugin {
 		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		smithingCategory.addExtension(SmithingTransformRecipe.class, new SmithingTransformCategoryExtension(recipeHelper));
 		smithingCategory.addExtension(SmithingTrimRecipe.class, new SmithingTrimCategoryExtension(recipeHelper));
+
+		IExtendableBrewingRecipeCategory brewingCategory = registration.getBrewingCategory();
+		IPlatformBrewingHelper brewingHelper = Services.PLATFORM.getBrewingHelper();
+		brewingHelper.registerCategoryExtensions(
+			brewingCategory,
+			registration.getJeiHelpers().getIngredientManager()
+		);
 	}
 
 	@Override
@@ -256,6 +315,7 @@ public class VanillaPlugin implements IModPlugin {
 		ErrorUtil.checkNotNull(blastingCategory, "blastingCategory");
 		ErrorUtil.checkNotNull(campfireCategory, "campfireCategory");
 		ErrorUtil.checkNotNull(smithingCategory, "smithingCategory");
+		ErrorUtil.checkNotNull(brewingExtensionHelper, "brewingExtensionHelper");
 
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IVanillaRecipeFactory vanillaRecipeFactory = registration.getVanillaRecipeFactory();
@@ -275,6 +335,7 @@ public class VanillaPlugin implements IModPlugin {
 
 		registration.addRecipes(RecipeTypes.STONECUTTING, vanillaRecipes.getStonecuttingRecipes(stonecuttingCategory));
 		registration.addRecipes(RecipeTypes.SMELTING, vanillaRecipes.getFurnaceRecipes(furnaceCategory));
+		registration.addRecipes(RecipeTypes.SMELTING, FurnaceRecipeMaker.getRecipes(vanillaRecipeFactory, clientSyncedRecipes));
 		registration.addRecipes(RecipeTypes.SMOKING, vanillaRecipes.getSmokingRecipes(smokingCategory));
 		registration.addRecipes(RecipeTypes.BLASTING, vanillaRecipes.getBlastingRecipes(blastingCategory));
 		registration.addRecipes(RecipeTypes.CAMPFIRE_COOKING, vanillaRecipes.getCampfireCookingRecipes(campfireCategory));
@@ -285,14 +346,16 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipes(RecipeTypes.SMITHING, vanillaRecipes.getSmithingRecipes(smithingCategory));
 		registration.addRecipes(RecipeTypes.COMPOSTING, CompostingRecipeMaker.getRecipes(ingredientManager));
 
-		Minecraft minecraft = Minecraft.getInstance();
-		ClientLevel level = minecraft.level;
-		ErrorUtil.checkNotNull(level, "minecraft.level");
 		var vanillaBrewingRecipes = clientSyncedRecipes.byType(RecipeType.BREWING);
-		List<IJeiBrewingRecipe> brewingRecipes = recipeHelper.getBrewingRecipes(ingredientManager, vanillaRecipeFactory, vanillaBrewingRecipes, contextMap)
-			.stream()
-			.sorted(Comparator.comparingInt(IJeiBrewingRecipe::getBrewingSteps))
-			.toList();
+		IPlatformBrewingHelper brewingHelper = Services.PLATFORM.getBrewingHelper();
+		List<IJeiBrewingRecipe> brewingRecipes = brewingHelper.getBrewingRecipes(
+			ingredientManager,
+			vanillaRecipeFactory,
+			vanillaBrewingRecipes,
+			contextMap,
+			brewingExtensionHelper
+		);
+		brewingRecipes.sort(Comparator.comparingInt(IJeiBrewingRecipe::getBrewingSteps));
 		registration.addRecipes(RecipeTypes.BREWING, brewingRecipes);
 		registration.addRecipes(RecipeTypes.GRINDSTONE, GrindstoneRecipeMaker.getGrindstoneRecipes(ingredientManager, recipeHelper));
 	}
@@ -321,7 +384,7 @@ public class VanillaPlugin implements IModPlugin {
 	public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
 		registration.addRecipeTransferHandler(CraftingMenu.class, MenuType.CRAFTING, RecipeTypes.CRAFTING, 1, 9, 10, 36);
 		registration.addRecipeTransferHandler(CrafterMenu.class, MenuType.CRAFTER_3x3, RecipeTypes.CRAFTING, 0, 9, 9, 36);
-		registration.addRecipeTransferHandler(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING, 0, 1, 3, 36);
+		registration.addRecipeTransferHandler(new FurnaceRecipeTransferInfo());
 		registration.addRecipeTransferHandler(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING_FUEL, 1, 1, 3, 36);
 		registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.SMOKING, 0, 1, 3, 36);
 		registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.SMOKING_FUEL, 1, 1, 3, 36);
@@ -372,6 +435,10 @@ public class VanillaPlugin implements IModPlugin {
 
 	public Optional<SmithingRecipeCategory> getSmithingCategory() {
 		return Optional.ofNullable(smithingCategory);
+	}
+
+	public Optional<BrewingExtensionHelper> getBrewingExtensionHelper() {
+		return Optional.ofNullable(brewingExtensionHelper);
 	}
 
 	/**

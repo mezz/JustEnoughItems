@@ -153,15 +153,16 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 
 	private void addBookmarkTooltipFeaturesIfEnabled(JeiTooltip tooltip) {
 		JeiTooltip transferComponents = createTransferComponents();
+		List<BookmarkTooltipFeature> bookmarkTooltipFeatures = getBookmarkTooltipFeatures();
 
-		if (clientConfig.getBookmarkTooltipFeatures().isEmpty() && transferComponents.isEmpty()) {
+		if (bookmarkTooltipFeatures.isEmpty() && transferComponents.isEmpty()) {
 			return;
 		}
 
-		if (clientConfig.isHoldShiftToShowBookmarkTooltipFeaturesEnabled()) {
+		if (clientConfig.holdShiftToShowBookmarkTooltipFeaturesEnabled().getValue()) {
 			IJeiKeyMappingInternal showBookmarkTooltipFeatures = Internal.getKeyMappings().getShowBookmarkTooltipFeatures();
 			if (showBookmarkTooltipFeatures.isDown()) {
-				addBookmarkTooltipFeatures(tooltip);
+				addBookmarkTooltipFeatures(tooltip, bookmarkTooltipFeatures);
 				tooltip.addAll(transferComponents);
 			} else {
 				tooltip.addKeyUsageComponent(
@@ -170,13 +171,17 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 				);
 			}
 		} else {
-			addBookmarkTooltipFeatures(tooltip);
+			addBookmarkTooltipFeatures(tooltip, bookmarkTooltipFeatures);
 			tooltip.addAll(transferComponents);
 		}
 	}
 
-	private void addBookmarkTooltipFeatures(JeiTooltip tooltip) {
-		for (BookmarkTooltipFeature feature : clientConfig.getBookmarkTooltipFeatures()) {
+	private List<BookmarkTooltipFeature> getBookmarkTooltipFeatures() {
+		return clientConfig.bookmarkTooltipFeatures().getValue();
+	}
+
+	private void addBookmarkTooltipFeatures(JeiTooltip tooltip, List<BookmarkTooltipFeature> features) {
+		for (BookmarkTooltipFeature feature : features) {
 			boolean added = addBookmarkTooltipFeature(tooltip, feature);
 			if (!added) {
 				break;

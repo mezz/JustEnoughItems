@@ -113,6 +113,7 @@ val neoForgeServerWithoutJeiRunName = "neoForgeServerWithoutJei"
 val vanillaServerRunName = "vanillaServer"
 val clientRecipeSyncTestProperty = "jei.clientRecipeSyncTest"
 val clientRecipeSyncTestRunName = "clientRecipeSyncTest"
+val clientResourcePackName = "jei-client-test-pack"
 val clientRecipeSyncTestCaseRuns = listOf(
 	"clientRecipeSyncSingleplayer" to "singleplayer",
 	"clientRecipeSyncNeoForgeServerWithJei" to "neoforgeServerWithJei",
@@ -304,6 +305,18 @@ val writeClientRecipeSyncTestOptionsTasks = clientRecipeSyncRuns.associate { (ru
 	}
 }
 
+val copyClientResourcePackTasks = clientRecipeSyncRuns.associate { (runName, _) ->
+	runName to tasks.register<Sync>("copy${capitalizedRunName(runName)}ResourcePack") {
+		from(layout.projectDirectory.file("src/clientGameTest/templates/resourcepacks/$clientResourcePackName/pack.mcmeta"))
+		// Override JEI's 16x16 config button with an existing 32x32 texture to catch stale atlas coordinates.
+		from(commonProjectDirectory.file("src/main/resources/assets/jei/textures/jei/atlas/gui/icons/shapeless_icon.png")) {
+			into("assets/jei/textures/jei/atlas/gui/icons")
+			rename { "config_button.png" }
+		}
+		into(clientRecipeSyncTestGameDirectory(runName).dir("resourcepacks/$clientResourcePackName"))
+	}
+}
+
 val cleanGameTestJunitResults = tasks.register<Delete>("cleanGameTestJunitResults") {
 	description = "Deletes NeoForge game test JUnit result files before running game tests."
 	delete(gameTestJunitResultsDir)
@@ -318,7 +331,8 @@ clientRecipeSyncRuns.forEach { (runName, _) ->
 		dependsOn(
 			writeExternalServerLaunchProperties,
 			copyClientRecipeSyncTestFmlConfigTasks.getValue(runName),
-			writeClientRecipeSyncTestOptionsTasks.getValue(runName)
+			writeClientRecipeSyncTestOptionsTasks.getValue(runName),
+			copyClientResourcePackTasks.getValue(runName)
 		)
 	}
 }

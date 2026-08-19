@@ -1,16 +1,11 @@
 package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import de.siphalor.amecs.key_modifiers.api.AmecsKeyModifierCombination;
-import de.siphalor.amecs.key_modifiers.impl.AmecsKeyMappingManagerLayer;
+import mezz.jei.common.Internal;
 import mezz.jei.common.input.keys.IJeiKeyMappingBuilder;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
-import mezz.jei.fabric.input.AmecsHelper;
-import mezz.jei.fabric.input.AmecsJeiKeyMapping;
-import mezz.jei.fabric.input.AmecsJeiKeyMappingManagerLayer;
-import mezz.jei.fabric.input.AmecsKeyMappingWithContext;
 import mezz.jei.fabric.input.FabricAmecsSupport;
 import mezz.jei.fabric.input.FabricJeiKeyMapping;
 import mezz.jei.fabric.input.FabricJeiKeyMappingCategoryBuilder;
@@ -21,73 +16,253 @@ import net.fabricmc.fabric.api.client.gametest.v1.TestInput;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.locale.Language;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Verifies JEI's Fabric key-mapping wrappers with and without AMECS support.
  *
  * <p>This test class is run by two Fabric client launches:
  * <ul>
- *     <li>{@code :Fabric:runClientGameTest} leaves JEI's AMECS support enabled.</li>
- *     <li>{@code :Fabric:runClientGameTestWithoutAmecs} sets {@code -Djei.fabric.disableAmecsSupport=true},
- *     so JEI uses its non-AMECS Fabric key mapping path even though the test AMECS dependency is still present.</li>
+ *     <li>{@code :Fabric:runClientGameTest} runs with AMECS and its JEI integration enabled.</li>
+ *     <li>{@code :Fabric:runClientGameTestWithoutAmecs} removes AMECS from the runtime classpath and exercises
+ *     JEI's plain Fabric key-mapping path.</li>
  * </ul>
  */
 @SuppressWarnings("UnstableApiUsage")
 public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 	private static final KeyMapping.Category CATEGORY = new KeyMapping.Category(Identifier.fromNamespaceAndPath("jei-test", "key_mapping"));
+	private static final Identifier GUI_BACKGROUND_TEXTURE = Identifier.fromNamespaceAndPath("jei", "textures/jei/atlas/gui/gui_background.png");
+	private static final String FOCUS_SEARCH_TRANSLATION_KEY = "key.jei.focusSearch";
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		JUnitXmlTestReporter.runAndReportWithBooleanVariant(
-			"fabric-client-gametest",
-			"jei.fabric.disableAmecsSupport",
-			"without-amecs",
+		boolean amecsLoaded = FabricLoader.getInstance()
+			.isModLoaded(FabricAmecsSupport.AMECS_KEY_MODIFIERS_MOD_ID);
+		String suiteName = "fabric-client-gametest";
+		if (!amecsLoaded) {
+			suiteName += "-without-amecs";
+		}
+		JUnitXmlTestReporter.runAndReport(
+			suiteName,
 			getClass().getSimpleName(),
 			() -> {
 				context.runOnClient(client -> {
-					assertFabricJeiKeyMappingMatches("key.jei.test.fabricKeyMapping.keyboardR", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R);
-					assertFabricJeiKeyMappingMatches("key.jei.test.fabricKeyMapping.keyboardU", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_U);
-					assertFabricJeiKeyMappingMatches("key.jei.test.fabricKeyMapping.mouseLeft", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_LEFT);
-					assertFabricJeiKeyMappingMatches("key.jei.test.fabricKeyMapping.mouseRight", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT);
+					assertJeiResourcesAreLoaded(client);
+					assertFabricKeyMappingConflictContexts();
+					assertFabricJeiKeyMappingIsDiscoverableAndRebindable(
+						"key.jei.test.fabricKeyMapping.keyboardR",
+						InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_R),
+						InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_T)
+					);
+					assertFabricJeiKeyMappingIsDiscoverableAndRebindable(
+						"key.jei.test.fabricKeyMapping.keyboardU",
+						InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_U),
+						InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_Y)
+					);
+					assertFabricJeiKeyMappingIsDiscoverableAndRebindable(
+						"key.jei.test.fabricKeyMapping.mouseLeft",
+						InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_LEFT),
+						InputConstants.Type.MOUSE.getOrCreate(3)
+					);
+					assertFabricJeiKeyMappingIsDiscoverableAndRebindable(
+						"key.jei.test.fabricKeyMapping.mouseRight",
+						InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_RIGHT),
+						InputConstants.Type.MOUSE.getOrCreate(2)
+					);
+					if (FabricAmecsSupport.isEnabled()) {
+						AmecsKeyMappingClientGameTestHelper.assertKeyMappingConflictContexts(CATEGORY);
+						AmecsKeyMappingClientGameTestHelper.assertJeiKeyMappingIsDiscoverableAndRebindable(CATEGORY);
+					}
 				});
 				assertModifiedJeiKeyMappings(context);
+				assertFocusSearchHotkeyDoesNotTypeItsCharacter(context);
 				assertJeiMouseMappingsDoNotHideVanillaMouseClicks(context);
 			}
 		);
 	}
 
-	private static void assertFabricJeiKeyMappingMatches(String description, InputConstants.Type type, int keyCode) {
-		// Setup: FabricKeyMapping stores the real key separately, then clears the vanilla key field so the
-		// binding does not conflict with other mods' keybinds.
+	private static void assertJeiResourcesAreLoaded(Minecraft client) {
+		if (client.getResourceManager().getResource(GUI_BACKGROUND_TEXTURE).isEmpty()) {
+			throw new AssertionError("Expected the Fabric development mod to include JEI's Common textures.");
+		}
+		if (!Language.getInstance().has(FOCUS_SEARCH_TRANSLATION_KEY)) {
+			throw new AssertionError("Expected the Fabric development mod to include JEI's Common translations.");
+		}
+	}
+
+	private static void assertFocusSearchHotkeyDoesNotTypeItsCharacter(ClientGameTestContext context) {
+		try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
+			context.waitFor(
+				client -> Internal.getOptionalJeiRuntime().isPresent(),
+				ClientGameTestContext.DEFAULT_TIMEOUT
+			);
+
+			context.getInput().pressKey(options -> options.keyInventory);
+			context.waitFor(
+				client -> client.gui.screen() instanceof InventoryScreen &&
+					Internal.getJeiRuntime().getIngredientListOverlay().isListDisplayed(),
+				ClientGameTestContext.DEFAULT_TIMEOUT
+			);
+			context.runOnClient(client -> {
+				KeyMapping focusSearch = KeyMapping.get("key.jei.focusSearch");
+				if (focusSearch == null) {
+					throw new AssertionError("Expected the focus-search key mapping to be registered.");
+				}
+				// Match the controls screen, which unbinds the selected mapping before recording its new key.
+				focusSearch.setKey(InputConstants.UNKNOWN);
+				focusSearch.setKey(InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_F));
+				KeyMapping.resetMapping();
+				Internal.getJeiRuntime().getIngredientFilter().setFilterText("");
+			});
+
+			TestInput input = context.getInput();
+			input.pressKey(GLFW.GLFW_KEY_F);
+			context.waitFor(
+				client -> Internal.getJeiRuntime().getIngredientListOverlay().hasKeyboardFocus(),
+				ClientGameTestContext.DEFAULT_TIMEOUT
+			);
+
+			input.typeChar('f');
+			String filterText = context.computeOnClient(client -> Internal.getJeiRuntime().getIngredientFilter().getFilterText());
+			if (!filterText.isEmpty()) {
+				throw new AssertionError("Expected the focus-search hotkey character to be consumed, got: " + filterText);
+			}
+
+			input.pressKey(GLFW.GLFW_KEY_X);
+			input.typeChar('x');
+			filterText = context.computeOnClient(client -> Internal.getJeiRuntime().getIngredientFilter().getFilterText());
+			if (!filterText.equals("x")) {
+				throw new AssertionError("Expected normal typing to resume after the focus-search character, got: " + filterText);
+			}
+		}
+	}
+
+	private static void assertFabricKeyMappingConflictContexts() {
+		InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_G);
+		FabricKeyMapping guiMapping = createFabricKeyMapping("conflicts.gui", key, JeiKeyConflictContext.GUI);
+		FabricKeyMapping otherGuiMapping = createFabricKeyMapping("conflicts.otherGui", key, JeiKeyConflictContext.GUI);
+		FabricKeyMapping inGameMapping = createFabricKeyMapping("conflicts.inGame", key, JeiKeyConflictContext.IN_GAME);
+		FabricKeyMapping universalMapping = createFabricKeyMapping("conflicts.universal", key, JeiKeyConflictContext.UNIVERSAL);
+		KeyMapping regularMapping = new KeyMapping("key.jei.test.fabricKeyMapping.conflicts.regular", key.getType(), key.getValue(), CATEGORY);
+
+		try {
+			assertConflictContextBehavior("Fabric", guiMapping, otherGuiMapping, inGameMapping, universalMapping, regularMapping);
+		} finally {
+			unbindMappings(guiMapping, otherGuiMapping, inGameMapping, universalMapping, regularMapping);
+		}
+	}
+
+	private static FabricKeyMapping createFabricKeyMapping(String nameSuffix, InputConstants.Key key, JeiKeyConflictContext context) {
+		return new FabricKeyMapping(
+			"key.jei.test.fabricKeyMapping." + nameSuffix,
+			key.getType(),
+			key.getValue(),
+			CATEGORY,
+			context
+		);
+	}
+
+	static void assertConflictContextBehavior(
+		String implementationName,
+		KeyMapping guiMapping,
+		KeyMapping otherGuiMapping,
+		KeyMapping inGameMapping,
+		KeyMapping universalMapping,
+		KeyMapping regularMapping
+	) {
+		if (!guiMapping.same(otherGuiMapping)) {
+			throw new AssertionError("Expected " + implementationName + " mappings in the same context to conflict.");
+		}
+		if (guiMapping.same(inGameMapping) || inGameMapping.same(guiMapping)) {
+			throw new AssertionError("Expected " + implementationName + " GUI and in-game mappings not to conflict.");
+		}
+		if (!guiMapping.same(universalMapping) || !universalMapping.same(guiMapping)) {
+			throw new AssertionError("Expected " + implementationName + " universal mappings to conflict with every JEI context.");
+		}
+		if (!guiMapping.same(regularMapping) || !regularMapping.same(guiMapping)) {
+			throw new AssertionError("Expected " + implementationName + " and regular mappings to report key conflicts symmetrically.");
+		}
+	}
+
+	static void unbindMappings(KeyMapping... mappings) {
+		for (KeyMapping mapping : mappings) {
+			mapping.setKey(InputConstants.UNKNOWN);
+		}
+		KeyMapping.resetMapping();
+	}
+
+	private static void assertFabricJeiKeyMappingIsDiscoverableAndRebindable(
+		String description,
+		InputConstants.Key boundKey,
+		InputConstants.Key reboundKey
+	) {
+		// Setup: build a plain Fabric-backed JEI mapping with a test-only translation key.
 		FabricKeyMapping fabricMapping = new FabricKeyMapping(
 			description,
-			type,
-			keyCode,
+			boundKey.getType(),
+			boundKey.getValue(),
 			CATEGORY,
 			JeiKeyConflictContext.UNIVERSAL
 		);
 		FabricJeiKeyMapping jeiMapping = new FabricJeiKeyMapping(fabricMapping, JeiKeyConflictContext.UNIVERSAL);
-		InputConstants.Key boundKey = type.getOrCreate(keyCode);
-		InputConstants.Key hiddenVanillaKey = KeyMappingHelper.getBoundKeyOf(fabricMapping);
+		assertJeiKeyMappingIsDiscoverableAndRebindable("Fabric", fabricMapping, jeiMapping, boundKey, reboundKey);
+	}
 
-		// Operation: match the JEI wrapper against the real input key and against the hidden vanilla key.
-		boolean matchesBoundKey = jeiMapping.isActiveAndMatches(boundKey);
-		boolean matchesUnknownKey = jeiMapping.isActiveAndMatches(InputConstants.UNKNOWN);
+	static void assertJeiKeyMappingIsDiscoverableAndRebindable(
+		String implementationName,
+		KeyMapping platformMapping,
+		IJeiKeyMappingInternal jeiMapping,
+		InputConstants.Key boundKey,
+		InputConstants.Key reboundKey
+	) {
+		// Operation and assertions: Fabric and other mods must see the same key that JEI matches.
+		assertBoundKeyEquals(implementationName, platformMapping, boundKey, "initial binding");
+		if (!jeiMapping.isActiveAndMatches(boundKey)) {
+			throw new AssertionError("Expected " + implementationName + " JEI mapping to match its initial key: " + boundKey.getName());
+		}
+		if (jeiMapping.isActiveAndMatches(InputConstants.UNKNOWN)) {
+			throw new AssertionError("Expected " + implementationName + " JEI mapping to reject the UNKNOWN key.");
+		}
 
-		// Assertions: Fabric still sees this binding as unbound, but JEI must match the preserved real key.
-		if (!hiddenVanillaKey.equals(InputConstants.UNKNOWN)) {
-			throw new AssertionError("Expected FabricKeyMapping to hide its vanilla bound key from Fabric's key helper.");
+		// Rebind through the standard KeyMapping API, as third-party controls screens do, then rebuild dispatch maps.
+		platformMapping.setKey(reboundKey);
+		KeyMapping.resetMapping();
+		assertBoundKeyEquals(implementationName, platformMapping, reboundKey, "rebound binding");
+		if (!jeiMapping.isActiveAndMatches(reboundKey)) {
+			throw new AssertionError("Expected " + implementationName + " JEI mapping to match its rebound key: " + reboundKey.getName());
 		}
-		if (!matchesBoundKey) {
-			throw new AssertionError("Expected FabricJeiKeyMapping to match its stored real key: " + boundKey.getName());
+		if (jeiMapping.isActiveAndMatches(boundKey)) {
+			throw new AssertionError("Expected " + implementationName + " JEI mapping to stop matching its previous key: " + boundKey.getName());
 		}
-		if (matchesUnknownKey) {
-			throw new AssertionError("Expected FabricJeiKeyMapping to reject the hidden vanilla UNKNOWN key.");
+
+		// Cleanup and verify that standard unbinding remains visible to both Fabric and JEI.
+		platformMapping.setKey(InputConstants.UNKNOWN);
+		KeyMapping.resetMapping();
+		assertBoundKeyEquals(implementationName, platformMapping, InputConstants.UNKNOWN, "unbound binding");
+		if (!jeiMapping.isUnbound()) {
+			throw new AssertionError("Expected " + implementationName + " JEI mapping to report unbound after setting UNKNOWN.");
+		}
+	}
+
+	private static void assertBoundKeyEquals(
+		String implementationName,
+		KeyMapping platformMapping,
+		InputConstants.Key expectedKey,
+		String operation
+	) {
+		InputConstants.Key exposedKey = KeyMappingHelper.getBoundKeyOf(platformMapping);
+		if (!exposedKey.equals(expectedKey)) {
+			throw new AssertionError(
+				"Expected Fabric's key helper to expose the " + implementationName + " " + operation + ": " + expectedKey.getName()
+			);
 		}
 	}
 
@@ -101,23 +276,8 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 		assertModifiedMapping(context, mouseRightMapping("key.jei.test.modifiedKeyMapping.altMouseRight"), JeiKeyModifier.ALT);
 	}
 
-	private static void assertInactiveJeiMouseMappingsDoNotHideVanillaMouseMappings() {
-		if (!FabricAmecsSupport.isEnabled()) {
-			return;
-		}
-
-		// Setup: AMECS-backed JEI mappings can use modifiers on the same mouse buttons as vanilla attack/use.
-		// Operation and assertions: when JEI's GUI context is inactive, these mappings must not consume the
-		// modified mouse input or conflict with vanilla's unmodified mouse bindings.
-		assertVanillaMouseMappingIsNotHidden(getMouseMappingMatches(InputConstants.MOUSE_BUTTON_LEFT, JeiKeyModifier.SHIFT));
-		assertVanillaMouseMappingIsNotHidden(getMouseMappingMatches(InputConstants.MOUSE_BUTTON_RIGHT, JeiKeyModifier.SHIFT));
-		assertVanillaMouseMappingIsNotHidden(getMouseMappingMatches(InputConstants.MOUSE_BUTTON_LEFT, JeiKeyModifier.CONTROL_OR_COMMAND));
-		assertVanillaMouseMappingIsNotHidden(getMouseMappingMatches(InputConstants.MOUSE_BUTTON_RIGHT, JeiKeyModifier.CONTROL_OR_COMMAND));
-	}
-
 	private static void assertJeiMouseMappingsDoNotHideVanillaMouseClicks(ClientGameTestContext context) {
 		try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
-			singleplayer.getClientLevel().waitForChunksRender();
 			context.runOnClient(client -> client.gui.setScreen(null));
 			context.waitFor(
 				client -> client.level != null &&
@@ -129,10 +289,60 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 			// Setup: enter the in-game input state with no screen open and JEI's GUI context inactive.
 			// JEI's GUI-only mouse mappings use the same buttons as vanilla attack/use, but vanilla
 			// should remain responsible for those clicks while the player is in-world.
+			assertJeiKeyMappingHeldState(context);
 			assertBoundJeiMouseMappingsDoNotHideVanillaMouseClicks(context);
 			assertUnboundJeiMouseMappingsDoNotHideVanillaMouseClicks(context);
-			context.runOnClient(client -> assertInactiveJeiMouseMappingsDoNotHideVanillaMouseMappings());
+			if (FabricAmecsSupport.isEnabled()) {
+				context.runOnClient(client -> AmecsKeyMappingClientGameTestHelper.assertInactiveJeiMouseMappingsDoNotHideVanillaMouseMappings(CATEGORY));
+			}
 		}
+	}
+
+	private static void assertJeiKeyMappingHeldState(ClientGameTestContext context) {
+		TestMapping mapping = context.computeOnClient(client -> createActiveTestMapping(
+			"key.jei.test.heldKeyMapping.shift",
+			GLFW.GLFW_KEY_LEFT_SHIFT,
+			JeiKeyConflictContext.UNIVERSAL
+		));
+
+		if (context.computeOnClient(client -> mapping.jeiMapping().isDown())) {
+			throw new AssertionError("Expected JEI's held-key mapping to start released.");
+		}
+
+		holdShiftForKeyMappingDispatch(context);
+		try {
+			if (!context.computeOnClient(client -> mapping.jeiMapping().isDown())) {
+				throw new AssertionError("Expected JEI's held-key mapping to detect its standard bound key.");
+			}
+		} finally {
+			releaseShiftForKeyMappingDispatch(context);
+		}
+
+		if (context.computeOnClient(client -> mapping.jeiMapping().isDown())) {
+			throw new AssertionError("Expected JEI's held-key mapping to detect that its key was released.");
+		}
+		context.runOnClient(client -> {
+			mapping.platformMapping().setKey(InputConstants.UNKNOWN);
+			KeyMapping.resetMapping();
+		});
+	}
+
+	private static TestMapping createActiveTestMapping(
+		String description,
+		int keyCode,
+		JeiKeyConflictContext context
+	) {
+		IJeiKeyMappingInternal jeiMapping = new FabricJeiKeyMappingCategoryBuilder(CATEGORY)
+			.createMapping(description)
+			.setContext(context)
+			.buildKeyboardKey(keyCode);
+		AtomicReference<KeyMapping> platformMapping = new AtomicReference<>();
+		jeiMapping.register(platformMapping::set);
+		KeyMapping registeredMapping = platformMapping.get();
+		if (registeredMapping == null) {
+			throw new AssertionError("Expected JEI's Fabric key mapping to register its platform mapping.");
+		}
+		return new TestMapping(registeredMapping, jeiMapping);
 	}
 
 	private static void assertBoundJeiMouseMappingsDoNotHideVanillaMouseClicks(ClientGameTestContext context) {
@@ -141,10 +351,10 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 			assertBoundFabricJeiMouseMapping(InputConstants.MOUSE_BUTTON_LEFT);
 			assertBoundFabricJeiMouseMapping(InputConstants.MOUSE_BUTTON_RIGHT);
 			if (FabricAmecsSupport.isEnabled()) {
-				assertBoundAmecsJeiMouseMapping(InputConstants.MOUSE_BUTTON_LEFT, JeiKeyModifier.NONE);
-				assertBoundAmecsJeiMouseMapping(InputConstants.MOUSE_BUTTON_RIGHT, JeiKeyModifier.NONE);
-				assertBoundAmecsJeiMouseMapping(InputConstants.MOUSE_BUTTON_LEFT, JeiKeyModifier.SHIFT);
-				assertBoundAmecsJeiMouseMapping(InputConstants.MOUSE_BUTTON_RIGHT, JeiKeyModifier.SHIFT);
+				AmecsKeyMappingClientGameTestHelper.assertBoundJeiMouseMapping(CATEGORY, InputConstants.MOUSE_BUTTON_LEFT, JeiKeyModifier.NONE);
+				AmecsKeyMappingClientGameTestHelper.assertBoundJeiMouseMapping(CATEGORY, InputConstants.MOUSE_BUTTON_RIGHT, JeiKeyModifier.NONE);
+				AmecsKeyMappingClientGameTestHelper.assertBoundJeiMouseMapping(CATEGORY, InputConstants.MOUSE_BUTTON_LEFT, JeiKeyModifier.SHIFT);
+				AmecsKeyMappingClientGameTestHelper.assertBoundJeiMouseMapping(CATEGORY, InputConstants.MOUSE_BUTTON_RIGHT, JeiKeyModifier.SHIFT);
 			}
 
 			// Operation and assertions: bound JEI GUI-only mouse mappings must not hide vanilla attack/use clicks
@@ -170,10 +380,10 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 			assertUnboundFabricJeiMouseMapping(InputConstants.MOUSE_BUTTON_LEFT);
 			assertUnboundFabricJeiMouseMapping(InputConstants.MOUSE_BUTTON_RIGHT);
 			if (FabricAmecsSupport.isEnabled()) {
-				assertUnboundAmecsJeiMouseMapping(InputConstants.MOUSE_BUTTON_LEFT, JeiKeyModifier.NONE);
-				assertUnboundAmecsJeiMouseMapping(InputConstants.MOUSE_BUTTON_RIGHT, JeiKeyModifier.NONE);
-				assertUnboundAmecsJeiMouseMapping(InputConstants.MOUSE_BUTTON_LEFT, JeiKeyModifier.SHIFT);
-				assertUnboundAmecsJeiMouseMapping(InputConstants.MOUSE_BUTTON_RIGHT, JeiKeyModifier.SHIFT);
+				AmecsKeyMappingClientGameTestHelper.assertUnboundJeiMouseMapping(CATEGORY, InputConstants.MOUSE_BUTTON_LEFT, JeiKeyModifier.NONE);
+				AmecsKeyMappingClientGameTestHelper.assertUnboundJeiMouseMapping(CATEGORY, InputConstants.MOUSE_BUTTON_RIGHT, JeiKeyModifier.NONE);
+				AmecsKeyMappingClientGameTestHelper.assertUnboundJeiMouseMapping(CATEGORY, InputConstants.MOUSE_BUTTON_LEFT, JeiKeyModifier.SHIFT);
+				AmecsKeyMappingClientGameTestHelper.assertUnboundJeiMouseMapping(CATEGORY, InputConstants.MOUSE_BUTTON_RIGHT, JeiKeyModifier.SHIFT);
 			}
 
 			// Operation and assertions: setting JEI mouse bindings to UNKNOWN must remove them from vanilla/AMECS
@@ -271,55 +481,6 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 		);
 	}
 
-	private static MouseMappingMatches getMouseMappingMatches(int mouseButton, JeiKeyModifier modifier) {
-		AmecsKeyModifierCombination previousModifiers = new AmecsKeyModifierCombination();
-		AmecsKeyModifierCombination currentModifiers = AmecsKeyModifierCombination.getCurrentlyPressed();
-		previousModifiers.copyFrom(currentModifiers);
-
-		AmecsKeyModifierCombination pressedModifiers = new AmecsKeyModifierCombination();
-		AmecsHelper.setJeiModifier(pressedModifiers, modifier);
-		currentModifiers.copyFrom(pressedModifiers);
-		try {
-			InputConstants.Key mouseKey = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
-			AmecsJeiKeyMappingManagerLayer jeiLayer = new AmecsJeiKeyMappingManagerLayer();
-			AmecsKeyMappingManagerLayer vanillaLayer = new AmecsKeyMappingManagerLayer();
-
-			AmecsKeyModifierCombination jeiModifiers = new AmecsKeyModifierCombination();
-			AmecsHelper.setJeiModifier(jeiModifiers, modifier);
-			KeyMapping inactiveJeiMapping = new AmecsKeyMappingWithContext(
-				"key.jei.test.amecs.inactiveJeiMouse" + mouseButton,
-				InputConstants.Type.MOUSE,
-				mouseButton,
-				CATEGORY,
-				jeiModifiers,
-				JeiKeyConflictContext.GUI
-			);
-			KeyMapping vanillaMapping = new KeyMapping(
-				"key.jei.test.amecs.vanillaMouse" + mouseButton,
-				InputConstants.Type.MOUSE,
-				mouseButton,
-				CATEGORY
-			);
-
-			jeiLayer.register(inactiveJeiMapping);
-			vanillaLayer.register(vanillaMapping);
-			List<KeyMapping> matchingJeiMappings = jeiLayer.getMappingsForInput(mouseKey).toList();
-			List<KeyMapping> matchingVanillaMappings = vanillaLayer.getMappingsForInput(mouseKey).toList();
-			return new MouseMappingMatches(mouseKey, vanillaMapping, matchingJeiMappings, matchingVanillaMappings);
-		} finally {
-			currentModifiers.copyFrom(previousModifiers);
-		}
-	}
-
-	private static void assertVanillaMouseMappingIsNotHidden(MouseMappingMatches matches) {
-		if (!matches.jeiMappings().isEmpty()) {
-			throw new AssertionError("Expected AMECS to ignore inactive JEI mouse mapping: " + matches.mouseKey().getName());
-		}
-		if (!matches.vanillaMappings().contains(matches.vanillaMapping())) {
-			throw new AssertionError("Expected vanilla mouse mapping to remain eligible with JEI's inactive mapping ignored: " + matches.mouseKey().getName());
-		}
-	}
-
 	private static void assertBoundFabricJeiMouseMapping(int mouseButton) {
 		InputConstants.Key mouseKey = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
 		FabricKeyMapping fabricMapping = new FabricKeyMapping(
@@ -339,28 +500,6 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 		}
 	}
 
-	private static void assertBoundAmecsJeiMouseMapping(int mouseButton, JeiKeyModifier modifier) {
-		InputConstants.Key mouseKey = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
-		AmecsKeyModifierCombination jeiModifiers = new AmecsKeyModifierCombination();
-		AmecsHelper.setJeiModifier(jeiModifiers, modifier);
-		AmecsKeyMappingWithContext amecsMapping = new AmecsKeyMappingWithContext(
-			"key.jei.test.amecs.boundJeiMouse" + mouseButton + "." + modifier.name(),
-			InputConstants.Type.MOUSE,
-			mouseButton,
-			CATEGORY,
-			jeiModifiers,
-			JeiKeyConflictContext.GUI
-		);
-		AmecsJeiKeyMapping jeiMapping = new AmecsJeiKeyMapping(amecsMapping, JeiKeyConflictContext.GUI);
-
-		if (jeiMapping.isUnbound()) {
-			throw new AssertionError("Expected bound AMECS-backed JEI mouse mapping to report bound: " + mouseKey.getName());
-		}
-		if (jeiMapping.isActiveAndMatches(mouseKey)) {
-			throw new AssertionError("Expected bound AMECS-backed JEI mouse mapping to reject input while its GUI context is inactive: " + mouseKey.getName());
-		}
-	}
-
 	private static void assertUnboundFabricJeiMouseMapping(int mouseButton) {
 		InputConstants.Key mouseKey = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
 		FabricKeyMapping fabricMapping = new FabricKeyMapping(
@@ -373,36 +512,13 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 		FabricJeiKeyMapping jeiMapping = new FabricJeiKeyMapping(fabricMapping, JeiKeyConflictContext.GUI);
 
 		fabricMapping.setKey(InputConstants.UNKNOWN);
+		KeyMapping.resetMapping();
 
 		if (!jeiMapping.isUnbound()) {
 			throw new AssertionError("Expected unbound Fabric-backed JEI mouse mapping to report unbound: " + mouseKey.getName());
 		}
 		if (jeiMapping.isActiveAndMatches(mouseKey)) {
 			throw new AssertionError("Expected unbound Fabric-backed JEI mouse mapping to reject input: " + mouseKey.getName());
-		}
-	}
-
-	private static void assertUnboundAmecsJeiMouseMapping(int mouseButton, JeiKeyModifier modifier) {
-		InputConstants.Key mouseKey = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
-		AmecsKeyModifierCombination jeiModifiers = new AmecsKeyModifierCombination();
-		AmecsHelper.setJeiModifier(jeiModifiers, modifier);
-		AmecsKeyMappingWithContext amecsMapping = new AmecsKeyMappingWithContext(
-			"key.jei.test.amecs.unboundJeiMouse" + mouseButton + "." + modifier.name(),
-			InputConstants.Type.MOUSE,
-			mouseButton,
-			CATEGORY,
-			jeiModifiers,
-			JeiKeyConflictContext.GUI
-		);
-		AmecsJeiKeyMapping jeiMapping = new AmecsJeiKeyMapping(amecsMapping, JeiKeyConflictContext.GUI);
-
-		amecsMapping.setKey(InputConstants.UNKNOWN);
-
-		if (!jeiMapping.isUnbound()) {
-			throw new AssertionError("Expected unbound AMECS-backed JEI mouse mapping to report unbound: " + mouseKey.getName());
-		}
-		if (jeiMapping.isActiveAndMatches(mouseKey)) {
-			throw new AssertionError("Expected unbound AMECS-backed JEI mouse mapping to reject input: " + mouseKey.getName());
 		}
 	}
 
@@ -465,11 +581,6 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 	private record ModifiedMapping(String description, InputConstants.Key boundKey, MappingFactory mappingFactory) {
 	}
 
-	private record MouseMappingMatches(
-		InputConstants.Key mouseKey,
-		KeyMapping vanillaMapping,
-		List<KeyMapping> jeiMappings,
-		List<KeyMapping> vanillaMappings
-	) {
+	private record TestMapping(KeyMapping platformMapping, IJeiKeyMappingInternal jeiMapping) {
 	}
 }
