@@ -28,7 +28,7 @@ plugins {
     // https://mvnrepository.com/artifact/org.parchmentmc.librarian.forgegradle/org.parchmentmc.librarian.forgegradle.gradle.plugin
     id("org.parchmentmc.librarian.forgegradle") version("1.2.0") apply(false)
 
-    id("net.neoforged.jarcompatibilitychecker") version("0.1.18") apply(false)
+    id("net.neoforged.jarcompatibilitychecker") version("0.1.19") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
@@ -179,8 +179,7 @@ apiProjectPaths.forEach { apiProjectPath ->
             // Match the previous CLI check and avoid loading the full Minecraft compile classpath.
             libraries.setFrom(emptyList<Any>())
             nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
-            // Do not set fail: the plugin invokes ConsoleTool in-process and its fail mode calls System.exit.
-            // checkApiCompatibility validates the generated reports instead.
+            // Keep fail disabled so the target branch validator can filter its known non-extendable API exceptions.
         }
     }
 }
