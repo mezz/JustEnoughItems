@@ -1,3 +1,11 @@
+library(
+    identifier: 'jenkins-release-notifier@v0.2.0',
+    retriever: modernSCM([
+        $class: 'GitSCMSource',
+        remote: 'https://github.com/mezz/jenkins-release-notifier.git'
+    ])
+)
+
 def runExternalPublishTask(String gradleTask) {
     def maxAttempts = 3
 
@@ -57,7 +65,6 @@ pipeline {
       ORG_GRADLE_PROJECT_curseforgeApikey = credentials("jei-curseforge-key")
       ORG_GRADLE_PROJECT_modrinthToken = credentials("modrinth-auth-token")
       ORG_GRADLE_PROJECT_BUILD_NUMBER = "${env.BUILD_NUMBER}"
-      DISCORD_WEBHOOK_URL = credentials("jei-discord-webhook-url")
     }
     stages {
         stage('Build') {
@@ -181,27 +188,18 @@ pipeline {
             }
             steps {
                 script {
-                    library(
-                        identifier: 'jenkins-release-notifier@v0.1.1',
-                        retriever: modernSCM([
-                            $class: 'GitSCMSource',
-                            remote: 'https://github.com/mezz/jenkins-release-notifier.git'
-                        ])
-                    )
-
-                    def discordNotification = load '.jenkins/discordNotification.groovy'
-                    def minecraftVersion = discordNotification.getGradleProperty('minecraftVersion')
+                    def releaseMetadata = discordNotifier.getGradleReleaseMetadata()
                     releaseNotifier(
                         workerJob: '/mezz/release-notifier-worker',
                         repository: 'mezz/JustEnoughItems',
-                        channel: minecraftVersion,
-                        projectName: discordNotification.getGradleProperty('modName'),
-                        version: discordNotification.getBuildVersion(),
+                        channel: releaseMetadata.minecraftVersion,
+                        projectName: releaseMetadata.projectName,
+                        version: releaseMetadata.version,
                         baseCommit: findPreviousReleaseCommit(),
                         headCommit: env.GIT_COMMIT,
-                        releaseLinks: discordNotification.getReleaseLinks(true),
-                        minecraftVersions: [minecraftVersion],
-                        modLoaders: discordNotification.getReleaseLoaders()
+                        releaseLinks: releaseMetadata.releaseLinks,
+                        minecraftVersions: [releaseMetadata.minecraftVersion],
+                        modLoaders: releaseMetadata.modLoaders
                     )
                     currentBuild.description = "jenkins-release-notifier-source:v1:${env.GIT_COMMIT}"
                 }
@@ -214,8 +212,7 @@ pipeline {
             junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
             archiveArtifacts allowEmptyArchive: true, artifacts: 'Fabric/build/reports/client-gametest-diagnostics.txt'
             script {
-                def discordNotification = load '.jenkins/discordNotification.groovy'
-                discordNotification.notifyDiscordBuildSafely(currentBuild.currentResult)
+                discordNotifier(workerJob: '/mezz/release-notifier-worker')
             }
         }
     }
