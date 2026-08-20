@@ -1,27 +1,43 @@
 package mezz.jei.library.gui.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.IngredientGridTooltipComponent;
+import mezz.jei.common.util.SafeIngredientUtil;
 import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.List;
 
-public class TagContentTooltipComponent<T> extends IngredientGridTooltipComponent<T> {
-	private final IIngredientRenderer<T> renderer;
+public class TagContentTooltipComponent extends IngredientGridTooltipComponent<ITypedIngredient<?>> {
+	private final IIngredientManager ingredientManager;
 
-	public TagContentTooltipComponent(IIngredientRenderer<T> renderer, List<T> ingredients) {
+	public TagContentTooltipComponent(IIngredientManager ingredientManager, List<ITypedIngredient<?>> ingredients) {
 		super(ingredients);
-		this.renderer = renderer;
+		this.ingredientManager = ingredientManager;
 	}
 
 	@Override
-	protected void drawIngredient(GuiGraphics guiGraphics, T ingredient, int index, int x, int y, boolean hovered) {
-		var poseStack = guiGraphics.pose();
-		poseStack.pushMatrix();
-		{
-			poseStack.translate(x, y);
-			this.renderer.render(guiGraphics, ingredient);
-		}
-		poseStack.popMatrix();
+	protected void drawIngredient(
+		GuiGraphics guiGraphics,
+		ITypedIngredient<?> ingredient,
+		int index,
+		int x,
+		int y,
+		boolean hovered
+	) {
+		drawIngredient(guiGraphics, ingredient, x, y);
+	}
+
+	private <T> void drawIngredient(
+		GuiGraphics guiGraphics,
+		ITypedIngredient<T> ingredient,
+		int x,
+		int y
+	) {
+		IIngredientType<T> ingredientType = ingredient.getType();
+		IIngredientRenderer<T> renderer = this.ingredientManager.getIngredientRenderer(ingredientType);
+		SafeIngredientUtil.render(guiGraphics, renderer, ingredient, x, y);
 	}
 }

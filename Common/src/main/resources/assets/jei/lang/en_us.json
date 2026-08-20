@@ -10,7 +10,7 @@
   "jei.tooltip.transfer": "Move Items",
   "jei.tooltip.recipe.any": "Any %s",
   "jei.tooltip.recipe.any_fuel": "Any Fuel",
-  "jei.tooltip.recipe.tag": "Accepts Tag: %s",
+  "jei.tooltip.recipe.tag": "%s Tag:",
   "jei.tooltip.recipe.slot.options": "Hold %s to pin this tooltip, then click an ingredient to view recipes.",
   "jei.tooltip.item.colors": "Colors: %s",
   "jei.tooltip.item.search.aliases": "Search Aliases:",
