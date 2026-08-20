@@ -395,7 +395,7 @@ public final class SlotDisplayIngredientGameTests {
 				);
 				registration.register(
 					WrappingSlotDisplay.TYPE,
-					(display, context, infoBuilder) -> infoBuilder.setWrappedDisplay(CountingSlotDisplay.INSTANCE)
+					(display, context, infoBuilder) -> infoBuilder.addChildDisplay(CountingSlotDisplay.INSTANCE)
 				);
 			}
 		);
@@ -432,7 +432,7 @@ public final class SlotDisplayIngredientGameTests {
 				registration.register(
 					WrappingSlotDisplay.TYPE,
 					(display, context, infoBuilder) -> infoBuilder
-						.setWrappedDisplay(CountingSlotDisplay.INSTANCE)
+						.addChildDisplay(CountingSlotDisplay.INSTANCE)
 						.setWildcardForSubtypes(false)
 						.clearTagKey()
 						.clearTooltipHeader()
@@ -465,7 +465,7 @@ public final class SlotDisplayIngredientGameTests {
 			List.of(new ItemStack(Items.STICK)),
 			registration -> registration.register(
 				WrappingSlotDisplay.TYPE,
-				(display, context, infoBuilder) -> infoBuilder.setWrappedDisplay(display)
+				(display, context, infoBuilder) -> infoBuilder.addChildDisplay(display)
 			)
 		);
 		CountingSlotDisplay.reset();

@@ -37,7 +37,7 @@ public final class SlotDisplayInterpreterRegistry {
 		IIngredientType<T> ingredientType,
 		SlotDisplay slotDisplay,
 		ISlotDisplayInterpreter.IContext<T> context,
-		ISlotDisplayInterpretationBuilder interpretationBuilder
+		ISlotDisplayInterpretationBuilder<T> interpretationBuilder
 	) {
 		IUniversalSlotDisplayInterpreter<?> universalInterpreter = universalInterpreters.get(slotDisplay.type());
 		if (universalInterpreter != null) {
@@ -55,7 +55,7 @@ public final class SlotDisplayInterpreterRegistry {
 	private static void interpretUniversalUnchecked(
 		IUniversalSlotDisplayInterpreter<?> interpreter,
 		SlotDisplay slotDisplay,
-		ISlotDisplayInterpretationBuilder interpretationBuilder
+		ISlotDisplayInterpretationBuilder<?> interpretationBuilder
 	) {
 		IUniversalSlotDisplayInterpreter<SlotDisplay> castInterpreter = (IUniversalSlotDisplayInterpreter<SlotDisplay>) interpreter;
 		castInterpreter.interpret(slotDisplay, interpretationBuilder);
@@ -66,7 +66,7 @@ public final class SlotDisplayInterpreterRegistry {
 		ISlotDisplayInterpreter<?, ?> interpreter,
 		SlotDisplay slotDisplay,
 		ISlotDisplayInterpreter.IContext<T> context,
-		ISlotDisplayInterpretationBuilder interpretationBuilder
+		ISlotDisplayInterpretationBuilder<T> interpretationBuilder
 	) {
 		ISlotDisplayInterpreter<SlotDisplay, T> castInterpreter = (ISlotDisplayInterpreter<SlotDisplay, T>) interpreter;
 		castInterpreter.interpret(slotDisplay, context, interpretationBuilder);

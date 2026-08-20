@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.library.focus.FocusGroup;
@@ -41,6 +42,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SlotDisplayIngredientResolverTest {
@@ -70,6 +72,60 @@ class SlotDisplayIngredientResolverTest {
 		SlotDisplayData<TestIngredient> displayData = resolved.getFirst().slotDisplayData();
 		assertNotNull(displayData);
 		assertEquals(CHILD_HEADER, displayData.info().tooltipHeader().orElseThrow());
+	}
+
+	@Test
+	void transformingWrapperPreservesNestedGroupsAndMetadata() {
+		// Setup: two interpreted child groups are wrapped by two result-transforming displays.
+		IIngredientManagerInternal ingredientManager = createIngredientManager(List.of(new TestIngredient(1)), false);
+		SlotDisplay composite = new SlotDisplay.Composite(List.of(TestSlotDisplay.INSTANCE, TestSlotDisplay.INSTANCE));
+		SlotDisplay innerWrapper = new TransformingTestSlotDisplay(composite, 10);
+		SlotDisplay outerWrapper = new TransformingTestSlotDisplay(innerWrapper, 100);
+
+		// Operation: resolve and interpret the nested wrappers.
+		List<SlotIngredient<TestIngredient>> resolved = resolve(ingredientManager, outerWrapper);
+
+		// Assertions: transformations run inside-out, and the composite's separate child groups and metadata remain.
+		assertEquals(
+			List.of(new TestIngredient(111), new TestIngredient(111)),
+			resolved.stream()
+				.map(SlotIngredient::typedIngredient)
+				.map(ITypedIngredient::getIngredient)
+				.toList()
+		);
+		SlotDisplayData<TestIngredient> firstDisplayData = resolved.getFirst().slotDisplayData();
+		SlotDisplayData<TestIngredient> secondDisplayData = resolved.getLast().slotDisplayData();
+		assertNotNull(firstDisplayData);
+		assertNotNull(secondDisplayData);
+		assertNotSame(firstDisplayData, secondDisplayData);
+		assertEquals(CHILD_HEADER, firstDisplayData.info().tooltipHeader().orElseThrow());
+		assertEquals(CHILD_HEADER, secondDisplayData.info().tooltipHeader().orElseThrow());
+	}
+
+	@Test
+	void childDisplaysCanBeTransformedIndependently() {
+		// Setup: one display delegates to an unchanged child and a transformed child.
+		IIngredientManagerInternal ingredientManager = createIngredientManager(List.of(new TestIngredient(1)), false);
+		SlotDisplay display = new SelectiveChildrenTestSlotDisplay(
+			TestSlotDisplay.INSTANCE,
+			TestSlotDisplay.INSTANCE,
+			10
+		);
+
+		// Operation: resolve and interpret both children.
+		List<SlotIngredient<TestIngredient>> resolved = resolve(ingredientManager, display);
+
+		// Assertions: only the selected child is transformed, and both child groups keep their metadata.
+		assertEquals(
+			List.of(new TestIngredient(1), new TestIngredient(11)),
+			resolved.stream()
+				.map(SlotIngredient::typedIngredient)
+				.map(ITypedIngredient::getIngredient)
+				.toList()
+		);
+		assertNotSame(resolved.getFirst().slotDisplayData(), resolved.getLast().slotDisplayData());
+		assertEquals(CHILD_HEADER, resolved.getFirst().slotDisplayData().info().tooltipHeader().orElseThrow());
+		assertEquals(CHILD_HEADER, resolved.getLast().slotDisplayData().info().tooltipHeader().orElseThrow());
 	}
 
 	@Test
@@ -142,6 +198,24 @@ class SlotDisplayIngredientResolverTest {
 				}
 			}
 		);
+		builder.getSlotDisplayInterpreterRegistration().register(
+			TransformingTestSlotDisplay.TYPE,
+			INGREDIENT_TYPE,
+			(display, ignoredContext, interpretationBuilder) -> interpretationBuilder.addChildDisplay(
+				display.source(),
+				ingredient -> new TestIngredient(ingredient.value() + display.offset())
+			)
+		);
+		builder.getSlotDisplayInterpreterRegistration().register(
+			SelectiveChildrenTestSlotDisplay.TYPE,
+			INGREDIENT_TYPE,
+			(display, ignoredContext, interpretationBuilder) -> interpretationBuilder
+				.addChildDisplay(display.unchanged())
+				.addChildDisplay(
+					display.transformed(),
+					ingredient -> new TestIngredient(ingredient.value() + display.offset())
+				)
+		);
 		return builder.build();
 	}
 
@@ -184,6 +258,68 @@ class SlotDisplayIngredientResolverTest {
 
 		@Override
 		public Type<TestSlotDisplay> type() {
+			return TYPE;
+		}
+	}
+
+	private record TransformingTestSlotDisplay(SlotDisplay source, int offset) implements SlotDisplay {
+		private static final TransformingTestSlotDisplay DEFAULT = new TransformingTestSlotDisplay(TestSlotDisplay.INSTANCE, 0);
+		private static final MapCodec<TransformingTestSlotDisplay> MAP_CODEC = MapCodec.unit(DEFAULT);
+		private static final StreamCodec<RegistryFriendlyByteBuf, TransformingTestSlotDisplay> STREAM_CODEC = StreamCodec.unit(DEFAULT);
+		private static final SlotDisplay.Type<TransformingTestSlotDisplay> TYPE = new SlotDisplay.Type<>(MAP_CODEC, STREAM_CODEC);
+
+		@Override
+		public <T> Stream<T> resolve(ContextMap context, DisplayContentsFactory<T> factory) {
+			return source.resolve(context, factory)
+				.map(this::transform);
+		}
+
+		@SuppressWarnings("unchecked")
+		private <T> T transform(T ingredient) {
+			if (ingredient instanceof TestIngredient(int value)) {
+				return (T) new TestIngredient(value + offset);
+			}
+			return ingredient;
+		}
+
+		@Override
+		public Type<TransformingTestSlotDisplay> type() {
+			return TYPE;
+		}
+	}
+
+	private record SelectiveChildrenTestSlotDisplay(
+		SlotDisplay unchanged,
+		SlotDisplay transformed,
+		int offset
+	) implements SlotDisplay {
+		private static final SelectiveChildrenTestSlotDisplay DEFAULT = new SelectiveChildrenTestSlotDisplay(
+			TestSlotDisplay.INSTANCE,
+			TestSlotDisplay.INSTANCE,
+			0
+		);
+		private static final MapCodec<SelectiveChildrenTestSlotDisplay> MAP_CODEC = MapCodec.unit(DEFAULT);
+		private static final StreamCodec<RegistryFriendlyByteBuf, SelectiveChildrenTestSlotDisplay> STREAM_CODEC = StreamCodec.unit(DEFAULT);
+		private static final SlotDisplay.Type<SelectiveChildrenTestSlotDisplay> TYPE = new SlotDisplay.Type<>(MAP_CODEC, STREAM_CODEC);
+
+		@Override
+		public <T> Stream<T> resolve(ContextMap context, DisplayContentsFactory<T> factory) {
+			return Stream.concat(
+				unchanged.resolve(context, factory),
+				transformed.resolve(context, factory).map(this::transform)
+			);
+		}
+
+		@SuppressWarnings("unchecked")
+		private <T> T transform(T ingredient) {
+			if (ingredient instanceof TestIngredient(int value)) {
+				return (T) new TestIngredient(value + offset);
+			}
+			return ingredient;
+		}
+
+		@Override
+		public Type<SelectiveChildrenTestSlotDisplay> type() {
 			return TYPE;
 		}
 	}

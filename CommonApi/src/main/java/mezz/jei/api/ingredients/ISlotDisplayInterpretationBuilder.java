@@ -6,6 +6,7 @@ import net.minecraft.world.item.crafting.display.SlotDisplay;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 /**
  * Builds JEI's interpretation of a slot display.
@@ -15,10 +16,12 @@ import java.util.List;
  * interpreter. If the interpreter does not change the builder, JEI handles the display as one ordinary ingredient
  * group.
  *
+ * @param <T> the type of ingredient being interpreted
+ *
  * @since 30.20.0
  */
 @ApiStatus.NonExtendable
-public interface ISlotDisplayInterpretationBuilder {
+public interface ISlotDisplayInterpretationBuilder<T> {
 	/**
 	 * Set the display wrapped by this display.
 	 * <p>
@@ -33,8 +36,10 @@ public interface ISlotDisplayInterpretationBuilder {
 	 * @return this builder, for chaining calls
 	 *
 	 * @since 30.20.0
+	 * @deprecated use {@link #addChildDisplay(SlotDisplay)}
 	 */
-	ISlotDisplayInterpretationBuilder setWrappedDisplay(SlotDisplay wrappedDisplay);
+	@Deprecated(since = "30.25.0", forRemoval = true)
+	ISlotDisplayInterpretationBuilder<T> setWrappedDisplay(SlotDisplay wrappedDisplay);
 
 	/**
 	 * Set the displays that make up this display.
@@ -50,8 +55,44 @@ public interface ISlotDisplayInterpretationBuilder {
 	 * @return this builder, for chaining calls
 	 *
 	 * @since 30.20.0
+	 * @deprecated call {@link #addChildDisplay(SlotDisplay)} for each child display
 	 */
-	ISlotDisplayInterpretationBuilder setChildDisplays(List<? extends SlotDisplay> childDisplays);
+	@Deprecated(since = "30.25.0", forRemoval = true)
+	ISlotDisplayInterpretationBuilder<T> setChildDisplays(List<? extends SlotDisplay> childDisplays);
+
+	/**
+	 * Append a display to the displays that make up this display.
+	 * <p>
+	 * JEI resolves and interprets the child as its own ingredient group. Displays that were previously added to this
+	 * builder are retained.
+	 *
+	 * @param childDisplay the display to append
+	 * @return this builder, for chaining calls
+	 *
+	 * @since 30.25.0
+	 */
+	ISlotDisplayInterpretationBuilder<T> addChildDisplay(SlotDisplay childDisplay);
+
+	/**
+	 * Append a display to the displays that make up this display, and transform each ingredient produced by that child.
+	 * <p>
+	 * JEI resolves and interprets the child first, then applies the transformer to each of its ingredients. This allows
+	 * transformed and untransformed children to be combined while preserving their separate ingredient groups and
+	 * interpretation details. Nested transformations are applied from the inside out.
+	 * <p>
+	 * The transformer must not mutate the ingredient it receives. It should return a new ingredient when making a
+	 * change. Invalid ingredients returned by the transformer are omitted.
+	 *
+	 * @param childDisplay the display to append
+	 * @param ingredientTransformer transforms each ingredient produced by this child
+	 * @return this builder, for chaining calls
+	 *
+	 * @since 30.25.0
+	 */
+	ISlotDisplayInterpretationBuilder<T> addChildDisplay(
+		SlotDisplay childDisplay,
+		UnaryOperator<T> ingredientTransformer
+	);
 
 	/**
 	 * Set whether each resolved ingredient can stand for all variants with the same
@@ -68,7 +109,7 @@ public interface ISlotDisplayInterpretationBuilder {
 	 * @deprecated use {@link #setWildcardForSubtypes(boolean)} to describe the slot display's subtype semantics
 	 */
 	@Deprecated(since = "30.21.0", forRemoval = true)
-	ISlotDisplayInterpretationBuilder setMatchesAllSubtypes(boolean matchesAllSubtypes);
+	ISlotDisplayInterpretationBuilder<T> setMatchesAllSubtypes(boolean matchesAllSubtypes);
 
 	/**
 	 * Set whether each resolved ingredient is a wildcard, representing every subtype with the same
@@ -86,7 +127,7 @@ public interface ISlotDisplayInterpretationBuilder {
 	 *
 	 * @since 30.21.0
 	 */
-	ISlotDisplayInterpretationBuilder setWildcardForSubtypes(boolean wildcardForSubtypes);
+	ISlotDisplayInterpretationBuilder<T> setWildcardForSubtypes(boolean wildcardForSubtypes);
 
 	/**
 	 * Set the tag represented by the slot display so JEI can show it in recipe slot tooltips.
@@ -97,7 +138,7 @@ public interface ISlotDisplayInterpretationBuilder {
 	 *
 	 * @since 30.20.0
 	 */
-	ISlotDisplayInterpretationBuilder setTagKey(TagKey<?> tagKey);
+	ISlotDisplayInterpretationBuilder<T> setTagKey(TagKey<?> tagKey);
 
 	/**
 	 * Prevent JEI from showing a tag for this display.
@@ -108,7 +149,7 @@ public interface ISlotDisplayInterpretationBuilder {
 	 *
 	 * @since 30.20.0
 	 */
-	ISlotDisplayInterpretationBuilder clearTagKey();
+	ISlotDisplayInterpretationBuilder<T> clearTagKey();
 
 	/**
 	 * Set a heading that JEI shows above the normal tooltip for the currently displayed ingredient.
@@ -121,7 +162,7 @@ public interface ISlotDisplayInterpretationBuilder {
 	 *
 	 * @since 30.20.0
 	 */
-	ISlotDisplayInterpretationBuilder setTooltipHeader(Component tooltipHeader);
+	ISlotDisplayInterpretationBuilder<T> setTooltipHeader(Component tooltipHeader);
 
 	/**
 	 * Prevent a tooltip heading inherited from a wrapped or child display from being shown for this display.
@@ -132,5 +173,5 @@ public interface ISlotDisplayInterpretationBuilder {
 	 *
 	 * @since 30.20.0
 	 */
-	ISlotDisplayInterpretationBuilder clearTooltipHeader();
+	ISlotDisplayInterpretationBuilder<T> clearTooltipHeader();
 }
