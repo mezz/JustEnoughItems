@@ -46,7 +46,7 @@ public interface ISlotDisplayInterpreter<D extends SlotDisplay, T> {
 	void interpret(
 		D slotDisplay,
 		IContext<T> context,
-		ISlotDisplayInterpretationBuilder interpretationBuilder
+		ISlotDisplayInterpretationBuilder<T> interpretationBuilder
 	);
 
 	/**

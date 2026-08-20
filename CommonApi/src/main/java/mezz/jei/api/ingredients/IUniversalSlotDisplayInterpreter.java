@@ -27,5 +27,5 @@ public interface IUniversalSlotDisplayInterpreter<D extends SlotDisplay> {
 	 *
 	 * @since 29.25.0
 	 */
-	void interpret(D slotDisplay, ISlotDisplayInterpretationBuilder interpretationBuilder);
+	void interpret(D slotDisplay, ISlotDisplayInterpretationBuilder<?> interpretationBuilder);
 }
