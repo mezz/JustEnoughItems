@@ -206,7 +206,9 @@ public class VanillaPlugin implements IModPlugin {
 	@Override
 	public void registerSlotDisplayInterpreters(ISlotDisplayInterpreterRegistration registration) {
 		registration.registerUniversal(SlotDisplay.Composite.TYPE, (slotDisplay, interpretationBuilder) -> {
-			interpretationBuilder.setChildDisplays(slotDisplay.contents());
+			for (SlotDisplay childDisplay : slotDisplay.contents()) {
+				interpretationBuilder.addChildDisplay(childDisplay);
+			}
 		});
 		registration.register(SlotDisplay.ItemSlotDisplay.TYPE, (ignoredSlotDisplay, ignoredContext, interpretationBuilder) -> {
 			interpretationBuilder.setWildcardForSubtypes(true);
@@ -226,7 +228,7 @@ public class VanillaPlugin implements IModPlugin {
 				.setWildcardForSubtypes(true);
 		});
 		registration.register(SlotDisplay.WithRemainder.TYPE, (slotDisplay, ignoredContext, interpretationBuilder) -> {
-			interpretationBuilder.setWrappedDisplay(slotDisplay.input());
+			interpretationBuilder.addChildDisplay(slotDisplay.input());
 		});
 	}
 
