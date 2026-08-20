@@ -38,6 +38,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -183,11 +184,11 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
-		List<T> visibleCandidates = getVisibleCandidates(ingredientType);
+		List<ITypedIngredient<?>> visibleCandidates = getVisibleCandidates();
 
 		SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
-		addTagNameTooltip(tooltip, ingredientManager, ingredientType, visibleCandidates);
-		addIngredientGridToTooltip(tooltip, ingredientManager, ingredientType, visibleCandidates);
+		addTagNameTooltip(tooltip, ingredientManager, typedIngredient, visibleCandidates);
+		addIngredientGridToTooltip(tooltip, ingredientManager, visibleCandidates);
 		if (visibleCandidates.size() > 1) {
 			var pauseRecipeCycling = Internal.getKeyMappings().getPauseRecipeCycling();
 			tooltip.add(new RecipeSlotOptionsTooltipComponent(pauseRecipeCycling));
@@ -202,11 +203,11 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
-		List<T> visibleCandidates = getVisibleCandidates(ingredientType);
+		List<ITypedIngredient<?>> visibleCandidates = getVisibleCandidates();
 
 		JeiTooltip tooltip = new JeiTooltip();
 		SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
-		addTagNameTooltip(tooltip, ingredientManager, ingredientType, visibleCandidates);
+		addTagNameTooltip(tooltip, ingredientManager, typedIngredient, visibleCandidates);
 
 		for (IRecipeSlotRichTooltipCallback tooltipCallback : this.tooltipCallbacks) {
 			tooltipCallback.onRichTooltip(this, tooltip);
@@ -217,8 +218,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private static <T> void addTagNameTooltip(
 		ITooltipBuilder tooltip,
 		IIngredientManager ingredientManager,
-		IIngredientType<T> ingredientType,
-		List<T> visibleCandidates
+		ITypedIngredient<T> displayedIngredient,
+		List<ITypedIngredient<?>> visibleCandidates
 	) {
 		if (visibleCandidates.isEmpty()) {
 			return;
@@ -229,26 +230,48 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			return;
 		}
 
-		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-		Component tagName = ingredientHelper.getTagKeyEquivalent(visibleCandidates)
-			.map(renderHelper::getName)
-			.orElse(null);
-		if (tagName == null) {
-			@SuppressWarnings("removal")
-			Optional<ResourceLocation> legacyTagEquivalent = ingredientHelper.getTagEquivalent(visibleCandidates);
-			tagName = legacyTagEquivalent
-				.<Component>map(location -> new TextComponent("#" + location))
-				.orElse(null);
-		}
-		if (tagName == null) {
+		Optional<TagKey<?>> tagKeyEquivalent = getTagKeyEquivalent(ingredientManager, visibleCandidates, displayedIngredient);
+		if (tagKeyEquivalent.isPresent()) {
+			TagKey<?> tagKey = tagKeyEquivalent.get();
+			String registryName = tagKey.registry().location().getPath()
+				.replace('_', ' ');
+			tooltip.add(
+				new TranslatableComponent("jei.tooltip.recipe.tag", StringUtils.capitalize(registryName))
+					.withStyle(ChatFormatting.GRAY)
+			);
+			IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
+			Component tagName = renderHelper.getName(tagKey);
+			tooltip.add(tagName.copy().withStyle(ChatFormatting.GRAY));
 			return;
 		}
-		tooltip.add(
-			new TranslatableComponent("jei.tooltip.recipe.tag", "")
-				.withStyle(ChatFormatting.GRAY)
-		);
-		tooltip.add(tagName.copy().withStyle(ChatFormatting.GRAY));
+
+		addLegacyTagNameTooltip(tooltip, ingredientManager, displayedIngredient, visibleCandidates);
+	}
+
+	@SuppressWarnings("removal")
+	private static <T> void addLegacyTagNameTooltip(
+		ITooltipBuilder tooltip,
+		IIngredientManager ingredientManager,
+		ITypedIngredient<T> displayedIngredient,
+		List<ITypedIngredient<?>> visibleCandidates
+	) {
+		IIngredientType<T> ingredientType = displayedIngredient.getType();
+		List<T> values = visibleCandidates.stream()
+			.map(ingredient -> ingredient.getIngredient(ingredientType))
+			.flatMap(Optional::stream)
+			.toList();
+		if (values.size() != visibleCandidates.size()) {
+			return;
+		}
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		Optional<ResourceLocation> legacyTagEquivalent = ingredientHelper.getTagEquivalent(values);
+		legacyTagEquivalent.ifPresent(location -> {
+			tooltip.add(
+				new TranslatableComponent("jei.tooltip.recipe.tag", "")
+					.withStyle(ChatFormatting.GRAY)
+			);
+			tooltip.add(new TextComponent("#" + location).withStyle(ChatFormatting.GRAY));
+		});
 	}
 
 	@Override
@@ -281,23 +304,29 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		return ingredientHelper.getTagKeyEquivalent(values);
 	}
 
-	private static <T> void addIngredientGridToTooltip(
+	private static void addIngredientGridToTooltip(
 		ITooltipBuilder tooltip,
 		IIngredientManager ingredientManager,
-		IIngredientType<T> ingredientType,
-		List<T> visibleCandidates
+		List<ITypedIngredient<?>> visibleCandidates
 	) {
 		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
 		if (clientConfig.isTagContentTooltipEnabled() && visibleCandidates.size() > 1) {
-			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(ingredientType);
-			tooltip.add(new TagContentTooltipComponent<>(renderer, visibleCandidates));
+			List<ITypedIngredient<?>> normalizedCandidates = visibleCandidates.stream()
+				.<ITypedIngredient<?>>map(ingredient -> normalizeTypedIngredient(ingredientManager, ingredient))
+				.toList();
+			tooltip.add(new TagContentTooltipComponent(ingredientManager, normalizedCandidates));
 		}
 	}
 
-	private <T> List<T> getVisibleCandidates(IIngredientType<T> ingredientType) {
+	private static ITypedIngredient<?> normalizeTypedIngredient(
+		IIngredientManager ingredientManager,
+		ITypedIngredient<?> ingredient
+	) {
+		return ingredientManager.normalizeTypedIngredient(ingredient);
+	}
+
+	private List<ITypedIngredient<?>> getVisibleCandidates() {
 		return ingredients.getDisplayedIngredients()
-			.map(ingredient -> ingredient.getIngredient(ingredientType))
-			.flatMap(Optional::stream)
 			.toList();
 	}
 
