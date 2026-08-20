@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class RecipeSlotIngredientGroupingTest {
 	private static final IIngredientType<String> INGREDIENT_TYPE = () -> String.class;
+	private static final IIngredientType<Integer> SECOND_INGREDIENT_TYPE = () -> Integer.class;
 
 	@BeforeAll
 	static void setup() {
@@ -119,6 +120,26 @@ public class RecipeSlotIngredientGroupingTest {
 		// Assertions: display rotation is capped, but metadata calculations retain the complete ingredient group.
 		assertEquals(100, displayedIngredients.size());
 		assertEquals(110, displayGroup.size());
+	}
+
+	@Test
+	void uninterpretedDisplayGroupRetainsMixedIngredientTypes() {
+		// Setup: one uninterpreted recipe slot combines two registered ingredient types.
+		SlotIngredient<String> displayed = new SlotIngredient<>(createIngredient("first type"));
+		ITypedIngredient<Integer> secondType = TypedIngredient.createUnvalidated(SECOND_INGREDIENT_TYPE, 1);
+		List<SlotIngredient<?>> ingredients = List.of(
+			displayed,
+			new SlotIngredient<>(secondType)
+		);
+
+		// Operation: get the candidates represented by the displayed ingredient.
+		List<IIngredientType<?>> ingredientTypes = RecipeSlotIngredients.getDisplayGroupIngredients(ingredients, displayed)
+			.stream()
+			.<IIngredientType<?>>map(candidate -> candidate.typedIngredient().getType())
+			.toList();
+
+		// Assertions: the candidate group retains every type for tooltip rendering and cycling.
+		assertEquals(List.of(INGREDIENT_TYPE, SECOND_INGREDIENT_TYPE), ingredientTypes);
 	}
 
 	private static ITypedIngredient<String> createIngredient(String ingredient) {
