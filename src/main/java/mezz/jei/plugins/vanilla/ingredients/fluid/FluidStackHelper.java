@@ -168,6 +168,16 @@ public class FluidStackHelper implements IIngredientHelper<FluidStack> {
 	}
 
 	@Override
+	public boolean isValidIngredient(FluidStack ingredient) {
+		if (ingredient.isEmpty()) {
+			return false;
+		}
+
+		Fluid fluid = ingredient.getRawFluid();
+		return fluid.isSource(fluid.defaultFluidState());
+	}
+
+	@Override
 	public Collection<ResourceLocation> getTags(FluidStack ingredient) {
 		return ingredient.getFluid().getTags();
 	}
