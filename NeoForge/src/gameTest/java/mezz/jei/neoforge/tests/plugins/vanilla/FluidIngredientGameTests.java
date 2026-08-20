@@ -37,30 +37,36 @@ public final class FluidIngredientGameTests {
 
 	@GameTest
 	@EmptyTemplate
-	@TestHolder(description = "Empty NeoForge fluid stacks are invalid and filtered before display.")
-	public static void emptyFluidStacksAreInvalid(JeiGameTestHelper helper) {
-		// Setup: canonical empty, empty-fluid, and zero-sized water stacks are all empty by NeoForge's contract.
+	@TestHolder(description = "Empty and flowing NeoForge fluid stacks are invalid and filtered before display.")
+	public static void emptyAndFlowingFluidStacksAreInvalid(JeiGameTestHelper helper) {
+		// Setup: native empty forms and unobtainable flowing variants exercise JEI's validity boundary.
 		FluidIngredientHelper<FluidStack> ingredientHelper = createIngredientHelper();
 		DisplayIngredientAcceptor acceptor = createIngredientAcceptor();
 		FluidStack emptyFluid = new FluidStack(Fluids.EMPTY, 1000);
 		FluidStack zeroAmountWater = new FluidStack(Fluids.WATER, 1000);
 		zeroAmountWater.setAmount(0);
+		FluidStack flowingWater = new FluidStack(Fluids.FLOWING_WATER, 1000);
+		FluidStack flowingLava = new FluidStack(Fluids.FLOWING_LAVA, 1000);
 
-		// Operation: submit every empty form through JEI's display ingredient boundary.
+		// Operation: submit every invalid form through JEI's display ingredient boundary.
 		acceptor.add(NeoForgeTypes.FLUID_STACK, FluidStack.EMPTY);
 		acceptor.add(NeoForgeTypes.FLUID_STACK, emptyFluid);
 		acceptor.add(NeoForgeTypes.FLUID_STACK, zeroAmountWater);
+		acceptor.add(NeoForgeTypes.FLUID_STACK, flowingWater);
+		acceptor.add(NeoForgeTypes.FLUID_STACK, flowingLava);
 
-		// Assertions: native emptiness drives validity and none of the stacks reach display state.
+		// Assertions: empty and flowing stacks are invalid and never reach display state.
 		helper.assertTrue(FluidStack.EMPTY.isEmpty(), "Expected FluidStack.EMPTY to be empty");
 		helper.assertTrue(emptyFluid.isEmpty(), "Expected an empty-fluid stack to be empty");
 		helper.assertTrue(zeroAmountWater.isEmpty(), "Expected zero-sized water to be empty");
 		helper.assertTrue(!ingredientHelper.isValidIngredient(FluidStack.EMPTY), "Expected FluidStack.EMPTY to be invalid");
 		helper.assertTrue(!ingredientHelper.isValidIngredient(emptyFluid), "Expected an empty-fluid stack to be invalid");
 		helper.assertTrue(!ingredientHelper.isValidIngredient(zeroAmountWater), "Expected zero-sized water to be invalid");
+		helper.assertTrue(!ingredientHelper.isValidIngredient(flowingWater), "Expected flowing water to be invalid");
+		helper.assertTrue(!ingredientHelper.isValidIngredient(flowingLava), "Expected flowing lava to be invalid");
 		helper.assertTrue(
 			acceptor.getAllIngredients().stream().noneMatch(Objects::nonNull),
-			"Expected empty fluid stacks to be filtered before display"
+			"Expected empty and flowing fluid stacks to be filtered before display"
 		);
 		helper.succeed();
 	}

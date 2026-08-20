@@ -56,6 +56,28 @@ public final class FluidIngredientGameTests {
 	}
 
 	@GameTest
+	public void flowingFluidsAreCanonicalizedToSources(GameTestHelper helper) {
+		// Setup: Fabric's transfer API converts flowing fluids to their obtainable source variants.
+		RegistryUtil.setRegistryAccess(helper.getLevel().registryAccess());
+		FluidIngredientHelper<IJeiFluidIngredient> ingredientHelper = createIngredientHelper();
+		IJeiFluidIngredient flowingWater = new JeiFluidIngredient(FluidVariant.of(Fluids.FLOWING_WATER), FluidConstants.BUCKET);
+		IJeiFluidIngredient flowingLava = new JeiFluidIngredient(FluidVariant.of(Fluids.FLOWING_LAVA), FluidConstants.BUCKET);
+
+		// Assertions: no flowing identity reaches JEI, and the canonical source ingredients remain valid.
+		helper.assertTrue(
+			flowingWater.getFluidVariant().getFluid() == Fluids.WATER,
+			"Expected flowing water to be canonicalized to source water"
+		);
+		helper.assertTrue(
+			flowingLava.getFluidVariant().getFluid() == Fluids.LAVA,
+			"Expected flowing lava to be canonicalized to source lava"
+		);
+		helper.assertTrue(ingredientHelper.isValidIngredient(flowingWater), "Expected canonical source water to be valid");
+		helper.assertTrue(ingredientHelper.isValidIngredient(flowingLava), "Expected canonical source lava to be valid");
+		helper.succeed();
+	}
+
+	@GameTest
 	public void nonEmptyFluidIsAccepted(GameTestHelper helper) {
 		// Setup: a concrete water variant and a display acceptor backed by JEI's real fluid helper.
 		RegistryUtil.setRegistryAccess(helper.getLevel().registryAccess());
