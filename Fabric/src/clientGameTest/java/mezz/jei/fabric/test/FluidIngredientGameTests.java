@@ -44,6 +44,7 @@ final class FluidIngredientGameTests {
 			ClientTestUtil.runOnClient(client -> {
 				RegistryUtil.setRegistryAccess(Objects.requireNonNull(client.level).registryAccess());
 				emptyFluidsAreInvalid();
+				flowingFluidsAreCanonicalizedToSources();
 				nonEmptyFluidIsAccepted();
 				copyWithAmountKeepsEmptyIngredientsEmpty();
 			});
@@ -65,6 +66,23 @@ final class FluidIngredientGameTests {
 			acceptor.getAllIngredients().stream().noneMatch(Objects::nonNull),
 			"Expected empty fluid ingredients to be filtered before display"
 		);
+	}
+
+	private static void flowingFluidsAreCanonicalizedToSources() {
+		FluidIngredientHelper<IJeiFluidIngredient> ingredientHelper = createIngredientHelper();
+		IJeiFluidIngredient flowingWater = new JeiFluidIngredient(FluidVariant.of(Fluids.FLOWING_WATER), FluidConstants.BUCKET);
+		IJeiFluidIngredient flowingLava = new JeiFluidIngredient(FluidVariant.of(Fluids.FLOWING_LAVA), FluidConstants.BUCKET);
+
+		assertTrue(
+			flowingWater.getFluidVariant().getFluid() == Fluids.WATER,
+			"Expected flowing water to be canonicalized to source water"
+		);
+		assertTrue(
+			flowingLava.getFluidVariant().getFluid() == Fluids.LAVA,
+			"Expected flowing lava to be canonicalized to source lava"
+		);
+		assertTrue(ingredientHelper.isValidIngredient(flowingWater), "Expected canonical source water to be valid");
+		assertTrue(ingredientHelper.isValidIngredient(flowingLava), "Expected canonical source lava to be valid");
 	}
 
 	private static void nonEmptyFluidIsAccepted() {
