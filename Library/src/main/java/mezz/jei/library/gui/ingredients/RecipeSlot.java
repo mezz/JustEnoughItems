@@ -161,13 +161,14 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private <T> void getTooltip(ITooltipBuilder tooltip, SlotIngredient<T> slotIngredient) {
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 		ITypedIngredient<T> typedIngredient = slotIngredient.typedIngredient();
-		List<ITypedIngredient<?>> visibleCandidates = getVisibleIngredientsInDisplayGroup(slotIngredient);
+		List<ITypedIngredient<?>> visibleCandidates = getVisibleIngredients();
+		List<ITypedIngredient<?>> visibleDisplayGroup = getVisibleIngredientsInDisplayGroup(slotIngredient);
 
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
 		SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
 		addSlotDisplayTooltip(tooltip, slotIngredient);
-		addTagNameTooltip(tooltip, ingredientManager, slotIngredient, visibleCandidates);
+		addTagNameTooltip(tooltip, ingredientManager, slotIngredient, visibleDisplayGroup);
 		addIngredientGridToTooltip(tooltip, ingredientManager, visibleCandidates);
 		if (visibleCandidates.size() > 1) {
 			var pauseRecipeCycling = Internal.getKeyMappings().getPauseRecipeCycling();
@@ -323,8 +324,13 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			.toList();
 	}
 
-	private boolean hasCandidates(SlotIngredient<?> displayed) {
-		return ingredients.getVisibleTypedIngredientsInDisplayGroup(displayed)
+	private List<ITypedIngredient<?>> getVisibleIngredients() {
+		return ingredients.getVisibleTypedIngredients()
+			.toList();
+	}
+
+	private boolean hasCandidates() {
+		return ingredients.getVisibleTypedIngredients()
 			.limit(2)
 			.count() > 1;
 	}
@@ -367,7 +373,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			overlay.draw(guiGraphics, x, y);
 		}
 
-		displayedIngredient.ifPresent(ingredient -> drawCandidatesBadge(guiGraphics, ingredient));
+		displayedIngredient.ifPresent(ignored -> drawCandidatesBadge(guiGraphics));
 
 		if (hovered) {
 			IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
@@ -375,8 +381,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		}
 	}
 
-	private <T> void drawCandidatesBadge(GuiGraphicsExtractor guiGraphics, SlotIngredient<T> displayed) {
-		if (!hasCandidates(displayed)) {
+	private void drawCandidatesBadge(GuiGraphicsExtractor guiGraphics) {
+		if (!hasCandidates()) {
 			return;
 		}
 		Textures textures = Internal.getTextures();
