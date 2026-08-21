@@ -331,7 +331,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			.map(tagKey -> textures.getTagBadgeIcon())
 			.orElseGet(textures::getListBadgeIcon);
 		int badgeX = this.rect.getX() + this.rect.getWidth() - badgeIcon.getWidth() + 1;
-		int badgeY = this.rect.getY() + this.rect.getHeight() - badgeIcon.getHeight() + 1;
+		int badgeY = this.rect.getY() - 1;
 		badgeIcon.draw(guiGraphics, badgeX, badgeY);
 	}
 
