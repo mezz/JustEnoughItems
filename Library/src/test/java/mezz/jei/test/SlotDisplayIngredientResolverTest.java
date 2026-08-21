@@ -129,6 +129,30 @@ class SlotDisplayIngredientResolverTest {
 	}
 
 	@Test
+	void nestedCompositeKeepsListCandidatesAcrossChildGroups() {
+		// Setup: a singleton and a nested list contribute separate metadata groups to one recipe slot.
+		IIngredientManagerInternal ingredientManager = createIngredientManager(List.of(new TestIngredient(1)), false);
+		SlotDisplay nestedList = new SlotDisplay.Composite(List.of(
+			new TransformingTestSlotDisplay(TestSlotDisplay.INSTANCE, 10),
+			new TransformingTestSlotDisplay(TestSlotDisplay.INSTANCE, 100)
+		));
+		SlotDisplay display = new SlotDisplay.Composite(List.of(TestSlotDisplay.INSTANCE, nestedList));
+		List<SlotIngredient<TestIngredient>> resolved = resolve(ingredientManager, display);
+
+		// Operation: collect the visible candidates used by the slot's list badge and tooltip grid.
+		List<TestIngredient> candidates = RecipeSlotIngredients.getVisibleSlotIngredients(resolved, ingredientManager, ingredient -> true)
+			.map(SlotIngredient::typedIngredient)
+			.map(ingredient -> ingredient.getIngredient(INGREDIENT_TYPE))
+			.flatMap(Optional::stream)
+			.toList();
+
+		// Assertions: group metadata stays independent, but every cycled child still exposes the full list.
+		assertEquals(List.of(new TestIngredient(1), new TestIngredient(11), new TestIngredient(101)), candidates);
+		assertNotSame(resolved.get(0).slotDisplayData(), resolved.get(1).slotDisplayData());
+		assertNotSame(resolved.get(1).slotDisplayData(), resolved.get(2).slotDisplayData());
+	}
+
+	@Test
 	void groupedDisplayExpansionStopsAtTheDisplayLimit() {
 		// Setup: one grouping UID contains more registered ingredients than JEI's display limit.
 		List<TestIngredient> registeredIngredients = IntStream.range(0, 110)

@@ -161,18 +161,28 @@ public final class RecipeSlotIngredients {
 
 	public Stream<SlotIngredient<?>> getVisibleSlotIngredientsInDisplayGroup(SlotIngredient<?> displayed) {
 		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getJeiHelpers().getIngredientVisibility();
-		List<? extends @Nullable SlotIngredient<?>> displayGroupSource;
-		if (this.displayOverrides == null) {
-			displayGroupSource = this.sourceSlotIngredients;
-		} else {
-			displayGroupSource = this.displayOverrides.getAllSlotIngredients();
-		}
 		return getVisibleSlotIngredientsInDisplayGroup(
-			displayGroupSource,
+			getCandidateSource(),
 			displayed,
 			ingredientManager,
 			ingredientVisibility::isIngredientVisible
 		);
+	}
+
+	public Stream<SlotIngredient<?>> getVisibleSlotIngredients() {
+		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getJeiHelpers().getIngredientVisibility();
+		return getVisibleSlotIngredients(
+			getCandidateSource(),
+			ingredientManager,
+			ingredientVisibility::isIngredientVisible
+		);
+	}
+
+	private List<? extends @Nullable SlotIngredient<?>> getCandidateSource() {
+		if (this.displayOverrides == null) {
+			return this.sourceSlotIngredients;
+		}
+		return this.displayOverrides.getAllSlotIngredients();
 	}
 
 	public static Stream<SlotIngredient<?>> getVisibleSlotIngredientsInDisplayGroup(
@@ -182,11 +192,24 @@ public final class RecipeSlotIngredients {
 		Predicate<ITypedIngredient<?>> isVisible
 	) {
 		List<@Nullable SlotIngredient<?>> displayGroup = getDisplayGroupIngredients(displayGroupSource, displayed);
-		displayGroup = SlotDisplayIngredientExpander.expandForDisplay(ingredientManager, displayGroup);
-		return displayGroup.stream()
+		return getVisibleSlotIngredients(displayGroup, ingredientManager, isVisible);
+	}
+
+	public static Stream<SlotIngredient<?>> getVisibleSlotIngredients(
+		List<? extends @Nullable SlotIngredient<?>> ingredients,
+		IIngredientManagerInternal ingredientManager,
+		Predicate<ITypedIngredient<?>> isVisible
+	) {
+		List<@Nullable SlotIngredient<?>> expandedIngredients = SlotDisplayIngredientExpander.expandForDisplay(ingredientManager, ingredients);
+		return expandedIngredients.stream()
 			.filter(Objects::nonNull)
 			.<SlotIngredient<?>>map(ingredient -> ingredient)
 			.filter(ingredient -> isVisible.test(ingredient.typedIngredient()));
+	}
+
+	public Stream<ITypedIngredient<?>> getVisibleTypedIngredients() {
+		return getVisibleSlotIngredients()
+			.map(SlotIngredient::typedIngredient);
 	}
 
 	public Stream<ITypedIngredient<?>> getVisibleTypedIngredientsInDisplayGroup(SlotIngredient<?> displayed) {
