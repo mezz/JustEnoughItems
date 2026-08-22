@@ -10,6 +10,7 @@
     "ClientPacketListenerRecipeUpdateMixin",
     "EffectsInInventoryMixin",
     "GuiGraphicsExtractorMixin",
+    "GuiRendererMixin",
     "KeyboardHandlerMixin",
     "MinecraftMixin",
     "ScreenMixin"
