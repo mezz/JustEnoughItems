@@ -183,7 +183,7 @@ public class IngredientFilterTest {
 	}
 
 	public static Set<String> getTooltipStrings(IIngredientRenderer<TestIngredient> ingredientRenderer, TestIngredient testIngredient) {
-		List<Component> components = ingredientRenderer.getTooltip(testIngredient, TooltipFlag.Default.NORMAL);
+		List<Component> components = ingredientRenderer.getTooltip(testIngredient, null, TooltipFlag.Default.NORMAL);
 		return ListElementInfo.getStrings(components);
 	}
 
