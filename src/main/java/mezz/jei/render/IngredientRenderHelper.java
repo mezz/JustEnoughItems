@@ -21,7 +21,9 @@ public class IngredientRenderHelper {
 	public static <V> List<ITextComponent> getIngredientTooltipSafe(V ingredient, IIngredientRenderer<V> ingredientRenderer, IIngredientHelper<V> ingredientHelper, IModIdHelper modIdHelper) {
 		try {
 			Minecraft minecraft = Minecraft.getInstance();
-			ITooltipFlag.TooltipFlags tooltipFlag = minecraft.options.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
+			ITooltipFlag.TooltipFlags tooltipFlag = minecraft != null && minecraft.options.advancedItemTooltips ?
+				ITooltipFlag.TooltipFlags.ADVANCED :
+				ITooltipFlag.TooltipFlags.NORMAL;
 			List<ITextComponent> tooltip = ingredientRenderer.getTooltip(ingredient, tooltipFlag);
 			tooltip = modIdHelper.addModNameToIngredientTooltip(tooltip, ingredient, ingredientHelper);
 			return tooltip;
