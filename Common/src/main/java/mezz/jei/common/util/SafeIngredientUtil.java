@@ -20,6 +20,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,7 +66,16 @@ public final class SafeIngredientUtil {
 
 		tooltip.setIngredient(typedIngredient);
 		try {
-			ingredientRenderer.getTooltip(tooltip, ingredient, tooltipFlag);
+			Minecraft minecraft = Minecraft.getInstance();
+			Item.TooltipContext tooltipContext = Item.TooltipContext.of(minecraft.level);
+			Player player = minecraft.player;
+			ingredientRenderer.getTooltip(
+				tooltip,
+				ingredient,
+				tooltipContext,
+				player,
+				tooltipFlag
+			);
 			if (CRASHING_INGREDIENT_RENDERERS.contains(ingredient)) {
 				getRenderErrorTooltip(tooltip);
 			}
@@ -89,7 +100,10 @@ public final class SafeIngredientUtil {
 		}
 
 		try {
-			return ingredientRenderer.getTooltip(ingredient, tooltipFlag);
+			Minecraft minecraft = Minecraft.getInstance();
+			Item.TooltipContext tooltipContext = Item.TooltipContext.of(minecraft.level);
+			Player player = minecraft.player;
+			return ingredientRenderer.getTooltip(ingredient, tooltipContext, player, tooltipFlag);
 		} catch (RuntimeException | LinkageError e) {
 			CRASHING_INGREDIENT_TOOLTIPS.add(ingredient);
 			ErrorUtil.logIngredientCrash(e, "Caught an error getting an Ingredient's tooltip", ingredientManager, typedIngredient.getType(), ingredient);

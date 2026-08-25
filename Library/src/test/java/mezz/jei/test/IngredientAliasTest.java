@@ -1,6 +1,7 @@
 package mezz.jei.test;
 
 import com.mojang.serialization.Codec;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -16,6 +17,8 @@ import mezz.jei.library.load.registration.IngredientManagerBuilder;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -247,7 +250,21 @@ public class IngredientAliasTest {
 			}
 
 			@Override
+			@Deprecated(since = "27.32.0", forRemoval = true)
+			@SuppressWarnings("removal")
 			public List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag) {
+				return getTooltip(ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+			}
+
+			@Override
+			@Deprecated(since = "27.32.0", forRemoval = true)
+			@SuppressWarnings("removal")
+			public void getTooltip(ITooltipBuilder tooltip, T ingredient, TooltipFlag tooltipFlag) {
+				getTooltip(tooltip, ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+			}
+
+			@Override
+			public List<Component> getTooltip(T ingredient, Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
 				return List.of();
 			}
 		};
