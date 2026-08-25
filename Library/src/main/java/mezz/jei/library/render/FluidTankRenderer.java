@@ -13,17 +13,20 @@ import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.joml.Matrix4f;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -233,9 +236,16 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	}
 
 	@Override
+	@Deprecated(since = "15.54.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public List<Component> getTooltip(T fluidStack, TooltipFlag tooltipFlag) {
-		List<Component> tooltip = new ArrayList<>();
+		Minecraft minecraft = Minecraft.getInstance();
+		return getTooltip(fluidStack, minecraft.player, tooltipFlag);
+	}
 
+	@Override
+	public List<Component> getTooltip(T fluidStack, @Nullable Player player, TooltipFlag tooltipFlag) {
+		List<Component> tooltip = new ArrayList<>();
 		IIngredientTypeWithSubtypes<Fluid, T> type = fluidHelper.getFluidIngredientType();
 		Fluid fluidType = type.getBase(fluidStack);
 		if (fluidType.isSame(Fluids.EMPTY)) {

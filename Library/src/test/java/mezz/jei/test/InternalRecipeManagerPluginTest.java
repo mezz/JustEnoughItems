@@ -1,5 +1,6 @@
 package mezz.jei.test;
 
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IColorHelper;
@@ -26,6 +27,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.Nullable;
@@ -310,7 +312,21 @@ public class InternalRecipeManagerPluginTest {
 		}
 
 		@Override
+		@Deprecated(since = "15.54.0", forRemoval = true)
+		@SuppressWarnings("removal")
 		public List<Component> getTooltip(TestIngredient ingredient, TooltipFlag tooltipFlag) {
+			return getTooltip(ingredient, null, tooltipFlag);
+		}
+
+		@Override
+		@Deprecated(since = "15.54.0", forRemoval = true)
+		@SuppressWarnings("removal")
+		public void getTooltip(ITooltipBuilder tooltip, TestIngredient ingredient, TooltipFlag tooltipFlag) {
+			getTooltip(tooltip, ingredient, null, tooltipFlag);
+		}
+
+		@Override
+		public List<Component> getTooltip(TestIngredient ingredient, @Nullable Player player, TooltipFlag tooltipFlag) {
 			return List.of(Component.literal(Integer.toString(ingredient.number())));
 		}
 	}
@@ -358,7 +374,21 @@ public class InternalRecipeManagerPluginTest {
 		}
 
 		@Override
+		@Deprecated(since = "15.54.0", forRemoval = true)
+		@SuppressWarnings("removal")
 		public List<Component> getTooltip(OtherTestIngredient ingredient, TooltipFlag tooltipFlag) {
+			return getTooltip(ingredient, null, tooltipFlag);
+		}
+
+		@Override
+		@Deprecated(since = "15.54.0", forRemoval = true)
+		@SuppressWarnings("removal")
+		public void getTooltip(ITooltipBuilder tooltip, OtherTestIngredient ingredient, TooltipFlag tooltipFlag) {
+			getTooltip(tooltip, ingredient, null, tooltipFlag);
+		}
+
+		@Override
+		public List<Component> getTooltip(OtherTestIngredient ingredient, @Nullable Player player, TooltipFlag tooltipFlag) {
 			return List.of(Component.literal(Integer.toString(ingredient.number())));
 		}
 	}
