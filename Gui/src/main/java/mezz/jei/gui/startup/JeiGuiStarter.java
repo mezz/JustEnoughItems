@@ -44,6 +44,7 @@ import mezz.jei.gui.input.GuiContainerWrapper;
 import mezz.jei.gui.input.ICharTypedHandler;
 import mezz.jei.gui.input.handlers.BookmarkInputHandler;
 import mezz.jei.gui.input.handlers.ChatLinkInputHandler;
+import mezz.jei.gui.input.handlers.CheatInputHandler;
 import mezz.jei.gui.input.handlers.DragRouter;
 import mezz.jei.gui.input.handlers.EditInputHandler;
 import mezz.jei.gui.input.handlers.FocusInputHandler;
@@ -235,9 +236,10 @@ public class JeiGuiStarter {
 		UserInputRouter userInputRouter = new UserInputRouter(
 			"JEIGlobal",
 			new EditInputHandler(recipeFocusSource, worldConfig, editModeConfig),
+			new CheatInputHandler(recipeFocusSource, clientConfig, ingredientManager, worldConfig, serverConnection),
 			ingredientListOverlay.createInputHandler(),
 			bookmarkOverlay.createInputHandler(),
-			new FocusInputHandler(recipeFocusSource, recipesGui, focusUtil, clientConfig, ingredientManager, worldConfig, serverConnection),
+			new FocusInputHandler(recipeFocusSource, recipesGui, focusUtil, ingredientManager),
 			new BookmarkInputHandler(recipeFocusSource, bookmarkList, bookmarkOverlay),
 			new GlobalInputHandler(worldConfig),
 			new GuiAreaInputHandler(screenHelper, recipesGui, focusFactory)
