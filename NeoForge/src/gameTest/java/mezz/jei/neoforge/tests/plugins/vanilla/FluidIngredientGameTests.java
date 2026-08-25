@@ -1,5 +1,6 @@
 package mezz.jei.neoforge.tests.plugins.vanilla;
 
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -18,6 +19,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.util.context.ContextMap;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluids;
@@ -26,6 +29,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
@@ -158,7 +162,21 @@ public final class FluidIngredientGameTests {
 		}
 
 		@Override
+		@Deprecated(since = "29.31.0", forRemoval = true)
+		@SuppressWarnings("removal")
 		public List<Component> getTooltip(FluidStack ingredient, TooltipFlag tooltipFlag) {
+			return List.of();
+		}
+
+		@Override
+		@Deprecated(since = "29.31.0", forRemoval = true)
+		@SuppressWarnings("removal")
+		public void getTooltip(ITooltipBuilder tooltip, FluidStack ingredient, TooltipFlag tooltipFlag) {
+
+		}
+
+		@Override
+		public List<Component> getTooltip(FluidStack ingredient, Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
 			return List.of();
 		}
 	}
