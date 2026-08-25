@@ -4,7 +4,6 @@
   "package": "mezz.jei.neoforge.mixin",
   "compatibilityLevel": "JAVA_25",
   "client": [
-    "KeyboardHandlerMixin",
     "ScreenMixin"
   ],
   "injectors": {

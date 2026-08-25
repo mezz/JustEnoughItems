@@ -2,6 +2,7 @@ package mezz.jei.neoforge.startup;
 
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
+import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.neoforge.events.JeiScreenRenderForegroundEvent;
@@ -55,6 +56,14 @@ public class EventRegistration {
 			Screen screen = event.getScreen();
 			CharacterEvent characterEvent = event.getCharacterEvent();
 			handler.onKeyboardCharTypedPost(screen, characterEvent);
+		});
+
+		subscriptions.register(ScreenEvent.Preedit.Pre.class, event -> {
+			Screen screen = event.getScreen();
+			if (screen.getFocused() instanceof GuiTextFieldFilter searchField && searchField.isFocused()) {
+				searchField.preeditUpdated(event.getPreeditEvent());
+				event.setCanceled(true);
+			}
 		});
 
 		subscriptions.register(ScreenEvent.MouseButtonPressed.Pre.class, event -> {
