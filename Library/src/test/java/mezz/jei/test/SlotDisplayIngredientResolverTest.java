@@ -2,6 +2,7 @@ package mezz.jei.test;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -28,6 +29,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.util.context.ContextKeySet;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -401,7 +404,21 @@ class SlotDisplayIngredientResolverTest {
 		}
 
 		@Override
+		@Deprecated(since = "30.26.0", forRemoval = true)
+		@SuppressWarnings("removal")
 		public List<Component> getTooltip(TestIngredient ingredient, TooltipFlag tooltipFlag) {
+			return getTooltip(ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+		}
+
+		@Override
+		@Deprecated(since = "30.26.0", forRemoval = true)
+		@SuppressWarnings("removal")
+		public void getTooltip(ITooltipBuilder tooltip, TestIngredient ingredient, TooltipFlag tooltipFlag) {
+			getTooltip(tooltip, ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+		}
+
+		@Override
+		public List<Component> getTooltip(TestIngredient ingredient, Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
 			return List.of();
 		}
 	}
