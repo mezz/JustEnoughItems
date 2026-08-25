@@ -3,12 +3,14 @@ package mezz.jei.library.gui.recipes.supplier.builder;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
+import mezz.jei.api.gui.ingredient.IRecipeIngredientsSource;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.ingredients.RecipeIngredientSupplier;
 import mezz.jei.library.ingredients.SlotIngredient;
 import net.minecraft.util.context.ContextMap;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,7 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 	private final IIngredientManagerInternal ingredientManager;
 	private final ContextMap contextMap;
 	private final Map<RecipeIngredientRole, IngredientSlotBuilder> ingredientSlotBuilders;
+	private final List<IRecipeIngredientsSource> ingredientSources = new ArrayList<>();
 
 	public IngredientSupplierBuilder(IIngredientManagerInternal ingredientManager, ContextMap contextMap) {
 		this.ingredientManager = ingredientManager;
@@ -49,6 +52,11 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 	}
 
 	@Override
+	public void addIngredientsSource(IRecipeIngredientsSource source) {
+		this.ingredientSources.add(source);
+	}
+
+	@Override
 	public void moveRecipeTransferButton(int posX, int posY) {
 
 	}
@@ -73,6 +81,12 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 		ingredientSlotBuilders.forEach(
 			(role, builder) -> ingredientsByRole.put(role, builder.getAllSlotIngredients())
 		);
+		// add a snapshot of externally managed sources, so their ingredients are searchable too
+		for (IRecipeIngredientsSource source : ingredientSources) {
+			List<SlotIngredient<?>> roleIngredients = ingredientsByRole.computeIfAbsent(source.getRole(), role -> new ArrayList<>());
+			source.getAllIngredients()
+				.forEach(typedIngredient -> roleIngredients.add(new SlotIngredient<>(typedIngredient)));
+		}
 		return new RecipeIngredientSupplier(ingredientsByRole);
 	}
 }

@@ -24,7 +24,7 @@ import java.util.List;
  * @since 11.5.0
  */
 @ApiStatus.NonExtendable
-public interface IRecipeSlotDrawable extends IRecipeSlotView {
+public interface IRecipeSlotDrawable extends IRecipeSlotView, IRecipeHoverable {
 	/**
 	 * Draws the recipe slot relative to the pose stack.
 	 *

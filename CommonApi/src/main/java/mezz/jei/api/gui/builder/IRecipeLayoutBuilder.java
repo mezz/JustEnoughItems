@@ -1,5 +1,6 @@
 package mezz.jei.api.gui.builder;
 
+import mezz.jei.api.gui.ingredient.IRecipeIngredientsSource;
 import mezz.jei.api.gui.placement.IPlaceable;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -101,6 +102,20 @@ public interface IRecipeLayoutBuilder {
 	 * @since 9.3.0
 	 */
 	IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole recipeIngredientRole);
+
+	/**
+	 * Add an external source of ingredients that is drawn by the plugin itself, not by JEI.
+	 *
+	 * <p>The source is managed like one of JEI's own slots for hover detection, tooltips,
+	 * ingredient lookup, bookmarks and focus, and its ingredients are added to the recipe lookup index
+	 * (a snapshot is taken once when recipes are registered).</p>
+	 *
+	 * <p>For per-displayed-recipe sources that should not be indexed, see
+	 * {@link mezz.jei.api.gui.widgets.IRecipeExtrasBuilder#addIngredientsSource}.</p>
+	 *
+	 * @since 30.26.0
+	 */
+	void addIngredientsSource(IRecipeIngredientsSource source);
 
 	/**
 	 * Moves the recipe transfer button's position relative to the recipe layout.

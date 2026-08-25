@@ -1,6 +1,7 @@
 package mezz.jei.api.gui.widgets;
 
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeIngredientsSource;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawablesView;
 import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
@@ -66,6 +67,20 @@ public interface IRecipeExtrasBuilder {
 	 * @since 19.19.3
 	 */
 	void addSlottedWidget(ISlottedRecipeWidget widget, List<IRecipeSlotDrawable> slots);
+
+	/**
+	 * Add an {@link IRecipeIngredientsSource} for the recipe category,
+	 * for elements that are drawn by the addon itself instead of JEI.
+	 *
+	 * <p>The source is managed like one of JEI's own slots for hover detection, tooltips,
+	 * ingredient lookup, bookmarks and focus, but JEI never draws it.
+	 * Sources added here are per-displayed-recipe and are not added to the recipe search index;
+	 * to have an external source indexed, register it in {@link mezz.jei.api.recipe.category.IRecipeCategory#setRecipe}
+	 * with {@link mezz.jei.api.gui.builder.IRecipeLayoutBuilder#addIngredientsSource}.</p>
+	 *
+	 * @since 30.26.0
+	 */
+	void addIngredientsSource(IRecipeIngredientsSource source);
 
 	/**
 	 * Add a {@link IJeiInputHandler} for the recipe category.

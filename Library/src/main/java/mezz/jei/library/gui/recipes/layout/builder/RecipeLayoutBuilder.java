@@ -8,6 +8,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeIngredientsSource;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -19,6 +20,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTicker;
+import mezz.jei.library.gui.ingredients.IngredientsSourceAdapter;
 import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.gui.recipes.IngredientsTooltipCallback;
 import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
@@ -42,6 +44,7 @@ import java.util.function.Supplier;
 public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	private final List<RecipeSlotBuilder> visibleSlots = new ArrayList<>();
 	private final List<List<RecipeSlotBuilder>> focusLinkedSlots = new ArrayList<>();
+	private final List<IRecipeIngredientsSource> ingredientSources = new ArrayList<>();
 
 	private final IIngredientManagerInternal ingredientManager;
 	private final ContextMap contextMap;
@@ -86,6 +89,11 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	@Override
 	public IIngredientAcceptor<?> addInvisibleIngredients(RecipeIngredientRole role) {
 		return new RecipeSlotBuilder(ingredientManager, contextMap, nextSlotIndex++, role);
+	}
+
+	@Override
+	public void addIngredientsSource(IRecipeIngredientsSource source) {
+		this.ingredientSources.add(source);
 	}
 
 	@Override
@@ -187,6 +195,11 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			}
 		}
 
+		List<IRecipeSlotDrawable> sortedSlots = sortSlots(slots);
+		for (IRecipeIngredientsSource source : ingredientSources) {
+			sortedSlots.add(new IngredientsSourceAdapter(source, ingredientManager, contextMap));
+		}
+
 		RecipeLayout<T> recipeLayout = new RecipeLayout<>(
 			recipeCategory,
 			decorators,
@@ -195,9 +208,11 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			recipeBorderPadding,
 			shapelessIcon,
 			recipeTransferButtonPosition,
-			sortSlots(slots),
+			sortedSlots,
 			cycleTicker,
-			focuses
+			focuses,
+			ingredientManager,
+			contextMap
 		);
 
 		layoutSupplier.drawable = recipeLayout;

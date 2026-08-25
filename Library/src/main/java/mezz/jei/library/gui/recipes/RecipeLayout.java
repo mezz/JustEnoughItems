@@ -5,6 +5,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeIngredientsSource;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawablesView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
@@ -36,6 +37,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.LimitedLogger;
 import mezz.jei.library.gui.ingredients.CycleTicker;
+import mezz.jei.library.gui.ingredients.IngredientsSourceAdapter;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
 import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
@@ -67,6 +69,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 
 	private final IRecipeCategory<R> recipeCategory;
 	private final Collection<IRecipeCategoryDecorator<R>> recipeCategoryDecorators;
+	private final IIngredientManagerInternal ingredientManager;
+	private final ContextMap contextMap;
 	/**
 	 * Slots handled by the recipe category directly.
 	 */
@@ -127,10 +131,14 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		ImmutablePoint2i recipeTransferButtonPos,
 		List<IRecipeSlotDrawable> slots,
 		CycleTicker cycleTicker,
-		IFocusGroup focuses
+		IFocusGroup focuses,
+		IIngredientManagerInternal ingredientManager,
+		ContextMap contextMap
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipeCategoryDecorators = recipeCategoryDecorators;
+		this.ingredientManager = ingredientManager;
+		this.contextMap = contextMap;
 		this.drawables = new ArrayList<>();
 		this.slottedWidgets = new ArrayList<>();
 		this.allWidgets = new ArrayList<>();
@@ -412,6 +420,11 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		this.allWidgets.add(widget);
 		this.slottedWidgets.add(widget);
 		this.slots.removeAll(slots);
+	}
+
+	@Override
+	public void addIngredientsSource(IRecipeIngredientsSource source) {
+		this.slots.add(new IngredientsSourceAdapter(source, ingredientManager, contextMap));
 	}
 
 	@Override

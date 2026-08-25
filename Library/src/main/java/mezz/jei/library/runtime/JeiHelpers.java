@@ -7,13 +7,20 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.helpers.IStackHelper;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.library.gui.helpers.GuiHelper;
 import mezz.jei.library.ingredients.IngredientVisibility;
 import net.minecraft.resources.Identifier;
@@ -142,6 +149,20 @@ public class JeiHelpers implements IJeiHelpers {
 	@Override
 	public IIngredientVisibility getIngredientVisibility() {
 		return ingredientVisibility;
+	}
+
+	@Override
+	public ITooltipBuilder createTooltip(ITypedIngredient<?> ingredient) {
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		return createTooltipInternal(ingredient);
+	}
+
+	private <T> ITooltipBuilder createTooltipInternal(ITypedIngredient<T> ingredient) {
+		ITooltipBuilder tooltip = new JeiTooltip();
+		IIngredientType<T> ingredientType = ingredient.getType();
+		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
+		SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, ingredient);
+		return tooltip;
 	}
 
 	public void onRuntimeStopped() {

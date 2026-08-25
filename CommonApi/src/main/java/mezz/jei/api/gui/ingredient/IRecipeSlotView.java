@@ -32,7 +32,7 @@ import java.util.stream.Stream;
  * @since 9.3.0
  */
 @ApiStatus.NonExtendable
-public interface IRecipeSlotView {
+public interface IRecipeSlotView extends IRecipeIngredientsSource {
 	/**
 	 * All ingredient variations that can be shown, ignoring focus and visibility.
 	 *

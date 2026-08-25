@@ -2,6 +2,8 @@ package mezz.jei.api.helpers;
 
 import com.mojang.serialization.Codec;
 import mezz.jei.api.IModPlugin;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
@@ -113,4 +115,12 @@ public interface IJeiHelpers {
 	 * @since 19.18.4
 	 */
 	IIngredientVisibility getIngredientVisibility();
+
+	/**
+	 * Build a rich tooltip for the given ingredient using JEI's standard logic.
+	 * Useful for addons that draw their own UI but want to show the same tooltip JEI would show.
+	 *
+	 * @since 30.26.0
+	 */
+	ITooltipBuilder createTooltip(ITypedIngredient<?> ingredient);
 }
