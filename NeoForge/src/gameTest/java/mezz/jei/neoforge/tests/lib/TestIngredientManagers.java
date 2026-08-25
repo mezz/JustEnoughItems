@@ -1,6 +1,7 @@
 package mezz.jei.neoforge.tests.lib;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -19,8 +20,11 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Proxy;
 import java.util.Collection;
@@ -115,7 +119,21 @@ public final class TestIngredientManagers {
 		}
 
 		@Override
+		@Deprecated(since = "19.49.0", forRemoval = true)
+		@SuppressWarnings("removal")
 		public List<Component> getTooltip(ItemStack ingredient, TooltipFlag tooltipFlag) {
+			return getTooltip(ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+		}
+
+		@Override
+		@Deprecated(since = "19.49.0", forRemoval = true)
+		@SuppressWarnings("removal")
+		public void getTooltip(ITooltipBuilder tooltip, ItemStack ingredient, TooltipFlag tooltipFlag) {
+			getTooltip(tooltip, ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+		}
+
+		@Override
+		public List<Component> getTooltip(ItemStack ingredient, Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
 			return List.of();
 		}
 	}

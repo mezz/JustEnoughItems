@@ -2,6 +2,7 @@ package mezz.jei.debug.ingredients;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import net.minecraft.ChatFormatting;
@@ -12,7 +13,10 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +60,21 @@ public class ErrorIngredientRenderer implements IIngredientRenderer<ErrorIngredi
 	}
 
 	@Override
+	@Deprecated(since = "19.49.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public List<Component> getTooltip(ErrorIngredient ingredient, TooltipFlag tooltipFlag) {
+		return getTooltip(ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+	}
+
+	@Override
+	@Deprecated(since = "19.49.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	public void getTooltip(ITooltipBuilder tooltip, ErrorIngredient ingredient, TooltipFlag tooltipFlag) {
+		getTooltip(tooltip, ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+	}
+
+	@Override
+	public List<Component> getTooltip(ErrorIngredient ingredient, Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
 		if (ingredient.crashType() == ErrorIngredient.CrashType.TooltipCrash) {
 			throw new RuntimeException("intentional tooltip crash for testing");
 		}
