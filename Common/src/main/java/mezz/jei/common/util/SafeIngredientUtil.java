@@ -68,8 +68,16 @@ public final class SafeIngredientUtil {
 		tooltip.setIngredient(typedIngredient);
 		try {
 			Minecraft minecraft = Minecraft.getInstance();
-			Item.TooltipContext tooltipContext = Item.TooltipContext.of(minecraft.level);
-			Player player = minecraft.player;
+			Item.TooltipContext tooltipContext;
+			Player player;
+			//noinspection ConstantValue
+			if (minecraft == null) {
+				tooltipContext = Item.TooltipContext.EMPTY;
+				player = null;
+			} else {
+				tooltipContext = Item.TooltipContext.of(minecraft.level);
+				player = minecraft.player;
+			}
 			ingredientRenderer.getTooltip(
 				tooltip,
 				ingredient,
@@ -102,8 +110,16 @@ public final class SafeIngredientUtil {
 
 		try {
 			Minecraft minecraft = Minecraft.getInstance();
-			Item.TooltipContext tooltipContext = Item.TooltipContext.of(minecraft.level);
-			Player player = minecraft.player;
+			Item.TooltipContext tooltipContext;
+			Player player;
+			//noinspection ConstantValue
+			if (minecraft == null) {
+				tooltipContext = Item.TooltipContext.EMPTY;
+				player = null;
+			} else {
+				tooltipContext = Item.TooltipContext.of(minecraft.level);
+				player = minecraft.player;
+			}
 			return ingredientRenderer.getTooltip(ingredient, tooltipContext, player, tooltipFlag);
 		} catch (RuntimeException | LinkageError e) {
 			CRASHING_INGREDIENT_TOOLTIPS.add(ingredient);
