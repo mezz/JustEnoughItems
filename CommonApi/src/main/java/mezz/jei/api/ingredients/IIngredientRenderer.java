@@ -7,7 +7,9 @@ import mezz.jei.api.registration.IModIngredientRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.TooltipFlag;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -67,8 +69,28 @@ public interface IIngredientRenderer<T> {
 	 * @param ingredient  The ingredient to get the tooltip for.
 	 * @param tooltipFlag Whether to show advanced information on item tooltips, toggled by F3+H
 	 * @return The tooltip text for the ingredient.
+	 * @deprecated use {@link #getTooltip(Object, Player, TooltipFlag)}
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "11.59.0", forRemoval = true)
 	List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag);
+
+	/**
+	 * Get the tooltip text for this ingredient. JEI searches tooltips based on this.
+	 *
+	 * @param ingredient  The ingredient to get the tooltip for.
+	 * @param player      The current player, if available.
+	 * @param tooltipFlag Whether to show advanced information on item tooltips, toggled by F3+H
+	 * @return The tooltip text for the ingredient.
+	 *
+	 * @implNote Implementations should override this method. The default implementation delegates to the deprecated overload
+	 * to support renderers compiled against older versions of the API.
+	 *
+	 * @since 11.59.0
+	 */
+	default List<Component> getTooltip(T ingredient, @Nullable Player player, TooltipFlag tooltipFlag) {
+		return getTooltip(ingredient, tooltipFlag);
+	}
 
 	/**
 	 * Get a rich tooltip for this ingredient. JEI renders the tooltip based on this.
@@ -78,9 +100,27 @@ public interface IIngredientRenderer<T> {
 	 * @param tooltipFlag Whether to show advanced information on item tooltips, toggled by F3+H
 	 *
 	 * @since 11.30.1
+	 * @deprecated use {@link #getTooltip(ITooltipBuilder, Object, Player, TooltipFlag)}
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "11.59.0", forRemoval = true)
 	default void getTooltip(ITooltipBuilder tooltip, T ingredient, TooltipFlag tooltipFlag) {
 		List<Component> components = getTooltip(ingredient, tooltipFlag);
+		tooltip.addAll(components);
+	}
+
+	/**
+	 * Get a rich tooltip for this ingredient. JEI renders the tooltip based on this.
+	 *
+	 * @param tooltip     A tooltip builder for building rich tooltips.
+	 * @param ingredient  The ingredient to get the tooltip for.
+	 * @param player      The current player, if available.
+	 * @param tooltipFlag Whether to show advanced information on item tooltips, toggled by F3+H
+	 *
+	 * @since 11.59.0
+	 */
+	default void getTooltip(ITooltipBuilder tooltip, T ingredient, @Nullable Player player, TooltipFlag tooltipFlag) {
+		List<Component> components = getTooltip(ingredient, player, tooltipFlag);
 		tooltip.addAll(components);
 	}
 
