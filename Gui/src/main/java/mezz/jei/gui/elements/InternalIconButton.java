@@ -8,7 +8,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.util.ARGB;
 
 /**
  * A button that has an {@link IDrawable} instead of a string label.
@@ -48,8 +47,7 @@ class InternalIconButton extends Button implements IButtonState {
 			this.getX(),
 			this.getY(),
 			this.getWidth(),
-			this.getHeight(),
-			ARGB.white(this.alpha)
+			this.getHeight()
 		);
 
 		float xOffset = getX() + (width - icon.getWidth()) / 2.0f;
