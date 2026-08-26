@@ -7,7 +7,6 @@ import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
-import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -565,15 +564,16 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	private boolean openInteractiveIngredientTooltip(double mouseX, double mouseY) {
-		Optional<RecipeSlotUnderMouse> slotUnderMouse = getSlotUnderMouse(mouseX, mouseY);
-		if (slotUnderMouse.isEmpty()) {
-			return false;
-		}
-		return interactiveIngredientTooltipController.show(slotUnderMouse.get(), mouseX, mouseY);
-	}
-
-	private Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY) {
-		return layouts.getSlotUnderMouse(mouseX, mouseY);
+		return layouts.getRecipeLayoutUnderMouse(mouseX, mouseY)
+			.map(IRecipeLayoutWithButtons::getRecipeLayout)
+			.flatMap(layout -> layout.getSlotUnderMouse(mouseX, mouseY)
+				.map(slotUnderMouse -> interactiveIngredientTooltipController.show(
+					slotUnderMouse,
+					RecipeSlotClickTargetFactory.createMouseOverable(layout, slotUnderMouse),
+					mouseX,
+					mouseY
+				)))
+			.orElse(false);
 	}
 
 	private void updateLayout() {

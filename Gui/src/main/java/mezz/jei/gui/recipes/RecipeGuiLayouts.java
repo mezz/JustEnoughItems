@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
-import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IClickableIngredientInternal;
@@ -105,18 +104,17 @@ public class RecipeGuiLayouts {
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return this.recipeLayoutsWithButtons.stream()
 			.map(IRecipeLayoutWithButtons::getRecipeLayout)
-			.map(recipeLayout -> recipeLayout.getSlotUnderMouse(mouseX, mouseY))
-			.flatMap(Optional::stream)
-			.map(this.clickTargetFactory::create)
-			.flatMap(Optional::stream);
+			.flatMap(recipeLayout -> clickTargetFactory.create(recipeLayout, mouseX, mouseY).stream());
 	}
 
-	public Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY) {
-		return this.recipeLayoutsWithButtons.stream()
-			.map(IRecipeLayoutWithButtons::getRecipeLayout)
-			.map(recipeLayout -> recipeLayout.getSlotUnderMouse(mouseX, mouseY))
-			.flatMap(Optional::stream)
-			.findFirst();
+	public Optional<IRecipeLayoutWithButtons<?>> getRecipeLayoutUnderMouse(double mouseX, double mouseY) {
+		for (IRecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
+			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.getRecipeLayout();
+			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
+				return Optional.of(recipeLayoutWithButtons);
+			}
+		}
+		return Optional.empty();
 	}
 
 	public boolean mouseDragged(double mouseX, double mouseY, InputConstants.Key input, double dragX, double dragY) {

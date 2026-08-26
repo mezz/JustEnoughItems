@@ -11,6 +11,7 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.ingredients.IngredientInfo;
 import mezz.jei.common.ingredients.TypedIngredient;
+import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
@@ -24,6 +25,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class IngredientAliasTest {
 	private static final IIngredientTypeWithSubtypes<TestBase, TestIngredient> TEST_TYPE = new IIngredientTypeWithSubtypes<>() {
@@ -206,6 +209,30 @@ public class IngredientAliasTest {
 			IllegalArgumentException.class,
 			() -> builder.addAliases(castType, wrongIngredient, List.of("alias"))
 		);
+	}
+
+	@Test
+	public void displayIngredientMutationsNotifyDynamicRecipeLayouts() {
+		// Setup: a display acceptor represents the authoritative contents of a dynamic recipe slot.
+		TestIngredient ingredient = new TestIngredient(new TestBase("dynamic"), null);
+		IngredientManagerBuilder builder = createIngredientManagerBuilder();
+		builder.register(
+			TEST_TYPE,
+			List.of(ingredient),
+			TEST_HELPER,
+			createTestRenderer()
+		);
+		IIngredientManager ingredientManager = builder.build();
+		AtomicInteger changes = new AtomicInteger();
+		DisplayIngredientAcceptor acceptor = new DisplayIngredientAcceptor(ingredientManager, changes::incrementAndGet);
+
+		// Operation: add two entries through different public mutation paths.
+		acceptor.addTypedIngredient(createTypedIngredient(ingredient));
+		acceptor.addOptionalTypedIngredients(List.of(Optional.empty()));
+
+		// Assertions: each mutation schedules a refresh, including a blank rotation entry.
+		Assertions.assertEquals(2, changes.get());
+		Assertions.assertEquals(2, acceptor.getAllIngredients().size());
 	}
 
 	@SafeVarargs
