@@ -39,6 +39,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -166,20 +167,19 @@ class SlotDisplayIngredientResolverTest {
 		// Operation: resolve the wildcard display and calculate its visible rotation.
 		List<SlotIngredient<TestIngredient>> resolved = resolve(ingredientManager, TestSlotDisplay.INSTANCE);
 
-		List<SlotIngredient<?>> displayed = RecipeSlotIngredients.calculateDisplayIngredients(
+		List<@Nullable SlotIngredient<?>> displayed = RecipeSlotIngredients.calculateDisplayIngredients(
 			resolved,
 			ingredientManager,
 			FocusGroup.EMPTY,
 			RecipeIngredientRole.INPUT,
 			ingredient -> true
 		);
-		SlotIngredient<?> displayedIngredient = displayed.getFirst();
-		List<SlotIngredient<?>> candidates = RecipeSlotIngredients.getVisibleSlotIngredientsInDisplayGroup(
-				resolved,
-				displayedIngredient,
-				ingredientManager,
-				ingredient -> true
-			)
+		SlotIngredient<?> displayedIngredient = Objects.requireNonNull(displayed.getFirst());
+		List<SlotIngredient<?>> displayGroup = RecipeSlotIngredients.getDisplayGroupIngredients(
+			resolved,
+			displayedIngredient
+		);
+		List<SlotIngredient<?>> candidates = RecipeSlotIngredients.getVisibleSlotIngredients(displayGroup, ingredientManager, ingredient -> true)
 			.toList();
 
 		// Assertions: subtype wildcard handling adds wildcard matching and a generic heading before expansion.

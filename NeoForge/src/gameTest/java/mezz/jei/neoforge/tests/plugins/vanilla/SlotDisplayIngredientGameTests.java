@@ -40,6 +40,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.List;
@@ -103,10 +104,7 @@ public final class SlotDisplayIngredientGameTests {
 
 		// Operation: resolve and expand the item-only display with the initially registered ingredients.
 		SlotIngredient<ItemStack> anyPotion = resolve(helper, ingredientManager, slotDisplay).getFirst();
-		List<SlotIngredient<?>> initialRotation = SlotDisplayIngredientExpander.expandForDisplay(
-			ingredientManager,
-			List.of(anyPotion)
-		);
+		List<SlotIngredient<?>> initialRotation = expandForDisplay(ingredientManager, List.of(anyPotion));
 
 		// Assertions: the item-only input is a wildcard group with one initial rotation entry.
 		helper.assertTrue(getInfo(anyPotion).matchesAllSubtypes(), "Expected every potion subtype to match");
@@ -115,10 +113,7 @@ public final class SlotDisplayIngredientGameTests {
 
 		// Operation: add another potion subtype at runtime and expand the wildcard group again.
 		ingredientManager.addIngredientsAtRuntime(VanillaTypes.ITEM_STACK, List.of(healingPotion));
-		List<SlotIngredient<?>> expanded = SlotDisplayIngredientExpander.expandForDisplay(
-			ingredientManager,
-			List.of(anyPotion)
-		);
+		List<SlotIngredient<?>> expanded = expandForDisplay(ingredientManager, List.of(anyPotion));
 
 		// Assertions: both runtime subtypes rotate within the original display group.
 		helper.assertEquals(2, expanded.size(), "Expected every registered potion subtype in the rotation");
@@ -131,10 +126,7 @@ public final class SlotDisplayIngredientGameTests {
 
 		// Operation: remove the original subtype at runtime and expand the group once more.
 		ingredientManager.removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, List.of(waterPotion));
-		List<SlotIngredient<?>> expandedAfterRemoval = SlotDisplayIngredientExpander.expandForDisplay(
-			ingredientManager,
-			List.of(anyPotion)
-		);
+		List<SlotIngredient<?>> expandedAfterRemoval = expandForDisplay(ingredientManager, List.of(anyPotion));
 
 		// Assertions: the grouping index and rotation retain only the remaining subtype.
 		helper.assertEquals(1, expandedAfterRemoval.size(), "Expected the grouping index to update after runtime removal");
@@ -168,7 +160,7 @@ public final class SlotDisplayIngredientGameTests {
 		);
 
 		// Operation: expand every wildcard representative for display.
-		List<SlotIngredient<?>> expanded = SlotDisplayIngredientExpander.expandForDisplay(ingredientManager, resolved);
+		List<SlotIngredient<?>> expanded = expandForDisplay(ingredientManager, resolved);
 
 		// Assertions: the shared grouping UID expands once and contains both registered subtypes.
 		helper.assertEquals(2, expanded.size(), "Expected the grouping UID to expand only once");
@@ -334,7 +326,7 @@ public final class SlotDisplayIngredientGameTests {
 		acceptor.add(slotDisplay);
 
 		// Operation: calculate displayed ingredients with a concrete healing-potion focus.
-		List<SlotIngredient<?>> focusedIngredients = RecipeSlotIngredients.calculateDisplayIngredients(
+		List<@Nullable SlotIngredient<?>> focusedIngredients = RecipeSlotIngredients.calculateDisplayIngredients(
 			acceptor.getAllSlotIngredients(),
 			ingredientManager,
 			focus,
@@ -360,7 +352,7 @@ public final class SlotDisplayIngredientGameTests {
 		helper.assertTrue(containsItemStack(allIngredients, healingPotion), "Expected public slot ingredients to include healing potion");
 
 		// Operation: calculate the same display through the display-override path.
-		List<SlotIngredient<?>> overrideIngredients = RecipeSlotIngredients.calculateDisplayIngredients(
+		List<@Nullable SlotIngredient<?>> overrideIngredients = RecipeSlotIngredients.calculateDisplayIngredients(
 			acceptor.getAllSlotIngredients(),
 			ingredientManager,
 			FocusGroup.EMPTY,
@@ -502,8 +494,9 @@ public final class SlotDisplayIngredientGameTests {
 		helper.assertTrue(!data.info().matchesAllSubtypes(), message);
 	}
 
-	private static boolean containsStack(List<SlotIngredient<?>> ingredients, ItemStack expected) {
+	private static boolean containsStack(List<? extends @Nullable SlotIngredient<?>> ingredients, ItemStack expected) {
 		return ingredients.stream()
+			.filter(Objects::nonNull)
 			.map(SlotIngredient::typedIngredient)
 			.map(ITypedIngredient::getItemStack)
 			.flatMap(java.util.Optional::stream)
@@ -517,6 +510,15 @@ public final class SlotDisplayIngredientGameTests {
 
 	private static IIngredientManagerInternal createIngredientManager(ItemStack... itemStacks) {
 		return TestIngredientManagers.createVanillaItemStackIngredientManager(List.of(itemStacks));
+	}
+
+	private static List<SlotIngredient<?>> expandForDisplay(
+		IIngredientManagerInternal ingredientManager,
+		List<? extends SlotIngredient<?>> ingredients
+	) {
+		return SlotDisplayIngredientExpander.streamForDisplay(ingredientManager, ingredients)
+			.filter(Objects::nonNull)
+			.toList();
 	}
 
 	private static List<SlotIngredient<ItemStack>> resolve(

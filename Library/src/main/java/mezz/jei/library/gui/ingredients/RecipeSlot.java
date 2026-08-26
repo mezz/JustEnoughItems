@@ -45,7 +45,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
@@ -57,7 +56,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private final @Nullable OffsetDrawable background;
 	private final @Nullable IDrawable overlay;
 	private final @Nullable String slotName;
-	private final Supplier<Optional<TagKey<?>>> tagKey;
+	private final LazySupplier<Optional<TagKey<?>>> tagKey;
+	private Runnable displayOverridesChangedListener = () -> {};
 	private ImmutableRect2i rect;
 
 	public RecipeSlot(
@@ -66,8 +66,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		ImmutableRect2i rect,
 		ICycler cycler,
 		List<IRecipeSlotRichTooltipCallback> tooltipCallbacks,
-		List<@Nullable SlotIngredient<?>> allIngredients,
-		@Nullable List<@Nullable SlotIngredient<?>> focusedIngredients,
+		List<? extends @Nullable SlotIngredient<?>> allIngredients,
+		@Nullable List<? extends @Nullable SlotIngredient<?>> focusedIngredients,
 		IFocusGroup focusGroup,
 		@Nullable OffsetDrawable background,
 		@Nullable IDrawable overlay,
@@ -81,7 +81,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			role,
 			allIngredients,
 			focusedIngredients,
-			focusGroup
+			focusGroup,
+			this::onDisplayOverridesChanged
 		);
 		this.background = background;
 		this.overlay = overlay;
@@ -247,11 +248,27 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	private Optional<TagKey<?>> calculateTagKey() {
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
-		List<ITypedIngredient<?>> allIngredients = ingredients.getAllIngredients().toList();
-		return ingredients.getSingleDisplayGroupTagKey(() -> allIngredients.stream()
+		if (!ingredients.hasDisplayOverrides()) {
+			List<ITypedIngredient<?>> allIngredients = ingredients.getAllIngredients().toList();
+			return ingredients.getSingleDisplayGroupTagKey(() -> getTagKeyEquivalent(ingredientManager, allIngredients));
+		}
+		return getDisplayedSlotIngredient()
+			.flatMap(displayed -> {
+				List<ITypedIngredient<?>> displayGroup = ingredients.getCandidateIngredientsInDisplayGroup(displayed).toList();
+				return ingredients.getDisplayGroupTagKey(
+					displayed,
+					() -> getTagKeyEquivalent(ingredientManager, displayGroup)
+				);
+			});
+	}
+
+	private static Optional<TagKey<?>> getTagKeyEquivalent(
+		IIngredientManager ingredientManager,
+		List<ITypedIngredient<?>> ingredients
+	) {
+		return ingredients.stream()
 			.findFirst()
-			.flatMap(first -> getTagKeyEquivalent(ingredientManager, allIngredients, first))
-		);
+			.flatMap(first -> getTagKeyEquivalent(ingredientManager, ingredients, first));
 	}
 
 	private static <T> Optional<TagKey<?>> getTagKeyEquivalent(
@@ -325,12 +342,16 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	}
 
 	private List<ITypedIngredient<?>> getVisibleIngredients() {
+		if (ingredients.hasDisplayOverrides()) {
+			return getDisplayedIngredients().toList();
+		}
 		return ingredients.getVisibleTypedIngredients()
 			.toList();
 	}
 
 	private boolean hasCandidates() {
-		return ingredients.getVisibleTypedIngredients()
+		return getVisibleIngredients()
+			.stream()
 			.limit(2)
 			.count() > 1;
 	}
@@ -469,6 +490,19 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	@Override
 	public IIngredientAcceptor<?> createDisplayOverrides() {
 		return ingredients.createDisplayOverrides();
+	}
+
+	public void setDisplayOverridesChangedListener(Runnable listener) {
+		this.displayOverridesChangedListener = listener;
+	}
+
+	private void onDisplayOverridesChanged() {
+		invalidateTagKey();
+		displayOverridesChangedListener.run();
+	}
+
+	private void invalidateTagKey() {
+		this.tagKey.invalidate();
 	}
 
 	@Override

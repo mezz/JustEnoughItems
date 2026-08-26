@@ -8,6 +8,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IGuiInputLayer;
 import mezz.jei.gui.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IMouseOverable;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.util.FocusUtil;
@@ -63,7 +64,12 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer {
 		}
 	}
 
-	public boolean show(RecipeSlotUnderMouse sourceSlot, double mouseX, double mouseY) {
+	public boolean show(
+		RecipeSlotUnderMouse sourceSlot,
+		IMouseOverable sourceMouseOverable,
+		double mouseX,
+		double mouseY
+	) {
 		Optional<InteractiveIngredientTooltip> tooltip = InteractiveIngredientTooltip.create(
 			this,
 			this.recipesGui,
@@ -72,6 +78,7 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer {
 			this.ingredientManager,
 			this.clickTargetFactory,
 			sourceSlot,
+			sourceMouseOverable,
 			mouseX,
 			mouseY
 		);
