@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class RecipeBookmark<R, I> implements IBookmark {
 	private final IElement<I> element;
@@ -62,10 +63,10 @@ public class RecipeBookmark<R, I> implements IBookmark {
 			if (slotView.getRole() != role) {
 				continue;
 			}
-			for (ITypedIngredient<?> ingredient : slotView.getAllIngredientsList()) {
-				if (ingredient != null) {
-					return ingredient;
-				}
+			Optional<ITypedIngredient<?>> ingredient = slotView.getDisplayedIngredient()
+				.or(() -> slotView.getAllIngredients().findFirst());
+			if (ingredient.isPresent()) {
+				return ingredient.get();
 			}
 		}
 		return null;

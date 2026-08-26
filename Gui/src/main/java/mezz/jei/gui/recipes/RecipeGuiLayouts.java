@@ -102,10 +102,7 @@ public class RecipeGuiLayouts {
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		return this.recipeLayoutsWithButtons.stream()
 			.map(IRecipeLayoutWithButtons::getRecipeLayout)
-			.map(recipeLayout -> recipeLayout.getSlotUnderMouse(mouseX, mouseY))
-			.flatMap(Optional::stream)
-			.map(this.clickTargetFactory::create)
-			.flatMap(Optional::stream);
+			.flatMap(recipeLayout -> clickTargetFactory.create(recipeLayout, mouseX, mouseY).stream());
 	}
 
 	public Optional<IRecipeLayoutWithButtons<?>> getRecipeLayoutUnderMouse(double mouseX, double mouseY) {

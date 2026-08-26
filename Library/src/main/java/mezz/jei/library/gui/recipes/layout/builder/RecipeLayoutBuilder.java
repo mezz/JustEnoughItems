@@ -9,7 +9,6 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
@@ -132,8 +131,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			builders.add(builder);
 
 			DisplayIngredientAcceptor displayIngredientAcceptor = builder.getIngredientAcceptor();
-			List<@Nullable ITypedIngredient<?>> allIngredients = displayIngredientAcceptor.getAllIngredients();
-			int ingredientCount = allIngredients.size();
+			int ingredientCount = displayIngredientAcceptor.getAllIngredients().size();
 			if (count == -1) {
 				count = ingredientCount;
 			} else if (count != ingredientCount) {
@@ -246,12 +244,11 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 		List<Pair<Integer, IRecipeSlotDrawable>> sortedPairs = new ArrayList<>(indexedSlots);
 		sortedPairs.sort(Comparator.comparingInt(Pair::first));
 
-		List<IRecipeSlotDrawable> iRecipeSlotDrawables = new ArrayList<>(sortedPairs.size());
+		List<IRecipeSlotDrawable> recipeSlotDrawables = new ArrayList<>(sortedPairs.size());
 		for (Pair<Integer, IRecipeSlotDrawable> indexedSlot : sortedPairs) {
-			IRecipeSlotDrawable second = indexedSlot.second();
-			iRecipeSlotDrawables.add(second);
+			recipeSlotDrawables.add(indexedSlot.second());
 		}
-		return iRecipeSlotDrawables;
+		return recipeSlotDrawables;
 	}
 
 	@Nullable

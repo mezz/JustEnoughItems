@@ -14,11 +14,11 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
+import mezz.jei.common.ingredients.itemStacks.TypedItemStack;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.ingredients.TypedIngredientUtil;
-import mezz.jei.common.ingredients.TypedIngredient;
-import mezz.jei.common.ingredients.itemStacks.TypedItemStack;
 import mezz.jei.common.util.ErrorUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
@@ -36,6 +36,7 @@ import java.util.Optional;
 
 public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIngredientAcceptor> {
 	private final IIngredientManager ingredientManager;
+	private final Runnable onChange;
 	/**
 	 * A list of ingredients, including "blank" ingredients represented by {@link Optional#empty()}.
 	 * Blank ingredients are drawn as "nothing" in a rotation of ingredients, but aren't considered in lookups.
@@ -43,7 +44,12 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	private final List<@Nullable ITypedIngredient<?>> ingredients = new ArrayList<>();
 
 	public DisplayIngredientAcceptor(IIngredientManager ingredientManager) {
+		this(ingredientManager, () -> {});
+	}
+
+	public DisplayIngredientAcceptor(IIngredientManager ingredientManager, Runnable onChange) {
 		this.ingredientManager = ingredientManager;
+		this.onChange = onChange;
 	}
 
 	@Override
@@ -52,7 +58,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 
 		for (Object ingredient : ingredients) {
 			@Nullable ITypedIngredient<?> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient, false);
-			this.ingredients.add(typedIngredient);
+			addIngredient(typedIngredient);
 		}
 
 		return this;
@@ -77,7 +83,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		List<@Nullable ITypedIngredient<T>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredientType, ingredients, false);
-		this.ingredients.addAll(typedIngredients);
+		typedIngredients.forEach(this::addIngredient);
 
 		return this;
 	}
@@ -87,7 +93,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Preconditions.checkNotNull(ingredient, "ingredient");
 
 		List<@Nullable ITypedIngredient<ItemStack>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredient, false);
-		this.ingredients.addAll(typedIngredients);
+		typedIngredients.forEach(this::addIngredient);
 
 		return this;
 	}
@@ -106,7 +112,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
 		@Nullable ITypedIngredient<I> copy = TypedIngredientUtil.checkAndValidateTypedIngredientFromApi(ingredientManager, typedIngredient);
-		this.ingredients.add(copy);
+		addIngredient(copy);
 
 		return this;
 	}
@@ -116,7 +122,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Preconditions.checkNotNull(itemLike, "itemLike");
 
 		ITypedIngredient<ItemStack> ingredient = TypedItemStack.create(itemLike);
-		this.ingredients.add(ingredient);
+		addIngredient(ingredient);
 
 		return this;
 	}
@@ -167,7 +173,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 			if (o.isPresent()) {
 				this.addTypedIngredient(o.get());
 			} else {
-				this.ingredients.add(null);
+				addIngredient(null);
 			}
 		}
 
@@ -176,7 +182,12 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 
 	private <T> void addIngredientInternal(IIngredientType<T> ingredientType, @Nullable T ingredient) {
 		@Nullable ITypedIngredient<T> result = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false);
-		this.ingredients.add(result);
+		addIngredient(result);
+	}
+
+	private void addIngredient(@Nullable ITypedIngredient<?> ingredient) {
+		this.ingredients.add(ingredient);
+		onChange.run();
 	}
 
 	@UnmodifiableView
