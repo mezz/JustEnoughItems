@@ -38,7 +38,6 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
@@ -52,7 +51,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private final @Nullable OffsetDrawable background;
 	private final @Nullable IDrawable overlay;
 	private final @Nullable String slotName;
-	private final Supplier<Optional<TagKey<?>>> tagKey;
+	private final LazySupplier<Optional<TagKey<?>>> tagKey;
+	private Runnable displayOverridesChangedListener = () -> {};
 	private ImmutableRect2i rect;
 
 	public RecipeSlot(
@@ -69,7 +69,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	) {
 		this.ingredients = new RecipeSlotIngredients(
 			allIngredients,
-			focusedIngredients
+			focusedIngredients,
+			this::onDisplayOverridesChanged
 		);
 		this.background = background;
 		this.overlay = overlay;
@@ -212,10 +213,19 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	private Optional<TagKey<?>> calculateTagKey() {
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
-		List<ITypedIngredient<?>> allIngredients = ingredients.getAllIngredients().toList();
-		return allIngredients.stream()
+		List<ITypedIngredient<?>> candidates = ingredients.hasDisplayOverrides() ?
+			getDisplayedIngredients().toList() :
+			ingredients.getAllIngredients().toList();
+		return getTagKeyEquivalent(ingredientManager, candidates);
+	}
+
+	private static Optional<TagKey<?>> getTagKeyEquivalent(
+		IIngredientManager ingredientManager,
+		List<ITypedIngredient<?>> ingredients
+	) {
+		return ingredients.stream()
 			.findFirst()
-			.flatMap(first -> getTagKeyEquivalent(ingredientManager, allIngredients, first));
+			.flatMap(first -> getTagKeyEquivalent(ingredientManager, ingredients, first));
 	}
 
 	private static <T> Optional<TagKey<?>> getTagKeyEquivalent(
@@ -405,12 +415,24 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		return ingredients.createDisplayOverrides();
 	}
 
+	public void setDisplayOverridesChangedListener(Runnable listener) {
+		this.displayOverridesChangedListener = listener;
+	}
+
+	private void onDisplayOverridesChanged() {
+		invalidateTagKey();
+		displayOverridesChangedListener.run();
+	}
+
+	private void invalidateTagKey() {
+		this.tagKey.invalidate();
+	}
+
 	@SuppressWarnings("removal")
 	@Override
 	public Rect2i getRect() {
 		return rect.toMutable();
 	}
-
 	@Override
 	public Rect2i getAreaIncludingBackground() {
 		if (background == null) {

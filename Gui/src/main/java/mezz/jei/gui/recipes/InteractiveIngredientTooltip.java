@@ -21,6 +21,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.input.IGuiInputLayer;
 import mezz.jei.gui.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IMouseOverable;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.handlers.SameElementInputHandler;
@@ -48,6 +49,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 	private final RecipeSlotClickTargetFactory clickTargetFactory;
 	private final IScalableDrawable background;
 	private final RecipeSlotUnderMouse sourceSlot;
+	private final IMouseOverable sourceMouseOverable;
 	private final RecipeSlotTooltipPositioner positioner;
 	private final InteractiveIngredientGridTooltipComponent ingredientGrid;
 	private final int anchorX;
@@ -61,6 +63,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		IIngredientManager ingredientManager,
 		RecipeSlotClickTargetFactory clickTargetFactory,
 		RecipeSlotUnderMouse sourceSlot,
+		IMouseOverable sourceMouseOverable,
 		double mouseX,
 		double mouseY
 	) {
@@ -77,6 +80,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 			ingredientManager,
 			clickTargetFactory,
 			sourceSlot,
+			sourceMouseOverable,
 			new InteractiveIngredientGridTooltipComponent(recipeManager, displayedIngredients),
 			(int) mouseX,
 			(int) mouseY
@@ -90,6 +94,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		IIngredientManager ingredientManager,
 		RecipeSlotClickTargetFactory clickTargetFactory,
 		RecipeSlotUnderMouse sourceSlot,
+		IMouseOverable sourceMouseOverable,
 		InteractiveIngredientGridTooltipComponent ingredientGrid,
 		int anchorX,
 		int anchorY
@@ -101,6 +106,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		this.clickTargetFactory = clickTargetFactory;
 		this.background = Internal.getTextures().getInteractiveIngredientTooltipBackground();
 		this.sourceSlot = sourceSlot;
+		this.sourceMouseOverable = sourceMouseOverable;
 		this.positioner = new RecipeSlotTooltipPositioner();
 		this.ingredientGrid = ingredientGrid;
 		this.anchorX = anchorX;
@@ -122,8 +128,8 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		if (ingredient.isPresent()) {
 			return ingredient.stream();
 		}
-		if (this.sourceSlot.isMouseOver(mouseX, mouseY)) {
-			return this.clickTargetFactory.create(this.sourceSlot)
+		if (this.sourceMouseOverable.isMouseOver(mouseX, mouseY)) {
+			return this.clickTargetFactory.create(this.sourceSlot, this.sourceMouseOverable)
 				.stream();
 		}
 		return Stream.empty();
