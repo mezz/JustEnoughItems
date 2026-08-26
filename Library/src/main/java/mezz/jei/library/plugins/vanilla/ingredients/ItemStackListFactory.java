@@ -1,5 +1,6 @@
 package mezz.jei.library.plugins.vanilla.ingredients;
 
+import mezz.jei.api.constants.Tags;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
@@ -15,10 +16,10 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
@@ -37,6 +38,10 @@ import java.util.stream.Collectors;
 
 public final class ItemStackListFactory {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final TagKey<CreativeModeTab> HIDDEN_FROM_RECIPE_VIEWERS = TagKey.create(
+		Registries.CREATIVE_MODE_TAB,
+		Tags.HIDDEN_FROM_RECIPE_VIEWERS
+	);
 
 	public static List<ItemStack> create(StackHelper stackHelper, ItemStackHelper itemStackHelper) {
 		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
@@ -68,73 +73,85 @@ public final class ItemStackListFactory {
 		final CreativeModeTab.ItemDisplayParameters displayParameters =
 			new CreativeModeTab.ItemDisplayParameters(features, hasOperatorItemsTabPermissions, registryAccess);
 
-		for (CreativeModeTab tab : CreativeModeTabs.allTabs()) {
-			if (tab.getType() != CreativeModeTab.Type.CATEGORY) {
-				LOGGER.debug(
-					"Skipping creative tab: '{}' because it is type: {}",
-					tab.getDisplayName().getString(),
-					tab.getType()
-				);
-				continue;
-			}
-			try {
-				tab.buildContents(displayParameters);
-			} catch (RuntimeException | LinkageError e) {
-				LOGGER.error(
-					"Item Group crashed while building contents." +
-					"Items from this group will be missing from the JEI ingredient list: {}",
-					tab.getDisplayName().getString(),
-					e
-				);
-				continue;
-			}
+		registryAccess
+			.lookupOrThrow(Registries.CREATIVE_MODE_TAB)
+			.listElements()
+			.forEach(tabHolder -> {
+				CreativeModeTab tab = tabHolder.value();
+				if (tab.getType() != CreativeModeTab.Type.CATEGORY) {
+					LOGGER.debug(
+						"Skipping creative tab: '{}' because it is type: {}",
+						tab.getDisplayName().getString(),
+						tab.getType()
+					);
+					return;
+				}
+				if (tabHolder.is(HIDDEN_FROM_RECIPE_VIEWERS)) {
+					LOGGER.debug(
+						"Skipping creative tab: '{}' because it has tag: '{}'",
+						tab.getDisplayName().getString(),
+						Tags.HIDDEN_FROM_RECIPE_VIEWERS
+					);
+					return;
+				}
+				try {
+					tab.buildContents(displayParameters);
+				} catch (RuntimeException | LinkageError e) {
+					LOGGER.error(
+						"Item Group crashed while building contents." +
+						"Items from this group will be missing from the JEI ingredient list: {}",
+						tab.getDisplayName().getString(),
+						e
+					);
+					return;
+				}
 
-			@Unmodifiable Collection<ItemStack> displayItems;
-			@Unmodifiable Collection<ItemStack> searchTabDisplayItems;
-			try {
-				displayItems = tab.getDisplayItems();
-				searchTabDisplayItems = tab.getSearchTabDisplayItems();
-			} catch (RuntimeException | LinkageError e) {
-				LOGGER.error(
-					"Item Group crashed while getting search tab display items." +
-					"Some items from this group will be missing from the JEI ingredient list: {}",
-					tab.getDisplayName().getString(),
-					e
-				);
-				continue;
-			}
+				@Unmodifiable Collection<ItemStack> displayItems;
+				@Unmodifiable Collection<ItemStack> searchTabDisplayItems;
+				try {
+					displayItems = tab.getDisplayItems();
+					searchTabDisplayItems = tab.getSearchTabDisplayItems();
+				} catch (RuntimeException | LinkageError e) {
+					LOGGER.error(
+						"Item Group crashed while getting search tab display items." +
+						"Some items from this group will be missing from the JEI ingredient list: {}",
+						tab.getDisplayName().getString(),
+						e
+					);
+					return;
+				}
 
-			if (displayItems.isEmpty() && searchTabDisplayItems.isEmpty()) {
-				Level logLevel = isKnownEmptyTab(tab) ? Level.DEBUG : Level.WARN;
-				LOGGER.log(logLevel,
-					"Item Group has no display items and no search tab display items. " +
-					"Items from this group will be missing from the JEI ingredient list. {}",
-					tab.getDisplayName().getString()
-				);
-				continue;
-			}
+				if (displayItems.isEmpty() && searchTabDisplayItems.isEmpty()) {
+					Level logLevel = isKnownEmptyTab(tab) ? Level.DEBUG : Level.WARN;
+					LOGGER.log(logLevel,
+						"Item Group has no display items and no search tab display items. " +
+						"Items from this group will be missing from the JEI ingredient list. {}",
+						tab.getDisplayName().getString()
+					);
+					return;
+				}
 
-			addFromTab(
-				displayItems,
-				"displayItems",
-				tab,
-				stackHelper,
-				itemStackHelper,
-				itemList,
-				itemUidSet
-			);
-			if (!displayItems.equals(searchTabDisplayItems)) {
 				addFromTab(
-					searchTabDisplayItems,
-					"searchTabDisplayItems",
+					displayItems,
+					"displayItems",
 					tab,
 					stackHelper,
 					itemStackHelper,
 					itemList,
 					itemUidSet
 				);
-			}
-		}
+				if (!displayItems.equals(searchTabDisplayItems)) {
+					addFromTab(
+						searchTabDisplayItems,
+						"searchTabDisplayItems",
+						tab,
+						stackHelper,
+						itemStackHelper,
+						itemList,
+						itemUidSet
+					);
+				}
+			});
 
 		if (showHidden) {
 			addItemsFromRegistries(stackHelper, itemList, itemUidSet, features);
