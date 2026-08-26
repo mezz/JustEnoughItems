@@ -250,14 +250,6 @@ public final class RecipeSlotIngredients {
 			.map(SlotIngredient::typedIngredient);
 	}
 
-	public <T> List<T> getVisibleIngredientsInDisplayGroup(SlotIngredient<T> displayed) {
-		IIngredientType<T> ingredientType = displayed.typedIngredient().getType();
-		return getVisibleTypedIngredientsInDisplayGroup(displayed)
-			.map(ingredient -> ingredient.getIngredient(ingredientType))
-			.flatMap(Optional::stream)
-			.toList();
-	}
-
 	public void clearDisplayOverrides() {
 		boolean changed = this.displayOverrides != null;
 		this.displayOverrides = null;
