@@ -12,8 +12,10 @@ import net.minecraft.SharedConstants;
 import net.minecraft.server.Bootstrap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -91,14 +93,16 @@ public class RecipeSlotIngredientGroupingTest {
 			.toList();
 
 		// Operation: filter one ingredient out while applying the display limit.
-		List<SlotIngredient<?>> visible = RecipeSlotIngredients.filterVisibleIngredients(
+		List<@Nullable SlotIngredient<?>> visible = RecipeSlotIngredients.filterVisibleIngredients(
 			ingredients,
 			ingredient -> !ingredient.getIngredient().equals("5")
 		);
 
 		// Assertions: the hidden ingredient is excluded and the result is capped after filtering.
 		assertEquals(100, visible.size());
-		assertFalse(visible.stream().anyMatch(ingredient -> ingredient.typedIngredient().getIngredient().equals("5")));
+		assertFalse(visible.stream()
+			.filter(Objects::nonNull)
+			.anyMatch(ingredient -> ingredient.typedIngredient().getIngredient().equals("5")));
 	}
 
 	@Test
@@ -109,13 +113,13 @@ public class RecipeSlotIngredientGroupingTest {
 			.toList();
 
 		// Operation: apply the display limit, then get the displayed ingredient's group from the canonical source.
-		List<SlotIngredient<?>> displayedIngredients = RecipeSlotIngredients.filterVisibleIngredients(
+		List<@Nullable SlotIngredient<?>> displayedIngredients = RecipeSlotIngredients.filterVisibleIngredients(
 			ingredients,
 			ingredient -> true
 		);
 
-		SlotIngredient<?> displayed = displayedIngredients.getFirst();
-		List<?> displayGroup = RecipeSlotIngredients.getDisplayGroupIngredients(ingredients, displayed);
+		SlotIngredient<?> displayed = Objects.requireNonNull(displayedIngredients.getFirst());
+		List<SlotIngredient<?>> displayGroup = RecipeSlotIngredients.getDisplayGroupIngredients(ingredients, displayed);
 
 		// Assertions: display rotation is capped, but metadata calculations retain the complete ingredient group.
 		assertEquals(100, displayedIngredients.size());

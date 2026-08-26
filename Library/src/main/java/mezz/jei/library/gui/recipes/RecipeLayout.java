@@ -36,6 +36,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.LimitedLogger;
 import mezz.jei.library.gui.ingredients.CycleTicker;
+import mezz.jei.library.gui.ingredients.RecipeSlot;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeLayoutBuilder;
 import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
@@ -87,6 +88,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	private final @Nullable ShapelessIcon shapelessIcon;
 	private final RecipeLayoutInputHandler<R> inputHandler;
 	private boolean extrasCreated = false;
+	private boolean displayedIngredientsUpdatePending;
 
 	private ImmutableRect2i area;
 
@@ -125,7 +127,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		int recipeBorderPadding,
 		@Nullable ShapelessIcon shapelessIcon,
 		ImmutablePoint2i recipeTransferButtonPos,
-		List<IRecipeSlotDrawable> slots,
+		List<RecipeSlot> slots,
 		CycleTicker cycleTicker,
 		IFocusGroup focuses
 	) {
@@ -138,8 +140,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		this.focuses = focuses;
 		this.inputHandler = new RecipeLayoutInputHandler<>(this);
 
-		this.slots = slots;
-		this.recipeSlotsView = new RecipeSlotsView(List.copyOf(slots));
+		this.slots = new ArrayList<>(slots);
+		this.recipeSlotsView = new RecipeSlotsView(List.copyOf(this.slots));
 		this.recipeBorderPadding = recipeBorderPadding;
 		this.area = new ImmutableRect2i(
 			0,
@@ -159,7 +161,10 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		this.recipeBackground = recipeBackground;
 		this.shapelessIcon = shapelessIcon;
 
-		recipeCategory.onDisplayedIngredientsUpdate(recipe, Collections.unmodifiableList(this.slots), focuses);
+		for (RecipeSlot slot : slots) {
+			slot.setDisplayOverridesChangedListener(this::onDisplayOverridesChanged);
+		}
+		updateDisplayedIngredients(false);
 	}
 
 	public void ensureRecipeExtrasAreCreated() {
@@ -379,11 +384,31 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		for (IRecipeWidget widget : allWidgets) {
 			widget.tick();
 		}
-		if (cycleTicker.tick()) {
-			for (IRecipeSlotDrawable slot : slots) {
-				slot.clearDisplayOverrides();
+		boolean ingredientsCycled = cycleTicker.tick();
+		if (ingredientsCycled || displayedIngredientsUpdatePending) {
+			updateDisplayedIngredients(ingredientsCycled);
+		}
+	}
+
+	private void onDisplayOverridesChanged() {
+		displayedIngredientsUpdatePending = true;
+	}
+
+	private void updateDisplayedIngredients(boolean clearDisplayOverrides) {
+		try {
+			if (clearDisplayOverrides) {
+				for (IRecipeSlotDrawable slot : slots) {
+					slot.clearDisplayOverrides();
+				}
 			}
-			recipeCategory.onDisplayedIngredientsUpdate(recipe, slots, focuses);
+			recipeCategory.onDisplayedIngredientsUpdate(
+				recipe,
+				Collections.unmodifiableList(slots),
+				focuses
+			);
+		} finally {
+			// Ignore notifications caused by the category's own update to avoid a reentrant update loop.
+			displayedIngredientsUpdatePending = false;
 		}
 	}
 

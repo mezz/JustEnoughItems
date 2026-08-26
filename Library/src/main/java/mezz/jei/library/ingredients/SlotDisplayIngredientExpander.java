@@ -24,24 +24,6 @@ public final class SlotDisplayIngredientExpander {
 	private SlotDisplayIngredientExpander() {
 	}
 
-	public static List<@Nullable SlotIngredient<?>> expandForDisplay(
-		IIngredientManagerInternal ingredientManager,
-		List<? extends @Nullable SlotIngredient<?>> ingredients
-	) {
-		return streamForDisplay(ingredientManager, ingredients)
-			.toList();
-	}
-
-	public static List<@Nullable SlotIngredient<?>> expandForDisplay(
-		IIngredientManagerInternal ingredientManager,
-		List<? extends @Nullable SlotIngredient<?>> ingredients,
-		IFocusGroup focusGroup,
-		RecipeIngredientRole role
-	) {
-		return streamForDisplay(ingredientManager, ingredients, focusGroup, role)
-			.toList();
-	}
-
 	public static Stream<@Nullable SlotIngredient<?>> streamForDisplay(
 		IIngredientManagerInternal ingredientManager,
 		List<? extends @Nullable SlotIngredient<?>> ingredients
