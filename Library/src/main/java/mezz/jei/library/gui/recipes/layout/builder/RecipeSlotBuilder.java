@@ -6,7 +6,6 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.drawable.TilingDirection;
-import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -287,25 +286,14 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 		return this;
 	}
 
-	public Pair<Integer, IRecipeSlotDrawable> build(IFocusGroup focusGroup, ICycler cycler) {
+	public Pair<Integer, RecipeSlot> build(IFocusGroup focusGroup, ICycler cycler) {
 		Set<Integer> focusMatches = getMatches(focusGroup);
 		return build(focusMatches, focusGroup, cycler);
 	}
 
-	public Pair<Integer, IRecipeSlotDrawable> build(Set<Integer> focusMatches, IFocusGroup focusGroup, ICycler cycler) {
+	public Pair<Integer, RecipeSlot> build(Set<Integer> focusMatches, IFocusGroup focusGroup, ICycler cycler) {
 		List<@Nullable SlotIngredient<?>> allIngredients = this.ingredients.getAllSlotIngredients();
-
-		List<@Nullable SlotIngredient<?>> focusedIngredients = null;
-
-		if (!focusMatches.isEmpty()) {
-			focusedIngredients = new ArrayList<>();
-			for (Integer i : focusMatches) {
-				if (i < allIngredients.size()) {
-					SlotIngredient<?> ingredient = allIngredients.get(i);
-					focusedIngredients.add(ingredient);
-				}
-			}
-		}
+		var focusedIngredients = getFocusedIngredients(allIngredients, focusMatches);
 
 		RecipeSlot recipeSlot = new RecipeSlot(
 			ingredientManager,
@@ -323,6 +311,23 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 			getContextMap()
 		);
 		return new Pair<>(slotIndex, recipeSlot);
+	}
+
+	private static @Nullable List<@Nullable SlotIngredient<?>> getFocusedIngredients(
+		List<@Nullable SlotIngredient<?>> allIngredients,
+		Set<Integer> focusMatches
+	) {
+		if (focusMatches.isEmpty()) {
+			return null;
+		}
+
+		List<@Nullable SlotIngredient<?>> focusedIngredients = new ArrayList<>();
+		for (Integer i : focusMatches) {
+			if (i < allIngredients.size()) {
+				focusedIngredients.add(allIngredients.get(i));
+			}
+		}
+		return focusedIngredients;
 	}
 
 	public IntSet getMatches(IFocusGroup focuses) {
