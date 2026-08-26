@@ -98,6 +98,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 	private final RecipeLayoutInputHandler<R> inputHandler;
 	private @Nullable RecipeLayoutLegacyAdapter<R> legacyAdapter;
 	private boolean extrasCreated = false;
+	private boolean displayedIngredientsUpdatePending;
 
 	private ImmutableRect2i area;
 
@@ -200,12 +201,20 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 		this.recipeBackground = recipeBackground;
 		this.shapelessIcon = shapelessIcon;
 
-		recipeCategory.onDisplayedIngredientsUpdate(recipe, Collections.unmodifiableList(recipeCategorySlots), focuses);
+		for (IRecipeSlotDrawable slot : this.allSlots) {
+			if (slot instanceof RecipeSlot recipeSlot) {
+				recipeSlot.setDisplayOverridesChangedListener(this::onDisplayOverridesChanged);
+			}
+		}
+		updateDisplayedIngredients(false);
 	}
 
 	private void addLegacyRecipeSlots(List<RecipeSlot> recipeSlots) {
 		this.recipeCategorySlots.addAll(recipeSlots);
 		this.allSlots.addAll(recipeSlots);
+		for (RecipeSlot recipeSlot : recipeSlots) {
+			recipeSlot.setDisplayOverridesChangedListener(this::onDisplayOverridesChanged);
+		}
 	}
 
 	public void ensureRecipeExtrasAreCreated() {
@@ -534,11 +543,31 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable, IRecipeExtrasBuil
 		for (IRecipeWidget widget : allWidgets) {
 			widget.tick();
 		}
-		if (cycleTicker.tick()) {
-			for (IRecipeSlotDrawable slot : recipeCategorySlots) {
-				slot.clearDisplayOverrides();
+		boolean ingredientsCycled = cycleTicker.tick();
+		if (ingredientsCycled || displayedIngredientsUpdatePending) {
+			updateDisplayedIngredients(ingredientsCycled);
+		}
+	}
+
+	private void onDisplayOverridesChanged() {
+		displayedIngredientsUpdatePending = true;
+	}
+
+	private void updateDisplayedIngredients(boolean clearDisplayOverrides) {
+		try {
+			if (clearDisplayOverrides) {
+				for (IRecipeSlotDrawable slot : recipeCategorySlots) {
+					slot.clearDisplayOverrides();
+				}
 			}
-			recipeCategory.onDisplayedIngredientsUpdate(recipe, recipeCategorySlots, focuses);
+			recipeCategory.onDisplayedIngredientsUpdate(
+				recipe,
+				Collections.unmodifiableList(recipeCategorySlots),
+				focuses
+			);
+		} finally {
+			// Ignore notifications caused by the category's own update to avoid a reentrant update loop.
+			displayedIngredientsUpdatePending = false;
 		}
 	}
 

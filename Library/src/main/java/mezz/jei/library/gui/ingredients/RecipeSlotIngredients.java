@@ -38,11 +38,14 @@ public final class RecipeSlotIngredients {
 	private @Nullable List<@Nullable ITypedIngredient<?>> displayIngredients;
 
 	private @Nullable DisplayIngredientAcceptor displayOverrides;
+	private final Runnable displayOverridesChangedListener;
 
 	public RecipeSlotIngredients(
 		List<@Nullable ITypedIngredient<?>> allIngredients,
-		@Nullable List<@Nullable ITypedIngredient<?>> focusedIngredients
+		@Nullable List<@Nullable ITypedIngredient<?>> focusedIngredients,
+		Runnable displayOverridesChangedListener
 	) {
+		this.displayOverridesChangedListener = displayOverridesChangedListener;
 		set(allIngredients, focusedIngredients);
 	}
 
@@ -105,13 +108,22 @@ public final class RecipeSlotIngredients {
 	}
 
 	public void clearDisplayOverrides() {
+		boolean changed = this.displayOverrides != null;
 		this.displayOverrides = null;
+		if (changed) {
+			displayOverridesChangedListener.run();
+		}
+	}
+
+	public boolean hasDisplayOverrides() {
+		return this.displayOverrides != null;
 	}
 
 	public IIngredientConsumer createDisplayOverrides() {
 		if (this.displayOverrides == null) {
 			IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
-			this.displayOverrides = new DisplayIngredientAcceptor(ingredientManager);
+			this.displayOverrides = new DisplayIngredientAcceptor(ingredientManager, displayOverridesChangedListener);
+			displayOverridesChangedListener.run();
 		}
 		return this.displayOverrides;
 	}

@@ -20,4 +20,8 @@ public class LazySupplier<T> implements Supplier<T> {
 		}
 		return cachedResult;
 	}
+
+	public void invalidate() {
+		cachedResult = null;
+	}
 }
