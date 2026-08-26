@@ -71,7 +71,7 @@ class SlotDisplayIngredientResolverTest {
 		// Assertions: the custom ingredient resolves and keeps the metadata supplied by its child interpreter.
 		assertEquals(List.of(new TestIngredient(1)), resolved.stream()
 			.map(SlotIngredient::typedIngredient)
-			.map(ingredient -> ingredient.getIngredient())
+			.map(ITypedIngredient::getIngredient)
 			.toList());
 		SlotDisplayData<TestIngredient> displayData = resolved.getFirst().slotDisplayData();
 		assertNotNull(displayData);

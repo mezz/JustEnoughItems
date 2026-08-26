@@ -246,12 +246,12 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		List<IFocus<?>> focuses = focusGroup.getFocuses(role).toList();
 		IntSet results = new IntOpenHashSet();
 		for (IFocus<?> focus : focuses) {
-			getMatches(focus, role, results);
+			getMatches(focus, results);
 		}
 		return results;
 	}
 
-	private <T> void getMatches(IFocus<T> focus, RecipeIngredientRole role, IntSet results) {
+	private <T> void getMatches(IFocus<T> focus, IntSet results) {
 		List<@Nullable SlotIngredient<?>> ingredients = getAllSlotIngredients();
 		if (ingredients.isEmpty()) {
 			return;
