@@ -3,6 +3,7 @@ package mezz.jei.library.recipes;
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -34,7 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class RecipeManagerInternal {
+public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	@Unmodifiable
@@ -62,6 +63,7 @@ public class RecipeManagerInternal {
 
 		this.ingredientManager = ingredientManager;
 		this.ingredientVisibility = ingredientVisibility;
+		this.ingredientVisibility.registerListener(this);
 
 		Collection<RecipeType<?>> recipeTypes = recipeCategories.stream()
 			.<RecipeType<?>>map(IRecipeCategory::getRecipeType)
@@ -238,7 +240,26 @@ public class RecipeManagerInternal {
 			return catalysts.stream();
 		}
 		return catalysts.stream()
-			.filter(ingredientVisibility::isIngredientVisible);
+			.filter(ingredient -> ingredientVisibility.isIngredientVisible(
+				ingredient,
+				UidContext.Recipe
+			));
+	}
+
+	@Override
+	public <V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible) {
+		recipeCategoriesVisibleCache = null;
+	}
+
+	@Override
+	public <V> void onIngredientsVisibilityChanged(
+		Collection<ITypedIngredient<V>> ingredients,
+		Collection<UidContext> contexts,
+		boolean visible
+	) {
+		if (contexts.contains(UidContext.Recipe)) {
+			recipeCategoriesVisibleCache = null;
+		}
 	}
 
 	public <T> void hideRecipes(RecipeType<T> recipeType, Collection<T> recipes) {

@@ -4,6 +4,7 @@ import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
@@ -66,6 +67,10 @@ public class IngredientFilterTest {
 
 	@BeforeEach
 	public void setup() {
+		setup(false);
+	}
+
+	private void setup(boolean lowMemorySlowSearchEnabled) {
 		TestPlugin testPlugin = new TestPlugin();
 
 		SubtypeInterpreters subtypeInterpreters = new SubtypeInterpreters();
@@ -76,9 +81,9 @@ public class IngredientFilterTest {
 		testPlugin.registerIngredients(ingredientManagerBuilder);
 		this.ingredientManager = ingredientManagerBuilder.build();
 
-		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
+		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal(ingredientManager);
 		this.modIdHelper = new TestModIdHelper();
-		IClientConfig clientConfig = new TestClientConfig(false);
+		IClientConfig clientConfig = new TestClientConfig(lowMemorySlowSearchEnabled);
 
 		this.baseList = IngredientListElementFactory.createBaseList(ingredientManager, modIdHelper);
 
@@ -135,6 +140,151 @@ public class IngredientFilterTest {
 		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
 		removeIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
 		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
+	}
+
+	@Test
+	public void testHidingIngredientsInMultipleContexts() {
+		Assertions.assertNotNull(ingredientFilter);
+		Assertions.assertNotNull(ingredientManager);
+		Assertions.assertNotNull(ingredientVisibility);
+		Assertions.assertNotNull(filterTextSource);
+		Assertions.assertNotNull(modIdHelper);
+
+		List<TestIngredient> ingredients = createIngredients();
+		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
+
+		ingredientVisibility.hideIngredients(
+			TestIngredient.TYPE,
+			ingredients,
+			Set.of(
+				UidContext.Ingredient,
+				UidContext.Recipe
+			)
+		);
+
+		filterTextSource.setFilterText("");
+		List<TestIngredient> filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
+		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, filteredIngredients.size());
+		for (TestIngredient ingredient : ingredients) {
+			Assertions.assertFalse(filteredIngredients.contains(ingredient));
+			Assertions.assertFalse(ingredientVisibility.isIngredientVisible(
+				TestIngredient.TYPE,
+				ingredient,
+				UidContext.Ingredient
+			));
+			Assertions.assertFalse(ingredientVisibility.isIngredientVisible(
+				TestIngredient.TYPE,
+				ingredient,
+				UidContext.Recipe
+			));
+		}
+
+		Collection<TestIngredient> registeredIngredients = ingredientManager.getAllIngredients(TestIngredient.TYPE);
+		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT, registeredIngredients.size());
+		Assertions.assertTrue(registeredIngredients.containsAll(ingredients));
+
+		ingredientFilter.updateHidden();
+		filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
+		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, filteredIngredients.size());
+
+		ingredientVisibility.unhideIngredients(
+			TestIngredient.TYPE,
+			ingredients,
+			Set.of(UidContext.Ingredient)
+		);
+		filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
+		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT, filteredIngredients.size());
+		for (TestIngredient ingredient : ingredients) {
+			Assertions.assertTrue(ingredientVisibility.isIngredientVisible(TestIngredient.TYPE, ingredient));
+			Assertions.assertFalse(ingredientVisibility.isIngredientVisible(
+				TestIngredient.TYPE,
+				ingredient,
+				UidContext.Recipe
+			));
+		}
+	}
+
+	@Test
+	public void testUnhidingIngredientsWithLowMemorySearch() {
+		setup(true);
+		Assertions.assertNotNull(ingredientFilter);
+		Assertions.assertNotNull(ingredientManager);
+		Assertions.assertNotNull(ingredientVisibility);
+		Assertions.assertNotNull(filterTextSource);
+		Assertions.assertNotNull(modIdHelper);
+
+		List<TestIngredient> ingredients = createIngredients();
+		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
+		ingredientVisibility.hideIngredients(
+			TestIngredient.TYPE,
+			ingredients,
+			Set.of(UidContext.Ingredient)
+		);
+		Assertions.assertEquals(
+			TestPlugin.BASE_INGREDIENT_COUNT,
+			ingredientFilter.getFilteredIngredients(TestIngredient.TYPE).size()
+		);
+
+		ingredientVisibility.unhideIngredients(
+			TestIngredient.TYPE,
+			ingredients,
+			Set.of(UidContext.Ingredient)
+		);
+		Assertions.assertEquals(
+			TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT,
+			ingredientFilter.getFilteredIngredients(TestIngredient.TYPE).size()
+		);
+	}
+
+	@Test
+	public void testRecipeVisibilityUsesRecipeUid() {
+		Assertions.assertNotNull(ingredientFilter);
+		Assertions.assertNotNull(ingredientManager);
+		Assertions.assertNotNull(ingredientVisibility);
+		Assertions.assertNotNull(filterTextSource);
+		Assertions.assertNotNull(modIdHelper);
+
+		List<TestIngredient> ingredients = createIngredients();
+		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
+
+		TestIngredient hiddenIngredient = ingredients.getFirst();
+		TestIngredient recipeEquivalentIngredient = ingredients.get(2);
+		TestIngredient differentRecipeIngredient = ingredients.get(1);
+		ingredientVisibility.hideIngredients(
+			TestIngredient.TYPE,
+			Set.of(hiddenIngredient),
+			Set.of(UidContext.Recipe)
+		);
+
+		Assertions.assertTrue(ingredientVisibility.isIngredientVisible(
+			TestIngredient.TYPE,
+			recipeEquivalentIngredient,
+			UidContext.Ingredient
+		));
+		Assertions.assertFalse(ingredientVisibility.isIngredientVisible(
+			TestIngredient.TYPE,
+			recipeEquivalentIngredient,
+			UidContext.Recipe
+		));
+		Assertions.assertTrue(ingredientVisibility.isIngredientVisible(
+			TestIngredient.TYPE,
+			differentRecipeIngredient,
+			UidContext.Recipe
+		));
+
+		List<TestIngredient> filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
+		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT + EXTRA_INGREDIENT_COUNT, filteredIngredients.size());
+
+		ingredientVisibility.unhideIngredients(
+			TestIngredient.TYPE,
+			Set.of(hiddenIngredient),
+			Set.of(UidContext.Recipe)
+		);
+		Assertions.assertTrue(ingredientVisibility.isIngredientVisible(
+			TestIngredient.TYPE,
+			recipeEquivalentIngredient,
+			UidContext.Recipe
+		));
 	}
 
 	@Test
@@ -264,6 +414,20 @@ public class IngredientFilterTest {
 
 		for (TestIngredient ingredient : ingredientsToRemove) {
 			Assertions.assertFalse(ingredientVisibility.isIngredientVisible(TestIngredient.TYPE, ingredient));
+			for (UidContext context : UidContext.values()) {
+				Assertions.assertFalse(ingredientVisibility.isIngredientVisible(TestIngredient.TYPE, ingredient, context));
+			}
+		}
+
+		ingredientVisibility.unhideIngredients(
+			TestIngredient.TYPE,
+			ingredientsToRemove,
+			Set.of(UidContext.values())
+		);
+		for (TestIngredient ingredient : ingredientsToRemove) {
+			for (UidContext context : UidContext.values()) {
+				Assertions.assertFalse(ingredientVisibility.isIngredientVisible(TestIngredient.TYPE, ingredient, context));
+			}
 		}
 	}
 
