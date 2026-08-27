@@ -384,6 +384,12 @@ tasks.named<Jar>("sourcesJar") {
 val shadedJar = modShade.shadeJar()
 val shadedSourcesJar = modShade.shadeSourcesJar()
 
+configurations.named("modShadeRuntimeElements") {
+    // These project dependencies are unpacked into the Fabric jar above.
+    // Do not also publish them as external Maven dependencies.
+    setExtendsFrom(emptyList())
+}
+
 publishMods {
     file.set(shadedJar.flatMap { it.archiveFile })
     changelog.set(changelogMarkdown.singleFileContents())
