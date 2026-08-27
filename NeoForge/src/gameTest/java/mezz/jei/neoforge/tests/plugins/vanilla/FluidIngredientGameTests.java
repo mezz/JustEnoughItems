@@ -141,7 +141,11 @@ public final class FluidIngredientGameTests {
 
 	private static IIngredientManagerInternal createIngredientManager() {
 		SubtypeManager subtypeManager = new SubtypeManager(new SubtypeInterpreters());
-		IngredientManagerBuilder builder = new IngredientManagerBuilder(subtypeManager, TestColorHelper.INSTANCE);
+		IngredientManagerBuilder builder = new IngredientManagerBuilder(
+			subtypeManager,
+			TestColorHelper.INSTANCE,
+			new ContextMap.Builder().create(new ContextKeySet.Builder().build())
+		);
 		FluidHelper fluidHelper = new FluidHelper();
 		FluidIngredientHelper<FluidStack> ingredientHelper = new FluidIngredientHelper<>(subtypeManager, TestColorHelper.INSTANCE, fluidHelper);
 		builder.register(

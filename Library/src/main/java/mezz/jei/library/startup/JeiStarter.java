@@ -144,7 +144,13 @@ public final class JeiStarter {
 		IColorHelper colorHelper = new ColorHelper(colorNameConfig);
 		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
 		SubtypeManager subtypeManager = PluginLoader.registerSubtypes(data);
-		IngredientManager ingredientManager = PluginLoader.registerIngredients(data, subtypeManager, colorHelper, ingredientFilterConfig);
+		IngredientManager ingredientManager = PluginLoader.registerIngredients(
+			data,
+			subtypeManager,
+			colorHelper,
+			ingredientFilterConfig,
+			contextMap
+		);
 		stopCallbacks.add(ingredientManager::onRuntimeStopped);
 
 		FocusFactory focusFactory = new FocusFactory(ingredientManager);

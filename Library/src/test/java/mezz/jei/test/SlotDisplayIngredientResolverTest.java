@@ -204,7 +204,8 @@ class SlotDisplayIngredientResolverTest {
 	) {
 		IngredientManagerBuilder builder = new IngredientManagerBuilder(
 			new SubtypeManager(new SubtypeInterpreters()),
-			DummyColorHelper.INSTANCE
+			DummyColorHelper.INSTANCE,
+			new ContextMap.Builder().create(new ContextKeySet.Builder().build())
 		);
 		builder.register(
 			INGREDIENT_TYPE,

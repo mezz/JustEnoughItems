@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.runtime.IIngredientManager;
+import net.minecraft.util.context.ContextMap;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
@@ -28,6 +29,13 @@ public interface IModIngredientRegistration {
 	 * @since 7.6.3
 	 */
 	IColorHelper getColorHelper();
+
+	/**
+	 * @return the current context for resolving recipe displays.
+	 *
+	 * @since 30.27.0
+	 */
+	ContextMap getContextMap();
 
 	/**
 	 * Register a new type of ingredient.
