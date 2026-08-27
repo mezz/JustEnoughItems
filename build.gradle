@@ -1,4 +1,5 @@
 import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
+import org.gradle.api.attributes.java.TargetJvmVersion
 
 buildscript {
 	repositories {
@@ -6,7 +7,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: "[6.0.24,6.2)"
+		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.0.54'
 	}
 }
 
@@ -15,9 +16,8 @@ plugins {
 	id 'eclipse'
 	id 'idea'
 	id "maven-publish"
-	id 'me.modmuss50.mod-publish-plugin' version '0.8.4'
-	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.79.0'
-	id 'com.modrinth.minotaur' version '2.+'
+	id 'me.modmuss50.mod-publish-plugin' version '2.2.0'
+	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '3.1.2'
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply from: 'buildtools/ColoredOutput.gradle'
@@ -57,7 +57,17 @@ configurations {
 	apiRuntimeOnly.extendsFrom(runtimeOnly)
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+['testCompileClasspath', 'testRuntimeClasspath'].each { configurationName ->
+	configurations.named(configurationName) {
+		attributes.attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 17)
+	}
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+tasks.withType(JavaCompile).configureEach {
+	options.release.set(8)
+}
 
 dependencies {
 	minecraft([
@@ -65,9 +75,9 @@ dependencies {
 			name   : 'forge',
 			version: "${project.minecraft_version}-${project.forge_version}"
 	])
-	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
-	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
-	testImplementation "org.mockito:mockito-core:3.12.4"
+	testImplementation "org.junit.jupiter:junit-jupiter:6.1.3"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher:6.1.3"
+	testImplementation "org.mockito:mockito-core:5.23.0"
 }
 
 minecraft {
@@ -119,61 +129,85 @@ javadoc {
 	options.addStringOption('Xdoclint:none', '-quiet')
 }
 
-task makeChangelog(type: GitChangelogTask) {
-	fromRepo = file("${projectDir}")
-	file = file('changelog.html')
-	untaggedName = "Current release ${project.version}"
-	fromCommit = '2fe051cf727adce1be210a46f778aa8fe031331e'
-	toRef = 'HEAD'
-	templateContent = file('changelog.mustache').getText('UTF-8')
+def makeChangelog = tasks.register('makeChangelog', GitChangelogTask) {
+	def output = layout.buildDirectory.file('changelog.html')
+	fromRepo.set(projectDir.absolutePath)
+	file.set(output.get().asFile)
+	untaggedName.set("Current release ${project.version}")
+	fromRevision.set('2fe051cf727adce1be210a46f778aa8fe031331e')
+	toRevision.set('HEAD')
+	templateContent.set(file('changelog.mustache').getText('UTF-8'))
+	outputs.file(output)
+	outputs.upToDateWhen { false }
 }
 
-task makeMarkdownChangelog(type: GitChangelogTask) {
-	fromRepo = file("$projectDir")
-	file = file('changelog.md')
-	untaggedName = "Current release ${project.version}"
-	fromCommit = '61d3bcb0d37e12dc3872bec62ef831dbe7699c59'
-	toRef = 'HEAD'
-	templateContent = file('changelog-markdown.mustache').getText('UTF-8')
+def makeMarkdownChangelog = tasks.register('makeMarkdownChangelog', GitChangelogTask) {
+	def output = layout.buildDirectory.file('changelog.md')
+	fromRepo.set(projectDir.absolutePath)
+	file.set(output.get().asFile)
+	untaggedName.set("Current release ${project.version}")
+	fromRevision.set('61d3bcb0d37e12dc3872bec62ef831dbe7699c59')
+	toRevision.set('HEAD')
+	templateContent.set(file('changelog-markdown.mustache').getText('UTF-8'))
+	outputs.file(output)
+	outputs.upToDateWhen { false }
 }
+
+def changelogHtml = providers.provider { layout.buildDirectory.file('changelog.html').get().asFile.getText('UTF-8') }
+def changelogMarkdown = providers.provider { layout.buildDirectory.file('changelog.md').get().asFile.getText('UTF-8') }
 
 publishMods {
 	file.set(tasks.jar.archiveFile)
 	version.set(project.version.toString())
-	changelog.set(providers.provider { file('changelog.html').getText('UTF-8') })
+	changelog.set(changelogMarkdown)
 	type.set(BETA)
 	displayName.set("${project.version} for Forge ${minecraft_version}")
 	modLoaders.add('forge')
 
 	curseforge {
-		projectId.set(curse_project_id)
+		projectId = curse_project_id
+		projectSlug = curseHomepageUrl.substring(curseHomepageUrl.lastIndexOf('/') + 1)
 		accessToken.set(project.findProperty('curseforge_apikey') ?: '0')
-		changelogType.set('html')
-		minecraftVersions.add(minecraft_version)
+		changelog.set(changelogHtml)
+		changelogType = 'html'
+		minecraftVersionRange {
+			start = minecraft_version
+			end = minecraft_version
+		}
 		javaVersions.add(JavaVersion.VERSION_1_8)
-		clientRequired.set(true)
-		serverRequired.set(true)
+		client = true
+		server = true
+		dryRun = project.findProperty('curseforge_apikey') == null
+	}
+
+	modrinth {
+		projectId = modrinthId
+		accessToken = project.findProperty('modrinthToken')
+		minecraftVersionRange {
+			start = minecraft_version
+			end = minecraft_version
+		}
+		dryRun = project.findProperty('modrinthToken') == null
 	}
 }
 
-modrinth {
-	token = project.findProperty('modrinthToken') ?: '0'
-	projectId = "jei"
-	versionType = "beta"
-	uploadFile = jar
-	changelog = provider { file("changelog.md").getText('UTF-8') }
-}
-tasks.modrinth.dependsOn(tasks.jar)
-tasks.modrinth.dependsOn(tasks.makeMarkdownChangelog)
-
 tasks.named('publishCurseforge') {
-	dependsOn makeChangelog
+	dependsOn(makeChangelog)
+}
+tasks.named('publishModrinth') {
+	dependsOn(makeMarkdownChangelog)
 }
 
 tasks.register('curseforge') {
 	group = 'publishing'
 	description = 'Publishes JEI to CurseForge.'
 	dependsOn tasks.named('publishCurseforge')
+}
+
+tasks.register('modrinth') {
+	group = 'publishing'
+	description = 'Publishes JEI to Modrinth.'
+	dependsOn tasks.named('publishModrinth')
 }
 
 jar {
@@ -207,11 +241,10 @@ task sourcesJar(type: Jar) {
 	from sourceSets.api.allJava
 }
 
-task apiJar(type: Jar) {
+def apiJarTask = tasks.register('apiJar', Jar) {
 	duplicatesStrategy(DuplicatesStrategy.FAIL)
 	archiveClassifier.set('api')
 	from sourceSets.api.output
-	afterEvaluate { finalizedBy reobfApiJar }
 
 	// TODO: when FG bug is fixed, remove allJava from the api jar.
 	// https://github.com/MinecraftForge/ForgeGradle/issues/369
@@ -229,7 +262,7 @@ task deobfJar(type: Jar) {
 artifacts {
 	archives javadocJar
 	archives sourcesJar
-	archives apiJar
+	archives apiJarTask
 	archives deobfJar
 }
 
@@ -238,7 +271,11 @@ reobf {
 	jar { classpath.from(sourceSets.main.compileClasspath) }
 }
 
-task reobf {
+apiJarTask.configure {
+	finalizedBy tasks.named('reobfApiJar')
+}
+
+tasks.register('reobf') {
 	dependsOn reobfJar
 	dependsOn reobfApiJar
 }
@@ -246,7 +283,11 @@ task reobf {
 publishing {
 	publications { PublicationContainer publicationContainer ->
 		publicationContainer.register("maven", MavenPublication) { MavenPublication publication ->
-			publication.artifacts = [apiJar, jar, javadocJar, deobfJar, sourcesJar]
+			artifact(apiJarTask)
+			artifact(jar)
+			artifact(javadocJar)
+			artifact(deobfJar)
+			artifact(sourcesJar)
 		}
 	}
 	repositories {

@@ -241,7 +241,7 @@ repositories {
 	}
 }
 
-def apiCompatibilityCheckerVersion = '0.1.15'
+def apiCompatibilityCheckerVersion = '0.1.19'
 def apiCompatibilityAsmVersion = '9.10.1'
 def apiCompatibilityMajorVersion = version_major.toInteger()
 def apiCompatibilityBaselineVersion = providers.gradleProperty('apiCompatibilityBaselineVersion')
