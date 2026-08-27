@@ -21,7 +21,10 @@ public class TestIngredientHelper implements IIngredientHelper<TestIngredient> {
 
 	@Override
 	public Object getUid(TestIngredient ingredient, UidContext context) {
-		return ingredient.number();
+		return switch (context) {
+			case Ingredient -> ingredient.number();
+			case Recipe -> ingredient.number() % 2;
+		};
 	}
 
 	@Override

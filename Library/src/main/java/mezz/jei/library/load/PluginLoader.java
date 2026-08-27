@@ -148,7 +148,7 @@ public final class PluginLoader {
 		);
 
 		IClientToggleState toggleState = Internal.getClientToggleState();
-		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
+		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal(ingredientManager);
 		ingredientManager.registerIngredientListener(blacklist);
 
 		IngredientVisibility ingredientVisibility = new IngredientVisibility(
