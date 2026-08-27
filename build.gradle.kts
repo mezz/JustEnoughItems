@@ -6,7 +6,7 @@ plugins {
     id("com.dorongold.task-tree") version("4.0.2")
 
     // https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/vanillagradle/
-    id("org.spongepowered.gradle.vanilla") version("0.2.1-SNAPSHOT") apply(false)
+    id("org.spongepowered.gradle.vanilla") version("0.2.2") apply(false)
 
     // https://projects.neoforged.net/neoforged/ModDevGradle
     id("net.neoforged.moddev.legacyforge") version("2.0.144") apply(false)
@@ -17,7 +17,7 @@ plugins {
     id("me.modmuss50.mod-publish-plugin") version("2.2.0") apply(false)
 
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
-    id("fabric-loom") version("1.8.13") apply(false)
+    id("fabric-loom") version("1.17.20") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
@@ -30,6 +30,8 @@ repositories {
 // gradle.properties
 val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
+val amecsKeyModifiersVersionFabric: String by extra
+val amecsVersionFabric: String by extra
 val fabricApiVersion: String by extra
 val fabricLoaderVersion: String by extra
 val forgeVersion: String by extra
@@ -103,6 +105,8 @@ subprojects {
 
     tasks.withType<ProcessResources> {
         val properties = mapOf(
+            "amecsKeyModifiersVersionFabric" to amecsKeyModifiersVersionFabric,
+            "amecsVersionFabric" to amecsVersionFabric,
             "curseHomepageUrl" to curseHomepageUrl,
             "fabricApiVersion" to fabricApiVersion,
             "fabricLoaderVersion" to fabricLoaderVersion,

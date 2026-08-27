@@ -15,7 +15,9 @@ import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
 import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
+import mezz.jei.test.lib.ForgeTestBootstrap;
 import mezz.jei.test.lib.TestColorHelper;
+
 import net.minecraft.DetectedVersion;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.GuiGraphics;
@@ -23,7 +25,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.Bootstrap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
@@ -50,7 +51,7 @@ public class ForgeBrewingExtensionTest {
 	@BeforeAll
 	public static void setup() {
 		SharedConstants.setVersion(DetectedVersion.BUILT_IN);
-		Bootstrap.bootStrap();
+		ForgeTestBootstrap.bootStrap();
 	}
 
 	@Test

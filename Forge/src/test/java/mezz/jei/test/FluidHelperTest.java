@@ -10,12 +10,13 @@ import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
 import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidIngredientHelper;
+import mezz.jei.test.lib.ForgeTestBootstrap;
 import mezz.jei.test.lib.TestColorHelper;
+
 import net.minecraft.DetectedVersion;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.Bootstrap;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
@@ -35,7 +36,7 @@ public class FluidHelperTest {
 	@BeforeAll
 	public static void setup() {
 		SharedConstants.setVersion(DetectedVersion.BUILT_IN);
-		Bootstrap.bootStrap();
+		ForgeTestBootstrap.bootStrap();
 	}
 
 	@Test

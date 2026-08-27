@@ -118,13 +118,12 @@ dependencies {
 	changelogMarkdown(project(":Changelog"))
 	testImplementation(
 		group = "org.junit.jupiter",
-		name = "junit-jupiter-api",
+		name = "junit-jupiter",
 		version = jUnitVersion
 	)
 	testRuntimeOnly(
-		group = "org.junit.jupiter",
-		name = "junit-jupiter-engine",
-		version = jUnitVersion
+		group = "org.junit.platform",
+		name = "junit-platform-launcher"
 	)
 }
 
