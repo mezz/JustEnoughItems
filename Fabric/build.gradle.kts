@@ -225,10 +225,8 @@ val keyMappingGametestSourceSet = sourceSets.create("keyMappingGametest") {
     runtimeClasspath += output + compileClasspath + gametestSourceSet.runtimeClasspath.minus(gametestSourceSet.output)
 }
 val keyMappingGametestWithoutAmecsSourceSet = sourceSets.create("keyMappingGametestWithoutAmecs") {
-    val declaredFabricLoaderJar = "fabric-loader-$fabricLoaderVersion.jar"
     runtimeClasspath += keyMappingGametestSourceSet.runtimeClasspath.filter {
-        !it.name.startsWith("amecs-key-modifiers-") &&
-            it.name != declaredFabricLoaderJar // Keep Loom's newer launch loader.
+        !it.name.startsWith("amecs-key-modifiers-")
     }
 }
 
