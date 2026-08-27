@@ -5,24 +5,24 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 plugins {
     // https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-	id("com.diffplug.spotless") version("8.8.0")
+	id("com.diffplug.spotless") version("8.10.0")
 
 	// https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
-	id("fabric-loom") version("1.17.18") apply(false)
+	id("fabric-loom") version("1.17.20") apply(false)
 
     // https://maven.fabricmc.net/net/fabricmc/fabric-loom-companion/net.fabricmc.fabric-loom-companion.gradle.plugin/maven-metadata.xml
     // applying this to all projects allows loom projects to access the required data in a manner that follows Gradle's best practices.
-    id("net.fabricmc.fabric-loom-companion") version("1.17.18")
+    id("net.fabricmc.fabric-loom-companion") version("1.17.20")
 
     // https://projects.neoforged.net/neoforged/moddevgradle
-    id("net.neoforged.moddev") version("2.0.143") apply(false)
+    id("net.neoforged.moddev") version("2.0.144") apply(false)
 
-    id("net.mezzdev.modshade") version("0.3.0") apply(false)
+    id("net.mezzdev.modshade") version("0.6.0") apply(false)
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
-    id("me.modmuss50.mod-publish-plugin") version("2.0.1") apply(false)
+    id("me.modmuss50.mod-publish-plugin") version("2.2.0") apply(false)
 
-    id("net.neoforged.jarcompatibilitychecker") version("0.1.18") apply(false)
+    id("net.neoforged.jarcompatibilitychecker") version("0.1.19") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
