@@ -14,6 +14,7 @@ import mezz.jei.library.load.registration.IngredientManagerBuilder;
 import mezz.jei.library.load.registration.SubtypeRegistration;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 import mezz.jei.library.plugins.vanilla.ingredients.ItemStackHelper;
+import mezz.jei.test.lib.ForgeTestBootstrap;
 import mezz.jei.test.lib.TestColorHelper;
 
 import net.minecraft.DetectedVersion;
@@ -21,7 +22,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.Bootstrap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
@@ -36,7 +36,7 @@ public class BookmarkConfigTest {
 	@BeforeAll
 	public static void setup() {
 		SharedConstants.setVersion(DetectedVersion.BUILT_IN);
-		Bootstrap.bootStrap();
+		ForgeTestBootstrap.bootStrap();
 	}
 
 	@Test

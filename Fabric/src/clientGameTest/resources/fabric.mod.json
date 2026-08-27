@@ -18,6 +18,7 @@
     "jei": "*"
   },
   "suggests": {
-    "amecsapi": "*"
+    "amecsapi": ">=${amecsVersionFabric}",
+    "amecs_key_modifiers": ">=${amecsKeyModifiersVersionFabric}"
   }
 }

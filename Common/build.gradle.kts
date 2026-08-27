@@ -53,12 +53,12 @@ dependencies {
     testFixturesCompileOnly("org.jspecify:jspecify:1.0.0")
     testImplementation(
         group = "org.junit.jupiter",
-        name = "junit-jupiter-api",
+        name = "junit-jupiter",
         version = jUnitVersion
     )
     testRuntimeOnly(
-        group = "org.junit.jupiter",
-        name = "junit-jupiter-engine",
+        group = "org.junit.platform",
+        name = "junit-platform-launcher",
         version = jUnitVersion
     )
 }

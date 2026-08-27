@@ -1,15 +1,11 @@
-import me.modmuss50.mpp.PublishModTask
-import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
-import net.minecraftforge.gradle.common.tasks.JarExec
-import java.util.function.Supplier
+import org.slf4j.event.Level
 
 plugins {
 	java
 	idea
 	eclipse
 	`maven-publish`
-	id("net.minecraftforge.gradle")
-	id("org.parchmentmc.librarian.forgegradle")
+	id("net.neoforged.moddev.legacyforge")
 	id("me.modmuss50.mod-publish-plugin")
 	id("net.mezzdev.modshade")
 }
@@ -26,6 +22,9 @@ val modJavaVersion: String by extra
 val bakedSubstringIndexVersion: String by extra
 val parchmentVersionForge: String by extra
 val modrinthId: String by extra
+val parchmentMinecraftVersion: String by extra
+
+val forgeArtifactVersion = "${minecraftVersion}-${forgeVersion}"
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -69,7 +68,6 @@ dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
 }
 project.evaluationDependsOn(debugProject.path)
-project.evaluationDependsOn(":Changelog")
 
 java {
 	toolchain {
@@ -78,108 +76,115 @@ java {
 	withSourcesJar()
 }
 
+val changelogHtml = configurations.create("changelogHtml") {
+	isCanBeConsumed = false
+	isCanBeResolved = true
+	isVisible = false
+	attributes {
+		attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogHtml"))
+	}
+}
+
+val changelogMarkdown = configurations.create("changelogMarkdown") {
+	isCanBeConsumed = false
+	isCanBeResolved = true
+	isVisible = false
+	attributes {
+		attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogMarkdown"))
+	}
+}
+
+fun Configuration.singleFileContents(): Provider<String> =
+	incoming
+		.files
+		.elements
+		.map { elements -> elements.single() }
+		.map { it.asFile.readText() }
+
 dependencies {
-	"minecraft"(
-		group = "net.minecraftforge",
-		name = "forge",
-		version = "${minecraftVersion}-${forgeVersion}"
-	)
 	dependencyProjects.forEach {
 		implementation(it)
 	}
 	modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
 		isTransitive = false
 	}
+	changelogHtml(project(":Changelog"))
+	changelogMarkdown(project(":Changelog"))
 	testImplementation(
 		group = "org.junit.jupiter",
-		name = "junit-jupiter-api",
+		name = "junit-jupiter",
 		version = jUnitVersion
 	)
 	testRuntimeOnly(
-		group = "org.junit.jupiter",
-		name = "junit-jupiter-engine",
+		group = "org.junit.platform",
+		name = "junit-platform-launcher",
 		version = jUnitVersion
 	)
 }
 
-val modShadeClasspath = configurations.named("modShadeClasspath")
+legacyForge {
+	validateAccessTransformers = true
+	setAccessTransformers("src/main/resources/META-INF/accesstransformer.cfg")
 
-fun net.minecraftforge.gradle.common.util.RunConfig.addModShadeClasspathToMinecraftRun() {
-	lazyToken("minecraft_classpath", Supplier<String> {
-		modShadeClasspath.get()
-			.resolve()
-			.joinToString(File.pathSeparator) { it.absolutePath }
-	})
-}
+	parchment {
+		minecraftVersion = parchmentMinecraftVersion
+		mappingsVersion = parchmentVersionForge
+			.removePrefix("$parchmentMinecraftVersion-")
+			.removeSuffix("-$parchmentMinecraftVersion")
+	}
 
-minecraft {
-	mappings("parchment", parchmentVersionForge)
+	enable {
+		setForgeVersion(forgeArtifactVersion)
+		setEnabledSourceSets(setOf(sourceSets.main.get(), sourceSets.test.get(), gameTestSourceSet))
+		setDisableRecompilation(false)
+	}
 
-	accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
+	mods {
+		create(modId) {
+			sourceSet(sourceSets.main.get())
+			sourceSet(gameTestSourceSet)
+			for (p in dependencyProjects) {
+				sourceSet(p.sourceSets.main.get())
+			}
+		}
+		create("${modId}debug") {
+			sourceSet(debugProject.sourceSets.main.get())
+		}
+	}
 
 	runs {
-		val client = create("client") {
-			taskName("runClientDev")
-			property("forge.logging.console.level", "debug")
-			workingDirectory(file("run/client/Dev"))
-			addModShadeClasspathToMinecraftRun()
-			mods {
-				create(modId) {
-					source(sourceSets.main.get())
-					for (p in dependencyProjects) {
-						source(p.sourceSets.main.get())
-					}
-				}
-				create("${modId}debug") {
-					source(debugProject.sourceSets.main.get())
-				}
-			}
+		create("clientDev") {
+			client()
+			systemProperty("forge.logging.console.level", "debug")
+			gameDirectory = file("run/client/Dev")
+			logLevel = Level.DEBUG
 		}
-		create("client_01") {
-			taskName("runClientPlayer01")
-			parent(client)
-			workingDirectory(file("run/client/Player01"))
-			args("--username", "Player01")
-			addModShadeClasspathToMinecraftRun()
+		create("clientPlayer01") {
+			client()
+			systemProperty("forge.logging.console.level", "debug")
+			gameDirectory = file("run/client/Player01")
+			programArguments.addAll("--username", "Player01")
+			logLevel = Level.DEBUG
 		}
-		create("client_02") {
-			taskName("runClientPlayer02")
-			parent(client)
-			workingDirectory(file("run/client/Player02"))
-			args("--username", "Player02")
-			addModShadeClasspathToMinecraftRun()
+		create("clientPlayer02") {
+			client()
+			systemProperty("forge.logging.console.level", "debug")
+			gameDirectory = file("run/client/Player02")
+			programArguments.addAll("--username", "Player02")
+			logLevel = Level.DEBUG
 		}
 		create("server") {
-			taskName("Server")
-			property("forge.logging.console.level", "debug")
-			workingDirectory(file("run/server"))
-			addModShadeClasspathToMinecraftRun()
-			mods {
-				create(modId) {
-					source(sourceSets.main.get())
-					for (p in dependencyProjects) {
-						source(p.sourceSets.main.get())
-					}
-				}
-				create("${modId}debug") {
-					source(debugProject.sourceSets.main.get())
-				}
-			}
+			server()
+			systemProperty("forge.logging.console.level", "debug")
+			gameDirectory = file("run/server")
+			programArguments.add("nogui")
+			logLevel = Level.DEBUG
 		}
 		create("gameTestServer") {
-			taskName("runGameTestServer")
-			property("forge.enabledGameTestNamespaces", modId)
-			workingDirectory(file("run/gameTestServer-$minecraftVersion"))
-			addModShadeClasspathToMinecraftRun()
-			mods {
-				create(modId) {
-					source(sourceSets.main.get())
-					source(gameTestSourceSet)
-					for (p in dependencyProjects) {
-						source(p.sourceSets.main.get())
-					}
-				}
-			}
+			type.set("gameTestServer")
+			systemProperty("forge.enabledGameTestNamespaces", modId)
+			gameDirectory = file("run/gameTestServer-$minecraftVersion")
+			logLevel = Level.INFO
 		}
 	}
 }
@@ -189,7 +194,7 @@ val copyGameTestStructures = tasks.register<Copy>("copyGameTestStructures") {
 	into(layout.projectDirectory.dir("run/gameTestServer-$minecraftVersion/gameteststructures"))
 }
 
-tasks.matching { it.name == "runGameTestServer" }.configureEach {
+tasks.named("runGameTestServer") {
 	dependsOn(copyGameTestStructures)
 }
 
@@ -200,7 +205,6 @@ tasks.jar {
 	}
 
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	finalizedBy("reobfJar")
 }
 
 val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
@@ -214,10 +218,11 @@ val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 
 val shadedJar = modShade.shadeJar()
 val shadedSourcesJar = modShade.shadeSourcesJar()
+val reobfJarTask = tasks.named<AbstractArchiveTask>("reobfJar")
 
 publishMods {
 	file.set(shadedJar.flatMap { it.archiveFile })
-	changelog.set(provider { file("../Changelog/changelog.md").readText() })
+	changelog.set(changelogMarkdown.singleFileContents())
 	type = BETA
 	modLoaders.add("forge")
 	displayName.set("${project.version} for Forge $minecraftVersion")
@@ -227,30 +232,27 @@ publishMods {
 		projectId = curseProjectId
 		projectSlug = curseHomepageUrl.substringAfterLast("/")
 		accessToken.set(curseforgeApikey ?: "0")
-		changelog.set(provider { file("../Changelog/changelog.html").readText() })
+		changelog.set(changelogHtml.singleFileContents())
 		changelogType = "html"
-		minecraftVersions.add(minecraftVersion)
+		minecraftVersionRange {
+			start = minecraftVersion
+			end = minecraftVersion
+		}
 		javaVersions.add(JavaVersion.toVersion(modJavaVersion))
-		clientRequired.set(true)
-		serverRequired.set(true)
+		client = true
+		server = true
+		dryRun = curseforgeApikey == null
 	}
 
 	modrinth {
 		projectId = modrinthId
 		accessToken = modrinthToken
-		minecraftVersions.add(minecraftVersion)
+		minecraftVersionRange {
+			start = minecraftVersion
+			end = minecraftVersion
+		}
+		dryRun = modrinthToken == null
 	}
-}
-tasks.withType<PublishModTask> {
-	dependsOn(shadedJar, ":Changelog:makeChangelog", ":Changelog:makeMarkdownChangelog")
-}
-
-tasks.withType<DownloadMavenArtifact> {
-	notCompatibleWithConfigurationCache("uses Task.project at execution time")
-}
-
-tasks.withType<JarExec> {
-	notCompatibleWithConfigurationCache("uses external process at execution time")
 }
 
 tasks.named<Test>("test") {
@@ -262,8 +264,8 @@ tasks.named<Test>("test") {
 }
 
 artifacts {
-	archives(shadedJar)
-	archives(shadedSourcesJar)
+	archives(reobfJarTask)
+	archives(sourcesJarTask.get())
 }
 
 publishing {
