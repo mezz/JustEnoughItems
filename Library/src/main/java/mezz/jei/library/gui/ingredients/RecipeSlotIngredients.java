@@ -166,7 +166,10 @@ public final class RecipeSlotIngredients {
 	public Stream<SlotIngredient<?>> getVisibleSlotIngredientsInDisplayGroup(SlotIngredient<?> displayed) {
 		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getJeiHelpers().getIngredientVisibility();
 		return getCandidateSlotIngredientsInDisplayGroup(displayed)
-			.filter(ingredient -> ingredientVisibility.isIngredientVisible(ingredient.typedIngredient()));
+			.filter(ingredient -> ingredientVisibility.isIngredientVisible(
+				ingredient.typedIngredient(),
+				UidContext.Recipe
+			));
 	}
 
 	public Stream<ITypedIngredient<?>> getCandidateIngredientsInDisplayGroup(SlotIngredient<?> displayed) {
