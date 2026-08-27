@@ -1,7 +1,6 @@
 package mezz.jei.neoforge.startup;
 
 import mezz.jei.gui.events.GuiEventHandler;
-import mezz.jei.neoforge.events.JeiScreenRenderForegroundEvent;
 import mezz.jei.neoforge.events.RuntimeEventSubscriptions;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -40,9 +39,9 @@ public class EventRegistrationTest {
 		int mouseX = 13;
 		int mouseY = 17;
 
-		// Operation: fire the event bridged between screen contents and deferred tooltips.
-		Consumer<JeiScreenRenderForegroundEvent> listener = getListener(listeners, JeiScreenRenderForegroundEvent.class);
-		listener.accept(new JeiScreenRenderForegroundEvent(screen, guiGraphics, mouseX, mouseY));
+		// Operation: fire NeoForge's event between screen contents and deferred tooltips.
+		Consumer<ScreenEvent.Render.Foreground> listener = getListener(listeners, ScreenEvent.Render.Foreground.class);
+		listener.accept(new ScreenEvent.Render.Foreground(screen, guiGraphics, mouseX, mouseY, 0));
 
 		// Assertions: JEI's foreground path receives the original render context.
 		assertEquals(1, guiEventHandler.foregroundDrawCount);

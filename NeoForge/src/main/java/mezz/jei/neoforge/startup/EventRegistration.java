@@ -5,7 +5,6 @@ import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.startup.JeiEventHandlers;
-import mezz.jei.neoforge.events.JeiScreenRenderForegroundEvent;
 import mezz.jei.neoforge.events.RuntimeEventSubscriptions;
 import mezz.jei.neoforge.input.ForgeUserInput;
 import net.minecraft.client.Minecraft;
@@ -14,7 +13,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.ContainerScreenEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import org.joml.Matrix3x2fStack;
 
@@ -120,16 +118,6 @@ public class EventRegistration {
 			Screen screen = event.getScreen();
 			guiEventHandler.onGuiOpen(screen);
 		});
-		subscriptions.register(EventPriority.LOWEST, ContainerScreenEvent.Render.Foreground.class, event -> {
-			Screen screen = event.getContainerScreen();
-			var guiGraphics = event.getGuiGraphics();
-			int mouseX = event.getMouseX();
-			int mouseY = event.getMouseY();
-			guiGraphics.nextStratum();
-			runWithIdentityPose(guiGraphics, () -> {
-				guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY);
-			});
-		});
 		subscriptions.register(EventPriority.HIGHEST, ScreenEvent.Render.Background.class, event -> {
 			Screen screen = event.getScreen();
 			var guiGraphics = event.getGuiGraphics();
@@ -137,12 +125,15 @@ public class EventRegistration {
 				guiEventHandler.drawForScreenBackground(screen, guiGraphics);
 			});
 		});
-		subscriptions.register(EventPriority.LOWEST, JeiScreenRenderForegroundEvent.class, event -> {
+		subscriptions.register(EventPriority.LOWEST, ScreenEvent.Render.Foreground.class, event -> {
 			Screen screen = event.getScreen();
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY);
+			guiGraphics.nextStratum();
+			runWithIdentityPose(guiGraphics, () -> {
+				guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY);
+			});
 		});
 		subscriptions.register(ScreenEvent.RenderInventoryMobEffects.class, event -> {
 			if (guiEventHandler.renderCompactPotionIndicators()) {
