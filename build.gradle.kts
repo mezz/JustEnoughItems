@@ -1,10 +1,10 @@
 plugins {
-	id("com.diffplug.spotless") version("8.8.0")
-    id("com.dorongold.task-tree") version("2.1.0")
+	id("com.diffplug.spotless") version("8.10.0")
+    id("com.dorongold.task-tree") version("2.1.1")
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
-    id("me.modmuss50.mod-publish-plugin") version("0.7.3") apply(false)
+    id("me.modmuss50.mod-publish-plugin") version("0.8.4") apply(false)
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/
-    id("fabric-loom") version("1.7.1") apply(false)
+    id("fabric-loom") version("1.7.4") apply(false)
     // https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/gradle/vanilla/org.spongepowered.gradle.vanilla.gradle.plugin/
     id("org.spongepowered.gradle.vanilla") version("0.2.1") apply(false)
 }
