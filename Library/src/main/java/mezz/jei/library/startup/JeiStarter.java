@@ -145,7 +145,7 @@ public final class JeiStarter {
 		IngredientManager ingredientManager = PluginLoader.registerIngredients(data, subtypeManager, colorHelper, ingredientFilterConfig);
 		stopCallbacks.add(ingredientManager::onRuntimeStopped);
 
-		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
+		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal(ingredientManager);
 		ingredientManager.registerIngredientListener(blacklist);
 
 		Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();

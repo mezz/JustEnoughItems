@@ -6,6 +6,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
+import mezz.jei.api.runtime.IIngredientVisibility;
 
 /**
  * Optional context used when getting Unique IDs for ingredients and subtypes.
@@ -24,6 +25,7 @@ public enum UidContext {
 	 * blacklists from the config
 	 * debug info
 	 * bookmarks
+	 * ingredient visibility (see {@link IIngredientVisibility#hideIngredients})
 	 */
 	Ingredient,
 
@@ -35,6 +37,8 @@ public enum UidContext {
 	 * recipe lookups (see {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)})
 	 * recipe catalysts (see {@link IRecipeCatalystRegistration})
 	 * recipe transfer (since JEI 7.4.0) (see {@link IRecipeTransferRegistration}
+	 * ingredient visibility in recipe slots and catalysts
+	 * (see {@link IIngredientVisibility#hideIngredients})
 	 */
 	Recipe
 }

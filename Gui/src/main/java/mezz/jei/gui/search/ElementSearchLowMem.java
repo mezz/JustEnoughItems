@@ -50,12 +50,14 @@ public class ElementSearchLowMem implements IElementSearch {
 
 	private static boolean matches(String word, PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo, IListElementInfo<?> elementInfo) {
 		IListElement<?> element = elementInfo.getElement();
-		if (element.isVisible()) {
-			Collection<String> strings = prefixInfo.getStrings(elementInfo);
-			for (String string : strings) {
-				if (string.contains(word)) {
-					return true;
-				}
+		return element.isVisible() && matchesStrings(word, prefixInfo, elementInfo);
+	}
+
+	private static boolean matchesStrings(String word, PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo, IListElementInfo<?> elementInfo) {
+		Collection<String> strings = prefixInfo.getStrings(elementInfo);
+		for (String string : strings) {
+			if (string.contains(word)) {
+				return true;
 			}
 		}
 		return false;
@@ -82,7 +84,7 @@ public class ElementSearchLowMem implements IElementSearch {
 		PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo = tokenInfo.prefixInfo();
 
 		for (IListElementInfo<?> elementInfo : this.elementInfoList) {
-			if (matches(lowercaseDisplayName, prefixInfo, elementInfo)) {
+			if (matchesStrings(lowercaseDisplayName, prefixInfo, elementInfo)) {
 				IListElement<?> element = elementInfo.getElement();
 				IListElement<T> match = checkForMatch(element, type, ingredientUid, uidFunction);
 				if (match != null) {
