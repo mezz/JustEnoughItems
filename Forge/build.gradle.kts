@@ -217,7 +217,7 @@ val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 }
 
 val shadedJar = modShade.shadeJar()
-val shadedSourcesJar = modShade.shadeSourcesJar()
+modShade.shadeSourcesJar()
 val reobfJarTask = tasks.named<AbstractArchiveTask>("reobfJar")
 
 publishMods {
@@ -272,7 +272,7 @@ publishing {
 	publications {
 		register<MavenPublication>("forgeJar") {
 			artifactId = baseArchivesName
-			from(components["modShade"])
+			from(components["java"])
 		}
 	}
 	repositories {

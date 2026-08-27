@@ -6,7 +6,7 @@ plugins {
     id("com.dorongold.task-tree") version("4.0.2")
     id("org.spongepowered.gradle.vanilla") version("0.2.2") apply(false)
     id("net.neoforged.moddev.legacyforge") version("2.0.144") apply(false)
-    id("net.mezzdev.modshade") version("0.6.0") apply(false)
+    id("net.mezzdev.modshade") version("0.7.0") apply(false)
     id("me.modmuss50.mod-publish-plugin") version("2.2.0") apply(false)
     id("fabric-loom") version("1.17.20") apply(false)
 }

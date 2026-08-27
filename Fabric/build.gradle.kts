@@ -460,7 +460,7 @@ publishing {
             @Suppress("UnstableApiUsage")
             loom.disableDeprecatedPomGeneration(this)
             artifactId = baseArchivesName
-            from(components["modShade"])
+            from(components["java"])
         }
     }
     repositories {
