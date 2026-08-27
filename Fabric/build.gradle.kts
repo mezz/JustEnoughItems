@@ -1,5 +1,3 @@
-import me.modmuss50.mpp.PublishModTask
-
 repositories {
     maven("https://maven.parchmentmc.org")
     maven("https://maven.siphalor.de/") {
@@ -29,25 +27,26 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val parchmentVersionFabric: String by extra
 val amecsVersionFabric: String by extra
+val amecsKeyModifiersVersionFabric: String by extra
 val amecsMinecraftVersion: String by extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-fabric"
 base {
     archivesName.set(baseArchivesName)
 }
-val dependencyProjects: List<ProjectDependency> = listOf(
-    project.dependencies.project(":Core"),
-    project.dependencies.project(":Common"),
-    project.dependencies.project(":CommonApi"),
-    project.dependencies.project(":Library"),
-    project.dependencies.project(":Gui"),
-    project.dependencies.project(":FabricApi", configuration = "namedElements")
+val vanillaDependencyProjects: List<Project> = listOf(
+    project(":Core"),
+    project(":Common"),
+    project(":CommonApi"),
+    project(":Library"),
+    project(":Gui"),
 )
+val loomDependencyProjects: List<Project> = listOf(project(":FabricApi"))
+val dependencyProjects: List<Project> = vanillaDependencyProjects + loomDependencyProjects
 
 dependencyProjects.forEach {
-    project.evaluationDependsOn(it.dependencyProject.path)
+    project.evaluationDependsOn(it.path)
 }
-project.evaluationDependsOn(":Changelog")
 
 val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
     compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
@@ -55,7 +54,7 @@ val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
 }
 val clientGameTestWithoutAmecsSourceSet = sourceSets.create("clientGameTestWithoutAmecs") {
     runtimeClasspath += clientGameTestSourceSet.runtimeClasspath.filter {
-        !it.name.startsWith("amecsapi-")
+        !it.name.startsWith("amecs-")
     }
 }
 configurations.named(clientGameTestSourceSet.runtimeOnlyConfigurationName) {
@@ -72,6 +71,22 @@ java {
     }
     withSourcesJar()
 }
+
+val changelogHtml = configurations.create("changelogHtml") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    isVisible = false
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogHtml"))
+    }
+}
+
+fun Configuration.singleFileContents(): Provider<String> =
+    incoming
+        .files
+        .elements
+        .map { elements -> elements.single() }
+        .map { it.asFile.readText() }
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
@@ -104,20 +119,27 @@ dependencies {
         version = fabricApiVersion,
     )
     modImplementation(
-        group = "de.siphalor",
-        name = "amecsapi-${amecsMinecraftVersion}",
+        group = "de.siphalor.amecs.amecs-api-legacy",
+        name = "amecs-api-legacy-${amecsMinecraftVersion}",
         version = amecsVersionFabric
-    ) {
-        exclude(group = "de.siphalor", module = "nmuk-${amecsMinecraftVersion}")
-    }
+    )
+    modImplementation(
+        group = "de.siphalor.amecs.amecs-key-modifiers",
+        name = "amecs-key-modifiers-${amecsMinecraftVersion}",
+        version = amecsKeyModifiersVersionFabric
+    )
     implementation(
         group = "com.google.code.findbugs",
         name = "jsr305",
         version = "3.0.2"
     )
-    dependencyProjects.forEach {
+    vanillaDependencyProjects.forEach {
         implementation(it)
     }
+    loomDependencyProjects.forEach {
+        implementation(project(it.path, "namedElements"))
+    }
+    changelogHtml(project(":Changelog"))
 }
 
 loom {
@@ -128,7 +150,7 @@ loom {
     }
     runs {
         val dependencyJarPaths = dependencyProjects.map {
-            it.dependencyProject.tasks.jar.get().archiveFile.get().asFile
+            it.tasks.jar.get().archiveFile.get().asFile
         }
         val classPaths = sourceSets.main.get().output.classesDirs
         val resourcesPaths = listOf(
@@ -221,7 +243,7 @@ sourceSets {
     named("main") {
         resources {
             for (p in dependencyProjects) {
-                srcDir(p.dependencyProject.sourceSets.main.get().resources)
+                srcDir(p.sourceSets.main.get().resources)
             }
         }
     }
@@ -312,7 +334,7 @@ tasks.register("runClientGameTestWithoutAmecs") {
 tasks.jar {
     from(sourceSets.main.get().output)
     for (p in dependencyProjects) {
-        from(p.dependencyProject.sourceSets.main.get().output)
+        from(p.sourceSets.main.get().output)
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
@@ -320,15 +342,15 @@ tasks.jar {
 tasks.named<Jar>("sourcesJar") {
     from(sourceSets.main.get().allJava)
     for (p in dependencyProjects) {
-        from(p.dependencyProject.sourceSets.main.get().allJava)
+        from(p.sourceSets.main.get().allJava)
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveClassifier.set("sources")
 }
 
 publishMods {
-    file.set(tasks.remapJar.get().archiveFile)
-    changelog.set(provider { file("../Changelog/changelog.html").readText() })
+    file.set(tasks.remapJar.flatMap { it.archiveFile })
+    changelog.set(changelogHtml.singleFileContents())
     type = BETA
     modLoaders.add("fabric")
     displayName.set("${project.version} for Fabric $minecraftVersion")
@@ -338,16 +360,17 @@ publishMods {
         projectId = curseProjectId
         projectSlug = curseHomepageUrl.substringAfterLast("/")
         accessToken.set((project.findProperty("curseforge_apikey") as String?) ?: "0")
-        changelog.set(provider { file("../Changelog/changelog.html").readText() })
+        changelog.set(changelogHtml.singleFileContents())
         changelogType = "html"
-        minecraftVersions.add(minecraftVersion)
+        minecraftVersionRange {
+            start = minecraftVersion
+            end = minecraftVersion
+        }
         javaVersions.add(JavaVersion.toVersion(modJavaVersion))
-        clientRequired.set(true)
-        serverRequired.set(true)
+        client = true
+        server = true
+        dryRun = project.findProperty("curseforge_apikey") == null
     }
-}
-tasks.withType<PublishModTask> {
-    dependsOn(tasks.remapJar, ":Changelog:makeChangelog")
 }
 tasks.register("publishCurseForge") {
     dependsOn(tasks.named("publishCurseforge"))
@@ -379,7 +402,7 @@ publishing {
                 dependencyProjects.forEach {
                     val dependencyNode = dependenciesNode.appendNode("dependency")
                     dependencyNode.appendNode("groupId", it.group)
-                    dependencyNode.appendNode("artifactId", it.dependencyProject.base.archivesName.get())
+                    dependencyNode.appendNode("artifactId", it.base.archivesName.get())
                     dependencyNode.appendNode("version", it.version)
                 }
             }

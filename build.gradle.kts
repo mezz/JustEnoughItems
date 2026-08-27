@@ -1,12 +1,13 @@
 plugins {
 	id("com.diffplug.spotless") version("8.10.0")
-    id("com.dorongold.task-tree") version("2.1.1")
+    id("com.dorongold.task-tree") version("4.0.2")
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
-    id("me.modmuss50.mod-publish-plugin") version("0.8.4") apply(false)
+    id("me.modmuss50.mod-publish-plugin") version("2.2.0") apply(false)
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/
-    id("fabric-loom") version("1.7.4") apply(false)
+    id("fabric-loom") version("1.17.20") apply(false)
     // https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/gradle/vanilla/org.spongepowered.gradle.vanilla.gradle.plugin/
-    id("org.spongepowered.gradle.vanilla") version("0.2.1") apply(false)
+    id("org.spongepowered.gradle.vanilla") version("0.2.2") apply(false)
+    id("net.neoforged.moddev.legacyforge") version("2.0.144") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
@@ -19,6 +20,8 @@ repositories {
 // gradle.properties
 val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
+val amecsKeyModifiersVersionFabric: String by extra
+val amecsVersionFabric: String by extra
 val fabricLoaderVersion: String by extra
 val forgeVersion: String by extra
 val forgeVersionRange: String by extra
@@ -84,25 +87,27 @@ subprojects {
     }
 
     tasks.withType<ProcessResources> {
-        // this will ensure that this task is redone when the versions change.
-        inputs.property("version", version)
+        val properties = mapOf(
+            "amecsKeyModifiersVersionFabric" to amecsKeyModifiersVersionFabric,
+            "amecsVersionFabric" to amecsVersionFabric,
+            "curseHomepageUrl" to curseHomepageUrl,
+            "fabricLoaderVersion" to fabricLoaderVersion,
+            "forgeVersionRange" to forgeVersionRange,
+            "githubUrl" to githubUrl,
+            "loaderVersionRange" to loaderVersionRange,
+            "minecraftVersion" to minecraftVersion,
+            "minecraftVersionRange" to minecraftVersionRange,
+            "modAuthor" to modAuthor,
+            "modDescription" to modDescription,
+            "modId" to modId,
+            "modJavaVersion" to modJavaVersion,
+            "modName" to modName,
+            "version" to version,
+        )
+        inputs.properties(properties)
 
         filesMatching(listOf("META-INF/mods.toml", "pack.mcmeta", "fabric.mod.json")) {
-            expand(mapOf(
-                "curseHomepageUrl" to curseHomepageUrl,
-                "fabricLoaderVersion" to fabricLoaderVersion,
-                "forgeVersionRange" to forgeVersionRange,
-                "githubUrl" to githubUrl,
-                "loaderVersionRange" to loaderVersionRange,
-                "minecraftVersion" to minecraftVersion,
-                "minecraftVersionRange" to minecraftVersionRange,
-                "modAuthor" to modAuthor,
-                "modDescription" to modDescription,
-                "modId" to modId,
-                "modJavaVersion" to modJavaVersion,
-                "modName" to modName,
-                "version" to version,
-            ))
+            expand(properties)
         }
     }
 

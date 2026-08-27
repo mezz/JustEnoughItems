@@ -1,28 +1,29 @@
 package mezz.jei.fabric.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import mezz.jei.fabric.input.ContextAwareKeyMapping;
 import net.minecraft.client.KeyMapping;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Stream;
 
 @Pseudo
-@Mixin(targets = "de.siphalor.amecs.impl.KeyBindingManager", remap = false)
+@Mixin(targets = "de.siphalor.amecs.key_modifiers.impl.AmecsKeyMappingManagerLayer", remap = false)
 public class AmecsKeyBindingManagerMixin {
-	@Redirect(
-		method = "getMatchingKeyBindings",
+	@WrapOperation(
+		method = "getMappingsForInput",
 		at = @At(
 			value = "INVOKE",
-			target = "Ljava/util/List;stream()Ljava/util/stream/Stream;"
+			target = "Ljava/util/Collection;stream()Ljava/util/stream/Stream;"
 		),
-		require = 3
+		require = 2
 	)
-	private static Stream<KeyMapping> filterInactiveJeiMappings(List<KeyMapping> mappings) {
-		return mappings.stream()
+	private static Stream<KeyMapping> filterInactiveJeiMappings(Collection<KeyMapping> mappings, Operation<Stream<KeyMapping>> original) {
+		return original.call(mappings)
 			.filter(mapping -> !(mapping instanceof ContextAwareKeyMapping contextAware) || contextAware.isContextActive());
 	}
 }

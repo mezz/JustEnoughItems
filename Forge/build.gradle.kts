@@ -1,16 +1,12 @@
-import me.modmuss50.mpp.PublishModTask
+import org.slf4j.event.Level
 
 plugins {
 	java
 	idea
 	eclipse
 	`maven-publish`
-	id("net.minecraftforge.gradle") version("6.0.26")
-	id("org.parchmentmc.librarian.forgegradle") version("1.+")
+	id("net.neoforged.moddev.legacyforge")
 	id("me.modmuss50.mod-publish-plugin")
-}
-apply {
-	from("buildtools/AppleSiliconSupport.gradle")
 }
 
 // gradle.properties
@@ -23,6 +19,9 @@ val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 val parchmentVersionForge: String by extra
+
+val forgeArtifactVersion = "${minecraftVersion}-${forgeVersion}"
+val parchmentMinecraftVersion = minecraftVersion
 
 val baseArchivesName = "${modId}-${minecraftVersion}-forge"
 base {
@@ -68,84 +67,97 @@ java {
 	withSourcesJar()
 }
 
+val changelogHtml = configurations.create("changelogHtml") {
+	isCanBeConsumed = false
+	isCanBeResolved = true
+	isVisible = false
+	attributes {
+		attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogHtml"))
+	}
+}
+
+fun Configuration.singleFileContents(): Provider<String> =
+	incoming
+		.files
+		.elements
+		.map { elements -> elements.single() }
+		.map { it.asFile.readText() }
+
 dependencies {
-	"minecraft"(
-		group = "net.minecraftforge",
-		name = "forge",
-		version = "${minecraftVersion}-${forgeVersion}"
-	)
 	dependencyProjects.forEach {
 		implementation(it)
 	}
+	changelogHtml(project(":Changelog"))
 	testImplementation(
 		group = "org.junit.jupiter",
-		name = "junit-jupiter-api",
+		name = "junit-jupiter",
 		version = jUnitVersion
 	)
 	testRuntimeOnly(
-		group = "org.junit.jupiter",
-		name = "junit-jupiter-engine",
+		group = "org.junit.platform",
+		name = "junit-platform-launcher",
 		version = jUnitVersion
 	)
 }
 
-minecraft {
-	mappings("parchment", parchmentVersionForge)
+legacyForge {
+	validateAccessTransformers = true
+	setAccessTransformers("src/main/resources/META-INF/accesstransformer.cfg")
 
-	accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
+	parchment {
+		minecraftVersion = parchmentMinecraftVersion
+		mappingsVersion = parchmentVersionForge.removeSuffix("-$parchmentMinecraftVersion")
+	}
+
+	enable {
+		setForgeVersion(forgeArtifactVersion)
+		setEnabledSourceSets(setOf(sourceSets.main.get(), sourceSets.test.get(), gameTestSourceSet))
+		setDisableRecompilation(false)
+	}
+
+	mods {
+		create(modId) {
+			sourceSet(sourceSets.main.get())
+			sourceSet(gameTestSourceSet)
+			for (p in dependencyProjects) {
+				sourceSet(p.sourceSets.main.get())
+			}
+		}
+	}
 
 	runs {
-		val client = create("client") {
-			taskName("runClientDev")
-			property("forge.logging.console.level", "debug")
-			workingDirectory(file("run/client/Dev"))
-			mods {
-				create(modId) {
-					source(sourceSets.main.get())
-					for (p in dependencyProjects) {
-						source(p.sourceSets.main.get())
-					}
-				}
-			}
+		create("clientDev") {
+			client()
+			systemProperty("forge.logging.console.level", "debug")
+			gameDirectory = file("run/client/Dev")
+			logLevel = Level.DEBUG
 		}
-		create("client_01") {
-			taskName("runClientPlayer01")
-			parent(client)
-			workingDirectory(file("run/client/Player01"))
-			args("--username", "Player01")
+		create("clientPlayer01") {
+			client()
+			systemProperty("forge.logging.console.level", "debug")
+			gameDirectory = file("run/client/Player01")
+			programArguments.addAll("--username", "Player01")
+			logLevel = Level.DEBUG
 		}
-		create("client_02") {
-			taskName("runClientPlayer02")
-			parent(client)
-			workingDirectory(file("run/client/Player02"))
-			args("--username", "Player02")
+		create("clientPlayer02") {
+			client()
+			systemProperty("forge.logging.console.level", "debug")
+			gameDirectory = file("run/client/Player02")
+			programArguments.addAll("--username", "Player02")
+			logLevel = Level.DEBUG
 		}
 		create("server") {
-			taskName("Server")
-			property("forge.logging.console.level", "debug")
-			workingDirectory(file("run/server"))
-			mods {
-				create(modId) {
-					source(sourceSets.main.get())
-					for (p in dependencyProjects) {
-						source(p.sourceSets.main.get())
-					}
-				}
-			}
+			server()
+			systemProperty("forge.logging.console.level", "debug")
+			gameDirectory = file("run/server")
+			programArguments.add("nogui")
+			logLevel = Level.DEBUG
 		}
 		create("gameTestServer") {
-			taskName("runGameTestServer")
-			property("forge.enabledGameTestNamespaces", modId)
-			workingDirectory(file("run/gameTestServer-$minecraftVersion"))
-			mods {
-				create(modId) {
-					source(sourceSets.main.get())
-					source(gameTestSourceSet)
-					for (p in dependencyProjects) {
-						source(p.sourceSets.main.get())
-					}
-				}
-			}
+			type.set("gameTestServer")
+			systemProperty("forge.enabledGameTestNamespaces", modId)
+			gameDirectory = file("run/gameTestServer-$minecraftVersion")
+			logLevel = Level.INFO
 		}
 	}
 }
@@ -155,7 +167,7 @@ val copyGameTestStructures = tasks.register<Copy>("copyGameTestStructures") {
 	into(layout.projectDirectory.dir("run/gameTestServer-$minecraftVersion/gameteststructures"))
 }
 
-tasks.matching { it.name == "runGameTestServer" }.configureEach {
+tasks.named("runGameTestServer") {
 	dependsOn(copyGameTestStructures)
 }
 
@@ -166,7 +178,6 @@ tasks.jar {
 	}
 
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	finalizedBy("reobfJar")
 }
 
 val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
@@ -178,9 +189,11 @@ val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 	archiveClassifier.set("sources")
 }
 
+val reobfJarTask = tasks.named<AbstractArchiveTask>("reobfJar")
+
 publishMods {
-	file.set(tasks.jar.get().archiveFile)
-	changelog.set(provider { file("../Changelog/changelog.html").readText() })
+	file.set(reobfJarTask.flatMap { it.archiveFile })
+	changelog.set(changelogHtml.singleFileContents())
 	type = BETA
 	modLoaders.add("forge")
 	displayName.set("${project.version} for Forge $minecraftVersion")
@@ -190,16 +203,17 @@ publishMods {
 		projectId = curseProjectId
 		projectSlug = curseHomepageUrl.substringAfterLast("/")
 		accessToken.set((project.findProperty("curseforge_apikey") as String?) ?: "0")
-		changelog.set(provider { file("../Changelog/changelog.html").readText() })
+		changelog.set(changelogHtml.singleFileContents())
 		changelogType = "html"
-		minecraftVersions.add(minecraftVersion)
+		minecraftVersionRange {
+			start = minecraftVersion
+			end = minecraftVersion
+		}
 		javaVersions.add(JavaVersion.toVersion(modJavaVersion))
-		clientRequired.set(true)
-		serverRequired.set(true)
+		client = true
+		server = true
+		dryRun = project.findProperty("curseforge_apikey") == null
 	}
-}
-tasks.withType<PublishModTask> {
-	dependsOn(tasks.jar, ":Changelog:makeChangelog")
 }
 tasks.register("publishCurseForge") {
 	dependsOn(tasks.named("publishCurseforge"))
@@ -213,24 +227,32 @@ tasks.named<Test>("test") {
 }
 
 artifacts {
-	archives(tasks.jar.get())
+	archives(reobfJarTask)
 	archives(sourcesJarTask.get())
+}
+
+val dependencyInfos = dependencyProjects.map {
+	mapOf(
+		"groupId" to it.group,
+		"artifactId" to it.base.archivesName.get(),
+		"version" to it.version
+	)
 }
 
 publishing {
 	publications {
 		register<MavenPublication>("forgeJar") {
 			artifactId = baseArchivesName
-			artifact(tasks.jar.get())
+			artifact(reobfJarTask)
 			artifact(sourcesJarTask.get())
 
 			pom.withXml {
 				val dependenciesNode = asNode().appendNode("dependencies")
-				dependencyProjects.forEach {
+				dependencyInfos.forEach {
 					val dependencyNode = dependenciesNode.appendNode("dependency")
-					dependencyNode.appendNode("groupId", it.group)
-					dependencyNode.appendNode("artifactId", it.base.archivesName.get())
-					dependencyNode.appendNode("version", it.version)
+					it.forEach { (key, value) ->
+						dependencyNode.appendNode(key, value)
+					}
 				}
 			}
 		}

@@ -1,8 +1,8 @@
 plugins {
 	java
+	idea
 	`maven-publish`
-	id("net.minecraftforge.gradle") version("6.0.26")
-	id("org.parchmentmc.librarian.forgegradle") version ("1.+")
+	id("net.neoforged.moddev.legacyforge")
 }
 
 repositories {
@@ -16,6 +16,9 @@ val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 val parchmentVersionForge: String by extra
+
+val forgeArtifactVersion = "${minecraftVersion}-${forgeVersion}"
+val parchmentMinecraftVersion = minecraftVersion
 
 val baseArchivesName = "${modId}-${minecraftVersion}-forge-api"
 base {
@@ -53,51 +56,59 @@ java {
 }
 
 dependencies {
-	"minecraft"(
-		group = "net.minecraftforge",
-		name = "forge",
-		version = "${minecraftVersion}-${forgeVersion}"
-	)
 	dependencyProjects.forEach {
 		implementation(it)
 	}
 }
 
-minecraft {
-	mappings("parchment", parchmentVersionForge)
+legacyForge {
+	validateAccessTransformers = true
+	setAccessTransformers("../Forge/src/main/resources/META-INF/accesstransformer.cfg")
 
-	// All minecraft configurations in the multi-project must be identical, including ATs,
-	// because of a ForgeGradle bug https://github.com/MinecraftForge/ForgeGradle/issues/844
-	accessTransformer(file("../Forge/src/main/resources/META-INF/accesstransformer.cfg"))
+	parchment {
+		minecraftVersion = parchmentMinecraftVersion
+		mappingsVersion = parchmentVersionForge.removeSuffix("-$parchmentMinecraftVersion")
+	}
+
+	enable {
+		setForgeVersion(forgeArtifactVersion)
+		setEnabledSourceSets(setOf(sourceSets.main.get(), sourceSets.test.get()))
+		setDisableRecompilation(false)
+	}
 
 	// no runs are configured for API
 }
 
-tasks.jar {
-	finalizedBy("reobfJar")
-}
-
 val sourcesJar = tasks.named<Jar>("sourcesJar")
+val reobfJarTask = tasks.named<AbstractArchiveTask>("reobfJar")
 
 artifacts {
-	archives(tasks.jar.get())
+	archives(reobfJarTask)
 	archives(sourcesJar.get())
+}
+
+val dependencyInfos = dependencyProjects.map {
+	mapOf(
+		"groupId" to it.group,
+		"artifactId" to it.base.archivesName.get(),
+		"version" to it.version
+	)
 }
 
 publishing {
 	publications {
 		register<MavenPublication>("forgeApi") {
 			artifactId = baseArchivesName
-			artifact(tasks.jar)
+			artifact(reobfJarTask)
 			artifact(sourcesJar)
 
 			pom.withXml {
 				val dependenciesNode = asNode().appendNode("dependencies")
-				dependencyProjects.forEach {
+				dependencyInfos.forEach {
 					val dependencyNode = dependenciesNode.appendNode("dependency")
-					dependencyNode.appendNode("groupId", it.group)
-					dependencyNode.appendNode("artifactId", it.base.archivesName.get())
-					dependencyNode.appendNode("version", it.version)
+					it.forEach { (key, value) ->
+						dependencyNode.appendNode(key, value)
+					}
 				}
 			}
 		}
@@ -106,6 +117,14 @@ publishing {
 		val deployDir = project.findProperty("DEPLOY_DIR")
 		if (deployDir != null) {
 			maven(deployDir)
+		}
+	}
+}
+
+idea {
+	module {
+		for (fileName in listOf("build", "run", "out", "logs")) {
+			excludeDirs.add(file(fileName))
 		}
 	}
 }
