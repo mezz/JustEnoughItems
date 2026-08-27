@@ -15,7 +15,7 @@ plugins {
 	id 'eclipse'
 	id 'idea'
 	id "maven-publish"
-	id 'me.modmuss50.mod-publish-plugin' version '0.7.3'
+	id 'me.modmuss50.mod-publish-plugin' version '0.8.4'
 	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.79.0'
 	id 'com.modrinth.minotaur' version '2.+'
 }
