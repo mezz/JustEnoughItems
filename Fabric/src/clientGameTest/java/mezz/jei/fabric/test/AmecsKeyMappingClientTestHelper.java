@@ -3,7 +3,7 @@ package mezz.jei.fabric.test;
 import com.mojang.blaze3d.platform.InputConstants;
 import de.siphalor.amecs.api.KeyBindingUtils;
 import de.siphalor.amecs.api.KeyModifiers;
-import de.siphalor.amecs.impl.KeyBindingManager;
+import de.siphalor.amecs.key_modifiers.impl.AmecsKeyMappingManagerLayer;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
 import mezz.jei.fabric.input.AmecsHelper;
@@ -112,7 +112,10 @@ final class AmecsKeyMappingClientTestHelper {
 
 		try {
 			KeyMapping.resetMapping();
-			List<KeyMapping> matchingMappings = KeyBindingManager.getMatchingKeyBindings(mouseKey, false).toList();
+			AmecsKeyMappingManagerLayer keyMappingLayer = new AmecsKeyMappingManagerLayer();
+			keyMappingLayer.register(inactiveJeiMapping);
+			keyMappingLayer.register(vanillaMapping);
+			List<KeyMapping> matchingMappings = keyMappingLayer.getMappingsForInput(mouseKey).toList();
 			if (matchingMappings.contains(inactiveJeiMapping)) {
 				throw new AssertionError("Expected AMECS to ignore inactive JEI mouse mapping: " + mouseKey.getName());
 			}

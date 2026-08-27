@@ -6,7 +6,7 @@ plugins {
     id("com.dorongold.task-tree") version("4.0.2")
 
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
-    id("fabric-loom") version("1.11.8") apply(false)
+    id("fabric-loom") version("1.17.20") apply(false)
 
     // https://projects.neoforged.net/neoforged/moddevgradle
     id("net.neoforged.moddev") version("2.0.144") apply(false)

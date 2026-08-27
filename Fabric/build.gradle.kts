@@ -22,7 +22,7 @@ repositories {
     maven("https://maven.siphalor.de/") {
         // for optional AMECS integration
         content {
-            includeGroup("de.siphalor")
+            includeGroupAndSubgroups("de.siphalor")
         }
     }
 }
@@ -41,6 +41,7 @@ val parchmentMinecraftVersion: String by extra
 val parchmentVersionFabric: String by extra
 val modrinthId: String by extra
 val amecsVersionFabric: String by extra
+val amecsKeyModifiersVersionFabric: String by extra
 val amecsMinecraftVersion: String by extra
 val bakedSubstringIndexVersion: String by extra
 val suffixtreeVersion: String by extra
@@ -74,7 +75,7 @@ val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
 }
 val clientGameTestWithoutAmecsSourceSet = sourceSets.create("clientGameTestWithoutAmecs") {
     runtimeClasspath += clientGameTestSourceSet.runtimeClasspath.filter {
-        !it.name.startsWith("amecsapi-")
+        !it.name.startsWith("amecs-")
     }
 }
 configurations.named(clientGameTestSourceSet.runtimeOnlyConfigurationName) {
@@ -172,9 +173,14 @@ dependencies {
         version = "3.0.1"
     )
     modImplementation(
-        group = "de.siphalor",
-        name = "amecsapi-${amecsMinecraftVersion}",
+        group = "de.siphalor.amecs.amecs-api-legacy",
+        name = "amecs-api-legacy-${amecsMinecraftVersion}",
         version = amecsVersionFabric
+    )
+    modImplementation(
+        group = "de.siphalor.amecs.amecs-key-modifiers",
+        name = "amecs-key-modifiers-${amecsMinecraftVersion}",
+        version = amecsKeyModifiersVersionFabric
     )
     "clientGameTestCompileOnly"("org.jspecify:jspecify:1.0.0")
     vanillaDependencyProjects.forEach {

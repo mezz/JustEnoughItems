@@ -1,5 +1,7 @@
 package mezz.jei.fabric.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import mezz.jei.fabric.input.ContextAwareKeyMapping;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
@@ -8,7 +10,6 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public class KeyMappingMixin {
 	@Final
 	private static Map<String, KeyMapping> ALL;
 
-	@Redirect(
+	@WrapOperation(
 		method = {
 			"click(Lcom/mojang/blaze3d/platform/InputConstants$Key;)V",
 			"set(Lcom/mojang/blaze3d/platform/InputConstants$Key;Z)V"
@@ -28,8 +29,8 @@ public class KeyMappingMixin {
 			target = "Ljava/util/Map;get(Ljava/lang/Object;)Ljava/lang/Object;"
 		)
 	)
-	private static @Nullable Object getActiveKeyMapping(Map<?, ?> mappings, Object key) {
-		Object mapping = mappings.get(key);
+	private static @Nullable Object getActiveKeyMapping(Map<?, ?> mappings, Object key, Operation<Object> original) {
+		Object mapping = original.call(mappings, key);
 		if (!(mapping instanceof ContextAwareKeyMapping contextAware) || contextAware.isContextActive()) {
 			return mapping;
 		}
