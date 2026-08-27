@@ -21,6 +21,7 @@ import mezz.jei.library.ingredients.IngredientInfo;
 import mezz.jei.library.ingredients.IngredientManager;
 import mezz.jei.library.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.TypedIngredient;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.level.material.Fluid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,11 +38,13 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 	private final SequencedMap<IIngredientType<?>, IngredientInfo<?>> ingredientInfos = new LinkedHashMap<>();
 	private final ISubtypeManager subtypeManager;
 	private final IColorHelper colorHelper;
+	private final ContextMap contextMap;
 	private final SlotDisplayInterpreterRegistration slotDisplayInterpreterRegistration = new SlotDisplayInterpreterRegistration();
 
-	public IngredientManagerBuilder(ISubtypeManager subtypeManager, IColorHelper colorHelper) {
+	public IngredientManagerBuilder(ISubtypeManager subtypeManager, IColorHelper colorHelper, ContextMap contextMap) {
 		this.subtypeManager = subtypeManager;
 		this.colorHelper = colorHelper;
+		this.contextMap = contextMap;
 	}
 
 	@Override
@@ -278,6 +281,11 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 	@Override
 	public IColorHelper getColorHelper() {
 		return colorHelper;
+	}
+
+	@Override
+	public ContextMap getContextMap() {
+		return contextMap;
 	}
 
 	public ISlotDisplayInterpreterRegistration getSlotDisplayInterpreterRegistration() {
