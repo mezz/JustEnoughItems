@@ -8,10 +8,10 @@ plugins {
 	id("com.gtnewhorizons.retrofuturagradle") version("1.4.9")
 	id("eclipse")
 	id("java")
-	id("me.modmuss50.mod-publish-plugin") version("2.0.1")
+	id("me.modmuss50.mod-publish-plugin") version("2.2.0")
 	id("maven-publish")
-	id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.7"
-	id("se.bjurr.gitchangelog.git-changelog-gradle-plugin") version("1.77.2")
+	id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.10"
+	id("se.bjurr.gitchangelog.git-changelog-gradle-plugin") version("1.79.0")
 }
 
 // gradle.properties
