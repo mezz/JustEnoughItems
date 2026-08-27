@@ -27,6 +27,8 @@ import mezz.jei.library.recipes.collect.RecipeTypeDataMap;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextKeySet;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
@@ -222,7 +224,11 @@ public class InternalRecipeManagerPluginTest {
 
 	private static IIngredientManager createIngredientManager() {
 		SubtypeManager subtypeManager = new SubtypeManager(new SubtypeInterpreters());
-		IngredientManagerBuilder builder = new IngredientManagerBuilder(subtypeManager, DummyColorHelper.INSTANCE);
+		IngredientManagerBuilder builder = new IngredientManagerBuilder(
+			subtypeManager,
+			DummyColorHelper.INSTANCE,
+			new ContextMap.Builder().create(new ContextKeySet.Builder().build())
+		);
 		builder.register(
 			INGREDIENT_TYPE,
 			List.of(CATALYST, INPUT),

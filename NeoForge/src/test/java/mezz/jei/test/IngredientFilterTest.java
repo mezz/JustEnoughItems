@@ -34,6 +34,8 @@ import mezz.jei.test.lib.TestIngredientHelper;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.context.ContextKeySet;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import org.jspecify.annotations.Nullable;
@@ -72,7 +74,11 @@ public class IngredientFilterTest {
 		SubtypeManager subtypeManager = new SubtypeManager(subtypeInterpreters);
 
 		IColorHelper colorHelper = new TestColorHelper();
-		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper);
+		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(
+			subtypeManager,
+			colorHelper,
+			new ContextMap.Builder().create(new ContextKeySet.Builder().build())
+		);
 		testPlugin.registerIngredients(ingredientManagerBuilder);
 		this.ingredientManager = ingredientManagerBuilder.build();
 

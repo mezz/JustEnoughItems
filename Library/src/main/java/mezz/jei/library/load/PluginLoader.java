@@ -87,9 +87,15 @@ public final class PluginLoader {
 		return new SubtypeManager(subtypeInterpreters);
 	}
 
-	public static IngredientManager registerIngredients(StartData data, SubtypeManager subtypeManager, IColorHelper colorHelper, IIngredientFilterConfig ingredientFilterConfig) {
+	public static IngredientManager registerIngredients(
+		StartData data,
+		SubtypeManager subtypeManager,
+		IColorHelper colorHelper,
+		IIngredientFilterConfig ingredientFilterConfig,
+		ContextMap contextMap
+	) {
 		List<IModPlugin> plugins = data.plugins();
-		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper);
+		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper, contextMap);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(ingredientManagerBuilder));
 		PluginCaller.callOnPlugins("Registering extra ingredients", plugins, p -> p.registerExtraIngredients(ingredientManagerBuilder));
 
