@@ -5,6 +5,7 @@ import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
@@ -192,7 +193,10 @@ public class IngredientFilter implements
 
 	private <V> boolean updateHiddenState(IListElement<V> element) {
 		ITypedIngredient<V> typedIngredient = element.getTypedIngredient();
-		boolean visible = this.ingredientVisibility.isIngredientVisible(typedIngredient);
+		boolean visible = this.ingredientVisibility.isIngredientVisible(
+			typedIngredient,
+			UidContext.Ingredient
+		);
 		if (element.isVisible() != visible) {
 			element.setVisible(visible);
 			return true;
@@ -206,8 +210,7 @@ public class IngredientFilter implements
 		IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		this.elementSearch.findElement(ingredient, ingredientHelper)
 			.ifPresent(element -> {
-				if (element.isVisible() != visible) {
-					element.setVisible(visible);
+				if (updateHiddenState(element)) {
 					invalidateCache();
 					notifyListenersOfChange();
 				}
@@ -223,10 +226,7 @@ public class IngredientFilter implements
 			Optional<IListElement<V>> matchingElementOptional = this.elementSearch.findElement(ingredient, ingredientHelper);
 			if (matchingElementOptional.isPresent()) {
 				IListElement<V> element = matchingElementOptional.get();
-				if (element.isVisible() != visible) {
-					element.setVisible(visible);
-					changed = true;
-				}
+				changed |= updateHiddenState(element);
 			}
 		}
 		if (changed) {

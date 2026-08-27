@@ -3,6 +3,7 @@ package mezz.jei.library.gui.ingredients;
 import mezz.jei.api.gui.builder.IIngredientConsumer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.Internal;
@@ -94,7 +95,7 @@ public final class RecipeSlotIngredients {
 	public <T> List<T> getVisibleIngredients(IIngredientType<T> ingredientType) {
 		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getJeiHelpers().getIngredientVisibility();
 		return getAllIngredients()
-			.filter(ingredientVisibility::isIngredientVisible)
+			.filter(ingredient -> ingredientVisibility.isIngredientVisible(ingredient, UidContext.Recipe))
 			.map(ingredient -> ingredient.getIngredient(ingredientType))
 			.flatMap(Optional::stream)
 			.toList();
@@ -135,7 +136,7 @@ public final class RecipeSlotIngredients {
 		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getJeiHelpers().getIngredientVisibility();
 		for (int i = 0; i < allIngredients.size() && visibleIngredients.size() < MAX_DISPLAYED_INGREDIENTS; i++) {
 			ITypedIngredient<?> ingredient = allIngredients.get(i);
-			boolean visible = ingredient == null || ingredientVisibility.isIngredientVisible(ingredient);
+			boolean visible = ingredient == null || ingredientVisibility.isIngredientVisible(ingredient, UidContext.Recipe);
 			if (visible) {
 				if (hasInvisibleIngredients) {
 					visibleIngredients.add(ingredient);
