@@ -1,23 +1,23 @@
 plugins {
     // https://plugins.gradle.org/plugin/com.diffplug.gradle.spotless
-	id("com.diffplug.spotless") version("8.8.0")
+	id("com.diffplug.spotless") version("8.10.0")
 
     // https://plugins.gradle.org/plugin/com.dorongold.task-tree
-    id("com.dorongold.task-tree") version("4.0.0")
+    id("com.dorongold.task-tree") version("4.0.2")
 
     // https://repo.spongepowered.org/service/rest/repository/browse/maven-public/org/spongepowered/vanillagradle/
     id("org.spongepowered.gradle.vanilla") version("0.2.1-SNAPSHOT") apply(false)
 
     // https://projects.neoforged.net/neoforged/ModDevGradle
-    id("net.neoforged.moddev.legacyforge") version("2.0.143") apply(false)
+    id("net.neoforged.moddev.legacyforge") version("2.0.144") apply(false)
 
-    id("net.mezzdev.modshade") version("0.3.0") apply(false)
+    id("net.mezzdev.modshade") version("0.6.0") apply(false)
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
-    id("me.modmuss50.mod-publish-plugin") version("2.0.1") apply(false)
+    id("me.modmuss50.mod-publish-plugin") version("2.2.0") apply(false)
 
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
-    id("fabric-loom") version("1.8.0-alpha.16") apply(false)
+    id("fabric-loom") version("1.8.13") apply(false)
 }
 apply {
 	from("buildtools/ColoredOutput.gradle")
