@@ -386,7 +386,7 @@ tasks.named<Jar>("sourcesJar") {
 }
 
 val shadedJar = modShade.shadeJar()
-val shadedSourcesJar = modShade.shadeSourcesJar()
+modShade.shadeSourcesJar()
 
 publishMods {
     file.set(shadedJar.flatMap { it.archiveFile })
@@ -445,7 +445,7 @@ publishing {
             @Suppress("UnstableApiUsage")
             loom.disableDeprecatedPomGeneration(this)
             artifactId = baseArchivesName
-            from(components["modShade"])
+            from(components["java"])
         }
     }
     repositories {
