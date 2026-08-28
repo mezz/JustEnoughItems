@@ -18,6 +18,7 @@ class JeiProjectPlugin : Plugin<Project> {
 
 private fun Project.configureJeiProject() {
 	val buildNumber = findProperty("BUILD_NUMBER") ?: "9999"
+	val amecsVersionFabric = property("amecsVersionFabric")
 	val specificationVersion = property("specificationVersion").toString()
 	val modGroup = property("modGroup").toString()
 	val modJavaVersion = property("modJavaVersion").toString()
@@ -68,6 +69,7 @@ private fun Project.configureJeiProject() {
 
 	tasks.withType(ProcessResources::class.java).configureEach {
 		val resourceProperties = mapOf(
+			"amecsVersionFabric" to amecsVersionFabric,
 			"curseHomepageUrl" to curseHomepageUrl,
 			"fabricApiVersion" to fabricApiVersion,
 			"fabricApiVersionRange" to fabricApiVersionRange,

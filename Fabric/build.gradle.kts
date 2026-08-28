@@ -204,7 +204,13 @@ dependencies {
     modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
     }
-    modImplementation("de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric")
+    val amecsKeyModifiers = "de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric"
+    modCompileOnly(amecsKeyModifiers) {
+        isTransitive = false
+    }
+    modLocalRuntime(amecsKeyModifiers) {
+        isTransitive = false
+    }
     changelogHtml(project(":Changelog"))
     changelogMarkdown(project(":Changelog"))
 }
