@@ -149,12 +149,22 @@ dependencies {
         name = "fabric-api",
         version = fabricApiVersion,
     )
-    modImplementation(
+    modCompileOnly(
         group = "de.siphalor.amecs.amecs-api-legacy",
         name = "amecs-api-legacy-${amecsMinecraftVersion}",
         version = amecsVersionFabric
     )
-    modImplementation(
+    modLocalRuntime(
+        group = "de.siphalor.amecs.amecs-api-legacy",
+        name = "amecs-api-legacy-${amecsMinecraftVersion}",
+        version = amecsVersionFabric
+    )
+    modCompileOnly(
+        group = "de.siphalor.amecs.amecs-key-modifiers",
+        name = "amecs-key-modifiers-${amecsMinecraftVersion}",
+        version = amecsKeyModifiersVersionFabric
+    )
+    modLocalRuntime(
         group = "de.siphalor.amecs.amecs-key-modifiers",
         name = "amecs-key-modifiers-${amecsMinecraftVersion}",
         version = amecsKeyModifiersVersionFabric
