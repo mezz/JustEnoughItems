@@ -1,7 +1,5 @@
-import groovy.util.Node
 import net.fabricmc.loom.task.RemapJarTask
 import net.fabricmc.loom.task.RemapSourcesJarTask
-import org.gradle.api.publish.tasks.GenerateModuleMetadata
 
 plugins {
     java
@@ -134,12 +132,6 @@ artifacts {
     archives(commonApiIntermediarySourcesJar)
 }
 
-tasks.withType<GenerateModuleMetadata>().configureEach {
-    if (name == "generateMetadataFileForFabricApiPublication") {
-        enabled = false
-    }
-}
-
 publishing {
     publications {
         register<MavenPublication>("commonApiIntermediary") {
@@ -151,8 +143,8 @@ publishing {
             artifactId = baseArchivesName
             @Suppress("UnstableApiUsage")
             loom.disableDeprecatedPomGeneration(this)
-            from(components["java"])
-            setArtifacts(listOf(tasks.remapJar, tasks.remapSourcesJar))
+            artifact(tasks.remapJar)
+            artifact(tasks.remapSourcesJar)
 
             val dependencyInfo = mapOf(
                 "groupId" to commonApiIntermediaryJar.group,
@@ -161,12 +153,7 @@ publishing {
             )
 
             pom.withXml {
-                val projectNode = asNode()
-                projectNode.children()
-                    .filterIsInstance<Node>()
-                    .filter { it.name().toString().endsWith("dependencies") }
-                    .forEach { projectNode.remove(it) }
-                val dependenciesNode = projectNode.appendNode("dependencies")
+                val dependenciesNode = asNode().appendNode("dependencies")
                 val dependencyNode = dependenciesNode.appendNode("dependency")
                 dependencyInfo.forEach { (key, value) ->
                     dependencyNode.appendNode(key, value)
