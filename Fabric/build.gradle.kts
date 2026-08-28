@@ -169,16 +169,19 @@ dependencies {
         name = "amecs-key-modifiers-${amecsMinecraftVersion}",
         version = amecsKeyModifiersVersionFabric
     )
-    implementation(
-        group = "com.google.code.findbugs",
-        name = "jsr305",
-        version = "3.0.1"
-    )
+    val jsr305 = "com.google.code.findbugs:jsr305:3.0.1"
+    compileOnly(jsr305)
+    testCompileOnly(jsr305)
     vanillaDependencyProjects.forEach {
-        implementation(it)
+        compileOnly(it)
+        testImplementation(it)
+        localRuntime(it)
     }
     loomDependencyProjects.forEach {
-        implementation(project(it.path, "namedElements"))
+        val namedElements = project(it.path, "namedElements")
+        compileOnly(namedElements)
+        testImplementation(namedElements)
+        localRuntime(namedElements)
     }
     changelogHtml(project(":Changelog"))
     changelogMarkdown(project(":Changelog"))

@@ -103,7 +103,8 @@ fun Configuration.singleFileContents(): Provider<String> =
 
 dependencies {
 	dependencyProjects.forEach {
-		implementation(it)
+		compileOnly(it)
+		testImplementation(it)
 	}
 	modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
 		isTransitive = false
