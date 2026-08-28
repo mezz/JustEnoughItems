@@ -87,20 +87,20 @@ artifacts {
 	archives(sourcesJar.get())
 }
 
-val dependencyInfos = dependencyProjects.map {
-	mapOf(
-		"groupId" to it.group,
-		"artifactId" to it.base.archivesName.get(),
-		"version" to it.version
-	)
-}
-
 publishing {
 	publications {
 		register<MavenPublication>("forgeApi") {
 			artifactId = baseArchivesName
 			artifact(reobfJarTask)
 			artifact(sourcesJar)
+
+			val dependencyInfos = dependencyProjects.map {
+				mapOf(
+					"groupId" to it.group,
+					"artifactId" to it.base.archivesName.get(),
+					"version" to it.version
+				)
+			}
 
 			pom.withXml {
 				val dependenciesNode = asNode().appendNode("dependencies")

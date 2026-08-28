@@ -138,16 +138,19 @@ dependencies {
         name = "amecs-key-modifiers-${amecsMinecraftVersion}",
         version = amecsKeyModifiersVersionFabric
     )
-    implementation(
-        group = "com.google.code.findbugs",
-        name = "jsr305",
-        version = "3.0.2"
-    )
+    val jsr305 = "com.google.code.findbugs:jsr305:3.0.2"
+    compileOnly(jsr305)
+    testCompileOnly(jsr305)
     vanillaDependencyProjects.forEach {
-        implementation(it)
+        compileOnly(it)
+        testImplementation(it)
+        localRuntime(it)
     }
     loomDependencyProjects.forEach {
-        implementation(project(it.path, "namedElements"))
+        val namedElements = project(it.path, "namedElements")
+        compileOnly(namedElements)
+        testImplementation(namedElements)
+        localRuntime(namedElements)
     }
     changelogHtml(project(":Changelog"))
 }
@@ -406,16 +409,6 @@ publishing {
             artifactId = baseArchivesName
             artifact(tasks.remapJar)
             artifact(tasks.remapSourcesJar)
-
-            pom.withXml {
-                val dependenciesNode = asNode().appendNode("dependencies")
-                dependencyProjects.forEach {
-                    val dependencyNode = dependenciesNode.appendNode("dependency")
-                    dependencyNode.appendNode("groupId", it.group)
-                    dependencyNode.appendNode("artifactId", it.base.archivesName.get())
-                    dependencyNode.appendNode("version", it.version)
-                }
-            }
         }
     }
     repositories {

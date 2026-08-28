@@ -85,7 +85,9 @@ fun Configuration.singleFileContents(): Provider<String> =
 
 dependencies {
 	dependencyProjects.forEach {
-		implementation(it)
+		compileOnly(it)
+		testImplementation(it)
+		add(gameTestSourceSet.implementationConfigurationName, it)
 	}
 	changelogHtml(project(":Changelog"))
 	testImplementation(
@@ -231,30 +233,12 @@ artifacts {
 	archives(sourcesJarTask.get())
 }
 
-val dependencyInfos = dependencyProjects.map {
-	mapOf(
-		"groupId" to it.group,
-		"artifactId" to it.base.archivesName.get(),
-		"version" to it.version
-	)
-}
-
 publishing {
 	publications {
 		register<MavenPublication>("forgeJar") {
 			artifactId = baseArchivesName
 			artifact(reobfJarTask)
 			artifact(sourcesJarTask.get())
-
-			pom.withXml {
-				val dependenciesNode = asNode().appendNode("dependencies")
-				dependencyInfos.forEach {
-					val dependencyNode = dependenciesNode.appendNode("dependency")
-					it.forEach { (key, value) ->
-						dependencyNode.appendNode(key, value)
-					}
-				}
-			}
 		}
 	}
 	repositories {
