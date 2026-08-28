@@ -33,6 +33,8 @@ repositories {
 // gradle.properties
 val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
+val amecsKeyModifiersVersionFabric: String by extra
+val amecsVersionFabric: String by extra
 val fabricApiVersion: String by extra
 val fabricApiVersionRange: String by extra
 val fabricLoaderVersion: String by extra
@@ -112,6 +114,8 @@ subprojects {
         exclude("**/.DS_Store")
 
         val properties = mapOf(
+            "amecsKeyModifiersVersionFabric" to amecsKeyModifiersVersionFabric,
+            "amecsVersionFabric" to amecsVersionFabric,
             "curseHomepageUrl" to curseHomepageUrl,
             "fabricApiVersion" to fabricApiVersion,
             "fabricApiVersionRange" to fabricApiVersionRange,
