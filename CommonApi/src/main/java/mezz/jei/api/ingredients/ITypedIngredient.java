@@ -61,7 +61,14 @@ public interface ITypedIngredient<T> {
 	 * @since 15.35.0
 	 */
 	@Nullable
-	<V> ITypedIngredient<V> cast(IIngredientType<V> ingredientType);
+	default <V> ITypedIngredient<V> cast(IIngredientType<V> ingredientType) {
+		if (getType().equals(ingredientType)) {
+			@SuppressWarnings("unchecked")
+			ITypedIngredient<V> cast = (ITypedIngredient<V>) this;
+			return cast;
+		}
+		return null;
+	}
 
 	/**
 	 * @return this instance, only if it contains an ItemStack.
