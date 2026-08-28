@@ -253,7 +253,6 @@ publishMods {
 
 tasks.test {
 	useJUnitPlatform()
-	failOnNoDiscoveredTests = false
 	include("mezz/jei/test/**")
 	exclude("mezz/jei/test/lib/**")
 	outputs.upToDateWhen { false }

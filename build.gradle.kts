@@ -6,7 +6,8 @@ plugins {
     id("com.dorongold.task-tree") version("4.0.2")
 
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
-    id("fabric-loom") version("1.17.20") apply(false)
+    // Loom 1.14+ requires Gradle 9, but ForgeGradle 6 requires Gradle 8.
+    id("fabric-loom") version("1.13.6") apply(false)
 
     // https://projects.neoforged.net/neoforged/moddevgradle
     id("net.neoforged.moddev") version("2.0.144") apply(false)
