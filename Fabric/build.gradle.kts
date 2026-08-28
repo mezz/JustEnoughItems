@@ -167,7 +167,7 @@ dependencies {
         name = "fabric-api",
         version = fabricApiVersion,
     )
-    implementation(
+    compileOnly(
         group = "com.google.code.findbugs",
         name = "jsr305",
         version = "3.0.1"
@@ -194,10 +194,13 @@ dependencies {
     )
     "clientGameTestCompileOnly"("org.jspecify:jspecify:1.0.0")
     vanillaDependencyProjects.forEach {
-        implementation(it)
+        compileOnly(it)
+        localRuntime(it)
     }
     loomDependencyProjects.forEach {
-        implementation(project(it.path, "namedElements"))
+        val namedElements = project(it.path, "namedElements")
+        compileOnly(namedElements)
+        localRuntime(namedElements)
     }
     modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
         isTransitive = false
