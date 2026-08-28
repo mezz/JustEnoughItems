@@ -30,7 +30,7 @@ pipeline {
         timeout(time: 1, unit: 'HOURS')
     }
     tools {
-        jdk "jdk8u292-b10"
+        jdk "jdk-25"
     }
 
     environment {

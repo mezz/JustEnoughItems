@@ -1,17 +1,17 @@
 import com.gtnewhorizons.retrofuturagradle.mcp.DeobfuscateTask
+import org.gradle.api.attributes.java.TargetJvmVersion
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
-import java.io.ByteArrayOutputStream
 
 plugins {
-	id("com.gtnewhorizons.retrofuturagradle") version("1.4.9")
+	id("com.gtnewhorizons.retrofuturagradle") version("2.0.3")
 	id("eclipse")
 	id("java")
 	id("me.modmuss50.mod-publish-plugin") version("2.2.0")
 	id("maven-publish")
-	id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.10"
-	id("se.bjurr.gitchangelog.git-changelog-gradle-plugin") version("1.79.0")
+	id("org.jetbrains.gradle.plugin.idea-ext") version "1.4.1"
+	id("se.bjurr.gitchangelog.git-changelog-gradle-plugin") version("3.1.2")
 }
 
 // gradle.properties
@@ -45,7 +45,19 @@ version = "${specificationVersion}.${buildNumber}"
 
 java {
 	toolchain {
-		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
+		languageVersion.set(JavaLanguageVersion.of(21))
+	}
+}
+
+listOf("compileApiJava", "compileJava", "compileTestJava").forEach { taskName ->
+	tasks.named<JavaCompile>(taskName) {
+		options.release.set(modJavaVersion.toInt())
+	}
+}
+
+listOf("testCompileClasspath", "testRuntimeClasspath").forEach { configurationName ->
+	configurations.named(configurationName) {
+		attributes.attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 17)
 	}
 }
 
@@ -58,10 +70,11 @@ dependencies {
 	testImplementation(
 		group = "org.mockito",
 		name = "mockito-core",
-		version = "3.12.4"
+		version = "5.23.0"
 	)
 	testRuntimeOnly("org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209")
-	testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.8.2")
+	testRuntimeOnly("org.junit.vintage:junit-vintage-engine:6.1.3")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.3")
 }
 
 val macOsxX64Lwjgl2Natives = configurations.create("macOsxX64Lwjgl2Natives") {
@@ -83,14 +96,11 @@ val extractMacOsxX64Lwjgl2Natives = tasks.register<Copy>("extractMacOsxX64Lwjgl2
 	onlyIf("runClient uses an x86_64 Java launcher on macOS") {
 		val isMacOs = System.getProperty("os.name").startsWith("Mac")
 		val javaExec = tasks.named<JavaExec>("runClient").get()
-		val javaSettings = ByteArrayOutputStream()
-		exec {
+		val javaSettings = providers.exec {
 			commandLine(javaExec.javaLauncher.get().executablePath.asFile, "-XshowSettings:properties", "-version")
-			standardOutput = javaSettings
-			errorOutput = javaSettings
 			isIgnoreExitValue = true
-		}
-		isMacOs && javaSettings.toString().contains("os.arch = x86_64")
+		}.standardError.asText.get()
+		isMacOs && javaSettings.contains("os.arch = x86_64")
 	}
 }
 
@@ -100,6 +110,16 @@ tasks.named("extractNatives2") {
 
 tasks.named("runClient") {
 	dependsOn(extractMacOsxX64Lwjgl2Natives)
+}
+
+val java8Launcher = javaToolchains.launcherFor {
+	languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
+}
+
+tasks.withType<JavaExec>().matching {
+	it.name == "runClient" || it.name == "runServer"
+}.configureEach {
+	javaLauncher.set(java8Launcher)
 }
 
 extractMacOsxX64Lwjgl2Natives.configure {
@@ -161,22 +181,35 @@ idea {
 	}
 }
 
-tasks.register<GitChangelogTask>("makeChangelog") {
-	fromRepo = projectDir.absolutePath.toString()
-	file = file("changelog.html")
-	untaggedName = "Current release ${project.version}"
-	fromCommit = "2fe051cf727adce1be210a46f778aa8fe031331e"
-	toRef = "HEAD"
-	templateContent = file("changelog.mustache").readText()
+val makeChangelog = tasks.register<GitChangelogTask>("makeChangelog") {
+	val output = layout.buildDirectory.file("changelog.html")
+	fromRepo.set(projectDir.absolutePath)
+	file.set(output.get().asFile)
+	untaggedName.set("Current release ${project.version}")
+	fromRevision.set("2fe051cf727adce1be210a46f778aa8fe031331e")
+	toRevision.set("HEAD")
+	templateContent.set(file("changelog.mustache").readText())
+	outputs.file(output)
+	outputs.upToDateWhen { false }
 }
 
-tasks.register<GitChangelogTask>("makeMarkdownChangelog") {
-	fromRepo = projectDir.absolutePath.toString()
-	file = file("changelog.md")
-	untaggedName = "Current release ${project.version}"
-	fromCommit = System.getenv("GIT_PREVIOUS_SUCCESSFUL_COMMIT") ?: "HEAD~10"
-	toRef = "HEAD"
-	templateContent = file("changelog-markdown.mustache").readText()
+val makeMarkdownChangelog = tasks.register<GitChangelogTask>("makeMarkdownChangelog") {
+	val output = layout.buildDirectory.file("changelog.md")
+	fromRepo.set(projectDir.absolutePath)
+	file.set(output.get().asFile)
+	untaggedName.set("Current release ${project.version}")
+	fromRevision.set(System.getenv("GIT_PREVIOUS_SUCCESSFUL_COMMIT") ?: "HEAD~10")
+	toRevision.set("HEAD")
+	templateContent.set(file("changelog-markdown.mustache").readText())
+	outputs.file(output)
+	outputs.upToDateWhen { false }
+}
+
+val changelogHtml = providers.provider {
+	layout.buildDirectory.file("changelog.html").get().asFile.readText()
+}
+val changelogMarkdown = providers.provider {
+	layout.buildDirectory.file("changelog.md").get().asFile.readText()
 }
 
 publishMods {
@@ -191,10 +224,14 @@ publishMods {
 
 	curseforge {
 		projectId = curseProjectId
+		projectSlug = curseHomepageUrl.substringAfterLast("/")
 		accessToken.set(curseforgeApikey)
-		changelog.set(provider { file("changelog.html").readText() })
+		changelog.set(changelogHtml)
 		changelogType = "html"
-		minecraftVersions.add(minecraftVersion)
+		minecraftVersionRange {
+			start = minecraftVersion
+			end = minecraftVersion
+		}
 		javaVersions.add(JavaVersion.toVersion(modJavaVersion))
 		client = true
 		server = true
@@ -203,19 +240,22 @@ publishMods {
 	modrinth {
 		projectId = modrinthId
 		accessToken.set(modrinthToken)
-		changelog.set(provider { file("changelog.md").readText() })
-		minecraftVersions.add(minecraftVersion)
+		changelog.set(changelogMarkdown)
+		minecraftVersionRange {
+			start = minecraftVersion
+			end = minecraftVersion
+		}
 	}
 }
 
 tasks.named("publishCurseforge") {
 	dependsOn(tasks.reobfJar)
-	dependsOn(":makeChangelog")
+	dependsOn(makeChangelog)
 }
 
 tasks.named("publishModrinth") {
 	dependsOn(tasks.reobfJar)
-	dependsOn(":makeMarkdownChangelog")
+	dependsOn(makeMarkdownChangelog)
 }
 
 tasks.register("publishCurseForge") {
