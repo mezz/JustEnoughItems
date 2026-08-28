@@ -181,7 +181,13 @@ dependencies {
     modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
     }
-    implementation("de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric")
+    val amecsKeyModifiers = "de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric"
+    compileOnly(amecsKeyModifiers) {
+        isTransitive = false
+    }
+    localRuntime(amecsKeyModifiers) {
+        isTransitive = false
+    }
     changelogHtml(project(":Changelog"))
     changelogMarkdown(project(":Changelog"))
 }
@@ -289,7 +295,7 @@ sourceSets {
     }
     named("gametest") {
         java.srcDir(commonClientTestFixturesSource)
-        runtimeClasspath += keyMappingGametestSourceSet.output
+        runtimeClasspath += keyMappingGametestSourceSet.output + configurations.named("localRuntime").get()
     }
 }
 

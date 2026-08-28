@@ -42,6 +42,6 @@
     "java": ">=${modJavaVersion}"
   },
   "suggests": {
-    "amecs_key_modifiers": "*"
+    "amecs_key_modifiers": ">=${amecsVersionFabric}"
   }
 }
