@@ -177,7 +177,8 @@ dependencies {
         } else {
             project(dependencyProjectPath)
         }
-        implementation(dependencyProject)
+        compileOnly(dependencyProject)
+        localRuntime(dependencyProject)
         dependencyClasses(project(dependencyProjectPath)) {
             isTransitive = false
         }
