@@ -84,6 +84,9 @@ configurations.named("gameTestImplementation") {
 configurations.named("clientGameTestImplementation") {
 	extendsFrom(configurations.implementation.get())
 }
+configurations.named("clientGameTestCompileOnly") {
+	extendsFrom(configurations.compileOnly.get())
+}
 
 java {
 	toolchain {
