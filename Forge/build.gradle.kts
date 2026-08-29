@@ -108,6 +108,7 @@ dependencies {
 	dependencyProjects.forEach {
 		compileOnly(it)
 		testImplementation(it)
+		add(gameTestSourceSet.implementationConfigurationName, it)
 	}
 	modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
 		isTransitive = false
