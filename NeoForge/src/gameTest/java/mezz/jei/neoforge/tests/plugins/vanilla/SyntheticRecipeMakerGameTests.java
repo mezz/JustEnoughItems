@@ -103,6 +103,25 @@ public final class SyntheticRecipeMakerGameTests {
 		helper.succeed();
 	}
 
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Generated JEI grindstone recipes skip enchantment-item pairs whose compatibility checks crash.")
+	public static void grindstoneRecipesSkipBrokenEnchantabilityChecks(JeiGameTestHelper helper) {
+		ThrowingEnchantabilityRecipeHelper recipeHelper = new ThrowingEnchantabilityRecipeHelper(TestRecipeHelper.INSTANCE);
+		GrindstoneMenu grindstoneMenu = createGrindstoneMenu(helper);
+		List<IJeiGrindstoneRecipe> recipes = GrindstoneRecipeMaker.getGrindstoneRecipes(
+			TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel()),
+			recipeHelper,
+			TestIngredientHelper.INSTANCE,
+			grindstoneMenu
+		);
+
+		helper.assertTrue(recipeHelper.hasThrown(), "Expected an enchantability check to throw");
+		helper.assertTrue(!recipes.isEmpty(), "Generated JEI grindstone recipes should continue after an enchantability check throws");
+
+		helper.succeed();
+	}
+
 	private static List<RecipeHolder<CraftingRecipe>> createTippedArrowRecipes() {
 		return TippedArrowRecipeMaker.createRecipes(TestIngredientManagers.createJeiHelpers());
 	}
@@ -406,6 +425,49 @@ public final class SyntheticRecipeMakerGameTests {
 			bottomInput,
 			describeStacks(recipe.getOutputs())
 		);
+	}
+
+	private static final class ThrowingEnchantabilityRecipeHelper implements IPlatformRecipeHelper {
+		private final IPlatformRecipeHelper delegate;
+		private boolean hasThrown;
+
+		private ThrowingEnchantabilityRecipeHelper(IPlatformRecipeHelper delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public Ingredient getBase(SmithingRecipe recipe) {
+			return delegate.getBase(recipe);
+		}
+
+		@Override
+		public Ingredient getAddition(SmithingRecipe recipe) {
+			return delegate.getAddition(recipe);
+		}
+
+		@Override
+		public Ingredient getTemplate(SmithingRecipe recipe) {
+			return delegate.getTemplate(recipe);
+		}
+
+		@Override
+		public ItemStack getGrindstoneResult(GrindstoneMenu grindstoneMenu, ItemStack input1, ItemStack input2) {
+			return delegate.getGrindstoneResult(grindstoneMenu, input1, input2);
+		}
+
+		@Override
+		public boolean isItemEnchantable(ItemStack stack, Holder<Enchantment> enchantment) {
+			boolean isItemEnchantable = delegate.isItemEnchantable(stack, enchantment);
+			if (!hasThrown && isItemEnchantable) {
+				hasThrown = true;
+				throw new IllegalStateException("Test enchantability failure");
+			}
+			return isItemEnchantable;
+		}
+
+		public boolean hasThrown() {
+			return hasThrown;
+		}
 	}
 
 	private record JeiCraftingRecipeIngredients(List<ItemStack> inputs, ItemStack output) {
