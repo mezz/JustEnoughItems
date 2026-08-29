@@ -1,11 +1,11 @@
 package mezz.jei.forge.tests.lib;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.ingredients.TypedIngredient;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -62,6 +62,11 @@ public record TestRecipeSlotView(RecipeIngredientRole role, List<@Nullable IType
 	public Stream<ITypedIngredient<?>> getAllIngredients() {
 		return ingredients.stream()
 			.filter(Objects::nonNull);
+	}
+
+	@Override
+	public List<@Nullable ITypedIngredient<?>> getAllIngredientsList() {
+		return ingredients;
 	}
 
 	@Override
