@@ -3,6 +3,7 @@ package mezz.jei.library.plugins.vanilla.grindstone;
 import mezz.jei.api.recipe.vanilla.IJeiGrindstoneRecipe;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
+import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.core.Registry;
@@ -12,6 +13,8 @@ import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -20,6 +23,8 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 public final class GrindstoneRecipeMaker {
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	public static List<IJeiGrindstoneRecipe> getGrindstoneRecipes(IIngredientManager ingredientManager, IPlatformRecipeHelper platformHelper) {
 		GrindstoneMenu grindstoneMenu = GrindstoneHelper.getFakeGrindstoneMenu();
 		if (grindstoneMenu == null) {
@@ -58,8 +63,7 @@ public final class GrindstoneRecipeMaker {
 			for (Item item : items) {
 				ItemStack stack = new ItemStack(item);
 				if (!stack.isEnchantable() ||
-						!enchantment.canEnchant(stack) ||
-						!platformHelper.isItemEnchantable(stack, enchantment)
+						!canEnchant(platformHelper, stack, enchantment, enchantmentResourceLocation)
 				) {
 					continue;
 				}
@@ -81,6 +85,22 @@ public final class GrindstoneRecipeMaker {
 		}
 
 		return grindstoneRecipes.stream();
+	}
+
+	private static boolean canEnchant(
+		IPlatformRecipeHelper platformHelper,
+		ItemStack stack,
+		Enchantment enchantment,
+		@Nullable ResourceLocation enchantmentId
+	) {
+		try {
+			return enchantment.canEnchant(stack) &&
+				platformHelper.isItemEnchantable(stack, enchantment);
+		} catch (RuntimeException e) {
+			String stackInfo = ErrorUtil.getItemStackInfo(stack);
+			LOGGER.error("Failed to check if enchantment {} can be applied to item: {}", enchantmentId, stackInfo, e);
+			return false;
+		}
 	}
 
 	private static Stream<IJeiGrindstoneRecipe> getRepairRecipes(IPlatformRecipeHelper platformHelper, IIngredientManager ingredientManager, GrindstoneMenu grindstoneMenu) {
