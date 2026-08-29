@@ -195,21 +195,25 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		List<IFocus<?>> focuses = focusGroup.getFocuses(role).toList();
 		IntSet results = new IntOpenHashSet();
 		for (IFocus<?> focus : focuses) {
-			getMatches(focus, results);
+			boolean foundExactMatch = getMatches(focus, UidContext.Ingredient, results);
+			if (!foundExactMatch) {
+				getMatches(focus, UidContext.Recipe, results);
+			}
 		}
 		return results;
 	}
 
-	private <T> void getMatches(IFocus<T> focus, IntSet results) {
+	private <T> boolean getMatches(IFocus<T> focus, UidContext uidContext, IntSet results) {
 		List<@Nullable ITypedIngredient<?>> ingredients = getAllIngredients();
 		if (ingredients.isEmpty()) {
-			return;
+			return false;
 		}
 
 		ITypedIngredient<T> focusValue = focus.getTypedValue();
 		IIngredientType<T> ingredientType = focusValue.getType();
 		IIngredientHelper<T> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredientType);
-		Object focusUid = ingredientHelper.getUid(focusValue, UidContext.Ingredient);
+		Object focusUid = ingredientHelper.getUid(focusValue, uidContext);
+		boolean foundMatch = false;
 
 		for (int i = 0; i < ingredients.size(); i++) {
 			@Nullable ITypedIngredient<?> typedIngredient = ingredients.get(i);
@@ -220,10 +224,12 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 			if (ingredient == null) {
 				continue;
 			}
-			Object uniqueId = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
+			Object uniqueId = ingredientHelper.getUid(ingredient, uidContext);
 			if (focusUid.equals(uniqueId)) {
 				results.add(i);
+				foundMatch = true;
 			}
 		}
+		return foundMatch;
 	}
 }
