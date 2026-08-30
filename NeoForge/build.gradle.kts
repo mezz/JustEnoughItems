@@ -361,7 +361,7 @@ tasks.named<ProcessResources>(sourceSets.main.get().processResourcesTaskName) {
 }
 
 val shadedJar = modShade.shadeJar()
-modShade.shadeSourcesJar()
+val shadedSourcesJar = modShade.shadeSourcesJar()
 
 publishMods {
 	file.set(shadedJar.flatMap { it.archiveFile })
@@ -419,7 +419,8 @@ publishing {
 	publications {
 		register<MavenPublication>("neoforgeJar") {
 			artifactId = baseArchivesName
-			from(components["java"])
+			artifact(shadedJar)
+			artifact(shadedSourcesJar)
 		}
 	}
 	repositories {
