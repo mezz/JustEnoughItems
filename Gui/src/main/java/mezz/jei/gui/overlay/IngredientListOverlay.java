@@ -313,6 +313,17 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		});
 	}
 
+	public IUserInputHandler createDeleteItemInputHandler() {
+		final IUserInputHandler deleteItemInputHandler = this.contents.createDeleteItemInputHandler();
+
+		return new ProxyInputHandler(() -> {
+			if (isListDisplayed()) {
+				return deleteItemInputHandler;
+			}
+			return NullInputHandler.INSTANCE;
+		});
+	}
+
 	public IDragHandler createDragHandler() {
 
 		final IDragHandler combinedDragHandler = new CombinedDragHandler(

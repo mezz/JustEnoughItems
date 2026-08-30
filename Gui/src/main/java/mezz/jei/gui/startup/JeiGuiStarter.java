@@ -233,6 +233,8 @@ public class JeiGuiStarter {
 			"JEIGlobal",
 			recipesGuiForegroundInputLayer,
 			new EditInputHandler(recipeFocusSource, toggleState, editModeConfig),
+			ingredientListOverlay.createDeleteItemInputHandler(),
+			bookmarkOverlay.createDeleteItemInputHandler(),
 			new CheatInputHandler(recipeFocusSource, clientConfig, ingredientManager, toggleState, serverConnection),
 			ingredientListOverlay.createInputHandler(),
 			bookmarkOverlay.createInputHandler(),

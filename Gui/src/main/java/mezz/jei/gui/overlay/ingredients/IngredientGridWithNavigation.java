@@ -291,6 +291,10 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 				.noneMatch(area -> area.contains(mouseX, mouseY));
 	}
 
+	public IUserInputHandler createDeleteItemInputHandler() {
+		return this.ingredientGrid.getInputHandler();
+	}
+
 	public IUserInputHandler createInputHandler() {
 		return new CombinedInputHandler(
 			this.debugName,
@@ -308,7 +312,6 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 				this.navigation::updatePageNumber,
 				this.ghostIngredientQuickMoveManager
 			),
-			this.ingredientGrid.getInputHandler(),
 			this.navigation.createInputHandler()
 		);
 	}
