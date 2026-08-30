@@ -38,7 +38,7 @@ sourceSets {
 
 dependencies {
 	dependencyProjects.forEach {
-		implementation(it)
+		compileOnly(it)
 	}
 }
 
@@ -60,7 +60,7 @@ tasks.withType<JavaCompile> {
 val copyModMetadataToClasses = tasks.register<Copy>("copyModMetadataToClasses") {
 	// ModDevGradle exposes classes and resources as separate mod roots on this branch.
 	from(layout.buildDirectory.dir("resources/main/META-INF")) {
-		include("mods.toml", "neoforge.mods.toml")
+		include("neoforge.mods.toml")
 	}
 	into(layout.buildDirectory.dir("classes/java/main/META-INF"))
 	dependsOn(

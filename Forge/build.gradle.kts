@@ -62,6 +62,30 @@ dependencyProjects.forEach {
 }
 project.evaluationDependsOn(debugProject.path)
 
+val debugSourceSet = debugProject.sourceSets.main.get()
+val forgeDebugOutput = layout.buildDirectory.dir("sourcesSets/forgeDebug")
+val prepareForgeDebug = tasks.register<Sync>("prepareForgeDebug") {
+	from(debugSourceSet.output)
+	into(forgeDebugOutput)
+	dependsOn(debugProject.tasks.named(debugSourceSet.classesTaskName))
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+val forgeDebugSourceSet = sourceSets.create("forgeDebug") {
+	java.setSrcDirs(emptyList<String>())
+	resources.setSrcDirs(emptyList<String>())
+	output.setResourcesDir(forgeDebugOutput)
+	(output.classesDirs as ConfigurableFileCollection).setFrom(forgeDebugOutput)
+}
+tasks.named(forgeDebugSourceSet.compileJavaTaskName) {
+	enabled = false
+}
+tasks.named(forgeDebugSourceSet.processResourcesTaskName) {
+	enabled = false
+}
+tasks.named(forgeDebugSourceSet.classesTaskName) {
+	dependsOn(prepareForgeDebug)
+}
+
 java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
@@ -154,7 +178,7 @@ minecraft {
 					source(sourceSets.main.get())
 				}
 				create("${modId}debug") {
-					source(debugProject.sourceSets.main.get())
+					source(forgeDebugSourceSet)
 				}
 			}
 		}
@@ -179,7 +203,7 @@ minecraft {
 					source(sourceSets.main.get())
 				}
 				create("${modId}debug") {
-					source(debugProject.sourceSets.main.get())
+					source(forgeDebugSourceSet)
 				}
 			}
 		}

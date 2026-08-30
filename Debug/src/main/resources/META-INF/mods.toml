@@ -1,4 +1,4 @@
-modLoader="javafml"
+modLoader="lowcodefml"
 loaderVersion="${forgeLoaderVersionRange}"
 license="MIT"
 
