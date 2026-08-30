@@ -24,6 +24,7 @@ import mezz.jei.gui.input.MouseUtil;
 import mezz.jei.gui.input.handlers.CombinedDragHandler;
 import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import mezz.jei.gui.input.handlers.NullDragHandler;
+import mezz.jei.gui.input.handlers.NullInputHandler;
 import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
@@ -339,6 +340,17 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				return displayedInputHandler;
 			}
 			return buttonInputHandler;
+		});
+	}
+
+	public IUserInputHandler createDeleteItemInputHandler() {
+		final IUserInputHandler deleteItemInputHandler = this.contents.createDeleteItemInputHandler();
+
+		return new ProxyInputHandler(() -> {
+			if (isListDisplayed()) {
+				return deleteItemInputHandler;
+			}
+			return NullInputHandler.INSTANCE;
 		});
 	}
 
