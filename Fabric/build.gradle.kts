@@ -463,7 +463,8 @@ publishing {
             @Suppress("UnstableApiUsage")
             loom.disableDeprecatedPomGeneration(this)
             artifactId = baseArchivesName
-            from(components["java"])
+            artifact(shadedJar)
+            artifact(shadedSourcesJar)
         }
     }
     repositories {
