@@ -119,6 +119,9 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	@Override
 	public Stream<ITypedIngredient<?>> getDisplayedIngredients() {
+		if (!ingredients.hasDisplayOverrides()) {
+			return ingredients.getVisibleTypedIngredients();
+		}
 		return getDisplayedSlotIngredient()
 			.stream()
 			.flatMap(ingredients::getVisibleTypedIngredientsInDisplayGroup);
@@ -162,7 +165,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private <T> void addIngredientTooltip(ITooltipBuilder tooltip, SlotIngredient<T> slotIngredient) {
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 		ITypedIngredient<T> typedIngredient = slotIngredient.typedIngredient();
-		List<ITypedIngredient<?>> visibleCandidates = getVisibleIngredients();
+		List<ITypedIngredient<?>> visibleCandidates = getDisplayedIngredients().toList();
 		List<ITypedIngredient<?>> visibleDisplayGroup = getVisibleIngredientsInDisplayGroup(slotIngredient);
 
 		IIngredientType<T> ingredientType = typedIngredient.getType();
@@ -343,17 +346,8 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			.toList();
 	}
 
-	private List<ITypedIngredient<?>> getVisibleIngredients() {
-		if (ingredients.hasDisplayOverrides()) {
-			return getDisplayedIngredients().toList();
-		}
-		return ingredients.getVisibleTypedIngredients()
-			.toList();
-	}
-
 	private boolean hasCandidates() {
-		return getVisibleIngredients()
-			.stream()
+		return getDisplayedIngredients()
 			.limit(2)
 			.count() > 1;
 	}
