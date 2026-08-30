@@ -56,7 +56,8 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		for (Object ingredient : ingredients) {
-			@Nullable ITypedIngredient<?> typedIngredient = TypedIngredient.createAndFilterInvalidForDisplay(ingredientManager, ingredient, false);
+			@Nullable
+			ITypedIngredient<?> typedIngredient = TypedIngredient.createAndFilterInvalidForDisplay(ingredientManager, ingredient, false);
 			addIngredient(typedIngredient);
 		}
 
@@ -110,7 +111,8 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	public <I> DisplayIngredientAcceptor addTypedIngredient(ITypedIngredient<I> typedIngredient) {
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
-		@Nullable ITypedIngredient<I> copy = TypedIngredientUtil.checkAndValidateTypedIngredientFromApi(ingredientManager, typedIngredient);
+		@Nullable
+		ITypedIngredient<I> copy = TypedIngredientUtil.checkAndValidateTypedIngredientFromApi(ingredientManager, typedIngredient);
 		addIngredient(copy);
 
 		return this;
@@ -177,7 +179,8 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	}
 
 	private <T> void addIngredientInternal(IIngredientType<T> ingredientType, @Nullable T ingredient) {
-		@Nullable ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalidForDisplay(this.ingredientManager, ingredientType, ingredient, false);
+		@Nullable
+		ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalidForDisplay(this.ingredientManager, ingredientType, ingredient, false);
 		addIngredient(typedIngredient);
 	}
 
