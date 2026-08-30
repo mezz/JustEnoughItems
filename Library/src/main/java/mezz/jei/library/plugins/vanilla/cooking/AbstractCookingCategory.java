@@ -23,14 +23,25 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Block;
 
+import java.util.List;
+
 public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> extends AbstractRecipeCategory<RecipeHolder<T>> {
 	protected final int regularCookTime;
+	private final List<ItemStack> furnaceFuels;
 
 	public AbstractCookingCategory(IGuiHelper guiHelper, RecipeType<RecipeHolder<T>> recipeType, Block icon, String translationKey, int regularCookTime) {
-		this(guiHelper, recipeType, icon, translationKey, regularCookTime, 82, 54);
+		this(guiHelper, recipeType, icon, translationKey, regularCookTime, List.of());
+	}
+
+	public AbstractCookingCategory(IGuiHelper guiHelper, RecipeType<RecipeHolder<T>> recipeType, Block icon, String translationKey, int regularCookTime, List<ItemStack> furnaceFuels) {
+		this(guiHelper, recipeType, icon, translationKey, regularCookTime, furnaceFuels, 82, 54);
 	}
 
 	public AbstractCookingCategory(IGuiHelper guiHelper, RecipeType<RecipeHolder<T>> recipeType, Block icon, String translationKey, int regularCookTime, int width, int height) {
+		this(guiHelper, recipeType, icon, translationKey, regularCookTime, List.of(), width, height);
+	}
+
+	public AbstractCookingCategory(IGuiHelper guiHelper, RecipeType<RecipeHolder<T>> recipeType, Block icon, String translationKey, int regularCookTime, List<ItemStack> furnaceFuels, int width, int height) {
 		super(
 			recipeType,
 			Component.translatable(translationKey),
@@ -39,6 +50,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 			height
 		);
 		this.regularCookTime = regularCookTime;
+		this.furnaceFuels = List.copyOf(furnaceFuels);
 	}
 
 	@Override
@@ -57,6 +69,8 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 			.setStandardSlotBackground();
 		if (fuelDisplay.isSpecific()) {
 			fuelSlot.addIngredients(fuelDisplay.input());
+		} else {
+			fuelSlot.addItemStacks(furnaceFuels);
 		}
 
 		ItemStack result = recipe instanceof JeiSmeltingRecipe jeiRecipe ? jeiRecipe.getResult() : RecipeUtil.getResultItem(recipe);

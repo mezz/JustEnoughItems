@@ -41,6 +41,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
+	private static final int SLOT_FOREGROUND_Z = 200;
+
 	private final RecipeIngredientRole role;
 	private final RecipeSlotIngredients ingredients;
 	private final ICycler cycler;
@@ -319,7 +321,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			var poseStack = guiGraphics.pose();
 			poseStack.pushPose();
 			{
-				poseStack.translate(0, 0, 200);
+				poseStack.translate(0, 0, SLOT_FOREGROUND_Z);
 				overlay.draw(guiGraphics, x, y);
 			}
 			poseStack.popPose();
@@ -344,7 +346,14 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			.orElseGet(textures::getListBadgeIcon);
 		int badgeX = this.rect.getX() + this.rect.getWidth() - badgeIcon.getWidth() + 1;
 		int badgeY = this.rect.getY() - 1;
-		badgeIcon.draw(guiGraphics, badgeX, badgeY);
+
+		var poseStack = guiGraphics.pose();
+		poseStack.pushPose();
+		{
+			poseStack.translate(0, 0, SLOT_FOREGROUND_Z);
+			badgeIcon.draw(guiGraphics, badgeX, badgeY);
+		}
+		poseStack.popPose();
 	}
 
 	private <T> void drawIngredient(GuiGraphics guiGraphics, ITypedIngredient<T> typedIngredient, int xPos, int yPos) {

@@ -63,6 +63,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasBuilder {
+	private static final int RECIPE_FOREGROUND_Z = 200;
+
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final LimitedLogger LIMITED_LOGGER = new LimitedLogger(LOGGER, Duration.ofSeconds(10));
 
@@ -218,7 +220,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 				RecipeWidgetRenderer.forEachWidget(allWidgets, recipeMouseX, recipeMouseY, (widget, position, relativeMouseX, relativeMouseY) -> {
 					poseStack.pushPose();
 					try {
-						poseStack.translate(position.x(), position.y(), 0);
+						poseStack.translate(position.x(), position.y(), RECIPE_FOREGROUND_Z);
 						widget.drawWidget(guiGraphics, relativeMouseX, relativeMouseY);
 					} finally {
 						poseStack.popPose();

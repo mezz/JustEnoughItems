@@ -38,6 +38,7 @@ import java.util.stream.Stream;
 
 final class InteractiveIngredientTooltip implements IGuiInputLayer {
 	private static final int NAVIGATION_BACKGROUND_PADDING = 2;
+	private static final int TOOLTIP_FOREGROUND_Z = 300;
 	private static final InputConstants.Key LEFT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_LEFT);
 	private static final InputConstants.Key RIGHT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_RIGHT);
 
@@ -165,7 +166,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{
-			poseStack.translate(0, 0, 300);
+			poseStack.translate(0, 0, TOOLTIP_FOREGROUND_Z);
 			guiGraphics.fill(
 				0,
 				0,
@@ -199,7 +200,14 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		IIngredientRenderer<T> ingredientRenderer = this.ingredientManager.getIngredientRenderer(ingredientType);
 		JeiTooltip tooltip = new JeiTooltip();
 		SafeIngredientUtil.getRichTooltip(tooltip, this.ingredientManager, ingredientRenderer, ingredient);
-		tooltip.draw(guiGraphics, mouseX, mouseY, ingredient, ingredientRenderer, this.ingredientManager);
+
+		var poseStack = guiGraphics.pose();
+		poseStack.pushPose();
+		{
+			poseStack.translate(0, 0, TOOLTIP_FOREGROUND_Z);
+			tooltip.draw(guiGraphics, mouseX, mouseY, ingredient, ingredientRenderer, this.ingredientManager);
+		}
+		poseStack.popPose();
 	}
 
 	private ImmutableRect2i getNavigationArea() {

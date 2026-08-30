@@ -222,13 +222,16 @@ public class VanillaPlugin implements IModPlugin {
 		Textures textures = Internal.getTextures();
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+		List<ItemStack> furnaceFuels = FuelRecipeMaker.getFuelRecipes(jeiHelpers.getIngredientManager()).stream()
+			.flatMap(recipe -> recipe.getInputs().stream())
+			.toList();
 		brewingExtensionHelper = new BrewingExtensionHelper();
 		registration.addRecipeCategories(
 			craftingCategory = new CraftingRecipeCategory(guiHelper),
 			stonecuttingCategory = new StoneCuttingRecipeCategory(guiHelper),
-			furnaceCategory = new FurnaceSmeltingCategory(guiHelper),
-			smokingCategory = new SmokingCategory(guiHelper),
-			blastingCategory = new BlastingCategory(guiHelper),
+			furnaceCategory = new FurnaceSmeltingCategory(guiHelper, furnaceFuels),
+			smokingCategory = new SmokingCategory(guiHelper, furnaceFuels),
+			blastingCategory = new BlastingCategory(guiHelper, furnaceFuels),
 			campfireCategory = new CampfireCookingCategory(guiHelper),
 			smithingCategory = new SmithingRecipeCategory(guiHelper),
 			new CompostableRecipeCategory(guiHelper),

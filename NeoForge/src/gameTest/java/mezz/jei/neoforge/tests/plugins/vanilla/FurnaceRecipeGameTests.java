@@ -136,6 +136,21 @@ public final class FurnaceRecipeGameTests {
 		helper.assertTrue(recipe.getFuel().isEmpty(), "Expected the default all-fuels marker");
 		helper.assertTrue(recipe.getFuelOutput().isEmpty(), "Expected no default fuel output");
 
+		List<ItemStack> furnaceFuels = List.of(new ItemStack(Items.COAL), new ItemStack(Items.CHARCOAL));
+		IIngredientManager ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel());
+		FurnaceSmeltingCategory recipeCategory = new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE, furnaceFuels);
+		IIngredientSupplier ingredients = IngredientSupplierHelper.getIngredientSupplier(
+			recipeHolder,
+			recipeCategory,
+			ingredientManager
+		);
+		assertStacks(
+			helper,
+			furnaceFuels,
+			getItemStacks(ingredients, RecipeIngredientRole.RENDER_ONLY),
+			"Default fuel-slot inputs"
+		);
+
 		FurnaceMenu menu = helper.openMenu(FurnaceMenu::new);
 		FurnaceRecipeTransferInfo transferInfo = new FurnaceRecipeTransferInfo();
 		helper.assertEquals(1, transferInfo.getRecipeSlots(menu, recipeHolder).size(), "Normal smelting transfer slot count");
