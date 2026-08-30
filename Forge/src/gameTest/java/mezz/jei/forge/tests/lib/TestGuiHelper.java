@@ -33,7 +33,7 @@ public final class TestGuiHelper implements IGuiHelper {
 	}
 
 	@Override
-	@Deprecated(since = "19.38.0")
+	@Deprecated(since = "15.32.0")
 	public IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId) {
 		return DRAWABLE;
 	}
