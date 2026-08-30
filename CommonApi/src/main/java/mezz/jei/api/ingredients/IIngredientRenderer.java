@@ -45,11 +45,12 @@ public interface IIngredientRenderer<T> {
 	default void render(GuiGraphicsExtractor guiGraphics, T ingredient, int posX, int posY) {
 		var poseStack = guiGraphics.pose();
 		poseStack.pushMatrix();
-		{
+		try {
 			poseStack.translate(posX, posY);
 			render(guiGraphics, ingredient);
+		} finally {
+			poseStack.popMatrix();
 		}
-		poseStack.popMatrix();
 	}
 
 	/**

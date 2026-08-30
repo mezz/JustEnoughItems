@@ -159,7 +159,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		);
 	}
 
-	private <T> void getTooltip(ITooltipBuilder tooltip, SlotIngredient<T> slotIngredient) {
+	private <T> void addIngredientTooltip(ITooltipBuilder tooltip, SlotIngredient<T> slotIngredient) {
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 		ITypedIngredient<T> typedIngredient = slotIngredient.typedIngredient();
 		List<ITypedIngredient<?>> visibleCandidates = getVisibleIngredients();
@@ -175,7 +175,12 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			var pauseRecipeCycling = Internal.getKeyMappings().getPauseRecipeCycling();
 			tooltip.add(new RecipeSlotOptionsTooltipComponent(pauseRecipeCycling));
 		}
-		for (IRecipeSlotRichTooltipCallback tooltipCallback : this.tooltipCallbacks) {
+	}
+
+	private void addTooltip(ITooltipBuilder tooltip) {
+		getDisplayedSlotIngredient()
+			.ifPresent(ingredient -> addIngredientTooltip(tooltip, ingredient));
+		for (IRecipeSlotRichTooltipCallback tooltipCallback : tooltipCallbacks) {
 			tooltipCallback.onRichTooltip(this, tooltip);
 		}
 	}
@@ -194,9 +199,6 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		addSlotDisplayTooltip(tooltip, slotIngredient);
 		addTagNameTooltip(tooltip, ingredientManager, slotIngredient, visibleCandidates);
 
-		for (IRecipeSlotRichTooltipCallback tooltipCallback : this.tooltipCallbacks) {
-			tooltipCallback.onRichTooltip(this, tooltip);
-		}
 		return tooltip.getLegacyComponents();
 	}
 
@@ -449,27 +451,27 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	@Override
 	@Deprecated
 	public List<Component> getTooltip() {
-		return getDisplayedSlotIngredient()
-			.map(this::getLegacyTooltip)
-			.orElseGet(List::of);
+		JeiTooltip tooltip = new JeiTooltip();
+		getDisplayedSlotIngredient()
+			.ifPresent(ingredient -> tooltip.addAll(getLegacyTooltip(ingredient)));
+		for (IRecipeSlotRichTooltipCallback tooltipCallback : tooltipCallbacks) {
+			tooltipCallback.onRichTooltip(this, tooltip);
+		}
+		return tooltip.getLegacyComponents();
 	}
 
 	@SuppressWarnings("removal")
 	@Override
 	@Deprecated
 	public void getTooltip(ITooltipBuilder tooltipBuilder) {
-		getDisplayedSlotIngredient()
-			.ifPresent(ingredient -> getTooltip(tooltipBuilder, ingredient));
+		addTooltip(tooltipBuilder);
 	}
 
 	@Override
 	public void drawTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		getDisplayedSlotIngredient()
-			.ifPresent(ingredient -> {
-				JeiTooltip tooltip = new JeiTooltip();
-				getTooltip(tooltip, ingredient);
-				tooltip.draw(guiGraphics, mouseX, mouseY);
-			});
+		JeiTooltip tooltip = new JeiTooltip();
+		addTooltip(tooltip);
+		tooltip.draw(guiGraphics, mouseX, mouseY);
 	}
 
 	@Override
