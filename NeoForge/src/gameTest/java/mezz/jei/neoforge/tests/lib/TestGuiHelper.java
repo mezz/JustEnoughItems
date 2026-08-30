@@ -11,6 +11,7 @@ import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.gui.widgets.IScrollGridWidgetFactory;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.library.gui.helpers.CraftingGridHelper;
@@ -115,6 +116,11 @@ public final class TestGuiHelper implements IGuiHelper {
 	@Override
 	public <V> IDrawable createDrawableIngredient(ITypedIngredient<V> ingredient) {
 		return DRAWABLE;
+	}
+
+	@Override
+	public <V> IDrawable createDrawableIngredient(IIngredientRenderer<V> ingredientRenderer, V ingredient) {
+		return new TestDrawable(ingredientRenderer.getWidth(), ingredientRenderer.getHeight());
 	}
 
 	@Override
