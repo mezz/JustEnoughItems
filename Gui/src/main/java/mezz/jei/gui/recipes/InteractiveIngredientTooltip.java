@@ -68,10 +68,10 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		double mouseX,
 		double mouseY
 	) {
-		List<ITypedIngredient<?>> displayedIngredients = sourceSlot.slot()
+		List<ITypedIngredient<?>> visibleIngredients = sourceSlot.slot()
 			.getDisplayedIngredients()
 			.toList();
-		if (displayedIngredients.size() <= 1) {
+		if (visibleIngredients.size() <= 1) {
 			return Optional.empty();
 		}
 		return Optional.of(new InteractiveIngredientTooltip(
@@ -82,7 +82,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 			clickTargetFactory,
 			sourceSlot,
 			sourceMouseOverable,
-			new InteractiveIngredientGridTooltipComponent(recipeManager, displayedIngredients),
+			new InteractiveIngredientGridTooltipComponent(recipeManager, visibleIngredients),
 			(int) mouseX,
 			(int) mouseY
 		));
