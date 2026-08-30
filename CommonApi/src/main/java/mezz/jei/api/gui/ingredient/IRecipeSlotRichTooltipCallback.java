@@ -5,7 +5,7 @@ import mezz.jei.api.gui.builder.ITooltipBuilder;
 
 
 /**
- * Used to add tooltips to ingredients drawn on a recipe.
+ * Used to add rich tooltips to recipe slots.
  *
  * Implement a tooltip callback and add it with
  * {@link IRecipeSlotBuilder#addRichTooltipCallback(IRecipeSlotRichTooltipCallback)}
@@ -15,7 +15,10 @@ import mezz.jei.api.gui.builder.ITooltipBuilder;
 @FunctionalInterface
 public interface IRecipeSlotRichTooltipCallback {
 	/**
-	 * Add to the tooltip for an ingredient.
+	 * Add to the tooltip for a recipe slot.
+	 *
+	 * This is also called when the slot has no displayed ingredient. This allows a slot background,
+	 * overlay, or placeholder to provide its own tooltip.
 	 *
 	 * @since 19.8.5
 	 */

@@ -46,11 +46,12 @@ public interface IIngredientRenderer<T> {
 	default void render(GuiGraphics guiGraphics, T ingredient, int posX, int posY) {
 		PoseStack poseStack = guiGraphics.pose();
 		poseStack.pushPose();
-		{
+		try {
 			poseStack.translate(posX, posY, 0);
 			render(guiGraphics, ingredient);
+		} finally {
+			poseStack.popPose();
 		}
-		poseStack.popPose();
 	}
 
 	/**

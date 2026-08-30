@@ -4,12 +4,15 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.gui.widgets.IScrollGridWidget;
 import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.GridScrollMath;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
+import mezz.jei.common.util.PlaceableUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 
@@ -50,6 +53,27 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 	@Override
 	public ScrollGridRecipeWidget setPosition(int xPos, int yPos) {
 		this.area = area.setPosition(xPos, yPos);
+		return this;
+	}
+
+	@Override
+	public ScrollGridRecipeWidget setPosition(
+		int areaX,
+		int areaY,
+		int areaWidth,
+		int areaHeight,
+		HorizontalAlignment horizontalAlignment,
+		VerticalAlignment verticalAlignment
+	) {
+		PlaceableUtil.setPosition(
+			this,
+			areaX,
+			areaY,
+			areaWidth,
+			areaHeight,
+			horizontalAlignment,
+			verticalAlignment
+		);
 		return this;
 	}
 

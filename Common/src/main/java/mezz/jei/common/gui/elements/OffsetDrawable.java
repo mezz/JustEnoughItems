@@ -1,8 +1,11 @@
 package mezz.jei.common.gui.elements;
 
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.IPlaceable;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.PlaceableUtil;
 import net.minecraft.client.gui.GuiGraphics;
 
 /**
@@ -55,6 +58,26 @@ public class OffsetDrawable implements IDrawable, IPlaceable<OffsetDrawable> {
 		this.xOffset = xPos;
 		this.yOffset = yPos;
 		return this;
+	}
+
+	@Override
+	public OffsetDrawable setPosition(
+		int areaX,
+		int areaY,
+		int areaWidth,
+		int areaHeight,
+		HorizontalAlignment horizontalAlignment,
+		VerticalAlignment verticalAlignment
+	) {
+		return PlaceableUtil.setPosition(
+			this,
+			areaX,
+			areaY,
+			areaWidth,
+			areaHeight,
+			horizontalAlignment,
+			verticalAlignment
+		);
 	}
 
 	public ImmutableRect2i getArea() {
