@@ -79,7 +79,8 @@ public class JeiInternalPlugin implements IModPlugin {
 		IIngredientManager ingredientManager,
 		Registry<B> registry
 	) {
-		registry.getAny()
+		registry.holders()
+			.findAny()
 			.ifPresent(holder -> {
 				IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 				IGuiHelper guiHelper = jeiHelpers.getGuiHelper();

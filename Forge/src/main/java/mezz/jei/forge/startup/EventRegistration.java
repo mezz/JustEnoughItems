@@ -95,16 +95,14 @@ public class EventRegistration {
 		subscriptions.register(ContainerScreenEvent.Render.Background.class, event -> {
 			AbstractContainerScreen<?> containerScreen = event.getContainerScreen();
 			var guiGraphics = event.getGuiGraphics();
-			int mouseX = event.getMouseX();
-			int mouseY = event.getMouseY();
-			guiEventHandler.drawForScreen(containerScreen, guiGraphics, mouseX, mouseY);
+			guiEventHandler.drawForScreenBackground(containerScreen, guiGraphics);
 		});
 		subscriptions.register(ContainerScreenEvent.Render.Foreground.class, event -> {
 			AbstractContainerScreen<?> containerScreen = event.getContainerScreen();
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			guiEventHandler.drawForContainerScreen(containerScreen, guiGraphics, mouseX, mouseY);
+			guiEventHandler.drawForScreenForeground(containerScreen, guiGraphics, mouseX, mouseY);
 		});
 		subscriptions.register(ScreenEvent.Render.Post.class, event -> {
 			Screen screen = event.getScreen();
@@ -114,7 +112,8 @@ public class EventRegistration {
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			guiEventHandler.drawForScreen(screen, guiGraphics, mouseX, mouseY);
+			guiEventHandler.drawForScreenBackground(screen, guiGraphics);
+			guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY);
 		});
 		subscriptions.register(ScreenEvent.RenderInventoryMobEffects.class, event -> {
 			if (guiEventHandler.renderCompactPotionIndicators()) {
