@@ -39,7 +39,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.material.Fluids;
 import org.jspecify.annotations.Nullable;
 
@@ -102,7 +106,7 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 
 	@Override
 	public void draw(DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		if (runtime != null) {
+		if (runtime != null && !recipe.isSlotDisplayComparison()) {
 			this.item.draw(guiGraphics, 50, 20);
 
 			IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
@@ -131,6 +135,11 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, DebugRecipe recipe, IFocusGroup focuses) {
+		if (recipe.isSlotDisplayComparison()) {
+			setSlotDisplayComparisonRecipe(builder);
+			return;
+		}
+
 		// ITEM type
 		builder.addOutputSlot(70, 0)
 			.add(new ItemStack(Items.FARMLAND))
@@ -183,6 +192,68 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 					case CRAFTING_STATION -> tooltip.add(Component.literal("Crafting Station DebugIngredient"));
 				}
 			});
+	}
+
+	private static void setSlotDisplayComparisonRecipe(IRecipeLayoutBuilder builder) {
+		ItemStack damagedIronPickaxe = new ItemStack(Items.IRON_PICKAXE);
+		damagedIronPickaxe.setDamageValue(10);
+		ItemStack damagedDiamondPickaxe = new ItemStack(Items.DIAMOND_PICKAXE);
+		damagedDiamondPickaxe.setDamageValue(100);
+
+		builder.addInputSlot(50, 8)
+			.setStandardSlotBackground()
+			.add(createExactStackComposite(
+				new ItemStack(Items.STICK),
+				new ItemStack(Items.GLASS_BOTTLE),
+				new ItemStack(Items.APPLE)
+			))
+			.addRichTooltipCallback((recipeSlotView, tooltip) -> tooltip.add(Component.literal("Composite of exact ordinary stacks")));
+
+		builder.addInputSlot(80, 8)
+			.setStandardSlotBackground()
+			.add(createExactStackComposite(
+				PotionContents.createItemStack(Items.POTION, Potions.WATER),
+				PotionContents.createItemStack(Items.POTION, Potions.HEALING),
+				PotionContents.createItemStack(Items.POTION, Potions.POISON)
+			))
+			.addRichTooltipCallback((recipeSlotView, tooltip) -> tooltip.add(Component.literal("Composite of exact potion stacks")));
+
+		builder.addInputSlot(110, 8)
+			.setStandardSlotBackground()
+			.add(createExactStackComposite(
+				damagedIronPickaxe,
+				damagedDiamondPickaxe
+			))
+			.addRichTooltipCallback((recipeSlotView, tooltip) -> tooltip.add(Component.literal("Composite of exact damaged stacks")));
+
+		builder.addInputSlot(50, 36)
+			.setStandardSlotBackground()
+			.add(createItemComposite(Items.STICK, Items.GLASS_BOTTLE, Items.APPLE))
+			.addRichTooltipCallback((recipeSlotView, tooltip) -> tooltip.add(Component.literal("Composite of ordinary item displays")));
+
+		builder.addInputSlot(80, 36)
+			.setStandardSlotBackground()
+			.add(createItemComposite(Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION))
+			.addRichTooltipCallback((recipeSlotView, tooltip) -> tooltip.add(Component.literal("Composite of potion item displays")));
+
+		builder.addInputSlot(110, 36)
+			.setStandardSlotBackground()
+			.add(createItemComposite(Items.IRON_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE))
+			.addRichTooltipCallback((recipeSlotView, tooltip) -> tooltip.add(Component.literal("Composite of tool item displays")));
+	}
+
+	private static SlotDisplay createExactStackComposite(ItemStack... itemStacks) {
+		List<SlotDisplay> displays = Arrays.stream(itemStacks)
+			.<SlotDisplay>map(SlotDisplay.ItemStackSlotDisplay::new)
+			.toList();
+		return new SlotDisplay.Composite(displays);
+	}
+
+	private static SlotDisplay createItemComposite(Item... items) {
+		List<SlotDisplay> displays = Arrays.stream(items)
+			.<SlotDisplay>map(SlotDisplay.ItemSlotDisplay::new)
+			.toList();
+		return new SlotDisplay.Composite(displays);
 	}
 
 	@Override

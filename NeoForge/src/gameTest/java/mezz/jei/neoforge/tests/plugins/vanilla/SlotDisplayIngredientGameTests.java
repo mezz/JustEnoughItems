@@ -307,6 +307,40 @@ public final class SlotDisplayIngredientGameTests {
 
 	@GameTest
 	@EmptyTemplate
+	@TestHolder(description = "Exact item-stack composites retain candidates across their independent display groups.")
+	public static void exactItemStackCompositeKeepsCandidatesAcrossDisplayGroups(JeiGameTestHelper helper) {
+		// Setup: each exact item-stack child contributes an independent, non-wildcard display group.
+		ItemStack stick = new ItemStack(Items.STICK);
+		ItemStack glassBottle = new ItemStack(Items.GLASS_BOTTLE);
+		IIngredientManagerInternal ingredientManager = createIngredientManager(stick, glassBottle);
+		SlotDisplay composite = new SlotDisplay.Composite(List.of(
+			new SlotDisplay.ItemStackSlotDisplay(stick),
+			new SlotDisplay.ItemStackSlotDisplay(glassBottle)
+		));
+		List<SlotIngredient<ItemStack>> resolved = resolve(helper, ingredientManager, composite);
+
+		// Operation: collect the current display group and the broader candidate set used by slot tooltips.
+		List<SlotIngredient<?>> displayedGroup = RecipeSlotIngredients.getDisplayGroupIngredients(resolved, resolved.getFirst());
+		List<ItemStack> visibleCandidates = RecipeSlotIngredients.getVisibleSlotIngredients(resolved, ingredientManager, ingredient -> true)
+			.map(SlotIngredient::typedIngredient)
+			.map(ITypedIngredient::getItemStack)
+			.flatMap(Optional::stream)
+			.toList();
+
+		// Assertions: pinning can browse both exact children even though the currently displayed group is a singleton.
+		helper.assertTrue(
+			resolved.stream().noneMatch(ingredient -> getInfo(ingredient).matchesAllSubtypes()),
+			"Expected exact item-stack displays not to match every subtype"
+		);
+		helper.assertEquals(1, displayedGroup.size(), "Expected one exact ingredient in the current display group");
+		helper.assertEquals(2, visibleCandidates.size(), "Expected both exact ingredients in the interactive tooltip");
+		helper.assertTrue(containsItemStack(visibleCandidates, stick), "Expected the stick candidate");
+		helper.assertTrue(containsItemStack(visibleCandidates, glassBottle), "Expected the glass bottle candidate");
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
 	@TestHolder(description = "Wildcard slot displays preserve focus and expand consistently wherever they are displayed.")
 	public static void wildcardDisplaysPreserveFocusAndExpandConsistently(JeiGameTestHelper helper) {
 		// Setup: an item-only potion display can expand to two registered potion subtypes.

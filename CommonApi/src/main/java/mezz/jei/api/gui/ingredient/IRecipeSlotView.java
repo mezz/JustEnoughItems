@@ -53,17 +53,24 @@ public interface IRecipeSlotView {
 	List<@Nullable ITypedIngredient<?>> getAllIngredientsList();
 
 	/**
-	 * The ingredient variation that is shown at this moment.
-	 * For ingredients that rotate through several values, this will change over time.
-	 * If nothing is currently shown, this will return {@link Optional#empty()}.
+	 * The single ingredient currently rendered in this slot.
+	 * This changes over time when the slot rotates through multiple ingredients.
+	 * Returns {@link Optional#empty()} when the slot is currently blank.
+	 *
+	 * For example, if a slot accepts any plank or one exact red wool stack, this may return an oak plank.
 	 *
 	 * @since 9.3.0
 	 */
 	Optional<ITypedIngredient<?>> getDisplayedIngredient();
 
 	/**
-	 * All visible ingredient candidates in the group that contains the currently displayed ingredient.
-	 * This includes the complete group, even when the slot's normal rotation is limited for performance.
+	 * All visible ingredients represented by this slot.
+	 *
+	 * For example, if a slot accepts any plank or one exact red wool stack,
+	 * this returns every visible plank and the red wool.
+	 *
+	 * This includes the complete set even when the slot's normal rotation is limited for performance.
+	 * Display overrides are applied to the result.
 	 *
 	 * @since 27.28.0
 	 */
@@ -71,7 +78,7 @@ public interface IRecipeSlotView {
 
 	/**
 	 * The tag represented by every ingredient in this slot, if there is one.
-	 * Slots that rotate between multiple tags or groups do not have one tag key.
+	 * Slots that rotate between independently declared recipe choices do not have one tag key.
 	 *
 	 * @since 27.29.0
 	 */
