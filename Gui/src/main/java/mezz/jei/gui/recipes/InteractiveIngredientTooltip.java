@@ -73,6 +73,9 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		if (displayedIngredients.size() <= 1) {
 			return Optional.empty();
 		}
+		List<ITypedIngredient<?>> normalizedIngredients = displayedIngredients.stream()
+			.<ITypedIngredient<?>>map(ingredient -> normalizeTypedIngredient(ingredientManager, ingredient))
+			.toList();
 		return Optional.of(new InteractiveIngredientTooltip(
 			controller,
 			recipesGui,
@@ -81,10 +84,17 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 			clickTargetFactory,
 			sourceSlot,
 			sourceMouseOverable,
-			new InteractiveIngredientGridTooltipComponent(recipeManager, displayedIngredients),
+			new InteractiveIngredientGridTooltipComponent(recipeManager, normalizedIngredients),
 			(int) mouseX,
 			(int) mouseY
 		));
+	}
+
+	private static ITypedIngredient<?> normalizeTypedIngredient(
+		IIngredientManager ingredientManager,
+		ITypedIngredient<?> ingredient
+	) {
+		return ingredientManager.normalizeTypedIngredient(ingredient);
 	}
 
 	private InteractiveIngredientTooltip(

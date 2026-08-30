@@ -150,6 +150,8 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 		int posX,
 		int posY
 	) {
+		// Flush buffered tooltip text before drawing the fluid immediately with Tesselator.
+		guiGraphics.flush();
 		RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
 		Matrix4f matrix = guiGraphics.pose().last().pose();
 
