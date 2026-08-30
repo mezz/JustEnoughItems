@@ -64,7 +64,7 @@ public abstract class AbstractFuelCategory extends AbstractRecipeCategory<IJeiFu
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiFuelingRecipe recipe, IFocusGroup focuses) {
 		int burnTime = recipe.getBurnTime() / burnDivisor;
-		builder.addAnimatedRecipeFlame(burnTime)
+		builder.addAnimatedRecipeFlameWidget(burnTime)
 			.setPosition(1, 0);
 
 		Component smeltCountText = createSmeltCountText(recipe.getBurnTime());
