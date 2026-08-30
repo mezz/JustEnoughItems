@@ -4,7 +4,9 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.TilingDirection;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.IPlaceable;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -25,7 +27,9 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.NonExtendable
 public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuilder>, IPlaceable<IRecipeSlotBuilder> {
 	/**
-	 * Add a callback to alter the rich tooltip for these ingredients.
+	 * Add a callback to alter the rich tooltip for this slot.
+	 * The callback is invoked while the slot is hovered even when it has no displayed ingredient,
+	 * so backgrounds, overlays, and placeholders can provide tooltips.
 	 *
 	 * @see IRecipeSlotRichTooltipCallback
 	 *
@@ -189,4 +193,23 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	default IRecipeSlotBuilder addFluidStack(Fluid fluid, long amount, DataComponentPatch component) {
 		return add(fluid, amount, component);
 	}
+
+	@Override
+	IRecipeSlotBuilder setPosition(int xPos, int yPos);
+
+	@Override
+	IRecipeSlotBuilder setPosition(
+		int areaX,
+		int areaY,
+		int areaWidth,
+		int areaHeight,
+		HorizontalAlignment horizontalAlignment,
+		VerticalAlignment verticalAlignment
+	);
+
+	@Override
+	int getWidth();
+
+	@Override
+	int getHeight();
 }

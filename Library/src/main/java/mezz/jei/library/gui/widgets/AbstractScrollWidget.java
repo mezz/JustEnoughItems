@@ -67,6 +67,11 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 	}
 
 	@Override
+	public ScreenRectangle getScreenRectangle() {
+		return area.toScreenRectangle();
+	}
+
+	@Override
 	public final void drawWidget(GuiGraphics guiGraphics, double mouseX, double mouseY) {
 		this.scrollbar.draw(guiGraphics, getVisibleAmount(), getHiddenAmount(), scrollOffsetY);
 		drawContents(guiGraphics, mouseX, mouseY, scrollOffsetY);

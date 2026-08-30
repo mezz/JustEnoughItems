@@ -4,11 +4,13 @@ import com.mojang.serialization.Codec;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
-import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
+import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -20,6 +22,8 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.library.recipes.CraftingExtensionHelper;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenPosition;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -33,7 +37,6 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 	public static final int width = 116;
 	public static final int height = 54;
 
-	private final IGuiHelper guiHelper;
 	private final ICraftingGridHelper craftingGridHelper;
 	private final CraftingExtensionHelper extendableHelper = new CraftingExtensionHelper();
 
@@ -45,7 +48,6 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 			width,
 			height
 		);
-		this.guiHelper = guiHelper;
 		craftingGridHelper = guiHelper.createCraftingGridHelper();
 	}
 
@@ -64,18 +66,14 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, RecipeHolder<CraftingRecipe> recipeHolder, IFocusGroup focuses) {
 		var recipeExtension = this.extendableHelper.getRecipeExtension(this, recipeHolder);
-		recipeExtension.createRecipeExtras(recipeHolder, builder, craftingGridHelper, focuses);
-	}
-
-	@Override
-	public void draw(RecipeHolder<CraftingRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		var extension = this.extendableHelper.getRecipeExtension(this, recipeHolder);
 		int recipeWidth = this.getWidth();
 		int recipeHeight = this.getHeight();
-		extension.drawInfo(recipeHolder, recipeWidth, recipeHeight, guiGraphics, mouseX, mouseY);
+		builder.addWidget(new CraftingExtensionRecipeWidget(recipeExtension, recipeHolder, recipeWidth, recipeHeight));
 
-		IDrawableStatic recipeArrow = guiHelper.getRecipeArrow();
-		recipeArrow.draw(guiGraphics, 61, (height - recipeArrow.getHeight()) / 2);
+		builder.addRecipeArrowWidget()
+			.setPosition(61, 0, width - 61, height, HorizontalAlignment.LEFT, VerticalAlignment.CENTER);
+
+		recipeExtension.createRecipeExtras(recipeHolder, builder, craftingGridHelper, focuses);
 	}
 
 	@Override
@@ -90,7 +88,6 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 			.isPresent();
 	}
 
-	@Override
 	public <R extends CraftingRecipe> void addExtension(Class<? extends R> recipeClass, ICraftingCategoryExtension<R> extension) {
 		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
 		ErrorUtil.checkNotNull(extension, "extension");
@@ -124,5 +121,27 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 		return this.extendableHelper.getOptionalRecipeExtension(recipeHolder)
 			.map(extension -> extension.getIngredients(recipeHolder))
 			.orElse(List.of());
+	}
+
+	private record CraftingExtensionRecipeWidget(
+		ICraftingCategoryExtension<CraftingRecipe> recipeExtension,
+		RecipeHolder<CraftingRecipe> recipeHolder,
+		int recipeWidth,
+		int recipeHeight
+	) implements IRecipeWidget {
+		@Override
+		public ScreenPosition getPosition() {
+			return new ScreenPosition(0, 0);
+		}
+
+		@Override
+		public ScreenRectangle getScreenRectangle() {
+			return new ScreenRectangle(0, 0, recipeWidth, recipeHeight);
+		}
+
+		@Override
+		public void drawWidget(GuiGraphics guiGraphics, double mouseX, double mouseY) {
+			recipeExtension.drawInfo(recipeHolder, recipeWidth, recipeHeight, guiGraphics, mouseX, mouseY);
+		}
 	}
 }

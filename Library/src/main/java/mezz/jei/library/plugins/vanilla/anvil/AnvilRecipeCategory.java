@@ -71,8 +71,8 @@ public class AnvilRecipeCategory extends AbstractRecipeCategory<IJeiAnvilRecipe>
 
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiAnvilRecipe recipe, IFocusGroup focuses) {
-		builder.addRecipePlusSign().setPosition(27, 3);
-		builder.addRecipeArrow().setPosition(76, 1);
+		builder.addRecipePlusSignWidget().setPosition(27, 3);
+		builder.addRecipeArrowWidget().setPosition(76, 1);
 
 		Integer cost = getCost(builder.getRecipeSlots());
 		if (cost != null) {
