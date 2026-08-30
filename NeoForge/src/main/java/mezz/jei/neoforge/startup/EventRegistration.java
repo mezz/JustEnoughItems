@@ -118,16 +118,14 @@ public class EventRegistration {
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
 			runWithIdentityPose(guiGraphics, () ->
-				guiEventHandler.drawForContainerScreen(containerScreen, guiGraphics, mouseX, mouseY)
+				guiEventHandler.drawForScreenForeground(containerScreen, guiGraphics, mouseX, mouseY)
 			);
 		});
 		subscriptions.register(EventPriority.HIGHEST, ContainerScreenEvent.Render.Background.class, event -> {
 			AbstractContainerScreen<?> containerScreen = event.getContainerScreen();
 			var guiGraphics = event.getGuiGraphics();
-			int mouseX = event.getMouseX();
-			int mouseY = event.getMouseY();
 			runWithIdentityPose(guiGraphics, () ->
-				guiEventHandler.drawForScreen(containerScreen, guiGraphics, mouseX, mouseY)
+				guiEventHandler.drawForScreenBackground(containerScreen, guiGraphics)
 			);
 		});
 		subscriptions.register(EventPriority.HIGHEST, ScreenEvent.Render.Post.class, event -> {
@@ -138,9 +136,10 @@ public class EventRegistration {
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			runWithIdentityPose(guiGraphics, () ->
-				guiEventHandler.drawForScreen(screen, guiGraphics, mouseX, mouseY)
-			);
+			runWithIdentityPose(guiGraphics, () -> {
+				guiEventHandler.drawForScreenBackground(screen, guiGraphics);
+				guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY);
+			});
 		});
 		subscriptions.register(ScreenEvent.RenderInventoryMobEffects.class, event -> {
 			if (guiEventHandler.renderCompactPotionIndicators()) {

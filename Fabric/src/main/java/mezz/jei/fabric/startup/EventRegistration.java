@@ -16,7 +16,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.jetbrains.annotations.Nullable;
 
 public class EventRegistration {
@@ -125,13 +124,13 @@ public class EventRegistration {
 
 	private void drawBackground(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (guiEventHandler != null) {
-			guiEventHandler.drawForScreen(screen, guiGraphics, mouseX, mouseY);
+			guiEventHandler.drawForScreenBackground(screen, guiGraphics);
 		}
 	}
 
-	private void drawForeground(AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+	private void drawForeground(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		if (guiEventHandler != null) {
-			guiEventHandler.drawForContainerScreen(screen, guiGraphics, mouseX, mouseY);
+			guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY);
 		}
 	}
 
