@@ -1,8 +1,13 @@
 package mezz.jei.api.gui.widgets;
 
+import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.IPlaceable;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import net.minecraft.client.renderer.Rect2i;
 import org.jetbrains.annotations.ApiStatus;
+
+import java.util.Optional;
 
 /**
  * A scrolling area for ingredients with a scrollbar.
@@ -20,4 +25,26 @@ public interface IScrollGridWidget extends ISlottedRecipeWidget, IPlaceable<IScr
 	 */
 	@Override
 	Rect2i getArea();
+
+	@Override
+	IScrollGridWidget setPosition(int xPos, int yPos);
+
+	@Override
+	IScrollGridWidget setPosition(
+		int areaX,
+		int areaY,
+		int areaWidth,
+		int areaHeight,
+		HorizontalAlignment horizontalAlignment,
+		VerticalAlignment verticalAlignment
+	);
+
+	@Override
+	int getWidth();
+
+	@Override
+	int getHeight();
+
+	@Override
+	Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY);
 }

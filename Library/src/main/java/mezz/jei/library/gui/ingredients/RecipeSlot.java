@@ -136,7 +136,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 	}
 
-	private <T> void getTooltip(ITooltipBuilder tooltip, ITypedIngredient<T> typedIngredient) {
+	private <T> void addIngredientTooltip(ITooltipBuilder tooltip, ITypedIngredient<T> typedIngredient) {
 		IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
@@ -149,7 +149,12 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			var pauseRecipeCycling = Internal.getKeyMappings().getPauseRecipeCycling();
 			tooltip.add(new RecipeSlotOptionsTooltipComponent(pauseRecipeCycling));
 		}
-		for (IRecipeSlotRichTooltipCallback tooltipCallback : this.tooltipCallbacks) {
+	}
+
+	private void addTooltip(ITooltipBuilder tooltip) {
+		getDisplayedIngredient()
+			.ifPresent(ingredient -> addIngredientTooltip(tooltip, ingredient));
+		for (IRecipeSlotRichTooltipCallback tooltipCallback : tooltipCallbacks) {
 			tooltipCallback.onRichTooltip(this, tooltip);
 		}
 	}
@@ -165,9 +170,6 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
 		addTagNameTooltip(tooltip, ingredientManager, typedIngredient, visibleCandidates);
 
-		for (IRecipeSlotRichTooltipCallback tooltipCallback : this.tooltipCallbacks) {
-			tooltipCallback.onRichTooltip(this, tooltip);
-		}
 		return tooltip.getLegacyComponents();
 	}
 
@@ -370,27 +372,27 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	@Override
 	@Deprecated
 	public List<Component> getTooltip() {
-		return getDisplayedIngredient()
-			.map(this::getLegacyTooltip)
-			.orElseGet(List::of);
+		JeiTooltip tooltip = new JeiTooltip();
+		getDisplayedIngredient()
+			.ifPresent(ingredient -> tooltip.addAll(getLegacyTooltip(ingredient)));
+		for (IRecipeSlotRichTooltipCallback tooltipCallback : tooltipCallbacks) {
+			tooltipCallback.onRichTooltip(this, tooltip);
+		}
+		return tooltip.getLegacyComponents();
 	}
 
 	@SuppressWarnings("removal")
 	@Override
 	@Deprecated
 	public void getTooltip(ITooltipBuilder tooltipBuilder) {
-		getDisplayedIngredient()
-			.ifPresent(ingredient -> getTooltip(tooltipBuilder, ingredient));
+		addTooltip(tooltipBuilder);
 	}
 
 	@Override
 	public void drawTooltip(PoseStack poseStack, int mouseX, int mouseY) {
-		getDisplayedIngredient()
-			.ifPresent(ingredient -> {
-				JeiTooltip tooltip = new JeiTooltip();
-				getTooltip(tooltip, ingredient);
-				tooltip.draw(poseStack, mouseX, mouseY);
-			});
+		JeiTooltip tooltip = new JeiTooltip();
+		addTooltip(tooltip);
+		tooltip.draw(poseStack, mouseX, mouseY);
 	}
 
 	@Override

@@ -15,6 +15,7 @@ import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.gui.placement.IPlaceable;
+import mezz.jei.api.gui.widgets.IDrawableWidget;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
@@ -29,8 +30,10 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.DrawableAnimated;
+import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.DrawableCombined;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.gui.elements.DrawableRecipeWidget;
 import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.common.gui.elements.TextWidget;
 import mezz.jei.common.gui.textures.Textures;
@@ -228,15 +231,15 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 				for (IRecipeSlotDrawable slot : recipeCategorySlots) {
 					slot.draw(poseStack, false);
 				}
-				for (IRecipeWidget widget : allWidgets) {
-					Rect2i widgetArea = widget.getArea();
+				RecipeWidgetRenderer.forEachWidget(allWidgets, recipeMouseX, recipeMouseY, (widget, widgetArea, relativeMouseX, relativeMouseY) -> {
 					poseStack.pushPose();
-					{
+					try {
 						poseStack.translate(widgetArea.getX(), widgetArea.getY(), 0);
-						widget.drawWidget(poseStack, recipeMouseX - widgetArea.getX(), recipeMouseY - widgetArea.getY());
+						widget.drawWidget(poseStack, relativeMouseX, relativeMouseY);
+					} finally {
+						poseStack.popPose();
 					}
-					poseStack.popPose();
-				}
+				});
 
 				// drawExtras and drawInfo often render text which messes with the color, this clears it
 				RenderSystem.setShaderColor(1, 1, 1, 1);
@@ -316,10 +319,14 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 				);
 			}
 
-			for (IRecipeWidget widget : allWidgets) {
-				Rect2i widgetArea = widget.getArea();
-				widget.getTooltip(tooltip, recipeMouseX - widgetArea.getX(), recipeMouseY - widgetArea.getY());
-			}
+			RecipeWidgetTooltipDispatcher.addWidgetTooltips(
+				tooltip,
+				allWidgets,
+				recipeMouseX,
+				recipeMouseY,
+				area.width(),
+				area.height()
+			);
 
 			if (tooltip.isEmpty() && shapelessIcon != null) {
 				shapelessIcon.addTooltipStrings(tooltip, recipeMouseX, recipeMouseY);
@@ -482,15 +489,41 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	}
 
 	@Override
+	@Deprecated(since = "11.61.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public void addDrawable(IDrawable drawable, int xPos, int yPos) {
 		this.drawables.add(OffsetDrawable.create(drawable, xPos, yPos));
 	}
 
 	@Override
+	@Deprecated(since = "11.61.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public IPlaceable<?> addDrawable(IDrawable drawable) {
 		OffsetDrawable offsetDrawable = new OffsetDrawable(drawable, 0, 0);
 		this.drawables.add(offsetDrawable);
 		return offsetDrawable;
+	}
+
+	@Override
+	public IDrawableWidget addDrawableWidget(IDrawable drawable) {
+		ErrorUtil.checkNotNull(drawable, "drawable");
+		DrawableRecipeWidget widget = new DrawableRecipeWidget(drawable);
+		addWidget(widget);
+		return widget;
+	}
+
+	@Override
+	public IDrawableWidget addTooltipArea(int xPos, int yPos, int width, int height) {
+		if (width < 0) {
+			throw new IllegalArgumentException("width must be non-negative");
+		}
+		if (height < 0) {
+			throw new IllegalArgumentException("height must be non-negative");
+		}
+		DrawableRecipeWidget widget = new DrawableRecipeWidget(new DrawableBlank(width, height));
+		widget.setPosition(xPos, yPos);
+		addWidget(widget);
+		return widget;
 	}
 
 	@Override
@@ -535,6 +568,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	}
 
 	@Override
+	@Deprecated(since = "11.61.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public IPlaceable<?> addRecipeArrow() {
 		Textures textures = Internal.getTextures();
 		IDrawable drawable = textures.getRecipeArrow();
@@ -542,6 +577,14 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	}
 
 	@Override
+	public IDrawableWidget addRecipeArrowWidget() {
+		Textures textures = Internal.getTextures();
+		return addDrawableWidget(textures.getRecipeArrow());
+	}
+
+	@Override
+	@Deprecated(since = "11.61.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public IPlaceable<?> addRecipePlusSign() {
 		Textures textures = Internal.getTextures();
 		IDrawable drawable = textures.getRecipePlusSign();
@@ -549,6 +592,14 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	}
 
 	@Override
+	public IDrawableWidget addRecipePlusSignWidget() {
+		Textures textures = Internal.getTextures();
+		return addDrawableWidget(textures.getRecipePlusSign());
+	}
+
+	@Override
+	@Deprecated(since = "11.61.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public IPlaceable<?> addAnimatedRecipeArrow(int ticksPerCycle) {
 		Textures textures = Internal.getTextures();
 
@@ -560,6 +611,17 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	}
 
 	@Override
+	public IDrawableWidget addAnimatedRecipeArrowWidget(int ticksPerCycle) {
+		Textures textures = Internal.getTextures();
+		IDrawableStatic recipeArrowFilled = textures.getRecipeArrowFilled();
+		IDrawable animatedFill = new DrawableAnimated(recipeArrowFilled, ticksPerCycle, IDrawableAnimated.StartDirection.LEFT, false);
+		IDrawable drawable = new DrawableCombined(textures.getRecipeArrow(), animatedFill);
+		return addDrawableWidget(drawable);
+	}
+
+	@Override
+	@Deprecated(since = "11.61.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public IPlaceable<?> addAnimatedRecipeFlame(int cookTime) {
 		Textures textures = Internal.getTextures();
 
@@ -569,6 +631,15 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		IDrawable drawableCombined = new DrawableCombined(textures.getFlameEmptyIcon(), animatedFill);
 		OffsetDrawable offsetDrawable = new OffsetDrawable(drawableCombined, 0, 0);
 		return addDrawable(offsetDrawable);
+	}
+
+	@Override
+	public IDrawableWidget addAnimatedRecipeFlameWidget(int cookTime) {
+		Textures textures = Internal.getTextures();
+		IDrawableStatic flameIcon = textures.getFlameIcon();
+		IDrawableAnimated animatedFill = new DrawableAnimated(flameIcon, cookTime, IDrawableAnimated.StartDirection.TOP, true);
+		IDrawable drawable = new DrawableCombined(textures.getFlameEmptyIcon(), animatedFill);
+		return addDrawableWidget(drawable);
 	}
 
 	@Override

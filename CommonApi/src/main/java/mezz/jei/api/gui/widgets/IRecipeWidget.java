@@ -70,8 +70,7 @@ public interface IRecipeWidget {
 	/**
 	 * Add extra tooltips for this widget.
 	 *
-	 * Be careful to only add tooltips when the mouse is over the widget,
-	 * there is no way to determine if the mouse is over this widget except in this method.
+	 * Mouse coordinates are relative to {@link #getArea()}.
 	 *
 	 * @param mouseX          the X position of the mouse, relative to this widget's position.
 	 * @param mouseY          the Y position of the mouse, relative to this widget's position.

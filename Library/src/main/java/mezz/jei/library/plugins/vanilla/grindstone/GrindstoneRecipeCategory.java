@@ -1,11 +1,11 @@
 package mezz.jei.library.plugins.vanilla.grindstone;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -14,7 +14,6 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiGrindstoneRecipe;
 import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.JeiGuiColors.GuiColor;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -28,13 +27,11 @@ public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneR
 	private static final String bottomSlotName = "bottomSlot";
 	private final IDrawable background;
 	private final IDrawable icon;
-	private final IDrawable arrow;
 	private final Component localizedName;
 
 	public GrindstoneRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createBlankDrawable(125, 52);
 		icon = guiHelper.createDrawableItemLike(Blocks.GRINDSTONE);
-		arrow = guiHelper.getRecipeArrow();
 		localizedName = Blocks.GRINDSTONE.getName();
 	}
 
@@ -95,16 +92,18 @@ public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneR
 	}
 
 	@Override
-	public void draw(IJeiGrindstoneRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack poseStack, double mouseX, double mouseY) {
-		arrow.draw(poseStack, 20, 12);
+	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiGrindstoneRecipe recipe, IFocusGroup focuses) {
+		builder.addRecipeArrowWidget().setPosition(20, 12);
 
 		int maxXpReward = recipe.getMaxXpReward();
 		if (maxXpReward > 0) {
 			int minXpReward = recipe.getMinXpReward();
 			Component text = Component.translatable("gui.jei.category.grindstone.experience", minXpReward, maxXpReward);
-			Minecraft minecraft = Minecraft.getInstance();
-			int width = minecraft.font.width(text);
-			minecraft.font.drawShadow(poseStack, text, getWidth() - width, 43, JeiGuiColors.getColor(GuiColor.GRINDSTONE_EXPERIENCE_REWARD_TEXT));
+			builder.addText(text, getWidth(), 10)
+				.setPosition(0, 43)
+				.setColor(JeiGuiColors.getColor(GuiColor.GRINDSTONE_EXPERIENCE_REWARD_TEXT))
+				.setShadow(true)
+				.setTextAlignment(HorizontalAlignment.RIGHT);
 		}
 	}
 

@@ -1,10 +1,13 @@
 package mezz.jei.api.gui.widgets;
 
 import mezz.jei.api.gui.placement.HorizontalAlignment;
-import mezz.jei.api.gui.placement.IPlaceable;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jetbrains.annotations.ApiStatus;
+
+import java.util.Collection;
 
 /**
  * An interface to allow configuration of a text widget.
@@ -13,11 +16,13 @@ import org.jetbrains.annotations.ApiStatus;
  * then configure it using this interface.
  *
  * By default, text is aligned to the top left, and uses the minecraft client font.
+ * If text is truncated, its full text is shown first in the tooltip, followed by any text, rich
+ * components, or callback-built content configured with a {@link #setTooltip} overload.
  *
  * @since 11.38.0
  */
 @ApiStatus.NonExtendable
-public interface ITextWidget extends IPlaceable<ITextWidget> {
+public interface ITextWidget extends IRecipeWidgetBuilder<ITextWidget> {
 	/**
 	 * Set the font used by this text widget when drawing text.
 	 * Defaults to the minecraft client font.
@@ -65,4 +70,35 @@ public interface ITextWidget extends IPlaceable<ITextWidget> {
 	 * @since 11.38.0
 	 */
 	ITextWidget setTextAlignment(VerticalAlignment verticalAlignment);
+
+	@Override
+	ITextWidget setPosition(int xPos, int yPos);
+
+	@Override
+	ITextWidget setPosition(
+		int areaX,
+		int areaY,
+		int areaWidth,
+		int areaHeight,
+		HorizontalAlignment horizontalAlignment,
+		VerticalAlignment verticalAlignment
+	);
+
+	@Override
+	int getWidth();
+
+	@Override
+	int getHeight();
+
+	@Override
+	ITextWidget setTooltip(FormattedText tooltip);
+
+	@Override
+	ITextWidget setTooltip(Collection<? extends FormattedText> tooltip);
+
+	@Override
+	ITextWidget setTooltip(TooltipComponent tooltip);
+
+	@Override
+	ITextWidget setTooltip(IRecipeWidgetTooltipCallback tooltipCallback);
 }

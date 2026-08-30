@@ -44,11 +44,12 @@ public interface IIngredientRenderer<T> {
 	 */
 	default void render(PoseStack poseStack, T ingredient, int posX, int posY) {
 		poseStack.pushPose();
-		{
+		try {
 			poseStack.translate(posX, posY, 0);
 			render(poseStack, ingredient);
+		} finally {
+			poseStack.popPose();
 		}
-		poseStack.popPose();
 	}
 
 	/**
