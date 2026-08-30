@@ -7,6 +7,10 @@ import java.util.List;
 
 /**
  * A single ingredient to render in a batch render operation.
+ * The x and y positions are the top-left corner of the ingredient in scaled GUI screen coordinates,
+ * where {@code (0, 0)} is the top-left corner of the Minecraft window.
+ * JEI does not translate the graphics pose before calling
+ * {@link IIngredientRenderer#renderBatch(GuiGraphics, List)}.
  *
  * @see IIngredientRenderer#renderBatch(GuiGraphics, List)
  *

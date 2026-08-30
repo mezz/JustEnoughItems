@@ -3,7 +3,6 @@ package mezz.jei.common.gui.elements;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
-import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.ITextWidget;
 import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.JeiGuiColors.GuiColor;
@@ -14,7 +13,6 @@ import mezz.jei.common.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.FormattedCharSequence;
@@ -22,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class TextWidget implements ITextWidget, IRecipeWidget {
+public class TextWidget extends AbstractRecipeWidgetBuilder<ITextWidget> implements ITextWidget {
 	private final List<FormattedText> text;
 	private ImmutableRect2i availableArea;
 
@@ -37,9 +35,13 @@ public class TextWidget implements ITextWidget, IRecipeWidget {
 	private boolean truncated = false;
 
 	public TextWidget(List<FormattedText> text, int xPos, int yPos, int maxWidth, int maxHeight) {
-		this.availableArea = new ImmutableRect2i(xPos, yPos, maxWidth, maxHeight);
-		Minecraft minecraft = Minecraft.getInstance();
-		this.font = minecraft.font;
+		this(text, xPos, yPos, maxWidth, maxHeight, Minecraft.getInstance().font);
+	}
+
+	TextWidget(List<FormattedText> text, int xPos, int yPos, int maxWidth, int maxHeight, Font font) {
+		super(xPos, yPos);
+		this.availableArea = new ImmutableRect2i(0, 0, maxWidth, maxHeight);
+		this.font = font;
 		this.text = text;
 		this.lineSpacing = 2;
 		this.horizontalAlignment = HorizontalAlignment.LEFT;
@@ -62,9 +64,7 @@ public class TextWidget implements ITextWidget, IRecipeWidget {
 	}
 
 	@Override
-	public TextWidget setPosition(int xPos, int yPos) {
-		this.availableArea = this.availableArea.setPosition(xPos, yPos);
-		invalidateCachedValues();
+	protected ITextWidget getThis() {
 		return this;
 	}
 
@@ -116,11 +116,6 @@ public class TextWidget implements ITextWidget, IRecipeWidget {
 		return this;
 	}
 
-	@Override
-	public ScreenPosition getPosition() {
-		return availableArea.getScreenPosition();
-	}
-
 	private List<FormattedText> calculateWrappedText() {
 		if (wrappedText != null) {
 			return wrappedText;
@@ -168,11 +163,15 @@ public class TextWidget implements ITextWidget, IRecipeWidget {
 
 	@Override
 	public void getTooltip(ITooltipBuilder tooltip, double mouseX, double mouseY) {
-		if (mouseX >= 0 && mouseX < availableArea.width() && mouseY >= 0 && mouseY < availableArea.height()) {
-			calculateWrappedText();
-			if (truncated) {
-				tooltip.addAll(text);
-			}
+		if (!isMouseOver(mouseX, mouseY)) {
+			return;
+		}
+		calculateWrappedText();
+		if (truncated) {
+			tooltip.addAll(text);
+		}
+		if (hasConfiguredTooltip()) {
+			addConfiguredTooltip(tooltip);
 		}
 	}
 

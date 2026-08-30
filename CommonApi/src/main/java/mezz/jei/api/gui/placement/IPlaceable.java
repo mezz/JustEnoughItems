@@ -20,11 +20,7 @@ public interface IPlaceable<THIS extends IPlaceable<THIS>> {
 	 *
 	 * @since 15.20.0
 	 */
-	default THIS setPosition(int areaX, int areaY, int areaWidth, int areaHeight, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
-		int x = areaX + horizontalAlignment.getXPos(areaWidth, getWidth());
-		int y = areaY + verticalAlignment.getYPos(areaHeight, getHeight());
-		return setPosition(x, y);
-	}
+	THIS setPosition(int areaX, int areaY, int areaWidth, int areaHeight, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment);
 
 	/**
 	 * Get the width of this element.

@@ -19,6 +19,7 @@ import mezz.jei.common.gui.elements.DrawableAnimated;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.DrawableCombined;
 import mezz.jei.common.gui.elements.DrawableIngredient;
+import mezz.jei.common.gui.elements.DrawableIngredientRenderer;
 import mezz.jei.common.gui.elements.DrawableSprite;
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
@@ -45,6 +46,7 @@ public class GuiHelper implements IGuiHelper {
 		return new DrawableBuilder(resourceLocation, u, v, width, height);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	@Deprecated(since = "15.32.0")
 	public IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId) {
@@ -174,6 +176,13 @@ public class GuiHelper implements IGuiHelper {
 		IIngredientType<V> type = checkedIngredient.getType();
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
 		return new DrawableIngredient<>(checkedIngredient, ingredientRenderer);
+	}
+
+	@Override
+	public <V> IDrawable createDrawableIngredient(IIngredientRenderer<V> ingredientRenderer, V ingredient) {
+		ErrorUtil.checkNotNull(ingredientRenderer, "ingredientRenderer");
+		ErrorUtil.checkNotNull(ingredient, "ingredient");
+		return new DrawableIngredientRenderer<>(ingredientRenderer, ingredient);
 	}
 
 	@Override

@@ -13,6 +13,7 @@ import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -200,6 +201,20 @@ public interface IGuiHelper {
 	 * @since 15.5.0
 	 */
 	<V> IDrawable createDrawableIngredient(ITypedIngredient<V> ingredient);
+
+	/**
+	 * Returns a drawable that uses the given ingredient renderer and ingredient directly.
+	 *
+	 * This is useful for slotless icons and other renderer-owned visuals that do not have a registered
+	 * or displayed ingredient.
+	 *
+	 * The drawable calls the renderer's positional
+	 * {@link IIngredientRenderer#render(net.minecraft.client.gui.GuiGraphics, Object, int, int)}
+	 * overload with the requested draw offsets.
+	 *
+	 * @since 15.56.0
+	 */
+	<V> IDrawable createDrawableIngredient(IIngredientRenderer<V> ingredientRenderer, V ingredient);
 
 	/**
 	 * Create a crafting grid helper.

@@ -87,9 +87,9 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		if (cookTime <= 0) {
 			cookTime = regularCookTime;
 		}
-		builder.addAnimatedRecipeArrow(cookTime)
+		builder.addAnimatedRecipeArrowWidget(cookTime)
 			.setPosition(getArrowX(), 17);
-		builder.addAnimatedRecipeFlame(300)
+		builder.addAnimatedRecipeFlameWidget(300)
 			.setPosition(1, 20);
 
 		addExperience(builder, recipe, hasFuelOutput);

@@ -4,11 +4,13 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
-import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
+import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
@@ -18,6 +20,8 @@ import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.library.recipes.ExtendableRecipeCategoryHelper;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenPosition;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -33,7 +37,6 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<CraftingRecip
 	public static final int width = 116;
 	public static final int height = 54;
 
-	private final IGuiHelper guiHelper;
 	private final ICraftingGridHelper craftingGridHelper;
 	private final ExtendableRecipeCategoryHelper<Recipe<?>, ICraftingCategoryExtension> extendableHelper = new ExtendableRecipeCategoryHelper<>(CraftingRecipe.class);
 
@@ -45,7 +48,6 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<CraftingRecip
 			width,
 			height
 		);
-		this.guiHelper = guiHelper;
 		craftingGridHelper = guiHelper.createCraftingGridHelper();
 	}
 
@@ -64,18 +66,14 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<CraftingRecip
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, CraftingRecipe recipe, IFocusGroup focuses) {
 		var recipeExtension = this.extendableHelper.getRecipeExtension(this, recipe);
-		recipeExtension.createRecipeExtras(builder, craftingGridHelper, focuses);
-	}
-
-	@Override
-	public void draw(CraftingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		ICraftingCategoryExtension extension = this.extendableHelper.getRecipeExtension(this, recipe);
 		int recipeWidth = this.getWidth();
 		int recipeHeight = this.getHeight();
-		extension.drawInfo(recipeWidth, recipeHeight, guiGraphics, mouseX, mouseY);
+		builder.addWidget(new CraftingExtensionRecipeWidget(recipeExtension, recipeWidth, recipeHeight));
 
-		IDrawableStatic recipeArrow = guiHelper.getRecipeArrow();
-		recipeArrow.draw(guiGraphics, 61, (height - recipeArrow.getHeight()) / 2);
+		builder.addRecipeArrowWidget()
+			.setPosition(61, 0, width - 61, height, HorizontalAlignment.LEFT, VerticalAlignment.CENTER);
+
+		recipeExtension.createRecipeExtras(builder, craftingGridHelper, focuses);
 	}
 
 	@Override
@@ -129,5 +127,26 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<CraftingRecip
 				return new ImmutableSize2i(width, height);
 			})
 			.orElse(ImmutableSize2i.EMPTY);
+	}
+
+	private record CraftingExtensionRecipeWidget(
+		ICraftingCategoryExtension recipeExtension,
+		int recipeWidth,
+		int recipeHeight
+	) implements IRecipeWidget {
+		@Override
+		public ScreenPosition getPosition() {
+			return new ScreenPosition(0, 0);
+		}
+
+		@Override
+		public ScreenRectangle getScreenRectangle() {
+			return new ScreenRectangle(0, 0, recipeWidth, recipeHeight);
+		}
+
+		@Override
+		public void drawWidget(GuiGraphics guiGraphics, double mouseX, double mouseY) {
+			recipeExtension.drawInfo(recipeWidth, recipeHeight, guiGraphics, mouseX, mouseY);
+		}
 	}
 }
