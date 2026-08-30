@@ -95,7 +95,6 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 			debugName,
 			this.scrollbar,
 			this.controller,
-			this.ingredientGrid.getInputHandler(),
 			this.navigation.createInputHandler()
 		);
 
@@ -287,6 +286,11 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 			this.backgroundArea.contains(mouseX, mouseY) &&
 			this.guiExclusionAreas.stream()
 				.noneMatch(area -> area.contains(mouseX, mouseY));
+	}
+
+	@Override
+	public IUserInputHandler createDeleteItemInputHandler() {
+		return this.ingredientGrid.getInputHandler();
 	}
 
 	@Override
