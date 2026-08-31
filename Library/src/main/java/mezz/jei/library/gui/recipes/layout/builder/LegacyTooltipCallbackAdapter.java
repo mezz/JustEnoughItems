@@ -14,6 +14,9 @@ public class LegacyTooltipCallbackAdapter implements IRecipeSlotRichTooltipCallb
 
 	@Override
 	public void onRichTooltip(IRecipeSlotView recipeSlotView, ITooltipBuilder tooltip) {
-		callback.onRichTooltip(recipeSlotView, tooltip);
+		// Legacy callbacks apply to displayed ingredients and were historically skipped for empty slots.
+		if (recipeSlotView.getDisplayedIngredient().isPresent()) {
+			callback.onRichTooltip(recipeSlotView, tooltip);
+		}
 	}
 }
