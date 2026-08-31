@@ -1,6 +1,7 @@
 package mezz.jei.common.transfer;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
@@ -11,6 +12,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.common.util.StringUtil;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -46,6 +48,14 @@ public final class RecipeTransferUtil {
 		return transferRecipe(recipeTransferManager, container, recipeLayout, player, maxTransfer, true)
 			.map(error -> error.getType().allowsTransfer)
 			.orElse(true);
+	}
+
+	public static void addTransferRecipeTooltip(@Nullable IRecipeTransferError recipeTransferError, ITooltipBuilder tooltip) {
+		if (recipeTransferError == null) {
+			tooltip.add(Component.translatable("jei.tooltip.transfer"));
+		} else {
+			recipeTransferError.getTooltip(tooltip);
+		}
 	}
 
 	private static <C extends AbstractContainerMenu, R> Optional<IRecipeTransferError> transferRecipe(
