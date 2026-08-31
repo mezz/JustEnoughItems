@@ -50,6 +50,22 @@ public class PinnedTooltipManagerTest {
 		}
 	}
 
+	@Test
+	public void pinnedTooltipSuppressesOnlyExternalTooltips() {
+		IPinnedTooltipHolder holder = () -> {};
+
+		assertFalse(PinnedTooltipManager.shouldSuppressExternalTooltip());
+		PinnedTooltipManager.opened(holder);
+		try {
+			assertTrue(PinnedTooltipManager.shouldSuppressExternalTooltip());
+			PinnedTooltipManager.draw(holder, () -> assertFalse(PinnedTooltipManager.shouldSuppressExternalTooltip()));
+			assertTrue(PinnedTooltipManager.shouldSuppressExternalTooltip());
+		} finally {
+			PinnedTooltipManager.closed(holder);
+		}
+		assertFalse(PinnedTooltipManager.shouldSuppressExternalTooltip());
+	}
+
 	private static class TestKeyMapping implements IJeiKeyMappingInternal {
 		private final InputConstants.Key key;
 		private final boolean down;
