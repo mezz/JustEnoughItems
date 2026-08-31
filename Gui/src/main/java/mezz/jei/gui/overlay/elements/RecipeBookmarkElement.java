@@ -135,7 +135,10 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 	}
 
 	public Optional<PreviewTooltipComponent<T>> getInteractivePreview() {
-		if (!getBookmarkTooltipFeatures().contains(BookmarkTooltipFeature.PREVIEW)) {
+		IJeiKeyMappingInternal pauseRecipeCycling = Internal.getKeyMappings().getPauseRecipeCycling();
+		if (pauseRecipeCycling.isUnbound() ||
+			!getBookmarkTooltipFeatures().contains(BookmarkTooltipFeature.PREVIEW)
+		) {
 			return Optional.empty();
 		}
 		TooltipComponent component = getOrCreateTooltipComponent(BookmarkTooltipFeature.PREVIEW);
@@ -183,7 +186,9 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 
 		if (previewAdded && !pinned) {
 			IJeiKeyMappingInternal pauseRecipeCycling = Internal.getKeyMappings().getPauseRecipeCycling();
-			tooltip.addKeyUsageComponent("jei.tooltip.bookmarks.preview.pin.usage", pauseRecipeCycling);
+			if (!pauseRecipeCycling.isUnbound()) {
+				tooltip.addKeyUsageComponent("jei.tooltip.bookmarks.preview.pin.usage", pauseRecipeCycling);
+			}
 		}
 	}
 
