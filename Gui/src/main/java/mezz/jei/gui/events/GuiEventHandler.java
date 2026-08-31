@@ -74,6 +74,15 @@ public class GuiEventHandler {
 	}
 
 	/**
+	 * Updates input layers before the screen can render its tooltip.
+	 */
+	public void updateForScreenRender(Screen screen, int mouseX, int mouseY) {
+		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
+		updateOverlayProperties(screen, guiProperties);
+		this.inputLayers.forEach(inputLayer -> inputLayer.update(mouseX, mouseY));
+	}
+
+	/**
 	 * Draws the JEI overlay backgrounds before the screen contents are drawn.
 	 */
 	public void drawForScreenBackground(Screen screen, GuiGraphics guiGraphics) {
@@ -127,7 +136,6 @@ public class GuiEventHandler {
 
 	private void drawPostForeground(Screen screen, @Nullable IGuiProperties guiProperties, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getInstance();
-		this.inputLayers.forEach(inputLayer -> inputLayer.update(mouseX, mouseY));
 		boolean mouseOverInputLayer = this.inputLayers.stream()
 			.anyMatch(inputLayer -> inputLayer.isMouseOver(mouseX, mouseY));
 

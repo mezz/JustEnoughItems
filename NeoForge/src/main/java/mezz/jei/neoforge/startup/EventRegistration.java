@@ -5,6 +5,7 @@ import mezz.jei.neoforge.events.RuntimeEventSubscriptions;
 import mezz.jei.neoforge.input.ForgeUserInput;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
+import mezz.jei.gui.input.PinnedTooltipManager;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import net.minecraft.client.Minecraft;
@@ -14,6 +15,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ContainerScreenEvent;
+import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 
 public class EventRegistration {
@@ -99,6 +101,15 @@ public class EventRegistration {
 		RuntimeEventSubscriptions subscriptions,
 		GuiEventHandler guiEventHandler
 	) {
+		subscriptions.register(EventPriority.HIGHEST, ScreenEvent.Render.Pre.class, event -> {
+			Screen screen = event.getScreen();
+			guiEventHandler.updateForScreenRender(screen, event.getMouseX(), event.getMouseY());
+		});
+		subscriptions.register(EventPriority.HIGHEST, RenderTooltipEvent.Pre.class, event -> {
+			if (PinnedTooltipManager.shouldSuppressExternalTooltip()) {
+				event.setCanceled(true);
+			}
+		});
 		subscriptions.register(ClientTickEvent.Post.class, event -> {
 			if (Minecraft.getInstance().screen != null) {
 				guiEventHandler.onClientTick();
