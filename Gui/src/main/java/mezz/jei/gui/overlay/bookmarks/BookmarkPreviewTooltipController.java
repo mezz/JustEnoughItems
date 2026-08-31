@@ -80,25 +80,27 @@ public class BookmarkPreviewTooltipController implements IGuiInputLayer, IPinned
 	}
 
 	private void open(double mouseX, double mouseY) {
-		bookmarkOverlay.getIngredientUnderMouse(mouseX, mouseY)
-			.map(IClickableIngredientInternal::getElement)
-			.<RecipeBookmarkElement<?, ?>>mapMulti((element, consumer) -> {
-				if (element instanceof RecipeBookmarkElement<?, ?> recipeBookmarkElement) {
-					consumer.accept(recipeBookmarkElement);
+		bookmarkOverlay.getPreviewSourcesUnderMouse(mouseX, mouseY)
+			.<BookmarkPreviewTooltip>mapMulti((source, consumer) -> {
+				if (source.ingredient().getElement() instanceof RecipeBookmarkElement<?, ?> element) {
+					element.getInteractivePreview()
+						.map(component -> new BookmarkPreviewTooltip(
+							this,
+							element,
+							source::isPresentAndVisible,
+							component,
+							(int) mouseX,
+							(int) mouseY
+						))
+						.ifPresent(consumer);
 				}
 			})
 			.findFirst()
-			.ifPresent(element -> element.getInteractivePreview().ifPresent(component -> {
+			.ifPresent(tooltip -> {
 				hide();
-				this.activeTooltip = new BookmarkPreviewTooltip(
-					this,
-					element,
-					component,
-					(int) mouseX,
-					(int) mouseY
-				);
+				this.activeTooltip = tooltip;
 				PinnedTooltipManager.opened(this);
-			}));
+			});
 	}
 
 	@Override

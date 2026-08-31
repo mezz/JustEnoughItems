@@ -28,6 +28,8 @@ import net.minecraft.client.gui.screens.Screen;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
+import java.util.stream.Stream;
 
 final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable {
 	private static final int BACKGROUND_PADDING = 2;
@@ -36,6 +38,7 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 
 	private final BookmarkPreviewTooltipController controller;
 	private final RecipeBookmarkElement<?, ?> element;
+	private final BooleanSupplier sourceVisible;
 	private final PreviewTooltipComponent<?> component;
 	private final IRecipeLayoutDrawable<?> drawable;
 	private final RecipeSlotClickTargetFactory clickTargetFactory;
@@ -47,12 +50,14 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 	BookmarkPreviewTooltip(
 		BookmarkPreviewTooltipController controller,
 		RecipeBookmarkElement<?, ?> element,
+		BooleanSupplier sourceVisible,
 		PreviewTooltipComponent<?> component,
 		int anchorX,
 		int anchorY
 	) {
 		this.controller = controller;
 		this.element = element;
+		this.sourceVisible = sourceVisible;
 		this.component = component;
 		this.drawable = component.getRecipeLayout();
 		IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
@@ -67,7 +72,7 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 	}
 
 	public boolean isSourceVisible() {
-		return this.element.isVisible();
+		return sourceVisible.getAsBoolean();
 	}
 
 	@Override
