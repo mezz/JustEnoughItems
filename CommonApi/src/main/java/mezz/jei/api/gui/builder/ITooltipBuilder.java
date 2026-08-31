@@ -51,7 +51,7 @@ public interface ITooltipBuilder {
 	 * The translationKey must take a string formatting key (%s) to accept the translated key mapping string.
 	 *
 	 * For example, a translation key could be defined this way:
-	 * "jei.tooltip.bookmarks.tooltips.usage": "[Press \"%s\" to show details]"
+	 * "example.tooltip.key.usage": "[Press \"%s\" to perform an action]"
 	 *
 	 * @since 27.1.0
 	 */

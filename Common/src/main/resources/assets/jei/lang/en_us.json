@@ -30,7 +30,7 @@
   "jei.tooltip.bookmarks.not.enough.space": "The area on the left-hand side of this screen is too small for the JEI bookmark list overlay to display.",
   "jei.tooltip.bookmarks.recipe.add": "Bookmark this recipe.",
   "jei.tooltip.bookmarks.recipe.remove": "Remove the bookmark for this recipe.",
-  "jei.tooltip.bookmarks.tooltips.usage": "[Press \"%s\" to show details]",
+  "jei.tooltip.bookmarks.tooltips.usage": "[Hold \"%s\" for recipe details]",
   "jei.tooltip.bookmarks.tooltips.transfer.usage": "[Press \"%s\" to craft one]",
   "jei.tooltip.bookmarks.tooltips.transfer.max.usage": "[Press \"%s\" to craft many]",
   "jei.tooltip.bookmarks.preview.pin.usage": "[Hold \"%s\" to pin this preview, then click an ingredient to view recipes]",
@@ -101,7 +101,6 @@
   "key.jei.showUses2": "Show Uses",
   "key.jei.transferRecipeBookmark": "Craft Bookmarked Recipe (One)",
   "key.jei.maxTransferRecipeBookmark": "Craft Bookmarked Recipe (Many)",
-  "key.jei.showBookmarkTooltipFeatures": "Show Bookmark Details",
   "key.jei.quickMove": "Quick Move Ghost Item",
   "key.jei.shareToChat": "Share Item to Chat",
 
