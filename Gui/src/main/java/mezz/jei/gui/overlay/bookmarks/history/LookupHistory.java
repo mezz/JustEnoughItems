@@ -64,6 +64,12 @@ public class LookupHistory implements IIngredientGridSource {
 	}
 
 	@Override
+	public boolean containsElement(IElement<?> element) {
+		return elements.stream()
+			.anyMatch(bookmark -> bookmark.getElement() == element);
+	}
+
+	@Override
 	public void addSourceListChangedListener(SourceListChangedListener listener) {
 		listeners.add(listener);
 	}

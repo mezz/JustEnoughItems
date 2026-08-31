@@ -24,6 +24,7 @@ import net.minecraft.client.gui.screens.Screen;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
 final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable {
 	private static final InputConstants.Key LEFT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_LEFT);
@@ -32,6 +33,7 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 
 	private final BookmarkPreviewTooltipController controller;
 	private final RecipeBookmarkElement<?, ?> element;
+	private final BooleanSupplier sourceVisible;
 	private final PreviewTooltipComponent<?> component;
 	private final IRecipeLayoutDrawable<?> drawable;
 	private final int anchorX;
@@ -40,12 +42,14 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 	BookmarkPreviewTooltip(
 		BookmarkPreviewTooltipController controller,
 		RecipeBookmarkElement<?, ?> element,
+		BooleanSupplier sourceVisible,
 		PreviewTooltipComponent<?> component,
 		int anchorX,
 		int anchorY
 	) {
 		this.controller = controller;
 		this.element = element;
+		this.sourceVisible = sourceVisible;
 		this.component = component;
 		this.drawable = component.getRecipeLayout();
 		this.anchorX = anchorX;
@@ -53,7 +57,7 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 	}
 
 	public boolean isSourceVisible() {
-		return this.element.isVisible();
+		return sourceVisible.getAsBoolean();
 	}
 
 	@Override

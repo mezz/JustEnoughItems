@@ -93,7 +93,7 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	public <T> boolean onElementBookmarked(IElement<T> element, UserInput input, BookmarkOverlay bookmarkOverlay) {
-		if (bookmarkOverlay.isMouseOver(input.getMouseX(), input.getMouseY())) {
+		if (bookmarkOverlay.isBookmarkElementUnderMouse(element, input.getMouseX(), input.getMouseY())) {
 			return element.getBookmark()
 				.map(this::remove)
 				.orElse(false);
@@ -170,6 +170,12 @@ public class BookmarkList implements IIngredientGridSource {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public boolean containsElement(IElement<?> element) {
+		return bookmarksList.stream()
+			.anyMatch(bookmark -> bookmark.getElement() == element);
 	}
 
 	public boolean isEmpty() {
