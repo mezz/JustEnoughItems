@@ -79,6 +79,8 @@ public class BookmarkPreviewTooltipController implements IGuiInputLayer, IPinned
 			open(mouseX, mouseY);
 		} else if (!activeTooltip.isSourceVisible()) {
 			hide();
+		} else {
+			activeTooltip.update();
 		}
 	}
 

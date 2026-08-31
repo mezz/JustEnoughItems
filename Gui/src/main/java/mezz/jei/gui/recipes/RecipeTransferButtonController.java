@@ -16,22 +16,74 @@ import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.RecipeTransferUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jspecify.annotations.Nullable;
 import org.joml.Matrix3x2fStack;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
+
 public class RecipeTransferButtonController implements IIconButtonController {
 	private final IRecipeLayoutDrawable<?> recipeLayout;
-	private final RecipesGui recipesGui;
+	private final Supplier<@Nullable AbstractContainerMenu> containerSupplier;
+	private final BooleanSupplier maxTransferSupplier;
+	private final Runnable onSuccessfulTransfer;
 	private @Nullable IRecipeTransferError recipeTransferError;
 
 	public RecipeTransferButtonController(IRecipeLayoutDrawable<?> recipeLayout, RecipesGui recipesGui) {
+		this(
+			recipeLayout,
+			recipesGui::getParentContainerMenu,
+			() -> Minecraft.getInstance().hasShiftDown(),
+			recipesGui::onClose
+		);
+	}
+
+	public static RecipeTransferButtonController createForPinnedRecipe(IRecipeLayoutDrawable<?> recipeLayout) {
+		PinnedTransferState transferState = new PinnedTransferState();
+		return new RecipeTransferButtonController(
+			recipeLayout,
+			RecipeTransferButtonController::getCurrentContainer,
+			transferState::shouldTransferMax,
+			transferState::onSuccessfulTransfer
+		);
+	}
+
+	private RecipeTransferButtonController(
+		IRecipeLayoutDrawable<?> recipeLayout,
+		Supplier<@Nullable AbstractContainerMenu> containerSupplier,
+		BooleanSupplier maxTransferSupplier,
+		Runnable onSuccessfulTransfer
+	) {
 		this.recipeLayout = recipeLayout;
-		this.recipesGui = recipesGui;
+		this.containerSupplier = containerSupplier;
+		this.maxTransferSupplier = maxTransferSupplier;
+		this.onSuccessfulTransfer = onSuccessfulTransfer;
+	}
+
+	private static @Nullable AbstractContainerMenu getCurrentContainer() {
+		Screen screen = Minecraft.getInstance().gui.screen();
+		if (screen instanceof AbstractContainerScreen<?> containerScreen) {
+			return containerScreen.getMenu();
+		}
+		return null;
+	}
+
+	private static class PinnedTransferState {
+		private boolean transferred;
+
+		public boolean shouldTransferMax() {
+			return transferred;
+		}
+
+		public void onSuccessfulTransfer() {
+			this.transferred = true;
+		}
 	}
 
 	@Override
@@ -44,7 +96,7 @@ public class RecipeTransferButtonController implements IIconButtonController {
 	@Override
 	public void updateState(IButtonState state) {
 		Player player = Minecraft.getInstance().player;
-		AbstractContainerMenu parentContainer = recipesGui.getParentContainerMenu();
+		AbstractContainerMenu parentContainer = containerSupplier.get();
 		if (parentContainer != null && player != null) {
 			IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
 			this.recipeTransferError = RecipeTransferUtil.getTransferRecipeError(recipeTransferManager, parentContainer, recipeLayout, player)
@@ -73,12 +125,11 @@ public class RecipeTransferButtonController implements IIconButtonController {
 	public boolean onPress(IJeiUserInput input) {
 		if (!input.isSimulate()) {
 			IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
-			Minecraft minecraft = Minecraft.getInstance();
-			boolean maxTransfer = minecraft.hasShiftDown();
-			LocalPlayer player = minecraft.player;
-			AbstractContainerMenu parentContainer = recipesGui.getParentContainerMenu();
+			LocalPlayer player = Minecraft.getInstance().player;
+			AbstractContainerMenu parentContainer = containerSupplier.get();
+			boolean maxTransfer = maxTransferSupplier.getAsBoolean();
 			if (parentContainer != null && player != null && RecipeTransferUtil.transferRecipe(recipeTransferManager, parentContainer, recipeLayout, player, maxTransfer)) {
-				recipesGui.onClose();
+				onSuccessfulTransfer.run();
 			}
 		}
 		return true;
@@ -90,12 +141,7 @@ public class RecipeTransferButtonController implements IIconButtonController {
 	}
 
 	static void getTooltips(@Nullable IRecipeTransferError recipeTransferError, ITooltipBuilder tooltip) {
-		if (recipeTransferError == null) {
-			Component tooltipTransfer = Component.translatable("jei.tooltip.transfer");
-			tooltip.add(tooltipTransfer);
-		} else {
-			recipeTransferError.getTooltip(tooltip);
-		}
+		RecipeTransferUtil.addTransferRecipeTooltip(recipeTransferError, tooltip);
 	}
 
 	@Override
