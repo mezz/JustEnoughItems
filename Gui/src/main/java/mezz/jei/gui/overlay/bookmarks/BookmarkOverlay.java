@@ -9,6 +9,7 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.bookmarks.BookmarkList;
@@ -75,6 +76,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 	public BookmarkOverlay(
 		BookmarkList bookmarkList,
+		RecipeTransferService recipeTransferService,
 		IngredientGridWithNavigation contents,
 		LookupHistoryOverlay lookupHistoryOverlay,
 		IClientToggleState toggleState,
@@ -95,7 +97,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				.orElse(null)
 		);
 		this.bookmarkDragManager = new BookmarkDragManager(this);
-		this.previewTooltipController = new BookmarkPreviewTooltipController(this);
+		this.previewTooltipController = new BookmarkPreviewTooltipController(this, recipeTransferService);
 		bookmarkList.addSourceListChangedListener(() -> {
 			toggleState.setBookmarkEnabled(!bookmarkList.isEmpty());
 			markScreenPropertiesDirty();

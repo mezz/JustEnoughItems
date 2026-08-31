@@ -6,6 +6,7 @@ import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.transfer.RecipeTransferUtil;
 import net.minecraft.network.chat.Component;
 import org.joml.Matrix4f;
 import org.junit.jupiter.api.Test;
@@ -103,7 +104,7 @@ public class RecipeTransferButtonControllerTest {
 		JeiTooltip tooltip = new JeiTooltip();
 
 		// Operation: read the state exposed by the transfer button controller.
-		RecipeTransferButtonController.getTooltips(error, tooltip);
+		RecipeTransferUtil.addTransferRecipeTooltip(error, tooltip);
 		int missingCountHint = RecipeTransferButtonController.getMissingCountHint(error);
 
 		// Assertions: the button exposes the plugin error's tooltip and missing-count hint.
@@ -117,7 +118,7 @@ public class RecipeTransferButtonControllerTest {
 		JeiTooltip tooltip = new JeiTooltip();
 
 		// Operation: read the default transfer tooltip.
-		RecipeTransferButtonController.getTooltips(null, tooltip);
+		RecipeTransferUtil.addTransferRecipeTooltip(null, tooltip);
 
 		// Assertions: the normal transfer tooltip is still available.
 		List<Component> components = tooltip.getLegacyComponents();
