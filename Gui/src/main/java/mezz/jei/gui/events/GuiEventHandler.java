@@ -137,6 +137,7 @@ public class GuiEventHandler {
 			.updateExclusionAreas(guiExclusionAreas)
 			.update();
 
+		bookmarkOverlay.getPreviewTooltipController().update(mouseX, mouseY);
 		boolean mouseOverInputLayer = this.inputLayers.stream()
 			.anyMatch(inputLayer -> inputLayer.isMouseOver(mouseX, mouseY));
 		int overlayMouseX = mouseX;

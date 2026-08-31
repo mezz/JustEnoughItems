@@ -17,14 +17,24 @@ public class CombinedRecipeFocusSource {
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
 
-		Stream<IClickableIngredientInternal<?>> stream = handlers.stream()
-			.flatMap(handler -> handler.getIngredientUnderMouse(mouseX, mouseY));
+		Stream<IClickableIngredientInternal<?>> stream = getIngredientUnderMouse(mouseX, mouseY);
 
 		if (isConflictingVanillaMouseButton(input, keyBindings)) {
 			stream = stream.filter(IClickableIngredientInternal::canClickToFocus);
 		}
 
 		return stream;
+	}
+
+	Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		Stream<IClickableIngredientInternal<?>> result = Stream.empty();
+		for (IRecipeFocusSource handler : handlers) {
+			result = Stream.concat(result, handler.getIngredientUnderMouse(mouseX, mouseY));
+			if (handler instanceof IMouseOverable mouseOverable && mouseOverable.isMouseOver(mouseX, mouseY)) {
+				break;
+			}
+		}
+		return result;
 	}
 
 	/**

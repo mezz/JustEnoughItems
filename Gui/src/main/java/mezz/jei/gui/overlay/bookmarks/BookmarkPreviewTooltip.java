@@ -3,7 +3,6 @@ package mezz.jei.gui.overlay.bookmarks;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
-import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
@@ -25,6 +24,7 @@ import net.minecraft.client.gui.screens.Screen;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Stream;
 
 final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable {
 	private static final InputConstants.Key LEFT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_LEFT);
@@ -58,6 +58,23 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 
 	public boolean isSourceVisible() {
 		return sourceVisible.getAsBoolean();
+	}
+
+	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		if (!this.controller.isActive(this)) {
+			return Stream.empty();
+		}
+		return getClickableIngredientUnderMouse(mouseX, mouseY).stream();
+	}
+
+	private Optional<IClickableIngredientInternal<?>> getClickableIngredientUnderMouse(double mouseX, double mouseY) {
+		return this.drawable.getSlotUnderMouse(mouseX, mouseY)
+			.flatMap(slotUnderMouse -> slotUnderMouse.slot().getDisplayedIngredient()
+				.<IClickableIngredientInternal<?>>map(displayedIngredient -> {
+					IngredientElement<?> ingredientElement = new IngredientElement<>(displayedIngredient);
+					return new ClickableIngredientInternal<>(ingredientElement, slotUnderMouse::isMouseOver, false, true);
+				})
+			);
 	}
 
 	@Override
@@ -104,17 +121,12 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 			return Optional.empty();
 		}
 
-		RecipeSlotUnderMouse slotUnderMouse = this.drawable.getSlotUnderMouse(mouseX, mouseY)
-			.orElse(null);
-		if (slotUnderMouse == null) {
+		if (this.drawable.getSlotUnderMouse(mouseX, mouseY).isEmpty()) {
+			// keep clicks on the tooltip itself from reaching the screen behind it
 			return Optional.of(this);
 		}
 
-		IClickableIngredientInternal<?> ingredient = slotUnderMouse.slot().getDisplayedIngredient()
-			.<IClickableIngredientInternal<?>>map(displayedIngredient -> {
-				IngredientElement<?> ingredientElement = new IngredientElement<>(displayedIngredient);
-				return new ClickableIngredientInternal<>(ingredientElement, slotUnderMouse::isMouseOver, false, true);
-			})
+		IClickableIngredientInternal<?> ingredient = getClickableIngredientUnderMouse(mouseX, mouseY)
 			.orElse(null);
 		if (ingredient == null) {
 			return Optional.of(this);
