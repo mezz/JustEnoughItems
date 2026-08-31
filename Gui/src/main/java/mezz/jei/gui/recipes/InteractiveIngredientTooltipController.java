@@ -112,7 +112,7 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer, IP
 	public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		InteractiveIngredientTooltip activeTooltip = this.activeTooltip;
 		if (activeTooltip != null) {
-			activeTooltip.draw(guiGraphics, mouseX, mouseY);
+			PinnedTooltipManager.draw(this, () -> activeTooltip.draw(guiGraphics, mouseX, mouseY));
 		}
 	}
 
