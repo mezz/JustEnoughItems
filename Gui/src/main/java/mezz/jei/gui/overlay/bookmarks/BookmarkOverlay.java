@@ -66,6 +66,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	private final BookmarkList bookmarkList;
 	private final IWorldConfig worldConfig;
 	private final IClientConfig clientConfig;
+	private final BookmarkPreviewTooltipController previewTooltipController;
 
 	// these need to be stored as strong references here because listeners are weakly stored elsewhere
 	@SuppressWarnings("FieldCanBeLocal")
@@ -92,6 +93,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		this.lookupHistoryOverlay = lookupHistoryOverlay;
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
 		this.bookmarkDragManager = new BookmarkDragManager(this);
+		this.previewTooltipController = new BookmarkPreviewTooltipController(this);
 		bookmarkList.addSourceListChangedListener(() -> {
 			worldConfig.setBookmarkEnabled(!bookmarkList.isEmpty());
 			Minecraft minecraft = Minecraft.getInstance();
@@ -203,9 +205,13 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		}
 	}
 
+	public BookmarkPreviewTooltipController getPreviewTooltipController() {
+		return previewTooltipController;
+	}
+
 	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
 		if (!this.bookmarkDragManager.drawDraggedItem(poseStack, mouseX, mouseY)) {
-			if (isListDisplayed()) {
+			if (isListDisplayed() && !previewTooltipController.isVisible()) {
 				this.contents.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 			}
 			if (screenPropertiesCache.hasValidScreen() && worldConfig.isOverlayEnabled()) {

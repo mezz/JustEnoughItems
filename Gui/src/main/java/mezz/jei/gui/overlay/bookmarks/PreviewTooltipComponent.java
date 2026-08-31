@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.common.transfer.RecipeTransferService;
+import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
@@ -22,6 +23,10 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 	private final RecipeTransferService recipeTransferService;
 	private @Nullable IRecipeTransferError transferError;
 	private long lastUpdateTime = 0;
+	private boolean interactive;
+	private double mouseX = -1;
+	private double mouseY = -1;
+	private ImmutableRect2i tooltipArea = ImmutableRect2i.EMPTY;
 
 	public PreviewTooltipComponent(
 		IRecipeLayoutDrawable<R> drawable,
@@ -29,6 +34,25 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 	) {
 		this.drawable = drawable;
 		this.recipeTransferService = recipeTransferService;
+	}
+
+	public IRecipeLayoutDrawable<R> getRecipeLayout() {
+		return drawable;
+	}
+
+	public void setInteractive(double mouseX, double mouseY) {
+		this.interactive = true;
+		this.mouseX = mouseX;
+		this.mouseY = mouseY;
+	}
+
+	public void setStatic() {
+		this.interactive = false;
+		this.tooltipArea = ImmutableRect2i.EMPTY;
+	}
+
+	public ImmutableRect2i getTooltipArea() {
+		return this.tooltipArea;
 	}
 
 	@Override
@@ -43,17 +67,35 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 
 	@Override
 	public void renderImage(Font font, int x, int y, PoseStack poseStack, ItemRenderer itemRenderer, int z) {
+		if (interactive) {
+			int mouseX = (int) this.mouseX;
+			int mouseY = (int) this.mouseY;
+			this.tooltipArea = new ImmutableRect2i(x - 3, y - 4, getWidth(font) + 6, getHeight() + 8);
+			drawable.setPosition(x + 2, y + 5);
+			drawable.drawRecipe(poseStack, mouseX, mouseY);
+			drawTransferError(poseStack, mouseX, mouseY);
+			return;
+		}
 		poseStack.pushPose();
 		{
 			poseStack.translate(x + 2, y + 5, 0);
+			drawable.setPosition(0, 0);
 			drawable.drawRecipe(poseStack, 0, 0);
-			updateTransferError();
-			if (transferError != null) {
-				Rect2i recipeRect = drawable.getRect();
-				transferError.showError(poseStack, x, y, drawable.getRecipeSlotsView(), recipeRect.getX(), recipeRect.getY());
-			}
+			drawTransferError(poseStack, x, y);
 		}
 		poseStack.popPose();
+	}
+
+	private void drawTransferError(PoseStack poseStack, int mouseX, int mouseY) {
+		updateTransferError();
+		if (transferError != null) {
+			Rect2i recipeRect = drawable.getRect();
+			transferError.showError(poseStack, mouseX, mouseY, drawable.getRecipeSlotsView(), recipeRect.getX(), recipeRect.getY());
+		}
+	}
+
+	public void tick() {
+		drawable.tick();
 	}
 
 	private void updateTransferError() {
