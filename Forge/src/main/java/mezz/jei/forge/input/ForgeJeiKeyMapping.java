@@ -7,6 +7,7 @@ import mezz.jei.common.input.KeyNameUtil;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
+import net.minecraftforge.client.settings.KeyModifier;
 
 public class ForgeJeiKeyMapping implements IJeiKeyMappingInternal {
 	private final KeyMapping keyMapping;
@@ -18,6 +19,18 @@ public class ForgeJeiKeyMapping implements IJeiKeyMappingInternal {
 	@Override
 	public boolean isActiveAndMatches(InputConstants.Key key) {
 		return keyMapping.isActiveAndMatches(key);
+	}
+
+	@Override
+	public boolean isActiveAndMatchesAllowingExtraModifiers(InputConstants.Key key) {
+		if (keyMapping.isUnbound() || !keyMapping.getKey().equals(key)) {
+			return false;
+		}
+		if (!keyMapping.getKeyConflictContext().isActive()) {
+			return false;
+		}
+		KeyModifier keyModifier = keyMapping.getKeyModifier();
+		return keyModifier == KeyModifier.NONE || keyModifier.isActive(keyMapping.getKeyConflictContext());
 	}
 
 	@Override

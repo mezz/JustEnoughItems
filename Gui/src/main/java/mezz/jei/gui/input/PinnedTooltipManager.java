@@ -1,6 +1,9 @@
 package mezz.jei.gui.input;
 
-import org.jspecify.annotations.Nullable;
+import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
+import mezz.jei.common.input.keys.IJeiKeyMappingWithExtraModifiers;
+import org.jetbrains.annotations.Nullable;
 
 public final class PinnedTooltipManager {
 	private static @Nullable IPinnedTooltipHolder active;
@@ -17,6 +20,20 @@ public final class PinnedTooltipManager {
 		if (PinnedTooltipManager.active == holder) {
 			PinnedTooltipManager.active = null;
 		}
+	}
+
+	public static boolean matchesInput(
+		InputConstants.Key inputKey,
+		IJeiKeyMappingWithExtraModifiers keyMapping,
+		IJeiKeyMappingInternal pinKeyMapping
+	) {
+		if (keyMapping.isActiveAndMatches(inputKey)) {
+			return true;
+		}
+		return active != null &&
+			pinKeyMapping.isDown() &&
+			inputKey.getType() != InputConstants.Type.MOUSE &&
+			keyMapping.isActiveAndMatchesAllowingExtraModifiers(inputKey);
 	}
 
 	private PinnedTooltipManager() {
