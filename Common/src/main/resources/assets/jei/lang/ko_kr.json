@@ -20,7 +20,6 @@
   "jei.tooltip.bookmarks.usage.nokey": "조작 설정에서 JEI 북마크에 대한 키를 지정하십시오.",
   "jei.tooltip.bookmarks.usage.key": "아이템 위에 마우스를 올려 놓고 \"%s\"를 눌러 북마크에 추가하십시오.",
   "jei.tooltip.bookmarks.not.enough.space": "여기에 북마크를 표시할 공간이 부족합니다.",
-  "jei.tooltip.bookmarks.recipe": "%s 제작법 북마크",
   "jei.tooltip.bookmarks.recipe.add": "이 제작법을 북마크하십시오.",
   "jei.tooltip.bookmarks.recipe.remove": "이 제작법의 북마크를 제거하십시오.",
   "jei.tooltip.bookmarks.tooltips.usage": "[%s를 눌러 세부사항 보기]",

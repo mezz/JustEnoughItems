@@ -26,7 +26,6 @@
   "jei.tooltip.bookmarks.usage.nokey": "操作設定でJEIブックマークのキー割り当てを追加してください",
   "jei.tooltip.bookmarks.usage.key": "アイテムに重ねて「%s」を押してブックマークします",
   "jei.tooltip.bookmarks.not.enough.space": "JEIブックマークを表示するためのスペースが狭すぎます",
-  "jei.tooltip.bookmarks.recipe": "ブックマークしたレシピ（%s）",
   "jei.tooltip.bookmarks.recipe.add": "レシピをブックマークに追加",
   "jei.tooltip.bookmarks.recipe.remove": "レシピをブックマークから削除",
   "jei.tooltip.bookmarks.tooltips.usage": "［「%s」を押して詳細を表示］",

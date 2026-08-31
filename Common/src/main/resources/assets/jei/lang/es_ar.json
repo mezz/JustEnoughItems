@@ -25,7 +25,6 @@
   "jei.tooltip.bookmarks.usage.nokey": "Asigná una tecla para los favoritos de JEI en los controles.",
   "jei.tooltip.bookmarks.usage.key": "Pasá el cursor sobre un ingrediente y presioná \"%s\" para marcarlo como favorito.",
   "jei.tooltip.bookmarks.not.enough.space": "El área a la izquierda de esta pantalla es demasiado chica para mostrar la lista de favoritos de JEI.",
-  "jei.tooltip.bookmarks.recipe": "Receta favorita: %s",
   "jei.tooltip.bookmarks.recipe.add": "Agregar esta receta a favoritos.",
   "jei.tooltip.bookmarks.recipe.remove": "Quitar esta receta de favoritos.",
   "jei.tooltip.bookmarks.tooltips.usage": "[Presioná \"%s\" para ver detalles]",

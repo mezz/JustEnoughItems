@@ -160,13 +160,14 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 		ITypedIngredient<R> recipeOutput = recipeBookmark.getRecipeOutput();
 		T recipe = recipeBookmark.getRecipe();
 		IRecipeCategory<T> recipeCategory = recipeBookmark.getRecipeCategory();
-		tooltip.add(new TranslatableComponent("jei.tooltip.bookmarks.recipe", recipeCategory.getTitle()));
-		boolean previewAdded = addBookmarkTooltipFeaturesIfEnabled(tooltip, pinned);
+		JeiTooltip bookmarkTooltip = new JeiTooltip();
+		boolean previewAdded = addBookmarkTooltipFeaturesIfEnabled(bookmarkTooltip, pinned);
 
 		if (recipeBookmark.getDisplayRole() == RecipeIngredientRole.OUTPUT) {
 			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
 			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
 			IModIdHelper modIdHelper = jeiRuntime.getJeiHelpers().getModIdHelper();
+			boolean recipeByAdded = false;
 
 			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
 			if (recipeName != null) {
@@ -177,10 +178,13 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 					Component modName = modIdHelper.getFormattedModNameComponentForModId(recipeModId);
 					MutableComponent recipeBy = new TranslatableComponent("jei.tooltip.recipe.by", modName);
 					tooltip.add(recipeBy.withStyle(ChatFormatting.GRAY));
+					recipeByAdded = true;
 				}
 			}
 
-			tooltip.add(new TextComponent(""));
+			if (recipeByAdded) {
+				tooltip.add(new TextComponent(""));
+			}
 
 			SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, recipeOutput);
 		}
@@ -188,8 +192,14 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 		if (previewAdded && !pinned) {
 			IJeiKeyMappingInternal pauseRecipeCycling = Internal.getKeyMappings().getPauseRecipeCycling();
 			if (!pauseRecipeCycling.isUnbound()) {
-				tooltip.addKeyUsageComponent("jei.tooltip.bookmarks.preview.pin.usage", pauseRecipeCycling);
+				bookmarkTooltip.addKeyUsageComponent("jei.tooltip.bookmarks.preview.pin.usage", pauseRecipeCycling);
 			}
+		}
+
+		if (pinned) {
+			tooltip.addAll(bookmarkTooltip);
+		} else {
+			tooltip.addIngredientTooltipFooter(bookmarkTooltip);
 		}
 	}
 
