@@ -87,6 +87,9 @@
   "key.jei.showUses2": "Mostrar usos",
   "key.jei.transferRecipeBookmark": "Fabricar receta favorita (una vez)",
   "key.jei.maxTransferRecipeBookmark": "Fabricar receta favorita (muchas veces)",
+  "key.jei.quickMove": "Mover rápido ítem fantasma",
+  "key.jei.shareToChat": "Compartir ítem en el chat",
+
   "jei.key.category.search": "JEI (Filtro de búsqueda)",
   "key.jei.clearSearchBar": "Limpiar búsqueda",
   "key.jei.previousSearch": "Búsqueda anterior",
@@ -282,7 +285,6 @@
   "jei.alias.panda.spawn.egg": "en peligro",
   "jei.alias.villager.spawn.egg": "HMMM",
   "key.jei.pauseRecipeCycling": "Pausar rotación de ingredientes en la receta",
-  "key.jei.showBookmarkTooltipFeatures": "Mostrar detalles de favoritos",
   "key.jei.quickMove": "Mover rápido ítem fantasma",
   "key.jei.shareToChat": "Compartir ítem en el chat",
   "jei.config.client.bookmarks.bookmarkOutputAsRecipe": "Marcar Resultado como Receta",

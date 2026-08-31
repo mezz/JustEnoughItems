@@ -213,11 +213,14 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 		}
 
 		if (!pinned && clientConfig.isHoldShiftToShowBookmarkTooltipFeaturesEnabled()) {
-			IJeiKeyMappingInternal showBookmarkTooltipFeatures = Internal.getKeyMappings().getShowBookmarkTooltipFeatures();
-			if (!showBookmarkTooltipFeatures.isDown()) {
+			IJeiKeyMappingInternal pauseRecipeCycling = Internal.getKeyMappings().getPauseRecipeCycling();
+			if (pauseRecipeCycling.isUnbound()) {
+				return false;
+			}
+			if (!pauseRecipeCycling.isDown()) {
 				tooltip.addKeyUsageComponent(
 					"jei.tooltip.bookmarks.tooltips.usage",
-					showBookmarkTooltipFeatures
+					pauseRecipeCycling
 				);
 				return false;
 			}
