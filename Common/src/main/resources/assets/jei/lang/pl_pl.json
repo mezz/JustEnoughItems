@@ -25,7 +25,6 @@
   "jei.tooltip.bookmarks.usage.nokey": "Przypisz klawisz dla zakładek JEI w swoich ustawieniach sterowania.",
   "jei.tooltip.bookmarks.usage.key": "Najedź kursorem na składnik i naciśnij „%s”, aby dodać go do zakładek.",
   "jei.tooltip.bookmarks.not.enough.space": "Obszar po lewej stronie tego ekranu jest zbyt mały, żeby wyświetlić nakładkę z listą zakładek JEI.",
-  "jei.tooltip.bookmarks.recipe": "%s - zakładka receptury",
   "jei.tooltip.bookmarks.recipe.add": "Dodaj recepturę do zakładek.",
   "jei.tooltip.bookmarks.recipe.remove": "Usuń recepturę z zakładek.",
   "jei.tooltip.bookmarks.tooltips.usage": "[Naciśnij „%s”, by wyświetlić szczegóły]",

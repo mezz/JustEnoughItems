@@ -157,14 +157,14 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 		R recipe = recipeBookmark.getRecipe();
 
 		IRecipeCategory<R> recipeCategory = recipeBookmark.getRecipeCategory();
-		tooltip.add(Component.translatable("jei.tooltip.bookmarks.recipe", recipeCategory.getTitle()));
-
-		boolean previewAdded = addBookmarkTooltipFeaturesIfEnabled(tooltip, pinned);
+		JeiTooltip bookmarkTooltip = new JeiTooltip();
+		boolean previewAdded = addBookmarkTooltipFeaturesIfEnabled(bookmarkTooltip, pinned);
 
 		if (recipeBookmark.isDisplayIsOutput()) {
 			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
 			IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
 			IModIdHelper modIdHelper = jeiRuntime.getJeiHelpers().getModIdHelper();
+			boolean recipeByAdded = false;
 
 			Identifier recipeName = recipeCategory.getIdentifier(recipe);
 			if (recipeName != null) {
@@ -175,10 +175,13 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 					Component modName = modIdHelper.getFormattedModNameComponentForModId(recipeModId);
 					MutableComponent recipeBy = Component.translatable("jei.tooltip.recipe.by", modName);
 					tooltip.add(recipeBy.withStyle(ChatFormatting.GRAY));
+					recipeByAdded = true;
 				}
 			}
 
-			tooltip.add(Component.empty());
+			if (recipeByAdded) {
+				tooltip.add(Component.empty());
+			}
 
 			SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, displayIngredient);
 		}
@@ -186,8 +189,14 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 		if (previewAdded && !pinned) {
 			IJeiKeyMappingInternal pauseRecipeCycling = Internal.getKeyMappings().getPauseRecipeCycling();
 			if (!pauseRecipeCycling.isUnbound()) {
-				tooltip.addKeyUsageComponent("jei.tooltip.bookmarks.preview.pin.usage", pauseRecipeCycling);
+				bookmarkTooltip.addKeyUsageComponent("jei.tooltip.bookmarks.preview.pin.usage", pauseRecipeCycling);
 			}
+		}
+
+		if (pinned) {
+			tooltip.addAll(bookmarkTooltip);
+		} else {
+			tooltip.addIngredientTooltipFooter(bookmarkTooltip);
 		}
 	}
 
