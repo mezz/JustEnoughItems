@@ -38,6 +38,8 @@ import java.util.stream.Collectors;
 public class JeiTooltip implements ITooltipBuilder {
 	private final List<Component> lines = new ArrayList<>();
 	private final List<Either<FormattedText, TooltipComponent>> elements = new ArrayList<>();
+	private final List<Component> ingredientTooltipFooterLines = new ArrayList<>();
+	private final List<Either<FormattedText, TooltipComponent>> ingredientTooltipFooterElements = new ArrayList<>();
 	private @Nullable ITypedIngredient<?> typedIngredient;
 
 	public record TooltipRenderData(Font font, ItemStack itemStack) {
@@ -101,17 +103,22 @@ public class JeiTooltip implements ITooltipBuilder {
 
 	@Override
 	public void addKeyUsageComponent(String translationKey, IJeiKeyMapping keyMapping) {
-		MutableComponent translatedKeyMessage = keyMapping.getTranslatedKeyMessage().copy();
-		addKeyUsageComponent(translationKey, translatedKeyMessage);
+		add(createKeyUsageComponent(translationKey, keyMapping));
 	}
 
 	public void addKeyUsageComponent(String translationKey, MutableComponent keyMapping) {
+		add(createKeyUsageComponent(translationKey, keyMapping));
+	}
+
+	private static MutableComponent createKeyUsageComponent(String translationKey, IJeiKeyMapping keyMapping) {
+		return createKeyUsageComponent(translationKey, keyMapping.getTranslatedKeyMessage().copy());
+	}
+
+	private static MutableComponent createKeyUsageComponent(String translationKey, MutableComponent keyMapping) {
 		Component boldKeyMapping = keyMapping.withStyle(ChatFormatting.BOLD);
-		MutableComponent component = Component.translatable(translationKey, boldKeyMapping)
+		return Component.translatable(translationKey, boldKeyMapping)
 			.withStyle(ChatFormatting.ITALIC)
 			.withStyle(ChatFormatting.GRAY);
-
-		add(component);
 	}
 
 	@Override
@@ -125,6 +132,8 @@ public class JeiTooltip implements ITooltipBuilder {
 	public void clear() {
 		this.lines.clear();
 		this.elements.clear();
+		this.ingredientTooltipFooterLines.clear();
+		this.ingredientTooltipFooterElements.clear();
 		clearIngredient();
 	}
 
@@ -141,10 +150,19 @@ public class JeiTooltip implements ITooltipBuilder {
 	public void addAll(JeiTooltip tooltip) {
 		lines.addAll(tooltip.lines);
 		elements.addAll(tooltip.elements);
+		ingredientTooltipFooterLines.addAll(tooltip.ingredientTooltipFooterLines);
+		ingredientTooltipFooterElements.addAll(tooltip.ingredientTooltipFooterElements);
+	}
+
+	public void addIngredientTooltipFooter(JeiTooltip tooltip) {
+		ingredientTooltipFooterLines.addAll(tooltip.lines);
+		ingredientTooltipFooterLines.addAll(tooltip.ingredientTooltipFooterLines);
+		ingredientTooltipFooterElements.addAll(tooltip.elements);
+		ingredientTooltipFooterElements.addAll(tooltip.ingredientTooltipFooterElements);
 	}
 
 	public boolean isEmpty() {
-		return elements.isEmpty() && typedIngredient == null;
+		return elements.isEmpty() && ingredientTooltipFooterElements.isEmpty() && typedIngredient == null;
 	}
 
 	public List<Either<FormattedText, TooltipComponent>> build() {
@@ -251,6 +269,10 @@ public class JeiTooltip implements ITooltipBuilder {
 			.ifPresent(c -> elements.add(Math.min(1, elements.size()), Either.right(c)));
 
 		addDebugInfo(ingredientManager, typedIngredient);
+		lines.addAll(ingredientTooltipFooterLines);
+		ingredientTooltipFooterLines.clear();
+		elements.addAll(ingredientTooltipFooterElements);
+		ingredientTooltipFooterElements.clear();
 
 		IJeiHelpers jeiHelpers = Internal.getJeiRuntime().getJeiHelpers();
 		IModIdHelper modIdHelper = jeiHelpers.getModIdHelper();
