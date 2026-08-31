@@ -153,7 +153,9 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		addIngredientGridToTooltip(tooltip, ingredientManager, visibleCandidates);
 		if (visibleCandidates.size() > 1) {
 			var pauseRecipeCycling = Internal.getKeyMappings().getPauseRecipeCycling();
-			tooltip.add(new RecipeSlotOptionsTooltipComponent(pauseRecipeCycling));
+			if (!pauseRecipeCycling.isUnbound() && !pauseRecipeCycling.isDown()) {
+				tooltip.add(new RecipeSlotOptionsTooltipComponent(pauseRecipeCycling));
+			}
 		}
 	}
 

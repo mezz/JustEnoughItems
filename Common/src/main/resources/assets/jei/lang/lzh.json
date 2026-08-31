@@ -23,7 +23,6 @@
   "jei.tooltip.bookmarks.usage.nokey": "置設鍵控以賦鍵",
   "jei.tooltip.bookmarks.usage.key": "滑鼠浮此物而擊[%s]以增入書籤",
   "jei.tooltip.bookmarks.not.enough.space": "無空以顯書籤",
-  "jei.tooltip.bookmarks.recipe": "%s方書籤",
   "jei.tooltip.bookmarks.recipe.add": "此方增入書籤",
   "jei.tooltip.bookmarks.recipe.remove": "此方除出書籤",
   "jei.tooltip.bookmarks.tooltips.usage": "[%s]以詳閱",

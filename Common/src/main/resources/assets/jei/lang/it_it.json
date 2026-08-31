@@ -149,7 +149,6 @@
   "jei.alias.panda.spawn.egg": "endangered",
   "jei.alias.villager.spawn.egg": "HMMM",
   "jei.tooltip.bookmarks": "Segnalibri JEI",
-  "jei.tooltip.bookmarks.recipe": "%s ricette salvate nel segnalibro",
   "jei.tooltip.bookmarks.recipe.add": "Aggiungi questa ricetta al segnalibro.",
   "jei.tooltip.bookmarks.recipe.remove": "Rimuovi il segnalibro da questa ricetta.",
   "jei.tooltip.bookmarks.tooltips.usage": "[Premi \"%s\" per vedere i dettagli]",
