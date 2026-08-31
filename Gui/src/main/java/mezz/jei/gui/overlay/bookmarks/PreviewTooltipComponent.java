@@ -23,9 +23,26 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 	private final IRecipeLayoutDrawable<R> drawable;
 	private @Nullable IRecipeTransferError transferError;
 	private long lastUpdateTime = 0;
+	private boolean interactive;
+	private double mouseX = -1;
+	private double mouseY = -1;
 
 	public PreviewTooltipComponent(IRecipeLayoutDrawable<R> drawable) {
 		this.drawable = drawable;
+	}
+
+	public IRecipeLayoutDrawable<R> getRecipeLayout() {
+		return drawable;
+	}
+
+	public void setInteractive(double mouseX, double mouseY) {
+		this.interactive = true;
+		this.mouseX = mouseX;
+		this.mouseY = mouseY;
+	}
+
+	public void setStatic() {
+		this.interactive = false;
 	}
 
 	@Override
@@ -40,18 +57,31 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 
 	@Override
 	public void renderImage(Font font, int x, int y, int p_368529_, int p_368584_, GuiGraphics guiGraphics) {
+		if (interactive) {
+			int mouseX = (int) this.mouseX;
+			int mouseY = (int) this.mouseY;
+			drawable.setPosition(x + 2, y + 5);
+			drawable.drawRecipe(guiGraphics, mouseX, mouseY);
+			drawTransferError(guiGraphics, mouseX, mouseY);
+			return;
+		}
 		var pose = guiGraphics.pose();
 		pose.pushMatrix();
 		{
 			pose.translate(x + 2, y + 5);
+			drawable.setPosition(0, 0);
 			drawable.drawRecipe(guiGraphics, 0, 0);
-			updateTransferError();
-			if (transferError != null) {
-				Rect2i recipeRect = drawable.getRect();
-				transferError.showError(guiGraphics, x, y, drawable.getRecipeSlotsView(), recipeRect.getX(), recipeRect.getY());
-			}
+			drawTransferError(guiGraphics, x, y);
 		}
 		pose.popMatrix();
+	}
+
+	private void drawTransferError(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		updateTransferError();
+		if (transferError != null) {
+			Rect2i recipeRect = drawable.getRect();
+			transferError.showError(guiGraphics, mouseX, mouseY, drawable.getRecipeSlotsView(), recipeRect.getX(), recipeRect.getY());
+		}
 	}
 
 	public void tick() {

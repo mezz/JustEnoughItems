@@ -9,7 +9,9 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IGuiInputLayer;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IMouseOverable;
+import mezz.jei.gui.input.IPinnedTooltipHolder;
 import mezz.jei.gui.input.IUserInputHandler;
+import mezz.jei.gui.input.PinnedTooltipManager;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.client.gui.GuiGraphics;
@@ -19,7 +21,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-final class InteractiveIngredientTooltipController implements IGuiInputLayer {
+final class InteractiveIngredientTooltipController implements IGuiInputLayer, IPinnedTooltipHolder {
 	private final RecipesGui recipesGui;
 	private final FocusUtil focusUtil;
 	private final IRecipeManager recipeManager;
@@ -55,6 +57,7 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer {
 		if (activeTooltip != null) {
 			activeTooltip.unfocus();
 			this.activeTooltip = null;
+			PinnedTooltipManager.closed(this);
 		}
 	}
 
@@ -87,6 +90,7 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer {
 		}
 		hide();
 		this.activeTooltip = tooltip.get();
+		PinnedTooltipManager.opened(this);
 		return true;
 	}
 

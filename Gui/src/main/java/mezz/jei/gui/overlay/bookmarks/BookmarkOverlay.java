@@ -67,6 +67,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	private final BookmarkList bookmarkList;
 	private final IClientToggleState toggleState;
 	private final IClientConfig clientConfig;
+	private final BookmarkPreviewTooltipController previewTooltipController;
 	private boolean screenPropertiesDirty;
 
 	public BookmarkOverlay(
@@ -91,6 +92,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				.orElse(null)
 		);
 		this.bookmarkDragManager = new BookmarkDragManager(this);
+		this.previewTooltipController = new BookmarkPreviewTooltipController(this);
 		bookmarkList.addSourceListChangedListener(() -> {
 			toggleState.setBookmarkEnabled(!bookmarkList.isEmpty());
 			markScreenPropertiesDirty();
@@ -248,10 +250,14 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		}
 	}
 
+	public BookmarkPreviewTooltipController getPreviewTooltipController() {
+		return previewTooltipController;
+	}
+
 	public void drawTooltips(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		updateScreenPropertiesIfDirty();
 		if (!this.bookmarkDragManager.drawDraggedItem(guiGraphics, mouseX, mouseY)) {
-			if (isListDisplayed()) {
+			if (isListDisplayed() && !previewTooltipController.isVisible()) {
 				this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 			}
 			if (guiPropertiesCache.hasValidScreen() && toggleState.isOverlayEnabled()) {
