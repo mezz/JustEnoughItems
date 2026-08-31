@@ -10,6 +10,7 @@ import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.input.CombinedRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
+import mezz.jei.gui.input.PinnedTooltipManager;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkPreviewTooltipController;
@@ -45,7 +46,7 @@ public class BookmarkInputHandler implements IUserInputHandler {
 
 	@Override
 	public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
-		if (input.is(keyBindings.getBookmark())) {
+		if (PinnedTooltipManager.matchesInput(input.getKey(), keyBindings.getBookmark(), keyBindings.getPauseRecipeCycling())) {
 			Optional<IUserInputHandler> recipeHandler = handleRecipeBookmark(input);
 			if (recipeHandler.isPresent()) {
 				return recipeHandler;
