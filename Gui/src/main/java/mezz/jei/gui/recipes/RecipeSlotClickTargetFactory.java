@@ -25,7 +25,7 @@ public final class RecipeSlotClickTargetFactory {
 		this.isRecipeCyclingPaused = isRecipeCyclingPaused;
 	}
 
-	Optional<IClickableIngredientInternal<?>> create(
+	public Optional<IClickableIngredientInternal<?>> create(
 		IRecipeLayoutDrawable<?> recipeLayout,
 		double mouseX,
 		double mouseY
@@ -37,7 +37,7 @@ public final class RecipeSlotClickTargetFactory {
 			));
 	}
 
-	public Optional<IClickableIngredientInternal<?>> create(
+	Optional<IClickableIngredientInternal<?>> create(
 		RecipeSlotUnderMouse slotUnderMouse,
 		IMouseOverable mouseOverable
 	) {
@@ -55,7 +55,7 @@ public final class RecipeSlotClickTargetFactory {
 		return new ClickableIngredientInternal<>(element, mouseOverable, false, true);
 	}
 
-	public static IMouseOverable createMouseOverable(
+	static IMouseOverable createMouseOverable(
 		IRecipeLayoutDrawable<?> recipeLayout,
 		RecipeSlotUnderMouse expected
 	) {
