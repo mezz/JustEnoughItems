@@ -3,6 +3,7 @@ package mezz.jei.gui.overlay.bookmarks;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.common.Internal;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IGuiInputLayer;
@@ -21,11 +22,13 @@ import java.util.stream.Stream;
 
 public class BookmarkPreviewTooltipController implements IGuiInputLayer, IPinnedTooltipHolder, IRecipeFocusSource {
 	private final BookmarkOverlay bookmarkOverlay;
+	private final RecipeTransferService recipeTransferService;
 	private @Nullable BookmarkPreviewTooltip activeTooltip;
 	private @Nullable Screen lastScreen;
 
-	public BookmarkPreviewTooltipController(BookmarkOverlay bookmarkOverlay) {
+	public BookmarkPreviewTooltipController(BookmarkOverlay bookmarkOverlay, RecipeTransferService recipeTransferService) {
 		this.bookmarkOverlay = bookmarkOverlay;
+		this.recipeTransferService = recipeTransferService;
 	}
 
 	public boolean isVisible() {
@@ -75,6 +78,8 @@ public class BookmarkPreviewTooltipController implements IGuiInputLayer, IPinned
 			open(mouseX, mouseY);
 		} else if (!activeTooltip.isSourceVisible()) {
 			hide();
+		} else {
+			activeTooltip.update();
 		}
 	}
 
@@ -88,6 +93,7 @@ public class BookmarkPreviewTooltipController implements IGuiInputLayer, IPinned
 							element,
 							source::isPresentAndVisible,
 							component,
+							recipeTransferService,
 							(int) mouseX,
 							(int) mouseY
 						))
