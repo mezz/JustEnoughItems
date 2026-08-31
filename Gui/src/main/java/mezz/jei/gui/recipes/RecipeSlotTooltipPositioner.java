@@ -7,7 +7,7 @@ import org.joml.Vector2i;
 import org.joml.Vector2ic;
 import org.jetbrains.annotations.Nullable;
 
-final class RecipeSlotTooltipPositioner implements ClientTooltipPositioner {
+public final class RecipeSlotTooltipPositioner implements ClientTooltipPositioner {
 	private static final int TOOLTIP_MARGIN = 4;
 
 	private ImmutableRect2i tooltipArea = ImmutableRect2i.EMPTY;
