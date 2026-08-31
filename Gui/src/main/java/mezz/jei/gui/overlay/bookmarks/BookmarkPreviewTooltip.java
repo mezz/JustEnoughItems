@@ -2,24 +2,19 @@ package mezz.jei.gui.overlay.bookmarks;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
-import mezz.jei.api.gui.drawable.IScalableDrawable;
-import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.JeiGuiColors;
-import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IMouseOverable;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.handlers.SameElementInputHandler;
 import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
+import mezz.jei.gui.recipes.PinnedTooltipRenderer;
 import mezz.jei.gui.recipes.RecipeSlotClickTargetFactory;
-import mezz.jei.gui.recipes.RecipeSlotTooltipPositioner;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -27,9 +22,9 @@ import net.minecraft.client.gui.screens.Screen;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Stream;
 
 final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable {
-	private static final int BACKGROUND_PADDING = 2;
 	private static final InputConstants.Key LEFT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_LEFT);
 	private static final InputConstants.Key RIGHT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_RIGHT);
 
@@ -39,10 +34,7 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 	private final PreviewTooltipComponent<?> component;
 	private final IRecipeLayoutDrawable<?> drawable;
 	private final RecipeSlotClickTargetFactory clickTargetFactory;
-	private final RecipeSlotTooltipPositioner positioner;
-	private final IScalableDrawable background;
-	private final int anchorX;
-	private final int anchorY;
+	private final PinnedTooltipRenderer tooltipRenderer;
 
 	BookmarkPreviewTooltip(
 		BookmarkPreviewTooltipController controller,
@@ -62,27 +54,27 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 			jeiRuntime.getRecipeManager(),
 			Internal.getKeyMappings().getPauseRecipeCycling()::isDown
 		);
-		this.positioner = new RecipeSlotTooltipPositioner();
-		this.background = Internal.getTextures().getInteractiveIngredientTooltipBackground();
-		this.anchorX = anchorX;
-		this.anchorY = anchorY;
+		this.tooltipRenderer = new PinnedTooltipRenderer(anchorX, anchorY);
 	}
 
 	public boolean isSourceVisible() {
 		return sourceVisible.getAsBoolean();
 	}
 
-	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
-		return getTooltipArea().contains(mouseX, mouseY);
+	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		if (!this.controller.isActive(this)) {
+			return Stream.empty();
+		}
+		return getClickableIngredientUnderMouse(mouseX, mouseY).stream();
 	}
 
-	private ImmutableRect2i getTooltipArea() {
-		ImmutableRect2i tooltipArea = this.positioner.getTooltipArea();
-		if (tooltipArea.isEmpty()) {
-			return ImmutableRect2i.EMPTY;
-		}
-		return tooltipArea.expandBy(BACKGROUND_PADDING);
+	private Optional<IClickableIngredientInternal<?>> getClickableIngredientUnderMouse(double mouseX, double mouseY) {
+		return this.clickTargetFactory.create(this.drawable, mouseX, mouseY);
+	}
+
+	@Override
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		return this.tooltipRenderer.isMouseOver(mouseX, mouseY);
 	}
 
 	public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY) {
@@ -90,25 +82,14 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 		this.element.getPinnedTooltip(tooltip);
 		this.component.setInteractive(mouseX, mouseY);
 
-		ImmutableRect2i tooltipArea = getTooltipArea();
-		guiGraphics.fill(
-			0,
-			0,
-			guiGraphics.guiWidth(),
-			guiGraphics.guiHeight(),
-			JeiGuiColors.getColor(GuiColor.INTERACTIVE_INGREDIENT_TOOLTIP_SCREEN_DIM)
-		);
-		if (!tooltipArea.isEmpty()) {
-			this.background.draw(
-				guiGraphics,
-				tooltipArea.x(),
-				tooltipArea.y(),
-				tooltipArea.width(),
-				tooltipArea.height()
-			);
+		this.tooltipRenderer.draw(guiGraphics, tooltip);
+		var poseStack = guiGraphics.pose();
+		poseStack.pushPose();
+		{
+			poseStack.translate(0, 0, PinnedTooltipRenderer.TOOLTIP_FOREGROUND_Z);
+			this.drawable.drawOverlays(guiGraphics, mouseX, mouseY);
 		}
-		tooltip.draw(guiGraphics, this.anchorX, this.anchorY, this.positioner);
-		this.drawable.drawOverlays(guiGraphics, mouseX, mouseY);
+		poseStack.popPose();
 	}
 
 	@Override
@@ -133,17 +114,12 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 			return Optional.empty();
 		}
 
-		RecipeSlotUnderMouse slotUnderMouse = this.drawable.getSlotUnderMouse(mouseX, mouseY)
-			.orElse(null);
-		if (slotUnderMouse == null) {
+		if (this.drawable.getSlotUnderMouse(mouseX, mouseY).isEmpty()) {
 			// keep clicks on the tooltip itself from reaching the screen behind it
 			return Optional.of(this);
 		}
 
-		IClickableIngredientInternal<?> ingredient = this.clickTargetFactory.create(
-				slotUnderMouse,
-				RecipeSlotClickTargetFactory.createMouseOverable(this.drawable, slotUnderMouse)
-			)
+		IClickableIngredientInternal<?> ingredient = getClickableIngredientUnderMouse(mouseX, mouseY)
 			.orElse(null);
 		if (ingredient == null) {
 			return Optional.of(this);
