@@ -183,6 +183,7 @@ public class JeiGuiStarter {
 			ingredientManager,
 			screenHelper,
 			bookmarkList,
+			recipeTransferService,
 			lookupHistory,
 			keyMappings,
 			bookmarkListConfig,

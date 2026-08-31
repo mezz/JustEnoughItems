@@ -202,8 +202,11 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	}
 
 	private boolean addBookmarkTooltipFeaturesIfEnabled(JeiTooltip tooltip, boolean pinned) {
-		JeiTooltip transferComponents = createTransferComponents();
-		List<BookmarkTooltipFeature> bookmarkTooltipFeatures = clientConfig.getBookmarkTooltipFeatures();
+		JeiTooltip transferComponents = new JeiTooltip();
+		if (!pinned) {
+			transferComponents.addAll(createTransferComponents());
+		}
+		List<BookmarkTooltipFeature> bookmarkTooltipFeatures = getBookmarkTooltipFeatures();
 
 		if (bookmarkTooltipFeatures.isEmpty() && transferComponents.isEmpty()) {
 			return false;

@@ -7,6 +7,8 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.transfer.RecipeTransferService;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IMouseOverable;
 import mezz.jei.gui.input.IUserInputHandler;
@@ -15,9 +17,11 @@ import mezz.jei.gui.input.handlers.SameElementInputHandler;
 import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
 import mezz.jei.gui.recipes.PinnedTooltipRenderer;
 import mezz.jei.gui.recipes.RecipeSlotClickTargetFactory;
+import mezz.jei.gui.recipes.RecipeTransferButton;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,12 +39,15 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 	private final IRecipeLayoutDrawable<?> drawable;
 	private final RecipeSlotClickTargetFactory clickTargetFactory;
 	private final PinnedTooltipRenderer tooltipRenderer;
+	private final RecipeTransferButton transferButton;
+	private final IUserInputHandler transferButtonInputHandler;
 
 	BookmarkPreviewTooltip(
 		BookmarkPreviewTooltipController controller,
 		RecipeBookmarkElement<?, ?> element,
 		BooleanSupplier sourceVisible,
 		PreviewTooltipComponent<?> component,
+		RecipeTransferService recipeTransferService,
 		int anchorX,
 		int anchorY
 	) {
@@ -55,6 +62,8 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 			Internal.getKeyMappings().getPauseRecipeCycling()::isDown
 		);
 		this.tooltipRenderer = new PinnedTooltipRenderer(anchorX, anchorY);
+		this.transferButton = RecipeTransferButton.createForPinnedRecipe(this.drawable, recipeTransferService);
+		this.transferButtonInputHandler = this.transferButton.createInputHandler();
 	}
 
 	public boolean isSourceVisible() {
@@ -74,22 +83,52 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return this.tooltipRenderer.isMouseOver(mouseX, mouseY);
+		return this.tooltipRenderer.isMouseOver(mouseX, mouseY) || this.transferButton.isMouseOver(mouseX, mouseY);
+	}
+
+	public void update() {
+		this.transferButton.tick();
 	}
 
 	public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		JeiTooltip tooltip = new JeiTooltip();
 		this.element.getPinnedTooltip(tooltip);
-		this.component.setInteractive(mouseX, mouseY);
+		this.component.setInteractive(mouseX, mouseY, getInteractiveWidth());
 
 		this.tooltipRenderer.draw(guiGraphics, tooltip);
 		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{
 			poseStack.translate(0, 0, PinnedTooltipRenderer.NESTED_TOOLTIP_FOREGROUND_Z);
+			updateTransferButtonBounds();
+			this.transferButton.draw(guiGraphics, mouseX, mouseY, 0.0f);
 			this.drawable.drawOverlays(guiGraphics, mouseX, mouseY);
+			this.transferButton.drawTooltips(guiGraphics, mouseX, mouseY);
 		}
 		poseStack.popPose();
+	}
+
+	private int getInteractiveWidth() {
+		if (!this.transferButton.isVisible()) {
+			return 0;
+		}
+		Rect2i buttonArea = this.drawable.getSideButtonArea(0);
+		return 2 + buttonArea.getX() + buttonArea.getWidth();
+	}
+
+	private void updateTransferButtonBounds() {
+		if (!this.transferButton.isVisible()) {
+			this.transferButton.updateBounds(ImmutableRect2i.EMPTY);
+			return;
+		}
+		Rect2i recipeArea = this.drawable.getRect();
+		Rect2i buttonArea = this.drawable.getSideButtonArea(0);
+		this.transferButton.updateBounds(new ImmutableRect2i(
+			recipeArea.getX() + buttonArea.getX(),
+			recipeArea.getY() + buttonArea.getY(),
+			buttonArea.getWidth(),
+			buttonArea.getHeight()
+		));
 	}
 
 	@Override
@@ -100,6 +139,15 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 	) {
 		if (!this.controller.isActive(this)) {
 			return Optional.empty();
+		}
+
+		Optional<IUserInputHandler> transferButtonHandler = transferButtonInputHandler.handleUserInput(
+			screen,
+			input,
+			keyBindings
+		);
+		if (transferButtonHandler.isPresent()) {
+			return transferButtonHandler;
 		}
 
 		boolean leftClick = input.getKey().equals(LEFT_MOUSE_BUTTON);
