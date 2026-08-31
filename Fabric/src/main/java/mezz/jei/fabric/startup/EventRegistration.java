@@ -8,6 +8,7 @@ import mezz.jei.fabric.input.KeyboardHandlerExtension;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.gui.input.InputType;
+import mezz.jei.gui.input.PinnedTooltipManager;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -46,6 +47,7 @@ public class EventRegistration {
 		JeiScreenEvents.DRAW_FOREGROUND.register(this::drawForeground);
 		JeiScreenEvents.ALLOW_MOUSE_DRAG.register(this::allowMouseDrag);
 		ClientTickEvents.START_CLIENT_TICK.register(this::onStartTick);
+		JeiScreenEvents.ALLOW_TOOLTIP.register(this::allowTooltip);
 	}
 
 	private void registerScreenEvents(Screen screen) {
@@ -58,6 +60,17 @@ public class EventRegistration {
 		ScreenMouseEvents.allowMouseRelease(screen).register(this::allowMouseRelease);
 		ScreenMouseEvents.allowMouseScroll(screen).register(this::allowMouseScroll);
 		ScreenEvents.afterRender(screen).register(this::afterRender);
+		ScreenEvents.beforeRender(screen).register(this::beforeRender);
+	}
+
+	private void beforeRender(Screen screen, PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+		if (guiEventHandler != null) {
+			guiEventHandler.updateForScreenRender(screen, mouseX, mouseY);
+		}
+	}
+
+	private boolean allowTooltip() {
+		return guiEventHandler == null || !PinnedTooltipManager.shouldSuppressExternalTooltip();
 	}
 
 	private boolean allowMouseClick(Screen screen, double mouseX, double mouseY, int button) {

@@ -78,6 +78,14 @@ public class GuiEventHandler {
 			.update();
 	}
 
+	/**
+	 * Updates the pinned tooltip before the screen can render its own tooltip.
+	 */
+	public void updateForScreenRender(Screen screen, int mouseX, int mouseY) {
+		updateOverlayProperties(screen);
+		bookmarkOverlay.getPreviewTooltipController().update(mouseX, mouseY);
+	}
+
 	public void onDrawBackgroundPost(Screen screen, PoseStack poseStack) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
@@ -121,19 +129,8 @@ public class GuiEventHandler {
 	public void onDrawScreenPost(Screen screen, PoseStack poseStack, int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getInstance();
 
-		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
-			.map(ImmutableRect2i::new)
-			.collect(Collectors.toUnmodifiableSet());
-		ingredientListOverlay.getScreenPropertiesUpdater()
-			.updateScreen(screen)
-			.updateExclusionAreas(guiExclusionAreas)
-			.update();
-		bookmarkOverlay.getScreenPropertiesUpdater()
-			.updateScreen(screen)
-			.updateExclusionAreas(guiExclusionAreas)
-			.update();
+		updateOverlayProperties(screen);
 
-		bookmarkOverlay.getPreviewTooltipController().update(mouseX, mouseY);
 		boolean mouseOverInputLayer = this.inputLayers.stream()
 			.anyMatch(inputLayer -> inputLayer.isMouseOver(mouseX, mouseY));
 		int overlayMouseX = mouseOverInputLayer ? MOUSE_OUTSIDE_SCREEN : mouseX;
@@ -178,6 +175,20 @@ public class GuiEventHandler {
 		if (DebugConfig.isDebugGuisEnabled()) {
 			drawDebugInfoForScreen(screen, poseStack);
 		}
+	}
+
+	private void updateOverlayProperties(Screen screen) {
+		Set<ImmutableRect2i> guiExclusionAreas = screenHelper.getGuiExclusionAreas(screen)
+			.map(ImmutableRect2i::new)
+			.collect(Collectors.toUnmodifiableSet());
+		ingredientListOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.updateExclusionAreas(guiExclusionAreas)
+			.update();
+		bookmarkOverlay.getScreenPropertiesUpdater()
+			.updateScreen(screen)
+			.updateExclusionAreas(guiExclusionAreas)
+			.update();
 	}
 
 	public void onClientTick() {

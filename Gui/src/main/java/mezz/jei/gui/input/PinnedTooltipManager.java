@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 public final class PinnedTooltipManager {
 	private static @Nullable IPinnedTooltipHolder active;
+	private static int activeTooltipRenderDepth;
 
 	public static void opened(IPinnedTooltipHolder holder) {
 		IPinnedTooltipHolder active = PinnedTooltipManager.active;
@@ -20,6 +21,23 @@ public final class PinnedTooltipManager {
 		if (PinnedTooltipManager.active == holder) {
 			PinnedTooltipManager.active = null;
 		}
+	}
+
+	public static void draw(IPinnedTooltipHolder holder, Runnable draw) {
+		if (active != holder) {
+			draw.run();
+			return;
+		}
+		activeTooltipRenderDepth++;
+		try {
+			draw.run();
+		} finally {
+			activeTooltipRenderDepth--;
+		}
+	}
+
+	public static boolean shouldSuppressExternalTooltip() {
+		return active != null && activeTooltipRenderDepth == 0;
 	}
 
 	public static boolean matchesInput(
