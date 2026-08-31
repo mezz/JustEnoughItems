@@ -127,6 +127,7 @@ public class GuiEventHandler {
 
 	private void drawPostForeground(Screen screen, @Nullable IGuiProperties guiProperties, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getInstance();
+		this.inputLayers.forEach(inputLayer -> inputLayer.update(mouseX, mouseY));
 		boolean mouseOverInputLayer = this.inputLayers.stream()
 			.anyMatch(inputLayer -> inputLayer.isMouseOver(mouseX, mouseY));
 

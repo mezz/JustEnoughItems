@@ -1,10 +1,12 @@
 package mezz.jei.gui.overlay.bookmarks;
 
-import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.common.Internal;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.gui.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IGuiInputLayer;
 import mezz.jei.gui.input.IPinnedTooltipHolder;
+import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.input.PinnedTooltipManager;
 import mezz.jei.gui.input.UserInput;
@@ -12,11 +14,12 @@ import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
-public class BookmarkPreviewTooltipController implements IGuiInputLayer, IPinnedTooltipHolder {
+public class BookmarkPreviewTooltipController implements IGuiInputLayer, IPinnedTooltipHolder, IRecipeFocusSource {
 	private final BookmarkOverlay bookmarkOverlay;
 	private @Nullable BookmarkPreviewTooltip activeTooltip;
 	private @Nullable Screen lastScreen;
@@ -49,14 +52,14 @@ public class BookmarkPreviewTooltipController implements IGuiInputLayer, IPinned
 
 	@Override
 	public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-		update(mouseX, mouseY);
 		BookmarkPreviewTooltip activeTooltip = this.activeTooltip;
 		if (activeTooltip != null) {
 			activeTooltip.draw(guiGraphics, mouseX, mouseY);
 		}
 	}
 
-	private void update(double mouseX, double mouseY) {
+	@Override
+	public void update(double mouseX, double mouseY) {
 		if (!Internal.getKeyMappings().getPauseRecipeCycling().isDown() ||
 			!bookmarkOverlay.isListDisplayed()
 		) {
@@ -103,9 +106,22 @@ public class BookmarkPreviewTooltipController implements IGuiInputLayer, IPinned
 	}
 
 	@Override
+	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		BookmarkPreviewTooltip activeTooltip = this.activeTooltip;
+		if (activeTooltip == null) {
+			return Stream.empty();
+		}
+		return activeTooltip.getIngredientUnderMouse(mouseX, mouseY);
+	}
+
+	@Override
+	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		return Stream.empty();
+	}
+
+	@Override
 	public Optional<IUserInputHandler> handleUserInput(
 		Screen screen,
-		IGuiProperties guiProperties,
 		UserInput input,
 		IInternalKeyMappings keyBindings
 	) {
@@ -113,6 +129,6 @@ public class BookmarkPreviewTooltipController implements IGuiInputLayer, IPinned
 		if (activeTooltip == null) {
 			return Optional.empty();
 		}
-		return activeTooltip.handleUserInput(screen, guiProperties, input, keyBindings);
+		return activeTooltip.handleUserInput(screen, input, keyBindings);
 	}
 }

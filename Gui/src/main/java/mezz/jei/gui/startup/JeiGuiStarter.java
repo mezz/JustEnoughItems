@@ -233,6 +233,7 @@ public class JeiGuiStarter {
 		);
 
 		CombinedRecipeFocusSource recipeFocusSource = new CombinedRecipeFocusSource(
+			bookmarkPreviewTooltipController,
 			recipesGui,
 			ingredientListOverlay,
 			bookmarkOverlay,
@@ -254,7 +255,14 @@ public class JeiGuiStarter {
 			ingredientListOverlay.createInputHandler(),
 			bookmarkOverlay.createInputHandler(),
 			new FocusInputHandler(recipeFocusSource, recipesGui, focusUtil, ingredientManager),
-			new BookmarkInputHandler(recipeFocusSource, bookmarkList, bookmarkOverlay, clientConfig, recipesGui),
+			new BookmarkInputHandler(
+				recipeFocusSource,
+				bookmarkList,
+				bookmarkOverlay,
+				bookmarkPreviewTooltipController,
+				clientConfig,
+				recipesGui
+			),
 			new GlobalInputHandler(toggleState),
 			new GuiAreaInputHandler(screenHelper, recipesGui, focusFactory)
 		);
