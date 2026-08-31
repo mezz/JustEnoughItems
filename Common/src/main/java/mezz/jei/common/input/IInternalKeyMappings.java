@@ -3,6 +3,7 @@ package mezz.jei.common.input;
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.api.runtime.IJeiKeyMappings;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
+import mezz.jei.common.input.keys.IJeiKeyMappingWithExtraModifiers;
 
 public interface IInternalKeyMappings extends IJeiKeyMappings {
 	IJeiKeyMapping getToggleOverlay();
@@ -25,14 +26,14 @@ public interface IInternalKeyMappings extends IJeiKeyMappings {
 
 	IJeiKeyMapping getCloseRecipeGui();
 
-	IJeiKeyMapping getBookmark();
+	IJeiKeyMappingWithExtraModifiers getBookmark();
 	IJeiKeyMapping getToggleBookmarkOverlay();
 
 	@Override
-	IJeiKeyMapping getShowRecipe();
+	IJeiKeyMappingWithExtraModifiers getShowRecipe();
 
 	@Override
-	IJeiKeyMapping getShowUses();
+	IJeiKeyMappingWithExtraModifiers getShowUses();
 
 	IJeiKeyMapping getTransferRecipeBookmark();
 	IJeiKeyMapping getMaxTransferRecipeBookmark();
