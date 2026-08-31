@@ -219,12 +219,14 @@ public class JeiGuiStarter {
 		);
 		registration.setRecipesGui(recipesGui);
 		var recipesGuiForegroundInputLayer = recipesGui.getForegroundInputLayer();
+		var bookmarkPreviewTooltipController = bookmarkOverlay.getPreviewTooltipController();
 
 		GuiEventHandler guiEventHandler = new GuiEventHandler(
 			screenHelper,
 			bookmarkOverlay,
 			ingredientListOverlay,
-			recipesGuiForegroundInputLayer
+			recipesGuiForegroundInputLayer,
+			bookmarkPreviewTooltipController
 		);
 
 		CombinedRecipeFocusSource recipeFocusSource = new CombinedRecipeFocusSource(
@@ -241,6 +243,7 @@ public class JeiGuiStarter {
 		UserInputRouter userInputRouter = new UserInputRouter(
 			"JEIGlobal",
 			recipesGuiForegroundInputLayer,
+			bookmarkPreviewTooltipController,
 			new EditInputHandler(recipeFocusSource, toggleState, editModeConfig),
 			ingredientListOverlay.createDeleteItemInputHandler(),
 			bookmarkOverlay.createDeleteItemInputHandler(),

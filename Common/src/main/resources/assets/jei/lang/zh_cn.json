@@ -32,6 +32,7 @@
   "jei.tooltip.bookmarks.tooltips.usage": "[按“%s”以显示细节]",
   "jei.tooltip.bookmarks.tooltips.transfer.usage": "[按“%s”以合成一次]",
   "jei.tooltip.bookmarks.tooltips.transfer.max.usage": "[按“%s”以合成全部]",
+  "jei.tooltip.bookmarks.preview.pin.usage": "[按住“%s”固定此预览，然后点击原料查看配方]",
   "jei.tooltip.lookupHistory.enable": "显示JEI查询历史",
   "jei.tooltip.lookupHistory.disable": "隐藏JEI查询历史",
   "jei.tooltip.lookupHistory.usage": "显示最近用于查询配方的原料列表。",

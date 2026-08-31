@@ -16,11 +16,11 @@ import net.minecraft.tags.TagKey;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
-final class RecipeSlotClickTargetFactory {
+public final class RecipeSlotClickTargetFactory {
 	private final IRecipeManager recipeManager;
 	private final BooleanSupplier isRecipeCyclingPaused;
 
-	RecipeSlotClickTargetFactory(IRecipeManager recipeManager, BooleanSupplier isRecipeCyclingPaused) {
+	public RecipeSlotClickTargetFactory(IRecipeManager recipeManager, BooleanSupplier isRecipeCyclingPaused) {
 		this.recipeManager = recipeManager;
 		this.isRecipeCyclingPaused = isRecipeCyclingPaused;
 	}
@@ -37,7 +37,7 @@ final class RecipeSlotClickTargetFactory {
 			));
 	}
 
-	Optional<IClickableIngredientInternal<?>> create(
+	public Optional<IClickableIngredientInternal<?>> create(
 		RecipeSlotUnderMouse slotUnderMouse,
 		IMouseOverable mouseOverable
 	) {
@@ -55,7 +55,7 @@ final class RecipeSlotClickTargetFactory {
 		return new ClickableIngredientInternal<>(element, mouseOverable, false, true);
 	}
 
-	static IMouseOverable createMouseOverable(
+	public static IMouseOverable createMouseOverable(
 		IRecipeLayoutDrawable<?> recipeLayout,
 		RecipeSlotUnderMouse expected
 	) {
