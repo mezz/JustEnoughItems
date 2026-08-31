@@ -12,7 +12,6 @@ import mezz.jei.common.input.keys.JeiKeyModifier;
 import mezz.jei.common.input.keys.JeiMultiKeyMapping;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.KeyMapping;
 import org.lwjgl.glfw.GLFW;
 
@@ -41,7 +40,6 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping maxTransferRecipeBookmark;
 	private final IJeiKeyMapping quickMove;
 	private final IJeiKeyMapping shareToChat;
-	private final IJeiKeyMappingInternal showBookmarkTooltipFeatures;
 
 	private final IJeiKeyMappingWithExtraModifiers showRecipe;
 	private final IJeiKeyMappingWithExtraModifiers showUses;
@@ -65,13 +63,6 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping leftClick;
 	private final IJeiKeyMapping rightClick;
 	private final IJeiKeyMapping enterKey;
-
-	private static int getDefaultBookmarkTooltipFeaturesKey() {
-		if (Minecraft.ON_OSX) {
-			return GLFW.GLFW_KEY_LEFT_SUPER;
-		}
-		return GLFW.GLFW_KEY_LEFT_CONTROL;
-	}
 
 	public InternalKeyMappings(Consumer<KeyMapping> registerMethod) {
 		IPlatformInputHelper inputHelper = Services.PLATFORM.getInputHelper();
@@ -176,11 +167,6 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 		shareToChat = mouseHover.createMapping("key.jei.shareToChat")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
 			.buildUnbound()
-			.register(registerMethod);
-
-		showBookmarkTooltipFeatures = mouseHover.createMapping("key.jei.showBookmarkTooltipFeatures")
-			.setContext(JeiKeyConflictContext.GUI)
-			.buildKeyboardKey(getDefaultBookmarkTooltipFeaturesKey())
 			.register(registerMethod);
 
 		// Search Bar
@@ -444,11 +430,6 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	@Override
 	public IJeiKeyMapping getShareToChat() {
 		return shareToChat;
-	}
-
-	@Override
-	public IJeiKeyMappingInternal getShowBookmarkTooltipFeatures() {
-		return showBookmarkTooltipFeatures;
 	}
 
 	@Override
