@@ -86,7 +86,7 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{
-			poseStack.translate(0, 0, PinnedTooltipRenderer.TOOLTIP_FOREGROUND_Z);
+			poseStack.translate(0, 0, PinnedTooltipRenderer.NESTED_TOOLTIP_FOREGROUND_Z);
 			this.drawable.drawOverlays(guiGraphics, mouseX, mouseY);
 		}
 		poseStack.popPose();

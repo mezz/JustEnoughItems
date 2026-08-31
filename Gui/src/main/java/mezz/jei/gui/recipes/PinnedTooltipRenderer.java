@@ -10,6 +10,8 @@ import net.minecraft.client.gui.GuiGraphics;
 
 public final class PinnedTooltipRenderer {
 	public static final int TOOLTIP_FOREGROUND_Z = 300;
+	// Vanilla renders stack-count decorations 200 Z above the item, so nested tooltips must clear that layer.
+	public static final int NESTED_TOOLTIP_FOREGROUND_Z = TOOLTIP_FOREGROUND_Z + 300;
 	private static final int BACKGROUND_PADDING = 2;
 
 	private final RecipeSlotTooltipPositioner positioner = new RecipeSlotTooltipPositioner();
