@@ -30,6 +30,8 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 	private static final InputConstants.Key LEFT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_LEFT);
 	private static final InputConstants.Key RIGHT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_RIGHT);
 	private static final int SCREEN_DIM_COLOR = 0x40000000;
+	// Vanilla renders stack-count decorations 200 Z above the item, so nested tooltips must clear that layer.
+	private static final int NESTED_TOOLTIP_FOREGROUND_Z = 600;
 
 	private final BookmarkPreviewTooltipController controller;
 	private final RecipeBookmarkElement<?, ?> element;
@@ -96,7 +98,12 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 			GuiComponent.fill(poseStack, 0, 0, screen.width, screen.height, SCREEN_DIM_COLOR);
 		}
 		tooltip.draw(poseStack, this.anchorX, this.anchorY);
-		this.drawable.drawOverlays(poseStack, mouseX, mouseY);
+		poseStack.pushPose();
+		{
+			poseStack.translate(0, 0, NESTED_TOOLTIP_FOREGROUND_Z);
+			this.drawable.drawOverlays(poseStack, mouseX, mouseY);
+		}
+		poseStack.popPose();
 	}
 
 	@Override
