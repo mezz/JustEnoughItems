@@ -28,6 +28,7 @@ import mezz.jei.gui.input.handlers.NullInputHandler;
 import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
+import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.ingredients.IngredientListSlot;
 import mezz.jei.gui.overlay.IScreenPropertiesUpdater;
 import mezz.jei.gui.overlay.GuiPropertiesCache;
@@ -43,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
 public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
@@ -254,6 +256,28 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		return previewTooltipController;
 	}
 
+	Stream<PreviewSource> getPreviewSourcesUnderMouse(double mouseX, double mouseY) {
+		Stream<PreviewSource> bookmarkSources = contents.getIngredientUnderMouse(mouseX, mouseY)
+			.map(ingredient -> new PreviewSource(ingredient, bookmarkList, this::isListDisplayed));
+		IIngredientGridSource lookupHistory = lookupHistoryOverlay.getLookupHistory();
+		Stream<PreviewSource> lookupHistorySources = lookupHistoryOverlay.getIngredientUnderMouse(mouseX, mouseY)
+			.map(ingredient -> new PreviewSource(ingredient, lookupHistory, lookupHistoryOverlay::isListDisplayed));
+		return Stream.concat(bookmarkSources, lookupHistorySources);
+	}
+
+	record PreviewSource(
+		IClickableIngredientInternal<?> ingredient,
+		IIngredientGridSource owner,
+		BooleanSupplier ownerDisplayed
+	) {
+		boolean isPresentAndVisible() {
+			IElement<?> element = ingredient.getElement();
+			return ownerDisplayed.getAsBoolean() &&
+				element.isVisible() &&
+				owner.containsElement(element);
+		}
+	}
+
 	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		updateScreenPropertiesIfDirty();
 		if (!this.bookmarkDragManager.drawDraggedItem(guiGraphics, mouseX, mouseY)) {
@@ -423,6 +447,14 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return this.contents.isMouseOver(mouseX, mouseY);
+	}
+
+	public boolean isBookmarkElementUnderMouse(IElement<?> element, double mouseX, double mouseY) {
+		return isListDisplayed() &&
+			element.isVisible() &&
+			bookmarkList.containsElement(element) &&
+			contents.getIngredientUnderMouse(mouseX, mouseY)
+				.anyMatch(ingredient -> ingredient.getElement() == element);
 	}
 
 	public static class ActionDragTarget extends DragTarget {
