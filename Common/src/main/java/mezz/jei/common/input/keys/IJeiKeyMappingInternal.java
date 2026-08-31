@@ -1,17 +1,21 @@
 package mezz.jei.common.input.keys;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import java.util.function.Consumer;
-
-import mezz.jei.api.runtime.IJeiKeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
-public interface IJeiKeyMappingInternal extends IJeiKeyMapping {
+import java.util.function.Consumer;
+
+public interface IJeiKeyMappingInternal extends IJeiKeyMappingWithExtraModifiers {
 	@Override
 	boolean isActiveAndMatches(InputConstants.Key key);
+
+	@Override
+	default boolean isActiveAndMatchesAllowingExtraModifiers(InputConstants.Key key) {
+		return isActiveAndMatches(key);
+	}
 
 	@Override
 	boolean isUnbound();
