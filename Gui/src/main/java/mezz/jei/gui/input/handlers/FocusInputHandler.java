@@ -10,6 +10,7 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.CombinedRecipeFocusSource;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IUserInputHandler;
+import mezz.jei.gui.input.PinnedTooltipManager;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.util.FocusUtil;
@@ -45,7 +46,7 @@ public class FocusInputHandler implements IUserInputHandler {
 			return handledClick;
 		}
 
-		if (input.is(keyBindings.getShowRecipe())) {
+		if (PinnedTooltipManager.matchesInput(input.getKey(), keyBindings.getShowRecipe(), keyBindings.getPauseRecipeCycling())) {
 			return handleShow(input, List.of(RecipeIngredientRole.OUTPUT), keyBindings);
 		}
 
@@ -53,7 +54,7 @@ public class FocusInputHandler implements IUserInputHandler {
 			return handleShareToChat(input, keyBindings);
 		}
 
-		if (input.is(keyBindings.getShowUses())) {
+		if (PinnedTooltipManager.matchesInput(input.getKey(), keyBindings.getShowUses(), keyBindings.getPauseRecipeCycling())) {
 			return handleShow(input, List.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.CRAFTING_STATION), keyBindings);
 		}
 
