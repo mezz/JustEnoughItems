@@ -12,7 +12,6 @@ import mezz.jei.common.input.keys.JeiMultiKeyMapping;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.input.InputQuirks;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
@@ -42,7 +41,6 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping toggleBookmarkOverlay;
 	private final IJeiKeyMapping transferRecipeBookmark;
 	private final IJeiKeyMapping maxTransferRecipeBookmark;
-	private final IJeiKeyMappingInternal showBookmarkTooltipFeatures;
 	private final IJeiKeyMapping quickMove;
 	private final IJeiKeyMapping shareToChat;
 
@@ -72,13 +70,6 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private static KeyMapping.Category createUnregisteredCategory(String name) {
 		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, name);
 		return new KeyMapping.Category(id);
-	}
-
-	private static int getDefaultBookmarkTooltipFeaturesKey() {
-		if (InputQuirks.REPLACE_CTRL_KEY_WITH_CMD_KEY) {
-			return GLFW.GLFW_KEY_LEFT_SUPER;
-		}
-		return GLFW.GLFW_KEY_LEFT_CONTROL;
 	}
 
 	private record CategoryBuilderFactory(
@@ -185,11 +176,6 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
 			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
 			.buildMouseLeft()
-			.register(registerMethod);
-
-		showBookmarkTooltipFeatures = mouseHover.createMapping("key.jei.showBookmarkTooltipFeatures")
-			.setContext(JeiKeyConflictContext.GUI)
-			.buildKeyboardKey(getDefaultBookmarkTooltipFeaturesKey())
 			.register(registerMethod);
 
 		quickMove = mouseHover.createMapping("key.jei.quickMove")
@@ -454,11 +440,6 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	@Override
 	public IJeiKeyMapping getMaxTransferRecipeBookmark() {
 		return maxTransferRecipeBookmark;
-	}
-
-	@Override
-	public IJeiKeyMappingInternal getShowBookmarkTooltipFeatures() {
-		return showBookmarkTooltipFeatures;
 	}
 
 	@Override
