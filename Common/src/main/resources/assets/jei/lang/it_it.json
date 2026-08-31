@@ -21,7 +21,6 @@
   "jei.tooltip.bookmarks.usage.nokey": "Associa un tasto per i segnalibri JEI nelle tue inpostazioni dei comandi.",
   "jei.tooltip.bookmarks.usage.key": "Passa il mouse su un ingrediente e premi \"%s\" per aggiungerlo ai segnalibri.",
   "jei.tooltip.bookmarks.not.enough.space": "Non c'è abbastanza spazio per la schermata dei segnalibri JEI qui.",
-  "jei.tooltip.bookmarks.recipe": "%s ricette salvate nel segnalibro",
   "jei.tooltip.bookmarks.recipe.add": "Aggiungi questa ricetta al segnalibro.",
   "jei.tooltip.bookmarks.recipe.remove": "Rimuovi il segnalibro da questa ricetta.",
   "jei.tooltip.bookmarks.tooltips.usage": "[Premi \"%s\" per vedere i dettagli]",

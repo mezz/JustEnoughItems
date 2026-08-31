@@ -25,7 +25,6 @@
   "jei.tooltip.bookmarks.usage.nokey": "Додайте призначення клавіш для закладок JEI у налаштуваннях керування.",
   "jei.tooltip.bookmarks.usage.key": "Наведіть вказівник миші на інгредієнт і натисніть «%s», щоби додати його до закладок.",
   "jei.tooltip.bookmarks.not.enough.space": "Область у лівій частині цього екрана замала для показу списку закладок JEI.",
-  "jei.tooltip.bookmarks.recipe": "%s закладок рецептів",
   "jei.tooltip.bookmarks.recipe.add": "Закладки рецептів",
   "jei.tooltip.bookmarks.recipe.remove": "Видалити закладки для рецептів",
   "jei.tooltip.bookmarks.tooltips.usage": "[Натисніть «%s» для показу деталей]",

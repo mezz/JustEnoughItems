@@ -24,7 +24,6 @@
   "jei.tooltip.bookmarks.usage.nokey": "Lägg till ett tangentkombination för JEI-bokmärken i dina kontrollinställningar.",
   "jei.tooltip.bookmarks.usage.key": "Lägg musen över en ingrediens och tryck på \"%s\" för att bokmärka den.",
   "jei.tooltip.bookmarks.not.enough.space": "Området till vänster om denna meny är för litet för att visa överlägget för JEI:s bokmärken.",
-  "jei.tooltip.bookmarks.recipe": "%s (receptbokmärke)",
   "jei.tooltip.bookmarks.recipe.add": "Bokmärk detta recept.",
   "jei.tooltip.bookmarks.recipe.remove": "Ta bort bokmärket för detta recept.",
   "jei.tooltip.bookmarks.tooltips.usage": "[Håll ned \"%s\" för att visa mer information]",
