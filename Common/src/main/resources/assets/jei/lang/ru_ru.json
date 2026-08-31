@@ -21,7 +21,6 @@
   "jei.tooltip.bookmarks.usage.nokey": "Добавь привязку клавиши для Закладок JEI в настройках управления.",
   "jei.tooltip.bookmarks.usage.key": "Наведи курсором на ингредиент и нажми \"%s\", чтобы добавить его в закладки.",
   "jei.tooltip.bookmarks.not.enough.space": "Здесь недостаточно места, чтобы отобразить список закладок JEI.",
-  "jei.tooltip.bookmarks.recipe": "%s рецепта в закладке",
   "jei.tooltip.bookmarks.recipe.add": "Добавить рецепт в закладки.",
   "jei.tooltip.bookmarks.recipe.remove": "Убрать закладку этого рецепта.",
   "jei.tooltip.bookmarks.tooltips.usage": "[%s для деталей]",
