@@ -8,6 +8,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.ClickableIngredientInternal;
 import mezz.jei.gui.input.IClickableIngredientInternal;
@@ -17,9 +18,11 @@ import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.input.handlers.SameElementInputHandler;
 import mezz.jei.gui.overlay.elements.IngredientElement;
 import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
+import mezz.jei.gui.recipes.RecipeTransferButton;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +41,8 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 	private final BooleanSupplier sourceVisible;
 	private final PreviewTooltipComponent<?> component;
 	private final IRecipeLayoutDrawable<?> drawable;
+	private final RecipeTransferButton transferButton;
+	private final IUserInputHandler transferButtonInputHandler;
 	private final int anchorX;
 	private final int anchorY;
 
@@ -46,6 +51,7 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 		RecipeBookmarkElement<?, ?> element,
 		BooleanSupplier sourceVisible,
 		PreviewTooltipComponent<?> component,
+		RecipeTransferService recipeTransferService,
 		int anchorX,
 		int anchorY
 	) {
@@ -54,6 +60,8 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 		this.sourceVisible = sourceVisible;
 		this.component = component;
 		this.drawable = component.getRecipeLayout();
+		this.transferButton = RecipeTransferButton.createForPinnedRecipe(this.drawable, recipeTransferService);
+		this.transferButtonInputHandler = this.transferButton.createInputHandler();
 		this.anchorX = anchorX;
 		this.anchorY = anchorY;
 	}
@@ -81,17 +89,21 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return getTooltipArea().contains(mouseX, mouseY);
+		return getTooltipArea().contains(mouseX, mouseY) || this.transferButton.isMouseOver(mouseX, mouseY);
 	}
 
 	private ImmutableRect2i getTooltipArea() {
 		return this.component.getTooltipArea();
 	}
 
+	public void update() {
+		this.transferButton.tick();
+	}
+
 	public void draw(PoseStack poseStack, int mouseX, int mouseY) {
 		JeiTooltip tooltip = new JeiTooltip();
 		this.element.getPinnedTooltip(tooltip);
-		this.component.setInteractive(mouseX, mouseY);
+		this.component.setInteractive(mouseX, mouseY, getInteractiveWidth());
 
 		Screen screen = net.minecraft.client.Minecraft.getInstance().screen;
 		if (screen != null) {
@@ -101,9 +113,35 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 		poseStack.pushPose();
 		{
 			poseStack.translate(0, 0, NESTED_TOOLTIP_FOREGROUND_Z);
+			updateTransferButtonBounds();
+			this.transferButton.draw(poseStack, mouseX, mouseY, 0.0f);
 			this.drawable.drawOverlays(poseStack, mouseX, mouseY);
+			this.transferButton.drawTooltips(poseStack, mouseX, mouseY);
 		}
 		poseStack.popPose();
+	}
+
+	private int getInteractiveWidth() {
+		if (!this.transferButton.isVisible()) {
+			return 0;
+		}
+		Rect2i buttonArea = this.drawable.getRecipeTransferButtonArea();
+		return 2 + buttonArea.getX() + buttonArea.getWidth();
+	}
+
+	private void updateTransferButtonBounds() {
+		if (!this.transferButton.isVisible()) {
+			this.transferButton.updateBounds(ImmutableRect2i.EMPTY);
+			return;
+		}
+		Rect2i recipeArea = this.drawable.getRect();
+		Rect2i buttonArea = this.drawable.getRecipeTransferButtonArea();
+		this.transferButton.updateBounds(new ImmutableRect2i(
+			recipeArea.getX() + buttonArea.getX(),
+			recipeArea.getY() + buttonArea.getY(),
+			buttonArea.getWidth(),
+			buttonArea.getHeight()
+		));
 	}
 
 	@Override
@@ -114,6 +152,15 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 	) {
 		if (!this.controller.isActive(this)) {
 			return Optional.empty();
+		}
+
+		Optional<IUserInputHandler> transferButtonHandler = transferButtonInputHandler.handleUserInput(
+			screen,
+			input,
+			keyBindings
+		);
+		if (transferButtonHandler.isPresent()) {
+			return transferButtonHandler;
 		}
 
 		boolean leftClick = input.getKey().equals(LEFT_MOUSE_BUTTON);

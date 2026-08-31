@@ -1,9 +1,12 @@
 package mezz.jei.common.transfer;
 
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.common.util.StringUtil;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -28,6 +31,14 @@ public final class RecipeTransferUtil {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private RecipeTransferUtil() {
+	}
+
+	public static void addTransferRecipeTooltip(@Nullable IRecipeTransferError recipeTransferError, ITooltipBuilder tooltip) {
+		if (recipeTransferError == null) {
+			tooltip.add(Component.translatable("jei.tooltip.transfer"));
+		} else {
+			recipeTransferError.getTooltip(tooltip);
+		}
 	}
 
 	public static boolean validateSlots(

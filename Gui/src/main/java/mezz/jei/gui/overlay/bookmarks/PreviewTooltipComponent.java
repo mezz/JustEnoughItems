@@ -24,6 +24,7 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 	private @Nullable IRecipeTransferError transferError;
 	private long lastUpdateTime = 0;
 	private boolean interactive;
+	private int interactiveWidth;
 	private double mouseX = -1;
 	private double mouseY = -1;
 	private ImmutableRect2i tooltipArea = ImmutableRect2i.EMPTY;
@@ -40,14 +41,16 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 		return drawable;
 	}
 
-	public void setInteractive(double mouseX, double mouseY) {
+	public void setInteractive(double mouseX, double mouseY, int interactiveWidth) {
 		this.interactive = true;
+		this.interactiveWidth = interactiveWidth;
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
 	}
 
 	public void setStatic() {
 		this.interactive = false;
+		this.interactiveWidth = 0;
 		this.tooltipArea = ImmutableRect2i.EMPTY;
 	}
 
@@ -62,7 +65,8 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 
 	@Override
 	public int getWidth(Font font) {
-		return drawable.getRect().getWidth() + 4;
+		int width = drawable.getRect().getWidth() + 4;
+		return Math.max(width, interactiveWidth);
 	}
 
 	@Override
@@ -73,7 +77,6 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 			this.tooltipArea = new ImmutableRect2i(x - 3, y - 4, getWidth(font) + 6, getHeight() + 8);
 			drawable.setPosition(x + 2, y + 5);
 			drawable.drawRecipe(poseStack, mouseX, mouseY);
-			drawTransferError(poseStack, mouseX, mouseY);
 			return;
 		}
 		poseStack.pushPose();
