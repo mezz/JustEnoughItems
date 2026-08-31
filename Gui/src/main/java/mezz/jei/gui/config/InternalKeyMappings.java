@@ -6,6 +6,7 @@ import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.keys.IJeiKeyMappingCategoryBuilder;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
+import mezz.jei.common.input.keys.IJeiKeyMappingWithExtraModifiers;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
 import mezz.jei.common.input.keys.JeiMultiKeyMapping;
@@ -33,15 +34,15 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping previousPage;
 	private final IJeiKeyMapping nextPage;
 
-	private final IJeiKeyMapping bookmark;
+	private final IJeiKeyMappingWithExtraModifiers bookmark;
 	private final IJeiKeyMapping toggleBookmarkOverlay;
 	private final IJeiKeyMapping transferRecipeBookmark;
 	private final IJeiKeyMapping maxTransferRecipeBookmark;
 	private final IJeiKeyMapping quickMove;
 	private final IJeiKeyMapping shareToChat;
 
-	private final IJeiKeyMapping showRecipe;
-	private final IJeiKeyMapping showUses;
+	private final IJeiKeyMappingWithExtraModifiers showRecipe;
+	private final IJeiKeyMappingWithExtraModifiers showUses;
 
 	private final IJeiKeyMapping cheatOneItem;
 	private final IJeiKeyMapping cheatItemStack;
@@ -392,7 +393,7 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	}
 
 	@Override
-	public IJeiKeyMapping getBookmark() {
+	public IJeiKeyMappingWithExtraModifiers getBookmark() {
 		return bookmark;
 	}
 
@@ -402,12 +403,12 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	}
 
 	@Override
-	public IJeiKeyMapping getShowRecipe() {
+	public IJeiKeyMappingWithExtraModifiers getShowRecipe() {
 		return showRecipe;
 	}
 
 	@Override
-	public IJeiKeyMapping getShowUses() {
+	public IJeiKeyMappingWithExtraModifiers getShowUses() {
 		return showUses;
 	}
 
