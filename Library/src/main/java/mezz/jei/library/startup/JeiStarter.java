@@ -16,6 +16,7 @@ import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.common.network.ClientConnectionHelper;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.network.packets.PacketRecipeTransferResult;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.recipes.VanillaClientRecipeLoader;
 import mezz.jei.common.util.ChatUtil;
@@ -291,6 +292,7 @@ public final class JeiStarter {
 
 		List<IModPlugin> plugins = data.plugins();
 		PluginCaller.callOnPlugins("Sending Runtime Unavailable", plugins, IModPlugin::onRuntimeUnavailable);
+		PacketRecipeTransferResult.clearPendingRecipeTransfers();
 
 		Internal.onRuntimeStopped();
 

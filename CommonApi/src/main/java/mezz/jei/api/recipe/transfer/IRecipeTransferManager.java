@@ -4,6 +4,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -19,4 +20,11 @@ public interface IRecipeTransferManager {
 	 * @since 11.5.0
 	 */
 	<C extends AbstractContainerMenu, R> Optional<IRecipeTransferHandler<C, R>> getRecipeTransferHandler(C container, IRecipeCategory<R> recipeCategory);
+
+	/**
+	 * Returns the registered recipe transfer listeners.
+	 *
+	 * @since 29.35.0
+	 */
+	List<IRecipeTransferListener> getRecipeTransferListeners();
 }
