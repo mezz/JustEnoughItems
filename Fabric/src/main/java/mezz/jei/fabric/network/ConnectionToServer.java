@@ -22,11 +22,16 @@ public final class ConnectionToServer implements IConnectionToServer {
 	}
 
 	@Override
+	public boolean supportsRecipeTransferResults() {
+		return ClientPlayNetworking.canSend(Constants.RECIPE_TRANSFER_RESULT_CHANNEL_ID);
+	}
+
+	@Override
 	public void sendPacketToServer(PacketJei packet) {
 		if (isJeiOnServer()) {
 			Pair<FriendlyByteBuf, Integer> packetData = packet.getPacketData();
 			FriendlyByteBuf buf = packetData.getLeft();
-			ClientPlayNetworking.send(Constants.NETWORK_CHANNEL_ID, buf);
+			ClientPlayNetworking.send(packet.getChannelId(), buf);
 		}
 	}
 }

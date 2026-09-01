@@ -16,7 +16,6 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.Internal;
@@ -28,6 +27,7 @@ import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
@@ -75,6 +75,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final BookmarkList bookmarks;
 	private final IFocusFactory focusFactory;
 	private final IIngredientManager ingredientManager;
+	private final RecipeTransferService recipeTransferService;
 	private final List<IRecipeButtonControllerFactory> recipeButtonControllerFactories;
 
 	private int headerHeight;
@@ -118,8 +119,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	public RecipesGui(
 		IRecipeManager recipeManager,
-		IRecipeTransferManager recipeTransferManager,
 		IIngredientManager ingredientManager,
+		RecipeTransferService recipeTransferService,
 		IInternalKeyMappings keyBindings,
 		IFocusFactory focusFactory,
 		BookmarkList bookmarks,
@@ -130,13 +131,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		super(Component.literal("Recipes"));
 		this.bookmarks = bookmarks;
 		this.ingredientManager = ingredientManager;
+		this.recipeTransferService = recipeTransferService;
 		this.recipeButtonControllerFactories = recipeManager.getRecipeButtonControllerFactories();
 		this.keyBindings = keyBindings;
 		this.logic = new RecipeGuiLogic(
 			recipeManager,
 			ingredientManager,
 			lookupHistory,
-			recipeTransferManager,
+			recipeTransferService,
 			this::updateLayout,
 			focusFactory,
 			bookmarks,
@@ -638,6 +640,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	) {
 		RecipeTransferButton transferButton = RecipeTransferButton.create(
 			recipeLayoutDrawable,
+			recipeTransferService,
+			this::getParentContainerScreen,
 			this::onClose
 		);
 
@@ -646,6 +650,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			bookmarkButton = RecipeBookmarkButton.create(
 				recipeLayoutDrawable,
 				ingredientManager,
+				recipeTransferService,
 				bookmarks
 			);
 		} else {
@@ -666,6 +671,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Nullable
 	private AbstractContainerMenu getParentContainerMenu() {
+		AbstractContainerScreen<?> parentScreen = getParentContainerScreen();
+		return parentScreen == null ? null : parentScreen.getMenu();
+	}
+
+	@Nullable
+	public AbstractContainerScreen<?> getParentContainerScreen() {
 		Screen screen;
 		if (parentScreen == null) {
 			screen = Minecraft.getInstance().screen;
@@ -673,7 +684,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			screen = parentScreen;
 		}
 		if (screen instanceof AbstractContainerScreen<?> containerScreen) {
-			return containerScreen.getMenu();
+			return containerScreen;
 		}
 		return null;
 	}

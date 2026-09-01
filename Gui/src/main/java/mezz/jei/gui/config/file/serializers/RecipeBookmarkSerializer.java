@@ -11,9 +11,11 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import mezz.jei.common.config.file.serializers.DeserializeResult;
 import mezz.jei.common.config.file.serializers.TypedIngredientSerializer;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,6 +29,7 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 	private final IFocusFactory focusFactory;
 	private final TypedIngredientSerializer ingredientSerializer;
 	private final IIngredientManager ingredientManager;
+	private final @Nullable RecipeTransferService recipeTransferService;
 
 	public RecipeBookmarkSerializer(
 		IRecipeManager recipeManager,
@@ -34,10 +37,21 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 		TypedIngredientSerializer ingredientSerializer,
 		IIngredientManager ingredientManager
 	) {
+		this(recipeManager, focusFactory, ingredientSerializer, ingredientManager, null);
+	}
+
+	public RecipeBookmarkSerializer(
+		IRecipeManager recipeManager,
+		IFocusFactory focusFactory,
+		TypedIngredientSerializer ingredientSerializer,
+		IIngredientManager ingredientManager,
+		RecipeTransferService recipeTransferService
+	) {
 		this.recipeManager = recipeManager;
 		this.focusFactory = focusFactory;
 		this.ingredientSerializer = ingredientSerializer;
 		this.ingredientManager = ingredientManager;
+		this.recipeTransferService = recipeTransferService;
 	}
 
 	@Override
@@ -110,6 +124,9 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 	}
 
 	private <T> DeserializeResult<RecipeBookmark<?, ?>> createBookmark(String string, IRecipeCategory<T> recipeCategory, ResourceLocation recipeUid, ITypedIngredient<?> output, RecipeIngredientRole displayRole) {
+		if (recipeTransferService == null) {
+			return new DeserializeResult<>(null, "recipe transfer service is required to deserialize recipe bookmarks");
+		}
 		IFocus<?> focus = focusFactory.createFocus(displayRole, output);
 
 		Optional<T> recipeResult = findRecipe(recipeCategory, List.of(focus), recipeUid);
@@ -119,7 +136,7 @@ public class RecipeBookmarkSerializer implements IJeiConfigValueSerializer<Recip
 		}
 
 		T recipe = recipeResult.get();
-		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, displayRole);
+		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, displayRole, recipeTransferService);
 		return new DeserializeResult<>(recipeBookmark);
 	}
 

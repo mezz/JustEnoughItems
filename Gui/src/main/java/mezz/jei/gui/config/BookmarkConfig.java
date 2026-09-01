@@ -14,6 +14,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer.IDeserializeResult;
 import mezz.jei.common.config.file.JsonArrayFileHelper;
 import mezz.jei.common.config.file.serializers.TypedIngredientSerializer;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.DeduplicatingRunner;
 import mezz.jei.common.util.PathUtil;
 import mezz.jei.common.util.ServerConfigPathUtil;
@@ -152,14 +153,15 @@ public class BookmarkConfig implements IBookmarkConfig {
 		IGuiHelper guiHelper,
 		IIngredientManager ingredientManager,
 		RegistryAccess registryAccess,
-		BookmarkList bookmarkList
+		BookmarkList bookmarkList,
+		RecipeTransferService recipeTransferService
 	) {
 		List<IBookmark> bookmarks = new ArrayList<>();
 
 		getJsonPath(jeiConfigurationDir)
-			.ifPresent(path -> bookmarks.addAll(loadJsonBookmarks(recipeManager, focusFactory, ingredientManager, path)));
+			.ifPresent(path -> bookmarks.addAll(loadJsonBookmarks(recipeManager, focusFactory, ingredientManager, recipeTransferService, path)));
 
-		List<IBookmark> legacyBookmarks = loadLegacyBookmarks(recipeManager, focusFactory, ingredientManager);
+		List<IBookmark> legacyBookmarks = loadLegacyBookmarks(recipeManager, focusFactory, ingredientManager, recipeTransferService);
 		if (!legacyBookmarks.isEmpty()) {
 			bookmarks.addAll(legacyBookmarks);
 			getJsonPath(jeiConfigurationDir)
@@ -182,6 +184,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 		IRecipeManager recipeManager,
 		IFocusFactory focusFactory,
 		IIngredientManager ingredientManager,
+		RecipeTransferService recipeTransferService,
 		Path path
 	) {
 		if (!Files.exists(path)) {
@@ -189,7 +192,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 		}
 
 		TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
-		RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, ingredientManager);
+		RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, ingredientManager, recipeTransferService);
 		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 
 		List<IBookmark> bookmarks = new ArrayList<>();
@@ -256,10 +259,11 @@ public class BookmarkConfig implements IBookmarkConfig {
 	private List<IBookmark> loadLegacyBookmarks(
 		IRecipeManager recipeManager,
 		IFocusFactory focusFactory,
-		IIngredientManager ingredientManager
+		IIngredientManager ingredientManager,
+		RecipeTransferService recipeTransferService
 	) {
 		return getLegacyPath(jeiConfigurationDir)
-			.<List<IBookmark>>map(path -> loadLegacyBookmarks(path, recipeManager, focusFactory, ingredientManager))
+			.<List<IBookmark>>map(path -> loadLegacyBookmarks(path, recipeManager, focusFactory, ingredientManager, recipeTransferService))
 			.orElseGet(List::of);
 	}
 
@@ -267,7 +271,8 @@ public class BookmarkConfig implements IBookmarkConfig {
 		Path path,
 		IRecipeManager recipeManager,
 		IFocusFactory focusFactory,
-		IIngredientManager ingredientManager
+		IIngredientManager ingredientManager,
+		RecipeTransferService recipeTransferService
 	) {
 		if (!Files.exists(path)) {
 			return List.of();
@@ -282,7 +287,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 		}
 
 		TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
-		RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, ingredientManager);
+		RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, ingredientManager, recipeTransferService);
 
 		Collection<IIngredientType<?>> otherIngredientTypes = ingredientManager.getRegisteredIngredientTypes()
 			.stream()

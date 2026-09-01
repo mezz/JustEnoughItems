@@ -6,13 +6,17 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.transfer.IRecipeTransferContext;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.network.packets.PacketRecipeTransfer;
-import mezz.jei.common.network.packets.PacketRecipeTransferCounted;
+import mezz.jei.common.network.packets.PacketRecipeTransferCountedWithResult;
+import mezz.jei.common.network.packets.PacketRecipeTransferResult;
+import mezz.jei.common.network.packets.PacketRecipeTransferWithResult;
+import mezz.jei.common.network.packets.legacy.PacketRecipeTransfer;
+import mezz.jei.common.network.packets.legacy.PacketRecipeTransferCounted;
 import mezz.jei.common.transfer.RecipeTransferOperationsResult;
 import mezz.jei.common.transfer.RecipeTransferUtil;
 import mezz.jei.common.transfer.TransferOperation;
@@ -70,9 +74,37 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		return transferInfo.getRecipeType();
 	}
 
+	@SuppressWarnings("removal")
 	@Nullable
 	@Override
 	public IRecipeTransferError transferRecipe(C container, R recipe, IRecipeSlotsView recipeSlotsView, Player player, boolean maxTransfer, boolean doTransfer) {
+		return transferRecipeInternal(container, recipe, recipeSlotsView, player, maxTransfer, doTransfer, null);
+	}
+
+	@Nullable
+	@Override
+	public IRecipeTransferError transferRecipe(IRecipeTransferContext<R, C> context, boolean doTransfer) {
+		return transferRecipeInternal(
+			context.getContainer(),
+			context.getRecipe(),
+			context.getRecipeSlots(),
+			context.getPlayer(),
+			context.isMaxTransfer(),
+			doTransfer,
+			context
+		);
+	}
+
+	@Nullable
+	private IRecipeTransferError transferRecipeInternal(
+		C container,
+		R recipe,
+		IRecipeSlotsView recipeSlotsView,
+		Player player,
+		boolean maxTransfer,
+		boolean doTransfer,
+		@Nullable IRecipeTransferContext<R, C> context
+	) {
 		if (!serverConnection.isJeiOnServer()) {
 			Component tooltipMessage = Component.translatable("jei.tooltip.error.recipe.transfer.no.server");
 			return handlerHelper.createUserErrorWithTooltip(tooltipMessage);
@@ -132,7 +164,18 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 
 		if (doTransfer) {
 			boolean requireCompleteSets = transferInfo.requireCompleteSets(container, recipe);
-			if (useCountedTransferPacket) {
+			boolean supportsTransferResults = serverConnection.supportsRecipeTransferResults();
+			if (context != null && supportsTransferResults) {
+				sendTransferWithResult(
+					transferOperations.results,
+					craftingSlots,
+					inventorySlots,
+					maxTransfer,
+					requireCompleteSets,
+					useCountedTransferPacket,
+					context
+				);
+			} else if (useCountedTransferPacket) {
 				PacketRecipeTransferCounted packet = new PacketRecipeTransferCounted(
 					transferOperations.results,
 					craftingSlots,
@@ -166,6 +209,39 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 			.toList();
 	}
 
+	private void sendTransferWithResult(
+		List<TransferOperation> transferOperations,
+		List<Slot> craftingSlots,
+		List<Slot> inventorySlots,
+		boolean maxTransfer,
+		boolean requireCompleteSets,
+		boolean useCountedTransferPacket,
+		IRecipeTransferContext<R, C> context
+	) {
+		PacketRecipeTransferResult.registerPendingRecipeTransfer(context);
+		int transferId = context.getTransferId();
+		if (useCountedTransferPacket) {
+			PacketRecipeTransferCountedWithResult packet = PacketRecipeTransferCountedWithResult.fromSlots(
+				transferOperations,
+				craftingSlots,
+				inventorySlots,
+				maxTransfer,
+				requireCompleteSets,
+				transferId
+			);
+			serverConnection.sendPacketToServer(packet);
+		} else {
+			PacketRecipeTransferWithResult packet = PacketRecipeTransferWithResult.fromSlots(
+				transferOperations,
+				craftingSlots,
+				inventorySlots,
+				maxTransfer,
+				requireCompleteSets,
+				transferId
+			);
+			serverConnection.sendPacketToServer(packet);
+		}
+	}
 	private static boolean requiresCountedTransferPacket(List<TransferOperation> transferOperations) {
 		Set<Integer> craftingSlotIds = new IntOpenHashSet();
 		for (TransferOperation transferOperation : transferOperations) {

@@ -4,6 +4,7 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.config.ILookupHistoryConfig;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
@@ -28,7 +29,8 @@ public class LookupHistory implements IIngredientGridSource {
 		IIngredientManager ingredientManager,
 		IFocusFactory focusFactory,
 		IClientConfig clientConfig,
-		ILookupHistoryConfig lookupHistoryConfig
+		ILookupHistoryConfig lookupHistoryConfig,
+		RecipeTransferService recipeTransferService
 	) {
 		this.recipeManager = recipeManager;
 		this.ingredientManager = ingredientManager;
@@ -36,7 +38,7 @@ public class LookupHistory implements IIngredientGridSource {
 		this.clientConfig = clientConfig;
 		this.lookupHistoryConfig = lookupHistoryConfig;
 
-		List<IBookmark> loaded = lookupHistoryConfig.load(recipeManager, ingredientManager, focusFactory);
+		List<IBookmark> loaded = lookupHistoryConfig.load(recipeManager, ingredientManager, focusFactory, recipeTransferService);
 		this.elements.addAll(loaded);
 		clientConfig.addMaxLookupHistoryIngredientsListener(v -> trimToMaxElements());
 		trimToMaxElements();

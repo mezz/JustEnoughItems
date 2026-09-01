@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.recipes.RecipeSortUtil;
 import org.jetbrains.annotations.Nullable;
@@ -29,9 +29,9 @@ public class IngredientLookupState implements ILookupState {
 		IRecipeManager recipeManager,
 		IFocusGroup focusGroup,
 		List<IRecipeCategory<?>> recipeCategories,
-		IRecipeTransferManager recipeTransferManager
+		RecipeTransferService recipeTransferService
 	) {
-		recipeCategories = RecipeSortUtil.sortRecipeCategories(recipeCategories, recipeTransferManager);
+		recipeCategories = RecipeSortUtil.sortRecipeCategories(recipeCategories, recipeTransferService);
 		return new IngredientLookupState(recipeManager, focusGroup, recipeCategories);
 	}
 

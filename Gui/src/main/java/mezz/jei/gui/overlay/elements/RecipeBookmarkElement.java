@@ -15,7 +15,6 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
-import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.api.runtime.IJeiRuntime;
@@ -27,7 +26,7 @@ import mezz.jei.common.gui.IngredientsTooltipComponent;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
-import mezz.jei.common.transfer.RecipeTransferUtil;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
@@ -45,7 +44,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -54,13 +52,18 @@ import java.util.Optional;
 public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	private final RecipeBookmark<R, I> recipeBookmark;
 	private final IClientConfig clientConfig;
+	private final RecipeTransferService recipeTransferService;
 	private @Nullable PreviewTooltipComponent<R> previewTooltipComponent;
 	private @Nullable IngredientsTooltipComponent ingredientsTooltipComponent;
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	private @Nullable Optional<IRecipeLayoutDrawable<R>> cachedLayoutDrawable;
 
-	public RecipeBookmarkElement(RecipeBookmark<R, I> recipeBookmark) {
+	public RecipeBookmarkElement(
+		RecipeBookmark<R, I> recipeBookmark,
+		RecipeTransferService recipeTransferService
+	) {
 		this.recipeBookmark = recipeBookmark;
+		this.recipeTransferService = recipeTransferService;
 		this.clientConfig = Internal.getJeiClientConfigs().getClientConfig();
 	}
 
@@ -94,13 +97,11 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 					return false;
 				}
 
-				IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
-				AbstractContainerMenu container = containerScreen.getMenu();
 				if (input.isSimulate()) {
-					IRecipeTransferError recipeTransferError = RecipeTransferUtil.getTransferRecipeError(recipeTransferManager, container, recipeLayout, player).orElse(null);
+					IRecipeTransferError recipeTransferError = recipeTransferService.getTransferRecipeError(containerScreen, recipeLayout, player).orElse(null);
 					return recipeTransferError == null || recipeTransferError.getType().allowsTransfer;
 				} else {
-					return RecipeTransferUtil.transferRecipe(recipeTransferManager, container, recipeLayout, player, transferMax);
+					return recipeTransferService.transferRecipe(containerScreen, recipeLayout, player, transferMax);
 				}
 			}
 		}
@@ -199,7 +200,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 			if (recipeLayout == null) {
 				return false;
 			}
-			component = new PreviewTooltipComponent<>(recipeLayout);
+			component = new PreviewTooltipComponent<>(recipeLayout, recipeTransferService);
 			previewTooltipComponent = component;
 		}
 
@@ -230,12 +231,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 		Player player = minecraft.player;
 		if (player != null && screen instanceof AbstractContainerScreen<?> containerScreen) {
 			IRecipeTransferError recipeTransferError = getRecipeLayoutDrawable()
-				.flatMap(recipeLayout -> {
-					IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
-					IRecipeTransferManager recipeTransferManager = jeiRuntime.getRecipeTransferManager();
-					AbstractContainerMenu container = containerScreen.getMenu();
-					return RecipeTransferUtil.getTransferRecipeError(recipeTransferManager, container, recipeLayout, player);
-				})
+				.flatMap(recipeLayout -> recipeTransferService.getTransferRecipeError(containerScreen, recipeLayout, player))
 				.orElse(null);
 
 			if (recipeTransferError == null || recipeTransferError.getType().allowsTransfer) {

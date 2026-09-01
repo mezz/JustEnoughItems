@@ -5,6 +5,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
+import mezz.jei.api.recipe.transfer.IRecipeTransferListener;
 import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.common.network.IConnectionToServer;
@@ -70,10 +71,14 @@ final class TestRecipeTransferRegistration implements IRecipeTransferRegistratio
 	public <C extends AbstractContainerMenu> void addUniversalRecipeTransferHandler(IUniversalRecipeTransferHandler<C> universalRecipeTransferHandler) {
 		throw new UnsupportedOperationException();
 	}
-
 	@SuppressWarnings("removal")
 	@Override
 	public <C extends AbstractContainerMenu, R> void addUniversalRecipeTransferHandler(IRecipeTransferHandler<C, R> recipeTransferHandler) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void addRecipeTransferListener(IRecipeTransferListener recipeTransferListener) {
 		throw new UnsupportedOperationException();
 	}
 
