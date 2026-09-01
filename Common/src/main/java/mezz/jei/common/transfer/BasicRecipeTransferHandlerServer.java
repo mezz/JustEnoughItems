@@ -35,16 +35,30 @@ public final class BasicRecipeTransferHandlerServer {
 		boolean maxTransfer,
 		boolean requireCompleteSets
 	) {
+		setItemsWithResult(player, transferOperations, craftingSlots, inventorySlots, maxTransfer, requireCompleteSets);
+	}
+
+	/**
+	 * Called server-side to put the items in place and report whether the transfer was applied.
+	 */
+	public static boolean setItemsWithResult(
+		Player player,
+		List<TransferOperation> transferOperations,
+		List<Slot> craftingSlots,
+		List<Slot> inventorySlots,
+		boolean maxTransfer,
+		boolean requireCompleteSets
+	) {
 		if (!RecipeTransferUtil.validateSlots(player, transferOperations, craftingSlots, inventorySlots)) {
-			return;
+			return false;
 		}
 		if (!canClearCraftingSlots(player, craftingSlots)) {
-			return;
+			return false;
 		}
 
 		List<RequiredTransfer> requiredTransfers = calculateRequiredTransfers(transferOperations, player);
 		if (requiredTransfers == null) {
-			return;
+			return false;
 		}
 
 		// Transfer as many items as possible only if it has been explicitly requested by the implementation
@@ -62,7 +76,7 @@ public final class BasicRecipeTransferHandlerServer {
 
 		if (recipeSlotToTakenStacks.isEmpty()) {
 			LOGGER.error("Tried to transfer recipe but was unable to remove any items from the inventory.");
-			return;
+			return false;
 		}
 
 		// clear the crafting grid
@@ -77,6 +91,7 @@ public final class BasicRecipeTransferHandlerServer {
 
 		AbstractContainerMenu container = player.containerMenu;
 		container.broadcastChanges();
+		return true;
 	}
 
 	private static boolean canClearCraftingSlots(Player player, List<Slot> craftingSlots) {

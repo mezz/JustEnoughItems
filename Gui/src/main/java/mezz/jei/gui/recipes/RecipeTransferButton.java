@@ -5,19 +5,19 @@ import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
-import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
-import mezz.jei.common.transfer.RecipeTransferUtil;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.gui.input.UserInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -25,9 +25,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Supplier;
+
 public class RecipeTransferButton extends GuiIconToggleButton {
 	public static RecipeTransferButton create(
 		IRecipeLayoutDrawable<?> recipeLayout,
+		RecipeTransferService recipeTransferService,
+		Supplier<@Nullable AbstractContainerScreen<?>> parentScreenSupplier,
 		Runnable onClose
 	) {
 		Rect2i buttonArea = recipeLayout.getRecipeTransferButtonArea();
@@ -37,54 +41,67 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 
 		Textures textures = Internal.getTextures();
 		IDrawable icon = textures.getRecipeTransfer();
-		RecipeTransferButton transferButton = new RecipeTransferButton(icon, recipeLayout, onClose);
+		RecipeTransferButton transferButton = new RecipeTransferButton(
+			icon,
+			recipeLayout,
+			recipeTransferService,
+			parentScreenSupplier,
+			onClose
+		);
 		transferButton.updateBounds(buttonArea);
 		return transferButton;
 	}
 
 	private final IRecipeLayoutDrawable<?> recipeLayout;
+	private final RecipeTransferService recipeTransferService;
+	private final Supplier<@Nullable AbstractContainerScreen<?>> parentScreenSupplier;
 	private final Runnable onClose;
 	private @Nullable IRecipeTransferError recipeTransferError;
-	private @Nullable AbstractContainerMenu parentContainer;
 	private boolean initialized = false;
 
-	private RecipeTransferButton(IDrawable icon, IRecipeLayoutDrawable<?> recipeLayout, Runnable onClose) {
+	private RecipeTransferButton(
+		IDrawable icon,
+		IRecipeLayoutDrawable<?> recipeLayout,
+		RecipeTransferService recipeTransferService,
+		Supplier<@Nullable AbstractContainerScreen<?>> parentScreenSupplier,
+		Runnable onClose
+	) {
 		super(icon, icon);
 		this.recipeLayout = recipeLayout;
+		this.recipeTransferService = recipeTransferService;
+		this.parentScreenSupplier = parentScreenSupplier;
 		this.onClose = onClose;
 	}
 
 	public void update(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player) {
-		this.parentContainer = parentContainer;
 		this.initialized = true;
 
-		if (parentContainer != null && player != null) {
-			IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
-			this.recipeTransferError = RecipeTransferUtil.getTransferRecipeError(recipeTransferManager, parentContainer, recipeLayout, player)
+		AbstractContainerScreen<?> parentScreen = parentScreenSupplier.get();
+		if (parentContainer != null && parentScreen != null && player != null) {
+			this.recipeTransferError = recipeTransferService.getTransferRecipeError(parentScreen, recipeLayout, player)
 				.orElse(null);
 		} else {
 			this.recipeTransferError = RecipeTransferErrorInternal.INSTANCE;
 		}
 
-		if (recipeTransferError == null ||
-			recipeTransferError.getType().allowsTransfer) {
+		if (recipeTransferError == null || recipeTransferError.getType().allowsTransfer) {
 			this.button.active = true;
 			this.button.visible = true;
 		} else {
 			this.button.active = false;
 			IRecipeTransferError.Type type = this.recipeTransferError.getType();
-			this.button.visible = (type == IRecipeTransferError.Type.USER_FACING);
+			this.button.visible = type == IRecipeTransferError.Type.USER_FACING;
 		}
 	}
 
 	@Override
 	protected boolean onMouseClicked(UserInput input) {
 		if (!input.isSimulate()) {
-			IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
 			boolean maxTransfer = Screen.hasShiftDown();
 			Minecraft minecraft = Minecraft.getInstance();
 			LocalPlayer player = minecraft.player;
-			if (parentContainer != null && player != null && RecipeTransferUtil.transferRecipe(recipeTransferManager, parentContainer, recipeLayout, player, maxTransfer)) {
+			AbstractContainerScreen<?> parentScreen = parentScreenSupplier.get();
+			if (parentScreen != null && player != null && recipeTransferService.transferRecipe(parentScreen, recipeLayout, player, maxTransfer)) {
 				onClose.run();
 			}
 		}
@@ -94,8 +111,7 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 	@Override
 	protected void getTooltips(JeiTooltip tooltip) {
 		if (recipeTransferError == null) {
-			Component tooltipTransfer = Component.translatable("jei.tooltip.transfer");
-			tooltip.add(tooltipTransfer);
+			tooltip.add(Component.translatable("jei.tooltip.transfer"));
 		} else {
 			recipeTransferError.getTooltip(tooltip);
 		}

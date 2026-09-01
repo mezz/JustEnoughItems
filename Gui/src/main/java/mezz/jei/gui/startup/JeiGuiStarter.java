@@ -6,6 +6,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientFilter;
@@ -23,6 +24,7 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.gui.bookmarks.BookmarkList;
@@ -79,6 +81,8 @@ public class JeiGuiStarter {
 		IInternalKeyMappings keyMappings = Internal.getKeyMappings();
 
 		IScreenHelper screenHelper = registration.getScreenHelper();
+		IRecipeTransferManager recipeTransferManager = registration.getRecipeTransferManager();
+		RecipeTransferService recipeTransferService = new RecipeTransferService(recipeTransferManager);
 		IRecipeManager recipeManager = registration.getRecipeManager();
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IEditModeConfig editModeConfig = registration.getEditModeConfig();
@@ -151,7 +155,8 @@ public class JeiGuiStarter {
 			focusFactory,
 			guiHelper,
 			clientConfig::getMaxLookupHistoryIngredients,
-			lookupHistoryConfig
+			lookupHistoryConfig,
+			recipeTransferService
 		);
 
 		IngredientListOverlay ingredientListOverlay = OverlayHelper.createIngredientListOverlay(
@@ -186,7 +191,8 @@ public class JeiGuiStarter {
 			guiHelper,
 			ingredientManager,
 			registryAccess,
-			bookmarkList
+			bookmarkList,
+			recipeTransferService
 		);
 
 		BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
@@ -210,6 +216,7 @@ public class JeiGuiStarter {
 		RecipesGui recipesGui = new RecipesGui(
 			recipeManager,
 			ingredientManager,
+			recipeTransferService,
 			keyMappings,
 			focusFactory,
 			guiHelper,

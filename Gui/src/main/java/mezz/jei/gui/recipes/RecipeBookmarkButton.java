@@ -7,6 +7,7 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.elements.GuiIconToggleButton;
@@ -23,11 +24,12 @@ public class RecipeBookmarkButton extends GuiIconToggleButton {
 	public static Optional<RecipeBookmarkButton> create(
 		IRecipeLayoutDrawable<?> recipeLayout,
 		IIngredientManager ingredientManager,
+		RecipeTransferService recipeTransferService,
 		BookmarkList bookmarks,
 		IRecipeManager recipeManager,
 		IGuiHelper guiHelper
 	) {
-		return RecipeBookmark.create(recipeLayout, ingredientManager, recipeManager, guiHelper)
+		return RecipeBookmark.create(recipeLayout, ingredientManager, recipeManager, guiHelper, recipeTransferService)
 			.map(recipeBookmark -> create(recipeLayout, bookmarks, recipeBookmark));
 	}
 

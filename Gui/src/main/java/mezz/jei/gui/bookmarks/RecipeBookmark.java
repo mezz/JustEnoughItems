@@ -11,6 +11,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
 import mezz.jei.gui.recipes.RecipeCategoryIconUtil;
@@ -32,7 +33,8 @@ public class RecipeBookmark<R, I> implements IBookmark {
 		IRecipeLayoutDrawable<T> recipeLayoutDrawable,
 		IIngredientManager ingredientManager,
 		IRecipeManager recipeManager,
-		IGuiHelper guiHelper
+		IGuiHelper guiHelper,
+		RecipeTransferService recipeTransferService
 	) {
 		T recipe = recipeLayoutDrawable.getRecipe();
 		IRecipeCategory<T> recipeCategory = recipeLayoutDrawable.getRecipeCategory();
@@ -52,14 +54,14 @@ public class RecipeBookmark<R, I> implements IBookmark {
 			ITypedIngredient<?> output = findFirst(recipeSlotsView, RecipeIngredientRole.OUTPUT);
 			if (output != null) {
 				output = ingredientManager.normalizeTypedIngredient(output);
-				return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, icon, RecipeIngredientRole.OUTPUT));
+				return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, icon, RecipeIngredientRole.OUTPUT, recipeTransferService));
 			}
 		}
 		{
 			ITypedIngredient<?> input = findFirst(recipeSlotsView, RecipeIngredientRole.INPUT);
 			if (input != null) {
 				input = ingredientManager.normalizeTypedIngredient(input);
-				return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, input, icon, RecipeIngredientRole.INPUT));
+				return Optional.of(new RecipeBookmark<>(recipeCategory, recipe, recipeUid, input, icon, RecipeIngredientRole.INPUT, recipeTransferService));
 			}
 		}
 
@@ -87,13 +89,14 @@ public class RecipeBookmark<R, I> implements IBookmark {
 		ResourceLocation recipeUid,
 		ITypedIngredient<I> recipeOutput,
 		IDrawable icon,
-		RecipeIngredientRole displayRole
+		RecipeIngredientRole displayRole,
+		RecipeTransferService recipeTransferService
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipe = recipe;
 		this.recipeUid = recipeUid;
 		this.recipeOutput = recipeOutput;
-		this.element = new RecipeBookmarkElement<>(this, icon);
+		this.element = new RecipeBookmarkElement<>(this, icon, recipeTransferService);
 		this.displayRole = displayRole;
 	}
 

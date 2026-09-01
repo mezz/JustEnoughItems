@@ -47,6 +47,11 @@ public final class TestConnectionToServer implements IConnectionToServer {
 	}
 
 	@Override
+	public boolean supportsRecipeTransferResults() {
+		return true;
+	}
+
+	@Override
 	public void sendPacketToServer(PacketJei packet) {
 		ServerPlayer player = this.player;
 		if (player == null) {

@@ -11,8 +11,8 @@ import io.netty.buffer.Unpooled;
 
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.common.network.PacketIdServer;
-import mezz.jei.common.network.packets.PacketRecipeTransfer;
-import mezz.jei.common.network.packets.PacketRecipeTransferCounted;
+import mezz.jei.common.network.packets.legacy.PacketRecipeTransfer;
+import mezz.jei.common.network.packets.legacy.PacketRecipeTransferCounted;
 import mezz.jei.common.transfer.BasicRecipeTransferHandlerServer;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.TransferOperation;
@@ -2849,6 +2849,5 @@ public final class RecipeTransferGameTests {
 		PotionUtils.setPotion(stack, potion);
 		return stack;
 	}
-
 
 }

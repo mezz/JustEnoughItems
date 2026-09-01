@@ -14,6 +14,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IngredientBookmark;
@@ -38,6 +39,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IIngredientManager ingredientManager;
 	private final LookupHistory lookupHistory;
 	private final IGuiHelper guiHelper;
+	private final RecipeTransferService recipeTransferService;
 	private final IRecipeLogicStateListener stateListener;
 
 	private boolean initialState = true;
@@ -56,6 +58,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		IIngredientManager ingredientManager,
 		LookupHistory lookupHistory,
 		IGuiHelper guiHelper,
+		RecipeTransferService recipeTransferService,
 		IRecipeLogicStateListener stateListener,
 		IFocusFactory focusFactory,
 		BookmarkList bookmarks,
@@ -65,6 +68,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		this.ingredientManager = ingredientManager;
 		this.lookupHistory = lookupHistory;
 		this.guiHelper = guiHelper;
+		this.recipeTransferService = recipeTransferService;
 		this.stateListener = stateListener;
 		this.recipeLayoutFactory = recipeLayoutFactory;
 		this.bookmarks = bookmarks;
@@ -116,7 +120,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		ILookupState state = new SingleCategoryLookupState(focusedRecipes, focuses);
 		boolean changed = setState(state, true);
 		if (changed) {
-			var recipeBookmark = createRecipeBookmark(recipeManager, ingredientManager, guiHelper, focusedRecipes, focuses);
+			var recipeBookmark = createRecipeBookmark(recipeManager, ingredientManager, guiHelper, recipeTransferService, focusedRecipes, focuses);
 			if (recipeBookmark != null) {
 				this.lookupHistory.add(recipeBookmark);
 			} else {
@@ -133,6 +137,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		IRecipeManager recipeManager,
 		IIngredientManager ingredientManager,
 		IGuiHelper guiHelper,
+		RecipeTransferService recipeTransferService,
 		IFocusedRecipes<T> focusedRecipes,
 		IFocusGroup focusGroup
 	) {
@@ -143,7 +148,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 		T recipe = recipes.get(0);
 		return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, focusGroup)
-			.flatMap(drawable -> RecipeBookmark.create(drawable, ingredientManager, recipeManager, guiHelper))
+			.flatMap(drawable -> RecipeBookmark.create(drawable, ingredientManager, recipeManager, guiHelper, recipeTransferService))
 			.orElse(null);
 	}
 
