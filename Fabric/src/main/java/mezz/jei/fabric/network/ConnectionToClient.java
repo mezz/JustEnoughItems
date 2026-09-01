@@ -1,6 +1,5 @@
 package mezz.jei.fabric.network;
 
-import mezz.jei.common.Constants;
 import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.common.network.packets.PacketJei;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -13,6 +12,6 @@ public class ConnectionToClient implements IConnectionToClient {
 	public void sendPacketToClient(PacketJei packet, ServerPlayer player) {
 		Pair<FriendlyByteBuf, Integer> packetData = packet.getPacketData();
 		FriendlyByteBuf buf = packetData.getLeft();
-		ServerPlayNetworking.send(player, Constants.NETWORK_CHANNEL_ID, buf);
+		ServerPlayNetworking.send(player, packet.getChannelId(), buf);
 	}
 }

@@ -10,6 +10,13 @@ public interface IConnectionToServer {
 	 */
 	boolean isSameModLoader();
 
+	/**
+	 * Returns true when the server supports reporting the result of recipe transfer packets.
+	 */
+	default boolean supportsRecipeTransferResults() {
+		return false;
+	}
+
 	void sendPacketToServer(PacketJei packet);
 
 	default void onRuntimeStopped() {

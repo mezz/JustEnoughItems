@@ -57,12 +57,22 @@ public final class ConnectionToServer implements IConnectionToServer {
 	}
 
 	@Override
+	public boolean supportsRecipeTransferResults() {
+		return Optional.ofNullable(ClientConnectionHelper.getConnectedClientPacketListener())
+			.map(ClientPacketListener::getConnection)
+			.map(NetworkHooks::getConnectionData)
+			.map(ConnectionData::getChannels)
+			.map(channels -> channels.containsKey(networkHandler.getRecipeTransferResultChannelId()))
+			.orElse(false);
+	}
+
+	@Override
 	public void sendPacketToServer(PacketJei packet) {
 		Minecraft minecraft = Minecraft.getInstance();
 		ClientPacketListener netHandler = minecraft.getConnection();
 		if (netHandler != null && isJeiOnServer()) {
 			Pair<FriendlyByteBuf, Integer> packetData = packet.getPacketData();
-			ICustomPacket<Packet<?>> payload = NetworkDirection.PLAY_TO_SERVER.buildPacket(packetData, networkHandler.getChannelId());
+			ICustomPacket<Packet<?>> payload = NetworkDirection.PLAY_TO_SERVER.buildPacket(packetData, packet.getChannelId());
 			netHandler.send(payload.getThis());
 		}
 	}

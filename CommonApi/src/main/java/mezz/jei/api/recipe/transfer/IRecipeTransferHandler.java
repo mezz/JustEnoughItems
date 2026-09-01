@@ -52,8 +52,11 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	 * @param doTransfer  if true, do the transfer. if false, check for errors but do not actually transfer the items
 	 * @return a recipe transfer error if the recipe can't be transferred. Return null on success.
 	 *
+	 * @deprecated use {@link #transferRecipe(IRecipeTransferContext, boolean)}
+	 *
 	 * @since 9.3.0
 	 */
+	@Deprecated(since = "10.80.0", forRemoval = true)
 	@Nullable
 	default IRecipeTransferError transferRecipe(C container, R recipe, IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer) {
 		throw new UnsupportedOperationException("The new transferRecipe method has not been implemented on this recipe transfer handler");
@@ -77,5 +80,30 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	@Nullable
 	default IRecipeTransferError transferRecipe(C container, R recipe, IRecipeLayout recipeLayout, Player player, boolean maxTransfer, boolean doTransfer) {
 		return null;
+	}
+
+	/**
+	 * Handles a recipe transfer or checks whether it can be transferred.
+	 *
+	 * When {@code doTransfer} is true, call
+	 * {@link IRecipeTransferContext#completeRecipeTransfer(RecipeTransferResult)}
+	 * when the transfer has finished.
+	 *
+	 * @param context information about the recipe transfer
+	 * @param doTransfer if true, do the transfer. if false, check for errors but do not transfer any items
+	 * @return a recipe transfer error if the recipe can't be transferred. Return null on success.
+	 *
+	 * @since 10.80.0
+	 */
+	@Nullable
+	default IRecipeTransferError transferRecipe(IRecipeTransferContext<R, C> context, boolean doTransfer) {
+		return transferRecipe(
+			context.getContainer(),
+			context.getRecipe(),
+			context.getRecipeSlots(),
+			context.getPlayer(),
+			context.isMaxTransfer(),
+			doTransfer
+		);
 	}
 }

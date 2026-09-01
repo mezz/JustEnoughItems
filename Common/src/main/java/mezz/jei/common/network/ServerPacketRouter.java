@@ -3,8 +3,10 @@ package mezz.jei.common.network;
 import mezz.jei.common.network.packets.IServerPacketHandler;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PacketGiveItemStack;
-import mezz.jei.common.network.packets.PacketRecipeTransfer;
-import mezz.jei.common.network.packets.PacketRecipeTransferCounted;
+import mezz.jei.common.network.packets.PacketRecipeTransferCountedWithResult;
+import mezz.jei.common.network.packets.PacketRecipeTransferWithResult;
+import mezz.jei.common.network.packets.legacy.PacketRecipeTransfer;
+import mezz.jei.common.network.packets.legacy.PacketRecipeTransferCounted;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.network.packets.PacketSetHotbarItemStack;
 import mezz.jei.common.config.IServerConfig;
@@ -32,6 +34,8 @@ public class ServerPacketRouter {
 		handlers.put(PacketIdServer.SET_HOTBAR_ITEM, PacketSetHotbarItemStack::readPacketData);
 		handlers.put(PacketIdServer.CHEAT_PERMISSION_REQUEST, PacketRequestCheatPermission::readPacketData);
 		handlers.put(PacketIdServer.RECIPE_TRANSFER_COUNTED, PacketRecipeTransferCounted::readPacketData);
+		handlers.put(PacketIdServer.RECIPE_TRANSFER_WITH_RESULT, PacketRecipeTransferWithResult::readPacketData);
+		handlers.put(PacketIdServer.RECIPE_TRANSFER_COUNTED_WITH_RESULT, PacketRecipeTransferCountedWithResult::readPacketData);
 	}
 
 	public void onPacket(FriendlyByteBuf packetBuffer, ServerPlayer player) {

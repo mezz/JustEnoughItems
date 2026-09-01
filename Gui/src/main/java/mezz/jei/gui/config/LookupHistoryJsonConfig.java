@@ -8,6 +8,7 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.file.serializers.TypedIngredientSerializer;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.DeduplicatingRunner;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.gui.bookmarks.IBookmark;
@@ -114,9 +115,10 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 		IRecipeManager recipeManager,
 		IIngredientManager ingredientManager,
 		IFocusFactory focusFactory,
-		IGuiHelper guiHelper
+		IGuiHelper guiHelper,
+		RecipeTransferService recipeTransferService
 	) {
-		return loadBookmarks(ingredientManager, recipeManager, focusFactory, guiHelper);
+		return loadBookmarks(ingredientManager, recipeManager, focusFactory, guiHelper, recipeTransferService);
 	}
 
 	@Unmodifiable
@@ -124,7 +126,8 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 		IIngredientManager ingredientManager,
 		IRecipeManager recipeManager,
 		IFocusFactory focusFactory,
-		IGuiHelper guiHelper
+		IGuiHelper guiHelper,
+		RecipeTransferService recipeTransferService
 	) {
 		return getPath(jeiConfigurationDir)
 			.<List<IBookmark>>map(path -> {
@@ -141,7 +144,7 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 				}
 
 				TypedIngredientSerializer ingredientSerializer = new TypedIngredientSerializer(ingredientManager);
-				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper);
+				RecipeBookmarkSerializer recipeBookmarkSerializer = new RecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, guiHelper, recipeTransferService);
 
 				IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 				List<IBookmark> bookmarks = new ArrayList<>();
