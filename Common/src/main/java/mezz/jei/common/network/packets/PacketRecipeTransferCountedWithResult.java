@@ -14,9 +14,9 @@ import net.minecraft.world.inventory.Slot;
 
 import java.util.List;
 
-public class PacketRecipeTransferCounted extends PlayToServerPacket<PacketRecipeTransferCounted> {
-	public static final CustomPacketPayload.Type<PacketRecipeTransferCounted> TYPE = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "recipe_transfer_counted"));
-	public static final StreamCodec<RegistryFriendlyByteBuf, PacketRecipeTransferCounted> STREAM_CODEC = StreamCodec.composite(
+public class PacketRecipeTransferCountedWithResult extends PlayToServerPacket<PacketRecipeTransferCountedWithResult> {
+	public static final CustomPacketPayload.Type<PacketRecipeTransferCountedWithResult> TYPE = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "recipe_transfer_counted_with_result"));
+	public static final StreamCodec<RegistryFriendlyByteBuf, PacketRecipeTransferCountedWithResult> STREAM_CODEC = StreamCodec.composite(
 		TransferOperation.COUNTED_STREAM_CODEC.apply(ByteBufCodecs.list()),
 		p -> p.transferOperations,
 		ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list()),
@@ -27,65 +27,73 @@ public class PacketRecipeTransferCounted extends PlayToServerPacket<PacketRecipe
 		p -> p.maxTransfer,
 		ByteBufCodecs.BOOL,
 		p -> p.requireCompleteSets,
-		PacketRecipeTransferCounted::new
+		ByteBufCodecs.VAR_INT,
+		p -> p.transferId,
+		PacketRecipeTransferCountedWithResult::new
 	);
 
-	public final List<TransferOperation> transferOperations;
-	public final List<Integer> craftingSlots;
-	public final List<Integer> inventorySlots;
+	private final List<TransferOperation> transferOperations;
+	private final List<Integer> craftingSlots;
+	private final List<Integer> inventorySlots;
 	private final boolean maxTransfer;
 	private final boolean requireCompleteSets;
+	private final int transferId;
 
-	public static PacketRecipeTransferCounted fromSlots(
+	public static PacketRecipeTransferCountedWithResult fromSlots(
 		List<TransferOperation> transferOperations,
 		List<Slot> craftingSlots,
 		List<Slot> inventorySlots,
 		boolean maxTransfer,
-		boolean requireCompleteSets
+		boolean requireCompleteSets,
+		int transferId
 	) {
-		return new PacketRecipeTransferCounted(
+		return new PacketRecipeTransferCountedWithResult(
 			transferOperations,
 			craftingSlots.stream().map(s -> s.index).toList(),
 			inventorySlots.stream().map(s -> s.index).toList(),
 			maxTransfer,
-			requireCompleteSets
+			requireCompleteSets,
+			transferId
 		);
 	}
 
-	public PacketRecipeTransferCounted(
+	public PacketRecipeTransferCountedWithResult(
 		List<TransferOperation> transferOperations,
 		List<Integer> craftingSlots,
 		List<Integer> inventorySlots,
 		boolean maxTransfer,
-		boolean requireCompleteSets
+		boolean requireCompleteSets,
+		int transferId
 	) {
 		this.transferOperations = transferOperations;
 		this.craftingSlots = craftingSlots;
 		this.inventorySlots = inventorySlots;
 		this.maxTransfer = maxTransfer;
 		this.requireCompleteSets = requireCompleteSets;
+		this.transferId = transferId;
 	}
 
 	@Override
-	public Type<PacketRecipeTransferCounted> type() {
+	public Type<PacketRecipeTransferCountedWithResult> type() {
 		return TYPE;
 	}
 
 	@Override
-	public StreamCodec<RegistryFriendlyByteBuf, PacketRecipeTransferCounted> streamCodec() {
+	public StreamCodec<RegistryFriendlyByteBuf, PacketRecipeTransferCountedWithResult> streamCodec() {
 		return STREAM_CODEC;
 	}
 
 	@Override
 	public void process(ServerPacketContext context) {
 		AbstractContainerMenu container = context.player().containerMenu;
-		List<Slot> craftingSlots = PacketRecipeTransfer.getSlots(container, this.craftingSlots);
-		List<Slot> inventorySlots = PacketRecipeTransfer.getSlots(container, this.inventorySlots);
+		List<Slot> craftingSlots = PacketRecipeTransferWithResult.getSlots(container, this.craftingSlots);
+		List<Slot> inventorySlots = PacketRecipeTransferWithResult.getSlots(container, this.inventorySlots);
 		if (craftingSlots == null || inventorySlots == null) {
+			PacketRecipeTransferWithResult.sendResult(context, transferId, false);
 			return;
 		}
 
-		BasicRecipeTransferHandlerServer.setItems(
+		boolean successful = BasicRecipeTransferHandlerServer.setItemsWithResult(
 			context.player(),
 			transferOperations,
 			craftingSlots,
@@ -93,5 +101,6 @@ public class PacketRecipeTransferCounted extends PlayToServerPacket<PacketRecipe
 			maxTransfer,
 			requireCompleteSets
 		);
+		PacketRecipeTransferWithResult.sendResult(context, transferId, successful);
 	}
 }

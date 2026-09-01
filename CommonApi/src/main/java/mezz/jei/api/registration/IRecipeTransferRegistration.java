@@ -5,6 +5,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
+import mezz.jei.api.recipe.transfer.IRecipeTransferListener;
 import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
 import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -62,4 +63,11 @@ public interface IRecipeTransferRegistration {
 	 * @since 19.8.1
 	 */
 	<C extends AbstractContainerMenu> void addUniversalRecipeTransferHandler(IUniversalRecipeTransferHandler<C> universalRecipeTransferHandler);
+
+	/**
+	 * Add a listener that observes attempts to transfer recipes through JEI.
+	 *
+	 * @since 30.29.0
+	 */
+	void addRecipeTransferListener(IRecipeTransferListener recipeTransferListener);
 }

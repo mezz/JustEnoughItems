@@ -7,13 +7,19 @@ import static mezz.jei.neoforge.tests.lib.TestRecipes.ingredient;
 import static mezz.jei.neoforge.tests.lib.TestRecipes.testRecipe;
 import static mezz.jei.neoforge.tests.lib.StackPlacement.stackAt;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.api.recipe.transfer.RecipeTransferResult;
 import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.common.network.ServerPacketContext;
-import mezz.jei.common.network.packets.PacketRecipeTransfer;
-import mezz.jei.common.network.packets.PacketRecipeTransferCounted;
+import mezz.jei.common.network.packets.PacketRecipeTransferWithResult;
+import mezz.jei.common.network.packets.PacketRecipeTransferResult;
 import mezz.jei.common.network.packets.PlayToClientPacket;
+import mezz.jei.common.network.packets.PlayToServerPacket;
+import mezz.jei.common.network.packets.legacy.PacketRecipeTransfer;
+import mezz.jei.common.network.packets.legacy.PacketRecipeTransferCounted;
 import mezz.jei.common.transfer.BasicRecipeTransferHandlerServer;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.TransferOperation;
@@ -26,6 +32,7 @@ import mezz.jei.neoforge.tests.lib.TestRecipeSlotView;
 import mezz.jei.neoforge.tests.lib.TransferRecipe;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -52,6 +59,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -2490,6 +2498,87 @@ public final class RecipeTransferGameTests {
 
 	@GameTest
 	@EmptyTemplate
+	@TestHolder(description = "Acknowledges a correlated recipe transfer after the server applies it.")
+	public static void acknowledgesSuccessfulRecipeTransfer(RecipeTransferTestHelper helper) {
+		// Setup: correlate a valid one-item transfer with a client transfer id.
+		ServerPlayer player = helper.getPlayer();
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		Slot targetSlot = menu.getInputGridSlots().get(CRAFTING_GRID_TOP_LEFT);
+		Slot sourceSlot = helper.getStandardInventorySlots(menu).get(0);
+		sourceSlot.set(new ItemStack(Items.OAK_PLANKS));
+		PacketRecipeTransferWithResult packet = PacketRecipeTransferWithResult.fromSlots(
+			List.of(new TransferOperation(sourceSlot.index, targetSlot.index)),
+			List.of(targetSlot),
+			List.of(sourceSlot),
+			false,
+			true,
+			42
+		);
+		var connection = new RecordingConnectionToClient();
+		var context = new ServerPacketContext(player, SERVER_CONFIG, connection);
+
+		// Operation: process the transfer packet with its correlation id.
+		encodeAndDecode(player, packet).process(context);
+
+		// Assertions: the server applies the transfer and acknowledges the matching id afterward.
+		helper.assertTrue(connection.result != null, "Expected a recipe transfer result packet");
+		helper.assertEquals(42, connection.result.transferId, "Expected matching transfer id");
+		helper.assertEquals(RecipeTransferResult.SUCCESS, connection.result.result, "Expected successful transfer result");
+		helper.createMenuChecker(menu)
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				CraftingMenu::getInputGridSlots,
+				List.of(stackAt(CRAFTING_GRID_TOP_LEFT, Items.OAK_PLANKS))
+			)
+			.assertPlayerInventory(List.of())
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Acknowledges a correlated recipe transfer when the server rejects it.")
+	public static void acknowledgesRejectedRecipeTransfer(RecipeTransferTestHelper helper) {
+		// Setup: correlate a transfer packet whose allowed-slot list contains an invalid id.
+		ServerPlayer player = helper.getPlayer();
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		Slot targetSlot = menu.getInputGridSlots().get(CRAFTING_GRID_TOP_LEFT);
+		Slot sourceSlot = helper.getStandardInventorySlots(menu).get(0);
+		sourceSlot.set(new ItemStack(Items.OAK_PLANKS));
+		PacketRecipeTransferWithResult packet = new PacketRecipeTransferWithResult(
+			List.of(new TransferOperation(sourceSlot.index, targetSlot.index)),
+			List.of(targetSlot.index, menu.slots.size()),
+			List.of(sourceSlot.index),
+			false,
+			true,
+			43
+		);
+		var connection = new RecordingConnectionToClient();
+		var context = new ServerPacketContext(player, SERVER_CONFIG, connection);
+
+		// Operation: process the invalid transfer packet with its correlation id.
+		encodeAndDecode(player, packet).process(context);
+
+		// Assertions: the server rejects the transfer without moving items and acknowledges the matching id.
+		helper.assertTrue(connection.result != null, "Expected a recipe transfer result packet");
+		helper.assertEquals(43, connection.result.transferId, "Expected matching transfer id");
+		helper.assertEquals(RecipeTransferResult.REJECTED, connection.result.result, "Expected rejected transfer result");
+		helper.createMenuChecker(menu)
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(CraftingMenu::getInputGridSlots, List.of())
+			.assertPlayerInventory(List.of(stackAt(0, Items.OAK_PLANKS)))
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
 	@TestHolder(description = "Ignores malicious recipe transfer operations with invalid slot ids.")
 	public static void ignoresMaliciousPacketWithInvalidOperationSlotId(RecipeTransferTestHelper helper) {
 		// Setup: the allowed slot lists are valid, but the transfer operation references an invalid source.
@@ -2990,6 +3079,17 @@ public final class RecipeTransferGameTests {
 		packet.process(new ServerPacketContext(helper.getPlayer(), SERVER_CONFIG, CONNECTION_TO_CLIENT));
 	}
 
+	private static <T extends PlayToServerPacket<T>> T encodeAndDecode(ServerPlayer player, T packet) {
+		ByteBuf byteBuf = Unpooled.buffer();
+		try {
+			RegistryFriendlyByteBuf buffer = RegistryFriendlyByteBuf.decorator(player.level().registryAccess(), ConnectionType.OTHER).apply(byteBuf);
+			packet.streamCodec().encode(buffer, packet);
+			return packet.streamCodec().decode(buffer);
+		} finally {
+			byteBuf.release();
+		}
+	}
+
 	private static final class EmptyServerConfig implements IServerConfig {
 		@Override
 		public boolean isCheatModeEnabledForOp() {
@@ -3010,6 +3110,17 @@ public final class RecipeTransferGameTests {
 	private static final class EmptyConnectionToClient implements IConnectionToClient {
 		@Override
 		public <T extends PlayToClientPacket<T>> void sendPacketToClient(T packet, ServerPlayer player) {
+		}
+	}
+
+	private static final class RecordingConnectionToClient implements IConnectionToClient {
+		private PacketRecipeTransferResult result;
+
+		@Override
+		public <T extends PlayToClientPacket<T>> void sendPacketToClient(T packet, ServerPlayer player) {
+			if (packet instanceof PacketRecipeTransferResult result) {
+				this.result = result;
+			}
 		}
 	}
 
