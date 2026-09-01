@@ -10,6 +10,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import mezz.jei.common.config.file.serializers.DeserializeResult;
 import mezz.jei.common.config.file.serializers.LegacyTypedIngredientSerializer;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import net.minecraft.resources.ResourceLocation;
 
@@ -24,15 +25,18 @@ public class LegacyRecipeBookmarkSerializer {
 	private final IRecipeManager recipeManager;
 	private final IFocusFactory focusFactory;
 	private final LegacyTypedIngredientSerializer ingredientSerializer;
+	private final RecipeTransferService recipeTransferService;
 
 	public LegacyRecipeBookmarkSerializer(
 		IRecipeManager recipeManager,
 		IFocusFactory focusFactory,
-		LegacyTypedIngredientSerializer ingredientSerializer
+		LegacyTypedIngredientSerializer ingredientSerializer,
+		RecipeTransferService recipeTransferService
 	) {
 		this.recipeManager = recipeManager;
 		this.focusFactory = focusFactory;
 		this.ingredientSerializer = ingredientSerializer;
+		this.recipeTransferService = recipeTransferService;
 	}
 
 	public IJeiConfigValueSerializer.IDeserializeResult<RecipeBookmark<?, ?>> deserialize(String string) {
@@ -84,7 +88,7 @@ public class LegacyRecipeBookmarkSerializer {
 		}
 
 		T recipe = recipeResult.get();
-		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, true);
+		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, true, recipeTransferService);
 		return new DeserializeResult<>(recipeBookmark);
 	}
 

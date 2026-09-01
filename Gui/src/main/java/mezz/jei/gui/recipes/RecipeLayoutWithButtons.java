@@ -7,6 +7,7 @@ import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
@@ -35,9 +36,10 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 		@Nullable RecipeBookmark<?, ?> recipeBookmark,
 		BookmarkList bookmarks,
 		RecipesGui recipesGui,
+		RecipeTransferService recipeTransferService,
 		List<IRecipeButtonControllerFactory> extraButtonControllerFactories
 	) {
-		RecipeTransferButtonController transferButton = new RecipeTransferButtonController(recipeLayoutDrawable, recipesGui);
+		RecipeTransferButtonController transferButton = new RecipeTransferButtonController(recipeLayoutDrawable, recipesGui, recipeTransferService);
 		RecipeBookmarkButtonController bookmarkButton = new RecipeBookmarkButtonController(bookmarks, recipeBookmark);
 
 		List<IconButton> buttons = new ArrayList<>();

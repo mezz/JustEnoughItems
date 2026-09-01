@@ -6,11 +6,11 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.recipes.IRecipeLayoutWithButtons;
@@ -29,6 +29,7 @@ import java.util.Set;
 
 public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 	private final IRecipeManager recipeManager;
+	private final RecipeTransferService recipeTransferService;
 	private final IRecipeCategory<T> recipeCategory;
 	private final RecipesGui recipesGui;
 	private final IFocusGroup focusGroup;
@@ -46,6 +47,7 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 		IFocusedRecipes<T> selectedRecipes,
 		BookmarkList bookmarkList,
 		IRecipeManager recipeManager,
+		RecipeTransferService recipeTransferService,
 		RecipesGui recipesGui,
 		IFocusGroup focusGroup
 	) {
@@ -53,6 +55,7 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 		boolean matchingBookmarks = recipeSorterStages.contains(RecipeSorterStage.BOOKMARKED);
 		boolean matchingCraftable = recipeSorterStages.contains(RecipeSorterStage.CRAFTABLE);
 		this.recipeManager = recipeManager;
+		this.recipeTransferService = recipeTransferService;
 		this.recipesGui = recipesGui;
 		this.focusGroup = focusGroup;
 		this.results = new ArrayList<>();
@@ -63,8 +66,7 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 		this.size = recipes.size();
 
 		if (matchingCraftable && container != null) {
-			IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
-			this.matchingCraftable = recipeTransferManager.getRecipeTransferHandler(container, recipeCategory).isPresent();
+			this.matchingCraftable = recipeTransferService.hasRecipeTransferHandler(container, recipeCategory);
 		} else {
 			this.matchingCraftable = false;
 		}
@@ -81,7 +83,7 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 				RecipeBookmark<T, ?> recipeBookmark = bookmarkList.getMatchingBookmark(recipeType, recipe);
 				if (recipeBookmark != null) {
 					IRecipeLayoutDrawable<T> recipeLayout = recipeManager.createRecipeLayoutDrawableOrShowError(recipeCategory, recipe, focusGroup);
-					IRecipeLayoutWithButtons<T> recipeLayoutWithButtons = RecipeLayoutWithButtons.create(recipeLayout, recipeBookmark, bookmarkList, recipesGui, recipeButtonControllerFactories);
+					IRecipeLayoutWithButtons<T> recipeLayoutWithButtons = RecipeLayoutWithButtons.create(recipeLayout, recipeBookmark, bookmarkList, recipesGui, recipeTransferService, recipeButtonControllerFactories);
 					results.add(recipeLayoutWithButtons);
 					iterator.remove();
 				}
@@ -100,8 +102,8 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 		IIngredientManager ingredientManager,
 		List<IRecipeButtonControllerFactory> recipeButtonControllerFactories
 	) {
-		RecipeBookmark<T, ?> recipeBookmark = RecipeBookmark.create(recipeLayoutDrawable, ingredientManager);
-		return RecipeLayoutWithButtons.create(recipeLayoutDrawable, recipeBookmark, bookmarkList, recipesGui, recipeButtonControllerFactories);
+		RecipeBookmark<T, ?> recipeBookmark = RecipeBookmark.create(recipeLayoutDrawable, ingredientManager, recipeTransferService);
+		return RecipeLayoutWithButtons.create(recipeLayoutDrawable, recipeBookmark, bookmarkList, recipesGui, recipeTransferService, recipeButtonControllerFactories);
 	}
 
 	@Override

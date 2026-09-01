@@ -10,6 +10,7 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.config.IJeiConfigValueSerializer.IDeserializeResult;
 import mezz.jei.common.config.file.serializers.LegacyTypedIngredientSerializer;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.gui.bookmarks.BookmarkFactory;
@@ -71,7 +72,8 @@ public class LegacyBookmarkConfig {
 		IFocusFactory focusFactory,
 		IIngredientManager ingredientManager,
 		RegistryAccess registryAccess,
-		BookmarkFactory bookmarkFactory
+		BookmarkFactory bookmarkFactory,
+		RecipeTransferService recipeTransferService
 	) {
 		return getPath(jeiConfigurationDir)
 			.<List<IBookmark>>map(path -> {
@@ -94,7 +96,7 @@ public class LegacyBookmarkConfig {
 
 				List<IBookmark> bookmarkList = new ArrayList<>();
 				LegacyTypedIngredientSerializer ingredientSerializer = new LegacyTypedIngredientSerializer(ingredientManager);
-				LegacyRecipeBookmarkSerializer legacyRecipeBookmarkSerializer = new LegacyRecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer);
+				LegacyRecipeBookmarkSerializer legacyRecipeBookmarkSerializer = new LegacyRecipeBookmarkSerializer(recipeManager, focusFactory, ingredientSerializer, recipeTransferService);
 
 				Collection<IIngredientType<?>> otherIngredientTypes = ingredientManager.getRegisteredIngredientTypes()
 						.stream()

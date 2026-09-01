@@ -7,9 +7,11 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.transfer.IRecipeTransferContext;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
+import mezz.jei.common.transfer.RecipeTransferContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -52,6 +54,7 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Inven
 		return RecipeTypes.CRAFTING;
 	}
 
+	@SuppressWarnings("removal")
 	@Nullable
 	@Override
 	public IRecipeTransferError transferRecipe(InventoryMenu container, RecipeHolder<CraftingRecipe> recipe, IRecipeSlotsView recipeSlotsView, Player player, boolean maxTransfer, boolean doTransfer) {
@@ -72,6 +75,28 @@ public class PlayerRecipeTransferHandler implements IRecipeTransferHandler<Inven
 		List<IRecipeSlotView> filteredSlotViews = filterSlots(slotViews);
 		IRecipeSlotsView filteredRecipeSlots = this.handlerHelper.createRecipeSlotsView(filteredSlotViews);
 		return this.handler.transferRecipe(container, recipe, filteredRecipeSlots, player, maxTransfer, doTransfer);
+	}
+
+	@Nullable
+	@Override
+	public IRecipeTransferError transferRecipe(IRecipeTransferContext<RecipeHolder<CraftingRecipe>, InventoryMenu> context, boolean doTransfer) {
+		if (!handlerHelper.recipeTransferHasServerSupport()) {
+			Component tooltipMessage = Component.translatable("jei.tooltip.error.recipe.transfer.no.server");
+			return this.handlerHelper.createUserErrorWithTooltip(tooltipMessage);
+		}
+
+		List<IRecipeSlotView> slotViews = context.getRecipeSlots().getSlotViews(RecipeIngredientRole.INPUT);
+		if (!validateIngredientsOutsidePlayerGridAreEmpty(slotViews)) {
+			Component tooltipMessage = Component.translatable(
+				"jei.tooltip.error.recipe.transfer.too.large.player.inventory"
+			);
+			return this.handlerHelper.createUserErrorWithTooltip(tooltipMessage);
+		}
+
+		List<IRecipeSlotView> filteredSlotViews = filterSlots(slotViews);
+		IRecipeSlotsView filteredRecipeSlots = this.handlerHelper.createRecipeSlotsView(filteredSlotViews);
+		var filteredContext = RecipeTransferContext.copyWithRecipeSlots(context, filteredRecipeSlots);
+		return this.handler.transferRecipe(filteredContext, doTransfer);
 	}
 
 	private static boolean validateIngredientsOutsidePlayerGridAreEmpty(List<IRecipeSlotView> slotViews) {

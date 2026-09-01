@@ -3,9 +3,7 @@ package mezz.jei.gui.overlay.bookmarks;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
-import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
-import mezz.jei.common.Internal;
-import mezz.jei.common.transfer.RecipeTransferUtil;
+import mezz.jei.common.transfer.RecipeTransferService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -14,7 +12,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,11 +19,16 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 	private static final int UPDATE_INTERVAL_MS = 2000;
 
 	private final IRecipeLayoutDrawable<R> drawable;
+	private final RecipeTransferService recipeTransferService;
 	private @Nullable IRecipeTransferError transferError;
 	private long lastUpdateTime = 0;
 
-	public PreviewTooltipComponent(IRecipeLayoutDrawable<R> drawable) {
+	public PreviewTooltipComponent(
+		IRecipeLayoutDrawable<R> drawable,
+		RecipeTransferService recipeTransferService
+	) {
 		this.drawable = drawable;
+		this.recipeTransferService = recipeTransferService;
 	}
 
 	@Override
@@ -74,9 +76,7 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 		}
 		Screen screen = Minecraft.getInstance().screen;
 		if (screen instanceof AbstractContainerScreen<?> containerScreen) {
-			AbstractContainerMenu container = containerScreen.getMenu();
-			IRecipeTransferManager recipeTransferManager = Internal.getJeiRuntime().getRecipeTransferManager();
-			transferError = RecipeTransferUtil.getTransferRecipeError(recipeTransferManager, container, drawable, player)
+			transferError = recipeTransferService.getTransferRecipeError(containerScreen, drawable, player)
 				.orElse(null);
 		} else {
 			transferError = null;

@@ -6,7 +6,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
-import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.recipe.transfer.IRecipeTransferListener;
 import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.common.Constants;
@@ -21,8 +21,12 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 	private final Table<Class<? extends AbstractContainerMenu>, RecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers = Table.hashBasedTable();
+	private final List<IRecipeTransferListener> recipeTransferListeners = new ArrayList<>();
 	private final IStackHelper stackHelper;
 	private final IRecipeTransferHandlerHelper handlerHelper;
 	private final IJeiHelpers jeiHelpers;
@@ -94,7 +98,13 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 		this.recipeTransferHandlers.put(containerClass, Constants.UNIVERSAL_RECIPE_TRANSFER_TYPE, recipeTransferHandler);
 	}
 
-	public IRecipeTransferManager createRecipeTransferManager() {
-		return new RecipeTransferManager(recipeTransferHandlers.toImmutable());
+	@Override
+	public void addRecipeTransferListener(IRecipeTransferListener recipeTransferListener) {
+		ErrorUtil.checkNotNull(recipeTransferListener, "recipeTransferListener");
+		this.recipeTransferListeners.add(recipeTransferListener);
+	}
+
+	public RecipeTransferManager createRecipeTransferManager() {
+		return new RecipeTransferManager(recipeTransferHandlers.toImmutable(), recipeTransferListeners);
 	}
 }

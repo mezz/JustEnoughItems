@@ -9,6 +9,7 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.file.JsonArrayFileHelper;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.DeduplicatingRunner;
 import mezz.jei.common.util.PathUtil;
 import mezz.jei.common.util.ServerConfigPathUtil;
@@ -123,12 +124,13 @@ public class BookmarkJsonConfig implements IBookmarkConfig {
 		BookmarkList bookmarkList,
 		ICodecHelper codecHelper,
 		Codec<IBookmark> bookmarkCodec,
-		BookmarkFactory bookmarkFactory
+		BookmarkFactory bookmarkFactory,
+		RecipeTransferService recipeTransferService
 	) {
 		RegistryOps<JsonElement> registryOps = getRegistryOps(registryAccess);
 		List<IBookmark> bookmarks = loadJsonBookmarks(ingredientManager, recipeManager, registryOps, codecHelper, bookmarkCodec);
 
-		List<IBookmark> legacyIniBookmarks = legacyBookmarkConfig.loadBookmarks(recipeManager, focusFactory, ingredientManager, registryAccess, bookmarkFactory);
+		List<IBookmark> legacyIniBookmarks = legacyBookmarkConfig.loadBookmarks(recipeManager, focusFactory, ingredientManager, registryAccess, bookmarkFactory, recipeTransferService);
 		List<IBookmark> legacyCompressedBookmarks = loadLegacyCompressedJsonBookmarks(ingredientManager, recipeManager, registryAccess, codecHelper, bookmarkCodec);
 
 		List<IBookmark> legacyBookmarks = new ArrayList<>();

@@ -16,7 +16,6 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.Internal;
@@ -28,6 +27,7 @@ import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
@@ -120,7 +120,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public RecipesGui(
 		IRecipeManager recipeManager,
 		IIngredientManager ingredientManager,
-		IRecipeTransferManager recipeTransferManager,
+		RecipeTransferService recipeTransferService,
 		IInternalKeyMappings keyBindings,
 		IFocusFactory focusFactory,
 		BookmarkList bookmarks,
@@ -136,7 +136,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			recipeManager,
 			ingredientManager,
 			lookupHistory,
-			recipeTransferManager,
+			recipeTransferService,
 			this::updateLayout,
 			focusFactory,
 			bookmarkFactory
@@ -709,6 +709,15 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Nullable
 	public AbstractContainerMenu getParentContainerMenu() {
+		AbstractContainerScreen<?> containerScreen = getParentContainerScreen();
+		if (containerScreen == null) {
+			return null;
+		}
+		return containerScreen.getMenu();
+	}
+
+	@Nullable
+	public AbstractContainerScreen<?> getParentContainerScreen() {
 		Screen screen;
 		if (parentScreen == null) {
 			screen = Minecraft.getInstance().screen;
@@ -716,7 +725,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			screen = parentScreen;
 		}
 		if (screen instanceof AbstractContainerScreen<?> containerScreen) {
-			return containerScreen.getMenu();
+			return containerScreen;
 		}
 		return null;
 	}

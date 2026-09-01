@@ -11,6 +11,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.codecs.EnumCodec;
+import mezz.jei.common.transfer.RecipeTransferService;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -19,9 +20,15 @@ public final class BookmarkCodec {
 
 	private BookmarkCodec() {}
 
-	public static MapCodec<IBookmark> create(ICodecHelper codecHelper, IIngredientManager ingredientManager, IRecipeManager recipeManager, BookmarkFactory bookmarkFactory) {
+	public static MapCodec<IBookmark> create(
+		ICodecHelper codecHelper,
+		IIngredientManager ingredientManager,
+		IRecipeManager recipeManager,
+		RecipeTransferService recipeTransferService,
+		BookmarkFactory bookmarkFactory
+	) {
 		MapCodec<? extends IngredientBookmark<?>> ingredientBookmarkCodec = createIngredientBookmarkCodec(codecHelper, bookmarkFactory);
-		MapCodec<? extends RecipeBookmark<?, ?>> recipeBookmarkCodec = createRecipeBookmarkCodec(codecHelper, ingredientManager, recipeManager);
+		MapCodec<? extends RecipeBookmark<?, ?>> recipeBookmarkCodec = createRecipeBookmarkCodec(codecHelper, ingredientManager, recipeManager, recipeTransferService);
 
 		return EnumCodec.create(BookmarkType.class).dispatchMap(
 			"bookmarkType",
@@ -41,14 +48,19 @@ public final class BookmarkCodec {
 			);
 	}
 
-	private static MapCodec<? extends RecipeBookmark<?, ?>> createRecipeBookmarkCodec(ICodecHelper codecHelper, IIngredientManager ingredientManager, IRecipeManager recipeManager) {
+	private static MapCodec<? extends RecipeBookmark<?, ?>> createRecipeBookmarkCodec(
+		ICodecHelper codecHelper,
+		IIngredientManager ingredientManager,
+		IRecipeManager recipeManager,
+		RecipeTransferService recipeTransferService
+	) {
 		return codecHelper.getRecipeTypeCodec(recipeManager)
 			.dispatchMap(
 				"recipeType",
 				bookmark -> bookmark.getRecipeCategory().getRecipeType(),
 				recipeType -> {
 					IRecipeCategory<?> recipeCategory = recipeManager.getRecipeCategory(recipeType);
-					return createRecipeBookmarkCodec(recipeCategory, codecHelper, recipeManager, ingredientManager)
+					return createRecipeBookmarkCodec(recipeCategory, codecHelper, recipeManager, ingredientManager, recipeTransferService)
 						.fieldOf("recipe");
 				}
 			);
@@ -58,7 +70,8 @@ public final class BookmarkCodec {
 		IRecipeCategory<R> recipeCategory,
 		ICodecHelper codecHelper,
 		IRecipeManager recipeManager,
-		IIngredientManager ingredientManager
+		IIngredientManager ingredientManager,
+		RecipeTransferService recipeTransferService
 	) {
 		return recipeCategory.getCodec(codecHelper, recipeManager)
 			.flatXmap(
@@ -86,7 +99,7 @@ public final class BookmarkCodec {
 					}
 
 					displayIngredient = ingredientManager.normalizeTypedIngredient(displayIngredient);
-					RecipeBookmark<R, ?> bookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, displayIngredient, displayIsOutput);
+					RecipeBookmark<R, ?> bookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, displayIngredient, displayIsOutput, recipeTransferService);
 					return DataResult.success(bookmark);
 				},
 				bookmark -> {

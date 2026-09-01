@@ -31,7 +31,11 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 	private final CraftingRecipeCategory craftingRecipeCategory;
 	private final IConnectionToServer serverConnection;
 
-	public RecipeTransferHandlerHelper(IStackHelper stackHelper, CraftingRecipeCategory craftingRecipeCategory, IConnectionToServer serverConnection) {
+	public RecipeTransferHandlerHelper(
+		IStackHelper stackHelper,
+		CraftingRecipeCategory craftingRecipeCategory,
+		IConnectionToServer serverConnection
+	) {
 		this.stackHelper = stackHelper;
 		this.craftingRecipeCategory = craftingRecipeCategory;
 		this.serverConnection = serverConnection;

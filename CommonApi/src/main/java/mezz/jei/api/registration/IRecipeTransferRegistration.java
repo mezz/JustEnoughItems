@@ -9,6 +9,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
+import mezz.jei.api.recipe.transfer.IRecipeTransferListener;
 import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -71,4 +72,11 @@ public interface IRecipeTransferRegistration {
 	 */
 	@Deprecated(since = "19.8.1", forRemoval = true)
 	<C extends AbstractContainerMenu, R> void addUniversalRecipeTransferHandler(IRecipeTransferHandler<C, R> recipeTransferHandler);
+
+	/**
+	 * Add a listener that observes attempts to transfer recipes through JEI.
+	 *
+	 * @since 19.52.0
+	 */
+	void addRecipeTransferListener(IRecipeTransferListener recipeTransferListener);
 }
