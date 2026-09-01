@@ -12,6 +12,7 @@ import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
@@ -136,6 +137,7 @@ public final class OverlayHelper {
 		IIngredientManager ingredientManager,
 		IScreenHelper screenHelper,
 		BookmarkList bookmarkList,
+		RecipeTransferService recipeTransferService,
 		IIngredientGridSource lookupHistory,
 		IInternalKeyMappings keyMappings,
 		IIngredientGridConfig bookmarkListConfig,
@@ -183,6 +185,7 @@ public final class OverlayHelper {
 
 		return new BookmarkOverlay(
 			bookmarkList,
+			recipeTransferService,
 			bookmarkListGridNavigation,
 			lookupHistoryOverlay,
 			toggleState,

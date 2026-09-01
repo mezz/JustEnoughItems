@@ -9,6 +9,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.input.IClickableIngredientInternal;
@@ -49,6 +50,7 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 		RecipeBookmarkElement<?, ?> element,
 		BooleanSupplier sourceVisible,
 		PreviewTooltipComponent<?> component,
+		RecipeTransferService recipeTransferService,
 		int anchorX,
 		int anchorY
 	) {
@@ -63,7 +65,7 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 			Internal.getKeyMappings().getPauseRecipeCycling()::isDown
 		);
 		this.tooltipRenderer = new PinnedTooltipRenderer(anchorX, anchorY);
-		this.transferButton = new IconButton(RecipeTransferButtonController.createForPinnedRecipe(this.drawable));
+		this.transferButton = new IconButton(RecipeTransferButtonController.createForPinnedRecipe(this.drawable, recipeTransferService));
 		this.transferButtonInputHandler = this.transferButton.createInputHandler();
 	}
 

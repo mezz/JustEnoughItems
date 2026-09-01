@@ -1,7 +1,9 @@
-package mezz.jei.common.network.packets;
+package mezz.jei.common.network.packets.legacy;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.network.ServerPacketContext;
+import mezz.jei.common.network.packets.PacketRecipeTransferWithResult;
+import mezz.jei.common.network.packets.PlayToServerPacket;
 import mezz.jei.common.transfer.BasicRecipeTransferHandlerServer;
 import mezz.jei.common.transfer.TransferOperation;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -11,18 +13,13 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class PacketRecipeTransfer extends PlayToServerPacket<PacketRecipeTransfer> {
-	private static final Logger LOGGER = LogManager.getLogger();
-	public static final CustomPacketPayload.Type<PacketRecipeTransfer> TYPE = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "recipe_transfer"));
-	public static final StreamCodec<RegistryFriendlyByteBuf, PacketRecipeTransfer> STREAM_CODEC = StreamCodec.composite(
-		TransferOperation.STREAM_CODEC.apply(ByteBufCodecs.list()),
+public class PacketRecipeTransferCounted extends PlayToServerPacket<PacketRecipeTransferCounted> {
+	public static final CustomPacketPayload.Type<PacketRecipeTransferCounted> TYPE = new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "recipe_transfer_counted"));
+	public static final StreamCodec<RegistryFriendlyByteBuf, PacketRecipeTransferCounted> STREAM_CODEC = StreamCodec.composite(
+		TransferOperation.COUNTED_STREAM_CODEC.apply(ByteBufCodecs.list()),
 		p -> p.transferOperations,
 		ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list()),
 		p -> p.craftingSlots,
@@ -32,7 +29,7 @@ public class PacketRecipeTransfer extends PlayToServerPacket<PacketRecipeTransfe
 		p -> p.maxTransfer,
 		ByteBufCodecs.BOOL,
 		p -> p.requireCompleteSets,
-		PacketRecipeTransfer::new
+		PacketRecipeTransferCounted::new
 	);
 
 	public final List<TransferOperation> transferOperations;
@@ -41,14 +38,14 @@ public class PacketRecipeTransfer extends PlayToServerPacket<PacketRecipeTransfe
 	private final boolean maxTransfer;
 	private final boolean requireCompleteSets;
 
-	public static PacketRecipeTransfer fromSlots(
+	public static PacketRecipeTransferCounted fromSlots(
 		List<TransferOperation> transferOperations,
 		List<Slot> craftingSlots,
 		List<Slot> inventorySlots,
 		boolean maxTransfer,
 		boolean requireCompleteSets
 	) {
-		return new PacketRecipeTransfer(
+		return new PacketRecipeTransferCounted(
 			transferOperations,
 			craftingSlots.stream().map(s -> s.index).toList(),
 			inventorySlots.stream().map(s -> s.index).toList(),
@@ -57,7 +54,7 @@ public class PacketRecipeTransfer extends PlayToServerPacket<PacketRecipeTransfe
 		);
 	}
 
-	public PacketRecipeTransfer(
+	public PacketRecipeTransferCounted(
 		List<TransferOperation> transferOperations,
 		List<Integer> craftingSlots,
 		List<Integer> inventorySlots,
@@ -72,20 +69,20 @@ public class PacketRecipeTransfer extends PlayToServerPacket<PacketRecipeTransfe
 	}
 
 	@Override
-	public Type<PacketRecipeTransfer> type() {
+	public Type<PacketRecipeTransferCounted> type() {
 		return TYPE;
 	}
 
 	@Override
-	public StreamCodec<RegistryFriendlyByteBuf, PacketRecipeTransfer> streamCodec() {
+	public StreamCodec<RegistryFriendlyByteBuf, PacketRecipeTransferCounted> streamCodec() {
 		return STREAM_CODEC;
 	}
 
 	@Override
 	public void process(ServerPacketContext context) {
 		AbstractContainerMenu container = context.player().containerMenu;
-		List<Slot> craftingSlots = getSlots(container, this.craftingSlots);
-		List<Slot> inventorySlots = getSlots(container, this.inventorySlots);
+		List<Slot> craftingSlots = PacketRecipeTransferWithResult.getSlots(container, this.craftingSlots);
+		List<Slot> inventorySlots = PacketRecipeTransferWithResult.getSlots(container, this.inventorySlots);
 		if (craftingSlots == null || inventorySlots == null) {
 			return;
 		}
@@ -99,32 +96,4 @@ public class PacketRecipeTransfer extends PlayToServerPacket<PacketRecipeTransfe
 			requireCompleteSets
 		);
 	}
-
-	@Nullable
-	static List<Slot> getSlots(AbstractContainerMenu container, List<Integer> slotIds) {
-		if (slotIds.size() > container.slots.size()) {
-			LOGGER.error(
-				"Recipe transfer packet has too many slot ids {} for container {} with {} slots",
-				slotIds.size(),
-				container.getClass(),
-				container.slots.size()
-			);
-			return null;
-		}
-
-		List<Slot> slots = new ArrayList<>(slotIds.size());
-		for (int slotId : slotIds) {
-			if (slotId < 0 || slotId >= container.slots.size()) {
-				LOGGER.error(
-					"Recipe transfer packet has invalid slot id {} for container {}",
-					slotId,
-					container.getClass()
-				);
-				return null;
-			}
-			slots.add(container.getSlot(slotId));
-		}
-		return slots;
-	}
-
 }

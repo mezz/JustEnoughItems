@@ -5,7 +5,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.common.transfer.RecipeTransferService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -18,7 +18,7 @@ public class RecipeSortUtil {
 
 	public static List<IRecipeCategory<?>> sortRecipeCategories(
 		List<IRecipeCategory<?>> recipeCategories,
-		IRecipeTransferManager recipeTransferManager
+		RecipeTransferService recipeTransferService
 	) {
 		Minecraft minecraft = Minecraft.getInstance();
 		LocalPlayer player = minecraft.player;
@@ -32,8 +32,7 @@ public class RecipeSortUtil {
 		}
 
 		Comparator<IRecipeCategory<?>> comparator = Comparator.comparing((IRecipeCategory<?> r) -> {
-			var recipeTransferHandler = recipeTransferManager.getRecipeTransferHandler(openContainer, r);
-			return recipeTransferHandler.isPresent();
+			return recipeTransferService.hasRecipeTransferHandler(openContainer, r);
 		})
 			.reversed();
 
