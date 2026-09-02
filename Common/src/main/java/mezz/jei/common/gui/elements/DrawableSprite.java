@@ -66,12 +66,18 @@ public class DrawableSprite implements IDrawableStatic {
 
 	@Override
 	public int getWidth() {
+		if (width > 0) {
+			return width;
+		}
 		TextureAtlasSprite sprite = spriteSupplier.get();
 		return getWidth(sprite);
 	}
 
 	@Override
 	public int getHeight() {
+		if (height > 0) {
+			return height;
+		}
 		TextureAtlasSprite sprite = spriteSupplier.get();
 		return getHeight(sprite);
 	}
