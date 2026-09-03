@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 final class FabricClientTestRunner {
@@ -20,29 +21,53 @@ final class FabricClientTestRunner {
 	}
 
 	public static void register(String suiteName, String testName, JUnitXmlTestReporter.ThrowingRunnable test) {
+		register(new ClientTestCase(suiteName, testName, test));
+	}
+
+	public static void register(ClientTestCase testCase) {
+		register(List.of(testCase));
+	}
+
+	public static void register(List<ClientTestCase> testCases) {
+		List<ClientTestCase> registeredTestCases = List.copyOf(testCases);
+		if (registeredTestCases.isEmpty()) {
+			throw new IllegalArgumentException("Expected at least one Fabric client test case");
+		}
+
 		AtomicBoolean started = new AtomicBoolean(false);
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (started.compareAndSet(false, true)) {
-				Thread thread = new Thread(() -> runTests(suiteName, testName, test), "JEI Fabric Client Tests");
+				Thread thread = new Thread(() -> runTests(registeredTestCases), "JEI Fabric Client Tests");
 				thread.setDaemon(false);
 				thread.start();
 			}
 		});
 	}
 
-	private static void runTests(String suiteName, String testName, JUnitXmlTestReporter.ThrowingRunnable test) {
+	private static void runTests(List<ClientTestCase> testCases) {
 		int exitCode = 0;
+		String suiteName = "fabric-client-tests";
+		String testName = "client-startup";
 		try {
 			waitForClientStartup();
-			if (!FabricLoader.getInstance().isModLoaded(FabricAmecsSupport.AMECS_MOD_ID)) {
-				suiteName += "-without-amecs";
+			boolean withoutAmecs = !FabricLoader.getInstance().isModLoaded(FabricAmecsSupport.AMECS_MOD_ID);
+			for (ClientTestCase testCase : testCases) {
+				suiteName = testCase.suiteName();
+				testName = testCase.testName();
+				if (withoutAmecs) {
+					suiteName += "-without-amecs";
+				}
+				try {
+					JUnitXmlTestReporter.runAndReport(
+						suiteName,
+						testName,
+						testCase.test()
+					);
+					LOGGER.info("JEI Fabric client test passed: {}.{}", suiteName, testName);
+				} finally {
+					FabricClientTestInput.clear();
+				}
 			}
-			JUnitXmlTestReporter.runAndReport(
-				suiteName,
-				testName,
-				test
-			);
-			LOGGER.info("JEI Fabric client test passed: {}.{}", suiteName, testName);
 		} catch (Throwable t) {
 			exitCode = 1;
 			LOGGER.error("JEI Fabric client test failed: {}.{}", suiteName, testName, t);
@@ -70,5 +95,13 @@ final class FabricClientTestRunner {
 		if (exitCode != 0) {
 			System.exit(exitCode);
 		}
+	}
+
+	public record ClientTestCase(
+		String suiteName,
+		String testName,
+		JUnitXmlTestReporter.ThrowingRunnable test
+	) {
+
 	}
 }
