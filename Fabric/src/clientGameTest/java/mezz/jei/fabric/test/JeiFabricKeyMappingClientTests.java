@@ -27,9 +27,9 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * <p>This test class is run by two Fabric client launches:
  * <ul>
- *     <li>{@code :Fabric:runClientKeyMappingTest} runs with AMECS and its JEI integration enabled.</li>
- *     <li>{@code :Fabric:runClientKeyMappingTestWithoutAmecs} removes AMECS from the runtime classpath and exercises
- *     JEI's plain Fabric key-mapping path.</li>
+ *     <li>{@code :Fabric:runClientGameTest} includes this test with AMECS and its JEI integration enabled.</li>
+ *     <li>{@code :Fabric:runClientGameTestWithoutAmecs} removes AMECS from the runtime classpath and runs only this
+ *     test to exercise JEI's plain Fabric key-mapping path.</li>
  * </ul>
  */
 final class JeiFabricKeyMappingClientTests {
@@ -45,7 +45,11 @@ final class JeiFabricKeyMappingClientTests {
 	}
 
 	public static void register() {
-		FabricClientTestRunner.register(JUNIT_SUITE_NAME, TEST_NAME, JeiFabricKeyMappingClientTests::runTest);
+		FabricClientTestRunner.register(getTestCase());
+	}
+
+	public static FabricClientTestRunner.ClientTestCase getTestCase() {
+		return new FabricClientTestRunner.ClientTestCase(JUNIT_SUITE_NAME, TEST_NAME, JeiFabricKeyMappingClientTests::runTest);
 	}
 
 	private static void runTest() {

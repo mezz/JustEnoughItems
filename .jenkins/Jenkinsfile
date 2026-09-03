@@ -96,8 +96,8 @@ pipeline {
                         JEI_JVM_DIAGNOSTIC_DELAY_SECONDS=600 \
                         JEI_JVM_DIAGNOSTIC_FILE="$WORKSPACE/Fabric/build/reports/client-gametest-diagnostics.txt" \
                             python3 .jenkins/runWithJvmDiagnostics.py \
-							xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
-							./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs --no-parallel
+                            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
+                            ./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs --no-parallel
                     else
                         echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
                     fi
@@ -192,7 +192,7 @@ pipeline {
     post {
         always {
             junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
-            archiveArtifacts allowEmptyArchive: true, artifacts: 'Fabric/build/reports/client-gametest-diagnostics.txt'
+            archiveArtifacts allowEmptyArchive: true, artifacts: '*/build/reports/client-gametest-diagnostics.txt'
             script {
                 discordNotifier(workerJob: '/mezz/release-notifier-worker')
             }

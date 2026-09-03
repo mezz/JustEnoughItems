@@ -89,9 +89,6 @@ val clientTestModId = "${modId}-client-tests"
 fun clientTestGameDirectory(runName: String) =
     layout.projectDirectory.dir("run/$runName")
 
-fun capitalizedRunName(runName: String): String =
-    runName.replaceFirstChar { it.uppercase() }
-
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
@@ -249,47 +246,24 @@ loom {
             runDir(loomRunDir.resolve("server").toString())
             vmArgs("-Dfabric.classPathGroups=${classPathGroupsString}")
         }
-        create("clientCreativeInventoryTest") {
+        create("clientGameTest") {
             client()
             source(clientGameTestSourceSet)
-            configName = "Fabric Client Creative Inventory Test"
+            configName = "Fabric Client Game Tests"
             ideConfigGenerated(false)
-            runDir(loomRunDir.resolve("clientCreativeInventoryTest").toString())
-            property("jei.fabric.clientTest", "creativeInventory")
+            runDir(loomRunDir.resolve("clientGameTest").toString())
+            property("jei.fabric.clientTest", "all")
             vmArgs(
                 "-Dfabric.log.level=info"
             )
             programArgs("--username", "JeiClientTest", "--width", "1280", "--height", "720")
         }
-        create("clientCreativeInventoryTestWithoutAmecs") {
+        create("clientGameTestWithoutAmecs") {
             client()
             source(clientGameTestWithoutAmecsSourceSet)
-            configName = "Fabric Client Creative Inventory Test Without AMECS"
+            configName = "Fabric Client Game Tests Without AMECS"
             ideConfigGenerated(false)
-            runDir(loomRunDir.resolve("clientCreativeInventoryTestWithoutAmecs").toString())
-            property("jei.fabric.clientTest", "creativeInventory")
-            vmArgs(
-                "-Dfabric.log.level=info"
-            )
-            programArgs("--username", "JeiClientTest", "--width", "1280", "--height", "720")
-        }
-        create("clientKeyMappingTest") {
-            client()
-            source(clientGameTestSourceSet)
-            configName = "Fabric Client Key Mapping Test"
-            ideConfigGenerated(false)
-            runDir(loomRunDir.resolve("clientKeyMappingTest").toString())
-            property("jei.fabric.clientTest", "keyMapping")
-            vmArgs(
-                "-Dfabric.log.level=info"
-            )
-            programArgs("--username", "JeiClientTest", "--width", "1280", "--height", "720")
-        }
-        create("clientKeyMappingTestWithoutAmecs") {
-            client()
-            source(clientGameTestWithoutAmecsSourceSet)
-            configName = "Fabric Client Key Mapping Test Without AMECS"
-            runDir(loomRunDir.resolve("clientKeyMappingTestWithoutAmecs").toString())
+            runDir(loomRunDir.resolve("clientGameTestWithoutAmecs").toString())
             property("jei.fabric.clientTest", "keyMapping")
             vmArgs(
                 "-Dfabric.log.level=info"
@@ -311,47 +285,42 @@ sourceSets {
     }
 }
 
-val writeClientTestOptionsTasks = listOf(
-    "clientCreativeInventoryTest",
-    "clientCreativeInventoryTestWithoutAmecs",
-    "clientKeyMappingTest",
-    "clientKeyMappingTestWithoutAmecs"
-).associateWith { runName ->
-    tasks.register<Copy>("write${capitalizedRunName(runName)}Options") {
+fun registerWriteClientTestOptionsTask(name: String, runName: String) =
+    tasks.register<Copy>(name) {
         from(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
         into(clientTestGameDirectory(runName))
     }
+
+val writeClientGameTestOptions = registerWriteClientTestOptionsTask(
+    "writeClientGameTestOptions",
+    "clientGameTest"
+)
+val writeClientGameTestWithoutAmecsOptions = registerWriteClientTestOptionsTask(
+    "writeClientGameTestWithoutAmecsOptions",
+    "clientGameTestWithoutAmecs"
+)
+
+val cleanClientGameTestResults = tasks.register<Delete>("cleanClientGameTestResults") {
+    delete(
+        layout.buildDirectory.dir("test-results/fabric-client-creative-inventory"),
+        layout.buildDirectory.dir("test-results/fabric-client-key-mapping"),
+        layout.buildDirectory.dir("test-results/fabric-client-gametest")
+    )
+}
+val cleanClientGameTestWithoutAmecsResults = tasks.register<Delete>("cleanClientGameTestWithoutAmecsResults") {
+    delete(
+        layout.buildDirectory.dir("test-results/fabric-client-key-mapping-without-amecs"),
+        layout.buildDirectory.dir("test-results/fabric-client-gametest-without-amecs")
+    )
 }
 
-tasks.named("runClientKeyMappingTest") {
-    dependsOn(writeClientTestOptionsTasks.getValue("clientKeyMappingTest"))
-    mustRunAfter("runClientCreativeInventoryTest")
+tasks.named("runClientGameTest") {
+    dependsOn(cleanClientGameTestResults, writeClientGameTestOptions)
 }
 
-tasks.named("runClientKeyMappingTestWithoutAmecs") {
-    dependsOn(writeClientTestOptionsTasks.getValue("clientKeyMappingTestWithoutAmecs"))
-    mustRunAfter("runClientCreativeInventoryTestWithoutAmecs")
-}
-
-tasks.named("runClientCreativeInventoryTest") {
-    dependsOn(writeClientTestOptionsTasks.getValue("clientCreativeInventoryTest"))
-}
-
-tasks.named("runClientCreativeInventoryTestWithoutAmecs") {
-    dependsOn(writeClientTestOptionsTasks.getValue("clientCreativeInventoryTestWithoutAmecs"))
-    mustRunAfter("runClientCreativeInventoryTest", "runClientKeyMappingTest")
-}
-
-tasks.register("runClientGameTest") {
-    group = "mod development"
-    description = "Runs JEI Fabric client tests with AMECS support enabled."
-    dependsOn("runClientCreativeInventoryTest", "runClientKeyMappingTest")
-}
-
-tasks.register("runClientGameTestWithoutAmecs") {
-    group = "mod development"
-    description = "Runs JEI Fabric client tests without AMECS on the runtime classpath."
-    dependsOn("runClientCreativeInventoryTestWithoutAmecs", "runClientKeyMappingTestWithoutAmecs")
+tasks.named("runClientGameTestWithoutAmecs") {
+    dependsOn(cleanClientGameTestWithoutAmecsResults, writeClientGameTestWithoutAmecsOptions)
+    mustRunAfter("runClientGameTest")
 }
 
 val debugClassesTask = debugProject.tasks.named(debugSourceSet.classesTaskName)
