@@ -38,10 +38,9 @@ public final class ItemStackListFactory {
 			}
 			for (ItemStack itemStack : creativeTabItemStacks) {
 				if (itemStack.isEmpty()) {
-					LOGGER.error("Found an empty itemStack from creative tab: {}", itemGroup);
-				} else {
-					addItemStack(stackHelper, itemStack, itemList, itemNameSet);
+					continue;
 				}
+				addItemStack(stackHelper, itemStack, itemList, itemNameSet);
 			}
 		}
 
