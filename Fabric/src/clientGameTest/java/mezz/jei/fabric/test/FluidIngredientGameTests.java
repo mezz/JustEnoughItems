@@ -36,7 +36,11 @@ final class FluidIngredientGameTests {
 	}
 
 	public static void register() {
-		FabricClientTestRunner.register(
+		FabricClientTestRunner.register(getTestCase());
+	}
+
+	public static FabricClientTestRunner.ClientTestCase getTestCase() {
+		return new FabricClientTestRunner.ClientTestCase(
 			"fabric-client-fluid-ingredients",
 			FluidIngredientGameTests.class.getSimpleName(),
 			FluidIngredientGameTests::runTest

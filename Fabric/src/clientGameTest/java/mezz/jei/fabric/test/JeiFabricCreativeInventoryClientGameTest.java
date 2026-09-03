@@ -34,7 +34,11 @@ final class JeiFabricCreativeInventoryClientGameTest {
 	}
 
 	public static void register() {
-		FabricClientTestRunner.register(
+		FabricClientTestRunner.register(getTestCase());
+	}
+
+	public static FabricClientTestRunner.ClientTestCase getTestCase() {
+		return new FabricClientTestRunner.ClientTestCase(
 			"fabric-client-creative-inventory",
 			JeiFabricCreativeInventoryClientGameTest.class.getSimpleName(),
 			JeiFabricCreativeInventoryClientGameTest::runTest

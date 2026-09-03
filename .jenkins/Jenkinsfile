@@ -109,17 +109,32 @@ pipeline {
                 timeout(time: 15, unit: 'MINUTES')
             }
             steps {
-                sh '''
-                    if command -v xvfb-run >/dev/null 2>&1; then
-                        JEI_JVM_DIAGNOSTIC_DELAY_SECONDS=600 \
-                        JEI_JVM_DIAGNOSTIC_FILE="$WORKSPACE/Fabric/build/reports/client-gametest-diagnostics.txt" \
-                            python3 .jenkins/runWithJvmDiagnostics.py \
-                            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
-                            ./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs :NeoForge:runClientRecipeSyncTest --no-parallel
-                    else
-                        echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
-                    fi
-                '''
+                script {
+                    if (sh(script: 'command -v xvfb-run >/dev/null 2>&1', returnStatus: true) != 0) {
+                        echo 'ERROR: xvfb-run is not available; skipping client GameTests.'
+                    } else {
+                        parallel(
+                            'Fabric client tests': {
+                                sh '''
+                                    JEI_JVM_DIAGNOSTIC_DELAY_SECONDS=600 \
+                                    JEI_JVM_DIAGNOSTIC_FILE="$WORKSPACE/Fabric/build/reports/client-gametest-diagnostics.txt" \
+                                        python3 .jenkins/runWithJvmDiagnostics.py \
+                                        xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
+                                        ./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs --no-daemon --no-parallel
+                                '''
+                            },
+                            'NeoForge client tests': {
+                                sh '''
+                                    JEI_JVM_DIAGNOSTIC_DELAY_SECONDS=600 \
+                                    JEI_JVM_DIAGNOSTIC_FILE="$WORKSPACE/NeoForge/build/reports/client-gametest-diagnostics.txt" \
+                                        python3 .jenkins/runWithJvmDiagnostics.py \
+                                        xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
+                                        ./gradlew :NeoForge:runClientRecipeSyncTest --no-daemon --no-parallel
+                                '''
+                            }
+                        )
+                    }
+                }
             }
         }
 
@@ -227,7 +242,7 @@ pipeline {
     post {
         always {
             junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
-            archiveArtifacts allowEmptyArchive: true, artifacts: 'Fabric/build/reports/client-gametest-diagnostics.txt'
+            archiveArtifacts allowEmptyArchive: true, artifacts: '*/build/reports/client-gametest-diagnostics.txt'
             script {
                 discordNotifier(workerJob: '/mezz/release-notifier-worker')
             }

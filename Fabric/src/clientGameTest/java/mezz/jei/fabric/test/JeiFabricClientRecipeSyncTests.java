@@ -24,7 +24,17 @@ final class JeiFabricClientRecipeSyncTests {
 
 	public static void register() {
 		TestCase testCase = TestCase.fromSystemProperty();
-		FabricClientTestRunner.register(JUNIT_SUITE_NAME, testCase.id, testCase::run);
+		FabricClientTestRunner.register(getTestCase(testCase));
+	}
+
+	public static List<FabricClientTestRunner.ClientTestCase> getTestCases() {
+		return Arrays.stream(TestCase.values())
+			.map(JeiFabricClientRecipeSyncTests::getTestCase)
+			.toList();
+	}
+
+	private static FabricClientTestRunner.ClientTestCase getTestCase(TestCase testCase) {
+		return new FabricClientTestRunner.ClientTestCase(JUNIT_SUITE_NAME, testCase.id, testCase::run);
 	}
 
 	private static void runSingleplayerTestCase(String name, Runnable assertions) {
