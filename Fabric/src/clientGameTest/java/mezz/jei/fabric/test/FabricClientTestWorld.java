@@ -1,14 +1,19 @@
 package mezz.jei.fabric.test;
 
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.DataPackConfig;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.LevelSettings;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.levelgen.FlatLevelSource;
 import net.minecraft.world.level.levelgen.WorldGenSettings;
+import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
+import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraft.world.level.storage.LevelStorageSource;
 
 import java.io.IOException;
@@ -36,13 +41,18 @@ final class FabricClientTestWorld implements AutoCloseable {
 				"JEI Fabric Client Test",
 				gameType,
 				false,
-				Difficulty.NORMAL,
+				Difficulty.PEACEFUL,
 				true,
 				new GameRules(),
 				DataPackConfig.DEFAULT
 			);
 			RegistryAccess registryAccess = RegistryAccess.builtinCopy();
-			WorldGenSettings worldGenSettings = WorldPresets.createNormalWorldFromPreset(registryAccess);
+			Registry<StructureSet> structureSets = registryAccess.registryOrThrow(Registry.STRUCTURE_SET_REGISTRY);
+			Registry<Biome> biomes = registryAccess.registryOrThrow(Registry.BIOME_REGISTRY);
+			FlatLevelGeneratorSettings flatSettings = FlatLevelGeneratorSettings.getDefault(biomes, structureSets);
+			FlatLevelSource flatSource = new FlatLevelSource(structureSets, flatSettings);
+			WorldGenSettings normalSettings = WorldPresets.createNormalWorldFromPreset(registryAccess, 0L, false, false);
+			WorldGenSettings worldGenSettings = WorldGenSettings.replaceOverworldGenerator(registryAccess, normalSettings, flatSource);
 			client.createWorldOpenFlows()
 				.createFreshLevel(levelId, levelSettings, registryAccess, worldGenSettings);
 		}, WORLD_LOAD_TIMEOUT);

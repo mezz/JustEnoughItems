@@ -97,12 +97,12 @@ pipeline {
             options {
                 timeout(time: 15, unit: 'MINUTES')
             }
-            steps {
-                sh '''
-                    if command -v xvfb-run >/dev/null 2>&1; then
-                        JEI_JVM_DIAGNOSTIC_DELAY_SECONDS=600 \
-                        JEI_JVM_DIAGNOSTIC_FILE="$WORKSPACE/Fabric/build/reports/client-gametest-diagnostics.txt" \
-                            python3 .jenkins/runWithJvmDiagnostics.py \
+			steps {
+				sh '''
+					if command -v xvfb-run >/dev/null 2>&1; then
+						JEI_JVM_DIAGNOSTIC_DELAY_SECONDS=600 \
+						JEI_JVM_DIAGNOSTIC_FILE="$WORKSPACE/Fabric/build/reports/client-gametest-diagnostics.txt" \
+							python3 .jenkins/runWithJvmDiagnostics.py \
 							xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
 							./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs --no-parallel
                     else
@@ -197,10 +197,10 @@ pipeline {
         }
 
     }
-    post {
-        always {
-            junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
-            archiveArtifacts allowEmptyArchive: true, artifacts: 'Fabric/build/reports/client-gametest-diagnostics.txt'
+	post {
+		always {
+			junit allowEmptyResults: true, testResults: '*/build/test-results/**/*.xml'
+			archiveArtifacts allowEmptyArchive: true, artifacts: 'Fabric/build/reports/client-gametest-diagnostics.txt'
             script {
                 discordNotifier(workerJob: '/mezz/release-notifier-worker')
             }
