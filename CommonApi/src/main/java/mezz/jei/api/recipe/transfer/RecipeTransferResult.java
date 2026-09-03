@@ -3,7 +3,7 @@ package mezz.jei.api.recipe.transfer;
 /**
  * The result reported when a recipe transfer has finished.
  *
- * @since 30.29.0
+ * @since 30.30.0
  */
 public enum RecipeTransferResult {
 	/**

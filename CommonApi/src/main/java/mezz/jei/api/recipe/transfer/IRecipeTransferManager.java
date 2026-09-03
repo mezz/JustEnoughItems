@@ -24,7 +24,7 @@ public interface IRecipeTransferManager {
 	/**
 	 * Returns the registered recipe transfer listeners.
 	 *
-	 * @since 30.29.0
+	 * @since 30.30.0
 	 */
 	List<IRecipeTransferListener> getRecipeTransferListeners();
 }

@@ -51,7 +51,7 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	 *
 	 * @since 9.3.0
 	 */
-	@Deprecated(since = "30.29.0", forRemoval = true)
+	@Deprecated(since = "30.30.0", forRemoval = true)
 	@Nullable
 	IRecipeTransferError transferRecipe(C container, R recipe, IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer);
 
@@ -66,7 +66,7 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	 * @param doTransfer if true, do the transfer. if false, check for errors but do not transfer any items
 	 * @return a recipe transfer error if the recipe can't be transferred. Return null on success.
 	 *
-	 * @since 30.29.0
+	 * @since 30.30.0
 	 */
 	@Nullable
 	default IRecipeTransferError transferRecipe(IRecipeTransferContext<R, C> context, boolean doTransfer) {
