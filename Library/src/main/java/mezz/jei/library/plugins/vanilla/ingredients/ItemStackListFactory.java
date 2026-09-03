@@ -105,8 +105,6 @@ public final class ItemStackListFactory {
 		int duplicateInTabCount = 0;
 		for (ItemStack itemStack : tabDisplayItems) {
 			if (itemStack.isEmpty()) {
-				String errorInfo = itemStackHelper.getErrorInfo(itemStack);
-				LOGGER.error("Found an empty itemStack in '{}' creative tab's {}: {}", tab, displayType, errorInfo);
 				continue;
 			}
 			if (!itemStackHelper.isValidIngredient(itemStack)) {
