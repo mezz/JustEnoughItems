@@ -49,7 +49,7 @@ public final class ItemStackListFactory {
 			}
 			for (ItemStack itemStack : creativeTabItemStacks) {
 				if (itemStack.isEmpty()) {
-					Log.get().error("Found an empty itemStack from creative tab: {}", creativeTab);
+					continue;
 				} else if (itemStack.getMetadata() == OreDictionary.WILDCARD_VALUE) {
 					String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
 					Log.get().error("Found an itemStack with wildcard metadata from creative tab: {}. {}", creativeTab, itemStackInfo);
