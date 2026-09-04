@@ -5,8 +5,11 @@ import de.siphalor.amecs.api.AmecsKeyBinding;
 import de.siphalor.amecs.api.KeyBindingUtils;
 import de.siphalor.amecs.api.KeyModifiers;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
+import mezz.jei.common.input.keys.JeiKeyModifier;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
+
+import java.util.List;
 
 public class AmecsKeyBindingWithContext extends AmecsKeyBinding implements ContextAwareKeyMapping {
 	private final JeiKeyConflictContext context;
@@ -40,5 +43,27 @@ public class AmecsKeyBindingWithContext extends AmecsKeyBinding implements Conte
 	@Override
 	public boolean isContextActive() {
 		return context.isActive();
+	}
+
+	@Override
+	public boolean isActiveAndMatches(InputConstants.Key key) {
+		if (isUnbound()) {
+			return false;
+		}
+		if (!KeyBindingHelper.getBoundKeyOf(this).equals(key)) {
+			return false;
+		}
+		if (!context.isActive()) {
+			return false;
+		}
+
+		KeyModifiers modifiers = KeyBindingUtils.getBoundModifiers(this);
+		List<JeiKeyModifier> jeiKeyModifiers = AmecsHelper.getJeiModifiers(modifiers);
+		for (JeiKeyModifier jeiKeyModifier : jeiKeyModifiers) {
+			if (!jeiKeyModifier.isActive(context)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
