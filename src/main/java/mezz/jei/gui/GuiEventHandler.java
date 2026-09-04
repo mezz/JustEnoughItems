@@ -15,6 +15,7 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.util.math.vector.Vector4f;
 
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.config.Constants;
@@ -103,12 +104,9 @@ public class GuiEventHandler {
 		if (minecraft == null) {
 			return;
 		}
-		MatrixStack matrixStack = event.getMatrixStack();
-		ingredientListOverlay.drawOnForeground(minecraft, matrixStack, gui, event.getMouseX(), event.getMouseY());
-		matrixStack.pushPose();
-		matrixStack.translate(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
+		MatrixStack matrixStack = createIdentityMatrixStack(event.getMatrixStack());
+		ingredientListOverlay.drawOnForegroundAtIdentity(minecraft, matrixStack, event.getMouseX(), event.getMouseY());
 		leftAreaDispatcher.drawOnForeground(minecraft, matrixStack, event.getMouseX(), event.getMouseY());
-		matrixStack.popPose();
 	}
 
 	public void onDrawScreenEventPost(GuiScreenEvent.DrawScreenEvent.Post event) {
@@ -118,7 +116,7 @@ public class GuiEventHandler {
 			return;
 		}
 
-		MatrixStack matrixStack = event.getMatrixStack();
+		MatrixStack matrixStack = createIdentityMatrixStack(event.getMatrixStack());
 
 		ingredientListOverlay.updateScreen(gui, false);
 		leftAreaDispatcher.updateScreen(gui, false);
@@ -161,5 +159,13 @@ public class GuiEventHandler {
 		if (ingredientListOverlay.isListDisplayed()) {
 			event.setCanceled(true);
 		}
+	}
+
+	private static MatrixStack createIdentityMatrixStack(MatrixStack matrixStack) {
+		Vector4f origin = new Vector4f(0, 0, 0, 1);
+		origin.transform(matrixStack.last().pose());
+		MatrixStack identityStack = new MatrixStack();
+		identityStack.translate(0, 0, origin.z());
+		return identityStack;
 	}
 }

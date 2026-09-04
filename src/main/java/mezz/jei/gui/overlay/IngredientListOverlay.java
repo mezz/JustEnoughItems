@@ -204,8 +204,14 @@ public class IngredientListOverlay implements IIngredientListOverlay, IShowsReci
 		if (isListDisplayed()) {
 			matrixStack.pushPose();
 			matrixStack.translate(-gui.getGuiLeft(), -gui.getGuiTop(), 0);
-			this.contents.drawOnForeground(minecraft, matrixStack, mouseX, mouseY);
+			drawOnForegroundAtIdentity(minecraft, matrixStack, mouseX, mouseY);
 			matrixStack.popPose();
+		}
+	}
+
+	public void drawOnForegroundAtIdentity(Minecraft minecraft, MatrixStack matrixStack, int mouseX, int mouseY) {
+		if (isListDisplayed()) {
+			this.contents.drawOnForeground(minecraft, matrixStack, mouseX, mouseY);
 		}
 	}
 
