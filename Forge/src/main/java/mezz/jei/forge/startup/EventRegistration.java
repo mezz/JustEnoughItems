@@ -1,6 +1,7 @@
 package mezz.jei.forge.startup;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector4f;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.gui.input.PinnedTooltipManager;
@@ -9,7 +10,6 @@ import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.input.ForgeUserInput;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraftforge.client.event.ContainerScreenEvent;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -116,18 +116,21 @@ public class EventRegistration {
 			guiEventHandler.onDrawBackgroundPost(screen, poseStack);
 		});
 		subscriptions.register(ContainerScreenEvent.Render.Foreground.class, event -> {
-			AbstractContainerScreen<?> containerScreen = event.getContainerScreen();
 			PoseStack poseStack = event.getPoseStack();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			guiEventHandler.onDrawForeground(containerScreen, poseStack, mouseX, mouseY);
+			runWithIdentityPose(poseStack, () ->
+				guiEventHandler.onDrawForegroundAtIdentity(poseStack, mouseX, mouseY)
+			);
 		});
 		subscriptions.register(ScreenEvent.Render.Post.class, event -> {
 			Screen screen = event.getScreen();
 			PoseStack poseStack = event.getPoseStack();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			guiEventHandler.onDrawScreenPost(screen, poseStack, mouseX, mouseY);
+			runWithIdentityPose(poseStack, () ->
+				guiEventHandler.onDrawScreenPost(screen, poseStack, mouseX, mouseY)
+			);
 		});
 		subscriptions.register(TickEvent.ClientTickEvent.class, event -> {
 			if (event.phase == TickEvent.Phase.START) {
@@ -141,5 +144,19 @@ public class EventRegistration {
 				event.setCompact(true);
 			}
 		});
+	}
+
+	private static void runWithIdentityPose(PoseStack poseStack, Runnable runnable) {
+		Vector4f origin = new Vector4f(0, 0, 0, 1);
+		origin.transform(poseStack.last().pose());
+		float z = origin.z();
+		poseStack.pushPose();
+		poseStack.setIdentity();
+		poseStack.translate(0, 0, z);
+		try {
+			runnable.run();
+		} finally {
+			poseStack.popPose();
+		}
 	}
 }

@@ -120,10 +120,14 @@ public class GuiEventHandler {
 		{
 			IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 			poseStack.translate(-screenHelper.getGuiLeft(screen), -screenHelper.getGuiTop(screen), 0);
-			bookmarkOverlay.drawOnForeground(poseStack, mouseX, mouseY);
-			ingredientListOverlay.drawOnForeground(poseStack, mouseX, mouseY);
+			onDrawForegroundAtIdentity(poseStack, mouseX, mouseY);
 		}
 		poseStack.popPose();
+	}
+
+	public void onDrawForegroundAtIdentity(PoseStack poseStack, int mouseX, int mouseY) {
+		bookmarkOverlay.drawOnForeground(poseStack, mouseX, mouseY);
+		ingredientListOverlay.drawOnForeground(poseStack, mouseX, mouseY);
 	}
 
 	public void onDrawScreenPost(Screen screen, PoseStack poseStack, int mouseX, int mouseY) {
