@@ -31,7 +31,7 @@ final class AmecsKeyMappingClientGameTestHelper {
 			new AmecsKeyModifierCombination(),
 			JeiKeyConflictContext.UNIVERSAL
 		);
-		AmecsJeiKeyMapping jeiMapping = new AmecsJeiKeyMapping(amecsMapping, JeiKeyConflictContext.UNIVERSAL);
+		AmecsJeiKeyMapping jeiMapping = new AmecsJeiKeyMapping(amecsMapping);
 		JeiFabricKeyMappingClientGameTest.assertJeiKeyMappingIsDiscoverableAndRebindable(
 			"AMECS",
 			amecsMapping,
@@ -101,7 +101,7 @@ final class AmecsKeyMappingClientGameTestHelper {
 			jeiModifiers,
 			JeiKeyConflictContext.GUI
 		);
-		AmecsJeiKeyMapping jeiMapping = new AmecsJeiKeyMapping(amecsMapping, JeiKeyConflictContext.GUI);
+		AmecsJeiKeyMapping jeiMapping = new AmecsJeiKeyMapping(amecsMapping);
 
 		if (jeiMapping.isUnbound()) {
 			throw new AssertionError("Expected bound AMECS-backed JEI mouse mapping to report bound: " + mouseKey.getName());
@@ -123,7 +123,7 @@ final class AmecsKeyMappingClientGameTestHelper {
 			jeiModifiers,
 			JeiKeyConflictContext.GUI
 		);
-		AmecsJeiKeyMapping jeiMapping = new AmecsJeiKeyMapping(amecsMapping, JeiKeyConflictContext.GUI);
+		AmecsJeiKeyMapping jeiMapping = new AmecsJeiKeyMapping(amecsMapping);
 
 		amecsMapping.setKey(InputConstants.UNKNOWN);
 		KeyMapping.resetMapping();
