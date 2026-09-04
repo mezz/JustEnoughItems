@@ -5,7 +5,7 @@ import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 
-public class FabricKeyMapping extends KeyMapping {
+public class FabricKeyMapping extends KeyMapping implements ContextAwareKeyMapping {
 	protected final JeiKeyConflictContext context;
 
 	public FabricKeyMapping(
@@ -33,7 +33,15 @@ public class FabricKeyMapping extends KeyMapping {
 		}
 	}
 
+	@Override
 	public boolean isContextActive() {
 		return context.isActive();
+	}
+
+	@Override
+	public boolean isActiveAndMatches(InputConstants.Key key) {
+		return !isUnbound() &&
+			KeyBindingHelper.getBoundKeyOf(this).equals(key) &&
+			context.isActive();
 	}
 }
