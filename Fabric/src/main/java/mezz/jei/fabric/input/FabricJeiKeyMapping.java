@@ -32,8 +32,8 @@ public class FabricJeiKeyMapping<T extends KeyMapping & ContextAwareKeyMapping> 
 
 	@Override
 	public boolean isDown() {
-		return mapping.isContextActive() &&
-			IJeiKeyMappingInternal.isKeyDown(KeyBindingHelper.getBoundKeyOf(mapping));
+		return this.mapping.isContextActive() &&
+			IJeiKeyMappingInternal.isKeyDown(KeyBindingHelper.getBoundKeyOf(this.mapping));
 	}
 
 	@Override
