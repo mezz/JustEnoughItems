@@ -23,12 +23,12 @@ public class AmecsJeiKeyMappingBuilder extends FabricJeiKeyMappingBuilder {
 	@Override
 	protected IJeiKeyMappingInternal buildMouse(int mouseButton) {
 		var keyMapping = new AmecsKeyBindingWithContext(description, InputConstants.Type.MOUSE, mouseButton, category, modifier, context);
-		return new AmecsJeiKeyMapping(keyMapping, context);
+		return new AmecsJeiKeyMapping(keyMapping);
 	}
 
 	@Override
 	public IJeiKeyMappingInternal buildKeyboardKey(int key) {
 		var keyMapping = new AmecsKeyBindingWithContext(description, InputConstants.Type.KEYSYM, key, category, modifier, context);
-		return new AmecsJeiKeyMapping(keyMapping, context);
+		return new AmecsJeiKeyMapping(keyMapping);
 	}
 }

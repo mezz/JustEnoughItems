@@ -44,7 +44,7 @@ public class FabricJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
 			category,
 			context
 		);
-		return new FabricJeiKeyMapping(keyMapping, context);
+		return new FabricJeiKeyMapping<>(keyMapping);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class FabricJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
 			category,
 			context
 		);
-		return new FabricJeiKeyMapping(keyMapping, context);
+		return new FabricJeiKeyMapping<>(keyMapping);
 	}
 
 	private boolean hasUnsupportedModifier() {

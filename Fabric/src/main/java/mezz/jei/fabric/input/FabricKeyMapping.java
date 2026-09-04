@@ -36,4 +36,11 @@ public class FabricKeyMapping extends KeyMapping implements ContextAwareKeyMappi
 	public boolean isContextActive() {
 		return context.isActive();
 	}
+
+	@Override
+	public boolean isActiveAndMatches(InputConstants.Key key) {
+		return !isUnbound() &&
+			KeyBindingHelper.getBoundKeyOf(this).equals(key) &&
+			context.isActive();
+	}
 }
