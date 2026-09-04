@@ -1,12 +1,14 @@
 package mezz.jei.forge.startup;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.forge.events.RuntimeEventSubscriptions;
+import mezz.jei.forge.input.ForgeUserInput;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.gui.input.PinnedTooltipManager;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.startup.JeiEventHandlers;
-import mezz.jei.forge.events.RuntimeEventSubscriptions;
-import mezz.jei.forge.input.ForgeUserInput;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraftforge.client.event.ContainerScreenEvent;
@@ -114,14 +116,18 @@ public class EventRegistration {
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			guiEventHandler.onDrawForeground(containerScreen, guiGraphics, mouseX, mouseY);
+			runWithIdentityPose(guiGraphics, () ->
+				guiEventHandler.onDrawForegroundAtIdentity(guiGraphics, mouseX, mouseY)
+			);
 		});
 		subscriptions.register(ScreenEvent.Render.Post.class, event -> {
 			Screen screen = event.getScreen();
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			guiEventHandler.onDrawScreenPost(screen, guiGraphics, mouseX, mouseY);
+			runWithIdentityPose(guiGraphics, () ->
+				guiEventHandler.onDrawScreenPost(screen, guiGraphics, mouseX, mouseY)
+			);
 		});
 		subscriptions.register(TickEvent.ClientTickEvent.class, event -> {
 			if (event.phase == TickEvent.Phase.START) {
@@ -135,5 +141,18 @@ public class EventRegistration {
 				event.setCompact(true);
 			}
 		});
+	}
+
+	private static void runWithIdentityPose(GuiGraphics graphics, Runnable runnable) {
+		PoseStack pose = graphics.pose();
+		float z = pose.last().pose().m32();
+		pose.pushPose();
+		pose.setIdentity();
+		pose.translate(0, 0, z);
+		try {
+			runnable.run();
+		} finally {
+			pose.popPose();
+		}
 	}
 }
