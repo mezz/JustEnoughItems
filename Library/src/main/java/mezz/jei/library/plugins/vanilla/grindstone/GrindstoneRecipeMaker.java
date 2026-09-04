@@ -108,9 +108,9 @@ public final class GrindstoneRecipeMaker {
 				.stream()
 				.filter(ItemStack::isDamageableItem)
 				.map(stack -> {
-					stack.setDamageValue(stack.getMaxDamage() * 3 / 4);
 					ItemStack topInput = stack.copy();
-					ItemStack bottomInput = stack.copy();
+					topInput.setDamageValue(topInput.getMaxDamage() * 3 / 4);
+					ItemStack bottomInput = topInput.copy();
 					String itemId = stack.getItem().getDescriptionId();
 					String rawPath = "grindstone.self_repair." + itemId;
 					String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
