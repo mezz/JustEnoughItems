@@ -2,6 +2,7 @@ import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
 import net.minecraftforge.gradle.common.tasks.JarExec
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import java.util.function.Supplier
 
 plugins {
 	id("java")
@@ -158,6 +159,16 @@ dependencies {
 	changelogMarkdown(project(":Changelog"))
 }
 
+val modShadeClasspath = configurations.named("modShadeClasspath")
+
+fun net.minecraftforge.gradle.common.util.RunConfig.addModShadeClasspathToMinecraftRun() {
+	lazyToken("minecraft_classpath", Supplier<String> {
+		modShadeClasspath.get()
+			.resolve()
+			.joinToString(File.pathSeparator) { it.absolutePath }
+	})
+}
+
 minecraft {
 	mappings("official", minecraftVersion)
 
@@ -173,6 +184,7 @@ minecraft {
 			taskName("runClientDev")
 			property("forge.logging.console.level", "debug")
 			workingDirectory(file("run/client/Dev"))
+			addModShadeClasspathToMinecraftRun()
 			mods {
 				create(modId) {
 					source(sourceSets.main.get())
@@ -187,17 +199,20 @@ minecraft {
 			parent(client)
 			workingDirectory(file("run/client/Player01"))
 			args("--username", "Player01")
+			addModShadeClasspathToMinecraftRun()
 		}
 		create("client_02") {
 			taskName("runClientPlayer02")
 			parent(client)
 			workingDirectory(file("run/client/Player02"))
 			args("--username", "Player02")
+			addModShadeClasspathToMinecraftRun()
 		}
 		create("server") {
 			taskName("Server")
 			property("forge.logging.console.level", "debug")
 			workingDirectory(file("run/server"))
+			addModShadeClasspathToMinecraftRun()
 			mods {
 				create(modId) {
 					source(sourceSets.main.get())
