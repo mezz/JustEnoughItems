@@ -211,6 +211,7 @@ public final class JeiStarter {
 			editModeConfig,
 			runtimeRegistration.getIngredientListOverlay(),
 			runtimeRegistration.getBookmarkOverlay(),
+			runtimeRegistration.getBookmarkManager(),
 			runtimeRegistration.getRecipesGui(),
 			runtimeRegistration.getIngredientFilter(),
 			configManager
