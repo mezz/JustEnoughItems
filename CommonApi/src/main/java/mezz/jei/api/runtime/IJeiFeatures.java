@@ -2,6 +2,7 @@ package mezz.jei.api.runtime;
 
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.registration.IAdvancedRegistration;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Provides access for mod plugins to disable various JEI features.
@@ -11,6 +12,7 @@ import mezz.jei.api.registration.IAdvancedRegistration;
  *
  * @since 11.25.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiFeatures {
 	/**
 	 * Disable JEI's Inventory Effect Renderer {@link IGuiContainerHandler}.

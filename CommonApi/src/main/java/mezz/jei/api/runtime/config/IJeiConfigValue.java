@@ -1,5 +1,7 @@
 package mezz.jei.api.runtime.config;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.function.Consumer;
 
 /**
@@ -12,6 +14,7 @@ import java.util.function.Consumer;
  *
  * @since 11.7.0
  */
+@ApiStatus.NonExtendable
 public interface IJeiConfigValue<T> {
 	/**
 	 * Get the name of this config value.

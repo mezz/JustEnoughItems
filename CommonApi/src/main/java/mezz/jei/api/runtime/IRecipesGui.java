@@ -11,11 +11,13 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * JEI's gui for displaying recipes. Use this interface to open recipes.
  * Get the instance from {@link IJeiRuntime#getRecipesGui()}.
  */
+@ApiStatus.NonExtendable
 public interface IRecipesGui {
 	/**
 	 * Show recipes for an {@link IFocus}.

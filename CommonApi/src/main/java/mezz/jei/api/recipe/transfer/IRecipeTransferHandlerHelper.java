@@ -8,6 +8,7 @@ import mezz.jei.api.registration.IRecipeTransferRegistration;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -17,6 +18,7 @@ import java.util.List;
  * Helper functions for implementing an {@link IRecipeTransferHandler}.
  * Get an instance from {@link IRecipeTransferRegistration#getTransferHelper()}.
  */
+@ApiStatus.NonExtendable
 public interface IRecipeTransferHandlerHelper {
 	/**
 	 * Create an error with {@link Type#INTERNAL}.
