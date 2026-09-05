@@ -4,6 +4,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.runtime.IBookmarkManager;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientFilter;
@@ -37,6 +38,16 @@ public interface IRuntimeRegistration {
 	 * that want to override JEI's GUI and have it still work with mods that use JEI's API.
 	 */
 	void setBookmarkOverlay(IBookmarkOverlay bookmarkOverlay);
+
+	/**
+	 * Set the bookmark manager.
+	 *
+	 * This is used by JEI's GUI and can be used by other mods
+	 * that want to override JEI's bookmark management and have it still work with mods that use JEI's API.
+	 *
+	 * @since 30.31.0
+	 */
+	void setBookmarkManager(IBookmarkManager bookmarkManager);
 
 	/**
 	 * Set the Recipe GUI.

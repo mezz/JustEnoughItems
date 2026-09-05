@@ -27,4 +27,12 @@ public interface IJeiKeyMappings {
 	 * @since 11.0.1
 	 */
 	IJeiKeyMapping getShowUses();
+
+	/**
+	 * @return the key mapping to bookmark an ingredient.
+	 * The default binding is 'A'.
+	 *
+	 * @since 30.31.0
+	 */
+	IJeiKeyMapping getBookmark();
 }
