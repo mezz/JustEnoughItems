@@ -194,6 +194,7 @@ public class JeiGuiStarter {
 			bookmarkList,
 			recipeTransferService
 		);
+		registration.setBookmarkManager(bookmarkList);
 
 		BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
 			ingredientManager,

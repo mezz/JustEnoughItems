@@ -143,7 +143,7 @@ public class ChatLinkInputHandler {
 		switch (action) {
 			case SHOW_RECIPE -> show(typedIngredient, List.of(RecipeIngredientRole.OUTPUT));
 			case SHOW_USES -> show(typedIngredient, List.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.CATALYST));
-			case BOOKMARK -> bookmarkList.addIngredientBookmark(typedIngredient);
+			case BOOKMARK -> bookmarkList.add(typedIngredient);
 		}
 	}
 
