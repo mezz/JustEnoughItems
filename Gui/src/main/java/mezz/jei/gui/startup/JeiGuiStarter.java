@@ -150,6 +150,7 @@ public class JeiGuiStarter {
 
 		BookmarkList bookmarkList = new BookmarkList(ingredientManager, bookmarkConfig, clientConfig);
 		bookmarkConfig.loadBookmarks(ingredientManager, bookmarkList);
+		registration.setBookmarkManager(bookmarkList);
 
 		BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
 			ingredientManager,

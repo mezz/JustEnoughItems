@@ -4,6 +4,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.registration.IRuntimeRegistration;
+import mezz.jei.api.runtime.IBookmarkManager;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientFilter;
@@ -12,6 +13,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.library.gui.BookmarkManagerDummy;
 import mezz.jei.library.gui.BookmarkOverlayDummy;
 import mezz.jei.library.gui.IngredientListOverlayDummy;
 import mezz.jei.library.gui.recipes.RecipesGuiDummy;
@@ -28,6 +30,7 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 
 	private IIngredientListOverlay ingredientListOverlay = IngredientListOverlayDummy.INSTANCE;
 	private IBookmarkOverlay bookmarkOverlay = BookmarkOverlayDummy.INSTANCE;
+	private IBookmarkManager bookmarkManager = BookmarkManagerDummy.INSTANCE;
 	private IRecipesGui recipesGui = RecipesGuiDummy.INSTANCE;
 	private IIngredientFilter ingredientFilter = IngredientFilterApiDummy.INSTANCE;
 
@@ -57,6 +60,11 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 	@Override
 	public void setBookmarkOverlay(IBookmarkOverlay bookmarkOverlay) {
 		this.bookmarkOverlay = bookmarkOverlay;
+	}
+
+	@Override
+	public void setBookmarkManager(IBookmarkManager bookmarkManager) {
+		this.bookmarkManager = bookmarkManager;
 	}
 
 	@Override
@@ -110,6 +118,10 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 
 	public IBookmarkOverlay getBookmarkOverlay() {
 		return bookmarkOverlay;
+	}
+
+	public IBookmarkManager getBookmarkManager() {
+		return bookmarkManager;
 	}
 
 	public IRecipesGui getRecipesGui() {

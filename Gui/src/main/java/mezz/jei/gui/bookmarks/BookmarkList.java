@@ -1,6 +1,7 @@
 package mezz.jei.gui.bookmarks;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IBookmarkManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.config.IBookmarkConfig;
@@ -13,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class BookmarkList implements IIngredientGridSource {
+public class BookmarkList implements IIngredientGridSource, IBookmarkManager {
 	private final List<IBookmark> bookmarksList = new LinkedList<>();
 	private final Set<IBookmark> bookmarksSet = new HashSet<>();
 
@@ -68,7 +69,16 @@ public class BookmarkList implements IIngredientGridSource {
 		return this.bookmarksSet.contains(value);
 	}
 
+	@Override
+	public boolean contains(ITypedIngredient<?> ingredient) {
+		return contains(IngredientBookmark.create(ingredient, ingredientManager));
+	}
+
 	public <T> boolean onElementBookmarked(IElement<T> element) {
+		return toggleBookmark(element);
+	}
+
+	public <T> boolean toggleBookmark(IElement<T> element) {
 		return element.getBookmark()
 			.map(this::remove)
 			.orElseGet(() -> {
@@ -78,6 +88,12 @@ public class BookmarkList implements IIngredientGridSource {
 			});
 	}
 
+	@Override
+	public boolean add(ITypedIngredient<?> ingredient) {
+		IBookmark bookmark = IngredientBookmark.create(ingredient, ingredientManager);
+		return add(bookmark);
+	}
+
 	public void toggleBookmark(IBookmark bookmark) {
 		if (remove(bookmark)) {
 			return;
@@ -85,15 +101,20 @@ public class BookmarkList implements IIngredientGridSource {
 		add(bookmark);
 	}
 
-	public boolean remove(IBookmark ingredient) {
-		if (!bookmarksSet.remove(ingredient)) {
+	public boolean remove(IBookmark bookmark) {
+		if (!bookmarksSet.remove(bookmark)) {
 			return false;
 		}
-		bookmarksList.remove(ingredient);
+		bookmarksList.remove(bookmark);
 
 		notifyListenersOfChange();
 		bookmarkConfig.saveBookmarks(ingredientManager, bookmarksList);
 		return true;
+	}
+
+	@Override
+	public boolean remove(ITypedIngredient<?> ingredient) {
+		return remove(IngredientBookmark.create(ingredient, ingredientManager));
 	}
 
 	public boolean addToListWithoutNotifying(IBookmark value, boolean addToFront) {
