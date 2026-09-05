@@ -40,7 +40,9 @@ import java.util.stream.Stream;
 
 final class InteractiveIngredientTooltip implements IGuiInputLayer {
 	private static final int NAVIGATION_BACKGROUND_PADDING = 2;
-	private static final int TOOLTIP_FOREGROUND_Z = 300;
+	// Vanilla adds another 400 Z for each tooltip. Keep these additions within 1.19's 1000-deep GUI projection.
+	private static final int TOOLTIP_BACKGROUND_Z = 300;
+	private static final int NESTED_TOOLTIP_FOREGROUND_Z = 300;
 	private static final InputConstants.Key LEFT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_LEFT);
 	private static final InputConstants.Key RIGHT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_RIGHT);
 
@@ -173,18 +175,18 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		this.ingredientGrid.setMousePosition(mouseX, mouseY);
 
 		ImmutableRect2i navigationArea = getNavigationArea();
+		Minecraft minecraft = Minecraft.getInstance();
+		GuiComponent.fill(
+			poseStack,
+			0,
+			0,
+			minecraft.getWindow().getGuiScaledWidth(),
+			minecraft.getWindow().getGuiScaledHeight(),
+			JeiGuiColors.getColor(GuiColor.INTERACTIVE_INGREDIENT_TOOLTIP_SCREEN_DIM)
+		);
 		poseStack.pushPose();
 		{
-			poseStack.translate(0, 0, TOOLTIP_FOREGROUND_Z);
-			Minecraft minecraft = Minecraft.getInstance();
-			GuiComponent.fill(
-				poseStack,
-				0,
-				0,
-				minecraft.getWindow().getGuiScaledWidth(),
-				minecraft.getWindow().getGuiScaledHeight(),
-				JeiGuiColors.getColor(GuiColor.INTERACTIVE_INGREDIENT_TOOLTIP_SCREEN_DIM)
-			);
+			poseStack.translate(0, 0, TOOLTIP_BACKGROUND_Z);
 			if (!navigationArea.isEmpty()) {
 				this.background.draw(
 					poseStack,
@@ -194,11 +196,11 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 					navigationArea.height()
 				);
 			}
-			tooltip.draw(poseStack, this.anchorX, this.anchorY);
-			this.ingredientGrid.getTypedIngredientUnderMouse(mouseX, mouseY)
-				.ifPresent(ingredient -> drawIngredientTooltip(poseStack, mouseX, mouseY, ingredient));
 		}
 		poseStack.popPose();
+		tooltip.draw(poseStack, this.anchorX, this.anchorY);
+		this.ingredientGrid.getTypedIngredientUnderMouse(mouseX, mouseY)
+			.ifPresent(ingredient -> drawIngredientTooltip(poseStack, mouseX, mouseY, ingredient));
 	}
 
 	private <T> void drawIngredientTooltip(
@@ -214,7 +216,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 
 		poseStack.pushPose();
 		{
-			poseStack.translate(0, 0, TOOLTIP_FOREGROUND_Z);
+			poseStack.translate(0, 0, NESTED_TOOLTIP_FOREGROUND_Z);
 			tooltip.draw(poseStack, mouseX, mouseY, ingredient, ingredientRenderer, this.ingredientManager);
 		}
 		poseStack.popPose();

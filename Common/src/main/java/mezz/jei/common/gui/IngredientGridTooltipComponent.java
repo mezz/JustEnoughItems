@@ -71,6 +71,10 @@ public abstract class IngredientGridTooltipComponent<T> implements ClientTooltip
 
 	@Override
 	public void renderImage(Font font, int x, int y, PoseStack poseStack, ItemRenderer itemRenderer, int z) {
+		TooltipRenderHelper.renderImage(poseStack, itemRenderer, z, () -> drawGrid(poseStack, x, y));
+	}
+
+	private void drawGrid(PoseStack poseStack, int x, int y) {
 		this.area = new ImmutableRect2i(x, y, this.width, this.height - BOTTOM_PADDING);
 		int gridX = x + GRID_PADDING;
 		int gridY = y + GRID_PADDING;

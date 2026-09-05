@@ -46,10 +46,12 @@ public final class RecipeSlotOptionsTooltipComponent implements ClientTooltipCom
 
 	@Override
 	public void renderImage(Font font, int x, int y, PoseStack poseStack, ItemRenderer itemRenderer, int z) {
-		List<FormattedCharSequence> lines = getLines(font);
-		for (int i = 0; i < lines.size(); i++) {
-			FormattedCharSequence line = lines.get(i);
-			font.drawShadow(poseStack, line, x, y + (i * LINE_HEIGHT), -1);
-		}
+		TooltipRenderHelper.renderImage(poseStack, itemRenderer, z, () -> {
+			List<FormattedCharSequence> lines = getLines(font);
+			for (int i = 0; i < lines.size(); i++) {
+				FormattedCharSequence line = lines.get(i);
+				font.drawShadow(poseStack, line, x, y + (i * LINE_HEIGHT), -1);
+			}
+		});
 	}
 }

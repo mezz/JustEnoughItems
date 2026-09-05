@@ -3,6 +3,7 @@ package mezz.jei.gui.overlay.bookmarks;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
+import mezz.jei.common.gui.TooltipRenderHelper;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.Minecraft;
@@ -71,6 +72,10 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 
 	@Override
 	public void renderImage(Font font, int x, int y, PoseStack poseStack, ItemRenderer itemRenderer, int z) {
+		TooltipRenderHelper.renderImage(poseStack, itemRenderer, z, () -> drawPreview(font, x, y, poseStack));
+	}
+
+	private void drawPreview(Font font, int x, int y, PoseStack poseStack) {
 		if (interactive) {
 			int mouseX = (int) this.mouseX;
 			int mouseY = (int) this.mouseY;
