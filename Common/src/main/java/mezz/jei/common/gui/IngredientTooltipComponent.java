@@ -32,12 +32,17 @@ public class IngredientTooltipComponent<T> implements ClientTooltipComponent, To
 
 	@Override
 	public void renderImage(Font font, int x, int y, PoseStack poseStack, ItemRenderer itemRenderer, int z) {
-		SafeIngredientUtil.render(
+		TooltipRenderHelper.renderImage(
 			poseStack,
-			ingredientRenderer,
-			typedIngredient,
-			x + INGREDIENT_PADDING,
-			y + INGREDIENT_PADDING
+			itemRenderer,
+			z,
+			() -> SafeIngredientUtil.render(
+				poseStack,
+				ingredientRenderer,
+				typedIngredient,
+				x + INGREDIENT_PADDING,
+				y + INGREDIENT_PADDING
+			)
 		);
 	}
 }

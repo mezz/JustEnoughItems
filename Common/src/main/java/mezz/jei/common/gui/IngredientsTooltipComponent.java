@@ -88,6 +88,10 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 
 	@Override
 	public void renderImage(Font font, int x, int y, PoseStack poseStack, ItemRenderer itemRenderer, int z) {
+		TooltipRenderHelper.renderImage(poseStack, itemRenderer, z, () -> drawIngredients(poseStack, x, y));
+	}
+
+	private void drawIngredients(PoseStack poseStack, int x, int y) {
 		for (int i = 0; i < ingredients.size(); i++) {
 			int elementX = INGREDIENT_PADDING + x + ((i % MAX_INGREDIENTS_PER_ROW) * INGREDIENT_SIZE);
 			int elementY = INGREDIENT_PADDING + y + ((i / MAX_INGREDIENTS_PER_ROW) * INGREDIENT_SIZE);
