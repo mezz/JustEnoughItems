@@ -3,6 +3,7 @@ package mezz.jei.library.runtime;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
+import mezz.jei.api.runtime.IBookmarkManager;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientFilter;
@@ -25,6 +26,7 @@ public class JeiRuntime implements IJeiRuntime {
 	private final IJeiConfigManager configManager;
 	private final IIngredientListOverlay ingredientListOverlay;
 	private final IBookmarkOverlay bookmarkOverlay;
+	private final IBookmarkManager bookmarkManager;
 	private final IRecipesGui recipesGui;
 	private final IIngredientFilter ingredientFilter;
 
@@ -38,6 +40,7 @@ public class JeiRuntime implements IJeiRuntime {
 		IEditModeConfig editModeConfig,
 		IIngredientListOverlay ingredientListOverlay,
 		IBookmarkOverlay bookmarkOverlay,
+		IBookmarkManager bookmarkManager,
 		IRecipesGui recipesGui,
 		IIngredientFilter ingredientFilter,
 		IJeiConfigManager configManager
@@ -47,6 +50,7 @@ public class JeiRuntime implements IJeiRuntime {
 		this.editModeConfig = editModeConfig;
 		this.ingredientListOverlay = ingredientListOverlay;
 		this.bookmarkOverlay = bookmarkOverlay;
+		this.bookmarkManager = bookmarkManager;
 		this.recipesGui = recipesGui;
 		this.ingredientFilter = ingredientFilter;
 		this.ingredientManager = ingredientManager;
@@ -79,6 +83,11 @@ public class JeiRuntime implements IJeiRuntime {
 	@Override
 	public IBookmarkOverlay getBookmarkOverlay() {
 		return bookmarkOverlay;
+	}
+
+	@Override
+	public IBookmarkManager getBookmarkManager() {
+		return bookmarkManager;
 	}
 
 	@Override

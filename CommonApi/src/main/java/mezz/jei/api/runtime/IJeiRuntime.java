@@ -43,6 +43,13 @@ public interface IJeiRuntime {
 	IBookmarkOverlay getBookmarkOverlay();
 
 	/**
+	 * The {@link IBookmarkManager} gives access to JEI's ingredient bookmarks.
+	 *
+	 * @since 27.37.0
+	 */
+	IBookmarkManager getBookmarkManager();
+
+	/**
 	 * {@link IJeiHelpers} provides helpers and tools for addon mods.
 	 *
 	 * @since 9.4.2
