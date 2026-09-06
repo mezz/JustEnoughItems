@@ -48,6 +48,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -331,6 +332,14 @@ public class JeiDebugPlugin implements IModPlugin {
 		registration.addCraftingStation(DebugRecipeCategory.TYPE, DebugIngredient.TYPE, new DebugIngredient(7));
 		registration.addCraftingStation(DebugRecipeCategory.TYPE, fluidHelper.getFluidIngredientType(), fluidHelper.create(Fluids.WATER.defaultFluidState().holder(), bucketVolume));
 		registration.addCraftingStation(DebugRecipeCategory.TYPE, Items.STICK);
+		registration.addCraftingStation(
+			RecipeTypes.CRAFTING,
+			new SlotDisplay.Composite(List.of(
+				new SlotDisplay.TagSlotDisplay(ItemTags.PLANKS),
+				new SlotDisplay.ItemSlotDisplay(Items.EMERALD),
+				new SlotDisplay.ItemSlotDisplay(Items.DIAMOND)
+			))
+		);
 
 		BuiltInRegistries.ITEM
 			.stream()

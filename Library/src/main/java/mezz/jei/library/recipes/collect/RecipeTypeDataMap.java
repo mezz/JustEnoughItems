@@ -1,7 +1,7 @@
 package mezz.jei.library.recipes.collect;
 
 import com.google.common.collect.ImmutableListMultimap;
-import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.resources.Identifier;
@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class RecipeTypeDataMap {
@@ -18,14 +19,14 @@ public class RecipeTypeDataMap {
 
 	public RecipeTypeDataMap(
 		List<IRecipeCategory<?>> recipeCategories,
-		ImmutableListMultimap<IRecipeCategory<?>, ITypedIngredient<?>> craftingStationMap
+		ImmutableListMultimap<IRecipeCategory<?>, Consumer<IIngredientAcceptor<?>>> craftingStationMap
 	) {
 		this.uidMap = recipeCategories.stream()
 			.collect(
 				Collectors.toUnmodifiableMap(
 					IRecipeCategory::getRecipeType,
 					recipeCategory -> {
-						List<ITypedIngredient<?>> craftingStations = craftingStationMap.get(recipeCategory);
+						List<Consumer<IIngredientAcceptor<?>>> craftingStations = craftingStationMap.get(recipeCategory);
 						return new RecipeTypeData<>(recipeCategory, craftingStations);
 					}
 				)

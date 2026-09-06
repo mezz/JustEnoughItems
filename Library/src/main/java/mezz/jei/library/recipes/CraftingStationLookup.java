@@ -1,6 +1,7 @@
 package mezz.jei.library.recipes;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.ICraftingStationLookup;
@@ -8,6 +9,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 @SuppressWarnings("removal")
@@ -29,6 +31,12 @@ public class CraftingStationLookup implements mezz.jei.api.recipe.IRecipeCatalys
 
 	@Override
 	public Stream<ITypedIngredient<?>> get() {
+		return recipeManager.getCraftingStations(recipeType, true)
+			.flatMap(craftingStation -> recipeManager.getCraftingStationIngredients(craftingStation, includeHidden));
+	}
+
+	@Override
+	public Stream<Consumer<IIngredientAcceptor<?>>> getGroups() {
 		return recipeManager.getCraftingStations(recipeType, includeHidden);
 	}
 

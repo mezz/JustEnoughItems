@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -77,6 +78,21 @@ public interface IRecipeCatalystRegistration {
 	 * @since 20.0.0
 	 */
 	<T> void addCraftingStations(IRecipeType<?> recipeType, IIngredientType<T> ingredientType, List<T> ingredients);
+
+	/**
+	 * Add one crafting station that rotates through the ingredients resolved from a {@link SlotDisplay}.
+	 * <p>
+	 * All ingredients resolved by this display are shown together in one crafting station slot, while remaining
+	 * individually available for recipe lookups. Crafting stations registered by separate calls are kept in separate
+	 * slots, so mods have explicit control over which ingredients are grouped together. JEI keeps the original display
+	 * when creating the slot, preserving information such as its tag identity.
+	 *
+	 * @param recipeType the type of recipe that the crafting station can craft
+	 * @param slotDisplay the item stack ingredients to show together as one rotating crafting station
+	 *
+	 * @since 27.38.0
+	 */
+	void addCraftingStation(IRecipeType<?> recipeType, SlotDisplay slotDisplay);
 
 	/**
 	 * Add an association between {@link ItemLike}s and what it can craft.

@@ -1,9 +1,9 @@
 package mezz.jei.gui.recipes;
 
-import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
-import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.ScalableDrawable;
@@ -22,6 +22,8 @@ import javax.annotation.Nonnegative;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -37,14 +39,14 @@ public class CraftingStations implements IRecipeFocusSource {
 
 	private final List<IRecipeSlotDrawable> recipeSlots;
 	private final ScalableDrawable slotBackground;
-	private final IRecipeManager recipeManager;
+	private final IGuiHelper guiHelper;
 	private int left = 0;
 	private int top = 0;
 	private int width = 0;
 	private int height = 0;
 
-	public CraftingStations(IRecipeManager recipeManager) {
-		this.recipeManager = recipeManager;
+	public CraftingStations(IGuiHelper guiHelper) {
+		this.guiHelper = guiHelper;
 		recipeSlots = new ArrayList<>();
 		Textures textures = Internal.getTextures();
 		backgroundTab = textures.getCatalystTab();
@@ -60,18 +62,22 @@ public class CraftingStations implements IRecipeFocusSource {
 		return Math.max(0, width - overlapSize);
 	}
 
-	public void updateLayout(List<ITypedIngredient<?>> ingredients, ImmutableRect2i recipeArea, ImmutableRect2i optionButtonsArea) {
+	public void updateLayout(
+		List<Consumer<IIngredientAcceptor<?>>> craftingStations,
+		ImmutableRect2i recipeArea,
+		ImmutableRect2i optionButtonsArea
+	) {
 		this.recipeSlots.clear();
-		Layout layout = calculateLayout(ingredients.size(), recipeArea, optionButtonsArea);
+		Layout layout = calculateLayout(craftingStations.size(), recipeArea, optionButtonsArea);
 		left = layout.left();
 		top = layout.top();
 		width = layout.width();
 		height = layout.height();
 
 		if (layout.hasSlots()) {
-			for (int i = 0; i < ingredients.size(); i++) {
-				ITypedIngredient<?> ingredientForSlot = ingredients.get(i);
-				IRecipeSlotDrawable recipeSlot = createSlot(ingredientForSlot, i, layout.maxIngredientsPerColumn());
+			for (Consumer<IIngredientAcceptor<?>> craftingStation : craftingStations) {
+				int index = this.recipeSlots.size();
+				IRecipeSlotDrawable recipeSlot = createSlot(craftingStation, index, layout.maxIngredientsPerColumn());
 				this.recipeSlots.add(recipeSlot);
 			}
 		}
@@ -103,20 +109,28 @@ public class CraftingStations implements IRecipeFocusSource {
 		}
 	}
 
-	private <T> IRecipeSlotDrawable createSlot(ITypedIngredient<T> typedIngredient, int index, int maxIngredientsPerColumn) {
-		int column = index / maxIngredientsPerColumn;
-		int row = index % maxIngredientsPerColumn;
-		IRecipeSlotDrawable recipeSlotDrawable = recipeManager.createRecipeSlotDrawable(
+	private IRecipeSlotDrawable createSlot(
+		Consumer<IIngredientAcceptor<?>> craftingStation,
+		int index,
+		int maxIngredientsPerColumn
+	) {
+		IRecipeSlotDrawable recipeSlotDrawable = guiHelper.createRecipeSlotDrawable(
 			RecipeIngredientRole.CRAFTING_STATION,
-			List.of(Optional.of(typedIngredient)),
-			IntSet.of(0),
+			craftingStation,
+			Set.of(),
 			0
 		);
+		setPosition(recipeSlotDrawable, index, maxIngredientsPerColumn);
+		return recipeSlotDrawable;
+	}
+
+	private void setPosition(IRecipeSlotDrawable recipeSlotDrawable, int index, int maxIngredientsPerColumn) {
+		int column = index / maxIngredientsPerColumn;
+		int row = index % maxIngredientsPerColumn;
 		recipeSlotDrawable.setPosition(
 			left + borderSize + (column * ingredientSize) + ingredientBorderSize,
 			top + borderSize + (row * ingredientSize) + ingredientBorderSize
 		);
-		return recipeSlotDrawable;
 	}
 
 	public Optional<IRecipeSlotDrawable> draw(GuiGraphics guiGraphics, int mouseX, int mouseY) {
@@ -142,6 +156,12 @@ public class CraftingStations implements IRecipeFocusSource {
 	private Stream<IRecipeSlotDrawable> getHovered(double mouseX, double mouseY) {
 		return this.recipeSlots.stream()
 			.filter(recipeSlot -> recipeSlot.isMouseOver(mouseX, mouseY));
+	}
+
+	public Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY) {
+		return getHovered(mouseX, mouseY)
+			.findFirst()
+			.map(recipeSlot -> new RecipeSlotUnderMouse(recipeSlot, 0, 0));
 	}
 
 	@Override

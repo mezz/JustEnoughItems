@@ -2,13 +2,14 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
+import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -63,6 +64,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSource {
@@ -141,7 +143,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			focusFactory,
 			bookmarkFactory
 		);
-		this.craftingStations = new CraftingStations(recipeManager);
+		this.craftingStations = new CraftingStations(guiHelper);
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, recipeManager, guiHelper);
 		this.optionButtons = new RecipeOptionButtons(this.logic::goToFirstPage);
 		this.focusFactory = focusFactory;
@@ -153,7 +155,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.interactiveIngredientTooltipController = new InteractiveIngredientTooltipController(
 			this,
 			focusUtil,
-			recipeManager,
+			guiHelper,
 			ingredientManager,
 			clickTargetFactory
 		);
@@ -632,6 +634,16 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	private boolean openInteractiveIngredientTooltip(double mouseX, double mouseY) {
+		Optional<RecipeSlotUnderMouse> craftingStation = craftingStations.getSlotUnderMouse(mouseX, mouseY);
+		if (craftingStation.isPresent()) {
+			RecipeSlotUnderMouse slotUnderMouse = craftingStation.get();
+			return interactiveIngredientTooltipController.show(
+				slotUnderMouse,
+				slotUnderMouse::isMouseOver,
+				mouseX,
+				mouseY
+			);
+		}
 		return getRecipeLayoutUnderMouse(mouseX, mouseY)
 			.map(IRecipeLayoutWithButtons::getRecipeLayout)
 			.flatMap(layout -> layout.getSlotUnderMouse(mouseX, mouseY)
@@ -686,8 +698,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		optionButtons.updateLayout(this.area);
 		ImmutableRect2i optionButtonsArea = optionButtons.getArea();
-		List<ITypedIngredient<?>> recipeCatalystIngredients = logic.getRecipeCatalysts().toList();
-		craftingStations.updateLayout(recipeCatalystIngredients, this.area, optionButtonsArea);
+		List<Consumer<IIngredientAcceptor<?>>> craftingStations = logic.getCraftingStations().toList();
+		this.craftingStations.updateLayout(craftingStations, this.area, optionButtonsArea);
 		recipeGuiTabs.initLayout(this.idealArea);
 	}
 

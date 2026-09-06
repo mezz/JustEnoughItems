@@ -1,21 +1,29 @@
 package mezz.jei.neoforge.tests.lib;
 
 import mezz.jei.api.gui.ITickTimer;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.library.gui.helpers.CraftingGridHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.Identifier;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
 
 public final class TestGuiHelper implements IGuiHelper {
 	public static final TestGuiHelper INSTANCE = new TestGuiHelper();
@@ -120,6 +128,26 @@ public final class TestGuiHelper implements IGuiHelper {
 	@Override
 	public <V> IDrawable createDrawableIngredient(IIngredientRenderer<V> ingredientRenderer, V ingredient) {
 		return new TestDrawable(ingredientRenderer.getWidth(), ingredientRenderer.getHeight());
+	}
+
+	@Override
+	public IRecipeSlotDrawable createRecipeSlotDrawable(
+		RecipeIngredientRole role,
+		List<Optional<ITypedIngredient<?>>> ingredients,
+		Set<Integer> focusedIngredients,
+		int ingredientCycleOffset
+	) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public IRecipeSlotDrawable createRecipeSlotDrawable(
+		RecipeIngredientRole role,
+		Consumer<IIngredientAcceptor<?>> ingredientAdder,
+		Set<Integer> focusedIngredients,
+		int ingredientCycleOffset
+	) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

@@ -2,28 +2,41 @@ package mezz.jei.library.load.registration;
 
 import com.google.common.collect.ImmutableListMultimap;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.collect.ListMultiMap;
 import mezz.jei.common.ingredients.TypedIngredient;
+import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.library.ingredients.IIngredientManagerInternal;
+import mezz.jei.library.ingredients.SimpleIngredientAcceptor;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.ItemLike;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
-	private final ListMultiMap<IRecipeType<?>, ITypedIngredient<?>> recipeCatalysts = new ListMultiMap<>();
-	private final IIngredientManager ingredientManager;
+	private final ListMultiMap<IRecipeType<?>, Consumer<IIngredientAcceptor<?>>> craftingStations = new ListMultiMap<>();
+	private final IIngredientManagerInternal ingredientManager;
 	private final IJeiHelpers jeiHelpers;
+	private final ContextMap contextMap;
 
-	public RecipeCatalystRegistration(IIngredientManager ingredientManager, IJeiHelpers jeiHelpers) {
+	public RecipeCatalystRegistration(
+		IIngredientManagerInternal ingredientManager,
+		IJeiHelpers jeiHelpers,
+		ContextMap contextMap
+	) {
 		this.ingredientManager = ingredientManager;
 		this.jeiHelpers = jeiHelpers;
+		this.contextMap = contextMap;
 	}
 
 	@Override
@@ -47,8 +60,16 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 			if (typedIngredient == null) {
 				throw new IllegalArgumentException("Recipe catalyst must be a valid ingredient");
 			}
-			this.recipeCatalysts.put(recipeType, typedIngredient);
+			addCraftingStation(recipeType, typedIngredient);
 		}
+	}
+
+	@Override
+	public void addCraftingStation(IRecipeType<?> recipeType, SlotDisplay slotDisplay) {
+		ErrorUtil.checkNotNull(recipeType, "recipeType");
+		ErrorUtil.checkNotNull(slotDisplay, "slotDisplay");
+
+		addCraftingStation(recipeType, acceptor -> acceptor.add(slotDisplay));
 	}
 
 	@Override
@@ -62,7 +83,7 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 			if (typedIngredient == null) {
 				throw new IllegalArgumentException("Recipe catalyst must be a valid ingredient");
 			}
-			this.recipeCatalysts.put(recipeType, typedIngredient);
+			addCraftingStation(recipeType, typedIngredient);
 		}
 	}
 
@@ -76,7 +97,7 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 		if (typedIngredient == null) {
 			throw new IllegalArgumentException("Recipe catalyst must be a valid ingredient");
 		}
-		this.recipeCatalysts.put(recipeType, typedIngredient);
+		addCraftingStation(recipeType, typedIngredient);
 	}
 
 	@SuppressWarnings("removal")
@@ -92,11 +113,23 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 			if (typedIngredient == null) {
 				throw new IllegalArgumentException("Recipe catalyst must be a valid ingredient");
 			}
-			this.recipeCatalysts.put(recipeType, typedIngredient);
+			addCraftingStation(recipeType, typedIngredient);
 		}
 	}
 
-	public ImmutableListMultimap<IRecipeType<?>, ITypedIngredient<?>> getRecipeCatalysts() {
-		return recipeCatalysts.toImmutable();
+	private void addCraftingStation(IRecipeType<?> recipeType, ITypedIngredient<?> ingredient) {
+		addCraftingStation(recipeType, acceptor -> acceptor.add(ingredient));
+	}
+
+	private void addCraftingStation(IRecipeType<?> recipeType, Consumer<IIngredientAcceptor<?>> craftingStation) {
+		SimpleIngredientAcceptor acceptor = new SimpleIngredientAcceptor(ingredientManager, contextMap, RecipeIngredientRole.CRAFTING_STATION);
+		craftingStation.accept(acceptor);
+		if (!acceptor.getAllSlotIngredients().isEmpty()) {
+			this.craftingStations.put(recipeType, craftingStation);
+		}
+	}
+
+	public ImmutableListMultimap<IRecipeType<?>, Consumer<IIngredientAcceptor<?>>> getCraftingStations() {
+		return craftingStations.toImmutable();
 	}
 }

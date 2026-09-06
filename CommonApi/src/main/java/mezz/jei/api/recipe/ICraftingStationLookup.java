@@ -1,12 +1,14 @@
 package mezz.jei.api.recipe;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -32,6 +34,14 @@ public interface ICraftingStationLookup {
 	 * @since 20.0.0
 	 */
 	Stream<ITypedIngredient<?>> get();
+
+	/**
+	 * Get the crafting station results for this lookup, grouped by how they were registered.
+	 * Each consumer adds one crafting station to an ingredient acceptor.
+	 *
+	 * @since 27.38.0
+	 */
+	Stream<Consumer<IIngredientAcceptor<?>>> getGroups();
 
 	/**
 	 * Get the crafting station results of the given type for this lookup.
