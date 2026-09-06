@@ -1,7 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
-import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
@@ -219,16 +220,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public Stream<ITypedIngredient<?>> getRecipeCatalysts() {
+	public Stream<Consumer<IIngredientAcceptor<?>>> getRecipeCatalystGroups() {
 		IRecipeCategory<?> category = getSelectedRecipeCategory();
-		return getRecipeCatalysts(category);
-	}
-
-	@Override
-	public Stream<ITypedIngredient<?>> getRecipeCatalysts(IRecipeCategory<?> recipeCategory) {
-		RecipeType<?> recipeType = recipeCategory.getRecipeType();
+		RecipeType<?> recipeType = category.getRecipeType();
 		return recipeManager.createRecipeCatalystLookup(recipeType)
-			.get();
+			.getGroups();
 	}
 
 	@Override

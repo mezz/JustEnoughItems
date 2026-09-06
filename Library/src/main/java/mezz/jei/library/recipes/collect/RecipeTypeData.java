@@ -1,6 +1,6 @@
 package mezz.jei.library.recipes.collect;
 
-import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -11,14 +11,15 @@ import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class RecipeTypeData<T> {
 	private final IRecipeCategory<T> recipeCategory;
-	private final List<ITypedIngredient<?>> recipeCategoryCatalysts;
+	private final List<Consumer<IIngredientAcceptor<?>>> recipeCategoryCatalysts;
 	private final List<T> recipes = new ArrayList<>();
 	private final Set<T> hiddenRecipes = Collections.newSetFromMap(new IdentityHashMap<>());
 
-	public RecipeTypeData(IRecipeCategory<T> recipeCategory, List<ITypedIngredient<?>> recipeCategoryCatalysts) {
+	public RecipeTypeData(IRecipeCategory<T> recipeCategory, List<Consumer<IIngredientAcceptor<?>>> recipeCategoryCatalysts) {
 		this.recipeCategory = recipeCategory;
 		this.recipeCategoryCatalysts = List.copyOf(recipeCategoryCatalysts);
 	}
@@ -28,7 +29,7 @@ public class RecipeTypeData<T> {
 	}
 
 	@Unmodifiable
-	public List<ITypedIngredient<?>> getRecipeCategoryCatalysts() {
+	public List<Consumer<IIngredientAcceptor<?>>> getRecipeCategoryCatalysts() {
 		return recipeCategoryCatalysts;
 	}
 
