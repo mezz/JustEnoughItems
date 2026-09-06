@@ -1,6 +1,7 @@
 package mezz.jei.api.registration;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeType;
@@ -10,6 +11,7 @@ import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 @ApiStatus.NonExtendable
 public interface IRecipeCatalystRegistration {
@@ -55,6 +57,19 @@ public interface IRecipeCatalystRegistration {
 	default void addRecipeCatalysts(RecipeType<?> recipeType, ItemStack... ingredients) {
 		addRecipeCatalysts(recipeType, VanillaTypes.ITEM_STACK, List.of(ingredients));
 	}
+
+	/**
+	 * Add one recipe catalyst slot that rotates through all ingredients added by {@code ingredientAdder}.
+	 * <p>
+	 * Every ingredient in the group remains individually available for recipe lookups. Catalysts registered by
+	 * separate calls are shown in separate slots, so mods control which ingredients rotate together.
+	 *
+	 * @param recipeType      the type of recipe that the catalyst can craft
+	 * @param ingredientAdder adds the ingredients to show together in one rotating catalyst slot
+	 *
+	 * @since 15.59.0
+	 */
+	void addRecipeCatalyst(RecipeType<?> recipeType, Consumer<IIngredientAcceptor<?>> ingredientAdder);
 
 	/**
 	 * Add an association between ingredients and what it can craft. (i.e. Furnace ItemStack -> Smelting and Fuel Recipes)

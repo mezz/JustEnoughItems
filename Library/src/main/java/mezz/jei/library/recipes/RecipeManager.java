@@ -161,7 +161,9 @@ public class RecipeManager implements IRecipeManager {
 		);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
+	@Deprecated(since = "19.54.0", forRemoval = true)
 	public IRecipeSlotDrawable createRecipeSlotDrawable(RecipeIngredientRole role, List<Optional<ITypedIngredient<?>>> ingredients, Set<Integer> focusedIngredients, int ingredientCycleOffset) {
 		RecipeSlotBuilder builder = new RecipeSlotBuilder(ingredientManager, 0, role);
 		builder.addOptionalTypedIngredients(ingredients);

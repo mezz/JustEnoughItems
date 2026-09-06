@@ -52,6 +52,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -294,10 +295,18 @@ public class JeiDebugPlugin implements IModPlugin {
 
 	private <T> void registerRecipeCatalysts(IRecipeCatalystRegistration registration, IPlatformFluidHelper<T> fluidHelper) {
 		long bucketVolume = fluidHelper.bucketVolume();
-
 		registration.addRecipeCatalyst(DebugIngredient.TYPE, new DebugIngredient(7), DebugRecipeCategory.TYPE);
 		registration.addRecipeCatalyst(fluidHelper.getFluidIngredientType(), fluidHelper.create(Fluids.WATER, bucketVolume, null), DebugRecipeCategory.TYPE);
 		registration.addRecipeCatalyst(new ItemStack(Items.STICK), DebugRecipeCategory.TYPE);
+		registration.addRecipeCatalyst(
+			RecipeTypes.CRAFTING,
+			acceptor -> {
+				acceptor.addIngredients(Ingredient.of(ItemTags.PLANKS));
+				acceptor.addItemLike(Items.EMERALD);
+				acceptor.addItemLike(Items.DIAMOND);
+			}
+		);
+
 		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registries.ITEM);
 		registry.getValues()
 			.limit(300)

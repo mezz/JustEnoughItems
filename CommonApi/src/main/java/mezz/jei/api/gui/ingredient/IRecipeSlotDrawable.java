@@ -4,7 +4,7 @@ import mezz.jei.api.gui.builder.IIngredientConsumer;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
-import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
@@ -19,7 +19,7 @@ import java.util.List;
  * Created from a {@link IRecipeSlotBuilder}, usually from {@link IRecipeLayoutBuilder#addSlot},
  * using the {@link IRecipeLayoutBuilder} given to mod plugins in {@link IRecipeCategory#setRecipe}.
  *
- * You can also create one for other purposes with {@link IRecipeManager#createRecipeSlotDrawable}.
+ * You can also create one for other purposes with {@link IGuiHelper#createRecipeSlotDrawable}.
  *
  * @since 11.5.0
  */
