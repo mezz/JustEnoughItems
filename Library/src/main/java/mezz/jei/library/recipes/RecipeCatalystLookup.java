@@ -1,11 +1,13 @@
 package mezz.jei.library.recipes;
 
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IRecipeCatalystLookup;
 import mezz.jei.api.recipe.RecipeType;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class RecipeCatalystLookup implements IRecipeCatalystLookup {
@@ -26,7 +28,13 @@ public class RecipeCatalystLookup implements IRecipeCatalystLookup {
 
 	@Override
 	public Stream<ITypedIngredient<?>> get() {
-		return recipeManager.getRecipeCatalystStream(recipeType, includeHidden);
+		return recipeManager.getRecipeCatalystGroups(recipeType, true)
+			.flatMap(group -> recipeManager.getRecipeCatalystIngredients(group, includeHidden));
+	}
+
+	@Override
+	public Stream<Consumer<IIngredientAcceptor<?>>> getGroups() {
+		return recipeManager.getRecipeCatalystGroups(recipeType, includeHidden);
 	}
 
 	@Override

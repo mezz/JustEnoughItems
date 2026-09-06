@@ -2,8 +2,8 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.gui.IngredientGridTooltipComponent;
 import mezz.jei.gui.input.ClickableIngredientInternal;
@@ -20,11 +20,11 @@ import java.util.stream.Stream;
 public final class InteractiveIngredientGridTooltipComponent extends IngredientGridTooltipComponent<ITypedIngredient<?>> {
 	private final List<IRecipeSlotDrawable> slots;
 
-	public InteractiveIngredientGridTooltipComponent(IRecipeManager recipeManager, List<ITypedIngredient<?>> ingredients) {
+	public InteractiveIngredientGridTooltipComponent(IGuiHelper guiHelper, List<ITypedIngredient<?>> ingredients) {
 		super(ingredients);
 		this.slots = new ArrayList<>(ingredients.size());
 		for (ITypedIngredient<?> ingredient : ingredients) {
-			IRecipeSlotDrawable slot = recipeManager.createRecipeSlotDrawable(
+			IRecipeSlotDrawable slot = guiHelper.createRecipeSlotDrawable(
 				RecipeIngredientRole.OUTPUT,
 				List.of(Optional.of(ingredient)),
 				Set.of(0),
