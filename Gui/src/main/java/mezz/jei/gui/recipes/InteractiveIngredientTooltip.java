@@ -6,10 +6,10 @@ import com.mojang.datafixers.util.Either;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.IngredientGridTooltipComponent;
@@ -51,7 +51,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		InteractiveIngredientTooltipController controller,
 		RecipesGui recipesGui,
 		FocusUtil focusUtil,
-		IRecipeManager recipeManager,
+		IGuiHelper guiHelper,
 		IIngredientManager ingredientManager,
 		RecipeSlotClickTargetFactory clickTargetFactory,
 		RecipeSlotUnderMouse sourceSlot,
@@ -73,7 +73,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 			clickTargetFactory,
 			sourceSlot,
 			sourceMouseOverable,
-			new InteractiveIngredientGridTooltipComponent(recipeManager, visibleIngredients),
+			new InteractiveIngredientGridTooltipComponent(guiHelper, visibleIngredients),
 			(int) mouseX,
 			(int) mouseY
 		));

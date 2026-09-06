@@ -5,6 +5,7 @@ import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.buttons.IIconButtonController;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
@@ -196,7 +197,9 @@ public interface IRecipeManager {
 	 * @param focusedIngredients    indexes of the focused ingredients in "ingredients"
 	 * @param ingredientCycleOffset the starting index for cycling the list of ingredients when rendering.
 	 * @since 19.19.1
+	 * @deprecated use {@link IGuiHelper#createRecipeSlotDrawable(RecipeIngredientRole, List, Set, int)}
 	 */
+	@Deprecated(since = "30.32.0", forRemoval = true)
 	IRecipeSlotDrawable createRecipeSlotDrawable(
 		RecipeIngredientRole role,
 		List<Optional<ITypedIngredient<?>>> ingredients,

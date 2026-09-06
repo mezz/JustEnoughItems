@@ -2,21 +2,29 @@ package mezz.jei.api.helpers;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ITickTimer;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.ApiStatus;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Helps with the implementation of GUIs.
@@ -214,6 +222,41 @@ public interface IGuiHelper {
 	 * @since 30.29.0
 	 */
 	<V> IDrawable createDrawableIngredient(IIngredientRenderer<V> ingredientRenderer, V ingredient);
+
+	/**
+	 * Create a drawable recipe slot from a list of optional typed ingredients.
+	 *
+	 * @param role                  the recipe ingredient role of this slot
+	 * @param ingredients           a non-null list of optional ingredients for the slot
+	 * @param focusedIngredients    indexes of the focused ingredients in {@code ingredients}
+	 * @param ingredientCycleOffset the starting index for cycling the ingredients when rendering
+	 *
+	 * @since 30.32.0
+	 */
+	IRecipeSlotDrawable createRecipeSlotDrawable(
+		RecipeIngredientRole role,
+		List<Optional<ITypedIngredient<?>>> ingredients,
+		Set<Integer> focusedIngredients,
+		int ingredientCycleOffset
+	);
+
+	/**
+	 * Create a drawable recipe slot with ingredients added through an {@link IIngredientAcceptor}.
+	 * This supports both typed ingredients and slot displays, preserving display information such as tag identity.
+	 *
+	 * @param role                  the recipe ingredient role of this slot
+	 * @param ingredientAdder       adds the ingredients to the slot
+	 * @param focusedIngredients    indexes of the focused ingredients
+	 * @param ingredientCycleOffset the starting index for cycling the ingredients when rendering
+	 *
+	 * @since 30.32.0
+	 */
+	IRecipeSlotDrawable createRecipeSlotDrawable(
+		RecipeIngredientRole role,
+		Consumer<IIngredientAcceptor<?>> ingredientAdder,
+		Set<Integer> focusedIngredients,
+		int ingredientCycleOffset
+	);
 
 	/**
 	 * Create a crafting grid helper.
