@@ -112,7 +112,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		this.visibleSlotCount = calculateAvailableSlotCount(
 			this.area,
 			this.guiExclusionAreas,
-			this.mouseExclusionPoint
+			null
 		);
 		updateSlots(0);
 	}
