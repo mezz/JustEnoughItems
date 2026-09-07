@@ -155,7 +155,6 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			1
 		);
 
@@ -176,7 +175,6 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			100
 		);
 
@@ -202,7 +200,6 @@ public class IngredientGridConfigTest {
 				.navigationVisibility(NavigationVisibility.DISABLED),
 			availableArea,
 			Set.of(),
-			null,
 			0
 		);
 		int onePageIngredientCount = referenceLayout.availableSlotCount();
@@ -212,21 +209,18 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			ImmutableRect2i.EMPTY,
 			Set.of(),
-			null,
 			onePageIngredientCount + 1
 		);
 		IngredientGridWithNavigationLayout hiddenWithOnePage = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			onePageIngredientCount
 		);
 		IngredientGridWithNavigationLayout shownWithMultiplePages = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			onePageIngredientCount + 1
 		);
 
@@ -237,50 +231,38 @@ public class IngredientGridConfigTest {
 	}
 
 	@Test
-	public void autoHideNavigationUsesMouseBlockedSlotCapacity() {
-		// Setup: a mouse exclusion blocks one otherwise available slot in an auto-hide grid.
+	public void mouseExclusionBlocksRenderedSlotWithoutChangingGridCapacity() {
+		// Setup: a grid has no GUI exclusions and the mouse starts outside its bounds.
+		TestGridConfig gridConfig = config()
+			.maxColumns(4)
+			.maxRows(3)
+			.drawBackground(false);
 		ImmutableRect2i availableArea = largeAvailableArea();
-		TestGridConfig disabledGridConfig = config()
-			.maxColumns(4)
-			.maxRows(3)
-			.drawBackground(false)
-			.navigationVisibility(NavigationVisibility.DISABLED);
-		TestGridConfig autoHideGridConfig = config()
-			.maxColumns(4)
-			.maxRows(3)
-			.drawBackground(false)
-			.navigationVisibility(NavigationVisibility.AUTO_HIDE);
-		IngredientGridWithNavigationLayout unblockedLayout = IngredientGridButtonNavigationLayout.calculate(
-			disabledGridConfig,
-			availableArea,
-			Set.of(),
+		IngredientGrid ingredientGrid = new IngredientGrid(
 			null,
-			0
+			gridConfig,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			false
 		);
-		ImmutablePoint2i mouseExclusionPoint = new ImmutablePoint2i(
-			unblockedLayout.ingredientGridArea().x(),
-			unblockedLayout.ingredientGridArea().y()
-		);
+		ingredientGrid.updateBounds(availableArea, Set.of(), null);
+		int capacity = ingredientGrid.size();
+		ImmutableRect2i firstSlot = ingredientGrid.getSlots()
+			.findFirst()
+			.orElseThrow()
+			.getArea();
+		ImmutablePoint2i mouseExclusionPoint = new ImmutablePoint2i(firstSlot.x(), firstSlot.y());
 
-		// Operation: calculate layout with one slot blocked and enough ingredients to need that slot.
-		IngredientGridWithNavigationLayout blockedLayout = IngredientGridButtonNavigationLayout.calculate(
-			disabledGridConfig,
-			availableArea,
-			Set.of(),
-			mouseExclusionPoint,
-			0
-		);
-		IngredientGridWithNavigationLayout autoHideLayout = IngredientGridButtonNavigationLayout.calculate(
-			autoHideGridConfig,
-			availableArea,
-			Set.of(),
-			mouseExclusionPoint,
-			unblockedLayout.availableSlotCount()
-		);
+		// Operation: update the same grid with its first slot under the drag cursor.
+		ingredientGrid.updateBounds(availableArea, Set.of(), mouseExclusionPoint);
 
-		// Assertions: the blocked slot reduces capacity, so auto-hide reserves navigation for the overflow item.
-		assertEquals(unblockedLayout.availableSlotCount() - 1, blockedLayout.availableSlotCount());
-		assertPositiveArea(autoHideLayout.navigationArea());
+		// Assertions: pagination capacity stays fixed, but the slot under the mouse is unavailable for rendering.
+		assertEquals(capacity, ingredientGrid.size());
+		assertEquals(capacity - 1, ingredientGrid.getSlots().count());
 	}
 
 	@Test
@@ -301,7 +283,6 @@ public class IngredientGridConfigTest {
 			disabledGridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			0
 		);
 		Set<ImmutableRect2i> guiExclusionAreas = Set.of(new ImmutableRect2i(
@@ -316,14 +297,12 @@ public class IngredientGridConfigTest {
 			disabledGridConfig,
 			availableArea,
 			guiExclusionAreas,
-			null,
 			0
 		);
 		IngredientGridWithNavigationLayout autoHideLayout = IngredientGridButtonNavigationLayout.calculate(
 			autoHideGridConfig,
 			availableArea,
 			guiExclusionAreas,
-			null,
 			unblockedLayout.availableSlotCount()
 		);
 
@@ -346,7 +325,6 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			100
 		);
 
@@ -375,7 +353,6 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			100
 		);
 
@@ -399,7 +376,6 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			100
 		);
 
@@ -422,7 +398,6 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			100
 		);
 
@@ -445,7 +420,6 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			100
 		);
 
@@ -478,14 +452,12 @@ public class IngredientGridConfigTest {
 			buttonGridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			100
 		);
 		IngredientGridWithNavigationLayout scrollbarLayout = IngredientGridScrollbarLayout.calculate(
 			scrollbarGridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			100
 		);
 
@@ -512,7 +484,6 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			100
 		);
 
@@ -542,7 +513,6 @@ public class IngredientGridConfigTest {
 				.navigationVisibility(NavigationVisibility.DISABLED),
 			availableArea,
 			Set.of(),
-			null,
 			0
 		);
 		int onePageIngredientCount = referenceLayout.availableSlotCount();
@@ -552,14 +522,12 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			onePageIngredientCount
 		);
 		IngredientGridWithNavigationLayout shownWithOverflow = IngredientGridScrollbarLayout.calculate(
 			gridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			onePageIngredientCount + 1
 		);
 
@@ -590,7 +558,6 @@ public class IngredientGridConfigTest {
 			disabledGridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			0
 		);
 		Set<ImmutableRect2i> guiExclusionAreas = Set.of(new ImmutableRect2i(
@@ -605,14 +572,12 @@ public class IngredientGridConfigTest {
 			disabledGridConfig,
 			availableArea,
 			guiExclusionAreas,
-			null,
 			0
 		);
 		IngredientGridWithNavigationLayout autoHideLayout = IngredientGridScrollbarLayout.calculate(
 			autoHideGridConfig,
 			availableArea,
 			guiExclusionAreas,
-			null,
 			unblockedLayout.availableSlotCount()
 		);
 
@@ -638,14 +603,12 @@ public class IngredientGridConfigTest {
 			pageConfig,
 			availableArea,
 			Set.of(),
-			null,
 			100
 		);
 		IngredientGridWithNavigationLayout scrollbarLayout = IngredientGridScrollbarLayout.calculate(
 			scrollbarConfig,
 			availableArea,
 			Set.of(),
-			null,
 			100
 		);
 
@@ -671,14 +634,12 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			0
 		);
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
 			gridConfig,
 			availableArea,
 			Set.of(offscreenExclusion),
-			null,
 			0
 		);
 
@@ -701,7 +662,6 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			0
 		);
 		ImmutableRect2i firstSlot = unobstructedLayout.ingredientGridArea()
@@ -719,7 +679,6 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(negativeExclusion),
-			null,
 			0
 		);
 
@@ -853,7 +812,7 @@ public class IngredientGridConfigTest {
 			.drawBackground(true)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i navigationPaddingExclusion = new ImmutableRect2i(
 			unobstructedLayout.navigationArea().x(),
@@ -864,7 +823,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate layout with the background below navigation occupied.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(navigationPaddingExclusion), null, 0
+			gridConfig, availableArea, Set.of(navigationPaddingExclusion), 0
 		);
 
 		// Assertions: the exclusion is outside the controls, so it does not move navigation.
@@ -889,7 +848,6 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			null,
 			0
 		);
 		ImmutableRect2i falseNavigationExclusion = new ImmutableRect2i(0, 0, 1, 1);
@@ -899,7 +857,6 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(falseNavigationExclusion),
-			null,
 			0
 		);
 
@@ -921,7 +878,7 @@ public class IngredientGridConfigTest {
 			.drawBackground(false)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i navArea = unobstructedLayout.navigationArea();
 		ImmutableRect2i rightHalfExclusion = new ImmutableRect2i(
@@ -930,7 +887,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate layout with the right half of navigation obstructed.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(rightHalfExclusion), null, 0
+			gridConfig, availableArea, Set.of(rightHalfExclusion), 0
 		);
 
 		// Assertions: navigation shifts into the left gap, grid stays in place (L-shape).
@@ -951,7 +908,7 @@ public class IngredientGridConfigTest {
 			.layoutMode(IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i navArea = unobstructedLayout.navigationArea();
 		ImmutableRect2i leftHalfExclusion = new ImmutableRect2i(
@@ -960,7 +917,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate layout with the left half of navigation obstructed.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(leftHalfExclusion), null, 0
+			gridConfig, availableArea, Set.of(leftHalfExclusion), 0
 		);
 
 		// Assertions: navigation shifts into the right gap, grid stays in place (L-shape).
@@ -982,14 +939,14 @@ public class IngredientGridConfigTest {
 			.layoutMode(IngredientGridLayoutMode.RECTANGULAR)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i leftHalfExclusion = unobstructedLayout.navigationArea()
 			.keepLeft(unobstructedLayout.navigationArea().width() / 2);
 
 		// Operation: recalculate with the original navigation partly obstructed.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(leftHalfExclusion), null, 0
+			gridConfig, availableArea, Set.of(leftHalfExclusion), 0
 		);
 
 		// Assertions: the whole layout moves down and navigation retains the grid's width and alignment.
@@ -1005,6 +962,47 @@ public class IngredientGridConfigTest {
 
 	@ParameterizedTest
 	@ValueSource(booleans = {false, true})
+	public void mouseExclusionOnlyBlocksSlotsInRectangularLayout(boolean drawBackground) {
+		// Setup: a GUI exclusion forces the rectangular layout to choose between fallback positions.
+		ImmutableRect2i availableArea = largeAvailableArea();
+		TestGridConfig gridConfig = config()
+			.maxColumns(4)
+			.maxRows(3)
+			.drawBackground(drawBackground)
+			.layoutMode(IngredientGridLayoutMode.RECTANGULAR)
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
+			gridConfig, availableArea, Set.of(), 0
+		);
+		ImmutableRect2i navigationExclusion = unobstructedLayout.navigationArea()
+			.keepLeft(unobstructedLayout.navigationArea().width() / 2);
+		Set<ImmutableRect2i> guiExclusionAreas = Set.of(navigationExclusion);
+		IngredientGridWithNavigationLayout layout = IngredientGridButtonNavigationLayout.calculate(
+			gridConfig, availableArea, guiExclusionAreas, 0
+		);
+		ImmutablePoint2i mouseExclusionPoint = new ImmutablePoint2i(
+			layout.ingredientGridArea().x(),
+			layout.ingredientGridArea().y()
+		);
+
+		// Operation: block a slot in the selected fallback layout with the drag cursor.
+		long blockedSlots = IngredientGridLayout.calculateSlots(
+			layout.ingredientGridArea(),
+			guiExclusionAreas,
+			mouseExclusionPoint,
+			0
+		)
+			.stream()
+			.filter(IngredientGridLayout.SlotLayout::blocked)
+			.count();
+
+		// Assertions: the mouse creates a slot gap without participating in navigation layout.
+		assertFalse(layout.navigationArea().intersects(navigationExclusion));
+		assertEquals(1, blockedSlots);
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = {false, true})
 	public void rectangularLayoutChoosesMoreSlotsOverMovingBelowStackedExclusions(boolean drawBackground) {
 		// Setup: stacked tabs leave more room beside them than below them.
 		ImmutableRect2i availableArea = largeAvailableArea();
@@ -1015,7 +1013,7 @@ public class IngredientGridConfigTest {
 			.layoutMode(IngredientGridLayoutMode.RECTANGULAR)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i navigationArea = unobstructedLayout.navigationArea();
 		int tabWidth = 21;
@@ -1032,7 +1030,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate with a vertical stack of narrow navigation exclusions.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, tabs, null, 0
+			gridConfig, availableArea, tabs, 0
 		);
 
 		// Assertions: the grid narrows beside the tabs because that preserves more slots than moving below them.
@@ -1072,7 +1070,7 @@ public class IngredientGridConfigTest {
 			.layoutMode(IngredientGridLayoutMode.RECTANGULAR)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i gridArea = unobstructedLayout.ingredientGridArea();
 		ImmutableRect2i firstSlotExclusion = new ImmutableRect2i(
@@ -1084,7 +1082,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate with one ingredient slot obstructed.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(firstSlotExclusion), null, 0
+			gridConfig, availableArea, Set.of(firstSlotExclusion), 0
 		);
 
 		// Assertions: the rectangular bounds stay fixed and only the intersecting slot is unavailable.
@@ -1103,7 +1101,7 @@ public class IngredientGridConfigTest {
 			.drawBackground(false)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i farExclusion = new ImmutableRect2i(
 			availableArea.x() + 10, availableArea.y() + availableArea.height() - 20, 30, 10
@@ -1111,7 +1109,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate layout with a far-away exclusion.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(farExclusion), null, 0
+			gridConfig, availableArea, Set.of(farExclusion), 0
 		);
 
 		// Assertions: navigation stays aligned with the grid (no L-shape needed).
@@ -1128,7 +1126,7 @@ public class IngredientGridConfigTest {
 			.drawBackground(true)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i navArea = unobstructedLayout.navigationArea();
 		ImmutableRect2i rightExclusion = new ImmutableRect2i(
@@ -1137,7 +1135,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate layout with the right portion of navigation obstructed.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(rightExclusion), null, 0
+			gridConfig, availableArea, Set.of(rightExclusion), 0
 		);
 
 		// Assertions: shifted navigation is still contained by the single rectangular background.
@@ -1163,14 +1161,14 @@ public class IngredientGridConfigTest {
 			.drawBackground(true)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i navArea = unobstructedLayout.navigationArea();
 		ImmutableRect2i leftExclusion = navArea.keepLeft(IngredientGridWithNavigationLayout.NAVIGATION_HEIGHT);
 
 		// Operation: recalculate layout with the left portion of navigation obstructed.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(leftExclusion), null, 0
+			gridConfig, availableArea, Set.of(leftExclusion), 0
 		);
 
 		// Assertions: navigation's left edge shifts right, but the right button and background do not move right.
@@ -1200,14 +1198,14 @@ public class IngredientGridConfigTest {
 			.drawBackground(true)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i navArea = unobstructedLayout.navigationArea();
 		ImmutableRect2i rightExclusion = navArea.keepRight(IngredientGridWithNavigationLayout.NAVIGATION_HEIGHT);
 
 		// Operation: recalculate layout with the right portion of navigation obstructed.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(rightExclusion), null, 0
+			gridConfig, availableArea, Set.of(rightExclusion), 0
 		);
 
 		// Assertions: navigation's right edge shifts left, but the left button and background do not move left.
@@ -1239,7 +1237,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: calculate layout without any exclusions.
 		IngredientGridWithNavigationLayout layout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 
 		// Assertions: aligned navigation is part of the main rectangular background.
@@ -1265,10 +1263,10 @@ public class IngredientGridConfigTest {
 
 		// Operation: calculate both layouts.
 		IngredientGridWithNavigationLayout withoutBackground = IngredientGridButtonNavigationLayout.calculate(
-			withoutBackgroundConfig, availableArea, Set.of(), null, 0
+			withoutBackgroundConfig, availableArea, Set.of(), 0
 		);
 		IngredientGridWithNavigationLayout withBackground = IngredientGridButtonNavigationLayout.calculate(
-			withBackgroundConfig, availableArea, Set.of(), null, 0
+			withBackgroundConfig, availableArea, Set.of(), 0
 		);
 
 		// Assertions: background padding moves the navigation buttons along with the inset grid.
@@ -1291,7 +1289,7 @@ public class IngredientGridConfigTest {
 			.drawBackground(false)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i navArea = unobstructedLayout.navigationArea();
 		ImmutableRect2i fullWidthExclusion = new ImmutableRect2i(
@@ -1300,7 +1298,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate layout with the entire navigation strip obstructed.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(fullWidthExclusion), null, 0
+			gridConfig, availableArea, Set.of(fullWidthExclusion), 0
 		);
 
 		// Assertions: overlay shifts down, navigation stays on top but below the exclusion.
@@ -1322,7 +1320,7 @@ public class IngredientGridConfigTest {
 			.drawBackground(true)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i navArea = unobstructedLayout.navigationArea();
 		ImmutableRect2i fullWidthExclusion = new ImmutableRect2i(
@@ -1331,7 +1329,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate layout with the original navigation strip obstructed.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(fullWidthExclusion), null, 0
+			gridConfig, availableArea, Set.of(fullWidthExclusion), 0
 		);
 
 		// Assertions: the navigation and drawn background move below the exclusion.
@@ -1357,14 +1355,14 @@ public class IngredientGridConfigTest {
 			.drawBackground(false)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i navArea = unobstructedLayout.navigationArea();
 		ImmutableRect2i ownNavigationExclusion = new ImmutableRect2i(
 			navArea.x(), navArea.y(), navArea.width(), navArea.height()
 		);
 		IngredientGridWithNavigationLayout shiftedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(ownNavigationExclusion), null, 0
+			gridConfig, availableArea, Set.of(ownNavigationExclusion), 0
 		);
 		int sideGap = navArea.width();
 		int sideExclusionHeight = bottom(availableArea) - navArea.y();
@@ -1383,10 +1381,10 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate with tall exclusions outside this overlay's navigation strip.
 		IngredientGridWithNavigationLayout withLeftSideExclusion = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(ownNavigationExclusion, leftSideExclusion), null, 0
+			gridConfig, availableArea, Set.of(ownNavigationExclusion, leftSideExclusion), 0
 		);
 		IngredientGridWithNavigationLayout withRightSideExclusion = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(ownNavigationExclusion, rightSideExclusion), null, 0
+			gridConfig, availableArea, Set.of(ownNavigationExclusion, rightSideExclusion), 0
 		);
 
 		// Assertions: side exclusions do not further squish an overlay that already needed vertical fallback.
@@ -1406,7 +1404,7 @@ public class IngredientGridConfigTest {
 			.drawBackground(false)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i navArea = unobstructedLayout.navigationArea();
 		ImmutableRect2i overTallExclusion = new ImmutableRect2i(
@@ -1415,7 +1413,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate layout with no vertical space left after avoiding navigation.
 		IngredientGridWithNavigationLayout obstructedLayout = assertDoesNotThrow(() ->
-			IngredientGridButtonNavigationLayout.calculate(gridConfig, availableArea, Set.of(overTallExclusion), null, 0)
+			IngredientGridButtonNavigationLayout.calculate(gridConfig, availableArea, Set.of(overTallExclusion), 0)
 		);
 
 		// Assertions: no valid overlay remains, but layout calculation handles it without invalid rectangles.
@@ -1434,14 +1432,14 @@ public class IngredientGridConfigTest {
 			.drawBackground(false)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i firstNavigationArea = unobstructedLayout.navigationArea();
 		ImmutableRect2i firstExclusion = new ImmutableRect2i(
 			availableArea.x(), firstNavigationArea.y(), availableArea.width(), firstNavigationArea.height()
 		);
 		IngredientGridWithNavigationLayout fallbackLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(firstExclusion), null, 0
+			gridConfig, availableArea, Set.of(firstExclusion), 0
 		);
 		ImmutableRect2i fallbackNavigationArea = fallbackLayout.navigationArea();
 		ImmutableRect2i fallbackExclusion = new ImmutableRect2i(
@@ -1450,7 +1448,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate layout with no available navigation position.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(firstExclusion, fallbackExclusion), null, 0
+			gridConfig, availableArea, Set.of(firstExclusion, fallbackExclusion), 0
 		);
 
 		// Assertions: item slots would fit, but the overlay is unusable because required navigation cannot draw.
@@ -1470,7 +1468,7 @@ public class IngredientGridConfigTest {
 			.drawBackground(true)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i navArea = unobstructedLayout.navigationArea();
 		ImmutableRect2i overTallExclusion = new ImmutableRect2i(
@@ -1479,7 +1477,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate layout with no vertical space left after avoiding navigation and its padding.
 		IngredientGridWithNavigationLayout obstructedLayout = assertDoesNotThrow(() ->
-			IngredientGridButtonNavigationLayout.calculate(gridConfig, availableArea, Set.of(overTallExclusion), null, 0)
+			IngredientGridButtonNavigationLayout.calculate(gridConfig, availableArea, Set.of(overTallExclusion), 0)
 		);
 
 		// Assertions: no valid drawn area remains, but layout calculation handles it without invalid rectangles.
@@ -1500,13 +1498,13 @@ public class IngredientGridConfigTest {
 			.drawBackground(false)
 			.navigationVisibility(NavigationVisibility.DISABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i gridExclusion = unobstructedLayout.ingredientGridArea();
 
 		// Operation: recalculate layout with the whole grid covered by an exclusion.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(gridExclusion), null, 0
+			gridConfig, availableArea, Set.of(gridExclusion), 0
 		);
 
 		// Assertions: the grid bounds still exist, but no item slot is drawable.
@@ -1525,7 +1523,7 @@ public class IngredientGridConfigTest {
 			.drawBackground(false)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i navArea = unobstructedLayout.navigationArea();
 		int tooNarrowGapWidth = navArea.height() + 6;
@@ -1538,7 +1536,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate layout with only the too-narrow gap available at the original navigation Y.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(tooNarrowGapExclusion), null, 0
+			gridConfig, availableArea, Set.of(tooNarrowGapExclusion), 0
 		);
 
 		// Assertions: navigation falls back below the exclusion instead of shrinking the buttons.
@@ -1564,7 +1562,7 @@ public class IngredientGridConfigTest {
 			.drawBackground(true)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i navArea = unobstructedLayout.navigationArea();
 		int tooNarrowGapWidth = navArea.height() + 6;
@@ -1577,7 +1575,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate layout with only the background-expanded gap available at the original Y.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(tooNarrowGapExclusion), null, 0
+			gridConfig, availableArea, Set.of(tooNarrowGapExclusion), 0
 		);
 
 		// Assertions: navigation falls back below the exclusion instead of pushing controls into background padding.
@@ -1600,7 +1598,7 @@ public class IngredientGridConfigTest {
 			.drawBackground(true)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i navArea = unobstructedLayout.navigationArea();
 		int tooNarrowGapWidth = navArea.height() + 6;
@@ -1613,7 +1611,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate layout with only the too-narrow gap available at the original navigation Y.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(tooNarrowGapExclusion), null, 0
+			gridConfig, availableArea, Set.of(tooNarrowGapExclusion), 0
 		);
 
 		// Assertions: navigation falls back below the exclusion instead of pushing controls into background padding.
@@ -1636,7 +1634,7 @@ public class IngredientGridConfigTest {
 			.drawBackground(true)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		int collisionPadding = unobstructedLayout.ingredientGridArea().x() - unobstructedLayout.backgroundArea().x();
 		ImmutableRect2i paddedNavigationArea = unobstructedLayout.navigationArea().expandBy(collisionPadding);
@@ -1649,7 +1647,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate layout with the edge-touching exclusion.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(touchingExclusion), null, 0
+			gridConfig, availableArea, Set.of(touchingExclusion), 0
 		);
 
 		// Assertions: touching edges are not intersections, so the layout should remain unchanged.
@@ -1669,7 +1667,7 @@ public class IngredientGridConfigTest {
 			.drawBackground(false)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i gridArea = unobstructedLayout.ingredientGridArea();
 		ImmutableRect2i leftGridExclusion = new ImmutableRect2i(
@@ -1678,7 +1676,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate layout with the left half of the grid obstructed.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(leftGridExclusion), null, 0
+			gridConfig, availableArea, Set.of(leftGridExclusion), 0
 		);
 
 		// Assertions: grid fills the full area (slots blocked individually), navigation stays in place.
@@ -1698,7 +1696,7 @@ public class IngredientGridConfigTest {
 			.drawBackground(false)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		IngredientGridWithNavigationLayout unobstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(), null, 0
+			gridConfig, availableArea, Set.of(), 0
 		);
 		ImmutableRect2i gridArea = unobstructedLayout.ingredientGridArea();
 		ImmutableRect2i rightGridExclusion = new ImmutableRect2i(
@@ -1707,7 +1705,7 @@ public class IngredientGridConfigTest {
 
 		// Operation: recalculate layout with the right half of the grid obstructed.
 		IngredientGridWithNavigationLayout obstructedLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig, availableArea, Set.of(rightGridExclusion), null, 0
+			gridConfig, availableArea, Set.of(rightGridExclusion), 0
 		);
 
 		// Assertions: grid fills the full area (slots blocked individually), navigation stays in place.

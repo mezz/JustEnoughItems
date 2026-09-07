@@ -100,8 +100,7 @@ public class IngredientGrid implements IIngredientGrid {
 		this.mouseExclusionPoint = mouseExclusionPoint;
 		this.visibleSlotCount = IngredientGridLayout.calculateAvailableSlotCount(
 			this.area,
-			this.guiExclusionAreas,
-			this.mouseExclusionPoint
+			this.guiExclusionAreas
 		);
 		updateSlots(0);
 	}

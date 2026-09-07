@@ -156,7 +156,6 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		IngredientGridWithNavigationLayout layout = calculateLayout(
 			availableArea,
 			guiExclusionAreas,
-			mouseExclusionPoint,
 			this.ingredientSource.getElements().size()
 		);
 		applyLayout(layout, guiExclusionAreas, mouseExclusionPoint);
@@ -165,7 +164,6 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	private IngredientGridWithNavigationLayout calculateLayout(
 		final ImmutableRect2i availableArea,
 		Set<ImmutableRect2i> guiExclusionAreas,
-		@Nullable ImmutablePoint2i mouseExclusionPoint,
 		int ingredientCount
 	) {
 		if (this.gridConfig.navigationMode().getValue().usesScrollbar()) {
@@ -173,7 +171,6 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 				this.gridConfig,
 				availableArea,
 				guiExclusionAreas,
-				mouseExclusionPoint,
 				ingredientCount
 			);
 		}
@@ -182,7 +179,6 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 			this.gridConfig,
 			availableArea,
 			guiExclusionAreas,
-			mouseExclusionPoint,
 			ingredientCount
 		);
 	}

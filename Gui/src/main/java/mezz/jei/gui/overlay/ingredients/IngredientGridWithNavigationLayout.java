@@ -62,7 +62,7 @@ public record IngredientGridWithNavigationLayout(
 		return fromGridArea(
 			gridConfig,
 			ingredientGridArea,
-			IngredientGridLayout.calculateAvailableSlotCount(ingredientGridArea, Set.of(), null),
+			IngredientGridLayout.calculateAvailableSlotCount(ingredientGridArea, Set.of()),
 			navigationArea,
 			navigationArea,
 			navigationEnabled,
