@@ -7,6 +7,7 @@ import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.NavigationVisibility;
 import mezz.jei.api.gui.placement.VerticalAlignment;
+import mezz.jei.common.util.ImmutablePoint2i;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -17,6 +18,41 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IngredientGridWithNavigationLayoutTest {
+	@Test
+	public void mouseExclusionBlocksRenderedSlotWithoutChangingGridCapacity() {
+		// Setup: a grid has no GUI exclusions and the mouse starts outside its bounds.
+		TestGridConfig gridConfig = config()
+			.maxColumns(4)
+			.maxRows(3)
+			.drawBackground(false);
+		ImmutableRect2i availableArea = largeAvailableArea();
+		IngredientGrid ingredientGrid = new IngredientGrid(
+			null,
+			gridConfig,
+			null,
+			null,
+			null,
+			null,
+			null,
+			null,
+			false
+		);
+		ingredientGrid.updateBounds(availableArea, Set.of(), null);
+		int capacity = ingredientGrid.size();
+		ImmutableRect2i firstSlot = ingredientGrid.getSlots()
+			.findFirst()
+			.orElseThrow()
+			.getArea();
+		ImmutablePoint2i mouseExclusionPoint = new ImmutablePoint2i(firstSlot.x(), firstSlot.y());
+
+		// Operation: update the same grid with its first slot under the drag cursor.
+		ingredientGrid.updateBounds(availableArea, Set.of(), mouseExclusionPoint);
+
+		// Assertions: pagination capacity stays fixed, but the slot under the mouse is unavailable for rendering.
+		assertEquals(capacity, ingredientGrid.size());
+		assertEquals(capacity - 1, ingredientGrid.getSlots().count());
+	}
+
 	@Test
 	public void fullWidthNavigationExclusionShiftsOverlayDown() {
 		ImmutableRect2i availableArea = largeAvailableArea();
