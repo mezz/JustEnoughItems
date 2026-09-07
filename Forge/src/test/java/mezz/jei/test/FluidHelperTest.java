@@ -22,13 +22,17 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -84,6 +88,37 @@ public class FluidHelperTest {
 			.orElseThrow();
 		FluidStack accepted = typedIngredient.getIngredient(ForgeTypes.FLUID_STACK).orElseThrow();
 		assertSame(Fluids.WATER, accepted.getRawFluid());
+	}
+
+	@Test
+	public void flowingFluidStacksAreFilteredWithoutBlankPositions() {
+		FluidIngredientHelper<FluidStack> ingredientHelper = createIngredientHelper();
+		DisplayIngredientAcceptor acceptor = new DisplayIngredientAcceptor(createIngredientManager());
+		FluidStack sourceWater = new FluidStack(Fluids.WATER, 1000);
+		FluidStack flowingWater = new FluidStack(Fluids.FLOWING_WATER, 1000);
+		FluidStack flowingLava = new FluidStack(Fluids.FLOWING_LAVA, 1000);
+		List<@Nullable FluidStack> fluidStacks = new ArrayList<>();
+		fluidStacks.add(sourceWater);
+		fluidStacks.add(flowingWater);
+		fluidStacks.add(null);
+		fluidStacks.add(flowingLava);
+
+		acceptor.addIngredients(ForgeTypes.FLUID_STACK, fluidStacks);
+
+		assertFalse(ingredientHelper.isValidIngredient(flowingWater));
+		assertFalse(ingredientHelper.isValidIngredient(flowingLava));
+		List<? extends @Nullable ITypedIngredient<?>> acceptedIngredients = acceptor.getAllIngredients();
+		assertEquals(2, acceptedIngredients.size());
+		FluidStack acceptedSourceWater = Objects.requireNonNull(acceptedIngredients.get(0))
+			.getIngredient(ForgeTypes.FLUID_STACK)
+			.orElseThrow();
+		assertSame(Fluids.WATER, acceptedSourceWater.getRawFluid());
+		assertNull(acceptedIngredients.get(1));
+
+		acceptor.addOptionalTypedIngredients(List.of(Optional.empty()));
+		List<? extends @Nullable ITypedIngredient<?>> ingredientsWithExplicitBlank = acceptor.getAllIngredients();
+		assertEquals(3, ingredientsWithExplicitBlank.size());
+		assertNull(ingredientsWithExplicitBlank.get(2));
 	}
 
 	@Test

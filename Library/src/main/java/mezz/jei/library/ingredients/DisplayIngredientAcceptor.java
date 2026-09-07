@@ -58,7 +58,9 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		for (Object ingredient : ingredients) {
 			@Nullable
 			ITypedIngredient<?> typedIngredient = TypedIngredient.createAndFilterInvalidForDisplay(ingredientManager, ingredient, false);
-			addIngredient(typedIngredient);
+			if (ingredient == null || typedIngredient != null) {
+				addIngredient(typedIngredient);
+			}
 		}
 
 		return this;
@@ -83,7 +85,15 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		List<@Nullable ITypedIngredient<T>> typedIngredients = TypedIngredient.createAndFilterInvalidListForDisplay(this.ingredientManager, ingredientType, ingredients, false);
-		typedIngredients.forEach(this::addIngredient);
+		for (int i = 0; i < typedIngredients.size(); i++) {
+			@Nullable
+			T ingredient = ingredients.get(i);
+			@Nullable
+			ITypedIngredient<T> typedIngredient = typedIngredients.get(i);
+			if (ingredient == null || typedIngredient != null) {
+				addIngredient(typedIngredient);
+			}
+		}
 
 		return this;
 	}
