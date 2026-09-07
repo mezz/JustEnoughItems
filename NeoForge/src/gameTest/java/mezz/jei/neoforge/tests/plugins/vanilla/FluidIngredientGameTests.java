@@ -31,8 +31,10 @@ import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @ForEachTest(groups = "fluid_ingredients")
 public final class FluidIngredientGameTests {
@@ -41,37 +43,68 @@ public final class FluidIngredientGameTests {
 
 	@GameTest
 	@EmptyTemplate
-	@TestHolder(description = "Empty and flowing NeoForge fluid stacks are invalid and filtered before display.")
-	public static void emptyAndFlowingFluidStacksAreInvalid(JeiGameTestHelper helper) {
-		// Setup: native empty forms and unobtainable flowing variants exercise JEI's validity boundary.
+	@TestHolder(description = "Empty NeoForge fluid stacks are invalid and filtered before display.")
+	public static void emptyFluidStacksAreInvalid(JeiGameTestHelper helper) {
+		// Setup: native empty forms exercise JEI's validity boundary.
 		FluidIngredientHelper<FluidStack> ingredientHelper = createIngredientHelper();
 		DisplayIngredientAcceptor acceptor = createIngredientAcceptor();
 		FluidStack emptyFluid = new FluidStack(Fluids.EMPTY, 1000);
 		FluidStack zeroAmountWater = new FluidStack(Fluids.WATER, 1000);
 		zeroAmountWater.setAmount(0);
-		FluidStack flowingWater = new FluidStack(Fluids.FLOWING_WATER, 1000);
-		FluidStack flowingLava = new FluidStack(Fluids.FLOWING_LAVA, 1000);
 
-		// Operation: submit every invalid form through JEI's display ingredient boundary.
+		// Operation: submit every empty form through JEI's display ingredient boundary.
 		acceptor.add(NeoForgeTypes.FLUID_STACK, FluidStack.EMPTY);
 		acceptor.add(NeoForgeTypes.FLUID_STACK, emptyFluid);
 		acceptor.add(NeoForgeTypes.FLUID_STACK, zeroAmountWater);
-		acceptor.add(NeoForgeTypes.FLUID_STACK, flowingWater);
-		acceptor.add(NeoForgeTypes.FLUID_STACK, flowingLava);
 
-		// Assertions: empty and flowing stacks are invalid and never reach display state.
+		// Assertions: empty stacks are invalid and never reach display state.
 		helper.assertTrue(FluidStack.EMPTY.isEmpty(), "Expected FluidStack.EMPTY to be empty");
 		helper.assertTrue(emptyFluid.isEmpty(), "Expected an empty-fluid stack to be empty");
 		helper.assertTrue(zeroAmountWater.isEmpty(), "Expected zero-sized water to be empty");
 		helper.assertTrue(!ingredientHelper.isValidIngredient(FluidStack.EMPTY), "Expected FluidStack.EMPTY to be invalid");
 		helper.assertTrue(!ingredientHelper.isValidIngredient(emptyFluid), "Expected an empty-fluid stack to be invalid");
 		helper.assertTrue(!ingredientHelper.isValidIngredient(zeroAmountWater), "Expected zero-sized water to be invalid");
-		helper.assertTrue(!ingredientHelper.isValidIngredient(flowingWater), "Expected flowing water to be invalid");
-		helper.assertTrue(!ingredientHelper.isValidIngredient(flowingLava), "Expected flowing lava to be invalid");
 		helper.assertTrue(
 			acceptor.getAllIngredients().stream().noneMatch(Objects::nonNull),
-			"Expected empty and flowing fluid stacks to be filtered before display"
+			"Expected empty fluid stacks to be filtered before display"
 		);
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Invalid flowing NeoForge fluid stacks are filtered without adding blank positions.")
+	public static void flowingFluidStacksAreFilteredWithoutBlankPositions(JeiGameTestHelper helper) {
+		// Setup: a source followed by flowing variants reproduces a rotating recipe slot from a fluid tag.
+		FluidIngredientHelper<FluidStack> ingredientHelper = createIngredientHelper();
+		DisplayIngredientAcceptor acceptor = createIngredientAcceptor();
+		FluidStack sourceWater = new FluidStack(Fluids.WATER, 1000);
+		FluidStack flowingWater = new FluidStack(Fluids.FLOWING_WATER, 1000);
+		FluidStack flowingLava = new FluidStack(Fluids.FLOWING_LAVA, 1000);
+		List<@Nullable FluidStack> fluidStacks = new ArrayList<>();
+		fluidStacks.add(sourceWater);
+		fluidStacks.add(flowingWater);
+		fluidStacks.add(null);
+		fluidStacks.add(flowingLava);
+
+		// Operation: submit source, flowing, and intentional blank values through JEI's display ingredient boundary.
+		acceptor.addIngredients(NeoForgeTypes.FLUID_STACK, fluidStacks);
+
+		// Assertions: invalid values are omitted, but the original null remains as an intentional blank.
+		helper.assertTrue(!ingredientHelper.isValidIngredient(flowingWater), "Expected raw flowing water to be invalid");
+		helper.assertTrue(!ingredientHelper.isValidIngredient(flowingLava), "Expected raw flowing lava to be invalid");
+		List<? extends @Nullable ITypedIngredient<?>> acceptedIngredients = acceptor.getAllIngredients();
+		helper.assertEquals(2, acceptedIngredients.size(), "Expected the valid source and intentional blank to remain");
+		FluidStack acceptedSourceWater = Objects.requireNonNull(acceptedIngredients.getFirst())
+			.getIngredient(NeoForgeTypes.FLUID_STACK)
+			.orElseThrow();
+		helper.assertTrue(acceptedSourceWater.getFluid() == Fluids.WATER, "Expected source water to remain water");
+		helper.assertTrue(acceptedIngredients.getLast() == null, "Expected the original null to remain as a blank position");
+
+		acceptor.addOptionalTypedIngredients(List.of(Optional.empty()));
+		List<? extends @Nullable ITypedIngredient<?>> ingredientsWithExplicitBlank = acceptor.getAllIngredients();
+		helper.assertEquals(3, ingredientsWithExplicitBlank.size(), "Expected an explicitly empty optional to add a blank position");
+		helper.assertTrue(ingredientsWithExplicitBlank.getLast() == null, "Expected the explicit blank position to remain empty");
 		helper.succeed();
 	}
 
