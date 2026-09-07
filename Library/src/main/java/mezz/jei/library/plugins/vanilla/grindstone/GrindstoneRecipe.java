@@ -6,7 +6,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -39,21 +38,18 @@ public final class GrindstoneRecipe implements IJeiGrindstoneRecipe {
 
 	@Override
 	@Unmodifiable
-	@NotNull
 	public List<ItemStack> getTopInputs() {
 		return topInputs;
 	}
 
 	@Override
 	@Unmodifiable
-	@NotNull
 	public List<ItemStack> getBottomInputs() {
 		return bottomInputs;
 	}
 
 	@Override
 	@Unmodifiable
-	@NotNull
 	public List<ItemStack> getOutputs() {
 		return outputs;
 	}

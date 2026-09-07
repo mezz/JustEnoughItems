@@ -46,6 +46,7 @@ public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneR
 		return localizedName;
 	}
 
+	@SuppressWarnings("removal")
 	@Override
 	public IDrawable getBackground() {
 		return background;
@@ -64,10 +65,12 @@ public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneR
 
 		IRecipeSlotBuilder topInputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
 			.addItemStacks(topInputs)
+			.setStandardSlotBackground()
 			.setSlotName(topSlotName);
 
 		IRecipeSlotBuilder bottomInputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 1, 24)
 			.addItemStacks(bottomInputs)
+			.setStandardSlotBackground()
 			.setSlotName(bottomSlotName);
 
 		int outputSlotXPosition = 52;
@@ -77,6 +80,7 @@ public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneR
 			outputRole = RecipeIngredientRole.RENDER_ONLY;
 		}
 		IRecipeSlotBuilder outputSlot = builder.addSlot(outputRole, outputSlotXPosition, outputSlotYPosition)
+			.setOutputSlotBackground()
 			.addItemStacks(outputs);
 
 		if (topInputs.size() == bottomInputs.size()) {
