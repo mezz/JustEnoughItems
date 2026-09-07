@@ -73,7 +73,9 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 
 		for (Object ingredient : ingredients) {
 			ITypedIngredient<?> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient, false);
-			addSlotIngredient(createSlotIngredient(typedIngredient));
+			if (ingredient == null || typedIngredient != null) {
+				addSlotIngredient(createSlotIngredient(typedIngredient));
+			}
 		}
 
 		return this;
@@ -119,9 +121,13 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		List<@Nullable ITypedIngredient<T>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredientType, ingredients, false);
-		typedIngredients.stream()
-			.map(DisplayIngredientAcceptor::createSlotIngredient)
-			.forEach(this::addSlotIngredient);
+		for (int i = 0; i < typedIngredients.size(); i++) {
+			T ingredient = ingredients.get(i);
+			ITypedIngredient<T> typedIngredient = typedIngredients.get(i);
+			if (ingredient == null || typedIngredient != null) {
+				addSlotIngredient(createSlotIngredient(typedIngredient));
+			}
+		}
 
 		return this;
 	}
