@@ -41,11 +41,10 @@ public final class IngredientGridLayout {
 
 	public static int calculateAvailableSlotCount(
 		ImmutableRect2i area,
-		Set<ImmutableRect2i> exclusionAreas,
-		@Nullable ImmutablePoint2i mouseExclusionPoint
+		Set<ImmutableRect2i> exclusionAreas
 	) {
 		int blocked = 0;
-		List<SlotLayout> slotLayouts = calculateSlots(area, exclusionAreas, mouseExclusionPoint, 0);
+		List<SlotLayout> slotLayouts = calculateSlots(area, exclusionAreas, null, 0);
 		for (SlotLayout slotLayout : slotLayouts) {
 			if (slotLayout.blocked()) {
 				blocked++;
