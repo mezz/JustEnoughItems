@@ -63,10 +63,14 @@ configurations {
 	}
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
-tasks.withType(JavaCompile).configureEach {
-	options.release.set(8)
+def java21Compiler = javaToolchains.compilerFor {
+	languageVersion = JavaLanguageVersion.of(21)
+}
+
+tasks.named('compileTestJava') {
+	javaCompiler.set(java21Compiler)
 }
 
 dependencies {
@@ -306,6 +310,9 @@ idea {
 }
 
 test {
+	javaLauncher.set(javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(21)
+	})
 	useJUnitPlatform()
 	include 'mezz/jei/**'
 	exclude 'mezz/jei/lib/**'
