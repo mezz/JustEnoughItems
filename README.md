@@ -41,13 +41,6 @@ This means:
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.19.2-fabric%2Fmaven-metadata.xml&label=Fabric%201.19.2)](https://maven.blamejared.com/mezz/jei/jei-1.19.2-fabric/maven-metadata.xml)
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.19.2-forge%2Fmaven-metadata.xml&label=Forge%201.19.2)](https://maven.blamejared.com/mezz/jei/jei-1.19.2-forge/maven-metadata.xml)
 
-## 1.18.2
-* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.18.2-fabric%2Fmaven-metadata.xml&label=Fabric%201.18.2)](https://maven.blamejared.com/mezz/jei/jei-1.18.2-fabric/maven-metadata.xml)
-* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.18.2-forge%2Fmaven-metadata.xml&label=Forge%201.18.2)](https://maven.blamejared.com/mezz/jei/jei-1.18.2-forge/maven-metadata.xml)
-
-## 1.16.5
-* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.16.5%2Fmaven-metadata.xml&label=Forge%201.16.5)](https://maven.blamejared.com/mezz/jei/jei-1.16.5/maven-metadata.xml)
-
 ## 1.12.2
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei_1.12.2%2Fmaven-metadata.xml&label=Forge%201.12.2)](https://maven.blamejared.com/mezz/jei/jei_1.12.2/maven-metadata.xml)
 
