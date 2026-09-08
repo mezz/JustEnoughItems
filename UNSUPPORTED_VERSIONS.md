@@ -64,6 +64,10 @@ These versions are available on Maven, but are not receiving updates.
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.19-fabric%2Fmaven-metadata.xml&label=Fabric%201.19)](https://maven.blamejared.com/mezz/jei/jei-1.19-fabric/maven-metadata.xml)
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.19-forge%2Fmaven-metadata.xml&label=Forge%201.19)](https://maven.blamejared.com/mezz/jei/jei-1.19-forge/maven-metadata.xml)
 
+## 1.18.2
+* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.18.2-fabric%2Fmaven-metadata.xml&label=Fabric%201.18.2)](https://maven.blamejared.com/mezz/jei/jei-1.18.2-fabric/maven-metadata.xml)
+* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.18.2-forge%2Fmaven-metadata.xml&label=Forge%201.18.2)](https://maven.blamejared.com/mezz/jei/jei-1.18.2-forge/maven-metadata.xml)
+
 ## 1.18.1
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.18.1%2Fmaven-metadata.xml&label=Forge%201.18.1)](https://maven.blamejared.com/mezz/jei/jei-1.18.1/maven-metadata.xml)
 
@@ -72,6 +76,9 @@ These versions are available on Maven, but are not receiving updates.
 
 ## 1.17.1
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.17.1%2Fmaven-metadata.xml&label=Forge%201.17.1)](https://maven.blamejared.com/mezz/jei/jei-1.17.1/maven-metadata.xml)
+
+## 1.16.5
+* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.16.5%2Fmaven-metadata.xml&label=Forge%201.16.5)](https://maven.blamejared.com/mezz/jei/jei-1.16.5/maven-metadata.xml)
 
 ## 1.16.4
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-1.16.4%2Fmaven-metadata.xml&label=Forge%201.16.4)](https://maven.blamejared.com/mezz/jei/jei-1.16.4/maven-metadata.xml)
