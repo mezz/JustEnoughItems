@@ -77,6 +77,7 @@ public final class TestConnectionToServer implements IConnectionToServer {
 		}
 	}
 
+	@Override
 	public void onRuntimeStopped() {
 		clearPlayer();
 	}

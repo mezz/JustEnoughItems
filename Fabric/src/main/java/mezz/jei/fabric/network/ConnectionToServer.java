@@ -8,6 +8,10 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public final class ConnectionToServer implements IConnectionToServer {
+	@Override
+	public void onRuntimeStopped() {
+	}
+
 	private static final String FABRIC_SERVER_BRAND = "fabric";
 
 	@Override

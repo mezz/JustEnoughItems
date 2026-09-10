@@ -42,6 +42,10 @@ public final class Internal {
 	private static IJeiClientConfigs jeiClientConfigs;
 	@Nullable
 	private static IJeiRuntime jeiRuntime;
+	/**
+	 * Null means that no recipe source has been selected for the current connection yet.
+	 * A present value may have an empty recipe map when the server explicitly synchronizes zero recipes.
+	 */
 	@Nullable
 	private static ClientRecipes clientRecipes = null;
 	private static final JeiFeatures jeiFeatures = new JeiFeatures();
@@ -147,6 +151,10 @@ public final class Internal {
 		setClientRecipes(clientRecipes, false);
 	}
 
+	public static void clearClientRecipes() {
+		clientRecipes = null;
+	}
+
 	private static void setClientRecipes(RecipeMap recipes, boolean syncedWithServer) {
 		var connectionId = getRemoteConnectionId();
 		if (connectionId != null) {
@@ -201,6 +209,9 @@ public final class Internal {
 		}
 		if (toggleState != null) {
 			toggleState.clearListeners();
+		}
+		if (serverConnection != null) {
+			serverConnection.onRuntimeStopped();
 		}
 		if (jeiRuntime != null) {
 			jeiRuntime = null;

@@ -776,6 +776,7 @@ public class IngredientGridWithNavigationControllerTest {
 			throw new UnsupportedOperationException("Unexpected packet send");
 		}
 
+		@Override
 		public void onRuntimeStopped() {
 		}
 	}

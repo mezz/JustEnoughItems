@@ -20,6 +20,12 @@ public final class ConnectionToServer implements IConnectionToServer {
 	private static boolean jeiOnServerCacheValue = false;
 
 	@Override
+	public void onRuntimeStopped() {
+		jeiOnServerCacheUuid = null;
+		jeiOnServerCacheValue = false;
+	}
+
+	@Override
 	public boolean isJeiOnServer() {
 		return canSendPacket(PacketDeletePlayerItem.TYPE);
 	}

@@ -31,6 +31,7 @@ public class JeiFabricServerWithJeiClientGameTest implements FabricClientGameTes
 						}
 					});
 					JeiFabricCreativeInventoryClientGameTest.assertLocalPlayerMousePickupWithModdedInventorySlotsWorks(context);
+					JeiFabricClientGameTestAssertions.assertRecipeUpdatesReplaceRecipesOnSameConnection(context);
 				}
 				JeiFabricClientGameTestAssertions.assertClientRecipesCleared(context, "Fabric server with JEI");
 			}

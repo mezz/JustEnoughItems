@@ -14,4 +14,6 @@ public interface IConnectionToServer {
 	boolean canSendPacket(CustomPacketPayload.Type<?> packetType);
 
 	<T extends PlayToServerPacket<T>> void sendPacketToServer(T packet);
+
+	void onRuntimeStopped();
 }

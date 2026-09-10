@@ -32,12 +32,10 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
-import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStoppingEvent;
@@ -73,7 +71,6 @@ public class JustEnoughItemsClient {
 	public void register() {
 		subscriptions.register(AddClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 		subscriptions.register(RegisterClientTooltipComponentFactoriesEvent.class, this::onRegisterClientTooltipEvent);
-		subscriptions.register(RecipesReceivedEvent.class, this::onRecipesReceivedEvent);
 		subscriptions.register(ClientStoppingEvent.class, e -> onClientStopping());
 		subscriptions.register(RegisterKeyMappingsEvent.class, e -> {
 			InternalKeyMappings keyMappings = new InternalKeyMappings(e::register, id -> {
@@ -100,13 +97,6 @@ public class JustEnoughItemsClient {
 	private void onClientStopping() {
 		jeiStarter.stop();
 		Internal.onClientStopping();
-	}
-
-	private void onRecipesReceivedEvent(RecipesReceivedEvent event) {
-		RecipeMap recipeMap = event.getRecipeMap();
-		if (!recipeMap.values().isEmpty()) {
-			Internal.setClientSyncedRecipes(recipeMap);
-		}
 	}
 
 	private void onRegisterReloadListenerEvent(AddClientReloadListenersEvent event) {
