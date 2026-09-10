@@ -1,6 +1,20 @@
 package mezz.jei.neoforge.tests.plugins.vanilla;
 
 import mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.ingredients.TypedIngredient;
+import mezz.jei.library.focus.Focus;
+import mezz.jei.library.focus.FocusGroup;
+import mezz.jei.library.gui.recipes.supplier.builder.IngredientSlotBuilder;
+import mezz.jei.library.gui.recipes.supplier.builder.IngredientSupplierBuilder;
+import mezz.jei.library.plugins.vanilla.ingredients.FireworkRocketIngredientFactory;
+import mezz.jei.library.plugins.vanilla.ingredients.FireworkStarIngredientFactory;
+import mezz.jei.neoforge.platform.RecipeHelper;
+import net.minecraft.resources.ResourceLocation;
 import mezz.jei.api.recipe.vanilla.IJeiGrindstoneRecipe;
 import mezz.jei.common.platform.IPlatformIngredientHelper;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
@@ -10,6 +24,8 @@ import mezz.jei.library.gui.helpers.CraftingGridHelper;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingCategoryExtension;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
+import mezz.jei.library.plugins.vanilla.crafting.FireworkRocketRecipeCategoryExtension;
+import mezz.jei.library.plugins.vanilla.crafting.FireworkStarRecipeCategoryExtension;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.ShieldDecorationRecipeMaker;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
 import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipeMaker;
@@ -33,6 +49,10 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.FireworkRocketRecipe;
+import net.minecraft.world.item.crafting.FireworkStarRecipe;
+import net.minecraft.world.item.crafting.FireworkStarFadeRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingRecipe;
@@ -49,6 +69,63 @@ import java.util.stream.Collectors;
 @ForEachTest(groups = "synthetic_recipes")
 public final class SyntheticRecipeMakerGameTests {
 	private SyntheticRecipeMakerGameTests() {
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Firework displays use 1.21.1 recipe ingredients and craft rockets, stars, and faded stars.")
+	public static void fireworkRecipeDisplaysCraftExpectedOutputs(JeiGameTestHelper helper) {
+		IPlatformRecipeHelper recipeHelper = new RecipeHelper();
+		CraftingRecipeCategory category = createCraftingCategory();
+		category.addExtension(FireworkRocketRecipe.class, new FireworkRocketRecipeCategoryExtension(recipeHelper));
+		var stars = new FireworkStarRecipeCategoryExtension(recipeHelper);
+		category.addExtension(FireworkStarRecipe.class, stars);
+		category.addExtension(FireworkStarFadeRecipe.class, stars);
+		List<CraftingRecipe> recipes = List.of(
+			new FireworkRocketRecipe(CraftingBookCategory.MISC),
+			new FireworkStarRecipe(CraftingBookCategory.MISC),
+			new FireworkStarFadeRecipe(CraftingBookCategory.MISC)
+		);
+
+		// Resolve JEI's displays, then craft them through the target's actual crafting table.
+		List<ItemStack> outputs = new ArrayList<>();
+		for (int i = 0; i < recipes.size(); i++) {
+			ResourceLocation key = ResourceLocation.fromNamespaceAndPath("jei", "firework_test_" + i);
+			RecipeHolder<CraftingRecipe> holder = new RecipeHolder<>(key, recipes.get(i));
+			List<ItemStack> inputs = getFireworkInputGrid(helper, category, holder, FocusGroup.EMPTY);
+			outputs.add(helper.craftInCraftingTable(inputs));
+		}
+
+		// Focused decorated outputs must retain every shape, dye, fade, trail, and flight duration.
+		List<ItemStack> samples = new ArrayList<>(FireworkRocketIngredientFactory.create());
+		samples.addAll(FireworkStarIngredientFactory.create());
+		for (ItemStack sample : samples) {
+			CraftingRecipe recipe;
+			int count = 1;
+			if (sample.is(Items.FIREWORK_ROCKET)) {
+				recipe = recipes.get(0);
+				count = 3;
+			} else if (sample.get(DataComponents.FIREWORK_EXPLOSION).fadeColors().isEmpty()) {
+				recipe = recipes.get(1);
+			} else {
+				recipe = recipes.get(2);
+			}
+			RecipeHolder<CraftingRecipe> holder = new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("jei", "focused_firework"), recipe);
+			Focus<ItemStack> focus = new Focus<>(RecipeIngredientRole.OUTPUT, TypedIngredient.createUnvalidated(VanillaTypes.ITEM_STACK, sample));
+			List<ItemStack> inputs = getFireworkInputGrid(helper, category, holder, focus);
+			ItemStack actual = helper.craftInCraftingTable(inputs);
+			helper.assertTrue(!actual.isEmpty(), "Focused firework display should craft an output");
+			helper.assertSameStack(sample.copyWithCount(count), actual, "Focused firework display should craft its decorated output");
+		}
+
+		helper.assertTrue(outputs.get(0).is(Items.FIREWORK_ROCKET), "Rocket display should craft rockets");
+		helper.assertEquals(3, outputs.get(0).getCount(), "Rocket recipe should preserve its three-item output");
+		helper.assertTrue(outputs.get(1).is(Items.FIREWORK_STAR), "Star display should craft a star");
+		helper.assertTrue(outputs.get(1).has(DataComponents.FIREWORK_EXPLOSION), "Star should retain its dye color");
+		helper.assertTrue(outputs.get(2).is(Items.FIREWORK_STAR), "Fading display should craft a star");
+		var faded = outputs.get(2).get(DataComponents.FIREWORK_EXPLOSION);
+		helper.assertTrue(faded != null && !faded.fadeColors().isEmpty(), "Faded star should include fade colors");
+		helper.succeed();
 	}
 
 	@GameTest
@@ -336,6 +413,31 @@ public final class SyntheticRecipeMakerGameTests {
 		return output;
 	}
 
+	private static List<ItemStack> getFireworkInputGrid(
+		JeiGameTestHelper helper,
+		CraftingRecipeCategory category,
+		RecipeHolder<CraftingRecipe> recipe,
+		IFocusGroup focuses
+	) {
+		IIngredientManager ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel());
+		List<IngredientSlotBuilder> inputs = new ArrayList<>();
+		IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager) {
+			@Override
+			public IRecipeSlotBuilder addSlot(RecipeIngredientRole role) {
+				IngredientSlotBuilder slot = new IngredientSlotBuilder(ingredientManager);
+				if (role == RecipeIngredientRole.INPUT) {
+					inputs.add(slot);
+				}
+				return slot;
+			}
+		};
+		category.setRecipe(builder, recipe, focuses);
+		helper.assertEquals(9, inputs.size(), "Firework display should supply the entire crafting grid");
+		return inputs.stream()
+			.map(slot -> slot.getAllIngredients().stream().flatMap(ingredient -> ingredient.getItemStack().stream()).findFirst().orElse(ItemStack.EMPTY))
+			.toList();
+	}
+
 	private static List<ItemStack> getCraftingInputGrid(
 		JeiGameTestHelper helper,
 		CraftingRecipeCategory craftingCategory,
@@ -451,6 +553,21 @@ public final class SyntheticRecipeMakerGameTests {
 		}
 
 		@Override
+		public FireworkRocketRecipeData getFireworkRocketRecipeData(FireworkRocketRecipe recipe) {
+			return delegate.getFireworkRocketRecipeData(recipe);
+		}
+
+		@Override
+		public FireworkStarRecipeData getFireworkStarRecipeData(FireworkStarRecipe recipe) {
+			return delegate.getFireworkStarRecipeData(recipe);
+		}
+
+		@Override
+		public FireworkStarFadeRecipeData getFireworkStarFadeRecipeData(FireworkStarFadeRecipe recipe) {
+			return delegate.getFireworkStarFadeRecipeData(recipe);
+		}
+
+		@Override
 		public ItemStack getGrindstoneResult(GrindstoneMenu grindstoneMenu, ItemStack input1, ItemStack input2) {
 			return delegate.getGrindstoneResult(grindstoneMenu, input1, input2);
 		}
@@ -476,7 +593,7 @@ public final class SyntheticRecipeMakerGameTests {
 	private record AnvilResult(ItemStack output, int levelCost) {
 	}
 
-	private static final class TestRecipeHelper implements IPlatformRecipeHelper {
+	private static final class TestRecipeHelper extends RecipeHelper {
 		private static final TestRecipeHelper INSTANCE = new TestRecipeHelper();
 
 		@Override
