@@ -93,9 +93,8 @@ public class JustEnoughItemsClient {
 
 	private void onRecipesUpdatedEvent(RecipesUpdatedEvent event) {
 		List<RecipeHolder<?>> recipes = List.copyOf(event.getRecipeManager().getRecipes());
-		if (!recipes.isEmpty()) {
-			Internal.setClientSyncedRecipes(recipes);
-		}
+		// Every recipe update is authoritative in 1.21.1, including an empty recipe list.
+		Internal.setClientSyncedRecipes(recipes);
 	}
 
 	private void onRegisterReloadListenerEvent(RegisterClientReloadListenersEvent event) {
