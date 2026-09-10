@@ -39,6 +39,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.FireworkRocketRecipe;
+import net.minecraft.world.item.crafting.FireworkStarRecipe;
+import net.minecraft.world.item.crafting.FireworkStarFadeRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -552,6 +555,21 @@ public final class SyntheticRecipeMakerGameTests {
 		@Override
 		public Optional<Ingredient> getTemplate(SmithingRecipe recipe) {
 			return delegate.getTemplate(recipe);
+		}
+
+		@Override
+		public FireworkRocketRecipeData getFireworkRocketRecipeData(FireworkRocketRecipe recipe) {
+			return delegate.getFireworkRocketRecipeData(recipe);
+		}
+
+		@Override
+		public FireworkStarRecipeData getFireworkStarRecipeData(FireworkStarRecipe recipe) {
+			return delegate.getFireworkStarRecipeData(recipe);
+		}
+
+		@Override
+		public FireworkStarFadeRecipeData getFireworkStarFadeRecipeData(FireworkStarFadeRecipe recipe) {
+			return delegate.getFireworkStarFadeRecipeData(recipe);
 		}
 
 		@Override

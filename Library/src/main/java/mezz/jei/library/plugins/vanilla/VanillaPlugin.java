@@ -19,6 +19,7 @@ import mezz.jei.api.recipe.category.extensions.vanilla.smithing.IExtendableSmith
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
+import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModInfoRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
@@ -60,6 +61,9 @@ import mezz.jei.library.plugins.vanilla.cooking.fuel.FuelRecipeMaker;
 import mezz.jei.library.plugins.vanilla.cooking.fuel.SmeltingFuelCategory;
 import mezz.jei.library.plugins.vanilla.cooking.fuel.SmokingFuelCategory;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingCategoryExtension;
+import mezz.jei.library.plugins.vanilla.crafting.FireworkRocketRecipeCategoryExtension;
+import mezz.jei.library.plugins.vanilla.crafting.FireworkStarRecipeCategoryExtension;
+import mezz.jei.library.plugins.vanilla.crafting.FireworkStarRecipeManagerPlugin;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.library.plugins.vanilla.crafting.VanillaRecipes;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.IRecipeReplacer;
@@ -118,6 +122,9 @@ import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.FireworkRocketRecipe;
+import net.minecraft.world.item.crafting.FireworkStarRecipe;
+import net.minecraft.world.item.crafting.FireworkStarFadeRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -158,6 +165,8 @@ public class VanillaPlugin implements IModPlugin {
 	private SmithingRecipeCategory smithingCategory;
 	@Nullable
 	private BrewingExtensionHelper brewingExtensionHelper;
+	@Nullable
+	private FireworkStarRecipeCategoryExtension fireworkStarExtension;
 
 	@Override
 	public Identifier getPluginUid() {
@@ -205,6 +214,7 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void registerSlotDisplayInterpreters(ISlotDisplayInterpreterRegistration registration) {
+		FireworkRocketRecipeCategoryExtension.registerSlotDisplayInterpreter(registration);
 		registration.registerUniversal(SlotDisplay.Composite.TYPE, (slotDisplay, interpretationBuilder) -> {
 			for (SlotDisplay childDisplay : slotDisplay.contents()) {
 				interpretationBuilder.addChildDisplay(childDisplay);
@@ -290,10 +300,14 @@ public class VanillaPlugin implements IModPlugin {
 	@Override
 	public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
 		IExtendableCraftingRecipeCategory craftingCategory = registration.getCraftingCategory();
+		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
+		craftingCategory.addExtension(FireworkRocketRecipe.class, new FireworkRocketRecipeCategoryExtension(recipeHelper));
+		fireworkStarExtension = new FireworkStarRecipeCategoryExtension(recipeHelper);
+		craftingCategory.addExtension(FireworkStarRecipe.class, fireworkStarExtension);
+		craftingCategory.addExtension(FireworkStarFadeRecipe.class, fireworkStarExtension);
 		craftingCategory.addExtension(CraftingRecipe.class, new CraftingCategoryExtension());
 
 		IExtendableSmithingRecipeCategory smithingCategory = registration.getSmithingCategory();
-		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		smithingCategory.addExtension(SmithingTransformRecipe.class, new SmithingTransformCategoryExtension(recipeHelper));
 		smithingCategory.addExtension(SmithingTrimRecipe.class, new SmithingTrimCategoryExtension(recipeHelper));
 
@@ -303,6 +317,13 @@ public class VanillaPlugin implements IModPlugin {
 			brewingCategory,
 			registration.getJeiHelpers().getIngredientManager()
 		);
+	}
+
+	@Override
+	public void registerAdvanced(IAdvancedRegistration registration) {
+		ErrorUtil.checkNotNull(fireworkStarExtension, "fireworkStarExtension");
+		registration.addSimpleRecipeManagerPlugin(RecipeTypes.CRAFTING,
+			new FireworkStarRecipeManagerPlugin(Internal.getClientSyncedRecipes(), fireworkStarExtension));
 	}
 
 	@Override
@@ -328,10 +349,10 @@ public class VanillaPlugin implements IModPlugin {
 
 		VanillaRecipes vanillaRecipes = new VanillaRecipes(clientSyncedRecipes);
 
+		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		var craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
 		var handledCraftingRecipes = craftingRecipes.getHandled();
 		var unhandledCraftingRecipes = craftingRecipes.getUnhandled();
-		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		var specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, jeiHelpers, recipeHelper);
 
 		registration.addRecipes(RecipeTypes.CRAFTING, handledCraftingRecipes);

@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.contents.TranslatableContents;
@@ -20,7 +21,10 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.FireworkExplosion;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -157,7 +161,49 @@ public final class ItemStackListFactory {
 			addItemsFromRegistries(stackHelper, itemList, itemUidSet, features);
 		}
 
+		replaceUncraftableFireworkStar(stackHelper, itemList, itemUidSet);
+		addSamples(stackHelper, itemList, itemUidSet, Items.FIREWORK_ROCKET, FireworkRocketIngredientFactory.create());
+
 		return itemList;
+	}
+
+	private static void replaceUncraftableFireworkStar(StackHelper stackHelper, List<ItemStack> itemList, Set<Object> itemUidSet) {
+		for (int i = 0; i < itemList.size(); i++) {
+			ItemStack stack = itemList.get(i);
+			if (!stack.is(Items.FIREWORK_STAR)) {
+				continue;
+			}
+			FireworkExplosion explosion = stack.getOrDefault(DataComponents.FIREWORK_EXPLOSION, FireworkExplosion.DEFAULT);
+			if (explosion.colors().isEmpty()) {
+				itemList.remove(i);
+				Object itemKey = safeGetUid(stackHelper, stack);
+				if (itemKey != null) {
+					itemUidSet.remove(itemKey);
+				}
+				addSamplesAt(stackHelper, itemList, itemUidSet, FireworkStarIngredientFactory.create(), i);
+				return;
+			}
+		}
+	}
+
+	private static void addSamples(StackHelper stackHelper, List<ItemStack> itemList, Set<Object> itemUidSet, Item item, List<ItemStack> samples) {
+		for (int i = 0; i < itemList.size(); i++) {
+			if (!itemList.get(i).is(item)) {
+				continue;
+			}
+			// Keep samples next to their existing item, and don't reintroduce an item omitted from the list.
+			addSamplesAt(stackHelper, itemList, itemUidSet, samples, i + 1);
+			return;
+		}
+	}
+
+	private static void addSamplesAt(StackHelper stackHelper, List<ItemStack> itemList, Set<Object> itemUidSet, List<ItemStack> samples, int index) {
+		for (ItemStack sample : samples) {
+			Object itemKey = safeGetUid(stackHelper, sample);
+			if (itemKey != null && itemUidSet.add(itemKey)) {
+				itemList.add(index++, sample);
+			}
+		}
 	}
 
 	private static boolean isKnownEmptyTab(CreativeModeTab tab) {
