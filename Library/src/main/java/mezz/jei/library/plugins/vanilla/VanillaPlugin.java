@@ -18,6 +18,7 @@ import mezz.jei.api.recipe.category.extensions.vanilla.smithing.IExtendableSmith
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
+import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModInfoRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
@@ -55,6 +56,10 @@ import mezz.jei.library.plugins.vanilla.cooking.SmokingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.fuel.FuelRecipeMaker;
 import mezz.jei.library.plugins.vanilla.cooking.fuel.FurnaceFuelCategory;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingCategoryExtension;
+import mezz.jei.library.plugins.vanilla.crafting.FireworkRocketRecipeCategoryExtension;
+import mezz.jei.library.plugins.vanilla.crafting.FireworkStarRecipeCategoryExtension;
+import mezz.jei.library.plugins.vanilla.crafting.FireworkStarRecipeManagerPlugin;
+import mezz.jei.library.plugins.vanilla.crafting.FireworkRocketRecipeManagerPlugin;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.library.plugins.vanilla.crafting.VanillaRecipes;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.ShieldDecorationRecipeMaker;
@@ -109,6 +114,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.FireworkRocketRecipe;
+import net.minecraft.world.item.crafting.FireworkStarFadeRecipe;
+import net.minecraft.world.item.crafting.FireworkStarRecipe;
 import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
 import net.minecraft.world.item.crafting.ShulkerBoxColoring;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
@@ -149,6 +157,7 @@ public class VanillaPlugin implements IModPlugin {
 	private SmithingRecipeCategory smithingCategory;
 	@Nullable
 	private BrewingExtensionHelper brewingExtensionHelper;
+	@Nullable
 
 	@Override
 	public ResourceLocation getPluginUid() {
@@ -228,10 +237,13 @@ public class VanillaPlugin implements IModPlugin {
 	@Override
 	public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
 		IExtendableRecipeCategory<CraftingRecipe, ICraftingCategoryExtension> craftingCategory = registration.getCraftingCategory();
+		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
+		craftingCategory.addCategoryExtension(FireworkRocketRecipe.class, recipe -> new FireworkRocketRecipeCategoryExtension(recipe, recipeHelper));
+		craftingCategory.addCategoryExtension(FireworkStarRecipe.class, recipe -> new FireworkStarRecipeCategoryExtension(recipe, recipeHelper));
+		craftingCategory.addCategoryExtension(FireworkStarFadeRecipe.class, recipe -> new FireworkStarRecipeCategoryExtension(recipe, recipeHelper));
 		craftingCategory.addCategoryExtension(CraftingRecipe.class, r -> !r.isSpecial(), CraftingCategoryExtension::new);
 
 		IExtendableSmithingRecipeCategory smithingCategory = registration.getSmithingCategory();
-		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
 		smithingCategory.addExtension(UpgradeRecipe.class, new SmithingCategoryExtension<>(recipeHelper));
 
 		IExtendableBrewingRecipeCategory brewingCategory = registration.getBrewingCategory();
@@ -240,6 +252,16 @@ public class VanillaPlugin implements IModPlugin {
 			brewingCategory,
 			registration.getJeiHelpers().getIngredientManager()
 		);
+	}
+
+	@Override
+	public void registerAdvanced(IAdvancedRegistration registration) {
+		ClientLevel level = ErrorUtil.checkNotNull(Minecraft.getInstance().level, "minecraft.level");
+		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
+		registration.addTypedRecipeManagerPlugin(RecipeTypes.CRAFTING,
+			new FireworkStarRecipeManagerPlugin(level.getRecipeManager(), recipeHelper));
+		registration.addTypedRecipeManagerPlugin(RecipeTypes.CRAFTING,
+			new FireworkRocketRecipeManagerPlugin(level.getRecipeManager(), recipeHelper));
 	}
 
 	@Override
