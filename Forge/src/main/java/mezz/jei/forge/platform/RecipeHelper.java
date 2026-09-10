@@ -1,10 +1,18 @@
 package mezz.jei.forge.platform;
 
 import mezz.jei.common.platform.IPlatformRecipeHelper;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.GrindstoneMenu;
+import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.FireworkRocketItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.FireworkRocketRecipe;
+import net.minecraft.world.item.crafting.FireworkStarFadeRecipe;
+import net.minecraft.world.item.crafting.FireworkStarRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.SmithingRecipe;
@@ -13,7 +21,9 @@ import net.minecraft.world.item.crafting.SmithingTrimRecipe;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.common.crafting.IShapedRecipe;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class RecipeHelper implements IPlatformRecipeHelper {
 	@Override
@@ -30,6 +40,30 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 			return shapedRecipe.getRecipeHeight();
 		}
 		return 0;
+	}
+
+	@Override
+	public FireworkRocketRecipeData getFireworkRocketRecipeData(FireworkRocketRecipe recipe) {
+		return new FireworkRocketRecipeData(FireworkRocketRecipe.PAPER_INGREDIENT, FireworkRocketRecipe.GUNPOWDER_INGREDIENT, FireworkRocketRecipe.STAR_INGREDIENT, new ItemStack(Items.FIREWORK_ROCKET, 3));
+	}
+
+	@Override
+	public FireworkStarRecipeData getFireworkStarRecipeData(FireworkStarRecipe recipe) {
+		Map<FireworkRocketItem.Shape, Ingredient> shapes = FireworkStarRecipe.SHAPE_BY_ITEM.entrySet().stream()
+			.collect(Collectors.groupingBy(Map.Entry::getValue,
+				Collectors.collectingAndThen(Collectors.mapping(Map.Entry::getKey, Collectors.toList()),
+					items -> Ingredient.of(items.toArray(Item[]::new)))));
+		return new FireworkStarRecipeData(shapes, FireworkStarRecipe.TRAIL_INGREDIENT, FireworkStarRecipe.FLICKER_INGREDIENT,
+			FireworkStarRecipe.GUNPOWDER_INGREDIENT, getFireworkDyes(), new ItemStack(Items.FIREWORK_STAR));
+	}
+
+	@Override
+	public FireworkStarFadeRecipeData getFireworkStarFadeRecipeData(FireworkStarFadeRecipe recipe) {
+		return new FireworkStarFadeRecipeData(FireworkStarFadeRecipe.STAR_INGREDIENT, getFireworkDyes(), new ItemStack(Items.FIREWORK_STAR));
+	}
+
+	private static Ingredient getFireworkDyes() {
+		return Ingredient.of(BuiltInRegistries.ITEM.stream().filter(item -> item instanceof DyeItem).toArray(Item[]::new));
 	}
 
 	@Override
@@ -68,8 +102,7 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 	@SuppressWarnings("OptionalOfNullableMisuse")
 	@Override
 	public Optional<ResourceLocation> getRegistryNameForRecipe(Recipe<?> recipe) {
-		ResourceLocation id = recipe.getId();
-		return Optional.ofNullable(id);
+		return Optional.ofNullable(recipe.getId());
 	}
 
 	@Override

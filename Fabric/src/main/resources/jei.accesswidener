@@ -32,3 +32,13 @@ accessible field net/minecraft/client/gui/components/toasts/ToastComponent visib
 accessible class net/minecraft/client/gui/components/toasts/ToastComponent$ToastInstance
 
 accessible field net/minecraft/client/gui/components/EditBox canLoseFocus Z
+
+# Fireworks recipes
+accessible field net/minecraft/world/item/crafting/FireworkRocketRecipe PAPER_INGREDIENT Lnet/minecraft/world/item/crafting/Ingredient;
+accessible field net/minecraft/world/item/crafting/FireworkRocketRecipe GUNPOWDER_INGREDIENT Lnet/minecraft/world/item/crafting/Ingredient;
+accessible field net/minecraft/world/item/crafting/FireworkRocketRecipe STAR_INGREDIENT Lnet/minecraft/world/item/crafting/Ingredient;
+accessible field net/minecraft/world/item/crafting/FireworkStarRecipe SHAPE_BY_ITEM Ljava/util/Map;
+accessible field net/minecraft/world/item/crafting/FireworkStarRecipe TRAIL_INGREDIENT Lnet/minecraft/world/item/crafting/Ingredient;
+accessible field net/minecraft/world/item/crafting/FireworkStarRecipe FLICKER_INGREDIENT Lnet/minecraft/world/item/crafting/Ingredient;
+accessible field net/minecraft/world/item/crafting/FireworkStarRecipe GUNPOWDER_INGREDIENT Lnet/minecraft/world/item/crafting/Ingredient;
+accessible field net/minecraft/world/item/crafting/FireworkStarFadeRecipe STAR_INGREDIENT Lnet/minecraft/world/item/crafting/Ingredient;
