@@ -11,6 +11,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.Connection;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.world.item.crafting.RecipeMap;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -30,8 +31,8 @@ import java.lang.ref.WeakReference;
  * so it does not briefly start with fallback client recipes.
  *
  * Connections to vanilla servers get an empty recipe event, which lets JEI continue with fallback recipes.
- * Datapack reloads can fire another recipe event after JEI has started; if that event provides
- * synced recipes, JEI restarts using the synced recipes.
+ * Datapack reloads can fire another recipe event after JEI has started. JEI restarts when that
+ * event changes the recipe source between synced recipes and fallback client recipes.
  */
 public class StartEventObserver implements ResourceManagerReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -97,8 +98,17 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 		if (!observeConnectionEvent(event)) {
 			return;
 		}
+		boolean hadSyncedRecipes = Internal.hasClientSyncedRecipes();
+		RecipeMap recipeMap = event.getRecipeMap();
+		boolean receivedSyncedRecipes = !event.getRecipeTypes().isEmpty();
+		if (receivedSyncedRecipes) {
+			Internal.setClientSyncedRecipes(recipeMap);
+		} else if (hadSyncedRecipes) {
+			Internal.clearClientRecipes();
+		}
+
 		this.observedRecipeSync = true;
-		if (this.state == State.JEI_STARTED && Internal.hasClientSyncedRecipes()) {
+		if (this.state == State.JEI_STARTED && (hadSyncedRecipes || receivedSyncedRecipes)) {
 			restart();
 		} else {
 			startIfReady();
