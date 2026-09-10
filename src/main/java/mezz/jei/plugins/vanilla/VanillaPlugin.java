@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.RecipeFireworks;
 import net.minecraft.item.crafting.RecipeTippedArrow;
 import net.minecraft.item.crafting.ShieldRecipes;
 import net.minecraftforge.common.MinecraftForge;
@@ -62,6 +63,7 @@ import mezz.jei.plugins.vanilla.brewing.BrewingRecipeMaker;
 import mezz.jei.plugins.vanilla.brewing.PotionSubtypeInterpreter;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.plugins.vanilla.crafting.CraftingRecipeChecker;
+import mezz.jei.plugins.vanilla.crafting.FireworkRecipeMaker;
 import mezz.jei.plugins.vanilla.crafting.ShapedOreRecipeWrapper;
 import mezz.jei.plugins.vanilla.crafting.ShapedRecipesWrapper;
 import mezz.jei.plugins.vanilla.crafting.ShapelessRecipeWrapper;
@@ -178,10 +180,14 @@ public class VanillaPlugin implements IModPlugin {
 		List<IRecipe> validRecipes = result.getLeft();
 		Set<Class<? extends IRecipe>> recipeTypes = result.getRight();
 
+		validRecipes.removeIf(RecipeFireworks.class::isInstance);
 		registry.addRecipes(validRecipes, VanillaRecipeCategoryUid.CRAFTING);
 		registry.addRecipes(SmeltingRecipeMaker.getFurnaceRecipes(jeiHelpers), VanillaRecipeCategoryUid.SMELTING);
 		registry.addRecipes(FuelRecipeMaker.getFuelRecipes(ingredientRegistry, jeiHelpers), VanillaRecipeCategoryUid.FUEL);
 		registry.addRecipes(BrewingRecipeMaker.getBrewingRecipes(ingredientRegistry), VanillaRecipeCategoryUid.BREWING);
+		if (recipeTypes.contains(RecipeFireworks.class)) {
+			registry.addRecipes(FireworkRecipeMaker.getFireworkRecipes(), VanillaRecipeCategoryUid.CRAFTING);
+		}
 		if (recipeTypes.contains(RecipeTippedArrow.class)) {
 			registry.addRecipes(TippedArrowRecipeMaker.getTippedArrowRecipes(), VanillaRecipeCategoryUid.CRAFTING);
 		}

@@ -67,7 +67,43 @@ public final class ItemStackListFactory {
 			addItemAndSubItems(stackHelper, item, itemList, itemNameSet);
 		}
 
+		replaceUncraftableFireworkStar(stackHelper, itemList, itemNameSet);
+		addSamples(stackHelper, itemList, itemNameSet, Items.FIREWORKS, FireworkRocketIngredientFactory.create());
+
 		return itemList;
+	}
+
+	private void replaceUncraftableFireworkStar(StackHelper stackHelper, List<ItemStack> itemList, Set<String> itemNameSet) {
+		for (int i = 0; i < itemList.size(); i++) {
+			ItemStack stack = itemList.get(i);
+			if (stack.getItem() != Items.FIREWORK_CHARGE || FireworkStarIngredientFactory.hasColors(stack)) {
+				continue;
+			}
+			itemList.remove(i);
+			String itemKey = getItemKey(stackHelper, stack);
+			if (itemKey != null) {
+				itemNameSet.remove(itemKey);
+			}
+			addSamplesAt(stackHelper, itemList, itemNameSet, FireworkStarIngredientFactory.create(), i);
+			return;
+		}
+	}
+
+	private void addSamples(StackHelper stackHelper, List<ItemStack> itemList, Set<String> itemNameSet, Item item, List<ItemStack> samples) {
+		for (int i = 0; i < itemList.size(); i++) {
+			if (itemList.get(i).getItem() == item) {
+				addSamplesAt(stackHelper, itemList, itemNameSet, samples, i + 1);
+				return;
+			}
+		}
+	}
+
+	private void addSamplesAt(StackHelper stackHelper, List<ItemStack> itemList, Set<String> itemNameSet, List<ItemStack> samples, int index) {
+		for (ItemStack sample : samples) {
+			if (addItemStackAt(stackHelper, sample, itemList, itemNameSet, index)) {
+				index++;
+			}
+		}
 	}
 
 	private void addItemAndSubItems(StackHelper stackHelper, @Nullable Item item, List<ItemStack> itemList, Set<String> itemNameSet) {
@@ -113,20 +149,30 @@ public final class ItemStackListFactory {
 	}
 
 	private void addItemStack(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<String> itemNameSet) {
-		final String itemKey;
+		addItemStackAt(stackHelper, stack, itemList, itemNameSet, itemList.size());
+	}
 
+	private boolean addItemStackAt(StackHelper stackHelper, ItemStack stack, List<ItemStack> itemList, Set<String> itemNameSet, int index) {
+		String itemKey = getItemKey(stackHelper, stack);
+		if (itemKey == null) {
+			return false;
+		}
+		if (itemNameSet.add(itemKey)) {
+			itemList.add(index, stack);
+			return true;
+		}
+		return false;
+	}
+
+	@Nullable
+	private String getItemKey(StackHelper stackHelper, ItemStack stack) {
 		try {
 			addFallbackSubtypeInterpreter(stack);
-			itemKey = stackHelper.getUniqueIdentifierForStack(stack, StackHelper.UidMode.FULL);
+			return stackHelper.getUniqueIdentifierForStack(stack, StackHelper.UidMode.FULL);
 		} catch (RuntimeException | LinkageError e) {
 			String stackInfo = ErrorUtil.getItemStackInfo(stack);
 			Log.get().error("Couldn't get unique name for itemStack {}", stackInfo, e);
-			return;
-		}
-
-		if (!itemNameSet.contains(itemKey)) {
-			itemNameSet.add(itemKey);
-			itemList.add(stack);
+			return null;
 		}
 	}
 

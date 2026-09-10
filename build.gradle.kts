@@ -345,6 +345,7 @@ tasks.named<Test>("test") {
 	include("mezz/jei/test/**")
 	include("mezz/jei/gui/recipes/**")
 	include("mezz/jei/plugins/vanilla/anvil/**")
+	include("mezz/jei/plugins/vanilla/crafting/FireworkRecipeIntegrationTest.class")
 	exclude("mezz/jei/test/lib/**")
 	outputs.upToDateWhen { false }
 	testLogging {
