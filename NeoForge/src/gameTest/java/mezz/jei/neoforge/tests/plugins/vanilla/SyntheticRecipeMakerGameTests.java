@@ -10,6 +10,8 @@ import mezz.jei.library.gui.helpers.CraftingGridHelper;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingCategoryExtension;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
+import mezz.jei.library.plugins.vanilla.crafting.FireworkRocketRecipeCategoryExtension;
+import mezz.jei.library.plugins.vanilla.crafting.FireworkStarRecipeCategoryExtension;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.ShieldDecorationRecipeMaker;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
 import mezz.jei.library.plugins.vanilla.grindstone.GrindstoneRecipeMaker;
@@ -20,6 +22,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.inventory.AnvilMenu;
@@ -32,6 +36,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.FireworkRocketRecipe;
+import net.minecraft.world.item.crafting.FireworkStarRecipe;
+import net.minecraft.world.item.crafting.FireworkStarFadeRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingRecipe;
@@ -53,6 +62,42 @@ import java.util.stream.Collectors;
 @ForEachTest(groups = "synthetic_recipes")
 public final class SyntheticRecipeMakerGameTests {
 	private SyntheticRecipeMakerGameTests() {
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Firework displays use 1.21.11 recipe ingredients and craft rockets, stars, and faded stars.")
+	public static void fireworkRecipeDisplaysCraftExpectedOutputs(JeiGameTestHelper helper) {
+		ContextMap displayContext = createDisplayContext(helper);
+		IPlatformRecipeHelper recipeHelper = Services.PLATFORM.getRecipeHelper();
+		CraftingRecipeCategory category = createCraftingCategory();
+		category.addExtension(FireworkRocketRecipe.class, new FireworkRocketRecipeCategoryExtension(recipeHelper));
+		var stars = new FireworkStarRecipeCategoryExtension(recipeHelper);
+		category.addExtension(FireworkStarRecipe.class, stars);
+		category.addExtension(FireworkStarFadeRecipe.class, stars);
+		List<CraftingRecipe> recipes = List.of(
+			new FireworkRocketRecipe(CraftingBookCategory.MISC),
+			new FireworkStarRecipe(CraftingBookCategory.MISC),
+			new FireworkStarFadeRecipe(CraftingBookCategory.MISC)
+		);
+
+		// Resolve JEI's displays, then craft them through the target's actual crafting table.
+		List<ItemStack> outputs = new ArrayList<>();
+		for (int i = 0; i < recipes.size(); i++) {
+			ResourceKey<Recipe<?>> key = ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath("jei", "firework_test_" + i));
+			RecipeHolder<CraftingRecipe> holder = new RecipeHolder<>(key, recipes.get(i));
+			List<ItemStack> inputs = getCraftingInputGrid(helper, displayContext, category, holder);
+			outputs.add(helper.craftInCraftingTable(inputs));
+		}
+
+		helper.assertTrue(outputs.get(0).is(Items.FIREWORK_ROCKET), "Rocket display should craft rockets");
+		helper.assertEquals(3, outputs.get(0).getCount(), "Rocket recipe should preserve its three-item output");
+		helper.assertTrue(outputs.get(1).is(Items.FIREWORK_STAR), "Star display should craft a star");
+		helper.assertTrue(outputs.get(1).has(DataComponents.FIREWORK_EXPLOSION), "Star should retain its dye color");
+		helper.assertTrue(outputs.get(2).is(Items.FIREWORK_STAR), "Fading display should craft a star");
+		var faded = outputs.get(2).get(DataComponents.FIREWORK_EXPLOSION);
+		helper.assertTrue(faded != null && !faded.fadeColors().isEmpty(), "Faded star should include fade colors");
+		helper.succeed();
 	}
 
 	@GameTest
@@ -464,6 +509,21 @@ public final class SyntheticRecipeMakerGameTests {
 		@Override
 		public Optional<Ingredient> getTemplate(SmithingRecipe recipe) {
 			return delegate.getTemplate(recipe);
+		}
+
+		@Override
+		public FireworkRocketRecipeData getFireworkRocketRecipeData(FireworkRocketRecipe recipe) {
+			return delegate.getFireworkRocketRecipeData(recipe);
+		}
+
+		@Override
+		public FireworkStarRecipeData getFireworkStarRecipeData(FireworkStarRecipe recipe) {
+			return delegate.getFireworkStarRecipeData(recipe);
+		}
+
+		@Override
+		public FireworkStarFadeRecipeData getFireworkStarFadeRecipeData(FireworkStarFadeRecipe recipe) {
+			return delegate.getFireworkStarFadeRecipeData(recipe);
 		}
 
 		@Override
