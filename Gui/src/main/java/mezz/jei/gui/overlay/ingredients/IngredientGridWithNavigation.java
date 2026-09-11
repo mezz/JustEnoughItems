@@ -246,6 +246,11 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		return this.backgroundArea;
 	}
 
+	public ImmutableRect2i getIngredientGridArea() {
+		updateLayoutIfDirty();
+		return this.ingredientGrid.getArea();
+	}
+
 	public ImmutableRect2i getSlotBackgroundArea() {
 		return this.slotBackgroundArea;
 	}
