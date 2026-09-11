@@ -1,7 +1,8 @@
 package mezz.jei.common.config.file;
 
+import mezz.jei.common.Internal;
 import mezz.jei.common.config.ConfigManager;
-import mezz.jei.common.util.DeduplicatingRunner;
+import net.mezzdev.deduplicatingrunner.DeduplicatingRunner;
 import net.minecraft.locale.Language;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +23,7 @@ public class ConfigSchema implements IConfigSchema {
 	@Unmodifiable
 	private final List<ConfigCategory> categories;
 	private final AtomicBoolean needsLoad = new AtomicBoolean(true);
-	private final DeduplicatingRunner delayedSave = new DeduplicatingRunner(SAVE_DELAY_TIME);
+	private final DeduplicatingRunner delayedSave = new DeduplicatingRunner(SAVE_DELAY_TIME, Internal.getDelayedExecutor());
 
 	public ConfigSchema(Path path, List<ConfigCategoryBuilder> categoryBuilders) {
 		this.path = path;

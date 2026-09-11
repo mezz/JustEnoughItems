@@ -29,6 +29,7 @@ val parchmentVersionForge: String by extra
 val modrinthId: String by extra
 val bakedSubstringIndexVersion: String by extra
 val suffixtreeVersion: String by extra
+val deduplicatingRunnerVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -134,6 +135,9 @@ dependencies {
 		compileOnly(it)
 	}
 	modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
+		isTransitive = false
+	}
+	modShadeImplementation("net.mezzdev:deduplicating-runner:${deduplicatingRunnerVersion}") {
 		isTransitive = false
 	}
 	modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {

@@ -45,6 +45,7 @@ val amecsKeyModifiersVersionFabric: String by extra
 val amecsMinecraftVersion: String by extra
 val bakedSubstringIndexVersion: String by extra
 val suffixtreeVersion: String by extra
+val deduplicatingRunnerVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -91,6 +92,14 @@ dependencyProjects.forEach {
 }
 project.evaluationDependsOn(debugProject.path)
 val debugSourceSet = debugProject.sourceSets.main.get()
+
+val embeddedLibraries: Configuration by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+configurations.implementation {
+    extendsFrom(embeddedLibraries)
+}
 
 val commonTestFixturesSourceSet = project(":Common").sourceSets.named("testFixtures").get()
 val commonTestFixturesClasses = commonTestFixturesSourceSet.output.classesDirs
@@ -197,6 +206,9 @@ dependencies {
         isTransitive = false
     }
     modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
+        isTransitive = false
+    }
+    embeddedLibraries("net.mezzdev:deduplicating-runner:${deduplicatingRunnerVersion}") {
         isTransitive = false
     }
     changelogHtml(project(":Changelog"))
@@ -365,10 +377,12 @@ tasks.matching { it.name in debugRunTasks }.configureEach {
 }
 
 tasks.jar {
+    dependsOn(embeddedLibraries)
     from(sourceSets.main.get().output)
     for (p in dependencyProjects) {
         from(p.sourceSets.main.get().output)
     }
+    from(embeddedLibraries.map(::zipTree))
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 

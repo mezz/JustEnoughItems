@@ -19,6 +19,7 @@ val modJavaVersion: String by extra
 val bakedSubstringIndexVersion: String by extra
 val suffixtreeVersion: String by extra
 val neoformVersionAndTimestamp = "$minecraftVersion-$neoformTimestamp"
+val deduplicatingRunnerVersion: String by extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
 base {
@@ -100,6 +101,9 @@ dependencies {
         name = "log4j-api",
         version = "2.17.0"
     )
+    implementation("net.mezzdev:deduplicating-runner:$deduplicatingRunnerVersion") {
+        isTransitive = false
+    }
     implementation(
         group = "net.mezzdev",
         name = "baked-substring-index",
@@ -172,7 +176,13 @@ publishing {
                     "artifactId" to it.base.archivesName.get(),
                     "version" to it.version
                 )
-            }
+            } + listOf(
+                mapOf(
+                    "groupId" to "net.mezzdev",
+                    "artifactId" to "deduplicating-runner",
+                    "version" to deduplicatingRunnerVersion
+                )
+            )
 
             pom.withXml {
                 val dependenciesNode = asNode().appendNode("dependencies")
