@@ -9,6 +9,7 @@ import java.util.Set;
 public interface IClientConfig {
 	int minRecipeGuiHeight = 175;
 	int defaultRecipeGuiHeight = 350;
+	int maximumRecipeGuiHeight = 7680;
 	boolean defaultCenterSearchBar = false;
 
 	boolean isCenterSearchBarEnabled();
