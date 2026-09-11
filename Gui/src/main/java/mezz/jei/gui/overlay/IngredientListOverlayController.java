@@ -169,15 +169,15 @@ class IngredientListOverlayController {
 			lookupHistory.getDisplayHeight()
 		);
 
-		layout.lookupHistoryArea()
-			.ifPresent(lookupHistoryArea -> {
-				this.lookupHistory.updateBounds(lookupHistoryArea, guiExclusionAreas, null);
-				this.lookupHistory.updateLayout();
-			});
-
 		IElement<?> pageAnchorElement = this.contentsPageNavigation.getPageAnchorElement();
 		this.contentsView.updateBounds(layout.availableContentsArea(), guiExclusionAreas, null);
 		this.contentsPageNavigation.updateLayoutKeepingPageAnchorVisible(pageAnchorElement);
+
+		layout.lookupHistoryArea()
+			.ifPresent(lookupHistoryArea -> {
+				this.lookupHistory.updateBounds(alignLookupHistoryArea(lookupHistoryArea), guiExclusionAreas, null);
+				this.lookupHistory.updateLayout();
+			});
 
 		IngredientListOverlayLayout.SearchAndConfigAreas searchAndConfigAreas = layout.getSearchAndConfigAreas(
 			this.contentsView.hasRoom(),
@@ -186,6 +186,14 @@ class IngredientListOverlayController {
 		this.searchField.setValue(filterTextSource.getFilterText());
 		this.searchField.updateBounds(searchAndConfigAreas.searchArea());
 		this.configButton.updateBounds(searchAndConfigAreas.configButtonArea());
+	}
+
+	private ImmutableRect2i alignLookupHistoryArea(ImmutableRect2i lookupHistoryArea) {
+		ImmutableRect2i ingredientGridArea = this.contentsView.getIngredientGridArea();
+		if (ingredientGridArea.isEmpty()) {
+			return lookupHistoryArea;
+		}
+		return lookupHistoryArea.matchWidthAndX(ingredientGridArea);
 	}
 
 	interface Config {
