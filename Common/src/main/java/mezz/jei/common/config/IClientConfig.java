@@ -7,6 +7,7 @@ import java.util.List;
 public interface IClientConfig {
 	int minRecipeGuiHeight = 175;
 	int defaultRecipeGuiHeight = 350;
+	int maximumRecipeGuiHeight = 7680;
 	boolean defaultCenterSearchBar = false;
 
 	IJeiConfigValue<Boolean> centerSearchBarEnabled();

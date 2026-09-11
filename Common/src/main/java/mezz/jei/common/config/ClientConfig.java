@@ -74,7 +74,7 @@ public final class ClientConfig implements IClientConfig {
 			"recipeGuiHeight",
 			defaultRecipeGuiHeight,
 			minRecipeGuiHeight,
-			Integer.MAX_VALUE
+			maximumRecipeGuiHeight
 		);
 		toastReflowEnabled = appearance.addBoolean("toastReflowEnabled", true);
 
