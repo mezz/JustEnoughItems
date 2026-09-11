@@ -1,5 +1,3 @@
-import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
-import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 plugins {
@@ -31,22 +29,7 @@ repositories {
     mavenCentral()
 }
 
-val apiProjectPaths = listOf(":CommonApi", ":FabricApi", ":NeoForgeApi")
-apiProjectPaths.forEach { apiProjectPath ->
-    val apiProject = project(apiProjectPath)
-    apiProject.pluginManager.apply("net.neoforged.jarcompatibilitychecker")
-    apiProject.pluginManager.withPlugin("java") {
-        apiProject.tasks.named<CompatibilityTask>("checkJarCompatibility") {
-            group = LifecycleBasePlugin.VERIFICATION_GROUP
-            description = "Checks $apiProjectPath against the latest published API jar in the same major version."
-            mavens.set(listOf("https://maven.blamejared.com"))
-            // Match the previous CLI check and avoid loading the full Minecraft compile classpath.
-            libraries.setFrom(emptyList<Any>())
-            nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
-            fail.set(true)
-        }
-    }
-}
+val apiProjectPaths = listOf(":Common", ":Fabric", ":NeoForge")
 
 val checkApiCompatibility = tasks.register("checkApiCompatibility") {
     group = LifecycleBasePlugin.VERIFICATION_GROUP

@@ -1,6 +1,10 @@
 import mezz.jei.gradle.gradleProperty
+import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
+import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
+import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.slf4j.event.Level
 
 plugins {
@@ -8,6 +12,7 @@ plugins {
     id("java")
     id("java-test-fixtures")
     id("net.neoforged.moddev")
+    id("net.neoforged.jarcompatibilitychecker")
     id("maven-publish")
 }
 
@@ -22,16 +27,31 @@ val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
 val suffixtreeVersion = gradleProperty("suffixtreeVersion")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
+val apiArchivesName = "${modId}-${minecraftVersion}-common-api"
 base {
     archivesName.set(baseArchivesName)
 }
 
 val generatedJeiGuiColorsResources = layout.buildDirectory.dir("generated/resources/jeiGuiColors")
 
-val dependencyProjectPaths = listOf(":CommonApi")
+val apiSourceSet = sourceSets.create("api") {
+    resources.setSrcDirs(emptyList<String>())
+    output.setResourcesDir(layout.buildDirectory.dir("classes/java/api"))
+}
+
+configurations.create("apiClassesElements") {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+    outgoing.capability("${project.group}:$apiArchivesName:${project.version}")
+    outgoing.artifact(layout.buildDirectory.dir("classes/java/api")) {
+        builtBy(tasks.named(apiSourceSet.classesTaskName))
+        type = "directory"
+    }
+}
 
 neoForge {
     neoFormVersion = neoformVersionAndTimestamp
+    addModdingDependenciesTo(apiSourceSet)
     addModdingDependenciesTo(sourceSets.test.get())
 
     runs {
@@ -71,6 +91,7 @@ sourceSets {
 }
 
 dependencies {
+    implementation(apiSourceSet.output)
     implementation("org.jetbrains:annotations:26.0.2")
     implementation("com.google.guava:guava:33.5.0-jre")
     implementation("it.unimi.dsi:fastutil:8.5.18")
@@ -80,9 +101,6 @@ dependencies {
     }
     implementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
-    }
-    dependencyProjectPaths.forEach {
-        implementation(project(it))
     }
     testFixturesCompileOnly("org.jspecify:jspecify:1.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
@@ -118,8 +136,52 @@ tasks.withType<JavaCompile> {
     }
 }
 
+val apiJarTask = tasks.register<Jar>("apiJar") {
+    archiveBaseName.set(apiArchivesName)
+    from(apiSourceSet.output)
+    manifest.attributes["Implementation-Title"] = "jar"
+}
+
+val apiSourcesJarTask = tasks.register<Jar>("apiSourcesJar") {
+    archiveBaseName.set(apiArchivesName)
+    archiveClassifier.set("sources")
+    from(apiSourceSet.allSource)
+    manifest.attributes["Implementation-Title"] = "sourcesJar"
+}
+
+configurations.create("apiSourcesElements") {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+    outgoing.capability("${project.group}:$apiArchivesName:${project.version}")
+    outgoing.artifact(apiSourcesJarTask)
+}
+
+tasks.assemble {
+    dependsOn(apiJarTask, apiSourcesJarTask)
+}
+
+tasks.named<CompatibilityTask>("checkJarCompatibility") {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = "Checks the Common API against the latest published API jar in the same major version."
+    mavens.set(listOf("https://maven.blamejared.com"))
+    // The plugin defaults auxiliary libraries to the main compile classpath.
+    // This API check intentionally runs without them, avoiding the full Minecraft classpath.
+    libraries.setFrom(emptyList<Any>())
+    nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
+    fail.set(true)
+    inputJar.set(apiJarTask.flatMap { it.archiveFile })
+    artifact.set("${project.group}:$apiArchivesName")
+}
+
 publishing {
     publications {
+        register<MavenPublication>("commonApiJar") {
+            // Project dependencies should resolve to the main publication's coordinates.
+            (this as MavenPublicationInternal).isAlias = true
+            artifactId = apiArchivesName
+            artifact(apiJarTask)
+            artifact(apiSourcesJarTask)
+        }
         register<MavenPublication>("commonJar") {
             artifactId = base.archivesName.get()
             artifact(tasks.jar)
