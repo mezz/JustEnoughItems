@@ -1,3 +1,4 @@
+import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import net.neoforged.moddevgradle.dsl.ModModel
@@ -45,8 +46,14 @@ val modrinthToken: String? by project
 val curseforgeApikey: String? by project
 
 val baseArchivesName = "${modId}-${minecraftVersion}-neoforge"
+val apiArchivesName = "${modId}-${minecraftVersion}-neoforge-api"
 base {
 	archivesName.set(baseArchivesName)
+}
+
+val apiSourceSet = sourceSets.create("api") {
+    resources.setSrcDirs(emptyList<String>())
+    compileClasspath += configurations.compileClasspath.get()
 }
 
 val gameTestJunitResultsDir = layout.buildDirectory.dir("test-results/gameTest")
@@ -72,10 +79,10 @@ sourceSets {
 
 val dependencyProjects: List<Project> = listOf(
 	project(":Common"),
-	project(":CommonApi"),
+
 	project(":Library"),
 	project(":Gui"),
-	project(":NeoForgeApi"),
+
 )
 val debugProject = project(":Debug")
 
@@ -83,6 +90,16 @@ dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
 }
 project.evaluationDependsOn(debugProject.path)
+
+val commonApiSourceSet = project(":Common").sourceSets.named("api").get()
+apiSourceSet.compileClasspath += commonApiSourceSet.output
+
+sourceSets.configureEach {
+    if (name != "api") {
+        compileClasspath += apiSourceSet.output + commonApiSourceSet.output
+        runtimeClasspath += apiSourceSet.output + commonApiSourceSet.output
+    }
+}
 
 configurations.named("gameTestImplementation") {
 	extendsFrom(configurations.implementation.get())
@@ -95,6 +112,7 @@ configurations.named("clientGameTestCompileOnly") {
 }
 
 tasks.named<JavaCompile>(sourceSets.main.get().compileJavaTaskName) {
+    source(commonApiSourceSet.allJava)
     dependencyProjects.forEach {
         source(it.sourceSets.main.get().allSource)
     }
@@ -218,6 +236,7 @@ neoForge {
 	mods {
 		create("jei") {
 			sourceSet(sourceSets.main.get())
+				sourceSet(apiSourceSet)
 			for (dependencyProject in dependencyProjects) {
 				sourceSet(dependencyProject.sourceSets.main.get())
 			}
@@ -406,6 +425,7 @@ clientRecipeSyncRuns.forEach { (runName, _) ->
 }
 
 tasks.jar {
+    from(apiSourceSet.output)
 	from(sourceSets.main.get().output)
 	for (p in dependencyProjects) {
 		from(p.sourceSets.main.get().output)
@@ -415,6 +435,8 @@ tasks.jar {
 }
 
 val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
+    from(apiSourceSet.allJava)
+    from(commonApiSourceSet.allJava)
 	from(sourceSets.main.get().allJava)
 	for (p in dependencyProjects) {
 		from(p.sourceSets.main.get().allJava)
@@ -482,8 +504,44 @@ tasks.assemble {
 	dependsOn(sourcesJarTask)
 }
 
+val apiJarTask = tasks.register<Jar>("apiJar") {
+    archiveBaseName.set(apiArchivesName)
+    from(apiSourceSet.output)
+    manifest.attributes["Implementation-Title"] = "jar"
+}
+
+val apiSourcesJarTask = tasks.register<Jar>("apiSourcesJar") {
+    archiveBaseName.set(apiArchivesName)
+    archiveClassifier.set("sources")
+    from(apiSourceSet.allSource)
+    manifest.attributes["Implementation-Title"] = "sourcesJar"
+}
+
+tasks.assemble {
+    dependsOn(apiJarTask, apiSourcesJarTask)
+}
+
 publishing {
 	publications {
+        register<MavenPublication>("neoforgeApiJar") {
+            // Project dependencies continue to use the main publication's coordinates.
+            (this as MavenPublicationInternal).isAlias = true
+            artifactId = apiArchivesName
+            artifact(apiJarTask)
+            artifact(apiSourcesJarTask)
+            val apiDependencyInfo = mapOf(
+                "groupId" to project.group,
+                "artifactId" to "${modId}-${minecraftVersion}-common-api",
+                "version" to project.version
+            )
+            pom.withXml {
+                val dependency = asNode().appendNode("dependencies").appendNode("dependency")
+                apiDependencyInfo.forEach { (key, value) ->
+                    dependency.appendNode(key, value)
+                }
+            }
+        }
+
 		register<MavenPublication>("neoforgeJar") {
 			artifactId = baseArchivesName
 			artifact(shadedJar)

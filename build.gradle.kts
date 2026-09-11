@@ -67,7 +67,6 @@ val githubUrl: String by extra
 val forgeLoaderVersionRange: String by extra
 val neoforgeVersionRange: String by extra
 val neoforgeLoaderVersionRange: String by extra
-val parchmentVersionForge: String by extra
 val minecraftVersion: String by extra
 val minecraftVersionRange: String by extra
 val modAuthor: String by extra
@@ -177,7 +176,7 @@ subprojects {
     }
 }
 
-val apiProjectPaths = listOf(":CommonApi", ":FabricApi", ":NeoForgeApi", ":ForgeApi")
+val apiProjectPaths = listOf(":Common", ":Fabric", ":NeoForge", ":Forge")
 val apiCompatibilityReports = apiProjectPaths.associateWith { apiProjectPath ->
     project(apiProjectPath).layout.buildDirectory.file("checkJarCompatibility/output.json")
 }
@@ -190,6 +189,9 @@ apiProjectPaths.forEach { apiProjectPath ->
             group = LifecycleBasePlugin.VERIFICATION_GROUP
             description = "Checks $apiProjectPath against the latest published API jar in the same major version."
             output.set(apiCompatibilityReports.getValue(apiProjectPath))
+            val apiJarTaskName = if (apiProjectPath == ":Fabric") "remapApiJar" else "apiJar"
+            inputJar.set(apiProject.tasks.named<AbstractArchiveTask>(apiJarTaskName).flatMap { it.archiveFile })
+            artifact.set("${modGroup}:${modId}-${minecraftVersion}-${apiProject.name.lowercase()}-api")
             mavens.set(listOf("https://maven.blamejared.com"))
             // Match the previous CLI check and avoid loading the full Minecraft compile classpath.
             libraries.setFrom(emptyList<Any>())
@@ -205,7 +207,7 @@ val checkApiCompatibility = tasks.register<ValidateApiCompatibilityReports>("che
     dependsOn(apiProjectPaths.map { "$it:checkJarCompatibility" })
     reportFiles.from(apiCompatibilityReports.values)
     apiSourceFiles.from(apiProjectPaths.map { apiProjectPath ->
-        project(apiProjectPath).fileTree("src/main/java") {
+        project(apiProjectPath).fileTree("src/api/java") {
             include("**/*.java")
         }
     })

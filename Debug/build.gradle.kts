@@ -18,11 +18,18 @@ base {
 
 val dependencyProjects: List<Project> = listOf(
 	project(":Common"),
-	project(":CommonApi"),
+
 )
 
 dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
+}
+
+val commonApiSourceSet = project(":Common").sourceSets.named("api").get()
+
+sourceSets.configureEach {
+    compileClasspath += commonApiSourceSet.output
+    runtimeClasspath += commonApiSourceSet.output
 }
 
 neoForge {

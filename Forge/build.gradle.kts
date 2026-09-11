@@ -1,3 +1,4 @@
+import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
@@ -23,7 +24,6 @@ val minecraftVersionRangeStart: String by extra
 val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
-val parchmentVersionForge: String by extra
 val modrinthId: String by extra
 val mezzConfigCurseForgeProjectSlug: String by extra
 val mezzConfigModrinthProjectId: String by extra
@@ -45,8 +45,14 @@ val modrinthToken: String? by project
 val curseforgeApikey: String? by project
 
 val baseArchivesName = "${modId}-${minecraftVersion}-forge"
+val apiArchivesName = "${modId}-${minecraftVersion}-forge-api"
 base {
 	archivesName.set(baseArchivesName)
+}
+
+val apiSourceSet = sourceSets.create("api") {
+    resources.setSrcDirs(emptyList<String>())
+    compileClasspath += configurations.compileClasspath.get()
 }
 
 sourceSets {
@@ -60,10 +66,10 @@ sourceSets {
 
 val dependencyProjects: List<Project> = listOf(
 	project(":Common"),
-	project(":CommonApi"),
+
 	project(":Library"),
 	project(":Gui"),
-	project(":ForgeApi"),
+
 )
 val debugProject = project(":Debug")
 
@@ -71,6 +77,16 @@ dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
 }
 project.evaluationDependsOn(debugProject.path)
+
+val commonApiSourceSet = project(":Common").sourceSets.named("api").get()
+apiSourceSet.compileClasspath += commonApiSourceSet.output
+
+sourceSets.configureEach {
+    if (name != "api") {
+        compileClasspath += apiSourceSet.output + commonApiSourceSet.output
+        runtimeClasspath += apiSourceSet.output + commonApiSourceSet.output
+    }
+}
 
 val debugSourceSet = debugProject.sourceSets.main.get()
 val forgeDebugOutput = layout.buildDirectory.dir("sourceSets/forgeDebug")
@@ -148,7 +164,7 @@ repositories {
 
 dependencies {
 	val forgeDependency = create("net.minecraftforge:forge:${minecraftVersion}-${forgeVersion}") as ExternalModuleDependency
-	// ForgeApi also generates Parchment variants; pin the development runtime to official mappings.
+	// Pin development dependencies to the runtime's official mappings.
 	forgeDependency.attributes {
 		attribute(Attribute.of("net.minecraftforge.mappings.channel", String::class.java), "official")
 		attribute(Attribute.of("net.minecraftforge.mappings.version", String::class.java), minecraftVersion)
@@ -222,6 +238,7 @@ minecraft {
 			mods {
 				create(modId) {
 					source(sourceSets.main.get())
+					source(apiSourceSet)
 				}
 				create("${modId}debug") {
 					source(forgeDebugSourceSet)
@@ -265,6 +282,7 @@ tasks.withType<JavaExec>().configureEach {
 }
 
 tasks.named<JavaCompile>(sourceSets.main.get().compileJavaTaskName) {
+    source(commonApiSourceSet.allJava)
 	dependencyProjects.forEach {
 		source(it.sourceSets.main.get().allSource)
 	}
@@ -277,12 +295,15 @@ tasks.named<ProcessResources>(sourceSets.main.get().processResourcesTaskName) {
 }
 
 tasks.jar {
+    from(apiSourceSet.output)
 	from(sourceSets.main.get().output)
 
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
+    from(apiSourceSet.allJava)
+    from(commonApiSourceSet.allJava)
 	from(sourceSets.main.get().allJava)
 	for (p in dependencyProjects) {
 		from(p.sourceSets.main.get().allJava)
@@ -350,8 +371,44 @@ tasks.assemble {
 	dependsOn(sourcesJarTask)
 }
 
+val apiJarTask = tasks.register<Jar>("apiJar") {
+    archiveBaseName.set(apiArchivesName)
+    from(apiSourceSet.output)
+    manifest.attributes["Implementation-Title"] = "jar"
+}
+
+val apiSourcesJarTask = tasks.register<Jar>("apiSourcesJar") {
+    archiveBaseName.set(apiArchivesName)
+    archiveClassifier.set("sources")
+    from(apiSourceSet.allSource)
+    manifest.attributes["Implementation-Title"] = "sourcesJar"
+}
+
+tasks.assemble {
+    dependsOn(apiJarTask, apiSourcesJarTask)
+}
+
 publishing {
 	publications {
+        register<MavenPublication>("forgeApiJar") {
+            // Project dependencies continue to use the main publication's coordinates.
+            (this as MavenPublicationInternal).isAlias = true
+            artifactId = apiArchivesName
+            artifact(apiJarTask)
+            artifact(apiSourcesJarTask)
+            val apiDependencyInfo = mapOf(
+                "groupId" to project.group,
+                "artifactId" to "${modId}-${minecraftVersion}-common-api",
+                "version" to project.version
+            )
+            pom.withXml {
+                val dependency = asNode().appendNode("dependencies").appendNode("dependency")
+                apiDependencyInfo.forEach { (key, value) ->
+                    dependency.appendNode(key, value)
+                }
+            }
+        }
+
 		register<MavenPublication>("forgeJar") {
 			artifactId = baseArchivesName
 			artifact(shadedJar)

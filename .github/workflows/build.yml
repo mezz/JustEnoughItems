@@ -47,10 +47,6 @@ jobs:
           ./gradlew :Fabric:build --no-daemon
           ./gradlew :NeoForge:build --no-daemon
           ./gradlew :Common:build --no-daemon
-          ./gradlew :CommonApi:build --no-daemon
-          ./gradlew :ForgeApi:build --no-daemon
-          ./gradlew :FabricApi:build --no-daemon
-          ./gradlew :NeoForgeApi:build --no-daemon
 
       - name: Run NeoForge GameTests
         run: ./gradlew :NeoForge:runGameTestServer --no-daemon
@@ -71,13 +67,9 @@ jobs:
         run: |
           mkdir dist
           cp Common/build/libs/*.jar dist
-          cp CommonApi/build/libs/*.jar dist
           cp Fabric/build/libs/*.jar dist
-          cp FabricApi/build/libs/*.jar dist
           cp Forge/build/libs/*.jar dist
-          cp ForgeApi/build/libs/*.jar dist
           cp NeoForge/build/libs/*.jar dist
-          cp NeoForgeApi/build/libs/*.jar dist
           cp Gui/build/libs/*.jar dist
           cp Library/build/libs/*.jar dist
 

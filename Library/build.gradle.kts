@@ -27,11 +27,18 @@ base {
 
 val dependencyProjects: List<Project> = listOf(
     project(":Common"),
-    project(":CommonApi"),
+
 )
 
 dependencyProjects.forEach {
     project.evaluationDependsOn(it.path)
+}
+
+val commonApiSourceSet = project(":Common").sourceSets.named("api").get()
+
+sourceSets.configureEach {
+    compileClasspath += commonApiSourceSet.output
+    runtimeClasspath += commonApiSourceSet.output
 }
 
 neoForge {
@@ -105,6 +112,7 @@ publishing {
             artifact(sourcesJarTask.get())
 
             val dependencyInfos = listOf(
+                mapOf("groupId" to project.group, "artifactId" to "${modId}-${minecraftVersion}-common-api", "version" to project.version),
                 dependencyInfo(mezzConfigApiDependency)
             ) + dependencyProjects.map {
                 mapOf(
@@ -141,7 +149,6 @@ fun dependencyInfo(notation: String): Map<String, String> {
         "version" to version
     )
 }
-
 
 idea {
     module {

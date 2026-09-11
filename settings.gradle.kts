@@ -48,10 +48,10 @@ val minecraftVersion: String by settings
 rootProject.name = "jei-${minecraftVersion}"
 include(
 	"Changelog",
-	"Common", "CommonApi",
-	"NeoForge", "NeoForgeApi",
-	"Forge", "ForgeApi",
-	"Fabric", "FabricApi",
+	"Common",
+	"NeoForge",
+	"Forge",
+	"Fabric",
 	"Library",
 	"Debug",
 	"Gui"

@@ -1,3 +1,4 @@
+import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.slf4j.event.Level
@@ -25,18 +26,23 @@ val mezzConfigApiDependency: String by rootProject.extra
 val mezzConfigNeoForgeDependency: String by rootProject.extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
+val apiArchivesName = "${modId}-${minecraftVersion}-common-api"
 base {
     archivesName.set(baseArchivesName)
 }
 
+val apiSourceSet = sourceSets.create("api") {
+    resources.setSrcDirs(emptyList<String>())
+    compileClasspath += configurations.compileClasspath.get()
+}
+
 val generatedJeiGuiColorsResources = layout.buildDirectory.dir("generated/resources/jeiGuiColors")
 
-val dependencyProjects: List<Project> = listOf(
-    project(":CommonApi"),
-)
-
-dependencyProjects.forEach {
-    project.evaluationDependsOn(it.path)
+sourceSets.configureEach {
+    if (name != "api") {
+        compileClasspath += apiSourceSet.output
+        runtimeClasspath += apiSourceSet.output
+    }
 }
 
 neoForge {
@@ -122,9 +128,6 @@ dependencies {
     ) {
         isTransitive = false
     }
-    dependencyProjects.forEach {
-        implementation(it)
-    }
 	testFixturesCompileOnly("org.jspecify:jspecify:1.0.0")
 	"datagenCompileOnly"("org.jspecify:jspecify:1.0.0")
 	testImplementation(
@@ -168,21 +171,49 @@ tasks.withType<JavaCompile> {
     }
 }
 
+val apiJarTask = tasks.register<Jar>("apiJar") {
+    archiveBaseName.set(apiArchivesName)
+    from(apiSourceSet.output)
+    manifest.attributes["Implementation-Title"] = "jar"
+}
+
+val apiSourcesJarTask = tasks.register<Jar>("apiSourcesJar") {
+    archiveBaseName.set(apiArchivesName)
+    archiveClassifier.set("sources")
+    from(apiSourceSet.allSource)
+    manifest.attributes["Implementation-Title"] = "sourcesJar"
+}
+
+apiJarTask.configure {
+    manifest.attributes["Fabric-Loom-Remap"] = true
+}
+apiSourcesJarTask.configure {
+    manifest.attributes["Fabric-Loom-Remap"] = true
+}
+
+tasks.assemble {
+    dependsOn(apiJarTask, apiSourcesJarTask)
+}
+
 publishing {
     publications {
+        register<MavenPublication>("commonApiJar") {
+            // Project dependencies continue to use the main publication's coordinates.
+            (this as MavenPublicationInternal).isAlias = true
+            artifactId = apiArchivesName
+            artifact(apiJarTask)
+            artifact(apiSourcesJarTask)
+        }
+
         register<MavenPublication>("commonJar") {
             artifactId = base.archivesName.get()
             artifact(tasks.jar)
             artifact(tasks.named("sourcesJar"))
 
             val mezzConfigApiDependencyInfo = dependencyInfo(mezzConfigApiDependency)
-            val dependencyInfos = listOf(mezzConfigApiDependencyInfo) + dependencyProjects.map {
-                mapOf(
-                    "groupId" to it.group,
-                    "artifactId" to it.base.archivesName.get(),
-                    "version" to it.version
-                )
-            } + listOf(
+            val dependencyInfos = listOf(mezzConfigApiDependencyInfo) + listOf(
+                mapOf("groupId" to project.group, "artifactId" to apiArchivesName, "version" to project.version)
+            ) + listOf(
                 mapOf(
                     "groupId" to "net.mezzdev",
                     "artifactId" to "deduplicating-runner",
