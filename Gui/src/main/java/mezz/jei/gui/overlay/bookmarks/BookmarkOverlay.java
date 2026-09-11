@@ -154,23 +154,28 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 		ImmutableRect2i availableContentsArea = displayArea.cropBottom(BUTTON_SIZE + INNER_PADDING);
 		IElement<?> pageAnchorElement = this.contents.getPageAnchorElement();
+		Optional<ImmutableRect2i> historyArea = Optional.empty();
 		if (clientConfig.isLookupHistoryEnabled() && lookupHistoryOverlay.isOnSide()) {
 			int historyHeight = lookupHistoryOverlay.getDisplayHeight();
 			if (historyHeight > 0) {
-				ImmutableRect2i historyArea = displayArea
+				ImmutableRect2i area = displayArea
 					.insetBy(BORDER_MARGIN)
 					.cropBottom(BUTTON_SIZE + LOOKUP_HISTORY_BOTTOM_PADDING)
 					.keepBottom(historyHeight);
+				historyArea = Optional.of(area);
 				availableContentsArea = cropBottomTo(
 					availableContentsArea,
-					historyArea.y() - LOOKUP_HISTORY_PADDING_EXTRA
+					area.y() - LOOKUP_HISTORY_PADDING_EXTRA
 				);
-				this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, mouseExclusionArea);
-				this.lookupHistoryOverlay.updateLayout();
 			}
 		}
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas, mouseExclusionArea);
 		this.contents.updateLayoutKeepingPageAnchorVisible(pageAnchorElement);
+
+		historyArea.ifPresent(area -> {
+			this.lookupHistoryOverlay.updateBounds(alignLookupHistoryArea(area), guiExclusionAreas, mouseExclusionArea);
+			this.lookupHistoryOverlay.updateLayout();
+		});
 
 		if (contents.hasRoom()) {
 			ImmutableRect2i contentsArea = this.contents.getBackgroundArea();
@@ -191,6 +196,14 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			ImmutableRect2i historyButtonArea = bookmarkButtonArea.moveRight(2 + BUTTON_SIZE);
 			this.historyButton.updateBounds(historyButtonArea);
 		}
+	}
+
+	private ImmutableRect2i alignLookupHistoryArea(ImmutableRect2i lookupHistoryArea) {
+		ImmutableRect2i ingredientGridArea = this.contents.getIngredientGridArea();
+		if (ingredientGridArea.isEmpty()) {
+			return lookupHistoryArea;
+		}
+		return lookupHistoryArea.matchWidthAndX(ingredientGridArea);
 	}
 
 	private static ImmutableRect2i getDisplayArea(IGuiProperties guiProperties) {

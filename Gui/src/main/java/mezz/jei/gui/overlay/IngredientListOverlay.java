@@ -148,20 +148,25 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 		ImmutableRect2i availableContentsArea = getAvailableContentsArea(displayArea, searchBarCentered);
 		IElement<?> pageAnchorElement = this.contents.getPageAnchorElement();
+		Optional<ImmutableRect2i> historyArea = Optional.empty();
 		if (clientConfig.isLookupHistoryEnabled() && lookupHistoryOverlay.isOnSide()) {
 			int historyHeight = lookupHistoryOverlay.getDisplayHeight();
 			if (historyHeight > 0) {
-				ImmutableRect2i historyArea = getLookupHistoryArea(displayArea, searchBarCentered, historyHeight);
+				ImmutableRect2i area = getLookupHistoryArea(displayArea, searchBarCentered, historyHeight);
+				historyArea = Optional.of(area);
 				availableContentsArea = cropBottomTo(
 					availableContentsArea,
-					historyArea.y() - LOOKUP_HISTORY_PADDING_EXTRA
+					area.y() - LOOKUP_HISTORY_PADDING_EXTRA
 				);
-				this.lookupHistoryOverlay.updateBounds(historyArea, guiExclusionAreas, null);
-				this.lookupHistoryOverlay.updateLayout();
 			}
 		}
 		this.contents.updateBounds(availableContentsArea, guiExclusionAreas, null);
 		this.contents.updateLayoutKeepingPageAnchorVisible(pageAnchorElement);
+
+		historyArea.ifPresent(area -> {
+			this.lookupHistoryOverlay.updateBounds(alignLookupHistoryArea(area), guiExclusionAreas, null);
+			this.lookupHistoryOverlay.updateLayout();
+		});
 
 		final ImmutableRect2i searchAndConfigArea = getSearchAndConfigArea(displayArea, searchBarCentered, guiProperties);
 		final ImmutableRect2i searchArea = searchAndConfigArea.cropRight(BUTTON_SIZE);
@@ -171,6 +176,14 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.searchField.updateBounds(searchArea);
 
 		this.configButton.updateBounds(configButtonArea);
+	}
+
+	private ImmutableRect2i alignLookupHistoryArea(ImmutableRect2i lookupHistoryArea) {
+		ImmutableRect2i ingredientGridArea = this.contents.getIngredientGridArea();
+		if (ingredientGridArea.isEmpty()) {
+			return lookupHistoryArea;
+		}
+		return lookupHistoryArea.matchWidthAndX(ingredientGridArea);
 	}
 
 	private void onFilterTextChanged(String filterText) {
