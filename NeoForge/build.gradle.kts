@@ -96,6 +96,13 @@ configurations.named("clientGameTestImplementation") {
 	extendsFrom(configurations.implementation.get())
 }
 
+tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME) {
+	dependsOn(
+		"runGameTestServer",
+		tasks.named(sourceSets.named("clientGameTest").get().compileJavaTaskName)
+	)
+}
+
 java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))

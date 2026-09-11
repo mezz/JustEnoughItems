@@ -75,12 +75,6 @@ pipeline {
             }
         }
 
-        stage('Server GameTests') {
-            steps {
-                sh "./gradlew :NeoForge:runGameTestServer"
-            }
-        }
-
         stage('Client GameTests') {
             options {
                 timeout(time: 15, unit: 'MINUTES')

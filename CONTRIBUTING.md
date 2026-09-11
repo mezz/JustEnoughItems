@@ -30,13 +30,13 @@ Pull requests that change production Java code should include relevant tests or 
 
 If a production-code change does not need a test, explain why in the pull request description. A maintainer can apply the `no-tests-needed` label to bypass the automated test-change check.
 
-Useful local test commands:
+Run the standard verification suite before opening or updating a pull request:
 
 ```shell
-./gradlew test
-./gradlew :Fabric:runGameTest
-./gradlew :NeoForge:runGameTestServer
+./gradlew check
 ```
+
+This checks formatting and API compatibility, runs unit tests and server GameTests, validates the Fabric access widener, and compiles the client GameTest source sets.
 
 Client game tests require a graphical environment. On Linux CI they run through `xvfb-run`.
 
