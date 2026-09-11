@@ -151,6 +151,7 @@ fun Configuration.singleFileContents(): Provider<String> =
 
 dependencies {
 	implementation(apiSourceSet.output)
+	implementation(project(path = ":Common", configuration = "apiClassesElements"))
 	add(apiSourceSet.implementationConfigurationName, project(path = ":Common", configuration = "apiClassesElements"))
 	dependencyProjectPaths.forEach {
 		implementation(project(it))
