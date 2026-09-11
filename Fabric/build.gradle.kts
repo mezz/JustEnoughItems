@@ -2,14 +2,23 @@ import mezz.jei.gradle.UnpackArchives
 import mezz.jei.gradle.gradleProperty
 import mezz.jei.gradle.isolatedProjectDirectory
 import mezz.jei.gradle.optionalGradleProperty
+import net.fabricmc.loom.task.RemapJarTask
+import net.fabricmc.loom.task.RemapSourcesJarTask
+import net.fabricmc.loom.task.ManifestModificationAction
+import net.fabricmc.loom.task.service.JarManifestService
+import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
+import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
+import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 plugins {
     java
     idea
     `maven-publish`
     id("fabric-loom")
+    id("net.neoforged.jarcompatibilitychecker")
     id("net.mezzdev.modshade")
     id("me.modmuss50.mod-publish-plugin")
 }
@@ -38,6 +47,7 @@ val fabricLoaderVersion = gradleProperty("fabricLoaderVersion")
 val minecraftVersionRangeStart = gradleProperty("minecraftVersionRangeStart")
 val minecraftVersion = gradleProperty("minecraftVersion")
 val modId = gradleProperty("modId")
+val modGroup = gradleProperty("modGroup")
 val modJavaVersion = gradleProperty("modJavaVersion")
 val parchmentMinecraftVersion = gradleProperty("parchmentMinecraftVersion")
 val parchmentVersionFabric = gradleProperty("parchmentVersionFabric")
@@ -53,11 +63,12 @@ val modrinthToken = optionalGradleProperty("modrinthToken")
 val curseforgeApikey = optionalGradleProperty("curseforgeApikey")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-fabric"
+val apiArchivesName = "${modId}-${minecraftVersion}-fabric-api"
 base {
     archivesName.set(baseArchivesName)
 }
 
-val dependencyProjectPaths = listOf(":Common", ":CommonApi", ":Library", ":Gui", ":FabricApi")
+val dependencyProjectPaths = listOf(":Common", ":Library", ":Gui")
 val commonProjectDirectory = isolatedProjectDirectory(":Common")
 val debugProjectDirectory = isolatedProjectDirectory(":Debug")
 
@@ -66,11 +77,23 @@ val commonClientTestFixturesSource = commonProjectDirectory.dir("src/clientTestF
 val clientGameTestRunDirectory = layout.buildDirectory.dir("run/clientGameTest")
 val clientGameTestWithoutAmecsRunDirectory = layout.buildDirectory.dir("run/clientGameTestWithoutAmecs")
 
+val apiSourceSet = sourceSets.create("api") {
+    resources.setSrcDirs(emptyList<String>())
+    output.setResourcesDir(layout.buildDirectory.dir("classes/java/api"))
+}
 val debugSourceSet = sourceSets.create("debug") {
     java.srcDir(debugProjectDirectory.dir("src/main/java"))
     resources.srcDir(debugProjectDirectory.dir("src/main/resources"))
     compileClasspath += sourceSets.main.get().compileClasspath
     runtimeClasspath += output + compileClasspath
+}
+
+loom.createRemapConfigurations(apiSourceSet)
+
+afterEvaluate {
+    configurations.named(apiSourceSet.compileClasspathConfigurationName) {
+        extendsFrom(configurations.getByName("minecraftNamedCompile"))
+    }
 }
 
 java {
@@ -126,26 +149,6 @@ val dependencySources = configurations.create("dependencySources") {
     }
 }
 
-val fabricApiClasses = configurations.create("fabricApiClasses") {
-    isCanBeConsumed = false
-    isCanBeResolved = true
-    attributes {
-        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
-        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
-        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.CLASSES))
-    }
-}
-
-val fabricApiResources = configurations.create("fabricApiResources") {
-    isCanBeConsumed = false
-    isCanBeResolved = true
-    attributes {
-        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
-        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
-        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.RESOURCES))
-    }
-}
-
 fun Configuration.singleFileContents(): Provider<String> =
     incoming
         .files
@@ -171,28 +174,30 @@ dependencies {
     })
     modImplementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
-    dependencyProjectPaths.forEach { dependencyProjectPath ->
-        val dependencyProject = if (dependencyProjectPath == ":FabricApi") {
-            project(dependencyProjectPath, "namedElements")
-        } else {
-            project(dependencyProjectPath)
-        }
-        compileOnly(dependencyProject)
-        localRuntime(dependencyProject)
-        dependencyClasses(project(dependencyProjectPath)) {
+    implementation(apiSourceSet.output)
+    implementation(project(path = ":Common", configuration = "apiClassesElements"))
+    add("modApiImplementation", "net.fabricmc:fabric-loader:${fabricLoaderVersion}")
+    add("modApiImplementation", "net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
+    add(apiSourceSet.implementationConfigurationName, "org.jetbrains:annotations:26.0.2")
+    add(apiSourceSet.implementationConfigurationName, "org.jspecify:jspecify:1.0.0")
+    add(apiSourceSet.implementationConfigurationName, project(path = ":Common", configuration = "apiClassesElements"))
+    dependencyProjectPaths.forEach {
+        compileOnly(project(it))
+        localRuntime(project(it))
+        dependencyClasses(project(it)) {
             isTransitive = false
         }
-        dependencyResources(project(dependencyProjectPath)) {
+        dependencyResources(project(it)) {
             isTransitive = false
         }
-        dependencySources(project(dependencyProjectPath)) {
+        dependencySources(project(it)) {
             isTransitive = false
         }
     }
-    fabricApiClasses(project(":FabricApi")) {
+    dependencyClasses(project(path = ":Common", configuration = "apiClassesElements")) {
         isTransitive = false
     }
-    fabricApiResources(project(":FabricApi")) {
+    dependencySources(project(path = ":Common", configuration = "apiSourcesElements")) {
         isTransitive = false
     }
     modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
@@ -233,11 +238,6 @@ val keyMappingGametestWithoutAmecsSourceSet = sourceSets.create("keyMappingGamet
     }
 }
 
-val includedFabricApiSourceSet = sourceSets.create("includedFabricApi") {
-    output.dir(fabricApiClasses)
-    output.dir(fabricApiResources)
-}
-
 dependencies {
     "gametestImplementation"(testFixtures(project(":Common")))
 }
@@ -246,7 +246,7 @@ loom {
     mods {
         create("jei") {
             sourceSet(sourceSets.main.get())
-            sourceSet(includedFabricApiSourceSet)
+            sourceSet(apiSourceSet)
         }
         create(keyMappingGametestModId) {
             sourceSet(keyMappingGametestSourceSet)
@@ -367,6 +367,7 @@ tasks.matching { it.name in debugRunTasks }.configureEach {
 
 tasks.jar {
     from(sourceSets.main.get().output)
+    from(apiSourceSet.output)
     from(dependencyClasses)
     from(dependencyResources)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -380,6 +381,7 @@ val unpackDependencySources = tasks.register<UnpackArchives>("unpackDependencySo
 
 tasks.named<Jar>("sourcesJar") {
     from(sourceSets.main.get().allJava)
+    from(apiSourceSet.allSource)
     from(unpackDependencySources)
     exclude("**/Readme.md")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -393,6 +395,83 @@ configurations.named("modShadeRuntimeElements") {
     // These project dependencies are unpacked into the Fabric jar above.
     // Do not also publish them as external Maven dependencies.
     setExtendsFrom(emptyList())
+}
+
+val apiJarTask = tasks.register<Jar>("apiJar") {
+    archiveBaseName.set(apiArchivesName)
+    archiveClassifier.set("dev")
+    from(apiSourceSet.output)
+    manifest {
+        attributes["Implementation-Title"] = "jar"
+        attributes["Fabric-Loom-Remap"] = true
+    }
+    val manifestService = JarManifestService.get(project)
+    doLast(ManifestModificationAction(
+        manifestService,
+        "named",
+        providers.provider { loom.areEnvironmentSourceSetsSplit() },
+        providers.provider { emptyList() }
+    ))
+    usesService(manifestService)
+}
+
+val apiSourcesJarTask = tasks.register<Jar>("apiSourcesJar") {
+    archiveBaseName.set(apiArchivesName)
+    archiveClassifier.set("dev-sources")
+    from(apiSourceSet.allSource)
+    manifest {
+        attributes["Implementation-Title"] = "sourcesJar"
+        attributes["Fabric-Loom-Remap"] = true
+    }
+}
+
+val remapApiJar = tasks.register<RemapJarTask>("remapApiJar") {
+    inputFile.set(apiJarTask.flatMap { it.archiveFile })
+    archiveBaseName.set(apiArchivesName)
+    archiveClassifier.set("")
+}
+
+val remapApiSourcesJar = tasks.register<RemapSourcesJarTask>("remapApiSourcesJar") {
+    inputFile.set(apiSourcesJarTask.flatMap { it.archiveFile })
+    archiveBaseName.set(apiArchivesName)
+    archiveClassifier.set("sources")
+}
+
+val commonApiIntermediaryBaseArchivesName = "${modId}-${minecraftVersion}-common-api-intermediary"
+val commonApiJar = configurations.create("commonApiJar") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+val commonApiSourcesJar = configurations.create("commonApiSourcesJar") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+dependencies {
+    commonApiJar(project(path = ":Common", configuration = "apiJarElements")) { isTransitive = false }
+    commonApiSourcesJar(project(path = ":Common", configuration = "apiSourcesElements")) { isTransitive = false }
+}
+val commonApiIntermediaryJar = tasks.register<RemapJarTask>("commonApiIntermediaryJar") {
+    inputFile.set(layout.file(commonApiJar.elements.map { it.single().asFile }))
+    archiveBaseName.set(commonApiIntermediaryBaseArchivesName)
+    archiveClassifier.set("")
+}
+val commonApiIntermediarySourcesJar = tasks.register<RemapSourcesJarTask>("commonApiIntermediarySourcesJar") {
+    inputFile.set(layout.file(commonApiSourcesJar.elements.map { it.single().asFile }))
+    archiveBaseName.set(commonApiIntermediaryBaseArchivesName)
+    archiveClassifier.set("sources")
+}
+
+tasks.named<CompatibilityTask>("checkJarCompatibility") {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = "Checks the Fabric API against the latest published API jar in the same major version."
+    mavens.set(listOf("https://maven.blamejared.com"))
+    // The plugin defaults auxiliary libraries to the main compile classpath.
+    // This API check intentionally runs without them, avoiding the full Minecraft classpath.
+    libraries.setFrom(emptyList<Any>())
+    nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
+    fail.set(true)
+    inputJar.set(remapApiJar.flatMap { it.archiveFile })
+    artifact.set("${project.group}:$apiArchivesName")
 }
 
 publishMods {
@@ -443,11 +522,44 @@ tasks.named<Test>("test") {
 }
 
 tasks.assemble {
-    dependsOn(tasks.remapJar, tasks.remapSourcesJar)
+    dependsOn(tasks.remapJar, tasks.remapSourcesJar, remapApiJar, remapApiSourcesJar, commonApiIntermediaryJar, commonApiIntermediarySourcesJar)
 }
 
 publishing {
     publications {
+        register<MavenPublication>("commonApiIntermediary") {
+            (this as MavenPublicationInternal).isAlias = true
+            artifactId = commonApiIntermediaryBaseArchivesName
+            artifact(commonApiIntermediaryJar)
+            artifact(commonApiIntermediarySourcesJar)
+        }
+        register<MavenPublication>("fabricApi") {
+            // Project dependencies should resolve to the main publication's coordinates.
+            (this as MavenPublicationInternal).isAlias = true
+            artifactId = apiArchivesName
+            @Suppress("UnstableApiUsage")
+            loom.disableDeprecatedPomGeneration(this)
+            artifact(remapApiJar)
+            artifact(remapApiSourcesJar)
+
+            val dependencyInfos = listOf("common-api-intermediary").map {
+                mapOf(
+                    "groupId" to modGroup,
+                    "artifactId" to "${modId}-${minecraftVersion}-$it",
+                    "version" to project.version
+                )
+            }
+
+            pom.withXml {
+                val dependenciesNode = asNode().appendNode("dependencies")
+                dependencyInfos.forEach {
+                    val dependencyNode = dependenciesNode.appendNode("dependency")
+                    it.forEach { (key, value) ->
+                        dependencyNode.appendNode(key, value)
+                    }
+                }
+            }
+        }
         register<MavenPublication>("fabricJar") {
             @Suppress("UnstableApiUsage")
             loom.disableDeprecatedPomGeneration(this)

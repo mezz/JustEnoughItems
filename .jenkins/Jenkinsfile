@@ -74,12 +74,9 @@ pipeline {
                         :Fabric:build \
                         :NeoForge:build \
                         :Common:build \
-                        :CommonApi:build \
                         :Gui:build \
                         :Library:build \
-                        :Debug:build \
-                        :FabricApi:build \
-                        :NeoForgeApi:build
+                        :Debug:build
                 '''
             }
         }
@@ -142,9 +139,6 @@ pipeline {
                         :Fabric:publish \
                         :NeoForge:publish \
                         :Common:publish \
-                        :CommonApi:publish \
-                        :FabricApi:publish \
-                        :NeoForgeApi:publish \
                         -PDEPLOY_DIR="$MAVEN_DEPLOY_DIR"
                 '''
             }
