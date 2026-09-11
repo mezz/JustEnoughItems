@@ -10,9 +10,9 @@ import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.ClientConnectionHelper;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.util.DelayedExecutor;
-import mezz.jei.common.util.IDelayedExecutor;
 import mezz.jei.common.config.IWorldConfig;
+import net.mezzdev.deduplicatingrunner.DelayedExecutor;
+import net.mezzdev.deduplicatingrunner.DelayedTaskScheduler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -44,8 +44,8 @@ public final class Internal {
 	private static IJeiClientConfigs jeiClientConfigs;
 	@Nullable
 	private static ClientRecipes clientRecipes = null;
-	private static final DelayedExecutor delayedExecutor = new DelayedExecutor(Duration.ofSeconds(10));
 	private static final JeiFeatures jeiFeatures = new JeiFeatures();
+	private static final DelayedExecutor delayedExecutor = new DelayedExecutor(Duration.ofSeconds(10), "JEI Delayed Executor");
 
 	private Internal() {
 
@@ -98,7 +98,7 @@ public final class Internal {
 		Internal.jeiRuntime = jeiRuntime;
 	}
 
-	public static IDelayedExecutor getDelayedExecutor() {
+	public static DelayedTaskScheduler getDelayedExecutor() {
 		return delayedExecutor;
 	}
 

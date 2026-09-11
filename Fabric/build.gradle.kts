@@ -45,6 +45,7 @@ val amecsVersionFabric: String by extra
 val amecsKeyModifiersVersionFabric: String by extra
 val amecsMinecraftVersion: String by extra
 val modrinthId: String by extra
+val deduplicatingRunnerVersion: String by extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -87,6 +88,14 @@ val clientTestModId = "${modId}-client-tests"
 
 fun clientTestGameDirectory(runName: String) =
     layout.projectDirectory.dir("run/$runName")
+
+val embeddedLibraries: Configuration by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+configurations.implementation {
+    extendsFrom(embeddedLibraries)
+}
 
 java {
     toolchain {
@@ -190,6 +199,9 @@ dependencies {
         isTransitive = false
     }
     modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
+        isTransitive = false
+    }
+    embeddedLibraries("net.mezzdev:deduplicating-runner:${deduplicatingRunnerVersion}") {
         isTransitive = false
     }
     testImplementation(
@@ -335,10 +347,12 @@ tasks.matching { it.name in debugRunTasks }.configureEach {
 }
 
 tasks.jar {
+    dependsOn(embeddedLibraries)
     from(sourceSets.main.get().output)
     for (p in dependencyProjects) {
         from(p.sourceSets.main.get().output)
     }
+    from(embeddedLibraries.map(::zipTree))
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
