@@ -435,6 +435,7 @@ public class IngredientListOverlayControllerTest {
 		@Nullable
 		IElement<?> layoutPageAnchorElement;
 		ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
+		ImmutableRect2i ingredientGridArea = ImmutableRect2i.EMPTY;
 		@Nullable
 		ImmutableRect2i availableArea;
 
@@ -479,6 +480,11 @@ public class IngredientListOverlayControllerTest {
 		@Override
 		public ImmutableRect2i getBackgroundArea() {
 			return backgroundArea;
+		}
+
+		@Override
+		public ImmutableRect2i getIngredientGridArea() {
+			return ingredientGridArea;
 		}
 	}
 
