@@ -1,9 +1,13 @@
 import mezz.jei.gradle.gradleProperty
 import mezz.jei.gradle.isolatedProjectDirectory
 import mezz.jei.gradle.optionalGradleProperty
+import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
+import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.moddevgradle.dsl.ModModel
+import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.slf4j.event.Level
 import java.io.File
 
@@ -14,6 +18,7 @@ plugins {
 	id("maven-publish")
 	id("me.modmuss50.mod-publish-plugin")
 	id("net.neoforged.moddev")
+	id("net.neoforged.jarcompatibilitychecker")
 	id("net.mezzdev.modshade")
 }
 
@@ -37,16 +42,21 @@ val modrinthToken = optionalGradleProperty("modrinthToken")
 val curseforgeApikey = optionalGradleProperty("curseforgeApikey")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-neoforge"
+val apiArchivesName = "${modId}-${minecraftVersion}-neoforge-api"
 base {
 	archivesName.set(baseArchivesName)
 }
 
 val gameTestJunitResultsDir = layout.buildDirectory.dir("test-results/gameTest")
-val dependencyProjectPaths = listOf(":Common", ":CommonApi", ":Library", ":Gui", ":NeoForgeApi")
+val dependencyProjectPaths = listOf(":Common", ":Library", ":Gui")
 val dependencyProjectDirectories = dependencyProjectPaths.map { isolatedProjectDirectory(it) }
 val commonProjectDirectory = isolatedProjectDirectory(":Common")
 val debugProjectDirectory = isolatedProjectDirectory(":Debug")
 val commonClientTestFixturesSource = commonProjectDirectory.dir("src/clientTestFixtures/java")
+val apiSourceSet = sourceSets.create("api") {
+	resources.setSrcDirs(emptyList<String>())
+	output.setResourcesDir(layout.buildDirectory.dir("classes/java/api"))
+}
 
 sourceSets {
 	named("main") {
@@ -54,6 +64,7 @@ sourceSets {
 			dependencyProjectDirectories.forEach {
 				srcDir(it.dir("src/main/java"))
 			}
+			srcDir(commonProjectDirectory.dir("src/api/java"))
 		}
 	}
 	named("test") {
@@ -139,6 +150,8 @@ fun Configuration.singleFileContents(): Provider<String> =
 		.map { it.asFile.readText() }
 
 dependencies {
+	implementation(apiSourceSet.output)
+	add(apiSourceSet.implementationConfigurationName, project(path = ":Common", configuration = "apiClassesElements"))
 	dependencyProjectPaths.forEach {
 		implementation(project(it))
 	}
@@ -165,12 +178,14 @@ neoForge {
 	validateAccessTransformers = true
 
 	addModdingDependenciesTo(sourceSets.test.get())
+	addModdingDependenciesTo(apiSourceSet)
 	addModdingDependenciesTo(sourceSets.named("gameTest").get())
 	addModdingDependenciesTo(sourceSets.named("clientGameTest").get())
 
 	mods {
 		create("jei") {
 			sourceSet(sourceSets.main.get())
+			sourceSet(apiSourceSet)
 		}
 		create("jeidebug") {
 			sourceSet(debugSourceSet)
@@ -339,11 +354,13 @@ clientRecipeSyncRuns.forEach { (runName, _) ->
 
 tasks.jar {
 	from(sourceSets.main.get().output)
+	from(apiSourceSet.output)
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 	from(sourceSets.main.get().allJava)
+	from(apiSourceSet.allJava)
 	exclude("**/Readme.md")
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	archiveClassifier.set("sources")
@@ -359,6 +376,32 @@ tasks.named<ProcessResources>(sourceSets.main.get().processResourcesTaskName) {
 
 val shadedJar = modShade.shadeJar()
 val shadedSourcesJar = modShade.shadeSourcesJar()
+
+val apiJarTask = tasks.register<Jar>("apiJar") {
+	archiveBaseName.set(apiArchivesName)
+	from(apiSourceSet.output)
+	manifest.attributes["Implementation-Title"] = "jar"
+}
+
+val apiSourcesJarTask = tasks.register<Jar>("apiSourcesJar") {
+	archiveBaseName.set(apiArchivesName)
+	archiveClassifier.set("sources")
+	from(apiSourceSet.allSource)
+	manifest.attributes["Implementation-Title"] = "sourcesJar"
+}
+
+tasks.named<CompatibilityTask>("checkJarCompatibility") {
+	group = LifecycleBasePlugin.VERIFICATION_GROUP
+	description = "Checks the NeoForge API against the latest published API jar in the same major version."
+	mavens.set(listOf("https://maven.blamejared.com"))
+	// The plugin defaults auxiliary libraries to the main compile classpath.
+	// This API check intentionally runs without them, avoiding the full Minecraft classpath.
+	libraries.setFrom(emptyList<Any>())
+	nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
+	fail.set(true)
+	inputJar.set(apiJarTask.flatMap { it.archiveFile })
+	artifact.set("${project.group}:$apiArchivesName")
+}
 
 publishMods {
 	file.set(shadedJar.flatMap { it.archiveFile })
@@ -409,11 +452,36 @@ tasks.test {
 }
 
 tasks.assemble {
-	dependsOn(sourcesJarTask)
+	dependsOn(sourcesJarTask, apiJarTask, apiSourcesJarTask)
 }
 
 publishing {
 	publications {
+		register<MavenPublication>("neoforgeApi") {
+			// Project dependencies should resolve to the main publication's coordinates.
+			(this as MavenPublicationInternal).isAlias = true
+			artifactId = apiArchivesName
+			artifact(apiJarTask)
+			artifact(apiSourcesJarTask)
+
+			val dependencyInfos = listOf("common-api").map {
+				mapOf(
+					"groupId" to modGroup,
+					"artifactId" to "${modId}-${minecraftVersion}-$it",
+					"version" to project.version
+				)
+			}
+
+			pom.withXml {
+				val dependenciesNode = asNode().appendNode("dependencies")
+				dependencyInfos.forEach {
+					val dependencyNode = dependenciesNode.appendNode("dependency")
+					it.forEach { (key, value) ->
+						dependencyNode.appendNode(key, value)
+					}
+				}
+			}
+		}
 		register<MavenPublication>("neoforgeJar") {
 			artifactId = baseArchivesName
 			from(components["modShade"])

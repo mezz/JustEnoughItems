@@ -48,7 +48,7 @@ Breaking API changes require a JEI major version bump and should only be conside
 
 ## Code organization
 
-Keep changes in the module that owns the behavior. Avoid moving code between Common, Gui, Library, Fabric, NeoForge, and API modules unless the change specifically requires it.
+Keep changes in the module that owns the behavior. Avoid moving code between Common, Gui, Library, Fabric, NeoForge, and their API source sets unless the change specifically requires it.
 
 Subproject relationships are grouped by published code modules and helper modules:
 
@@ -57,12 +57,7 @@ flowchart TB
     subgraph published["Published code modules"]
         direction TB
 
-        subgraph shared["Shared foundation"]
-            direction LR
-            CommonApi["CommonApi<br/>shared API"]
-            Common["Common<br/>shared implementation"]
-            CommonApi --> Common
-        end
+        Common["Common<br/>shared API + implementation"]
 
         Gui["Gui<br/>client GUI"]
         Library["Library<br/>runtime implementation"]
@@ -70,19 +65,8 @@ flowchart TB
         subgraph loaders["Loader packages"]
             direction LR
 
-            subgraph fabricStack["Fabric"]
-                direction LR
-                FabricApi["FabricApi"]
-                Fabric["Fabric<br/>packaged mod"]
-                FabricApi --> Fabric
-            end
-
-            subgraph neoForgeStack["NeoForge"]
-                direction LR
-                NeoForgeApi["NeoForgeApi"]
-                NeoForge["NeoForge<br/>packaged mod"]
-                NeoForgeApi --> NeoForge
-            end
+            Fabric["Fabric<br/>API + packaged mod"]
+            NeoForge["NeoForge<br/>API + packaged mod"]
         end
     end
 
@@ -92,18 +76,16 @@ flowchart TB
         Changelog["Changelog<br/>release notes"]
     end
 
-    shared --> Gui
-    shared --> Library
-    shared --> loaders
+    Common --> Gui
+    Common --> Library
+    Common --> loaders
     Gui --> loaders
     Library --> loaders
 
-    classDef api fill:#e8f3ff,stroke:#0969da,color:#0b1f33
     classDef code fill:#e9fbe8,stroke:#1a7f37,color:#0b1f33
     classDef package fill:#f0e7ff,stroke:#8250df,color:#0b1f33
     classDef helper fill:#fff7d6,stroke:#9a6700,stroke-dasharray: 5 3,color:#0b1f33
 
-    class CommonApi,FabricApi,NeoForgeApi api
     class Common,Gui,Library code
     class Fabric,NeoForge package
     class Debug,Changelog helper

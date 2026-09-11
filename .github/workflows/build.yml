@@ -40,7 +40,7 @@ jobs:
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
       - name: Build with Gradle
-        run: ./gradlew assemble :Fabric:validateAccessWidener :FabricApi:validateAccessWidener --no-daemon
+        run: ./gradlew assemble :Fabric:validateAccessWidener --no-daemon
 
       - name: Copy together artifacts
         if: github.event_name == 'push'
@@ -48,11 +48,8 @@ jobs:
         run: |
           mkdir dist
           cp Common/build/libs/*.jar dist
-          cp CommonApi/build/libs/*.jar dist
           cp Fabric/build/libs/*.jar dist
-          cp FabricApi/build/libs/*.jar dist
           cp NeoForge/build/libs/*.jar dist
-          cp NeoForgeApi/build/libs/*.jar dist
           cp Gui/build/libs/*.jar dist
           cp Library/build/libs/*.jar dist
 
