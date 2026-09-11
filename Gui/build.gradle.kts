@@ -13,7 +13,7 @@ val jUnitVersion: String by extra
 val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
-
+val deduplicatingRunnerVersion: String by extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-gui"
 base {
@@ -49,6 +49,9 @@ dependencies {
     )
     dependencyProjects.forEach {
         implementation(it)
+    }
+    implementation("net.mezzdev:deduplicating-runner:$deduplicatingRunnerVersion") {
+        isTransitive = false
     }
     testImplementation(
         group = "org.junit.jupiter",
@@ -97,6 +100,30 @@ publishing {
             artifactId = baseArchivesName
             artifact(tasks.jar.get())
             artifact(sourcesJarTask.get())
+
+            val dependencyInfos = dependencyProjects.map {
+                mapOf(
+                    "groupId" to it.group,
+                    "artifactId" to it.base.archivesName.get(),
+                    "version" to it.version
+                )
+            } + listOf(
+                mapOf(
+                    "groupId" to "net.mezzdev",
+                    "artifactId" to "deduplicating-runner",
+                    "version" to deduplicatingRunnerVersion
+                )
+            )
+
+            pom.withXml {
+                val dependenciesNode = asNode().appendNode("dependencies")
+                dependencyInfos.forEach {
+                    val dependencyNode = dependenciesNode.appendNode("dependency")
+                    it.forEach { (key, value) ->
+                        dependencyNode.appendNode(key, value)
+                    }
+                }
+            }
         }
     }
     repositories {

@@ -6,9 +6,9 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.Internal;
 import mezz.jei.common.config.file.serializers.TypedIngredientSerializer;
 import mezz.jei.common.transfer.RecipeTransferService;
-import mezz.jei.common.util.DeduplicatingRunner;
 import mezz.jei.common.util.PathUtil;
 import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.gui.bookmarks.IBookmark;
@@ -17,6 +17,7 @@ import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.config.file.serializers.RecipeBookmarkSerializer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.mezzdev.deduplicatingrunner.DeduplicatingRunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Unmodifiable;
@@ -41,7 +42,7 @@ public class LookupHistoryJsonConfig implements ILookupHistoryConfig {
 	private static final Duration SAVE_DELAY_TIME = Duration.ofSeconds(5);
 
 	private final Path jeiConfigurationDir;
-	private final DeduplicatingRunner delayedSave = new DeduplicatingRunner(SAVE_DELAY_TIME);
+	private final DeduplicatingRunner delayedSave = new DeduplicatingRunner(SAVE_DELAY_TIME, Internal.getDelayedExecutor());
 
 	private static Optional<Path> getPath(Path jeiConfigurationDir) {
 		return ServerConfigPathUtil.getWorldPath(jeiConfigurationDir)
