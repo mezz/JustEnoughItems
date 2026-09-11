@@ -236,6 +236,10 @@ tasks.named("runGameTestServer") {
 	dependsOn(copyGameTestStructures)
 }
 
+tasks.check {
+	dependsOn("runGameTestServer")
+}
+
 tasks.jar {
 	from(sourceSets.main.get().output)
 	for (p in dependencyProjects) {
