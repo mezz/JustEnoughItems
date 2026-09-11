@@ -40,7 +40,28 @@ jobs:
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
       - name: Build with Gradle
-        run: ./gradlew assemble :Fabric:validateAccessWidener :FabricApi:validateAccessWidener --no-daemon
+        run: |
+          ./gradlew :Forge:build --no-daemon
+          ./gradlew :Fabric:build --no-daemon
+          ./gradlew :NeoForge:build --no-daemon
+          ./gradlew :Common:build --no-daemon
+          ./gradlew :CommonApi:build --no-daemon
+          ./gradlew :ForgeApi:build --no-daemon
+          ./gradlew :FabricApi:build --no-daemon
+          ./gradlew :NeoForgeApi:build --no-daemon
+
+      - name: Run NeoForge GameTests
+        run: ./gradlew :NeoForge:runGameTestServer --no-daemon
+
+      - name: Run Client GameTests
+        run: |
+          if command -v xvfb-run >/dev/null 2>&1; then
+            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest --no-daemon
+            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTestWithoutAmecs --no-daemon
+            xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :NeoForge:runClientRecipeSyncTest --no-daemon
+          else
+            echo "::error::xvfb-run is not available; skipping client GameTests."
+          fi
 
       - name: Copy together artifacts
         if: github.event_name == 'push'
