@@ -11,7 +11,7 @@ import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerStatusPinger;
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import net.minecraft.network.chat.Component;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.net.UnknownHostException;

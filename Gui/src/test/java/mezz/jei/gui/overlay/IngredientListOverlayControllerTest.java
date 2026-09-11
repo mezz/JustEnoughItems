@@ -18,12 +18,12 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -301,8 +301,7 @@ public class IngredientListOverlayControllerTest {
 	}
 
 	private static ImmutableRect2i area(String name, @Nullable ImmutableRect2i area) {
-		assertNotNull(area, name + " area should be set");
-		return area;
+		return Objects.requireNonNull(area, name + " area should be set");
 	}
 
 	private static void assertRightOfGui(ImmutableRect2i area, IGuiProperties guiProperties) {

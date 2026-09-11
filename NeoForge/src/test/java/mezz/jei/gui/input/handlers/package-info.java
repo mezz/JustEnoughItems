@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @FieldsAndMethodsAreNonnullByDefault
-package mezz.jei.neoforge.tests;
+package mezz.jei.gui.input.handlers;
 
 import mezz.jei.common.FieldsAndMethodsAreNonnullByDefault;
 
