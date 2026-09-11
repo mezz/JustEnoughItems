@@ -99,6 +99,10 @@ val clientGameTestWithoutAmecsSourceSet = sourceSets.create("clientGameTestWitho
 configurations.named(clientGameTestSourceSet.runtimeOnlyConfigurationName) {
     extendsFrom(configurations.runtimeOnly.get())
 }
+tasks.check {
+    dependsOn("validateAccessWidener", tasks.named(clientGameTestSourceSet.compileJavaTaskName))
+}
+
 val clientTestModId = "${modId}-client-tests"
 
 fun clientTestGameDirectory(runName: String) =
