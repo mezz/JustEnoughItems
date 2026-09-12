@@ -1,10 +1,8 @@
-package mezz.jei.gui.input;
+package mezz.jei.common.input;
 
 import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Either;
-import mezz.jei.common.input.KeyNameUtil;
-import mezz.jei.common.input.MouseButtonEventData;
 import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.util.StringUtil;
