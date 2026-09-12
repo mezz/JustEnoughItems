@@ -1,6 +1,8 @@
 package mezz.jei.gui.input;
 
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.IGuiInputLayer;
+import mezz.jei.common.input.UserInput;
 import net.minecraft.client.Minecraft;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package mezz.jei.gui.input;
+package mezz.jei.common.input;
 
 import net.minecraft.client.gui.GuiGraphics;
 

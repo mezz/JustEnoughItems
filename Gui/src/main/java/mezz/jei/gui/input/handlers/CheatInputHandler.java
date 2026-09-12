@@ -1,13 +1,14 @@
 package mezz.jei.gui.input.handlers;
 
+import mezz.jei.common.input.handlers.SameElementInputHandler;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.gui.input.CombinedRecipeFocusSource;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.util.CommandUtil;
 import mezz.jei.gui.util.GiveAmount;
 import net.minecraft.client.gui.screens.Screen;

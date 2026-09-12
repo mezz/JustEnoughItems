@@ -3,7 +3,7 @@ package mezz.jei.gui.overlay.ingredients;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IRecipeFocusSource;
-import mezz.jei.gui.input.IUserInputHandler;
+import mezz.jei.common.input.IUserInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 

@@ -1,5 +1,6 @@
 package mezz.jei.gui.input;
 
+import mezz.jei.common.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;

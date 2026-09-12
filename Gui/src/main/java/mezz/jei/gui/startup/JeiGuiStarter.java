@@ -59,7 +59,7 @@ import mezz.jei.gui.input.handlers.EditInputHandler;
 import mezz.jei.gui.input.handlers.FocusInputHandler;
 import mezz.jei.gui.input.handlers.GlobalInputHandler;
 import mezz.jei.gui.input.handlers.GuiAreaInputHandler;
-import mezz.jei.gui.input.handlers.UserInputRouter;
+import mezz.jei.common.input.handlers.UserInputRouter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
