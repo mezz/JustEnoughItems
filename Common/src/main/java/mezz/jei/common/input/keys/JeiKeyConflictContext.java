@@ -26,32 +26,17 @@ public enum JeiKeyConflictContext {
 			return !GUI.isActive();
 		}
 	},
-	JEI_GUI_HOVER {
-		@Override
-		public boolean isActive() {
-			return GUI.isActive();
-		}
-	},
-	JEI_GUI_HOVER_CHEAT_MODE {
-		@Override
-		public boolean isActive() {
-			return GUI.isActive();
-		}
-	},
-	JEI_GUI_HOVER_CONFIG_BUTTON {
-		@Override
-		public boolean isActive() {
-			return GUI.isActive();
-		}
-	},
-	JEI_GUI_HOVER_SEARCH {
-		@Override
-		public boolean isActive() {
-			return GUI.isActive();
-		}
-	};
+	JEI_GUI_HOVER,
+	JEI_GUI_HOVER_BOOKMARK,
+	JEI_GUI_HOVER_CHEAT_MODE,
+	JEI_GUI_HOVER_CONFIG_BUTTON,
+	JEI_GUI_HOVER_INGREDIENT,
+	JEI_GUI_HOVER_SEARCH,
+	JEI_GUI_FOCUSED_SEARCH;
 
-	public abstract boolean isActive();
+	public boolean isActive() {
+		return GUI.isActive();
+	}
 
 	public boolean conflicts(JeiKeyConflictContext other) {
 		return this == other;
