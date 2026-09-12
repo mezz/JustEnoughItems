@@ -31,6 +31,7 @@ import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.gui.config.ILookupHistoryConfig;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
+import mezz.jei.gui.config.JeiGuiSortingConfigData;
 import mezz.jei.gui.config.ModNameSortingConfig;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.filter.FilterTextSource;
@@ -72,7 +73,10 @@ import java.util.function.Function;
 public class JeiGuiStarter {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static JeiEventHandlers start(IRuntimeRegistration registration) {
+	public static JeiEventHandlers start(
+		IRuntimeRegistration registration,
+		JeiGuiSortingConfigData sortingConfigData
+	) {
 		LOGGER.info("Starting JEI GUI");
 		LoggedTimer timer = new LoggedTimer();
 
@@ -113,7 +117,7 @@ public class JeiGuiStarter {
 		timer.stop();
 
 		timer.start("Building ingredient filter");
-		GuiConfigData configData = GuiConfigData.create();
+		GuiConfigData configData = GuiConfigData.create(sortingConfigData);
 
 		ModNameSortingConfig modNameSortingConfig = configData.modNameSortingConfig();
 		IngredientTypeSortingConfig ingredientTypeSortingConfig = configData.ingredientTypeSortingConfig();

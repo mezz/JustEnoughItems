@@ -10,12 +10,14 @@ import mezz.jei.forge.startup.EventRegistration;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.gui.startup.JeiGuiStarter;
 import mezz.jei.gui.startup.ResourceReloadHandler;
+import mezz.jei.gui.config.JeiGuiSortingConfigData;
+import mezz.jei.gui.config.JeiGuiSortingConfigRegistration;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Optional;
 
 @JeiPlugin
@@ -23,6 +25,7 @@ public class ForgeGuiPlugin implements IModPlugin {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static @Nullable ResourceReloadHandler resourceReloadHandler;
 
+	private final JeiGuiSortingConfigData sortingConfigData = JeiGuiSortingConfigRegistration.register();
 	private @Nullable IJeiFeatures jeiFeatures;
 	private final RuntimeEventSubscriptions runtimeSubscriptions = new RuntimeEventSubscriptions(MinecraftForge.EVENT_BUS);
 
@@ -47,7 +50,7 @@ public class ForgeGuiPlugin implements IModPlugin {
 			runtimeSubscriptions.clear();
 		}
 
-		JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration);
+		JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration, sortingConfigData);
 		resourceReloadHandler = eventHandlers.resourceReloadHandler();
 
 		EventRegistration.registerEvents(runtimeSubscriptions, eventHandlers);
