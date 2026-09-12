@@ -75,6 +75,7 @@ private fun Project.configureJeiProject() {
 	tasks.withType(ProcessResources::class.java).configureEach {
 		val resourceProperties = mapOf(
 			"amecsVersionFabric" to amecsVersionFabric,
+			"configGuiModId" to gradleProperty("configGuiModId"),
 			"configModId" to gradleProperty("configModId"),
 			"mezzConfigVersionRange" to gradleProperty("mezzConfigVersionRange"),
 			"mezzConfigFabricVersionRange" to gradleProperty("mezzConfigFabricVersionRange"),
