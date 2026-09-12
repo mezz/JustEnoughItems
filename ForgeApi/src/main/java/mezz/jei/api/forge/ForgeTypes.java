@@ -3,8 +3,11 @@ package mezz.jei.api.forge;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidType;
+
+import java.util.Optional;
 
 /**
  * Built-in {@link IIngredientType} for Forge Minecraft.
@@ -24,6 +27,11 @@ public final class ForgeTypes {
 		@Override
 		public Class<? extends FluidStack> getIngredientClass() {
 			return FluidStack.class;
+		}
+
+		@Override
+		public Optional<FluidStack> getRepresentativeIngredient() {
+			return Optional.of(new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME));
 		}
 
 		@Override
