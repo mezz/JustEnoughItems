@@ -21,6 +21,8 @@ public interface IJeiKeyMappingInternal extends IJeiKeyMappingWithExtraModifiers
 	@Override
 	Component getTranslatedKeyMessage();
 
+	KeyMapping getKeyMapping();
+
 	boolean isDown();
 
 	IJeiKeyMappingInternal register(Consumer<KeyMapping> registerMethod);

@@ -90,6 +90,11 @@ public class PinnedTooltipManagerTest {
 		}
 
 		@Override
+		public KeyMapping getKeyMapping() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
 		public Component getTranslatedKeyMessage() {
 			return Component.empty();
 		}
