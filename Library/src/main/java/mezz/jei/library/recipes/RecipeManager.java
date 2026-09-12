@@ -58,6 +58,10 @@ public class RecipeManager implements IRecipeManager, IRecipeVisibility {
 		this.contextMap = contextMap;
 	}
 
+	public void onRuntimeStopped() {
+		internal.onRuntimeStopped();
+	}
+
 	@Override
 	public <R> IRecipeLookup<R> createRecipeLookup(IRecipeType<R> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
