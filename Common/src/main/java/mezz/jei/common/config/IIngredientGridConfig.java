@@ -1,7 +1,6 @@
 package mezz.jei.common.config;
 
 import mezz.jei.api.gui.placement.HorizontalAlignment;
-import mezz.jei.common.util.NavigationVisibility;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 
 public interface IIngredientGridConfig {
