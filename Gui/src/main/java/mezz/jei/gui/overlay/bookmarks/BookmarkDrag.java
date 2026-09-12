@@ -45,7 +45,7 @@ public class BookmarkDrag<T> {
 		this.origin = origin;
 		this.mouseStartX = mouseX;
 		this.mouseStartY = mouseY;
-		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 		this.dragCanStartTime = System.currentTimeMillis() + clientConfig.dragDelayMs().getValue();
 	}
 

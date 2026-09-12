@@ -65,7 +65,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	) {
 		this.recipeBookmark = recipeBookmark;
 		this.recipeTransferService = recipeTransferService;
-		this.clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		this.clientConfig = Internal.getClientConfigs().getClientConfig();
 	}
 
 	@Override
