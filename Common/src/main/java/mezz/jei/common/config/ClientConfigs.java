@@ -4,6 +4,7 @@ import mezz.jei.api.gui.placement.HorizontalAlignment;
 import net.mezzdev.config.api.schema.builder.IConfigCategoryBuilder;
 import net.mezzdev.config.api.schema.builder.IConfigEditorCategoryBuilder;
 import net.mezzdev.config.api.schema.builder.IConfigSchemaBuilder;
+import net.mezzdev.config.api.sorting.ISortingConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,12 +15,14 @@ public class ClientConfigs implements IClientConfigs {
 	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IIngredientGridConfig ingredientListConfig;
 	private final IIngredientGridConfig bookmarkListConfig;
+	private final ISortingConfig<String> recipeCategorySortingConfig;
 
 	private final List<Runnable> runtimeListenerRemovals = new ArrayList<>();
 
 	public ClientConfigs(
 		IConfigSchemaBuilder builder,
-		boolean isDev
+		boolean isDev,
+		ISortingConfig<String> recipeCategorySortingConfig
 	) {
 		IConfigCategoryBuilder search = builder.addCategory("search");
 		IConfigCategoryBuilder ingredientList = builder.addCategory("ingredientList");
@@ -52,6 +55,7 @@ public class ClientConfigs implements IClientConfigs {
 		this.ingredientFilterConfig = ingredientFilterConfig;
 		this.ingredientListConfig = ingredientListConfig;
 		this.bookmarkListConfig = bookmarkListConfig;
+		this.recipeCategorySortingConfig = Objects.requireNonNull(recipeCategorySortingConfig);
 		builder.build();
 	}
 
@@ -73,6 +77,11 @@ public class ClientConfigs implements IClientConfigs {
 	@Override
 	public IIngredientGridConfig getBookmarkListConfig() {
 		return bookmarkListConfig;
+	}
+
+	@Override
+	public ISortingConfig<String> getRecipeCategorySortingConfig() {
+		return recipeCategorySortingConfig;
 	}
 
 	@Override

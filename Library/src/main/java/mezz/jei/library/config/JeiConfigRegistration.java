@@ -9,6 +9,7 @@ import mezz.jei.common.platform.Services;
 import net.mezzdev.config.api.Configs;
 import net.mezzdev.config.api.IConfigRegistration;
 import net.mezzdev.config.api.schema.builder.IConfigSchemaBuilder;
+import net.mezzdev.config.api.sorting.ISortingConfig;
 import net.minecraft.client.Minecraft;
 
 import java.nio.file.Path;
@@ -40,12 +41,14 @@ public final class JeiConfigRegistration {
 		colorFileBuilder.build();
 
 		boolean isDev = Services.PLATFORM.getModHelper().isInDev();
+		ISortingConfig<String> recipeCategorySortingConfig = RecipeCategorySortingConfig.create(registration, jeiConfigDirectory, profileId);
 		String localizationPath = "jei.config.client";
 		IConfigSchemaBuilder clientFileBuilder = registration.createClientSchemaBuilder("jei-client.ini", localizationPath);
 		clientFileBuilder.setLegacySources(LegacyConfigPaths.get(jeiConfigDirectory, profileId, "jei-client.ini"));
 		ClientConfigs clientConfigs = new ClientConfigs(
 			clientFileBuilder,
-			isDev
+			isDev,
+			recipeCategorySortingConfig
 		);
 
 		Internal.setClientConfigs(clientConfigs);
