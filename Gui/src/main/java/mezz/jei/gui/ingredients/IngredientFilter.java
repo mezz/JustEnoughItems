@@ -9,6 +9,7 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
+import mezz.jei.common.Internal;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
@@ -108,24 +109,24 @@ public class IngredientFilter
 	}
 
 	private void addConfigListeners(IClientConfig clientConfig, IIngredientFilterConfig config) {
-		clientConfig.lowMemorySlowSearchEnabled().addListener(v -> markSearchIndexDirty());
-		clientConfig.ingredientSorterStages().addListener(v -> markSortIndexesDirty());
+		Internal.registerRuntimeListenerRemoval(clientConfig.lowMemorySlowSearchEnabled().addListener(v -> markSearchIndexDirty()));
+		Internal.registerRuntimeListenerRemoval(clientConfig.ingredientSorterStages().addListener(v -> markSortIndexesDirty()));
 
-		config.modNameSearchMode().addListener(v -> markSearchIndexDirty());
-		config.tooltipSearchMode().addListener(v -> markSearchIndexDirty());
-		config.tagSearchMode().addListener(v -> markSearchIndexDirty());
-		config.colorSearchMode().addListener(v -> markSearchIndexDirty());
-		config.resourceLocationSearchMode().addListener(v -> markSearchIndexDirty());
-		config.creativeTabSearchMode().addListener(v -> markSearchIndexDirty());
-		config.searchAdvancedTooltips().addListener(v -> markSearchIndexDirty());
-		config.searchModIds().addListener(v -> markSearchIndexDirty());
-		config.searchModAliases().addListener(v -> markSearchIndexDirty());
-		config.searchIngredientAliases().addListener(v -> markSearchIndexDirty());
-		config.searchShortModNames().addListener(v -> markSearchIndexDirty());
+		Internal.registerRuntimeListenerRemoval(config.modNameSearchMode().addListener(v -> markSearchIndexDirty()));
+		Internal.registerRuntimeListenerRemoval(config.tooltipSearchMode().addListener(v -> markSearchIndexDirty()));
+		Internal.registerRuntimeListenerRemoval(config.tagSearchMode().addListener(v -> markSearchIndexDirty()));
+		Internal.registerRuntimeListenerRemoval(config.colorSearchMode().addListener(v -> markSearchIndexDirty()));
+		Internal.registerRuntimeListenerRemoval(config.resourceLocationSearchMode().addListener(v -> markSearchIndexDirty()));
+		Internal.registerRuntimeListenerRemoval(config.creativeTabSearchMode().addListener(v -> markSearchIndexDirty()));
+		Internal.registerRuntimeListenerRemoval(config.searchAdvancedTooltips().addListener(v -> markSearchIndexDirty()));
+		Internal.registerRuntimeListenerRemoval(config.searchModIds().addListener(v -> markSearchIndexDirty()));
+		Internal.registerRuntimeListenerRemoval(config.searchModAliases().addListener(v -> markSearchIndexDirty()));
+		Internal.registerRuntimeListenerRemoval(config.searchIngredientAliases().addListener(v -> markSearchIndexDirty()));
+		Internal.registerRuntimeListenerRemoval(config.searchShortModNames().addListener(v -> markSearchIndexDirty()));
 	}
 
 	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser, List<IListElementInfo<?>> elementInfos, IIngredientManager ingredientManager) {
-		if (clientConfig.lowMemorySlowSearchEnabled().getValue()) {
+		if (clientConfig.lowMemorySlowSearchEnabled().get()) {
 			return new ElementSearchLowMem(elementPrefixParser.getNoPrefix(), elementInfos);
 		} else {
 			return new ElementSearch(elementPrefixParser, elementInfos, ingredientManager);

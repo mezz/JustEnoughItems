@@ -1,33 +1,51 @@
 package mezz.jei.library.config;
 
 import mezz.jei.api.constants.ModIds;
-import mezz.jei.common.config.file.IConfigCategoryBuilder;
-import mezz.jei.common.config.file.IConfigSchemaBuilder;
+import mezz.jei.common.config.legacy.LegacyConfigValueMigrator;
+import mezz.jei.common.config.legacy.LegacyModNameFormatSerializer;
+import net.mezzdev.config.api.schema.builder.IConfigCategoryBuilder;
+import net.mezzdev.config.api.schema.builder.IConfigSchemaBuilder;
+import net.mezzdev.config.api.value.IConfigValue;
 import mezz.jei.common.util.function.CachedSupplierTransformer;
-import mezz.jei.library.config.serializers.ChatFormattingSerializer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
 public class ModIdFormatConfig implements IModIdFormatConfig {
+	private static final List<ChatFormatting> validModNameFormats = Arrays.stream(ChatFormatting.values())
+		.filter(chatFormatting -> chatFormatting != ChatFormatting.RESET)
+		.toList();
+	private static final LegacyModNameFormatSerializer LEGACY_SERIALIZER = new LegacyModNameFormatSerializer(validModNameFormats);
 	protected static final List<ChatFormatting> defaultModNameFormat = List.of(ChatFormatting.BLUE, ChatFormatting.ITALIC);
 	public static final String MOD_NAME_FORMAT_CODE = "%MODNAME%";
 
 	private final Supplier<Component> modNameFormat;
+	private final IConfigValue<List<ChatFormatting>> configValue;
 	@Nullable
 	private Component cachedOverride; // when we detect another mod is adding mod names to tooltips, use its formatting
 
 	public ModIdFormatConfig(IConfigSchemaBuilder builder) {
 		IConfigCategoryBuilder modName = builder.addCategory("modName");
-		Supplier<List<ChatFormatting>> configValue = modName.addList(
+		this.configValue = modName.addEnumList("modNameFormat", defaultModNameFormat, validModNameFormats)
+			.build();
+		this.modNameFormat = new CachedSupplierTransformer<>(this.configValue::get, ModIdFormatConfig::toFormatString);
+	}
+
+	public ModIdFormatConfig(IConfigSchemaBuilder builder, List<Path> legacyPaths) {
+		this(builder);
+		LegacyConfigValueMigrator.register(
+			builder,
+			legacyPaths,
+			configValue,
+			"modName",
 			"modNameFormat",
-			defaultModNameFormat,
-			ChatFormattingSerializer.INSTANCE
+			LEGACY_SERIALIZER
 		);
-		this.modNameFormat = new CachedSupplierTransformer<>(configValue, ModIdFormatConfig::toFormatString);
 	}
 
 	private static Component toFormatString(List<ChatFormatting> values) {
@@ -83,4 +101,5 @@ public class ModIdFormatConfig implements IModIdFormatConfig {
 		return StyledTextHelper.replaceFirst(format, MOD_NAME_FORMAT_CODE, Component.literal(modName))
 			.orElseGet(() -> format.copy().append(Component.literal(modName)));
 	}
+
 }

@@ -84,7 +84,7 @@ public class BookmarkDragManager {
 		@Override
 		public Optional<IDragHandler> handleDragStart(Screen screen, UserInput input) {
 			IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
-			if (!clientConfig.dragToRearrangeBookmarksEnabled().getValue()) {
+			if (!clientConfig.dragToRearrangeBookmarksEnabled().get()) {
 				stopDrag();
 				return Optional.empty();
 			}

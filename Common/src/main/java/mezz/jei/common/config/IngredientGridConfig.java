@@ -2,9 +2,9 @@ package mezz.jei.common.config;
 
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
-import mezz.jei.common.config.file.ConfigValue;
-import mezz.jei.common.config.file.IConfigCategoryBuilder;
-import mezz.jei.common.config.file.IConfigSchemaBuilder;
+import net.mezzdev.config.api.value.editor.ConfigValueEditMode;
+import net.mezzdev.config.api.value.IConfigValue;
+import net.mezzdev.config.api.schema.builder.IConfigCategoryBuilder;
 
 public class IngredientGridConfig implements IIngredientGridConfig {
 	private static final int minNumRows = 1;
@@ -21,35 +21,41 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	private static final IngredientGridLayoutMode defaultLayoutMode = IngredientGridLayoutMode.RECTANGULAR;
 	private static final IngredientGridNavigationMode defaultNavigationMode = IngredientGridNavigationMode.PAGED;
 
-	private final ConfigValue<Integer> maxRows;
-	private final ConfigValue<Integer> maxColumns;
-	private final ConfigValue<HorizontalAlignment> horizontalAlignment;
-	private final ConfigValue<VerticalAlignment> verticalAlignment;
-	private final ConfigValue<NavigationVisibility> navigationVisibility;
-	private final ConfigValue<Boolean> drawBackground;
-	private final ConfigValue<IngredientGridLayoutMode> layoutMode;
-	private final ConfigValue<IngredientGridNavigationMode> navigationMode;
+	private final IConfigValue<Integer> maxRows;
+	private final IConfigValue<Integer> maxColumns;
+	private final IConfigValue<HorizontalAlignment> horizontalAlignment;
+	private final IConfigValue<VerticalAlignment> verticalAlignment;
+	private final IConfigValue<NavigationVisibility> navigationVisibility;
+	private final IConfigValue<Boolean> drawBackground;
+	private final IConfigValue<IngredientGridLayoutMode> layoutMode;
+	private final IConfigValue<IngredientGridNavigationMode> navigationMode;
 
-	public IngredientGridConfig(String categoryName, IConfigSchemaBuilder builder, HorizontalAlignment defaultHorizontalAlignment) {
-		IConfigCategoryBuilder category = builder.addCategory(categoryName);
-		maxRows = category.addInteger(
-			"maxRows",
-			defaultNumRows,
-			minNumRows,
-			largestNumRows
-		);
-		maxColumns = category.addInteger(
-			"maxColumns",
-			defaultNumColumns,
-			minNumColumns,
-			largestNumColumns
-		);
-		horizontalAlignment = category.addEnum("horizontalAlignment", defaultHorizontalAlignment);
-		verticalAlignment = category.addEnum("verticalAlignment", defaultVerticalAlignment);
-		navigationVisibility = category.addEnum("navigationVisibility", defaultNavigationVisibility);
-		drawBackground = category.addBoolean("drawBackground", defaultDrawBackground);
-		layoutMode = category.addEnum("layoutMode", defaultLayoutMode);
-		navigationMode = category.addEnum("navigationMode", defaultNavigationMode);
+	public IngredientGridConfig(IConfigCategoryBuilder category, HorizontalAlignment defaultHorizontalAlignment) {
+		maxRows = category.addInteger("maxRows", defaultNumRows, minNumRows, largestNumRows)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
+		maxColumns = category.addInteger("maxColumns", defaultNumColumns, minNumColumns, largestNumColumns)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
+		horizontalAlignment = category.addEnum("horizontalAlignment", defaultHorizontalAlignment)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
+		verticalAlignment = category.addEnum("verticalAlignment", defaultVerticalAlignment)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
+		navigationVisibility = category.addEnum("navigationVisibility", defaultNavigationVisibility)
+			.addLegacyName("buttonNavigationVisibility")
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
+		drawBackground = category.addBoolean("drawBackground", defaultDrawBackground)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
+		layoutMode = category.addEnum("layoutMode", defaultLayoutMode)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
+		navigationMode = category.addEnum("navigationMode", defaultNavigationMode)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
 	}
 
 	@Override
@@ -63,42 +69,42 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	}
 
 	@Override
-	public ConfigValue<Integer> maxColumns() {
+	public IConfigValue<Integer> maxColumns() {
 		return maxColumns;
 	}
 
 	@Override
-	public ConfigValue<Integer> maxRows() {
+	public IConfigValue<Integer> maxRows() {
 		return maxRows;
 	}
 
 	@Override
-	public ConfigValue<Boolean> drawBackground() {
+	public IConfigValue<Boolean> drawBackground() {
 		return drawBackground;
 	}
 
 	@Override
-	public ConfigValue<IngredientGridLayoutMode> layoutMode() {
+	public IConfigValue<IngredientGridLayoutMode> layoutMode() {
 		return layoutMode;
 	}
 
 	@Override
-	public ConfigValue<IngredientGridNavigationMode> navigationMode() {
+	public IConfigValue<IngredientGridNavigationMode> navigationMode() {
 		return navigationMode;
 	}
 
 	@Override
-	public ConfigValue<HorizontalAlignment> horizontalAlignment() {
+	public IConfigValue<HorizontalAlignment> horizontalAlignment() {
 		return horizontalAlignment;
 	}
 
 	@Override
-	public ConfigValue<VerticalAlignment> verticalAlignment() {
+	public IConfigValue<VerticalAlignment> verticalAlignment() {
 		return verticalAlignment;
 	}
 
 	@Override
-	public ConfigValue<NavigationVisibility> navigationVisibility() {
+	public IConfigValue<NavigationVisibility> navigationVisibility() {
 		return navigationVisibility;
 	}
 }

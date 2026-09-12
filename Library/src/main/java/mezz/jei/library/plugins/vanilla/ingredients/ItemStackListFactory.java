@@ -46,7 +46,7 @@ public final class ItemStackListFactory {
 	public static List<ItemStack> create(StackHelper stackHelper, ItemStackHelper itemStackHelper) {
 		IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-		final boolean showHidden = clientConfig.showHiddenIngredients().getValue();
+		final boolean showHidden = clientConfig.showHiddenIngredients().get();
 
 		final List<ItemStack> itemList = new ArrayList<>();
 		final Set<Object> itemUidSet = new HashSet<>();

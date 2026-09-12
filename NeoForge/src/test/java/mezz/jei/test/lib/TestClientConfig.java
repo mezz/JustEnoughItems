@@ -1,202 +1,214 @@
 package mezz.jei.test.lib;
 
-import mezz.jei.api.runtime.config.IJeiConfigValue;
-import mezz.jei.common.config.BookmarkTooltipFeature;
+import net.mezzdev.config.api.value.IConfigValue;
+import mezz.jei.common.config.BookmarkAddPosition;
 import mezz.jei.common.config.GiveMode;
 import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IngredientSortStage;
-import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.common.config.SearchBarPosition;
 
 import java.util.List;
 
 public class TestClientConfig implements IClientConfig {
-	private final IJeiConfigValue<Boolean> centerSearchBarEnabled = value("centerSearchBarEnabled", false);
-	private final IJeiConfigValue<Integer> maxRecipeGuiHeight = value("maxRecipeGuiHeight", 500);
-	private final IJeiConfigValue<Boolean> toastReflowEnabled = value("toastReflowEnabled", true);
-	private final IJeiConfigValue<GiveMode> giveMode = value("giveMode", GiveMode.INVENTORY);
-	private final IJeiConfigValue<Boolean> cheatToHotbarUsingHotkeysEnabled = value("cheatToHotbarUsingHotkeysEnabled", false);
-	private final IJeiConfigValue<Boolean> showHiddenIngredients = value("showHiddenIngredients", false);
-	private final IJeiConfigValue<Boolean> showTagRecipesEnabled = value("showTagRecipesEnabled", false);
-	private final IJeiConfigValue<Boolean> addBookmarksToFrontEnabled = value("addBookmarksToFrontEnabled", false);
-	private final IJeiConfigValue<Boolean> bookmarkOutputAsRecipe = value("bookmarkOutputAsRecipe", true);
-	private final IJeiConfigValue<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures = value("bookmarkTooltipFeatures", List.of());
-	private final IJeiConfigValue<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled = value("holdShiftToShowBookmarkTooltipFeaturesEnabled", true);
-	private final IJeiConfigValue<Boolean> dragToRearrangeBookmarksEnabled = value("dragToRearrangeBookmarksEnabled", false);
-	private final IJeiConfigValue<Boolean> lookupHistoryEnabled = value("lookupHistoryEnabled", false);
-	private final IJeiConfigValue<Integer> maxLookupHistoryRows = value("maxLookupHistoryRows", 0);
-	private final IJeiConfigValue<Integer> maxLookupHistoryIngredients = value("maxLookupHistoryIngredients", 0);
-	private final IJeiConfigValue<HistoryDisplaySide> lookupHistoryDisplaySide = value("lookupHistoryDisplaySide", HistoryDisplaySide.LEFT);
-	private final IJeiConfigValue<Boolean> ingredientsSummaryEnabled = value("ingredientsSummaryEnabled", true);
-	private final IJeiConfigValue<Boolean> lowMemorySlowSearchEnabled;
-	private final IJeiConfigValue<Boolean> catchRenderErrorsEnabled = value("catchRenderErrorsEnabled", false);
-	private final IJeiConfigValue<Boolean> recipeSyncWarningEnabled = value("recipeSyncWarningEnabled", true);
-	private final IJeiConfigValue<Boolean> lookupFluidContentsEnabled = value("lookupFluidContentsEnabled", false);
-	private final IJeiConfigValue<Boolean> lookupBlockTagsEnabled = value("lookupBlockTagsEnabled", false);
-	private final IJeiConfigValue<Boolean> showCreativeTabNamesEnabled = value("showCreativeTabNamesEnabled", false);
-	private final IJeiConfigValue<Integer> dragDelayMs = value("dragDelayMs", 0);
-	private final IJeiConfigValue<Integer> smoothScrollRate = value("smoothScrollRate", 9);
-	private final IJeiConfigValue<Boolean> recipeSlotCyclingEnabled = value("recipeSlotCyclingEnabled", false);
-	private final IJeiConfigValue<List<IngredientSortStage>> ingredientSorterStages = value("ingredientSorterStages", List.of());
-	private final IJeiConfigValue<List<RecipeSorterStage>> recipeSorterStages = value("recipeSorterStages", List.of());
-	private final IJeiConfigValue<Boolean> tagContentTooltipEnabled = value("tagContentTooltipEnabled", true);
-	private final IJeiConfigValue<Boolean> hideSingleTagContentTooltipEnabled = value("hideSingleTagContentTooltipEnabled", true);
+	private final IConfigValue<SearchBarPosition> searchBarPosition = value("searchBarPosition", SearchBarPosition.STANDARD);
+	private final IConfigValue<Integer> maxRecipeGuiHeight = value("maxRecipeGuiHeight", 500);
+	private final IConfigValue<Boolean> toastReflowEnabled = value("toastReflowEnabled", true);
+	private final IConfigValue<GiveMode> giveMode = value("giveMode", GiveMode.INVENTORY);
+	private final IConfigValue<Boolean> cheatToHotbarUsingHotkeysEnabled = value("cheatToHotbarUsingHotkeysEnabled", false);
+	private final IConfigValue<Boolean> showHiddenIngredients = value("showHiddenIngredients", false);
+	private final IConfigValue<BookmarkAddPosition> bookmarkAddPosition = value("bookmarkAddPosition", BookmarkAddPosition.END);
+	private final IConfigValue<Boolean> bookmarkOutputAsRecipe = value("bookmarkOutputAsRecipe", true);
+	private final IConfigValue<Boolean> bookmarkTooltipPreviewEnabled = value("bookmarkTooltipPreviewEnabled", false);
+	private final IConfigValue<Boolean> bookmarkTooltipIngredientsEnabled = value("bookmarkTooltipIngredientsEnabled", false);
+	private final IConfigValue<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled = value("holdShiftToShowBookmarkTooltipFeaturesEnabled", true);
+	private final IConfigValue<Boolean> dragToRearrangeBookmarksEnabled = value("dragToRearrangeBookmarksEnabled", false);
+	private final IConfigValue<Boolean> lookupHistoryEnabled = value("lookupHistoryEnabled", false);
+	private final IConfigValue<Integer> maxLookupHistoryRows = value("maxLookupHistoryRows", 0);
+	private final IConfigValue<Integer> maxLookupHistoryIngredients = value("maxLookupHistoryIngredients", 0);
+	private final IConfigValue<HistoryDisplaySide> lookupHistoryDisplaySide = value("lookupHistoryDisplaySide", HistoryDisplaySide.LEFT);
+	private final IConfigValue<Boolean> ingredientsSummaryEnabled = value("ingredientsSummaryEnabled", true);
+	private final IConfigValue<Boolean> showTagRecipesEnabled = value("showTagRecipesEnabled", false);
+	private final IConfigValue<Boolean> lowMemorySlowSearchEnabled;
+	private final IConfigValue<Boolean> catchRenderErrorsEnabled = value("catchRenderErrorsEnabled", false);
+	private final IConfigValue<Boolean> recipeSyncWarningEnabled = value("recipeSyncWarningEnabled", true);
+	private final IConfigValue<Boolean> lookupFluidContentsEnabled = value("lookupFluidContentsEnabled", false);
+	private final IConfigValue<Boolean> lookupBlockTagsEnabled = value("lookupBlockTagsEnabled", false);
+	private final IConfigValue<Boolean> showCreativeTabNamesEnabled = value("showCreativeTabNamesEnabled", false);
+	private final IConfigValue<Integer> dragDelayMs = value("dragDelayMs", 0);
+	private final IConfigValue<Integer> smoothScrollRate = value("smoothScrollRate", 9);
+	private final IConfigValue<Boolean> recipeSlotCyclingEnabled = value("recipeSlotCyclingEnabled", false);
+	private final IConfigValue<List<IngredientSortStage>> ingredientSorterStages = value("ingredientSorterStages", List.<IngredientSortStage>of());
+	private final IConfigValue<Boolean> recipeSortingBookmarksEnabled = value("recipeSortingBookmarksEnabled", false);
+	private final IConfigValue<Boolean> recipeSortingCraftableEnabled = value("recipeSortingCraftableEnabled", false);
+	private final IConfigValue<Boolean> tagContentTooltipEnabled = value("tagContentTooltipEnabled", true);
+	private final IConfigValue<Boolean> hideSingleTagContentTooltipEnabled = value("hideSingleTagContentTooltipEnabled", true);
 
 	public TestClientConfig(boolean lowMemorySlowSearchEnabled) {
 		this.lowMemorySlowSearchEnabled = value("lowMemorySlowSearchEnabled", lowMemorySlowSearchEnabled);
 	}
 
-	private static <T> IJeiConfigValue<T> value(String name, T value) {
+	private static <T> IConfigValue<T> value(String name, T value) {
 		return new TestJeiConfigValue<>(name, value);
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> centerSearchBarEnabled() {
-		return centerSearchBarEnabled;
+	public IConfigValue<SearchBarPosition> searchBarPosition() {
+		return searchBarPosition;
 	}
 
 	@Override
-	public IJeiConfigValue<Integer> maxRecipeGuiHeight() {
+	public IConfigValue<Integer> maxRecipeGuiHeight() {
 		return maxRecipeGuiHeight;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> toastReflowEnabled() {
+	public IConfigValue<Boolean> toastReflowEnabled() {
 		return toastReflowEnabled;
 	}
 
 	@Override
-	public IJeiConfigValue<GiveMode> giveMode() {
+	public IConfigValue<GiveMode> giveMode() {
 		return giveMode;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> cheatToHotbarUsingHotkeysEnabled() {
+	public IConfigValue<Boolean> cheatToHotbarUsingHotkeysEnabled() {
 		return cheatToHotbarUsingHotkeysEnabled;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> showHiddenIngredients() {
+	public IConfigValue<Boolean> showHiddenIngredients() {
 		return showHiddenIngredients;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> showTagRecipesEnabled() {
-		return showTagRecipesEnabled;
+	public IConfigValue<BookmarkAddPosition> bookmarkAddPosition() {
+		return bookmarkAddPosition;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> addBookmarksToFrontEnabled() {
-		return addBookmarksToFrontEnabled;
-	}
-
-	@Override
-	public IJeiConfigValue<Boolean> bookmarkOutputAsRecipe() {
+	public IConfigValue<Boolean> bookmarkOutputAsRecipe() {
 		return bookmarkOutputAsRecipe;
 	}
 
 	@Override
-	public IJeiConfigValue<List<BookmarkTooltipFeature>> bookmarkTooltipFeatures() {
-		return bookmarkTooltipFeatures;
+	public IConfigValue<Boolean> bookmarkTooltipPreviewEnabled() {
+		return bookmarkTooltipPreviewEnabled;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled() {
+	public IConfigValue<Boolean> bookmarkTooltipIngredientsEnabled() {
+		return bookmarkTooltipIngredientsEnabled;
+	}
+
+	@Override
+	public IConfigValue<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled() {
 		return holdShiftToShowBookmarkTooltipFeaturesEnabled;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> dragToRearrangeBookmarksEnabled() {
+	public IConfigValue<Boolean> dragToRearrangeBookmarksEnabled() {
 		return dragToRearrangeBookmarksEnabled;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> lookupHistoryEnabled() {
+	public IConfigValue<Boolean> lookupHistoryEnabled() {
 		return lookupHistoryEnabled;
 	}
 
 	@Override
-	public IJeiConfigValue<Integer> maxLookupHistoryRows() {
+	public IConfigValue<Integer> maxLookupHistoryRows() {
 		return maxLookupHistoryRows;
 	}
 
 	@Override
-	public IJeiConfigValue<Integer> maxLookupHistoryIngredients() {
+	public IConfigValue<Integer> maxLookupHistoryIngredients() {
 		return maxLookupHistoryIngredients;
 	}
 
 	@Override
-	public IJeiConfigValue<HistoryDisplaySide> lookupHistoryDisplaySide() {
+	public IConfigValue<HistoryDisplaySide> lookupHistoryDisplaySide() {
 		return lookupHistoryDisplaySide;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> ingredientsSummaryEnabled() {
+	public IConfigValue<Boolean> ingredientsSummaryEnabled() {
 		return ingredientsSummaryEnabled;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> lowMemorySlowSearchEnabled() {
+	public IConfigValue<Boolean> showTagRecipesEnabled() {
+		return showTagRecipesEnabled;
+	}
+
+	@Override
+	public IConfigValue<Boolean> lowMemorySlowSearchEnabled() {
 		return lowMemorySlowSearchEnabled;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> catchRenderErrorsEnabled() {
+	public IConfigValue<Boolean> catchRenderErrorsEnabled() {
 		return catchRenderErrorsEnabled;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> recipeSyncWarningEnabled() {
+	public IConfigValue<Boolean> recipeSyncWarningEnabled() {
 		return recipeSyncWarningEnabled;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> lookupFluidContentsEnabled() {
+	public IConfigValue<Boolean> lookupFluidContentsEnabled() {
 		return lookupFluidContentsEnabled;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> lookupBlockTagsEnabled() {
+	public IConfigValue<Boolean> lookupBlockTagsEnabled() {
 		return lookupBlockTagsEnabled;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> showCreativeTabNamesEnabled() {
+	public IConfigValue<Boolean> showCreativeTabNamesEnabled() {
 		return showCreativeTabNamesEnabled;
 	}
 
 	@Override
-	public IJeiConfigValue<Integer> dragDelayMs() {
+	public IConfigValue<Integer> dragDelayMs() {
 		return dragDelayMs;
 	}
 
 	@Override
-	public IJeiConfigValue<Integer> smoothScrollRate() {
+	public IConfigValue<Integer> smoothScrollRate() {
 		return smoothScrollRate;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> recipeSlotCyclingEnabled() {
+	public IConfigValue<Boolean> recipeSlotCyclingEnabled() {
 		return recipeSlotCyclingEnabled;
 	}
 
 	@Override
-	public IJeiConfigValue<List<IngredientSortStage>> ingredientSorterStages() {
+	public IConfigValue<List<IngredientSortStage>> ingredientSorterStages() {
 		return ingredientSorterStages;
 	}
 
 	@Override
-	public IJeiConfigValue<List<RecipeSorterStage>> recipeSorterStages() {
-		return recipeSorterStages;
+	public IConfigValue<Boolean> recipeSortingBookmarksEnabled() {
+		return recipeSortingBookmarksEnabled;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> tagContentTooltipEnabled() {
+	public IConfigValue<Boolean> recipeSortingCraftableEnabled() {
+		return recipeSortingCraftableEnabled;
+	}
+
+	@Override
+	public IConfigValue<Boolean> tagContentTooltipEnabled() {
 		return tagContentTooltipEnabled;
 	}
 
 	@Override
-	public IJeiConfigValue<Boolean> hideSingleTagContentTooltipEnabled() {
+	public IConfigValue<Boolean> hideSingleTagContentTooltipEnabled() {
 		return hideSingleTagContentTooltipEnabled;
 	}
 }

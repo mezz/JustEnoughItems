@@ -10,8 +10,13 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.search.ISearchStorageBuilder;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
+import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.ClientToggleState;
 import mezz.jei.common.search.GeneralizedSuffixTreeSearchStorage;
 import mezz.jei.common.search.SearchStorageBuilderAdapter;
 import mezz.jei.gui.filter.FilterTextSource;
@@ -27,7 +32,6 @@ import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
 import mezz.jei.test.lib.TestClientConfig;
-import mezz.jei.test.lib.TestClientToggleState;
 import mezz.jei.test.lib.TestColorHelper;
 import mezz.jei.test.lib.TestIngredient;
 import mezz.jei.test.lib.TestIngredientFilterConfig;
@@ -39,6 +43,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -64,10 +69,19 @@ public class IngredientFilterTest {
 	private FilterTextSource filterTextSource;
 	@Nullable
 	private IModIdHelper modIdHelper;
+	@Nullable
+	private TestIngredientFilterConfig ingredientFilterConfig;
+	@Nullable
+	private ClientToggleState toggleState;
 
 	@BeforeEach
 	public void setup() {
 		setup(false);
+	}
+
+	@AfterEach
+	public void tearDown() {
+		Internal.getOptionalClientConfigs().ifPresent(IClientConfigs::onRuntimeStopped);
 	}
 
 	private void setup(boolean lowMemorySlowSearchEnabled) {
@@ -85,13 +99,18 @@ public class IngredientFilterTest {
 		this.modIdHelper = new TestModIdHelper();
 		IClientConfig clientConfig = new TestClientConfig(lowMemorySlowSearchEnabled);
 
+		this.ingredientFilterConfig = new TestIngredientFilterConfig();
+		TestIngredientFilterConfig ingredientFilterConfig = this.ingredientFilterConfig;
+		Internal.getOptionalClientConfigs().ifPresent(IClientConfigs::onRuntimeStopped);
+		Internal.setClientConfigs(new TestClientConfigs(clientConfig, ingredientFilterConfig));
+
 		this.baseList = IngredientListElementFactory.createBaseList(ingredientManager, modIdHelper);
 
 		this.editModeConfig = new EditModeConfig(new NullSerializer(), ingredientManager);
 
-		IClientToggleState toggleState = new TestClientToggleState();
+		this.toggleState = new ClientToggleState();
+		IClientToggleState toggleState = this.toggleState;
 
-		TestIngredientFilterConfig ingredientFilterConfig = new TestIngredientFilterConfig();
 		this.ingredientVisibility = new IngredientVisibility(blacklist, toggleState, editModeConfig, ingredientManager);
 		this.filterTextSource = new FilterTextSource();
 		this.ingredientFilter = new IngredientFilter(
@@ -134,6 +153,7 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(ingredientVisibility);
 		Assertions.assertNotNull(filterTextSource);
 		Assertions.assertNotNull(modIdHelper);
+		Assertions.assertNotNull(ingredientFilterConfig);
 
 		List<TestIngredient> ingredients = createIngredients();
 
@@ -149,6 +169,7 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(ingredientVisibility);
 		Assertions.assertNotNull(filterTextSource);
 		Assertions.assertNotNull(modIdHelper);
+		Assertions.assertNotNull(ingredientFilterConfig);
 
 		List<TestIngredient> ingredients = createIngredients();
 		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
@@ -212,6 +233,7 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(ingredientVisibility);
 		Assertions.assertNotNull(filterTextSource);
 		Assertions.assertNotNull(modIdHelper);
+		Assertions.assertNotNull(ingredientFilterConfig);
 
 		List<TestIngredient> ingredients = createIngredients();
 		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
@@ -243,6 +265,7 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(ingredientVisibility);
 		Assertions.assertNotNull(filterTextSource);
 		Assertions.assertNotNull(modIdHelper);
+		Assertions.assertNotNull(ingredientFilterConfig);
 
 		List<TestIngredient> ingredients = createIngredients();
 		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
@@ -294,6 +317,7 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(ingredientVisibility);
 		Assertions.assertNotNull(filterTextSource);
 		Assertions.assertNotNull(modIdHelper);
+		Assertions.assertNotNull(ingredientFilterConfig);
 
 		List<TestIngredient> ingredients = createIngredients();
 		TestIngredient testIngredient = ingredients.getFirst();
@@ -339,6 +363,35 @@ public class IngredientFilterTest {
 
 		List<?> ingredientList = ingredientFilter.getElements();
 		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT - 1, ingredientList.size());
+	}
+
+	@Test
+	public void testConfigBlacklistInEditMode() {
+		Assertions.assertNotNull(ingredientFilter);
+		Assertions.assertNotNull(baseList);
+		Assertions.assertNotNull(editModeConfig);
+		Assertions.assertNotNull(toggleState);
+
+		IListElementInfo<?> elementInfo = baseList.getFirst();
+		ITypedIngredient<?> typedIngredient = elementInfo.getTypedIngredient();
+		@SuppressWarnings("unchecked")
+		ITypedIngredient<TestIngredient> blacklistedIngredient = (ITypedIngredient<TestIngredient>) typedIngredient;
+		TestIngredientHelper testIngredientHelper = new TestIngredientHelper();
+
+		toggleState.toggleEditModeEnabled();
+		editModeConfig.addIngredientToConfigBlacklist(
+			blacklistedIngredient,
+			IEditModeConfig.HideMode.SINGLE,
+			testIngredientHelper
+		);
+
+		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientFilter.getElements().size());
+
+		toggleState.toggleEditModeEnabled();
+		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT - 1, ingredientFilter.getElements().size());
+
+		toggleState.toggleEditModeEnabled();
+		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientFilter.getElements().size());
 	}
 
 	public static Set<String> getTooltipStrings(IIngredientRenderer<TestIngredient> ingredientRenderer, TestIngredient testIngredient) {
@@ -445,6 +498,48 @@ public class IngredientFilterTest {
 		@Override
 		public void load(EditModeConfig config) {
 
+		}
+	}
+
+	private static class TestClientConfigs implements IClientConfigs {
+		private final IClientConfig clientConfig;
+		private final IIngredientFilterConfig ingredientFilterConfig;
+		private final List<Runnable> listenerRemovals = new ArrayList<>();
+
+		private TestClientConfigs(IClientConfig clientConfig, IIngredientFilterConfig ingredientFilterConfig) {
+			this.clientConfig = clientConfig;
+			this.ingredientFilterConfig = ingredientFilterConfig;
+		}
+
+		@Override
+		public IClientConfig getClientConfig() {
+			return clientConfig;
+		}
+
+		@Override
+		public IIngredientFilterConfig getIngredientFilterConfig() {
+			return ingredientFilterConfig;
+		}
+
+		@Override
+		public IIngredientGridConfig getIngredientListConfig() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public IIngredientGridConfig getBookmarkListConfig() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void registerRuntimeListenerRemoval(Runnable listenerRemoval) {
+			listenerRemovals.add(listenerRemoval);
+		}
+
+		@Override
+		public void onRuntimeStopped() {
+			listenerRemovals.forEach(Runnable::run);
+			listenerRemovals.clear();
 		}
 	}
 }

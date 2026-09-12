@@ -1,27 +1,27 @@
 package mezz.jei.common.config;
 
-import mezz.jei.api.runtime.config.IJeiConfigValue;
+import net.mezzdev.config.api.value.IConfigValue;
 
 public interface IIngredientFilterConfig {
-	IJeiConfigValue<SearchMode> modNameSearchMode();
+	IConfigValue<SearchMode> modNameSearchMode();
 
-	IJeiConfigValue<SearchMode> tooltipSearchMode();
+	IConfigValue<SearchMode> tooltipSearchMode();
 
-	IJeiConfigValue<SearchMode> tagSearchMode();
+	IConfigValue<SearchMode> tagSearchMode();
 
-	IJeiConfigValue<SearchMode> colorSearchMode();
+	IConfigValue<SearchMode> colorSearchMode();
 
-	IJeiConfigValue<SearchMode> resourceLocationSearchMode();
+	IConfigValue<SearchMode> resourceLocationSearchMode();
 
-	IJeiConfigValue<SearchMode> creativeTabSearchMode();
+	IConfigValue<SearchMode> creativeTabSearchMode();
 
-	IJeiConfigValue<Boolean> searchAdvancedTooltips();
+	IConfigValue<Boolean> searchAdvancedTooltips();
 
-	IJeiConfigValue<Boolean> searchModIds();
+	IConfigValue<Boolean> searchModIds();
 
-	IJeiConfigValue<Boolean> searchModAliases();
+	IConfigValue<Boolean> searchModAliases();
 
-	IJeiConfigValue<Boolean> searchIngredientAliases();
+	IConfigValue<Boolean> searchIngredientAliases();
 
-	IJeiConfigValue<Boolean> searchShortModNames();
+	IConfigValue<Boolean> searchShortModNames();
 }

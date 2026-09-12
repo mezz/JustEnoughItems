@@ -217,7 +217,7 @@ public final class SafeIngredientUtil {
 	private static boolean shouldCatchRenderErrors() {
 		return Internal.getOptionalClientConfigs()
 			.map(IClientConfigs::getClientConfig)
-			.map(clientConfig -> clientConfig.catchRenderErrorsEnabled().getValue())
+			.map(clientConfig -> clientConfig.catchRenderErrorsEnabled().get())
 			.orElse(false);
 	}
 

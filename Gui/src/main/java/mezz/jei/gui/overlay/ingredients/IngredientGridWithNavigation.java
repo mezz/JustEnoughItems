@@ -166,7 +166,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		Set<ImmutableRect2i> guiExclusionAreas,
 		int ingredientCount
 	) {
-		if (this.gridConfig.navigationMode().getValue().usesScrollbar()) {
+		if (this.gridConfig.navigationMode().get().usesScrollbar()) {
 			return IngredientGridScrollbarLayout.calculate(
 				this.gridConfig,
 				availableArea,
@@ -248,7 +248,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		if (!this.active) {
 			return;
 		}
-		if (this.gridConfig.drawBackground().getValue()) {
+		if (this.gridConfig.drawBackground().get()) {
 			this.background.draw(guiGraphics, this.backgroundArea);
 			this.slotBackground.draw(guiGraphics, this.slotBackgroundArea);
 			GuiExclusionAreaShadow.draw(guiGraphics, this.exclusionAreaShadow, this.backgroundArea, this.guiExclusionAreas);

@@ -2,23 +2,28 @@ package mezz.jei.gui.overlay.history;
 
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
-import mezz.jei.api.runtime.config.IJeiConfigValue;
-import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.config.NavigationVisibility;
 import mezz.jei.gui.overlay.ingredients.IngredientGridButtonNavigationLayout;
 import mezz.jei.gui.overlay.ingredients.IngredientGridLayout;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigationLayout;
-import net.minecraft.network.chat.Component;
+import net.mezzdev.config.api.schema.category.IConfigEditorCategory;
+import net.mezzdev.config.api.value.editor.ConfigValueEditMode;
+import net.mezzdev.config.api.value.editor.IConfigValueEditorInfo;
+import net.mezzdev.config.api.value.editor.ConfigValueRestartRequirement;
+import net.mezzdev.config.api.value.change.IConfigValueBatchChangeListener;
+import net.mezzdev.config.api.value.IConfigValue;
+import net.mezzdev.config.api.value.change.IConfigValueChangeListener;
+import net.mezzdev.config.api.value.serializer.IConfigValueSerializer;
+import mezz.jei.common.config.NavigationVisibility;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -289,7 +294,7 @@ public class LookupHistoryOverlayLayoutTest {
 		}
 
 		@Override
-		public IJeiConfigValue<Integer> maxColumns() {
+		public IConfigValue<Integer> maxColumns() {
 			return maxColumns;
 		}
 
@@ -299,7 +304,7 @@ public class LookupHistoryOverlayLayoutTest {
 		}
 
 		@Override
-		public IJeiConfigValue<Integer> maxRows() {
+		public IConfigValue<Integer> maxRows() {
 			return maxRows;
 		}
 
@@ -309,32 +314,32 @@ public class LookupHistoryOverlayLayoutTest {
 		}
 
 		@Override
-		public IJeiConfigValue<Boolean> drawBackground() {
+		public IConfigValue<Boolean> drawBackground() {
 			return drawBackground;
 		}
 
 		@Override
-		public IJeiConfigValue<IngredientGridLayoutMode> layoutMode() {
+		public IConfigValue<IngredientGridLayoutMode> layoutMode() {
 			return layoutMode;
 		}
 
 		@Override
-		public IJeiConfigValue<IngredientGridNavigationMode> navigationMode() {
+		public IConfigValue<IngredientGridNavigationMode> navigationMode() {
 			return navigationMode;
 		}
 
 		@Override
-		public IJeiConfigValue<HorizontalAlignment> horizontalAlignment() {
+		public IConfigValue<HorizontalAlignment> horizontalAlignment() {
 			return horizontalAlignment;
 		}
 
 		@Override
-		public IJeiConfigValue<VerticalAlignment> verticalAlignment() {
+		public IConfigValue<VerticalAlignment> verticalAlignment() {
 			return verticalAlignment;
 		}
 
 		@Override
-		public IJeiConfigValue<NavigationVisibility> navigationVisibility() {
+		public IConfigValue<NavigationVisibility> navigationVisibility() {
 			return navigationVisibility;
 		}
 
@@ -343,7 +348,7 @@ public class LookupHistoryOverlayLayoutTest {
 		}
 	}
 
-	private static class TestConfigValue<T> implements IJeiConfigValue<T> {
+	private static class TestConfigValue<T> implements IConfigValue<T>, IConfigValueEditorInfo<T> {
 		private final String name;
 		private final T defaultValue;
 		private T value;
@@ -360,23 +365,22 @@ public class LookupHistoryOverlayLayoutTest {
 		}
 
 		@Override
-		@SuppressWarnings("removal")
-		public String getDescription() {
-			return "";
+		public String getLocalizationKey() {
+			return "test.config." + name;
 		}
 
 		@Override
-		public Component getLocalizedName() {
-			throw new UnsupportedOperationException();
+		public T get() {
+			return value;
 		}
 
 		@Override
-		public Component getLocalizedDescription() {
-			throw new UnsupportedOperationException();
+		public IConfigValueEditorInfo<T> getEditorInfo() {
+			return this;
 		}
 
 		@Override
-		public T getValue() {
+		public T getPendingValue() {
 			return value;
 		}
 
@@ -386,18 +390,50 @@ public class LookupHistoryOverlayLayoutTest {
 		}
 
 		@Override
+		public ConfigValueEditMode getEditMode() {
+			return ConfigValueEditMode.IMMEDIATE;
+		}
+
+		@Override
+		public ConfigValueRestartRequirement getRestartRequirement() {
+			return ConfigValueRestartRequirement.NONE;
+		}
+
+		@Override
+		public List<? extends IConfigEditorCategory> getEditorCategories() {
+			return List.of();
+		}
+
+		@Override
 		public boolean set(T value) {
 			this.value = value;
 			return true;
 		}
 
 		@Override
-		public void addListener(Consumer<T> listener) {
+		public Runnable addListener(IConfigValueChangeListener<T> listener) {
+			return () -> {};
 		}
 
 		@Override
-		public IJeiConfigValueSerializer<T> getSerializer() {
+		public Runnable addPendingListener(IConfigValueChangeListener<T> listener) {
+			return () -> {};
+		}
+
+		@Override
+		public Runnable addBatchListener(IConfigValueBatchChangeListener listener) {
+			return () -> {};
+		}
+
+		@Override
+		public Runnable addPendingBatchListener(IConfigValueBatchChangeListener listener) {
+			return () -> {};
+		}
+
+		@Override
+		public IConfigValueSerializer<T> getSerializer() {
 			throw new UnsupportedOperationException();
 		}
 	}
+
 }

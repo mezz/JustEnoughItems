@@ -97,6 +97,10 @@ public final class Internal {
 		Internal.jeiClientConfigs = jeiClientConfigs;
 	}
 
+	public static void registerRuntimeListenerRemoval(Runnable listenerRemoval) {
+		getClientConfigs().registerRuntimeListenerRemoval(listenerRemoval);
+	}
+
 	public static JeiFeatures getJeiFeatures() {
 		return jeiFeatures;
 	}

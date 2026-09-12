@@ -4,6 +4,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
@@ -84,10 +85,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 		ingredientGridSource.addSourceListChangedListener(this::markScreenPropertiesDirty);
 
-		clientConfig.centerSearchBarEnabled().addListener(v -> markScreenPropertiesDirty());
-		clientConfig.lookupHistoryEnabled().addListener(v -> markScreenPropertiesDirty());
-		clientConfig.maxLookupHistoryRows().addListener(v -> markScreenPropertiesDirty());
-		clientConfig.lookupHistoryDisplaySide().addListener(v -> markScreenPropertiesDirty());
+		Internal.registerRuntimeListenerRemoval(clientConfig.searchBarPosition().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(clientConfig.lookupHistoryEnabled().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(clientConfig.maxLookupHistoryRows().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(clientConfig.lookupHistoryDisplaySide().addListener(v -> markScreenPropertiesDirty()));
 		addGridConfigListeners(ingredientGridConfig);
 	}
 
@@ -102,12 +103,12 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	private void addGridConfigListeners(IIngredientGridConfig gridConfig) {
-		gridConfig.maxColumns().addListener(v -> markScreenPropertiesDirty());
-		gridConfig.maxRows().addListener(v -> markScreenPropertiesDirty());
-		gridConfig.drawBackground().addListener(v -> markScreenPropertiesDirty());
-		gridConfig.horizontalAlignment().addListener(v -> markScreenPropertiesDirty());
-		gridConfig.verticalAlignment().addListener(v -> markScreenPropertiesDirty());
-		gridConfig.navigationVisibility().addListener(v -> markScreenPropertiesDirty());
+		Internal.registerRuntimeListenerRemoval(gridConfig.maxColumns().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.maxRows().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.drawBackground().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.horizontalAlignment().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.verticalAlignment().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.navigationVisibility().addListener(v -> markScreenPropertiesDirty()));
 	}
 
 	private void updateScreenPropertiesIfDirty() {

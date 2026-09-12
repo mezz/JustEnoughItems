@@ -98,14 +98,14 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 
 	public boolean isListDisplayed() {
 		updateLayoutIfDirty();
-		return clientConfig.lookupHistoryEnabled().getValue() &&
+		return clientConfig.lookupHistoryEnabled().get() &&
 			isDisplayedOnThisSide() &&
 			contents.hasRoom();
 	}
 
 	@Override
 	public boolean isDisplayedOnThisSide() {
-		return ownerDisplaySide.equals(clientConfig.lookupHistoryDisplaySide().getValue());
+		return ownerDisplaySide.equals(clientConfig.lookupHistoryDisplaySide().get());
 	}
 
 	public IIngredientGridSource getLookupHistory() {
@@ -115,8 +115,8 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	@Override
 	public int getDisplayHeight() {
 		return getDisplayHeight(
-			clientConfig.maxLookupHistoryRows().getValue(),
-			historyListConfig.drawBackground().getValue()
+			clientConfig.maxLookupHistoryRows().get(),
+			historyListConfig.drawBackground().get()
 		);
 	}
 
@@ -132,7 +132,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		this.backgroundArea = layout.backgroundArea();
 		this.slotBackgroundArea = layout.slotBackgroundArea();
 		int rows = this.contents.getArea().getHeight() / SLOT_HEIGHT;
-		this.rows = Math.min(rows, clientConfig.maxLookupHistoryRows().getValue());
+		this.rows = Math.min(rows, clientConfig.maxLookupHistoryRows().get());
 	}
 
 	@Override
@@ -227,7 +227,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		updateLayoutIfDirty();
 		if (isListDisplayed()) {
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY);
-			if (!this.historyListConfig.drawBackground().getValue()) {
+			if (!this.historyListConfig.drawBackground().get()) {
 				ImmutableRect2i area = this.contents.getArea();
 				int startY = area.getY() + area.getHeight() - rows * SLOT_HEIGHT - 3;
 				int color = JeiGuiColors.getColor(GuiColor.LOOKUP_HISTORY_LINE);
@@ -238,7 +238,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	}
 
 	public void drawBackground(GuiGraphics guiGraphics) {
-		if (isListDisplayed() && this.historyListConfig.drawBackground().getValue()) {
+		if (isListDisplayed() && this.historyListConfig.drawBackground().get()) {
 			this.background.draw(guiGraphics, this.backgroundArea);
 			this.slotBackground.draw(guiGraphics, this.slotBackgroundArea);
 			GuiExclusionAreaShadow.draw(guiGraphics, this.exclusionAreaShadow, this.backgroundArea, this.guiExclusionAreas);

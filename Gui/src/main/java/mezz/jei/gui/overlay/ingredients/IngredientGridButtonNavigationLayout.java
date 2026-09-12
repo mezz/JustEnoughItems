@@ -25,7 +25,7 @@ public final class IngredientGridButtonNavigationLayout {
 		Set<ImmutableRect2i> guiExclusionAreas,
 		int ingredientCount
 	) {
-		return switch (gridConfig.navigationVisibility().getValue()) {
+		return switch (gridConfig.navigationVisibility().get()) {
 			case ENABLED -> calculateForNavigation(gridConfig, availableArea, guiExclusionAreas, true);
 			case DISABLED -> calculateForNavigation(gridConfig, availableArea, guiExclusionAreas, false);
 			case AUTO_HIDE -> calculateAutoHide(
@@ -66,7 +66,7 @@ public final class IngredientGridButtonNavigationLayout {
 		Set<ImmutableRect2i> guiExclusionAreas,
 		boolean navigationEnabled
 	) {
-		if (navigationEnabled && gridConfig.layoutMode().getValue() == IngredientGridLayoutMode.RECTANGULAR) {
+		if (navigationEnabled && gridConfig.layoutMode().get() == IngredientGridLayoutMode.RECTANGULAR) {
 			return calculateRectangularLayout(
 				gridConfig,
 				availableArea,
@@ -144,18 +144,18 @@ public final class IngredientGridButtonNavigationLayout {
 
 		int maxColumns = Math.min(
 			availableGridArea.width() / IngredientGridLayout.INGREDIENT_WIDTH,
-			gridConfig.maxColumns().getValue()
+			gridConfig.maxColumns().get()
 		);
 		int maxRows = Math.min(
 			availableGridArea.height() / IngredientGridLayout.INGREDIENT_HEIGHT,
-			gridConfig.maxRows().getValue()
+			gridConfig.maxRows().get()
 		);
 		if (maxColumns < gridConfig.getMinColumns() || maxRows < gridConfig.getMinRows()) {
 			return initialLayout;
 		}
 
 		int gridPadding = 0;
-		if (gridConfig.drawBackground().getValue()) {
+		if (gridConfig.drawBackground().get()) {
 			gridPadding = IngredientGridWithNavigationLayout.INNER_PADDING;
 		}
 		int navigationToGridOffset = IngredientGridWithNavigationLayout.NAVIGATION_HEIGHT +
@@ -186,7 +186,7 @@ public final class IngredientGridButtonNavigationLayout {
 			xPositions.add(availableGridArea.x());
 			xPositions.add(availableGridRight - gridWidth);
 			xPositions.add(
-				availableGridArea.x() + gridConfig.horizontalAlignment().getValue().getXPos(availableGridArea.width(), gridWidth)
+				availableGridArea.x() + gridConfig.horizontalAlignment().get().getXPos(availableGridArea.width(), gridWidth)
 			);
 			for (ImmutableRect2i exclusionArea : guiExclusionAreas) {
 				xPositions.add(exclusionArea.x() + exclusionArea.width() + gridPadding);
@@ -317,7 +317,7 @@ public final class IngredientGridButtonNavigationLayout {
 		IIngredientGridConfig gridConfig
 	) {
 		int padding = 0;
-		if (gridConfig.drawBackground().getValue()) {
+		if (gridConfig.drawBackground().get()) {
 			padding = IngredientGridWithNavigationLayout.BORDER_PADDING + IngredientGridWithNavigationLayout.INNER_PADDING;
 		}
 		int stripTop = availableArea.y() + IngredientGridWithNavigationLayout.BORDER_MARGIN;
@@ -465,7 +465,7 @@ public final class IngredientGridButtonNavigationLayout {
 	) {
 		int x = slotBackgroundArea.x();
 		int right = slotBackgroundArea.x() + slotBackgroundArea.width();
-		if (gridConfig.drawBackground().getValue()) {
+		if (gridConfig.drawBackground().get()) {
 			x -= IngredientGridWithNavigationLayout.BORDER_PADDING;
 			right += IngredientGridWithNavigationLayout.BORDER_PADDING;
 		}

@@ -1,10 +1,10 @@
 package mezz.jei.gui.overlay.history;
 
-import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.gui.overlay.ingredients.IngredientGridLayout;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigationLayout;
+import mezz.jei.common.config.IIngredientGridConfig;
 
 public record LookupHistoryOverlayLayout(
 	ImmutableRect2i availableGridArea,
@@ -33,7 +33,7 @@ public record LookupHistoryOverlayLayout(
 			historyListConfig
 		);
 		ImmutableRect2i backgroundArea;
-		if (historyListConfig.drawBackground().getValue() && !slotBackgroundArea.isEmpty()) {
+		if (historyListConfig.drawBackground().get() && !slotBackgroundArea.isEmpty()) {
 			backgroundArea = slotBackgroundArea.expandBy(IngredientGridWithNavigationLayout.BORDER_PADDING);
 		} else {
 			backgroundArea = slotBackgroundArea;
@@ -48,7 +48,7 @@ public record LookupHistoryOverlayLayout(
 	}
 
 	private static ImmutableRect2i getAvailableGridArea(IIngredientGridConfig historyListConfig, ImmutableRect2i availableArea) {
-		if (historyListConfig.drawBackground().getValue()) {
+		if (historyListConfig.drawBackground().get()) {
 			return availableArea.insetBy(BACKGROUND_PADDING);
 		}
 		return availableArea;

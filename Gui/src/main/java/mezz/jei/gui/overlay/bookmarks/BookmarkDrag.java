@@ -45,7 +45,7 @@ public class BookmarkDrag<T> {
 		this.mouseStartX = mouseX;
 		this.mouseStartY = mouseY;
 		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
-		this.dragCanStartTime = System.currentTimeMillis() + clientConfig.dragDelayMs().getValue();
+		this.dragCanStartTime = System.currentTimeMillis() + clientConfig.dragDelayMs().get();
 	}
 
 	public static boolean canStart(BookmarkDrag<?> drag, double mouseX, double mouseY) {

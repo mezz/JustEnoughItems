@@ -47,6 +47,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -212,7 +213,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 			return false;
 		}
 
-		if (!pinned && clientConfig.holdShiftToShowBookmarkTooltipFeaturesEnabled().getValue()) {
+		if (!pinned && clientConfig.holdShiftToShowBookmarkTooltipFeaturesEnabled().get()) {
 			IJeiKeyMappingInternal pauseRecipeCycling = Internal.getKeyMappings().getPauseRecipeCycling();
 			if (pauseRecipeCycling.isUnbound()) {
 				return false;
@@ -232,7 +233,14 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	}
 
 	private List<BookmarkTooltipFeature> getBookmarkTooltipFeatures() {
-		return clientConfig.bookmarkTooltipFeatures().getValue();
+		List<BookmarkTooltipFeature> features = new ArrayList<>(2);
+		if (clientConfig.bookmarkTooltipPreviewEnabled().get()) {
+			features.add(BookmarkTooltipFeature.PREVIEW);
+		}
+		if (clientConfig.bookmarkTooltipIngredientsEnabled().get()) {
+			features.add(BookmarkTooltipFeature.INGREDIENTS);
+		}
+		return List.copyOf(features);
 	}
 
 	private boolean addBookmarkTooltipFeatures(JeiTooltip tooltip, List<BookmarkTooltipFeature> features) {

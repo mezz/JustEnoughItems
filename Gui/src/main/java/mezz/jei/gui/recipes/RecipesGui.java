@@ -161,7 +161,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			clickTargetFactory
 		);
 		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
-		clientConfig.centerSearchBarEnabled().addListener(v -> reopenIfOpen());
+		clientConfig.searchBarPosition().addListener(v -> reopenIfOpen());
 		clientConfig.maxRecipeGuiHeight().addListener(v -> reopenIfOpen());
 
 		Textures textures = Internal.getTextures();
@@ -291,8 +291,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 		RecipeGuiSizing.Size recipeGuiSize = RecipeGuiSizing.calculateInitialSize(
 			this.height,
-			clientConfig.centerSearchBarEnabled().getValue(),
-			clientConfig.maxRecipeGuiHeight().getValue()
+			clientConfig.searchBarPosition().get().isCentered(),
+			clientConfig.maxRecipeGuiHeight().get()
 		);
 		int ySize = recipeGuiSize.ySize();
 		int extraSpace = recipeGuiSize.extraSpace();

@@ -109,6 +109,12 @@ public class JeiGuiStarter {
 
 		RegistryAccess registryAccess = level.registryAccess();
 
+		IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
+		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+		IIngredientGridConfig ingredientListConfig = jeiClientConfigs.getIngredientListConfig();
+		IIngredientGridConfig bookmarkListConfig = jeiClientConfigs.getBookmarkListConfig();
+		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
+
 		timer.start("Building ingredient list");
 		List<IListElementInfo<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager, modIdHelper);
 		timer.stop();
@@ -121,12 +127,6 @@ public class JeiGuiStarter {
 		IClientToggleState toggleState = Internal.getClientToggleState();
 		IBookmarkConfig bookmarkConfig = configData.bookmarkConfig();
 		ILookupHistoryConfig lookupHistoryConfig = configData.lookupHistoryConfig();
-
-		IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
-		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-		IIngredientGridConfig ingredientListConfig = jeiClientConfigs.getIngredientListConfig();
-		IIngredientGridConfig bookmarkListConfig = jeiClientConfigs.getBookmarkListConfig();
-		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
 
 		Function<List<IListElementInfo<?>>, Comparator<IListElement<?>>> sortIndexUpdater = ingredients -> IngredientSorter.sortIngredients(
 			clientConfig,
@@ -291,4 +291,5 @@ public class JeiGuiStarter {
 			resourceReloadHandler
 		);
 	}
+
 }

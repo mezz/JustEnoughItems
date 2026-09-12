@@ -7,11 +7,10 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
-import mezz.jei.common.config.file.serializers.DeserializeResult;
 import mezz.jei.common.config.file.serializers.LegacyTypedIngredientSerializer;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
+import net.mezzdev.config.api.value.serializer.IDeserializeResult;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -39,36 +38,36 @@ public class LegacyRecipeBookmarkSerializer {
 		this.recipeTransferService = recipeTransferService;
 	}
 
-	public IJeiConfigValueSerializer.IDeserializeResult<RecipeBookmark<?, ?>> deserialize(String string) {
+	public IDeserializeResult<RecipeBookmark<?, ?>> deserialize(String string) {
 		String[] parts = string.split(SEPARATOR);
 		if (parts.length != 3) {
 			String error = "string must be 3 parts";
-			return new DeserializeResult<>(null, error);
+			return IDeserializeResult.failure(error);
 		}
 		ResourceLocation recipeTypeUid;
 		try {
 			recipeTypeUid = ResourceLocation.parse(parts[0]);
 		} catch (RuntimeException e) {
 			String error = "recipe type uid must be a valid resource location: %s\n%s".formatted(string, e.getMessage());
-			return new DeserializeResult<>(null, error);
+			return IDeserializeResult.failure(error);
 		}
 		ResourceLocation recipeUid;
 		try {
 			recipeUid = ResourceLocation.parse(parts[1]);
 		} catch (RuntimeException e) {
 			String error = "recipe uid must be a valid resource location: %s\n%s".formatted(string, e.getMessage());
-			return new DeserializeResult<>(null, error);
+			return IDeserializeResult.failure(error);
 		}
-		IJeiConfigValueSerializer.IDeserializeResult<ITypedIngredient<?>> deserialized = ingredientSerializer.deserialize(parts[2]);
+		IDeserializeResult<ITypedIngredient<?>> deserialized = ingredientSerializer.deserialize(parts[2]);
 		Optional<ITypedIngredient<?>> outputResult = deserialized.getResult();
 		if (outputResult.isEmpty()) {
-			List<String> errors = deserialized.getErrors();
-			return new DeserializeResult<>(null, errors);
+			List<String> diagnostics = deserialized.getDiagnostics();
+			return IDeserializeResult.failure(diagnostics);
 		}
 		Optional<RecipeType<?>> recipeTypeResult = recipeManager.getRecipeType(recipeTypeUid);
 		if (recipeTypeResult.isEmpty()) {
 			String error = "could not find a recipe type matching the given uid: %s".formatted(recipeTypeUid);
-			return new DeserializeResult<>(null, error);
+			return IDeserializeResult.failure(error);
 		}
 
 		ITypedIngredient<?> output = outputResult.get();
@@ -78,18 +77,18 @@ public class LegacyRecipeBookmarkSerializer {
 		return createBookmark(string, recipeCategory, recipeUid, output);
 	}
 
-	private <T> DeserializeResult<RecipeBookmark<?, ?>> createBookmark(String string, IRecipeCategory<T> recipeCategory, ResourceLocation recipeUid, ITypedIngredient<?> output) {
+	private <T> IDeserializeResult<RecipeBookmark<?, ?>> createBookmark(String string, IRecipeCategory<T> recipeCategory, ResourceLocation recipeUid, ITypedIngredient<?> output) {
 		IFocus<?> focus = focusFactory.createFocus(RecipeIngredientRole.OUTPUT, output);
 
 		Optional<T> recipeResult = findRecipe(recipeCategory, List.of(focus), recipeUid);
 		if (recipeResult.isEmpty()) {
 			String error = "could not find a recipe for this string: %s".formatted(string);
-			return new DeserializeResult<>(null, error);
+			return IDeserializeResult.failure(error);
 		}
 
 		T recipe = recipeResult.get();
 		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, true, recipeTransferService);
-		return new DeserializeResult<>(recipeBookmark);
+		return IDeserializeResult.success(recipeBookmark);
 	}
 
 	private <T> Optional<T> findRecipe(IRecipeCategory<T> recipeCategory, List<IFocus<?>> focus, ResourceLocation recipeUid) {

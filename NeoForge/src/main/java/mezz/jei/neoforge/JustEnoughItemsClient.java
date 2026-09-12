@@ -13,6 +13,8 @@ import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
 import mezz.jei.gui.recipes.InteractiveIngredientGridTooltipComponent;
 import mezz.jei.library.gui.ingredients.TagContentTooltipComponent;
+import mezz.jei.library.config.JeiConfigData;
+import mezz.jei.library.config.JeiConfigRegistration;
 import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipe;
 import mezz.jei.library.plugins.vanilla.cooking.JeiSmeltingRecipe;
 import mezz.jei.library.recipes.RecipeSerializers;
@@ -52,12 +54,14 @@ public class JustEnoughItemsClient {
 		PermanentEventSubscriptions subscriptions
 	) {
 		this.subscriptions = subscriptions;
+		JeiConfigData configData = JeiConfigRegistration.register();
 		IConnectionToServer serverConnection = networkHandler.getConnectionToServer();
 
 		List<IModPlugin> plugins = ForgePluginFinder.getModPlugins();
 		StartData startData = new StartData(
 			plugins,
-			serverConnection
+			serverConnection,
+			configData
 		);
 
 		this.jeiStarter = new JeiStarter(startData);

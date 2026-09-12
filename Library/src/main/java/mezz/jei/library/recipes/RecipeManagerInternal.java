@@ -67,8 +67,7 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 		this.ingredientManager = ingredientManager;
 		this.ingredientVisibility = ingredientVisibility;
 		this.ingredientVisibility.registerListener(this);
-
-		Collection<RecipeType<?>> recipeTypes = recipeCategories.stream()
+		List<RecipeType<?>> recipeTypes = recipeCategories.stream()
 			.<RecipeType<?>>map(IRecipeCategory::getRecipeType)
 			.toList();
 		Comparator<RecipeType<?>> recipeTypeComparator = recipeCategorySortingConfig.getComparator(recipeTypes);

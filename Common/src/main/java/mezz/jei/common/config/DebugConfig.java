@@ -1,10 +1,9 @@
 package mezz.jei.common.config;
 
-import mezz.jei.common.config.file.IConfigCategoryBuilder;
-import mezz.jei.common.config.file.IConfigSchemaBuilder;
+import net.mezzdev.config.api.schema.builder.IConfigCategoryBuilder;
+import net.mezzdev.config.api.schema.builder.IConfigSchemaBuilder;
+import net.mezzdev.config.api.value.IConfigValue;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Supplier;
 
 public final class DebugConfig {
 	@Nullable
@@ -14,19 +13,25 @@ public final class DebugConfig {
 		instance = new DebugConfig(schema);
 	}
 
-	private final Supplier<Boolean> debugIngredientsEnabled;
-	private final Supplier<Boolean> debugGuisEnabled;
-	private final Supplier<Boolean> debugInputsEnabled;
-	private final Supplier<Boolean> debugInfoTooltipsEnabled;
-	private final Supplier<Boolean> logSuffixTreeStats;
+	private final IConfigValue<Boolean> debugIngredientsEnabled;
+	private final IConfigValue<Boolean> debugGuisEnabled;
+	private final IConfigValue<Boolean> debugInputsEnabled;
+	private final IConfigValue<Boolean> debugInfoTooltipsEnabled;
+	private final IConfigValue<Boolean> logSuffixTreeStats;
 
 	private DebugConfig(IConfigSchemaBuilder schema) {
 		IConfigCategoryBuilder advanced = schema.addCategory("debug");
-		debugIngredientsEnabled = advanced.addBoolean("debugIngredientsEnabled", false);
-		debugGuisEnabled = advanced.addBoolean("debugGuis", false);
-		debugInputsEnabled = advanced.addBoolean("debugInputs", false);
-		debugInfoTooltipsEnabled = advanced.addBoolean("debugInfoTooltipsEnabled", false);
-		logSuffixTreeStats = advanced.addBoolean("logSuffixTreeStats", false);
+		debugIngredientsEnabled = advanced.addBoolean("debugIngredientsEnabled", false)
+			.addLegacyName("debugMode")
+			.build();
+		debugGuisEnabled = advanced.addBoolean("debugGuis", false)
+			.build();
+		debugInputsEnabled = advanced.addBoolean("debugInputs", false)
+			.build();
+		debugInfoTooltipsEnabled = advanced.addBoolean("debugInfoTooltipsEnabled", false)
+			.build();
+		logSuffixTreeStats = advanced.addBoolean("logSuffixTreeStats", false)
+			.build();
 	}
 
 	public static boolean isDebugIngredientsEnabled() {

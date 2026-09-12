@@ -25,7 +25,7 @@ public class LookupHistoryButtonController implements IIconButtonController {
 
 	@Override
 	public void getTooltips(ITooltipBuilder tooltip) {
-		if (clientConfig.lookupHistoryEnabled().getValue()) {
+		if (clientConfig.lookupHistoryEnabled().get()) {
 			tooltip.add(Component.translatable("jei.tooltip.lookupHistory.disable"));
 		} else {
 			tooltip.add(Component.translatable("jei.tooltip.lookupHistory.enable"));
@@ -39,8 +39,8 @@ public class LookupHistoryButtonController implements IIconButtonController {
 
 	@Override
 	public void updateState(IButtonState state) {
-		state.setForcePressed(clientConfig.lookupHistoryEnabled().getValue());
-		if (clientConfig.lookupHistoryEnabled().getValue()) {
+		state.setForcePressed(clientConfig.lookupHistoryEnabled().get());
+		if (clientConfig.lookupHistoryEnabled().get()) {
 			state.setIcon(onIcon);
 		} else {
 			state.setIcon(offIcon);
@@ -50,7 +50,7 @@ public class LookupHistoryButtonController implements IIconButtonController {
 	@Override
 	public boolean onPress(IJeiUserInput input) {
 		if (!input.isSimulate()) {
-			clientConfig.lookupHistoryEnabled().set(!clientConfig.lookupHistoryEnabled().getValue());
+			clientConfig.lookupHistoryEnabled().set(!clientConfig.lookupHistoryEnabled().get());
 		}
 		return true;
 	}

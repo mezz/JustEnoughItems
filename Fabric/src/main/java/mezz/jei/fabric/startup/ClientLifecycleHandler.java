@@ -7,6 +7,7 @@ import mezz.jei.fabric.events.JeiLifecycleEvents;
 import mezz.jei.fabric.network.ClientNetworkHandler;
 import mezz.jei.fabric.network.ConnectionToServer;
 import mezz.jei.gui.config.InternalKeyMappings;
+import mezz.jei.library.config.JeiConfigData;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -25,7 +26,7 @@ public class ClientLifecycleHandler {
 	private final JeiStarter jeiStarter;
 	private boolean running;
 
-	public ClientLifecycleHandler() {
+	public ClientLifecycleHandler(JeiConfigData configData) {
 		IConnectionToServer serverConnection = new ConnectionToServer();
 		Internal.setServerConnection(serverConnection);
 
@@ -37,7 +38,8 @@ public class ClientLifecycleHandler {
 		List<IModPlugin> plugins = FabricPluginFinder.getModPlugins();
 		StartData startData = new StartData(
 			plugins,
-			serverConnection
+			serverConnection,
+			configData
 		);
 
 		this.jeiStarter = new JeiStarter(startData);

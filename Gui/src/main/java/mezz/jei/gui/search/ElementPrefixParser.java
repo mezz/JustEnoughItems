@@ -6,9 +6,9 @@ import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.config.SearchMode;
 import mezz.jei.common.search.LimitedStringStorageBuilder;
 import mezz.jei.common.search.PrefixInfo;
-import mezz.jei.common.config.SearchMode;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
 
@@ -40,42 +40,42 @@ public class ElementPrefixParser {
 		addPrefix(new PrefixInfo<>(
 			"mod_names",
 			'@',
-			config.modNameSearchMode()::getValue,
+			config.modNameSearchMode()::get,
 			info -> info.getModNames(config),
 			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
 			"tags",
 			'#',
-			config.tagSearchMode()::getValue,
+			config.tagSearchMode()::get,
 			e -> e.getTagStrings(ingredientManager),
 			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
 			"tooltips",
 			'$',
-			config.tooltipSearchMode()::getValue,
+			config.tooltipSearchMode()::get,
 			e -> e.getTooltipStrings(config, ingredientManager),
 			searchStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
 			"creative_tabs",
 			'%',
-			config.creativeTabSearchMode()::getValue,
+			config.creativeTabSearchMode()::get,
 			e -> e.getCreativeTabsStrings(ingredientManager),
 			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
 			"colors",
 			'^',
-			config.colorSearchMode()::getValue,
+			config.colorSearchMode()::get,
 			e -> e.getColorNames(ingredientManager, colorHelper),
 			limitedStringStorageBuilderFactory
 		));
 		addPrefix(new PrefixInfo<>(
 			"identifiers",
 			'&',
-			config.resourceLocationSearchMode()::getValue,
+			config.resourceLocationSearchMode()::get,
 			element -> List.of(element.getResourceLocation().toString()),
 			searchStorageBuilderFactory
 		));
@@ -127,5 +127,4 @@ public class ElementPrefixParser {
 		}
 		return Optional.of(new TokenInfo(token.substring(1), prefixInfo));
 	}
-
 }

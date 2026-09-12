@@ -8,16 +8,16 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.config.IJeiConfigValueSerializer.IDeserializeResult;
 import mezz.jei.common.config.file.serializers.LegacyTypedIngredientSerializer;
 import mezz.jei.common.transfer.RecipeTransferService;
-import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.common.util.LoggedTimer;
+import mezz.jei.common.util.ServerConfigPathUtil;
 import mezz.jei.gui.bookmarks.BookmarkFactory;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.bookmarks.IngredientBookmark;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.config.file.serializers.LegacyRecipeBookmarkSerializer;
+import net.mezzdev.config.api.value.serializer.IDeserializeResult;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
@@ -165,8 +165,8 @@ public class LegacyBookmarkConfig {
 		IDeserializeResult<ITypedIngredient<?>> deserialized = ingredientSerializer.deserialize(serializedIngredient);
 		Optional<ITypedIngredient<?>> result = deserialized.getResult();
 		if (result.isEmpty()) {
-			List<String> errors = deserialized.getErrors();
-			LOGGER.warn("Failed to load bookmarked ingredient from string: \n{}\n{}", serializedIngredient, String.join(", ", errors));
+			List<String> diagnostics = deserialized.getDiagnostics();
+			LOGGER.warn("Failed to load bookmarked ingredient from string: \n{}\n{}", serializedIngredient, String.join(", ", diagnostics));
 		} else {
 			IngredientBookmark<?> bookmark = bookmarkFactory.create(result.get());
 			bookmarkList.add(bookmark);
@@ -197,8 +197,8 @@ public class LegacyBookmarkConfig {
 		IDeserializeResult<RecipeBookmark<?, ?>> deserialized = legacyRecipeBookmarkSerializer.deserialize(serializedRecipe);
 		Optional<RecipeBookmark<?, ?>> result = deserialized.getResult();
 		if (result.isEmpty()) {
-			List<String> errors = deserialized.getErrors();
-			LOGGER.warn("Failed to load bookmarked recipe from string: \n{}\n{}", serializedRecipe, String.join(", ", errors));
+			List<String> diagnostics = deserialized.getDiagnostics();
+			LOGGER.warn("Failed to load bookmarked recipe from string: \n{}\n{}", serializedRecipe, String.join(", ", diagnostics));
 		} else {
 			bookmarkList.add(result.get());
 		}
