@@ -47,16 +47,16 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	private final ResourceLocation resourceLocation;
 
 	@Nullable
-	public static <V> IListElementInfo<V> create(ITypedIngredient<V> value, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	public static <V> IListElementInfo<V> create(ITypedIngredient<V> value, IIngredientManager ingredientManager, IIngredientFilterConfig config, IModIdHelper modIdHelper) {
 		int createdIndex = elementCount++;
 		ListElement<V> element = new ListElement<>(value, createdIndex);
-		return createFromElement(element, ingredientManager, modIdHelper);
+		return createFromElement(element, ingredientManager, config, modIdHelper);
 	}
 
 	@Nullable
-	public static <V> IListElementInfo<V> createFromElement(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	public static <V> IListElementInfo<V> createFromElement(IListElement<V> element, IIngredientManager ingredientManager, IIngredientFilterConfig config, IModIdHelper modIdHelper) {
 		try {
-			return new ListElementInfo<>(element, ingredientManager, modIdHelper);
+			return new ListElementInfo<>(element, ingredientManager, config, modIdHelper);
 		} catch (RuntimeException e) {
 			try {
 				ITypedIngredient<V> typedIngredient = element.getTypedIngredient();
@@ -70,7 +70,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		}
 	}
 
-	protected ListElementInfo(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	protected ListElementInfo(IListElement<V> element, IIngredientManager ingredientManager, IIngredientFilterConfig config, IModIdHelper modIdHelper) {
 		this.element = element;
 		this.modIdHelper = modIdHelper;
 		ITypedIngredient<V> value = element.getTypedIngredient();
@@ -91,6 +91,10 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		}
 
 		String displayNameLowercase = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
+		if (!config.searchIngredientAliases().get()) {
+			this.names = List.of(displayNameLowercase);
+			return;
+		}
 		Collection<String> aliases = ingredientManager.getIngredientAliases(value);
 		if (aliases.isEmpty()) {
 			this.names = List.of(displayNameLowercase);

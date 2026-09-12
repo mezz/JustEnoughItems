@@ -80,6 +80,11 @@ public class IngredientFilterTest {
 	@Nullable
 	private TestSortingConfig ingredientTypeSortingConfig;
 
+	private static final TestIngredient ALIASED_INGREDIENT = new TestIngredient(0);
+	private static final String INGREDIENT_ALIAS = "aliasedingredientzero";
+	private static final String ALIASED_MOD_ID = "jei_test_mod";
+	private static final String MOD_ALIAS = "testmodalias";
+
 	@BeforeEach
 	public void setup() {
 		setup(false);
@@ -99,10 +104,19 @@ public class IngredientFilterTest {
 		IColorHelper colorHelper = new TestColorHelper();
 		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper);
 		testPlugin.registerIngredients(ingredientManagerBuilder);
+		ingredientManagerBuilder.addAlias(TestIngredient.TYPE, ALIASED_INGREDIENT, INGREDIENT_ALIAS);
 		this.ingredientManager = ingredientManagerBuilder.build();
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal(ingredientManager);
-		this.modIdHelper = new TestModIdHelper();
+		this.modIdHelper = new TestModIdHelper() {
+			@Override
+			public Set<String> getModAliases(String modId) {
+				if (ALIASED_MOD_ID.equals(modId)) {
+					return Set.of(MOD_ALIAS);
+				}
+				return Set.of();
+			}
+		};
 		IClientConfig clientConfig = new TestClientConfig(lowMemorySlowSearchEnabled);
 
 		this.ingredientFilterConfig = new TestIngredientFilterConfig();
@@ -110,7 +124,7 @@ public class IngredientFilterTest {
 		Internal.getOptionalClientConfigs().ifPresent(IClientConfigs::onRuntimeStopped);
 		Internal.setClientConfigs(new TestClientConfigs(clientConfig, ingredientFilterConfig));
 
-		this.baseList = IngredientListElementFactory.createBaseList(ingredientManager, modIdHelper);
+		this.baseList = IngredientListElementFactory.createBaseList(ingredientManager, ingredientFilterConfig, modIdHelper);
 
 		this.editModeConfig = new EditModeConfig(new NullSerializer(), ingredientManager);
 
@@ -179,9 +193,9 @@ public class IngredientFilterTest {
 
 		List<TestIngredient> ingredients = createIngredients();
 
-		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
-		removeIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
-		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
+		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredientFilterConfig, ingredients);
+		removeIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredientFilterConfig, ingredients);
+		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredientFilterConfig, ingredients);
 	}
 
 	@Test
@@ -194,7 +208,7 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(ingredientFilterConfig);
 
 		List<TestIngredient> ingredients = createIngredients();
-		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
+		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredientFilterConfig, ingredients);
 
 		ingredientVisibility.hideIngredients(
 			TestIngredient.TYPE,
@@ -258,7 +272,7 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(ingredientFilterConfig);
 
 		List<TestIngredient> ingredients = createIngredients();
-		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
+		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredientFilterConfig, ingredients);
 		ingredientVisibility.hideIngredients(
 			TestIngredient.TYPE,
 			ingredients,
@@ -290,7 +304,7 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(ingredientFilterConfig);
 
 		List<TestIngredient> ingredients = createIngredients();
-		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
+		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredientFilterConfig, ingredients);
 
 		TestIngredient hiddenIngredient = ingredients.getFirst();
 		TestIngredient recipeEquivalentIngredient = ingredients.get(2);
@@ -346,26 +360,66 @@ public class IngredientFilterTest {
 		IIngredientRenderer<TestIngredient> ingredientRenderer = ingredientManager.getIngredientRenderer(TestIngredient.TYPE);
 		Set<String> tooltipStrings = getTooltipStrings(ingredientRenderer, testIngredient);
 
-		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
+		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredientFilterConfig, ingredients);
 		for (String tooltipString : tooltipStrings) {
 			filterTextSource.setFilterText(tooltipString);
 			List<TestIngredient> filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
 			Assertions.assertTrue(filteredIngredients.contains(testIngredient), tooltipString);
 		}
 
-		removeIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
+		removeIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredientFilterConfig, ingredients);
 		for (String tooltipString : tooltipStrings) {
 			filterTextSource.setFilterText(tooltipString);
 			List<TestIngredient> filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
 			Assertions.assertFalse(filteredIngredients.contains(testIngredient), tooltipString);
 		}
 
-		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredients);
+		addIngredients(ingredientFilter, filterTextSource, ingredientVisibility, ingredientManager, modIdHelper, ingredientFilterConfig, ingredients);
 		for (String tooltipString : tooltipStrings) {
 			filterTextSource.setFilterText(tooltipString);
 			List<TestIngredient> filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
 			Assertions.assertTrue(filteredIngredients.contains(testIngredient), tooltipString);
 		}
+	}
+
+	@Test
+	public void testIngredientAliasesCanBeToggledWithoutRestart() {
+		Assertions.assertNotNull(ingredientFilter);
+		Assertions.assertNotNull(filterTextSource);
+		Assertions.assertNotNull(ingredientFilterConfig);
+
+		filterTextSource.setFilterText(INGREDIENT_ALIAS);
+		List<TestIngredient> filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
+		Assertions.assertFalse(filteredIngredients.contains(ALIASED_INGREDIENT));
+
+		ingredientFilterConfig.searchIngredientAliases().set(true);
+		filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
+		Assertions.assertEquals(List.of(ALIASED_INGREDIENT), filteredIngredients);
+
+		ingredientFilterConfig.searchIngredientAliases().set(false);
+		filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
+		Assertions.assertFalse(filteredIngredients.contains(ALIASED_INGREDIENT));
+	}
+
+	@Test
+	public void testModAliasesCanBeToggledWithoutRestart() {
+		Assertions.assertNotNull(ingredientFilter);
+		Assertions.assertNotNull(filterTextSource);
+		Assertions.assertNotNull(ingredientFilterConfig);
+
+		filterTextSource.setFilterText("@" + MOD_ALIAS);
+		List<TestIngredient> filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
+		Assertions.assertTrue(filteredIngredients.isEmpty());
+
+		ingredientFilterConfig.searchModAliases().set(true);
+		filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
+		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, filteredIngredients.size());
+		Assertions.assertTrue(filteredIngredients.contains(new TestIngredient(0)));
+		Assertions.assertTrue(filteredIngredients.contains(new TestIngredient(1)));
+
+		ingredientFilterConfig.searchModAliases().set(false);
+		filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
+		Assertions.assertTrue(filteredIngredients.isEmpty());
 	}
 
 	@Test
@@ -436,9 +490,10 @@ public class IngredientFilterTest {
 		IIngredientVisibility ingredientVisibility,
 		IIngredientManager ingredientManager,
 		IModIdHelper modIdHelper,
+		TestIngredientFilterConfig ingredientFilterConfig,
 		List<TestIngredient> ingredientsToAdd
 	) {
-		List<IListElementInfo<TestIngredient>> listToAdd = IngredientListElementFactory.createTestList(ingredientManager, TestIngredient.TYPE, ingredientsToAdd, modIdHelper);
+		List<IListElementInfo<TestIngredient>> listToAdd = IngredientListElementFactory.createTestList(ingredientManager, TestIngredient.TYPE, ingredientsToAdd, ingredientFilterConfig, modIdHelper);
 		Assertions.assertEquals(EXTRA_INGREDIENT_COUNT, listToAdd.size());
 
 		ingredientManager.addIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToAdd);
@@ -467,9 +522,10 @@ public class IngredientFilterTest {
 		IIngredientVisibility ingredientVisibility,
 		IIngredientManager ingredientManager,
 		IModIdHelper modIdHelper,
+		TestIngredientFilterConfig ingredientFilterConfig,
 		List<TestIngredient> ingredientsToRemove
 	) {
-		List<IListElementInfo<TestIngredient>> listToRemove = IngredientListElementFactory.createTestList(ingredientManager, TestIngredient.TYPE, ingredientsToRemove, modIdHelper);
+		List<IListElementInfo<TestIngredient>> listToRemove = IngredientListElementFactory.createTestList(ingredientManager, TestIngredient.TYPE, ingredientsToRemove, ingredientFilterConfig, modIdHelper);
 		Assertions.assertEquals(EXTRA_INGREDIENT_COUNT, listToRemove.size());
 
 		ingredientManager.removeIngredientsAtRuntime(TestIngredient.TYPE, ingredientsToRemove);

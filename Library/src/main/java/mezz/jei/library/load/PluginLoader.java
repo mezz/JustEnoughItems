@@ -24,7 +24,6 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientToggleState;
-import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
@@ -84,26 +83,17 @@ public final class PluginLoader {
 		return new SubtypeManager(subtypeInterpreters);
 	}
 
-	public static IngredientManager registerIngredients(StartData data, SubtypeManager subtypeManager, IColorHelper colorHelper, IIngredientFilterConfig ingredientFilterConfig) {
+	public static IngredientManager registerIngredients(StartData data, SubtypeManager subtypeManager, IColorHelper colorHelper) {
 		List<IModPlugin> plugins = data.plugins();
 		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(ingredientManagerBuilder));
 		PluginCaller.callOnPlugins("Registering extra ingredients", plugins, p -> p.registerExtraIngredients(ingredientManagerBuilder));
-
-		if (ingredientFilterConfig.searchIngredientAliases().get()) {
-			PluginCaller.callOnPlugins("Registering search ingredient aliases", plugins, p -> p.registerIngredientAliases(ingredientManagerBuilder));
-		}
+		PluginCaller.callOnPlugins("Registering search ingredient aliases", plugins, p -> p.registerIngredientAliases(ingredientManagerBuilder));
 		return ingredientManagerBuilder.build();
 	}
 
-	public static ImmutableSetMultimap<String, String> registerModAliases(
-		StartData data,
-		IIngredientFilterConfig ingredientFilterConfig
-	) {
+	public static ImmutableSetMultimap<String, String> registerModAliases(StartData data) {
 		List<IModPlugin> plugins = data.plugins();
-		if (!ingredientFilterConfig.searchModAliases().get()) {
-			return ImmutableSetMultimap.of();
-		}
 		ModInfoRegistration modInfoRegistration = new ModInfoRegistration();
 		PluginCaller.callOnPlugins("Registering Mod Info", plugins, p -> p.registerModInfo(modInfoRegistration));
 		return modInfoRegistration.getModAliases();

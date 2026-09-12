@@ -63,7 +63,7 @@ public class ElementSearchIngredientsTest {
 	public void addAllIndexesBaseIngredientsFromBuilder() {
 		// Setup: IngredientManagerBuilder registered the base test plugin ingredients.
 		SearchFixture fixture = createFixture();
-		List<IListElementInfo<?>> baseList = IngredientListElementFactory.createBaseList(fixture.ingredientManager(), MOD_ID_HELPER);
+		List<IListElementInfo<?>> baseList = IngredientListElementFactory.createBaseList(fixture.ingredientManager(), FILTER_CONFIG, MOD_ID_HELPER);
 
 		// Operation: add the whole base list to the search index.
 		fixture = fixture.withInitialIngredients(baseList);
@@ -76,7 +76,7 @@ public class ElementSearchIngredientsTest {
 	public void addAllIndexesExtraIngredientsFromBuilder() {
 		// Setup: extra ingredients are added through IngredientManagerBuilder before the manager is built.
 		SearchFixture fixture = createFixture(List.of(new TestIngredient(10), new TestIngredient(11)));
-		List<IListElementInfo<?>> baseList = IngredientListElementFactory.createBaseList(fixture.ingredientManager(), MOD_ID_HELPER);
+		List<IListElementInfo<?>> baseList = IngredientListElementFactory.createBaseList(fixture.ingredientManager(), FILTER_CONFIG, MOD_ID_HELPER);
 
 		// Operation: add the whole manager-backed list to the search index.
 		fixture = fixture.withInitialIngredients(baseList);
@@ -342,6 +342,7 @@ public class ElementSearchIngredientsTest {
 				ingredientManager,
 				TestIngredient.TYPE,
 				ingredients,
+				FILTER_CONFIG,
 				MOD_ID_HELPER
 			);
 			return new ArrayList<>(infos);

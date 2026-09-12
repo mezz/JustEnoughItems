@@ -8,7 +8,6 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.ClientConfigs;
-import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.api.runtime.config.IJeiConfigManager;
 import mezz.jei.common.config.ConfigManagerAdapter;
 import mezz.jei.common.network.ClientConnectionHelper;
@@ -122,9 +121,8 @@ public final class JeiStarter {
 		PluginCaller.callOnPlugins("Configuring JEI", plugins, p -> p.configureJei(new PluginAwareJeiFeatures(Internal.getJeiFeatures(), p)));
 
 		IColorHelper colorHelper = new ColorHelper(colorNameConfig);
-		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
 		SubtypeManager subtypeManager = PluginLoader.registerSubtypes(data);
-		IngredientManager ingredientManager = PluginLoader.registerIngredients(data, subtypeManager, colorHelper, ingredientFilterConfig);
+		IngredientManager ingredientManager = PluginLoader.registerIngredients(data, subtypeManager, colorHelper);
 		stopCallbacks.add(ingredientManager::onRuntimeStopped);
 
 		FocusFactory focusFactory = new FocusFactory(ingredientManager);
@@ -138,7 +136,7 @@ public final class JeiStarter {
 		);
 		EditModeConfig editModeConfig = new EditModeConfig(editModeSerializer, ingredientManager);
 
-		ImmutableSetMultimap<String, String> modAliases = PluginLoader.registerModAliases(data, ingredientFilterConfig);
+		ImmutableSetMultimap<String, String> modAliases = PluginLoader.registerModAliases(data);
 		JeiHelpers jeiHelpers = PluginLoader.createJeiHelpers(
 			modAliases,
 			modIdFormatConfig,

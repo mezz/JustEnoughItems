@@ -297,7 +297,7 @@ public interface IIngredientManager {
 	 * Get localized search aliases for ingredients.
 	 * Registered by mods with {@link IIngredientAliasRegistration#addAlias}.
 	 *
-	 * If search aliases are disabled by the player in the configs, this will return an empty collection.
+	 * The player's search config controls whether these aliases are used by JEI's search.
 	 *
 	 * @since 19.10.0
 	 */
