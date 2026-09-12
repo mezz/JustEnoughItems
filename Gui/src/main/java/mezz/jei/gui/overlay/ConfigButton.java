@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay;
 
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
@@ -104,7 +105,7 @@ public class ConfigButton extends GuiIconToggleButton {
 		}
 
 		IPlatformConfigHelper configHelper = Services.PLATFORM.getConfigHelper();
-		Optional<Screen> configScreen = configHelper.getConfigScreen();
+		Optional<Screen> configScreen = configHelper.getConfigScreen(ModIds.JEI_ID, mc.screen);
 
 		if (configScreen.isPresent()) {
 			mc.setScreen(configScreen.get());
