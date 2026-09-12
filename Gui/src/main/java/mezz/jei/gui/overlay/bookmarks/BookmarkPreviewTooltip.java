@@ -182,7 +182,7 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
 			FocusUtil focusUtil = new FocusUtil(
 				jeiRuntime.getJeiHelpers().getFocusFactory(),
-				Internal.getJeiClientConfigs().getClientConfig(),
+				Internal.getClientConfigs().getClientConfig(),
 				jeiRuntime.getIngredientManager()
 			);
 			ingredient.show(jeiRuntime.getRecipesGui(), focusUtil, roles);

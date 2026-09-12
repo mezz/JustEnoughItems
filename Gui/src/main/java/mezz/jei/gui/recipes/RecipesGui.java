@@ -163,7 +163,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			ingredientManager,
 			clickTargetFactory
 		);
-		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 		clientConfig.addCenterSearchBarEnabledListener(v -> reopenIfOpen());
 		clientConfig.addMaxRecipeGuiHeightListener(v -> reopenIfOpen());
 
@@ -213,7 +213,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		super.init();
 
 		final int xSize = minGuiWidth;
-		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 		RecipeGuiSizing.Size recipeGuiSize = RecipeGuiSizing.calculateInitialSize(
 			this.height,
 			clientConfig.isCenterSearchBarEnabled(),

@@ -11,7 +11,7 @@ import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
@@ -191,7 +191,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			.map(TagKey::location);
 
 		if (ingredient.getItem() instanceof BlockItem blockItem) {
-			IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+			IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 			if (clientConfig.isLookupBlockTagsEnabled()) {
 				Stream<ResourceLocation> blockTagStream = blockItem.getBlock()
@@ -222,7 +222,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			return true;
 		}
 		if (itemHolder.value() instanceof BlockItem blockItem) {
-			IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+			IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 			if (clientConfig.isLookupBlockTagsEnabled()) {
 				Block block = blockItem.getBlock();
