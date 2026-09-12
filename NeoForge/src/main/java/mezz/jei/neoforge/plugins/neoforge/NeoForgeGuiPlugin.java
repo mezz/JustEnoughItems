@@ -25,7 +25,7 @@ public class NeoForgeGuiPlugin implements IModPlugin {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static @Nullable ResourceReloadHandler resourceReloadHandler;
 
-	private final JeiGuiSortingConfigData sortingConfigData = JeiGuiSortingConfigRegistration.register();
+	private final JeiGuiSortingConfigData sortingConfigData = JeiGuiSortingConfigRegistration.get();
 	private @Nullable IJeiFeatures jeiFeatures;
 	private final RuntimeEventSubscriptions runtimeSubscriptions = new RuntimeEventSubscriptions(NeoForge.EVENT_BUS);
 

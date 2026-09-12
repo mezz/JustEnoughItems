@@ -24,7 +24,7 @@ public class ForgeGuiPlugin implements IModPlugin {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static @Nullable ResourceReloadHandler resourceReloadHandler;
 
-	private final JeiGuiSortingConfigData sortingConfigData = JeiGuiSortingConfigRegistration.register();
+	private final JeiGuiSortingConfigData sortingConfigData = JeiGuiSortingConfigRegistration.get();
 	private final RuntimeEventSubscriptions runtimeSubscriptions = new RuntimeEventSubscriptions(MinecraftForge.EVENT_BUS);
 
 	@Override

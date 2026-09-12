@@ -25,7 +25,7 @@ public class FabricGuiPlugin implements IModPlugin {
 	private static @Nullable IJeiRuntime runtime;
 	private static @Nullable ResourceReloadHandler resourceReloadHandler;
 
-	private final JeiGuiSortingConfigData sortingConfigData = JeiGuiSortingConfigRegistration.register();
+	private final JeiGuiSortingConfigData sortingConfigData = JeiGuiSortingConfigRegistration.get();
 	private @Nullable IJeiFeatures jeiFeatures;
 	private final EventRegistration eventRegistration = new EventRegistration();
 
