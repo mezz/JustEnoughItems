@@ -116,7 +116,7 @@ public class JeiGuiStarter {
 		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
 
 		timer.start("Building ingredient list");
-		List<IListElementInfo<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager, modIdHelper);
+		List<IListElementInfo<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager, ingredientFilterConfig, modIdHelper);
 		timer.stop();
 
 		timer.start("Building ingredient filter");

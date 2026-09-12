@@ -1,5 +1,6 @@
 package mezz.jei.library.startup;
 
+import com.google.common.collect.ImmutableSetMultimap;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
@@ -7,7 +8,6 @@ import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.ClientConfigs;
-import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.api.runtime.config.IJeiConfigManager;
 import mezz.jei.common.config.ConfigManagerAdapter;
 import mezz.jei.common.network.ClientConnectionHelper;
@@ -117,9 +117,8 @@ public final class JeiStarter {
 		PluginCaller.callOnPlugins("Configuring JEI", plugins, p -> p.configureJei(new PluginAwareJeiFeatures(Internal.getJeiFeatures(), p)));
 
 		IColorHelper colorHelper = new ColorHelper(colorNameConfig);
-		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
 		SubtypeManager subtypeManager = PluginLoader.registerSubtypes(data);
-		IngredientManager ingredientManager = PluginLoader.registerIngredients(data, subtypeManager, colorHelper, ingredientFilterConfig);
+		IngredientManager ingredientManager = PluginLoader.registerIngredients(data, subtypeManager, colorHelper);
 		stopCallbacks.add(ingredientManager::onRuntimeStopped);
 
 		FocusFactory focusFactory = new FocusFactory(ingredientManager);
@@ -127,7 +126,16 @@ public final class JeiStarter {
 		Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
 		EditModeConfig editModeConfig = new EditModeConfig(new EditModeConfig.FileSerializer(configDir.resolve("blacklist.json"), configDir.resolve("blacklist.cfg")), ingredientManager);
 
-		JeiHelpers jeiHelpers = PluginLoader.createJeiHelpers(plugins, modIdFormatConfig, colorHelper, editModeConfig, focusFactory, ingredientManager, subtypeManager);
+		ImmutableSetMultimap<String, String> modAliases = PluginLoader.registerModAliases(data);
+		JeiHelpers jeiHelpers = PluginLoader.createJeiHelpers(
+			modAliases,
+			modIdFormatConfig,
+			colorHelper,
+			editModeConfig,
+			focusFactory,
+			ingredientManager,
+			subtypeManager
+		);
 		stopCallbacks.add(jeiHelpers::onRuntimeStopped);
 
 		RecipeManager recipeManager = PluginLoader.createRecipeManager(

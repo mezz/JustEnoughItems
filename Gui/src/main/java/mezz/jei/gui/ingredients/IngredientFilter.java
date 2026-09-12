@@ -50,6 +50,7 @@ public class IngredientFilter
 	private final SearchTokenizer searchTokenizer = new SearchTokenizer();
 
 	private final IClientConfig clientConfig;
+	private final IIngredientFilterConfig config;
 	private final IFilterTextSource filterTextSource;
 	private final IIngredientManager ingredientManager;
 	private Comparator<IListElement<?>> ingredientComparator;
@@ -83,6 +84,7 @@ public class IngredientFilter
 	) {
 		this.filterTextSource = filterTextSource;
 		this.clientConfig = clientConfig;
+		this.config = config;
 		this.ingredientManager = ingredientManager;
 		this.sortIndexUpdater = sortIndexUpdater;
 		this.ingredientComparator = sortIndexUpdater.apply(ingredients);
@@ -146,7 +148,7 @@ public class IngredientFilter
 	public void rebuildItemFilter() {
 		this.invalidateCache();
 		Collection<IListElement<?>> ingredients = this.elementSearch.getAllIngredients();
-		List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, modIdHelper);
+		List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, config, modIdHelper);
 		this.ingredientComparator = this.sortIndexUpdater.apply(elementInfos);
 		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser, elementInfos, ingredientManager);
 		this.searchIndexDirty = false;
@@ -177,8 +179,12 @@ public class IngredientFilter
 			rebuildItemFilter();
 		}
 		if (sortIndexesDirty) {
-			Collection<IListElement<?>> ingredients = this.elementSearch.getAllIngredients();
-			List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, modIdHelper);
+			List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(
+				ingredientManager,
+				this.elementSearch.getAllIngredients(),
+				config,
+				modIdHelper
+			);
 			this.ingredientComparator = this.sortIndexUpdater.apply(elementInfos);
 			this.sortIndexesDirty = false;
 			invalidateCache();
@@ -309,7 +315,7 @@ public class IngredientFilter
 					LOGGER.debug("Updated ingredient: {}", ingredientHelper.getErrorInfo(value.getIngredient()));
 				}
 			} else {
-				IListElementInfo<V> listElementInfo = ListElementInfo.create(value, this.ingredientManager, modIdHelper);
+				IListElementInfo<V> listElementInfo = ListElementInfo.create(value, this.ingredientManager, config, modIdHelper);
 				if (listElementInfo != null) {
 					addIngredient(listElementInfo);
 					if (DebugConfig.isDebugIngredientsEnabled()) {
