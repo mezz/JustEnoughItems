@@ -7,7 +7,7 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
-import mezz.jei.common.config.file.serializers.TypedIngredientSerializer;
+import mezz.jei.gui.config.file.serializers.TypedIngredientSerializer;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.PathUtil;
 import mezz.jei.common.util.ServerConfigPathUtil;

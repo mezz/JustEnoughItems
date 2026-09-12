@@ -14,7 +14,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import net.mezzdev.config.api.value.serializer.IDeserializeResult;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.file.JsonArrayFileHelper;
-import mezz.jei.common.config.file.serializers.TypedIngredientSerializer;
+import mezz.jei.gui.config.file.serializers.TypedIngredientSerializer;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.PathUtil;
 import mezz.jei.common.util.ServerConfigPathUtil;
