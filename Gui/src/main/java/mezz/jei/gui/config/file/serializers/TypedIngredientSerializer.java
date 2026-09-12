@@ -1,4 +1,4 @@
-package mezz.jei.common.config.file.serializers;
+package mezz.jei.gui.config.file.serializers;
 
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
