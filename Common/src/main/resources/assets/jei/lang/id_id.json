@@ -96,12 +96,7 @@
 
   "_comment": "Config",
   "jei.config": "Konfigurasi JEI",
-  "jei.config.name": "Nama: %s",
-  "jei.config.description": "Deskripsi: %s",
-  "jei.config.valueValues": "Nilai Valid: %s",
-  "jei.config.defaultValue": "Nilai Default: %s",
 
-  "jei.config.default": "Default",
   "jei.config.valid": "Valid",
   "jei.config.title": "Konfigurasi %MODNAME",
   "jei.config.mode": "Mode",
@@ -135,14 +130,10 @@
   "jei.config.client.advanced.description": "Opsi konfigurasi lanjutan untuk mengubah cara JEI berfungsi.",
   "jei.config.client.advanced.itemBlacklist": "Daftar hitam item",
   "jei.config.client.advanced.itemBlacklist.description": "Daftar Bahan yang tidak boleh ditampilkan dalam daftar. Format: modId[:name[:meta]]. Mode Sembunyikan Bahan akan secara otomatis menambah atau menghapus entri di sini.",
-  "jei.config.client.appearance.centerSearch": "Bilah Pencarian di Tengah",
-  "jei.config.client.appearance.centerSearch.description": "Pindahkan bilah pencarian JEI ke tengah bawah layar.",
   "jei.config.modIdFormat.modName.modNameFormat": "Format Nama Mod",
   "jei.config.modIdFormat.modName.modNameFormat.description": "Bagaimana nama mod harus diformat di tooltip untuk GUI JEI. Biarkan kosong untuk menonaktifkan.",
   "jei.config.client.advanced.maxColumns": "Lebar Maksimum Overlay",
   "jei.config.client.advanced.maxColumns.description": "Lebar maksimum daftar bahan dan bookmark.",
-  "jei.config.client.appearance.recipeGuiHeight": "Tinggi Maksimum GUI Resep",
-  "jei.config.client.appearance.recipeGuiHeight.description": "Ketinggian maksimum GUI resep.",
   "jei.config.client.cheating.giveMode": "Mode Pemberian",
   "jei.config.client.cheating.giveMode.description": "Pilih apakah JEI harus memberikan Item langsung ke persediaan atau mengambilnya dengan mouse.",
 

@@ -32,7 +32,6 @@
 
   "_comment": "Config",
   "jei.config": "Asetukset",
-  "jei.config.default": "Oletus",
   "jei.config.valid": "Virheetön",
   "jei.config.title": "%MODNAME-asetukset",
   "jei.config.mode": "Tila",
@@ -59,8 +58,6 @@
   "jei.config.client.advanced.description": "Edistyneitä asetuksia jotka muokkaavat JEI:n toimintaa.",
   "jei.config.client.advanced.itemBlacklist": "Tavaroiden musta lista",
   "jei.config.client.advanced.itemBlacklist.description": "Lista tavaroista joita ei pitäisi näyttää JEI:n tavaralistassa. Muoto: modinId:nimi[:metadata]. Muokkaustila lisää tai poistaa merkintöjä tästä.",
-  "jei.config.client.appearance.centerSearch": "Keskitä hakukenttä",
-  "jei.config.client.appearance.centerSearch.description": "Siirrä JEI:n hakukenttä näytön alareunan keskelle.",
   "jei.config.modIdFormat.modName.modNameFormat": "Modin nimen muoto",
   "jei.config.modIdFormat.modName.modNameFormat.description": "Tapa, jolla muotoillaan modin nimi JEI:n työkaluvihjeissä. Ota pois käytöstä jättämällä tyhjäksi.",
 
