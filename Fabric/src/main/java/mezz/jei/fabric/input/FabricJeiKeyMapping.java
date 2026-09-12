@@ -16,6 +16,11 @@ public class FabricJeiKeyMapping<T extends KeyMapping & ContextAwareKeyMapping> 
 	}
 
 	@Override
+	public KeyMapping getKeyMapping() {
+		return mapping;
+	}
+
+	@Override
 	public boolean isActiveAndMatches(InputConstants.Key key) {
 		return this.mapping.isActiveAndMatches(key);
 	}
