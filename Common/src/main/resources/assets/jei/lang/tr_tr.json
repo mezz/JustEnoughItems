@@ -50,7 +50,6 @@
 
   "_comment": "Config",
   "jei.config": "JEI Seçenekleri",
-  "jei.config.default": "Varsayılan",
   "jei.config.client.search": "Arama Seçenekleri",
   "jei.config.client.search.description": "Arama çubuğuyla ilgili seçenekler.",
   "jei.config.client.search.modNameSearchMode": "@ModAdı",
@@ -68,12 +67,8 @@
   "jei.config.client.search.searchAdvancedTooltips": "Gelişmiş ipuçlarını ara",
   "jei.config.client.advanced": "Gelişmiş",
   "jei.config.client.advanced.description": "JEI fonksiyonlarını değiştirmek için gelişmiş seçenekler.",
-  "jei.config.client.appearance.centerSearch": "Arama Çubuğu Merkezde",
-  "jei.config.client.appearance.centerSearch.description": "JEI arama çubuğunu ekranın alt ortasına yerleştir.",
   "jei.config.modIdFormat.modName.modNameFormat": "Mod Adı Biçimi",
   "jei.config.modIdFormat.modName.modNameFormat.description": "JEI arayüz ipuçlarında mod ismi biçimlendirme tipi. Devre dışı bırakmak için boş bırakın.",
-  "jei.config.client.appearance.recipeGuiHeight": "Azami Tarif Ekranı Yüksekliği",
-  "jei.config.client.appearance.recipeGuiHeight.description": "Tarif ekranının azami yüksekliği",
   "jei.config.client.cheating.giveMode": "Alma Modu",
   "jei.config.client.cheating.giveMode.description": "JEI'nin envantere doğrudan eşyaları vermesini mi yoksa fareyle almasını mı istediğinizi seçin.",
 

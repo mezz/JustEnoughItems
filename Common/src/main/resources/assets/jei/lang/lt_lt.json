@@ -25,7 +25,6 @@
 
   "_comment": "Config",
   "jei.config": "Konfigūracija",
-  "jei.config.default": "Numatytoji",
   "jei.config.client.search": "Paieškos nustatymai",
   "jei.config.client.search.description": "Nustatymai, susiję su paieškos juosta.",
   "jei.config.client.advanced": "Išsamiau",

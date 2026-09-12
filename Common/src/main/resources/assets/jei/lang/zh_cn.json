@@ -40,8 +40,6 @@
   "jei.tooltip.recipe.sort.bookmarks.first.disabled": "优先显示书签配方 (已禁用)",
   "jei.tooltip.recipe.sort.craftable.first.enabled": "优先显示可合成的配方 (已启用)",
   "jei.tooltip.recipe.sort.craftable.first.disabled": "优先显示可合成的配方 (已禁用)",
-  "jei.config.client.appearance.toastReflowEnabled": "弹窗重排",
-  "jei.config.client.appearance.toastReflowEnabled.description": "为弹窗通知预留空间，防止它们与JEI界面重叠。",
 
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "缺少物品",
@@ -112,19 +110,10 @@
 
   "_comment": "Config",
   "jei.config": "JEI配置",
-  "jei.config.name": "名称：%s",
-  "jei.config.description": "描述：%s",
-  "jei.config.valueValues": "有效值：%s",
-  "jei.config.defaultValue": "默认值：%s",
 
-  "jei.config.default": "默认",
 
   "jei.config.client.appearance": "外观",
   "jei.config.client.appearance.description": "用于更改JEI外观的配置选项。",
-  "jei.config.client.appearance.centerSearch": "搜索框居中",
-  "jei.config.client.appearance.centerSearch.description": "将JEI搜索框移动至屏幕底部居中的位置。",
-  "jei.config.client.appearance.recipeGuiHeight": "配方界面高度",
-  "jei.config.client.appearance.recipeGuiHeight.description": "配方界面的最大高度（单位为像素）。",
 
   "jei.config.client.cheating": "作弊",
   "jei.config.client.cheating.description": "与作弊相关的配置选项。",
@@ -134,32 +123,18 @@
   "jei.config.client.cheating.cheatToHotbarUsingHotkeysEnabled.description": "启用后，可按Shift+数字键将物品放入快捷栏。",
   "jei.config.client.cheating.showHiddenIngredients": "显示隐藏的原料",
   "jei.config.client.cheating.showHiddenIngredients.description": "显示不在创造模式菜单中的原料。",
-  "jei.config.client.cheating.showTagRecipesEnabled": "显示标签配方",
-  "jei.config.client.cheating.showTagRecipesEnabled.description": "显示配方原料的标签（例如物品标签、方块标签）。",
 
   "jei.config.client.bookmarks": "书签",
   "jei.config.client.bookmarks.description": "与书签原料和配方相关的配置选项。",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled": "置顶添加书签",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled.description": "设为true时，将新书签添加到列表顶端。设为false时，将新书签添加到列表末尾。",
-  "jei.config.client.bookmarks.bookmarkOutputAsRecipe": "将产物收藏为配方书签",
-  "jei.config.client.bookmarks.bookmarkOutputAsRecipe.description": "启用后，在配方产物上按书签键会收藏该配方，而不是该原料。",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled": "拖拽以重新排列书签",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled.description": "启用后，可拖拽书签以重新排列其在列表中顺序。",
 
   "jei.config.client.tooltips": "提示框",
   "jei.config.client.tooltips.description": "JEI中与提示框相关的配置选项。",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures": "书签提示框功能",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures.description": "书签提示框的额外功能。",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures": "Shift显示书签提示框",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures.description": "按住Shift以显示书签提示框。",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled": "显示创造标签页名称",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled.description": "在原料提示框中显示创造标签页名称。",
   "jei.config.client.tooltips.tagContentTooltipEnabled": "显示标签内容",
   "jei.config.client.tooltips.tagContentTooltipEnabled.description": "浏览配方原料时，在提示框中显示标签内容。",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled": "隐藏单一原料的标签内容",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled.description": "当标签仅对应存在一种原料时，在提示框中隐藏标签内容。",
-  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary": "配方原料总览",
-  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary.description": "在产物原料的提示框中显示配方所需的原料总览。",
 
   "jei.config.client.lookups": "查找",
   "jei.config.client.lookups.description": "JEI中与查找原料用途和配方相关的配置选项。",
@@ -170,14 +145,6 @@
 
   "jei.config.client.lookupHistory": "查询历史",
   "jei.config.client.lookupHistory.description": "JEI中用于显示原料查询历史的配置选项",
-  "jei.config.client.lookupHistory.enabled": "已启用",
-  "jei.config.client.lookupHistory.enabled.description": "显示或隐藏查询历史叠加层。",
-  "jei.config.client.lookupHistory.maxRows": "最大行数",
-  "jei.config.client.lookupHistory.maxRows.description": "查询历史叠加层显示的最大行数。",
-  "jei.config.client.lookupHistory.maxIngredients": "最大原料",
-  "jei.config.client.lookupHistory.maxIngredients.description": "查询历史原料保存的最大数量。",
-  "jei.config.client.lookupHistory.displaySide": "显示位置",
-  "jei.config.client.lookupHistory.displaySide.description": "查询历史叠加层在屏幕上显示的位置。",
 
   "jei.config.client.input": "输入",
   "jei.config.client.input.description": "JEI中与输入相关的配置选项。",
@@ -190,8 +157,6 @@
 
   "jei.config.client.performance": "性能",
   "jei.config.client.performance.description": "JEI中与性能优化相关的配置选项。",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled": "低内存搜索",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled.description": "启用低内存搜索模式（会导致搜索变慢，但减少内存占用）。",
 
   "jei.config.client.advanced": "高级",
   "jei.config.client.advanced.description": "用于更改JEI功能方式的高级配置选项。",
@@ -200,10 +165,6 @@
 
   "jei.config.client.sorting": "排序",
   "jei.config.client.sorting.description": "JEI中与配方和原料排序方式相关的配置文件。",
-  "jei.config.client.sorting.ingredientSortStages": "原料排序阶段",
-  "jei.config.client.sorting.ingredientSortStages.description": "原料列表的排序顺序。",
-  "jei.config.client.sorting.recipeSorterStages": "配方排序阶段",
-  "jei.config.client.sorting.recipeSorterStages.description": "配方列表的排序顺序。",
 
   "jei.config.client.search": "搜索",
   "jei.config.client.search.description": "与JEI搜索方式相关的配置选项。",

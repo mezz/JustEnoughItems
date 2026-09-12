@@ -80,7 +80,6 @@
 
   "_comment": "Config",
   "jei.config": "Configuración de JEI",
-  "jei.config.default": "Por defecto",
   "jei.config.client.search": "Opciones de búsqueda",
   "jei.config.client.search.description": "Opciones relacionadas con la barra de búsqueda",
   "jei.config.client.search.modNameSearchMode": "@Nombre del mod",
@@ -98,12 +97,8 @@
   "jei.config.client.search.searchAdvancedTooltips": "Búsqueda avanzada de información",
   "jei.config.client.advanced": "Avanzado",
   "jei.config.client.advanced.description": "Opciones avanzadas de configuración para cambiar la forma en que JEI funciona.",
-  "jei.config.client.appearance.centerSearch": "Centrar barra de búsqueda",
-  "jei.config.client.appearance.centerSearch.description": "Mueva la barra de búsqueda JEI a la parte inferior central de la pantalla.",
   "jei.config.modIdFormat.modName.modNameFormat": "Formato del nombre del mod",
   "jei.config.modIdFormat.modName.modNameFormat.description": "Cómo debe formatearse el nombre del mod en la información sobre herramientas para la interfaz JEI. Dejar en blanco para deshabilitar.",
-  "jei.config.client.appearance.recipeGuiHeight": "Altura máxima del GUI de recetas",
-  "jei.config.client.appearance.recipeGuiHeight.description": "La altura máxima del GUI de la receta.",
   "jei.config.client.cheating.giveMode": "Modo de obtener",
   "jei.config.client.cheating.giveMode.description": "Elija si JEI debe dar elementos directamente al inventario o recogerlos con el mouse.",
 

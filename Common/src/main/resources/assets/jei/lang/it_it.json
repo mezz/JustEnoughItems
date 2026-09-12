@@ -34,8 +34,6 @@
   "jei.tooltip.recipe.sort.bookmarks.first.disabled": "Mostra per prime le ricette salvate (disattivato).",
   "jei.tooltip.recipe.sort.craftable.first.enabled": "Mostra per prime le ricette craftabili (attivato).",
   "jei.tooltip.recipe.sort.craftable.first.disabled": "Mostra per prime le ricette craftabili (disattivato).",
-  "jei.config.client.appearance.toastReflowEnabled": "Spazio Toast",
-  "jei.config.client.appearance.toastReflowEnabled.description": "Riserva spazio per le notifiche toast così che non sovrappongono i menù JEI.",
 
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "Oggetti mancanti",
@@ -105,13 +103,8 @@
 
   "_comment": "Config",
   "jei.config": "Impostazioni JEI",
-  "jei.config.name": "Nome: %s",
-  "jei.config.description": "Descrizione: %s",
-  "jei.config.valueValues": "Valori Validi: %s",
-  "jei.config.defaultValue": "Valore Predefinito: %s",
 
   "jei.config.title": "%MODNAME Impostazioni",
-  "jei.config.default": "Predefinito",
   "jei.config.valid": "Valido",
   "jei.config.mode": "Modalità",
   "jei.config.mode.description": "Cambia la modalità nella quale la JEI opera.",
@@ -128,10 +121,6 @@
 
   "jei.config.client.appearance": "Aspetto",
   "jei.config.client.appearance.description": "Impostazioni per modificare l'aspetto di JEI.",
-  "jei.config.client.appearance.centerSearch": "Barra di ricerca centrale",
-  "jei.config.client.appearance.centerSearch.description": "Muovi la barra di ricerca JEI in basso allo schermo.",
-  "jei.config.client.appearance.recipeGuiHeight": "Altezza Menù Ricette",
-  "jei.config.client.appearance.recipeGuiHeight.description": "Altezza massima del Menù delle Ricette (pixel).",
 
   "jei.config.client.cheating": "Trucchi",
   "jei.config.client.cheating.description": "Impostazioni correlate ai trucchi.",
@@ -141,32 +130,18 @@
   "jei.config.client.cheating.cheatToHotbarUsingHotkeysEnabled.description": "Attiva la combinazione dei tasti Shift + i tasti numerici.",
   "jei.config.client.cheating.showHiddenIngredients": "Mostra gli ingredienti nascosti",
   "jei.config.client.cheating.showHiddenIngredients.description": "Attiva mostra ingredienti non nel menù creativa.",
-  "jei.config.client.cheating.showTagRecipesEnabled": "Mostra i tag delle ricette",
-  "jei.config.client.cheating.showTagRecipesEnabled.description": "Mostra i tag ricette come tag Item e blocchi.",
 
   "jei.config.client.bookmarks": "Segnalibri",
   "jei.config.client.bookmarks.description": "Impostazioni correlate ai Segnalibri.",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled": "Aggiungi i nuovi segnalibri a capo.",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled.description": "Quando attivo, aggiunge i nnuovi segnalibrii a capo della propria lista. Quando disattivato, li aggiunge alla fine.",
-  "jei.config.client.bookmarks.bookmarkOutputAsRecipe": "Aggiungi al segnalibro gli Output come ricetta",
-  "jei.config.client.bookmarks.bookmarkOutputAsRecipe.description": "Quando attivo, premere il tasto del segnalibro su un Output di una ricetta, lo salverà come ricetta invece che come ingredienti.",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled": "Trascina per ridimensionare i segnalibri",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled.description": "Attiva trascinare i segnalibri per riordinarli nella lista.",
 
   "jei.config.client.tooltips": "Suggerimenti",
   "jei.config.client.tooltips.description": "Impostazioni correlate ai Suggerimenti di JEI.",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures": "Funzionalità Suggerimenti dei Segnalibri",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures.description": "Funzionalità extra per i Suggerimenti per i Segnalibri.",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures": "Associazione tasti per i Suggerimenti per i Segnalibri",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures.description": "Tieni premuta la chiave impostata per vedere le funzionalità Suggerimenti per i Segnalibri.",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled": "Mostra i nomi delle Creative Tabs",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled.description": "Mostra le Creative Tab nei Suggerimenti degli ingredienti.",
   "jei.config.client.tooltips.tagContentTooltipEnabled": "Mostra Contenuto Tag",
   "jei.config.client.tooltips.tagContentTooltipEnabled.description": "Mostra il contenuto delle tag nei suggerimenti quando si naviga tra gli ingredienti di una ricetta.",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled": "Nascondi i Contenuti delle Tag Singoli",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled.description": "Nascondi il contenuto delle tag nei suggerimenti quando in essa c'è un solo ingrediente.",
-  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary": "Lista degli Ingredienti delle Ricette",
-  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary.description": "Mostra una lista degli ingredienti di una ricetta sul suggerimento del risultato.",
 
   "jei.config.client.lookups": "Ricerca",
   "jei.config.client.lookups.description": "Impostazioni correlate alla ricerca di usi e ricette degli ingredienti in JEI.",
@@ -177,14 +152,6 @@
 
   "jei.config.client.lookupHistory": "Cronologia Ricerca",
   "jei.config.client.lookupHistory.description": "Impostazioni per mostrare una cronologia degli Item aperti in JEI.",
-  "jei.config.client.lookupHistory.enabled": "Attiva",
-  "jei.config.client.lookupHistory.enabled.description": "Mostra o nascondi le cronologia di ricerca.",
-  "jei.config.client.lookupHistory.maxRows": "Righe Massime",
-  "jei.config.client.lookupHistory.maxRows.description": "Numero massimo di righe che si possono mostrare nella cronologia di ricerca.",
-  "jei.config.client.lookupHistory.maxIngredients": "Ingredienti Massimi",
-  "jei.config.client.lookupHistory.maxIngredients.description": "Numeero massimo di cronologia di ricerca degli ingredienti da salvare.",
-  "jei.config.client.lookupHistory.displaySide": "Mostra al Lato",
-  "jei.config.client.lookupHistory.displaySide.description": "Utilizza il lato dello schermo per mostrare la cronologia di ricerca.",
 
   "jei.config.client.input": "Input",
   "jei.config.client.input.description": "Impostazioni correlate agli Input in JEI.",
@@ -195,8 +162,6 @@
 
   "jei.config.client.performance": "Performance",
   "jei.config.client.performance.description": "Impostazioni correlate all'ottimizzazzione delle performance in JEI.",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled": "Ricerca a bassa RAM",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled.description": "Imposta la ricerca in modalità bassa memoria (la rende più lenta ma usa meno RAM).",
 
   "jei.config.client.advanced": "Avanzate",
   "jei.config.client.advanced.description": "Impostazioni avanzate per modificare il funzionamento di JEI.",
@@ -205,10 +170,6 @@
 
   "jei.config.client.sorting": "Ordine",
   "jei.config.client.sorting.description": "Impostazioni correlate a come JEI riordina ricette e ingredienti.",
-  "jei.config.client.sorting.ingredientSortStages": "Stadi Ordinamento Ingredienti",
-  "jei.config.client.sorting.ingredientSortStages.description": "Ordinamento della lista ingredienti.",
-  "jei.config.client.sorting.recipeSorterStages": "Stadi Ordinamento Ricette",
-  "jei.config.client.sorting.recipeSorterStages.description": "Ordinamento delle ricette mostrate.",
 
   "jei.config.client.search": "Opzioni di ricerca",
   "jei.config.client.search.description": "Opzioni che riguardano la barra di ricerca.",

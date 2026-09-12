@@ -29,7 +29,6 @@
 
   "_comment": "Config",
   "jei.config": "Ρυθμίσεις JEI",
-  "jei.config.default": "Αρχικό",
   "jei.config.client.search": "Ρυθμίσεις Αναζήτησης",
   "jei.config.client.search.description": "Ρυθμίσεις με σχέση την Μπάρα Αναζήτησης.",
   "jei.config.client.search.modNameSearchMode": "Απαίτηση @ για Όνομα Mod",
@@ -42,8 +41,6 @@
   "jei.config.client.search.colorSearchMode.description": "Απαίτηση \"^\" μπροστά από μια λέξη για αναζήτηση από χρώματα αντικειμένων.",
   "jei.config.client.advanced": "Προχωρημένα",
   "jei.config.client.advanced.description": "Προχωρημένες ρυθμίσεις για να αλλάξεις τον τρόπο που λειτουργεί το JEI.",
-  "jei.config.client.appearance.centerSearch": "Κέντραρε Μπάρα Αναζήτησης",
-  "jei.config.client.appearance.centerSearch.description": "Μετακίνησε την JEI μπάρα αναζήτης στο κεντρικό κάτω μέρος της οθόνης.",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Λίστα Αντικειμένων Λειτουργία Επεξεργασίας:",

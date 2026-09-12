@@ -81,7 +81,6 @@
 
   "_comment": "Config",
   "jei.config": "JEI-Konfiguration",
-  "jei.config.default": "Standard",
   "jei.config.client.search": "Suche",
   "jei.config.client.search.description": "Suchleisten-Einstellungen",
   "jei.config.client.search.modNameSearchMode": "@ModName",
@@ -99,12 +98,8 @@
   "jei.config.client.search.searchAdvancedTooltips": "Durchsuche erweiterte Tooltips",
   "jei.config.client.advanced": "Erweitert",
   "jei.config.client.advanced.description": "Erweiterte Konfigurationsoptionen, die ändern, wie JEI funktioniert.",
-  "jei.config.client.appearance.centerSearch": "Zentriere Suchleiste",
-  "jei.config.client.appearance.centerSearch.description": "Die JEI-Suchleiste wird unten in der Mitte des Bildschirms angezeigt.",
   "jei.config.modIdFormat.modName.modNameFormat": "Mod-Namensformat",
   "jei.config.modIdFormat.modName.modNameFormat.description": "Wie der Mod-Name in dem Tooltip für die JEI-Oberfläche formatiert werden soll. Zum Deaktivieren einfach leer lassen.",
-  "jei.config.client.appearance.recipeGuiHeight": "Max. Rezepthöhe der Benutzeroberfläche",
-  "jei.config.client.appearance.recipeGuiHeight.description": "Die maximale Höhe der Rezepte-Benutzeroberfläche.",
   "jei.config.client.cheating.giveMode": "Item-Aufnahmemodus",
   "jei.config.client.cheating.giveMode.description": "Wähle, ob JEI die Items direkt in das Inventar geben soll oder du sie mit der Maus aufnimmst.",
 

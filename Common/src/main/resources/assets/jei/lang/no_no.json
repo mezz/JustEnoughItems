@@ -25,7 +25,6 @@
 
   "_comment": "Config",
   "jei.config": "Innstillinger",
-  "jei.config.default": "Standard",
   "jei.config.client.search": "Søkevalg",
   "jei.config.client.search.description": "Valg relatert til søkelinjen.",
   "jei.config.client.search.modNameSearchMode": "Krev @ for Mod Navn",

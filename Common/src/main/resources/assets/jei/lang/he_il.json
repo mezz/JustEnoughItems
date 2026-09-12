@@ -29,7 +29,6 @@
 
   "_comment": "Config",
   "jei.config": "JEI הגדרות",
-  "jei.config.default": "ברירת מחדל",
   "jei.config.client.search": "הגדרות חיפוש",
   "jei.config.client.search.description": "הגדרות הקשורות לבר החיפוש",
   "jei.config.client.search.modNameSearchMode": "נידרש @ בשביל שם המוד",
@@ -42,8 +41,6 @@
   "jei.config.client.search.colorSearchMode.description": "נדרש \"^\" לפני מילה גדי לחפש צבע של חפץ.",
   "jei.config.client.advanced": "מתקדם",
   "jei.config.client.advanced.description": "הגדרות מתכדמות כדי לשנות את האופן שJEI מתנהג.",
-  "jei.config.client.appearance.centerSearch": "בר חיפוש מרכזי",
-  "jei.config.client.appearance.centerSearch.description": "הזז את בר החיפוש של JEI לתחתית מרכז המסך.",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI מצב עריכת רשימת חפצים:",

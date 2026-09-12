@@ -100,19 +100,10 @@
 
   "_comment": "Config",
   "jei.config": "足物配置",
-  "jei.config.name": "名：%s",
-  "jei.config.description": "述：%s",
-  "jei.config.valueValues": "效直：%s",
-  "jei.config.defaultValue": "本直：%s",
 
-  "jei.config.default": "本",
 
   "jei.config.client.appearance": "貌",
   "jei.config.client.appearance.description": "更足物之貌之配置",
-  "jei.config.client.appearance.centerSearch": "求匡中正",
-  "jei.config.client.appearance.centerSearch.description": "足物求匡中正於下",
-  "jei.config.client.appearance.recipeGuiHeight": "方葉之高",
-  "jei.config.client.appearance.recipeGuiHeight.description": "方葉之高，綱像素",
 
   "jei.config.client.cheating": "欺式置設",
   "jei.config.client.cheating.description": "欺式之配置",
@@ -122,22 +113,12 @@
   "jei.config.client.cheating.cheatToHotbarUsingHotkeysEnabled.description": "啟則擊[Shift]並[數]而入之熱槽",
   "jei.config.client.cheating.showHiddenIngredients": "顯匿之物",
   "jei.config.client.cheating.showHiddenIngredients.description": "啟則顯創囊所無",
-  "jei.config.client.cheating.showTagRecipesEnabled": "顯籤方",
-  "jei.config.client.cheating.showTagRecipesEnabled.description": "顯物塊之籖所入之方",
 
   "jei.config.client.bookmarks": "書籤",
   "jei.config.client.bookmarks.description": "物方書籤之配置",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled": "書籤置頂而入",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled.description": "啟則新入頭；禁則新入尾",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled": "復列書籤",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled.description": "啟則可拽物以復列書籤",
 
   "jei.config.client.tooltips": "器具之示",
   "jei.config.client.tooltips.description": "足物器具之示配置。",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures": "書籤器具之示",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures.description": "示書籤器具。",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures": "Shift顯書籤器具之示",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures.description": "擊[Shift]顯書籤器具之示。",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled": "顯創囊籖名",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled.description": "物示顯創囊籖名。",
   "jei.config.client.tooltips.tagContentTooltipEnabled": "顯含籖",
@@ -161,8 +142,6 @@
 
   "jei.config.client.performance": "性能置設",
   "jei.config.client.performance.description": "足物優其性能之配置。",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled": "低憶求式",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled.description": "置設求為低憶之式，速緩而憶少。",
 
   "jei.config.client.advanced": "彊之置設",
   "jei.config.client.advanced.description": "足物之彊者配置。",
@@ -171,10 +150,6 @@
 
   "jei.config.client.sorting": "列序置設",
   "jei.config.client.sorting.description": "足物之物、方之序列配置。",
-  "jei.config.client.sorting.ingredientSortStages": "物序",
-  "jei.config.client.sorting.ingredientSortStages.description": "物列之列序。",
-  "jei.config.client.sorting.recipeSorterStages": "方序",
-  "jei.config.client.sorting.recipeSorterStages.description": "方列之列序。",
 
   "jei.config.client.search": "求之置設",
   "jei.config.client.search.description": "足物之求方之配置。",

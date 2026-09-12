@@ -104,19 +104,10 @@
 
   "_comment": "Config",
   "jei.config": "JEI баптауы",
-  "jei.config.name": "Аты: %s",
-  "jei.config.description": "Сипаттама: %s",
-  "jei.config.valueValues": "Дұрыс мәндер: %s",
-  "jei.config.defaultValue": "Әдепкі мән: %s",
 
-  "jei.config.default": "Әдепкі",
 
   "jei.config.client.appearance": "Көрініс",
   "jei.config.client.appearance.description": "JEI көрінісін өзгерту баптаулары.",
-  "jei.config.client.appearance.centerSearch": "Ортадағы іздеу жолағы",
-  "jei.config.client.appearance.centerSearch.description": "JEI іздеу жолағын экранның астыңғы ортасына орналастыру.",
-  "jei.config.client.appearance.recipeGuiHeight": "Макс. рецепт интерфейсінің биіктігі",
-  "jei.config.client.appearance.recipeGuiHeight.description": "Рецепт интерфейсінің максималды биіктігі.",
 
   "jei.config.client.cheating": "Чит",
   "jei.config.client.cheating.description": "Читке байланысты баптаулар.",
@@ -126,22 +117,12 @@
   "jei.config.client.cheating.cheatToHotbarUsingHotkeysEnabled.description": "Shift + сан пернелерін қолданып, заттарды жылдам жолаққа алуды қосу.",
   "jei.config.client.cheating.showHiddenIngredients": "Жасырын ингредиенттерді көрсету",
   "jei.config.client.cheating.showHiddenIngredients.description": "Шығармашылық мәзірде жоқ ингредиенттерді көрсетуді қосу.",
-  "jei.config.client.cheating.showTagRecipesEnabled": "Тәг рецептерін көрсету",
-  "jei.config.client.cheating.showTagRecipesEnabled.description": "Зат тәгі және блок тәгі сияқты ингредиент тәгтеріне арналған рецептерді көрсету.",
 
   "jei.config.client.bookmarks": "Бетбелгі",
   "jei.config.client.bookmarks.description": "Ингредиенттер мен рецептерге бетбелгілеуге байланысты баптаулар.",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled": "Бетбелгілерді алдына қосу",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled.description": "Қосулы болса, жаңа бетбелгілер тізімнің басына қосылады. Өшірулі болса, соңына қосылады.",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled": "Бетбелгілерді тартып реттеу",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled.description": "Бетбелгілерді тізімде реттеу үшін тартуды қосу.",
 
   "jei.config.client.tooltips": "Түсіндірме",
   "jei.config.client.tooltips.description": "JEI түсіндірмелеріне байланысты баптаулар.",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures": "Бетбелгі түсіндірмесі мүмкіндіктері",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures.description": "Бетбелгі түсіндірмесіне қосымша мүмкіндіктер.",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures": "Бетбелгі түсіндірмесі үшін Shift",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures.description": "Бетбелгі түсіндірмесі мүмкіндіктерін көрсету үшін Shift ұстап тұр.",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled": "Шығармашылық қойынша атауларын көрсету",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled.description": "Ингредиент түсіндірмесінде шығармашылық қойынша атауларын көрсету.",
   "jei.config.client.tooltips.tagContentTooltipEnabled": "Тәг құрамын көрсету",
@@ -158,14 +139,6 @@
 
   "jei.config.client.lookupHistory": "Ақпарат алу тарихы",
   "jei.config.client.lookupHistory.description": "JEI-де ингредиенттер туралы ақпарат алу тарихын көрсетуге арналған баптаулар",
-  "jei.config.client.lookupHistory.enabled": "Қосулы",
-  "jei.config.client.lookupHistory.enabled.description": "Ақпарат алу тарихы оверлейін көрсету немесе жасыру.",
-  "jei.config.client.lookupHistory.maxRows": "Макс. жолдар",
-  "jei.config.client.lookupHistory.maxRows.description": "Ақпарат алу тарихы оверлейінде көрсетілетін жолдардың максималды саны.",
-  "jei.config.client.lookupHistory.maxIngredients": "Макс. ингредиенттер",
-  "jei.config.client.lookupHistory.maxIngredients.description": "Сақталатын ақпарат алу тарихы ингредиенттерінің максималды саны.",
-  "jei.config.client.lookupHistory.displaySide": "Көрсету жағы",
-  "jei.config.client.lookupHistory.displaySide.description": "Ақпарат алу тарихы оверлейін көрсететін экран жағы.",
 
   "jei.config.client.input": "Енгізу",
   "jei.config.client.input.description": "JEI-дегі енгізуге байланысты баптаулар.",
@@ -176,8 +149,6 @@
 
   "jei.config.client.performance": "Өнімділік",
   "jei.config.client.performance.description": "JEI-дегі өнімділік оңтайландыруларына байланысты баптаулар.",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled": "Аз жад іздеуі",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled.description": "Іздеуді аз жад режиміне қою (іздеуді баяу жасайды, бірақ аз RAM қолданады).",
 
   "jei.config.client.advanced": "Кеңейтілген",
   "jei.config.client.advanced.description": "JEI жұмысын өзгерту үшін кеңейтілген баптаулар.",
@@ -186,10 +157,6 @@
 
   "jei.config.client.sorting": "Сұрыптау",
   "jei.config.client.sorting.description": "JEI рецептер мен ингредиенттерді қалай сұрыптайтынына байланысты баптаулар.",
-  "jei.config.client.sorting.ingredientSortStages": "Ингредиенттерді сұрыптау кезеңдері",
-  "jei.config.client.sorting.ingredientSortStages.description": "Ингредиент тізіміне арналған сұрыптау реті.",
-  "jei.config.client.sorting.recipeSorterStages": "Рецептерді сұрыптау кезеңдері",
-  "jei.config.client.sorting.recipeSorterStages.description": "Көрсетілген рецептерге арналған сұрыптау реті.",
 
   "jei.config.client.search": "Іздеу",
   "jei.config.client.search.description": "Іздеу жолағына байланысты баптаулар.",

@@ -32,7 +32,6 @@
 
   "_comment": "Config",
   "jei.config": "Asetukset",
-  "jei.config.default": "Oletus",
   "jei.config.client.search": "Haku",
   "jei.config.client.search.description": "Hakuun liittyviä asetuksia.",
   "jei.config.client.search.modNameSearchMode": "@ModinNimi",
@@ -45,8 +44,6 @@
   "jei.config.client.search.colorSearchMode.description": "Tavaroiden värien hakutila (etuliite: ^)",
   "jei.config.client.advanced": "Edistynyt",
   "jei.config.client.advanced.description": "Edistyneitä asetuksia jotka muokkaavat JEI:n toimintaa.",
-  "jei.config.client.appearance.centerSearch": "Keskitä hakukenttä",
-  "jei.config.client.appearance.centerSearch.description": "Siirrä JEI:n hakukenttä näytön alareunan keskelle.",
   "jei.config.modIdFormat.modName.modNameFormat": "Modin nimen muoto",
   "jei.config.modIdFormat.modName.modNameFormat.description": "Tapa, jolla muotoillaan modin nimi JEI:n työkaluvihjeissä. Ota pois käytöstä jättämällä tyhjäksi.",
 

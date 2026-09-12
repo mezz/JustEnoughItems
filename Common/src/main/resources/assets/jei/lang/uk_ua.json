@@ -105,19 +105,10 @@
 
   "_comment": "Налаштування",
   "jei.config": "Налаштування JEI",
-  "jei.config.name": "Назва: %s",
-  "jei.config.description": "Опис: %s",
-  "jei.config.valueValues": "Дійсні значення: %s",
-  "jei.config.defaultValue": "Усталене значення: %s",
 
-  "jei.config.default": "Усталено",
 
   "jei.config.client.appearance": "Вигляд",
   "jei.config.client.appearance.description": "Налаштування, які стосуються зовнішнього вигляду JEI.",
-  "jei.config.client.appearance.centerSearch": "Панель пошуку по центру",
-  "jei.config.client.appearance.centerSearch.description": "Переміщає рядок пошуку JEI унизу по центру екрана.",
-  "jei.config.client.appearance.recipeGuiHeight": "Висота інтерфейсу рецепта",
-  "jei.config.client.appearance.recipeGuiHeight.description": "Максимальна висота інтерфейсу рецептів (у пікселях).",
 
   "jei.config.client.cheating": "Шахрайство",
   "jei.config.client.cheating.description": "Налаштування, які стосуються шахрайства.",
@@ -127,30 +118,18 @@
   "jei.config.client.cheating.cheatToHotbarUsingHotkeysEnabled.description": "Умикає брання предметів на панель швидкого доступу за допомогою Shift + цифрові клавіші.",
   "jei.config.client.cheating.showHiddenIngredients": "Показати приховані інгредієнти",
   "jei.config.client.cheating.showHiddenIngredients.description": "Умикає показ інгредієнтів, яких немає в творчому меню.",
-  "jei.config.client.cheating.showTagRecipesEnabled": "Показати рецепти теґів",
-  "jei.config.client.cheating.showTagRecipesEnabled.description": "Показує рецепти для теґів інгредієнтів, таких як теґи предметів і теґи блоків.",
 
   "jei.config.client.bookmarks": "Закладки",
   "jei.config.client.bookmarks.description": "Налаштування, які стосуються створення закладок інгредієнтів і рецептів.",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled": "Додати закладки на передній план",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled.description": "Якщо ввімкнено, нові закладки додаються на початку списку. Якщо вимкнено, у кінець.",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled": "Перетягніть, щоби змінити порядок закладок",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled.description": "Умикає перетягування закладок, щоби змінити їх порядок у списку.",
 
   "jei.config.client.tooltips": "Підказки",
   "jei.config.client.tooltips.description": "Налаштування, які стосуються підказок JEI.",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures": "Функції підказок закладок",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures.description": "Додаткові функції для підказок закладок.",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures": "Shift для підказок закладок",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures.description": "Утримуйте Shift, щоби показати функції підказок закладок.",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled": "Показати назви вкладок творчости",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled.description": "Показує назви вкладок творчости у підказках інгредієнтів.",
   "jei.config.client.tooltips.tagContentTooltipEnabled": "Показати вміст теґу",
   "jei.config.client.tooltips.tagContentTooltipEnabled.description": "Показує вміст теґів у підказках під час перегляду інгредієнтів рецепта.",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled": "Приховати вміст теґу одного інгредієнта",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled.description": "Приховує вміст теґу у підказках, якщо в теґу є лише один інгредієнт.",
-  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary": "Короткий опис інгредієнтів рецепта",
-  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary.description": "Показує короткий опис інгредієнтів, необхідних для рецепта, у підказці вихідного інгредієнта.",
 
   "jei.config.client.lookups": "Пошук",
   "jei.config.client.lookups.description": "Налаштування, які стосуються використання пошуку та рецептів інгредієнтів у JEI.",
@@ -161,14 +140,6 @@
 
   "jei.config.client.lookupHistory": "Перегляд історії",
   "jei.config.client.lookupHistory.description": "Налаштування, які стосуються показу історії перегляду інгредієнтів у JEI",
-  "jei.config.client.lookupHistory.enabled": "Увімкнено",
-  "jei.config.client.lookupHistory.enabled.description": "Показує або приховує накладення історії пошуку.",
-  "jei.config.client.lookupHistory.maxRows": "Максимум рядків",
-  "jei.config.client.lookupHistory.maxRows.description": "Максимальна кількість рядків для показу в накладенні історії пошуку.",
-  "jei.config.client.lookupHistory.maxIngredients": "Макс. інгредієнтів",
-  "jei.config.client.lookupHistory.maxIngredients.description": "Максимальна кількість інгредієнтів історії пошуку для збереження.",
-  "jei.config.client.lookupHistory.displaySide": "Сторона показу",
-  "jei.config.client.lookupHistory.displaySide.description": "Бокова частина екрана для показу накладання історії пошуку.",
 
   "jei.config.client.input": "Уведення",
   "jei.config.client.input.description": "Налаштування, які стосуються введення в JEI.",
@@ -179,8 +150,6 @@
 
   "jei.config.client.performance": "Продуктивність",
   "jei.config.client.performance.description": "Налаштування, які стосуються оптимізації продуктивности в JEI.",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled": "Пошук мало пам'яті",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled.description": "Установлює пошук у режим малого обсягу пам'яті (робить пошук повільним, але використовує менше оперативної пам'яті).",
 
   "jei.config.client.advanced": "Розширений",
   "jei.config.client.advanced.description": "Розширені налаштування, які стосуються зміни способу роботи JEI.",
@@ -189,10 +158,6 @@
 
   "jei.config.client.sorting": "Сортування",
   "jei.config.client.sorting.description": "Налаштування, які стосуються сортування рецептів та інгредієнтів JEI.",
-  "jei.config.client.sorting.ingredientSortStages": "Етапи сортування інгредієнтів",
-  "jei.config.client.sorting.ingredientSortStages.description": "Порядок сортування для списку інгредієнтів.",
-  "jei.config.client.sorting.recipeSorterStages": "Етапи сортування рецептів",
-  "jei.config.client.sorting.recipeSorterStages.description": "Порядок сортування для показаних рецептів.",
 
   "jei.config.client.search": "Пошук",
   "jei.config.client.search.description": "Налаштування, які стосуються пошуку рецептів JEI.",

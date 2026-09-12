@@ -105,19 +105,10 @@
 
   "_comment": "Config",
   "jei.config": "Konpigurasyon ng JEI",
-  "jei.config.name": "Pangalan: %s",
-  "jei.config.description": "Paglalarawan: %s",
-  "jei.config.valueValues": "Mga Wastong Halaga: %s",
-  "jei.config.defaultValue": "Panimulang Halaga: %s",
 
-  "jei.config.default": "Panimula",
 
   "jei.config.client.appearance": "Hitsura",
   "jei.config.client.appearance.description": "Mga opsyon sa konpigurasyon upang baguhin ang hitsura ng JEI.",
-  "jei.config.client.appearance.centerSearch": "Sentro ng Bar sa Paghahanap",
-  "jei.config.client.appearance.centerSearch.description": "Ilipat ang bar ng paghahanap ng JEI sa ibabang gitna ng screen.",
-  "jei.config.client.appearance.recipeGuiHeight": "Taas ng GUI ng Resipi",
-  "jei.config.client.appearance.recipeGuiHeight.description": "Ang pinakamataas na taas para sa Gui ng Resipi (sa pixels).",
 
   "jei.config.client.cheating": "Pang-daya",
   "jei.config.client.cheating.description": "Mga opsyon sa konpigurasyon na may kaugnayan sa Pang-daya.",
@@ -127,30 +118,18 @@
   "jei.config.client.cheating.cheatToHotbarUsingHotkeysEnabled.description": "Paganahin ang mga pangongopya ng aytem sa hotbar gamit ang Shift + mga pindutan ng numero.",
   "jei.config.client.cheating.showHiddenIngredients": "Ipakita ang mga Nakatagong Sangkap",
   "jei.config.client.cheating.showHiddenIngredients.description": "Paganahin ang pagpapakita ng mga sangkap na wala sa menu ng modong kalikhaan.",
-  "jei.config.client.cheating.showTagRecipesEnabled": "Ipakita ang mga Minarkahan na Resipi",
-  "jei.config.client.cheating.showTagRecipesEnabled.description": "Ipakita ang mga resipi para sa mga minarkahang sangkap tulad ng mga minarkahang aytem at mga minarkahang bloke.",
 
   "jei.config.client.bookmarks": "Mga Bookmark",
   "jei.config.client.bookmarks.description": "Mga opsyon sa konpigurasyon na may kaugnayan sa pagbo-bookmark ng mga sangkap at resipi.",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled": "Idagdag ang Mga Bookmark sa Unahan",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled.description": "Kapag pinagana, magdagdag ng mga bagong bookmark sa unahan ng listahan. Kapag hindi pinagana, idagdag ang mga ito sa dulo.",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled": "Ihatak Upang Ayusin ang mga Bookmark",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled.description": "Paganahin ang paghahatak ng mga bookmark upang muling ayusin ang mga ito sa listahan.",
 
   "jei.config.client.tooltips": "Mga Tooltip",
   "jei.config.client.tooltips.description": "Mga opsyon sa konpigurasyon na may kaugnayan sa Mga Tooltip sa JEI.",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures": "Mga Tampok ng Tooltip ng Bookmark",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures.description": "Mga karagdagang tampok para sa mga tooltip ng bookmark.",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures": "Mag-Shift para sa mga tooltip ng bookmark",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures.description": "Pindutin nang matagal ang Shift upang ipakita ang mga tampok ng tooltip ng bookmark.",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled": "Ipakita ang mga Pangalan ng Tab sa Modong Kalikhaan",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled.description": "Ipakita ang mga pangalan ng tab sa modong kalikhaan sa mga tooltip ng sangkap.",
   "jei.config.client.tooltips.tagContentTooltipEnabled": "Ipakita ang Mga Nilalaman ng Marka",
   "jei.config.client.tooltips.tagContentTooltipEnabled.description": "Ipakita ang nilalaman ng marka sa mga tooltip kapag naghahanap ng mga sangkap ng resipi.",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled": "Itago ang Mga Nilalaman ng Marka na Iisang Sangkap",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled.description": "Itago ang nilalaman ng marka sa mga tooltip kapag iisa lang ang sangkap sa marka.",
-  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary": "Buod ng Sangkap ng Resipi",
-  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary.description": "Ipakita ang buod ng mga sangkap na kailangan para sa isang resipi, sa tooltip ng kinalabasang sangkap nito.",
 
   "jei.config.client.lookups": "Mga Paghahanap",
   "jei.config.client.lookups.description": "Mga opsyon sa konpigurasyon na may kaugnayan sa paghahanap ng mga gamit at mga resipi para sa mga sangkap sa JEI.",
@@ -161,14 +140,6 @@
 
   "jei.config.client.lookupHistory": "Kasaysayan sa Paghahanap",
   "jei.config.client.lookupHistory.description": "Mga opsyon sa konpigurasyon para sa pagpapakita ng kasaysayan ng mga paghahanap ng sangkap sa JEI",
-  "jei.config.client.lookupHistory.enabled": "Pinagana",
-  "jei.config.client.lookupHistory.enabled.description": "Ipakita o itago ang overlay ng kasaysayan ng paghahanap.",
-  "jei.config.client.lookupHistory.maxRows": "Pinakamataas na mga Hanay",
-  "jei.config.client.lookupHistory.maxRows.description": "Pinakamataas na bilang ng mga hanay na ipapakita sa overlay ng kasaysayan ng paghahanap.",
-  "jei.config.client.lookupHistory.maxIngredients": "Pinakamataas na mga Sangkap",
-  "jei.config.client.lookupHistory.maxIngredients.description": "Pinakamataas na bilang ng mga sangkap sa kasaysayan ng paghahanap na ise-save.",
-  "jei.config.client.lookupHistory.displaySide": "Ipakita ang Gilid",
-  "jei.config.client.lookupHistory.displaySide.description": "Gilid ng screen para ipakita ang overlay ng kasaysayan ng paghahanap.",
 
   "jei.config.client.input": "Input",
   "jei.config.client.input.description": "Mga opsyon sa konpigurasyon na may kaugnayan sa Mga Input sa JEI.",
@@ -179,8 +150,6 @@
 
   "jei.config.client.performance": "Pagganap",
   "jei.config.client.performance.description": "Mga opsyon sa konpigurasyon na may kaugnayan sa mga pagpapahusay ng pagganp sa JEI.",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled": "Paghahanap sa Mababang Memorya",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled.description": "Itakda ang paghahanap sa modong mababang memorya (ginagawang mabagal ang paghahanap ngunit gumagamit ng mas kaunting RAM).",
 
   "jei.config.client.advanced": "Pasulong",
   "jei.config.client.advanced.description": "Mga pasulong na opsyon sa konpigurasyon upang baguhin ang paraan ng paggana ng JEI.",
@@ -189,10 +158,6 @@
 
   "jei.config.client.sorting": "Pag-uuri",
   "jei.config.client.sorting.description": "Mga opsyon sa konpigurasyon na may kaugnayan sa kung paano inaayos ng JEI ang mga resipi at sangkap.",
-  "jei.config.client.sorting.ingredientSortStages": "Mga Yugto ng Pag-uuri ng Sangkap",
-  "jei.config.client.sorting.ingredientSortStages.description": "Pagkakasunod-sunod ng mga sangkap para sa listahan ng mga sangkap.",
-  "jei.config.client.sorting.recipeSorterStages": "Mga Yugto ng Pag-uuri ng Resipi",
-  "jei.config.client.sorting.recipeSorterStages.description": "Pag-uuri-uri ng mga ipinapakitang resipi.",
 
   "jei.config.client.search": "Paghahanap",
   "jei.config.client.search.description": "Mga opsyon sa konpigurasyon na may kaugnayan sa kung paano naghahanap ang JEI ng mga resipi.",

@@ -39,8 +39,6 @@
   "jei.tooltip.recipe.sort.bookmarks.first.disabled": "ブックマークしたレシピを優先表示（無効）",
   "jei.tooltip.recipe.sort.craftable.first.enabled": "クラフト可能なレシピを優先表示（有効）",
   "jei.tooltip.recipe.sort.craftable.first.disabled": "クラフト可能なレシピを優先表示（無効）",
-  "jei.config.client.appearance.toastReflowEnabled": "トーストの再配置",
-  "jei.config.client.appearance.toastReflowEnabled.description": "トースト通知用のスペースを確保し、JEIのインターフェースと重ならないようにします。",
 
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "アイテムがインベントリ内に存在しません",
@@ -112,19 +110,10 @@
 
   "_comment": "Config",
   "jei.config": "JEIの設定",
-  "jei.config.name": "項目名：%s",
-  "jei.config.description": "説明：%s",
-  "jei.config.valueValues": "有効値：%s",
-  "jei.config.defaultValue": "デフォルト値：%s",
 
-  "jei.config.default": "デフォルト",
 
   "jei.config.client.appearance": "外観",
   "jei.config.client.appearance.description": "JEIの外観に関する設定。",
-  "jei.config.client.appearance.centerSearch": "検索バーを中央に移動",
-  "jei.config.client.appearance.centerSearch.description": "JEIの検索バーを画面の中央下部に移動します。",
-  "jei.config.client.appearance.recipeGuiHeight": "レシピGUIの最大高さ",
-  "jei.config.client.appearance.recipeGuiHeight.description": "レシピGUIの最大高さ（ピクセル）。",
 
   "jei.config.client.cheating": "チート",
   "jei.config.client.cheating.description": "チートに関する設定。",
@@ -134,32 +123,18 @@
   "jei.config.client.cheating.cheatToHotbarUsingHotkeysEnabled.description": "Shift + 数値キーを使用して、ホットバーにチートアイテムを与えられるようになります。",
   "jei.config.client.cheating.showHiddenIngredients": "隠されたアイテムを表示",
   "jei.config.client.cheating.showHiddenIngredients.description": "クリエイティブメニューに無いアイテムを表示します。",
-  "jei.config.client.cheating.showTagRecipesEnabled": "タグレシピの表示",
-  "jei.config.client.cheating.showTagRecipesEnabled.description": "アイテムタグやブロックタグなどのタグレシピを表示します。",
 
   "jei.config.client.bookmarks": "ブックマーク",
   "jei.config.client.bookmarks.description": "アイテムやレシピのブックマークに関する設定。",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled": "ブックマークを先頭に追加",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled.description": "trueにすると、新しいブックマークをリストの先頭に追加します。falseにすると、末尾に追加します。",
-  "jei.config.client.bookmarks.bookmarkOutputAsRecipe": "出力をレシピとしてブックマークする",
-  "jei.config.client.bookmarks.bookmarkOutputAsRecipe.description": "trueにすると、レシピの出力に対してブックマークキーを押すと、材料ではなくレシピ自体がブックマークされます。",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled": "ドラッグでブックマークを並び替える",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled.description": "ブックマークをドラッグして、リスト内で並び替えられるようになります。",
 
   "jei.config.client.tooltips": "ツールチップ",
   "jei.config.client.tooltips.description": "JEIのツールチップに関する設定。",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures": "ブックマークのツールチップ機能",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures.description": "ブックマークのツールチップの追加機能。",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures": "割り当てたキーでブックマークのツールチップを表示",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures.description": "割り当てたキーを押すとブックマークのツールチップ機能を表示します。",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled": "クリエイティブタブ名の表示",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled.description": "アイテムのツールチップにクリエイティブタブ名を表示します。",
   "jei.config.client.tooltips.tagContentTooltipEnabled": "タグの表示",
   "jei.config.client.tooltips.tagContentTooltipEnabled.description": "レシピの材料を確認するときに、ツールチップにタグの内容を表示します。",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled": "単一アイテム用タグの内容を非表示",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled.description": "タグにアイテムが1種類しかないとき、ツールチップにタグの内容を表示しないようにします。",
-  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary": "レシピの材料リスト",
-  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary.description": "レシピの完成品にカーソルを合わせたとき、ツールチップに材料リストを表示します。",
 
   "jei.config.client.lookups": "確認",
   "jei.config.client.lookups.description": "JEIのアイテムの用途やレシピの確認に関する設定。",
@@ -170,14 +145,6 @@
 
   "jei.config.client.lookupHistory": "検索履歴",
   "jei.config.client.lookupHistory.description": "JEIのアイテム検索履歴に関する設定。",
-  "jei.config.client.lookupHistory.enabled": "有効化",
-  "jei.config.client.lookupHistory.enabled.description": "検索履歴オーバーレイの表示／非表示を切り替えます",
-  "jei.config.client.lookupHistory.maxRows": "最大行数",
-  "jei.config.client.lookupHistory.maxRows.description": "検索履歴オーバーレイに表示される行の最大数。",
-  "jei.config.client.lookupHistory.maxIngredients": "最大アイテム数",
-  "jei.config.client.lookupHistory.maxIngredients.description": "保存する検索履歴の最大数。",
-  "jei.config.client.lookupHistory.displaySide": "表示位置",
-  "jei.config.client.lookupHistory.displaySide.description": "検索履歴オーバーレイを表示する画面の位置。",
 
   "jei.config.client.input": "入力",
   "jei.config.client.input.description": "JEIの入力に関する設定。",
@@ -190,8 +157,6 @@
 
   "jei.config.client.performance": "パフォーマンス",
   "jei.config.client.performance.description": "JEIのパフォーマンスの最適化に関する設定。",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled": "省メモリ検索",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled.description": "検索を省メモリモードに設定します（検索は遅くなりますが、RAMの使用量が低下します）。",
 
   "jei.config.client.advanced": "高度な設定",
   "jei.config.client.advanced.description": "JEIの機能を変更する高度な設定。",
@@ -202,10 +167,6 @@
 
   "jei.config.client.sorting": "ソート",
   "jei.config.client.sorting.description": "JEIがレシピやアイテムをソートする方法に関する設定。",
-  "jei.config.client.sorting.ingredientSortStages": "アイテムのソート階層",
-  "jei.config.client.sorting.ingredientSortStages.description": "アイテムリストのソート順序。",
-  "jei.config.client.sorting.recipeSorterStages": "レシピのソート階層",
-  "jei.config.client.sorting.recipeSorterStages.description": "表示されるレシピのソート順序。",
 
   "jei.config.client.search": "検索",
   "jei.config.client.search.description": "JEIがレシピを検索する方法に関する設定。",

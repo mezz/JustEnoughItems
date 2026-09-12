@@ -28,7 +28,6 @@
 
   "_comment": "Config",
   "jei.config": "JEI Config",
-  "jei.config.default": "Výchozí",
   "jei.config.client.search": "Nastavení Hledání",
   "jei.config.client.search.description": "Nastavení související s hledacím polem.",
   "jei.config.client.search.modNameSearchMode": "Vyžaduje @ pro jméno módu",
@@ -41,8 +40,6 @@
   "jei.config.client.search.colorSearchMode.description": "Vyžaduje \"^\" před slovem pro hledání barev itemů.",
   "jei.config.client.advanced": "Pokročilé",
   "jei.config.client.advanced.description": "Pokročilé funkce pro JEI.",
-  "jei.config.client.appearance.centerSearch": "Hýbat s vyhledávacím polem",
-  "jei.config.client.appearance.centerSearch.description": "Přesune JEI bar dolů doprostřed obrazovky.",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Item List Editovací Mód:",

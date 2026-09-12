@@ -37,8 +37,6 @@
   "jei.tooltip.recipe.sort.bookmarks.first.disabled": "Visa bokmärkta recept först (inaktiverad).",
   "jei.tooltip.recipe.sort.craftable.first.enabled": "Visa tillverkningsbara recept först (aktiverad).",
   "jei.tooltip.recipe.sort.craftable.first.disabled": "Visa tillverkningsbara recept först (inaktiverad).",
-  "jei.config.client.appearance.toastReflowEnabled": "Toast Reflow",
-  "jei.config.client.appearance.toastReflowEnabled.description": "Reserverar utrymme för popup-aviseringar så att de inte överlappar JEI-gränssnittet.",
 
   "_comment": "Error Tooltips",
   "jei.tooltip.error.recipe.transfer.missing": "Föremål saknas",
@@ -109,19 +107,10 @@
 
   "_comment": "Config",
   "jei.config": "Konfiguration för JEI",
-  "jei.config.name": "Namn: %s",
-  "jei.config.description": "Beskrivning: %s",
-  "jei.config.valueValues": "Giltiga värden: %s",
-  "jei.config.defaultValue": "Standardvärde: %s",
 
-  "jei.config.default": "Standard",
 
   "jei.config.client.appearance": "Utseende",
   "jei.config.client.appearance.description": "Konfigurationsalternativ för att ändra utseendet i JEI.",
-  "jei.config.client.appearance.centerSearch": "Centrera sökfältet",
-  "jei.config.client.appearance.centerSearch.description": "Placera JEI:s sökfält längst ned i mitten på skärmen.",
-  "jei.config.client.appearance.recipeGuiHeight": "Maximal bredd för receptgränssnittet",
-  "jei.config.client.appearance.recipeGuiHeight.description": "Maximal höjd för receptgränssnittet (i bildpunkter).",
 
   "jei.config.client.cheating": "Fusk",
   "jei.config.client.cheating.description": "Konfigurationsalternativ som relaterar till fusk.",
@@ -131,30 +120,18 @@
   "jei.config.client.cheating.cheatToHotbarUsingHotkeysEnabled.description": "Aktivera att fuska fram föremål till föremålsmenyn med Shift + numeriska tangenter.",
   "jei.config.client.cheating.showHiddenIngredients": "Visa dolda ingredienser",
   "jei.config.client.cheating.showHiddenIngredients.description": "Visa ingredienser som inte finns i menyn för kreativt läge.",
-  "jei.config.client.cheating.showTagRecipesEnabled": "Visa taggrecept",
-  "jei.config.client.cheating.showTagRecipesEnabled.description": "Visa recept för ingredienstaggar som föremåls- och blocktaggar.",
 
   "jei.config.client.bookmarks": "Bokmärken",
   "jei.config.client.bookmarks.description": "Konfigurationsalternativ som relaterar till att bokmärka ingredienser och recept.",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled": "Placera nya bokmärken längst fram",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled.description": "När detta aktiveras läggs nya bokmärken till längst fram i bokmärkeslistan. Annars läggs nya bokmärken till i slutet på listan",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled": "Dra för att omarrangera bokmärken",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled.description": "Aktivera att dra bokmärken och omarrangera dem i listan.",
 
   "jei.config.client.tooltips": "Inforutor",
   "jei.config.client.tooltips.description": "Konfigurationsalternativ som relaterar till inforutor i JEI.",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures": "Funktionalitet för inforutor till bokmärken",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures.description": "Extra funktionalitet för inforutor till bokmärken.",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures": "Kortkommando för inforutor till bokmärken",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures.description": "Håll ned konfigurerad tangent för att visa information i inforutor till bokmärken.",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled": "Visa namn på flikar från kreativt läge",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled.description": "Visa namn på flikar från kreativt läge i inforutor till ingredienser.",
   "jei.config.client.tooltips.tagContentTooltipEnabled": "Visa taggarnas innehåll",
   "jei.config.client.tooltips.tagContentTooltipEnabled.description": "Visa tagginnehåll i inforutor till receptingredienser.",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled": "Dölj tagginnhåll för Hide Single-Ingredient Tag Contents",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled.description": "Dölj tagginnehåll i inforutor när det endast finns en ingrediens i taggen.",
-  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary": "Sammanfattning av receptingredienser",
-  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary.description": "Visa en sammanfattning av nödvändiga receptingredienser i utmatningsingrediensens inforuta.",
 
   "jei.config.client.lookups": "Kolla upp",
   "jei.config.client.lookups.description": "Konfigurationsalternativ som relaterar till att kolla upp användningsområden och recept för ingredienser i JEI.",
@@ -164,14 +141,6 @@
   "jei.config.client.lookups.lookupBlockTagsEnabled.description": "Sök efter taggar för standardblocken som finns i föremålen samtidigt som föremålstaggar.",
   "jei.config.client.lookupHistory": "Sökhistorik",
   "jei.config.client.lookupHistory.description": "Konfigurationsalternativ för att visa en historik över ingredienssökningar i JEI",
-  "jei.config.client.lookupHistory.enabled": "Aktiverad",
-  "jei.config.client.lookupHistory.enabled.description": "Visa eller dölj överläggets sökhistorik.",
-  "jei.config.client.lookupHistory.maxRows": "Max antal rader",
-  "jei.config.client.lookupHistory.maxRows.description": "Maximalt antal rader att visa i överläggets sökhistorik.",
-  "jei.config.client.lookupHistory.maxIngredients": "Max antal ingredienser",
-  "jei.config.client.lookupHistory.maxIngredients.description": "Maximalt antal ingredienser i sökhistoriken att spara.",
-  "jei.config.client.lookupHistory.displaySide": "Visa åt sidan",
-  "jei.config.client.lookupHistory.displaySide.description": "Visa överläggets sökhistorik på sidan av skärmen.",
 
   "jei.config.client.input": "Inmatning",
   "jei.config.client.input.description": "Konfigurationsalternativ som relaterar till inmatningar i JEI.",
@@ -182,8 +151,6 @@
 
   "jei.config.client.performance": "Prestanda",
   "jei.config.client.performance.description": "Konfigurationsalternativ som relaterar till att prestandaoptimeringar i JEI.",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled": "Sökning med låg minnesanvändning",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled.description": "Ändra till lågminnesläge (det tar längre tid att söka, men använder mindre RAM).",
 
   "jei.config.client.advanced": "Avancerat",
   "jei.config.client.advanced.description": "Avancerade konfigurationsalternativ för att ändra hur JEI fungerar.",
@@ -192,10 +159,6 @@
 
   "jei.config.client.sorting": "Sortering",
   "jei.config.client.sorting.description": "Konfigurationsalternativ som relaterar till hur JEI sorterar recept och ingredienser.",
-  "jei.config.client.sorting.ingredientSortStages": "Sorteringssteg för ingredienser",
-  "jei.config.client.sorting.ingredientSortStages.description": "Sorteringsordning för ingredienslistan.",
-  "jei.config.client.sorting.recipeSorterStages": "Sorteringssteg för recept",
-  "jei.config.client.sorting.recipeSorterStages.description": "Sorteringsordning för recept som visas.",
 
   "jei.config.client.search": "Sökning",
   "jei.config.client.search.description": "Konfigurationsalternativ som relaterar till hur JEI söker efter recept.",

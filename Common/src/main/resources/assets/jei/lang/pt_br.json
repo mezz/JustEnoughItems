@@ -105,20 +105,11 @@
 
   "_comment": "Config",
   "jei.config": "Configurações do JEI",
-  "jei.config.name": "Nome: %s",
-  "jei.config.description": "Descrição: %s",
-  "jei.config.valueValues": "Valores válidos: %s",
-  "jei.config.defaultValue": "Valor padrão: %s",
 
-  "jei.config.default": "Padrão",
 
 
   "jei.config.client.appearance": "Aparência",
   "jei.config.client.appearance.description": "Opções para mudar a aparência do JEI.",
-  "jei.config.client.appearance.centerSearch": "Centralizar barra de busca",
-  "jei.config.client.appearance.centerSearch.description": "Move a barra de busca do JEI para o centro inferior da tela.",
-  "jei.config.client.appearance.recipeGuiHeight": "Altura máxima da interface de receitas",
-  "jei.config.client.appearance.recipeGuiHeight.description": "Altura máxima da interface de receitas (em pixels).",
 
   "jei.config.client.cheating": "Trapaça",
   "jei.config.client.cheating.description": "Opções relacionadas à trapaça.",
@@ -128,30 +119,18 @@
   "jei.config.client.cheating.cheatToHotbarUsingHotkeysEnabled.description": "Permite trapacear itens na barra rápida usando Shift + teclas numéricas.",
   "jei.config.client.cheating.showHiddenIngredients": "Mostrar ingredientes ocultos",
   "jei.config.client.cheating.showHiddenIngredients.description": "Exibe ingredientes que não aparecem no menu criativo.",
-  "jei.config.client.cheating.showTagRecipesEnabled": "Mostrar receitas de tags",
-  "jei.config.client.cheating.showTagRecipesEnabled.description": "Mostra receitas para tags de itens e blocos.",
 
   "jei.config.client.bookmarks": "Favoritos",
   "jei.config.client.bookmarks.description": "Opções relacionadas a favoritos de ingredientes e receitas.",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled": "Adicionar favoritos no início",
-  "jei.config.client.bookmarks.addBookmarksToFrontEnabled.description": "Se verdadeiro, novos favoritos vão para o início da lista. Se falso, vão para o final.",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled": "Arrastar para reorganizar favoritos",
-  "jei.config.client.bookmarks.dragToRearrangeBookmarksEnabled.description": "Permite arrastar favoritos para mudar a ordem na lista.",
 
   "jei.config.client.tooltips": "Dicas de ferramentas",
   "jei.config.client.tooltips.description": "Opções relacionadas às dicas de ferramentas no JEI.",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures": "Recursos das dicas de favoritos",
-  "jei.config.client.tooltips.bookmarkTooltipFeatures.description": "Recursos extras para dicas de favoritos.",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures": "Shift para dicas de favoritos",
-  "jei.config.client.tooltips.holdShiftToShowBookmarkTooltipFeatures.description": "Segure Shift para ver recursos das dicas de favoritos.",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled": "Mostrar nomes de abas criativas",
   "jei.config.client.tooltips.showCreativeTabNamesEnabled.description": "Mostra nomes das abas criativas nas dicas de ingredientes.",
   "jei.config.client.tooltips.tagContentTooltipEnabled": "Mostrar conteúdo das tags",
   "jei.config.client.tooltips.tagContentTooltipEnabled.description": "Mostra conteúdo das tags nas dicas ao navegar por ingredientes de receitas.",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled": "Ocultar conteúdo de tag com um único ingrediente",
   "jei.config.client.tooltips.hideSingleTagContentTooltipEnabled.description": "Oculta conteúdo da tag nas dicas quando há apenas um ingrediente na tag.",
-  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary": "Resumo de ingredientes da receita",
-  "jei.config.client.tooltips.enableRecipesGuiIngredientsSummary.description": "Mostra resumo dos ingredientes necessários na dica do item de saída da receita.",
 
   "jei.config.client.lookups": "Buscas",
   "jei.config.client.lookups.description": "Opções relacionadas a buscas de usos e receitas de ingredientes no JEI.",
@@ -162,14 +141,6 @@
 
   "jei.config.client.lookupHistory": "Histórico de buscas",
   "jei.config.client.lookupHistory.description": "Opções para mostrar histórico de buscas de ingredientes no JEI.",
-  "jei.config.client.lookupHistory.enabled": "Ativado",
-  "jei.config.client.lookupHistory.enabled.description": "Exibe ou oculta a sobreposição de histórico de buscas.",
-  "jei.config.client.lookupHistory.maxRows": "Máximo de linhas",
-  "jei.config.client.lookupHistory.maxRows.description": "Número máximo de linhas exibidas no histórico.",
-  "jei.config.client.lookupHistory.maxIngredients": "Máximo de ingredientes",
-  "jei.config.client.lookupHistory.maxIngredients.description": "Número máximo de ingredientes salvos no histórico.",
-  "jei.config.client.lookupHistory.displaySide": "Lado da tela",
-  "jei.config.client.lookupHistory.displaySide.description": "Lado da tela para exibir a sobreposição de histórico.",
 
   "jei.config.client.input": "Entrada",
   "jei.config.client.input.description": "Opções relacionadas a entradas no JEI.",
@@ -180,8 +151,6 @@
 
   "jei.config.client.performance": "Desempenho",
   "jei.config.client.performance.description": "Opções de otimização de desempenho no JEI.",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled": "Busca em modo baixo consumo",
-  "jei.config.client.performance.lowMemorySlowSearchEnabled.description": "Define a busca para modo de baixa memória (mais lenta, mas usa menos RAM).",
 
   "jei.config.client.advanced": "Avançado",
   "jei.config.client.advanced.description": "Opções avançadas que mudam o funcionamento do JEI.",
@@ -190,10 +159,6 @@
 
   "jei.config.client.sorting": "Ordenação",
   "jei.config.client.sorting.description": "Opções de como o JEI ordena receitas e ingredientes.",
-  "jei.config.client.sorting.ingredientSortStages": "Etapas de ordenação de ingredientes",
-  "jei.config.client.sorting.ingredientSortStages.description": "Ordem de classificação da lista de ingredientes.",
-  "jei.config.client.sorting.recipeSorterStages": "Etapas de ordenação de receitas",
-  "jei.config.client.sorting.recipeSorterStages.description": "Ordem de classificação das receitas exibidas.",
 
   "jei.config.client.search": "Busca",
   "jei.config.client.search.description": "Opções de como o JEI busca receitas.",
