@@ -152,6 +152,7 @@ public class JeiGuiStarter {
 			ingredientList,
 			modIdHelper,
 			ingredientVisibility,
+			ingredientTypeSortingConfig,
 			colorHelper,
 			searchStorageBuilderFactory,
 			toggleState
