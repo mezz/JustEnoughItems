@@ -6,7 +6,7 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiFeatures;
-import mezz.jei.gui.GuiProperties;
+import mezz.jei.common.gui.GuiProperties;
 import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

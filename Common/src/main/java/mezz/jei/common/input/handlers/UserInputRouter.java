@@ -1,11 +1,11 @@
-package mezz.jei.gui.input.handlers;
+package mezz.jei.common.input.handlers;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.KeyNameUtil;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
