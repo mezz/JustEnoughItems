@@ -55,6 +55,10 @@ public class IngredientTypeSortingConfig {
 		return Comparator.comparing(IngredientTypeSortingConfig::getIngredientTypeString, comparator);
 	}
 
+	public Runnable addChangeListener(Runnable listener) {
+		return sortingConfig.addChangeListener(listener);
+	}
+
 	private static Comparator<String> getDefaultSortOrder() {
 		String itemStackIngredientType = getIngredientTypeString(VanillaTypes.ITEM_STACK);
 		Comparator<String> itemStackFirst = Comparator.comparing((String s) -> s.equals(itemStackIngredientType)).reversed();
