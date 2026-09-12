@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay;
 
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.buttons.IIconButtonController;
@@ -107,7 +108,7 @@ public class ConfigButtonController implements IIconButtonController {
 		}
 
 		IPlatformConfigHelper configHelper = Services.PLATFORM.getConfigHelper();
-		Optional<Screen> configScreen = configHelper.getConfigScreen();
+		Optional<Screen> configScreen = configHelper.getConfigScreen(ModIds.JEI_ID, mc.screen);
 
 		if (configScreen.isPresent()) {
 			mc.setScreen(configScreen.get());
