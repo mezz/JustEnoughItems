@@ -27,6 +27,8 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val parchmentVersionForge: String by extra
 val modrinthId: String by extra
+val mezzConfigCurseForgeProjectSlug: String by extra
+val mezzConfigModrinthProjectId: String by extra
 val bakedSubstringIndexVersion: String by extra
 val suffixtreeVersion: String by extra
 val deduplicatingRunnerVersion: String by extra
@@ -296,6 +298,7 @@ publishMods {
 		projectId = curseProjectId
 		projectSlug = curseHomepageUrl.substringAfterLast("/")
 		accessToken.set(curseforgeApikey ?: "0")
+		requires(mezzConfigCurseForgeProjectSlug)
 		changelog.set(changelogHtml.singleFileContents())
 		changelogType = "html"
 		minecraftVersionRange {
@@ -311,6 +314,7 @@ publishMods {
 	modrinth {
 		projectId = modrinthId
 		accessToken = modrinthToken
+		requires(mezzConfigModrinthProjectId)
 		minecraftVersionRange {
 			start = minecraftVersionRangeStart
 			end = minecraftVersion
