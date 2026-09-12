@@ -1,6 +1,8 @@
 package mezz.jei.gui.config;
 
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -17,30 +19,30 @@ import net.minecraft.client.KeyMapping;
 import org.lwjgl.glfw.GLFW;
 
 public final class InternalKeyMappings implements IInternalKeyMappings {
-	private final IJeiKeyMapping toggleOverlay;
-	private final IJeiKeyMapping focusSearch;
-	private final IJeiKeyMapping toggleCheatMode;
-	private final IJeiKeyMapping toggleEditMode;
+	private final IJeiKeyMappingInternal toggleOverlay;
+	private final IJeiKeyMappingInternal focusSearch;
+	private final IJeiKeyMappingInternal toggleCheatMode;
+	private final IJeiKeyMappingInternal toggleEditMode;
 
-	private final IJeiKeyMapping toggleCheatModeConfigButton;
+	private final IJeiKeyMappingInternal toggleCheatModeConfigButton;
 
-	private final IJeiKeyMapping recipeBack;
-	private final IJeiKeyMapping recipeForward;
-	private final IJeiKeyMapping previousCategory;
-	private final IJeiKeyMapping nextCategory;
-	private final IJeiKeyMapping previousRecipePage;
-	private final IJeiKeyMapping nextRecipePage;
+	private final IJeiKeyMappingInternal recipeBack;
+	private final IJeiKeyMappingInternal recipeForward;
+	private final IJeiKeyMappingInternal previousCategory;
+	private final IJeiKeyMappingInternal nextCategory;
+	private final IJeiKeyMappingInternal previousRecipePage;
+	private final IJeiKeyMappingInternal nextRecipePage;
 	private final IJeiKeyMappingInternal pauseRecipeCycling;
 
-	private final IJeiKeyMapping previousPage;
-	private final IJeiKeyMapping nextPage;
+	private final IJeiKeyMappingInternal previousPage;
+	private final IJeiKeyMappingInternal nextPage;
 
-	private final IJeiKeyMappingWithExtraModifiers bookmark;
-	private final IJeiKeyMapping toggleBookmarkOverlay;
-	private final IJeiKeyMapping transferRecipeBookmark;
-	private final IJeiKeyMapping maxTransferRecipeBookmark;
-	private final IJeiKeyMapping quickMove;
-	private final IJeiKeyMapping shareToChat;
+	private final IJeiKeyMappingInternal bookmark;
+	private final IJeiKeyMappingInternal toggleBookmarkOverlay;
+	private final IJeiKeyMappingInternal transferRecipeBookmark;
+	private final IJeiKeyMappingInternal maxTransferRecipeBookmark;
+	private final IJeiKeyMappingInternal quickMove;
+	private final IJeiKeyMappingInternal shareToChat;
 
 	private final IJeiKeyMappingWithExtraModifiers showRecipe;
 	private final IJeiKeyMappingWithExtraModifiers showUses;
@@ -48,16 +50,16 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping cheatOneItem;
 	private final IJeiKeyMapping cheatItemStack;
 
-	private final IJeiKeyMapping toggleHideIngredient;
-	private final IJeiKeyMapping toggleWildcardHideIngredient;
+	private final IJeiKeyMappingInternal toggleHideIngredient;
+	private final IJeiKeyMappingInternal toggleWildcardHideIngredient;
 
-	private final IJeiKeyMapping hoveredClearSearchBar;
-	private final IJeiKeyMapping previousSearch;
-	private final IJeiKeyMapping nextSearch;
+	private final IJeiKeyMappingInternal hoveredClearSearchBar;
+	private final IJeiKeyMappingInternal previousSearch;
+	private final IJeiKeyMappingInternal nextSearch;
 
-	private final IJeiKeyMapping copyRecipeId;
+	private final IJeiKeyMappingInternal copyRecipeId;
 
-	private final IJeiKeyMapping closeRecipeGui;
+	private final IJeiKeyMappingInternal closeRecipeGui;
 
 	// internal only, unregistered and can't be changed because they match vanilla Minecraft hard-coded keys:
 	private final IJeiKeyMapping escapeKey;
@@ -65,17 +67,19 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping rightClick;
 	private final IJeiKeyMapping enterKey;
 
+	private final List<KeyMapping> configKeyMappings;
+
 	public InternalKeyMappings(Consumer<KeyMapping> registerMethod) {
 		IPlatformInputHelper inputHelper = Services.PLATFORM.getInputHelper();
 
-		IJeiKeyMapping showRecipe1;
-		IJeiKeyMapping showRecipe2;
-		IJeiKeyMapping showUses1;
-		IJeiKeyMapping showUses2;
-		IJeiKeyMapping cheatOneItem1;
-		IJeiKeyMapping cheatOneItem2;
-		IJeiKeyMapping cheatItemStack1;
-		IJeiKeyMapping cheatItemStack2;
+		IJeiKeyMappingInternal showRecipe1;
+		IJeiKeyMappingInternal showRecipe2;
+		IJeiKeyMappingInternal showUses1;
+		IJeiKeyMappingInternal showUses2;
+		IJeiKeyMappingInternal cheatOneItem1;
+		IJeiKeyMappingInternal cheatOneItem2;
+		IJeiKeyMappingInternal cheatItemStack1;
+		IJeiKeyMappingInternal cheatItemStack2;
 
 		String overlaysCategoryName = Translator.translateToLocal("jei.key.category.overlays");
 		IJeiKeyMappingCategoryBuilder overlay = inputHelper.createKeyMappingCategoryBuilder(overlaysCategoryName);
@@ -295,6 +299,46 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.buildUnbound()
 			.register(registerMethod);
 
+		configKeyMappings = Stream.of(
+				focusSearch,
+				hoveredClearSearchBar,
+				previousSearch,
+				nextSearch,
+				showRecipe1,
+				showRecipe2,
+				showUses1,
+				showUses2,
+				bookmark,
+				transferRecipeBookmark,
+				maxTransferRecipeBookmark,
+				quickMove,
+				shareToChat,
+				toggleOverlay,
+				toggleBookmarkOverlay,
+				previousPage,
+				nextPage,
+				recipeBack,
+				recipeForward,
+				previousRecipePage,
+				nextRecipePage,
+				pauseRecipeCycling,
+				previousCategory,
+				nextCategory,
+				closeRecipeGui,
+				toggleCheatMode,
+				toggleCheatModeConfigButton,
+				cheatOneItem1,
+				cheatOneItem2,
+				cheatItemStack1,
+				cheatItemStack2,
+				toggleEditMode,
+				toggleHideIngredient,
+				toggleWildcardHideIngredient,
+				copyRecipeId
+			)
+			.map(IJeiKeyMappingInternal::getKeyMapping)
+			.toList();
+
 		showRecipe = new JeiMultiKeyMapping(showRecipe1, showRecipe2);
 		showUses = new JeiMultiKeyMapping(showUses1, showUses2);
 		cheatOneItem = new JeiMultiKeyMapping(cheatOneItem1, cheatOneItem2);
@@ -479,6 +523,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	@Override
 	public IJeiKeyMapping getCopyRecipeId() {
 		return copyRecipeId;
+	}
+
+	@Override
+	public List<KeyMapping> getConfigKeyMappings() {
+		return configKeyMappings;
 	}
 
 	@Override
