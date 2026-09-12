@@ -16,14 +16,12 @@ import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.gui.GridScrollMath;
 import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PlayToServerPacket;
-import mezz.jei.common.config.NavigationVisibility;
 import mezz.jei.gui.ghost.GhostIngredientQuickMoveManager;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
@@ -41,6 +39,8 @@ import mezz.jei.test.lib.TestClientConfig;
 import mezz.jei.test.lib.TestClientToggleState;
 import mezz.jei.test.lib.TestColorHelper;
 import mezz.jei.test.lib.TestIngredient;
+import net.mezzdev.config.api.value.IConfigValue;
+import mezz.jei.common.config.NavigationVisibility;
 import mezz.jei.test.lib.TestJeiConfigValue;
 import mezz.jei.test.lib.TestPlugin;
 import net.minecraft.client.gui.screens.Screen;
@@ -607,7 +607,7 @@ public class IngredientGridWithNavigationControllerTest {
 
 	private record TestGridConfig(IngredientGridNavigationMode navigationModeValue) implements IIngredientGridConfig {
 		@Override
-		public IJeiConfigValue<Integer> maxColumns() {
+		public IConfigValue<Integer> maxColumns() {
 			return value("maxColumns", 9);
 		}
 
@@ -617,7 +617,7 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		@Override
-		public IJeiConfigValue<Integer> maxRows() {
+		public IConfigValue<Integer> maxRows() {
 			return value("maxRows", 16);
 		}
 
@@ -627,36 +627,36 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		@Override
-		public IJeiConfigValue<Boolean> drawBackground() {
+		public IConfigValue<Boolean> drawBackground() {
 			return value("drawBackground", false);
 		}
 
 		@Override
-		public IJeiConfigValue<IngredientGridLayoutMode> layoutMode() {
+		public IConfigValue<IngredientGridLayoutMode> layoutMode() {
 			return value("layoutMode", IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE);
 		}
 
 		@Override
-		public IJeiConfigValue<IngredientGridNavigationMode> navigationMode() {
+		public IConfigValue<IngredientGridNavigationMode> navigationMode() {
 			return value("navigationMode", navigationModeValue);
 		}
 
 		@Override
-		public IJeiConfigValue<HorizontalAlignment> horizontalAlignment() {
+		public IConfigValue<HorizontalAlignment> horizontalAlignment() {
 			return value("horizontalAlignment", HorizontalAlignment.RIGHT);
 		}
 
 		@Override
-		public IJeiConfigValue<VerticalAlignment> verticalAlignment() {
+		public IConfigValue<VerticalAlignment> verticalAlignment() {
 			return value("verticalAlignment", VerticalAlignment.TOP);
 		}
 
 		@Override
-		public IJeiConfigValue<NavigationVisibility> navigationVisibility() {
+		public IConfigValue<NavigationVisibility> navigationVisibility() {
 			return value("navigationVisibility", NavigationVisibility.ENABLED);
 		}
 
-		private static <T> IJeiConfigValue<T> value(String name, T value) {
+		private static <T> IConfigValue<T> value(String name, T value) {
 			return new TestJeiConfigValue<>(name, value);
 		}
 	}

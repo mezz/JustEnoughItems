@@ -10,6 +10,8 @@ import mezz.jei.fabric.chat.JeiInternalShowCommand;
 import mezz.jei.fabric.events.JeiLifecycleEvents;
 import mezz.jei.fabric.plugins.fabric.FabricGuiPlugin;
 import mezz.jei.fabric.startup.ClientLifecycleHandler;
+import mezz.jei.library.config.JeiConfigData;
+import mezz.jei.library.config.JeiConfigRegistration;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.recipe.v1.sync.ClientRecipeSynchronizedEvent;
@@ -24,7 +26,8 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		Translator.setLocaleSupplier(new MinecraftLocaleSupplier());
-		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler();
+		JeiConfigData configData = JeiConfigRegistration.register();
+		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(configData);
 		ClientRecipeSynchronizedEvent.EVENT.register((minecraft, synchronizedRecipes) -> {
 			RecipeMap recipes = RecipeMap.create(synchronizedRecipes.recipes());
 			clientLifecycleHandler.onRecipesSynchronized(recipes);

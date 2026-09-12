@@ -27,8 +27,8 @@ final class RecipeSlotTooltipClientTest {
 			var runtime = Internal.getJeiRuntime();
 			var helpers = runtime.getJeiHelpers();
 			var visibility = helpers.getIngredientVisibility();
-			var showGrid = Internal.getJeiClientConfigs().getClientConfig().tagContentTooltipEnabled();
-			boolean originalShowGrid = showGrid.getValue();
+			var showGrid = Internal.getClientConfigs().getClientConfig().tagContentTooltipEnabled();
+			boolean originalShowGrid = showGrid.get();
 			List<ItemStack> candidates = IntStream.rangeClosed(1, 10_000)
 				.mapToObj(index -> {
 					ItemStack stack = new ItemStack(Items.STONE, 64);

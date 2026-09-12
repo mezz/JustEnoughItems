@@ -118,18 +118,18 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	public Collection<String> getModNames(IIngredientFilterConfig config) {
 		Set<String> modNames = new HashSet<>(this.modNames);
 
-		if (config.searchModIds().getValue()) {
+		if (config.searchModIds().get()) {
 			modNames.addAll(this.modIds);
 		}
 
-		if (config.searchModAliases().getValue()) {
+		if (config.searchModAliases().get()) {
 			for (String modId : this.modIds) {
 				Set<String> modAliases = modIdHelper.getModAliases(modId);
 				modNames.addAll(modAliases);
 			}
 		}
 
-		if (config.searchShortModNames().getValue()) {
+		if (config.searchShortModNames().get()) {
 			for (String modName : this.modNames) {
 				List<String> shortModNames = getShortModNames(modName);
 				modNames.addAll(shortModNames);
@@ -152,7 +152,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(value.getType());
 		TooltipFlag.Default tooltipFlag = TooltipFlag.Default.NORMAL;
-		if (config.searchAdvancedTooltips().getValue()) {
+		if (config.searchAdvancedTooltips().get()) {
 			tooltipFlag = TooltipFlag.Default.ADVANCED;
 		}
 		tooltipFlag = tooltipFlag.asCreative();

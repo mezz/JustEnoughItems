@@ -294,7 +294,7 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 	}
 
 	private boolean usesScrollbar() {
-		return this.gridConfig.navigationMode().getValue()
+		return this.gridConfig.navigationMode().get()
 			.usesScrollbar();
 	}
 
@@ -334,7 +334,7 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 	 * Sets the stack in a hotbar slot to the one that's hovered over.
 	 */
 	private Optional<IUserInputHandler> checkHotbarKeys(Screen screen, UserInput input) {
-		if (!clientConfig.cheatToHotbarUsingHotkeysEnabled().getValue() ||
+		if (!clientConfig.cheatToHotbarUsingHotkeysEnabled().get() ||
 			!this.toggleState.isCheatItemsEnabled() ||
 			screen instanceof RecipesGui
 		) {
