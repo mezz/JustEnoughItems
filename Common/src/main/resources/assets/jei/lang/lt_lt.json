@@ -25,7 +25,6 @@
 
   "_comment": "Config",
   "jei.config": "Konfigūracija",
-  "jei.config.default": "Numatytoji",
   "jei.config.valid": "Teisinga",
   "jei.config.title": "%MODNAME konfigūracija",
   "jei.config.mode": "Rėžimas",

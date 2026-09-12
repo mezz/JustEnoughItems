@@ -80,7 +80,6 @@
 
   "_comment": "Config",
   "jei.config": "Configuración de JEI",
-  "jei.config.default": "Por defecto",
   "jei.config.valid": "Validar",
   "jei.config.title": "Configuración de %MODNAME",
   "jei.config.mode": "Modo",
@@ -114,14 +113,10 @@
   "jei.config.client.advanced.description": "Opciones avanzadas de configuración para cambiar la forma en que JEI funciona.",
   "jei.config.client.advanced.itemBlacklist": "Lista negra de objetos",
   "jei.config.client.advanced.itemBlacklist.description": "Lista de elementos que no se deben mostrar en la lista de elementos. Formato: modId[:nombre[:meta]]. El modo de edición agregará o eliminará entradas automáticamente aquí.",
-  "jei.config.client.appearance.centerSearch": "Centrar barra de búsqueda",
-  "jei.config.client.appearance.centerSearch.description": "Mueva la barra de búsqueda JEI a la parte inferior central de la pantalla.",
   "jei.config.modIdFormat.modName.modNameFormat": "Formato del nombre del mod",
   "jei.config.modIdFormat.modName.modNameFormat.description": "Cómo debe formatearse el nombre del mod en la información sobre herramientas para la interfaz JEI. Dejar en blanco para deshabilitar.",
   "jei.config.client.advanced.maxColumns": "Anchura máxima",
   "jei.config.client.advanced.maxColumns.description": "El ancho máximo de la lista de ingredientes.",
-  "jei.config.client.appearance.recipeGuiHeight": "Altura máxima del GUI de recetas",
-  "jei.config.client.appearance.recipeGuiHeight.description": "La altura máxima del GUI de la receta.",
   "jei.config.client.cheating.giveMode": "Modo de obtener",
   "jei.config.client.cheating.giveMode.description": "Elija si JEI debe dar elementos directamente al inventario o recogerlos con el mouse.",
 
