@@ -6,12 +6,11 @@ import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.platform.IPlatformConfigHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.gui.elements.GuiIconToggleButton;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.gui.util.CheatModeUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -88,11 +87,7 @@ public class ConfigButton extends GuiIconToggleButton {
 		if (toggleState.isOverlayEnabled()) {
 			if (!input.isSimulate()) {
 				if (input.is(keyBindings.getToggleCheatModeConfigButton())) {
-					toggleState.toggleCheatItemsEnabled();
-					if (toggleState.isCheatItemsEnabled()) {
-						IConnectionToServer serverConnection = Internal.getServerConnection();
-						serverConnection.sendPacketToServer(new PacketRequestCheatPermission());
-					}
+					CheatModeUtil.toggleCheatMode(toggleState);
 				} else {
 					openSettings();
 				}
