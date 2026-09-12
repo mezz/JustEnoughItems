@@ -1,10 +1,12 @@
 package mezz.jei.gui.config;
 
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.gui.config.sorting.SortingOrderConfigValues;
 import mezz.jei.gui.util.CheatModeUtil;
 import net.mezzdev.config.api.value.serializer.IConfigValueSerializer;
 import net.mezzdev.config.gui.api.ConfigGuiPlugin;
@@ -13,6 +15,8 @@ import net.mezzdev.config.gui.api.IConfigGuiRegistration;
 import net.mezzdev.config.gui.api.IConfigScreenCategoryBuilder;
 import net.mezzdev.config.gui.api.IConfigScreenBuilder;
 import net.minecraft.network.chat.Component;
+
+import java.util.List;
 
 /**
  * JEI config GUI customizations.
@@ -35,7 +39,12 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 			screenBuilder.configureCategory("input")
 				.addKeyMappings(Internal.getKeyMappings().getConfigKeyMappings());
 			Internal.getOptionalJeiRuntime()
-				.ifPresent(ignored -> configureRuntimeToggleValues(screenBuilder));
+				.ifPresent(runtime -> {
+					configureRuntimeToggleValues(screenBuilder);
+					if (Internal.getJeiFeatures().isJeiGuiEnabled()) {
+						configureSortingOrderCategories(screenBuilder, runtime, JeiGuiSortingConfigRegistration.get());
+					}
+				});
 		});
 	}
 
@@ -116,5 +125,51 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 				toggleState::addEditModeEnabledListener,
 				serializer
 			));
+	}
+
+	private static void configureSortingOrderCategories(
+		IConfigScreenBuilder screenBuilder,
+		IJeiRuntime runtime,
+		JeiGuiSortingConfigData sortingConfigData
+	) {
+		IClientConfigs clientConfigs = Internal.getClientConfigs();
+		SortingOrderConfigValues sortingOrderConfigValues = new SortingOrderConfigValues(runtime);
+		List<String> recipeCategorySortOrderValues = sortingOrderConfigValues.getRecipeCategorySortOrderValues();
+		List<String> ingredientModNameSortOrderValues = sortingOrderConfigValues.getIngredientModNameSortOrderValues();
+		List<String> ingredientTypeSortOrderValues = sortingOrderConfigValues.getIngredientTypeSortOrderValues();
+
+		screenBuilder.configureCategory("recipeCategorySorting")
+			.setTitle(Component.translatable("jei.config.client.recipeCategorySorting"))
+			.setDescription(Component.translatable("jei.config.client.recipeCategorySorting.description"))
+			.addStringSortingConfig(
+				"recipeCategorySortOrder",
+				"jei.config.client.sorting.recipeCategorySortOrder",
+				clientConfigs.getRecipeCategorySortingConfig(),
+				recipeCategorySortOrderValues
+			)
+			.setValueName(sortingOrderConfigValues::getRecipeCategorySortOrderValueName)
+			.setValueDescription(SortingOrderConfigValues::getRecipeCategorySortOrderValueDescription)
+			.setValueIcon(sortingOrderConfigValues::getRecipeCategorySortOrderValueIcon);
+
+		IConfigScreenCategoryBuilder ingredientSorting = screenBuilder.configureCategory("ingredientSorting");
+		ingredientSorting.addStringSortingConfig(
+				"ingredientTypeSortOrder",
+				"jei.config.client.sorting.ingredientTypeSortOrder",
+				sortingConfigData.ingredientTypeSortingConfig(),
+				ingredientTypeSortOrderValues
+			)
+			.setValueName(sortingOrderConfigValues::getIngredientTypeSortOrderValueName)
+			.setValueDescription(SortingOrderConfigValues::getIngredientTypeSortOrderValueDescription)
+			.setValueIcon(sortingOrderConfigValues::getIngredientTypeSortOrderValueIcon);
+
+		ingredientSorting.addStringSortingConfig(
+				"ingredientModNameSortOrder",
+				"jei.config.client.sorting.ingredientModNameSortOrder",
+				sortingConfigData.ingredientModNameSortingConfig(),
+				ingredientModNameSortOrderValues
+			)
+			.setValueName(Component::literal)
+			.setValueDescription(SortingOrderConfigValues::getIngredientModNameSortOrderValueDescription)
+			.setValueIcon(sortingOrderConfigValues::getIngredientModNameSortOrderValueIcon);
 	}
 }
