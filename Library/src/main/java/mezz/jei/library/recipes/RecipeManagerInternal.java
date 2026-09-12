@@ -253,6 +253,9 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 	}
 
 	public <T> Stream<T> getRecipesStream(IRecipeType<T> recipeType, IFocusGroup focuses, boolean includeHidden) {
+		if (!includeHidden && isRecipeTypeHidden(recipeType)) {
+			return Stream.empty();
+		}
 		RecipeTypeData<T> recipeTypeData = this.recipeTypeDataMap.get(recipeType);
 		Stream<T> recipes = this.pluginManager.getRecipes(recipeType, recipeTypeData, focuses, includeHidden);
 		if (!includeHidden) {
