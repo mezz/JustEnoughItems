@@ -14,7 +14,7 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.recipes.TagRecipeUtil;
 import mezz.jei.common.util.RegistryUtil;
@@ -49,7 +49,7 @@ public class JeiInternalPlugin implements IModPlugin {
 		registration.addRecipeCategories(new IngredientInfoRecipeCategory(textures));
 
 		tagInfoRecipeMakers.clear();
-		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+		IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 		if (clientConfig.showTagRecipesEnabled().getValue()) {
 			RegistryUtil.getRegistryAccess()
@@ -63,7 +63,7 @@ public class JeiInternalPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipes(IRecipeRegistration registration) {
-		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+		IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 		if (clientConfig.showTagRecipesEnabled().getValue()) {
 			for (TagInfoRecipeMaker<?, ?> data : tagInfoRecipeMakers) {

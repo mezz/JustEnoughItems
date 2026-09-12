@@ -139,7 +139,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	}
 
 	private Optional<SlotIngredient<?>> getDisplayedSlotIngredient() {
-		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 		if (!clientConfig.recipeSlotCyclingEnabled().getValue()) {
 			return ingredients.getFirstDisplayedIngredient();
 		}
@@ -183,7 +183,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
 		addSlotDisplayTooltip(tooltip, slotIngredient);
 		addTagNameTooltip(tooltip, tooltipData);
-		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 		if (clientConfig.tagContentTooltipEnabled().getValue() && tooltipData.candidates().size() > 1) {
 			tooltip.add(tooltipData.grid().get());
 		}
@@ -235,7 +235,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			return;
 		}
 
-		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 		if (clientConfig.hideSingleTagContentTooltipEnabled().getValue() && tooltipData.displayGroupSize() == 1) {
 			return;
 		}
