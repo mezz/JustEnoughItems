@@ -5,7 +5,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.buttons.IIconButtonController;
@@ -47,7 +47,7 @@ public class RecipeSortStateButtonController implements IIconButtonController {
 
 	@Override
 	public void updateState(IButtonState state) {
-		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+		IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 		boolean toggledOn = recipeSorterStage.isEnabled(clientConfig);
 		if (toggledOn != this.toggledOn) {
@@ -66,7 +66,7 @@ public class RecipeSortStateButtonController implements IIconButtonController {
 	@Override
 	public boolean onPress(IJeiUserInput input) {
 		if (!input.isSimulate()) {
-			IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+			IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 			this.toggledOn = !this.toggledOn;
 			recipeSorterStage.setEnabled(clientConfig, this.toggledOn);

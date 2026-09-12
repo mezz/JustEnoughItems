@@ -15,7 +15,7 @@ public class ToastGuiHandler implements IGlobalGuiHandler {
 
 	@Override
 	public Collection<Rect2i> getGuiExtraAreas() {
-		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 
 		if (!clientConfig.toastReflowEnabled().getValue()) {
 			return List.of();
