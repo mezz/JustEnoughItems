@@ -11,11 +11,21 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 public final class JeiGuiSortingConfigRegistration {
+	@Nullable
+	private static JeiGuiSortingConfigData sortingConfigData;
+
 	private JeiGuiSortingConfigRegistration() {
 
 	}
 
-	public static JeiGuiSortingConfigData register() {
+	public static JeiGuiSortingConfigData get() {
+		if (sortingConfigData == null) {
+			sortingConfigData = register();
+		}
+		return sortingConfigData;
+	}
+
+	private static JeiGuiSortingConfigData register() {
 		IConfigRegistration registration = Configs.forMod(ModIds.JEI_ID);
 		Path jeiConfigDirectory = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
 		Minecraft minecraft = Minecraft.getInstance();
