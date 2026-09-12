@@ -169,8 +169,15 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		});
 
 		final ImmutableRect2i searchAndConfigArea = getSearchAndConfigArea(displayArea, searchBarCentered, guiProperties);
-		final ImmutableRect2i searchArea = searchAndConfigArea.cropRight(BUTTON_SIZE);
-		final ImmutableRect2i configButtonArea = searchAndConfigArea.keepRight(BUTTON_SIZE);
+		final ImmutableRect2i searchArea;
+		final ImmutableRect2i configButtonArea;
+		if (searchAndConfigArea.getWidth() < BUTTON_SIZE || searchAndConfigArea.getHeight() < SEARCH_HEIGHT) {
+			searchArea = ImmutableRect2i.EMPTY;
+			configButtonArea = ImmutableRect2i.EMPTY;
+		} else {
+			searchArea = searchAndConfigArea.cropRight(BUTTON_SIZE);
+			configButtonArea = searchAndConfigArea.keepRight(BUTTON_SIZE);
+		}
 
 		this.searchField.setValue(filterTextSource.getFilterText());
 		this.searchField.updateBounds(searchArea);
