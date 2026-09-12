@@ -68,6 +68,7 @@ public class JustEnoughItemsClient {
 		this.jeiStarter = new JeiStarter(startData);
 
 		StartEventObserver startEventObserver = new StartEventObserver(serverConnection, this.jeiStarter::start, this.jeiStarter::stop);
+		Internal.setRestartJeiRunnable(startEventObserver::restart);
 		startEventObserver.register(subscriptions);
 	}
 
