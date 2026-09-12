@@ -42,6 +42,8 @@ val parchmentVersionFabric: String by extra
 val modrinthId: String by extra
 val mezzConfigCurseForgeProjectSlug: String by extra
 val mezzConfigModrinthProjectId: String by extra
+val mezzConfigGuiCurseForgeProjectSlug: String by extra
+val mezzConfigGuiModrinthProjectId: String by extra
 val amecsVersionFabric: String by extra
 val amecsKeyModifiersVersionFabric: String by extra
 val amecsMinecraftVersion: String by extra
@@ -50,6 +52,8 @@ val suffixtreeVersion: String by extra
 val deduplicatingRunnerVersion: String by extra
 val mezzConfigApiDependency: String by rootProject.extra
 val mezzConfigFabricDependency: String by rootProject.extra
+val mezzConfigGuiApiDependency: String by rootProject.extra
+val mezzConfigGuiFabricDependency: String by rootProject.extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -200,6 +204,8 @@ dependencies {
     compileOnly(mezzConfigApiDependency)
     modLocalRuntime(mezzConfigFabricDependency)
     include(mezzConfigFabricDependency)
+    compileOnly(mezzConfigGuiApiDependency)
+    modRuntimeOnly(mezzConfigGuiFabricDependency)
     vanillaDependencyProjects.forEach {
         compileOnly(it)
         localRuntime(it)
@@ -424,6 +430,7 @@ publishMods {
         projectSlug = curseHomepageUrl.substringAfterLast("/")
         accessToken.set(curseforgeApikey ?: "0")
         requires(mezzConfigCurseForgeProjectSlug)
+        optional(mezzConfigGuiCurseForgeProjectSlug)
         changelog.set(changelogHtml.singleFileContents())
         changelogType = "html"
         minecraftVersionRange {
@@ -440,6 +447,7 @@ publishMods {
         projectId = modrinthId
         accessToken = modrinthToken
         requires(mezzConfigModrinthProjectId)
+        optional(mezzConfigGuiModrinthProjectId)
         minecraftVersionRange {
             start = minecraftVersionRangeStart
             end = minecraftVersion
@@ -471,6 +479,26 @@ publishing {
             artifactId = baseArchivesName
             artifact(shadedJar)
             artifact(shadedSourcesJar)
+
+            val dependencyInfos = listOf(
+                dependencyInfo(mezzConfigGuiFabricDependency) + ("optional" to "true")
+            ) + dependencyProjects.map {
+                mapOf(
+                    "groupId" to it.group,
+                    "artifactId" to it.base.archivesName.get(),
+                    "version" to it.version
+                )
+            }
+
+            pom.withXml {
+                val dependenciesNode = asNode().appendNode("dependencies")
+                dependencyInfos.forEach {
+                    val dependencyNode = dependenciesNode.appendNode("dependency")
+                    it.forEach { (key, value) ->
+                        dependencyNode.appendNode(key, value)
+                    }
+                }
+            }
         }
     }
     repositories {
@@ -479,6 +507,15 @@ publishing {
             maven(deployDir)
         }
     }
+}
+
+fun dependencyInfo(notation: String): Map<String, String> {
+    val (groupId, artifactId, version) = notation.split(":")
+    return mapOf(
+        "groupId" to groupId,
+        "artifactId" to artifactId,
+        "version" to version
+    )
 }
 
 idea {
