@@ -11,6 +11,7 @@ import net.mezzdev.config.api.sorting.ISortingConfig;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -53,6 +54,14 @@ public class IngredientTypeSortingConfig {
 	public Comparator<IListElementInfo<?>> getComparatorFromMappedValues(Collection<String> ingredientTypeStrings) {
 		Comparator<String> comparator = sortingConfig.getComparator(ingredientTypeStrings);
 		return Comparator.comparing(IngredientTypeSortingConfig::getIngredientTypeString, comparator);
+	}
+
+	public boolean isIngredientTypeVisible(Collection<IIngredientType<?>> ingredientTypes, IIngredientType<?> ingredientType) {
+		String value = getIngredientTypeString(ingredientType);
+		List<String> values = ingredientTypes.stream()
+			.map(IngredientTypeSortingConfig::getIngredientTypeString)
+			.toList();
+		return sortingConfig.isVisible(values, value);
 	}
 
 	public Runnable addChangeListener(Runnable listener) {

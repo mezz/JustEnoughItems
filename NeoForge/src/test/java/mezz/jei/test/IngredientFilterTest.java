@@ -21,6 +21,7 @@ import mezz.jei.common.search.GeneralizedSuffixTreeSearchStorage;
 import mezz.jei.common.search.SearchStorageBuilderAdapter;
 import mezz.jei.gui.filter.FilterTextSource;
 import mezz.jei.gui.filter.IFilterTextSource;
+import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.ingredients.IListElementInfo;
 import mezz.jei.gui.ingredients.IngredientFilter;
 import mezz.jei.gui.ingredients.IngredientListElementFactory;
@@ -76,6 +77,8 @@ public class IngredientFilterTest {
 	private TestIngredientFilterConfig ingredientFilterConfig;
 	@Nullable
 	private ClientToggleState toggleState;
+	@Nullable
+	private TestSortingConfig ingredientTypeSortingConfig;
 
 	@BeforeEach
 	public void setup() {
@@ -113,6 +116,7 @@ public class IngredientFilterTest {
 
 		this.toggleState = new ClientToggleState();
 		IClientToggleState toggleState = this.toggleState;
+		this.ingredientTypeSortingConfig = new TestSortingConfig();
 
 		this.ingredientVisibility = new IngredientVisibility(blacklist, toggleState, editModeConfig, ingredientManager);
 		this.filterTextSource = new FilterTextSource();
@@ -125,6 +129,7 @@ public class IngredientFilterTest {
 			baseList,
 			modIdHelper,
 			ingredientVisibility,
+			new IngredientTypeSortingConfig(ingredientTypeSortingConfig),
 			colorHelper,
 			new ISearchStorageBuilderFactory() {
 				@Override
@@ -147,6 +152,20 @@ public class IngredientFilterTest {
 
 		List<?> ingredientList = ingredientFilter.getElements();
 		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientList.size());
+	}
+
+	@Test
+	public void testRemovedIngredientTypesAreHidden() {
+		Assertions.assertNotNull(ingredientFilter);
+		Assertions.assertNotNull(ingredientTypeSortingConfig);
+
+		ingredientTypeSortingConfig.setVisible(false);
+		ingredientFilter.onIngredientTypeSortOrderConfigChanged();
+		Assertions.assertTrue(ingredientFilter.getElements().isEmpty());
+
+		ingredientTypeSortingConfig.setVisible(true);
+		ingredientFilter.onIngredientTypeSortOrderConfigChanged();
+		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientFilter.getElements().size());
 	}
 
 	@Test
@@ -505,6 +524,12 @@ public class IngredientFilterTest {
 	}
 
 	private static class TestSortingConfig implements ISortingConfig<String> {
+		private boolean visible = true;
+
+		public void setVisible(boolean visible) {
+			this.visible = visible;
+		}
+
 		@Override
 		public List<String> getSortedValues(Collection<String> allValues) {
 			return allValues.stream()
@@ -529,7 +554,7 @@ public class IngredientFilterTest {
 
 		@Override
 		public boolean isVisible(Collection<String> allValues, String value) {
-			return true;
+			return visible;
 		}
 
 		@Override

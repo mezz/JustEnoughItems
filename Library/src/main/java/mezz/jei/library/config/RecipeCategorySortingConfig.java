@@ -54,6 +54,14 @@ public class RecipeCategorySortingConfig {
 		return Comparator.comparing(RecipeCategorySortingConfig::getRecipeCategoryString, comparator);
 	}
 
+	public boolean isRecipeCategoryVisible(Collection<RecipeType<?>> recipeTypes, RecipeType<?> recipeType) {
+		String value = getRecipeCategoryString(recipeType);
+		List<String> values = recipeTypes.stream()
+			.map(RecipeCategorySortingConfig::getRecipeCategoryString)
+			.toList();
+		return sortingConfig.isVisible(values, value);
+	}
+
 	public Runnable addChangeListener(Runnable listener) {
 		return sortingConfig.addChangeListener(listener);
 	}
