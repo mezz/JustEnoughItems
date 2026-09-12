@@ -1,12 +1,10 @@
 package mezz.jei.gui.input.handlers;
 
-import mezz.jei.common.Internal;
-import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.gui.util.CheatModeUtil;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;
@@ -36,11 +34,7 @@ public class GlobalInputHandler implements IUserInputHandler {
 
 		if (input.is(keyBindings.getToggleCheatMode())) {
 			if (!input.isSimulate()) {
-				worldConfig.toggleCheatItemsEnabled();
-				if (worldConfig.isCheatItemsEnabled()) {
-					IConnectionToServer serverConnection = Internal.getServerConnection();
-					serverConnection.sendPacketToServer(new PacketRequestCheatPermission());
-				}
+				CheatModeUtil.toggleCheatMode(worldConfig);
 			}
 			return Optional.of(this);
 		}
