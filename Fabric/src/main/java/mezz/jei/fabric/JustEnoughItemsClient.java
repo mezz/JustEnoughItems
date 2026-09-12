@@ -28,7 +28,9 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		Translator.setLocaleSupplier(new MinecraftLocaleSupplier());
 		IServerConfig serverConfig = ServerConfig.getInstance();
+
 		JeiConfigData configData = JeiConfigRegistration.register();
+
 		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(serverConfig, configData);
 
 		JeiChatEventHandler.register();

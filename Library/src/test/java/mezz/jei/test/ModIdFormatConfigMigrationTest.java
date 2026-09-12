@@ -60,6 +60,6 @@ public class ModIdFormatConfigMigrationTest {
 	}
 
 	private static Object getConfiguredValue(IConfigSchema schema) {
-		return schema.getCategories().getFirst().getConfigValues().getFirst().get();
+		return schema.getCategories().get(0).getConfigValues().get(0).get();
 	}
 }
