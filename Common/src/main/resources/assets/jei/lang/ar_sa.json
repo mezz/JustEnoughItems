@@ -27,7 +27,6 @@
 
   "_comment": "Config",
   "jei.config": "اعدادات جاي إي آي",
-  "jei.config.default": "الأصلي",
   "jei.config.valid": "مقبول",
   "jei.config.title": "%MODNAME إعدادات",
   "jei.config.mode": "الوضع",
@@ -54,8 +53,6 @@
   "jei.config.client.advanced.description": ".إعدادات خيارات متقدمة لتغيير كيفية عمل جاي إي آي",
   "jei.config.client.advanced.itemBlacklist": "قائمة العناصر السوداء",
   "jei.config.client.advanced.itemBlacklist.description": ".وضع التغيير سيقوم بإضافة وإزالة المدخلات هنا .modId[:name[:meta]] :قائمة العناصر التي لن تظهر في خانة العناصر. التنسيق",
-  "jei.config.client.appearance.centerSearch": ".شريط الشاشة في الوسط",
-  "jei.config.client.appearance.centerSearch.description": ".انقل جاي إي آي إلى أسفل وسط الشاشة",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": ":وضع جاي إي آي لتعديل قائمة العناصر",
