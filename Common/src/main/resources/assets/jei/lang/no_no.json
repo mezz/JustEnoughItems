@@ -22,7 +22,6 @@
   "key.jei.showUses2": "Vis Bruksområder",
   "jei.config": "Innstillinger",
   "jei.config.title": "%MODNAME Innstillinger",
-  "jei.config.default": "Standard",
   "jei.config.valid": "Gyldig",
   "jei.config.mode": "Modus",
   "jei.config.mode.description": "Endre modusen JEI opererer i",

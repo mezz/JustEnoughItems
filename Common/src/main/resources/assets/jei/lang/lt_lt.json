@@ -22,7 +22,6 @@
   "key.jei.showUses2": "Rodyti daikto panaudojimus",
   "jei.config": "Konfigūracija",
   "jei.config.title": "%MODNAME konfigūracija",
-  "jei.config.default": "Numatytoji",
   "jei.config.valid": "Teisinga",
   "jei.config.mode": "Rėžimas",
   "jei.config.client.advanced": "Išsamiau",
