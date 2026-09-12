@@ -3,6 +3,7 @@ package mezz.jei.gui.overlay.ingredients;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
@@ -104,14 +105,14 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	private void addGridConfigListeners(IIngredientGridConfig gridConfig) {
-		gridConfig.maxColumns().addListener(v -> markLayoutDirty());
-		gridConfig.maxRows().addListener(v -> markLayoutDirty());
-		gridConfig.drawBackground().addListener(v -> markLayoutDirty());
-		gridConfig.layoutMode().addListener(v -> markLayoutDirty());
-		gridConfig.horizontalAlignment().addListener(v -> markLayoutDirty());
-		gridConfig.verticalAlignment().addListener(v -> markLayoutDirty());
-		gridConfig.navigationVisibility().addListener(v -> markLayoutDirty());
-		gridConfig.navigationMode().addListener(v -> markLayoutDirty());
+		Internal.registerRuntimeListenerRemoval(gridConfig.maxColumns().addListener(v -> markLayoutDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.maxRows().addListener(v -> markLayoutDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.drawBackground().addListener(v -> markLayoutDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.layoutMode().addListener(v -> markLayoutDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.horizontalAlignment().addListener(v -> markLayoutDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.verticalAlignment().addListener(v -> markLayoutDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.navigationVisibility().addListener(v -> markLayoutDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.navigationMode().addListener(v -> markLayoutDirty()));
 	}
 
 	private void markLayoutDirty() {

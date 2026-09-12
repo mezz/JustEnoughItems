@@ -161,8 +161,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			clickTargetFactory
 		);
 		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
-		clientConfig.searchBarPosition().addListener(v -> reopenIfOpen());
-		clientConfig.maxRecipeGuiHeight().addListener(v -> reopenIfOpen());
+		Internal.registerRuntimeListenerRemoval(clientConfig.searchBarPosition().addListener(v -> reopenIfOpen()));
+		Internal.registerRuntimeListenerRemoval(clientConfig.maxRecipeGuiHeight().addListener(v -> reopenIfOpen()));
 
 		Textures textures = Internal.getTextures();
 		IDrawableStatic arrowNext = textures.getArrowNext();
