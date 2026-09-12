@@ -1,6 +1,7 @@
 package mezz.jei.common.search;
 
 import mezz.jei.api.search.ISearchStorage;
+import mezz.jei.common.config.SearchMode;
 
 import java.util.Collection;
 import java.util.function.Consumer;
