@@ -10,6 +10,7 @@ import net.mezzdev.config.api.value.serializer.IConfigValueSerializer;
 import net.mezzdev.config.gui.api.ConfigGuiPlugin;
 import net.mezzdev.config.gui.api.IConfigGuiPlugin;
 import net.mezzdev.config.gui.api.IConfigGuiRegistration;
+import net.mezzdev.config.gui.api.IConfigScreenCategoryBuilder;
 import net.mezzdev.config.gui.api.IConfigScreenBuilder;
 import net.minecraft.network.chat.Component;
 
@@ -25,15 +26,45 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 
 	@Override
 	public void register(IConfigGuiRegistration registration) {
+		registration.registerValueEditor(AlignmentConfigValueGuiAdapter.EDITOR_TYPE, ignored -> new AlignmentConfigValueEditor());
 		registration.configureScreen(screenBuilder -> {
 			screenBuilder.setTitle(Component.translatable("jei.config"));
 			screenBuilder.configureCategory("debug")
 				.clearDefaultValues();
+			configureAlignmentValues(screenBuilder);
 			screenBuilder.configureCategory("input")
 				.addKeyMappings(Internal.getKeyMappings().getConfigKeyMappings());
 			Internal.getOptionalJeiRuntime()
 				.ifPresent(ignored -> configureRuntimeToggleValues(screenBuilder));
 		});
+	}
+
+	private static void configureAlignmentValues(IConfigScreenBuilder screenBuilder) {
+		IClientConfigs clientConfigs = Internal.getClientConfigs();
+
+		IConfigScreenCategoryBuilder ingredientList = screenBuilder.configureCategory("ingredientList");
+		ingredientList.getValueBuilderByName("maxColumns")
+			.insertAfter(new AlignmentConfigValueGuiAdapter(
+				"jei.config.client.ingredientList.alignment",
+				clientConfigs.getIngredientListConfig().horizontalAlignment(),
+				clientConfigs.getIngredientListConfig().verticalAlignment()
+			));
+		ingredientList.getValueBuilderByName("horizontalAlignment")
+			.hide();
+		ingredientList.getValueBuilderByName("verticalAlignment")
+			.hide();
+
+		IConfigScreenCategoryBuilder bookmarkList = screenBuilder.configureCategory("bookmarkList");
+		bookmarkList.getValueBuilderByName("maxColumns")
+			.insertAfter(new AlignmentConfigValueGuiAdapter(
+				"jei.config.client.bookmarkList.alignment",
+				clientConfigs.getBookmarkListConfig().horizontalAlignment(),
+				clientConfigs.getBookmarkListConfig().verticalAlignment()
+			));
+		bookmarkList.getValueBuilderByName("horizontalAlignment")
+			.hide();
+		bookmarkList.getValueBuilderByName("verticalAlignment")
+			.hide();
 	}
 
 	private static void configureRuntimeToggleValues(IConfigScreenBuilder screenBuilder) {
