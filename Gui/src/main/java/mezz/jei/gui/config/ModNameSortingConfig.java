@@ -44,6 +44,10 @@ public class ModNameSortingConfig {
 		return Comparator.comparing(IListElementInfo::getModNameForSorting, comparator);
 	}
 
+	public Runnable addChangeListener(Runnable listener) {
+		return sortingConfig.addChangeListener(listener);
+	}
+
 	private static Comparator<String> getDefaultSortOrder() {
 		Comparator<String> minecraftFirst = Comparator.comparing((String s) -> s.equals(ModIds.MINECRAFT_NAME)).reversed();
 		Comparator<String> naturalOrder = Comparator.naturalOrder();
