@@ -40,6 +40,7 @@
     "fabricloader": ">=${fabricLoaderVersion}",
     "fabric-api": ">=${fabricApiVersion}",
     "minecraft": "${minecraftVersion}",
+    "${configModId}": "${mezzConfigFabricVersionRange}",
     "java": ">=${modJavaVersion}"
   },
   "suggests": {
