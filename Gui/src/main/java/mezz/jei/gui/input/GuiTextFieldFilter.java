@@ -50,7 +50,7 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 		this.backgroundBounds = area;
 		setX(area.getX() + 4);
 		setY(area.getY() + (area.getHeight() - 8) / 2);
-		this.width = area.getWidth() - 12;
+		this.width = Math.max(0, area.getWidth() - 12);
 		this.height = area.getHeight();
 		this.area = area;
 	}

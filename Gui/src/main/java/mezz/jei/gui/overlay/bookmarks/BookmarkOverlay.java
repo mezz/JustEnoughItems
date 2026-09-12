@@ -55,6 +55,8 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	private static final int BUTTON_SIZE = 20;
 	private static final int LOOKUP_HISTORY_BOTTOM_PADDING = BORDER_MARGIN;
 	private static final int LOOKUP_HISTORY_PADDING_EXTRA = LOOKUP_HISTORY_BOTTOM_PADDING - INNER_PADDING;
+	private static final int BUTTON_GAP = 2;
+	private static final int BUTTON_ROW_WIDTH = BUTTON_SIZE * 2 + BUTTON_GAP;
 
 	// input
 	private final BookmarkDragManager bookmarkDragManager;
@@ -189,23 +191,25 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			this.lookupHistoryOverlay.updateLayout();
 		});
 
-		if (contents.hasRoom()) {
+		ImmutableRect2i insetDisplayArea = displayArea.insetBy(BORDER_MARGIN);
+		if (insetDisplayArea.getWidth() < BUTTON_ROW_WIDTH || insetDisplayArea.getHeight() < BUTTON_SIZE) {
+			this.bookmarkButton.updateBounds(ImmutableRect2i.EMPTY);
+			this.historyButton.updateBounds(ImmutableRect2i.EMPTY);
+		} else if (contents.hasRoom() && this.contents.getBackgroundArea().getWidth() >= BUTTON_ROW_WIDTH) {
 			ImmutableRect2i contentsArea = this.contents.getBackgroundArea();
-			ImmutableRect2i bookmarkButtonArea = displayArea
-				.insetBy(BORDER_MARGIN)
+			ImmutableRect2i bookmarkButtonArea = insetDisplayArea
 				.matchWidthAndX(contentsArea)
 				.keepBottom(BUTTON_SIZE)
 				.keepLeft(BUTTON_SIZE);
 			this.bookmarkButton.updateBounds(bookmarkButtonArea);
-			ImmutableRect2i historyButtonArea = bookmarkButtonArea.moveRight(2 + BUTTON_SIZE);
+			ImmutableRect2i historyButtonArea = bookmarkButtonArea.moveRight(BUTTON_GAP + BUTTON_SIZE);
 			this.historyButton.updateBounds(historyButtonArea);
 		} else {
-			ImmutableRect2i bookmarkButtonArea = displayArea
-				.insetBy(BORDER_MARGIN)
+			ImmutableRect2i bookmarkButtonArea = insetDisplayArea
 				.keepBottom(BUTTON_SIZE)
 				.keepLeft(BUTTON_SIZE);
 			this.bookmarkButton.updateBounds(bookmarkButtonArea);
-			ImmutableRect2i historyButtonArea = bookmarkButtonArea.moveRight(2 + BUTTON_SIZE);
+			ImmutableRect2i historyButtonArea = bookmarkButtonArea.moveRight(BUTTON_GAP + BUTTON_SIZE);
 			this.historyButton.updateBounds(historyButtonArea);
 		}
 	}
