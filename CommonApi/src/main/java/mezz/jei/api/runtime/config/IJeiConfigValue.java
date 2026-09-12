@@ -14,8 +14,11 @@ import java.util.function.Consumer;
  * and using {@link #set} will automatically update the file.
  *
  * @since 12.1.0
+ * @deprecated use {@code net.mezzdev.config.api.value.IConfigValue}
  */
+@Deprecated(since = "19.55.0", forRemoval = true)
 @ApiStatus.NonExtendable
+@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
 public interface IJeiConfigValue<T> {
 	/**
 	 * Get the name of this config value.

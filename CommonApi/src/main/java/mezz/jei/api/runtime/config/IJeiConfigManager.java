@@ -13,8 +13,11 @@ import java.util.Collection;
  * Get an instance from {@link IJeiRuntime#getConfigManager()}
  *
  * @since 12.1.0
+ * @deprecated use {@code net.mezzdev.config.api.Configs#getSchemas()}
  */
+@Deprecated(since = "19.55.0", forRemoval = true)
 @ApiStatus.NonExtendable
+@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
 public interface IJeiConfigManager {
 	/**
 	 * @return all of JEI's config files.

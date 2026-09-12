@@ -12,6 +12,7 @@ import org.jetbrains.annotations.ApiStatus;
  * The IJeiRuntime instance is passed to your mod plugin in {@link IModPlugin#onRuntimeAvailable(IJeiRuntime)}.
  */
 @ApiStatus.NonExtendable
+@SuppressWarnings({"deprecation", "removal"})
 public interface IJeiRuntime {
 	/**
 	 * The {@link IRecipeManager} offers several functions for retrieving and handling recipes.
@@ -112,6 +113,8 @@ public interface IJeiRuntime {
 	 * override {@link IModPlugin#onConfigManagerAvailable} instead of waiting for it to be available here.
 	 *
 	 * @since 12.1.0
+	 * @deprecated use MezzConfig APIs directly
 	 */
+	@Deprecated(since = "19.55.0", forRemoval = true)
 	IJeiConfigManager getConfigManager();
 }

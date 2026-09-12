@@ -8,8 +8,11 @@ import java.util.List;
  * Serialization and validation helper for JEI config values.
  *
  * @since 12.1.1
+ * @deprecated MezzConfig list values now use {@code net.mezzdev.config.api.value.serializer.IConfigValueSerializer<java.util.List<T>>}
  */
+@Deprecated(since = "19.55.0", forRemoval = true)
 @ApiStatus.NonExtendable
+@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
 public interface IJeiConfigListValueSerializer<T> extends IJeiConfigValueSerializer<List<T>> {
 	/**
 	 * Get the serializer for each value in the list.

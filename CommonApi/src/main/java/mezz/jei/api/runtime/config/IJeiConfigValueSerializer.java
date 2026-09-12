@@ -14,8 +14,11 @@ import java.util.Optional;
  * it should implement {@link IJeiConfigListValueSerializer} as well.
  *
  * @since 12.1.1
+ * @deprecated use {@code net.mezzdev.config.api.value.serializer.IConfigValueSerializer}
  */
+@Deprecated(since = "19.55.0", forRemoval = true)
 @ApiStatus.NonExtendable
+@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
 public interface IJeiConfigValueSerializer<T> {
 	/**
 	 * Serialize the config value to a string.

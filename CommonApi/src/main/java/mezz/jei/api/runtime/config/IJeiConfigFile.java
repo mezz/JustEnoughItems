@@ -13,8 +13,11 @@ import java.util.List;
  * and each category has one or more {@link IJeiConfigValue}.
  *
  * @since 12.1.0
+ * @deprecated use {@code net.mezzdev.config.api.schema.IConfigSchema}
  */
+@Deprecated(since = "19.55.0", forRemoval = true)
 @ApiStatus.NonExtendable
+@SuppressWarnings({"removal", "DeprecatedIsStillUsed"})
 public interface IJeiConfigFile {
 	/**
 	 * Get the path of this config file.
