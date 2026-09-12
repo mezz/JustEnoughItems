@@ -1,6 +1,7 @@
 package mezz.jei.gui.config;
 
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.common.Internal;
 import net.mezzdev.config.gui.api.ConfigGuiPlugin;
 import net.mezzdev.config.gui.api.IConfigGuiPlugin;
 import net.mezzdev.config.gui.api.IConfigGuiRegistration;
@@ -22,6 +23,8 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 			screenBuilder.setTitle(Component.translatable("jei.config"));
 			screenBuilder.configureCategory("debug")
 				.clearDefaultValues();
+			screenBuilder.configureCategory("input")
+				.addKeyMappings(Internal.getKeyMappings().getConfigKeyMappings());
 		});
 	}
 }
