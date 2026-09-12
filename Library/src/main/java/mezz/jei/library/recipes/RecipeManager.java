@@ -47,6 +47,10 @@ public class RecipeManager implements IRecipeManager {
 		this.recipeButtonControllerFactories = List.copyOf(recipeButtonControllerFactories);
 	}
 
+	public void onRuntimeStopped() {
+		internal.onRuntimeStopped();
+	}
+
 	@Override
 	public <R> IRecipeLookup<R> createRecipeLookup(RecipeType<R> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
