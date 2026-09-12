@@ -8,7 +8,7 @@ import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.gui.GridScrollMath;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
-import mezz.jei.common.util.NavigationVisibility;
+import mezz.jei.common.config.NavigationVisibility;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
