@@ -56,7 +56,7 @@ public class ScreenHelper implements IPlatformScreenHelper {
 
 	@Override
 	public ImmutableRect2i getToastsArea() {
-		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 		if (!clientConfig.toastReflowEnabled().getValue()) {
 			return ImmutableRect2i.EMPTY;
 		}

@@ -6,7 +6,7 @@ import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.DrawableWrappedText;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -83,7 +83,7 @@ public class ScrollBoxRecipeWidget extends AbstractScrollWidget implements IScro
 
 	@Override
 	protected float calculateScrollAmount(double scrollDeltaY) {
-		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+		IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 		int smoothScrollRate = clientConfig.smoothScrollRate().getValue();
 

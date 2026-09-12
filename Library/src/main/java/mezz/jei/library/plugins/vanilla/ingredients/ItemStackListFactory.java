@@ -4,7 +4,7 @@ import mezz.jei.api.constants.Tags;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.RegistryUtil;
@@ -44,7 +44,7 @@ public final class ItemStackListFactory {
 	);
 
 	public static List<ItemStack> create(StackHelper stackHelper, ItemStackHelper itemStackHelper) {
-		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+		IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 		final boolean showHidden = clientConfig.showHiddenIngredients().getValue();
 

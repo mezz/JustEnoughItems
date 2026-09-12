@@ -10,7 +10,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.ConfigManager;
 import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.common.config.JeiClientConfigs;
+import mezz.jei.common.config.ClientConfigs;
 import mezz.jei.common.config.file.ConfigSchemaBuilder;
 import mezz.jei.common.config.file.FileWatcher;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
@@ -69,7 +69,7 @@ public final class JeiStarter {
 	@SuppressWarnings("FieldCanBeLocal")
 	private final FileWatcher fileWatcher = new FileWatcher("JEI Config File Watcher");
 	private final ConfigManager configManager;
-	private final JeiClientConfigs jeiClientConfigs;
+	private final ClientConfigs jeiClientConfigs;
 	private final List<IStopCallback> stopCallbacks = new ArrayList<>();
 	private boolean running = false;
 
@@ -100,9 +100,9 @@ public final class JeiStarter {
 		this.colorNameConfig = new ColorNameConfig(colorFileBuilder);
 		colorFileBuilder.build().register(fileWatcher, configManager);
 
-		this.jeiClientConfigs = new JeiClientConfigs(configDir.resolve("jei-client.ini"));
+		this.jeiClientConfigs = new ClientConfigs(configDir.resolve("jei-client.ini"));
 		jeiClientConfigs.register(fileWatcher, configManager);
-		Internal.setJeiClientConfigs(jeiClientConfigs);
+		Internal.setClientConfigs(jeiClientConfigs);
 
 		fileWatcher.start();
 

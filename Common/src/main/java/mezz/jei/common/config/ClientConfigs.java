@@ -8,7 +8,7 @@ import mezz.jei.common.config.file.IConfigSchemaBuilder;
 
 import java.nio.file.Path;
 
-public class JeiClientConfigs implements IJeiClientConfigs {
+public class ClientConfigs implements IClientConfigs {
 	private final IClientConfig clientConfig;
 	private final IIngredientFilterConfig ingredientFilterConfig;
 	private final IIngredientGridConfig ingredientListConfig;
@@ -16,7 +16,7 @@ public class JeiClientConfigs implements IJeiClientConfigs {
 
 	private final IConfigSchema schema;
 
-	public JeiClientConfigs(Path configFile) {
+	public ClientConfigs(Path configFile) {
 		IConfigSchemaBuilder builder = new ConfigSchemaBuilder(configFile, "jei.config.client");
 
 		clientConfig = new ClientConfig(builder);

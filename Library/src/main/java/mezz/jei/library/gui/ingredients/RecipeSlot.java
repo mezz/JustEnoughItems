@@ -101,7 +101,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	@Override
 	public Optional<ITypedIngredient<?>> getDisplayedIngredient() {
-		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 		if (!clientConfig.recipeSlotCyclingEnabled().getValue()) {
 			return ingredients.getFirstDisplayedIngredient();
 		}
@@ -191,7 +191,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			return;
 		}
 
-		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 		if (clientConfig.hideSingleTagContentTooltipEnabled().getValue() && visibleCandidates.size() == 1) {
 			return;
 		}
@@ -255,7 +255,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		IIngredientManager ingredientManager,
 		List<ITypedIngredient<?>> visibleCandidates
 	) {
-		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 		if (clientConfig.tagContentTooltipEnabled().getValue() && visibleCandidates.size() > 1) {
 			List<ITypedIngredient<?>> normalizedCandidates = visibleCandidates.stream()
 				.<ITypedIngredient<?>>map(ingredient -> normalizeTypedIngredient(ingredientManager, ingredient))

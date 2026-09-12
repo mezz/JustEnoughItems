@@ -5,7 +5,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.config.ClientToggleState;
 import mezz.jei.common.config.IClientToggleState;
-import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.gui.textures.JeiGuiSpriteManager;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -37,7 +37,7 @@ public final class Internal {
 	@Nullable
 	private static IClientToggleState toggleState;
 	@Nullable
-	private static IJeiClientConfigs jeiClientConfigs;
+	private static IClientConfigs jeiClientConfigs;
 	@Nullable
 	private static IJeiRuntime jeiRuntime;
 	@Nullable
@@ -84,16 +84,16 @@ public final class Internal {
 		return toggleState;
 	}
 
-	public static IJeiClientConfigs getJeiClientConfigs() {
+	public static IClientConfigs getClientConfigs() {
 		Preconditions.checkState(jeiClientConfigs != null, "Jei Client Configs have not been created yet.");
 		return jeiClientConfigs;
 	}
 
-	public static Optional<IJeiClientConfigs> getOptionalJeiClientConfigs() {
+	public static Optional<IClientConfigs> getOptionalClientConfigs() {
 		return Optional.ofNullable(jeiClientConfigs);
 	}
 
-	public static void setJeiClientConfigs(IJeiClientConfigs jeiClientConfigs) {
+	public static void setClientConfigs(IClientConfigs jeiClientConfigs) {
 		Internal.jeiClientConfigs = jeiClientConfigs;
 	}
 
