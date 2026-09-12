@@ -165,7 +165,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 		restart();
 	}
 
-	private void restart() {
+	public void restart() {
 		if (this.state != State.JEI_STARTED) {
 			return;
 		}
