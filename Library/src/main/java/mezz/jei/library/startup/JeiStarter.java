@@ -88,8 +88,7 @@ public final class JeiStarter {
 		);
 		this.modIdFormatConfig = configData.modIdFormatConfig();
 		this.colorNameConfig = configData.colorNameConfig();
-		Path configDir = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
-		this.recipeCategorySortingConfig = new RecipeCategorySortingConfig(configDir.resolve("recipe-category-sort-order.ini"));
+		this.recipeCategorySortingConfig = new RecipeCategorySortingConfig(jeiClientConfigs);
 
 		PluginCaller.callOnPlugins("Sending ConfigManager", plugins, p -> p.onConfigManagerAvailable(configManagerForPlugins));
 	}

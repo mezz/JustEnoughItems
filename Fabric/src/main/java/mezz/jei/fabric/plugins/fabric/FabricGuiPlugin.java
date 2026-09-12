@@ -7,6 +7,8 @@ import mezz.jei.api.registration.IRuntimeRegistration;
 import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.fabric.startup.EventRegistration;
+import mezz.jei.gui.config.JeiGuiSortingConfigData;
+import mezz.jei.gui.config.JeiGuiSortingConfigRegistration;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.gui.startup.JeiGuiStarter;
 import mezz.jei.gui.startup.ResourceReloadHandler;
@@ -23,6 +25,7 @@ public class FabricGuiPlugin implements IModPlugin {
 	private static @Nullable IJeiRuntime runtime;
 	private static @Nullable ResourceReloadHandler resourceReloadHandler;
 
+	private final JeiGuiSortingConfigData sortingConfigData = JeiGuiSortingConfigRegistration.register();
 	private @Nullable IJeiFeatures jeiFeatures;
 	private final EventRegistration eventRegistration = new EventRegistration();
 
@@ -42,7 +45,7 @@ public class FabricGuiPlugin implements IModPlugin {
 			return;
 		}
 
-		JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration);
+		JeiEventHandlers eventHandlers = JeiGuiStarter.start(registration, sortingConfigData);
 		resourceReloadHandler = eventHandlers.resourceReloadHandler();
 		eventRegistration.setEventHandlers(eventHandlers);
 	}

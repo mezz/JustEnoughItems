@@ -17,6 +17,7 @@ import mezz.jei.common.config.NavigationVisibility;
 import mezz.jei.common.config.SearchBarPosition;
 import mezz.jei.common.config.SearchMode;
 import mezz.jei.common.config.legacy.LegacyConfigPaths;
+import net.mezzdev.config.api.sorting.ISortingConfig;
 import net.mezzdev.config.file.ConfigFileWatcherSettings;
 import net.mezzdev.config.file.ConfigFileUtil;
 import net.mezzdev.config.file.ConfigManager;
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -131,11 +133,13 @@ public class ClientConfigMigrationTest {
 
 		ConfigFileWatcherSettings disabledWatcher = ConfigFileWatcherSettings.clientDefaults().withEnabled(false);
 		ConfigManager configManager = new ConfigManager("JEI Config Migration Test", disabledWatcher, disabledWatcher);
+		ISortingConfig<String> recipeSorting = configManager.createInMemorySortingConfig(Comparator.naturalOrder(), true);
 		ConfigSchemaBuilder schemaBuilder = new ConfigSchemaBuilder("jei", configFile, "jei.config.client", configManager);
 		schemaBuilder.setLegacySources(LegacyConfigPaths.get(configDirectory, profileId, "jei-client.ini"));
 		ClientConfigs configs = new ClientConfigs(
 			schemaBuilder,
-			false
+			false,
+			recipeSorting
 		);
 
 		IClientConfig client = configs.getClientConfig();
@@ -210,9 +214,11 @@ public class ClientConfigMigrationTest {
 		assertTrue(Files.notExists(ConfigFileUtil.getBackupPath(rootLegacyFile, 1)));
 
 		ConfigManager reloadedConfigManager = new ConfigManager("Reloaded JEI Client Config", disabledWatcher, disabledWatcher);
+		ISortingConfig<String> reloadedRecipeSorting = reloadedConfigManager.createInMemorySortingConfig(Comparator.naturalOrder(), true);
 		ClientConfigs reloaded = new ClientConfigs(
 			new ConfigSchemaBuilder("jei", configFile, "jei.config.client", reloadedConfigManager),
-			false
+			false,
+			reloadedRecipeSorting
 		);
 		assertFalse(reloaded.getClientConfig().bookmarkOutputAsRecipe().get());
 		assertFalse(reloaded.getClientConfig().recipeSyncWarningEnabled().get());
