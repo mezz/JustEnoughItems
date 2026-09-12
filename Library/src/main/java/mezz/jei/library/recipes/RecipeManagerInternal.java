@@ -54,6 +54,7 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 	private final IIngredientVisibility ingredientVisibility;
 	private ImmutableListMultimap<RecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators;
 	private final RecipeCategorySortingConfig recipeCategorySortingConfig;
+	private final List<RecipeType<?>> recipeTypes;
 	private final Runnable removeRecipeCategorySortingConfigChangeListener;
 
 	@Nullable
@@ -78,7 +79,7 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 			this::onRecipeCategorySortingConfigChanged
 		);
 
-		List<RecipeType<?>> recipeTypes = recipeCategories.stream()
+		this.recipeTypes = recipeCategories.stream()
 			.<RecipeType<?>>map(IRecipeCategory::getRecipeType)
 			.toList();
 		Comparator<RecipeType<?>> recipeTypeComparator = recipeCategorySortingConfig.getComparator(recipeTypes);
@@ -178,7 +179,7 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 	public boolean isCategoryHidden(IRecipeCategory<?> recipeCategory, IFocusGroup focuses) {
 		// hide the category if it has been explicitly hidden
 		RecipeType<?> recipeType = recipeCategory.getRecipeType();
-		if (hiddenRecipeTypes.contains(recipeType)) {
+		if (isRecipeTypeHidden(recipeType)) {
 			return true;
 		}
 
@@ -305,6 +306,11 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 		if (contexts.contains(UidContext.Recipe)) {
 			recipeCategoriesVisibleCache = null;
 		}
+	}
+
+	private boolean isRecipeTypeHidden(RecipeType<?> recipeType) {
+		return hiddenRecipeTypes.contains(recipeType) ||
+			!recipeCategorySortingConfig.isRecipeCategoryVisible(recipeTypes, recipeType);
 	}
 
 	private void onRecipeCategorySortingConfigChanged() {

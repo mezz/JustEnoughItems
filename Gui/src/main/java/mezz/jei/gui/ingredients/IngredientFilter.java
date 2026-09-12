@@ -13,6 +13,7 @@ import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
@@ -54,6 +55,7 @@ public class IngredientFilter
 	private Comparator<IListElement<?>> ingredientComparator;
 	private final IModIdHelper modIdHelper;
 	private final IIngredientVisibility ingredientVisibility;
+	private final IngredientTypeSortingConfig ingredientTypeSortingConfig;
 	private final Function<List<IListElementInfo<?>>, Comparator<IListElement<?>>> sortIndexUpdater;
 
 	private final ElementPrefixParser elementPrefixParser;
@@ -74,6 +76,7 @@ public class IngredientFilter
 		List<IListElementInfo<?>> ingredients,
 		IModIdHelper modIdHelper,
 		IIngredientVisibility ingredientVisibility,
+		IngredientTypeSortingConfig ingredientTypeSortingConfig,
 		IColorHelper colorHelper,
 		ISearchStorageBuilderFactory searchStorageBuilderFactory,
 		IWorldConfig worldConfig
@@ -85,8 +88,8 @@ public class IngredientFilter
 		this.ingredientComparator = sortIndexUpdater.apply(ingredients);
 		this.modIdHelper = modIdHelper;
 		this.ingredientVisibility = ingredientVisibility;
+		this.ingredientTypeSortingConfig = ingredientTypeSortingConfig;
 		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, modIdHelper, searchStorageBuilderFactory);
-
 		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser, ingredients, ingredientManager);
 		addConfigListeners(clientConfig, config);
 
@@ -205,7 +208,7 @@ public class IngredientFilter
 		boolean visible = this.ingredientVisibility.isIngredientVisible(
 			typedIngredient,
 			UidContext.Ingredient
-		);
+		) && isIngredientTypeVisible(typedIngredient.getType());
 		if (element.isVisible() != visible) {
 			element.setVisible(visible);
 			return true;
@@ -242,6 +245,13 @@ public class IngredientFilter
 			invalidateCache();
 			notifyListenersOfChange();
 		}
+	}
+
+	private boolean isIngredientTypeVisible(IIngredientType<?> ingredientType) {
+		return this.ingredientTypeSortingConfig.isIngredientTypeVisible(
+			ingredientManager.getRegisteredIngredientTypes(),
+			ingredientType
+		);
 	}
 
 	@Override
