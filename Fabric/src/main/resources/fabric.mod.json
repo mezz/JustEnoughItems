@@ -39,6 +39,7 @@
   "depends": {
     "fabricloader": ">=${fabricLoaderVersion}",
     "fabric-api": ">=${fabricApiVersion}",
+    "${configModId}": "${mezzConfigFabricVersionRange}",
     "java": ">=${modJavaVersion}"
   },
   "suggests": {
