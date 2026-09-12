@@ -1,16 +1,16 @@
 package mezz.jei.gui.overlay.ingredients;
 
+import mezz.jei.gui.overlay.TestJeiConfigValue;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
-import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
+import net.mezzdev.config.api.value.IConfigValue;
 import mezz.jei.common.config.NavigationVisibility;
-import mezz.jei.gui.overlay.TestJeiConfigValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -1953,7 +1953,7 @@ public class IngredientGridConfigTest {
 		}
 
 		@Override
-		public IJeiConfigValue<Integer> maxColumns() {
+		public IConfigValue<Integer> maxColumns() {
 			return maxColumns;
 		}
 
@@ -1963,7 +1963,7 @@ public class IngredientGridConfigTest {
 		}
 
 		@Override
-		public IJeiConfigValue<Integer> maxRows() {
+		public IConfigValue<Integer> maxRows() {
 			return maxRows;
 		}
 
@@ -1973,37 +1973,38 @@ public class IngredientGridConfigTest {
 		}
 
 		@Override
-		public IJeiConfigValue<Boolean> drawBackground() {
+		public IConfigValue<Boolean> drawBackground() {
 			return drawBackground;
 		}
 
 		@Override
-		public IJeiConfigValue<IngredientGridLayoutMode> layoutMode() {
+		public IConfigValue<IngredientGridLayoutMode> layoutMode() {
 			return layoutMode;
 		}
 
 		@Override
-		public IJeiConfigValue<IngredientGridNavigationMode> navigationMode() {
+		public IConfigValue<IngredientGridNavigationMode> navigationMode() {
 			return navigationMode;
 		}
 
 		@Override
-		public IJeiConfigValue<HorizontalAlignment> horizontalAlignment() {
+		public IConfigValue<HorizontalAlignment> horizontalAlignment() {
 			return horizontalAlignment;
 		}
 
 		@Override
-		public IJeiConfigValue<VerticalAlignment> verticalAlignment() {
+		public IConfigValue<VerticalAlignment> verticalAlignment() {
 			return verticalAlignment;
 		}
 
 		@Override
-		public IJeiConfigValue<NavigationVisibility> navigationVisibility() {
+		public IConfigValue<NavigationVisibility> navigationVisibility() {
 			return navigationVisibility;
 		}
 
-		private static <T> TestJeiConfigValue<T> value(String name, T value) {
-			return new TestJeiConfigValue<>(name, value);
+		private static <T> TestJeiConfigValue<T> value(String name, T defaultValue) {
+			return new TestJeiConfigValue<>(name, defaultValue);
 		}
 	}
+
 }

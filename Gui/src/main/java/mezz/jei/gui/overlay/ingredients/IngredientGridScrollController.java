@@ -179,7 +179,7 @@ public final class IngredientGridScrollController {
 	}
 
 	private boolean isSmoothScrolling() {
-		return this.gridConfig.navigationMode().getValue()
+		return this.gridConfig.navigationMode().get()
 			.usesSmoothScrolling();
 	}
 
@@ -189,7 +189,7 @@ public final class IngredientGridScrollController {
 			if (totalHeight == 0) {
 				return 0;
 			}
-			return (float) (scrollDeltaY * this.clientConfig.smoothScrollRate().getValue() / (double) totalHeight);
+			return (float) (scrollDeltaY * this.clientConfig.smoothScrollRate().get() / (double) totalHeight);
 		}
 		int hiddenRows = getHiddenScrollRows();
 		if (hiddenRows == 0) {
