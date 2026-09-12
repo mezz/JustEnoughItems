@@ -47,6 +47,8 @@ val amecsMinecraftVersion: String by extra
 val bakedSubstringIndexVersion: String by extra
 val suffixtreeVersion: String by extra
 val deduplicatingRunnerVersion: String by extra
+val mezzConfigApiDependency: String by rootProject.extra
+val mezzConfigFabricDependency: String by rootProject.extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -183,6 +185,9 @@ dependencies {
         name = "amecs-key-modifiers-${amecsMinecraftVersion}",
         version = amecsKeyModifiersVersionFabric
     )
+    compileOnly(mezzConfigApiDependency)
+    modLocalRuntime(mezzConfigFabricDependency)
+    include(mezzConfigFabricDependency)
     vanillaDependencyProjects.forEach {
         compileOnly(it)
         testImplementation(it)

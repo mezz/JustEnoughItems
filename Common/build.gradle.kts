@@ -17,6 +17,8 @@ val modJavaVersion: String by extra
 val bakedSubstringIndexVersion: String by extra
 val suffixtreeVersion: String by extra
 val deduplicatingRunnerVersion: String by extra
+val mezzConfigApiDependency: String by rootProject.extra
+val mezzConfigForgeDependency: String by rootProject.extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
 base {
@@ -92,6 +94,7 @@ dependencies {
     implementation("net.mezzdev:deduplicating-runner:$deduplicatingRunnerVersion") {
         isTransitive = false
     }
+    implementation(mezzConfigApiDependency)
     implementation(
         group = "net.mezzdev",
         name = "baked-substring-index",
@@ -116,6 +119,7 @@ dependencies {
         name = "junit-jupiter",
         version = jUnitVersion
     )
+    testImplementation(mezzConfigForgeDependency)
     testRuntimeOnly(
         group = "org.junit.platform",
         name = "junit-platform-launcher"
