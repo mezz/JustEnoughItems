@@ -23,7 +23,7 @@ import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PlayToServerPacket;
-import mezz.jei.common.util.NavigationVisibility;
+import mezz.jei.common.config.NavigationVisibility;
 import mezz.jei.gui.ghost.GhostIngredientQuickMoveManager;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;

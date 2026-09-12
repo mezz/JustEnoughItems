@@ -3,7 +3,6 @@ package mezz.jei.common.config;
 import mezz.jei.common.config.file.ConfigValue;
 import mezz.jei.common.config.file.IConfigCategoryBuilder;
 import mezz.jei.common.config.file.IConfigSchemaBuilder;
-import mezz.jei.common.search.SearchMode;
 
 public class IngredientFilterConfig implements IIngredientFilterConfig {
 	private final ConfigValue<SearchMode> modNameSearchMode;

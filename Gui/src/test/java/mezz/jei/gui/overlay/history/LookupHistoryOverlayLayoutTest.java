@@ -8,7 +8,7 @@ import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.NavigationVisibility;
+import mezz.jei.common.config.NavigationVisibility;
 import mezz.jei.gui.overlay.ingredients.IngredientGridButtonNavigationLayout;
 import mezz.jei.gui.overlay.ingredients.IngredientGridLayout;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigationLayout;

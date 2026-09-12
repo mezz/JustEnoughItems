@@ -2,6 +2,7 @@ package mezz.jei.common.search;
 
 import mezz.jei.api.search.ISearchStorageBuilder;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
+import mezz.jei.common.config.SearchMode;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
