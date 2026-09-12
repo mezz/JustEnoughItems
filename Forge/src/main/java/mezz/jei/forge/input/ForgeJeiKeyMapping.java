@@ -17,6 +17,11 @@ public class ForgeJeiKeyMapping implements IJeiKeyMappingInternal {
 	}
 
 	@Override
+	public KeyMapping getKeyMapping() {
+		return keyMapping;
+	}
+
+	@Override
 	public boolean isActiveAndMatches(InputConstants.Key key) {
 		return keyMapping.isActiveAndMatches(key);
 	}
