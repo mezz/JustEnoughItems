@@ -2,6 +2,8 @@ package mezz.jei.test.lib;
 
 import mezz.jei.common.config.IClientToggleState;
 
+import java.util.function.Consumer;
+
 public class TestClientToggleState implements IClientToggleState {
 	@Override
 	public boolean isOverlayEnabled() {
@@ -14,6 +16,16 @@ public class TestClientToggleState implements IClientToggleState {
 	}
 
 	@Override
+	public void setOverlayEnabled(boolean value) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Runnable addOverlayEnabledListener(Consumer<Boolean> listener) {
+		return () -> {};
+	}
+
+	@Override
 	public boolean isEditModeEnabled() {
 		return false;
 	}
@@ -21,6 +33,16 @@ public class TestClientToggleState implements IClientToggleState {
 	@Override
 	public void toggleEditModeEnabled() {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void setEditModeEnabled(boolean value) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Runnable addEditModeEnabledListener(Consumer<Boolean> listener) {
+		return () -> {};
 	}
 
 	@Override
@@ -39,7 +61,17 @@ public class TestClientToggleState implements IClientToggleState {
 	}
 
 	@Override
+	public Runnable addCheatItemsEnabledListener(Consumer<Boolean> listener) {
+		return () -> {};
+	}
+
+	@Override
 	public boolean isBookmarkOverlayEnabled() {
+		return true;
+	}
+
+	@Override
+	public boolean isBookmarkEnabled() {
 		return true;
 	}
 
@@ -51,6 +83,11 @@ public class TestClientToggleState implements IClientToggleState {
 	@Override
 	public void setBookmarkEnabled(boolean value) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Runnable addBookmarkEnabledListener(Consumer<Boolean> listener) {
+		return () -> {};
 	}
 
 	@Override
