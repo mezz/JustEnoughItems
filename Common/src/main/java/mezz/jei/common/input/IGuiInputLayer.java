@@ -1,4 +1,4 @@
-package mezz.jei.gui.input;
+package mezz.jei.common.input;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 

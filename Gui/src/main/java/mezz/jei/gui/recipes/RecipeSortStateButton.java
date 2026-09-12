@@ -7,7 +7,7 @@ import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.gui.elements.GuiIconToggleButton;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.common.input.UserInput;
 import net.minecraft.network.chat.Component;
 
 import java.util.Set;

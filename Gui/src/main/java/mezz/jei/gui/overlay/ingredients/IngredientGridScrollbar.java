@@ -5,8 +5,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.common.gui.elements.Scrollbar;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;

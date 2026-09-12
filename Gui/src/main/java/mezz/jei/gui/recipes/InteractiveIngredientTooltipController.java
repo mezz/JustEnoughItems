@@ -6,11 +6,13 @@ import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.gui.input.IGuiInputLayer;
+import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.gui.input.IClickableIngredientInternal;
-import mezz.jei.gui.input.IMouseOverable;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.common.input.IMouseOverable;
+import mezz.jei.gui.input.IPinnedTooltipHolder;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.gui.input.PinnedTooltipManager;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
@@ -160,3 +162,4 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer {
 		}
 	}
 }
+

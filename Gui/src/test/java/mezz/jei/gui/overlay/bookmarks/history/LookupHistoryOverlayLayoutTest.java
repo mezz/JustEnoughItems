@@ -29,7 +29,10 @@ public class LookupHistoryOverlayLayoutTest {
 
 	@Test
 	public void backgroundLayoutContainsSlotBackground() {
-		TestGridConfig gridConfig = new TestGridConfig(4, 2, true);
+		TestGridConfig gridConfig = config()
+			.maxColumns(4)
+			.maxRows(2)
+			.drawBackground(true);
 		ImmutableRect2i availableArea = new ImmutableRect2i(
 			0,
 			0,
@@ -45,7 +48,10 @@ public class LookupHistoryOverlayLayoutTest {
 
 	@Test
 	public void noBackgroundLayoutUsesGridAreaAsBackgroundArea() {
-		TestGridConfig gridConfig = new TestGridConfig(4, 2, false);
+		TestGridConfig gridConfig = config()
+			.maxColumns(4)
+			.maxRows(2)
+			.drawBackground(false);
 		ImmutableRect2i availableArea = new ImmutableRect2i(
 			0,
 			0,
@@ -165,4 +171,3 @@ public class LookupHistoryOverlayLayoutTest {
 		}
 	}
 }
-

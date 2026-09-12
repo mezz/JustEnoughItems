@@ -5,9 +5,9 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.UserInput;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 
