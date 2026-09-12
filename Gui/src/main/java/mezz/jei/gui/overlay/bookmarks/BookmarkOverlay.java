@@ -286,6 +286,17 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		}
 	}
 
+	public void tick() {
+		this.bookmarkButton.tick();
+		this.historyButton.tick();
+		if (isListDisplayed()) {
+			this.contents.tick();
+		}
+		if (screenPropertiesCache.hasValidScreen() && worldConfig.isOverlayEnabled()) {
+			this.lookupHistoryOverlay.tick();
+		}
+	}
+
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		Stream<IClickableIngredientInternal<?>> ingredients = Stream.empty();

@@ -287,6 +287,17 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		}
 	}
 
+	public void tick() {
+		handleTick();
+		this.configButton.tick();
+		if (isListDisplayed()) {
+			this.contents.tick();
+		}
+		if (this.screenPropertiesCache.hasValidScreen() && worldConfig.isOverlayEnabled()) {
+			this.lookupHistoryOverlay.tick();
+		}
+	}
+
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
