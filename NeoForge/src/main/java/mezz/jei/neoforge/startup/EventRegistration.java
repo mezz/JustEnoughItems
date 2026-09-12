@@ -4,7 +4,7 @@ import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.input.PinnedTooltipManager;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.neoforge.events.RuntimeEventSubscriptions;
 import mezz.jei.neoforge.input.ForgeUserInput;

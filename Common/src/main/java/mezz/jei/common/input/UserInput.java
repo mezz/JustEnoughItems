@@ -1,9 +1,8 @@
-package mezz.jei.gui.input;
+package mezz.jei.common.input;
 
 import com.mojang.datafixers.util.Either;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.runtime.IJeiKeyMapping;
-import mezz.jei.common.input.MouseButtonEventData;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.client.KeyMapping;

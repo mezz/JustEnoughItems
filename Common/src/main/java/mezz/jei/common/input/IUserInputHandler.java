@@ -1,8 +1,7 @@
-package mezz.jei.gui.input;
+package mezz.jei.common.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.handlers.IGuiProperties;
-import mezz.jei.common.input.IInternalKeyMappings;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;
