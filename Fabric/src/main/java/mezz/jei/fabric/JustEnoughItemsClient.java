@@ -30,8 +30,8 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 		IServerConfig serverConfig = ServerConfig.getInstance();
 
 		JeiConfigData configData = JeiConfigRegistration.register();
-
 		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(serverConfig, configData);
+		Internal.setRestartJeiRunnable(clientLifecycleHandler::restartJei);
 
 		JeiChatEventHandler.register();
 		JeiInternalShowCommand.register();

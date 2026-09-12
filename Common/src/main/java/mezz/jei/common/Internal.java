@@ -42,6 +42,8 @@ public final class Internal {
 	@Nullable
 	private static IJeiRuntime jeiRuntime;
 	@Nullable
+	private static Runnable restartJeiRunnable;
+	@Nullable
 	private static ClientRecipes clientRecipes = null;
 	private static final JeiFeatures jeiFeatures = new JeiFeatures();
 	private static final DelayedExecutor delayedExecutor = new DelayedExecutor(Duration.ofSeconds(10), "JEI Delayed Executor");
@@ -122,6 +124,15 @@ public final class Internal {
 
 	public static Optional<IJeiRuntime> getOptionalJeiRuntime() {
 		return Optional.ofNullable(jeiRuntime);
+	}
+
+	public static void setRestartJeiRunnable(Runnable restartJeiRunnable) {
+		Internal.restartJeiRunnable = restartJeiRunnable;
+	}
+
+	public static void restartJei() {
+		Preconditions.checkState(restartJeiRunnable != null, "JEI restart handler has not been created yet.");
+		restartJeiRunnable.run();
 	}
 
 	@Nullable
@@ -229,6 +240,7 @@ public final class Internal {
 
 	public static void onClientStopping() {
 		onRuntimeStopped();
+		restartJeiRunnable = null;
 		delayedExecutor.shutdown();
 	}
 
