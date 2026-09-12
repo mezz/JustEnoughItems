@@ -102,6 +102,26 @@ publishing {
             artifactId = baseArchivesName
             artifact(tasks.jar.get())
             artifact(sourcesJarTask.get())
+
+            val dependencyInfos = listOf(
+                dependencyInfo(mezzConfigApiDependency)
+            ) + dependencyProjects.map {
+                mapOf(
+                    "groupId" to it.group,
+                    "artifactId" to it.base.archivesName.get(),
+                    "version" to it.version
+                )
+            }
+
+            pom.withXml {
+                val dependenciesNode = asNode().appendNode("dependencies")
+                dependencyInfos.forEach {
+                    val dependencyNode = dependenciesNode.appendNode("dependency")
+                    it.forEach { (key, value) ->
+                        dependencyNode.appendNode(key, value)
+                    }
+                }
+            }
         }
     }
     repositories {
@@ -110,6 +130,15 @@ publishing {
             maven(deployDir)
         }
     }
+}
+
+fun dependencyInfo(notation: String): Map<String, String> {
+    val (groupId, artifactId, version) = notation.split(":")
+    return mapOf(
+        "groupId" to groupId,
+        "artifactId" to artifactId,
+        "version" to version
+    )
 }
 
 

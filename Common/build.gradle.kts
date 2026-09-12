@@ -174,7 +174,8 @@ publishing {
             artifact(tasks.jar)
             artifact(tasks.named("sourcesJar"))
 
-            val dependencyInfos = dependencyProjects.map {
+            val mezzConfigApiDependencyInfo = dependencyInfo(mezzConfigApiDependency)
+            val dependencyInfos = listOf(mezzConfigApiDependencyInfo) + dependencyProjects.map {
                 mapOf(
                     "groupId" to it.group,
                     "artifactId" to it.base.archivesName.get(),
@@ -205,6 +206,15 @@ publishing {
             maven(deployDir)
         }
     }
+}
+
+fun dependencyInfo(notation: String): Map<String, String> {
+    val (groupId, artifactId, version) = notation.split(":")
+    return mapOf(
+        "groupId" to groupId,
+        "artifactId" to artifactId,
+        "version" to version
+    )
 }
 
 idea {
