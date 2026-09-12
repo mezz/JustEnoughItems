@@ -138,7 +138,12 @@ final class ExternalTestServer implements AutoCloseable {
 			}
 		};
 
-		private static final List<String> SERVER_WITHOUT_JEI_EXCLUDED_MOD_IDS = List.of(ModIds.JEI_ID, "mezz_config", "jei-test");
+		private static final List<String> SERVER_WITHOUT_JEI_EXCLUDED_MOD_IDS = List.of(
+			ModIds.JEI_ID,
+			"mezz_config",
+			"mezz_config_gui",
+			"jei-test"
+		);
 
 		private final String description;
 		private final String mainClass;

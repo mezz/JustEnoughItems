@@ -82,13 +82,17 @@ public class GuiEventHandler {
 	}
 
 	/**
-	 * Draws the JEI overlay backgrounds, before the screen contents are drawn.
+	 * Draws the JEI overlay backgrounds for container screens, before the screen contents are drawn.
+	 * Non-container screens may draw translucent backgrounds as part of their contents, so their JEI backgrounds
+	 * are drawn later with the overlay foregrounds.
 	 */
 	public void drawForScreenBackground(Screen screen, GuiGraphics guiGraphics) {
 		@Nullable
 		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
 		updateOverlayProperties(screen, guiProperties);
-		drawOverlayBackgrounds(guiGraphics);
+		if (screen instanceof AbstractContainerScreen<?>) {
+			drawOverlayBackgrounds(guiGraphics);
+		}
 	}
 
 	/**
@@ -98,6 +102,9 @@ public class GuiEventHandler {
 		@Nullable
 		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
 		boolean drawScreenForeground = screen instanceof AbstractContainerScreen<?>;
+		if (!drawScreenForeground) {
+			drawOverlayBackgrounds(guiGraphics);
+		}
 		drawOverlayForegrounds(guiGraphics, mouseX, mouseY, drawScreenForeground);
 		drawPostForeground(screen, guiProperties, guiGraphics, mouseX, mouseY);
 	}

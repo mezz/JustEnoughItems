@@ -1,4 +1,6 @@
+import mezz.jei.gradle.dependencyInfo
 import mezz.jei.gradle.mezzConfigDependency
+import mezz.jei.gradle.mezzConfigGuiDependency
 import mezz.jei.gradle.gradleProperty
 import mezz.jei.gradle.isolatedProjectDirectory
 import mezz.jei.gradle.optionalGradleProperty
@@ -27,7 +29,14 @@ configurations.configureEach {
 	exclude(group = "net.fabricmc", module = "fabric-loader")
 }
 
+val mezzConfigGuiRuntime = configurations.create("mezzConfigGuiRuntime") {
+	isCanBeConsumed = false
+	isCanBeResolved = false
+}
+
 val mezzConfigApiDependency = mezzConfigDependency("config-api")
+val mezzConfigGuiApiDependency = mezzConfigGuiDependency("config-gui-api")
+val mezzConfigGuiNeoForgeDependency = mezzConfigGuiDependency("neoforge")
 
 // gradle.properties
 val curseHomepageUrl = gradleProperty("curseHomepageUrl")
@@ -42,6 +51,8 @@ val modJavaVersion = gradleProperty("modJavaVersion")
 val modrinthId = gradleProperty("modrinthId")
 val mezzConfigCurseForgeProjectSlug = gradleProperty("mezzConfigCurseForgeProjectSlug")
 val mezzConfigModrinthProjectId = gradleProperty("mezzConfigModrinthProjectId")
+val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForgeProjectSlug")
+val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
 val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
 val suffixtreeVersion = gradleProperty("suffixtreeVersion")
 
@@ -88,6 +99,12 @@ sourceSets {
 	}
 	create("clientGameTest") {
 		java.srcDir(commonClientTestFixturesSource)
+	}
+}
+
+listOf("runtimeClasspath", "testRuntimeClasspath", "gameTestRuntimeClasspath", "clientGameTestRuntimeClasspath").forEach {
+	configurations.named(it) {
+		extendsFrom(mezzConfigGuiRuntime)
 	}
 }
 
@@ -171,6 +188,8 @@ fun Configuration.singleFileContents(): Provider<String> =
 dependencies {
 	compileOnly(mezzConfigApiDependency)
 	runtimeOnly(mezzConfigDependency("neoforge"))
+	compileOnly(mezzConfigGuiApiDependency)
+	add(mezzConfigGuiRuntime.name, mezzConfigGuiNeoForgeDependency)
 	jarJar(mezzConfigDependency("neoforge")) {
 		version {
 			strictly(gradleProperty("mezzConfigVersionRange"))
@@ -180,6 +199,7 @@ dependencies {
 	"gameTestRuntimeOnly"(mezzConfigDependency("neoforge"))
 	"clientGameTestRuntimeOnly"(mezzConfigDependency("neoforge"))
 	testImplementation(mezzConfigApiDependency)
+	testImplementation(mezzConfigGuiApiDependency)
 	implementation(apiSourceSet.output)
 	implementation(project(path = ":Common", configuration = "apiClassesElements"))
 	add(apiSourceSet.implementationConfigurationName, project(path = ":Common", configuration = "apiClassesElements"))
@@ -446,6 +466,7 @@ publishMods {
 		projectSlug = curseHomepageUrl.substringAfterLast("/")
 		accessToken.set(curseforgeApikey ?: "0")
 		requires(mezzConfigCurseForgeProjectSlug)
+		optional(mezzConfigGuiCurseForgeProjectSlug)
 		changelog.set(changelogHtml.singleFileContents())
 		changelogType = "html"
 		minecraftVersionRange {
@@ -462,6 +483,7 @@ publishMods {
 		projectId = modrinthId
 		accessToken = modrinthToken
 		requires(mezzConfigModrinthProjectId)
+		optional(mezzConfigGuiModrinthProjectId)
 		changelog.set(changelogMarkdown.singleFileContents())
 		minecraftVersionRange {
 			start = minecraftVersionRangeStart
@@ -519,6 +541,17 @@ publishing {
 			artifactId = baseArchivesName
 			artifact(shadedJar)
 			artifact(shadedSourcesJar)
+
+			val mezzConfigGuiDependencyInfo =
+				dependencyInfo(mezzConfigGuiNeoForgeDependency) + ("optional" to "true")
+			pom.withXml {
+				val dependenciesNode =
+					(asNode().get("dependencies") as groovy.util.NodeList).first() as groovy.util.Node
+				val dependencyNode = dependenciesNode.appendNode("dependency")
+				mezzConfigGuiDependencyInfo.forEach { (key, value) ->
+					dependencyNode.appendNode(key, value)
+				}
+			}
 		}
 	}
 	repositories {
