@@ -140,7 +140,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	private Optional<SlotIngredient<?>> getDisplayedSlotIngredient() {
 		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
-		if (!clientConfig.recipeSlotCyclingEnabled().getValue()) {
+		if (!clientConfig.recipeSlotCyclingEnabled().get()) {
 			return ingredients.getFirstDisplayedIngredient();
 		}
 		return ingredients.getDisplayedIngredient(cycler);
@@ -184,7 +184,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		addSlotDisplayTooltip(tooltip, slotIngredient);
 		addTagNameTooltip(tooltip, tooltipData);
 		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
-		if (clientConfig.tagContentTooltipEnabled().getValue() && tooltipData.candidates().size() > 1) {
+		if (clientConfig.tagContentTooltipEnabled().get() && tooltipData.candidates().size() > 1) {
 			tooltip.add(tooltipData.grid().get());
 		}
 		if (tooltipData.candidates().size() > 1) {
@@ -236,7 +236,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		}
 
 		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
-		if (clientConfig.hideSingleTagContentTooltipEnabled().getValue() && tooltipData.displayGroupSize() == 1) {
+		if (clientConfig.hideSingleTagContentTooltipEnabled().get() && tooltipData.displayGroupSize() == 1) {
 			return;
 		}
 

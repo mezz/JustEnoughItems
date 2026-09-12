@@ -75,7 +75,7 @@ public class BookmarkInputHandler implements IUserInputHandler {
 
 		IRecipeLayoutDrawable<?> layout = recipeLayoutWithButtons.getRecipeLayout();
 		Optional<RecipeSlotUnderMouse> slotUnderMouse = layout.getSlotUnderMouse(mouseX, mouseY);
-		if (!shouldBookmarkRecipe(slotUnderMouse, clientConfig.bookmarkOutputAsRecipeEnabled().getValue())) {
+		if (!shouldBookmarkRecipe(slotUnderMouse, clientConfig.bookmarkOutputAsRecipe().get())) {
 			return Optional.empty();
 		}
 
@@ -85,14 +85,14 @@ public class BookmarkInputHandler implements IUserInputHandler {
 		return Optional.of(new SameElementInputHandler(this, layout::isMouseOver));
 	}
 
-	static boolean shouldBookmarkRecipe(Optional<RecipeSlotUnderMouse> slotUnderMouse, boolean bookmarkOutputAsRecipeEnabled) {
+	static boolean shouldBookmarkRecipe(Optional<RecipeSlotUnderMouse> slotUnderMouse, boolean bookmarkOutputAsRecipe) {
 		return slotUnderMouse
-			.map(slot -> shouldBookmarkRecipe(slot.slot().getRole(), bookmarkOutputAsRecipeEnabled))
+			.map(slot -> shouldBookmarkRecipe(slot.slot().getRole(), bookmarkOutputAsRecipe))
 			.orElse(true);
 	}
 
-	static boolean shouldBookmarkRecipe(RecipeIngredientRole role, boolean bookmarkOutputAsRecipeEnabled) {
-		return role == RecipeIngredientRole.OUTPUT && bookmarkOutputAsRecipeEnabled;
+	static boolean shouldBookmarkRecipe(RecipeIngredientRole role, boolean bookmarkOutputAsRecipe) {
+		return role == RecipeIngredientRole.OUTPUT && bookmarkOutputAsRecipe;
 	}
 
 	private Optional<IUserInputHandler> handleIngredientBookmark(UserInput input, IInternalKeyMappings keyBindings) {

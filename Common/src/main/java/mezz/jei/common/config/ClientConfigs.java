@@ -1,12 +1,13 @@
 package mezz.jei.common.config;
 
 import mezz.jei.api.gui.placement.HorizontalAlignment;
-import mezz.jei.common.config.file.ConfigSchemaBuilder;
-import mezz.jei.common.config.file.FileWatcher;
-import mezz.jei.common.config.file.IConfigSchema;
-import mezz.jei.common.config.file.IConfigSchemaBuilder;
+import net.mezzdev.config.api.schema.builder.IConfigCategoryBuilder;
+import net.mezzdev.config.api.schema.builder.IConfigEditorCategoryBuilder;
+import net.mezzdev.config.api.schema.builder.IConfigSchemaBuilder;
 
-import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class ClientConfigs implements IClientConfigs {
 	private final IClientConfig clientConfig;
@@ -14,21 +15,44 @@ public class ClientConfigs implements IClientConfigs {
 	private final IIngredientGridConfig ingredientListConfig;
 	private final IIngredientGridConfig bookmarkListConfig;
 
-	private final IConfigSchema schema;
+	private final List<Runnable> runtimeListenerRemovals = new ArrayList<>();
 
-	public ClientConfigs(Path configFile) {
-		IConfigSchemaBuilder builder = new ConfigSchemaBuilder(configFile, "jei.config.client");
+	public ClientConfigs(
+		IConfigSchemaBuilder builder,
+		boolean isDev
+	) {
+		IConfigCategoryBuilder search = builder.addCategory("search");
+		IConfigCategoryBuilder ingredientList = builder.addCategory("ingredientList");
+		IConfigEditorCategoryBuilder ingredientSorting = builder.addEditorCategory("ingredientSorting");
+		IConfigCategoryBuilder bookmarkList = builder.addCategory("bookmarkList");
+		IConfigCategoryBuilder input = builder.addCategory("input");
+		IConfigCategoryBuilder recipes = builder.addCategory("recipes");
+		IConfigCategoryBuilder tooltips = builder.addCategory("tooltips");
+		IConfigCategoryBuilder lookups = builder.addCategory("lookups");
+		IConfigCategoryBuilder cheating = builder.addCategory("cheating");
+		IConfigCategoryBuilder advanced = builder.addCategory("advanced");
 
-		clientConfig = new ClientConfig(builder);
-		ingredientFilterConfig = new IngredientFilterConfig(builder);
-		ingredientListConfig = new IngredientGridConfig("ingredientList", builder, HorizontalAlignment.RIGHT);
-		bookmarkListConfig = new IngredientGridConfig("bookmarkList", builder, HorizontalAlignment.LEFT);
+		IngredientFilterConfig ingredientFilterConfig = new IngredientFilterConfig(search);
+		IngredientGridConfig ingredientListConfig = new IngredientGridConfig(ingredientList, HorizontalAlignment.RIGHT);
+		IngredientGridConfig bookmarkListConfig = new IngredientGridConfig(bookmarkList, HorizontalAlignment.LEFT);
 
-		schema = builder.build();
-	}
-
-	public void register(FileWatcher fileWatcher, ConfigManager configManager) {
-		schema.register(fileWatcher, configManager);
+		this.clientConfig = new ClientConfig(
+			search,
+			ingredientList,
+			ingredientSorting,
+			bookmarkList,
+			input,
+			recipes,
+			tooltips,
+			lookups,
+			cheating,
+			advanced,
+			isDev
+		);
+		this.ingredientFilterConfig = ingredientFilterConfig;
+		this.ingredientListConfig = ingredientListConfig;
+		this.bookmarkListConfig = bookmarkListConfig;
+		builder.build();
 	}
 
 	@Override
@@ -52,7 +76,19 @@ public class ClientConfigs implements IClientConfigs {
 	}
 
 	@Override
+	public void registerRuntimeListenerRemoval(Runnable listenerRemoval) {
+		synchronized (runtimeListenerRemovals) {
+			runtimeListenerRemovals.add(Objects.requireNonNull(listenerRemoval));
+		}
+	}
+
+	@Override
 	public void onRuntimeStopped() {
-		schema.clearListeners();
+		List<Runnable> listenerRemovals;
+		synchronized (runtimeListenerRemovals) {
+			listenerRemovals = List.copyOf(runtimeListenerRemovals);
+			runtimeListenerRemovals.clear();
+		}
+		listenerRemovals.forEach(Runnable::run);
 	}
 }

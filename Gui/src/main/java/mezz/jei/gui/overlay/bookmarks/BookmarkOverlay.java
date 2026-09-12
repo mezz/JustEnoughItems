@@ -5,6 +5,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
@@ -107,9 +108,9 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		});
 		lookupHistoryOverlay.getLookupHistory().addSourceListChangedListener(this::markScreenPropertiesDirty);
 
-		clientConfig.lookupHistoryEnabled().addListener(v -> markScreenPropertiesDirty());
-		clientConfig.maxLookupHistoryRows().addListener(v -> markScreenPropertiesDirty());
-		clientConfig.lookupHistoryDisplaySide().addListener(v -> markScreenPropertiesDirty());
+		Internal.registerRuntimeListenerRemoval(clientConfig.lookupHistoryEnabled().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(clientConfig.maxLookupHistoryRows().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(clientConfig.lookupHistoryDisplaySide().addListener(v -> markScreenPropertiesDirty()));
 		addGridConfigListeners(bookmarkListConfig);
 	}
 
@@ -131,14 +132,14 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	private void addGridConfigListeners(IIngredientGridConfig gridConfig) {
-		gridConfig.maxColumns().addListener(v -> markScreenPropertiesDirty());
-		gridConfig.maxRows().addListener(v -> markScreenPropertiesDirty());
-		gridConfig.drawBackground().addListener(v -> markScreenPropertiesDirty());
-		gridConfig.layoutMode().addListener(v -> markScreenPropertiesDirty());
-		gridConfig.navigationMode().addListener(v -> markScreenPropertiesDirty());
-		gridConfig.horizontalAlignment().addListener(v -> markScreenPropertiesDirty());
-		gridConfig.verticalAlignment().addListener(v -> markScreenPropertiesDirty());
-		gridConfig.navigationVisibility().addListener(v -> markScreenPropertiesDirty());
+		Internal.registerRuntimeListenerRemoval(gridConfig.maxColumns().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.maxRows().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.drawBackground().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.layoutMode().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.navigationMode().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.horizontalAlignment().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.verticalAlignment().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.navigationVisibility().addListener(v -> markScreenPropertiesDirty()));
 	}
 
 	private void updateScreenPropertiesIfDirty() {
@@ -169,7 +170,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		ImmutableRect2i displayArea = getDisplayArea(guiProperties);
 		ImmutablePoint2i mouseExclusionArea = this.guiPropertiesCache.getMouseExclusionArea();
 		ImmutableRect2i availableContentsArea = displayArea.cropBottom(BUTTON_SIZE + INNER_PADDING);
-		if (clientConfig.lookupHistoryEnabled().getValue() && lookupHistoryOverlay.isDisplayedOnThisSide()) {
+		if (clientConfig.lookupHistoryEnabled().get() && lookupHistoryOverlay.isDisplayedOnThisSide()) {
 			int lookupHistoryDisplayHeight = lookupHistoryOverlay.getDisplayHeight();
 			if (lookupHistoryDisplayHeight > 0) {
 				ImmutableRect2i historyArea = displayArea
@@ -503,12 +504,12 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	private boolean canFlipPage() {
-		return !this.bookmarkListConfig.navigationMode().getValue().usesScrollbar() &&
+		return !this.bookmarkListConfig.navigationMode().get().usesScrollbar() &&
 			getPageDelegate().getPageCount() > 1;
 	}
 
 	void scrollDuringDrag(BookmarkDragScroll dragScroll, double mouseX, double mouseY) {
-		double pixels = dragScroll.update(this.contents.getSlotBackgroundArea(), this.bookmarkListConfig.navigationMode().getValue(), mouseX, mouseY);
+		double pixels = dragScroll.update(this.contents.getSlotBackgroundArea(), this.bookmarkListConfig.navigationMode().get(), mouseX, mouseY);
 		if (pixels != 0) {
 			this.contents.scrollByPixels(pixels);
 		}

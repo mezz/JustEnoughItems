@@ -4,7 +4,8 @@ import com.mojang.serialization.Codec;
 import mezz.jei.api.helpers.ICodecHelper;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.config.IJeiConfigValue;
+import mezz.jei.common.Internal;
+import net.mezzdev.config.api.value.IConfigValue;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.config.ILookupHistoryConfig;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
@@ -23,7 +24,7 @@ public class LookupHistory implements IIngredientGridSource {
 	private final IIngredientManager ingredientManager;
 	private final RegistryAccess registryAccess;
 	private final ICodecHelper codecHelper;
-	private final IJeiConfigValue<Integer> maxElements;
+	private final IConfigValue<Integer> maxElements;
 	private final ILookupHistoryConfig lookupHistoryConfig;
 	private final Codec<IBookmark> bookmarkCodec;
 
@@ -32,7 +33,7 @@ public class LookupHistory implements IIngredientGridSource {
 		IIngredientManager ingredientManager,
 		RegistryAccess registryAccess,
 		ICodecHelper codecHelper,
-		IJeiConfigValue<Integer> maxElements,
+		IConfigValue<Integer> maxElements,
 		ILookupHistoryConfig lookupHistoryConfig,
 		Codec<IBookmark> bookmarkCodec
 	) {
@@ -46,14 +47,14 @@ public class LookupHistory implements IIngredientGridSource {
 
 		List<IBookmark> loaded = lookupHistoryConfig.load(recipeManager, ingredientManager, registryAccess, codecHelper, bookmarkCodec);
 		this.elements.addAll(loaded);
-		maxElements.addListener(v -> trimToMaxElements());
+		Internal.registerRuntimeListenerRemoval(maxElements.addListener(v -> trimToMaxElements()));
 		trimToMaxElements();
 	}
 
 	public void add(IBookmark element) {
 		elements.remove(element);
 		elements.addFirst(element);
-		if (elements.size() > maxElements.getValue()) {
+		if (elements.size() > maxElements.get()) {
 			elements.removeLast();
 		}
 		notifyListeners();
@@ -86,7 +87,7 @@ public class LookupHistory implements IIngredientGridSource {
 
 	private void trimToMaxElements() {
 		boolean changed = false;
-		while (elements.size() > maxElements.getValue()) {
+		while (elements.size() > maxElements.get()) {
 			elements.removeLast();
 			changed = true;
 		}

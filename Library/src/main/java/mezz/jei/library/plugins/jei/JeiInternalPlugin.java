@@ -51,7 +51,7 @@ public class JeiInternalPlugin implements IModPlugin {
 		tagInfoRecipeMakers.clear();
 		IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-		if (clientConfig.showTagRecipesEnabled().getValue()) {
+		if (clientConfig.showTagRecipesEnabled().get()) {
 			RegistryUtil.getRegistryAccess()
 				.registries()
 				.forEach(entry -> {
@@ -65,7 +65,7 @@ public class JeiInternalPlugin implements IModPlugin {
 	public void registerRecipes(IRecipeRegistration registration) {
 		IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-		if (clientConfig.showTagRecipesEnabled().getValue()) {
+		if (clientConfig.showTagRecipesEnabled().get()) {
 			for (TagInfoRecipeMaker<?, ?> data : tagInfoRecipeMakers) {
 				data.addRecipes(registration);
 			}
