@@ -107,7 +107,7 @@ final class JeiFabricCreativeInventoryClientGameTest {
 					);
 				}
 
-				IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+				IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 				if (clientConfig.getGiveMode() != GiveMode.MOUSE_PICKUP) {
 					throw new AssertionError("Expected the client test configuration to use mouse-pickup give mode");
 				}

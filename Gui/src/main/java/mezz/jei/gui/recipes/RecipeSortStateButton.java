@@ -3,7 +3,7 @@ package mezz.jei.gui.recipes;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.gui.elements.GuiIconToggleButton;
@@ -47,7 +47,7 @@ public class RecipeSortStateButton extends GuiIconToggleButton {
 
 	@Override
 	public void tick() {
-		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+		IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 		Set<RecipeSorterStage> recipeSorterStages = clientConfig.getRecipeSorterStages();
 		boolean toggledOn = recipeSorterStages.contains(recipeSorterStage);
@@ -65,7 +65,7 @@ public class RecipeSortStateButton extends GuiIconToggleButton {
 	@Override
 	protected boolean onMouseClicked(UserInput input) {
 		if (!input.isSimulate()) {
-			IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+			IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
 			if (this.toggledOn) {
 				clientConfig.disableRecipeSorterStage(recipeSorterStage);

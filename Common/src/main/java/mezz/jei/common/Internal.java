@@ -4,13 +4,13 @@ import com.google.common.base.Preconditions;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
-import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.config.IClientConfigs;
+import mezz.jei.common.config.IWorldConfig;
 import mezz.jei.common.config.WorldConfig;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.ClientConnectionHelper;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.config.IWorldConfig;
 import net.mezzdev.deduplicatingrunner.DelayedExecutor;
 import net.mezzdev.deduplicatingrunner.DelayedTaskScheduler;
 import net.minecraft.client.Minecraft;
@@ -41,7 +41,7 @@ public final class Internal {
 	@Nullable
 	private static IJeiRuntime jeiRuntime;
 	@Nullable
-	private static IJeiClientConfigs jeiClientConfigs;
+	private static IClientConfigs jeiClientConfigs;
 	@Nullable
 	private static ClientRecipes clientRecipes = null;
 	private static final JeiFeatures jeiFeatures = new JeiFeatures();
@@ -107,16 +107,16 @@ public final class Internal {
 		return jeiRuntime;
 	}
 
-	public static void setJeiClientConfigs(@Nullable IJeiClientConfigs jeiClientConfigs) {
+	public static void setClientConfigs(@Nullable IClientConfigs jeiClientConfigs) {
 		Internal.jeiClientConfigs = jeiClientConfigs;
 	}
 
-	public static IJeiClientConfigs getJeiClientConfigs() {
+	public static IClientConfigs getClientConfigs() {
 		Preconditions.checkState(jeiClientConfigs != null, "JEI Client Configs have not been created yet.");
 		return jeiClientConfigs;
 	}
 
-	public static Optional<IJeiClientConfigs> getOptionalJeiClientConfigs() {
+	public static Optional<IClientConfigs> getOptionalClientConfigs() {
 		return Optional.ofNullable(jeiClientConfigs);
 	}
 

@@ -316,13 +316,12 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		}
 		tooltip.draw(poseStack, mouseX, mouseY, typedIngredient, ingredientRenderer, ingredientManager);
 	}
-
 	private static <T> void addCreativeTabs(
 		ITooltipBuilder tooltipBuilder,
 		ITypedIngredient<T> typedIngredient,
 		IIngredientHelper<T> ingredientHelper
 	) {
-		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 		if (!clientConfig.isShowCreativeTabNamesEnabled()) {
 			return;
 		}
