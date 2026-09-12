@@ -28,6 +28,11 @@ val modrinthId: String by extra
 val bakedSubstringIndexVersion: String by extra
 val suffixtreeVersion: String by extra
 val deduplicatingRunnerVersion: String by extra
+val mezzConfigVersion: String by extra
+val mezzConfigVersionRange: String by extra
+val mezzConfigApiDependency: String by rootProject.extra
+val mezzConfigDependency: String by rootProject.extra
+val mezzConfigNeoForgeDependency: String by rootProject.extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -150,6 +155,20 @@ fun Configuration.singleFileContents(): Provider<String> =
 		.map { it.asFile.readText() }
 
 dependencies {
+	compileOnly(mezzConfigApiDependency)
+	runtimeOnly(mezzConfigNeoForgeDependency)
+	jarJar(mezzConfigNeoForgeDependency) {
+		version {
+			strictly(mezzConfigVersionRange)
+			prefer(mezzConfigVersion)
+		}
+	}
+	jarJar(mezzConfigDependency) {
+		version {
+			strictly(mezzConfigVersionRange)
+			prefer(mezzConfigVersion)
+		}
+	}
 	dependencyProjects.forEach {
 		compileOnly(it)
 	}
@@ -166,6 +185,9 @@ dependencies {
 		isTransitive = false
 	}
 	"clientGameTestCompileOnly"("org.jspecify:jspecify:1.0.0")
+	"gameTestRuntimeOnly"(mezzConfigNeoForgeDependency)
+	"clientGameTestRuntimeOnly"(mezzConfigNeoForgeDependency)
+	testImplementation(mezzConfigApiDependency)
 	testImplementation(
 		group = "org.junit.jupiter",
 		name = "junit-jupiter",

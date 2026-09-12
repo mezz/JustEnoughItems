@@ -16,6 +16,7 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val neoformVersionAndTimestamp = "$minecraftVersion-$neoformTimestamp"
 val deduplicatingRunnerVersion: String by extra
+val mezzConfigApiDependency: String by rootProject.extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-gui"
 base {
@@ -49,6 +50,7 @@ dependencies {
         name = "mixin",
         version = "0.8.5"
     )
+    implementation(mezzConfigApiDependency)
     dependencyProjects.forEach {
         implementation(it)
     }

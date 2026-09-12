@@ -30,6 +30,11 @@ val modrinthId: String by extra
 val bakedSubstringIndexVersion: String by extra
 val suffixtreeVersion: String by extra
 val deduplicatingRunnerVersion: String by extra
+val mezzConfigVersion: String by extra
+val mezzConfigVersionRange: String by extra
+val mezzConfigApiDependency: String by rootProject.extra
+val mezzConfigDependency: String by rootProject.extra
+val mezzConfigForgeDependency: String by rootProject.extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -88,6 +93,16 @@ tasks.named(forgeDebugSourceSet.classesTaskName) {
 	dependsOn(prepareForgeDebug)
 }
 
+val mezzConfigLocalRuntime by configurations.creating {
+	isCanBeConsumed = false
+	isCanBeResolved = false
+}
+configurations.runtimeClasspath {
+	extendsFrom(mezzConfigLocalRuntime)
+}
+
+jarJar.enable()
+
 java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
@@ -131,6 +146,16 @@ dependencies {
 		name = "forge",
 		version = "${minecraftVersion}-${forgeVersion}"
 	)
+	compileOnly(mezzConfigApiDependency)
+	mezzConfigLocalRuntime(fg.deobf(mezzConfigForgeDependency))
+	jarJar("${mezzConfigForgeDependency.substringBeforeLast(":")}:$mezzConfigVersionRange") {
+		isTransitive = false
+		jarJar.pin(this, mezzConfigVersion)
+	}
+	jarJar("${mezzConfigDependency.substringBeforeLast(":")}:$mezzConfigVersionRange") {
+		isTransitive = false
+		jarJar.pin(this, mezzConfigVersion)
+	}
 	dependencyProjects.forEach {
 		compileOnly(it)
 	}

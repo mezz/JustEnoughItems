@@ -46,6 +46,9 @@ val amecsMinecraftVersion: String by extra
 val bakedSubstringIndexVersion: String by extra
 val suffixtreeVersion: String by extra
 val deduplicatingRunnerVersion: String by extra
+val mezzConfigApiDependency: String by rootProject.extra
+val mezzConfigDependency: String by rootProject.extra
+val mezzConfigFabricDependency: String by rootProject.extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -193,6 +196,10 @@ dependencies {
         version = amecsKeyModifiersVersionFabric
     )
     "clientGameTestCompileOnly"("org.jspecify:jspecify:1.0.0")
+    compileOnly(mezzConfigApiDependency)
+    modLocalRuntime(mezzConfigFabricDependency)
+    include(mezzConfigFabricDependency)
+    include(mezzConfigDependency)
     vanillaDependencyProjects.forEach {
         compileOnly(it)
         localRuntime(it)
