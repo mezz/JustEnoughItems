@@ -2,6 +2,7 @@ package mezz.jei.library.ingredients.subtypes;
 
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("removal")
 public class LegacyInterpreterAdapter<T> implements ISubtypeInterpreter<T> {
@@ -12,6 +13,7 @@ public class LegacyInterpreterAdapter<T> implements ISubtypeInterpreter<T> {
 	}
 
 	@Override
+	@Nullable
 	public Object getSubtypeData(T ingredient, UidContext context) {
 		String result = legacyInterpreter.apply(ingredient, context);
 		if (result.isEmpty()) {

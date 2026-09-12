@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.lang.reflect.Field;
@@ -95,6 +96,7 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 		} catch (IllegalAccessException ignored) {}
 	}
 
+	@Nullable
 	private static Field findRenderablesField() {
 		try {
 			Field field = Screen.class.getDeclaredField("renderables");
