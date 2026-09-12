@@ -9,6 +9,8 @@ import net.neoforged.fml.config.ModConfig;
 import java.util.function.Supplier;
 
 public final class ServerConfig implements IServerConfig {
+	private static final String TRANSLATION_KEY_PREFIX = "jei.configuration.server.";
+
 	// Forge config
 	private final Supplier<Boolean> enableCheatModeForOp;
 	private final Supplier<Boolean> enableCheatModeForCreative;
@@ -26,13 +28,16 @@ public final class ServerConfig implements IServerConfig {
 	private ServerConfig(ModConfigSpec.Builder builder) {
 		builder.push("cheat mode");
 		{
-			builder.comment("Enable the cheat mode for players who have an operator status (/op).");
+			builder.comment("Enable the cheat mode for players who have an operator status (/op).")
+				.translation(TRANSLATION_KEY_PREFIX + "enableCheatModeForOp");
 			enableCheatModeForOp = builder.define("enableCheatModeForOp", true);
 
-			builder.comment("Enable the cheat mode for players who are in the creative mode.");
+			builder.comment("Enable the cheat mode for players who are in the creative mode.")
+				.translation(TRANSLATION_KEY_PREFIX + "enableCheatModeForCreative");
 			enableCheatModeForCreative = builder.define("enableCheatModeForCreative", true);
 
-			builder.comment("Enable the cheat mode for players who can use the \"/give\" command.");
+			builder.comment("Enable the cheat mode for players who can use the \"/give\" command.")
+				.translation(TRANSLATION_KEY_PREFIX + "enableCheatModeForGive");
 			enableCheatModeForGive = builder.define("enableCheatModeForGive", false);
 		}
 		builder.pop();

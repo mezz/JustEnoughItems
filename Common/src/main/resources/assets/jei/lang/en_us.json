@@ -112,6 +112,12 @@
 
   "_comment": "Config",
   "jei.config": "JEI Config",
+  "jei.configuration.server.enableCheatModeForOp": "Allow Cheat Mode for Operators",
+  "jei.configuration.server.enableCheatModeForOp.tooltip": "Allow players with operator status (/op) to use JEI cheat mode.",
+  "jei.configuration.server.enableCheatModeForCreative": "Allow Cheat Mode in Creative Mode",
+  "jei.configuration.server.enableCheatModeForCreative.tooltip": "Allow players in Creative Mode to use JEI cheat mode.",
+  "jei.configuration.server.enableCheatModeForGive": "Allow Cheat Mode with Give Permission",
+  "jei.configuration.server.enableCheatModeForGive.tooltip": "Allow players who can use the /give command to use JEI cheat mode.",
   "jei.config.name": "Name: %s",
   "jei.config.description": "Description: %s",
   "jei.config.valueValues": "Valid Values: %s",
