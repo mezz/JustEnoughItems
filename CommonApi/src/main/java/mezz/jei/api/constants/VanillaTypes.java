@@ -3,7 +3,10 @@ package mezz.jei.api.constants;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.Optional;
 
 /**
  * Built-in {@link IIngredientType} for vanilla Minecraft.
@@ -21,6 +24,11 @@ public final class VanillaTypes {
 		@Override
 		public Class<? extends ItemStack> getIngredientClass() {
 			return ItemStack.class;
+		}
+
+		@Override
+		public Optional<ItemStack> getRepresentativeIngredient() {
+			return Optional.of(new ItemStack(Items.DIAMOND_PICKAXE));
 		}
 
 		@Override

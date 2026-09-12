@@ -33,6 +33,15 @@ public interface IIngredientType<T> {
 	}
 
 	/**
+	 * @return an optional representative ingredient for this type, suitable for UI icons.
+	 *
+	 * @since 19.56.0
+	 */
+	default Optional<T> getRepresentativeIngredient() {
+		return Optional.empty();
+	}
+
+	/**
 	 * Helper to cast an unknown ingredient to this type if it matches.
 	 *
 	 * @since 11.5.0

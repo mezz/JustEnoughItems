@@ -7,6 +7,9 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+
+import java.util.Optional;
 
 /**
  * Built-in {@link IIngredientType} for Fabric Minecraft.
@@ -26,6 +29,11 @@ public final class FabricTypes {
 		@Override
 		public Class<? extends IJeiFluidIngredient> getIngredientClass() {
 			return IJeiFluidIngredient.class;
+		}
+
+		@Override
+		public Optional<IJeiFluidIngredient> getRepresentativeIngredient() {
+			return Optional.of(new JeiFluidIngredient(FluidVariant.of(Fluids.WATER), FluidConstants.BUCKET));
 		}
 
 		@Override
