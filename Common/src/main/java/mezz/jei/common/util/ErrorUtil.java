@@ -122,10 +122,11 @@ public final class ErrorUtil {
 		}
 	}
 
-	public static <T> void checkNotNull(@Nullable T object, String name) {
+	public static <T> T checkNotNull(@Nullable T object, String name) {
 		if (object == null) {
 			throw new NullPointerException(name + " must not be null.");
 		}
+		return object;
 	}
 
 	@SuppressWarnings("ConstantConditions")
