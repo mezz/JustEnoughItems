@@ -27,6 +27,7 @@ import net.minecraft.world.item.crafting.display.SlotDisplay;
  * Everything communicated between a mod and JEI is through this class.
  * IModPlugins must have the {@link JeiPlugin} annotation to get loaded by JEI.
  */
+@SuppressWarnings({"deprecation", "removal"})
 public interface IModPlugin {
 
 	/**
@@ -211,7 +212,9 @@ public interface IModPlugin {
 	 * Called when JEI's configs are available.
 	 * This is called early on, as soon as configs are available.
 	 * @since 12.3.0
+	 * @deprecated use MezzConfig APIs directly
 	 */
+	@Deprecated(since = "30.33.0", forRemoval = true)
 	default void onConfigManagerAvailable(IJeiConfigManager configManager) {
 
 	}
