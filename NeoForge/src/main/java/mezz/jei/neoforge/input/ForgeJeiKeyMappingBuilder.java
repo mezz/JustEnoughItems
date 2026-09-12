@@ -29,9 +29,12 @@ public class ForgeJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
 			case GUI -> KeyConflictContext.GUI;
 			case IN_GAME -> KeyConflictContext.IN_GAME;
 			case JEI_GUI_HOVER -> JeiForgeKeyConflictContexts.JEI_GUI_HOVER;
+			case JEI_GUI_HOVER_BOOKMARK -> JeiForgeKeyConflictContexts.JEI_GUI_HOVER_BOOKMARK;
 			case JEI_GUI_HOVER_CHEAT_MODE -> JeiForgeKeyConflictContexts.JEI_GUI_HOVER_CHEAT_MODE;
 			case JEI_GUI_HOVER_CONFIG_BUTTON -> JeiForgeKeyConflictContexts.JEI_GUI_HOVER_CONFIG_BUTTON;
+			case JEI_GUI_HOVER_INGREDIENT -> JeiForgeKeyConflictContexts.JEI_GUI_HOVER_INGREDIENT;
 			case JEI_GUI_HOVER_SEARCH -> JeiForgeKeyConflictContexts.JEI_GUI_HOVER_SEARCH;
+			case JEI_GUI_FOCUSED_SEARCH -> JeiForgeKeyConflictContexts.JEI_GUI_FOCUSED_SEARCH;
 		};
 		return this;
 	}
