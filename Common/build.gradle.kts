@@ -1,3 +1,5 @@
+import mezz.jei.gradle.dependencyInfo
+import mezz.jei.gradle.mezzConfigDependency
 import mezz.jei.gradle.gradleProperty
 import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
@@ -15,6 +17,8 @@ plugins {
     id("net.neoforged.jarcompatibilitychecker")
     id("maven-publish")
 }
+
+val mezzConfigApiDependency = mezzConfigDependency("config-api")
 
 // gradle.properties
 val jUnitVersion = gradleProperty("jUnitVersion")
@@ -91,6 +95,8 @@ sourceSets {
 }
 
 dependencies {
+    implementation(mezzConfigApiDependency)
+    testImplementation(mezzConfigDependency("fabric"))
     implementation(apiSourceSet.output)
     implementation("org.jetbrains:annotations:26.0.2")
     implementation("com.google.guava:guava:33.5.0-jre")
@@ -187,7 +193,7 @@ publishing {
             artifact(tasks.jar)
             artifact(tasks.named("sourcesJar"))
 
-            val dependencyInfos = listOf("common-api").map {
+            val dependencyInfos = listOf(dependencyInfo(mezzConfigApiDependency)) + listOf("common-api").map {
                 mapOf(
                     "groupId" to modGroup,
                     "artifactId" to "${modId}-${minecraftVersion}-$it",
