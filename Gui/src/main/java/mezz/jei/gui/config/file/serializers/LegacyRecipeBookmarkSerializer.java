@@ -7,7 +7,6 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.common.config.file.serializers.LegacyTypedIngredientSerializer;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import net.mezzdev.config.api.value.serializer.IDeserializeResult;
