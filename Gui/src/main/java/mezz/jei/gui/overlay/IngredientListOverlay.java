@@ -182,6 +182,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	public void tick() {
+		this.configButton.tick();
 		if (isListDisplayed()) {
 			this.contents.tick();
 		}
