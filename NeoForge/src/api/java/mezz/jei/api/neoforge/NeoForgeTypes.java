@@ -3,8 +3,11 @@ package mezz.jei.api.neoforge;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
+
+import java.util.Optional;
 
 /**
  * Built-in {@link IIngredientType} for NeoForge Minecraft.
@@ -24,6 +27,11 @@ public final class NeoForgeTypes {
 		@Override
 		public Class<? extends FluidStack> getIngredientClass() {
 			return FluidStack.class;
+		}
+
+		@Override
+		public Optional<FluidStack> getRepresentativeIngredient() {
+			return Optional.of(new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME));
 		}
 
 		@Override
