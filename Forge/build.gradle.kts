@@ -256,16 +256,16 @@ minecraft {
 	}
 }
 
-tasks.withType<JavaCompile>().configureEach {
-    dependencyProjects.forEach {
-        source(it.sourceSets.main.get().allSource)
-    }
+tasks.named<JavaCompile>(sourceSets.main.get().compileJavaTaskName) {
+	dependencyProjects.forEach {
+		source(it.sourceSets.main.get().allSource)
+	}
 }
 
-tasks.withType<ProcessResources> {
-    dependencyProjects.forEach {
-        from(it.sourceSets.main.get().resources)
-    }
+tasks.named<ProcessResources>(sourceSets.main.get().processResourcesTaskName) {
+	dependencyProjects.forEach {
+		from(it.sourceSets.main.get().resources)
+	}
 }
 
 tasks.jar {
