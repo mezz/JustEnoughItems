@@ -156,13 +156,13 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.register(registerMethod);
 
 		transferRecipeBookmark = mouseHover.createMapping("key.jei.transferRecipeBookmark")
-			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
+			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER_BOOKMARK)
 			.setModifier(JeiKeyModifier.SHIFT)
 			.buildMouseLeft()
 			.register(registerMethod);
 
 		maxTransferRecipeBookmark = mouseHover.createMapping("key.jei.maxTransferRecipeBookmark")
-			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
+			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER_BOOKMARK)
 			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
 			.buildMouseLeft()
 			.register(registerMethod);
@@ -185,12 +185,12 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.register(registerMethod);
 
 		previousSearch = search.createMapping("key.jei.previousSearch")
-			.setContext(JeiKeyConflictContext.GUI)
+			.setContext(JeiKeyConflictContext.JEI_GUI_FOCUSED_SEARCH)
 			.buildKeyboardKey(GLFW.GLFW_KEY_UP)
 			.register(registerMethod);
 
 		nextSearch = search.createMapping("key.jei.nextSearch")
-			.setContext(JeiKeyConflictContext.GUI)
+			.setContext(JeiKeyConflictContext.JEI_GUI_FOCUSED_SEARCH)
 			.buildKeyboardKey(GLFW.GLFW_KEY_DOWN)
 			.register(registerMethod);
 
@@ -235,13 +235,13 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.register(registerMethod);
 
 		toggleHideIngredient = editMode.createMapping("key.jei.toggleHideIngredient")
-			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
+			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER_INGREDIENT)
 			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
 			.buildMouseLeft()
 			.register(registerMethod);
 
 		toggleWildcardHideIngredient = editMode.createMapping("key.jei.toggleWildcardHideIngredient")
-			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER)
+			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER_INGREDIENT)
 			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
 			.buildMouseRight()
 			.register(registerMethod);
