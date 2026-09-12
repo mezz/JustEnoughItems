@@ -1,4 +1,6 @@
+import mezz.jei.gradle.dependencyInfo
 import mezz.jei.gradle.mezzConfigDependency
+import mezz.jei.gradle.mezzConfigGuiDependency
 import mezz.jei.gradle.UnpackArchives
 import mezz.jei.gradle.gradleProperty
 import mezz.jei.gradle.isolatedProjectDirectory
@@ -32,6 +34,8 @@ repositories {
 }
 
 val mezzConfigApiDependency = mezzConfigDependency("config-api")
+val mezzConfigGuiApiDependency = mezzConfigGuiDependency("config-gui-api")
+val mezzConfigGuiFabricDependency = mezzConfigGuiDependency("fabric")
 
 // gradle.properties
 val curseHomepageUrl = gradleProperty("curseHomepageUrl")
@@ -48,6 +52,8 @@ val amecsVersionFabric = gradleProperty("amecsVersionFabric")
 val amecsMinecraftVersion = gradleProperty("amecsMinecraftVersion")
 val mezzConfigCurseForgeProjectSlug = gradleProperty("mezzConfigCurseForgeProjectSlug")
 val mezzConfigModrinthProjectId = gradleProperty("mezzConfigModrinthProjectId")
+val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForgeProjectSlug")
+val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
 val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
 val suffixtreeVersion = gradleProperty("suffixtreeVersion")
 
@@ -161,6 +167,8 @@ dependencies {
     compileOnly(mezzConfigApiDependency)
     runtimeOnly(mezzConfigDependency("fabric"))
     include(mezzConfigDependency("fabric"))
+    compileOnly(mezzConfigGuiApiDependency)
+    add("localRuntime", mezzConfigGuiFabricDependency)
     minecraft("com.mojang:minecraft:${minecraftVersion}")
     implementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
     implementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
@@ -430,6 +438,7 @@ publishMods {
         projectSlug = curseHomepageUrl.substringAfterLast("/")
         accessToken.set(curseforgeApikey ?: "0")
         requires(mezzConfigCurseForgeProjectSlug)
+        optional(mezzConfigGuiCurseForgeProjectSlug)
         changelog.set(changelogHtml.singleFileContents())
         changelogType = "html"
         minecraftVersionRange {
@@ -446,6 +455,7 @@ publishMods {
         projectId = modrinthId
         accessToken = modrinthToken
         requires(mezzConfigModrinthProjectId)
+        optional(mezzConfigGuiModrinthProjectId)
         changelog.set(changelogMarkdown.singleFileContents())
         minecraftVersionRange {
             start = minecraftVersionRangeStart
@@ -502,6 +512,17 @@ publishing {
         register<MavenPublication>("fabricJar") {
             artifactId = baseArchivesName
             from(components["modShade"])
+
+            val mezzConfigGuiDependencyInfo =
+                dependencyInfo(mezzConfigGuiFabricDependency) + ("optional" to "true")
+            pom.withXml {
+                val dependenciesNode =
+                    (asNode().get("dependencies") as groovy.util.NodeList).first() as groovy.util.Node
+                val dependencyNode = dependenciesNode.appendNode("dependency")
+                mezzConfigGuiDependencyInfo.forEach { (key, value) ->
+                    dependencyNode.appendNode(key, value)
+                }
+            }
         }
     }
     repositories {
