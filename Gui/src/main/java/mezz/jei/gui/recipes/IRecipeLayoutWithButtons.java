@@ -1,8 +1,8 @@
 package mezz.jei.gui.recipes;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
-import mezz.jei.gui.input.IUserInputHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.jspecify.annotations.Nullable;
 

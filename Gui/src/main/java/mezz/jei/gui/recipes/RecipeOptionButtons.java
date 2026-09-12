@@ -4,10 +4,10 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.handlers.CombinedInputHandler;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.elements.IconButton;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.handlers.CombinedInputHandler;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 

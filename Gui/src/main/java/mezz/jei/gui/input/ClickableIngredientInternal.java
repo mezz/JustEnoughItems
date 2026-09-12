@@ -3,6 +3,7 @@ package mezz.jei.gui.input;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.input.IMouseOverable;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.world.item.ItemStack;
