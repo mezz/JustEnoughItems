@@ -2,7 +2,7 @@ package mezz.jei.test.lib;
 
 import mezz.jei.api.runtime.config.IJeiConfigValue;
 import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.common.search.SearchMode;
+import mezz.jei.common.config.SearchMode;
 
 public class TestIngredientFilterConfig implements IIngredientFilterConfig {
 	private final IJeiConfigValue<SearchMode> modNameSearchMode = value("modNameSearchMode", SearchMode.ENABLED);
