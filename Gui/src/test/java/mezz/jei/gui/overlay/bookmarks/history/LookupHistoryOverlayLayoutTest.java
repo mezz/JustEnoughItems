@@ -7,8 +7,10 @@ import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.config.NavigationVisibility;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.gui.overlay.TestConfigValue;
 import mezz.jei.gui.overlay.ingredients.IngredientGrid;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigationLayout;
+import net.mezzdev.config.api.value.IConfigValue;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -117,8 +119,8 @@ public class LookupHistoryOverlayLayoutTest {
 		}
 
 		@Override
-		public int getMaxColumns() {
-			return maxColumns;
+		public IConfigValue<Integer> maxColumns() {
+			return new TestConfigValue<>(maxColumns);
 		}
 
 		@Override
@@ -127,8 +129,8 @@ public class LookupHistoryOverlayLayoutTest {
 		}
 
 		@Override
-		public int getMaxRows() {
-			return maxRows;
+		public IConfigValue<Integer> maxRows() {
+			return new TestConfigValue<>(maxRows);
 		}
 
 		@Override
@@ -137,33 +139,33 @@ public class LookupHistoryOverlayLayoutTest {
 		}
 
 		@Override
-		public boolean drawBackground() {
-			return drawBackground;
+		public IConfigValue<Boolean> drawBackground() {
+			return new TestConfigValue<>(drawBackground);
 		}
 
 		@Override
-		public IngredientGridLayoutMode getLayoutMode() {
-			return IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE;
+		public IConfigValue<IngredientGridLayoutMode> layoutMode() {
+			return new TestConfigValue<>(IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE);
 		}
 
 		@Override
-		public HorizontalAlignment getHorizontalAlignment() {
-			return horizontalAlignment;
+		public IConfigValue<HorizontalAlignment> horizontalAlignment() {
+			return new TestConfigValue<>(horizontalAlignment);
 		}
 
 		@Override
-		public VerticalAlignment getVerticalAlignment() {
-			return verticalAlignment;
+		public IConfigValue<VerticalAlignment> verticalAlignment() {
+			return new TestConfigValue<>(verticalAlignment);
 		}
 
 		@Override
-		public NavigationVisibility getNavigationVisibility() {
-			return navigationVisibility;
+		public IConfigValue<NavigationVisibility> navigationVisibility() {
+			return new TestConfigValue<>(navigationVisibility);
 		}
 
 		@Override
-		public IngredientGridNavigationMode getNavigationMode() {
-			return navigationMode;
+		public IConfigValue<IngredientGridNavigationMode> navigationMode() {
+			return new TestConfigValue<>(navigationMode);
 		}
 
 		@Override

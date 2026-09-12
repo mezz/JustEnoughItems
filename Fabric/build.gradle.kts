@@ -11,6 +11,9 @@ plugins {
 }
 
 repositories {
+	maven("https://maven.blamejared.com/") {
+		content { includeGroup("net.mezzdev.config") }
+	}
     fun exclusiveMaven(url: String, filter: Action<InclusiveRepositoryContentDescriptor>) =
         exclusiveContent {
             forRepository { maven(url) }

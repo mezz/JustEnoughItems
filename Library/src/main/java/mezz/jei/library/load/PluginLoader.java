@@ -89,10 +89,23 @@ public final class PluginLoader {
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(ingredientManagerBuilder));
 		PluginCaller.callOnPlugins("Registering extra ingredients", plugins, p -> p.registerExtraIngredients(ingredientManagerBuilder));
 
-		if (ingredientFilterConfig.getSearchIngredientAliases()) {
+		if (ingredientFilterConfig.searchIngredientAliases().get()) {
 			PluginCaller.callOnPlugins("Registering search ingredient aliases", plugins, p -> p.registerIngredientAliases(ingredientManagerBuilder));
 		}
 		return ingredientManagerBuilder.build();
+	}
+
+	public static ImmutableSetMultimap<String, String> registerModAliases(
+		StartData data,
+		IIngredientFilterConfig ingredientFilterConfig
+	) {
+		List<IModPlugin> plugins = data.plugins();
+		if (!ingredientFilterConfig.searchModAliases().get()) {
+			return ImmutableSetMultimap.of();
+		}
+		ModInfoRegistration modInfoRegistration = new ModInfoRegistration();
+		PluginCaller.callOnPlugins("Registering Mod Info", plugins, p -> p.registerModInfo(modInfoRegistration));
+		return modInfoRegistration.getModAliases();
 	}
 
 	public static JeiHelpers createJeiHelpers(

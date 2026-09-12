@@ -1,104 +1,98 @@
 package mezz.jei.common.config;
 
-import mezz.jei.common.config.file.ConfigValue;
-import mezz.jei.common.config.file.IConfigCategoryBuilder;
-import mezz.jei.common.config.file.IConfigSchemaBuilder;
+import net.mezzdev.config.api.value.IConfigValue;
+import net.mezzdev.config.api.schema.builder.IConfigCategoryBuilder;
 
 public class IngredientFilterConfig implements IIngredientFilterConfig {
-	public final ConfigValue<SearchMode> modNameSearchMode;
-	public final ConfigValue<SearchMode> tooltipSearchMode;
-	public final ConfigValue<SearchMode> tagSearchMode;
-	public final ConfigValue<SearchMode> colorSearchMode;
-	public final ConfigValue<SearchMode> resourceLocationSearchMode;
-	public final ConfigValue<SearchMode> creativeTabSearchMode;
-	public final ConfigValue<Boolean> searchAdvancedTooltips;
-	public final ConfigValue<Boolean> searchModIds;
-	public final ConfigValue<Boolean> searchModAliases;
-	public final ConfigValue<Boolean> searchShortModNames;
-	public final ConfigValue<Boolean> searchIngredientAliases;
+	private final IConfigValue<SearchMode> modNameSearchMode;
+	private final IConfigValue<SearchMode> tooltipSearchMode;
+	private final IConfigValue<SearchMode> tagSearchMode;
+	private final IConfigValue<SearchMode> colorSearchMode;
+	private final IConfigValue<SearchMode> resourceLocationSearchMode;
+	private final IConfigValue<SearchMode> creativeTabSearchMode;
+	private final IConfigValue<Boolean> searchAdvancedTooltips;
+	private final IConfigValue<Boolean> searchModIds;
+	private final IConfigValue<Boolean> searchModAliases;
+	private final IConfigValue<Boolean> searchShortModNames;
+	private final IConfigValue<Boolean> searchIngredientAliases;
 
-	public IngredientFilterConfig(IConfigSchemaBuilder builder) {
-		IConfigCategoryBuilder search = builder.addCategory("search");
-		modNameSearchMode = search.addEnum("modNameSearchMode", SearchMode.REQUIRE_PREFIX);
-		tagSearchMode = search.addEnum("tagSearchMode", SearchMode.REQUIRE_PREFIX);
-		tooltipSearchMode = search.addEnum("tooltipSearchMode", SearchMode.ENABLED);
-		colorSearchMode = search.addEnum("colorSearchMode", SearchMode.DISABLED);
-		resourceLocationSearchMode = search.addEnum("resourceLocationSearchMode", SearchMode.DISABLED);
-		creativeTabSearchMode = search.addEnum("creativeTabSearchMode", SearchMode.DISABLED);
-		searchAdvancedTooltips = search.addBoolean("searchAdvancedTooltips", false);
-		searchModIds = search.addBoolean("searchModIds", true);
-		searchModAliases = search.addBoolean("searchModAliases", true);
-		searchShortModNames = search.addBoolean("searchShortModNames", false);
-		searchIngredientAliases = search.addBoolean("searchIngredientAliases", true);
+	public IngredientFilterConfig(IConfigCategoryBuilder search) {
+		modNameSearchMode = search.addEnum("modNameSearchMode", SearchMode.REQUIRE_PREFIX)
+			.build();
+		tagSearchMode = search.addEnum("tagSearchMode", SearchMode.REQUIRE_PREFIX)
+			.build();
+		tooltipSearchMode = search.addEnum("tooltipSearchMode", SearchMode.ENABLED)
+			.build();
+		colorSearchMode = search.addEnum("colorSearchMode", SearchMode.DISABLED)
+			.build();
+		resourceLocationSearchMode = search.addEnum("resourceLocationSearchMode", SearchMode.DISABLED)
+			.build();
+		creativeTabSearchMode = search.addEnum("creativeTabSearchMode", SearchMode.DISABLED)
+			.build();
+		searchAdvancedTooltips = search.addBoolean("searchAdvancedTooltips", false)
+			.build();
+		searchModIds = search.addBoolean("searchModIds", true)
+			.build();
+		searchModAliases = search.addBoolean("searchModAliases", true)
+			.build();
+		searchShortModNames = search.addBoolean("searchShortModNames", false)
+			.build();
+		searchIngredientAliases = search.addBoolean("searchIngredientAliases", true)
+			.build();
 	}
 
 	@Override
-	public SearchMode getModNameSearchMode() {
-		return modNameSearchMode.get();
+	public IConfigValue<SearchMode> modNameSearchMode() {
+		return modNameSearchMode;
 	}
 
 	@Override
-	public SearchMode getTooltipSearchMode() {
-		return tooltipSearchMode.get();
+	public IConfigValue<SearchMode> tooltipSearchMode() {
+		return tooltipSearchMode;
 	}
 
 	@Override
-	public SearchMode getTagSearchMode() {
-		return tagSearchMode.get();
+	public IConfigValue<SearchMode> tagSearchMode() {
+		return tagSearchMode;
 	}
 
 	@Override
-	public SearchMode getColorSearchMode() {
-		return colorSearchMode.get();
+	public IConfigValue<SearchMode> colorSearchMode() {
+		return colorSearchMode;
 	}
 
 	@Override
-	public SearchMode getResourceLocationSearchMode() {
-		return resourceLocationSearchMode.get();
+	public IConfigValue<SearchMode> resourceLocationSearchMode() {
+		return resourceLocationSearchMode;
 	}
 
 	@Override
-	public SearchMode getCreativeTabSearchMode() {
-		return creativeTabSearchMode.get();
+	public IConfigValue<SearchMode> creativeTabSearchMode() {
+		return creativeTabSearchMode;
 	}
 
 	@Override
-	public boolean getSearchAdvancedTooltips() {
-		return searchAdvancedTooltips.get();
+	public IConfigValue<Boolean> searchAdvancedTooltips() {
+		return searchAdvancedTooltips;
 	}
 
 	@Override
-	public boolean getSearchModIds() {
-		return searchModIds.get();
+	public IConfigValue<Boolean> searchModIds() {
+		return searchModIds;
 	}
 
 	@Override
-	public boolean getSearchModAliases() {
-		return searchModAliases.get();
+	public IConfigValue<Boolean> searchModAliases() {
+		return searchModAliases;
 	}
 
 	@Override
-	public boolean getSearchIngredientAliases() {
-		return searchIngredientAliases.get();
+	public IConfigValue<Boolean> searchIngredientAliases() {
+		return searchIngredientAliases;
 	}
 
 	@Override
-	public boolean getSearchShortModNames() {
-		return searchShortModNames.get();
-	}
-
-	@Override
-	public void addSearchConfigListener(Runnable listener) {
-		modNameSearchMode.addListener(v -> listener.run());
-		tooltipSearchMode.addListener(v -> listener.run());
-		tagSearchMode.addListener(v -> listener.run());
-		colorSearchMode.addListener(v -> listener.run());
-		resourceLocationSearchMode.addListener(v -> listener.run());
-		creativeTabSearchMode.addListener(v -> listener.run());
-		searchAdvancedTooltips.addListener(v -> listener.run());
-		searchModIds.addListener(v -> listener.run());
-		searchModAliases.addListener(v -> listener.run());
-		searchShortModNames.addListener(v -> listener.run());
-		searchIngredientAliases.addListener(v -> listener.run());
+	public IConfigValue<Boolean> searchShortModNames() {
+		return searchShortModNames;
 	}
 }

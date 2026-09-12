@@ -63,8 +63,8 @@ public class IngredientSorterComparators {
 	}
 
 	public Comparator<IListElementInfo<?>> getDefault() {
-		return getModNameComparator()
-			.thenComparing(getIngredientTypeComparator())
+		return getIngredientTypeComparator()
+			.thenComparing(getModNameComparator())
 			.thenComparing(getCreativeMenuComparator());
 	}
 

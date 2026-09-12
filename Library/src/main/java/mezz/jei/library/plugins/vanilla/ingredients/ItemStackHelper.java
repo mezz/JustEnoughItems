@@ -193,7 +193,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		if (ingredient.getItem() instanceof BlockItem blockItem) {
 			IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-			if (clientConfig.isLookupBlockTagsEnabled()) {
+			if (clientConfig.lookupBlockTagsEnabled().get()) {
 				Stream<ResourceLocation> blockTagStream = blockItem.getBlock()
 					.defaultBlockState()
 					.getTags()
@@ -224,7 +224,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		if (itemHolder.value() instanceof BlockItem blockItem) {
 			IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-			if (clientConfig.isLookupBlockTagsEnabled()) {
+			if (clientConfig.lookupBlockTagsEnabled().get()) {
 				Block block = blockItem.getBlock();
 				@SuppressWarnings("deprecation")
 				Holder.Reference<Block> blockHolder = block.builtInRegistryHolder();

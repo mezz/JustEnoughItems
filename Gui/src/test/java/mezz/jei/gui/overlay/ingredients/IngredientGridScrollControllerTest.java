@@ -14,6 +14,8 @@ import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
+import mezz.jei.gui.overlay.TestConfigValue;
+import net.mezzdev.config.api.value.IConfigValue;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -102,10 +104,16 @@ public class IngredientGridScrollControllerTest {
 		}
 	}
 
-	private record TestGridConfig(IngredientGridNavigationMode navigationMode) implements IIngredientGridConfig {
+	private static final class TestGridConfig implements IIngredientGridConfig {
+		private final IngredientGridNavigationMode navigationMode;
+
+		private TestGridConfig(IngredientGridNavigationMode navigationMode) {
+			this.navigationMode = navigationMode;
+		}
+
 		@Override
-		public int getMaxColumns() {
-			return 0;
+		public IConfigValue<Integer> maxColumns() {
+			return new TestConfigValue<>(0);
 		}
 
 		@Override
@@ -114,8 +122,8 @@ public class IngredientGridScrollControllerTest {
 		}
 
 		@Override
-		public int getMaxRows() {
-			return 0;
+		public IConfigValue<Integer> maxRows() {
+			return new TestConfigValue<>(0);
 		}
 
 		@Override
@@ -124,33 +132,33 @@ public class IngredientGridScrollControllerTest {
 		}
 
 		@Override
-		public boolean drawBackground() {
-			return false;
+		public IConfigValue<Boolean> drawBackground() {
+			return new TestConfigValue<>(false);
 		}
 
 		@Override
-		public IngredientGridLayoutMode getLayoutMode() {
-			return IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE;
+		public IConfigValue<IngredientGridLayoutMode> layoutMode() {
+			return new TestConfigValue<>(IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE);
 		}
 
 		@Override
-		public HorizontalAlignment getHorizontalAlignment() {
-			return HorizontalAlignment.LEFT;
+		public IConfigValue<HorizontalAlignment> horizontalAlignment() {
+			return new TestConfigValue<>(HorizontalAlignment.LEFT);
 		}
 
 		@Override
-		public VerticalAlignment getVerticalAlignment() {
-			return VerticalAlignment.TOP;
+		public IConfigValue<VerticalAlignment> verticalAlignment() {
+			return new TestConfigValue<>(VerticalAlignment.TOP);
 		}
 
 		@Override
-		public NavigationVisibility getNavigationVisibility() {
-			return NavigationVisibility.ENABLED;
+		public IConfigValue<NavigationVisibility> navigationVisibility() {
+			return new TestConfigValue<>(NavigationVisibility.ENABLED);
 		}
 
 		@Override
-		public IngredientGridNavigationMode getNavigationMode() {
-			return navigationMode;
+		public IConfigValue<IngredientGridNavigationMode> navigationMode() {
+			return new TestConfigValue<>(navigationMode);
 		}
 
 		@Override

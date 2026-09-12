@@ -247,7 +247,6 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	public ImmutableRect2i getIngredientGridArea() {
-		updateLayoutIfDirty();
 		return this.ingredientGrid.getArea();
 	}
 
@@ -268,7 +267,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		if (gridConfig.drawBackground()) {
+		if (gridConfig.drawBackground().get()) {
 			background.draw(guiGraphics, this.backgroundArea);
 			slotBackground.draw(guiGraphics, this.slotBackgroundArea);
 		}

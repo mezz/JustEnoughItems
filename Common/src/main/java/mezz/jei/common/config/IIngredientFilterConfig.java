@@ -1,27 +1,82 @@
 package mezz.jei.common.config;
 
+import mezz.jei.common.Internal;
+import net.mezzdev.config.api.value.IConfigValue;
+
+import java.util.List;
+
 public interface IIngredientFilterConfig {
-	SearchMode getModNameSearchMode();
+	IConfigValue<SearchMode> modNameSearchMode();
 
-	SearchMode getTooltipSearchMode();
+	IConfigValue<SearchMode> tooltipSearchMode();
 
-	SearchMode getTagSearchMode();
+	IConfigValue<SearchMode> tagSearchMode();
 
-	SearchMode getColorSearchMode();
+	IConfigValue<SearchMode> colorSearchMode();
 
-	SearchMode getResourceLocationSearchMode();
+	IConfigValue<SearchMode> resourceLocationSearchMode();
 
-	SearchMode getCreativeTabSearchMode();
+	IConfigValue<SearchMode> creativeTabSearchMode();
 
-	boolean getSearchAdvancedTooltips();
+	IConfigValue<Boolean> searchAdvancedTooltips();
 
-	boolean getSearchModIds();
+	IConfigValue<Boolean> searchModIds();
 
-	boolean getSearchModAliases();
+	IConfigValue<Boolean> searchModAliases();
 
-	boolean getSearchIngredientAliases();
+	IConfigValue<Boolean> searchIngredientAliases();
 
-	boolean getSearchShortModNames();
+	IConfigValue<Boolean> searchShortModNames();
 
-	void addSearchConfigListener(Runnable listener);
+	default SearchMode getModNameSearchMode() {
+		return modNameSearchMode().get();
+	}
+
+	default SearchMode getTooltipSearchMode() {
+		return tooltipSearchMode().get();
+	}
+
+	default SearchMode getTagSearchMode() {
+		return tagSearchMode().get();
+	}
+
+	default SearchMode getColorSearchMode() {
+		return colorSearchMode().get();
+	}
+
+	default SearchMode getResourceLocationSearchMode() {
+		return resourceLocationSearchMode().get();
+	}
+
+	default SearchMode getCreativeTabSearchMode() {
+		return creativeTabSearchMode().get();
+	}
+
+	default boolean getSearchAdvancedTooltips() {
+		return searchAdvancedTooltips().get();
+	}
+
+	default boolean getSearchModIds() {
+		return searchModIds().get();
+	}
+
+	default boolean getSearchModAliases() {
+		return searchModAliases().get();
+	}
+
+	default boolean getSearchIngredientAliases() {
+		return searchIngredientAliases().get();
+	}
+
+	default boolean getSearchShortModNames() {
+		return searchShortModNames().get();
+	}
+
+	default void addSearchConfigListener(Runnable listener) {
+		List.of(
+			modNameSearchMode(), tooltipSearchMode(), tagSearchMode(), colorSearchMode(),
+			resourceLocationSearchMode(), creativeTabSearchMode(), searchAdvancedTooltips(),
+			searchModIds(), searchModAliases(), searchIngredientAliases(), searchShortModNames()
+		).forEach(value -> Internal.registerRuntimeListenerRemoval(value.addListener(change -> listener.run())));
+	}
 }

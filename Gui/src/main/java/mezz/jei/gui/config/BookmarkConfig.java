@@ -11,7 +11,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.config.IJeiConfigValueSerializer.IDeserializeResult;
+import net.mezzdev.config.api.value.serializer.IDeserializeResult;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.file.JsonArrayFileHelper;
 import mezz.jei.common.config.file.serializers.TypedIngredientSerializer;
@@ -384,7 +384,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 		IDeserializeResult<ITypedIngredient<?>> deserialized = ingredientSerializer.deserialize(serializedIngredient);
 		Optional<ITypedIngredient<?>> result = deserialized.getResult();
 		if (result.isEmpty()) {
-			List<String> errors = deserialized.getErrors();
+			List<String> errors = deserialized.getDiagnostics();
 			LOGGER.warn("Failed to load bookmarked ingredients from string: \n{}\n{}", serializedIngredient, String.join(", ", errors));
 		} else {
 			return IngredientBookmark.create(result.get(), ingredientManager);
@@ -413,7 +413,7 @@ public class BookmarkConfig implements IBookmarkConfig {
 		IDeserializeResult<RecipeBookmark<?, ?>> deserialized = recipeBookmarkSerializer.deserialize(serializedRecipe);
 		Optional<RecipeBookmark<?, ?>> result = deserialized.getResult();
 		if (result.isEmpty()) {
-			List<String> errors = deserialized.getErrors();
+			List<String> errors = deserialized.getDiagnostics();
 			LOGGER.warn("Failed to load bookmarked recipe from string: \n{}\n{}", serializedRecipe, String.join(", ", errors));
 		} else {
 			return result.get();
