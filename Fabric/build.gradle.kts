@@ -1,3 +1,4 @@
+import mezz.jei.gradle.mezzConfigDependency
 import mezz.jei.gradle.UnpackArchives
 import mezz.jei.gradle.gradleProperty
 import mezz.jei.gradle.isolatedProjectDirectory
@@ -39,6 +40,8 @@ repositories {
         }
     }
 }
+val mezzConfigApiDependency = mezzConfigDependency("config-api")
+
 // gradle.properties
 val curseHomepageUrl = gradleProperty("curseHomepageUrl")
 val curseProjectId = gradleProperty("curseProjectId")
@@ -54,6 +57,8 @@ val parchmentVersionFabric = gradleProperty("parchmentVersionFabric")
 val modrinthId = gradleProperty("modrinthId")
 val amecsVersionFabric = gradleProperty("amecsVersionFabric")
 val amecsMinecraftVersion = gradleProperty("amecsMinecraftVersion")
+val mezzConfigCurseForgeProjectSlug = gradleProperty("mezzConfigCurseForgeProjectSlug")
+val mezzConfigModrinthProjectId = gradleProperty("mezzConfigModrinthProjectId")
 val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
 val suffixtreeVersion = gradleProperty("suffixtreeVersion")
 
@@ -166,6 +171,9 @@ tasks.withType<JavaCompile> {
 }
 
 dependencies {
+    compileOnly(mezzConfigApiDependency)
+    modRuntimeOnly(mezzConfigDependency("fabric"))
+    include(mezzConfigDependency("fabric"))
     minecraft("com.mojang:minecraft:${minecraftVersion}")
     @Suppress("UnstableApiUsage")
     mappings(loom.layered {
@@ -486,6 +494,7 @@ publishMods {
         projectId = curseProjectId
         projectSlug = curseHomepageUrl.substringAfterLast("/")
         accessToken.set(curseforgeApikey ?: "0")
+        requires(mezzConfigCurseForgeProjectSlug)
         changelog.set(changelogHtml.singleFileContents())
         changelogType = "html"
         minecraftVersionRange {
@@ -501,6 +510,7 @@ publishMods {
     modrinth {
         projectId = modrinthId
         accessToken = modrinthToken
+        requires(mezzConfigModrinthProjectId)
         changelog.set(changelogMarkdown.singleFileContents())
         minecraftVersionRange {
             start = minecraftVersionRangeStart

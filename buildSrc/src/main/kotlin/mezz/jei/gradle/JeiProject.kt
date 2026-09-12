@@ -37,6 +37,11 @@ private fun Project.configureJeiProject() {
 	val modDescription = property("modDescription")
 	val modId = property("modId")
 
+	repositories.maven {
+		url = uri("https://maven.blamejared.com")
+		content { includeGroup(gradleProperty("configModGroup")) }
+	}
+
 	version = "$specificationVersion.$buildNumber"
 	group = modGroup
 
@@ -70,6 +75,9 @@ private fun Project.configureJeiProject() {
 	tasks.withType(ProcessResources::class.java).configureEach {
 		val resourceProperties = mapOf(
 			"amecsVersionFabric" to amecsVersionFabric,
+			"configModId" to gradleProperty("configModId"),
+			"mezzConfigVersionRange" to gradleProperty("mezzConfigVersionRange"),
+			"mezzConfigFabricVersionRange" to gradleProperty("mezzConfigFabricVersionRange"),
 			"curseHomepageUrl" to curseHomepageUrl,
 			"fabricApiVersion" to fabricApiVersion,
 			"fabricApiVersionRange" to fabricApiVersionRange,
