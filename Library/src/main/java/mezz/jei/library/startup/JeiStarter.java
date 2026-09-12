@@ -171,6 +171,7 @@ public final class JeiStarter {
 			ingredientManager,
 			contextMap
 		);
+		stopCallbacks.add(recipeManager::onRuntimeStopped);
 		IRecipeTransferManager recipeTransferManager = PluginLoader.createRecipeTransferManager(
 			vanillaPlugin,
 			plugins,
