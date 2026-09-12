@@ -38,6 +38,8 @@ import mezz.jei.test.lib.TestIngredientFilterConfig;
 import mezz.jei.test.lib.TestIngredientHelper;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
+import net.mezzdev.config.api.sorting.ISortingConfig;
+import net.mezzdev.config.api.migration.ISortingConfigMigrator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.util.context.ContextMap;
@@ -49,6 +51,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -507,6 +510,53 @@ public class IngredientFilterTest {
 		}
 	}
 
+	private static class TestSortingConfig implements ISortingConfig<String> {
+		@Override
+		public List<String> getSortedValues(Collection<String> allValues) {
+			return allValues.stream()
+				.sorted(getComparator(allValues))
+				.toList();
+		}
+
+		@Override
+		public List<String> getDefaultSortedValues(Collection<String> allValues) {
+			return getSortedValues(allValues);
+		}
+
+		@Override
+		public boolean setSortedValues(Collection<String> allValues, List<String> sortedValues) {
+			return false;
+		}
+
+		@Override
+		public Comparator<String> getComparator(Collection<String> allValues) {
+			return Comparator.naturalOrder();
+		}
+
+		@Override
+		public boolean isVisible(Collection<String> allValues, String value) {
+			return true;
+		}
+
+		@Override
+		public boolean allowsRemovingValues() {
+			return true;
+		}
+
+		@Override
+		public Runnable addChangeListener(Runnable listener) {
+			return () -> {};
+		}
+
+		@Override
+		public ISortingConfig<String> setLegacyMigration(
+			List<Path> legacyPaths,
+			ISortingConfigMigrator<String> migrator
+		) {
+			return this;
+		}
+	}
+
 	private static class TestClientConfigs implements IClientConfigs {
 		private final IClientConfig clientConfig;
 		private final IIngredientFilterConfig ingredientFilterConfig;
@@ -535,6 +585,11 @@ public class IngredientFilterTest {
 		@Override
 		public IIngredientGridConfig getBookmarkListConfig() {
 			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public ISortingConfig<String> getRecipeCategorySortingConfig() {
+			return new TestSortingConfig();
 		}
 
 		@Override
