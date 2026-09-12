@@ -35,6 +35,8 @@ repositories {
 // gradle.properties
 val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
+val configModId: String by extra
+val configModGroup: String by extra
 val amecsKeyModifiersVersionFabric: String by extra
 val amecsVersionFabric: String by extra
 val fabricApiVersion: String by extra
@@ -52,7 +54,15 @@ val modGroup: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
 val modName: String by extra
+val mezzConfigVersion: String by extra
+val mezzConfigVersionRange: String by extra
+val mezzConfigFabricVersionRange: String by extra
 val specificationVersion: String by extra
+
+val mezzConfigApiDependency = "$configModGroup:${configModId}-${minecraftVersion}-config-api:$mezzConfigVersion"
+extra["mezzConfigApiDependency"] = mezzConfigApiDependency
+extra["mezzConfigFabricDependency"] = "$configModGroup:${configModId}-${minecraftVersion}-fabric:$mezzConfigVersion"
+extra["mezzConfigForgeDependency"] = "$configModGroup:${configModId}-${minecraftVersion}-forge:$mezzConfigVersion"
 
 subprojects {
     //adds the build number to the end of the version string if on a build server
@@ -101,6 +111,7 @@ subprojects {
             "amecsKeyModifiersVersionFabric" to amecsKeyModifiersVersionFabric,
             "amecsVersionFabric" to amecsVersionFabric,
             "curseHomepageUrl" to curseHomepageUrl,
+            "configModId" to configModId,
             "fabricApiVersion" to fabricApiVersion,
             "fabricLoaderVersion" to fabricLoaderVersion,
             "forgeVersionRange" to forgeVersionRange,
@@ -113,6 +124,8 @@ subprojects {
             "modId" to modId,
             "modJavaVersion" to modJavaVersion,
             "modName" to modName,
+            "mezzConfigVersionRange" to mezzConfigVersionRange,
+            "mezzConfigFabricVersionRange" to mezzConfigFabricVersionRange,
             "version" to version,
         )
         inputs.properties(properties)

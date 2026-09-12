@@ -14,6 +14,8 @@ val jUnitVersion: String by extra
 val minecraftVersion: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val mezzConfigApiDependency: String by rootProject.extra
+val mezzConfigForgeDependency: String by rootProject.extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-lib"
 base {
@@ -47,6 +49,7 @@ dependencies {
         name = "mixin",
         version = "0.8.5"
     )
+    implementation(mezzConfigApiDependency)
     dependencyProjects.forEach {
         implementation(it)
     }
@@ -55,6 +58,7 @@ dependencies {
         name = "junit-jupiter",
         version = jUnitVersion
     )
+    testImplementation(mezzConfigForgeDependency)
     testRuntimeOnly(
         group = "org.junit.platform",
         name = "junit-platform-launcher",

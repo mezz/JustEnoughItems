@@ -25,6 +25,10 @@ val parchmentVersionForge: String by extra
 val modrinthId: String by extra
 val parchmentMinecraftVersion: String by extra
 val deduplicatingRunnerVersion: String by extra
+val mezzConfigVersion: String by extra
+val mezzConfigVersionRange: String by extra
+val mezzConfigApiDependency: String by rootProject.extra
+val mezzConfigForgeDependency: String by rootProject.extra
 
 val forgeArtifactVersion = "${minecraftVersion}-${forgeVersion}"
 
@@ -103,6 +107,15 @@ fun Configuration.singleFileContents(): Provider<String> =
 		.map { it.asFile.readText() }
 
 dependencies {
+	compileOnly(mezzConfigApiDependency)
+	modRuntimeOnly(mezzConfigForgeDependency)
+	jarJar(mezzConfigForgeDependency) {
+		isTransitive = false
+		version {
+			strictly(mezzConfigVersionRange)
+			prefer(mezzConfigVersion)
+		}
+	}
 	dependencyProjects.forEach {
 		compileOnly(it)
 		testImplementation(it)

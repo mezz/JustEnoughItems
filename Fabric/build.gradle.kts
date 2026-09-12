@@ -50,6 +50,8 @@ val amecsKeyModifiersVersionFabric: String by extra
 val amecsMinecraftVersion: String by extra
 val modrinthId: String by extra
 val deduplicatingRunnerVersion: String by extra
+val mezzConfigApiDependency: String by rootProject.extra
+val mezzConfigFabricDependency: String by rootProject.extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -186,6 +188,9 @@ dependencies {
     val jsr305 = "com.google.code.findbugs:jsr305:3.0.1"
     compileOnly(jsr305)
     testCompileOnly(jsr305)
+    compileOnly(mezzConfigApiDependency)
+    modLocalRuntime(mezzConfigFabricDependency)
+    include(mezzConfigFabricDependency)
     vanillaDependencyProjects.forEach {
         compileOnly(it)
         testImplementation(it)
