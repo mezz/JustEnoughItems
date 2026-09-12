@@ -28,7 +28,9 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		Translator.setLocaleSupplier(new MinecraftLocaleSupplier());
+
 		JeiConfigData configData = JeiConfigRegistration.register();
+
 		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(configData);
 		ClientRecipeSynchronizedEvent.EVENT.register((minecraft, synchronizedRecipes) -> {
 			var recipeRegistries = new RegistrySetBuilder()

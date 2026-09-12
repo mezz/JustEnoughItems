@@ -1,5 +1,7 @@
 package mezz.jei.common.config;
 
+import net.mezzdev.config.api.sorting.ISortingConfig;
+
 public interface IClientConfigs {
 	IClientConfig getClientConfig();
 
@@ -8,6 +10,8 @@ public interface IClientConfigs {
 	IIngredientGridConfig getIngredientListConfig();
 
 	IIngredientGridConfig getBookmarkListConfig();
+
+	ISortingConfig<String> getRecipeCategorySortingConfig();
 
 	void registerRuntimeListenerRemoval(Runnable listenerRemoval);
 
