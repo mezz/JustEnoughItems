@@ -24,7 +24,6 @@ import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.common.Internal;
-import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
@@ -83,31 +82,20 @@ public final class PluginLoader {
 	public static IngredientManager registerIngredients(
 		StartData data,
 		SubtypeManager subtypeManager,
-		IColorHelper colorHelper,
-		IIngredientFilterConfig ingredientFilterConfig
+		IColorHelper colorHelper
 	) {
 		List<IModPlugin> plugins = data.plugins();
 		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(ingredientManagerBuilder));
 		PluginCaller.callOnPlugins("Registering extra ingredients", plugins, p -> p.registerExtraIngredients(ingredientManagerBuilder));
-
-		if (ingredientFilterConfig.searchIngredientAliases().get()) {
-			PluginCaller.callOnPlugins("Registering search ingredient aliases", plugins, p -> p.registerIngredientAliases(ingredientManagerBuilder));
-		}
-
+		PluginCaller.callOnPlugins("Registering search ingredient aliases", plugins, p -> p.registerIngredientAliases(ingredientManagerBuilder));
 		IngredientManager ingredientManager = ingredientManagerBuilder.build();
 		Internal.setIngredientManager(ingredientManager);
 		return ingredientManager;
 	}
 
-	public static ImmutableSetMultimap<String, String> registerModAliases(
-		StartData data,
-		IIngredientFilterConfig ingredientFilterConfig
-	) {
+	public static ImmutableSetMultimap<String, String> registerModAliases(StartData data) {
 		List<IModPlugin> plugins = data.plugins();
-		if (!ingredientFilterConfig.searchModAliases().get()) {
-			return ImmutableSetMultimap.of();
-		}
 		ModInfoRegistration modInfoRegistration = new ModInfoRegistration();
 		PluginCaller.callOnPlugins("Registering Mod Info", plugins, p -> p.registerModInfo(modInfoRegistration));
 		return modInfoRegistration.getModAliases();
@@ -115,6 +103,7 @@ public final class PluginLoader {
 
 	public static JeiHelpers createJeiHelpers(
 		StartData data,
+		ImmutableSetMultimap<String, String> modAliases,
 		IModIdFormatConfig modIdFormatConfig,
 		IColorHelper colorHelper,
 		FocusFactory focusFactory,
@@ -124,14 +113,8 @@ public final class PluginLoader {
 	) {
 		IIngredientHelper<ItemStack> ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 		VanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory(ingredientHelper);
-
 		StackHelper stackHelper = new StackHelper(subtypeManager);
 		GuiHelper guiHelper = new GuiHelper(ingredientManager, data.textures());
-
-		List<IModPlugin> plugins = data.plugins();
-		ModInfoRegistration modInfoRegistration = new ModInfoRegistration();
-		PluginCaller.callOnPlugins("Registering Mod Info", plugins, p -> p.registerModInfo(modInfoRegistration));
-		ImmutableSetMultimap<String, String> modAliases = modInfoRegistration.getModAliases();
 		IModIdHelper modIdHelper = new ModIdHelper(
 			modIdFormatConfig,
 			ingredientManager,

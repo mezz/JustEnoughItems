@@ -1,5 +1,6 @@
 package mezz.jei.library.startup;
 
+import com.google.common.collect.ImmutableSetMultimap;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
@@ -7,7 +8,6 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.ClientConfigs;
-import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.api.runtime.config.IJeiConfigManager;
 import mezz.jei.common.config.ConfigManagerAdapter;
 import mezz.jei.common.network.ClientConnectionHelper;
@@ -127,10 +127,8 @@ public final class JeiStarter {
 		IColorHelper colorHelper = new ColorHelper(colorNameConfig);
 
 		IWorldConfig worldConfig = Internal.getWorldConfig();
-
-		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
 		SubtypeManager subtypeManager = PluginLoader.registerSubtypes(data);
-		IngredientManager ingredientManager = PluginLoader.registerIngredients(data, subtypeManager, colorHelper, ingredientFilterConfig);
+		IngredientManager ingredientManager = PluginLoader.registerIngredients(data, subtypeManager, colorHelper);
 		stopCallbacks.add(ingredientManager::onRuntimeStopped);
 
 		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal(ingredientManager);
@@ -148,8 +146,10 @@ public final class JeiStarter {
 		stopCallbacks.add(ingredientVisibility::onRuntimeStopped);
 
 		FocusFactory focusFactory = new FocusFactory(ingredientManager);
+		ImmutableSetMultimap<String, String> modAliases = PluginLoader.registerModAliases(data);
 		JeiHelpers jeiHelpers = PluginLoader.createJeiHelpers(
 			data,
+			modAliases,
 			modIdFormatConfig,
 			colorHelper,
 			focusFactory,
@@ -281,4 +281,3 @@ public final class JeiStarter {
 		RegistryUtil.setRegistryAccess(null);
 	}
 }
-

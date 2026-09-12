@@ -84,7 +84,7 @@ public interface IModPlugin {
 	/**
 	 * Register search aliases for ingredients.
 	 *
-	 * @implNote If the player has disabled search aliases in the config, this will not be called.
+	 * @implNote The player's search config controls whether these aliases are used by JEI's search.
 	 *
 	 * @since 11.9.0
 	 */
