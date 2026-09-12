@@ -155,6 +155,12 @@ public class JeiGuiStarter {
 			searchStorageBuilderFactory,
 			toggleState
 		);
+		jeiClientConfigs.registerRuntimeListenerRemoval(
+			modNameSortingConfig.addChangeListener(ingredientFilter::onIngredientSortOrderConfigChanged)
+		);
+		jeiClientConfigs.registerRuntimeListenerRemoval(
+			ingredientTypeSortingConfig.addChangeListener(ingredientFilter::onIngredientTypeSortOrderConfigChanged)
+		);
 		ingredientManager.registerIngredientListener(ingredientFilter);
 		ingredientVisibility.registerListener(ingredientFilter);
 		timer.stop();

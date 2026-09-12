@@ -54,6 +54,10 @@ public class RecipeCategorySortingConfig {
 		return Comparator.comparing(RecipeCategorySortingConfig::getRecipeCategoryString, comparator);
 	}
 
+	public Runnable addChangeListener(Runnable listener) {
+		return sortingConfig.addChangeListener(listener);
+	}
+
 	private static Comparator<String> getDefaultSortOrder() {
 		Comparator<String> minecraftCraftingFirst = Comparator.comparing((String s) -> {
 				String vanillaCrafting = RecipeTypes.CRAFTING.getUid().toString();

@@ -50,6 +50,8 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 	private final PluginManager pluginManager;
 	private final Set<RecipeType<?>> hiddenRecipeTypes = new HashSet<>();
 	private final IIngredientVisibility ingredientVisibility;
+	private final RecipeCategorySortingConfig recipeCategorySortingConfig;
+	private final Runnable removeRecipeCategorySortingConfigChangeListener;
 
 	@Nullable
 	@Unmodifiable
@@ -67,6 +69,11 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 		this.ingredientManager = ingredientManager;
 		this.ingredientVisibility = ingredientVisibility;
 		this.ingredientVisibility.registerListener(this);
+		this.recipeCategorySortingConfig = recipeCategorySortingConfig;
+		this.removeRecipeCategorySortingConfigChangeListener = this.recipeCategorySortingConfig.addChangeListener(
+			this::onRecipeCategorySortingConfigChanged
+		);
+
 		List<RecipeType<?>> recipeTypes = recipeCategories.stream()
 			.<RecipeType<?>>map(IRecipeCategory::getRecipeType)
 			.toList();
@@ -287,6 +294,14 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 		if (contexts.contains(UidContext.Recipe)) {
 			recipeCategoriesVisibleCache = null;
 		}
+	}
+
+	private void onRecipeCategorySortingConfigChanged() {
+		recipeCategoriesVisibleCache = null;
+	}
+
+	public void onRuntimeStopped() {
+		removeRecipeCategorySortingConfigChangeListener.run();
 	}
 
 	public <T> void hideRecipes(RecipeType<T> recipeType, Collection<T> recipes) {

@@ -166,6 +166,15 @@ public class IngredientFilter
 		notifyListenersOfChange();
 	}
 
+	public void onIngredientSortOrderConfigChanged() {
+		markSortIndexesDirty();
+	}
+
+	public void onIngredientTypeSortOrderConfigChanged() {
+		markSortIndexesDirty();
+		updateHidden();
+	}
+
 	private void updateDirtyState() {
 		if (searchIndexDirty) {
 			rebuildItemFilter();
