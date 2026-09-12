@@ -1,3 +1,5 @@
+import mezz.jei.gradle.dependencyInfo
+import mezz.jei.gradle.mezzConfigDependency
 import mezz.jei.gradle.addFabricMinecraftDependencies
 import mezz.jei.gradle.gradleProperty
 import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
@@ -11,6 +13,8 @@ plugins {
     id("net.fabricmc.fabric-loom")
     id("maven-publish")
 }
+
+val mezzConfigApiDependency = mezzConfigDependency("config-api")
 
 // gradle.properties
 val jUnitVersion = gradleProperty("jUnitVersion")
@@ -79,6 +83,8 @@ sourceSets {
 }
 
 dependencies {
+    implementation(mezzConfigApiDependency)
+    testImplementation(mezzConfigDependency("fabric"))
     implementation(apiSourceSet.output)
     add(apiSourceSet.compileOnlyConfigurationName, "net.fabricmc:fabric-loader:${fabricLoaderVersion}")
     add(apiSourceSet.compileOnlyConfigurationName, "com.google.code.findbugs:jsr305:3.0.2")
@@ -172,7 +178,7 @@ publishing {
             artifact(tasks.jar)
             artifact(tasks.named("sourcesJar"))
 
-            val dependencyInfos = listOf("common-api").map {
+            val dependencyInfos = listOf(dependencyInfo(mezzConfigApiDependency)) + listOf("common-api").map {
                 mapOf(
                     "groupId" to modGroup,
                     "artifactId" to "${modId}-${minecraftVersion}-$it",

@@ -1,3 +1,4 @@
+import mezz.jei.gradle.mezzConfigDependency
 import mezz.jei.gradle.gradleProperty
 import mezz.jei.gradle.isolatedProjectDirectory
 import mezz.jei.gradle.optionalGradleProperty
@@ -23,6 +24,8 @@ configurations.configureEach {
 	exclude(group = "net.fabricmc", module = "fabric-loader")
 }
 
+val mezzConfigApiDependency = mezzConfigDependency("config-api")
+
 // gradle.properties
 val curseHomepageUrl = gradleProperty("curseHomepageUrl")
 val curseProjectId = gradleProperty("curseProjectId")
@@ -34,6 +37,8 @@ val modGroup = gradleProperty("modGroup")
 val modId = gradleProperty("modId")
 val modJavaVersion = gradleProperty("modJavaVersion")
 val modrinthId = gradleProperty("modrinthId")
+val mezzConfigCurseForgeProjectSlug = gradleProperty("mezzConfigCurseForgeProjectSlug")
+val mezzConfigModrinthProjectId = gradleProperty("mezzConfigModrinthProjectId")
 val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
 val suffixtreeVersion = gradleProperty("suffixtreeVersion")
 
@@ -159,6 +164,17 @@ fun Configuration.singleFileContents(): Provider<String> =
 		.map { it.asFile.readText() }
 
 dependencies {
+	compileOnly(mezzConfigApiDependency)
+	runtimeOnly(mezzConfigDependency("neoforge"))
+	jarJar(mezzConfigDependency("neoforge")) {
+		version {
+			strictly(gradleProperty("mezzConfigVersionRange"))
+			prefer(gradleProperty("mezzConfigVersion"))
+		}
+	}
+	"gameTestRuntimeOnly"(mezzConfigDependency("neoforge"))
+	"clientGameTestRuntimeOnly"(mezzConfigDependency("neoforge"))
+	testImplementation(mezzConfigApiDependency)
 	implementation(apiSourceSet.output)
 	implementation(project(path = ":Common", configuration = "apiClassesElements"))
 	add(apiSourceSet.implementationConfigurationName, project(path = ":Common", configuration = "apiClassesElements"))
@@ -417,6 +433,7 @@ publishMods {
 		projectId = curseProjectId
 		projectSlug = curseHomepageUrl.substringAfterLast("/")
 		accessToken.set(curseforgeApikey ?: "0")
+		requires(mezzConfigCurseForgeProjectSlug)
 		changelog.set(changelogHtml.singleFileContents())
 		changelogType = "html"
 		minecraftVersionRange {
@@ -432,6 +449,7 @@ publishMods {
 	modrinth {
 		projectId = modrinthId
 		accessToken = modrinthToken
+		requires(mezzConfigModrinthProjectId)
 		changelog.set(changelogMarkdown.singleFileContents())
 		minecraftVersionRange {
 			start = minecraftVersionRangeStart
