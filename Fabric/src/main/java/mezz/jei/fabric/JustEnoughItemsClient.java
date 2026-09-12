@@ -43,6 +43,7 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 			RecipeMap recipes = RecipeMap.create(recipeRegistries.lookupOrThrow(Registries.RECIPE));
 			clientLifecycleHandler.onRecipesSynchronized(recipes);
 		});
+		Internal.setRestartJeiRunnable(clientLifecycleHandler::restartJei);
 
 		JeiChatEventHandler.register();
 		JeiInternalShowCommand.register();
