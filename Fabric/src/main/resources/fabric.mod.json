@@ -37,6 +37,7 @@
   "accessWidener" : "jei.accesswidener",
 
   "depends": {
+    "${configModId}": "${mezzConfigFabricVersionRange}",
     "fabricloader": "${fabricLoaderVersionRange}",
     "fabric-api": "${fabricApiVersionRange}",
     "java": ">=${modJavaVersion}"
