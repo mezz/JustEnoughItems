@@ -1,5 +1,6 @@
 import mezz.jei.gradle.dependencyInfo
 import mezz.jei.gradle.mezzConfigDependency
+import mezz.jei.gradle.mezzConfigGuiDependency
 import mezz.jei.gradle.addFabricMinecraftDependencies
 import mezz.jei.gradle.gradleProperty
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -13,6 +14,7 @@ plugins {
 }
 
 val mezzConfigApiDependency = mezzConfigDependency("config-api")
+val mezzConfigGuiApiDependency = mezzConfigGuiDependency("config-gui-api")
 
 // gradle.properties
 val jUnitVersion = gradleProperty("jUnitVersion")
@@ -39,10 +41,12 @@ sourceSets {
 
 dependencies {
     implementation(mezzConfigApiDependency)
+    compileOnly(mezzConfigGuiApiDependency)
     implementation(project(path = ":Common", configuration = "apiClassesElements"))
     dependencyProjectPaths.forEach {
         implementation(project(it))
     }
+    testImplementation(mezzConfigGuiApiDependency)
     testCompileOnly("org.jspecify:jspecify:1.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -87,6 +91,7 @@ publishing {
 
             val dependencyInfos = listOf(
                 dependencyInfo(mezzConfigApiDependency),
+                dependencyInfo(mezzConfigGuiApiDependency) + ("optional" to "true"),
                 dependencyInfo("$modGroup:${modId}-${minecraftVersion}-common:${project.version}"),
                 dependencyInfo("$modGroup:${modId}-${minecraftVersion}-common-api:${project.version}")
             )
