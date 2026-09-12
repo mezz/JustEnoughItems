@@ -19,6 +19,7 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val deduplicatingRunnerVersion: String by extra
 val mezzConfigApiDependency: String by rootProject.extra
+val mezzConfigGuiApiDependency: String by rootProject.extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-gui"
 base {
@@ -53,12 +54,14 @@ dependencies {
         version = "0.8.5"
     )
     implementation(mezzConfigApiDependency)
+    compileOnly(mezzConfigGuiApiDependency)
     dependencyProjects.forEach {
         implementation(it)
     }
     implementation("net.mezzdev:deduplicating-runner:$deduplicatingRunnerVersion") {
         isTransitive = false
     }
+    testImplementation(mezzConfigGuiApiDependency)
     testImplementation(
         group = "org.junit.jupiter",
         name = "junit-jupiter",
@@ -105,7 +108,8 @@ publishing {
             artifact(sourcesJarTask.get())
 
             val dependencyInfos = listOf(
-                dependencyInfo(mezzConfigApiDependency)
+                dependencyInfo(mezzConfigApiDependency),
+                dependencyInfo(mezzConfigGuiApiDependency) + ("optional" to "true")
             ) + dependencyProjects.map {
                 mapOf(
                     "groupId" to it.group,

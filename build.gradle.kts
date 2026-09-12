@@ -36,6 +36,7 @@ repositories {
 val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
 val configModId: String by extra
+val configGuiModId: String by extra
 val configModGroup: String by extra
 val amecsKeyModifiersVersionFabric: String by extra
 val amecsVersionFabric: String by extra
@@ -57,12 +58,16 @@ val modName: String by extra
 val mezzConfigVersion: String by extra
 val mezzConfigVersionRange: String by extra
 val mezzConfigFabricVersionRange: String by extra
+val mezzConfigGuiVersion: String by extra
 val specificationVersion: String by extra
 
 val mezzConfigApiDependency = "$configModGroup:${configModId}-${minecraftVersion}-config-api:$mezzConfigVersion"
 extra["mezzConfigApiDependency"] = mezzConfigApiDependency
 extra["mezzConfigFabricDependency"] = "$configModGroup:${configModId}-${minecraftVersion}-fabric:$mezzConfigVersion"
 extra["mezzConfigForgeDependency"] = "$configModGroup:${configModId}-${minecraftVersion}-forge:$mezzConfigVersion"
+extra["mezzConfigGuiApiDependency"] = "$configModGroup:${configGuiModId}-${minecraftVersion}-config-gui-api:$mezzConfigGuiVersion"
+extra["mezzConfigGuiFabricDependency"] = "$configModGroup:${configGuiModId}-${minecraftVersion}-fabric:$mezzConfigGuiVersion"
+extra["mezzConfigGuiForgeDependency"] = "$configModGroup:${configGuiModId}-${minecraftVersion}-forge:$mezzConfigGuiVersion"
 
 subprojects {
     //adds the build number to the end of the version string if on a build server
@@ -111,6 +116,7 @@ subprojects {
             "amecsKeyModifiersVersionFabric" to amecsKeyModifiersVersionFabric,
             "amecsVersionFabric" to amecsVersionFabric,
             "curseHomepageUrl" to curseHomepageUrl,
+            "configGuiModId" to configGuiModId,
             "configModId" to configModId,
             "fabricApiVersion" to fabricApiVersion,
             "fabricLoaderVersion" to fabricLoaderVersion,
