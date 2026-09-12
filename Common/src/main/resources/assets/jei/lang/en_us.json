@@ -412,5 +412,9 @@
   "jei.config.debug.debug.debugInfoTooltipsEnabled.value.true.description": "Add debug information to advanced ingredient tooltips.",
   "jei.config.debug.debug.debugInfoTooltipsEnabled.value.false.description": "Do not add debug information to ingredient tooltips.",
   "jei.config.debug.debug.logSuffixTreeStats.value.true.description": "Write search performance information to the log.",
-  "jei.config.debug.debug.logSuffixTreeStats.value.false.description": "Do not write search performance information to the log."
+  "jei.config.debug.debug.logSuffixTreeStats.value.false.description": "Do not write search performance information to the log.",
+  "jei.key.modifier.shift": "SHIFT",
+  "jei.key.modifier.control": "CTRL",
+  "jei.key.modifier.command": "CMD",
+  "jei.key.modifier.alt": "ALT"
 }
