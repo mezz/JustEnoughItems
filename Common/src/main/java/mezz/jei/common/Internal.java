@@ -89,9 +89,8 @@ public final class Internal {
 		Internal.ingredientManager = ingredientManager;
 	}
 
-	public static IIngredientManager getIngredientManager() {
-		Preconditions.checkState(ingredientManager != null, "Ingredient Manager has not been created yet.");
-		return ingredientManager;
+	public static void registerRuntimeListenerRemoval(Runnable listenerRemoval) {
+		getClientConfigs().registerRuntimeListenerRemoval(listenerRemoval);
 	}
 
 	public static void setRuntime(@Nullable IJeiRuntime jeiRuntime) {

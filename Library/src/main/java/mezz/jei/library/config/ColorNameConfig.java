@@ -1,17 +1,24 @@
 package mezz.jei.library.config;
 
+import mezz.jei.common.config.legacy.LegacyConfigValueMigrator;
+import mezz.jei.common.config.legacy.LegacyListSerializer;
+import net.mezzdev.config.api.schema.builder.IConfigCategoryBuilder;
+import net.mezzdev.config.api.schema.builder.IConfigSchemaBuilder;
+import net.mezzdev.config.api.value.serializer.ConfigListOrdering;
+import net.mezzdev.config.api.value.IConfigValue;
 import mezz.jei.library.color.ColorName;
 import mezz.jei.library.color.ColorUtil;
-import mezz.jei.common.config.file.IConfigCategoryBuilder;
-import mezz.jei.common.config.file.IConfigSchemaBuilder;
 import mezz.jei.library.config.serializers.ColorNameSerializer;
-import mezz.jei.common.config.file.serializers.ListSerializer;
 
+import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Supplier;
 
 public final class ColorNameConfig {
+	private static final LegacyListSerializer<ColorName> LEGACY_SERIALIZER = new LegacyListSerializer<>(
+		ColorNameSerializer.INSTANCE,
+		ConfigListOrdering.UNORDERED
+	);
 	private static final List<ColorName> defaultColors = List.of(
 		new ColorName("White", 0xEEEEEE),
 		new ColorName("LightBlue", 0x7492cc),
@@ -50,14 +57,23 @@ public final class ColorNameConfig {
 		new ColorName("Silver", 0xC0C0C0)
 	);
 
-	private final Supplier<List<ColorName>> searchColors;
+	private final IConfigValue<List<ColorName>> searchColors;
 
 	public ColorNameConfig(IConfigSchemaBuilder schema) {
 		IConfigCategoryBuilder colors = schema.addCategory("colors");
-		this.searchColors = colors.addList(
+		this.searchColors = colors.addList("searchColors", defaultColors, ColorNameSerializer.INSTANCE, ConfigListOrdering.UNORDERED)
+			.build();
+	}
+
+	public ColorNameConfig(IConfigSchemaBuilder schema, List<Path> legacyPaths) {
+		this(schema);
+		LegacyConfigValueMigrator.register(
+			schema,
+			legacyPaths,
+			searchColors,
+			"colors",
 			"searchColors",
-			defaultColors,
-			new ListSerializer<>(ColorNameSerializer.INSTANCE)
+			LEGACY_SERIALIZER
 		);
 	}
 
@@ -76,4 +92,5 @@ public final class ColorNameConfig {
 			.map(ColorName::name)
 			.orElseThrow();
 	}
+
 }

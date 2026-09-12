@@ -7,6 +7,9 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven("https://maven.blamejared.com/") {
+        content { includeGroup("net.mezzdev.config") }
+    }
 }
 
 // gradle.properties

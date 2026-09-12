@@ -12,6 +12,8 @@ import mezz.jei.fabric.events.JeiLifecycleEvents;
 import mezz.jei.fabric.plugins.fabric.FabricGuiPlugin;
 import mezz.jei.fabric.startup.ClientLifecycleHandler;
 import mezz.jei.gui.config.InternalKeyMappings;
+import mezz.jei.library.config.JeiConfigData;
+import mezz.jei.library.config.JeiConfigRegistration;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -24,6 +26,7 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		InternalKeyMappings keyMappings = new InternalKeyMappings(KeyBindingHelper::registerKeyBinding);
 		Internal.setKeyMappings(keyMappings);
+		JeiConfigData configData = JeiConfigRegistration.register();
 
 		JeiInternalShowCommand.register();
 
@@ -36,7 +39,7 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 
 			ClientLifecycleEvents.CLIENT_STARTED.register(event -> {
 				IServerConfig serverConfig = ServerConfig.getInstance();
-				ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(textures, serverConfig, keyMappings);
+				ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(textures, serverConfig, configData);
 				clientLifecycleHandler.registerEvents();
 
 				ResourceManagerHelper.get(PackType.SERVER_DATA)

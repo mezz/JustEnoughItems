@@ -9,7 +9,6 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.config.file.IConfigListener;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.config.IWorldConfig;
@@ -41,6 +40,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFocusSource, ICharTypedHandler {
@@ -64,9 +64,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	// these need to be stored as strong references here because listeners are weakly stored elsewhere
 	@SuppressWarnings("FieldCanBeLocal")
-	private final IConfigListener<Boolean> lookupHistoryEnabledListener;
+	private final Consumer<Boolean> lookupHistoryEnabledListener;
 	@SuppressWarnings("FieldCanBeLocal")
-	private final IConfigListener<HistoryDisplaySide> lookupHistoryViewSideListener;
+	private final Consumer<HistoryDisplaySide> lookupHistoryViewSideListener;
 
 	public IngredientListOverlay(
 		IIngredientGridSource ingredientGridSource,

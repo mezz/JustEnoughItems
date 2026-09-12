@@ -5,6 +5,7 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.gui.IngredientTooltipComponent;
+import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.textures.JeiSpriteUploader;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.ClientPacketRouter;
@@ -15,6 +16,7 @@ import mezz.jei.forge.chat.JeiInternalShowCommand;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.network.ConnectionToServer;
 import mezz.jei.forge.network.NetworkHandler;
+import mezz.jei.forge.plugins.forge.ForgeGuiPlugin;
 import mezz.jei.forge.startup.ForgePluginFinder;
 import mezz.jei.forge.startup.StartEventObserver;
 import mezz.jei.gui.config.InternalKeyMappings;
@@ -22,6 +24,8 @@ import mezz.jei.common.gui.RecipeSlotOptionsTooltipComponent;
 import mezz.jei.common.gui.IngredientsTooltipComponent;
 import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
 import mezz.jei.gui.recipes.InteractiveIngredientGridTooltipComponent;
+import mezz.jei.library.config.JeiConfigData;
+import mezz.jei.library.config.JeiConfigRegistration;
 import mezz.jei.library.gui.ingredients.TagContentTooltipComponent;
 import mezz.jei.library.plugins.vanilla.cooking.JeiSmeltingRecipe;
 import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipe;
@@ -31,6 +35,8 @@ import mezz.jei.library.startup.StartData;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
@@ -53,6 +59,7 @@ public class JustEnoughItemsClient {
 	private final NetworkHandler networkHandler;
 	private final PermanentEventSubscriptions subscriptions;
 	private final IServerConfig serverConfig;
+	private final JeiConfigData configData;
 	@Nullable
 	private JeiStarter jeiStarter;
 
@@ -60,6 +67,7 @@ public class JustEnoughItemsClient {
 		this.networkHandler = networkHandler;
 		this.subscriptions = subscriptions;
 		this.serverConfig = serverConfig;
+		this.configData = JeiConfigRegistration.register();
 	}
 
 	public void register() {
@@ -114,7 +122,7 @@ public class JustEnoughItemsClient {
 			plugins,
 			textures,
 			serverConnection,
-			keyMappings
+			configData
 		);
 
 		JeiStarter jeiStarter = new JeiStarter(startData);
@@ -122,6 +130,7 @@ public class JustEnoughItemsClient {
 		StartEventObserver startEventObserver = new StartEventObserver(serverConnection, jeiStarter::start, jeiStarter::stop);
 		startEventObserver.register(subscriptions);
 		event.registerReloadListener(startEventObserver);
+		event.registerReloadListener(createReloadListener());
 	}
 
 	private static Textures createTextures(RegisterClientReloadListenersEvent event) {
@@ -130,6 +139,14 @@ public class JustEnoughItemsClient {
 		JeiSpriteUploader spriteUploader = new JeiSpriteUploader(textureManager);
 		event.registerReloadListener(spriteUploader);
 		return new Textures(spriteUploader);
+	}
+
+	private static ResourceManagerReloadListener createReloadListener() {
+		return (ResourceManager resourceManager) -> {
+			JeiGuiColors.onResourceManagerReload(resourceManager);
+			ForgeGuiPlugin.getResourceReloadHandler()
+				.ifPresent(r -> r.onResourceManagerReload(resourceManager));
+		};
 	}
 
 	private void onRegisterClientTooltipEvent(RegisterClientTooltipComponentFactoriesEvent event) {

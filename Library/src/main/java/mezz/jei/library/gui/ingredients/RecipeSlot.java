@@ -103,7 +103,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	@Override
 	public Optional<ITypedIngredient<?>> getDisplayedIngredient() {
 		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
-		if (!clientConfig.recipeSlotCyclingEnabled().getValue()) {
+		if (!clientConfig.recipeSlotCyclingEnabled().get()) {
 			return ingredients.getFirstDisplayedIngredient();
 		}
 		return ingredients.getDisplayedIngredient(cycler);
@@ -186,7 +186,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		}
 
 		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
-		if (clientConfig.getHideSingleTagContentTooltipEnabled() && visibleCandidates.size() == 1) {
+		if (clientConfig.hideSingleTagContentTooltipEnabled().get() && visibleCandidates.size() == 1) {
 			return;
 		}
 
@@ -252,7 +252,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		List<ITypedIngredient<?>> visibleCandidates
 	) {
 		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
-		if (clientConfig.isTagContentTooltipEnabled() && visibleCandidates.size() > 1) {
+		if (clientConfig.tagContentTooltipEnabled().get() && visibleCandidates.size() > 1) {
 			List<ITypedIngredient<?>> normalizedCandidates = visibleCandidates.stream()
 				.<ITypedIngredient<?>>map(ingredient -> normalizeTypedIngredient(ingredientManager, ingredient))
 				.toList();

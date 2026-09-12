@@ -9,6 +9,9 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.Services;
@@ -194,11 +197,15 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			.map(TagKey::location);
 
 		if (ingredient.getItem() instanceof BlockItem blockItem) {
-			Stream<ResourceLocation> blockTagStream = blockItem.getBlock()
-				.defaultBlockState()
-				.getTags()
-				.map(TagKey::location);
-			return Streams.concat(itemTagStream, blockTagStream);
+			IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
+			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+			if (clientConfig.lookupBlockTagsEnabled().get()) {
+				Stream<ResourceLocation> blockTagStream = blockItem.getBlock()
+					.defaultBlockState()
+					.getTags()
+					.map(TagKey::location);
+				return Streams.concat(itemTagStream, blockTagStream);
+			}
 		}
 		return itemTagStream;
 	}
@@ -234,8 +241,14 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			return true;
 		}
 		if (itemHolder.value() instanceof BlockItem blockItem) {
-			Block block = blockItem.getBlock();
-			return block.builtInRegistryHolder().is(blockHiddenFromRecipeViewers);
+			IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
+			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+			if (clientConfig.lookupBlockTagsEnabled().get()) {
+				Block block = blockItem.getBlock();
+				@SuppressWarnings("deprecation")
+				Holder.Reference<Block> blockHolder = block.builtInRegistryHolder();
+				return blockHolder.is(blockHiddenFromRecipeViewers);
+			}
 		}
 		return false;
 	}

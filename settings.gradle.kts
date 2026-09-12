@@ -40,15 +40,6 @@ pluginManagement {
 	}
 }
 
-dependencyResolutionManagement {
-	repositories {
-		exclusiveContent {
-			forRepository { maven("https://maven.blamejared.com/") }
-			filter { includeGroup("net.mezzdev.config") }
-		}
-	}
-}
-
 val minecraftVersion: String by settings
 
 rootProject.name = "jei-${minecraftVersion}"

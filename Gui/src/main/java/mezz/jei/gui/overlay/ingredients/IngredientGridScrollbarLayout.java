@@ -126,14 +126,14 @@ public final class IngredientGridScrollbarLayout {
 
 	private static int calculateScrollbarReservedGridWidth(IIngredientGridConfig gridConfig) {
 		int reservedGridWidth = calculateScrollbarExtraWidth(gridConfig);
-		if (gridConfig.drawBackground()) {
+		if (gridConfig.drawBackground().get()) {
 			return reservedGridWidth - IngredientGridWithNavigationLayout.INNER_PADDING;
 		}
 		return reservedGridWidth;
 	}
 
 	private static int calculateScrollbarOffsetFromGrid(IIngredientGridConfig gridConfig) {
-		if (gridConfig.drawBackground()) {
+		if (gridConfig.drawBackground().get()) {
 			return 2 * IngredientGridWithNavigationLayout.INNER_PADDING;
 		}
 		return 0;

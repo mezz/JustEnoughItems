@@ -267,7 +267,7 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-		if (gridConfig.drawBackground()) {
+		if (gridConfig.drawBackground().get()) {
 			background.draw(poseStack, this.backgroundArea);
 			slotBackground.draw(poseStack, this.slotBackgroundArea);
 		}

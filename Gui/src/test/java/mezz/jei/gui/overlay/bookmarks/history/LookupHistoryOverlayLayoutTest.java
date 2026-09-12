@@ -7,8 +7,10 @@ import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.config.NavigationVisibility;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.gui.overlay.TestConfigValue;
 import mezz.jei.gui.overlay.ingredients.IngredientGrid;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigationLayout;
+import net.mezzdev.config.api.value.IConfigValue;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -77,40 +79,84 @@ public class LookupHistoryOverlayLayoutTest {
 		return area.y() + area.height();
 	}
 
-	private record TestGridConfig(int getMaxColumns, int getMaxRows, boolean drawBackground) implements IIngredientGridConfig {
+	private static TestGridConfig config() {
+		return new TestGridConfig();
+	}
+
+	private static final class TestGridConfig implements IIngredientGridConfig {
+		private int maxColumns = 9;
+		private int minColumns = 1;
+		private int maxRows = 16;
+		private int minRows = 1;
+		private boolean drawBackground;
+		private HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
+		private VerticalAlignment verticalAlignment = VerticalAlignment.TOP;
+		private NavigationVisibility navigationVisibility = NavigationVisibility.DISABLED;
+		private IngredientGridNavigationMode navigationMode = IngredientGridNavigationMode.PAGED;
+
+		TestGridConfig maxColumns(int maxColumns) {
+			this.maxColumns = maxColumns;
+			return this;
+		}
+
+		TestGridConfig maxRows(int maxRows) {
+			this.maxRows = maxRows;
+			return this;
+		}
+
+		TestGridConfig drawBackground(boolean drawBackground) {
+			this.drawBackground = drawBackground;
+			return this;
+		}
+
+		@Override
+		public IConfigValue<Integer> maxColumns() {
+			return new TestConfigValue<>(maxColumns);
+		}
+
 		@Override
 		public int getMinColumns() {
-			return 1;
+			return minColumns;
+		}
+
+		@Override
+		public IConfigValue<Integer> maxRows() {
+			return new TestConfigValue<>(maxRows);
 		}
 
 		@Override
 		public int getMinRows() {
-			return 1;
+			return minRows;
 		}
 
 		@Override
-		public HorizontalAlignment getHorizontalAlignment() {
-			return HorizontalAlignment.LEFT;
+		public IConfigValue<Boolean> drawBackground() {
+			return new TestConfigValue<>(drawBackground);
 		}
 
 		@Override
-		public VerticalAlignment getVerticalAlignment() {
-			return VerticalAlignment.TOP;
+		public IConfigValue<IngredientGridLayoutMode> layoutMode() {
+			return new TestConfigValue<>(IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE);
 		}
 
 		@Override
-		public NavigationVisibility getNavigationVisibility() {
-			return NavigationVisibility.DISABLED;
+		public IConfigValue<HorizontalAlignment> horizontalAlignment() {
+			return new TestConfigValue<>(horizontalAlignment);
 		}
 
 		@Override
-		public IngredientGridLayoutMode getLayoutMode() {
-			return IngredientGridLayoutMode.RECTANGULAR;
+		public IConfigValue<VerticalAlignment> verticalAlignment() {
+			return new TestConfigValue<>(verticalAlignment);
 		}
 
 		@Override
-		public IngredientGridNavigationMode getNavigationMode() {
-			return IngredientGridNavigationMode.PAGED;
+		public IConfigValue<NavigationVisibility> navigationVisibility() {
+			return new TestConfigValue<>(navigationVisibility);
+		}
+
+		@Override
+		public IConfigValue<IngredientGridNavigationMode> navigationMode() {
+			return new TestConfigValue<>(navigationMode);
 		}
 
 		@Override
@@ -119,3 +165,4 @@ public class LookupHistoryOverlayLayoutTest {
 		}
 	}
 }
+

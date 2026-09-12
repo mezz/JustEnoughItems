@@ -5,12 +5,11 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.config.IJeiConfigValueSerializer;
+import net.mezzdev.config.api.value.serializer.IDeserializeResult;
 
-import java.util.Collection;
 import java.util.Optional;
 
-public class TypedIngredientSerializer implements IJeiConfigValueSerializer<ITypedIngredient<?>> {
+public class TypedIngredientSerializer {
 	private static final String SEPARATOR = "&";
 	private final IIngredientManager ingredientManager;
 
@@ -18,7 +17,6 @@ public class TypedIngredientSerializer implements IJeiConfigValueSerializer<ITyp
 		this.ingredientManager = ingredientManager;
 	}
 
-	@Override
 	public String serialize(ITypedIngredient<?> value) {
 		IIngredientType<?> type = value.getType();
 		String typeUid = type.getUid();
@@ -31,41 +29,26 @@ public class TypedIngredientSerializer implements IJeiConfigValueSerializer<ITyp
 		return ingredientHelper.getUniqueId(typedIngredient, UidContext.Recipe);
 	}
 
-	@Override
 	public IDeserializeResult<ITypedIngredient<?>> deserialize(String string) {
 		String[] parts = string.split(SEPARATOR);
 		if (parts.length != 2) {
 			String error = "string must be two uids, separated by '" + SEPARATOR + "': " + string;
-			return new DeserializeResult<>(null, error);
+			return IDeserializeResult.failure(error);
 		}
 		String typeUid = parts[0];
 		String uid = parts[1];
 		Optional<IIngredientType<?>> ingredientTypeForUid = ingredientManager.getIngredientTypeForUid(typeUid);
 		if (ingredientTypeForUid.isEmpty()) {
 			String error = "no ingredient type was found for uid: " + typeUid;
-			return new DeserializeResult<>(null, error);
+			return IDeserializeResult.failure(error);
 		}
 		IIngredientType<?> ingredientType = ingredientTypeForUid.get();
 		Optional<? extends ITypedIngredient<?>> ingredient = ingredientManager.getTypedIngredientByUid(ingredientType, uid);
 		if (ingredient.isEmpty()) {
 			String error = "no ingredient was found for uid: " + uid;
-			return new DeserializeResult<>(null, error);
+			return IDeserializeResult.failure(error);
 		}
-		return new DeserializeResult<>(ingredient.get());
+		return IDeserializeResult.success(ingredient.get());
 	}
 
-	@Override
-	public boolean isValid(ITypedIngredient<?> value) {
-		return true;
-	}
-
-	@Override
-	public Optional<Collection<ITypedIngredient<?>>> getAllValidValues() {
-		return Optional.empty();
-	}
-
-	@Override
-	public String getValidValuesDescription() {
-		return "";
-	}
 }

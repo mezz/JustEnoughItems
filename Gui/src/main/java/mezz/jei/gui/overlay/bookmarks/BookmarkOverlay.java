@@ -9,7 +9,6 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.config.file.IConfigListener;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ImmutablePoint2i;
@@ -46,6 +45,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
@@ -75,9 +75,9 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 	// these need to be stored as strong references here because listeners are weakly stored elsewhere
 	@SuppressWarnings("FieldCanBeLocal")
-	private final IConfigListener<Boolean> lookupHistoryEnabledListener;
+	private final Consumer<Boolean> lookupHistoryEnabledListener;
 	@SuppressWarnings("FieldCanBeLocal")
-	private final IConfigListener<HistoryDisplaySide> lookupHistoryViewSideListener;
+	private final Consumer<HistoryDisplaySide> lookupHistoryViewSideListener;
 
 	public BookmarkOverlay(
 		BookmarkList bookmarkList,

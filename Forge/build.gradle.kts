@@ -10,6 +10,12 @@ plugins {
 	id("net.mezzdev.modshade")
 }
 
+repositories {
+	maven("https://maven.blamejared.com/") {
+		content { includeGroup("net.mezzdev.config") }
+	}
+}
+
 // gradle.properties
 val curseHomepageUrl: String by extra
 val curseProjectId: String by extra
@@ -134,6 +140,7 @@ dependencies {
 	}
 	changelogHtml(project(":Changelog"))
 	changelogMarkdown(project(":Changelog"))
+	testImplementation(mezzConfigApiDependency)
 	testImplementation(
 		group = "org.junit.jupiter",
 		name = "junit-jupiter",

@@ -110,7 +110,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 	public int getDisplayHeight() {
 		return getDisplayHeight(
 			clientConfig.getMaxLookupHistoryRows(),
-			historyListConfig.drawBackground()
+			historyListConfig.drawBackground().get()
 		);
 	}
 
@@ -176,12 +176,12 @@ public class LookupHistoryOverlay implements IRecipeFocusSource {
 
 	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
-			if (this.historyListConfig.drawBackground()) {
+			if (this.historyListConfig.drawBackground().get()) {
 				this.background.draw(poseStack, this.backgroundArea);
 				this.slotBackground.draw(poseStack, this.slotBackgroundArea);
 			}
 			this.contents.draw(minecraft, poseStack, mouseX, mouseY);
-			if (!this.historyListConfig.drawBackground()) {
+			if (!this.historyListConfig.drawBackground().get()) {
 				ImmutableRect2i area = this.contents.getArea();
 				int endX = area.getX() + area.getWidth();
 				int startY = area.getY() + area.getHeight() - rows * SLOT_HEIGHT - 3;
