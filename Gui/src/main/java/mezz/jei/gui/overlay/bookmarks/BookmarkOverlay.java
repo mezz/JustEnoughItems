@@ -314,6 +314,8 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	public void tick() {
+		this.bookmarkButton.tick();
+		this.historyButton.tick();
 		if (isListDisplayed()) {
 			this.contents.tick();
 		}
