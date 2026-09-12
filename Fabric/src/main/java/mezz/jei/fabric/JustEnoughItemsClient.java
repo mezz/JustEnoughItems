@@ -27,7 +27,6 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 		InternalKeyMappings keyMappings = new InternalKeyMappings(KeyBindingHelper::registerKeyBinding);
 		Internal.setKeyMappings(keyMappings);
 		JeiConfigData configData = JeiConfigRegistration.register();
-
 		JeiInternalShowCommand.register();
 
 		JeiLifecycleEvents.REGISTER_RESOURCE_RELOAD_LISTENER.register((resourceManager, textureManager) -> {
@@ -40,6 +39,7 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 			ClientLifecycleEvents.CLIENT_STARTED.register(event -> {
 				IServerConfig serverConfig = ServerConfig.getInstance();
 				ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler(textures, serverConfig, configData);
+				Internal.setRestartJeiRunnable(clientLifecycleHandler::restartJei);
 				clientLifecycleHandler.registerEvents();
 
 				ResourceManagerHelper.get(PackType.SERVER_DATA)

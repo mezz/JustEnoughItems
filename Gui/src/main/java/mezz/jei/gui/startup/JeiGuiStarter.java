@@ -60,6 +60,7 @@ import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.util.FocusUtil;
+import net.mezzdev.config.api.value.change.IConfigValueBatchChangeListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
@@ -108,6 +109,7 @@ public class JeiGuiStarter {
 
 		IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+		registerJeiRestartingConfigListeners(jeiClientConfigs);
 		IIngredientGridConfig ingredientListConfig = jeiClientConfigs.getIngredientListConfig();
 		IIngredientGridConfig bookmarkListConfig = jeiClientConfigs.getBookmarkListConfig();
 		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
@@ -294,4 +296,14 @@ public class JeiGuiStarter {
 		);
 	}
 
+	private static void registerJeiRestartingConfigListeners(IClientConfigs clientConfigs) {
+		IClientConfig clientConfig = clientConfigs.getClientConfig();
+		IConfigValueBatchChangeListener restartJei = changes -> Internal.restartJei();
+		clientConfigs.registerRuntimeListenerRemoval(
+			clientConfig.showTagRecipesEnabled().addBatchListener(restartJei)
+		);
+		clientConfigs.registerRuntimeListenerRemoval(
+			clientConfig.showHiddenIngredients().addBatchListener(restartJei)
+		);
+	}
 }

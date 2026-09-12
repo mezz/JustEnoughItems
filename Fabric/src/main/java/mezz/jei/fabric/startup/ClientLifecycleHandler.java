@@ -77,6 +77,14 @@ public class ClientLifecycleHandler {
 		};
 	}
 
+	public void restartJei() {
+		if (!running) {
+			return;
+		}
+		stopJei();
+		startJei();
+	}
+
 	private void startJei() {
 		Minecraft minecraft = Minecraft.getInstance();
 		if (minecraft.level == null) {
