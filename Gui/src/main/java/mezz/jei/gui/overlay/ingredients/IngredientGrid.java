@@ -217,7 +217,7 @@ public class IngredientGrid implements IIngredientGrid {
 
 	private <T> void addCreativeTabs(ITooltipBuilder tooltipBuilder, ITypedIngredient<T> typedIngredient) {
 		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
-		if (!clientConfig.showCreativeTabNamesEnabled().getValue()) {
+		if (!clientConfig.showCreativeTabNamesEnabled().get()) {
 			return;
 		}
 

@@ -73,7 +73,7 @@ public class ScreenHelper implements IPlatformScreenHelper {
 	@Override
 	public ImmutableRect2i getToastsArea() {
 		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
-		if (!clientConfig.toastReflowEnabled().getValue()) {
+		if (!clientConfig.toastReflowEnabled().get()) {
 			return ImmutableRect2i.EMPTY;
 		}
 		Minecraft minecraft = Minecraft.getInstance();

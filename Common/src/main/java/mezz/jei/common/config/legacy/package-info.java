@@ -1,4 +1,4 @@
 @NullMarked
-package mezz.jei.common.config.file.serializers;
+package mezz.jei.common.config.legacy;
 
 import org.jspecify.annotations.NullMarked;

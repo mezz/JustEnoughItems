@@ -9,5 +9,7 @@ public interface IClientConfigs {
 
 	IIngredientGridConfig getBookmarkListConfig();
 
+	void registerRuntimeListenerRemoval(Runnable listenerRemoval);
+
 	void onRuntimeStopped();
 }

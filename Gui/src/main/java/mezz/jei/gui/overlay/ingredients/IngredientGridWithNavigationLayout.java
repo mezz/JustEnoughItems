@@ -1,8 +1,8 @@
 package mezz.jei.gui.overlay.ingredients;
 
-import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.common.config.IIngredientGridConfig;
 
 import java.util.Set;
 
@@ -40,7 +40,7 @@ public record IngredientGridWithNavigationLayout(
 			availableGridArea = availableGridArea.cropTop(NAVIGATION_HEIGHT + INNER_PADDING);
 		}
 
-		if (gridConfig.drawBackground().getValue()) {
+		if (gridConfig.drawBackground().get()) {
 			availableGridArea = availableGridArea.insetBy(BORDER_PADDING + INNER_PADDING);
 		}
 
@@ -83,7 +83,7 @@ public record IngredientGridWithNavigationLayout(
 	) {
 		ImmutableRect2i slotBackgroundArea = calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
 		ImmutableRect2i backgroundArea = MathUtil.union(MathUtil.union(slotBackgroundArea, backgroundNavigationArea), scrollbarArea);
-		if (gridConfig.drawBackground().getValue() && !backgroundArea.isEmpty()) {
+		if (gridConfig.drawBackground().get() && !backgroundArea.isEmpty()) {
 			backgroundArea = backgroundArea.expandBy(BORDER_PADDING);
 		}
 		return new IngredientGridWithNavigationLayout(
@@ -102,7 +102,7 @@ public record IngredientGridWithNavigationLayout(
 		if (ingredientGridArea.isEmpty()) {
 			return ImmutableRect2i.EMPTY;
 		}
-		if (gridConfig.drawBackground().getValue()) {
+		if (gridConfig.drawBackground().get()) {
 			return ingredientGridArea.expandBy(INNER_PADDING);
 		} else {
 			return ingredientGridArea;
