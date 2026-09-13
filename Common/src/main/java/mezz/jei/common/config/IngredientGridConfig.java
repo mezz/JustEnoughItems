@@ -16,21 +16,20 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	private static final int largestNumColumns = 100;
 
 	private static final VerticalAlignment defaultVerticalAlignment = VerticalAlignment.TOP;
-	private static final NavigationVisibility defaultNavigationVisibility = NavigationVisibility.ENABLED;
 	private static final IngredientGridLayoutMode defaultLayoutMode = IngredientGridLayoutMode.RECTANGULAR;
-	private static final IngredientGridNavigationMode defaultNavigationMode = IngredientGridNavigationMode.PAGED;
-	private static final boolean defaultDrawBackground = false;
 
 	private final IConfigValue<Integer> maxRows;
 	private final IConfigValue<Integer> maxColumns;
 	private final IConfigValue<HorizontalAlignment> horizontalAlignment;
 	private final IConfigValue<VerticalAlignment> verticalAlignment;
-	private final IConfigValue<NavigationVisibility> navigationVisibility;
-	private final IConfigValue<Boolean> drawBackground;
 	private final IConfigValue<IngredientGridLayoutMode> layoutMode;
-	private final IConfigValue<IngredientGridNavigationMode> navigationMode;
+	private final IngredientGridSharedConfig sharedConfig;
 
-	public IngredientGridConfig(IConfigCategoryBuilder category, HorizontalAlignment defaultHorizontalAlignment) {
+	IngredientGridConfig(
+		IConfigCategoryBuilder category,
+		HorizontalAlignment defaultHorizontalAlignment,
+		IngredientGridSharedConfig sharedConfig
+	) {
 		maxRows = category.addInteger("maxRows", defaultNumRows, minNumRows, largestNumRows)
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
@@ -43,19 +42,10 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 		verticalAlignment = category.addEnum("verticalAlignment", defaultVerticalAlignment)
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
-		navigationVisibility = category.addEnum("navigationVisibility", defaultNavigationVisibility)
-			.addLegacyName("buttonNavigationVisibility")
-			.setEditMode(ConfigValueEditMode.IMMEDIATE)
-			.build();
-		drawBackground = category.addBoolean("drawBackground", defaultDrawBackground)
-			.setEditMode(ConfigValueEditMode.IMMEDIATE)
-			.build();
 		layoutMode = category.addEnum("layoutMode", defaultLayoutMode)
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
-		navigationMode = category.addEnum("navigationMode", defaultNavigationMode)
-			.setEditMode(ConfigValueEditMode.IMMEDIATE)
-			.build();
+		this.sharedConfig = sharedConfig;
 	}
 
 	@Override
@@ -80,7 +70,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 
 	@Override
 	public IConfigValue<Boolean> drawBackground() {
-		return drawBackground;
+		return sharedConfig.drawBackground();
 	}
 
 	@Override
@@ -90,7 +80,7 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 
 	@Override
 	public IConfigValue<IngredientGridNavigationMode> navigationMode() {
-		return navigationMode;
+		return sharedConfig.navigationMode();
 	}
 
 	@Override
@@ -105,6 +95,6 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 
 	@Override
 	public IConfigValue<NavigationVisibility> navigationVisibility() {
-		return navigationVisibility;
+		return sharedConfig.navigationVisibility();
 	}
 }
