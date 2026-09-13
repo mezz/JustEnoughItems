@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.level.storage.loot.providers.number.ResolvableNumber;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -27,11 +27,11 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 		return resolve(cookingFuel.burnTime());
 	}
 
-	private static int resolve(ResolvableNumber resolvableNumber) {
-		if (resolvableNumber instanceof ResolvableNumber.Constant constant) {
-			return Math.round(constant.value());
+	private static int resolve(ResolvableInt resolvableInt) {
+		if (resolvableInt instanceof ResolvableInt.Constant constant) {
+			return constant.value();
 		}
-		if (resolvableNumber instanceof ResolvableNumber.Reference reference &&
+		if (resolvableInt instanceof ResolvableInt.Reference reference &&
 			reference.key().identifier().getNamespace().equals("minecraft")
 		) {
 			return switch (reference.key().identifier().getPath()) {

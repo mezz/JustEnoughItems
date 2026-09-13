@@ -8,7 +8,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.Compostable;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.level.storage.loot.providers.number.ResolvableNumber;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
 
 public class IngredientHelper implements IPlatformIngredientHelper {
 	@Override
@@ -17,10 +17,10 @@ public class IngredientHelper implements IPlatformIngredientHelper {
 		if (compostable == null) {
 			return 0;
 		}
-		if (compostable.layers() instanceof ResolvableNumber.Constant constant) {
+		if (compostable.layers() instanceof ResolvableInt.Constant constant) {
 			return constant.value();
 		}
-		if (compostable.layers() instanceof ResolvableNumber.Reference reference &&
+		if (compostable.layers() instanceof ResolvableInt.Reference reference &&
 			reference.key().identifier().getNamespace().equals("minecraft")
 		) {
 			return switch (reference.key().identifier().getPath()) {
