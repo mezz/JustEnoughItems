@@ -8,6 +8,9 @@ plugins {
     // applying this to all projects allows loom projects to access the required data in a manner that follows Gradle's best practices.
     id("net.fabricmc.fabric-loom-companion") version("1.18.0-alpha.16")
 
+    // Match the version used by NeoForge's port/26.3 branch.
+    id("net.neoforged.moddev") version("2.0.142") apply(false)
+
     id("net.mezzdev.modshade") version("0.6.0") apply(false)
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
@@ -20,6 +23,7 @@ val javaSourceTrees = listOf(
     "Common",
     "Debug",
     "Fabric",
+    "NeoForge",
     "Gui", "Library"
 ).map { moduleName ->
     layout.projectDirectory.dir("$moduleName/src").asFileTree.matching {

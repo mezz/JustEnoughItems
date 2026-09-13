@@ -2,8 +2,10 @@ package mezz.jei.common.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.ResourceKey;
 import org.jspecify.annotations.Nullable;
 
@@ -13,6 +15,7 @@ import java.util.Map;
 public class RegistryUtil {
 	private static final Map<ResourceKey<? extends Registry<?>>, Registry<?>> REGISTRY_CACHE = new HashMap<>();
 	private static @Nullable RegistryAccess REGISTRY_ACCESS;
+	private static HolderLookup.@Nullable Provider REGISTRY_PROVIDER;
 
 	public static <T> Registry<T> getRegistry(ResourceKey<? extends Registry<T>> key) {
 		Registry<?> registry = REGISTRY_CACHE.get(key);
@@ -42,8 +45,24 @@ public class RegistryUtil {
 		return REGISTRY_ACCESS;
 	}
 
+	/**
+	 * Returns a registry provider that includes reloadable registries used by loot context providers.
+	 * The client level does not receive these registries from the server, so vanilla defaults are used as a fallback.
+	 */
+	public static HolderLookup.Provider getRegistryProvider() {
+		if (REGISTRY_PROVIDER == null) {
+			REGISTRY_PROVIDER = VanillaRegistries.createReloadableLookup(getRegistryAccess());
+		}
+		return REGISTRY_PROVIDER;
+	}
+
 	public static void setRegistryAccess(@Nullable RegistryAccess registryAccess) {
 		REGISTRY_ACCESS = registryAccess;
+		REGISTRY_PROVIDER = null;
 		REGISTRY_CACHE.clear();
+	}
+
+	public static void setRegistryProvider(HolderLookup.@Nullable Provider registryProvider) {
+		REGISTRY_PROVIDER = registryProvider;
 	}
 }

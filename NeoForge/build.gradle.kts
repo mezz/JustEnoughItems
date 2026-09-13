@@ -1,8 +1,6 @@
 import mezz.jei.gradle.gradleProperty
 import mezz.jei.gradle.isolatedProjectDirectory
 import mezz.jei.gradle.optionalGradleProperty
-import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
-import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.moddevgradle.dsl.ModModel
 import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -18,8 +16,27 @@ plugins {
 	id("maven-publish")
 	id("me.modmuss50.mod-publish-plugin")
 	id("net.neoforged.moddev")
-	id("net.neoforged.jarcompatibilitychecker")
 	id("net.mezzdev.modshade")
+}
+
+repositories {
+	exclusiveContent {
+		forRepository {
+			maven {
+				// Temporary local build of NeoForge port/26.3 at commit 42ed7367b.
+				name = "temporaryNeoForge26_3"
+				url = rootProject.layout.projectDirectory.dir(".gradle/neoforge-26.3-maven").asFile.toURI()
+			}
+		}
+		filter {
+			includeModule("net.neoforged", "neoforge")
+			includeModule("net.neoforged", "testframework")
+		}
+	}
+}
+
+configurations.configureEach {
+	exclude(group = "net.fabricmc", module = "fabric-loader")
 }
 
 // gradle.properties
@@ -391,24 +408,17 @@ val apiJarTask = tasks.register<Jar>("apiJar") {
 	manifest.attributes["Implementation-Title"] = "jar"
 }
 
+configurations.create("apiJarElements") {
+	isCanBeConsumed = true
+	isCanBeResolved = false
+	outgoing.artifact(apiJarTask)
+}
+
 val apiSourcesJarTask = tasks.register<Jar>("apiSourcesJar") {
 	archiveBaseName.set(apiArchivesName)
 	archiveClassifier.set("sources")
 	from(apiSourceSet.allSource)
 	manifest.attributes["Implementation-Title"] = "sourcesJar"
-}
-
-tasks.named<CompatibilityTask>("checkJarCompatibility") {
-	group = LifecycleBasePlugin.VERIFICATION_GROUP
-	description = "Checks the NeoForge API against the latest published API jar in the same major version."
-	mavens.set(listOf("https://maven.blamejared.com"))
-	// The plugin defaults auxiliary libraries to the main compile classpath.
-	// This API check intentionally runs without them, avoiding the full Minecraft classpath.
-	libraries.setFrom(emptyList<Any>())
-	nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
-	fail.set(true)
-	inputJar.set(apiJarTask.flatMap { it.archiveFile })
-	artifact.set("${project.group}:$apiArchivesName")
 }
 
 publishMods {

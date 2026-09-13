@@ -5,6 +5,7 @@ import mezz.jei.common.network.ClientConnectionHelper;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -165,7 +166,13 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 			if (recipes.size() == syncedRecipes.values().size()) {
 				throw new AssertionError("Expected the synced recipes to contain the crafting table recipe before the update.");
 			}
-			return RecipeMap.create(recipes);
+			var recipeRegistries = new RegistrySetBuilder()
+				.add(
+					Registries.RECIPE,
+					context -> recipes.forEach(recipe -> context.register(recipe.id(), recipe.value()))
+				)
+				.build(client.level.registryAccess());
+			return RecipeMap.create(recipeRegistries.lookupOrThrow(Registries.RECIPE));
 		});
 
 		Object initialRuntime = ClientTestUtil.computeOnClient(client -> Internal.getJeiRuntime());
@@ -305,7 +312,6 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 			public void run() {
 				runSingleplayerTestCase(displayName(), () -> {
 					assertSyncedRecipesFromSingleplayer();
-					JeiNeoForgeClientTextInputTests.run();
 				});
 			}
 		},

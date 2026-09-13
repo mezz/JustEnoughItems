@@ -20,7 +20,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -67,7 +66,7 @@ public final class TestIngredientManagers {
 		IngredientManagerBuilder builder = new IngredientManagerBuilder(
 			subtypeManager,
 			colorHelper,
-			new ContextMap.Builder().create(new ContextKeySet.Builder().build())
+			ContextMap.EMPTY
 		);
 		ItemStackHelper itemStackHelper = createVanillaItemStackHelper(subtypeManager, colorHelper);
 		builder.register(

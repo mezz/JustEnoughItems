@@ -53,6 +53,8 @@ accessible method net/minecraft/client/gui/GuiGraphicsExtractor blitTiledSprite 
 
 accessible method net/minecraft/world/inventory/GrindstoneMenu computeResult (Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/ItemStack;
 
+accessible method net/minecraft/world/level/storage/loot/LootContext <init> (Lnet/minecraft/world/level/storage/loot/LootParams;Lnet/minecraft/util/RandomSource;Lnet/minecraft/core/HolderGetter$Provider;)V
+
 accessible field net/minecraft/client/gui/components/toasts/ToastManager visibleToasts Ljava/util/List;
 accessible class net/minecraft/client/gui/components/toasts/ToastManager$ToastInstance
 

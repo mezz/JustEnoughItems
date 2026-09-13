@@ -23,6 +23,7 @@ import mezz.jei.library.ingredients.SlotIngredient;
 import mezz.jei.library.recipes.collect.RecipeIngredientRoleMap;
 import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
 import mezz.jei.neoforge.tests.lib.TestIngredientManagers;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.chat.Component;
@@ -71,11 +72,11 @@ public final class SlotDisplayIngredientGameTests {
 				(slotDisplay, context, infoBuilder) -> {
 					callCount.incrementAndGet();
 					interpretedIngredientCount.set(context.getIngredients().size());
-					infoBuilder.setTagKey(slotDisplay.tag());
+					slotDisplay.tag().unwrapKey().ifPresent(infoBuilder::setTagKey);
 				}
 			)
 		);
-		SlotDisplay slotDisplay = new SlotDisplay.TagSlotDisplay(ItemTags.PLANKS);
+		SlotDisplay slotDisplay = new SlotDisplay.TagSlotDisplay(helper.getRegistry(Registries.ITEM).getOrThrow(ItemTags.PLANKS));
 
 		// Operation: resolve the tag display through the registered interpreter.
 		List<SlotIngredient<ItemStack>> resolved = resolve(helper, ingredientManager, slotDisplay);
@@ -178,7 +179,7 @@ public final class SlotDisplayIngredientGameTests {
 		ItemStack oakPlanks = new ItemStack(Items.OAK_PLANKS);
 		IIngredientManagerInternal ingredientManager = createIngredientManager(oakPlanks);
 		IIngredientHelper<ItemStack> ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
-		SlotDisplay tagDisplay = new SlotDisplay.TagSlotDisplay(ItemTags.PLANKS);
+		SlotDisplay tagDisplay = new SlotDisplay.TagSlotDisplay(helper.getRegistry(Registries.ITEM).getOrThrow(ItemTags.PLANKS));
 
 		// Operation: resolve the declared tag display despite its incomplete registered contents.
 		SlotIngredient<ItemStack> resolvedTag = findStack(resolve(helper, ingredientManager, tagDisplay), Items.OAK_PLANKS);
@@ -218,7 +219,7 @@ public final class SlotDisplayIngredientGameTests {
 		ItemStack waterPotion = PotionContents.createItemStack(Items.POTION, Potions.WATER);
 		IIngredientManagerInternal ingredientManager = createIngredientManager(oakPlanks, waterPotion);
 		SlotDisplay composite = new SlotDisplay.Composite(List.of(
-			new SlotDisplay.TagSlotDisplay(ItemTags.PLANKS),
+			new SlotDisplay.TagSlotDisplay(helper.getRegistry(Registries.ITEM).getOrThrow(ItemTags.PLANKS)),
 			new SlotDisplay.ItemSlotDisplay(Items.POTION)
 		));
 

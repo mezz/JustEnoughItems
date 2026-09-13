@@ -15,7 +15,6 @@ import net.minecraft.client.input.KeyEvent;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * Verifies that IME composition and committed text are routed to JEI's search field.
@@ -24,7 +23,8 @@ public final class JeiNeoForgeClientTextInputTests {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final String JUNIT_SUITE_NAME = "neoforge-client-gametest";
 	private static final String FOCUS_SEARCH_KEY_MAPPING = "key.jei.focusSearch";
-	private static final InputConstants.Key TEST_FOCUS_SEARCH_KEY = InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_F);
+	private static final int KEY_CODE_F = 70;
+	private static final InputConstants.Key TEST_FOCUS_SEARCH_KEY = InputConstants.Type.KEYBOARD.getOrCreate(KEY_CODE_F);
 
 	private JeiNeoForgeClientTextInputTests() {
 
@@ -107,7 +107,7 @@ public final class JeiNeoForgeClientTextInputTests {
 		try {
 			// GLFW modifier state cannot be synthesized by this test harness, so temporarily remove Cmd/Ctrl.
 			focusSearch.setKeyModifierAndCode(KeyModifier.NONE, TEST_FOCUS_SEARCH_KEY);
-			KeyEvent event = new KeyEvent(GLFW.GLFW_KEY_F, 0, 0);
+			KeyEvent event = new KeyEvent(KEY_CODE_F, 0, 0);
 			ImeTextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, event);
 		} finally {
 			focusSearch.setKeyModifierAndCode(originalModifier, originalKey);

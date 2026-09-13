@@ -17,7 +17,6 @@ import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -167,7 +166,7 @@ public final class FluidIngredientGameTests {
 	private static DisplayIngredientAcceptor createIngredientAcceptor() {
 		return new DisplayIngredientAcceptor(
 			createIngredientManager(),
-			new ContextMap.Builder().create(new ContextKeySet.Builder().build()),
+			ContextMap.EMPTY,
 			RecipeIngredientRole.INPUT
 		);
 	}
@@ -177,7 +176,7 @@ public final class FluidIngredientGameTests {
 		IngredientManagerBuilder builder = new IngredientManagerBuilder(
 			subtypeManager,
 			TestColorHelper.INSTANCE,
-			new ContextMap.Builder().create(new ContextKeySet.Builder().build())
+			ContextMap.EMPTY
 		);
 		FluidHelper fluidHelper = new FluidHelper();
 		FluidIngredientHelper<FluidStack> ingredientHelper = new FluidIngredientHelper<>(subtypeManager, TestColorHelper.INSTANCE, fluidHelper);

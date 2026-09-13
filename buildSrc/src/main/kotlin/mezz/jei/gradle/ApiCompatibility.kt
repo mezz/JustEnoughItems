@@ -83,6 +83,7 @@ private fun Project.configureApiCompatibility() {
 	val apiCompatibilityModules = listOf(
 		ApiCompatibilityModule(":Common", "checkCommonApiCompatibility", "common-api"),
 		ApiCompatibilityModule(":Fabric", "checkFabricApiCompatibility", "fabric-api"),
+		ApiCompatibilityModule(":NeoForge", "checkNeoForgeApiCompatibility", "neoforge-api"),
 	)
 
 	val apiCompatibilityCheckTasks = apiCompatibilityModules.map { module ->
