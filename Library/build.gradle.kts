@@ -17,7 +17,7 @@ val modId: String by extra
 val modJavaVersion: String by extra
 val neoformVersionAndTimestamp = "$minecraftVersion-$neoformTimestamp"
 val mezzConfigApiDependency: String by rootProject.extra
-val mezzConfigDependency: String by rootProject.extra
+val mezzConfigNeoForgeDependency: String by rootProject.extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-lib"
 base {
@@ -60,7 +60,7 @@ dependencies {
         name = "junit-jupiter",
         version = jUnitVersion
     )
-    testImplementation(mezzConfigDependency)
+    testImplementation(mezzConfigNeoForgeDependency)
     testRuntimeOnly(
         group = "org.junit.platform",
         name = "junit-platform-launcher"

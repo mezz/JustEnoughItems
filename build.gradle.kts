@@ -84,7 +84,6 @@ val specificationVersion: String by extra
 
 val mezzConfigApiDependency = "$configModGroup:${configModId}-${minecraftVersion}-config-api:$mezzConfigVersion"
 extra["mezzConfigApiDependency"] = mezzConfigApiDependency
-extra["mezzConfigDependency"] = "$configModGroup:${configModId}-${minecraftVersion}-config:$mezzConfigVersion"
 extra["mezzConfigFabricDependency"] = "$configModGroup:${configModId}-${minecraftVersion}-fabric:$mezzConfigVersion"
 extra["mezzConfigForgeDependency"] = "$configModGroup:${configModId}-${minecraftVersion}-forge:$mezzConfigVersion"
 extra["mezzConfigNeoForgeDependency"] = "$configModGroup:${configModId}-${minecraftVersion}-neoforge:$mezzConfigVersion"

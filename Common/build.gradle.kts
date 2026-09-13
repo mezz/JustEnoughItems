@@ -21,7 +21,7 @@ val suffixtreeVersion: String by extra
 val neoformVersionAndTimestamp = "$minecraftVersion-$neoformTimestamp"
 val deduplicatingRunnerVersion: String by extra
 val mezzConfigApiDependency: String by rootProject.extra
-val mezzConfigDependency: String by rootProject.extra
+val mezzConfigNeoForgeDependency: String by rootProject.extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
 base {
@@ -131,7 +131,7 @@ dependencies {
         name = "junit-jupiter",
         version = jUnitVersion
     )
-    testImplementation(mezzConfigDependency)
+    testImplementation(mezzConfigNeoForgeDependency)
     testRuntimeOnly(
         group = "org.junit.platform",
         name = "junit-platform-launcher"
