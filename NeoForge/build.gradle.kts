@@ -33,7 +33,6 @@ val deduplicatingRunnerVersion: String by extra
 val mezzConfigVersion: String by extra
 val mezzConfigVersionRange: String by extra
 val mezzConfigApiDependency: String by rootProject.extra
-val mezzConfigDependency: String by rootProject.extra
 val mezzConfigNeoForgeDependency: String by rootProject.extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
@@ -160,12 +159,6 @@ dependencies {
 	compileOnly(mezzConfigApiDependency)
 	runtimeOnly(mezzConfigNeoForgeDependency)
 	jarJar(mezzConfigNeoForgeDependency) {
-		version {
-			strictly(mezzConfigVersionRange)
-			prefer(mezzConfigVersion)
-		}
-	}
-	jarJar(mezzConfigDependency) {
 		version {
 			strictly(mezzConfigVersionRange)
 			prefer(mezzConfigVersion)

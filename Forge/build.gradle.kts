@@ -35,7 +35,6 @@ val deduplicatingRunnerVersion: String by extra
 val mezzConfigVersion: String by extra
 val mezzConfigVersionRange: String by extra
 val mezzConfigApiDependency: String by rootProject.extra
-val mezzConfigDependency: String by rootProject.extra
 val mezzConfigForgeDependency: String by rootProject.extra
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
@@ -151,10 +150,6 @@ dependencies {
 	compileOnly(mezzConfigApiDependency)
 	mezzConfigLocalRuntime(fg.deobf(mezzConfigForgeDependency))
 	jarJar("${mezzConfigForgeDependency.substringBeforeLast(":")}:$mezzConfigVersionRange") {
-		isTransitive = false
-		jarJar.pin(this, mezzConfigVersion)
-	}
-	jarJar("${mezzConfigDependency.substringBeforeLast(":")}:$mezzConfigVersionRange") {
 		isTransitive = false
 		jarJar.pin(this, mezzConfigVersion)
 	}
