@@ -54,7 +54,7 @@ def findPreviousReleaseCommit() {
 pipeline {
     agent any
     options {
-        disableConcurrentBuilds(abortPrevious: true)
+        disableConcurrentBuilds(abortPrevious: false)
         timeout(time: 1, unit: 'HOURS')
     }
     tools {
