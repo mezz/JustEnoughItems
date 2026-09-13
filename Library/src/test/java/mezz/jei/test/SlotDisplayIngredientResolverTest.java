@@ -2,9 +2,11 @@ package mezz.jei.test;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.library.focus.FocusGroup;
@@ -26,6 +28,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.util.context.ContextMap;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -34,12 +38,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SlotDisplayIngredientResolverTest {
@@ -64,11 +70,89 @@ class SlotDisplayIngredientResolverTest {
 		// Assertions: the custom ingredient resolves and keeps the metadata supplied by its child interpreter.
 		assertEquals(List.of(new TestIngredient(1)), resolved.stream()
 			.map(SlotIngredient::typedIngredient)
-			.map(ingredient -> ingredient.getIngredient())
+			.map(ITypedIngredient::getIngredient)
 			.toList());
 		SlotDisplayData<TestIngredient> displayData = resolved.getFirst().slotDisplayData();
 		assertNotNull(displayData);
 		assertEquals(CHILD_HEADER, displayData.info().tooltipHeader().orElseThrow());
+	}
+
+	@Test
+	void transformingWrapperPreservesNestedGroupsAndMetadata() {
+		// Setup: two interpreted child groups are wrapped by two result-transforming displays.
+		IIngredientManagerInternal ingredientManager = createIngredientManager(List.of(new TestIngredient(1)), false);
+		SlotDisplay composite = new SlotDisplay.Composite(List.of(TestSlotDisplay.INSTANCE, TestSlotDisplay.INSTANCE));
+		SlotDisplay innerWrapper = new TransformingTestSlotDisplay(composite, 10);
+		SlotDisplay outerWrapper = new TransformingTestSlotDisplay(innerWrapper, 100);
+
+		// Operation: resolve and interpret the nested wrappers.
+		List<SlotIngredient<TestIngredient>> resolved = resolve(ingredientManager, outerWrapper);
+
+		// Assertions: transformations run inside-out, and the composite's separate child groups and metadata remain.
+		assertEquals(
+			List.of(new TestIngredient(111), new TestIngredient(111)),
+			resolved.stream()
+				.map(SlotIngredient::typedIngredient)
+				.map(ITypedIngredient::getIngredient)
+				.toList()
+		);
+		SlotDisplayData<TestIngredient> firstDisplayData = resolved.getFirst().slotDisplayData();
+		SlotDisplayData<TestIngredient> secondDisplayData = resolved.getLast().slotDisplayData();
+		assertNotNull(firstDisplayData);
+		assertNotNull(secondDisplayData);
+		assertNotSame(firstDisplayData, secondDisplayData);
+		assertEquals(CHILD_HEADER, firstDisplayData.info().tooltipHeader().orElseThrow());
+		assertEquals(CHILD_HEADER, secondDisplayData.info().tooltipHeader().orElseThrow());
+	}
+
+	@Test
+	void childDisplaysCanBeTransformedIndependently() {
+		// Setup: one display delegates to an unchanged child and a transformed child.
+		IIngredientManagerInternal ingredientManager = createIngredientManager(List.of(new TestIngredient(1)), false);
+		SlotDisplay display = new SelectiveChildrenTestSlotDisplay(
+			TestSlotDisplay.INSTANCE,
+			TestSlotDisplay.INSTANCE,
+			10
+		);
+
+		// Operation: resolve and interpret both children.
+		List<SlotIngredient<TestIngredient>> resolved = resolve(ingredientManager, display);
+
+		// Assertions: only the selected child is transformed, and both child groups keep their metadata.
+		assertEquals(
+			List.of(new TestIngredient(1), new TestIngredient(11)),
+			resolved.stream()
+				.map(SlotIngredient::typedIngredient)
+				.map(ITypedIngredient::getIngredient)
+				.toList()
+		);
+		assertNotSame(resolved.getFirst().slotDisplayData(), resolved.getLast().slotDisplayData());
+		assertEquals(CHILD_HEADER, resolved.getFirst().slotDisplayData().info().tooltipHeader().orElseThrow());
+		assertEquals(CHILD_HEADER, resolved.getLast().slotDisplayData().info().tooltipHeader().orElseThrow());
+	}
+
+	@Test
+	void nestedCompositeKeepsListCandidatesAcrossChildGroups() {
+		// Setup: a singleton and a nested list contribute separate metadata groups to one recipe slot.
+		IIngredientManagerInternal ingredientManager = createIngredientManager(List.of(new TestIngredient(1)), false);
+		SlotDisplay nestedList = new SlotDisplay.Composite(List.of(
+			new TransformingTestSlotDisplay(TestSlotDisplay.INSTANCE, 10),
+			new TransformingTestSlotDisplay(TestSlotDisplay.INSTANCE, 100)
+		));
+		SlotDisplay display = new SlotDisplay.Composite(List.of(TestSlotDisplay.INSTANCE, nestedList));
+		List<SlotIngredient<TestIngredient>> resolved = resolve(ingredientManager, display);
+
+		// Operation: collect the visible candidates used by the slot's list badge and tooltip grid.
+		List<TestIngredient> candidates = RecipeSlotIngredients.getVisibleSlotIngredients(resolved, ingredientManager, ingredient -> true)
+			.map(SlotIngredient::typedIngredient)
+			.map(ingredient -> ingredient.getIngredient(INGREDIENT_TYPE))
+			.flatMap(Optional::stream)
+			.toList();
+
+		// Assertions: group metadata stays independent, but every cycled child still exposes the full list.
+		assertEquals(List.of(new TestIngredient(1), new TestIngredient(11), new TestIngredient(101)), candidates);
+		assertNotSame(resolved.get(0).slotDisplayData(), resolved.get(1).slotDisplayData());
+		assertNotSame(resolved.get(1).slotDisplayData(), resolved.get(2).slotDisplayData());
 	}
 
 	@Test
@@ -82,20 +166,19 @@ class SlotDisplayIngredientResolverTest {
 		// Operation: resolve the wildcard display and calculate its visible rotation.
 		List<SlotIngredient<TestIngredient>> resolved = resolve(ingredientManager, TestSlotDisplay.INSTANCE);
 
-		List<SlotIngredient<?>> displayed = RecipeSlotIngredients.calculateDisplayIngredients(
+		List<@Nullable SlotIngredient<?>> displayed = RecipeSlotIngredients.calculateDisplayIngredients(
 			resolved,
 			ingredientManager,
 			FocusGroup.EMPTY,
 			RecipeIngredientRole.INPUT,
 			ingredient -> true
 		);
-		SlotIngredient<?> displayedIngredient = displayed.getFirst();
-		List<SlotIngredient<?>> candidates = RecipeSlotIngredients.getVisibleSlotIngredientsInDisplayGroup(
-				resolved,
-				displayedIngredient,
-				ingredientManager,
-				ingredient -> true
-			)
+		SlotIngredient<?> displayedIngredient = Objects.requireNonNull(displayed.getFirst());
+		List<SlotIngredient<?>> displayGroup = RecipeSlotIngredients.getDisplayGroupIngredients(
+			resolved,
+			displayedIngredient
+		);
+		List<SlotIngredient<?>> candidates = RecipeSlotIngredients.getVisibleSlotIngredients(displayGroup, ingredientManager, ingredient -> true)
 			.toList();
 
 		// Assertions: subtype wildcard handling adds wildcard matching and a generic heading before expansion.
@@ -120,7 +203,8 @@ class SlotDisplayIngredientResolverTest {
 	) {
 		IngredientManagerBuilder builder = new IngredientManagerBuilder(
 			new SubtypeManager(new SubtypeInterpreters()),
-			DummyColorHelper.INSTANCE
+			DummyColorHelper.INSTANCE,
+			ContextMap.EMPTY
 		);
 		builder.register(
 			INGREDIENT_TYPE,
@@ -140,6 +224,24 @@ class SlotDisplayIngredientResolverTest {
 					interpretationBuilder.setTooltipHeader(CHILD_HEADER);
 				}
 			}
+		);
+		builder.getSlotDisplayInterpreterRegistration().register(
+			TransformingTestSlotDisplay.TYPE,
+			INGREDIENT_TYPE,
+			(display, ignoredContext, interpretationBuilder) -> interpretationBuilder.addChildDisplay(
+				display.source(),
+				ingredient -> new TestIngredient(ingredient.value() + display.offset())
+			)
+		);
+		builder.getSlotDisplayInterpreterRegistration().register(
+			SelectiveChildrenTestSlotDisplay.TYPE,
+			INGREDIENT_TYPE,
+			(display, ignoredContext, interpretationBuilder) -> interpretationBuilder
+				.addChildDisplay(display.unchanged())
+				.addChildDisplay(
+					display.transformed(),
+					ingredient -> new TestIngredient(ingredient.value() + display.offset())
+				)
 		);
 		return builder.build();
 	}
@@ -178,6 +280,68 @@ class SlotDisplayIngredientResolverTest {
 
 		@Override
 		public Type<TestSlotDisplay> type() {
+			return TYPE;
+		}
+	}
+
+	private record TransformingTestSlotDisplay(SlotDisplay source, int offset) implements SlotDisplay {
+		private static final TransformingTestSlotDisplay DEFAULT = new TransformingTestSlotDisplay(TestSlotDisplay.INSTANCE, 0);
+		private static final MapCodec<TransformingTestSlotDisplay> MAP_CODEC = MapCodec.unit(DEFAULT);
+		private static final StreamCodec<RegistryFriendlyByteBuf, TransformingTestSlotDisplay> STREAM_CODEC = StreamCodec.unit(DEFAULT);
+		private static final SlotDisplay.Type<TransformingTestSlotDisplay> TYPE = new SlotDisplay.Type<>(MAP_CODEC, STREAM_CODEC);
+
+		@Override
+		public <T> Stream<T> resolve(ContextMap context, DisplayContentsFactory<T> factory) {
+			return source.resolve(context, factory)
+				.map(this::transform);
+		}
+
+		@SuppressWarnings("unchecked")
+		private <T> T transform(T ingredient) {
+			if (ingredient instanceof TestIngredient(int value)) {
+				return (T) new TestIngredient(value + offset);
+			}
+			return ingredient;
+		}
+
+		@Override
+		public Type<TransformingTestSlotDisplay> type() {
+			return TYPE;
+		}
+	}
+
+	private record SelectiveChildrenTestSlotDisplay(
+		SlotDisplay unchanged,
+		SlotDisplay transformed,
+		int offset
+	) implements SlotDisplay {
+		private static final SelectiveChildrenTestSlotDisplay DEFAULT = new SelectiveChildrenTestSlotDisplay(
+			TestSlotDisplay.INSTANCE,
+			TestSlotDisplay.INSTANCE,
+			0
+		);
+		private static final MapCodec<SelectiveChildrenTestSlotDisplay> MAP_CODEC = MapCodec.unit(DEFAULT);
+		private static final StreamCodec<RegistryFriendlyByteBuf, SelectiveChildrenTestSlotDisplay> STREAM_CODEC = StreamCodec.unit(DEFAULT);
+		private static final SlotDisplay.Type<SelectiveChildrenTestSlotDisplay> TYPE = new SlotDisplay.Type<>(MAP_CODEC, STREAM_CODEC);
+
+		@Override
+		public <T> Stream<T> resolve(ContextMap context, DisplayContentsFactory<T> factory) {
+			return Stream.concat(
+				unchanged.resolve(context, factory),
+				transformed.resolve(context, factory).map(this::transform)
+			);
+		}
+
+		@SuppressWarnings("unchecked")
+		private <T> T transform(T ingredient) {
+			if (ingredient instanceof TestIngredient(int value)) {
+				return (T) new TestIngredient(value + offset);
+			}
+			return ingredient;
+		}
+
+		@Override
+		public Type<SelectiveChildrenTestSlotDisplay> type() {
 			return TYPE;
 		}
 	}
@@ -235,7 +399,21 @@ class SlotDisplayIngredientResolverTest {
 		}
 
 		@Override
+		@Deprecated(since = "30.26.0", forRemoval = true)
+		@SuppressWarnings("removal")
 		public List<Component> getTooltip(TestIngredient ingredient, TooltipFlag tooltipFlag) {
+			return getTooltip(ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+		}
+
+		@Override
+		@Deprecated(since = "30.26.0", forRemoval = true)
+		@SuppressWarnings("removal")
+		public void getTooltip(ITooltipBuilder tooltip, TestIngredient ingredient, TooltipFlag tooltipFlag) {
+			getTooltip(tooltip, ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+		}
+
+		@Override
+		public List<Component> getTooltip(TestIngredient ingredient, Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
 			return List.of();
 		}
 	}

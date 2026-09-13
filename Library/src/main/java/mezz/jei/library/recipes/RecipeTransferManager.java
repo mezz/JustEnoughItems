@@ -3,6 +3,7 @@ package mezz.jei.library.recipes;
 import com.google.common.collect.ImmutableTable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.api.recipe.transfer.IRecipeTransferListener;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.Constants;
@@ -12,15 +13,21 @@ import net.minecraft.world.inventory.MenuType;
 import org.jspecify.annotations.Nullable;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 public class RecipeTransferManager implements IRecipeTransferManager {
 	private final ImmutableTable<Class<? extends AbstractContainerMenu>, IRecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers;
+	private final List<IRecipeTransferListener> recipeTransferListeners;
 	private final Set<AbstractContainerMenu> unsupportedContainers = new HashSet<>();
 
-	public RecipeTransferManager(ImmutableTable<Class<? extends AbstractContainerMenu>, IRecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers) {
+	public RecipeTransferManager(
+		ImmutableTable<Class<? extends AbstractContainerMenu>, IRecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers,
+		List<IRecipeTransferListener> recipeTransferListeners
+	) {
 		this.recipeTransferHandlers = recipeTransferHandlers;
+		this.recipeTransferListeners = List.copyOf(recipeTransferListeners);
 	}
 
 	@Override
@@ -38,6 +45,11 @@ public class RecipeTransferManager implements IRecipeTransferManager {
 		}
 
 		return getHandler(containerClass, menuType, Constants.UNIVERSAL_RECIPE_TRANSFER_TYPE);
+	}
+
+	@Override
+	public List<IRecipeTransferListener> getRecipeTransferListeners() {
+		return recipeTransferListeners;
 	}
 
 	@Nullable

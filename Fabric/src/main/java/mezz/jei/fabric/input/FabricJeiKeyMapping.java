@@ -1,29 +1,51 @@
 package mezz.jei.fabric.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import mezz.jei.common.input.keys.JeiKeyConflictContext;
+import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.network.chat.Component;
 
-public class FabricJeiKeyMapping extends AbstractJeiKeyMapping {
-	protected final FabricKeyMapping fabricMapping;
+import java.util.function.Consumer;
 
-	public FabricJeiKeyMapping(FabricKeyMapping fabricMapping, JeiKeyConflictContext context) {
-		super(context);
-		this.fabricMapping = fabricMapping;
-	}
+public class FabricJeiKeyMapping<T extends KeyMapping & ContextAwareKeyMapping> implements IJeiKeyMappingInternal {
+	protected final T mapping;
 
-	@Override
-	protected FabricKeyMapping getMapping() {
-		return this.fabricMapping;
+	public FabricJeiKeyMapping(T mapping) {
+		this.mapping = mapping;
 	}
 
 	@Override
 	public boolean isActiveAndMatches(InputConstants.Key key) {
-		if (isUnbound()) {
-			return false;
+		return this.mapping.isActiveAndMatches(key);
+	}
+
+	@Override
+	public boolean isUnbound() {
+		return this.mapping.isUnbound();
+	}
+
+	@Override
+	public Component getTranslatedKeyMessage() {
+		return this.mapping.getTranslatedKeyMessage();
+	}
+
+	@Override
+	public boolean isDown() {
+		return this.mapping.isContextActive() &&
+			IJeiKeyMappingInternal.isKeyDown(getBoundKey());
+	}
+
+	private InputConstants.Key getBoundKey() {
+		if (this.mapping instanceof FabricKeyMapping fabricMapping) {
+			return fabricMapping.getRealKey();
 		}
-		if (!this.fabricMapping.realKey.equals(key)) {
-			return false;
-		}
-		return context.isActive();
+		return KeyMappingHelper.getBoundKeyOf(this.mapping);
+	}
+
+	@Override
+	public IJeiKeyMappingInternal register(Consumer<KeyMapping> registerMethod) {
+		registerMethod.accept(this.mapping);
+		return this;
 	}
 }

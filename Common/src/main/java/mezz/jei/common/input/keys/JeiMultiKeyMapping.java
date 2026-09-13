@@ -7,7 +7,7 @@ import net.minecraft.network.chat.Component;
 import java.util.Arrays;
 import java.util.List;
 
-public class JeiMultiKeyMapping implements IJeiKeyMapping {
+public class JeiMultiKeyMapping implements IJeiKeyMappingWithExtraModifiers {
 	private final List<IJeiKeyMapping> mappings;
 
 	public JeiMultiKeyMapping(IJeiKeyMapping... mappings) {
@@ -18,6 +18,17 @@ public class JeiMultiKeyMapping implements IJeiKeyMapping {
 	public boolean isActiveAndMatches(InputConstants.Key key) {
 		return this.mappings.stream()
 			.anyMatch(m -> m.isActiveAndMatches(key));
+	}
+
+	@Override
+	public boolean isActiveAndMatchesAllowingExtraModifiers(InputConstants.Key key) {
+		return this.mappings.stream()
+			.anyMatch(mapping -> {
+				if (mapping instanceof IJeiKeyMappingWithExtraModifiers withExtraModifiers) {
+					return withExtraModifiers.isActiveAndMatchesAllowingExtraModifiers(key);
+				}
+				return mapping.isActiveAndMatches(key);
+			});
 	}
 
 	@Override

@@ -10,7 +10,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeMap;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.LevelSettings;
 import net.minecraft.world.level.WorldDataConfiguration;
@@ -18,6 +20,7 @@ import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +29,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -152,6 +156,55 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 		);
 	}
 
+	private static void assertRecipeUpdatesReplaceRecipesOnSameConnection() {
+		RecipeMap updatedRecipes = ClientTestUtil.computeOnClient(client -> {
+			RecipeMap syncedRecipes = Internal.getClientSyncedRecipes();
+			List<RecipeHolder<?>> recipes = syncedRecipes.values().stream()
+				.filter(recipe -> !recipe.id().equals(CRAFTING_TABLE_RECIPE_KEY))
+				.toList();
+			if (recipes.size() == syncedRecipes.values().size()) {
+				throw new AssertionError("Expected the synced recipes to contain the crafting table recipe before the update.");
+			}
+			return RecipeMap.create(recipes);
+		});
+
+		Object initialRuntime = ClientTestUtil.computeOnClient(client -> Internal.getJeiRuntime());
+		ClientTestUtil.runOnClient(client -> NeoForge.EVENT_BUS.post(
+			new RecipesReceivedEvent(Set.<RecipeType<?>>of(RecipeType.CRAFTING), updatedRecipes)
+		));
+		ClientTestUtil.waitUntil(
+			() -> ClientTestUtil.computeOnClient(client -> Internal.hasClientSyncedRecipes() &&
+				Internal.getClientSyncedRecipes().byKey(CRAFTING_TABLE_RECIPE_KEY) == null &&
+				Internal.getJeiRuntime() != initialRuntime),
+			ASSERTION_TIMEOUT,
+			() -> "Expected JEI to replace synced recipes after an update on the same connection. " + describeRecipeState()
+		);
+
+		Object updatedRuntime = ClientTestUtil.computeOnClient(client -> Internal.getJeiRuntime());
+		ClientTestUtil.runOnClient(client -> NeoForge.EVENT_BUS.post(
+			new RecipesReceivedEvent(Set.of(), RecipeMap.EMPTY)
+		));
+		ClientTestUtil.waitUntil(
+			() -> ClientTestUtil.computeOnClient(client -> Internal.hasClientFallbackRecipes() &&
+				Internal.getClientSyncedRecipes().byKey(CRAFTING_TABLE_RECIPE_KEY) != null &&
+				Internal.getJeiRuntime() != updatedRuntime),
+			ASSERTION_TIMEOUT,
+			() -> "Expected JEI to clear synced recipes after an empty update on the same connection. " + describeRecipeState()
+		);
+
+		Object fallbackRuntime = ClientTestUtil.computeOnClient(client -> Internal.getJeiRuntime());
+		ClientTestUtil.runOnClient(client -> NeoForge.EVENT_BUS.post(
+			new RecipesReceivedEvent(Set.<RecipeType<?>>of(RecipeType.CRAFTING), RecipeMap.EMPTY)
+		));
+		ClientTestUtil.waitUntil(
+			() -> ClientTestUtil.computeOnClient(client -> Internal.hasClientSyncedRecipes() &&
+				Internal.getClientSyncedRecipes().values().isEmpty() &&
+				Internal.getJeiRuntime() != fallbackRuntime),
+			ASSERTION_TIMEOUT,
+			() -> "Expected JEI to preserve an explicitly synchronized empty recipe map. " + describeRecipeState()
+		);
+	}
+
 	private static boolean hasVanillaRecipes(RecipeMap recipeMap) {
 		return !recipeMap.values().isEmpty() &&
 			recipeMap.byKey(CRAFTING_TABLE_RECIPE_KEY) != null;
@@ -260,7 +313,10 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 			@Override
 			public void run() {
 				try (NeoForgeExternalTestServer server = NeoForgeExternalTestServer.startNeoForgeWithJei()) {
-					runTestCase(displayName(), server, JeiNeoForgeClientRecipeSyncTests::assertSyncedRecipesFromJeiServer);
+					runTestCase(displayName(), server, () -> {
+						assertSyncedRecipesFromJeiServer();
+						assertRecipeUpdatesReplaceRecipesOnSameConnection();
+					});
 				}
 			}
 		},

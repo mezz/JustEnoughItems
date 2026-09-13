@@ -1,0 +1,61 @@
+package mezz.jei.api.recipe;
+
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.types.IRecipeType;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
+
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+
+/**
+ * This is a helper class for looking up crafting stations.
+ * Create one with {@link IRecipeManager#createCraftingStationLookup(IRecipeType)},
+ * then set its properties and call {@link #get()} to get the results.
+ *
+ * @since 20.0.0
+ */
+@ApiStatus.NonExtendable
+public interface ICraftingStationLookup {
+	/**
+	 * By default, hidden results are not returned.
+	 * Calling this will make this lookup include hidden crafting stations.
+	 *
+	 * @since 20.0.0
+	 */
+	ICraftingStationLookup includeHidden();
+
+	/**
+	 * Get the crafting station results for this lookup.
+	 *
+	 * @since 20.0.0
+	 */
+	Stream<ITypedIngredient<?>> get();
+
+	/**
+	 * Get the crafting station results for this lookup, grouped by how they were registered.
+	 * Each consumer adds one crafting station to an ingredient acceptor.
+	 *
+	 * @since 30.32.0
+	 */
+	Stream<Consumer<IIngredientAcceptor<?>>> getGroups();
+
+	/**
+	 * Get the crafting station results of the given type for this lookup.
+	 *
+	 * @since 20.0.0
+	 */
+	<S> Stream<S> get(IIngredientType<S> ingredientType);
+
+	/**
+	 * Get the ItemStack crafting station results for this lookup.
+	 *
+	 * @since 20.0.0
+	 */
+	default Stream<ItemStack> getItemStack() {
+		return get(VanillaTypes.ITEM_STACK);
+	}
+}

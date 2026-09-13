@@ -1,5 +1,6 @@
 import mezz.jei.gradle.addFabricMinecraftDependencies
 import mezz.jei.gradle.gradleProperty
+import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
@@ -13,6 +14,7 @@ plugins {
 
 // gradle.properties
 val jUnitVersion = gradleProperty("jUnitVersion")
+val fabricLoaderVersion = gradleProperty("fabricLoaderVersion")
 val minecraftVersion = gradleProperty("minecraftVersion")
 val modGroup = gradleProperty("modGroup")
 val modId = gradleProperty("modId")
@@ -21,15 +23,35 @@ val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
 val suffixtreeVersion = gradleProperty("suffixtreeVersion")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
+val apiArchivesName = "${modId}-${minecraftVersion}-common-api"
 base {
     archivesName.set(baseArchivesName)
 }
 
 val generatedJeiGuiColorsResources = layout.buildDirectory.dir("generated/resources/jeiGuiColors")
 
-val dependencyProjectPaths = listOf(":CommonApi")
+val apiSourceSet = sourceSets.create("api") {
+    resources.setSrcDirs(emptyList<String>())
+    output.setResourcesDir(layout.buildDirectory.dir("classes/java/api"))
+}
+
+configurations.create("apiClassesElements") {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+    outgoing.capability("${project.group}:$apiArchivesName:${project.version}")
+    outgoing.artifact(layout.buildDirectory.dir("classes/java/api")) {
+        builtBy(tasks.named(apiSourceSet.classesTaskName))
+        type = "directory"
+    }
+}
 
 addFabricMinecraftDependencies()
+
+afterEvaluate {
+    configurations.named(apiSourceSet.compileClasspathConfigurationName) {
+        extendsFrom(configurations.getByName("minecraftNamedCompile"))
+    }
+}
 
 val datagenSourceSet = sourceSets.create("datagen") {
     compileClasspath += sourceSets.main.get().output.classesDirs
@@ -57,6 +79,11 @@ sourceSets {
 }
 
 dependencies {
+    implementation(apiSourceSet.output)
+    add(apiSourceSet.compileOnlyConfigurationName, "net.fabricmc:fabric-loader:${fabricLoaderVersion}")
+    add(apiSourceSet.compileOnlyConfigurationName, "com.google.code.findbugs:jsr305:3.0.2")
+    add(apiSourceSet.compileOnlyConfigurationName, "org.jetbrains:annotations:26.0.2")
+    add(apiSourceSet.compileOnlyConfigurationName, "org.jspecify:jspecify:1.0.0")
     implementation("org.jetbrains:annotations:26.0.2")
     implementation("com.google.guava:guava:33.5.0-jre")
     implementation("it.unimi.dsi:fastutil:8.5.18")
@@ -66,9 +93,6 @@ dependencies {
     }
     implementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
-    }
-    dependencyProjectPaths.forEach {
-        implementation(project(it))
     }
     testFixturesCompileOnly("org.jspecify:jspecify:1.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
@@ -104,8 +128,45 @@ tasks.withType<JavaCompile> {
     }
 }
 
+val apiJarTask = tasks.register<Jar>("apiJar") {
+    archiveBaseName.set(apiArchivesName)
+    from(apiSourceSet.output)
+    manifest.attributes["Implementation-Title"] = "jar"
+}
+
+configurations.create("apiJarElements") {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+    outgoing.artifact(apiJarTask)
+}
+
+val apiSourcesJarTask = tasks.register<Jar>("apiSourcesJar") {
+    archiveBaseName.set(apiArchivesName)
+    archiveClassifier.set("sources")
+    from(apiSourceSet.allSource)
+    manifest.attributes["Implementation-Title"] = "sourcesJar"
+}
+
+configurations.create("apiSourcesElements") {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+    outgoing.capability("${project.group}:$apiArchivesName:${project.version}")
+    outgoing.artifact(apiSourcesJarTask)
+}
+
+tasks.assemble {
+    dependsOn(apiJarTask, apiSourcesJarTask)
+}
+
 publishing {
     publications {
+        register<MavenPublication>("commonApiJar") {
+            // Project dependencies should resolve to the main publication's coordinates.
+            (this as MavenPublicationInternal).isAlias = true
+            artifactId = apiArchivesName
+            artifact(apiJarTask)
+            artifact(apiSourcesJarTask)
+        }
         register<MavenPublication>("commonJar") {
             artifactId = base.archivesName.get()
             artifact(tasks.jar)

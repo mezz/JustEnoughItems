@@ -1,11 +1,9 @@
 package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.gui.util.AlignmentUtil;
-import org.jspecify.annotations.Nullable;
 
 import java.util.Set;
 
@@ -17,17 +15,15 @@ public final class IngredientGridScrollbarLayout {
 		IIngredientGridConfig gridConfig,
 		ImmutableRect2i availableArea,
 		Set<ImmutableRect2i> guiExclusionAreas,
-		@Nullable ImmutablePoint2i mouseExclusionPoint,
 		int ingredientCount
 	) {
 		return switch (gridConfig.navigationVisibility().getValue()) {
-			case ENABLED -> calculateForScrollbar(gridConfig, availableArea, guiExclusionAreas, mouseExclusionPoint, true);
-			case DISABLED -> calculateForScrollbar(gridConfig, availableArea, guiExclusionAreas, mouseExclusionPoint, false);
+			case ENABLED -> calculateForScrollbar(gridConfig, availableArea, guiExclusionAreas, true);
+			case DISABLED -> calculateForScrollbar(gridConfig, availableArea, guiExclusionAreas, false);
 			case AUTO_HIDE -> calculateAutoHideScrollbar(
 				gridConfig,
 				availableArea,
 				guiExclusionAreas,
-				mouseExclusionPoint,
 				ingredientCount
 			);
 		};
@@ -37,14 +33,12 @@ public final class IngredientGridScrollbarLayout {
 		IIngredientGridConfig gridConfig,
 		ImmutableRect2i availableArea,
 		Set<ImmutableRect2i> guiExclusionAreas,
-		@Nullable ImmutablePoint2i mouseExclusionPoint,
 		int ingredientCount
 	) {
 		IngredientGridWithNavigationLayout layoutWithoutScrollbar = calculateForScrollbar(
 			gridConfig,
 			availableArea,
 			guiExclusionAreas,
-			mouseExclusionPoint,
 			false
 		);
 		int pageCountWithoutScrollbar = IngredientGridPageState.getPageCount(
@@ -53,7 +47,7 @@ public final class IngredientGridScrollbarLayout {
 		);
 		boolean scrollbarEnabled = layoutWithoutScrollbar.hasRoom() && pageCountWithoutScrollbar > 1;
 		if (scrollbarEnabled) {
-			return calculateForScrollbar(gridConfig, availableArea, guiExclusionAreas, mouseExclusionPoint, true);
+			return calculateForScrollbar(gridConfig, availableArea, guiExclusionAreas, true);
 		}
 		return layoutWithoutScrollbar;
 	}
@@ -62,7 +56,6 @@ public final class IngredientGridScrollbarLayout {
 		IIngredientGridConfig gridConfig,
 		ImmutableRect2i availableArea,
 		Set<ImmutableRect2i> guiExclusionAreas,
-		@Nullable ImmutablePoint2i mouseExclusionPoint,
 		boolean scrollbarEnabled
 	) {
 		ImmutableRect2i availableGridArea = IngredientGridWithNavigationLayout.getAvailableGridArea(
@@ -78,8 +71,7 @@ public final class IngredientGridScrollbarLayout {
 		}
 		int availableSlotCount = IngredientGridLayout.calculateAvailableSlotCount(
 			ingredientGridArea,
-			guiExclusionAreas,
-			mouseExclusionPoint
+			guiExclusionAreas
 		);
 
 		ImmutableRect2i slotBackgroundArea = IngredientGridWithNavigationLayout.calculateSlotBackgroundArea(

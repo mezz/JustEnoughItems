@@ -17,8 +17,6 @@ base {
 	archivesName.set(baseArchivesName)
 }
 
-val dependencyProjectPaths = listOf(":CommonApi")
-
 addFabricMinecraftDependencies()
 
 sourceSets {
@@ -29,9 +27,7 @@ sourceSets {
 }
 
 dependencies {
-	dependencyProjectPaths.forEach {
-		implementation(project(it))
-	}
+	implementation(project(path = ":Common", configuration = "apiClassesElements"))
 }
 
 java {

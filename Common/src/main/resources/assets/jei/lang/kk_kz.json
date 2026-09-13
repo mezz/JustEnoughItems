@@ -25,7 +25,6 @@
   "jei.tooltip.bookmarks.usage.nokey": "Басқару баптауларында JEI бетбелгілер пернесін орнат.",
   "jei.tooltip.bookmarks.usage.key": "Ингредиентке бетбелгі қосу үшін оның үстіне курсорды апарып, \"%s\" бас.",
   "jei.tooltip.bookmarks.not.enough.space": "JEI бетбелгі тізімі оверлейін көрсетуге орын жетпейді.",
-  "jei.tooltip.bookmarks.recipe": "%s рецепт бетбелгісі",
   "jei.tooltip.bookmarks.recipe.add": "Бұл рецептке бетбелгі қой.",
   "jei.tooltip.bookmarks.recipe.remove": "Бұл рецепттен бетбелгіні жой.",
   "jei.tooltip.bookmarks.tooltips.usage": "[Толық ақпарат үшін \"%s\" бас]",

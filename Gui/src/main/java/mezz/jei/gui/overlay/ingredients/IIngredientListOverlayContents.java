@@ -41,6 +41,11 @@ public interface IIngredientListOverlayContents extends IIngredientGridView, IIn
 	void tick();
 
 	/**
+	 * Creates the high-priority input handler for deleting a carried item over these contents.
+	 */
+	IUserInputHandler createDeleteItemInputHandler();
+
+	/**
 	 * Creates the input handler for the ingredient-list contents.
 	 */
 	IUserInputHandler createInputHandler();

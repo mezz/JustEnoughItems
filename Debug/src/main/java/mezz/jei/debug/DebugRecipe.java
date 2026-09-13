@@ -10,13 +10,27 @@ public class DebugRecipe {
 
 	private final Button button;
 	private final Identifier id;
+	private final boolean slotDisplayComparison;
 
 	public DebugRecipe() {
-		this.button = Button.builder(Component.literal("test"), b -> {})
+		this(Component.literal("test"), false);
+	}
+
+	private DebugRecipe(Component buttonText, boolean slotDisplayComparison) {
+		this.button = Button.builder(buttonText, b -> {})
 			.bounds(0, 0, 40, 20)
 			.build();
 		this.id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "debug_recipe_" + NEXT_ID);
+		this.slotDisplayComparison = slotDisplayComparison;
 		NEXT_ID++;
+	}
+
+	public static DebugRecipe createSlotDisplayComparison() {
+		return new DebugRecipe(Component.literal("compare"), true);
+	}
+
+	public boolean isSlotDisplayComparison() {
+		return slotDisplayComparison;
 	}
 
 	public Button getButton() {

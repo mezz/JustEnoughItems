@@ -226,6 +226,12 @@ def main():
         return 2
 
     diagnostic_file = Path(os.environ.get(DIAGNOSTIC_FILE_ENV, DEFAULT_DIAGNOSTIC_FILE))
+    try:
+        diagnostic_file.unlink(missing_ok=True)
+    except OSError as error:
+        print(f"Failed to remove stale JVM diagnostics: {error}", file=sys.stderr)
+        return 2
+
     command_process = subprocess.Popen(sys.argv[1:])
     stop_event = threading.Event()
     watchdog_thread = threading.Thread(

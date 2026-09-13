@@ -29,7 +29,6 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		Translator.setLocaleSupplier(new MinecraftLocaleSupplier());
 		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler();
-
 		ClientRecipeSynchronizedEvent.EVENT.register((minecraft, synchronizedRecipes) -> {
 			var recipeRegistries = new RegistrySetBuilder()
 				.add(
@@ -38,7 +37,8 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 						.forEach(recipe -> context.register(recipe.id(), recipe.value()))
 				)
 				.build(minecraft.level.registryAccess());
-			Internal.setClientSyncedRecipes(RecipeMap.create(recipeRegistries.lookupOrThrow(Registries.RECIPE)));
+			RecipeMap recipes = RecipeMap.create(recipeRegistries.lookupOrThrow(Registries.RECIPE));
+			clientLifecycleHandler.onRecipesSynchronized(recipes);
 		});
 
 		JeiChatEventHandler.register();

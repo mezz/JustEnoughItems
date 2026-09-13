@@ -40,6 +40,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	private final IIngredientManagerInternal ingredientManager;
 	private final ContextMap contextMap;
 	private final RecipeIngredientRole role;
+	private final Runnable onChange;
 	/**
 	 * A list of ingredients, including "blank" ingredients represented by {@link Optional#empty()}.
 	 * Blank ingredients are drawn as "nothing" in a rotation of ingredients, but aren't considered in lookups.
@@ -47,9 +48,19 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	private final List<@Nullable SlotIngredient<?>> ingredients = new ArrayList<>();
 
 	public DisplayIngredientAcceptor(IIngredientManagerInternal ingredientManager, ContextMap contextMap, RecipeIngredientRole role) {
+		this(ingredientManager, contextMap, role, () -> {});
+	}
+
+	public DisplayIngredientAcceptor(
+		IIngredientManagerInternal ingredientManager,
+		ContextMap contextMap,
+		RecipeIngredientRole role,
+		Runnable onChange
+	) {
 		this.ingredientManager = ingredientManager;
 		this.contextMap = contextMap;
 		this.role = role;
+		this.onChange = onChange;
 	}
 
 	@Override
@@ -63,7 +74,9 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 
 		for (Object ingredient : ingredients) {
 			ITypedIngredient<?> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient, false);
-			this.ingredients.add(createSlotIngredient(typedIngredient));
+			if (ingredient == null || typedIngredient != null) {
+				addSlotIngredient(createSlotIngredient(typedIngredient));
+			}
 		}
 
 		return this;
@@ -74,7 +87,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Preconditions.checkNotNull(slotDisplay, "slotDisplay");
 
 		ingredientManager.resolveSlotDisplay(contextMap, role, slotDisplay)
-			.forEach(this.ingredients::add);
+			.forEach(this::addSlotIngredient);
 
 		return this;
 	}
@@ -85,7 +98,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Preconditions.checkNotNull(slotDisplay, "slotDisplay");
 
 		ingredientManager.resolveSlotDisplay(ingredientType, contextMap, role, slotDisplay)
-			.forEach(this.ingredients::add);
+			.forEach(this::addSlotIngredient);
 
 		return this;
 	}
@@ -109,9 +122,13 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		List<@Nullable ITypedIngredient<T>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredientType, ingredients, false);
-		typedIngredients.stream()
-			.map(DisplayIngredientAcceptor::createSlotIngredient)
-			.forEach(this.ingredients::add);
+		for (int i = 0; i < typedIngredients.size(); i++) {
+			T ingredient = ingredients.get(i);
+			ITypedIngredient<T> typedIngredient = typedIngredients.get(i);
+			if (ingredient == null || typedIngredient != null) {
+				addSlotIngredient(createSlotIngredient(typedIngredient));
+			}
+		}
 
 		return this;
 	}
@@ -142,7 +159,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
 		ITypedIngredient<I> copy = TypedIngredientUtil.checkAndValidateTypedIngredientFromApi(ingredientManager, typedIngredient);
-		this.ingredients.add(createSlotIngredient(copy));
+		addSlotIngredient(createSlotIngredient(copy));
 
 		return this;
 	}
@@ -152,7 +169,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Preconditions.checkNotNull(itemLike, "itemLike");
 
 		ITypedIngredient<ItemStack> ingredient = TypedItemStack.create(itemLike);
-		this.ingredients.add(new SlotIngredient<>(ingredient));
+		addSlotIngredient(new SlotIngredient<>(ingredient));
 
 		return this;
 	}
@@ -162,7 +179,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		ErrorUtil.checkNotNull(itemStackTemplate, "itemStackTemplate");
 
 		ITypedIngredient<ItemStack> ingredient = TypedItemStack.create(itemStackTemplate);
-		this.ingredients.add(new SlotIngredient<>(ingredient));
+		addSlotIngredient(new SlotIngredient<>(ingredient));
 
 		return this;
 	}
@@ -213,7 +230,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 			if (o.isPresent()) {
 				this.add(o.get());
 			} else {
-				this.ingredients.add(null);
+				addSlotIngredient(null);
 			}
 		}
 
@@ -222,11 +239,16 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 
 	private <T> void addIngredientInternal(IIngredientType<T> ingredientType, @Nullable T ingredient) {
 		ITypedIngredient<T> result = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false);
-		this.ingredients.add(createSlotIngredient(result));
+		addSlotIngredient(createSlotIngredient(result));
+	}
+
+	private void addSlotIngredient(@Nullable SlotIngredient<?> ingredient) {
+		this.ingredients.add(ingredient);
+		onChange.run();
 	}
 
 	@UnmodifiableView
-	public List<@Nullable ITypedIngredient<?>> getAllIngredients() {
+	public List<? extends @Nullable ITypedIngredient<?>> getAllIngredients() {
 		return this.ingredients.stream()
 			.map(DisplayIngredientAcceptor::getTypedIngredient)
 			.toList();
@@ -241,21 +263,25 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		List<IFocus<?>> focuses = focusGroup.getFocuses(role).toList();
 		IntSet results = new IntOpenHashSet();
 		for (IFocus<?> focus : focuses) {
-			getMatches(focus, role, results);
+			boolean foundExactMatch = getMatches(focus, UidContext.Ingredient, results);
+			if (!foundExactMatch) {
+				getMatches(focus, UidContext.Recipe, results);
+			}
 		}
 		return results;
 	}
 
-	private <T> void getMatches(IFocus<T> focus, RecipeIngredientRole role, IntSet results) {
+	private <T> boolean getMatches(IFocus<T> focus, UidContext uidContext, IntSet results) {
 		List<@Nullable SlotIngredient<?>> ingredients = getAllSlotIngredients();
 		if (ingredients.isEmpty()) {
-			return;
+			return false;
 		}
 
 		ITypedIngredient<T> focusValue = focus.getTypedValue();
 		IIngredientType<T> ingredientType = focusValue.getType();
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		Object focusUid = ingredientHelper.getUid(focusValue, UidContext.Ingredient);
+		Object focusUid = ingredientHelper.getUid(focusValue, uidContext);
+		boolean foundMatch = false;
 
 		for (int i = 0; i < ingredients.size(); i++) {
 			SlotIngredient<?> slotIngredient = ingredients.get(i);
@@ -267,11 +293,15 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 			if (ingredient == null) {
 				continue;
 			}
-			Object uniqueId = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
-			if (focusUid.equals(uniqueId) || matchesAllSubtypes(focusValue, ingredient, ingredientHelper, slotIngredient)) {
+			Object uniqueId = ingredientHelper.getUid(ingredient, uidContext);
+			if (focusUid.equals(uniqueId) ||
+				(uidContext == UidContext.Recipe && matchesAllSubtypes(focusValue, ingredient, ingredientHelper, slotIngredient))
+			) {
 				results.add(i);
+				foundMatch = true;
 			}
 		}
+		return foundMatch;
 	}
 
 	private <T> boolean matchesAllSubtypes(

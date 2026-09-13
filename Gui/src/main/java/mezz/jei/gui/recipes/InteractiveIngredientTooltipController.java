@@ -3,12 +3,15 @@ package mezz.jei.gui.recipes;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
-import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.input.IGuiInputLayer;
 import mezz.jei.gui.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IMouseOverable;
+import mezz.jei.gui.input.IPinnedTooltipHolder;
 import mezz.jei.gui.input.IUserInputHandler;
+import mezz.jei.gui.input.PinnedTooltipManager;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -18,10 +21,10 @@ import org.jspecify.annotations.Nullable;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-final class InteractiveIngredientTooltipController implements IGuiInputLayer {
+final class InteractiveIngredientTooltipController implements IGuiInputLayer, IPinnedTooltipHolder {
 	private final RecipesGui recipesGui;
 	private final FocusUtil focusUtil;
-	private final IRecipeManager recipeManager;
+	private final IGuiHelper guiHelper;
 	private final IIngredientManager ingredientManager;
 	private final RecipeSlotClickTargetFactory clickTargetFactory;
 
@@ -30,13 +33,13 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer {
 	public InteractiveIngredientTooltipController(
 		RecipesGui recipesGui,
 		FocusUtil focusUtil,
-		IRecipeManager recipeManager,
+		IGuiHelper guiHelper,
 		IIngredientManager ingredientManager,
 		RecipeSlotClickTargetFactory clickTargetFactory
 	) {
 		this.recipesGui = recipesGui;
 		this.focusUtil = focusUtil;
-		this.recipeManager = recipeManager;
+		this.guiHelper = guiHelper;
 		this.ingredientManager = ingredientManager;
 		this.clickTargetFactory = clickTargetFactory;
 	}
@@ -54,6 +57,7 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer {
 		if (activeTooltip != null) {
 			activeTooltip.unfocus();
 			this.activeTooltip = null;
+			PinnedTooltipManager.closed(this);
 		}
 	}
 
@@ -63,15 +67,21 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer {
 		}
 	}
 
-	public boolean show(RecipeSlotUnderMouse sourceSlot, double mouseX, double mouseY) {
+	public boolean show(
+		RecipeSlotUnderMouse sourceSlot,
+		IMouseOverable sourceMouseOverable,
+		double mouseX,
+		double mouseY
+	) {
 		Optional<InteractiveIngredientTooltip> tooltip = InteractiveIngredientTooltip.create(
 			this,
 			this.recipesGui,
 			this.focusUtil,
-			this.recipeManager,
+			this.guiHelper,
 			this.ingredientManager,
 			this.clickTargetFactory,
 			sourceSlot,
+			sourceMouseOverable,
 			mouseX,
 			mouseY
 		);
@@ -80,6 +90,7 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer {
 		}
 		hide();
 		this.activeTooltip = tooltip.get();
+		PinnedTooltipManager.opened(this);
 		return true;
 	}
 
@@ -101,7 +112,7 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer {
 	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		InteractiveIngredientTooltip activeTooltip = this.activeTooltip;
 		if (activeTooltip != null) {
-			activeTooltip.draw(guiGraphics, mouseX, mouseY);
+			PinnedTooltipManager.draw(this, () -> activeTooltip.draw(guiGraphics, mouseX, mouseY));
 		}
 	}
 

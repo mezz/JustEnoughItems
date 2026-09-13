@@ -3,9 +3,13 @@
   "id": "jei-test",
   "version": "1.0.0",
   "name": "JEI Fabric Tests",
-  "environment": "client",
+  "environment": "*",
   "entrypoints": {
+    "fabric-gametest": [
+      "mezz.jei.fabric.test.FluidIngredientGameTests"
+    ],
     "fabric-client-gametest": [
+      "mezz.jei.fabric.test.JeiFabricCreativeInventoryClientGameTest",
       "mezz.jei.fabric.test.JeiFabricSingleplayerClientGameTest",
       "mezz.jei.fabric.test.JeiFabricTextInputClientGameTest",
       "mezz.jei.fabric.test.JeiFabricServerWithJeiClientGameTest",

@@ -212,7 +212,7 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 			CATEGORY,
 			JeiKeyConflictContext.UNIVERSAL
 		);
-		FabricJeiKeyMapping jeiMapping = new FabricJeiKeyMapping(fabricMapping, JeiKeyConflictContext.UNIVERSAL);
+		IJeiKeyMappingInternal jeiMapping = new FabricJeiKeyMapping<>(fabricMapping);
 		assertJeiKeyMappingIsDiscoverableAndRebindable("Fabric", fabricMapping, jeiMapping, boundKey, reboundKey);
 	}
 
@@ -490,13 +490,16 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 			CATEGORY,
 			JeiKeyConflictContext.GUI
 		);
-		FabricJeiKeyMapping jeiMapping = new FabricJeiKeyMapping(fabricMapping, JeiKeyConflictContext.GUI);
+		IJeiKeyMappingInternal jeiMapping = new FabricJeiKeyMapping<>(fabricMapping);
 
 		if (jeiMapping.isUnbound()) {
 			throw new AssertionError("Expected bound Fabric-backed JEI mouse mapping to report bound: " + mouseKey.getName());
 		}
 		if (jeiMapping.isActiveAndMatches(mouseKey)) {
 			throw new AssertionError("Expected bound Fabric-backed JEI mouse mapping to reject input while its GUI context is inactive: " + mouseKey.getName());
+		}
+		if (fabricMapping.isActiveAndMatches(mouseKey)) {
+			throw new AssertionError("Expected the platform mapping to reject input while its GUI context is inactive: " + mouseKey.getName());
 		}
 	}
 
@@ -509,7 +512,7 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 			CATEGORY,
 			JeiKeyConflictContext.GUI
 		);
-		FabricJeiKeyMapping jeiMapping = new FabricJeiKeyMapping(fabricMapping, JeiKeyConflictContext.GUI);
+		IJeiKeyMappingInternal jeiMapping = new FabricJeiKeyMapping<>(fabricMapping);
 
 		fabricMapping.setKey(InputConstants.UNKNOWN);
 		KeyMapping.resetMapping();

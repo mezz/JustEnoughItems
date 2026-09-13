@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableSetMultimap;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -71,6 +72,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public final class PluginLoader {
 	private PluginLoader() {}
@@ -87,9 +89,15 @@ public final class PluginLoader {
 		return new SubtypeManager(subtypeInterpreters);
 	}
 
-	public static IngredientManager registerIngredients(StartData data, SubtypeManager subtypeManager, IColorHelper colorHelper, IIngredientFilterConfig ingredientFilterConfig) {
+	public static IngredientManager registerIngredients(
+		StartData data,
+		SubtypeManager subtypeManager,
+		IColorHelper colorHelper,
+		IIngredientFilterConfig ingredientFilterConfig,
+		ContextMap contextMap
+	) {
 		List<IModPlugin> plugins = data.plugins();
-		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper);
+		IngredientManagerBuilder ingredientManagerBuilder = new IngredientManagerBuilder(subtypeManager, colorHelper, contextMap);
 		PluginCaller.callOnPlugins("Registering ingredients", plugins, p -> p.registerIngredients(ingredientManagerBuilder));
 		PluginCaller.callOnPlugins("Registering extra ingredients", plugins, p -> p.registerExtraIngredients(ingredientManagerBuilder));
 
@@ -126,14 +134,14 @@ public final class PluginLoader {
 		EditModeConfig editModeConfig,
 		FocusFactory focusFactory,
 		CodecHelper codecHelper,
-		IIngredientManager ingredientManager,
+		IIngredientManagerInternal ingredientManager,
 		SubtypeManager subtypeManager,
 		ContextMap contextMap
 	) {
 		IIngredientHelper<ItemStack> ingredientHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
 		VanillaRecipeFactory vanillaRecipeFactory = new VanillaRecipeFactory(ingredientHelper, contextMap);
 		StackHelper stackHelper = new StackHelper(subtypeManager);
-		GuiHelper guiHelper = new GuiHelper(ingredientManager);
+		GuiHelper guiHelper = new GuiHelper(ingredientManager, contextMap);
 		IModIdHelper modIdHelper = new ModIdHelper(
 			modIdFormatConfig,
 			ingredientManager,
@@ -142,7 +150,7 @@ public final class PluginLoader {
 		);
 
 		IClientToggleState toggleState = Internal.getClientToggleState();
-		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal();
+		IngredientBlacklistInternal blacklist = new IngredientBlacklistInternal(ingredientManager);
 		ingredientManager.registerIngredientListener(blacklist);
 
 		IngredientVisibility ingredientVisibility = new IngredientVisibility(
@@ -233,16 +241,17 @@ public final class PluginLoader {
 	) {
 		List<IRecipeCategory<?>> recipeCategories = createRecipeCategories(plugins, vanillaPlugin, jeiHelpers);
 
-		RecipeCatalystRegistration recipeCatalystRegistration = new RecipeCatalystRegistration(ingredientManager, jeiHelpers);
+		RecipeCatalystRegistration recipeCatalystRegistration = new RecipeCatalystRegistration(ingredientManager, jeiHelpers, contextMap);
 		PluginCaller.callOnPlugins("Registering recipe catalysts", plugins, p -> p.registerRecipeCatalysts(recipeCatalystRegistration));
-		ImmutableListMultimap<IRecipeType<?>, ITypedIngredient<?>> recipeCatalysts = recipeCatalystRegistration.getRecipeCatalysts();
+		ImmutableListMultimap<IRecipeType<?>, Consumer<IIngredientAcceptor<?>>> craftingStations = recipeCatalystRegistration.getCraftingStations();
 
 		LoggedTimer timer = new LoggedTimer();
 		timer.start("Building recipe registry");
 		RecipeManagerInternal recipeManagerInternal = new RecipeManagerInternal(
 			recipeCategories,
-			recipeCatalysts,
+			craftingStations,
 			ingredientManager,
+			contextMap,
 			recipeCategorySortingConfig,
 			jeiHelpers.getIngredientVisibility()
 		);

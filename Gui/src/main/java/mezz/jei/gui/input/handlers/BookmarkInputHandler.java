@@ -10,8 +10,10 @@ import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.input.CombinedRecipeFocusSource;
 import mezz.jei.gui.input.IUserInputHandler;
+import mezz.jei.gui.input.PinnedTooltipManager;
 import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
+import mezz.jei.gui.overlay.bookmarks.BookmarkPreviewTooltipController;
 import mezz.jei.gui.recipes.IRecipeLayoutWithButtons;
 import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.screens.Screen;
@@ -22,6 +24,7 @@ public class BookmarkInputHandler implements IUserInputHandler {
 	private final CombinedRecipeFocusSource focusSource;
 	private final BookmarkList bookmarkList;
 	private final BookmarkOverlay bookmarkOverlay;
+	private final BookmarkPreviewTooltipController bookmarkPreviewTooltipController;
 	private final IClientConfig clientConfig;
 	private final RecipesGui recipesGui;
 
@@ -29,19 +32,21 @@ public class BookmarkInputHandler implements IUserInputHandler {
 		CombinedRecipeFocusSource focusSource,
 		BookmarkList bookmarkList,
 		BookmarkOverlay bookmarkOverlay,
+		BookmarkPreviewTooltipController bookmarkPreviewTooltipController,
 		IClientConfig clientConfig,
 		RecipesGui recipesGui
 	) {
 		this.focusSource = focusSource;
 		this.bookmarkList = bookmarkList;
 		this.bookmarkOverlay = bookmarkOverlay;
+		this.bookmarkPreviewTooltipController = bookmarkPreviewTooltipController;
 		this.clientConfig = clientConfig;
 		this.recipesGui = recipesGui;
 	}
 
 	@Override
 	public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
-		if (input.is(keyBindings.getBookmark())) {
+		if (PinnedTooltipManager.matchesInput(input.getKey(), keyBindings.getBookmark(), keyBindings.getPauseRecipeCycling())) {
 			Optional<IUserInputHandler> recipeHandler = handleRecipeBookmark(input);
 			if (recipeHandler.isPresent()) {
 				return recipeHandler;
@@ -54,6 +59,9 @@ public class BookmarkInputHandler implements IUserInputHandler {
 	private Optional<IUserInputHandler> handleRecipeBookmark(UserInput input) {
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
+		if (bookmarkPreviewTooltipController.isMouseOver(mouseX, mouseY)) {
+			return Optional.empty();
+		}
 		Optional<IRecipeLayoutWithButtons<?>> layoutWithButtons = recipesGui.getRecipeLayoutUnderMouse(mouseX, mouseY);
 		if (layoutWithButtons.isEmpty()) {
 			return Optional.empty();

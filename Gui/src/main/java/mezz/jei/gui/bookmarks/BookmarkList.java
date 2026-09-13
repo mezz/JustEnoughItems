@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.runtime.IBookmarkManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.config.IBookmarkConfig;
@@ -23,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class BookmarkList implements IIngredientGridSource {
+public class BookmarkList implements IIngredientGridSource, IBookmarkManager {
 	private final List<IBookmark> bookmarksList = new LinkedList<>();
 	private final Set<IBookmark> bookmarksSet = new HashSet<>();
 
@@ -99,8 +100,13 @@ public class BookmarkList implements IIngredientGridSource {
 		return this.bookmarksSet.contains(value);
 	}
 
+	@Override
+	public boolean contains(ITypedIngredient<?> ingredient) {
+		return contains(bookmarkFactory.create(ingredient));
+	}
+
 	public <T> boolean onElementBookmarked(IElement<T> element, UserInput input, BookmarkOverlay bookmarkOverlay) {
-		if (bookmarkOverlay.isMouseOver(input.getMouseX(), input.getMouseY())) {
+		if (bookmarkOverlay.isBookmarkElementUnderMouse(element, input.getMouseX(), input.getMouseY())) {
 			return element.getBookmark()
 				.map(this::remove)
 				.orElse(false);
@@ -111,7 +117,8 @@ public class BookmarkList implements IIngredientGridSource {
 		return add(bookmark);
 	}
 
-	public <T> boolean addIngredientBookmark(ITypedIngredient<T> ingredient) {
+	@Override
+	public boolean add(ITypedIngredient<?> ingredient) {
 		IBookmark bookmark = bookmarkFactory.create(ingredient);
 		return add(bookmark);
 	}
@@ -132,6 +139,11 @@ public class BookmarkList implements IIngredientGridSource {
 		notifyListenersOfChange();
 		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, codecHelper, bookmarksList, bookmarkCodec);
 		return true;
+	}
+
+	@Override
+	public boolean remove(ITypedIngredient<?> ingredient) {
+		return remove(bookmarkFactory.create(ingredient));
 	}
 
 	public void setFromConfigFile(List<IBookmark> bookmarks) {
@@ -166,6 +178,12 @@ public class BookmarkList implements IIngredientGridSource {
 		return bookmarksList.stream()
 			.<IElement<?>>map(IBookmark::getElement)
 			.toList();
+	}
+
+	@Override
+	public boolean containsElement(IElement<?> element) {
+		return bookmarksList.stream()
+			.anyMatch(bookmark -> bookmark.getElement() == element);
 	}
 
 	@Nullable

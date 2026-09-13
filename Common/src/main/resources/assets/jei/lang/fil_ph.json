@@ -25,7 +25,6 @@
   "jei.tooltip.bookmarks.usage.nokey": "Magdagdag ng pindutan para sa mga bookmark ng JEI sa iyong Mga Kontrol na opsyon.",
   "jei.tooltip.bookmarks.usage.key": "Magtapat sa isang sangkap at pindutin ang \"%s\" upang i-bookmark ito.",
   "jei.tooltip.bookmarks.not.enough.space": "Masyadong maliit para sa overlay ng listahan ng JEI bookmark ang lugar sa kaliwang bahagi ng screen na ito upang ipakita.",
-  "jei.tooltip.bookmarks.recipe": "%s Resipi Bookmark",
   "jei.tooltip.bookmarks.recipe.add": "I-bookmark ang resipi na ito.",
   "jei.tooltip.bookmarks.recipe.remove": "Tanggalin ang bookmark para sa resipi na ito.",
   "jei.tooltip.bookmarks.tooltips.usage": "[Pindutin ang \"%s\" upang ipakita ang mga detalye]",

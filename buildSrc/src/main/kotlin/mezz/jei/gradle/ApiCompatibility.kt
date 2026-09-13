@@ -51,7 +51,7 @@ private fun Project.configureApiCompatibility() {
 	val modId = property("modId").toString()
 	val specificationVersion = property("specificationVersion").toString()
 
-	val apiCompatibilityCheckerVersion = "0.1.15"
+	val apiCompatibilityCheckerVersion = "0.1.19"
 	val apiCompatibilityAsmVersion = "9.10.1"
 	val apiCompatibilityBaselineRepository = "https://maven.blamejared.com"
 	val apiCompatibilityMajorVersion = specificationVersion.substringBefore('.').toInt()
@@ -81,8 +81,8 @@ private fun Project.configureApiCompatibility() {
 	dependencies.add(apiCompatibilityChecker.name, "org.ow2.asm:asm-tree:$apiCompatibilityAsmVersion")
 
 	val apiCompatibilityModules = listOf(
-		ApiCompatibilityModule(":CommonApi", "checkCommonApiCompatibility", "common-api"),
-		ApiCompatibilityModule(":FabricApi", "checkFabricApiCompatibility", "fabric-api"),
+		ApiCompatibilityModule(":Common", "checkCommonApiCompatibility", "common-api"),
+		ApiCompatibilityModule(":Fabric", "checkFabricApiCompatibility", "fabric-api"),
 	)
 
 	val apiCompatibilityCheckTasks = apiCompatibilityModules.map { module ->
@@ -96,7 +96,13 @@ private fun Project.configureApiCompatibility() {
 				attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class.java, Bundling.EXTERNAL))
 			}
 		}
-		val inputDependency = dependencies.add(inputConfiguration.name, dependencies.project(module.projectPath))
+		val inputDependency = dependencies.add(
+			inputConfiguration.name,
+			dependencies.project(mapOf(
+				"path" to module.projectPath,
+				"configuration" to "apiJarElements",
+			))
+		)
 		if (inputDependency is ModuleDependency) {
 			inputDependency.isTransitive = false
 		}
@@ -142,7 +148,7 @@ private fun Project.configureApiCompatibility() {
 			dependsOn(checkerTask)
 			reportFile.set(outputFile)
 			val apiProjectDirectory = isolatedProjectDirectory(module.projectPath)
-			sourceFiles.from(apiProjectDirectory.dir("src/main/java").asFileTree.matching {
+			sourceFiles.from(apiProjectDirectory.dir("src/api/java").asFileTree.matching {
 				include("**/*.java")
 			})
 		}

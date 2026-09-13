@@ -12,8 +12,10 @@ import net.minecraft.SharedConstants;
 import net.minecraft.server.Bootstrap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -22,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class RecipeSlotIngredientGroupingTest {
 	private static final IIngredientType<String> INGREDIENT_TYPE = () -> String.class;
+	private static final IIngredientType<Integer> SECOND_INGREDIENT_TYPE = () -> Integer.class;
 
 	@BeforeAll
 	static void setup() {
@@ -90,14 +93,16 @@ public class RecipeSlotIngredientGroupingTest {
 			.toList();
 
 		// Operation: filter one ingredient out while applying the display limit.
-		List<SlotIngredient<?>> visible = RecipeSlotIngredients.filterVisibleIngredients(
+		List<@Nullable SlotIngredient<?>> visible = RecipeSlotIngredients.filterVisibleIngredients(
 			ingredients,
 			ingredient -> !ingredient.getIngredient().equals("5")
 		);
 
 		// Assertions: the hidden ingredient is excluded and the result is capped after filtering.
 		assertEquals(100, visible.size());
-		assertFalse(visible.stream().anyMatch(ingredient -> ingredient.typedIngredient().getIngredient().equals("5")));
+		assertFalse(visible.stream()
+			.filter(Objects::nonNull)
+			.anyMatch(ingredient -> ingredient.typedIngredient().getIngredient().equals("5")));
 	}
 
 	@Test
@@ -108,17 +113,37 @@ public class RecipeSlotIngredientGroupingTest {
 			.toList();
 
 		// Operation: apply the display limit, then get the displayed ingredient's group from the canonical source.
-		List<SlotIngredient<?>> displayedIngredients = RecipeSlotIngredients.filterVisibleIngredients(
+		List<@Nullable SlotIngredient<?>> displayedIngredients = RecipeSlotIngredients.filterVisibleIngredients(
 			ingredients,
 			ingredient -> true
 		);
 
-		SlotIngredient<?> displayed = displayedIngredients.getFirst();
-		List<?> displayGroup = RecipeSlotIngredients.getDisplayGroupIngredients(ingredients, displayed);
+		SlotIngredient<?> displayed = Objects.requireNonNull(displayedIngredients.getFirst());
+		List<SlotIngredient<?>> displayGroup = RecipeSlotIngredients.getDisplayGroupIngredients(ingredients, displayed);
 
 		// Assertions: display rotation is capped, but metadata calculations retain the complete ingredient group.
 		assertEquals(100, displayedIngredients.size());
 		assertEquals(110, displayGroup.size());
+	}
+
+	@Test
+	void uninterpretedDisplayGroupRetainsMixedIngredientTypes() {
+		// Setup: one uninterpreted recipe slot combines two registered ingredient types.
+		SlotIngredient<String> displayed = new SlotIngredient<>(createIngredient("first type"));
+		ITypedIngredient<Integer> secondType = TypedIngredient.createUnvalidated(SECOND_INGREDIENT_TYPE, 1);
+		List<SlotIngredient<?>> ingredients = List.of(
+			displayed,
+			new SlotIngredient<>(secondType)
+		);
+
+		// Operation: get the candidates represented by the displayed ingredient.
+		List<IIngredientType<?>> ingredientTypes = RecipeSlotIngredients.getDisplayGroupIngredients(ingredients, displayed)
+			.stream()
+			.<IIngredientType<?>>map(candidate -> candidate.typedIngredient().getType())
+			.toList();
+
+		// Assertions: the candidate group retains every type for tooltip rendering and cycling.
+		assertEquals(List.of(INGREDIENT_TYPE, SECOND_INGREDIENT_TYPE), ingredientTypes);
 	}
 
 	private static ITypedIngredient<String> createIngredient(String ingredient) {

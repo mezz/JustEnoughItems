@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.ISlotDisplayInterpreter;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.library.ingredients.SlotDisplayInterpretationBuilder.ChildDisplay;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.context.ContextMap;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 public final class SlotDisplayIngredientResolver {
@@ -118,14 +120,17 @@ public final class SlotDisplayIngredientResolver {
 			}
 
 			try {
-				SlotDisplayInterpretationBuilder interpretationBuilder = new SlotDisplayInterpretationBuilder();
+				SlotDisplayInterpretationBuilder<T> interpretationBuilder = new SlotDisplayInterpretationBuilder<>();
 				Context context = new Context(slotDisplay);
 				interpreterRegistry.interpret(ingredientType, slotDisplay, context, interpretationBuilder);
 
 				SlotDisplayInfo displayInfo = interpretationBuilder.buildInfo();
-				List<ResolvedGroup<T>> resolved = interpretationBuilder.getChildDisplays()
-					.map(children -> resolveChildren(children, displayInfo))
-					.orElseGet(() -> createGroup(slotDisplay, displayInfo));
+				List<ResolvedGroup<T>> resolved;
+				if (interpretationBuilder.isChildDisplaysSet()) {
+					resolved = resolveChildren(interpretationBuilder.getChildDisplays(), displayInfo);
+				} else {
+					resolved = createGroup(slotDisplay, displayInfo);
+				}
 				resolvedGroups.put(slotDisplay, resolved);
 				return resolved;
 			} finally {
@@ -134,16 +139,31 @@ public final class SlotDisplayIngredientResolver {
 		}
 
 		private List<ResolvedGroup<T>> resolveChildren(
-			List<SlotDisplay> children,
+			List<ChildDisplay<T>> children,
 			SlotDisplayInfo displayInfo
 		) {
 			List<ResolvedGroup<T>> groups = new ArrayList<>();
-			for (SlotDisplay child : children) {
-				resolve(child).stream()
+			for (ChildDisplay<T> child : children) {
+				resolve(child.slotDisplay()).stream()
+					.map(group -> transformIngredients(group, child.ingredientTransformer()))
+					.filter(group -> !group.ingredients().isEmpty())
 					.map(group -> group.withOverlay(displayInfo))
 					.forEach(groups::add);
 			}
 			return List.copyOf(groups);
+		}
+
+		private ResolvedGroup<T> transformIngredients(
+			ResolvedGroup<T> group,
+			UnaryOperator<T> ingredientTransformer
+		) {
+			List<ITypedIngredient<T>> transformedIngredients = group.ingredients().stream()
+				.map(ITypedIngredient::getIngredient)
+				.map(ingredientTransformer)
+				.map(ingredient -> TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, false))
+				.filter(Objects::nonNull)
+				.toList();
+			return new ResolvedGroup<>(transformedIngredients, group.info());
 		}
 
 		private List<ResolvedGroup<T>> createGroup(SlotDisplay slotDisplay, SlotDisplayInfo displayInfo) {

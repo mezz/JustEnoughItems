@@ -1,10 +1,14 @@
 package mezz.jei.neoforge.platform;
 
 import mezz.jei.common.platform.IPlatformRecipeHelper;
+import mezz.jei.common.platform.IPlatformRecipeHelper.FireworkRocketRecipeData;
 import mezz.jei.common.platform.IPlatformRecipeHelper.ShieldDecorationRecipeData;
 import net.minecraft.core.Holder;
 import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.FireworkRocketRecipe;
+import net.minecraft.world.item.crafting.FireworkStarRecipe;
+import net.minecraft.world.item.crafting.FireworkStarFadeRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
@@ -26,6 +30,21 @@ public class RecipeHelper implements IPlatformRecipeHelper {
 			return trimRecipe.base;
 		}
 		throw new IllegalArgumentException("Unknown recipe type: " + recipe.getClass());
+	}
+
+	@Override
+	public FireworkRocketRecipeData getFireworkRocketRecipeData(FireworkRocketRecipe recipe) {
+		return new FireworkRocketRecipeData(recipe.shell, recipe.fuel, recipe.star, recipe.result);
+	}
+
+	@Override
+	public FireworkStarRecipeData getFireworkStarRecipeData(FireworkStarRecipe recipe) {
+		return new FireworkStarRecipeData(recipe.shapes, recipe.trail, recipe.twinkle, recipe.fuel, recipe.dye, recipe.result);
+	}
+
+	@Override
+	public FireworkStarFadeRecipeData getFireworkStarFadeRecipeData(FireworkStarFadeRecipe recipe) {
+		return new FireworkStarFadeRecipeData(recipe.target, recipe.dye, recipe.result);
 	}
 
 	@Override

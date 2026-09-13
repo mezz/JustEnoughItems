@@ -8,20 +8,19 @@ plugins {
     // applying this to all projects allows loom projects to access the required data in a manner that follows Gradle's best practices.
     id("net.fabricmc.fabric-loom-companion") version("1.18.0-alpha.16")
 
-    id("net.mezzdev.modshade") version("0.3.0") apply(false)
+    id("net.mezzdev.modshade") version("0.6.0") apply(false)
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
-    id("me.modmuss50.mod-publish-plugin") version("2.0.1") apply(false)
+    id("me.modmuss50.mod-publish-plugin") version("2.2.0") apply(false)
 
     id("mezz.jei.api-compatibility")
 }
 
 val javaSourceTrees = listOf(
-    "Common", "CommonApi",
+    "Common",
     "Debug",
-    "Fabric", "FabricApi",
-    "Gui", "Library",
-    "NeoForge", "NeoForgeApi"
+    "Fabric",
+    "Gui", "Library"
 ).map { moduleName ->
     layout.projectDirectory.dir("$moduleName/src").asFileTree.matching {
         include("*/java/**/*.java")

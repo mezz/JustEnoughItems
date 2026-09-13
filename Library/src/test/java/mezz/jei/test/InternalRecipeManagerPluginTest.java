@@ -1,6 +1,7 @@
 package mezz.jei.test;
 
 import com.mojang.serialization.Codec;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -26,6 +27,9 @@ import mezz.jei.library.recipes.collect.RecipeTypeDataMap;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextMap;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -219,7 +223,11 @@ public class InternalRecipeManagerPluginTest {
 
 	private static IIngredientManager createIngredientManager() {
 		SubtypeManager subtypeManager = new SubtypeManager(new SubtypeInterpreters());
-		IngredientManagerBuilder builder = new IngredientManagerBuilder(subtypeManager, DummyColorHelper.INSTANCE);
+		IngredientManagerBuilder builder = new IngredientManagerBuilder(
+			subtypeManager,
+			DummyColorHelper.INSTANCE,
+			ContextMap.EMPTY
+		);
 		builder.register(
 			INGREDIENT_TYPE,
 			List.of(CATALYST, INPUT),
@@ -323,7 +331,21 @@ public class InternalRecipeManagerPluginTest {
 		}
 
 		@Override
+		@Deprecated(since = "30.26.0", forRemoval = true)
+		@SuppressWarnings("removal")
 		public List<Component> getTooltip(TestIngredient ingredient, TooltipFlag tooltipFlag) {
+			return getTooltip(ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+		}
+
+		@Override
+		@Deprecated(since = "30.26.0", forRemoval = true)
+		@SuppressWarnings("removal")
+		public void getTooltip(ITooltipBuilder tooltip, TestIngredient ingredient, TooltipFlag tooltipFlag) {
+			getTooltip(tooltip, ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+		}
+
+		@Override
+		public List<Component> getTooltip(TestIngredient ingredient, Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
 			return List.of(Component.literal(Integer.toString(ingredient.number())));
 		}
 	}
@@ -366,7 +388,21 @@ public class InternalRecipeManagerPluginTest {
 		}
 
 		@Override
+		@Deprecated(since = "30.26.0", forRemoval = true)
+		@SuppressWarnings("removal")
 		public List<Component> getTooltip(OtherTestIngredient ingredient, TooltipFlag tooltipFlag) {
+			return getTooltip(ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+		}
+
+		@Override
+		@Deprecated(since = "30.26.0", forRemoval = true)
+		@SuppressWarnings("removal")
+		public void getTooltip(ITooltipBuilder tooltip, OtherTestIngredient ingredient, TooltipFlag tooltipFlag) {
+			getTooltip(tooltip, ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+		}
+
+		@Override
+		public List<Component> getTooltip(OtherTestIngredient ingredient, Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
 			return List.of(Component.literal(Integer.toString(ingredient.number())));
 		}
 	}

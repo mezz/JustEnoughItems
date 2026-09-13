@@ -21,6 +21,8 @@ import mezz.jei.test.lib.TestIngredient;
 import mezz.jei.test.lib.TestIngredientFilterConfig;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
+import net.minecraft.util.context.ContextKeySet;
+import net.minecraft.util.context.ContextMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -313,7 +315,11 @@ public class ElementSearchIngredientsTest {
 	private static IngredientManagerBuilder createIngredientManagerBuilder() {
 		SubtypeInterpreters subtypeInterpreters = new SubtypeInterpreters();
 		SubtypeManager subtypeManager = new SubtypeManager(subtypeInterpreters);
-		return new IngredientManagerBuilder(subtypeManager, COLOR_HELPER);
+		return new IngredientManagerBuilder(
+			subtypeManager,
+			COLOR_HELPER,
+			new ContextMap.Builder().create(new ContextKeySet.Builder().build())
+		);
 	}
 
 	private static void assertIngredientNumbers(Collection<IListElement<?>> allIngredients, Set<Integer> expectedNumbers) {

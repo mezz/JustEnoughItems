@@ -33,8 +33,8 @@ val minecraftVersion = providers.gradleProperty("minecraftVersion").get()
 rootProject.name = "jei-${minecraftVersion}"
 include(
 	"Changelog",
-	"Common", "CommonApi",
-	"Fabric", "FabricApi",
+	"Common",
+	"Fabric",
 	"Library",
 	"Debug",
 	"Gui"

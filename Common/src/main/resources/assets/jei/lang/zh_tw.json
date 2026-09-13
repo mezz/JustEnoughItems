@@ -21,7 +21,6 @@
   "jei.tooltip.bookmarks.usage.nokey": "在按鍵設定中為 JEI 書籤新增綁定鍵。",
   "jei.tooltip.bookmarks.usage.key": "將游標停在某個物品上，然後按下「%s」以新增至書籤。",
   "jei.tooltip.bookmarks.not.enough.space": "這裡沒有足夠的空間顯示 JEI 書籤清單疊層。",
-  "jei.tooltip.bookmarks.recipe": "%s 配方書籤",
   "jei.tooltip.bookmarks.recipe.add": "將此配方加入書籤。",
   "jei.tooltip.bookmarks.recipe.remove": "移除此配方的書籤。",
   "jei.tooltip.bookmarks.tooltips.usage": "[%s 以顯示詳細資訊]",

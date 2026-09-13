@@ -23,7 +23,6 @@
   "jei.tooltip.bookmarks.usage.nokey": "Tambahkan Key binding untuk bookmark JEI di pengaturan Kontrol Anda.",
   "jei.tooltip.bookmarks.usage.key": "Arahkan kursor ke item dan tekan \"%s\" untuk Di bookmark.",
   "jei.tooltip.bookmarks.not.enough.space": "Area di sisi kiri layar ini terlalu kecil untuk menampilkan overlay daftar bookmark JEI.",
-  "jei.tooltip.bookmarks.recipe": "Bookmark Resep %s",
   "jei.tooltip.bookmarks.recipe.add": "Bookmark Resep ini.",
   "jei.tooltip.bookmarks.recipe.remove": "Hapus Bookmark untuk Resep ini.",
   "jei.tooltip.bookmarks.tooltips.usage": "[Tekan \"%s\" Untuk Menampilkan secara Detail]",

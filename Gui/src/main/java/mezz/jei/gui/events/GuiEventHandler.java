@@ -73,6 +73,15 @@ public class GuiEventHandler {
 	}
 
 	/**
+	 * Updates input layers before the screen can schedule its deferred tooltip.
+	 */
+	public void updateForScreenRender(Screen screen, int mouseX, int mouseY) {
+		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
+		updateOverlayProperties(screen, guiProperties);
+		this.inputLayers.forEach(inputLayer -> inputLayer.update(mouseX, mouseY));
+	}
+
+	/**
 	 * Draws the JEI overlay backgrounds, before the screen contents are drawn.
 	 */
 	public void drawForScreenBackground(Screen screen, GuiGraphicsExtractor guiGraphics) {

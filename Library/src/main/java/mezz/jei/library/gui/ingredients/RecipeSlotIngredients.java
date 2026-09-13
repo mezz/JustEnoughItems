@@ -1,8 +1,10 @@
 package mezz.jei.library.gui.ingredients;
 
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientVisibility;
@@ -71,6 +73,7 @@ public final class RecipeSlotIngredients {
 	private @Nullable List<@Nullable SlotIngredient<?>> displayIngredients;
 
 	private @Nullable DisplayIngredientAcceptor displayOverrides;
+	private final Runnable displayOverridesChangedListener;
 
 	/**
 	 * Displayed ingredients calculated from {@link #displayOverrides}.
@@ -84,14 +87,16 @@ public final class RecipeSlotIngredients {
 		IIngredientManagerInternal ingredientManager,
 		ContextMap contextMap,
 		RecipeIngredientRole role,
-		List<@Nullable SlotIngredient<?>> allIngredients,
-		@Nullable List<@Nullable SlotIngredient<?>> focusedIngredients,
-		IFocusGroup focusGroup
+		List<? extends @Nullable SlotIngredient<?>> allIngredients,
+		@Nullable List<? extends @Nullable SlotIngredient<?>> focusedIngredients,
+		IFocusGroup focusGroup,
+		Runnable displayOverridesChangedListener
 	) {
 		this.ingredientManager = ingredientManager;
 		this.contextMap = contextMap;
 		this.role = role;
 		this.focusGroup = focusGroup;
+		this.displayOverridesChangedListener = displayOverridesChangedListener;
 		this.sourceSlotIngredients = Collections.unmodifiableList(new ArrayList<>(allIngredients));
 		if (focusedIngredients == null) {
 			this.focusedSlotIngredients = null;
@@ -135,9 +140,8 @@ public final class RecipeSlotIngredients {
 	@Unmodifiable
 	public List<@Nullable ITypedIngredient<?>> getAllIngredientsList() {
 		if (this.allIngredients == null) {
-			this.allIngredients = SlotDisplayIngredientExpander.expandForDisplay(ingredientManager, sourceSlotIngredients)
-				.stream()
-				.map(RecipeSlotIngredients::getTypedIngredient)
+			this.allIngredients = SlotDisplayIngredientExpander.streamForDisplay(ingredientManager, sourceSlotIngredients)
+				.<@Nullable ITypedIngredient<?>>map(RecipeSlotIngredients::getTypedIngredient)
 				.toList();
 		}
 		return this.allIngredients;
@@ -161,32 +165,87 @@ public final class RecipeSlotIngredients {
 
 	public Stream<SlotIngredient<?>> getVisibleSlotIngredientsInDisplayGroup(SlotIngredient<?> displayed) {
 		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getJeiHelpers().getIngredientVisibility();
-		List<? extends @Nullable SlotIngredient<?>> displayGroupSource;
-		if (this.displayOverrides == null) {
-			displayGroupSource = this.sourceSlotIngredients;
-		} else {
-			displayGroupSource = this.displayOverrides.getAllSlotIngredients();
-		}
-		return getVisibleSlotIngredientsInDisplayGroup(
-			displayGroupSource,
-			displayed,
+		return getCandidateSlotIngredientsInDisplayGroup(displayed)
+			.filter(ingredient -> ingredientVisibility.isIngredientVisible(
+				ingredient.typedIngredient(),
+				UidContext.Recipe
+			));
+	}
+
+	public Stream<ITypedIngredient<?>> getCandidateIngredientsInDisplayGroup(SlotIngredient<?> displayed) {
+		return getCandidateSlotIngredientsInDisplayGroup(displayed)
+			.map(SlotIngredient::typedIngredient);
+	}
+
+	private Stream<SlotIngredient<?>> getCandidateSlotIngredientsInDisplayGroup(SlotIngredient<?> displayed) {
+		return SlotDisplayIngredientExpander.streamForDisplay(
+				ingredientManager,
+				getEffectiveDisplayGroupIngredients(displayed)
+			)
+			.filter(Objects::nonNull);
+	}
+
+	public Optional<TagKey<?>> getDisplayGroupTagKey(
+		SlotIngredient<?> displayed,
+		Supplier<Optional<TagKey<?>>> fallback
+	) {
+		return getSingleDisplayGroupTagKey(getEffectiveDisplayGroupIngredients(displayed), fallback);
+	}
+
+	public Stream<SlotIngredient<?>> getVisibleSlotIngredients() {
+		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getJeiHelpers().getIngredientVisibility();
+		return getVisibleSlotIngredients(
+			getCandidateSource(),
 			ingredientManager,
 			ingredientVisibility::isIngredientVisible
 		);
 	}
 
-	public static Stream<SlotIngredient<?>> getVisibleSlotIngredientsInDisplayGroup(
-		List<? extends @Nullable SlotIngredient<?>> displayGroupSource,
-		SlotIngredient<?> displayed,
+	private List<@Nullable SlotIngredient<?>> getCandidateSource() {
+		if (this.displayOverrides == null) {
+			return this.sourceSlotIngredients;
+		}
+		return this.displayOverrides.getAllSlotIngredients();
+	}
+
+	private List<SlotIngredient<?>> getEffectiveDisplayGroupIngredients(SlotIngredient<?> displayed) {
+		if (this.displayOverrides != null && this.displayOverrides.getAllSlotIngredients().size() == 1) {
+			Optional<SlotIngredient<?>> matchingSourceIngredient = findMatchingSourceIngredient(displayed.typedIngredient());
+			if (matchingSourceIngredient.isPresent()) {
+				return getDisplayGroupIngredients(this.sourceSlotIngredients, matchingSourceIngredient.get());
+			}
+		}
+		return getDisplayGroupIngredients(getCandidateSource(), displayed);
+	}
+
+	private <T> Optional<SlotIngredient<?>> findMatchingSourceIngredient(ITypedIngredient<T> displayed) {
+		IIngredientType<T> ingredientType = displayed.getType();
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		Object displayedUid = ingredientHelper.getUid(displayed, UidContext.Ingredient);
+		return SlotDisplayIngredientExpander.streamForDisplay(ingredientManager, sourceSlotIngredients)
+			.filter(Objects::nonNull)
+			.filter(candidate -> {
+				ITypedIngredient<T> typedCandidate = candidate.typedIngredient().cast(ingredientType);
+				return typedCandidate != null && displayedUid.equals(
+					ingredientHelper.getUid(typedCandidate, UidContext.Ingredient)
+				);
+			})
+			.findFirst();
+	}
+
+	public static Stream<SlotIngredient<?>> getVisibleSlotIngredients(
+		List<? extends @Nullable SlotIngredient<?>> ingredients,
 		IIngredientManagerInternal ingredientManager,
 		Predicate<ITypedIngredient<?>> isVisible
 	) {
-		List<@Nullable SlotIngredient<?>> displayGroup = getDisplayGroupIngredients(displayGroupSource, displayed);
-		displayGroup = SlotDisplayIngredientExpander.expandForDisplay(ingredientManager, displayGroup);
-		return displayGroup.stream()
+		return SlotDisplayIngredientExpander.streamForDisplay(ingredientManager, ingredients)
 			.filter(Objects::nonNull)
-			.<SlotIngredient<?>>map(ingredient -> ingredient)
 			.filter(ingredient -> isVisible.test(ingredient.typedIngredient()));
+	}
+
+	public Stream<ITypedIngredient<?>> getVisibleTypedIngredients() {
+		return getVisibleSlotIngredients()
+			.map(SlotIngredient::typedIngredient);
 	}
 
 	public Stream<ITypedIngredient<?>> getVisibleTypedIngredientsInDisplayGroup(SlotIngredient<?> displayed) {
@@ -194,25 +253,36 @@ public final class RecipeSlotIngredients {
 			.map(SlotIngredient::typedIngredient);
 	}
 
-	public <T> List<T> getVisibleIngredientsInDisplayGroup(SlotIngredient<T> displayed) {
-		IIngredientType<T> ingredientType = displayed.typedIngredient().getType();
-		return getVisibleTypedIngredientsInDisplayGroup(displayed)
-			.map(ingredient -> ingredient.getIngredient(ingredientType))
-			.flatMap(Optional::stream)
-			.toList();
-	}
-
 	public void clearDisplayOverrides() {
+		boolean changed = this.displayOverrides != null;
 		this.displayOverrides = null;
 		this.displayOverrideIngredients = null;
+		if (changed) {
+			displayOverridesChangedListener.run();
+		}
+	}
+
+	public boolean hasDisplayOverrides() {
+		return this.displayOverrides != null;
 	}
 
 	public IIngredientAcceptor<?> createDisplayOverrides() {
 		this.displayOverrideIngredients = null;
 		if (displayOverrides == null) {
-			displayOverrides = new DisplayIngredientAcceptor(ingredientManager, contextMap, role);
+			displayOverrides = new DisplayIngredientAcceptor(
+				ingredientManager,
+				contextMap,
+				role,
+				this::onDisplayOverridesChanged
+			);
+			onDisplayOverridesChanged();
 		}
 		return displayOverrides;
+	}
+
+	private void onDisplayOverridesChanged() {
+		this.displayOverrideIngredients = null;
+		displayOverridesChangedListener.run();
 	}
 
 	private List<@Nullable SlotIngredient<?>> getDisplayIngredients() {
@@ -278,18 +348,19 @@ public final class RecipeSlotIngredients {
 	}
 
 	public static List<@Nullable SlotIngredient<?>> filterVisibleIngredients(
-		List<@Nullable SlotIngredient<?>> ingredients,
+		List<? extends @Nullable SlotIngredient<?>> ingredients,
 		Predicate<ITypedIngredient<?>> isVisible
 	) {
 		return filterVisibleIngredients(ingredients::stream, isVisible);
 	}
 
 	private static List<@Nullable SlotIngredient<?>> filterVisibleIngredients(
-		Supplier<Stream<@Nullable SlotIngredient<?>>> ingredients,
+		Supplier<? extends Stream<? extends @Nullable SlotIngredient<?>>> ingredients,
 		Predicate<ITypedIngredient<?>> isVisible
 	) {
 		List<@Nullable SlotIngredient<?>> visibleIngredients = ingredients.get()
 			.filter(ingredient -> ingredient == null || isVisible.test(ingredient.typedIngredient()))
+			.<@Nullable SlotIngredient<?>>map(ingredient -> ingredient)
 			.limit(MAX_DISPLAYED_INGREDIENTS)
 			.toList();
 		if (!visibleIngredients.isEmpty()) {
@@ -297,11 +368,12 @@ public final class RecipeSlotIngredients {
 		}
 		// If every ingredient is invisible, show them anyway so that the recipe slot is not blank.
 		return ingredients.get()
+			.<@Nullable SlotIngredient<?>>map(ingredient -> ingredient)
 			.limit(MAX_DISPLAYED_INGREDIENTS)
 			.toList();
 	}
 
-	public static <T> List<@Nullable SlotIngredient<?>> getDisplayGroupIngredients(
+	public static <T> List<SlotIngredient<?>> getDisplayGroupIngredients(
 		List<? extends @Nullable SlotIngredient<?>> ingredients,
 		SlotIngredient<T> displayed
 	) {

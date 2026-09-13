@@ -22,7 +22,6 @@
   "jei.tooltip.bookmarks.usage.nokey": "Adicionar um atalho de teclado para marcadores JEI nas Configurações de controlos.",
   "jei.tooltip.bookmarks.usage.key": "Passar o rato sobre um ingrediente e pressionar \"%s\" para marcá-lo.",
   "jei.tooltip.bookmarks.not.enough.space": "Não há espaço suficiente para exibir a sobreposição da lista de favoritos JEI aqui.",
-  "jei.tooltip.bookmarks.recipe": "%s Marcador da Receita",
   "jei.tooltip.bookmarks.recipe.add": "Marcar esta receita.",
   "jei.tooltip.bookmarks.recipe.remove": "Remover o marcador desta receita.",
   "jei.tooltip.bookmarks.tooltips.usage": "[%s para mostrar detalhes]",

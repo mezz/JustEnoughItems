@@ -73,7 +73,7 @@ public class GrindstoneRecipeCategory extends AbstractRecipeCategory<IJeiGrindst
 
 	@Override
 	public void createRecipeExtras(IRecipeExtrasBuilder builder, IJeiGrindstoneRecipe recipe, IFocusGroup focuses) {
-		builder.addRecipeArrow().setPosition(20, 12);
+		builder.addRecipeArrowWidget().setPosition(20, 12);
 
 		int maxXpReward = recipe.getMaxXpReward();
 		if (maxXpReward > 0) {

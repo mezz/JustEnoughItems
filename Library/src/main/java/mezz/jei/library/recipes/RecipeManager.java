@@ -21,7 +21,6 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.gui.RecipeLayoutDrawableErrored;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTimer;
 import mezz.jei.library.focus.FocusGroup;
 import mezz.jei.library.gui.recipes.RecipeLayout;
@@ -188,13 +187,14 @@ public class RecipeManager implements IRecipeManager {
 		);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
+	@Deprecated(since = "30.32.0", forRemoval = true)
 	public IRecipeSlotDrawable createRecipeSlotDrawable(RecipeIngredientRole role, List<Optional<ITypedIngredient<?>>> ingredients, Set<Integer> focusedIngredients, int ingredientCycleOffset) {
 		RecipeSlotBuilder builder = new RecipeSlotBuilder(ingredientManager, contextMap, 0, role);
 		builder.addOptionalTypedIngredients(ingredients);
 		CycleTimer cycleTimer = CycleTimer.create(ingredientCycleOffset);
-		Pair<Integer, IRecipeSlotDrawable> result = builder.build(focusedIngredients, FocusGroup.EMPTY, cycleTimer);
-		return result.second();
+		return builder.build(focusedIngredients, FocusGroup.EMPTY, cycleTimer).second();
 	}
 
 	@Override

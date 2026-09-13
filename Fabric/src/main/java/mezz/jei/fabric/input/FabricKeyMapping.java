@@ -8,7 +8,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
-public class FabricKeyMapping extends KeyMapping {
+public class FabricKeyMapping extends KeyMapping implements ContextAwareKeyMapping {
 	protected InputConstants.Key realKey;
 	protected final JeiKeyConflictContext context;
 
@@ -76,8 +76,16 @@ public class FabricKeyMapping extends KeyMapping {
 		return this.realKey.getName();
 	}
 
+	@Override
 	public boolean isContextActive() {
 		return context.isActive();
+	}
+
+	@Override
+	public boolean isActiveAndMatches(InputConstants.Key key) {
+		return !isUnbound() &&
+			this.realKey.equals(key) &&
+			context.isActive();
 	}
 
 	public InputConstants.Key getRealKey() {

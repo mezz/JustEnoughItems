@@ -5,10 +5,13 @@ import de.siphalor.amecs.key_modifiers.api.AmecsKeyMappingWithKeyModifiers;
 import de.siphalor.amecs.key_modifiers.api.AmecsKeyModifierCombination;
 import de.siphalor.amecs.key_modifiers.api.AmecsKeyModifiersApi;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
+import mezz.jei.common.input.keys.JeiKeyModifier;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 
-public class AmecsKeyMappingWithContext extends AmecsKeyMappingWithKeyModifiers {
+import java.util.List;
+
+public class AmecsKeyMappingWithContext extends AmecsKeyMappingWithKeyModifiers implements ContextAwareKeyMapping {
 	private final JeiKeyConflictContext context;
 
 	public AmecsKeyMappingWithContext(String id, InputConstants.Type type, int code, Category category, AmecsKeyModifierCombination defaultModifiers, JeiKeyConflictContext context) {
@@ -37,7 +40,30 @@ public class AmecsKeyMappingWithContext extends AmecsKeyMappingWithKeyModifiers 
 		}
 	}
 
+	@Override
 	public boolean isContextActive() {
 		return context.isActive();
+	}
+
+	@Override
+	public boolean isActiveAndMatches(InputConstants.Key key) {
+		if (isUnbound()) {
+			return false;
+		}
+		if (!KeyMappingHelper.getBoundKeyOf(this).equals(key)) {
+			return false;
+		}
+		if (!context.isActive()) {
+			return false;
+		}
+
+		AmecsKeyModifierCombination combination = AmecsKeyModifiersApi.getBoundModifiers(this);
+		List<JeiKeyModifier> jeiKeyModifiers = AmecsHelper.getJeiModifiers(combination);
+		for (JeiKeyModifier jeiKeyModifier : jeiKeyModifiers) {
+			if (!jeiKeyModifier.isActive(context)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

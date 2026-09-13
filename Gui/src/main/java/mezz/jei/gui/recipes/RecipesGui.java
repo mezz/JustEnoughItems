@@ -2,6 +2,7 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
@@ -9,13 +10,11 @@ import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
@@ -28,6 +27,7 @@ import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
@@ -64,6 +64,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSource {
@@ -78,7 +79,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final IInternalKeyMappings keyBindings;
 	private final BookmarkList bookmarks;
 	private final IFocusFactory focusFactory;
-	private final FocusUtil focusUtil;
 
 	private int headerHeight;
 
@@ -122,7 +122,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public RecipesGui(
 		IRecipeManager recipeManager,
 		IIngredientManager ingredientManager,
-		IRecipeTransferManager recipeTransferManager,
+		RecipeTransferService recipeTransferService,
 		IInternalKeyMappings keyBindings,
 		IFocusFactory focusFactory,
 		BookmarkList bookmarks,
@@ -134,17 +134,16 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		super(Component.literal("Recipes"));
 		this.bookmarks = bookmarks;
 		this.keyBindings = keyBindings;
-		this.focusUtil = focusUtil;
 		this.logic = new RecipeGuiLogic(
 			recipeManager,
 			ingredientManager,
 			lookupHistory,
-			recipeTransferManager,
+			recipeTransferService,
 			this::updateLayout,
 			focusFactory,
 			bookmarkFactory
 		);
-		this.craftingStations = new CraftingStations(recipeManager);
+		this.craftingStations = new CraftingStations(guiHelper);
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, recipeManager, guiHelper);
 		this.optionButtons = new RecipeOptionButtons(this.logic::goToFirstPage);
 		this.focusFactory = focusFactory;
@@ -156,7 +155,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.interactiveIngredientTooltipController = new InteractiveIngredientTooltipController(
 			this,
 			focusUtil,
-			recipeManager,
+			guiHelper,
 			ingredientManager,
 			clickTargetFactory
 		);
@@ -635,16 +634,26 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	private boolean openInteractiveIngredientTooltip(double mouseX, double mouseY) {
-		Optional<RecipeSlotUnderMouse> slotUnderMouse = getSlotUnderMouse(mouseX, mouseY);
-		if (slotUnderMouse.isEmpty()) {
-			return false;
+		Optional<RecipeSlotUnderMouse> craftingStation = craftingStations.getSlotUnderMouse(mouseX, mouseY);
+		if (craftingStation.isPresent()) {
+			RecipeSlotUnderMouse slotUnderMouse = craftingStation.get();
+			return interactiveIngredientTooltipController.show(
+				slotUnderMouse,
+				slotUnderMouse::isMouseOver,
+				mouseX,
+				mouseY
+			);
 		}
-		return interactiveIngredientTooltipController.show(slotUnderMouse.get(), mouseX, mouseY);
-	}
-
-	private Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY) {
 		return getRecipeLayoutUnderMouse(mouseX, mouseY)
-			.flatMap(layout -> layout.getRecipeLayout().getSlotUnderMouse(mouseX, mouseY));
+			.map(IRecipeLayoutWithButtons::getRecipeLayout)
+			.flatMap(layout -> layout.getSlotUnderMouse(mouseX, mouseY)
+				.map(slotUnderMouse -> interactiveIngredientTooltipController.show(
+					slotUnderMouse,
+					RecipeSlotClickTargetFactory.createMouseOverable(layout, slotUnderMouse),
+					mouseX,
+					mouseY
+				)))
+			.orElse(false);
 	}
 
 	private void updateLayout() {
@@ -689,8 +698,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		optionButtons.updateLayout(this.area);
 		ImmutableRect2i optionButtonsArea = optionButtons.getArea();
-		List<ITypedIngredient<?>> recipeCatalystIngredients = logic.getRecipeCatalysts().toList();
-		craftingStations.updateLayout(recipeCatalystIngredients, this.area, optionButtonsArea);
+		List<Consumer<IIngredientAcceptor<?>>> craftingStations = logic.getCraftingStations().toList();
+		this.craftingStations.updateLayout(craftingStations, this.area, optionButtonsArea);
 		recipeGuiTabs.initLayout(this.idealArea);
 	}
 
@@ -705,6 +714,15 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Nullable
 	public AbstractContainerMenu getParentContainerMenu() {
+		AbstractContainerScreen<?> containerScreen = getParentContainerScreen();
+		if (containerScreen == null) {
+			return null;
+		}
+		return containerScreen.getMenu();
+	}
+
+	@Nullable
+	public AbstractContainerScreen<?> getParentContainerScreen() {
 		Screen screen;
 		if (parentScreen == null) {
 			screen = Minecraft.getInstance().gui.screen();
@@ -712,7 +730,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			screen = parentScreen;
 		}
 		if (screen instanceof AbstractContainerScreen<?> containerScreen) {
-			return containerScreen.getMenu();
+			return containerScreen;
 		}
 		return null;
 	}

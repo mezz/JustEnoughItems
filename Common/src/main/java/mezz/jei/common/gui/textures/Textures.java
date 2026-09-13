@@ -58,6 +58,9 @@ public class Textures {
 	private final IDrawableStatic brewingStandBubbles;
 	private final IDrawableStatic brewingStandArrow;
 
+	private final IScalableDrawable buttonDisabled;
+	private final IScalableDrawable buttonEnabled;
+	private final IScalableDrawable buttonHighlight;
 	private final IScalableDrawable buttonPressed;
 	private final IScalableDrawable buttonPressedHighlight;
 
@@ -92,6 +95,9 @@ public class Textures {
 		this.brewingStandBubbles = createGuiSprite("brewing_stand_bubbles", 11, 28);
 		this.brewingStandArrow = createGuiSprite("brewing_stand_arrow", 7, 27);
 
+		this.buttonDisabled = createScalableGuiSprite("button_disabled");
+		this.buttonEnabled = createScalableGuiSprite("button_enabled");
+		this.buttonHighlight = createScalableGuiSprite("button_highlight");
 		this.buttonPressed = createScalableGuiSprite("button_pressed");
 		this.buttonPressedHighlight = createScalableGuiSprite("button_pressed_highlighted");
 
@@ -305,6 +311,18 @@ public class Textures {
 
 	public IDrawableStatic getBrewingStandArrow() {
 		return brewingStandArrow;
+	}
+
+	public IScalableDrawable getButtonDisabled() {
+		return buttonDisabled;
+	}
+
+	public IScalableDrawable getButtonEnabled() {
+		return buttonEnabled;
+	}
+
+	public IScalableDrawable getButtonHighlight() {
+		return buttonHighlight;
 	}
 
 	public IScalableDrawable getButtonPressed() {

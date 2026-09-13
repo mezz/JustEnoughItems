@@ -41,6 +41,7 @@ import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.List;
@@ -104,10 +105,7 @@ public final class SlotDisplayIngredientGameTests {
 
 		// Operation: resolve and expand the item-only display with the initially registered ingredients.
 		SlotIngredient<ItemStack> anyPotion = resolve(helper, ingredientManager, slotDisplay).getFirst();
-		List<SlotIngredient<?>> initialRotation = SlotDisplayIngredientExpander.expandForDisplay(
-			ingredientManager,
-			List.of(anyPotion)
-		);
+		List<SlotIngredient<?>> initialRotation = expandForDisplay(ingredientManager, List.of(anyPotion));
 
 		// Assertions: the item-only input is a wildcard group with one initial rotation entry.
 		helper.assertTrue(getInfo(anyPotion).matchesAllSubtypes(), "Expected every potion subtype to match");
@@ -116,10 +114,7 @@ public final class SlotDisplayIngredientGameTests {
 
 		// Operation: add another potion subtype at runtime and expand the wildcard group again.
 		ingredientManager.addIngredientsAtRuntime(VanillaTypes.ITEM_STACK, List.of(healingPotion));
-		List<SlotIngredient<?>> expanded = SlotDisplayIngredientExpander.expandForDisplay(
-			ingredientManager,
-			List.of(anyPotion)
-		);
+		List<SlotIngredient<?>> expanded = expandForDisplay(ingredientManager, List.of(anyPotion));
 
 		// Assertions: both runtime subtypes rotate within the original display group.
 		helper.assertEquals(2, expanded.size(), "Expected every registered potion subtype in the rotation");
@@ -132,10 +127,7 @@ public final class SlotDisplayIngredientGameTests {
 
 		// Operation: remove the original subtype at runtime and expand the group once more.
 		ingredientManager.removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, List.of(waterPotion));
-		List<SlotIngredient<?>> expandedAfterRemoval = SlotDisplayIngredientExpander.expandForDisplay(
-			ingredientManager,
-			List.of(anyPotion)
-		);
+		List<SlotIngredient<?>> expandedAfterRemoval = expandForDisplay(ingredientManager, List.of(anyPotion));
 
 		// Assertions: the grouping index and rotation retain only the remaining subtype.
 		helper.assertEquals(1, expandedAfterRemoval.size(), "Expected the grouping index to update after runtime removal");
@@ -169,7 +161,7 @@ public final class SlotDisplayIngredientGameTests {
 		);
 
 		// Operation: expand every wildcard representative for display.
-		List<SlotIngredient<?>> expanded = SlotDisplayIngredientExpander.expandForDisplay(ingredientManager, resolved);
+		List<SlotIngredient<?>> expanded = expandForDisplay(ingredientManager, resolved);
 
 		// Assertions: the shared grouping UID expands once and contains both registered subtypes.
 		helper.assertEquals(2, expanded.size(), "Expected the grouping UID to expand only once");
@@ -322,6 +314,40 @@ public final class SlotDisplayIngredientGameTests {
 
 	@GameTest
 	@EmptyTemplate
+	@TestHolder(description = "Exact item-stack composites retain candidates across their independent display groups.")
+	public static void exactItemStackCompositeKeepsCandidatesAcrossDisplayGroups(JeiGameTestHelper helper) {
+		// Setup: each exact item-stack child contributes an independent, non-wildcard display group.
+		ItemStack stick = new ItemStack(Items.STICK);
+		ItemStack glassBottle = new ItemStack(Items.GLASS_BOTTLE);
+		IIngredientManagerInternal ingredientManager = createIngredientManager(stick, glassBottle);
+		SlotDisplay composite = new SlotDisplay.Composite(List.of(
+			new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(stick)),
+			new SlotDisplay.ItemStackSlotDisplay(ItemStackTemplate.fromNonEmptyStack(glassBottle))
+		));
+		List<SlotIngredient<ItemStack>> resolved = resolve(helper, ingredientManager, composite);
+
+		// Operation: collect the current display group and the broader candidate set used by slot tooltips.
+		List<SlotIngredient<?>> displayedGroup = RecipeSlotIngredients.getDisplayGroupIngredients(resolved, resolved.getFirst());
+		List<ItemStack> visibleCandidates = RecipeSlotIngredients.getVisibleSlotIngredients(resolved, ingredientManager, ingredient -> true)
+			.map(SlotIngredient::typedIngredient)
+			.map(ITypedIngredient::getItemStack)
+			.flatMap(Optional::stream)
+			.toList();
+
+		// Assertions: pinning can browse both exact children even though the currently displayed group is a singleton.
+		helper.assertTrue(
+			resolved.stream().noneMatch(ingredient -> getInfo(ingredient).matchesAllSubtypes()),
+			"Expected exact item-stack displays not to match every subtype"
+		);
+		helper.assertEquals(1, displayedGroup.size(), "Expected one exact ingredient in the current display group");
+		helper.assertEquals(2, visibleCandidates.size(), "Expected both exact ingredients in the interactive tooltip");
+		helper.assertTrue(containsItemStack(visibleCandidates, stick), "Expected the stick candidate");
+		helper.assertTrue(containsItemStack(visibleCandidates, glassBottle), "Expected the glass bottle candidate");
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
 	@TestHolder(description = "Wildcard slot displays preserve focus and expand consistently wherever they are displayed.")
 	public static void wildcardDisplaysPreserveFocusAndExpandConsistently(JeiGameTestHelper helper) {
 		// Setup: an item-only potion display can expand to two registered potion subtypes.
@@ -341,7 +367,7 @@ public final class SlotDisplayIngredientGameTests {
 		acceptor.add(slotDisplay);
 
 		// Operation: calculate displayed ingredients with a concrete healing-potion focus.
-		List<SlotIngredient<?>> focusedIngredients = RecipeSlotIngredients.calculateDisplayIngredients(
+		List<@Nullable SlotIngredient<?>> focusedIngredients = RecipeSlotIngredients.calculateDisplayIngredients(
 			acceptor.getAllSlotIngredients(),
 			ingredientManager,
 			focus,
@@ -367,7 +393,7 @@ public final class SlotDisplayIngredientGameTests {
 		helper.assertTrue(containsItemStack(allIngredients, healingPotion), "Expected public slot ingredients to include healing potion");
 
 		// Operation: calculate the same display through the display-override path.
-		List<SlotIngredient<?>> overrideIngredients = RecipeSlotIngredients.calculateDisplayIngredients(
+		List<@Nullable SlotIngredient<?>> overrideIngredients = RecipeSlotIngredients.calculateDisplayIngredients(
 			acceptor.getAllSlotIngredients(),
 			ingredientManager,
 			FocusGroup.EMPTY,
@@ -395,7 +421,7 @@ public final class SlotDisplayIngredientGameTests {
 				);
 				registration.register(
 					WrappingSlotDisplay.TYPE,
-					(display, context, infoBuilder) -> infoBuilder.setWrappedDisplay(CountingSlotDisplay.INSTANCE)
+					(display, context, infoBuilder) -> infoBuilder.addChildDisplay(CountingSlotDisplay.INSTANCE)
 				);
 			}
 		);
@@ -432,7 +458,7 @@ public final class SlotDisplayIngredientGameTests {
 				registration.register(
 					WrappingSlotDisplay.TYPE,
 					(display, context, infoBuilder) -> infoBuilder
-						.setWrappedDisplay(CountingSlotDisplay.INSTANCE)
+						.addChildDisplay(CountingSlotDisplay.INSTANCE)
 						.setWildcardForSubtypes(false)
 						.clearTagKey()
 						.clearTooltipHeader()
@@ -465,7 +491,7 @@ public final class SlotDisplayIngredientGameTests {
 			List.of(new ItemStack(Items.STICK)),
 			registration -> registration.register(
 				WrappingSlotDisplay.TYPE,
-				(display, context, infoBuilder) -> infoBuilder.setWrappedDisplay(display)
+				(display, context, infoBuilder) -> infoBuilder.addChildDisplay(display)
 			)
 		);
 		CountingSlotDisplay.reset();
@@ -509,8 +535,9 @@ public final class SlotDisplayIngredientGameTests {
 		helper.assertTrue(!data.info().matchesAllSubtypes(), message);
 	}
 
-	private static boolean containsStack(List<SlotIngredient<?>> ingredients, ItemStack expected) {
+	private static boolean containsStack(List<? extends @Nullable SlotIngredient<?>> ingredients, ItemStack expected) {
 		return ingredients.stream()
+			.filter(Objects::nonNull)
 			.map(SlotIngredient::typedIngredient)
 			.map(ITypedIngredient::getItemStack)
 			.flatMap(java.util.Optional::stream)
@@ -524,6 +551,15 @@ public final class SlotDisplayIngredientGameTests {
 
 	private static IIngredientManagerInternal createIngredientManager(ItemStack... itemStacks) {
 		return TestIngredientManagers.createVanillaItemStackIngredientManager(List.of(itemStacks));
+	}
+
+	private static List<SlotIngredient<?>> expandForDisplay(
+		IIngredientManagerInternal ingredientManager,
+		List<? extends SlotIngredient<?>> ingredients
+	) {
+		return SlotDisplayIngredientExpander.streamForDisplay(ingredientManager, ingredients)
+			.filter(Objects::nonNull)
+			.toList();
 	}
 
 	private static List<SlotIngredient<ItemStack>> resolve(

@@ -1,5 +1,7 @@
 package mezz.jei.library.config;
 
+import mezz.jei.common.platform.IPlatformItemStackHelper;
+import mezz.jei.common.platform.Services;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -29,7 +31,13 @@ final class ModIdFormatDetectionHelper {
 
 	private static List<Component> getTestTooltip(@Nullable Player player, ItemStack itemStack) {
 		try {
-			return itemStack.getTooltipLines(Item.TooltipContext.EMPTY, player, TooltipFlag.Default.NORMAL);
+			IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
+			return itemStackHelper.gatherTooltipLines(
+				itemStack,
+				Item.TooltipContext.EMPTY,
+				player,
+				TooltipFlag.Default.NORMAL
+			);
 		} catch (LinkageError | RuntimeException e) {
 			LOGGER.error("Error while Testing for mod name formatting", e);
 		}
