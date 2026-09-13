@@ -25,6 +25,7 @@ public class ClientConfigs implements IClientConfigs {
 		ISortingConfig<String> recipeCategorySortingConfig
 	) {
 		IConfigCategoryBuilder search = builder.addCategory("search");
+		IConfigCategoryBuilder lists = builder.addCategory("lists");
 		IConfigCategoryBuilder ingredientList = builder.addCategory("ingredientList");
 		IConfigEditorCategoryBuilder ingredientSorting = builder.addEditorCategory("ingredientSorting");
 		IConfigCategoryBuilder bookmarkList = builder.addCategory("bookmarkList");
@@ -36,8 +37,17 @@ public class ClientConfigs implements IClientConfigs {
 		IConfigCategoryBuilder advanced = builder.addCategory("advanced");
 
 		IngredientFilterConfig ingredientFilterConfig = new IngredientFilterConfig(search);
-		IngredientGridConfig ingredientListConfig = new IngredientGridConfig(ingredientList, HorizontalAlignment.RIGHT);
-		IngredientGridConfig bookmarkListConfig = new IngredientGridConfig(bookmarkList, HorizontalAlignment.LEFT);
+		IngredientGridSharedConfig ingredientGridSharedConfig = new IngredientGridSharedConfig(lists);
+		IngredientGridConfig ingredientListConfig = new IngredientGridConfig(
+			ingredientList,
+			HorizontalAlignment.RIGHT,
+			ingredientGridSharedConfig
+		);
+		IngredientGridConfig bookmarkListConfig = new IngredientGridConfig(
+			bookmarkList,
+			HorizontalAlignment.LEFT,
+			ingredientGridSharedConfig
+		);
 
 		this.clientConfig = new ClientConfig(
 			search,
