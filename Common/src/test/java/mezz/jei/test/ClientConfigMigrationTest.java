@@ -205,9 +205,9 @@ public class ClientConfigMigrationTest {
 			6,
 			HorizontalAlignment.RIGHT,
 			VerticalAlignment.CENTER,
-			NavigationVisibility.AUTO_HIDE,
+			NavigationVisibility.DISABLED,
 			IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE,
-			IngredientGridNavigationMode.SMOOTH_SCROLLING
+			IngredientGridNavigationMode.SCROLLING
 		);
 		assertTrue(Files.exists(configFile));
 		assertEquals(Files.readString(legacyFile), Files.readString(ConfigFileUtil.getBackupPath(legacyFile, 1)));
@@ -224,7 +224,7 @@ public class ClientConfigMigrationTest {
 		assertFalse(reloaded.getClientConfig().recipeSyncWarningEnabled().get());
 		assertFalse(reloaded.getClientConfig().recipeSlotCyclingEnabled().get());
 		assertEquals(IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE, reloaded.getIngredientListConfig().layoutMode().get());
-		assertEquals(IngredientGridNavigationMode.SMOOTH_SCROLLING, reloaded.getBookmarkListConfig().navigationMode().get());
+		assertEquals(IngredientGridNavigationMode.SCROLLING, reloaded.getBookmarkListConfig().navigationMode().get());
 	}
 
 	private static void assertGridConfig(
