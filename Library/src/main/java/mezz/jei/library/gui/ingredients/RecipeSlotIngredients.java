@@ -197,7 +197,7 @@ public final class RecipeSlotIngredients {
 		return getVisibleSlotIngredients(
 			getCandidateSource(),
 			ingredientManager,
-			ingredientVisibility::isIngredientVisible
+			ingredient -> ingredientVisibility.isIngredientVisible(ingredient, UidContext.Recipe)
 		);
 	}
 
@@ -329,7 +329,7 @@ public final class RecipeSlotIngredients {
 			ingredientManager,
 			focusGroup,
 			role,
-			ingredientVisibility::isIngredientVisible
+			ingredient -> ingredientVisibility.isIngredientVisible(ingredient, UidContext.Recipe)
 		);
 	}
 
