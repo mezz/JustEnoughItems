@@ -1,7 +1,10 @@
 package mezz.jei.library.gui.recipes.layout.builder;
 
-import it.unimi.dsi.fastutil.ints.IntArraySet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import mezz.jei.library.ingredients.RecipeIngredientSupplier.FocusLink;
+import mezz.jei.common.Internal;
+import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.runtime.IIngredientVisibility;
+import java.util.Optional;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -152,7 +155,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	}
 
 	@SuppressWarnings("removal")
-	public RecipeLayout<T> buildRecipeLayout(
+	public Optional<RecipeLayout<T>> buildRecipeLayout(
 		IFocusGroup focuses,
 		Collection<IRecipeCategoryDecorator<T>> decorators,
 		IScalableDrawable recipeBackground,
@@ -167,18 +170,24 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 
 		CycleTicker cycleTicker = CycleTicker.createWithRandomOffset();
 
+		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getJeiHelpers().getIngredientVisibility();
 		Set<RecipeSlotBuilder> focusLinkedSlots = new HashSet<>();
 		for (List<RecipeSlotBuilder> linkedSlots : this.focusLinkedSlots) {
-			IntSet focusMatches = new IntArraySet();
-			for (RecipeSlotBuilder slot : linkedSlots) {
-				focusMatches.addAll(slot.getMatches(focuses));
+			FocusLink focusLink = new FocusLink(linkedSlots.stream()
+				.map(slot -> new FocusLink.Slot(slot.getRole(), slot.getIngredientAcceptor().getAllIngredients()))
+				.toList());
+			Set<Integer> linkedIndexes = focusLink.getVisibleIngredientIndexes(
+				focuses, ingredientManager, ingredient -> ingredientVisibility.isIngredientVisible(ingredient, UidContext.Recipe)
+			);
+			if (linkedIndexes == null) {
+				return Optional.empty();
 			}
 			for (RecipeSlotBuilder slotBuilder : linkedSlots) {
 				if (!visibleSlots.contains(slotBuilder)) {
 					continue;
 				}
 				mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
-				Pair<Integer, IRecipeSlotDrawable> slotDrawable = slotBuilder.build(focusMatches, cycleTicker);
+				Pair<Integer, IRecipeSlotDrawable> slotDrawable = slotBuilder.build(linkedIndexes, cycleTicker);
 				if (assignedWidget == null) {
 					recipeCategorySlots.add(slotDrawable);
 				} else {
@@ -237,7 +246,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			factory.createWidgetForSlots(recipeLayout, recipe, slots);
 		}
 
-		return recipeLayout;
+		return Optional.of(recipeLayout);
 	}
 
 	private static List<IRecipeSlotDrawable> sortSlots(List<Pair<Integer, IRecipeSlotDrawable>> indexedSlots) {
