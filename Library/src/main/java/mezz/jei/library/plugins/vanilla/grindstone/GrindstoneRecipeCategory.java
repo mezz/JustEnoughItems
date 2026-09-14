@@ -1,6 +1,7 @@
 package mezz.jei.library.plugins.vanilla.grindstone;
 
 import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -20,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneRecipe> {
@@ -62,12 +64,12 @@ public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneR
 		List<ItemStack> outputs = recipe.getOutputs();
 
 		IRecipeSlotBuilder topInputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
-			.addItemStacks(topInputs)
+			.addIngredients(VanillaTypes.ITEM_STACK, getDisplayInputs(topInputs))
 			.setStandardSlotBackground()
 			.setSlotName(topSlotName);
 
 		IRecipeSlotBuilder bottomInputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 1, 24)
-			.addItemStacks(bottomInputs)
+			.addIngredients(VanillaTypes.ITEM_STACK, getDisplayInputs(bottomInputs))
 			.setStandardSlotBackground()
 			.setSlotName(bottomSlotName);
 
@@ -90,6 +92,18 @@ public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneR
 		} else if (bottomInputs.size() == outputs.size() && topInputs.size() == 1) {
 			builder.createFocusLink(bottomInputSlot, outputSlot);
 		}
+	}
+
+	private static List<@Nullable ItemStack> getDisplayInputs(List<ItemStack> inputs) {
+		List<@Nullable ItemStack> displayInputs = new ArrayList<>(inputs.size());
+		for (ItemStack input : inputs) {
+			if (input.isEmpty()) {
+				displayInputs.add(null);
+			} else {
+				displayInputs.add(input);
+			}
+		}
+		return displayInputs;
 	}
 
 	@Override
