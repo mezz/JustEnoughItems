@@ -279,8 +279,8 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 
 		if (!focusMatches.isEmpty()) {
 			focusedIngredients = new ArrayList<>();
-			for (Integer i : focusMatches) {
-				if (i < allIngredients.size()) {
+			for (int i = 0; i < allIngredients.size(); i++) {
+				if (focusMatches.contains(i)) {
 					@Nullable
 					ITypedIngredient<?> ingredient = allIngredients.get(i);
 					focusedIngredients.add(ingredient);
