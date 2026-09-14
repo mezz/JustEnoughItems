@@ -6,12 +6,17 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.ingredients.RecipeIngredientSupplier;
+import mezz.jei.library.ingredients.RecipeIngredientSupplier.FocusLink;
 import mezz.jei.library.ingredients.SlotIngredient;
 import net.minecraft.util.context.ContextMap;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Minimal version of {@link IRecipeLayoutBuilder} that can only return the ingredients,
@@ -20,7 +25,8 @@ import java.util.Map;
 public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 	private final IIngredientManagerInternal ingredientManager;
 	private final ContextMap contextMap;
-	private final Map<RecipeIngredientRole, IngredientSlotBuilder> ingredientSlotBuilders;
+	private final Map<RecipeIngredientRole, List<IngredientSlotBuilder>> ingredientSlotBuilders;
+	private final List<List<IngredientSlotBuilder>> focusLinkedSlots = new ArrayList<>();
 
 	public IngredientSupplierBuilder(IIngredientManagerInternal ingredientManager, ContextMap contextMap) {
 		this.ingredientManager = ingredientManager;
@@ -35,11 +41,9 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 
 	@Override
 	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role) {
-		IngredientSlotBuilder slot = ingredientSlotBuilders.get(role);
-		if (slot == null) {
-			slot = new IngredientSlotBuilder(ingredientManager, contextMap, role);
-			ingredientSlotBuilders.put(role, slot);
-		}
+		IngredientSlotBuilder slot = new IngredientSlotBuilder(ingredientManager, contextMap, role);
+		ingredientSlotBuilders.computeIfAbsent(role, key -> new ArrayList<>())
+			.add(slot);
 		return slot;
 	}
 
@@ -65,14 +69,38 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 
 	@Override
 	public void createFocusLink(IIngredientAcceptor<?>... slots) {
-
+		List<IngredientSlotBuilder> builders = Arrays.stream(slots)
+			.map(IngredientSlotBuilder.class::cast)
+			.toList();
+		long ingredientCounts = builders.stream()
+			.map(IngredientSlotBuilder::getAllSlotIngredients)
+			.mapToInt(Collection::size)
+			.distinct()
+			.count();
+		if (ingredientCounts > 1) {
+			throw new IllegalArgumentException("All slots must have the same number of ingredients in order to create a focus link.");
+		}
+		this.focusLinkedSlots.add(builders);
 	}
 
 	public RecipeIngredientSupplier buildIngredientSupplier() {
 		Map<RecipeIngredientRole, List<SlotIngredient<?>>> ingredientsByRole = new EnumMap<>(RecipeIngredientRole.class);
 		ingredientSlotBuilders.forEach(
-			(role, builder) -> ingredientsByRole.put(role, builder.getAllSlotIngredients())
+			(role, builders) -> ingredientsByRole.put(
+				role,
+				builders.stream()
+					.flatMap(builder -> builder.getAllSlotIngredients().stream())
+					.filter(Objects::nonNull)
+					.toList()
+			)
 		);
-		return new RecipeIngredientSupplier(ingredientsByRole);
+		List<FocusLink> focusLinks = this.focusLinkedSlots.stream()
+			.map(linkedSlots -> linkedSlots.stream()
+				.map(slot -> new FocusLink.Slot(slot.getRole(), slot.getAllSlotIngredients()))
+				.toList()
+			)
+			.map(FocusLink::new)
+			.toList();
+		return new RecipeIngredientSupplier(ingredientsByRole, focusLinks);
 	}
 }
