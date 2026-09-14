@@ -3,8 +3,6 @@ package mezz.jei.fabric;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiGuiColors;
-import mezz.jei.common.gui.textures.JeiAtlasManager;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.MinecraftLocaleSupplier;
 import mezz.jei.common.util.Translator;
 import mezz.jei.fabric.chat.JeiChatEventHandler;
@@ -36,11 +34,6 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 		JeiInternalShowCommand.register();
 
 		JeiLifecycleEvents.REGISTER_RESOURCE_RELOAD_LISTENER.register((resourceManager, textureManager) -> {
-			Textures textures = Internal.getTextures();
-			JeiAtlasManager atlasManager = textures.getAtlasManager();
-			ResourceLoader.get(PackType.CLIENT_RESOURCES)
-				.registerReloadListener(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "gui_sprite_manager"), atlasManager);
-
 			ClientLifecycleEvents.CLIENT_STARTED.register(event -> {
 				clientLifecycleHandler.registerEvents();
 

@@ -6,7 +6,6 @@ import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.config.ClientToggleState;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IJeiClientConfigs;
-import mezz.jei.common.gui.textures.JeiAtlasManager;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
@@ -15,16 +14,14 @@ import mezz.jei.common.util.IDelayedExecutor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
-import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.data.AtlasIds;
 import net.minecraft.network.Connection;
 import net.minecraft.world.item.crafting.RecipeMap;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * For JEI internal use only, these are normally accessed from the API.
@@ -58,15 +55,8 @@ public final class Internal {
 	public static Textures getTextures() {
 		if (textures == null) {
 			Minecraft minecraft = Minecraft.getInstance();
-			TextureManager textureManager = minecraft.getTextureManager();
-			JeiAtlasManager jeiAtlasManager = new JeiAtlasManager(textureManager,
-				new JeiAtlasManager.Config(
-					Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS,
-					Constants.JEI_GUI_TEXTURE_ATLAS_ID,
-					Set.of(AnimationMetadataSection.TYPE, GuiMetadataSection.TYPE)
-				)
-			);
-			textures = new Textures(jeiAtlasManager);
+			TextureAtlas guiAtlas = minecraft.getAtlasManager().getAtlasOrThrow(AtlasIds.GUI);
+			textures = new Textures(guiAtlas);
 		}
 		return textures;
 	}

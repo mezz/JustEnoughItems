@@ -6,10 +6,11 @@ import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.common.gui.elements.DrawableSprite;
 import mezz.jei.common.gui.elements.HighResolutionDrawable;
 import mezz.jei.common.gui.elements.ScalableDrawable;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.Identifier;
 
 public class Textures {
-	private final JeiAtlasManager jeiAtlasManager;
+	private final TextureAtlas guiAtlas;
 
 	private final IDrawableStatic slot;
 	private final IDrawableStatic outputSlot;
@@ -64,8 +65,8 @@ public class Textures {
 	private final IScalableDrawable buttonPressed;
 	private final IScalableDrawable buttonPressedHighlight;
 
-	public Textures(JeiAtlasManager jeiAtlasManager) {
-		this.jeiAtlasManager = jeiAtlasManager;
+	public Textures(TextureAtlas guiAtlas) {
+		this.guiAtlas = guiAtlas;
 
 		this.slot = createGuiSprite("slot", 18, 18);
 		this.outputSlot = createGuiSprite("output_slot", 26, 26);
@@ -129,12 +130,12 @@ public class Textures {
 
 	private IDrawableStatic createGuiSprite(String name, int width, int height) {
 		Identifier id = createSpriteId(name);
-		return new DrawableSprite(jeiAtlasManager.getAtlas(), id, width, height);
+		return new DrawableSprite(guiAtlas, id, width, height);
 	}
 
 	private ScalableDrawable createScalableGuiSprite(String name) {
 		Identifier id = createSpriteId(name);
-		return new ScalableDrawable(jeiAtlasManager, id);
+		return new ScalableDrawable(guiAtlas, id);
 	}
 
 	public IDrawableStatic getSlot() {
@@ -333,7 +334,4 @@ public class Textures {
 		return buttonPressedHighlight;
 	}
 
-	public JeiAtlasManager getAtlasManager() {
-		return jeiAtlasManager;
-	}
 }
