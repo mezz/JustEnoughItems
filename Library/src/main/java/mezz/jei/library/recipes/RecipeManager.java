@@ -20,6 +20,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.RecipeLayoutDrawableErrored;
 import mezz.jei.common.gui.elements.DrawableBlank;
+import mezz.jei.common.recipes.IRecipeVisibility;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.gui.ingredients.CycleTimer;
 import mezz.jei.library.focus.FocusGroup;
@@ -36,7 +37,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public class RecipeManager implements IRecipeManager {
+public class RecipeManager implements IRecipeManager, IRecipeVisibility {
 	private final RecipeManagerInternal internal;
 	private final IIngredientManagerInternal ingredientManager;
 	private final ImmutableListMultimap<IRecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators;
@@ -61,6 +62,11 @@ public class RecipeManager implements IRecipeManager {
 	public <R> IRecipeLookup<R> createRecipeLookup(IRecipeType<R> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		return new RecipeLookup<>(recipeType, internal, ingredientManager);
+	}
+
+	@Override
+	public <T> boolean isRecipeVisible(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses) {
+		return internal.isRecipeVisible(recipeCategory, recipe, focuses);
 	}
 
 	@Override

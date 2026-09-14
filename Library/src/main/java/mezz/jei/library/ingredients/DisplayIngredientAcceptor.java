@@ -249,19 +249,33 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	}
 
 	public IntSet getMatches(IFocusGroup focusGroup, RecipeIngredientRole role) {
+		return getMatches(getAllSlotIngredients(), focusGroup, role, ingredientManager);
+	}
+
+	static IntSet getMatches(
+		List<? extends @Nullable SlotIngredient<?>> ingredients,
+		IFocusGroup focusGroup,
+		RecipeIngredientRole role,
+		IIngredientManagerInternal ingredientManager
+	) {
 		List<IFocus<?>> focuses = focusGroup.getFocuses(role).toList();
 		IntSet results = new IntOpenHashSet();
 		for (IFocus<?> focus : focuses) {
-			boolean foundExactMatch = getMatches(focus, UidContext.Ingredient, results);
+			boolean foundExactMatch = getMatches(ingredients, focus, UidContext.Ingredient, results, ingredientManager);
 			if (!foundExactMatch) {
-				getMatches(focus, UidContext.Recipe, results);
+				getMatches(ingredients, focus, UidContext.Recipe, results, ingredientManager);
 			}
 		}
 		return results;
 	}
 
-	private <T> boolean getMatches(IFocus<T> focus, UidContext uidContext, IntSet results) {
-		List<@Nullable SlotIngredient<?>> ingredients = getAllSlotIngredients();
+	private static <T> boolean getMatches(
+		List<? extends @Nullable SlotIngredient<?>> ingredients,
+		IFocus<T> focus,
+		UidContext uidContext,
+		IntSet results,
+		IIngredientManagerInternal ingredientManager
+	) {
 		if (ingredients.isEmpty()) {
 			return false;
 		}
@@ -293,7 +307,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		return foundMatch;
 	}
 
-	private <T> boolean matchesAllSubtypes(
+	private static <T> boolean matchesAllSubtypes(
 		ITypedIngredient<T> focus,
 		ITypedIngredient<T> ingredient,
 		IIngredientHelper<T> ingredientHelper,

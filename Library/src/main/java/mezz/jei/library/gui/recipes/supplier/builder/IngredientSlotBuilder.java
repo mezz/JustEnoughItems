@@ -11,8 +11,8 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
+import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import mezz.jei.library.ingredients.IIngredientManagerInternal;
-import mezz.jei.library.ingredients.SimpleIngredientAcceptor;
 import mezz.jei.library.ingredients.SlotIngredient;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.util.context.ContextMap;
@@ -31,10 +31,12 @@ import java.util.Optional;
  * but doesn't bother building anything for drawing on screen.
  */
 public class IngredientSlotBuilder implements IRecipeSlotBuilder {
-	private final SimpleIngredientAcceptor ingredients;
+	private final DisplayIngredientAcceptor ingredients;
+	private final RecipeIngredientRole role;
 
 	public IngredientSlotBuilder(IIngredientManagerInternal ingredientManager, ContextMap contextMap, RecipeIngredientRole role) {
-		this.ingredients = new SimpleIngredientAcceptor(ingredientManager, contextMap, role);
+		this.ingredients = new DisplayIngredientAcceptor(ingredientManager, contextMap, role);
+		this.role = role;
 	}
 
 	@Override
@@ -210,7 +212,11 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 		return this;
 	}
 
-	public List<SlotIngredient<?>> getAllSlotIngredients() {
+	public List<@Nullable SlotIngredient<?>> getAllSlotIngredients() {
 		return this.ingredients.getAllSlotIngredients();
+	}
+
+	public RecipeIngredientRole getRole() {
+		return role;
 	}
 }

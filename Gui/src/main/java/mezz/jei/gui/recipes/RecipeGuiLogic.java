@@ -13,6 +13,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IJeiClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.common.recipes.IRecipeVisibility;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
@@ -25,6 +26,7 @@ import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import mezz.jei.gui.recipes.lookups.ILookupState;
 import mezz.jei.gui.recipes.lookups.IngredientLookupState;
 import mezz.jei.gui.recipes.lookups.SingleCategoryLookupState;
+import mezz.jei.gui.recipes.lookups.StaticFocusedRecipes;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jspecify.annotations.Nullable;
@@ -110,6 +112,10 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean showRecipes(IFocusedRecipes<?> focusedRecipes, IFocusGroup focuses) {
+		focusedRecipes = filterVisibleRecipes(focusedRecipes, focuses);
+		if (focusedRecipes.getRecipes().isEmpty()) {
+			return false;
+		}
 		var recipeBookmark = createRecipeBookmark(recipeManager, ingredientManager, recipeTransferService, focusedRecipes, focuses);
 		if (recipeBookmark != null) {
 			this.lookupHistory.add(recipeBookmark);
@@ -121,6 +127,17 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 		ILookupState state = new SingleCategoryLookupState(focusedRecipes, focuses);
 		return setState(state, true);
+	}
+
+	private <T> IFocusedRecipes<T> filterVisibleRecipes(IFocusedRecipes<T> focusedRecipes, IFocusGroup focuses) {
+		if (!(recipeManager instanceof IRecipeVisibility recipeVisibility)) {
+			return focusedRecipes;
+		}
+		IRecipeCategory<T> recipeCategory = focusedRecipes.getRecipeCategory();
+		List<T> visibleRecipes = focusedRecipes.getRecipes().stream()
+			.filter(recipe -> recipeVisibility.isRecipeVisible(recipeCategory, recipe, focuses))
+			.toList();
+		return new StaticFocusedRecipes<>(recipeCategory, visibleRecipes);
 	}
 
 	private static <T> @Nullable RecipeBookmark<T, ?> createRecipeBookmark(
