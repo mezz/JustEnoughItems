@@ -1,5 +1,7 @@
 package mezz.jei.gui.recipes;
 
+import mezz.jei.common.recipes.IRecipeVisibility;
+import mezz.jei.gui.recipes.lookups.StaticFocusedRecipes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -118,6 +120,10 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean showRecipes(IFocusedRecipes<?> focusedRecipes, IFocusGroup focuses) {
+		focusedRecipes = filterVisibleRecipes(focusedRecipes, focuses);
+		if (focusedRecipes.getRecipes().isEmpty()) {
+			return false;
+		}
 		ILookupState state = new SingleCategoryLookupState(focusedRecipes, focuses);
 		boolean changed = setState(state, true);
 		if (changed) {
@@ -132,6 +138,17 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			}
 		}
 		return changed;
+	}
+
+	private <T> IFocusedRecipes<T> filterVisibleRecipes(IFocusedRecipes<T> focusedRecipes, IFocusGroup focuses) {
+		if (!(recipeManager instanceof IRecipeVisibility recipeVisibility)) {
+			return focusedRecipes;
+		}
+		IRecipeCategory<T> recipeCategory = focusedRecipes.getRecipeCategory();
+		List<T> visibleRecipes = focusedRecipes.getRecipes().stream()
+			.filter(recipe -> recipeVisibility.isRecipeVisible(recipeCategory, recipe, focuses))
+			.toList();
+		return new StaticFocusedRecipes<>(recipeCategory, visibleRecipes);
 	}
 
 	private static <T> @Nullable RecipeBookmark<T, ?> createRecipeBookmark(

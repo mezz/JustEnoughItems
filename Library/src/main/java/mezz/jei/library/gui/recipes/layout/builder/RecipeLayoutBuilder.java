@@ -1,7 +1,5 @@
 package mezz.jei.library.gui.recipes.layout.builder;
 
-import it.unimi.dsi.fastutil.ints.IntArraySet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -9,15 +7,17 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.Internal;
-import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.collect.ListMultiMap;
+import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTicker;
 import mezz.jei.library.gui.recipes.IngredientsTooltipCallback;
@@ -25,6 +25,7 @@ import mezz.jei.library.gui.recipes.OutputSlotTooltipCallback;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.library.gui.recipes.ShapelessIcon;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
+import mezz.jei.library.ingredients.RecipeIngredientSupplier.FocusLink;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,6 +37,7 @@ import java.util.HashSet;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -152,7 +154,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	}
 
 	@SuppressWarnings("removal")
-	public RecipeLayout<T> buildRecipeLayout(
+	public Optional<RecipeLayout<T>> buildRecipeLayout(
 		IFocusGroup focuses,
 		Collection<IRecipeCategoryDecorator<T>> decorators,
 		IScalableDrawable recipeBackground,
@@ -167,17 +169,23 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 
 		CycleTicker cycleTicker = CycleTicker.createWithRandomOffset();
 
+		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getJeiHelpers().getIngredientVisibility();
 		Set<RecipeSlotBuilder> focusLinkedSlots = new HashSet<>();
 		for (List<RecipeSlotBuilder> linkedSlots : this.focusLinkedSlots) {
-			IntSet focusMatches = new IntArraySet();
-			for (RecipeSlotBuilder slot : linkedSlots) {
-				focusMatches.addAll(slot.getMatches(focuses));
+			FocusLink focusLink = new FocusLink(linkedSlots.stream()
+				.map(slot -> new FocusLink.Slot(slot.getRole(), slot.getIngredientAcceptor().getAllIngredients()))
+				.toList());
+			Set<Integer> linkedIndexes = focusLink.getVisibleIngredientIndexes(
+				focuses, ingredientManager, ingredient -> ingredientVisibility.isIngredientVisible(ingredient, UidContext.Recipe)
+			);
+			if (linkedIndexes == null) {
+				return Optional.empty();
 			}
 			for (RecipeSlotBuilder slotBuilder : linkedSlots) {
 				if (!visibleSlots.contains(slotBuilder)) {
 					continue;
 				}
-				Pair<Integer, IRecipeSlotDrawable> indexedSlot = buildSlot(slotBuilder, focusMatches, cycleTicker);
+				Pair<Integer, IRecipeSlotDrawable> indexedSlot = buildSlot(slotBuilder, linkedIndexes, cycleTicker);
 				mezz.jei.api.gui.widgets.ISlottedWidgetFactory<?> assignedWidget = slotBuilder.getAssignedWidget();
 				if (assignedWidget == null) {
 					recipeCategorySlots.add(indexedSlot);
@@ -237,7 +245,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			factory.createWidgetForSlots(recipeLayout, recipe, slots);
 		}
 
-		return recipeLayout;
+		return Optional.of(recipeLayout);
 	}
 
 	private static Pair<Integer, IRecipeSlotDrawable> buildSlot(RecipeSlotBuilder slotBuilder, IFocusGroup focuses, CycleTicker cycleTicker) {

@@ -205,26 +205,29 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	}
 
 	public IntSet getMatches(IFocusGroup focusGroup, RecipeIngredientRole role) {
+		return getMatches(getAllIngredients(), focusGroup, role, ingredientManager);
+	}
+
+	static IntSet getMatches(List<? extends @Nullable ITypedIngredient<?>> ingredients, IFocusGroup focusGroup, RecipeIngredientRole role, IIngredientManager ingredientManager) {
 		List<IFocus<?>> focuses = focusGroup.getFocuses(role).toList();
 		IntSet results = new IntOpenHashSet();
 		for (IFocus<?> focus : focuses) {
-			boolean foundExactMatch = getMatches(focus, UidContext.Ingredient, results);
+			boolean foundExactMatch = getMatches(ingredients, focus, UidContext.Ingredient, results, ingredientManager);
 			if (!foundExactMatch) {
-				getMatches(focus, UidContext.Recipe, results);
+				getMatches(ingredients, focus, UidContext.Recipe, results, ingredientManager);
 			}
 		}
 		return results;
 	}
 
-	private <T> boolean getMatches(IFocus<T> focus, UidContext uidContext, IntSet results) {
-		List<@Nullable ITypedIngredient<?>> ingredients = getAllIngredients();
+	private static <T> boolean getMatches(List<? extends @Nullable ITypedIngredient<?>> ingredients, IFocus<T> focus, UidContext uidContext, IntSet results, IIngredientManager ingredientManager) {
 		if (ingredients.isEmpty()) {
 			return false;
 		}
 
 		ITypedIngredient<T> focusValue = focus.getTypedValue();
 		IIngredientType<T> ingredientType = focusValue.getType();
-		IIngredientHelper<T> ingredientHelper = this.ingredientManager.getIngredientHelper(ingredientType);
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		Object focusUid = ingredientHelper.getUid(focusValue, uidContext);
 		boolean foundMatch = false;
 

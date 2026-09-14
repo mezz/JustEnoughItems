@@ -1,5 +1,6 @@
 package mezz.jei.library.recipes;
 
+import mezz.jei.common.recipes.IRecipeVisibility;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
@@ -32,7 +33,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public class RecipeManager implements IRecipeManager {
+public class RecipeManager implements IRecipeManager, IRecipeVisibility {
 	private final RecipeManagerInternal internal;
 	private final IIngredientManager ingredientManager;
 	private final List<IRecipeButtonControllerFactory> recipeButtonControllerFactories;
@@ -49,6 +50,11 @@ public class RecipeManager implements IRecipeManager {
 
 	public void onRuntimeStopped() {
 		internal.onRuntimeStopped();
+	}
+
+	@Override
+	public <T> boolean isRecipeVisible(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses) {
+		return internal.isRecipeVisible(recipeCategory, recipe, focuses);
 	}
 
 	@Override

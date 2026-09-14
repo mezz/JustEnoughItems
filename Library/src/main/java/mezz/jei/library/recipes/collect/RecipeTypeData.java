@@ -1,5 +1,8 @@
 package mezz.jei.library.recipes.collect;
 
+import mezz.jei.library.ingredients.RecipeIngredientSupplier.FocusLink;
+import java.util.Map;
+import org.jetbrains.annotations.Nullable;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import org.jetbrains.annotations.Unmodifiable;
@@ -16,6 +19,7 @@ import java.util.function.Consumer;
 public class RecipeTypeData<T> {
 	private final IRecipeCategory<T> recipeCategory;
 	private final List<Consumer<IIngredientAcceptor<?>>> recipeCategoryCatalysts;
+	private final Map<T, List<FocusLink>> focusLinks = new IdentityHashMap<>();
 	private final List<T> recipes = new ArrayList<>();
 	private final Set<T> hiddenRecipes = Collections.newSetFromMap(new IdentityHashMap<>());
 
@@ -40,6 +44,14 @@ public class RecipeTypeData<T> {
 
 	public void addRecipes(Collection<T> recipes) {
 		this.recipes.addAll(recipes);
+	}
+
+	public void addFocusLinks(T recipe, List<FocusLink> links) {
+		focusLinks.put(recipe, List.copyOf(links));
+	}
+
+	public @Nullable List<FocusLink> getFocusLinks(T recipe) {
+		return focusLinks.get(recipe);
 	}
 
 	public Set<T> getHiddenRecipes() {

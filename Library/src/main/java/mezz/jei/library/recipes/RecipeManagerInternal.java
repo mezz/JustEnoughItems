@@ -2,6 +2,8 @@ package mezz.jei.library.recipes;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
+import mezz.jei.library.ingredients.RecipeIngredientSupplier;
+import mezz.jei.library.ingredients.RecipeIngredientSupplier.FocusLink;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
@@ -16,7 +18,6 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
-import mezz.jei.library.ingredients.IIngredientSupplier;
 import mezz.jei.library.ingredients.SimpleIngredientAcceptor;
 import mezz.jei.library.recipes.collect.RecipeMap;
 import mezz.jei.library.recipes.collect.RecipeTypeData;
@@ -132,7 +133,9 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 
 		List<T> addedRecipes = new ArrayList<>(recipes.size());
 		for (T recipe : recipes) {
-			if (addRecipe(recipeCategory, recipe, hiddenRecipes)) {
+			RecipeIngredientSupplier ingredientSupplier = addRecipe(recipeCategory, recipe, hiddenRecipes);
+			if (ingredientSupplier != null) {
+				recipeTypeData.addFocusLinks(recipe, ingredientSupplier.getFocusLinks());
 				addedRecipes.add(recipe);
 			}
 		}
@@ -143,36 +146,33 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 		}
 	}
 
-	private <T> boolean addRecipe(IRecipeCategory<T> recipeCategory, T recipe, Set<T> hiddenRecipes) {
+	private <T> @Nullable RecipeIngredientSupplier addRecipe(IRecipeCategory<T> recipeCategory, T recipe, Set<T> hiddenRecipes) {
 		RecipeType<T> recipeType = recipeCategory.getRecipeType();
 		if (hiddenRecipes.contains(recipe)) {
 			if (LOGGER.isDebugEnabled()) {
 				String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipe, recipeCategory, ingredientManager);
 				LOGGER.debug("Recipe not added because it is hidden: {}", recipeInfo);
 			}
-			return false;
+			return null;
 		}
 		if (!recipeCategory.isHandled(recipe)) {
 			if (LOGGER.isDebugEnabled()) {
 				String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipe, recipeCategory, ingredientManager);
 				LOGGER.debug("Recipe not added because the recipe category cannot handle it: {}", recipeInfo);
 			}
-			return false;
+			return null;
 		}
-		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
-		if (ingredientSupplier == null) {
-			return false;
-		}
+		RecipeIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
 
 		try {
 			for (RecipeMap recipeMap : recipeMaps.values()) {
 				recipeMap.addRecipe(recipeType, recipe, ingredientSupplier);
 			}
-			return true;
+			return ingredientSupplier;
 		} catch (RuntimeException | LinkageError e) {
 			String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipe, recipeCategory, ingredientManager);
 			LOGGER.error("Found a broken recipe, failed to addRecipe: {}\n", recipeInfo, e);
-			return false;
+			return null;
 		}
 	}
 
@@ -260,7 +260,47 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 			return Stream.empty();
 		}
 		RecipeTypeData<T> recipeTypeData = this.recipeTypeDataMap.get(recipeType);
-		return this.pluginManager.getRecipes(recipeTypeData, focuses, includeHidden);
+		Stream<T> recipes = this.pluginManager.getRecipes(recipeTypeData, focuses, includeHidden);
+		if (!includeHidden) {
+			recipes = recipes.filter(recipe -> isRecipeVisible(recipeTypeData, recipe, focuses));
+		}
+		return recipes;
+	}
+
+	public <T> boolean isRecipeVisible(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses) {
+		RecipeTypeData<T> recipeTypeData = this.recipeTypeDataMap.get(recipeCategory.getRecipeType());
+		if (recipeTypeData.getHiddenRecipes().contains(recipe)) {
+			return false;
+		}
+		return isRecipeVisible(recipeTypeData, recipe, focuses);
+	}
+
+	private <T> boolean isRecipeVisible(RecipeTypeData<T> recipeTypeData, T recipe, IFocusGroup focuses) {
+		List<FocusLink> focusLinks = getFocusLinks(recipeTypeData, recipe);
+		for (FocusLink focusLink : focusLinks) {
+			Set<Integer> visibleIndexes = focusLink.getVisibleIngredientIndexes(
+				focuses,
+				ingredientManager,
+				ingredient -> ingredientVisibility.isIngredientVisible(ingredient, UidContext.Recipe)
+			);
+			if (visibleIndexes == null) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private <T> List<FocusLink> getFocusLinks(RecipeTypeData<T> recipeTypeData, T recipe) {
+		List<FocusLink> focusLinks = recipeTypeData.getFocusLinks(recipe);
+		if (focusLinks != null) {
+			return focusLinks;
+		}
+		RecipeIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(
+			recipe,
+			recipeTypeData.getRecipeCategory(),
+			ingredientManager
+		);
+		return ingredientSupplier.getFocusLinks();
 	}
 
 	public <T> Stream<Consumer<IIngredientAcceptor<?>>> getRecipeCatalystGroups(RecipeType<T> recipeType, boolean includeHidden) {
