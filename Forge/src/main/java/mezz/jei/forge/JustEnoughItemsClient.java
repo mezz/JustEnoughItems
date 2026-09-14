@@ -4,7 +4,6 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.IngredientsTooltipComponent;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.network.NetworkHandler;
@@ -98,8 +97,6 @@ public class JustEnoughItemsClient {
 	}
 
 	private void onRegisterReloadListenerEvent(RegisterClientReloadListenersEvent event) {
-		Textures textures = Internal.getTextures();
-		event.registerReloadListener(textures.getGuiSpriteManager());
 		event.registerReloadListener(createReloadListener());
 	}
 

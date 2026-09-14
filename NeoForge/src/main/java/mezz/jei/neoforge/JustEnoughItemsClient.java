@@ -7,7 +7,6 @@ import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.RecipeSlotOptionsTooltipComponent;
 import mezz.jei.common.gui.IngredientTooltipComponent;
 import mezz.jei.common.gui.IngredientsTooltipComponent;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
@@ -106,8 +105,6 @@ public class JustEnoughItemsClient {
 	}
 
 	private void onRegisterReloadListenerEvent(RegisterClientReloadListenersEvent event) {
-		Textures textures = Internal.getTextures();
-		event.registerReloadListener(textures.getGuiSpriteManager());
 		event.registerReloadListener(createReloadListener());
 	}
 

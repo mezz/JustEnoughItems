@@ -5,10 +5,11 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.common.gui.elements.DrawableSprite;
 import mezz.jei.common.gui.elements.HighResolutionDrawable;
 import mezz.jei.common.gui.elements.ScalableDrawable;
+import net.minecraft.client.gui.GuiSpriteManager;
 import net.minecraft.resources.ResourceLocation;
 
 public class Textures {
-	private final JeiGuiSpriteManager guiSpriteManager;
+	private final GuiSpriteManager guiSpriteManager;
 
 	private final IDrawableStatic slot;
 	private final IDrawableStatic outputSlot;
@@ -62,7 +63,7 @@ public class Textures {
 	private final IDrawableStatic brewingStandBubbles;
 	private final IDrawableStatic brewingStandArrow;
 
-	public Textures(JeiGuiSpriteManager guiSpriteManager) {
+	public Textures(GuiSpriteManager guiSpriteManager) {
 		this.guiSpriteManager = guiSpriteManager;
 
 		this.slot = createGuiSprite("slot", 18, 18);
@@ -227,10 +228,6 @@ public class Textures {
 		return buttonEnabled;
 	}
 
-	public JeiGuiSpriteManager getAtlasManager() {
-		return guiSpriteManager;
-	}
-
 	public ScalableDrawable getRecipeGuiBackground() {
 		return recipeGuiBackground;
 	}
@@ -329,9 +326,5 @@ public class Textures {
 
 	public IDrawableStatic getBrewingStandArrow() {
 		return brewingStandArrow;
-	}
-
-	public JeiGuiSpriteManager getGuiSpriteManager() {
-		return guiSpriteManager;
 	}
 }

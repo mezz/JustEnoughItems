@@ -7,11 +7,11 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
-import mezz.jei.common.gui.textures.JeiGuiSpriteManager;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiSpriteManager;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -22,25 +22,22 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceMetadata;
 import org.joml.Matrix4f;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ScalableDrawable implements IScalableDrawable {
 	// Texture atlases replace their sprites on resource reload, so this must not be cached.
 	private final Supplier<TextureAtlasSprite> spriteSupplier;
-	private final Function<TextureAtlasSprite, GuiSpriteScaling> scalingSupplier;
 
-	public ScalableDrawable(JeiGuiSpriteManager spriteManager, ResourceLocation spriteId) {
-		this(() -> spriteManager.getSprite(spriteId), spriteManager::getSpriteScaling);
+	public ScalableDrawable(GuiSpriteManager spriteManager, ResourceLocation spriteId) {
+		this(() -> spriteManager.getSprite(spriteId));
 	}
 
 	public ScalableDrawable(TextureAtlas textureAtlas, ResourceLocation spriteId) {
-		this(() -> textureAtlas.getSprite(spriteId), ScalableDrawable::getSpriteScaling);
+		this(() -> textureAtlas.getSprite(spriteId));
 	}
 
-	private ScalableDrawable(Supplier<TextureAtlasSprite> spriteSupplier, Function<TextureAtlasSprite, GuiSpriteScaling> scalingSupplier) {
+	private ScalableDrawable(Supplier<TextureAtlasSprite> spriteSupplier) {
 		this.spriteSupplier = spriteSupplier;
-		this.scalingSupplier = scalingSupplier;
 	}
 
 	public void draw(GuiGraphics guiGraphics, ImmutableRect2i area) {
@@ -50,7 +47,7 @@ public class ScalableDrawable implements IScalableDrawable {
 	@Override
 	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, int width, int height) {
 		TextureAtlasSprite sprite = spriteSupplier.get();
-		GuiSpriteScaling scaling = scalingSupplier.apply(sprite);
+		GuiSpriteScaling scaling = getSpriteScaling(sprite);
 
 		switch (scaling) {
 			case GuiSpriteScaling.Tile tileScaling -> {

@@ -1,7 +1,6 @@
 package mezz.jei.neoforge.tests.client;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import mezz.jei.common.Internal;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -19,10 +18,10 @@ import java.time.Duration;
 public final class JeiNeoForgeClientResourceTests {
 	private static final String JUNIT_SUITE_NAME = "neoforge-client-resources";
 	private static final Duration RESOURCE_RELOAD_TIMEOUT = Duration.ofSeconds(30);
-	private static final ResourceLocation GUI_BACKGROUND_TEXTURE = ResourceLocation.fromNamespaceAndPath("jei", "textures/jei/atlas/gui/gui_background_v2.png");
+	private static final ResourceLocation GUI_BACKGROUND_TEXTURE = ResourceLocation.fromNamespaceAndPath("jei", "textures/gui/sprites/gui_background_v2.png");
 	private static final String CLIENT_TEST_RESOURCE_PACK_ID = "file/jei-client-test-pack";
 	private static final String JEI_MOD_RESOURCE_PACK_ID = "mod/jei";
-	private static final ResourceLocation CONFIG_BUTTON_TEXTURE = ResourceLocation.fromNamespaceAndPath("jei", "textures/jei/atlas/gui/icons/config_button.png");
+	private static final ResourceLocation CONFIG_BUTTON_TEXTURE = ResourceLocation.fromNamespaceAndPath("jei", "textures/gui/sprites/icons/config_button.png");
 	private static final ResourceLocation CONFIG_BUTTON_SPRITE = ResourceLocation.fromNamespaceAndPath("jei", "icons/config_button");
 	private static final int CLIENT_TEST_TEXTURE_SIZE = 32;
 	private static final int DEFAULT_TEXTURE_SIZE = 16;
@@ -79,8 +78,7 @@ public final class JeiNeoForgeClientResourceTests {
 		return client.getResourceManager()
 			.getResource(CONFIG_BUTTON_TEXTURE)
 			.filter(resource -> resource.sourcePackId().equals(JEI_MOD_RESOURCE_PACK_ID))
-			.map(resource -> Internal.getTextures()
-				.getAtlasManager()
+			.map(resource -> client.getGuiSprites()
 				.getSprite(CONFIG_BUTTON_SPRITE)
 				.contents()
 			)
@@ -101,8 +99,7 @@ public final class JeiNeoForgeClientResourceTests {
 	}
 
 	private static void assertSpriteAndDrawableMatchResource(Minecraft client, Resource texture, int expectedTextureSize) {
-		TextureAtlasSprite sprite = Internal.getTextures()
-			.getAtlasManager()
+		TextureAtlasSprite sprite = client.getGuiSprites()
 			.getSprite(CONFIG_BUTTON_SPRITE);
 		try (InputStream stream = texture.open();
 			NativeImage image = NativeImage.read(stream)

@@ -6,7 +6,6 @@ import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.config.ClientToggleState;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IClientConfigs;
-import mezz.jei.common.gui.textures.JeiGuiSpriteManager;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
@@ -14,7 +13,6 @@ import net.mezzdev.deduplicatingrunner.DelayedExecutor;
 import net.mezzdev.deduplicatingrunner.DelayedTaskScheduler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.Connection;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -54,9 +52,7 @@ public final class Internal {
 	public static Textures getTextures() {
 		if (textures == null) {
 			Minecraft minecraft = Minecraft.getInstance();
-			TextureManager textureManager = minecraft.getTextureManager();
-			JeiGuiSpriteManager spriteUploader = new JeiGuiSpriteManager(textureManager);
-			textures = new Textures(spriteUploader);
+			textures = new Textures(minecraft.getGuiSprites());
 		}
 		return textures;
 	}

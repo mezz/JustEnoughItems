@@ -1,10 +1,10 @@
 package mezz.jei.common.gui.elements;
 
 import mezz.jei.api.gui.drawable.IDrawableStatic;
-import mezz.jei.common.gui.textures.JeiGuiSpriteManager;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiSpriteManager;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
@@ -17,11 +17,11 @@ public class DrawableSprite implements IDrawableStatic {
 	private final int width;
 	private final int height;
 
-	public DrawableSprite(JeiGuiSpriteManager spriteManager, ResourceLocation spriteId) {
+	public DrawableSprite(GuiSpriteManager spriteManager, ResourceLocation spriteId) {
 		this(() -> spriteManager.getSprite(spriteId));
 	}
 
-	public DrawableSprite(JeiGuiSpriteManager spriteManager, ResourceLocation spriteId, int width, int height) {
+	public DrawableSprite(GuiSpriteManager spriteManager, ResourceLocation spriteId, int width, int height) {
 		this(() -> spriteManager.getSprite(spriteId), width, height);
 	}
 

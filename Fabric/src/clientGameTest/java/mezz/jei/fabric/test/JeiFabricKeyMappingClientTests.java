@@ -36,7 +36,7 @@ final class JeiFabricKeyMappingClientTests {
 	private static final String JUNIT_SUITE_NAME = "fabric-client-key-mapping";
 	private static final String TEST_NAME = "JeiFabricKeyMappingClientTests";
 	private static final String CATEGORY = "key.categories.jei.test.key_mapping";
-	private static final ResourceLocation GUI_BACKGROUND_TEXTURE = ResourceLocation.fromNamespaceAndPath("jei", "textures/jei/atlas/gui/gui_background_v2.png");
+	private static final ResourceLocation GUI_BACKGROUND_TEXTURE = ResourceLocation.fromNamespaceAndPath("jei", "textures/gui/sprites/gui_background_v2.png");
 	private static final String FOCUS_SEARCH_TRANSLATION_KEY = "key.jei.focusSearch";
 	private static final Duration ASSERTION_TIMEOUT = Duration.ofSeconds(60);
 
