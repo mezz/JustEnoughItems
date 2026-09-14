@@ -58,36 +58,52 @@ public final class GrindstoneRecipeMaker {
 			if (enchantment.isCurse()) {
 				continue;
 			}
-			ResourceLocation enchantmentResourceLocation = enchantmentRegistry.getKey(enchantment);
-			String enchantmentPath = null;
-			if (enchantmentResourceLocation != null) {
-				enchantmentPath = enchantmentResourceLocation.getPath();
-			}
+			ResourceLocation enchantmentId = enchantmentRegistry.getKey(enchantment);
+			List<ItemStack> supportedItems = new ArrayList<>();
 			for (Item item : items) {
 				ItemStack stack = new ItemStack(item);
 				if (!stack.isEnchantable() ||
-					!canEnchant(platformHelper, stack, enchantment, enchantmentResourceLocation)
+					!canEnchant(platformHelper, stack, enchantment, enchantmentId)
 				) {
 					continue;
 				}
+				supportedItems.add(stack);
+			}
 
-				for (int level = 1; level <= Math.min(enchantment.getMaxLevel(), 10); level++) {
+			for (int level = 1; level <= Math.min(enchantment.getMaxLevel(), 10); level++) {
+				List<ItemStack> topInputs = new ArrayList<>(supportedItems.size());
+				List<ItemStack> bottomInputs = new ArrayList<>(supportedItems.size());
+				List<ItemStack> outputs = new ArrayList<>(supportedItems.size());
+				for (ItemStack stack : supportedItems) {
 					ItemStack enchantedStack = stack.copy();
 					enchantedStack.enchant(enchantment, level);
-					String itemId = stack.getItem().getDescriptionId();
-					String asciiLevel = Integer.toString(level);
-					String rawPath = "grindstone.disenchantment.%s.%s.%s".formatted(itemId, enchantmentPath, asciiLevel);
-					String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
-					ResourceLocation uid = new ResourceLocation("minecraft", uidPath);
-					IJeiGrindstoneRecipe grindstoneRecipe = getGrindstoneRecipe(platformHelper, grindstoneMenu, enchantedStack, ItemStack.EMPTY, uid);
-					if (grindstoneRecipe != null) {
-						grindstoneRecipes.add(grindstoneRecipe);
+					ItemStack output = platformHelper.getGrindstoneResult(grindstoneMenu, enchantedStack, ItemStack.EMPTY);
+					if (!output.isEmpty()) {
+						topInputs.add(enchantedStack);
+						bottomInputs.add(ItemStack.EMPTY);
+						outputs.add(output);
 					}
+				}
+				if (!topInputs.isEmpty()) {
+					ResourceLocation uid = getDisenchantmentRecipeUid(enchantmentId, level);
+					IJeiGrindstoneRecipe grindstoneRecipe = new GrindstoneRecipe(topInputs, bottomInputs, outputs, -1, -1, uid);
+					grindstoneRecipes.add(grindstoneRecipe);
 				}
 			}
 		}
 
 		return grindstoneRecipes.stream();
+	}
+
+	@Nullable
+	private static ResourceLocation getDisenchantmentRecipeUid(@Nullable ResourceLocation enchantmentId, int level) {
+		if (enchantmentId == null) {
+			return null;
+		}
+		String asciiLevel = Integer.toString(level);
+		String rawPath = "grindstone.disenchantment.%s.%s.%s".formatted(enchantmentId.getNamespace(), enchantmentId.getPath(), asciiLevel);
+		String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
+		return new ResourceLocation("minecraft", uidPath);
 	}
 
 	private static boolean canEnchant(
