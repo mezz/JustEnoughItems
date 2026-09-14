@@ -332,8 +332,8 @@ val copyClientResourcePackTasks = clientRecipeSyncRuns.associate { (runName, _) 
 	runName to tasks.register<Sync>("copy${capitalizedRunName(runName)}ResourcePack") {
 		from(layout.projectDirectory.file("src/clientGameTest/templates/resourcepacks/$clientResourcePackName/pack.mcmeta"))
 		// Override JEI's 16x16 config button with an existing 32x32 texture to catch stale atlas coordinates.
-		from(commonProjectDirectory.file("src/main/resources/assets/jei/textures/jei/atlas/gui/icons/shapeless_icon.png")) {
-			into("assets/jei/textures/jei/atlas/gui/icons")
+		from(commonProjectDirectory.file("src/main/resources/assets/jei/textures/gui/sprites/icons/shapeless_icon.png")) {
+			into("assets/jei/textures/gui/sprites/icons")
 			rename { "config_button.png" }
 		}
 		into(clientRecipeSyncTestGameDirectory(runName).dir("resourcepacks/$clientResourcePackName"))
