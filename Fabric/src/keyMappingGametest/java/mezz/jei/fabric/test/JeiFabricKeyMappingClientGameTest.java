@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @SuppressWarnings("UnstableApiUsage")
 public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 	private static final KeyMapping.Category CATEGORY = new KeyMapping.Category(Identifier.fromNamespaceAndPath("jei-test", "key_mapping"));
-	private static final Identifier GUI_BACKGROUND_TEXTURE = Identifier.fromNamespaceAndPath("jei", "textures/jei/atlas/gui/gui_background.png");
+	private static final Identifier GUI_BACKGROUND_TEXTURE = Identifier.fromNamespaceAndPath("jei", "textures/gui/sprites/gui_background.png");
 	private static final String FOCUS_SEARCH_TRANSLATION_KEY = "key.jei.focusSearch";
 
 	@Override

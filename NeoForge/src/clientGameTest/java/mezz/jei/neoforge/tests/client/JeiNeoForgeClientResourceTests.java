@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.render.state.BlitRenderState;
 import net.minecraft.client.gui.render.state.GuiRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.data.AtlasIds;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
@@ -24,10 +25,10 @@ import java.util.List;
 public final class JeiNeoForgeClientResourceTests {
 	private static final String JUNIT_SUITE_NAME = "neoforge-client-resources";
 	private static final Duration RESOURCE_RELOAD_TIMEOUT = Duration.ofSeconds(30);
-	private static final Identifier GUI_BACKGROUND_TEXTURE = Identifier.fromNamespaceAndPath("jei", "textures/jei/atlas/gui/gui_background.png");
+	private static final Identifier GUI_BACKGROUND_TEXTURE = Identifier.fromNamespaceAndPath("jei", "textures/gui/sprites/gui_background.png");
 	private static final String CLIENT_TEST_RESOURCE_PACK_ID = "file/jei-client-test-pack";
 	private static final String JEI_MOD_RESOURCE_PACK_ID = "mod/jei";
-	private static final Identifier CONFIG_BUTTON_TEXTURE = Identifier.fromNamespaceAndPath("jei", "textures/jei/atlas/gui/icons/config_button.png");
+	private static final Identifier CONFIG_BUTTON_TEXTURE = Identifier.fromNamespaceAndPath("jei", "textures/gui/sprites/icons/config_button.png");
 	private static final Identifier CONFIG_BUTTON_SPRITE = Identifier.fromNamespaceAndPath("jei", "icons/config_button");
 	private static final int CLIENT_TEST_TEXTURE_SIZE = 32;
 	private static final int DEFAULT_TEXTURE_SIZE = 16;
@@ -84,9 +85,8 @@ public final class JeiNeoForgeClientResourceTests {
 		return client.getResourceManager()
 			.getResource(CONFIG_BUTTON_TEXTURE)
 			.filter(resource -> resource.sourcePackId().equals(JEI_MOD_RESOURCE_PACK_ID))
-			.map(resource -> Internal.getTextures()
-				.getAtlasManager()
-				.getAtlas()
+			.map(resource -> client.getAtlasManager()
+				.getAtlasOrThrow(AtlasIds.GUI)
 				.getSprite(CONFIG_BUTTON_SPRITE)
 				.contents()
 			)
@@ -107,9 +107,8 @@ public final class JeiNeoForgeClientResourceTests {
 	}
 
 	private static void assertSpriteAndDrawableMatchResource(Minecraft client, Resource texture, int expectedTextureSize) {
-		TextureAtlasSprite sprite = Internal.getTextures()
-			.getAtlasManager()
-			.getAtlas()
+		TextureAtlasSprite sprite = client.getAtlasManager()
+			.getAtlasOrThrow(AtlasIds.GUI)
 			.getSprite(CONFIG_BUTTON_SPRITE);
 		try (InputStream stream = texture.open();
 			NativeImage image = NativeImage.read(stream)
