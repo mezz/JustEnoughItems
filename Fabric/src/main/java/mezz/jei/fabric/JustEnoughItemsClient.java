@@ -38,7 +38,8 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 		JeiLifecycleEvents.REGISTER_RESOURCE_RELOAD_LISTENER.register((resourceManager, textureManager) -> {
 			Textures textures = Internal.getTextures();
 			JeiAtlasManager atlasManager = textures.getAtlasManager();
-			resourceManager.registerReloadListener(atlasManager);
+			ResourceLoader.get(PackType.CLIENT_RESOURCES)
+				.registerReloader(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "gui_sprite_manager"), atlasManager);
 
 			ClientLifecycleEvents.CLIENT_STARTED.register(event -> {
 				clientLifecycleHandler.registerEvents();
