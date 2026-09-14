@@ -424,7 +424,7 @@ public final class SyntheticRecipeMakerGameTests {
 		IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager) {
 			@Override
 			public IRecipeSlotBuilder addSlot(RecipeIngredientRole role) {
-				IngredientSlotBuilder slot = new IngredientSlotBuilder(ingredientManager);
+				IngredientSlotBuilder slot = new IngredientSlotBuilder(ingredientManager, role);
 				if (role == RecipeIngredientRole.INPUT) {
 					inputs.add(slot);
 				}
@@ -434,7 +434,7 @@ public final class SyntheticRecipeMakerGameTests {
 		category.setRecipe(builder, recipe, focuses);
 		helper.assertEquals(9, inputs.size(), "Firework display should supply the entire crafting grid");
 		return inputs.stream()
-			.map(slot -> slot.getAllIngredients().stream().flatMap(ingredient -> ingredient.getItemStack().stream()).findFirst().orElse(ItemStack.EMPTY))
+			.map(slot -> slot.getAllIngredients().stream().filter(java.util.Objects::nonNull).flatMap(ingredient -> ingredient.getItemStack().stream()).findFirst().orElse(ItemStack.EMPTY))
 			.toList();
 	}
 

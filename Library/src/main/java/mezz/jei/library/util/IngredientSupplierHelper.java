@@ -1,6 +1,6 @@
 package mezz.jei.library.util;
 
-import mezz.jei.api.ingredients.IIngredientSupplier;
+import mezz.jei.library.ingredients.RecipeIngredientSupplier;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.ErrorUtil;
@@ -15,7 +15,7 @@ public final class IngredientSupplierHelper {
 	private IngredientSupplierHelper() {
 	}
 
-	public static <T> IIngredientSupplier getIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory, IIngredientManager ingredientManager) {
+	public static <T> RecipeIngredientSupplier getIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory, IIngredientManager ingredientManager) {
 		IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager);
 		if (!recipeCategory.isHandled(recipe)) {
 			return builder.buildIngredientSupplier();
