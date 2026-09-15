@@ -5,16 +5,21 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 public final class LegacyConfigPaths {
 	private LegacyConfigPaths() {}
 
-	public static List<Path> get(Path jeiConfigDirectory, UUID profileId, String fileName) {
+	public static List<Path> get(Path jeiConfigDirectory, @Nullable UUID profileId, String fileName) {
 		jeiConfigDirectory = Objects.requireNonNull(jeiConfigDirectory).toAbsolutePath().normalize();
-		Objects.requireNonNull(profileId);
 		Objects.requireNonNull(fileName);
 
-		Path legacyProfileFile = jeiConfigDirectory.resolve("players").resolve(profileId.toString()).resolve(fileName);
 		Path legacyFile = jeiConfigDirectory.resolve(fileName);
+		if (profileId == null) {
+			return List.of(legacyFile);
+		}
+
+		Path legacyProfileFile = jeiConfigDirectory.resolve("players").resolve(profileId.toString()).resolve(fileName);
 		return List.of(legacyProfileFile, legacyFile);
 	}
 }
