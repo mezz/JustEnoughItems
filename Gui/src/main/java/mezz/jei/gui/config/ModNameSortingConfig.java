@@ -12,6 +12,8 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 public class ModNameSortingConfig {
 	private static final String CONFIG_FILE_NAME = "ingredient-list-mod-sort-order.ini";
 	private static final boolean ALLOWS_REMOVING_VALUES = false;
@@ -29,7 +31,7 @@ public class ModNameSortingConfig {
 	public static ISortingConfig<String> create(
 		IConfigRegistration registration,
 		Path jeiConfigDirectory,
-		UUID profileId
+		@Nullable UUID profileId
 	) {
 		ISortingConfig<String> sortingConfig = create(registration);
 		return LegacySortingConfigMigrator.register(sortingConfig, jeiConfigDirectory, profileId, CONFIG_FILE_NAME);
