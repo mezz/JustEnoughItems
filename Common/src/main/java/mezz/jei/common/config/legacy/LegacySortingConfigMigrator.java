@@ -10,6 +10,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Loads a sort order written by JEI's config system and applies it through MezzConfig.
  * MezzConfig remains responsible for validating and saving its own file format.
@@ -20,7 +22,7 @@ public final class LegacySortingConfigMigrator {
 	public static ISortingConfig<String> register(
 		ISortingConfig<String> sortingConfig,
 		Path jeiConfigDirectory,
-		UUID profileId,
+		@Nullable UUID profileId,
 		String configFileName
 	) {
 		return sortingConfig.setLegacyMigration(

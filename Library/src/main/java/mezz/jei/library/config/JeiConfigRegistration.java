@@ -11,6 +11,7 @@ import net.mezzdev.config.api.IConfigRegistration;
 import net.mezzdev.config.api.schema.builder.IConfigSchemaBuilder;
 import net.mezzdev.config.api.sorting.ISortingConfig;
 import net.minecraft.client.Minecraft;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.UUID;
@@ -22,7 +23,12 @@ public final class JeiConfigRegistration {
 
 	public static JeiConfigData register() {
 		Path jeiConfigDirectory = Services.PLATFORM.getConfigHelper().createJeiConfigDir();
-		UUID profileId = Minecraft.getInstance().getUser().getProfileId();
+		Minecraft minecraft = Minecraft.getInstance();
+		@Nullable
+		UUID profileId = null;
+		if (minecraft != null) {
+			profileId = minecraft.getUser().getProfileId();
+		}
 
 		IConfigRegistration registration = Configs.forMod(ModIds.JEI_ID);
 		IConfigSchemaBuilder debugFileBuilder = registration.createClientSchemaBuilder("jei-debug.ini", "jei.config.debug");
