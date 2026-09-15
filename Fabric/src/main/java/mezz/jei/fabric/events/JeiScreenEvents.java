@@ -9,6 +9,12 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 public class JeiScreenEvents {
+	public static final Event<AfterRenderBackground> AFTER_RENDER_BACKGROUND = EventFactory.createArrayBacked(AfterRenderBackground.class, callbacks -> guiGraphics -> {
+		for (AfterRenderBackground callback : callbacks) {
+			callback.afterRenderBackground(guiGraphics);
+		}
+	});
+
 	public static final Event<AllowTooltip> ALLOW_TOOLTIP = EventFactory.createArrayBacked(
 		AllowTooltip.class,
 		callbacks -> guiGraphics -> {
@@ -35,6 +41,12 @@ public class JeiScreenEvents {
 		}
 		return true;
 	});
+
+	@Environment(EnvType.CLIENT)
+	@FunctionalInterface
+	public interface AfterRenderBackground {
+		void afterRenderBackground(GuiGraphics guiGraphics);
+	}
 
 	@Environment(EnvType.CLIENT)
 	@FunctionalInterface

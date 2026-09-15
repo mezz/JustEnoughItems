@@ -109,6 +109,10 @@ public class EventRegistration {
 			Screen screen = event.getScreen();
 			guiEventHandler.onGuiOpen(screen);
 		});
+		subscriptions.register(ScreenEvent.BackgroundRendered.class, event -> {
+			var guiGraphics = event.getGuiGraphics();
+			runWithIdentityPose(guiGraphics, () -> guiEventHandler.onDrawBackgroundPost(guiGraphics));
+		});
 		subscriptions.register(ContainerScreenEvent.Render.Foreground.class, event -> {
 			AbstractContainerScreen<?> containerScreen = event.getContainerScreen();
 			var guiGraphics = event.getGuiGraphics();

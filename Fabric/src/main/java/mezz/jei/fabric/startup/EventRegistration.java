@@ -41,6 +41,7 @@ public class EventRegistration {
 		ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> registerScreenEvents(screen));
 		JeiCharTypedEvents.BEFORE_CHAR_TYPED.register(this::beforeCharTyped);
 		ScreenEvents.AFTER_INIT.register(this::afterInit);
+		JeiScreenEvents.AFTER_RENDER_BACKGROUND.register(this::afterRenderBackground);
 		JeiScreenEvents.DRAW_FOREGROUND.register(this::drawForeground);
 		JeiScreenEvents.ALLOW_MOUSE_DRAG.register(this::allowMouseDrag);
 		ClientTickEvents.START_CLIENT_TICK.register(this::onStartTick);
@@ -123,6 +124,12 @@ public class EventRegistration {
 	private void afterRender(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float tickDelta) {
 		if (guiEventHandler != null) {
 			guiEventHandler.onDrawScreenPost(screen, guiGraphics, mouseX, mouseY);
+		}
+	}
+
+	private void afterRenderBackground(GuiGraphics guiGraphics) {
+		if (guiEventHandler != null) {
+			guiEventHandler.onDrawBackgroundPost(guiGraphics);
 		}
 	}
 

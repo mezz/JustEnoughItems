@@ -12,6 +12,7 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.RectDebugger;
 import mezz.jei.gui.input.IGuiInputLayer;
+import mezz.jei.gui.input.MouseUtil;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import net.minecraft.client.Minecraft;
@@ -33,6 +34,7 @@ public class GuiEventHandler {
 	private final IScreenHelper screenHelper;
 	private final BookmarkOverlay bookmarkOverlay;
 	private final List<IGuiInputLayer> inputLayers;
+	private boolean drawnOnBackground;
 
 	public GuiEventHandler(
 		IScreenHelper screenHelper,
@@ -82,8 +84,13 @@ public class GuiEventHandler {
 		this.inputLayers.forEach(inputLayer -> inputLayer.update(mouseX, mouseY));
 	}
 
+	public void onDrawBackgroundPost(GuiGraphics guiGraphics) {
+		drawnOnBackground = true;
+		drawOverlays(guiGraphics, (int) MouseUtil.getX(), (int) MouseUtil.getY());
+	}
+
 	/**
-	 * Draws above most ContainerScreen elements, but below the tooltips.
+	 * Draws JEI overlays above most ContainerScreen elements, but below the tooltips.
 	 */
 	public void onDrawForeground(AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		var poseStack = guiGraphics.pose();
@@ -104,19 +111,12 @@ public class GuiEventHandler {
 	public void onDrawScreenPost(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getInstance();
 
-		updateOverlayProperties(screen);
-
 		boolean mouseOverInputLayer = this.inputLayers.stream()
 			.anyMatch(inputLayer -> inputLayer.isMouseOver(mouseX, mouseY));
-		int overlayMouseX = mouseX;
-		int overlayMouseY = mouseY;
-		if (mouseOverInputLayer) {
-			overlayMouseX = MOUSE_OUTSIDE_SCREEN;
-			overlayMouseY = MOUSE_OUTSIDE_SCREEN;
+		if (!drawnOnBackground) {
+			drawOverlays(guiGraphics, mouseX, mouseY);
 		}
-
-		ingredientListOverlay.drawScreen(minecraft, guiGraphics, overlayMouseX, overlayMouseY, minecraft.getFrameTime());
-		bookmarkOverlay.drawScreen(minecraft, guiGraphics, overlayMouseX, overlayMouseY, minecraft.getFrameTime());
+		drawnOnBackground = false;
 
 		if (!mouseOverInputLayer && screen instanceof AbstractContainerScreen<?> guiContainer) {
 			IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
@@ -147,6 +147,22 @@ public class GuiEventHandler {
 		if (DebugConfig.isDebugGuisEnabled()) {
 			drawDebugInfoForScreen(screen, guiGraphics);
 		}
+	}
+
+	private void drawOverlays(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		Minecraft minecraft = Minecraft.getInstance();
+
+		boolean mouseOverInputLayer = this.inputLayers.stream()
+			.anyMatch(inputLayer -> inputLayer.isMouseOver(mouseX, mouseY));
+		int overlayMouseX = mouseX;
+		int overlayMouseY = mouseY;
+		if (mouseOverInputLayer) {
+			overlayMouseX = MOUSE_OUTSIDE_SCREEN;
+			overlayMouseY = MOUSE_OUTSIDE_SCREEN;
+		}
+
+		ingredientListOverlay.drawScreen(minecraft, guiGraphics, overlayMouseX, overlayMouseY, minecraft.getFrameTime());
+		bookmarkOverlay.drawScreen(minecraft, guiGraphics, overlayMouseX, overlayMouseY, minecraft.getFrameTime());
 	}
 
 	private void updateOverlayProperties(Screen screen) {

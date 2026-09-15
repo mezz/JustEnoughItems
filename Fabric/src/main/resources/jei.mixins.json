@@ -14,7 +14,8 @@
     "GuiGraphicsMixin",
     "KeyMappingMixin",
     "KeyboardHandlerMixin",
-    "MinecraftMixin"
+    "MinecraftMixin",
+    "ScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
