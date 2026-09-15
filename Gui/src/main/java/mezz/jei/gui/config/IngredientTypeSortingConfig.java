@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.jetbrains.annotations.Nullable;
+
 public class IngredientTypeSortingConfig {
 	private static final String CONFIG_FILE_NAME = "ingredient-list-type-sort-order.ini";
 	private static final boolean ALLOWS_REMOVING_VALUES = true;
@@ -32,7 +34,7 @@ public class IngredientTypeSortingConfig {
 	public static ISortingConfig<String> create(
 		IConfigRegistration registration,
 		Path jeiConfigDirectory,
-		UUID profileId
+		@Nullable UUID profileId
 	) {
 		ISortingConfig<String> sortingConfig = create(registration);
 		return LegacySortingConfigMigrator.register(sortingConfig, jeiConfigDirectory, profileId, CONFIG_FILE_NAME);
