@@ -127,7 +127,7 @@ tasks.named<ProcessResources>(sourceSets.main.get().processResourcesTaskName) {
 tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME) {
 	dependsOn(
 		"runGameTestServer",
-		tasks.named(sourceSets.named("clientGameTest").get().compileJavaTaskName)
+		tasks.named(sourceSets.named("clientGameTest").get().classesTaskName)
 	)
 }
 
