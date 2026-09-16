@@ -312,6 +312,7 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 			public void run() {
 				runSingleplayerTestCase(displayName(), () -> {
 					assertSyncedRecipesFromSingleplayer();
+					JeiNeoForgeClientTextInputTests.run();
 				});
 			}
 		},
