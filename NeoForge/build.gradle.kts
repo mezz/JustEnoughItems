@@ -52,6 +52,7 @@ val gameTestJunitResultsDir = layout.buildDirectory.dir("test-results/gameTest")
 val dependencyProjectPaths = listOf(":Common", ":Library", ":Gui")
 val dependencyProjectDirectories = dependencyProjectPaths.map { isolatedProjectDirectory(it) }
 val commonProjectDirectory = isolatedProjectDirectory(":Common")
+val vanillaServerProjectDirectory = isolatedProjectDirectory(":VanillaServer")
 val debugProjectDirectory = isolatedProjectDirectory(":Debug")
 val commonClientTestFixturesSource = commonProjectDirectory.dir("src/clientTestFixtures/java")
 val apiSourceSet = sourceSets.create("api") {
@@ -100,7 +101,7 @@ configurations.named("clientGameTestImplementation") {
 tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME) {
 	dependsOn(
 		"runGameTestServer",
-		tasks.named(sourceSets.named("clientGameTest").get().compileJavaTaskName)
+		tasks.named(sourceSets.named("clientGameTest").get().classesTaskName)
 	)
 }
 
@@ -286,7 +287,7 @@ fun modFoldersProperty(vararg mods: ModModel): String =
 		.joinToString(File.pathSeparator)
 
 fun vanillaServerRunFile(suffix: String): File =
-	commonProjectDirectory.file("build/moddev/$vanillaServerRunName$suffix").asFile
+	vanillaServerProjectDirectory.file("build/moddev/$vanillaServerRunName$suffix").asFile
 
 val writeExternalServerLaunchProperties = tasks.register<WriteProperties>("writeExternalServerLaunchProperties") {
 	destinationFile.set(layout.buildDirectory.file("generated/externalServerLaunch/resources/jei-external-server-launch.properties"))
@@ -305,7 +306,7 @@ val writeExternalServerLaunchProperties = tasks.register<WriteProperties>("write
 	property("vanillaServer.programArgsFile", vanillaServerRunFile("RunProgramArgs.txt").absolutePath)
 	property("vanillaServer.modFolders", "")
 	dependsOn(
-		":Common:createVanillaServerLaunchScript",
+		":VanillaServer:createVanillaServerLaunchScript",
 		"createNeoForgeServerWithJeiLaunchScript",
 		"createNeoForgeServerWithoutJeiLaunchScript"
 	)
