@@ -8,8 +8,8 @@ plugins {
     // applying this to all projects allows loom projects to access the required data in a manner that follows Gradle's best practices.
     id("net.fabricmc.fabric-loom-companion") version("1.18.0-alpha.16")
 
-    // Match the version used by NeoForge's port/26.3 branch.
-    id("net.neoforged.moddev") version("2.0.142") apply(false)
+    // https://plugins.gradle.org/plugin/net.neoforged.moddev
+    id("net.neoforged.moddev") version("2.0.147") apply(false)
 
     id("net.mezzdev.modshade") version("0.6.0") apply(false)
 

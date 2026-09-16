@@ -19,22 +19,6 @@ plugins {
 	id("net.mezzdev.modshade")
 }
 
-repositories {
-	exclusiveContent {
-		forRepository {
-			maven {
-				// Temporary local build of NeoForge port/26.3 at commit 42ed7367b.
-				name = "temporaryNeoForge26_3"
-				url = rootProject.layout.projectDirectory.dir(".gradle/neoforge-26.3-maven").asFile.toURI()
-			}
-		}
-		filter {
-			includeModule("net.neoforged", "neoforge")
-			includeModule("net.neoforged", "testframework")
-		}
-	}
-}
-
 configurations.configureEach {
 	exclude(group = "net.fabricmc", module = "fabric-loader")
 }

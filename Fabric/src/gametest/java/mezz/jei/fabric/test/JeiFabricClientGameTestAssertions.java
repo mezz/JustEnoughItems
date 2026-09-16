@@ -7,6 +7,7 @@ import mezz.jei.fabric.events.JeiLifecycleEvents;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.recipe.v1.sync.ClientRecipeSynchronizedEvent;
 import net.fabricmc.fabric.impl.recipe.sync.SynchronizedRecipesImpl;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -59,7 +60,13 @@ final class JeiFabricClientGameTestAssertions {
 			if (recipes.size() == syncedRecipes.values().size()) {
 				throw new AssertionError("Expected the synced recipes to contain the crafting table recipe before the update.");
 			}
-			return RecipeMap.create(recipes);
+			var recipeRegistries = new RegistrySetBuilder()
+				.add(
+					Registries.RECIPE,
+					bootstrap -> recipes.forEach(recipe -> bootstrap.register(recipe.id(), recipe.value()))
+				)
+				.build(client.level.registryAccess());
+			return RecipeMap.create(recipeRegistries.lookupOrThrow(Registries.RECIPE));
 		});
 
 		Object initialRuntime = context.computeOnClient(client -> Internal.getJeiRuntime());

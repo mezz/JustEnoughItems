@@ -47,6 +47,7 @@ jobs:
           mkdir dist
           cp Common/build/libs/*.jar dist
           cp Fabric/build/libs/*.jar dist
+          cp NeoForge/build/libs/*.jar dist
           cp Gui/build/libs/*.jar dist
           cp Library/build/libs/*.jar dist
 

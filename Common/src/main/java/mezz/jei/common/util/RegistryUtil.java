@@ -51,7 +51,14 @@ public class RegistryUtil {
 	 */
 	public static HolderLookup.Provider getRegistryProvider() {
 		if (REGISTRY_PROVIDER == null) {
-			REGISTRY_PROVIDER = VanillaRegistries.createReloadableLookup(getRegistryAccess());
+			Map<ResourceKey<? extends Registry<?>>, HolderLookup.RegistryLookup<?>> lookups = new HashMap<>();
+			// Loot tables also reference world-generation registries that are not synced to the client.
+			VanillaRegistries.createWorldLookup().listRegistries()
+				.forEach(lookup -> lookups.put(lookup.key(), lookup));
+			getRegistryAccess().listRegistries()
+				.forEach(lookup -> lookups.put(lookup.key(), lookup));
+			HolderLookup.Provider context = HolderLookup.Provider.create(lookups.values().stream());
+			REGISTRY_PROVIDER = VanillaRegistries.createReloadableLookup(context);
 		}
 		return REGISTRY_PROVIDER;
 	}

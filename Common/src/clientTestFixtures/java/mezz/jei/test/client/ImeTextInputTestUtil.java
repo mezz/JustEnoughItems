@@ -16,7 +16,6 @@ import net.minecraft.client.input.PreeditEvent;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.GameType;
-import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -233,13 +232,13 @@ public final class ImeTextInputTestUtil {
 	private static void updateImeComposition(KeyboardHandler keyboardHandler, long windowHandle, String... stages) {
 		for (String stage : stages) {
 			PreeditEvent event = new PreeditEvent(stage, stage.length(), List.of(stage), 0);
-			invokePreeditCallback(keyboardHandler, windowHandle, event);
+			keyboardHandler.textEditing(windowHandle, event);
 		}
 	}
 
 	private static void commitImeComposition(KeyboardHandler keyboardHandler, long windowHandle, char character) {
 		invokeCharacterCallback(keyboardHandler, windowHandle, new CharacterEvent(character));
-		invokePreeditCallback(keyboardHandler, windowHandle, null);
+		keyboardHandler.textEditing(windowHandle, null);
 	}
 
 	private static ChatTextInputFixture openChatWithTextInputFocused(
@@ -283,18 +282,6 @@ public final class ImeTextInputTestUtil {
 			}
 		} catch (ReflectiveOperationException e) {
 			throw new AssertionError("Failed to inspect Minecraft's text-input state.", e);
-		}
-	}
-
-	private static void invokePreeditCallback(KeyboardHandler keyboardHandler, long windowHandle, @Nullable PreeditEvent event) {
-		try {
-			Method method = KeyboardHandler.class.getDeclaredMethod("preeditCallback", long.class, PreeditEvent.class);
-			method.setAccessible(true);
-			method.invoke(keyboardHandler, windowHandle, event);
-		} catch (InvocationTargetException e) {
-			throw new AssertionError("The Minecraft preedit callback failed.", e.getCause());
-		} catch (ReflectiveOperationException e) {
-			throw new AssertionError("Failed to invoke Minecraft's preedit callback.", e);
 		}
 	}
 
