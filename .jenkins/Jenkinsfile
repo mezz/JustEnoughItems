@@ -60,6 +60,7 @@ pipeline {
                 sh '''
                     ./gradlew \
                         :Fabric:build \
+                        :NeoForge:build \
                         :Common:build \
                         :Gui:build \
                         :Library:build \
@@ -118,6 +119,7 @@ pipeline {
                         :Gui:publish \
                         :Library:publish \
                         :Fabric:publish \
+                        :NeoForge:publish \
                         :Common:publish \
                         -PDEPLOY_DIR="$MAVEN_DEPLOY_DIR"
                 '''
@@ -133,6 +135,9 @@ pipeline {
                     catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
                         runExternalPublishTask(':Fabric:publishCurseforge')
                     }
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+                        runExternalPublishTask(':NeoForge:publishCurseforge')
+                    }
                 }
             }
         }
@@ -145,6 +150,9 @@ pipeline {
                 script {
                     catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
                         runExternalPublishTask(':Fabric:publishModrinth')
+                    }
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+                        runExternalPublishTask(':NeoForge:publishModrinth')
                     }
                 }
             }
