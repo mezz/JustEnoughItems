@@ -178,6 +178,11 @@ def isTestOnlyChange(String fileName) {
     return false
 }
 
+def isReleasePipelineChange(String fileName) {
+    return fileName == '.jenkins/Jenkinsfile' ||
+        fileName == '.jenkins/publishGuard.groovy'
+}
+
 def isCiOnlyChange(String fileName) {
     if (fileName.startsWith('.jenkins/')) {
         return true
@@ -234,6 +239,9 @@ def isDevelopmentOnlyChange(String fileName) {
 def isPublishableChange(String fileName) {
     if (!fileName) {
         return false
+    }
+    if (isReleasePipelineChange(fileName)) {
+        return true
     }
     if (isCiOnlyChange(fileName)) {
         return false
