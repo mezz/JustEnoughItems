@@ -87,7 +87,9 @@ dependencyProjects.forEach {
 project.evaluationDependsOn(debugProject.path)
 val debugSourceSet = debugProject.sourceSets.main.get()
 
+val commonClientTestFixturesSource = project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java")
 val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
+    java.srcDir(commonClientTestFixturesSource)
     compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
     runtimeClasspath += output + sourceSets.main.get().runtimeClasspath
 }
