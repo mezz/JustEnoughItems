@@ -94,6 +94,7 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 						throw new AssertionError("Expected this regression test to cover a screen that blocks normal preedit dispatch.");
 					}
 
+					ImeTextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField);
 					ImeTextInputTestUtil.typeKoreanText(client.keyboardHandler, client.getWindow().handle(), searchField);
 					ImeTextInputTestUtil.assertScreenCleanupKeepsChatTextInputEnabled(client, ingredientListOverlay, searchField);
 					ImeTextInputTestUtil.assertRedundantUnfocusKeepsChatTextInputEnabled(client, searchField);
