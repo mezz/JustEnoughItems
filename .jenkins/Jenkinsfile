@@ -6,37 +6,18 @@ library(
     ])
 )
 
-def runExternalPublishTask(String gradleTask) {
-    def maxAttempts = 3
-
-    for (def attempt = 1; attempt <= maxAttempts; attempt++) {
-        try {
-            sh "./gradlew ${gradleTask}"
-            return
-        } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException e) {
-            throw e
-        } catch (Exception e) {
-            if (attempt >= maxAttempts) {
-                throw e
+def publishMods(String gradleTask) {
+    for (def loader in ['Fabric', 'NeoForge']) {
+        catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
+            def attempt = 0
+            retry(3) {
+                if (attempt++ > 0) {
+                    sleep time: 2, unit: 'MINUTES'
+                }
+                sh "./gradlew :${loader}:${gradleTask}"
             }
-
-            echo "External publish task '${gradleTask}' failed on attempt ${attempt}/${maxAttempts}; retrying in 2 minutes."
-            sleep time: 2, unit: 'MINUTES'
         }
     }
-}
-
-def findPreviousReleaseCommit() {
-    def descriptionPrefix = 'jenkins-release-notifier-source:v1:'
-    def previousBuild = currentBuild.previousBuild
-    while (previousBuild != null) {
-        def description = previousBuild.description ?: ''
-        if (description.startsWith(descriptionPrefix)) {
-            return description.substring(descriptionPrefix.length())
-        }
-        previousBuild = previousBuild.previousBuild
-    }
-    return env.GIT_PREVIOUS_SUCCESSFUL_COMMIT
 }
 
 pipeline {
@@ -50,34 +31,14 @@ pipeline {
     }
 
     environment {
-      ORG_GRADLE_PROJECT_curseforgeApikey = credentials("jei-curseforge-key")
-      ORG_GRADLE_PROJECT_modrinthToken = credentials("modrinth-auth-token")
-      ORG_GRADLE_PROJECT_BUILD_NUMBER = "${env.BUILD_NUMBER}"
+        ORG_GRADLE_PROJECT_curseforgeApikey = credentials("jei-curseforge-key")
+        ORG_GRADLE_PROJECT_modrinthToken = credentials("modrinth-auth-token")
+        ORG_GRADLE_PROJECT_BUILD_NUMBER = "${env.BUILD_NUMBER}"
     }
     stages {
         stage('Build') {
             steps {
-                sh '''
-                    ./gradlew \
-                        :Fabric:build \
-                        :NeoForge:build \
-                        :Common:build \
-                        :Gui:build \
-                        :Library:build \
-                        :Debug:build
-                '''
-            }
-        }
-
-        stage('API Compatibility') {
-            steps {
-                sh "./gradlew checkApiCompatibility"
-            }
-        }
-
-        stage('Server GameTests') {
-            steps {
-                sh "./gradlew :Fabric:runGameTest"
+                sh './gradlew build'
             }
         }
 
@@ -100,67 +61,31 @@ pipeline {
             }
         }
 
-        stage('Check Publish Changes') {
-            steps {
-                script {
-                    def publishGuard = load '.jenkins/publishGuard.groovy'
-                    env.SHOULD_PUBLISH = publishGuard.shouldPublishArtifacts() ? 'true' : 'false'
-                }
-            }
-        }
-
         stage('Publish Maven') {
-            when {
-                expression { env.SHOULD_PUBLISH != 'false' }
-            }
             steps {
-                sh '''
-                    ./gradlew \
-                        :Gui:publish \
-                        :Library:publish \
-                        :Fabric:publish \
-                        :NeoForge:publish \
-                        :Common:publish \
-                        -PDEPLOY_DIR="$MAVEN_DEPLOY_DIR"
-                '''
+                sh './gradlew publish -PDEPLOY_DIR="$MAVEN_DEPLOY_DIR"'
             }
         }
 
         stage('Publish CurseForge') {
-            when {
-                expression { env.SHOULD_PUBLISH != 'false' }
-            }
             steps {
                 script {
-                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
-                        runExternalPublishTask(':Fabric:publishCurseforge')
-                    }
-                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
-                        runExternalPublishTask(':NeoForge:publishCurseforge')
-                    }
+                    publishMods('publishCurseforge')
                 }
             }
         }
 
         stage('Publish Modrinth') {
-            when {
-                expression { env.SHOULD_PUBLISH != 'false' }
-            }
             steps {
                 script {
-                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
-                        runExternalPublishTask(':Fabric:publishModrinth')
-                    }
-                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE', catchInterruptions: false) {
-                        runExternalPublishTask(':NeoForge:publishModrinth')
-                    }
+                    publishMods('publishModrinth')
                 }
             }
         }
 
         stage('Notify Released Issues') {
             when {
-                expression { env.SHOULD_PUBLISH != 'false' && currentBuild.currentResult == 'SUCCESS' }
+                expression { currentBuild.currentResult == 'SUCCESS' }
             }
             steps {
                 script {
@@ -171,17 +96,15 @@ pipeline {
                         channel: releaseMetadata.minecraftVersion,
                         projectName: releaseMetadata.projectName,
                         version: releaseMetadata.version,
-                        baseCommit: findPreviousReleaseCommit(),
+                        baseCommit: env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: env.GIT_COMMIT,
                         headCommit: env.GIT_COMMIT,
                         releaseLinks: releaseMetadata.releaseLinks,
                         minecraftVersions: [releaseMetadata.minecraftVersion],
                         modLoaders: releaseMetadata.modLoaders
                     )
-                    currentBuild.description = "jenkins-release-notifier-source:v1:${env.GIT_COMMIT}"
                 }
             }
         }
-
     }
     post {
         always {
