@@ -64,7 +64,7 @@ public final class GrindstoneRecipeMaker {
 			}
 			Enchantment enchantment = enchantmentHolder.value();
 			Identifier enchantmentId = enchantmentHolder.key().identifier();
-			String enchantmentPath = enchantmentId.getPath();
+			List<ItemStack> supportedItems = new ArrayList<>();
 			for (Holder<Item> itemHolder : ingredientHelper.getSupportedItems(enchantmentHolder)) {
 				ItemStack stack = new ItemStack(itemHolder);
 				if (!stack.isEnchantable() ||
@@ -72,23 +72,39 @@ public final class GrindstoneRecipeMaker {
 				) {
 					continue;
 				}
-				for (int level = 1; level <= Math.min(enchantment.getMaxLevel(), 10); level++) {
+				supportedItems.add(stack);
+			}
+
+			for (int level = 1; level <= Math.min(enchantment.getMaxLevel(), 10); level++) {
+				List<ItemStack> topInputs = new ArrayList<>(supportedItems.size());
+				List<ItemStack> bottomInputs = new ArrayList<>(supportedItems.size());
+				List<ItemStack> outputs = new ArrayList<>(supportedItems.size());
+				for (ItemStack stack : supportedItems) {
 					ItemStack enchantedStack = stack.copy();
 					enchantedStack.enchant(enchantmentHolder, level);
-					String itemId = stack.getItem().getDescriptionId();
-					String asciiLevel = Integer.toString(level);
-					String rawPath = "grindstone.disenchantment.%s.%s.%s".formatted(itemId, enchantmentPath, asciiLevel);
-					String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
-					Identifier uid = Identifier.withDefaultNamespace(uidPath);
-					IJeiGrindstoneRecipe grindstoneRecipe = getGrindstoneRecipe(platformHelper, grindstoneMenu, enchantedStack, ItemStack.EMPTY, uid);
-					if (grindstoneRecipe != null) {
-						grindstoneRecipes.add(grindstoneRecipe);
+					ItemStack output = platformHelper.getGrindstoneResult(grindstoneMenu, enchantedStack, ItemStack.EMPTY);
+					if (!output.isEmpty()) {
+						topInputs.add(enchantedStack);
+						bottomInputs.add(ItemStack.EMPTY);
+						outputs.add(output);
 					}
+				}
+				if (!topInputs.isEmpty()) {
+					Identifier uid = getDisenchantmentRecipeUid(enchantmentId, level);
+					IJeiGrindstoneRecipe grindstoneRecipe = new GrindstoneRecipe(topInputs, bottomInputs, outputs, -1, -1, uid);
+					grindstoneRecipes.add(grindstoneRecipe);
 				}
 			}
 		}
 
 		return grindstoneRecipes.stream();
+	}
+
+	private static Identifier getDisenchantmentRecipeUid(Identifier enchantmentId, int level) {
+		String asciiLevel = Integer.toString(level);
+		String rawPath = "grindstone.disenchantment.%s.%s.%s".formatted(enchantmentId.getNamespace(), enchantmentId.getPath(), asciiLevel);
+		String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
+		return Identifier.withDefaultNamespace(uidPath);
 	}
 
 	private static boolean canEnchant(

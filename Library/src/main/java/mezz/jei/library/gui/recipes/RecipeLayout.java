@@ -108,13 +108,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		RecipeLayoutBuilder<T> builder = new RecipeLayoutBuilder<>(recipeCategory, recipe, ingredientManager, contextMap);
 		try {
 			recipeCategory.setRecipe(builder, recipe, focuses);
-			RecipeLayout<T> recipeLayout = builder.buildRecipeLayout(
-				focuses,
-				decorators,
-				recipeBackground,
-				recipeBorderPadding
-			);
-			return Optional.of(recipeLayout);
+			return builder.buildRecipeLayout(focuses, decorators, recipeBackground, recipeBorderPadding)
+				.<IRecipeLayoutDrawable<T>>map(layout -> layout);
 		} catch (RuntimeException | LinkageError e) {
 			String recipeInfo = ErrorUtil.getRecipeInfo(recipeCategory, recipe);
 			LOGGER.error("Recipe crashed during Recipe Layout creation:\n{}", recipeInfo, e);

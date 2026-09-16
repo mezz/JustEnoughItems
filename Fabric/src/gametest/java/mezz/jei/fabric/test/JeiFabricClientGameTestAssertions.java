@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.client.recipe.v1.sync.ClientRecipeSynchronizedEve
 import net.fabricmc.fabric.impl.recipe.sync.SynchronizedRecipesImpl;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
@@ -173,14 +174,14 @@ final class JeiFabricClientGameTestAssertions {
 
 	private static void assertJeiTexturesLoaded(ClientGameTestContext context) {
 		String error = context.computeOnClient(client -> {
-			var atlas = Internal.getTextures().getAtlasManager().getAtlas();
+			var atlas = client.getAtlasManager().getAtlasOrThrow(AtlasIds.GUI);
 			Identifier slotId = Identifier.fromNamespaceAndPath("jei", "slot");
 			if (atlas.getSprite(slotId) != atlas.missingSprite()) {
 				return null;
 			}
 
 			int resourceCount = client.getResourceManager()
-				.listResources("textures/jei/atlas/gui", id -> id.getPath().endsWith(".png"))
+				.listResources("textures/gui/sprites", id -> id.getPath().endsWith(".png"))
 				.size();
 			return "Expected the JEI slot texture to be stitched; found " + resourceCount + " source textures.";
 		});
