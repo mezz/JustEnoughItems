@@ -48,6 +48,7 @@ import mezz.jei.debug.ingredients.ErrorIngredientListFactory;
 import mezz.jei.debug.ingredients.ErrorIngredientRenderer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
 import net.minecraft.client.renderer.Rect2i;
@@ -57,6 +58,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -103,6 +105,32 @@ public class JeiDebugPlugin implements IModPlugin {
 	@Override
 	public void registerExtraIngredients(IExtraIngredientRegistration registration) {
 		registration.addExtraIngredients(DebugIngredient.TYPE, DebugIngredientListFactory.create(0, 10));
+		registration.addExtraItemStacks(createDamageBarTestIngredients());
+	}
+
+	private static List<ItemStack> createDamageBarTestIngredients() {
+		return List.of(
+			createDamageBarTestIngredient(Items.WOODEN_SWORD, 10),
+			createDamageBarTestIngredient(Items.STONE_SWORD, 25),
+			createDamageBarTestIngredient(Items.IRON_SWORD, 40),
+			createDamageBarTestIngredient(Items.GOLDEN_SWORD, 55),
+			createDamageBarTestIngredient(Items.DIAMOND_SWORD, 75),
+			createDamageBarTestIngredient(Items.NETHERITE_SWORD, 90),
+			createDamageBarTestIngredient(Items.WOODEN_PICKAXE, 10),
+			createDamageBarTestIngredient(Items.STONE_PICKAXE, 25),
+			createDamageBarTestIngredient(Items.IRON_PICKAXE, 40),
+			createDamageBarTestIngredient(Items.GOLDEN_PICKAXE, 55),
+			createDamageBarTestIngredient(Items.DIAMOND_PICKAXE, 75),
+			createDamageBarTestIngredient(Items.NETHERITE_PICKAXE, 90)
+		);
+	}
+
+	private static ItemStack createDamageBarTestIngredient(Item item, int damagePercent) {
+		ItemStack itemStack = new ItemStack(item);
+		int damageValue = itemStack.getMaxDamage() * damagePercent / 100;
+		itemStack.setDamageValue(damageValue);
+		itemStack.set(DataComponents.CUSTOM_NAME, Component.literal("JEI Debug Damage Bar (" + damagePercent + "% Damaged)"));
+		return itemStack;
 	}
 
 	@Override
