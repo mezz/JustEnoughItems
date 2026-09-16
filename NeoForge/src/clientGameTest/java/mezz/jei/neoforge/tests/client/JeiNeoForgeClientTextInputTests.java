@@ -23,7 +23,7 @@ public final class JeiNeoForgeClientTextInputTests {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final String JUNIT_SUITE_NAME = "neoforge-client-gametest";
 	private static final String FOCUS_SEARCH_KEY_MAPPING = "key.jei.focusSearch";
-	private static final int KEY_CODE_F = 70;
+	private static final int KEY_CODE_F = InputConstants.KEY_F;
 	private static final InputConstants.Key TEST_FOCUS_SEARCH_KEY = InputConstants.Type.KEYBOARD.getOrCreate(KEY_CODE_F);
 
 	private JeiNeoForgeClientTextInputTests() {
@@ -87,6 +87,7 @@ public final class JeiNeoForgeClientTextInputTests {
 					throw new AssertionError("Expected this regression test to cover a screen that blocks normal preedit dispatch.");
 				}
 
+				ImeTextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField);
 				ImeTextInputTestUtil.typeKoreanText(client.keyboardHandler, client.getWindow().handle(), searchField);
 				ImeTextInputTestUtil.assertScreenCleanupKeepsChatTextInputEnabled(client, ingredientListOverlay, searchField);
 				ImeTextInputTestUtil.assertRedundantUnfocusKeepsChatTextInputEnabled(client, searchField);
@@ -105,9 +106,9 @@ public final class JeiNeoForgeClientTextInputTests {
 		InputConstants.Key originalKey = focusSearch.getKey();
 		KeyModifier originalModifier = focusSearch.getKeyModifier();
 		try {
-			// GLFW modifier state cannot be synthesized by this test harness, so temporarily remove Cmd/Ctrl.
+			// Native modifier state cannot be synthesized by this test harness, so temporarily remove Cmd/Ctrl.
 			focusSearch.setKeyModifierAndCode(KeyModifier.NONE, TEST_FOCUS_SEARCH_KEY);
-			KeyEvent event = new KeyEvent(KEY_CODE_F, 0, 0);
+			KeyEvent event = new KeyEvent(KEY_CODE_F, 'f', 0);
 			ImeTextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, event);
 		} finally {
 			focusSearch.setKeyModifierAndCode(originalModifier, originalKey);

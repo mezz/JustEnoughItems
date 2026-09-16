@@ -24,7 +24,7 @@ import net.minecraft.client.input.KeyEvent;
  */
 @SuppressWarnings("UnstableApiUsage")
 public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
-	private static final int KEY_CODE_F = 70;
+	private static final int KEY_CODE_F = InputConstants.KEY_F;
 	private static final String FOCUS_SEARCH_KEY_MAPPING = "key.jei.focusSearch";
 	private static final InputConstants.Key TEST_FOCUS_SEARCH_KEY = InputConstants.Type.KEYBOARD.getOrCreate(KEY_CODE_F);
 
@@ -90,6 +90,7 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 						throw new AssertionError("Expected this regression test to cover a screen that blocks normal preedit dispatch.");
 					}
 
+					ImeTextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField);
 					ImeTextInputTestUtil.typeKoreanText(client.keyboardHandler, client.getWindow().handle(), searchField);
 					ImeTextInputTestUtil.assertScreenCleanupKeepsChatTextInputEnabled(client, ingredientListOverlay, searchField);
 					ImeTextInputTestUtil.assertRedundantUnfocusKeepsChatTextInputEnabled(client, searchField);
@@ -116,7 +117,7 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 			// Temporarily use an unmodified F for this callback-level test.
 			focusSearch.setKey(TEST_FOCUS_SEARCH_KEY);
 			KeyMapping.resetMapping();
-			KeyEvent event = new KeyEvent(KEY_CODE_F, 0, 0);
+			KeyEvent event = new KeyEvent(KEY_CODE_F, 'f', 0);
 			ImeTextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, event);
 
 			// A physical unmodified F also produces a character callback. JEI consumes the hotkey's character.

@@ -62,7 +62,8 @@ public class KeyUserInput extends UserInput {
 
 	@Override
 	public boolean isAllowedChatCharacter() {
-		return StringUtil.isAllowedChatCharacter((char) this.key.getValue());
+		// SDL scancodes identify physical keys; the keycode contains the layout-resolved character.
+		return StringUtil.isAllowedChatCharacter(this.event.keycode());
 	}
 
 	@Override
