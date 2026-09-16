@@ -112,7 +112,7 @@ private fun Project.configureApiCompatibility() {
 			"resolve${module.taskName.removePrefix("check")}Baseline",
 			ResolveApiCompatibilityBaseline::class.java,
 		) {
-			description = "Resolves the latest published $artifactId API jar in the same major version."
+			description = "Resolves the configured published $artifactId API baseline."
 			repositoryUrl.set(apiCompatibilityBaselineRepository)
 			groupId.set(modGroup)
 			this.artifactId.set(artifactId)
@@ -127,7 +127,7 @@ private fun Project.configureApiCompatibility() {
 
 		val checkerTask = tasks.register("${module.taskName}WithJarCompatibilityChecker", JavaExec::class.java) {
 			group = LifecycleBasePlugin.VERIFICATION_GROUP
-			description = "Runs JarCompatibilityChecker for ${module.projectPath} against the latest published $artifactId API jar in the same major version."
+			description = "Runs JarCompatibilityChecker for ${module.projectPath} against the configured $artifactId API baseline."
 
 			classpath = apiCompatibilityChecker
 			mainClass.set("net.neoforged.jarcompatibilitychecker.ConsoleTool")
@@ -144,7 +144,7 @@ private fun Project.configureApiCompatibility() {
 
 		tasks.register(module.taskName, ValidateApiCompatibilityReport::class.java) {
 			group = LifecycleBasePlugin.VERIFICATION_GROUP
-			description = "Checks ${module.projectPath} against the latest published $artifactId API jar in the same major version."
+			description = "Checks ${module.projectPath} against the configured $artifactId API baseline."
 
 			dependsOn(checkerTask)
 			reportFile.set(outputFile)
@@ -157,7 +157,7 @@ private fun Project.configureApiCompatibility() {
 
 	tasks.register("checkApiCompatibility") {
 		group = LifecycleBasePlugin.VERIFICATION_GROUP
-		description = "Checks all published JEI API jars for compatibility with the latest published API jars in the same major version."
+		description = "Checks all published JEI API jars for compatibility with the configured published API baselines."
 		dependsOn(apiCompatibilityCheckTasks)
 	}
 
@@ -166,7 +166,7 @@ private fun Project.configureApiCompatibility() {
 	}
 }
 
-@UntrackedTask(because = "Always checks Maven metadata for the latest published API baseline.")
+@UntrackedTask(because = "Version ranges require checking Maven metadata for the latest matching API baseline.")
 abstract class ResolveApiCompatibilityBaseline : DefaultTask() {
 	@get:Input
 	abstract val repositoryUrl: Property<String>
