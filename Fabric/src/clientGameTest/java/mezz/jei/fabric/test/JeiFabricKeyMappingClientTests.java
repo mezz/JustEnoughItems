@@ -2,6 +2,10 @@ package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.Internal;
+import mezz.jei.common.util.ReflectionUtil;
+import mezz.jei.gui.input.GuiTextFieldFilter;
+import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.test.client.TextInputTestUtil;
 import mezz.jei.common.input.keys.IJeiKeyMappingBuilder;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
@@ -156,12 +160,12 @@ final class JeiFabricKeyMappingClientTests {
 				throw new AssertionError("Expected the focus-search hotkey character to be consumed, got: " + filterText);
 			}
 
-			FabricClientTestInput.pressKey(GLFW.GLFW_KEY_X);
-			FabricClientTestInput.typeChar('x');
-			filterText = ClientTestUtil.computeOnClient(client -> Internal.getJeiRuntime().getIngredientFilter().getFilterText());
-			if (!filterText.equals("x")) {
-				throw new AssertionError("Expected normal typing to resume after the focus-search character, got: " + filterText);
-			}
+			ClientTestUtil.runOnClient(client -> {
+				IngredientListOverlay overlay = (IngredientListOverlay) Internal.getJeiRuntime().getIngredientListOverlay();
+				GuiTextFieldFilter searchField = new ReflectionUtil().getFieldWithClass(overlay, GuiTextFieldFilter.class)
+					.findFirst().orElseThrow(() -> new AssertionError("Expected JEI's search field."));
+				TextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().getWindow(), searchField);
+			});
 		}
 	}
 
