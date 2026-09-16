@@ -121,6 +121,14 @@ public class EventRegistration {
 			Screen screen = event.getScreen();
 			guiEventHandler.onGuiOpen(screen);
 		});
+		subscriptions.register(EventPriority.HIGHEST, ScreenEvent.BackgroundRendered.class, event -> {
+			Screen screen = event.getScreen();
+			if (screen instanceof AbstractContainerScreen<?>) {
+				return;
+			}
+			var guiGraphics = event.getGuiGraphics();
+			runWithIdentityPose(guiGraphics, () -> guiEventHandler.drawForScreenBackground(screen, guiGraphics));
+		});
 		subscriptions.register(EventPriority.LOWEST, ContainerScreenEvent.Render.Foreground.class, event -> {
 			AbstractContainerScreen<?> containerScreen = event.getContainerScreen();
 			var guiGraphics = event.getGuiGraphics();
@@ -141,10 +149,7 @@ public class EventRegistration {
 			var guiGraphics = event.getGuiGraphics();
 			int mouseX = event.getMouseX();
 			int mouseY = event.getMouseY();
-			runWithIdentityPose(guiGraphics, () -> {
-				guiEventHandler.drawForScreenBackground(screen, guiGraphics);
-				guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY);
-			});
+			runWithIdentityPose(guiGraphics, () -> guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY));
 		});
 		subscriptions.register(ScreenEvent.RenderInventoryMobEffects.class, event -> {
 			if (guiEventHandler.renderCompactPotionIndicators()) {

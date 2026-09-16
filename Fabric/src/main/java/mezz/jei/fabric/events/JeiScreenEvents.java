@@ -20,9 +20,9 @@ public class JeiScreenEvents {
 		}
 	);
 
-	public static final Event<DrawBackground> DRAW_BACKGROUND = EventFactory.createArrayBacked(DrawBackground.class, callbacks -> (screen, guiGraphics, mouseX, mouseY, partialTicks) -> {
+	public static final Event<DrawBackground> DRAW_BACKGROUND = EventFactory.createArrayBacked(DrawBackground.class, callbacks -> (screen, guiGraphics) -> {
 		for (DrawBackground callback : callbacks) {
-			callback.drawBackground(screen, guiGraphics, mouseX, mouseY, partialTicks);
+			callback.drawBackground(screen, guiGraphics);
 		}
 	});
 	public static final Event<DrawForeground> DRAW_FOREGROUND = EventFactory.createArrayBacked(DrawForeground.class, callbacks -> (screen, guiGraphics, mouseX, mouseY) -> {
@@ -55,7 +55,7 @@ public class JeiScreenEvents {
 	@Environment(EnvType.CLIENT)
 	@FunctionalInterface
 	public interface DrawBackground {
-		void drawBackground(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks);
+		void drawBackground(Screen screen, GuiGraphics guiGraphics);
 	}
 
 	@Environment(EnvType.CLIENT)

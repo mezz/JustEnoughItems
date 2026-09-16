@@ -133,7 +133,7 @@ public class EventRegistration {
 		}
 	}
 
-	private void drawBackground(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	private void drawBackground(Screen screen, GuiGraphics guiGraphics) {
 		if (guiEventHandler != null) {
 			guiEventHandler.drawForScreenBackground(screen, guiGraphics);
 		}

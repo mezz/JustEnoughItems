@@ -12,20 +12,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Screen.class)
 public class ScreenMixin {
 	@Inject(
-		method = "render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
+		method = "renderTransparentBackground(Lnet/minecraft/client/gui/GuiGraphics;)V",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/screens/Screen;renderBackground(Lnet/minecraft/client/gui/GuiGraphics;IIF)V",
+			target = "Lnet/minecraft/client/gui/GuiGraphics;fillGradient(IIIIII)V",
 			ordinal = 0,
 			shift = At.Shift.AFTER
 		)
 	)
-	private void drawBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+	private void drawBackground(GuiGraphics graphics, CallbackInfo ci) {
 		@SuppressWarnings("DataFlowIssue")
 		Screen screen = (Screen) (Object) this;
 		runWithIdentityPose(
 			graphics,
-			() -> JeiScreenEvents.DRAW_BACKGROUND.invoker().drawBackground(screen, graphics, mouseX, mouseY, partialTicks)
+			() -> JeiScreenEvents.DRAW_BACKGROUND.invoker().drawBackground(screen, graphics)
 		);
 	}
 
