@@ -5,7 +5,6 @@ import mezz.jei.api.recipe.vanilla.IJeiGrindstoneRecipe;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableSize2i;
-import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.gui.helpers.CraftingGridHelper;
 import mezz.jei.library.plugins.vanilla.anvil.AnvilRecipeMaker;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingCategoryExtension;
@@ -17,9 +16,9 @@ import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
 import mezz.jei.neoforge.tests.lib.TestGuiHelper;
 import mezz.jei.neoforge.tests.lib.TestIngredientManagers;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderOwner;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -74,7 +73,7 @@ public final class SyntheticRecipeMakerGameTests {
 	@TestHolder(description = "Every registry-backed tipped arrow has a JEI recipe that crafts in a real crafting table.")
 	public static void tippedArrowRecipesCraftExpectedRegistryOutputs(JeiGameTestHelper helper) {
 		ContextMap displayContext = createDisplayContext(helper);
-		List<ItemStack> expectedOutputs = createExpectedTippedArrowOutputs();
+		List<ItemStack> expectedOutputs = createExpectedTippedArrowOutputs(helper);
 		List<RecipeHolder<CraftingRecipe>> jeiRecipes = createTippedArrowRecipes(displayContext);
 
 		assertJeiRecipesCraftExpectedOutputs(helper, displayContext, expectedOutputs, jeiRecipes);
@@ -104,7 +103,7 @@ public final class SyntheticRecipeMakerGameTests {
 			.stream()
 			.map(banner -> createDecoratedOutput(Items.SHIELD, Items.SHIELD, banner))
 			.toList();
-		List<RecipeHolder<CraftingRecipe>> jeiRecipes = createShieldDecorationRecipesWithUnboundBannerTag();
+		List<RecipeHolder<CraftingRecipe>> jeiRecipes = createShieldDecorationRecipesWithUnboundBannerTag(helper);
 
 		assertJeiRecipesCraftExpectedOutputs(helper, displayContext, expectedOutputs, jeiRecipes);
 
@@ -169,9 +168,9 @@ public final class SyntheticRecipeMakerGameTests {
 		return recipes;
 	}
 
-	private static List<ItemStack> createExpectedTippedArrowOutputs() {
-		Registry<Potion> potionRegistry = RegistryUtil.getRegistry(Registries.POTION);
-		return potionRegistry.listElements()
+	private static List<ItemStack> createExpectedTippedArrowOutputs(JeiGameTestHelper helper) {
+		return helper.getRegistry(Registries.POTION)
+			.listElements()
 			.map(SyntheticRecipeMakerGameTests::createTippedArrowOutput)
 			.toList();
 	}
@@ -196,8 +195,8 @@ public final class SyntheticRecipeMakerGameTests {
 		return recipes;
 	}
 
-	private static List<RecipeHolder<CraftingRecipe>> createShieldDecorationRecipesWithUnboundBannerTag() {
-		Ingredient unboundBannerTag = createUnboundVanillaBannerTagIngredient();
+	private static List<RecipeHolder<CraftingRecipe>> createShieldDecorationRecipesWithUnboundBannerTag(JeiGameTestHelper helper) {
+		Ingredient unboundBannerTag = createUnboundVanillaBannerTagIngredient(helper);
 		ShieldDecorationRecipe shieldDecorationRecipe = new ShieldDecorationRecipe(
 			unboundBannerTag,
 			Ingredient.of(Items.SHIELD),
@@ -213,8 +212,8 @@ public final class SyntheticRecipeMakerGameTests {
 		return recipes;
 	}
 
-	private static Ingredient createUnboundVanillaBannerTagIngredient() {
-		Registry<Item> itemRegistry = RegistryUtil.getRegistry(Registries.ITEM);
+	private static Ingredient createUnboundVanillaBannerTagIngredient(JeiGameTestHelper helper) {
+		HolderLookup.RegistryLookup<Item> itemRegistry = helper.getRegistry(Registries.ITEM);
 		try {
 			// Client fallback recipes can contain tag ingredients before tags are bound.
 			Constructor<?> constructor = HolderSet.Named.class.getDeclaredConstructor(HolderOwner.class, TagKey.class);

@@ -13,10 +13,6 @@ public class FabricJeiKeyMappingCategoryBuilder implements IJeiKeyMappingCategor
 
 	@Override
 	public IJeiKeyMappingBuilder createMapping(String description) {
-		if (FabricAmecsSupport.isEnabled()) {
-			return new AmecsJeiKeyMappingBuilder(category, description);
-		} else {
-			return new FabricJeiKeyMappingBuilder(category, description);
-		}
+		return new FabricJeiKeyMappingBuilder(category, description);
 	}
 }

@@ -2,8 +2,6 @@ name: 'Build'
 
 on:
   push:
-    branches:
-      - '26.2'
   pull_request:
 
 permissions:

@@ -87,7 +87,6 @@ import mezz.jei.library.render.FluidTankRenderer;
 import mezz.jei.library.render.ItemStackRenderer;
 import mezz.jei.library.transfer.PlayerRecipeTransferHandler;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
@@ -100,7 +99,6 @@ import net.minecraft.client.gui.screens.inventory.GrindstoneScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -118,7 +116,6 @@ import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.inventory.SmokerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -224,9 +221,10 @@ public class VanillaPlugin implements IModPlugin {
 			interpretationBuilder.setWildcardForSubtypes(true);
 		});
 		registration.register(SlotDisplay.TagSlotDisplay.TYPE, (slotDisplay, ignoredContext, interpretationBuilder) -> {
-			interpretationBuilder
-				.setTagKey(slotDisplay.tag())
-				.setWildcardForSubtypes(true);
+			slotDisplay.tag()
+				.unwrapKey()
+				.ifPresent(interpretationBuilder::setTagKey);
+			interpretationBuilder.setWildcardForSubtypes(true);
 		});
 		registration.register(SlotDisplay.AnyFuel.TYPE, (ignoredSlotDisplay1, ignoredContext, interpretationBuilder) -> {
 			interpretationBuilder
@@ -371,15 +369,12 @@ public class VanillaPlugin implements IModPlugin {
 		registration.addRecipes(RecipeTypes.SMITHING, vanillaRecipes.getSmithingRecipes(smithingCategory));
 		registration.addRecipes(RecipeTypes.COMPOSTING, CompostingRecipeMaker.getRecipes(ingredientManager));
 
-		Minecraft minecraft = Minecraft.getInstance();
-		ClientLevel level = minecraft.level;
-		ErrorUtil.checkNotNull(level, "minecraft.level");
-		PotionBrewing potionBrewing = level.potionBrewing();
+		var vanillaBrewingRecipes = clientSyncedRecipes.byType(RecipeType.BREWING);
 		IPlatformBrewingHelper brewingHelper = Services.PLATFORM.getBrewingHelper();
 		List<IJeiBrewingRecipe> brewingRecipes = brewingHelper.getBrewingRecipes(
 			ingredientManager,
 			vanillaRecipeFactory,
-			potionBrewing,
+			vanillaBrewingRecipes,
 			contextMap,
 			brewingExtensionHelper
 		);

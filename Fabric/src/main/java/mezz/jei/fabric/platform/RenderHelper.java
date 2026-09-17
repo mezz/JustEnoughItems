@@ -1,8 +1,8 @@
 package mezz.jei.fabric.platform;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.datafixers.util.Either;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -115,7 +115,7 @@ public class RenderHelper implements IPlatformRenderHelper {
 		ClientTooltipPositioner positioner
 	) {
 		List<ClientTooltipComponent> components = createClientTooltipComponents(elements, font);
-		guiGraphics.tooltip(font, components, x, y, positioner, stack.get(DataComponents.TOOLTIP_STYLE));
+		guiGraphics.tooltip(font, components, x, y, positioner, stack.get(DataComponents.TOOLTIP_STYLE), true);
 	}
 
 	private List<ClientTooltipComponent> createClientTooltipComponents(List<Either<FormattedText, TooltipComponent>> elements, Font font) {

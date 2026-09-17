@@ -6,8 +6,10 @@ import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.recipes.BrewingExtensionHelper;
 import net.minecraft.util.context.ContextMap;
-import net.minecraft.world.item.alchemy.PotionBrewing;
+import net.minecraft.world.item.crafting.BrewingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface IPlatformBrewingHelper {
@@ -27,7 +29,7 @@ public interface IPlatformBrewingHelper {
 	List<IJeiBrewingRecipe> getBrewingRecipes(
 		IIngredientManager ingredientManager,
 		IVanillaRecipeFactory vanillaRecipeFactory,
-		PotionBrewing potionBrewing,
+		Collection<RecipeHolder<BrewingRecipe>> brewingRecipes,
 		ContextMap contextMap,
 		BrewingExtensionHelper brewingExtensionHelper
 	);

@@ -29,7 +29,6 @@ public interface IPlatformRecipeHelper {
 	ShieldDecorationRecipeData getShieldDecorationRecipeData(ShieldDecorationRecipe recipe);
 
 	ItemStack getGrindstoneResult(GrindstoneMenu grindstoneMenu, ItemStack input1, ItemStack input2);
-
 	String[] shrinkShapedRecipePattern(List<String> pattern);
 
 	boolean isItemEnchantable(ItemStack stack, Holder<Enchantment> enchantment);

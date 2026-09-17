@@ -7,7 +7,9 @@ import mezz.jei.fabric.events.JeiLifecycleEvents;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.recipe.v1.sync.ClientRecipeSynchronizedEvent;
 import net.fabricmc.fabric.impl.recipe.sync.SynchronizedRecipesImpl;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
@@ -26,6 +28,7 @@ final class JeiFabricClientGameTestAssertions {
 
 	public static void assertJeiStartedWithSyncedRecipes(ClientGameTestContext context) {
 		context.waitFor(client -> hasJeiRuntime(), ClientGameTestContext.DEFAULT_TIMEOUT);
+		assertJeiTexturesLoaded(context);
 
 		boolean hasSyncedRecipes = context.computeOnClient(client -> Internal.hasClientSyncedRecipes());
 		if (!hasSyncedRecipes) {
@@ -38,6 +41,7 @@ final class JeiFabricClientGameTestAssertions {
 
 	public static void assertJeiStartedWithFallbackRecipes(ClientGameTestContext context) {
 		context.waitFor(client -> hasJeiRuntime(), ClientGameTestContext.DEFAULT_TIMEOUT);
+		assertJeiTexturesLoaded(context);
 
 		boolean hasSyncedRecipes = context.computeOnClient(client -> Internal.hasClientSyncedRecipes());
 		if (hasSyncedRecipes) {
@@ -57,7 +61,13 @@ final class JeiFabricClientGameTestAssertions {
 			if (recipes.size() == syncedRecipes.values().size()) {
 				throw new AssertionError("Expected the synced recipes to contain the crafting table recipe before the update.");
 			}
-			return RecipeMap.create(recipes);
+			var recipeRegistries = new RegistrySetBuilder()
+				.add(
+					Registries.RECIPE,
+					bootstrap -> recipes.forEach(recipe -> bootstrap.register(recipe.id(), recipe.value()))
+				)
+				.build(client.level.registryAccess());
+			return RecipeMap.create(recipeRegistries.lookupOrThrow(Registries.RECIPE));
 		});
 
 		Object initialRuntime = context.computeOnClient(client -> Internal.getJeiRuntime());
@@ -159,6 +169,24 @@ final class JeiFabricClientGameTestAssertions {
 		}
 		if (recipeMap.byKey(CRAFTING_TABLE_RECIPE_KEY) == null) {
 			throw new AssertionError(message);
+		}
+	}
+
+	private static void assertJeiTexturesLoaded(ClientGameTestContext context) {
+		String error = context.computeOnClient(client -> {
+			var atlas = client.getAtlasManager().getAtlasOrThrow(AtlasIds.GUI);
+			Identifier slotId = Identifier.fromNamespaceAndPath("jei", "slot");
+			if (atlas.getSprite(slotId) != atlas.missingSprite()) {
+				return null;
+			}
+
+			int resourceCount = client.getResourceManager()
+				.listResources("textures/gui/sprites", id -> id.getPath().endsWith(".png"))
+				.size();
+			return "Expected the JEI slot texture to be stitched; found " + resourceCount + " source textures.";
+		});
+		if (error != null) {
+			throw new AssertionError(error);
 		}
 	}
 

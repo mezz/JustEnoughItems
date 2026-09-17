@@ -3,6 +3,9 @@ package mezz.jei.neoforge.tests.plugins.vanilla;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.common.platform.IPlatformItemStackHelper;
+import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeMaker;
@@ -15,11 +18,13 @@ import mezz.jei.neoforge.tests.lib.TestIngredientManagers;
 import mezz.jei.neoforge.tests.lib.TestRecipeSlotView;
 import mezz.jei.neoforge.tests.lib.TransferRecipe;
 import mezz.jei.neoforge.tests.recipe.transfer.RecipeTransferTestHelper;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.inventory.FurnaceMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeMap;
@@ -29,16 +34,51 @@ import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.item.crafting.display.FurnaceRecipeDisplay;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 
 import java.util.List;
+import java.util.Objects;
 
 @ForEachTest(groups = "furnace_recipes")
 public final class FurnaceRecipeGameTests {
 	private FurnaceRecipeGameTests() {
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Fuel burn times are resolved from vanilla's context-provider registry for each furnace type.")
+	public static void fuelBurnTimesUseVanillaContextProviders(JeiGameTestHelper helper) {
+		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
+		ItemStack coal = new ItemStack(Items.COAL);
+
+		RegistryUtil.setRegistryProvider(null);
+		try {
+			helper.assertEquals(1600, itemStackHelper.getBurnTime(coal, RecipeType.SMELTING), "Normal furnace coal burn time");
+			helper.assertEquals(800, itemStackHelper.getBurnTime(coal, RecipeType.BLASTING), "Blast furnace coal burn time");
+
+			CookingFuel coalFuel = Objects.requireNonNull(coal.get(DataComponents.COOKING_FUEL));
+			ItemStack registryBackedFuel = coal.copy();
+			registryBackedFuel.set(
+				DataComponents.COOKING_FUEL,
+				new CookingFuel(
+					new ResolvableInt.Reference(ContextIntProviders.COOKING_NORMAL_BURN_TIME_REDUCTION_FACTOR),
+					coalFuel.speedMultiplier()
+				)
+			);
+			helper.assertEquals(
+				1,
+				itemStackHelper.getBurnTime(registryBackedFuel, RecipeType.SMELTING),
+				"Registry-backed custom burn time"
+			);
+		} finally {
+			RegistryUtil.setRegistryProvider(helper.getRegistries());
+		}
+		helper.succeed();
 	}
 
 	@GameTest

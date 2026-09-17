@@ -1,25 +1,21 @@
+import mezz.jei.gradle.addFabricMinecraftDependencies
 import mezz.jei.gradle.gradleProperty
-import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
-import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.gradle.language.base.plugins.LifecycleBasePlugin
-import org.slf4j.event.Level
 
 plugins {
     id("idea")
     id("java")
     id("java-test-fixtures")
-    id("net.neoforged.moddev")
-    id("net.neoforged.jarcompatibilitychecker")
+    id("net.fabricmc.fabric-loom")
     id("maven-publish")
 }
 
 // gradle.properties
 val jUnitVersion = gradleProperty("jUnitVersion")
+val fabricLoaderVersion = gradleProperty("fabricLoaderVersion")
 val minecraftVersion = gradleProperty("minecraftVersion")
-val neoformVersionAndTimestamp = gradleProperty("neoformVersionAndTimestamp")
 val modGroup = gradleProperty("modGroup")
 val modId = gradleProperty("modId")
 val modJavaVersion = gradleProperty("modJavaVersion")
@@ -49,19 +45,11 @@ configurations.create("apiClassesElements") {
     }
 }
 
-neoForge {
-    neoFormVersion = neoformVersionAndTimestamp
-    addModdingDependenciesTo(apiSourceSet)
-    addModdingDependenciesTo(sourceSets.test.get())
+addFabricMinecraftDependencies()
 
-    runs {
-        create("vanillaServer") {
-            server()
-            gameDirectory = file("run/vanillaServer")
-            programArguments.addAll("nogui")
-            logLevel = Level.INFO
-            disableIdeRun()
-        }
+afterEvaluate {
+    configurations.named(apiSourceSet.compileClasspathConfigurationName) {
+        extendsFrom(configurations.getByName("minecraftNamedCompile"))
     }
 }
 
@@ -92,6 +80,10 @@ sourceSets {
 
 dependencies {
     implementation(apiSourceSet.output)
+    add(apiSourceSet.compileOnlyConfigurationName, "net.fabricmc:fabric-loader:${fabricLoaderVersion}")
+    add(apiSourceSet.compileOnlyConfigurationName, "com.google.code.findbugs:jsr305:3.0.2")
+    add(apiSourceSet.compileOnlyConfigurationName, "org.jetbrains:annotations:26.0.2")
+    add(apiSourceSet.compileOnlyConfigurationName, "org.jspecify:jspecify:1.0.0")
     implementation("org.jetbrains:annotations:26.0.2")
     implementation("com.google.guava:guava:33.5.0-jre")
     implementation("it.unimi.dsi:fastutil:8.5.18")
@@ -142,6 +134,12 @@ val apiJarTask = tasks.register<Jar>("apiJar") {
     manifest.attributes["Implementation-Title"] = "jar"
 }
 
+configurations.create("apiJarElements") {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+    outgoing.artifact(apiJarTask)
+}
+
 val apiSourcesJarTask = tasks.register<Jar>("apiSourcesJar") {
     archiveBaseName.set(apiArchivesName)
     archiveClassifier.set("sources")
@@ -158,19 +156,6 @@ configurations.create("apiSourcesElements") {
 
 tasks.assemble {
     dependsOn(apiJarTask, apiSourcesJarTask)
-}
-
-tasks.named<CompatibilityTask>("checkJarCompatibility") {
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-    description = "Checks the Common API against the latest published API jar in the same major version."
-    mavens.set(listOf("https://maven.blamejared.com"))
-    // The plugin defaults auxiliary libraries to the main compile classpath.
-    // This API check intentionally runs without them, avoiding the full Minecraft classpath.
-    libraries.setFrom(emptyList<Any>())
-    nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
-    fail.set(true)
-    inputJar.set(apiJarTask.flatMap { it.archiveFile })
-    artifact.set("${project.group}:$apiArchivesName")
 }
 
 publishing {

@@ -336,7 +336,7 @@ public class JeiDebugPlugin implements IModPlugin {
 		registration.addCraftingStation(
 			RecipeTypes.CRAFTING,
 			new SlotDisplay.Composite(List.of(
-				new SlotDisplay.TagSlotDisplay(ItemTags.PLANKS),
+				new SlotDisplay.TagSlotDisplay(BuiltInRegistries.ITEM.getOrThrow(ItemTags.PLANKS)),
 				new SlotDisplay.ItemSlotDisplay(Items.EMERALD),
 				new SlotDisplay.ItemSlotDisplay(Items.DIAMOND)
 			))

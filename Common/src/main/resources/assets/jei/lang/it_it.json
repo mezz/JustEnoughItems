@@ -209,7 +209,7 @@
   "jei.config.client.sorting.ingredientSortStages.description": "Ordinamento della lista ingredienti.",
   "jei.config.client.sorting.recipeSorterStages": "Stadi Ordinamento Ricette",
   "jei.config.client.sorting.recipeSorterStages.description": "Ordinamento delle ricette mostrate.",
-  
+
   "jei.config.client.search": "Opzioni di ricerca",
   "jei.config.client.search.description": "Opzioni che riguardano la barra di ricerca.",
   "jei.config.client.search.modNameSearchMode": "@ModName",
@@ -234,7 +234,7 @@
   "jei.config.client.search.searchShortModNames.description": "Cerca con le prime lettere del nome di una mod.",
   "jei.config.client.search.searchIngredientAliases": "Cerca Alias Ingredienti",
   "jei.config.client.search.searchIngredientAliases.description": "Cerca alias ingredienti (nomi alternativi) che sono aggiunti da plugin, insieme ai nomi dell'ingredienti.",
-  
+
   "jei.config.client.ingredientList": "Lista Ingredienti",
   "jei.config.client.ingredientList.description": "Impostazioni correlate alla Lista Ingredienti",
   "jei.config.client.ingredientList.maxRows": "Righe Massime",
@@ -273,7 +273,7 @@
   "jei.config.client.advanced.itemBlacklist.description": "Lista degli ingredienti che non dovrebbero essere mostrati nella loro lista. Formato: modId[:nome[:meta]]. La modalità nascondi ingredienti modificherà automaticamente questa impostazione.",
   "jei.config.client.advanced.maxColumns": "Massima Larghezza",
   "jei.config.client.advanced.maxColumns.description": "Massima larghezza della lista ingredienti e segnalibri.",
-  
+
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "Modalità nascondi ingredienti nella JEI:",
   "gui.jei.editMode.description.hide": "%s per nascondere.",
@@ -309,7 +309,7 @@
   "gui.jei.editMode.description": "Modalità Nascondi Ingredienti JEI:",
   "gui.jei.editMode.description.hide": "Premi \"%s\" per nascondere.",
   "gui.jei.editMode.description.hide.wild": "Premi \"%s\" per nascondere per jolly.",
-  
+
   "_comment": "Recipe Categories",
   "gui.jei.category.craftingTable": "Fabbricazione",
   "gui.jei.category.stoneCutter": "Lavorazione della pietra",

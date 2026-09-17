@@ -14,6 +14,8 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.recipe.v1.sync.ClientRecipeSynchronizedEvent;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -26,7 +28,14 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 		Translator.setLocaleSupplier(new MinecraftLocaleSupplier());
 		ClientLifecycleHandler clientLifecycleHandler = new ClientLifecycleHandler();
 		ClientRecipeSynchronizedEvent.EVENT.register((minecraft, synchronizedRecipes) -> {
-			RecipeMap recipes = RecipeMap.create(synchronizedRecipes.recipes());
+			var recipeRegistries = new RegistrySetBuilder()
+				.add(
+					Registries.RECIPE,
+					context -> synchronizedRecipes.recipes()
+						.forEach(recipe -> context.register(recipe.id(), recipe.value()))
+				)
+				.build(minecraft.level.registryAccess());
+			RecipeMap recipes = RecipeMap.create(recipeRegistries.lookupOrThrow(Registries.RECIPE));
 			clientLifecycleHandler.onRecipesSynchronized(recipes);
 		});
 

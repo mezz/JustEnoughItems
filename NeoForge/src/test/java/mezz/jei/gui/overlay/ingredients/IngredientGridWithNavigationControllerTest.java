@@ -47,7 +47,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import org.junit.jupiter.api.Test;
@@ -600,7 +599,7 @@ public class IngredientGridWithNavigationControllerTest {
 		IngredientManagerBuilder builder = new IngredientManagerBuilder(
 			subtypeManager,
 			new TestColorHelper(),
-			new ContextMap.Builder().create(new ContextKeySet.Builder().build())
+			ContextMap.EMPTY
 		);
 		new TestPlugin().registerIngredients(builder);
 		return builder.build();

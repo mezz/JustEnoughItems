@@ -4,30 +4,17 @@ import mezz.jei.gradle.isolatedProjectDirectory
 import mezz.jei.gradle.optionalGradleProperty
 import net.fabricmc.loom.task.ManifestModificationAction
 import net.fabricmc.loom.task.service.JarManifestService
-import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
-import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 plugins {
     java
     idea
     `maven-publish`
     id("net.fabricmc.fabric-loom")
-    id("net.neoforged.jarcompatibilitychecker")
     id("net.mezzdev.modshade")
     id("me.modmuss50.mod-publish-plugin")
-}
-
-repositories {
-    maven("https://maven.siphalor.de/") {
-        // for optional AMECS integration
-        content {
-            includeGroupAndSubgroups("de.siphalor")
-        }
-    }
 }
 
 // gradle.properties
@@ -41,8 +28,6 @@ val modId = gradleProperty("modId")
 val modGroup = gradleProperty("modGroup")
 val modJavaVersion = gradleProperty("modJavaVersion")
 val modrinthId = gradleProperty("modrinthId")
-val amecsVersionFabric = gradleProperty("amecsVersionFabric")
-val amecsMinecraftVersion = gradleProperty("amecsMinecraftVersion")
 val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
 val suffixtreeVersion = gradleProperty("suffixtreeVersion")
 
@@ -61,10 +46,8 @@ val dependencyProjectPaths = listOf(":Common", ":Library", ":Gui")
 val commonProjectDirectory = isolatedProjectDirectory(":Common")
 val debugProjectDirectory = isolatedProjectDirectory(":Debug")
 
-val keyMappingGametestModId = "${modId}-key-mapping-test"
 val commonClientTestFixturesSource = commonProjectDirectory.dir("src/clientTestFixtures/java")
 val clientGameTestRunDirectory = layout.buildDirectory.dir("run/clientGameTest")
-val clientGameTestWithoutAmecsRunDirectory = layout.buildDirectory.dir("run/clientGameTestWithoutAmecs")
 
 val apiSourceSet = sourceSets.create("api") {
     resources.setSrcDirs(emptyList<String>())
@@ -187,13 +170,6 @@ dependencies {
     modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
     }
-    val amecsKeyModifiers = "de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric"
-    compileOnly(amecsKeyModifiers) {
-        isTransitive = false
-    }
-    localRuntime(amecsKeyModifiers) {
-        isTransitive = false
-    }
     changelogHtml(project(":Changelog"))
     changelogMarkdown(project(":Changelog"))
 }
@@ -208,17 +184,6 @@ fabricApi {
     }
 }
 
-val keyMappingGametestSourceSet = sourceSets.create("keyMappingGametest") {
-    val gametestSourceSet = sourceSets.named("gametest").get()
-    compileClasspath += sourceSets.main.get().output + gametestSourceSet.compileClasspath
-    runtimeClasspath += output + compileClasspath + gametestSourceSet.runtimeClasspath.minus(gametestSourceSet.output)
-}
-val keyMappingGametestWithoutAmecsSourceSet = sourceSets.create("keyMappingGametestWithoutAmecs") {
-    runtimeClasspath += keyMappingGametestSourceSet.runtimeClasspath.filter {
-        !it.name.startsWith("amecs-key-modifiers-")
-    }
-}
-
 dependencies {
     "gametestImplementation"(testFixtures(project(":Common")))
 }
@@ -228,9 +193,6 @@ loom {
         create("jei") {
             sourceSet(sourceSets.main.get())
             sourceSet(apiSourceSet)
-        }
-        create(keyMappingGametestModId) {
-            sourceSet(keyMappingGametestSourceSet)
         }
     }
 
@@ -278,13 +240,6 @@ loom {
             val gameTestJunitReportFile = layout.buildDirectory.file("test-results/gameTest/TEST-fabric-game-tests.xml")
             systemProperties.put("fabric-api.gametest.report-file", gameTestJunitReportFile.get().asFile.absolutePath)
         }
-        create("clientGameTestWithoutAmecs") {
-            inherit(named("clientGameTest").get())
-            displayName.set("Fabric Client GameTest Without AMECS")
-            sourceSet.set(keyMappingGametestWithoutAmecsSourceSet.name)
-            runDirectory.set(clientGameTestWithoutAmecsRunDirectory.get().asFile)
-            systemProperties.put("fabric.client.gametest.modid", keyMappingGametestModId)
-        }
     }
 
     accessWidenerPath.set(file("src/main/resources/jei.accesswidener"))
@@ -292,20 +247,13 @@ loom {
 
 sourceSets {
     named("main") {
+        java.exclude("**/Amecs*.java")
+        java.exclude("**/FabricAmecsSupport.java")
         resources.srcDir(dependencyResources)
     }
     named("gametest") {
         java.srcDir(commonClientTestFixturesSource)
-        runtimeClasspath += keyMappingGametestSourceSet.output + configurations.named("localRuntime").get()
     }
-}
-
-tasks.named("runClientGameTest") {
-    dependsOn(keyMappingGametestSourceSet.classesTaskName)
-}
-
-tasks.named("runClientGameTestWithoutAmecs") {
-    dependsOn(keyMappingGametestSourceSet.classesTaskName)
 }
 
 fun registerWriteClientGameTestOptionsTask(name: String, runDirectory: Provider<Directory>) =
@@ -319,17 +267,8 @@ val writeClientGameTestOptions = registerWriteClientGameTestOptionsTask(
     "writeClientGameTestOptions",
     clientGameTestRunDirectory
 )
-val writeClientGameTestWithoutAmecsOptions = registerWriteClientGameTestOptionsTask(
-    "writeClientGameTestWithoutAmecsOptions",
-    clientGameTestWithoutAmecsRunDirectory
-)
-
 tasks.named("runClientGameTest") {
     dependsOn(writeClientGameTestOptions)
-}
-
-tasks.named("runClientGameTestWithoutAmecs") {
-    dependsOn(writeClientGameTestWithoutAmecsOptions)
 }
 
 val debugClassesTask = tasks.named(debugSourceSet.classesTaskName)
@@ -347,6 +286,11 @@ tasks.jar {
     from(sourceSets.main.get().output)
     from(apiSourceSet.output)
     from(dependencyClasses)
+    from(dependencyResources)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.processResources {
     from(dependencyResources)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
@@ -386,6 +330,12 @@ val apiJarTask = tasks.register<Jar>("apiJar") {
     usesService(manifestService)
 }
 
+configurations.create("apiJarElements") {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+    outgoing.artifact(apiJarTask)
+}
+
 val apiSourcesJarTask = tasks.register<Jar>("apiSourcesJar") {
     archiveBaseName.set(apiArchivesName)
     archiveClassifier.set("sources")
@@ -394,19 +344,6 @@ val apiSourcesJarTask = tasks.register<Jar>("apiSourcesJar") {
         attributes["Implementation-Title"] = "sourcesJar"
         attributes["Fabric-Loom-Remap"] = true
     }
-}
-
-tasks.named<CompatibilityTask>("checkJarCompatibility") {
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-    description = "Checks the Fabric API against the latest published API jar in the same major version."
-    mavens.set(listOf("https://maven.blamejared.com"))
-    // The plugin defaults auxiliary libraries to the main compile classpath.
-    // This API check intentionally runs without them, avoiding the full Minecraft classpath.
-    libraries.setFrom(emptyList<Any>())
-    nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
-    fail.set(true)
-    inputJar.set(apiJarTask.flatMap { it.archiveFile })
-    artifact.set("${project.group}:$apiArchivesName")
 }
 
 publishMods {

@@ -79,6 +79,7 @@ public final class JeiChatTooltipEventHandler {
 				event.getY(),
 				event.getTooltipPositioner(),
 				renderData.itemStack().get(DataComponents.TOOLTIP_STYLE),
+				true,
 				renderData.itemStack()
 			);
 		} finally {

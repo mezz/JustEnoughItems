@@ -1,8 +1,5 @@
 package mezz.jei.neoforge.platform;
 
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.ingredients.IIngredientHelper;
-import mezz.jei.api.recipe.category.extensions.vanilla.brewing.IExtendableBrewingRecipeCategory;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -10,45 +7,29 @@ import mezz.jei.common.platform.IPlatformBrewingHelper;
 import mezz.jei.common.recipes.BrewingExtensionHelper;
 import mezz.jei.library.util.BrewingRecipeMakerCommon;
 import net.minecraft.util.context.ContextMap;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.PotionBrewing;
-import net.neoforged.neoforge.common.brewing.BrewingRecipe;
+import net.minecraft.world.item.crafting.BrewingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 public class BrewingHelper implements IPlatformBrewingHelper {
-	@Override
-	public void registerCategoryExtensions(
-		IExtendableBrewingRecipeCategory brewingCategory,
-		IIngredientManager ingredientManager
-	) {
-		IIngredientHelper<ItemStack> itemStackHelper = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK);
-		brewingCategory.addExtension(BrewingRecipe.class, new BrewingRecipeCategoryExtension(itemStackHelper));
-	}
-
 	@Override
 	public List<IJeiBrewingRecipe> getBrewingRecipes(
 		IIngredientManager ingredientManager,
 		IVanillaRecipeFactory vanillaRecipeFactory,
-		PotionBrewing potionBrewing,
+		Collection<RecipeHolder<BrewingRecipe>> brewingRecipes,
 		ContextMap contextMap,
 		BrewingExtensionHelper brewingExtensionHelper
 	) {
-		Set<IJeiBrewingRecipe> recipes = BrewingRecipeMakerCommon.getVanillaBrewingRecipes(
-			vanillaRecipeFactory,
-			ingredientManager,
-			potionBrewing,
-			contextMap
-		);
-		recipes.addAll(
-			brewingExtensionHelper.getBrewingRecipes(
-				potionBrewing.getRecipes(),
+		return new ArrayList<>(
+			BrewingRecipeMakerCommon.getVanillaBrewingRecipes(
 				vanillaRecipeFactory,
+				ingredientManager,
+				brewingRecipes,
 				contextMap
 			)
 		);
-		return new ArrayList<>(recipes);
 	}
 }

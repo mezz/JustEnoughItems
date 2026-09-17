@@ -1,8 +1,6 @@
 import mezz.jei.gradle.gradleProperty
 import mezz.jei.gradle.isolatedProjectDirectory
 import mezz.jei.gradle.optionalGradleProperty
-import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
-import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import net.neoforged.moddevgradle.dsl.ModModel
 import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
@@ -18,8 +16,11 @@ plugins {
 	id("maven-publish")
 	id("me.modmuss50.mod-publish-plugin")
 	id("net.neoforged.moddev")
-	id("net.neoforged.jarcompatibilitychecker")
 	id("net.mezzdev.modshade")
+}
+
+configurations.configureEach {
+	exclude(group = "net.fabricmc", module = "fabric-loader")
 }
 
 // gradle.properties
@@ -51,6 +52,7 @@ val gameTestJunitResultsDir = layout.buildDirectory.dir("test-results/gameTest")
 val dependencyProjectPaths = listOf(":Common", ":Library", ":Gui")
 val dependencyProjectDirectories = dependencyProjectPaths.map { isolatedProjectDirectory(it) }
 val commonProjectDirectory = isolatedProjectDirectory(":Common")
+val vanillaServerProjectDirectory = isolatedProjectDirectory(":VanillaServer")
 val debugProjectDirectory = isolatedProjectDirectory(":Debug")
 val commonClientTestFixturesSource = commonProjectDirectory.dir("src/clientTestFixtures/java")
 val apiSourceSet = sourceSets.create("api") {
@@ -99,7 +101,7 @@ configurations.named("clientGameTestImplementation") {
 tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME) {
 	dependsOn(
 		"runGameTestServer",
-		tasks.named(sourceSets.named("clientGameTest").get().compileJavaTaskName)
+		tasks.named(sourceSets.named("clientGameTest").get().classesTaskName)
 	)
 }
 
@@ -285,7 +287,7 @@ fun modFoldersProperty(vararg mods: ModModel): String =
 		.joinToString(File.pathSeparator)
 
 fun vanillaServerRunFile(suffix: String): File =
-	commonProjectDirectory.file("build/moddev/$vanillaServerRunName$suffix").asFile
+	vanillaServerProjectDirectory.file("build/moddev/$vanillaServerRunName$suffix").asFile
 
 val writeExternalServerLaunchProperties = tasks.register<WriteProperties>("writeExternalServerLaunchProperties") {
 	destinationFile.set(layout.buildDirectory.file("generated/externalServerLaunch/resources/jei-external-server-launch.properties"))
@@ -304,7 +306,7 @@ val writeExternalServerLaunchProperties = tasks.register<WriteProperties>("write
 	property("vanillaServer.programArgsFile", vanillaServerRunFile("RunProgramArgs.txt").absolutePath)
 	property("vanillaServer.modFolders", "")
 	dependsOn(
-		":Common:createVanillaServerLaunchScript",
+		":VanillaServer:createVanillaServerLaunchScript",
 		"createNeoForgeServerWithJeiLaunchScript",
 		"createNeoForgeServerWithoutJeiLaunchScript"
 	)
@@ -391,24 +393,17 @@ val apiJarTask = tasks.register<Jar>("apiJar") {
 	manifest.attributes["Implementation-Title"] = "jar"
 }
 
+configurations.create("apiJarElements") {
+	isCanBeConsumed = true
+	isCanBeResolved = false
+	outgoing.artifact(apiJarTask)
+}
+
 val apiSourcesJarTask = tasks.register<Jar>("apiSourcesJar") {
 	archiveBaseName.set(apiArchivesName)
 	archiveClassifier.set("sources")
 	from(apiSourceSet.allSource)
 	manifest.attributes["Implementation-Title"] = "sourcesJar"
-}
-
-tasks.named<CompatibilityTask>("checkJarCompatibility") {
-	group = LifecycleBasePlugin.VERIFICATION_GROUP
-	description = "Checks the NeoForge API against the latest published API jar in the same major version."
-	mavens.set(listOf("https://maven.blamejared.com"))
-	// The plugin defaults auxiliary libraries to the main compile classpath.
-	// This API check intentionally runs without them, avoiding the full Minecraft classpath.
-	libraries.setFrom(emptyList<Any>())
-	nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
-	fail.set(true)
-	inputJar.set(apiJarTask.flatMap { it.archiveFile })
-	artifact.set("${project.group}:$apiArchivesName")
 }
 
 publishMods {

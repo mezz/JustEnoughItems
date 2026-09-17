@@ -1,11 +1,9 @@
 package mezz.jei.common.input.keys;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
 
 public enum JeiKeyModifier {
 	CONTROL {
@@ -24,9 +22,7 @@ public enum JeiKeyModifier {
 		@Override
 		public boolean isActive(JeiKeyConflictContext context) {
 			if (InputQuirks.REPLACE_CTRL_KEY_WITH_CMD_KEY) {
-				Minecraft minecraft = Minecraft.getInstance();
-				Window window = minecraft.getWindow();
-				return InputConstants.isKeyDown(window, GLFW.GLFW_KEY_LEFT_SUPER) || InputConstants.isKeyDown(window, GLFW.GLFW_KEY_RIGHT_SUPER);
+				return InputConstants.isKeyDown(InputConstants.KEY_LGUI) || InputConstants.isKeyDown(InputConstants.KEY_RGUI);
 			}
 			return CONTROL.isActive(context);
 		}

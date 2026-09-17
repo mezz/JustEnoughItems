@@ -28,7 +28,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.util.context.ContextMap;
-import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
@@ -205,7 +204,7 @@ class SlotDisplayIngredientResolverTest {
 		IngredientManagerBuilder builder = new IngredientManagerBuilder(
 			new SubtypeManager(new SubtypeInterpreters()),
 			DummyColorHelper.INSTANCE,
-			new ContextMap.Builder().create(new ContextKeySet.Builder().build())
+			ContextMap.EMPTY
 		);
 		builder.register(
 			INGREDIENT_TYPE,
@@ -251,12 +250,7 @@ class SlotDisplayIngredientResolverTest {
 		IIngredientManagerInternal ingredientManager,
 		SlotDisplay display
 	) {
-		return ingredientManager.resolveSlotDisplay(
-				INGREDIENT_TYPE,
-				new ContextMap.Builder().create(new ContextKeySet.Builder().build()),
-				RecipeIngredientRole.INPUT,
-				display
-			)
+		return ingredientManager.resolveSlotDisplay(INGREDIENT_TYPE, ContextMap.EMPTY, RecipeIngredientRole.INPUT, display)
 			.toList();
 	}
 

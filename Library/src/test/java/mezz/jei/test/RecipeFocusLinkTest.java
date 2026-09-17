@@ -12,7 +12,6 @@ import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.ingredients.RecipeIngredientSupplier;
 import mezz.jei.library.ingredients.RecipeIngredientSupplier.FocusLink;
 import mezz.jei.library.ingredients.SlotIngredient;
-import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.util.context.ContextMap;
 import org.junit.jupiter.api.Test;
 import org.jspecify.annotations.Nullable;
@@ -113,8 +112,7 @@ public class RecipeFocusLinkTest {
 	@Test
 	void ingredientSupplierRecordsFocusLinksForRecipeVisibility() {
 		IIngredientManagerInternal ingredientManager = createUnusedIngredientManager();
-		ContextMap contextMap = new ContextMap.Builder()
-			.create(new ContextKeySet.Builder().build());
+		ContextMap contextMap = ContextMap.EMPTY;
 		IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager, contextMap);
 		var firstSlot = builder.addSlot(RecipeIngredientRole.INPUT)
 			.add(createTypedIngredient("hidden"))

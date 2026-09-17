@@ -17,7 +17,6 @@ import mezz.jei.library.load.registration.IngredientManagerBuilder;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -239,7 +238,7 @@ public class IngredientAliasTest {
 		return new IngredientManagerBuilder(
 			subtypeManager,
 			DummyColorHelper.INSTANCE,
-			new ContextMap.Builder().create(new ContextKeySet.Builder().build())
+			ContextMap.EMPTY
 		);
 	}
 

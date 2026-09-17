@@ -33,7 +33,14 @@ public class FabricJeiKeyMapping<T extends KeyMapping & ContextAwareKeyMapping> 
 	@Override
 	public boolean isDown() {
 		return this.mapping.isContextActive() &&
-			IJeiKeyMappingInternal.isKeyDown(KeyMappingHelper.getBoundKeyOf(this.mapping));
+			IJeiKeyMappingInternal.isKeyDown(getBoundKey());
+	}
+
+	private InputConstants.Key getBoundKey() {
+		if (this.mapping instanceof FabricKeyMapping fabricMapping) {
+			return fabricMapping.getRealKey();
+		}
+		return KeyMappingHelper.getBoundKeyOf(this.mapping);
 	}
 
 	@Override

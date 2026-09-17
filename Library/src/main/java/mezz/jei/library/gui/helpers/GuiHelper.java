@@ -56,9 +56,9 @@ public class GuiHelper implements IGuiHelper {
 		return new DrawableBuilder(id, u, v, width, height);
 	}
 
-	@SuppressWarnings("removal")
 	@Override
 	@Deprecated(since = "30.11.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, Identifier spriteId) {
 		ErrorUtil.checkNotNull(textureAtlas, "textureAtlas");
 		ErrorUtil.checkNotNull(spriteId, "spriteId");

@@ -178,6 +178,11 @@ def isTestOnlyChange(String fileName) {
     return false
 }
 
+def isReleasePipelineChange(String fileName) {
+    return fileName == '.jenkins/Jenkinsfile' ||
+        fileName == '.jenkins/publishGuard.groovy'
+}
+
 def isCiOnlyChange(String fileName) {
     if (fileName.startsWith('.jenkins/')) {
         return true
@@ -235,6 +240,9 @@ def isPublishableChange(String fileName) {
     if (!fileName) {
         return false
     }
+    if (isReleasePipelineChange(fileName)) {
+        return true
+    }
     if (isCiOnlyChange(fileName)) {
         return false
     }
@@ -268,6 +276,19 @@ def joinLimited(List files, int maxFiles) {
     return result.join(', ')
 }
 
+def hasPreviousRecordedRelease() {
+    def descriptionPrefix = 'jenkins-release-notifier-source:v1:'
+    def previousBuild = currentBuild.previousBuild
+    while (previousBuild != null) {
+        def description = previousBuild.description ?: ''
+        if (description.startsWith(descriptionPrefix)) {
+            return true
+        }
+        previousBuild = previousBuild.previousBuild
+    }
+    return false
+}
+
 def shouldPublishAfterPreviousBuildFailure() {
     def previousBuild = currentBuild.previousBuild
     if (previousBuild == null) {
@@ -288,6 +309,11 @@ def shouldPublishAfterPreviousBuildFailure() {
 }
 
 def shouldPublishArtifacts() {
+    if (!hasPreviousRecordedRelease()) {
+        echo 'Publishing artifacts because no previous release was recorded for this Jenkins branch.'
+        return true
+    }
+
     def changedFiles = getChangedFiles()
     if (changedFiles == null) {
         echo 'Publishing artifacts because changed files could not be determined.'

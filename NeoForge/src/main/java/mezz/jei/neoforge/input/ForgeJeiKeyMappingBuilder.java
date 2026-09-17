@@ -67,7 +67,7 @@ public class ForgeJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
 			description,
 			keyConflictContext,
 			keyModifier,
-			InputConstants.Type.KEYSYM,
+			InputConstants.Type.KEYBOARD,
 			key,
 			category
 		);

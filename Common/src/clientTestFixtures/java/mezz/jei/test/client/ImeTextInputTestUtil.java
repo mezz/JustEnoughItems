@@ -1,5 +1,6 @@
 package mezz.jei.test.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.TextInputManager;
 import mezz.jei.common.util.ReflectionUtil;
 import mezz.jei.gui.input.GuiTextFieldFilter;
@@ -16,8 +17,6 @@ import net.minecraft.client.input.PreeditEvent;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.GameType;
-import org.jspecify.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,6 +25,27 @@ import java.util.List;
 public final class ImeTextInputTestUtil {
 	private ImeTextInputTestUtil() {
 
+	}
+
+	public static void typePlainText(KeyboardHandler keyboardHandler, long windowHandle, GuiTextFieldFilter searchField) {
+		String text = "stone";
+		int[] keys = {InputConstants.KEY_S, InputConstants.KEY_T, InputConstants.KEY_O, InputConstants.KEY_N, InputConstants.KEY_E};
+		for (int i = 0; i < keys.length; i++) {
+			char character = text.charAt(i);
+			KeyEvent event = new KeyEvent(keys[i], character, 0);
+			try {
+				invokeKeyPress(keyboardHandler, windowHandle, event);
+				if (!searchField.isFocused()) {
+					throw new AssertionError("Expected typing '" + character + "' to keep JEI's search field focused.");
+				}
+				assertTextInputEnabled(Minecraft.getInstance(), "typing '" + character + "' into JEI's search field");
+				keyboardHandler.textInput(windowHandle, String.valueOf(character));
+				assertSearchText(searchField, text.substring(0, i + 1));
+			} finally {
+				invokeKeyEvent(keyboardHandler, windowHandle, InputConstants.RELEASE, event);
+			}
+		}
+		searchField.setValue("");
 	}
 
 	public static void typeKoreanText(
@@ -168,10 +188,14 @@ public final class ImeTextInputTestUtil {
 	}
 
 	public static void invokeKeyPress(KeyboardHandler keyboardHandler, long windowHandle, KeyEvent event) {
+		invokeKeyEvent(keyboardHandler, windowHandle, InputConstants.PRESS, event);
+	}
+
+	private static void invokeKeyEvent(KeyboardHandler keyboardHandler, long windowHandle, int action, KeyEvent event) {
 		try {
 			Method method = KeyboardHandler.class.getDeclaredMethod("keyPress", long.class, int.class, KeyEvent.class);
 			method.setAccessible(true);
-			method.invoke(keyboardHandler, windowHandle, GLFW.GLFW_PRESS, event);
+			method.invoke(keyboardHandler, windowHandle, action, event);
 		} catch (InvocationTargetException e) {
 			throw new AssertionError("The Minecraft key callback failed.", e.getCause());
 		} catch (ReflectiveOperationException e) {
@@ -225,20 +249,20 @@ public final class ImeTextInputTestUtil {
 
 	private static void assertSearchText(GuiTextFieldFilter searchField, String expected) {
 		if (!searchField.getValue().equals(expected)) {
-			throw new AssertionError("Expected consecutive IME input to produce '" + expected + "', got: " + searchField.getValue());
+			throw new AssertionError("Expected text input to produce '" + expected + "', got: " + searchField.getValue());
 		}
 	}
 
 	private static void updateImeComposition(KeyboardHandler keyboardHandler, long windowHandle, String... stages) {
 		for (String stage : stages) {
 			PreeditEvent event = new PreeditEvent(stage, stage.length(), List.of(stage), 0);
-			invokePreeditCallback(keyboardHandler, windowHandle, event);
+			keyboardHandler.textEditing(windowHandle, event);
 		}
 	}
 
 	private static void commitImeComposition(KeyboardHandler keyboardHandler, long windowHandle, char character) {
 		invokeCharacterCallback(keyboardHandler, windowHandle, new CharacterEvent(character));
-		invokePreeditCallback(keyboardHandler, windowHandle, null);
+		keyboardHandler.textEditing(windowHandle, null);
 	}
 
 	private static ChatTextInputFixture openChatWithTextInputFocused(
@@ -282,18 +306,6 @@ public final class ImeTextInputTestUtil {
 			}
 		} catch (ReflectiveOperationException e) {
 			throw new AssertionError("Failed to inspect Minecraft's text-input state.", e);
-		}
-	}
-
-	private static void invokePreeditCallback(KeyboardHandler keyboardHandler, long windowHandle, @Nullable PreeditEvent event) {
-		try {
-			Method method = KeyboardHandler.class.getDeclaredMethod("preeditCallback", long.class, PreeditEvent.class);
-			method.setAccessible(true);
-			method.invoke(keyboardHandler, windowHandle, event);
-		} catch (InvocationTargetException e) {
-			throw new AssertionError("The Minecraft preedit callback failed.", e.getCause());
-		} catch (ReflectiveOperationException e) {
-			throw new AssertionError("Failed to invoke Minecraft's preedit callback.", e);
 		}
 	}
 

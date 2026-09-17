@@ -1,11 +1,9 @@
 package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import de.siphalor.amecs.key_modifiers.api.AmecsKeyModifierCombination;
-import de.siphalor.amecs.key_modifiers.api.AmecsKeyModifiersApi;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.ReflectionUtil;
-import mezz.jei.fabric.input.FabricAmecsSupport;
+import mezz.jei.fabric.input.FabricKeyMapping;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.test.client.ImeTextInputTestUtil;
@@ -20,22 +18,20 @@ import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * Verifies that IME composition and committed text are routed to JEI's search field.
  */
 @SuppressWarnings("UnstableApiUsage")
 public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
+	private static final int KEY_CODE_F = InputConstants.KEY_F;
 	private static final String FOCUS_SEARCH_KEY_MAPPING = "key.jei.focusSearch";
-	private static final InputConstants.Key TEST_FOCUS_SEARCH_KEY = InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_F);
+	private static final InputConstants.Key TEST_FOCUS_SEARCH_KEY = InputConstants.Type.KEYBOARD.getOrCreate(KEY_CODE_F);
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		JUnitXmlTestReporter.runAndReportWithBooleanVariant(
+		JUnitXmlTestReporter.runAndReport(
 			"fabric-client-gametest",
-			"jei.fabric.disableAmecsSupport",
-			"without-amecs",
 			getClass().getSimpleName(),
 			() -> assertImeInputRoutedToSearchField(context)
 		);
@@ -94,6 +90,7 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 						throw new AssertionError("Expected this regression test to cover a screen that blocks normal preedit dispatch.");
 					}
 
+					ImeTextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField);
 					ImeTextInputTestUtil.typeKoreanText(client.keyboardHandler, client.getWindow().handle(), searchField);
 					ImeTextInputTestUtil.assertScreenCleanupKeepsChatTextInputEnabled(client, ingredientListOverlay, searchField);
 					ImeTextInputTestUtil.assertRedundantUnfocusKeepsChatTextInputEnabled(client, searchField);
@@ -110,16 +107,17 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 			throw new AssertionError("Expected the focus-search key mapping to be registered.");
 		}
 
-		InputConstants.Key originalKey = KeyMappingHelper.getBoundKeyOf(focusSearch);
-		Object originalModifiers = null;
-		if (FabricAmecsSupport.isEnabled()) {
-			originalModifiers = AmecsModifierState.clear(focusSearch);
+		InputConstants.Key originalKey;
+		if (focusSearch instanceof FabricKeyMapping fabricKeyMapping) {
+			originalKey = fabricKeyMapping.getRealKey();
+		} else {
+			originalKey = KeyMappingHelper.getBoundKeyOf(focusSearch);
 		}
 		try {
-			// Modifier state cannot be synthesized by this callback-level test, so temporarily use an unmodified F.
+			// Temporarily use an unmodified F for this callback-level test.
 			focusSearch.setKey(TEST_FOCUS_SEARCH_KEY);
 			KeyMapping.resetMapping();
-			KeyEvent event = new KeyEvent(GLFW.GLFW_KEY_F, 0, 0);
+			KeyEvent event = new KeyEvent(KEY_CODE_F, 'f', 0);
 			ImeTextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, event);
 
 			// A physical unmodified F also produces a character callback. JEI consumes the hotkey's character.
@@ -129,32 +127,7 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 			}
 		} finally {
 			focusSearch.setKey(originalKey);
-			if (originalModifiers != null) {
-				AmecsModifierState.restore(focusSearch, originalModifiers);
-			}
 			KeyMapping.resetMapping();
-		}
-	}
-
-	/**
-	 * Kept behind a nested class so the test can run when the optional AMECS classes are absent.
-	 */
-	private static final class AmecsModifierState {
-		private AmecsModifierState() {
-
-		}
-
-		private static Object clear(KeyMapping keyMapping) {
-			AmecsKeyModifierCombination boundModifiers = AmecsKeyModifiersApi.getBoundModifiers(keyMapping);
-			AmecsKeyModifierCombination originalModifiers = new AmecsKeyModifierCombination();
-			originalModifiers.copyFrom(boundModifiers);
-			boundModifiers.unset();
-			return originalModifiers;
-		}
-
-		private static void restore(KeyMapping keyMapping, Object originalModifiers) {
-			AmecsKeyModifierCombination boundModifiers = AmecsKeyModifiersApi.getBoundModifiers(keyMapping);
-			boundModifiers.copyFrom((AmecsKeyModifierCombination) originalModifiers);
 		}
 	}
 }

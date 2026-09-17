@@ -2,10 +2,13 @@ package mezz.jei.neoforge.tests.lib;
 
 import mezz.jei.common.network.packets.PlayToServerPacket;
 import mezz.jei.common.util.RegistryUtil;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.gametest.framework.GameTestException;
 import net.minecraft.gametest.framework.GameTestInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -36,6 +39,15 @@ public class JeiGameTestHelper extends ExtendedGameTestHelper {
 	public JeiGameTestHelper(GameTestInfo info) {
 		super(info);
 		RegistryUtil.setRegistryAccess(getLevel().registryAccess());
+		RegistryUtil.setRegistryProvider(getRegistries());
+	}
+
+	public HolderLookup.Provider getRegistries() {
+		return getLevel().getServer().reloadableRegistries().lookup();
+	}
+
+	public <T> HolderLookup.RegistryLookup<T> getRegistry(ResourceKey<? extends Registry<? extends T>> key) {
+		return getRegistries().lookupOrThrow(key);
 	}
 
 	@SuppressWarnings("removal")

@@ -77,7 +77,7 @@ public class RecipeLayoutInputHandler<T> implements IJeiInputHandler {
 					return guiEventListener.mouseReleased(relativeMouseX, relativeMouseY, key.getValue());
 				}
 			}
-			case KEYSYM -> {
+			case KEYBOARD -> {
 				if (!userInput.isSimulate()) {
 					return guiEventListener.keyPressed(relativeMouseX, relativeMouseY, key.getValue(), 0, userInput.getModifiers());
 				}

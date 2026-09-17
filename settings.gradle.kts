@@ -43,6 +43,7 @@ include(
 	"Common",
 	"Fabric",
 	"NeoForge",
+	"VanillaServer",
 	"Library",
 	"Debug",
 	"Gui"

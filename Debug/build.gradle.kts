@@ -1,25 +1,23 @@
+import mezz.jei.gradle.addFabricMinecraftDependencies
 import mezz.jei.gradle.gradleProperty
 
 plugins {
 	id("idea")
 	id("java")
-	id("net.neoforged.moddev")
+	id("net.fabricmc.fabric-loom")
 }
 
 // gradle.properties
 val minecraftVersion = gradleProperty("minecraftVersion")
 val modId = gradleProperty("modId")
 val modJavaVersion = gradleProperty("modJavaVersion")
-val neoformVersionAndTimestamp = gradleProperty("neoformVersionAndTimestamp")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-debug"
 base {
 	archivesName.set(baseArchivesName)
 }
 
-neoForge {
-	neoFormVersion = neoformVersionAndTimestamp
-}
+addFabricMinecraftDependencies()
 
 sourceSets {
 	named("test") {

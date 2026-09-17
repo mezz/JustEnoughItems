@@ -5,7 +5,6 @@ import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 import org.junit.jupiter.api.Test;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Consumer;
 
@@ -13,8 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PinnedTooltipManagerTest {
-	private static final InputConstants.Key ACTION_KEY = InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_A);
-	private static final InputConstants.Key PIN_KEY = InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_SHIFT);
+	private static final InputConstants.Key ACTION_KEY = InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_A);
+	private static final InputConstants.Key PIN_KEY = InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_LSHIFT);
 
 	@Test
 	public void pinnedTooltipAllowsExtraKeyboardModifier() {
