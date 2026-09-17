@@ -92,6 +92,14 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 		this.onLayoutChanged.run();
 	}
 
+	public void setPageAnchorElement(IElement<?> pageAnchorElement) {
+		if (usesScrollbar()) {
+			this.scrollController.setScrollAnchorElement(pageAnchorElement);
+		} else {
+			this.pageState.setPageAnchorElement(pageAnchorElement);
+		}
+	}
+
 	@Nullable
 	public IElement<?> getPageAnchorElement() {
 		if (usesScrollbar()) {
@@ -123,9 +131,18 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 	}
 
 	private void rememberFirstVisibleElementAsPageAnchor() {
-		this.ingredientGrid.getVisibleElements()
-			.findFirst()
-			.ifPresent(this.pageState::setPageAnchorElement);
+		Optional<IElement<?>> firstVisibleElement = this.ingredientGrid.getVisibleElements()
+			.findFirst();
+		if (firstVisibleElement.isPresent()) {
+			this.pageState.setPageAnchorElement(firstVisibleElement.get());
+			return;
+		}
+		// the page can render empty while a drag hides its only bookmark
+		List<IElement<?>> ingredientList = ingredientSource.getElements();
+		int firstItemIndex = this.pageState.getFirstItemIndex();
+		if (firstItemIndex < ingredientList.size()) {
+			this.pageState.setPageAnchorElement(ingredientList.get(firstItemIndex));
+		}
 	}
 
 	@Override

@@ -18,7 +18,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
-import java.util.List;
 import java.util.Optional;
 
 public class BookmarkDragManager {
@@ -57,13 +56,11 @@ public class BookmarkDragManager {
 				ITypedIngredient<V> ingredient = clicked.getTypedIngredient();
 				IIngredientType<V> type = ingredient.getType();
 
-				List<IBookmarkDragTarget> targets = bookmarkOverlay.createBookmarkDragTargets();
 				IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 				IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
 				ImmutableRect2i clickedArea = clicked.getArea();
 				this.bookmarkDrag = new BookmarkDrag<>(
 					bookmarkOverlay,
-					targets,
 					ingredientRenderer,
 					ingredient,
 					bookmark,

@@ -96,6 +96,20 @@ public class BookmarkList implements IIngredientGridSource, IBookmarkManager {
 		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, codecHelper, bookmarksList, bookmarkCodec);
 	}
 
+	public void moveBookmarkToFront(IBookmark value) {
+		if (!bookmarksSet.contains(value)) {
+			return;
+		}
+		if (!bookmarksList.isEmpty() && bookmarksList.getFirst().equals(value)) {
+			return;
+		}
+		bookmarksList.remove(value);
+		bookmarksList.addFirst(value);
+
+		notifyListenersOfChange();
+		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, codecHelper, bookmarksList, bookmarkCodec);
+	}
+
 	public boolean contains(IBookmark value) {
 		return this.bookmarksSet.contains(value);
 	}

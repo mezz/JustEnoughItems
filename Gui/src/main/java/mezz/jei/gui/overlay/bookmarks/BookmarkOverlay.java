@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
@@ -413,38 +414,96 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		this.lookupHistoryOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
 	}
 
-	public List<IBookmarkDragTarget> createBookmarkDragTargets() {
+	public List<IBookmarkDragTarget> createBookmarkDragTargets(IBookmark draggedBookmark) {
 		updateScreenPropertiesIfDirty();
-		List<DragTarget> slotTargets = this.contents.getSlots()
-			.map(this::createDragTarget)
-			.filter(Optional::isPresent)
-			.map(Optional::get)
-			.toList();
+		List<DragTargetSpec> slotSpecs = buildSlotDragTargetSpecs(this.contents.getAllSlots());
+		List<IElement<?>> elements = this.bookmarkList.getElements();
+		IBookmark firstPageBookmark = getFirstPageBookmark(slotSpecs, draggedBookmark, elements);
+		IBookmark lastPageBookmark = getLastPageBookmark(slotSpecs, draggedBookmark, elements);
 
-		IBookmark firstBookmark = slotTargets.getFirst().bookmark;
-		IBookmark lastBookmark = slotTargets.getLast().bookmark;
-
-		List<IBookmarkDragTarget> bookmarkDragTargets = new ArrayList<>(slotTargets);
+		List<IBookmarkDragTarget> bookmarkDragTargets = new ArrayList<>(slotSpecs.size());
+		for (DragTargetSpec spec : slotSpecs) {
+			bookmarkDragTargets.add(new DragTarget(spec.area(), spec.anchor(), bookmarkList, spec.offset()));
+		}
 
 		IPaged pageDelegate = this.contents.getPageDelegate();
 		if (pageDelegate.getPageCount() > 1) {
-			// if a bookmark is dropped on the next button, put it on the next page
-			bookmarkDragTargets.add(new ActionDragTarget(this.contents.getNextPageButtonArea(), lastBookmark, bookmarkList, 1, pageDelegate::nextPage));
+			if (pageDelegate.getPageNumber() >= pageDelegate.getPageCount() - 1) {
+				// if a bookmark is dropped on the next button while on the last page, put it at the start of the first page
+				bookmarkDragTargets.add(new ActionDragTarget(
+					this.contents.getNextPageButtonArea(),
+					bookmarkList::moveBookmarkToFront,
+					pageDelegate::nextPage
+				));
+			} else {
+				// if a bookmark is dropped on the next button, put it on the next page
+				bookmarkDragTargets.add(new ActionDragTarget(
+					this.contents.getNextPageButtonArea(),
+					bookmark -> bookmarkList.moveBookmark(lastPageBookmark, bookmark, 1),
+					pageDelegate::nextPage
+				));
+			}
 
 			// if a bookmark is dropped on the back button, put it on the previous page
-			bookmarkDragTargets.add(new ActionDragTarget(this.contents.getBackButtonArea(), firstBookmark, bookmarkList, -1, pageDelegate::previousPage));
+			bookmarkDragTargets.add(new ActionDragTarget(
+				this.contents.getBackButtonArea(),
+				bookmark -> bookmarkList.moveBookmark(firstPageBookmark, bookmark, -1),
+				pageDelegate::previousPage
+			));
 		}
 
 		// if a bookmark is dropped somewhere else in the contents area, put it at the end of the current page
-		bookmarkDragTargets.add(new DragTarget(this.contents.getSlotBackgroundArea(), lastBookmark, bookmarkList, 0));
+		bookmarkDragTargets.add(new DragTarget(this.contents.getSlotBackgroundArea(), lastPageBookmark, bookmarkList, 0));
 
 		return bookmarkDragTargets;
 	}
 
-	private Optional<DragTarget> createDragTarget(IngredientListSlot ingredientListSlot) {
-		return ingredientListSlot.getOptionalElement()
-			.flatMap(IElement::getBookmark)
-			.map(bookmark -> new DragTarget(ingredientListSlot.getArea(), bookmark, bookmarkList, 0));
+	record DragTargetSpec(ImmutableRect2i area, IBookmark anchor, int offset) {
+	}
+
+	static List<DragTargetSpec> buildSlotDragTargetSpecs(List<IngredientListSlot> slots) {
+		List<DragTargetSpec> specs = new ArrayList<>();
+		List<ImmutableRect2i> emptySlotAreas = new ArrayList<>();
+		for (IngredientListSlot slot : slots) {
+			Optional<IBookmark> bookmark = slot.getOptionalElement()
+				.flatMap(IElement::getBookmark);
+			if (bookmark.isPresent()) {
+				for (ImmutableRect2i area : emptySlotAreas) {
+					specs.add(new DragTargetSpec(area, bookmark.get(), -1));
+				}
+				emptySlotAreas.clear();
+				specs.add(new DragTargetSpec(slot.getArea(), bookmark.get(), 0));
+			} else {
+				emptySlotAreas.add(slot.getArea());
+			}
+		}
+		return specs;
+	}
+
+	static IBookmark getFirstPageBookmark(List<DragTargetSpec> slotSpecs, IBookmark draggedBookmark, List<IElement<?>> elements) {
+		if (slotSpecs.isEmpty()) {
+			return draggedBookmark;
+		}
+		IBookmark firstVisible = slotSpecs.getFirst().anchor();
+		if (elements.indexOf(draggedBookmark.getElement()) < elements.indexOf(firstVisible.getElement())) {
+			return draggedBookmark;
+		}
+		return firstVisible;
+	}
+
+	static IBookmark getLastPageBookmark(List<DragTargetSpec> slotSpecs, IBookmark draggedBookmark, List<IElement<?>> elements) {
+		if (slotSpecs.isEmpty()) {
+			return draggedBookmark;
+		}
+		IBookmark lastVisible = slotSpecs.getLast().anchor();
+		if (elements.indexOf(lastVisible.getElement()) < elements.indexOf(draggedBookmark.getElement())) {
+			return draggedBookmark;
+		}
+		return lastVisible;
+	}
+
+	public void setPageAnchorElement(IBookmark bookmark) {
+		this.contents.setPageAnchorElement(bookmark.getElement());
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
@@ -459,17 +518,25 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 				.anyMatch(ingredient -> ingredient.getElement() == element);
 	}
 
-	public static class ActionDragTarget extends DragTarget {
+	public static class ActionDragTarget implements IBookmarkDragTarget {
+		private final ImmutableRect2i area;
+		private final Consumer<IBookmark> move;
 		private final Runnable action;
 
-		public ActionDragTarget(ImmutableRect2i area, IBookmark bookmark, BookmarkList bookmarkList, int offset, Runnable action) {
-			super(area, bookmark, bookmarkList, offset);
+		public ActionDragTarget(ImmutableRect2i area, Consumer<IBookmark> move, Runnable action) {
+			this.area = area;
+			this.move = move;
 			this.action = action;
 		}
 
 		@Override
+		public ImmutableRect2i getArea() {
+			return area;
+		}
+
+		@Override
 		public void accept(IBookmark bookmark) {
-			super.accept(bookmark);
+			move.accept(bookmark);
 			action.run();
 		}
 	}

@@ -17,7 +17,6 @@ import java.util.List;
 
 public class BookmarkDrag<T> {
 	private final BookmarkOverlay bookmarkOverlay;
-	private final List<IBookmarkDragTarget> targets;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final ITypedIngredient<T> ingredient;
 	private final double mouseStartX;
@@ -28,7 +27,6 @@ public class BookmarkDrag<T> {
 
 	public BookmarkDrag(
 		BookmarkOverlay bookmarkOverlay,
-		List<IBookmarkDragTarget> targets,
 		IIngredientRenderer<T> ingredientRenderer,
 		ITypedIngredient<T> ingredient,
 		IBookmark bookmark,
@@ -37,7 +35,6 @@ public class BookmarkDrag<T> {
 		ImmutableRect2i origin
 	) {
 		this.bookmarkOverlay = bookmarkOverlay;
-		this.targets = targets;
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredient = ingredient;
 		this.bookmark = bookmark;
@@ -97,11 +94,14 @@ public class BookmarkDrag<T> {
 			return false;
 		}
 
+		List<IBookmarkDragTarget> targets = bookmarkOverlay.createBookmarkDragTargets(bookmark);
 		for (IBookmarkDragTarget target : targets) {
 			ImmutableRect2i area = target.getArea();
 			if (MathUtil.contains(area, input.getMouseX(), input.getMouseY())) {
 				if (!input.isSimulate()) {
 					target.accept(bookmark);
+					// re-anchor on the dropped bookmark so that the page stays where it was dropped
+					bookmarkOverlay.setPageAnchorElement(bookmark);
 					stop();
 					return true;
 				}

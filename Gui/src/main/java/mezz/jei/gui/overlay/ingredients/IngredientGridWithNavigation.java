@@ -25,6 +25,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.jspecify.annotations.Nullable;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -139,6 +140,10 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	@Override
 	public void updateLayoutKeepingPageAnchorVisible(@Nullable IElement<?> pageAnchorElement) {
 		this.controller.updateLayoutKeepingPageAnchorVisible(pageAnchorElement);
+	}
+
+	public void setPageAnchorElement(IElement<?> pageAnchorElement) {
+		this.controller.setPageAnchorElement(pageAnchorElement);
 	}
 
 	@Override
@@ -360,5 +365,13 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 			return Stream.empty();
 		}
 		return this.ingredientGrid.getSlots();
+	}
+
+	public List<IngredientListSlot> getAllSlots() {
+		updateLayoutIfDirty();
+		if (!this.active) {
+			return List.of();
+		}
+		return this.ingredientGrid.getAllSlots();
 	}
 }
