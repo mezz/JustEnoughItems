@@ -17,6 +17,7 @@ jobs:
   tests:
     name: Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -42,11 +43,13 @@ jobs:
         run: ./gradlew test :Fabric:runGameTest :NeoForge:runGameTestServer :NeoForge:clientGameTestClasses --no-daemon
 
       - name: Run Client GameTests
+        timeout-minutes: 10
         run: |
           if command -v xvfb-run >/dev/null 2>&1; then
             xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTest --no-daemon
             xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :Fabric:runClientGameTestWithoutAmecs --no-daemon
             xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" ./gradlew :NeoForge:runClientRecipeSyncTest --no-daemon
           else
-            echo "::error::xvfb-run is not available; skipping client GameTests."
+            echo "::error::xvfb-run is required for client GameTests."
+            exit 1
           fi
