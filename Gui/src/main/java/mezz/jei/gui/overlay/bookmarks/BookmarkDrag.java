@@ -9,7 +9,9 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.bookmarks.IBookmark;
+import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.input.UserInput;
+import mezz.jei.gui.overlay.bookmarks.PageFlipHover.Button;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.phys.Vec2;
 
@@ -24,6 +26,7 @@ public class BookmarkDrag<T> {
 	private final IBookmark bookmark;
 	private final ImmutableRect2i origin;
 	private final long dragCanStartTime;
+	private final PageFlipHover pageFlipHover = new PageFlipHover(System::currentTimeMillis);
 
 	public BookmarkDrag(
 		BookmarkOverlay bookmarkOverlay,
@@ -78,6 +81,20 @@ public class BookmarkDrag<T> {
 		bookmarkOverlay.getScreenPropertiesUpdater()
 			.updateMouseExclusionArea(new ImmutablePoint2i(mouseX, mouseY))
 			.update();
+
+		Button hoveredButton = bookmarkOverlay.getHoveredPageEdge(mouseX, mouseY);
+		Button flipButton = pageFlipHover.update(hoveredButton);
+		if (flipButton != null) {
+			IPaged pageDelegate = bookmarkOverlay.getPageDelegate();
+			switch (flipButton) {
+				case NEXT -> pageDelegate.nextPage();
+				case BACK -> pageDelegate.previousPage();
+			}
+		}
+		bookmarkOverlay.setPageButtonsForcePressed(
+			hoveredButton == Button.NEXT,
+			hoveredButton == Button.BACK
+		);
 	}
 
 	public boolean drawItem(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
@@ -114,6 +131,8 @@ public class BookmarkDrag<T> {
 	}
 
 	public void stop() {
+		pageFlipHover.reset();
+		bookmarkOverlay.setPageButtonsForcePressed(false, false);
 		bookmark.setVisible(true);
 		bookmarkOverlay.getScreenPropertiesUpdater()
 			.updateMouseExclusionArea(null)

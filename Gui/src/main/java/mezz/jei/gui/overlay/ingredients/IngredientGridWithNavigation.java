@@ -240,6 +240,10 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		return controller;
 	}
 
+	public void setPageButtonsForcePressed(boolean nextButton, boolean backButton) {
+		this.navigation.setForcePressed(nextButton, backButton);
+	}
+
 	@Override
 	public void drawBackground(GuiGraphicsExtractor guiGraphics) {
 		updateLayoutIfDirty();

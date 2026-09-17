@@ -8,10 +8,13 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.elements.IconButton;
@@ -30,6 +33,7 @@ import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
+import mezz.jei.gui.overlay.ingredients.IngredientGridLayout;
 import mezz.jei.gui.overlay.ingredients.IngredientListSlot;
 import mezz.jei.gui.overlay.IScreenPropertiesUpdater;
 import mezz.jei.gui.overlay.GuiPropertiesCache;
@@ -244,6 +248,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		updateScreenPropertiesIfDirty();
 		if (isListDisplayed()) {
 			this.bookmarkDragManager.updateDrag(mouseX, mouseY);
+			drawPageFlipEdgeHighlights(guiGraphics, mouseX, mouseY);
 			this.contents.drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (guiPropertiesCache.hasValidScreen() && toggleState.isOverlayEnabled()) {
@@ -253,6 +258,41 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			this.bookmarkButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 			this.historyButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		}
+	}
+
+	private void drawPageFlipEdgeHighlights(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+		if (!this.bookmarkDragManager.isDragging()) {
+			return;
+		}
+		IPaged pageDelegate = getPageDelegate();
+		int pageCount = pageDelegate.getPageCount();
+		if (pageCount <= 1) {
+			return;
+		}
+		PageFlipHover.Button hoveredButton = getHoveredPageEdge(mouseX, mouseY);
+		int pageNumber = pageDelegate.getPageNumber();
+		if (pageNumber < pageCount - 1) {
+			drawPageFlipEdgeHighlight(guiGraphics, getNextPageEdgeArea(), hoveredButton == PageFlipHover.Button.NEXT);
+		}
+		if (pageNumber > 0) {
+			drawPageFlipEdgeHighlight(guiGraphics, getBackPageEdgeArea(), hoveredButton == PageFlipHover.Button.BACK);
+		}
+	}
+
+	private static void drawPageFlipEdgeHighlight(GuiGraphicsExtractor guiGraphics, ImmutableRect2i area, boolean hovered) {
+		GuiColor color;
+		if (hovered) {
+			color = GuiColor.BOOKMARK_DRAG_PAGE_FLIP_HIGHLIGHT;
+		} else {
+			color = GuiColor.BOOKMARK_DRAG_PAGE_FLIP_HINT;
+		}
+		guiGraphics.fill(
+			area.getX(),
+			area.getY(),
+			area.getX() + area.getWidth(),
+			area.getY() + area.getHeight(),
+			JeiGuiColors.getColor(color)
+		);
 	}
 
 	public BookmarkPreviewTooltipController getPreviewTooltipController() {
@@ -502,8 +542,46 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		return lastVisible;
 	}
 
+	public IPaged getPageDelegate() {
+		return this.contents.getPageDelegate();
+	}
+
 	public void setPageAnchorElement(IBookmark bookmark) {
 		this.contents.setPageAnchorElement(bookmark.getElement());
+	}
+
+	public void setPageButtonsForcePressed(boolean nextButton, boolean backButton) {
+		this.contents.setPageButtonsForcePressed(nextButton, backButton);
+	}
+
+	private ImmutableRect2i getNextPageEdgeArea() {
+		return this.contents.getSlotBackgroundArea()
+			.keepRight(IngredientGridLayout.INGREDIENT_WIDTH / 2);
+	}
+
+	private ImmutableRect2i getBackPageEdgeArea() {
+		return this.contents.getSlotBackgroundArea()
+			.keepLeft(IngredientGridLayout.INGREDIENT_WIDTH / 2);
+	}
+
+	PageFlipHover.@Nullable Button getHoveredPageEdge(double mouseX, double mouseY) {
+		IPaged pageDelegate = getPageDelegate();
+		int pageCount = pageDelegate.getPageCount();
+		if (pageCount <= 1) {
+			return null;
+		}
+		int pageNumber = pageDelegate.getPageNumber();
+		if (pageNumber < pageCount - 1 &&
+			MathUtil.contains(getNextPageEdgeArea(), mouseX, mouseY)
+		) {
+			return PageFlipHover.Button.NEXT;
+		}
+		if (pageNumber > 0 &&
+			MathUtil.contains(getBackPageEdgeArea(), mouseX, mouseY)
+		) {
+			return PageFlipHover.Button.BACK;
+		}
+		return null;
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
