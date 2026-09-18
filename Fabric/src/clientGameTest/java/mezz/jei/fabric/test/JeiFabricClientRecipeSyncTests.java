@@ -184,7 +184,10 @@ final class JeiFabricClientRecipeSyncTests {
 		SINGLEPLAYER("singleplayer", "Fabric singleplayer") {
 			@Override
 			public void run() {
-				runSingleplayerTestCase(displayName(), JeiFabricClientRecipeSyncTests::assertSyncedRecipesFromSingleplayer);
+				runSingleplayerTestCase(displayName(), () -> {
+					assertSyncedRecipesFromSingleplayer();
+					RecipeSlotTooltipClientTest.run();
+				});
 			}
 		},
 		FABRIC_SERVER_WITH_JEI("fabricServerWithJei", "Fabric server with JEI") {
