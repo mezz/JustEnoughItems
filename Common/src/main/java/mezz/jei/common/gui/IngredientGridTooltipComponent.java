@@ -19,6 +19,7 @@ public abstract class IngredientGridTooltipComponent<T> implements ClientTooltip
 	private static final int SCROLLBAR_GAP = 2;
 	private static final int MAX_COLUMNS = 10;
 	private static final int MAX_ROWS = 4;
+	protected static final int MAX_VISIBLE_INGREDIENTS = MAX_COLUMNS * MAX_ROWS;
 	private static final int MAX_WIDTH = (2 * GRID_PADDING) + (MAX_COLUMNS * CELL_SIZE) + SCROLLBAR_GAP + Scrollbar.WIDTH;
 
 	private final Scrollbar scrollbar;
