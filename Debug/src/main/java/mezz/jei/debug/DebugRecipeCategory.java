@@ -107,7 +107,11 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 
 	@Override
 	public void draw(DebugRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
-		if (runtime != null && !recipe.isSlotDisplayComparison()) {
+		if (!recipe.getLargeIngredientList().isEmpty()) {
+			var font = Minecraft.getInstance().font;
+			guiGraphics.text(font, "10,000 candidates", 50, 0, 0xFF000000, false);
+			guiGraphics.text(font, "Last: #10,000 (coal)", 0, 42, 0xFF000000, false);
+		} else if (runtime != null && !recipe.isSlotDisplayComparison()) {
 			this.item.draw(guiGraphics, 50, 20);
 
 			IIngredientFilter ingredientFilter = runtime.getIngredientFilter();
@@ -136,6 +140,16 @@ public class DebugRecipeCategory<F> implements IRecipeCategory<DebugRecipe> {
 
 	@Override
 	public void setRecipe(IRecipeLayoutBuilder builder, DebugRecipe recipe, IFocusGroup focuses) {
+		if (!recipe.getLargeIngredientList().isEmpty()) {
+			builder.addInputSlot(50, 18)
+				.setStandardSlotBackground()
+				.addItemStacks(recipe.getLargeIngredientList())
+				.addRichTooltipCallback((slot, tooltip) -> tooltip.add(Component.literal("10,000 candidates; rotation limited to 100")));
+			builder.addOutputSlot(110, 18)
+				.setStandardSlotBackground()
+				.add(new ItemStack(Items.COAL));
+			return;
+		}
 		if (recipe.isSlotDisplayComparison()) {
 			setSlotDisplayComparisonRecipe(builder);
 			return;
