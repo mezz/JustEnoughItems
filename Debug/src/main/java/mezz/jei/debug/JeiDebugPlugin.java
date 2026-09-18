@@ -213,7 +213,8 @@ public class JeiDebugPlugin implements IModPlugin {
 		registration.addRecipes(DebugRecipeCategory.TYPE, List.of(
 			new DebugRecipe(),
 			new DebugRecipe(),
-			DebugRecipe.createSlotDisplayComparison()
+			DebugRecipe.createSlotDisplayComparison(),
+			DebugRecipe.createLargeIngredientList(registration.getIngredientManager())
 		));
 
 		registration.addRecipes(DebugFocusRecipeCategory.TYPE, List.of(
