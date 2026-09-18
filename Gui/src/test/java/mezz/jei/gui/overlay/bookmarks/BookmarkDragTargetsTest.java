@@ -1,21 +1,31 @@
 package mezz.jei.gui.overlay.bookmarks;
 
+import com.mojang.serialization.Codec;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.helpers.ICodecHelper;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IFocusFactory;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.BookmarkType;
 import mezz.jei.gui.bookmarks.IBookmark;
+import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.ingredients.IngredientGridTooltipHelper;
 import mezz.jei.gui.overlay.ingredients.IngredientListSlot;
 import mezz.jei.gui.util.FocusUtil;
+import net.minecraft.core.RegistryAccess;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,176 +36,120 @@ public class BookmarkDragTargetsTest {
 	private static final int SLOT_SIZE = 18;
 
 	@Test
-	public void occupiedSlotsInsertAfterTheirBookmark() {
-		// Setup: a fully occupied page of slots.
+	public void occupiedSlotsUseTheirPositionInTheFullBookmarkList() {
+		FakeBookmark earlierPage = new FakeBookmark();
 		FakeBookmark first = new FakeBookmark();
 		FakeBookmark second = new FakeBookmark();
-		FakeBookmark third = new FakeBookmark();
-		IngredientListSlot firstSlot = occupiedSlot(0, first);
-		IngredientListSlot secondSlot = occupiedSlot(1, second);
-		IngredientListSlot thirdSlot = occupiedSlot(2, third);
+		FakeBookmark laterPage = new FakeBookmark();
+		List<IElement<?>> elements = elements(earlierPage, first, second, laterPage);
+		List<IngredientListSlot> slots = List.of(occupiedSlot(0, first), occupiedSlot(1, second));
 
-		// Operation: build the drag target specs for the slots.
-		List<BookmarkOverlay.DragTargetSpec> specs = BookmarkOverlay.buildSlotDragTargetSpecs(
-			List.of(firstSlot, secondSlot, thirdSlot)
-		);
-
-		// Assertions: dropping on an occupied slot inserts after that slot's bookmark.
-		assertEquals(3, specs.size());
-		assertSpec(specs.get(0), firstSlot, first, 0);
-		assertSpec(specs.get(1), secondSlot, second, 0);
-		assertSpec(specs.get(2), thirdSlot, third, 0);
+		for (FakeBookmark dragged : List.of(earlierPage, laterPage)) {
+			List<BookmarkDragTarget> targets = BookmarkDragTarget.createSlotTargets(slots, elements, dragged);
+			assertEquals(List.of(
+				new BookmarkDragTarget(slots.get(0).getArea(), 1),
+				new BookmarkDragTarget(slots.get(1).getArea(), 2)
+			), targets);
+		}
 	}
 
 	@Test
-	public void emptySlotsBeforeABookmarkInsertBeforeIt() {
-		// Setup: the slot under the drag cursor is empty, with occupied slots around it.
+	public void gapBeforeABookmarkAccountsForRemovingAnEarlierBookmark() {
+		FakeBookmark dragged = new FakeBookmark();
 		FakeBookmark first = new FakeBookmark();
 		FakeBookmark last = new FakeBookmark();
-		IngredientListSlot firstSlot = occupiedSlot(0, first);
-		IngredientListSlot gapSlot = emptySlot(1);
-		IngredientListSlot lastSlot = occupiedSlot(2, last);
+		List<IngredientListSlot> slots = List.of(occupiedSlot(0, first), emptySlot(1), occupiedSlot(2, last));
 
-		// Operation: build the drag target specs with the gap between two bookmarks.
-		List<BookmarkOverlay.DragTargetSpec> specs = BookmarkOverlay.buildSlotDragTargetSpecs(
-			List.of(firstSlot, gapSlot, lastSlot)
-		);
+		List<BookmarkDragTarget> targets = BookmarkDragTarget.createSlotTargets(slots, elements(dragged, first, last), dragged);
 
-		// Assertions: dropping on the gap inserts the dragged bookmark before the bookmark after
-		// the gap, so that it lands in the visible gap under the cursor.
-		assertEquals(3, specs.size());
-		assertSpec(specs.get(0), firstSlot, first, 0);
-		assertSpec(specs.get(1), gapSlot, last, -1);
-		assertSpec(specs.get(2), lastSlot, last, 0);
+		assertEquals(new BookmarkDragTarget(slots.get(1).getArea(), 1), targets.get(1));
 	}
 
 	@Test
-	public void leadingEmptySlotsInsertBeforeTheFirstBookmark() {
-		// Setup: the gap is in the first slot of the page.
+	public void gapBeforeABookmarkDoesNotShiftWhenDraggingFromALaterPage() {
 		FakeBookmark first = new FakeBookmark();
-		IngredientListSlot gapSlot = emptySlot(0);
-		IngredientListSlot firstSlot = occupiedSlot(1, first);
+		FakeBookmark last = new FakeBookmark();
+		FakeBookmark dragged = new FakeBookmark();
+		List<IngredientListSlot> slots = List.of(occupiedSlot(0, first), emptySlot(1), occupiedSlot(2, last));
 
-		// Operation: build the drag target specs with the gap before the first bookmark.
-		List<BookmarkOverlay.DragTargetSpec> specs = BookmarkOverlay.buildSlotDragTargetSpecs(
-			List.of(gapSlot, firstSlot)
-		);
+		List<BookmarkDragTarget> targets = BookmarkDragTarget.createSlotTargets(slots, elements(first, last, dragged), dragged);
 
-		// Assertions: dropping on the leading gap inserts before the first bookmark on the page.
-		assertEquals(2, specs.size());
-		assertSpec(specs.get(0), gapSlot, first, -1);
-		assertSpec(specs.get(1), firstSlot, first, 0);
+		assertEquals(new BookmarkDragTarget(slots.get(1).getArea(), 1), targets.get(1));
 	}
 
 	@Test
-	public void trailingEmptySlotsHaveNoSpecs() {
-		// Setup: the page ends with empty slots.
+	public void leadingGapsInsertBeforeTheFirstBookmark() {
 		FakeBookmark first = new FakeBookmark();
-		FakeBookmark second = new FakeBookmark();
-		IngredientListSlot firstSlot = occupiedSlot(0, first);
-		IngredientListSlot secondSlot = occupiedSlot(1, second);
-		IngredientListSlot trailingEmptySlot = emptySlot(2);
+		FakeBookmark dragged = new FakeBookmark();
+		List<IngredientListSlot> slots = List.of(emptySlot(0), emptySlot(1), occupiedSlot(2, first));
 
-		// Operation: build the drag target specs for the page.
-		List<BookmarkOverlay.DragTargetSpec> specs = BookmarkOverlay.buildSlotDragTargetSpecs(
-			List.of(firstSlot, secondSlot, trailingEmptySlot)
-		);
+		List<BookmarkDragTarget> targets = BookmarkDragTarget.createSlotTargets(slots, elements(first, dragged), dragged);
 
-		// Assertions: trailing empty slots are covered by the whole-contents-area fallback target
-		// instead of individual specs.
-		assertEquals(2, specs.size());
+		assertEquals(List.of(
+			new BookmarkDragTarget(slots.get(0).getArea(), 0),
+			new BookmarkDragTarget(slots.get(1).getArea(), 0),
+			new BookmarkDragTarget(slots.get(2).getArea(), 0)
+		), targets);
 	}
 
 	@Test
-	public void pageWithNoVisibleBookmarksHasNoSpecs() {
-		// Setup: the dragged bookmark is the only one on this page and is hidden by the drag.
-		IngredientListSlot emptySlot = emptySlot(0);
+	public void trailingGapsUseThePageFallback() {
+		FakeBookmark first = new FakeBookmark();
+		FakeBookmark dragged = new FakeBookmark();
+		List<IngredientListSlot> slots = List.of(occupiedSlot(0, first), emptySlot(1));
 
-		// Operation: build the drag target specs for the empty page.
-		List<BookmarkOverlay.DragTargetSpec> specs = BookmarkOverlay.buildSlotDragTargetSpecs(
-			List.of(emptySlot)
-		);
+		List<BookmarkDragTarget> targets = BookmarkDragTarget.createSlotTargets(slots, elements(first, dragged), dragged);
 
-		// Assertions: there are no slot specs to insert around.
-		assertTrue(specs.isEmpty());
+		assertEquals(List.of(new BookmarkDragTarget(slots.getFirst().getArea(), 0)), targets);
 	}
 
 	@Test
-	public void pageBookmarksFallBackToTheDraggedBookmarkOnAnEmptyPage() {
-		// Setup: the dragged bookmark is the only one on this page and is hidden by the drag.
-		List<BookmarkOverlay.DragTargetSpec> specs = List.of();
-		FakeBookmark draggedBookmark = new FakeBookmark();
-		List<IElement<?>> elements = List.of(draggedBookmark.getElement());
+	public void pageWithNoVisibleBookmarksUsesThePageFallback() {
+		FakeBookmark dragged = new FakeBookmark();
 
-		// Operation: get the page boundary bookmarks.
-		IBookmark firstPageBookmark = BookmarkOverlay.getFirstPageBookmark(specs, draggedBookmark, elements);
-		IBookmark lastPageBookmark = BookmarkOverlay.getLastPageBookmark(specs, draggedBookmark, elements);
+		List<BookmarkDragTarget> targets = BookmarkDragTarget.createSlotTargets(List.of(emptySlot(0)), elements(dragged), dragged);
 
-		// Assertions: both boundaries fall back to the dragged bookmark.
-		assertEquals(draggedBookmark, firstPageBookmark);
-		assertEquals(draggedBookmark, lastPageBookmark);
+		assertTrue(targets.isEmpty());
 	}
 
 	@Test
-	public void pageBookmarksUseTheFirstAndLastVisibleBookmarks() {
-		// Setup: a page shows two bookmarks, and the dragged bookmark sits between them in the list.
-		FakeBookmark firstVisible = new FakeBookmark();
-		FakeBookmark draggedBookmark = new FakeBookmark();
-		FakeBookmark lastVisible = new FakeBookmark();
-		IngredientListSlot firstSlot = occupiedSlot(0, firstVisible);
-		IngredientListSlot lastSlot = occupiedSlot(1, lastVisible);
-		List<BookmarkOverlay.DragTargetSpec> specs = BookmarkOverlay.buildSlotDragTargetSpecs(
-			List.of(firstSlot, lastSlot)
-		);
-		List<IElement<?>> elements = List.of(
-			firstVisible.getElement(),
-			draggedBookmark.getElement(),
-			lastVisible.getElement()
-		);
+	@SuppressWarnings("DataFlowIssue")
+	public void droppingIntoAGapFromEitherDirectionSavesTheSameOrder() {
+		FakeBookmark first = new FakeBookmark();
+		FakeBookmark last = new FakeBookmark();
+		FakeBookmark dragged = new FakeBookmark();
+		List<IngredientListSlot> slots = List.of(occupiedSlot(0, first), emptySlot(1), occupiedSlot(2, last));
+		for (List<IBookmark> initialOrder : List.<List<IBookmark>>of(List.of(dragged, first, last), List.of(first, last, dragged))) {
+			RecordingBookmarkConfig config = new RecordingBookmarkConfig();
+			BookmarkList bookmarks = new BookmarkList(null, null, null, null, config, null, null, null, null, null);
+			bookmarks.setFromConfigFile(initialOrder);
+			List<BookmarkDragTarget> targets = BookmarkDragTarget.createSlotTargets(slots, bookmarks.getElements(), dragged);
 
-		// Operation: get the page boundary bookmarks.
-		IBookmark firstPageBookmark = BookmarkOverlay.getFirstPageBookmark(specs, draggedBookmark, elements);
-		IBookmark lastPageBookmark = BookmarkOverlay.getLastPageBookmark(specs, draggedBookmark, elements);
+			bookmarks.moveBookmark(dragged, targets.get(1).index());
 
-		// Assertions: the visible page boundaries are used.
-		assertEquals(firstVisible, firstPageBookmark);
-		assertEquals(lastVisible, lastPageBookmark);
+			assertEquals(elements(first, dragged, last), bookmarks.getElements());
+			assertEquals(List.of(first, dragged, last), config.savedBookmarks);
+		}
 	}
 
-	@Test
-	public void pageBookmarksPreferTheDraggedBookmarkWhenItHidesABoundary() {
-		// Setup: the dragged bookmark is hidden and sits before the first (or after the last)
-		// visible bookmark of the page, so it defines the page boundary.
-		FakeBookmark draggedAtStart = new FakeBookmark();
-		FakeBookmark firstVisible = new FakeBookmark();
-		FakeBookmark lastVisible = new FakeBookmark();
-		FakeBookmark draggedAtEnd = new FakeBookmark();
-		IngredientListSlot firstSlot = occupiedSlot(0, firstVisible);
-		IngredientListSlot lastSlot = occupiedSlot(1, lastVisible);
-		List<BookmarkOverlay.DragTargetSpec> specs = BookmarkOverlay.buildSlotDragTargetSpecs(
-			List.of(firstSlot, lastSlot)
-		);
-		List<IElement<?>> elements = List.of(
-			draggedAtStart.getElement(),
-			firstVisible.getElement(),
-			lastVisible.getElement(),
-			draggedAtEnd.getElement()
-		);
+	private static class RecordingBookmarkConfig implements IBookmarkConfig {
+		private List<IBookmark> savedBookmarks = List.of();
 
-		// Operation: get the page boundary bookmarks for both hidden dragged positions.
-		IBookmark firstPageBookmark = BookmarkOverlay.getFirstPageBookmark(specs, draggedAtStart, elements);
-		IBookmark lastPageBookmark = BookmarkOverlay.getLastPageBookmark(specs, draggedAtEnd, elements);
+		@Override
+		public void saveBookmarks(IRecipeManager recipeManager, IFocusFactory focusFactory, IGuiHelper guiHelper, IIngredientManager ingredientManager, RegistryAccess registryAccess, ICodecHelper codecHelper, List<IBookmark> bookmarks, Codec<IBookmark> bookmarkCodec) {
+			this.savedBookmarks = List.copyOf(bookmarks);
+		}
 
-		// Assertions: the dragged bookmark defines the boundary it hides, so dropping it on a page
-		// button still moves it across that boundary.
-		assertEquals(draggedAtStart, firstPageBookmark);
-		assertEquals(draggedAtEnd, lastPageBookmark);
+		@Override
+		public void loadBookmarks(IRecipeManager recipeManager, IFocusFactory focusFactory, IGuiHelper guiHelper, IIngredientManager ingredientManager, RegistryAccess registryAccess, BookmarkList bookmarkList, ICodecHelper codecHelper, Codec<IBookmark> bookmarkCodec) {
+			throw new UnsupportedOperationException();
+		}
 	}
 
-	private static void assertSpec(BookmarkOverlay.DragTargetSpec spec, IngredientListSlot slot, IBookmark anchor, int offset) {
-		assertEquals(slot.getArea(), spec.area());
-		assertEquals(anchor, spec.anchor());
-		assertEquals(offset, spec.offset());
+	private static List<IElement<?>> elements(FakeBookmark... bookmarks) {
+		return Arrays.stream(bookmarks)
+			.map(FakeBookmark::getElement)
+			.toList();
 	}
 
 	private static IngredientListSlot occupiedSlot(int slotIndex, FakeBookmark bookmark) {

@@ -35,7 +35,7 @@ public class BookmarkDragManager {
 	}
 
 	boolean isDragging() {
-		return bookmarkDrag != null;
+		return bookmarkDrag != null && bookmarkDrag.isDragging();
 	}
 
 	public boolean drawDraggedItem(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {

@@ -146,6 +146,11 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.controller.setPageAnchorElement(pageAnchorElement);
 	}
 
+	public List<IElement<?>> getPageElements() {
+		updateLayoutIfDirty();
+		return this.controller.getPageElements();
+	}
+
 	@Override
 	public @Nullable IElement<?> getPageAnchorElement() {
 		return this.controller.getPageAnchorElement();

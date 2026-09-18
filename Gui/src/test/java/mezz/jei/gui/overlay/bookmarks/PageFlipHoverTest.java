@@ -14,10 +14,10 @@ public class PageFlipHoverTest {
 		AtomicLong currentTimeMillis = new AtomicLong(1_000);
 		PageFlipHover pageFlipHover = new PageFlipHover(currentTimeMillis::get);
 
-		// Operation: hover over the next-page button for just under the delay.
-		assertNull(pageFlipHover.update(PageFlipHover.Button.NEXT));
+		// Operation: hover over the next-page edge for just under the delay.
+		assertNull(pageFlipHover.update(PageFlipHover.Direction.NEXT));
 		currentTimeMillis.set(1_000 + PageFlipHover.FLIP_DELAY_MS - 1);
-		assertNull(pageFlipHover.update(PageFlipHover.Button.NEXT));
+		assertNull(pageFlipHover.update(PageFlipHover.Direction.NEXT));
 
 		// Assertions: no page flip is requested before the delay elapses.
 	}
@@ -27,70 +27,53 @@ public class PageFlipHoverTest {
 		// Setup: a hover has already been running for the full delay.
 		AtomicLong currentTimeMillis = new AtomicLong(1_000);
 		PageFlipHover pageFlipHover = new PageFlipHover(currentTimeMillis::get);
-		assertNull(pageFlipHover.update(PageFlipHover.Button.NEXT));
+		assertNull(pageFlipHover.update(PageFlipHover.Direction.NEXT));
 		currentTimeMillis.set(1_000 + PageFlipHover.FLIP_DELAY_MS);
 
 		// Operation: keep hovering past the delay, then shortly after the flip.
-		assertEquals(PageFlipHover.Button.NEXT, pageFlipHover.update(PageFlipHover.Button.NEXT));
-		assertNull(pageFlipHover.update(PageFlipHover.Button.NEXT));
+		assertEquals(PageFlipHover.Direction.NEXT, pageFlipHover.update(PageFlipHover.Direction.NEXT));
+		assertNull(pageFlipHover.update(PageFlipHover.Direction.NEXT));
 
 		// Assertions: the delay restarts after a flip, so continuing to hover flips repeatedly.
 		currentTimeMillis.set(1_000 + 2 * PageFlipHover.FLIP_DELAY_MS);
-		assertEquals(PageFlipHover.Button.NEXT, pageFlipHover.update(PageFlipHover.Button.NEXT));
+		assertEquals(PageFlipHover.Direction.NEXT, pageFlipHover.update(PageFlipHover.Direction.NEXT));
 	}
 
 	@Test
-	public void leavingTheButtonResetsTheDelay() {
+	public void leavingTheEdgeResetsTheDelay() {
 		// Setup: a hover has nearly reached the delay.
 		AtomicLong currentTimeMillis = new AtomicLong(1_000);
 		PageFlipHover pageFlipHover = new PageFlipHover(currentTimeMillis::get);
-		assertNull(pageFlipHover.update(PageFlipHover.Button.NEXT));
+		assertNull(pageFlipHover.update(PageFlipHover.Direction.NEXT));
 		currentTimeMillis.set(1_000 + PageFlipHover.FLIP_DELAY_MS - 1);
-		assertNull(pageFlipHover.update(PageFlipHover.Button.NEXT));
+		assertNull(pageFlipHover.update(PageFlipHover.Direction.NEXT));
 
-		// Operation: leave the button and come back.
+		// Operation: leave the edge and come back.
 		assertNull(pageFlipHover.update(null));
 		currentTimeMillis.set(1_000 + PageFlipHover.FLIP_DELAY_MS);
-		assertNull(pageFlipHover.update(PageFlipHover.Button.NEXT));
+		assertNull(pageFlipHover.update(PageFlipHover.Direction.NEXT));
 
 		// Assertions: the delay started over when the hover resumed.
 		currentTimeMillis.set(1_000 + 2 * PageFlipHover.FLIP_DELAY_MS);
-		assertEquals(PageFlipHover.Button.NEXT, pageFlipHover.update(PageFlipHover.Button.NEXT));
+		assertEquals(PageFlipHover.Direction.NEXT, pageFlipHover.update(PageFlipHover.Direction.NEXT));
 	}
 
 	@Test
-	public void switchingButtonsRestartsTheDelay() {
-		// Setup: the next-page button has been hovered for the full delay.
+	public void switchingDirectionsRestartsTheDelay() {
+		// Setup: the next-page edge has been hovered for the full delay.
 		AtomicLong currentTimeMillis = new AtomicLong(1_000);
 		PageFlipHover pageFlipHover = new PageFlipHover(currentTimeMillis::get);
-		assertNull(pageFlipHover.update(PageFlipHover.Button.NEXT));
+		assertNull(pageFlipHover.update(PageFlipHover.Direction.NEXT));
 		currentTimeMillis.set(1_000 + PageFlipHover.FLIP_DELAY_MS);
 
-		// Operation: move from the next-page button to the back-page button.
-		assertNull(pageFlipHover.update(PageFlipHover.Button.BACK));
+		// Operation: move from the next-page edge to the previous-page edge.
+		assertNull(pageFlipHover.update(PageFlipHover.Direction.PREVIOUS));
 
-		// Assertions: the back-page button needs its own full delay before flipping.
+		// Assertions: the previous-page edge needs its own full delay before flipping.
 		currentTimeMillis.set(1_000 + PageFlipHover.FLIP_DELAY_MS + PageFlipHover.FLIP_DELAY_MS - 1);
-		assertNull(pageFlipHover.update(PageFlipHover.Button.BACK));
+		assertNull(pageFlipHover.update(PageFlipHover.Direction.PREVIOUS));
 		currentTimeMillis.set(1_000 + 2 * PageFlipHover.FLIP_DELAY_MS);
-		assertEquals(PageFlipHover.Button.BACK, pageFlipHover.update(PageFlipHover.Button.BACK));
+		assertEquals(PageFlipHover.Direction.PREVIOUS, pageFlipHover.update(PageFlipHover.Direction.PREVIOUS));
 	}
 
-	@Test
-	public void resetClearsTheHover() {
-		// Setup: a hover is nearly at the delay.
-		AtomicLong currentTimeMillis = new AtomicLong(1_000);
-		PageFlipHover pageFlipHover = new PageFlipHover(currentTimeMillis::get);
-		assertNull(pageFlipHover.update(PageFlipHover.Button.BACK));
-		currentTimeMillis.set(1_000 + PageFlipHover.FLIP_DELAY_MS - 1);
-
-		// Operation: reset the tracker, then hover again for a long time.
-		pageFlipHover.reset();
-		currentTimeMillis.set(1_000 + 10 * PageFlipHover.FLIP_DELAY_MS);
-		assertNull(pageFlipHover.update(PageFlipHover.Button.BACK));
-
-		// Assertions: the hover restarts from scratch after a reset.
-		currentTimeMillis.set(1_000 + 11 * PageFlipHover.FLIP_DELAY_MS);
-		assertEquals(PageFlipHover.Button.BACK, pageFlipHover.update(PageFlipHover.Button.BACK));
-	}
 }

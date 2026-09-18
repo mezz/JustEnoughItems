@@ -34,7 +34,6 @@ import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.ingredients.IngredientGridLayout;
-import mezz.jei.gui.overlay.ingredients.IngredientListSlot;
 import mezz.jei.gui.overlay.IScreenPropertiesUpdater;
 import mezz.jei.gui.overlay.GuiPropertiesCache;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryButtonController;
@@ -45,12 +44,10 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
@@ -269,13 +266,13 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		if (pageCount <= 1) {
 			return;
 		}
-		PageFlipHover.Button hoveredButton = getHoveredPageEdge(mouseX, mouseY);
+		PageFlipHover.Direction hoveredDirection = getHoveredPageEdge(mouseX, mouseY);
 		int pageNumber = pageDelegate.getPageNumber();
 		if (pageNumber < pageCount - 1) {
-			drawPageFlipEdgeHighlight(guiGraphics, getNextPageEdgeArea(), hoveredButton == PageFlipHover.Button.NEXT);
+			drawPageFlipEdgeHighlight(guiGraphics, getNextPageEdgeArea(), hoveredDirection == PageFlipHover.Direction.NEXT);
 		}
 		if (pageNumber > 0) {
-			drawPageFlipEdgeHighlight(guiGraphics, getBackPageEdgeArea(), hoveredButton == PageFlipHover.Button.BACK);
+			drawPageFlipEdgeHighlight(guiGraphics, getBackPageEdgeArea(), hoveredDirection == PageFlipHover.Direction.PREVIOUS);
 		}
 	}
 
@@ -454,100 +451,36 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		this.lookupHistoryOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
 	}
 
-	public List<IBookmarkDragTarget> createBookmarkDragTargets(IBookmark draggedBookmark) {
+	public List<BookmarkDragTarget> createBookmarkDragTargets(IBookmark draggedBookmark) {
 		updateScreenPropertiesIfDirty();
-		List<DragTargetSpec> slotSpecs = buildSlotDragTargetSpecs(this.contents.getAllSlots());
 		List<IElement<?>> elements = this.bookmarkList.getElements();
-		IBookmark firstPageBookmark = getFirstPageBookmark(slotSpecs, draggedBookmark, elements);
-		IBookmark lastPageBookmark = getLastPageBookmark(slotSpecs, draggedBookmark, elements);
-
-		List<IBookmarkDragTarget> bookmarkDragTargets = new ArrayList<>(slotSpecs.size());
-		for (DragTargetSpec spec : slotSpecs) {
-			bookmarkDragTargets.add(new DragTarget(spec.area(), spec.anchor(), bookmarkList, spec.offset()));
+		List<BookmarkDragTarget> targets = BookmarkDragTarget.createSlotTargets(this.contents.getAllSlots(), elements, draggedBookmark);
+		List<IElement<?>> pageElements = this.contents.getPageElements();
+		if (pageElements.isEmpty()) {
+			return targets;
 		}
 
-		IPaged pageDelegate = this.contents.getPageDelegate();
-		if (pageDelegate.getPageCount() > 1) {
-			if (pageDelegate.getPageNumber() >= pageDelegate.getPageCount() - 1) {
-				// if a bookmark is dropped on the next button while on the last page, put it at the start of the first page
-				bookmarkDragTargets.add(new ActionDragTarget(
-					this.contents.getNextPageButtonArea(),
-					bookmarkList::moveBookmarkToFront,
-					pageDelegate::nextPage
-				));
-			} else {
-				// if a bookmark is dropped on the next button, put it on the next page
-				bookmarkDragTargets.add(new ActionDragTarget(
-					this.contents.getNextPageButtonArea(),
-					bookmark -> bookmarkList.moveBookmark(lastPageBookmark, bookmark, 1),
-					pageDelegate::nextPage
-				));
-			}
-
-			// if a bookmark is dropped on the back button, put it on the previous page
-			bookmarkDragTargets.add(new ActionDragTarget(
-				this.contents.getBackButtonArea(),
-				bookmark -> bookmarkList.moveBookmark(firstPageBookmark, bookmark, -1),
-				pageDelegate::previousPage
-			));
+		// Use the current page's range, including hidden bookmarks, even after navigating during a drag.
+		int firstIndex = elements.indexOf(pageElements.getFirst());
+		int lastIndex = elements.indexOf(pageElements.getLast());
+		if (this.contents.getPageDelegate().getPageCount() > 1) {
+			targets.add(new BookmarkDragTarget(this.contents.getNextPageButtonArea(), (lastIndex + 1) % elements.size()));
+			targets.add(new BookmarkDragTarget(this.contents.getBackButtonArea(), Math.floorMod(firstIndex - 1, elements.size())));
 		}
 
-		// if a bookmark is dropped somewhere else in the contents area, put it at the end of the current page
-		bookmarkDragTargets.add(new DragTarget(this.contents.getSlotBackgroundArea(), lastPageBookmark, bookmarkList, 0));
-
-		return bookmarkDragTargets;
+		// Trailing empty slots and background padding place the bookmark at the end of this page.
+		targets.add(new BookmarkDragTarget(this.contents.getSlotBackgroundArea(), lastIndex));
+		return targets;
 	}
 
-	record DragTargetSpec(ImmutableRect2i area, IBookmark anchor, int offset) {
-	}
-
-	static List<DragTargetSpec> buildSlotDragTargetSpecs(List<IngredientListSlot> slots) {
-		List<DragTargetSpec> specs = new ArrayList<>();
-		List<ImmutableRect2i> emptySlotAreas = new ArrayList<>();
-		for (IngredientListSlot slot : slots) {
-			Optional<IBookmark> bookmark = slot.getOptionalElement()
-				.flatMap(IElement::getBookmark);
-			if (bookmark.isPresent()) {
-				for (ImmutableRect2i area : emptySlotAreas) {
-					specs.add(new DragTargetSpec(area, bookmark.get(), -1));
-				}
-				emptySlotAreas.clear();
-				specs.add(new DragTargetSpec(slot.getArea(), bookmark.get(), 0));
-			} else {
-				emptySlotAreas.add(slot.getArea());
-			}
-		}
-		return specs;
-	}
-
-	static IBookmark getFirstPageBookmark(List<DragTargetSpec> slotSpecs, IBookmark draggedBookmark, List<IElement<?>> elements) {
-		if (slotSpecs.isEmpty()) {
-			return draggedBookmark;
-		}
-		IBookmark firstVisible = slotSpecs.getFirst().anchor();
-		if (elements.indexOf(draggedBookmark.getElement()) < elements.indexOf(firstVisible.getElement())) {
-			return draggedBookmark;
-		}
-		return firstVisible;
-	}
-
-	static IBookmark getLastPageBookmark(List<DragTargetSpec> slotSpecs, IBookmark draggedBookmark, List<IElement<?>> elements) {
-		if (slotSpecs.isEmpty()) {
-			return draggedBookmark;
-		}
-		IBookmark lastVisible = slotSpecs.getLast().anchor();
-		if (elements.indexOf(lastVisible.getElement()) < elements.indexOf(draggedBookmark.getElement())) {
-			return draggedBookmark;
-		}
-		return lastVisible;
+	public void moveBookmark(IBookmark bookmark, int index) {
+		this.bookmarkList.moveBookmark(bookmark, index);
+		// Keep the dropped bookmark visible when its visibility and the cursor's slot are restored.
+		this.contents.setPageAnchorElement(bookmark.getElement());
 	}
 
 	public IPaged getPageDelegate() {
 		return this.contents.getPageDelegate();
-	}
-
-	public void setPageAnchorElement(IBookmark bookmark) {
-		this.contents.setPageAnchorElement(bookmark.getElement());
 	}
 
 	public void setPageButtonsForcePressed(boolean nextButton, boolean backButton) {
@@ -564,7 +497,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			.keepLeft(IngredientGridLayout.INGREDIENT_WIDTH / 2);
 	}
 
-	PageFlipHover.@Nullable Button getHoveredPageEdge(double mouseX, double mouseY) {
+	PageFlipHover.@Nullable Direction getHoveredPageEdge(double mouseX, double mouseY) {
 		IPaged pageDelegate = getPageDelegate();
 		int pageCount = pageDelegate.getPageCount();
 		if (pageCount <= 1) {
@@ -574,12 +507,12 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		if (pageNumber < pageCount - 1 &&
 			MathUtil.contains(getNextPageEdgeArea(), mouseX, mouseY)
 		) {
-			return PageFlipHover.Button.NEXT;
+			return PageFlipHover.Direction.NEXT;
 		}
 		if (pageNumber > 0 &&
 			MathUtil.contains(getBackPageEdgeArea(), mouseX, mouseY)
 		) {
-			return PageFlipHover.Button.BACK;
+			return PageFlipHover.Direction.PREVIOUS;
 		}
 		return null;
 	}
@@ -594,52 +527,5 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			bookmarkList.containsElement(element) &&
 			contents.getIngredientUnderMouse(mouseX, mouseY)
 				.anyMatch(ingredient -> ingredient.getElement() == element);
-	}
-
-	public static class ActionDragTarget implements IBookmarkDragTarget {
-		private final ImmutableRect2i area;
-		private final Consumer<IBookmark> move;
-		private final Runnable action;
-
-		public ActionDragTarget(ImmutableRect2i area, Consumer<IBookmark> move, Runnable action) {
-			this.area = area;
-			this.move = move;
-			this.action = action;
-		}
-
-		@Override
-		public ImmutableRect2i getArea() {
-			return area;
-		}
-
-		@Override
-		public void accept(IBookmark bookmark) {
-			move.accept(bookmark);
-			action.run();
-		}
-	}
-
-	public static class DragTarget implements IBookmarkDragTarget {
-		private final ImmutableRect2i area;
-		private final IBookmark bookmark;
-		private final BookmarkList bookmarkList;
-		private final int offset;
-
-		public DragTarget(ImmutableRect2i area, IBookmark bookmark, BookmarkList bookmarkList, int offset) {
-			this.area = area;
-			this.bookmark = bookmark;
-			this.bookmarkList = bookmarkList;
-			this.offset = offset;
-		}
-
-		@Override
-		public ImmutableRect2i getArea() {
-			return area;
-		}
-
-		@Override
-		public void accept(IBookmark bookmark) {
-			bookmarkList.moveBookmark(this.bookmark, bookmark, offset);
-		}
 	}
 }

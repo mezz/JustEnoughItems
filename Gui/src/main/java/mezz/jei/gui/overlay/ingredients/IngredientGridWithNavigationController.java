@@ -100,6 +100,20 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 		}
 	}
 
+	/** Includes temporarily hidden elements, such as the bookmark currently being dragged. */
+	public List<IElement<?>> getPageElements() {
+		List<IElement<?>> elements = this.ingredientSource.getElements();
+		int firstIndex;
+		if (usesScrollbar()) {
+			firstIndex = this.scrollController.getFirstVisibleScrollRow() * this.ingredientGrid.getColumnCount();
+		} else {
+			firstIndex = this.pageState.getFirstItemIndex();
+		}
+		firstIndex = Math.min(firstIndex, elements.size());
+		int endIndex = Math.min(firstIndex + this.ingredientGrid.size(), elements.size());
+		return elements.subList(firstIndex, endIndex);
+	}
+
 	@Nullable
 	public IElement<?> getPageAnchorElement() {
 		if (usesScrollbar()) {

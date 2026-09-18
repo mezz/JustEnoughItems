@@ -469,6 +469,32 @@ public class IngredientGridWithNavigationControllerTest {
 		assertEquals(0, fixture.controller.getPageNumber());
 	}
 
+	@Test
+	public void pageElementsIncludeHiddenBookmarksOnlyOnTheirOwnPage() {
+		Fixture fixture = Fixture.create(3, 7, true);
+		List<IElement<?>> elements = fixture.source.getElements();
+		((HideableElement) elements.getFirst()).visible = false;
+		((HideableElement) elements.getLast()).visible = false;
+		fixture.controller.updateLayoutToFirstPage();
+
+		assertEquals(elements.subList(0, 3), fixture.controller.getPageElements());
+		fixture.controller.nextPage();
+		assertEquals(elements.subList(3, 6), fixture.controller.getPageElements());
+		fixture.controller.nextPage();
+		assertEquals(List.of(elements.getLast()), fixture.controller.getPageElements());
+	}
+
+	@Test
+	public void pageElementsFollowTheFirstVisibleRowInScrollingModes() {
+		for (IngredientGridNavigationMode navigationMode : List.of(IngredientGridNavigationMode.SCROLLING, IngredientGridNavigationMode.SMOOTH_SCROLLING)) {
+			Fixture fixture = Fixture.create(3, 2, 12, true, navigationMode);
+			fixture.controller.updateLayoutToFirstPage();
+			fixture.controller.nextPage();
+
+			assertEquals(fixture.source.getElements().subList(6, 12), fixture.controller.getPageElements());
+		}
+	}
+
 	private static class Fixture {
 		final IngredientGridWithNavigationController controller;
 		final TestNavigationGrid grid;

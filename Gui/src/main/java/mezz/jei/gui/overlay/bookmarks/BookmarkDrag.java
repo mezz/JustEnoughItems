@@ -11,7 +11,7 @@ import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.input.UserInput;
-import mezz.jei.gui.overlay.bookmarks.PageFlipHover.Button;
+import mezz.jei.gui.overlay.bookmarks.PageFlipHover.Direction;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.phys.Vec2;
 
@@ -82,19 +82,23 @@ public class BookmarkDrag<T> {
 			.updateMouseExclusionArea(new ImmutablePoint2i(mouseX, mouseY))
 			.update();
 
-		Button hoveredButton = bookmarkOverlay.getHoveredPageEdge(mouseX, mouseY);
-		Button flipButton = pageFlipHover.update(hoveredButton);
-		if (flipButton != null) {
+		Direction hoveredDirection = bookmarkOverlay.getHoveredPageEdge(mouseX, mouseY);
+		Direction flipDirection = pageFlipHover.update(hoveredDirection);
+		if (flipDirection != null) {
 			IPaged pageDelegate = bookmarkOverlay.getPageDelegate();
-			switch (flipButton) {
+			switch (flipDirection) {
 				case NEXT -> pageDelegate.nextPage();
-				case BACK -> pageDelegate.previousPage();
+				case PREVIOUS -> pageDelegate.previousPage();
 			}
 		}
 		bookmarkOverlay.setPageButtonsForcePressed(
-			hoveredButton == Button.NEXT,
-			hoveredButton == Button.BACK
+			hoveredDirection == Direction.NEXT,
+			hoveredDirection == Direction.PREVIOUS
 		);
+	}
+
+	public boolean isDragging() {
+		return !bookmark.isVisible();
 	}
 
 	public boolean drawItem(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
@@ -111,14 +115,12 @@ public class BookmarkDrag<T> {
 			return false;
 		}
 
-		List<IBookmarkDragTarget> targets = bookmarkOverlay.createBookmarkDragTargets(bookmark);
-		for (IBookmarkDragTarget target : targets) {
-			ImmutableRect2i area = target.getArea();
+		List<BookmarkDragTarget> targets = bookmarkOverlay.createBookmarkDragTargets(bookmark);
+		for (BookmarkDragTarget target : targets) {
+			ImmutableRect2i area = target.area();
 			if (MathUtil.contains(area, input.getMouseX(), input.getMouseY())) {
 				if (!input.isSimulate()) {
-					target.accept(bookmark);
-					// re-anchor on the dropped bookmark so that the page stays where it was dropped
-					bookmarkOverlay.setPageAnchorElement(bookmark);
+					bookmarkOverlay.moveBookmark(bookmark, target.index());
 					stop();
 					return true;
 				}
@@ -131,7 +133,6 @@ public class BookmarkDrag<T> {
 	}
 
 	public void stop() {
-		pageFlipHover.reset();
 		bookmarkOverlay.setPageButtonsForcePressed(false, false);
 		bookmark.setVisible(true);
 		bookmarkOverlay.getScreenPropertiesUpdater()

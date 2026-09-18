@@ -12,12 +12,12 @@ final class PageFlipHover {
 	static final long FLIP_DELAY_MS = 500;
 
 	private final LongSupplier currentTimeMillis;
-	private @Nullable Button hoveredButton;
+	private @Nullable Direction hoveredDirection;
 	private long hoverStartMillis;
 
-	enum Button {
+	enum Direction {
 		NEXT,
-		BACK
+		PREVIOUS
 	}
 
 	PageFlipHover(LongSupplier currentTimeMillis) {
@@ -25,21 +25,18 @@ final class PageFlipHover {
 	}
 
 	@Nullable
-	Button update(@Nullable Button hoveredButton) {
+	Direction update(@Nullable Direction hoveredDirection) {
 		long now = this.currentTimeMillis.getAsLong();
-		if (this.hoveredButton != hoveredButton) {
-			this.hoveredButton = hoveredButton;
+		if (this.hoveredDirection != hoveredDirection) {
+			this.hoveredDirection = hoveredDirection;
 			this.hoverStartMillis = now;
 			return null;
 		}
-		if (hoveredButton == null || now - this.hoverStartMillis < FLIP_DELAY_MS) {
+		if (hoveredDirection == null || now - this.hoverStartMillis < FLIP_DELAY_MS) {
 			return null;
 		}
 		this.hoverStartMillis = now;
-		return hoveredButton;
+		return hoveredDirection;
 	}
 
-	void reset() {
-		this.hoveredButton = null;
-	}
 }
