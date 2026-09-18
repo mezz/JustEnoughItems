@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -78,8 +79,14 @@ public final class RecipeSlotIngredients {
 	}
 
 	public Stream<ITypedIngredient<?>> getDisplayedIngredients() {
-		return getDisplayIngredients().stream()
-			.filter(Objects::nonNull);
+		List<@Nullable ITypedIngredient<?>> candidates = allIngredients;
+		if (displayOverrides != null) {
+			candidates = displayOverrides.getAllIngredients();
+		}
+		IIngredientVisibility visibility = Internal.getJeiRuntime().getJeiHelpers().getIngredientVisibility();
+		return candidates.stream()
+			.filter(Objects::nonNull)
+			.filter(ingredient -> visibility.isIngredientVisible(ingredient, UidContext.Recipe));
 	}
 
 	private List<@Nullable ITypedIngredient<?>> getDisplayIngredients() {
@@ -123,42 +130,23 @@ public final class RecipeSlotIngredients {
 	}
 
 	private static List<@Nullable ITypedIngredient<?>> calculateDisplayIngredients(List<@Nullable ITypedIngredient<?>> allIngredients) {
-		if (allIngredients.isEmpty()) {
-			return List.of();
-		}
+		IIngredientVisibility visibility = Internal.getJeiRuntime().getJeiHelpers().getIngredientVisibility();
+		return filterVisibleIngredients(allIngredients, ingredient -> visibility.isIngredientVisible(ingredient, UidContext.Recipe), MAX_DISPLAYED_INGREDIENTS);
+	}
 
-		List<@Nullable ITypedIngredient<?>> visibleIngredients = List.of();
-		boolean hasInvisibleIngredients = false;
-
-		// Hide invisible ingredients if there are any.
-		// Try scanning through all the ingredients without building the list of visible ingredients.
-		// If an invisible ingredient is found, start building the list of visible ingredients.
-		IIngredientVisibility ingredientVisibility = Internal.getJeiRuntime().getJeiHelpers().getIngredientVisibility();
-		for (int i = 0; i < allIngredients.size() && visibleIngredients.size() < MAX_DISPLAYED_INGREDIENTS; i++) {
-			ITypedIngredient<?> ingredient = allIngredients.get(i);
-			boolean visible = ingredient == null || ingredientVisibility.isIngredientVisible(ingredient, UidContext.Recipe);
-			if (visible) {
-				if (hasInvisibleIngredients) {
-					visibleIngredients.add(ingredient);
-				}
-			} else if (!hasInvisibleIngredients) {
-				hasInvisibleIngredients = true;
-				// `i` is the first invisible ingredient, start putting visible ingredients into visibleIngredients.
-				visibleIngredients = new ArrayList<>(allIngredients.subList(0, i));
-			}
+	public static List<@Nullable ITypedIngredient<?>> filterVisibleIngredients(
+		List<@Nullable ITypedIngredient<?>> ingredients,
+		Predicate<ITypedIngredient<?>> isVisible,
+		int limit
+	) {
+		List<@Nullable ITypedIngredient<?>> visible = ingredients.stream()
+			.filter(ingredient -> ingredient == null || isVisible.test(ingredient))
+			.limit(limit)
+			.toList();
+		if (!visible.isEmpty()) {
+			return visible;
 		}
-
-		if (!visibleIngredients.isEmpty()) {
-			// Some ingredients have been successfully hidden, and some are still visible.
-			return visibleIngredients;
-		}
-
-		// Either everything is visible or everything is invisible.
-		// If everything is invisible, show them all anyway so that the recipe slot is not blank.
-		if (allIngredients.size() < MAX_DISPLAYED_INGREDIENTS) {
-			// Reuse allIngredients to save some memory.
-			return allIngredients;
-		}
-		return allIngredients.subList(0, MAX_DISPLAYED_INGREDIENTS);
+		// If every ingredient is invisible, show them anyway so the recipe slot is not blank.
+		return ingredients.stream().limit(limit).toList();
 	}
 }
