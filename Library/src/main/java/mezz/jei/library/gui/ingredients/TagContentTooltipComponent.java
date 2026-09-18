@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.gui.IngredientGridTooltipComponent;
+import mezz.jei.common.util.LazyMappedList;
 import mezz.jei.common.util.SafeIngredientUtil;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public class TagContentTooltipComponent extends IngredientGridTooltipComponent<I
 	private final IIngredientManager ingredientManager;
 
 	public TagContentTooltipComponent(IIngredientManager ingredientManager, List<ITypedIngredient<?>> ingredients) {
-		super(ingredients);
+		super(new LazyMappedList<>(ingredients, ingredientManager::normalizeTypedIngredient, MAX_VISIBLE_INGREDIENTS));
 		this.ingredientManager = ingredientManager;
 	}
 
