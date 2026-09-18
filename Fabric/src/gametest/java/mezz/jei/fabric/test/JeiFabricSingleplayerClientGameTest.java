@@ -23,6 +23,7 @@ public class JeiFabricSingleplayerClientGameTest implements FabricClientGameTest
 
 					JeiFabricClientGameTestAssertions.assertJeiStartedWithSyncedRecipes(context);
 					JeiFabricClientGameTestAssertions.assertServerHasJei(context);
+					RecipeSlotTooltipClientTest.run(context);
 				}
 				JeiFabricClientGameTestAssertions.assertClientRecipesCleared(context, "Fabric singleplayer");
 			}

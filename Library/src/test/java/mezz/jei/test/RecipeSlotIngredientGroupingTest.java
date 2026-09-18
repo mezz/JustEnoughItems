@@ -12,11 +12,14 @@ import net.minecraft.SharedConstants;
 import net.minecraft.server.Bootstrap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -87,43 +90,79 @@ public class RecipeSlotIngredientGroupingTest {
 
 	@Test
 	void displayFilteringAppliesVisibilityAndLimitTogether() {
-		// Setup: a recipe slot has more visible ingredients than JEI's display limit.
-		List<SlotIngredient<?>> ingredients = IntStream.range(0, 110)
+		// Setup: a recipe slot has more visible ingredients than the requested limit.
+		int limit = 10;
+		List<SlotIngredient<?>> ingredients = IntStream.range(0, limit + 10)
 			.<SlotIngredient<?>>mapToObj(i -> new SlotIngredient<>(createIngredient(Integer.toString(i))))
 			.toList();
 
 		// Operation: filter one ingredient out while applying the display limit.
 		List<@Nullable SlotIngredient<?>> visible = RecipeSlotIngredients.filterVisibleIngredients(
 			ingredients,
-			ingredient -> !ingredient.getIngredient().equals("5")
+			ingredient -> !ingredient.getIngredient().equals("5"),
+			limit
 		);
 
 		// Assertions: the hidden ingredient is excluded and the result is capped after filtering.
-		assertEquals(100, visible.size());
+		assertEquals(limit, visible.size());
 		assertFalse(visible.stream()
 			.filter(Objects::nonNull)
 			.anyMatch(ingredient -> ingredient.typedIngredient().getIngredient().equals("5")));
 	}
 
+	@ParameterizedTest
+	@ValueSource(ints = {0, 1, 7, 128})
+	void largeRotationStopsCheckingVisibilityAtTheLimit(int limit) {
+		List<SlotIngredient<?>> ingredients = IntStream.range(0, 10_000)
+			.<SlotIngredient<?>>mapToObj(i -> new SlotIngredient<>(createIngredient(Integer.toString(i))))
+			.toList();
+		AtomicInteger visibilityChecks = new AtomicInteger();
+		List<@Nullable SlotIngredient<?>> rotation = RecipeSlotIngredients.filterVisibleIngredients(ingredients, ingredient -> {
+			visibilityChecks.incrementAndGet();
+			return true;
+		}, limit);
+		assertEquals(limit, rotation.size());
+		assertEquals(limit, visibilityChecks.get());
+		assertEquals(10_000, RecipeSlotIngredients.getDisplayGroupIngredients(ingredients, ingredients.getFirst()).size());
+	}
+
+	@Test
+	void allHiddenIngredientsFallbackRespectsLimit() {
+		int limit = 2;
+		List<SlotIngredient<?>> ingredients = IntStream.range(0, limit + 3)
+			.<SlotIngredient<?>>mapToObj(i -> new SlotIngredient<>(createIngredient(Integer.toString(i))))
+			.toList();
+
+		List<@Nullable SlotIngredient<?>> displayedIngredients = RecipeSlotIngredients.filterVisibleIngredients(
+			ingredients,
+			ingredient -> false,
+			limit
+		);
+
+		assertEquals(ingredients.subList(0, limit), displayedIngredients);
+	}
+
 	@Test
 	void uninterpretedDisplayGroupUsesCanonicalIngredientsBeforeDisplayLimit() {
-		// Setup: an uninterpreted recipe slot has more canonical ingredients than JEI can display.
-		List<SlotIngredient<?>> ingredients = IntStream.range(0, 110)
+		// Setup: an uninterpreted recipe slot has more canonical ingredients than the requested limit.
+		int limit = 5;
+		List<SlotIngredient<?>> ingredients = IntStream.range(0, limit + 10)
 			.<SlotIngredient<?>>mapToObj(i -> new SlotIngredient<>(createIngredient(Integer.toString(i))))
 			.toList();
 
 		// Operation: apply the display limit, then get the displayed ingredient's group from the canonical source.
 		List<@Nullable SlotIngredient<?>> displayedIngredients = RecipeSlotIngredients.filterVisibleIngredients(
 			ingredients,
-			ingredient -> true
+			ingredient -> true,
+			limit
 		);
 
 		SlotIngredient<?> displayed = Objects.requireNonNull(displayedIngredients.getFirst());
 		List<SlotIngredient<?>> displayGroup = RecipeSlotIngredients.getDisplayGroupIngredients(ingredients, displayed);
 
 		// Assertions: display rotation is capped, but metadata calculations retain the complete ingredient group.
-		assertEquals(100, displayedIngredients.size());
-		assertEquals(110, displayGroup.size());
+		assertEquals(limit, displayedIngredients.size());
+		assertEquals(ingredients.size(), displayGroup.size());
 	}
 
 	@Test
