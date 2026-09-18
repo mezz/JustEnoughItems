@@ -344,24 +344,26 @@ public final class RecipeSlotIngredients {
 			return List.of();
 		}
 		Supplier<Stream<@Nullable SlotIngredient<?>>> expandedIngredients = () -> SlotDisplayIngredientExpander.streamForDisplay(ingredientManager, allIngredients, focusGroup, role);
-		return filterVisibleIngredients(expandedIngredients, isVisible);
+		return filterVisibleIngredients(expandedIngredients, isVisible, MAX_DISPLAYED_INGREDIENTS);
 	}
 
 	public static List<@Nullable SlotIngredient<?>> filterVisibleIngredients(
 		List<? extends @Nullable SlotIngredient<?>> ingredients,
-		Predicate<ITypedIngredient<?>> isVisible
+		Predicate<ITypedIngredient<?>> isVisible,
+		int limit
 	) {
-		return filterVisibleIngredients(ingredients::stream, isVisible);
+		return filterVisibleIngredients(ingredients::stream, isVisible, limit);
 	}
 
 	private static List<@Nullable SlotIngredient<?>> filterVisibleIngredients(
 		Supplier<? extends Stream<? extends @Nullable SlotIngredient<?>>> ingredients,
-		Predicate<ITypedIngredient<?>> isVisible
+		Predicate<ITypedIngredient<?>> isVisible,
+		int limit
 	) {
 		List<@Nullable SlotIngredient<?>> visibleIngredients = ingredients.get()
 			.filter(ingredient -> ingredient == null || isVisible.test(ingredient.typedIngredient()))
 			.<@Nullable SlotIngredient<?>>map(ingredient -> ingredient)
-			.limit(MAX_DISPLAYED_INGREDIENTS)
+			.limit(limit)
 			.toList();
 		if (!visibleIngredients.isEmpty()) {
 			return visibleIngredients;
@@ -369,7 +371,7 @@ public final class RecipeSlotIngredients {
 		// If every ingredient is invisible, show them anyway so that the recipe slot is not blank.
 		return ingredients.get()
 			.<@Nullable SlotIngredient<?>>map(ingredient -> ingredient)
-			.limit(MAX_DISPLAYED_INGREDIENTS)
+			.limit(limit)
 			.toList();
 	}
 
