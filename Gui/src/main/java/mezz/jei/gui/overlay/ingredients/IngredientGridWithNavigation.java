@@ -25,6 +25,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import org.jspecify.annotations.Nullable;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -141,6 +142,15 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.controller.updateLayoutKeepingPageAnchorVisible(pageAnchorElement);
 	}
 
+	public void setPageAnchorElement(IElement<?> pageAnchorElement) {
+		this.controller.setPageAnchorElement(pageAnchorElement);
+	}
+
+	public List<IElement<?>> getPageElements() {
+		updateLayoutIfDirty();
+		return this.controller.getPageElements();
+	}
+
 	@Override
 	public @Nullable IElement<?> getPageAnchorElement() {
 		return this.controller.getPageAnchorElement();
@@ -233,6 +243,15 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	public IPaged getPageDelegate() {
 		return controller;
+	}
+
+	public void scrollByPixels(double pixels) {
+		updateLayoutIfDirty();
+		this.controller.scrollByPixels(pixels);
+	}
+
+	public void setPageButtonsForcePressed(boolean nextButton, boolean backButton) {
+		this.navigation.setForcePressed(nextButton, backButton);
 	}
 
 	@Override
@@ -360,5 +379,13 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 			return Stream.empty();
 		}
 		return this.ingredientGrid.getSlots();
+	}
+
+	public List<IngredientListSlot> getAllSlots() {
+		updateLayoutIfDirty();
+		if (!this.active) {
+			return List.of();
+		}
+		return this.ingredientGrid.getAllSlots();
 	}
 }

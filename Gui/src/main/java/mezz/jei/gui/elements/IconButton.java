@@ -34,6 +34,10 @@ public final class IconButton {
 		this.area = area;
 	}
 
+	public void setForcePressed(boolean forcePressed) {
+		this.button.setForcePressed(forcePressed);
+	}
+
 	public ImmutableRect2i getArea() {
 		return area;
 	}

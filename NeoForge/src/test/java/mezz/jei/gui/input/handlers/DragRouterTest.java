@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DragRouterTest {
@@ -53,6 +54,36 @@ public class DragRouterTest {
 		// Assertions: every registered handler is notified so passive state is cleared.
 		assertEquals(1, firstHandler.cancelCount);
 		assertEquals(1, secondHandler.cancelCount);
+	}
+
+	@Test
+	public void isDraggingTracksTheActiveDrag() {
+		// Setup: a handler that starts a drag.
+		RecordingDragHandler activeDragHandler = new RecordingDragHandler();
+		RecordingDragHandler dragStarter = new RecordingDragHandler(activeDragHandler);
+		DragRouter dragRouter = new DragRouter(dragStarter);
+
+		// Operation and assertions: dragging is active only between drag start and completion.
+		assertFalse(dragRouter.isDragging());
+		assertTrue(dragRouter.startDrag(null, null));
+		assertTrue(dragRouter.isDragging());
+		dragRouter.completeDrag(null, null);
+		assertFalse(dragRouter.isDragging());
+	}
+
+	@Test
+	public void isDraggingIsFalseAfterCancelDrag() {
+		// Setup: a drag is in progress.
+		RecordingDragHandler activeDragHandler = new RecordingDragHandler();
+		RecordingDragHandler dragStarter = new RecordingDragHandler(activeDragHandler);
+		DragRouter dragRouter = new DragRouter(dragStarter);
+		assertTrue(dragRouter.startDrag(null, null));
+
+		// Operation: cancel the drag.
+		dragRouter.cancelDrag();
+
+		// Assertions: the drag is no longer active.
+		assertFalse(dragRouter.isDragging());
 	}
 
 	private static class RecordingDragHandler implements IDragHandler {
