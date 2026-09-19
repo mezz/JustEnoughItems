@@ -417,6 +417,126 @@ public class IngredientGridWithNavigationControllerTest {
 		assertEquals(190, fixture.grid.firstItemIndex);
 	}
 
+	@Test
+	public void navigatingToAPageWithOnlyHiddenElementsKeepsThatPageAfterRelayout() {
+		// Setup: four ingredients in a three-slot grid put the fourth ingredient alone on the
+		// second page, hidden like a bookmark that is currently being dragged.
+		Fixture fixture = Fixture.create(3, 4, true);
+		fixture.controller.updateLayoutToFirstPage();
+		HideableElement draggedElement = (HideableElement) fixture.source.getElements().get(3);
+		draggedElement.visible = false;
+
+		// Operation: page onto the second page, then relayout with the page anchor like a
+		// bounds update does when the drag ends.
+		fixture.controller.nextPage();
+		assertEquals(3, fixture.grid.firstItemIndex);
+		fixture.controller.updateLayoutKeepingPageAnchorVisible(fixture.controller.getPageAnchorElement());
+
+		// Assertions: the page with only the hidden element is kept instead of resetting to the
+		// first page.
+		assertEquals(3, fixture.grid.firstItemIndex);
+		assertEquals(1, fixture.controller.getPageNumber());
+	}
+
+	@Test
+	public void reAnchoringOnADroppedBookmarkKeepsThePageItWasDroppedOn() {
+		// Setup: seven ingredients in a three-slot grid, viewing the second page, with a bookmark
+		// from the first page dragged onto the first slot of the second page.
+		Fixture fixture = Fixture.create(3, 7, true);
+		fixture.controller.updateLayoutToFirstPage();
+		fixture.controller.nextPage();
+		assertEquals(3, fixture.grid.firstItemIndex);
+		IElement<?> draggedElement = fixture.source.getElements().get(1);
+		IElement<?> oldPageAnchor = fixture.controller.getPageAnchorElement();
+
+		// Operation: the drop moves the dragged element after the page anchor, like the drag
+		// target does, then re-anchors on the dropped element and relayouts like the drag end.
+		fixture.source.moveElementAfter(draggedElement, oldPageAnchor);
+		fixture.controller.setPageAnchorElement(draggedElement);
+		fixture.controller.updateLayoutKeepingPageAnchorVisible(fixture.controller.getPageAnchorElement());
+
+		// Assertions: the page keeps the dropped element's page instead of following the old
+		// anchor across the page boundary.
+		assertEquals(3, fixture.grid.firstItemIndex);
+		assertEquals(1, fixture.controller.getPageNumber());
+
+		// Operation: without the re-anchor, following the old anchor alone resets the page.
+		fixture.controller.setPageAnchorElement(oldPageAnchor);
+		fixture.controller.updateLayoutKeepingPageAnchorVisible(fixture.controller.getPageAnchorElement());
+
+		// Assertions: the old anchor moved onto the previous page, and following it alone
+		// returns the grid to the first page.
+		assertEquals(0, fixture.grid.firstItemIndex);
+		assertEquals(0, fixture.controller.getPageNumber());
+	}
+
+	@Test
+	public void pageElementsIncludeHiddenBookmarksOnlyOnTheirOwnPage() {
+		Fixture fixture = Fixture.create(3, 7, true);
+		List<IElement<?>> elements = fixture.source.getElements();
+		((HideableElement) elements.getFirst()).visible = false;
+		((HideableElement) elements.getLast()).visible = false;
+		fixture.controller.updateLayoutToFirstPage();
+
+		assertEquals(elements.subList(0, 3), fixture.controller.getPageElements());
+		fixture.controller.nextPage();
+		assertEquals(elements.subList(3, 6), fixture.controller.getPageElements());
+		fixture.controller.nextPage();
+		assertEquals(List.of(elements.getLast()), fixture.controller.getPageElements());
+	}
+
+	@Test
+	public void pageElementsFollowTheFirstVisibleRowInScrollingModes() {
+		for (IngredientGridNavigationMode navigationMode : List.of(IngredientGridNavigationMode.SCROLLING, IngredientGridNavigationMode.SMOOTH_SCROLLING)) {
+			Fixture fixture = Fixture.create(3, 2, 12, true, navigationMode);
+			fixture.controller.updateLayoutToFirstPage();
+			fixture.controller.nextPage();
+
+			assertEquals(fixture.source.getElements().subList(6, 12), fixture.controller.getPageElements());
+		}
+	}
+
+	@Test
+	public void dragScrollingMovesGraduallyAndSurvivesRelayout() {
+		for (IngredientGridNavigationMode mode : List.of(IngredientGridNavigationMode.SCROLLING, IngredientGridNavigationMode.SMOOTH_SCROLLING)) {
+			Fixture fixture = Fixture.create(3, 3, 30, true, mode);
+			fixture.controller.updateLayoutToFirstPage();
+			if (mode.usesSmoothScrolling()) {
+				for (int i = 0; i < 3; i++) {
+					assertTrue(fixture.controller.scrollByPixels(6));
+					fixture.controller.updateLayoutKeepingPageAnchorVisible(fixture.controller.getPageAnchorElement());
+				}
+			} else {
+				assertTrue(fixture.controller.scrollByPixels(18));
+				fixture.controller.updateLayoutKeepingPageAnchorVisible(fixture.controller.getPageAnchorElement());
+			}
+			assertEquals(3, fixture.grid.firstItemIndex);
+			assertEquals(0, fixture.grid.scrollOffsetY);
+			assertTrue(fixture.controller.scrollByPixels(-18));
+			assertEquals(0, fixture.grid.firstItemIndex);
+		}
+	}
+
+	@Test
+	public void dragScrollingStopsAtBothEndsOfTheList() {
+		for (IngredientGridNavigationMode mode : List.of(IngredientGridNavigationMode.SCROLLING, IngredientGridNavigationMode.SMOOTH_SCROLLING)) {
+			Fixture fixture = Fixture.create(3, 3, 30, true, mode);
+			fixture.controller.updateLayoutToFirstPage();
+			assertFalse(fixture.controller.scrollByPixels(-18));
+			fixture.controller.setScrollOffsetY(1);
+			assertFalse(fixture.controller.scrollByPixels(18));
+			assertEquals(21, fixture.grid.firstItemIndex);
+		}
+	}
+
+	@Test
+	public void dragScrollingDoesNotChangePagedNavigation() {
+		Fixture fixture = Fixture.create(3, 3, 30, true, IngredientGridNavigationMode.PAGED);
+		fixture.controller.updateLayoutToFirstPage();
+		assertFalse(fixture.controller.scrollByPixels(18));
+		assertEquals(0, fixture.grid.firstItemIndex);
+	}
+
 	private static class Fixture {
 		final IngredientGridWithNavigationController controller;
 		final TestNavigationGrid grid;
@@ -616,7 +736,9 @@ public class IngredientGridWithNavigationControllerTest {
 			this.scrollOffsetY = scrollOffsetY;
 			int startIndex = Math.clamp(firstItemIndex, 0, ingredientList.size());
 			int endIndex = Math.min(startIndex + this.visibleSlotCount, ingredientList.size());
-			this.visibleElements = List.copyOf(ingredientList.subList(startIndex, endIndex));
+			this.visibleElements = ingredientList.subList(startIndex, endIndex).stream()
+				.filter(IElement::isVisible)
+				.toList();
 		}
 
 		@Override
@@ -704,7 +826,7 @@ public class IngredientGridWithNavigationControllerTest {
 
 	private record TestIngredientGridSource(List<IElement<?>> elements) implements IIngredientGridSource {
 		private TestIngredientGridSource(int itemCount) {
-			this(createElements(itemCount));
+			this(new ArrayList<>(createElements(itemCount)));
 		}
 
 		@Override
@@ -715,14 +837,33 @@ public class IngredientGridWithNavigationControllerTest {
 		@Override
 		public void addSourceListChangedListener(SourceListChangedListener listener) {
 		}
+
+		void moveElementAfter(IElement<?> moved, IElement<?> anchor) {
+			elements.remove(moved);
+			int anchorIndex = elements.indexOf(anchor);
+			elements.add(anchorIndex + 1, moved);
+		}
 	}
 
 	private static List<IElement<?>> createElements(int itemCount) {
 		List<IElement<?>> elements = new ArrayList<>();
 		for (int i = 0; i < itemCount; i++) {
-			elements.add(new IngredientElement<>(new TestTypedIngredient(new TestIngredient(i))));
+			elements.add(new HideableElement(new TestTypedIngredient(new TestIngredient(i))));
 		}
 		return List.copyOf(elements);
+	}
+
+	private static class HideableElement extends IngredientElement<TestIngredient> {
+		private boolean visible = true;
+
+		private HideableElement(ITypedIngredient<TestIngredient> ingredient) {
+			super(ingredient);
+		}
+
+		@Override
+		public boolean isVisible() {
+			return visible;
+		}
 	}
 
 	private record TestTypedIngredient(TestIngredient ingredient) implements ITypedIngredient<TestIngredient> {
