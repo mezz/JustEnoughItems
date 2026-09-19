@@ -10,13 +10,14 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.gui.input.IPaged;
+import mezz.jei.gui.overlay.bookmarks.PageFlipHover.Direction;
 import net.minecraft.world.phys.Vec2;
 
 import java.util.List;
 
 public class BookmarkDrag<T> {
 	private final BookmarkOverlay bookmarkOverlay;
-	private final List<IBookmarkDragTarget> targets;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final ITypedIngredient<T> ingredient;
 	private final double mouseStartX;
@@ -24,10 +25,11 @@ public class BookmarkDrag<T> {
 	private final IBookmark bookmark;
 	private final ImmutableRect2i origin;
 	private final long dragCanStartTime;
+	private final PageFlipHover pageFlipHover = new PageFlipHover(System::currentTimeMillis);
+	private final BookmarkDragScroll dragScroll = new BookmarkDragScroll(System::nanoTime);
 
 	public BookmarkDrag(
 		BookmarkOverlay bookmarkOverlay,
-		List<IBookmarkDragTarget> targets,
 		IIngredientRenderer<T> ingredientRenderer,
 		ITypedIngredient<T> ingredient,
 		IBookmark bookmark,
@@ -36,7 +38,6 @@ public class BookmarkDrag<T> {
 		ImmutableRect2i origin
 	) {
 		this.bookmarkOverlay = bookmarkOverlay;
-		this.targets = targets;
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredient = ingredient;
 		this.bookmark = bookmark;
@@ -80,6 +81,25 @@ public class BookmarkDrag<T> {
 		bookmarkOverlay.getScreenPropertiesUpdater()
 			.updateMouseExclusionArea(new ImmutablePoint2i(mouseX, mouseY))
 			.update();
+		bookmarkOverlay.scrollDuringDrag(dragScroll, mouseX, mouseY);
+
+		Direction hoveredDirection = bookmarkOverlay.getHoveredPageEdge(mouseX, mouseY);
+		Direction flipDirection = pageFlipHover.update(hoveredDirection);
+		if (flipDirection != null) {
+			IPaged pageDelegate = bookmarkOverlay.getPageDelegate();
+			switch (flipDirection) {
+				case NEXT -> pageDelegate.nextPage();
+				case PREVIOUS -> pageDelegate.previousPage();
+			}
+		}
+		bookmarkOverlay.setPageButtonsForcePressed(
+			hoveredDirection == Direction.NEXT,
+			hoveredDirection == Direction.PREVIOUS
+		);
+	}
+
+	public boolean isDragging() {
+		return !bookmark.isVisible();
 	}
 
 	public boolean drawItem(PoseStack poseStack, int mouseX, int mouseY) {
@@ -96,11 +116,12 @@ public class BookmarkDrag<T> {
 			return false;
 		}
 
-		for (IBookmarkDragTarget target : targets) {
-			ImmutableRect2i area = target.getArea();
+		List<BookmarkDragTarget> targets = bookmarkOverlay.createBookmarkDragTargets(bookmark);
+		for (BookmarkDragTarget target : targets) {
+			ImmutableRect2i area = target.area();
 			if (area.contains(input.getMouseX(), input.getMouseY())) {
 				if (!input.isSimulate()) {
-					target.accept(bookmark);
+					bookmarkOverlay.moveBookmark(bookmark, target.index());
 					stop();
 					return true;
 				}
@@ -113,6 +134,7 @@ public class BookmarkDrag<T> {
 	}
 
 	public void stop() {
+		bookmarkOverlay.setPageButtonsForcePressed(false, false);
 		bookmark.setVisible(true);
 		bookmarkOverlay.getScreenPropertiesUpdater()
 			.updateMouseExclusionArea(null)
