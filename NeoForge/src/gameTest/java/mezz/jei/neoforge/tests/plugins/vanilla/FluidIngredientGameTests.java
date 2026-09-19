@@ -6,6 +6,10 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.registration.ISlotDisplayInterpreterRegistration;
+import mezz.jei.library.focus.Focus;
+import mezz.jei.library.focus.FocusGroup;
+import mezz.jei.library.gui.ingredients.RecipeSlotIngredients;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
@@ -13,17 +17,22 @@ import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
 import mezz.jei.library.plugins.vanilla.ingredients.fluid.FluidIngredientHelper;
 import mezz.jei.neoforge.platform.FluidHelper;
+import mezz.jei.neoforge.plugins.neoforge.NeoForgeGuiPlugin;
 import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.display.FluidTagSlotDisplay;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -34,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @ForEachTest(groups = "fluid_ingredients")
 public final class FluidIngredientGameTests {
@@ -158,6 +168,61 @@ public final class FluidIngredientGameTests {
 		helper.succeed();
 	}
 
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Fluid tag expansion preserves recipe amounts when rotating, browsing candidates, and focusing.")
+	public static void fluidTagExpansionPreservesAmount(JeiGameTestHelper helper) {
+		for (int amount : new int[]{20_000, 250}) {
+			FluidStack registeredWater = new FluidStack(Fluids.WATER, 1000);
+			IIngredientManagerInternal ingredientManager = createIngredientManager(List.of(registeredWater), registration -> {
+				new NeoForgeGuiPlugin().registerSlotDisplayInterpreters(registration);
+				// Apply the recipe amount to a wrapped tag, as Mekanism's amount display does.
+				registration.register(SlotDisplay.Composite.TYPE, NeoForgeTypes.FLUID_STACK, (display, context, builder) -> {
+					for (SlotDisplay child : display.contents()) {
+						builder.addChildDisplay(child, stack -> stack.copyWithAmount(amount));
+					}
+				});
+			});
+			SlotDisplay display = new SlotDisplay.Composite(List.of(new FluidTagSlotDisplay(FluidTags.WATER)));
+			var resolved = ingredientManager.resolveSlotDisplay(
+					NeoForgeTypes.FLUID_STACK,
+					SlotDisplayContext.fromLevel(helper.getLevel()),
+					RecipeIngredientRole.INPUT,
+					display
+				)
+				.toList();
+			helper.assertEquals(1, resolved.size(), "Expected one valid source-water ingredient");
+			var source = resolved.getFirst();
+			helper.assertEquals(amount, source.typedIngredient().getIngredient().getAmount(), "Expected the wrapper's recipe amount");
+			var displayData = Objects.requireNonNull(source.slotDisplayData());
+			helper.assertEquals(FluidTags.WATER, displayData.info().tagKey().orElseThrow(), "Expected the water tag");
+			helper.assertTrue(displayData.info().matchesAllSubtypes(), "Expected the tag to expand registered fluids");
+
+			var focusedWater = ingredientManager.createTypedIngredient(NeoForgeTypes.FLUID_STACK, new FluidStack(Fluids.WATER, 500), false)
+				.orElseThrow();
+			var focus = new Focus<>(RecipeIngredientRole.INPUT, focusedWater);
+			for (var focusGroup : List.of(FocusGroup.EMPTY, focus)) {
+				var displayed = RecipeSlotIngredients.calculateDisplayIngredients(
+					resolved, ingredientManager, focusGroup, RecipeIngredientRole.INPUT, ingredient -> true
+				);
+				helper.assertEquals(1, displayed.size(), "Expected one displayed water ingredient");
+				var replacement = Objects.requireNonNull(displayed.getFirst());
+				FluidStack water = replacement.typedIngredient().getIngredient(NeoForgeTypes.FLUID_STACK).orElseThrow();
+				helper.assertEquals(amount, water.getAmount(), "Expected tag expansion to preserve the recipe amount");
+				helper.assertTrue(water.getFluid() == Fluids.WATER, "Expected the replacement to remain water");
+				helper.assertTrue(replacement.slotDisplayData() == displayData, "Expected tag metadata to remain attached");
+			}
+
+			var candidates = RecipeSlotIngredients.getVisibleSlotIngredients(resolved, ingredientManager, ingredient -> true).toList();
+			helper.assertEquals(1, candidates.size(), "Expected one water candidate");
+			helper.assertEquals(amount, candidates.getFirst().typedIngredient().getIngredient(NeoForgeTypes.FLUID_STACK).orElseThrow().getAmount(), "Expected the candidate amount");
+			helper.assertEquals(1000, registeredWater.getAmount(), "Expected registered water to remain unchanged");
+			helper.assertEquals(1000, ingredientManager.getAllIngredients(NeoForgeTypes.FLUID_STACK).iterator().next().getAmount(), "Expected the registry to remain normalized");
+			helper.assertEquals(500, focusedWater.getIngredient().getAmount(), "Expected focused water to remain unchanged");
+		}
+		helper.succeed();
+	}
+
 	private static FluidIngredientHelper<FluidStack> createIngredientHelper() {
 		SubtypeManager subtypeManager = new SubtypeManager(new SubtypeInterpreters());
 		return new FluidIngredientHelper<>(subtypeManager, TestColorHelper.INSTANCE, new FluidHelper());
@@ -172,6 +237,13 @@ public final class FluidIngredientGameTests {
 	}
 
 	private static IIngredientManagerInternal createIngredientManager() {
+		return createIngredientManager(List.of(), registration -> {});
+	}
+
+	private static IIngredientManagerInternal createIngredientManager(
+		List<FluidStack> ingredients,
+		Consumer<ISlotDisplayInterpreterRegistration> registerInterpreters
+	) {
 		SubtypeManager subtypeManager = new SubtypeManager(new SubtypeInterpreters());
 		IngredientManagerBuilder builder = new IngredientManagerBuilder(
 			subtypeManager,
@@ -182,11 +254,12 @@ public final class FluidIngredientGameTests {
 		FluidIngredientHelper<FluidStack> ingredientHelper = new FluidIngredientHelper<>(subtypeManager, TestColorHelper.INSTANCE, fluidHelper);
 		builder.register(
 			NeoForgeTypes.FLUID_STACK,
-			List.of(),
+			ingredients,
 			ingredientHelper,
 			TestFluidRenderer.INSTANCE,
 			fluidHelper.getCodec()
 		);
+		registerInterpreters.accept(builder.getSlotDisplayInterpreterRegistration());
 		return builder.build();
 	}
 
