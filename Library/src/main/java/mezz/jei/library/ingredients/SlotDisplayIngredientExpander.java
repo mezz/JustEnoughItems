@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.common.ingredients.TypedIngredient;
 import org.jspecify.annotations.Nullable;
 
 import java.util.HashSet;
@@ -87,14 +88,30 @@ public final class SlotDisplayIngredientExpander {
 			return Stream.of(ingredient);
 		}
 
-		ExpansionKey expansionKey = new ExpansionKey(ingredientType, groupingUid);
+		long amount = ingredientHelper.getAmount(typedIngredient.getIngredient());
+		ExpansionKey expansionKey = new ExpansionKey(ingredientType, groupingUid, amount);
 		Set<ExpansionKey> displayGroups = expandedGroups.computeIfAbsent(slotDisplayData, key -> new HashSet<>());
 		if (!displayGroups.add(expansionKey)) {
 			return Stream.empty();
 		}
 
 		return replacements.stream()
+			.map(replacement -> copyWithAmount(replacement, ingredientHelper, amount))
 			.<SlotIngredient<?>>map(replacement -> new SlotIngredient<>(replacement, slotDisplayData));
+	}
+
+	private static <T> ITypedIngredient<T> copyWithAmount(
+		ITypedIngredient<T> ingredient,
+		IIngredientHelper<T> ingredientHelper,
+		long amount
+	) {
+		T value = ingredient.getIngredient();
+		if (amount < 0 || ingredientHelper.getAmount(value) == amount) {
+			return ingredient;
+		}
+		// Registered and focused ingredients may be normalized; keep the recipe's amount without mutating them.
+		T copy = ingredientHelper.copyWithAmount(value, amount);
+		return TypedIngredient.createUnvalidated(ingredient.getType(), copy);
 	}
 
 	private static <T> List<ITypedIngredient<T>> getFocusedIngredients(
@@ -114,6 +131,6 @@ public final class SlotDisplayIngredientExpander {
 			.toList();
 	}
 
-	private record ExpansionKey(IIngredientType<?> ingredientType, Object groupingUid) {
+	private record ExpansionKey(IIngredientType<?> ingredientType, Object groupingUid, long amount) {
 	}
 }
