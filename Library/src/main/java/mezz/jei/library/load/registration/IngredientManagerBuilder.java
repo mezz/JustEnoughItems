@@ -2,6 +2,7 @@ package mezz.jei.library.load.registration;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
+import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -20,6 +21,7 @@ import mezz.jei.library.ingredients.IngredientInfo;
 import mezz.jei.library.ingredients.IngredientManager;
 import mezz.jei.library.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.TypedIngredient;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,10 +39,22 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 	private final SequencedMap<IIngredientType<?>, IngredientInfo<?>> ingredientInfos = new LinkedHashMap<>();
 	private final ISubtypeManager subtypeManager;
 	private final IColorHelper colorHelper;
+	@Nullable
+	private ResourceLocation registeringPluginUid;
 
 	public IngredientManagerBuilder(ISubtypeManager subtypeManager, IColorHelper colorHelper) {
 		this.subtypeManager = subtypeManager;
 		this.colorHelper = colorHelper;
+	}
+
+	public void registerIngredients(IModPlugin plugin) {
+		ResourceLocation previousPluginUid = registeringPluginUid;
+		registeringPluginUid = plugin.getPluginUid();
+		try {
+			plugin.registerIngredients(this);
+		} finally {
+			registeringPluginUid = previousPluginUid;
+		}
 	}
 
 	@SuppressWarnings("removal")
@@ -101,7 +115,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 			allTypedIngredients.add(typedIngredient);
 		}
 
-		ingredientInfos.put(ingredientType, new IngredientInfo<>(ingredientType, allTypedIngredients, ingredientHelper, ingredientRenderer, ingredientCodec));
+		ingredientInfos.put(ingredientType, new IngredientInfo<>(ingredientType, allTypedIngredients, ingredientHelper, ingredientRenderer, ingredientCodec, registeringPluginUid));
 	}
 
 	@Override
