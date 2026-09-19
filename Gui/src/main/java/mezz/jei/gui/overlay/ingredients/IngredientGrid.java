@@ -368,6 +368,10 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		return ingredientListRenderer.getSlots();
 	}
 
+	public List<IngredientListSlot> getAllSlots() {
+		return ingredientListRenderer.getAllSlots();
+	}
+
 	@Override
 	public Stream<IElement<?>> getVisibleElements() {
 		return this.ingredientListRenderer.getSlots()

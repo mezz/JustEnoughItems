@@ -155,11 +155,31 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		if (pageAnchorElement != null) {
 			return pageAnchorElement;
 		}
-		return this.ingredientGrid.getSlots()
-			.map(IngredientListSlot::getOptionalElement)
-			.flatMap(Optional::stream)
+		return this.ingredientGrid.getVisibleElements()
 			.findFirst()
 			.orElse(null);
+	}
+
+	public void setPageAnchorElement(IElement<?> pageAnchorElement) {
+		if (usesScrollbar()) {
+			this.scrollController.setScrollAnchorElement(pageAnchorElement);
+		} else {
+			this.pageState.setPageAnchorElement(pageAnchorElement);
+		}
+	}
+
+	/** Includes temporarily hidden elements, such as the bookmark currently being dragged. */
+	public List<IElement<?>> getPageElements() {
+		List<IElement<?>> elements = this.ingredientSource.getElements();
+		int firstIndex;
+		if (usesScrollbar()) {
+			firstIndex = this.scrollController.getFirstVisibleScrollRow() * this.ingredientGrid.getColumnCount();
+		} else {
+			firstIndex = this.pageState.getFirstItemIndex();
+		}
+		firstIndex = Math.min(firstIndex, elements.size());
+		int endIndex = Math.min(firstIndex + this.ingredientGrid.size(), elements.size());
+		return elements.subList(firstIndex, endIndex);
 	}
 
 	public <T> IClickableIngredientInternal<T> createPageAnchorIngredient(IClickableIngredientInternal<T> delegate) {
@@ -181,11 +201,18 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 	}
 
 	private void setAnchorToFirstVisible() {
-		this.ingredientGrid.getSlots()
-			.map(IngredientListSlot::getOptionalElement)
-			.flatMap(Optional::stream)
-			.findFirst()
-			.ifPresent(this.pageState::setPageAnchorElement);
+		Optional<IElement<?>> firstVisibleElement = this.ingredientGrid.getVisibleElements()
+			.findFirst();
+		if (firstVisibleElement.isPresent()) {
+			this.pageState.setPageAnchorElement(firstVisibleElement.get());
+			return;
+		}
+		// The page can render empty while a drag hides its only bookmark.
+		List<IElement<?>> ingredientList = ingredientSource.getElements();
+		int firstItemIndex = this.pageState.getFirstItemIndex();
+		if (firstItemIndex < ingredientList.size()) {
+			this.pageState.setPageAnchorElement(ingredientList.get(firstItemIndex));
+		}
 	}
 
 	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
@@ -264,6 +291,16 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 
 	public IPaged getPageDelegate() {
 		return pageDelegate;
+	}
+
+	public void scrollByPixels(double pixels) {
+		if (usesScrollbar()) {
+			updateLayoutWhenChanged(this.scrollController.scrollByPixels(pixels));
+		}
+	}
+
+	public void setPageButtonsForcePressed(boolean nextButton, boolean backButton) {
+		this.navigation.setForcePressed(nextButton, backButton);
 	}
 
 	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
@@ -617,5 +654,12 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 			}
 			return -1;
 		}
+	}
+
+	public List<IngredientListSlot> getAllSlots() {
+		if (!this.active) {
+			return List.of();
+		}
+		return this.ingredientGrid.getAllSlots();
 	}
 }

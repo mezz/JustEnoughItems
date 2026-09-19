@@ -8,10 +8,16 @@ import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.MouseUtil;
+import mezz.jei.common.input.handlers.CombinedInputHandler;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.elements.GuiIconToggleButton;
@@ -20,26 +26,22 @@ import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.input.IRecipeFocusSource;
-import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.input.MouseUtil;
 import mezz.jei.gui.input.handlers.CombinedDragHandler;
-import mezz.jei.common.input.handlers.CombinedInputHandler;
 import mezz.jei.gui.input.handlers.NullDragHandler;
 import mezz.jei.gui.input.handlers.NullInputHandler;
 import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
-import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
-import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
-import mezz.jei.gui.overlay.ingredients.IngredientListSlot;
 import mezz.jei.gui.overlay.ScreenPropertiesCache;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryButton;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 import mezz.jei.gui.overlay.elements.IElement;
+import mezz.jei.gui.overlay.ingredients.IngredientGrid;
+import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
+import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -71,6 +73,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	private final BookmarkList bookmarkList;
 	private final IClientToggleState toggleState;
 	private final IClientConfig clientConfig;
+	private final IIngredientGridConfig bookmarkListConfig;
 	private final BookmarkPreviewTooltipController previewTooltipController;
 
 	public BookmarkOverlay(
@@ -87,6 +90,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		this.bookmarkList = bookmarkList;
 		this.toggleState = toggleState;
 		this.clientConfig = clientConfig;
+		this.bookmarkListConfig = bookmarkListConfig;
 		this.bookmarkButton = BookmarkButton.create(this, bookmarkList, toggleState, keyBindings);
 		this.historyButton = LookupHistoryButton.create(clientConfig);
 		this.contents = contents;
@@ -223,6 +227,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	public void drawScreen(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
 			this.bookmarkDragManager.updateDrag(mouseX, mouseY);
+			drawPageFlipEdgeHighlights(guiGraphics, mouseX, mouseY);
 			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (screenPropertiesCache.hasValidScreen() && toggleState.isOverlayEnabled()) {
@@ -232,6 +237,31 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			this.bookmarkButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 			this.historyButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		}
+	}
+
+	private void drawPageFlipEdgeHighlights(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		if (!this.bookmarkDragManager.isDragging() || !canFlipPage()) {
+			return;
+		}
+		PageFlipHover.Direction hoveredDirection = getHoveredPageEdge(mouseX, mouseY);
+		drawPageFlipEdgeHighlight(guiGraphics, getNextPageEdgeArea(), hoveredDirection == PageFlipHover.Direction.NEXT);
+		drawPageFlipEdgeHighlight(guiGraphics, getBackPageEdgeArea(), hoveredDirection == PageFlipHover.Direction.PREVIOUS);
+	}
+
+	private static void drawPageFlipEdgeHighlight(GuiGraphics guiGraphics, ImmutableRect2i area, boolean hovered) {
+		GuiColor color;
+		if (hovered) {
+			color = GuiColor.BOOKMARK_DRAG_PAGE_FLIP_HIGHLIGHT;
+		} else {
+			color = GuiColor.BOOKMARK_DRAG_PAGE_FLIP_HINT;
+		}
+		guiGraphics.fill(
+			area.getX(),
+			area.getY(),
+			area.getX() + area.getWidth(),
+			area.getY() + area.getHeight(),
+			JeiGuiColors.getColor(color)
+		);
 	}
 
 	public BookmarkPreviewTooltipController getPreviewTooltipController() {
@@ -391,37 +421,74 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		this.lookupHistoryOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
 	}
 
-	public List<IBookmarkDragTarget> createBookmarkDragTargets() {
-		List<DragTarget> slotTargets = this.contents.getSlots()
-			.map(this::createDragTarget)
-			.filter(Optional::isPresent)
-			.map(Optional::get)
-			.toList();
-
-		IBookmark firstBookmark = slotTargets.get(0).bookmark;
-		IBookmark lastBookmark = slotTargets.get(slotTargets.size() - 1).bookmark;
-
-		List<IBookmarkDragTarget> bookmarkDragTargets = new ArrayList<>(slotTargets);
-
-		IPaged pageDelegate = this.contents.getPageDelegate();
-		if (pageDelegate.getPageCount() > 1) {
-			// if a bookmark is dropped on the next button, put it on the next page
-			bookmarkDragTargets.add(new ActionDragTarget(this.contents.getNextPageButtonArea(), lastBookmark, bookmarkList, 1, pageDelegate::nextPage));
-
-			// if a bookmark is dropped on the back button, put it on the previous page
-			bookmarkDragTargets.add(new ActionDragTarget(this.contents.getBackButtonArea(), firstBookmark, bookmarkList, -1, pageDelegate::previousPage));
+	public List<BookmarkDragTarget> createBookmarkDragTargets(IBookmark draggedBookmark) {
+		List<IElement<?>> elements = this.bookmarkList.getElements();
+		List<BookmarkDragTarget> targets = BookmarkDragTarget.createSlotTargets(this.contents.getAllSlots(), elements, draggedBookmark);
+		List<IElement<?>> pageElements = this.contents.getPageElements();
+		if (pageElements.isEmpty()) {
+			return targets;
 		}
 
-		// if a bookmark is dropped somewhere else in the contents area, put it at the end of the current page
-		bookmarkDragTargets.add(new DragTarget(this.contents.getSlotBackgroundArea(), lastBookmark, bookmarkList, 0));
+		// Use the current page's range, including hidden bookmarks, even after navigating during a drag.
+		int firstIndex = elements.indexOf(pageElements.get(0));
+		int lastIndex = elements.indexOf(pageElements.get(pageElements.size() - 1));
+		if (canFlipPage()) {
+			targets.add(new BookmarkDragTarget(this.contents.getNextPageButtonArea(), (lastIndex + 1) % elements.size()));
+			targets.add(new BookmarkDragTarget(this.contents.getBackButtonArea(), Math.floorMod(firstIndex - 1, elements.size())));
+		}
 
-		return bookmarkDragTargets;
+		// Trailing empty slots and background padding place the bookmark at the end of this page.
+		targets.add(new BookmarkDragTarget(this.contents.getSlotBackgroundArea(), lastIndex));
+		return targets;
 	}
 
-	private Optional<DragTarget> createDragTarget(IngredientListSlot ingredientListSlot) {
-		return ingredientListSlot.getOptionalElement()
-			.flatMap(IElement::getBookmark)
-			.map(bookmark -> new DragTarget(ingredientListSlot.getArea(), bookmark, bookmarkList, 0));
+	public void moveBookmark(IBookmark bookmark, int index) {
+		this.bookmarkList.moveBookmark(bookmark, index);
+		// Keep the dropped bookmark visible when its visibility and the cursor's slot are restored.
+		this.contents.setPageAnchorElement(bookmark.getElement());
+	}
+
+	public IPaged getPageDelegate() {
+		return this.contents.getPageDelegate();
+	}
+
+	public void setPageButtonsForcePressed(boolean nextButton, boolean backButton) {
+		this.contents.setPageButtonsForcePressed(nextButton, backButton);
+	}
+
+	private ImmutableRect2i getNextPageEdgeArea() {
+		return this.contents.getSlotBackgroundArea()
+			.keepRight(IngredientGrid.INGREDIENT_WIDTH / 2);
+	}
+
+	private ImmutableRect2i getBackPageEdgeArea() {
+		return this.contents.getSlotBackgroundArea()
+			.keepLeft(IngredientGrid.INGREDIENT_WIDTH / 2);
+	}
+
+	PageFlipHover.@Nullable Direction getHoveredPageEdge(double mouseX, double mouseY) {
+		if (!canFlipPage()) {
+			return null;
+		}
+		if (MathUtil.contains(getNextPageEdgeArea(), mouseX, mouseY)) {
+			return PageFlipHover.Direction.NEXT;
+		}
+		if (MathUtil.contains(getBackPageEdgeArea(), mouseX, mouseY)) {
+			return PageFlipHover.Direction.PREVIOUS;
+		}
+		return null;
+	}
+
+	private boolean canFlipPage() {
+		return !this.bookmarkListConfig.navigationMode().get().usesScrollbar() &&
+			getPageDelegate().getPageCount() > 1;
+	}
+
+	void scrollDuringDrag(BookmarkDragScroll dragScroll, double mouseX, double mouseY) {
+		double pixels = dragScroll.update(this.contents.getSlotBackgroundArea(), this.bookmarkListConfig.navigationMode().get(), mouseX, mouseY);
+		if (pixels != 0) {
+			this.contents.scrollByPixels(pixels);
+		}
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
@@ -434,44 +501,5 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			bookmarkList.containsElement(element) &&
 			contents.getIngredientUnderMouse(mouseX, mouseY)
 				.anyMatch(ingredient -> ingredient.getElement() == element);
-	}
-
-	public static class ActionDragTarget extends DragTarget {
-		private final Runnable action;
-
-		public ActionDragTarget(ImmutableRect2i area, IBookmark bookmark, BookmarkList bookmarkList, int offset, Runnable action) {
-			super(area, bookmark, bookmarkList, offset);
-			this.action = action;
-		}
-
-		@Override
-		public void accept(IBookmark bookmark) {
-			super.accept(bookmark);
-			action.run();
-		}
-	}
-
-	public static class DragTarget implements IBookmarkDragTarget {
-		private final ImmutableRect2i area;
-		private final IBookmark bookmark;
-		private final BookmarkList bookmarkList;
-		private final int offset;
-
-		public DragTarget(ImmutableRect2i area, IBookmark bookmark, BookmarkList bookmarkList, int offset) {
-			this.area = area;
-			this.bookmark = bookmark;
-			this.bookmarkList = bookmarkList;
-			this.offset = offset;
-		}
-
-		@Override
-		public ImmutableRect2i getArea() {
-			return area;
-		}
-
-		@Override
-		public void accept(IBookmark bookmark) {
-			bookmarkList.moveBookmark(this.bookmark, bookmark, offset);
-		}
 	}
 }

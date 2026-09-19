@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class BookmarkList implements IIngredientGridSource, IBookmarkManager {
@@ -67,22 +68,24 @@ public class BookmarkList implements IIngredientGridSource, IBookmarkManager {
 			return;
 		}
 		int i = bookmarksList.indexOf(previousBookmark);
-		int j = bookmarksList.indexOf(newBookmark);
-		int newIndex = i + offset;
-		if (newIndex == j) {
+		moveBookmark(newBookmark, Math.floorMod(i + offset, bookmarksList.size()));
+	}
+
+	public void moveBookmark(IBookmark bookmark, int index) {
+		int oldIndex = bookmarksList.indexOf(bookmark);
+		if (oldIndex < 0 || oldIndex == index) {
 			return;
 		}
-
-		if (newIndex < 0) {
-			newIndex += bookmarksList.size();
-		}
-		newIndex %= bookmarksList.size();
-
-		bookmarksList.remove(newBookmark);
-		bookmarksList.add(newIndex, newBookmark);
+		Objects.checkIndex(index, bookmarksList.size());
+		bookmarksList.remove(oldIndex);
+		bookmarksList.add(index, bookmark);
 
 		notifyListenersOfChange();
 		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarksList);
+	}
+
+	public void moveBookmarkToFront(IBookmark value) {
+		moveBookmark(value, 0);
 	}
 
 	public boolean contains(IBookmark value) {
