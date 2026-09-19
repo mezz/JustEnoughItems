@@ -9,6 +9,8 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.collect.ListMultiMap;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
@@ -16,12 +18,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Optional;
 
 public class IngredientInfo<T> {
 	private final IIngredientType<T> ingredientType;
 	private final IIngredientHelper<T> ingredientHelper;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final Codec<T> ingredientCodec;
+	@Nullable
+	private final Identifier registeringPluginUid;
 	private final RegisteredIngredientIndex<T> ingredientIndex;
 	private final ListMultiMap<Object, String> aliases;
 	private final ListMultiMap<Object, String> baseAliases;
@@ -31,12 +36,14 @@ public class IngredientInfo<T> {
 		Collection<ITypedIngredient<T>> ingredients,
 		IIngredientHelper<T> ingredientHelper,
 		IIngredientRenderer<T> ingredientRenderer,
-		Codec<T> ingredientCodec
+		Codec<T> ingredientCodec,
+		@Nullable Identifier registeringPluginUid
 	) {
 		this.ingredientType = ingredientType;
 		this.ingredientHelper = ingredientHelper;
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredientCodec = ingredientCodec;
+		this.registeringPluginUid = registeringPluginUid;
 
 		this.ingredientIndex = new RegisteredIngredientIndex<>(ingredientHelper);
 		this.ingredientIndex.addAll(ingredients);
@@ -59,6 +66,10 @@ public class IngredientInfo<T> {
 
 	public Codec<T> getIngredientCodec() {
 		return ingredientCodec;
+	}
+
+	public Optional<Identifier> getRegisteringPluginUid() {
+		return Optional.ofNullable(registeringPluginUid);
 	}
 
 	@Unmodifiable
