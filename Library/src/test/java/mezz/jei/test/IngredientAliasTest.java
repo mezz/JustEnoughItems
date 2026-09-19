@@ -241,7 +241,8 @@ public class IngredientAliasTest {
 			TEST_TYPE,
 			List.of(typedIngredients),
 			TEST_HELPER,
-			createTestRenderer()
+			createTestRenderer(),
+			null
 		);
 	}
 

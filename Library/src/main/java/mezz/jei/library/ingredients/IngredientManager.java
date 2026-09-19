@@ -40,6 +40,12 @@ public class IngredientManager implements IIngredientManager, ITypedIngredientFa
 	}
 
 	@Override
+	public Optional<ResourceLocation> getRegisteringPluginUid(IIngredientType<?> ingredientType) {
+		return registeredIngredients.getIngredientInfo(ingredientType)
+			.getRegisteringPluginUid();
+	}
+
+	@Override
 	@Unmodifiable
 	public <V> Collection<V> getAllIngredients(IIngredientType<V> ingredientType) {
 		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
