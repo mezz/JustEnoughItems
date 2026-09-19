@@ -14,6 +14,10 @@ This means:
 
 # Latest Versions:
 
+## 26.3
+* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-26.3-neoforge%2Fmaven-metadata.xml&label=NeoForge%2026.3)](https://maven.blamejared.com/mezz/jei/jei-26.3-neoforge/maven-metadata.xml)
+* [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-26.3-fabric%2Fmaven-metadata.xml&label=Fabric%2026.3)](https://maven.blamejared.com/mezz/jei/jei-26.3-fabric/maven-metadata.xml)
+
 ## 26.2
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-26.2-neoforge%2Fmaven-metadata.xml&label=NeoForge%2026.2)](https://maven.blamejared.com/mezz/jei/jei-26.2-neoforge/maven-metadata.xml)
 * [![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.blamejared.com%2Fmezz%2Fjei%2Fjei-26.2-fabric%2Fmaven-metadata.xml&label=Fabric%2026.2)](https://maven.blamejared.com/mezz/jei/jei-26.2-fabric/maven-metadata.xml)
