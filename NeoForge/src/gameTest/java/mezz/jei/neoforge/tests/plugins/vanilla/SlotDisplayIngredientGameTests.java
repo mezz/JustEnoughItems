@@ -172,6 +172,34 @@ public final class SlotDisplayIngredientGameTests {
 
 	@GameTest
 	@EmptyTemplate
+	@TestHolder(description = "Wildcard subtype expansion preserves distinct recipe counts within a display group.")
+	public static void wildcardDisplayGroupPreservesCounts(JeiGameTestHelper helper) {
+		ItemStack waterPotion = PotionContents.createItemStack(Items.POTION, Potions.WATER);
+		ItemStack healingPotion = PotionContents.createItemStack(Items.POTION, Potions.HEALING);
+		IIngredientManagerInternal ingredientManager = createIngredientManager(waterPotion, healingPotion);
+		SlotIngredient<ItemStack> anyPotion = resolve(helper, ingredientManager, Ingredient.of(Items.POTION).display()).getFirst();
+		List<ITypedIngredient<ItemStack>> ingredients = List.of(8, 16, 8).stream()
+			.map(count -> ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, waterPotion.copyWithCount(count), false).orElseThrow())
+			.toList();
+		SlotDisplayData<ItemStack> displayData = new SlotDisplayData<>(ingredients, getInfo(anyPotion));
+		var sources = ingredients.stream().map(ingredient -> new SlotIngredient<>(ingredient, displayData)).toList();
+
+		List<SlotIngredient<?>> expanded = expandForDisplay(ingredientManager, sources);
+		helper.assertEquals(4, expanded.size(), "Expected each subtype at each distinct recipe count, without duplicates");
+		List<ItemStack> stacks = expanded.stream().map(ingredient -> ingredient.typedIngredient().getItemStack().orElseThrow()).toList();
+		helper.assertEquals(List.of(8, 8, 16, 16), stacks.stream().map(ItemStack::getCount).toList(), "Expected both recipe counts to survive expansion");
+		for (int count : List.of(8, 16)) {
+			for (ItemStack subtype : List.of(waterPotion, healingPotion)) {
+				helper.assertTrue(stacks.stream().anyMatch(stack -> stack.getCount() == count && ItemStack.isSameItemSameComponents(stack, subtype)), "Expected each counted potion subtype");
+			}
+		}
+		helper.assertTrue(expanded.stream().allMatch(ingredient -> ingredient.slotDisplayData() == displayData), "Expected the original display group");
+		helper.assertTrue(ingredientManager.getAllIngredients(VanillaTypes.ITEM_STACK).stream().allMatch(stack -> stack.getCount() == 1), "Expected registered potion counts to remain normalized");
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
 	@TestHolder(description = "Tag displays retain their declared tag after resolution and wrapping.")
 	public static void tagDisplayRetainsDeclaredTag(JeiGameTestHelper helper) {
 		// Setup: only part of the planks tag is registered, so JEI cannot infer the tag from contents alone.
