@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
@@ -135,6 +136,11 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	@Override
 	public void addTooltipCallback(ITooltipCallback<T> tooltipCallback) {
 		this.tooltipCallback = tooltipCallback;
+	}
+
+	@Override
+	public ITooltipCallback<T> createRecipeIdTooltipCallback(@Nullable ResourceLocation recipeId) {
+		return new RecipeIdTooltipCallback<>(recipeId, ingredientHelper);
 	}
 
 	@Override

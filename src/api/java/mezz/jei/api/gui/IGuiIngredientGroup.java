@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredients;
@@ -58,6 +60,35 @@ public interface IGuiIngredientGroup<T> {
 	 * Add a callback to alter the tooltip for these ingredients.
 	 */
 	void addTooltipCallback(ITooltipCallback<T> tooltipCallback);
+
+	/**
+	 * Adds a callback that appends recipe id and "recipe by" text to the
+	 * tooltip for these ingredients that aren't marked as "input", as seen
+	 * in the crafting recipe category.
+	 * <p>
+	 * Should be used by recipe categories whose recipes have an id.
+	 *
+	 * @param recipeId registry id of the recipe
+	 * @see IGuiIngredientGroup#addTooltipCallback(ITooltipCallback)
+	 * @see IGuiIngredientGroup#createRecipeIdTooltipCallback(ResourceLocation)
+	 * @since JEI 4.16.6
+	 */
+	default void addRecipeIdTooltipCallback(@Nullable ResourceLocation recipeId) {
+		addTooltipCallback(createRecipeIdTooltipCallback(recipeId));
+	}
+
+	/**
+	 * Creates a callback instance that appends recipe id and "recipe by" text to
+	 * the tooltip for these ingredients that aren't marked as "input", as seen
+	 * in the crafting recipe category.
+	 * <p>
+	 * Should be used by recipe categories whose recipes have an id.
+	 *
+	 * @param recipeId registry id of the recipe
+	 * @see IGuiIngredientGroup#addTooltipCallback(ITooltipCallback)
+	 * @since JEI 4.16.6
+	 */
+	ITooltipCallback<T> createRecipeIdTooltipCallback(@Nullable ResourceLocation recipeId);
 
 	/**
 	 * Get the ingredients after they have been set.
