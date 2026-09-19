@@ -107,6 +107,11 @@ public class ClientInputHandler {
 			return false;
 		}
 
+		if (this.dragRouter.isDragging() && input.is(keybindings.getLeftClick())) {
+			// an extra left click during a drag (i.e. multi-touch) must not cancel it; it ends on release
+			return true;
+		}
+
 		boolean handled = this.inputRouter.handleUserInput(screen, guiProperties, input, keybindings);
 
 		if (Minecraft.getInstance().screen == screen && input.is(keybindings.getLeftClick())) {
