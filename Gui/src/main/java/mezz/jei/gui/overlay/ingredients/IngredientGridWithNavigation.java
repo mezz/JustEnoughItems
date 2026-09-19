@@ -245,6 +245,11 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		return controller;
 	}
 
+	public void scrollByPixels(double pixels) {
+		updateLayoutIfDirty();
+		this.controller.scrollByPixels(pixels);
+	}
+
 	public void setPageButtonsForcePressed(boolean nextButton, boolean backButton) {
 		this.navigation.setForcePressed(nextButton, backButton);
 	}

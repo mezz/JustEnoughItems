@@ -27,6 +27,7 @@ public class BookmarkDrag<T> {
 	private final ImmutableRect2i origin;
 	private final long dragCanStartTime;
 	private final PageFlipHover pageFlipHover = new PageFlipHover(System::currentTimeMillis);
+	private final BookmarkDragScroll dragScroll = new BookmarkDragScroll(System::nanoTime);
 
 	public BookmarkDrag(
 		BookmarkOverlay bookmarkOverlay,
@@ -81,6 +82,7 @@ public class BookmarkDrag<T> {
 		bookmarkOverlay.getScreenPropertiesUpdater()
 			.updateMouseExclusionArea(new ImmutablePoint2i(mouseX, mouseY))
 			.update();
+		bookmarkOverlay.scrollDuringDrag(dragScroll, mouseX, mouseY);
 
 		Direction hoveredDirection = bookmarkOverlay.getHoveredPageEdge(mouseX, mouseY);
 		Direction flipDirection = pageFlipHover.update(hoveredDirection);

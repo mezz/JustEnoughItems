@@ -318,6 +318,10 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 		updateLayoutWhenChanged(this.scrollController.setScrollOffsetY(scrollOffsetY));
 	}
 
+	public boolean scrollByPixels(double pixels) {
+		return usesScrollbar() && updateLayoutWhenChanged(this.scrollController.scrollByPixels(pixels));
+	}
+
 	private boolean updateLayoutWhenChanged(boolean layoutChanged) {
 		if (layoutChanged) {
 			this.onLayoutChanged.run();

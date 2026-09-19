@@ -260,16 +260,12 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	private void drawPageFlipEdgeHighlights(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		if (!this.bookmarkDragManager.isDragging()) {
+		if (!this.bookmarkDragManager.isDragging() || !canFlipPage()) {
 			return;
 		}
 		PageFlipHover.Direction hoveredDirection = getHoveredPageEdge(mouseX, mouseY);
-		if (canFlipPage(PageFlipHover.Direction.NEXT)) {
-			drawPageFlipEdgeHighlight(guiGraphics, getNextPageEdgeArea(), hoveredDirection == PageFlipHover.Direction.NEXT);
-		}
-		if (canFlipPage(PageFlipHover.Direction.PREVIOUS)) {
-			drawPageFlipEdgeHighlight(guiGraphics, getBackPageEdgeArea(), hoveredDirection == PageFlipHover.Direction.PREVIOUS);
-		}
+		drawPageFlipEdgeHighlight(guiGraphics, getNextPageEdgeArea(), hoveredDirection == PageFlipHover.Direction.NEXT);
+		drawPageFlipEdgeHighlight(guiGraphics, getBackPageEdgeArea(), hoveredDirection == PageFlipHover.Direction.PREVIOUS);
 	}
 
 	private static void drawPageFlipEdgeHighlight(GuiGraphicsExtractor guiGraphics, ImmutableRect2i area, boolean hovered) {
@@ -459,7 +455,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		// Use the current page's range, including hidden bookmarks, even after navigating during a drag.
 		int firstIndex = elements.indexOf(pageElements.getFirst());
 		int lastIndex = elements.indexOf(pageElements.getLast());
-		if (this.contents.getPageDelegate().getPageCount() > 1) {
+		if (canFlipPage()) {
 			targets.add(new BookmarkDragTarget(this.contents.getNextPageButtonArea(), (lastIndex + 1) % elements.size()));
 			targets.add(new BookmarkDragTarget(this.contents.getBackButtonArea(), Math.floorMod(firstIndex - 1, elements.size())));
 		}
@@ -494,33 +490,28 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	PageFlipHover.@Nullable Direction getHoveredPageEdge(double mouseX, double mouseY) {
-		if (canFlipPage(PageFlipHover.Direction.NEXT) &&
-			MathUtil.contains(getNextPageEdgeArea(), mouseX, mouseY)
-		) {
+		if (!canFlipPage()) {
+			return null;
+		}
+		if (MathUtil.contains(getNextPageEdgeArea(), mouseX, mouseY)) {
 			return PageFlipHover.Direction.NEXT;
 		}
-		if (canFlipPage(PageFlipHover.Direction.PREVIOUS) &&
-			MathUtil.contains(getBackPageEdgeArea(), mouseX, mouseY)
-		) {
+		if (MathUtil.contains(getBackPageEdgeArea(), mouseX, mouseY)) {
 			return PageFlipHover.Direction.PREVIOUS;
 		}
 		return null;
 	}
 
-	private boolean canFlipPage(PageFlipHover.Direction direction) {
-		IPaged pageDelegate = getPageDelegate();
-		int pageCount = pageDelegate.getPageCount();
-		if (pageCount <= 1) {
-			return false;
+	private boolean canFlipPage() {
+		return !this.bookmarkListConfig.navigationMode().getValue().usesScrollbar() &&
+			getPageDelegate().getPageCount() > 1;
+	}
+
+	void scrollDuringDrag(BookmarkDragScroll dragScroll, double mouseX, double mouseY) {
+		double pixels = dragScroll.update(this.contents.getSlotBackgroundArea(), this.bookmarkListConfig.navigationMode().getValue(), mouseX, mouseY);
+		if (pixels != 0) {
+			this.contents.scrollByPixels(pixels);
 		}
-		// Pages wrap in both directions; scrollbars stop at the ends of the list.
-		if (!this.bookmarkListConfig.navigationMode().getValue().usesScrollbar()) {
-			return true;
-		}
-		return switch (direction) {
-			case NEXT -> pageDelegate.getPageNumber() < pageCount - 1;
-			case PREVIOUS -> pageDelegate.getPageNumber() > 0;
-		};
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {

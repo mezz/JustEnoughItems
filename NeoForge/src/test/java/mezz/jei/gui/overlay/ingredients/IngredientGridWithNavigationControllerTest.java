@@ -495,6 +495,47 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 	}
 
+	@Test
+	public void dragScrollingMovesGraduallyAndSurvivesRelayout() {
+		for (IngredientGridNavigationMode mode : List.of(IngredientGridNavigationMode.SCROLLING, IngredientGridNavigationMode.SMOOTH_SCROLLING)) {
+			Fixture fixture = Fixture.create(3, 3, 30, true, mode);
+			fixture.controller.updateLayoutToFirstPage();
+			if (mode.usesSmoothScrolling()) {
+				for (int i = 0; i < 3; i++) {
+					assertTrue(fixture.controller.scrollByPixels(6));
+					fixture.controller.updateLayoutKeepingPageAnchorVisible(fixture.controller.getPageAnchorElement());
+				}
+			} else {
+				assertTrue(fixture.controller.scrollByPixels(18));
+				fixture.controller.updateLayoutKeepingPageAnchorVisible(fixture.controller.getPageAnchorElement());
+			}
+			assertEquals(3, fixture.grid.firstItemIndex);
+			assertEquals(0, fixture.grid.scrollOffsetY);
+			assertTrue(fixture.controller.scrollByPixels(-18));
+			assertEquals(0, fixture.grid.firstItemIndex);
+		}
+	}
+
+	@Test
+	public void dragScrollingStopsAtBothEndsOfTheList() {
+		for (IngredientGridNavigationMode mode : List.of(IngredientGridNavigationMode.SCROLLING, IngredientGridNavigationMode.SMOOTH_SCROLLING)) {
+			Fixture fixture = Fixture.create(3, 3, 30, true, mode);
+			fixture.controller.updateLayoutToFirstPage();
+			assertFalse(fixture.controller.scrollByPixels(-18));
+			fixture.controller.setScrollOffsetY(1);
+			assertFalse(fixture.controller.scrollByPixels(18));
+			assertEquals(21, fixture.grid.firstItemIndex);
+		}
+	}
+
+	@Test
+	public void dragScrollingDoesNotChangePagedNavigation() {
+		Fixture fixture = Fixture.create(3, 3, 30, true, IngredientGridNavigationMode.PAGED);
+		fixture.controller.updateLayoutToFirstPage();
+		assertFalse(fixture.controller.scrollByPixels(18));
+		assertEquals(0, fixture.grid.firstItemIndex);
+	}
+
 	private static class Fixture {
 		final IngredientGridWithNavigationController controller;
 		final TestNavigationGrid grid;
