@@ -21,6 +21,10 @@ public class DragRouter {
 		cancelDrag();
 	}
 
+	public boolean isDragging() {
+		return this.dragStartedCallback != null;
+	}
+
 	public boolean startDrag(Screen screen, UserInput input) {
 		cancelDrag();
 

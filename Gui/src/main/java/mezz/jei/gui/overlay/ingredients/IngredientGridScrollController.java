@@ -155,6 +155,14 @@ public final class IngredientGridScrollController {
 		return updateScrollOffset(scrollOffsetY);
 	}
 
+	public boolean scrollByPixels(double pixels) {
+		int hiddenPixels = getHiddenScrollRows() * IngredientGridLayout.INGREDIENT_HEIGHT;
+		if (hiddenPixels == 0 || pixels == 0) {
+			return false;
+		}
+		return updateScrollOffset(this.scrollState.getScrollOffsetY() + (float) (pixels / hiddenPixels));
+	}
+
 	public int getFirstVisibleScrollRow() {
 		if (isSmoothScrolling()) {
 			int scrollPixelOffset = GridScrollMath.getSmoothScrollPixelOffset(

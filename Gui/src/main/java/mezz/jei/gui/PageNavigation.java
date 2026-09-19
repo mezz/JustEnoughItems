@@ -113,6 +113,11 @@ public class PageNavigation {
 		}
 	}
 
+	public void setForcePressed(boolean nextButton, boolean backButton) {
+		this.nextButton.setForcePressed(nextButton);
+		this.backButton.setForcePressed(backButton);
+	}
+
 	public ImmutableRect2i getNextButtonArea() {
 		return nextButton.getArea();
 	}

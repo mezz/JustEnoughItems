@@ -264,6 +264,10 @@ public class IngredientGrid implements IIngredientGrid {
 		return ingredientListRenderer.getSlots();
 	}
 
+	public List<IngredientListSlot> getAllSlots() {
+		return ingredientListRenderer.getAllSlots();
+	}
+
 	@Override
 	public Stream<IElement<?>> getVisibleElements() {
 		return this.ingredientListRenderer.getSlots()
