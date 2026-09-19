@@ -2,6 +2,7 @@ package mezz.jei.library.load.registration;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
+import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -21,10 +22,12 @@ import mezz.jei.library.ingredients.IngredientInfo;
 import mezz.jei.library.ingredients.IngredientManager;
 import mezz.jei.library.ingredients.RegisteredIngredients;
 import mezz.jei.common.ingredients.TypedIngredient;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.level.material.Fluid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,11 +43,24 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 	private final IColorHelper colorHelper;
 	private final ContextMap contextMap;
 	private final SlotDisplayInterpreterRegistration slotDisplayInterpreterRegistration = new SlotDisplayInterpreterRegistration();
+	@Nullable
+	private Identifier registeringPluginUid;
 
 	public IngredientManagerBuilder(ISubtypeManager subtypeManager, IColorHelper colorHelper, ContextMap contextMap) {
 		this.subtypeManager = subtypeManager;
 		this.colorHelper = colorHelper;
 		this.contextMap = contextMap;
+	}
+
+	public void registerIngredients(IModPlugin plugin) {
+		@Nullable
+		Identifier previousPluginUid = registeringPluginUid;
+		registeringPluginUid = plugin.getPluginUid();
+		try {
+			plugin.registerIngredients(this);
+		} finally {
+			registeringPluginUid = previousPluginUid;
+		}
 	}
 
 	@Override
@@ -89,7 +105,14 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 			allTypedIngredients.add(typedIngredient);
 		}
 
-		ingredientInfos.put(ingredientType, new IngredientInfo<>(ingredientType, allTypedIngredients, ingredientHelper, ingredientRenderer, ingredientCodec));
+		ingredientInfos.put(ingredientType, new IngredientInfo<>(
+			ingredientType,
+			allTypedIngredients,
+			ingredientHelper,
+			ingredientRenderer,
+			ingredientCodec,
+			registeringPluginUid
+		));
 	}
 
 	@Override
