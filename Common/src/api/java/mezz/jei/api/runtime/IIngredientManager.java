@@ -13,6 +13,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -87,6 +88,16 @@ public interface IIngredientManager {
 	 */
 	@Unmodifiable
 	Collection<IIngredientType<?>> getRegisteredIngredientTypes();
+
+	/**
+	 * Returns the UID of the plugin that registered this ingredient type, or empty if unavailable.
+	 *
+	 * @see IModPlugin#getPluginUid()
+	 * @since 31.3.0
+	 */
+	default Optional<Identifier> getRegisteringPluginUid(IIngredientType<?> ingredientType) {
+		return Optional.empty();
+	}
 
 	/**
 	 * @return the ingredient type that has the given uid.

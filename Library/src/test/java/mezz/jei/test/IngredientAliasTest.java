@@ -225,7 +225,8 @@ public class IngredientAliasTest {
 			List.of(typedIngredients),
 			TEST_HELPER,
 			createTestRenderer(),
-			TEST_CODEC
+			TEST_CODEC,
+			null
 		);
 	}
 
