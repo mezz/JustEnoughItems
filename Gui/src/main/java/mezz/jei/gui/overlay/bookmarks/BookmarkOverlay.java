@@ -72,6 +72,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	private final BookmarkList bookmarkList;
 	private final IClientToggleState toggleState;
 	private final IClientConfig clientConfig;
+	private final IIngredientGridConfig bookmarkListConfig;
 	private final BookmarkPreviewTooltipController previewTooltipController;
 	private boolean screenPropertiesDirty;
 
@@ -89,6 +90,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		this.bookmarkList = bookmarkList;
 		this.toggleState = toggleState;
 		this.clientConfig = clientConfig;
+		this.bookmarkListConfig = bookmarkListConfig;
 		this.bookmarkButton = new IconButton(new BookmarkButtonController(this, bookmarkList, toggleState, keyBindings));
 		this.historyButton = new IconButton(new LookupHistoryButtonController(clientConfig));
 		this.contents = contents;
@@ -261,17 +263,11 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		if (!this.bookmarkDragManager.isDragging()) {
 			return;
 		}
-		IPaged pageDelegate = getPageDelegate();
-		int pageCount = pageDelegate.getPageCount();
-		if (pageCount <= 1) {
-			return;
-		}
 		PageFlipHover.Direction hoveredDirection = getHoveredPageEdge(mouseX, mouseY);
-		int pageNumber = pageDelegate.getPageNumber();
-		if (pageNumber < pageCount - 1) {
+		if (canFlipPage(PageFlipHover.Direction.NEXT)) {
 			drawPageFlipEdgeHighlight(guiGraphics, getNextPageEdgeArea(), hoveredDirection == PageFlipHover.Direction.NEXT);
 		}
-		if (pageNumber > 0) {
+		if (canFlipPage(PageFlipHover.Direction.PREVIOUS)) {
 			drawPageFlipEdgeHighlight(guiGraphics, getBackPageEdgeArea(), hoveredDirection == PageFlipHover.Direction.PREVIOUS);
 		}
 	}
@@ -498,23 +494,33 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	PageFlipHover.@Nullable Direction getHoveredPageEdge(double mouseX, double mouseY) {
-		IPaged pageDelegate = getPageDelegate();
-		int pageCount = pageDelegate.getPageCount();
-		if (pageCount <= 1) {
-			return null;
-		}
-		int pageNumber = pageDelegate.getPageNumber();
-		if (pageNumber < pageCount - 1 &&
+		if (canFlipPage(PageFlipHover.Direction.NEXT) &&
 			MathUtil.contains(getNextPageEdgeArea(), mouseX, mouseY)
 		) {
 			return PageFlipHover.Direction.NEXT;
 		}
-		if (pageNumber > 0 &&
+		if (canFlipPage(PageFlipHover.Direction.PREVIOUS) &&
 			MathUtil.contains(getBackPageEdgeArea(), mouseX, mouseY)
 		) {
 			return PageFlipHover.Direction.PREVIOUS;
 		}
 		return null;
+	}
+
+	private boolean canFlipPage(PageFlipHover.Direction direction) {
+		IPaged pageDelegate = getPageDelegate();
+		int pageCount = pageDelegate.getPageCount();
+		if (pageCount <= 1) {
+			return false;
+		}
+		// Pages wrap in both directions; scrollbars stop at the ends of the list.
+		if (!this.bookmarkListConfig.navigationMode().getValue().usesScrollbar()) {
+			return true;
+		}
+		return switch (direction) {
+			case NEXT -> pageDelegate.getPageNumber() < pageCount - 1;
+			case PREVIOUS -> pageDelegate.getPageNumber() > 0;
+		};
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
