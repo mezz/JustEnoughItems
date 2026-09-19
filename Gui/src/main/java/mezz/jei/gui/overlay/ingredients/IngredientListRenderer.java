@@ -74,6 +74,10 @@ public class IngredientListRenderer {
 			.filter(s -> !s.isBlocked());
 	}
 
+	public List<IngredientListSlot> getAllSlots() {
+		return slots;
+	}
+
 	public void set(final int startIndex, List<IElement<?>> ingredientList) {
 		blocked = 0;
 		renderElementsByType.clear();
