@@ -33,6 +33,13 @@ public final class LegacyListSerializer<T> implements IConfigListValueSerializer
 
 	@Override
 	public IDeserializeResult<List<T>> deserialize(String string) {
+		string = string.trim();
+		if (string.startsWith("[")) {
+			if (!string.endsWith("]")) {
+				return IDeserializeResult.failure("Legacy lists must have no brackets, or be wrapped in [ and ].");
+			}
+			string = string.substring(1, string.length() - 1);
+		}
 		List<String> diagnostics = new ArrayList<>();
 		List<T> results = Arrays.stream(string.split(","))
 			.map(String::trim)
