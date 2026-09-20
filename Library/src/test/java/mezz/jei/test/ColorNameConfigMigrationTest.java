@@ -22,8 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ColorNameConfigMigrationTest {
 	@ParameterizedTest
-	@ValueSource(strings = {"Exact:123456, Other:654321", "[Exact:123456, Other:654321]"})
-	public void migratesLegacyColorsTransactionallyThroughMezzConfig(String legacyColors, @TempDir Path tempDir) throws IOException {
+	@ValueSource(strings = {
+		"Exact:123456, Invalid:not-a-color, Other:654321",
+		"[Exact:123456, Invalid:not-a-color, Other:654321]"
+	})
+	public void migratesValidLegacyColorsWhenOneIsInvalid(String legacyColors, @TempDir Path tempDir) throws IOException {
 		Path configDirectory = tempDir.resolve("jei");
 		UUID profileId = UUID.randomUUID();
 		Path rootLegacyFile = configDirectory.resolve("jei-colors.ini");
