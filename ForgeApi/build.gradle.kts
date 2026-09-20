@@ -1,12 +1,10 @@
-import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
-
 plugins {
 	id("java")
 	id("idea")
 	id("eclipse")
 	id("maven-publish")
+	id("net.minecraftforge.accesstransformers")
 	id("net.minecraftforge.gradle")
-	id("org.parchmentmc.librarian.forgegradle")
 }
 
 // gradle.properties
@@ -30,9 +28,12 @@ dependencyProjects.forEach {
 	project.evaluationDependsOn(it.path)
 }
 
-// Hack fix: FG can't resolve deps like lwjgl-freetype-3.3.3-natives-macos-patch.jar without this
+minecraft.mavenizer(repositories)
 repositories {
+	// Mojang provides patched LWJGL natives that are absent from Maven Central.
 	maven("https://libraries.minecraft.net")
+	mavenCentral()
+	maven("https://maven.minecraftforge.net")
 }
 
 sourceSets {
@@ -58,11 +59,8 @@ java {
 }
 
 dependencies {
-	"minecraft"(
-		group = "net.minecraftforge",
-		name = "forge",
-		version = "${minecraftVersion}-${forgeVersion}"
-	)
+	// Keep the API's Parchment metadata separate from Forge's official-mappings run metadata.
+	implementation(minecraft.dependency("forgeApi", "net.minecraftforge:forge:${minecraftVersion}-${forgeVersion}"))
 	dependencyProjects.forEach {
 		implementation(it)
 	}
@@ -77,17 +75,7 @@ dependencies {
 
 minecraft {
 	mappings("parchment", parchmentVersionForge)
-
-	// we now use Official mappings at runtime
-	reobf = false
-
-	copyIdeResources.set(true)
-
-	// All minecraft configurations in the multi-project must be identical, including ATs,
-	// because of a ForgeGradle bug https://github.com/MinecraftForge/ForgeGradle/issues/844
-	accessTransformer(file("../Forge/src/main/resources/META-INF/accesstransformer.cfg"))
-
-	// no runs are configured for API
+	accessTransformers.from(file("../Forge/src/main/resources/META-INF/accesstransformer.cfg"))
 }
 
 val sourcesJar = tasks.named<Jar>("sourcesJar")
@@ -129,11 +117,6 @@ publishing {
 		}
 	}
 }
-
-tasks.withType<DownloadMavenArtifact> {
-	notCompatibleWithConfigurationCache("uses Task.project at execution time")
-}
-
 
 idea {
 	module {

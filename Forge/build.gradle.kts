@@ -1,16 +1,14 @@
-import net.minecraftforge.gradle.common.tasks.DownloadMavenArtifact
-import net.minecraftforge.gradle.common.tasks.JarExec
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import java.util.function.Supplier
 
 plugins {
 	id("java")
 	id("idea")
 	id("eclipse")
 	id("maven-publish")
+	id("net.minecraftforge.accesstransformers")
 	id("net.minecraftforge.gradle")
-	id("org.parchmentmc.librarian.forgegradle")
+	id("net.minecraftforge.jarjar")
 	id("me.modmuss50.mod-publish-plugin")
 	id("net.mezzdev.modshade")
 }
@@ -75,7 +73,7 @@ dependencyProjects.forEach {
 project.evaluationDependsOn(debugProject.path)
 
 val debugSourceSet = debugProject.sourceSets.main.get()
-val forgeDebugOutput = layout.buildDirectory.dir("sourcesSets/forgeDebug")
+val forgeDebugOutput = layout.buildDirectory.dir("sourceSets/forgeDebug")
 val prepareForgeDebug = tasks.register<Sync>("prepareForgeDebug") {
 	from(debugSourceSet.output)
 	into(forgeDebugOutput)
@@ -106,7 +104,7 @@ configurations.runtimeClasspath {
 	extendsFrom(mezzConfigLocalRuntime)
 }
 
-jarJar.enable()
+jarJar.register()
 
 java {
 	toolchain {
@@ -140,25 +138,34 @@ fun Configuration.singleFileContents(): Provider<String> =
 		.map { elements -> elements.single() }
 		.map { it.asFile.readText() }
 
-// Hack fix: FG can't resolve deps like lwjgl-freetype-3.3.3-natives-macos-patch.jar without this
+minecraft.mavenizer(repositories)
 repositories {
+	// Mojang provides patched LWJGL natives that are absent from Maven Central.
 	maven("https://libraries.minecraft.net")
+	mavenCentral()
+	maven("https://maven.minecraftforge.net")
 }
 
 dependencies {
-	"minecraft"(
-		group = "net.minecraftforge",
-		name = "forge",
-		version = "${minecraftVersion}-${forgeVersion}"
-	)
+	val forgeDependency = create("net.minecraftforge:forge:${minecraftVersion}-${forgeVersion}") as ExternalModuleDependency
+	// ForgeApi also generates Parchment variants; pin the development runtime to official mappings.
+	forgeDependency.attributes {
+		attribute(Attribute.of("net.minecraftforge.mappings.channel", String::class.java), "official")
+		attribute(Attribute.of("net.minecraftforge.mappings.version", String::class.java), minecraftVersion)
+	}
+	implementation(minecraft.dependency(forgeDependency))
 	compileOnly(mezzConfigApiDependency)
-	mezzConfigLocalRuntime(fg.deobf(mezzConfigForgeDependency))
-	jarJar("${mezzConfigForgeDependency.substringBeforeLast(":")}:$mezzConfigVersionRange") {
+	mezzConfigLocalRuntime(mezzConfigForgeDependency)
+	"jarJar"(mezzConfigForgeDependency) {
 		isTransitive = false
-		jarJar.pin(this, mezzConfigVersion)
+		jarJar.configure(this) {
+			setRange(mezzConfigVersionRange)
+			setVersion(mezzConfigVersion)
+		}
 	}
 	compileOnly(mezzConfigGuiApiDependency)
-	runtimeOnly(fg.deobf(mezzConfigGuiForgeDependency))
+	// GUI 0.4.0's thin Forge jar loads its shared Minecraft classes in the bootstrap layer.
+	// Keep it out of development runs until a complete Forge release is published.
 	dependencyProjects.forEach {
 		compileOnly(it)
 	}
@@ -193,30 +200,26 @@ dependencies {
 
 val modShadeClasspath = configurations.named("modShadeClasspath")
 
-fun net.minecraftforge.gradle.common.util.RunConfig.addModShadeClasspathToMinecraftRun() {
-	lazyToken("minecraft_classpath", Supplier<String> {
-		modShadeClasspath.get()
-			.resolve()
-			.joinToString(File.pathSeparator) { it.absolutePath }
-	})
+// ForgeGradle 7 customizes the standard client run per source set.
+val playerSourceSets = listOf("Player01", "Player02").associateWith { playerName ->
+	sourceSets.create(playerName.replaceFirstChar(Char::lowercaseChar)) {
+		java.setSrcDirs(emptyList<String>())
+		resources.setSrcDirs(emptyList<String>())
+		runtimeClasspath = sourceSets.main.get().runtimeClasspath
+		configurations.named(implementationConfigurationName) {
+			extendsFrom(configurations.implementation.get())
+		}
+	}
 }
 
 minecraft {
 	mappings("official", minecraftVersion)
-
-	// use Official mappings at runtime
-	reobf = false
-
-	copyIdeResources.set(true)
-
-	accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
+	accessTransformers.from(file("src/main/resources/META-INF/accesstransformer.cfg"))
 
 	runs {
-		val client = create("client") {
-			taskName("runClientDev")
-			property("forge.logging.console.level", "debug")
-			workingDirectory(file("run/client/Dev"))
-			addModShadeClasspathToMinecraftRun()
+		configureEach {
+			systemProperty("forge.logging.console.level", "debug")
+			extraLibraries(modShadeClasspath.get())
 			mods {
 				create(modId) {
 					source(sourceSets.main.get())
@@ -226,35 +229,40 @@ minecraft {
 				}
 			}
 		}
-		create("client_01") {
-			taskName("runClientPlayer01")
-			parent(client)
-			workingDirectory(file("run/client/Player01"))
-			args("--username", "Player01")
-			addModShadeClasspathToMinecraftRun()
-		}
-		create("client_02") {
-			taskName("runClientPlayer02")
-			parent(client)
-			workingDirectory(file("run/client/Player02"))
-			args("--username", "Player02")
-			addModShadeClasspathToMinecraftRun()
+		create("client") {
+			workingDir.set(layout.projectDirectory.dir("run/client/Dev"))
+			if (providers.systemProperty("os.name").get().startsWith("Mac")) {
+				jvmArgs("-XstartOnFirstThread")
+			}
+			playerSourceSets.forEach { (playerName, playerSourceSet) ->
+				with(playerSourceSet) {
+					workingDir.set(layout.projectDirectory.dir("run/client/$playerName"))
+					args("--username", playerName)
+				}
+			}
 		}
 		create("server") {
-			taskName("Server")
-			property("forge.logging.console.level", "debug")
-			workingDirectory(file("run/server"))
-			addModShadeClasspathToMinecraftRun()
-			mods {
-				create(modId) {
-					source(sourceSets.main.get())
-				}
-				create("${modId}debug") {
-					source(forgeDebugSourceSet)
-				}
-			}
+			workingDir.set(layout.projectDirectory.dir("run/server"))
+			args("nogui")
 		}
 	}
+}
+
+tasks.register("runClientDev") {
+	group = "Slime Launcher"
+	dependsOn("runClient")
+}
+playerSourceSets.forEach { (playerName, playerSourceSet) ->
+	tasks.register("runClient$playerName") {
+		group = "Slime Launcher"
+		dependsOn(playerSourceSet.getTaskName("run", "client"))
+	}
+}
+tasks.withType<JavaExec>().configureEach {
+	javaLauncher.set(javaToolchains.launcherFor {
+		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
+	})
+	classpath(forgeDebugSourceSet.output)
 }
 
 tasks.named<JavaCompile>(sourceSets.main.get().compileJavaTaskName) {
@@ -330,6 +338,8 @@ tasks.test {
 	useJUnitPlatform()
 	include("mezz/jei/test/**")
 	exclude("mezz/jei/test/lib/**")
+	// Package annotations alone do not constitute a test suite in Gradle 9.
+	exclude("**/package-info.class")
 	outputs.upToDateWhen { false }
 	testLogging {
 		events = setOf(TestLogEvent.FAILED)
@@ -392,19 +402,4 @@ idea {
 			excludeDirs.add(file(fileName))
 		}
 	}
-}
-
-// Required because FG, copied from the MDK
-sourceSets.forEach {
-    val outputDir = layout.buildDirectory.file("sourcesSets/${it.name}").get().asFile
-    it.output.setResourcesDir(outputDir)
-    it.java.destinationDirectory.set(outputDir)
-}
-
-tasks.withType<DownloadMavenArtifact> {
-	notCompatibleWithConfigurationCache("uses Task.project at execution time")
-}
-
-tasks.withType<JarExec> {
-	notCompatibleWithConfigurationCache("uses external process at execution time")
 }

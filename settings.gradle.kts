@@ -9,7 +9,9 @@ pluginManagement {
 					groupPrefixes.forEach(::includeGroupAndSubgroups)
 				}
 			}
-		exclusiveMaven("https://maven.minecraftforge.net", "net.minecraftforge")
+		maven("https://maven.minecraftforge.net") {
+			content { includeGroupAndSubgroups("net.minecraftforge") }
+		}
 		exclusiveMaven("https://maven.parchmentmc.org", "org.parchmentmc")
 		exclusiveContent {
 			forRepository { maven("https://maven.blamejared.com/") }
@@ -30,14 +32,15 @@ pluginManagement {
 	}
 	resolutionStrategy {
 		eachPlugin {
-			if (requested.id.id == "net.minecraftforge.gradle") {
-				useModule("${requested.id}:ForgeGradle:${requested.version}")
-			}
 			if (requested.id.id == "org.spongepowered.mixin") {
 				useModule("org.spongepowered:mixingradle:${requested.version}")
 			}
 		}
 	}
+}
+
+plugins {
+	id("org.gradle.toolchains.foojay-resolver-convention") version("1.0.0")
 }
 
 val minecraftVersion: String by settings

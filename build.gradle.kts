@@ -10,7 +10,6 @@ plugins {
     id("com.dorongold.task-tree") version("4.0.2")
 
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
-    // Loom 1.14+ requires Gradle 9, but ForgeGradle 6 requires Gradle 8.
     id("fabric-loom") version("1.13.6") apply(false)
 
     // https://projects.neoforged.net/neoforged/moddevgradle
@@ -21,11 +20,10 @@ plugins {
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
     id("me.modmuss50.mod-publish-plugin") version("2.2.0") apply(false)
 
-    // https://files.minecraftforge.net/net/minecraftforge/gradle/ForgeGradle/index.html
-    id("net.minecraftforge.gradle") version("6.0.54") apply(false)
-
-    // https://mvnrepository.com/artifact/org.parchmentmc.librarian.forgegradle/org.parchmentmc.librarian.forgegradle.gradle.plugin
-    id("org.parchmentmc.librarian.forgegradle") version("1.2.0") apply(false)
+    // https://plugins.gradle.org/plugin/net.minecraftforge.gradle
+    id("net.minecraftforge.accesstransformers") version("5.0.3") apply(false)
+    id("net.minecraftforge.gradle") version("7.0.40") apply(false)
+    id("net.minecraftforge.jarjar") version("0.2.3") apply(false)
 
     id("net.neoforged.jarcompatibilitychecker") version("0.1.19") apply(false)
 }

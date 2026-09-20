@@ -2,6 +2,12 @@
 
 Thanks for helping improve JEI. Please keep pull requests focused and target the latest active Minecraft branch. Changes can be backported to older supported branches after they are reviewed and merged.
 
+## Build requirements for 1.21.1
+
+Use Java 21 and the checked-in Gradle wrapper. Gradle downloads additional Java versions when needed.
+
+Run `./gradlew build` to build all loaders and check API compatibility.
+
 ## Pull requests
 
 Keep each pull request scoped to one fix, feature, or cleanup. Avoid mixing unrelated refactors, formatting-only changes, dependency updates, and behavior changes in the same pull request.
