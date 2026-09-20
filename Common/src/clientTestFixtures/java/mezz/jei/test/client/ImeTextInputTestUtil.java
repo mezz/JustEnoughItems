@@ -28,8 +28,9 @@ public final class ImeTextInputTestUtil {
 	}
 
 	public static void typePlainText(KeyboardHandler keyboardHandler, long windowHandle, GuiTextFieldFilter searchField) {
-		String text = "stone";
-		int[] keys = {InputConstants.KEY_S, InputConstants.KEY_T, InputConstants.KEY_O, InputConstants.KEY_N, InputConstants.KEY_E};
+		// The focus-search key must also work as text when the search field already has focus.
+		String text = "flint";
+		int[] keys = {InputConstants.KEY_F, InputConstants.KEY_L, InputConstants.KEY_I, InputConstants.KEY_N, InputConstants.KEY_T};
 		for (int i = 0; i < keys.length; i++) {
 			char character = text.charAt(i);
 			KeyEvent event = new KeyEvent(keys[i], character, 0);

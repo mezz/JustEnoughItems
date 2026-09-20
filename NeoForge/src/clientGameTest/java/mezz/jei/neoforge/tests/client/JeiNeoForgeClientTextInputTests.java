@@ -87,7 +87,10 @@ public final class JeiNeoForgeClientTextInputTests {
 					throw new AssertionError("Expected this regression test to cover a screen that blocks normal preedit dispatch.");
 				}
 
-				ImeTextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField);
+				searchField.setFocused(false);
+				focusSearchWithHotkey(
+					client.keyboardHandler, client.getWindow().handle(), () -> ImeTextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField)
+				);
 				ImeTextInputTestUtil.typeKoreanText(client.keyboardHandler, client.getWindow().handle(), searchField);
 				ImeTextInputTestUtil.assertScreenCleanupKeepsChatTextInputEnabled(client, ingredientListOverlay, searchField);
 				ImeTextInputTestUtil.assertRedundantUnfocusKeepsChatTextInputEnabled(client, searchField);
@@ -98,6 +101,10 @@ public final class JeiNeoForgeClientTextInputTests {
 	}
 
 	private static void focusSearchWithHotkey(KeyboardHandler keyboardHandler, long windowHandle) {
+		focusSearchWithHotkey(keyboardHandler, windowHandle, () -> {});
+	}
+
+	private static void focusSearchWithHotkey(KeyboardHandler keyboardHandler, long windowHandle, Runnable assertions) {
 		KeyMapping focusSearch = KeyMapping.get(FOCUS_SEARCH_KEY_MAPPING);
 		if (focusSearch == null) {
 			throw new AssertionError("Expected the focus-search key mapping to be registered.");
@@ -110,6 +117,7 @@ public final class JeiNeoForgeClientTextInputTests {
 			focusSearch.setKeyModifierAndCode(KeyModifier.NONE, TEST_FOCUS_SEARCH_KEY);
 			KeyEvent event = new KeyEvent(KEY_CODE_F, 'f', 0);
 			ImeTextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, event);
+			assertions.run();
 		} finally {
 			focusSearch.setKeyModifierAndCode(originalModifier, originalKey);
 		}
