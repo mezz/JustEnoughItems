@@ -50,8 +50,12 @@ public class LegacySortingConfigMigrationTest {
 		assertEquals(Files.readString(profileLegacyFile), Files.readString(ConfigFileUtil.getBackupPath(profileLegacyFile, 1)));
 		assertTrue(Files.notExists(ConfigFileUtil.getBackupPath(rootLegacyFile, 1)));
 
+		// Once imported, later edits to the old file must not replace the active sort order.
+		Files.write(profileLegacyFile, List.of("second", "fourth", "first"));
 		ConfigManager reloadedConfigManager = new ConfigManager("Reloaded JEI Sorting Config", disabledWatcher, disabledWatcher);
 		ISortingConfig<String> reloaded = reloadedConfigManager.createSortingConfig(mezzConfigFile, Comparator.naturalOrder(), true);
+		LegacySortingConfigMigrator.register(reloaded, configDirectory, profileId, fileName);
 		assertEquals(expected, reloaded.getSortedValues(allValues));
+		assertTrue(Files.notExists(ConfigFileUtil.getBackupPath(profileLegacyFile, 2)));
 	}
 }
