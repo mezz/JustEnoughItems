@@ -26,6 +26,7 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 		colorSearchMode = search.addEnum("colorSearchMode", SearchMode.DISABLED)
 			.build();
 		identifierSearchMode = search.addEnum("identifierSearchMode", SearchMode.DISABLED)
+			.addLegacyValue("search", "resourceLocationSearchMode")
 			.build();
 		creativeTabSearchMode = search.addEnum("creativeTabSearchMode", SearchMode.DISABLED)
 			.build();
