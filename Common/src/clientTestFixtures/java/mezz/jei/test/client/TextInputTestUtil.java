@@ -14,8 +14,9 @@ public final class TextInputTestUtil {
 	}
 
 	public static void typePlainText(KeyboardHandler keyboardHandler, long windowHandle, GuiTextFieldFilter searchField) {
-		String text = "stone";
-		int[] keys = {GLFW.GLFW_KEY_S, GLFW.GLFW_KEY_T, GLFW.GLFW_KEY_O, GLFW.GLFW_KEY_N, GLFW.GLFW_KEY_E};
+		// The focus-search key must also work as text when the search field already has focus.
+		String text = "flint";
+		int[] keys = {GLFW.GLFW_KEY_F, GLFW.GLFW_KEY_L, GLFW.GLFW_KEY_I, GLFW.GLFW_KEY_N, GLFW.GLFW_KEY_T};
 		for (int i = 0; i < keys.length; i++) {
 			char character = text.charAt(i);
 			KeyEvent event = new KeyEvent(keys[i], 0, 0);

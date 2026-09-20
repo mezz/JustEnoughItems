@@ -65,7 +65,10 @@ public final class JeiNeoForgeClientTextInputTests {
 			}
 
 			try {
-				TextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField);
+				searchField.setFocused(false);
+				focusSearchWithHotkey(
+					client.keyboardHandler, client.getWindow().handle(), () -> TextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField)
+				);
 			} finally {
 				client.setScreen(null);
 			}
@@ -73,6 +76,10 @@ public final class JeiNeoForgeClientTextInputTests {
 	}
 
 	private static void focusSearchWithHotkey(KeyboardHandler keyboardHandler, long windowHandle) {
+		focusSearchWithHotkey(keyboardHandler, windowHandle, () -> {});
+	}
+
+	private static void focusSearchWithHotkey(KeyboardHandler keyboardHandler, long windowHandle, Runnable assertions) {
 		KeyMapping focusSearch = KeyMapping.get(FOCUS_SEARCH_KEY_MAPPING);
 		if (focusSearch == null) {
 			throw new AssertionError("Expected the focus-search key mapping to be registered.");
@@ -85,6 +92,7 @@ public final class JeiNeoForgeClientTextInputTests {
 			focusSearch.setKeyModifierAndCode(KeyModifier.NONE, TEST_FOCUS_SEARCH_KEY);
 			KeyEvent event = new KeyEvent(GLFW.GLFW_KEY_F, 0, 0);
 			TextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, event);
+			assertions.run();
 		} finally {
 			focusSearch.setKeyModifierAndCode(originalModifier, originalKey);
 		}
