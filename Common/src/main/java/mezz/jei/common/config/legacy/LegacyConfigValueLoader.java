@@ -2,8 +2,6 @@ package mezz.jei.common.config.legacy;
 
 import net.mezzdev.config.api.value.serializer.IDeserializeResult;
 import net.mezzdev.config.api.value.serializer.IConfigValueSerializer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,13 +12,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 final class LegacyConfigValueLoader {
-	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern CATEGORY_PATTERN = Pattern.compile("\\s*\\[(?<category>\\w+)]\\s*");
 	private static final Pattern VALUE_PATTERN = Pattern.compile("\\s*(?<key>\\w+)\\s*=\\s*(?<value>.*)");
 
 	private LegacyConfigValueLoader() {}
 
-	public static <T> T loadValue(
+	public static <T> IDeserializeResult<T> loadValue(
 		Path path,
 		String targetCategoryName,
 		String targetValueName,
@@ -33,7 +30,7 @@ final class LegacyConfigValueLoader {
 		return parseValue(path, Files.readAllLines(path), targetCategoryName, targetValueName, serializer);
 	}
 
-	private static <T> T parseValue(
+	private static <T> IDeserializeResult<T> parseValue(
 		Path path,
 		List<String> lines,
 		String targetCategoryName,
@@ -58,26 +55,11 @@ final class LegacyConfigValueLoader {
 		}
 
 		if (serializedValue == null) {
-			throw new IllegalArgumentException(
+			return IDeserializeResult.failure(
 				"Legacy JEI config '%s' has no %s.%s value.".formatted(path, targetCategoryName, targetValueName)
 			);
 		}
 
-		IDeserializeResult<T> result = serializer.deserialize(serializedValue);
-		T value = result.getResult().orElse(null);
-		if (value == null) {
-			throw new IllegalArgumentException(
-				"Failed to parse legacy JEI config '%s': %s"
-					.formatted(path, String.join("; ", result.getDiagnostics()))
-			);
-		}
-		if (!result.getDiagnostics().isEmpty()) {
-			LOGGER.warn(
-				"Partially parsed legacy JEI config '{}': {}",
-				path,
-				String.join("; ", result.getDiagnostics())
-			);
-		}
-		return value;
+		return serializer.deserialize(serializedValue);
 	}
 }
