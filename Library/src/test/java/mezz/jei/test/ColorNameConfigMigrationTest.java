@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ColorNameConfigMigrationTest {
 	@Test
-	public void migratesLegacyColorsTransactionallyThroughMezzConfig(@TempDir Path tempDir) throws IOException {
+	public void migratesValidLegacyColorsWhenOneIsInvalid(@TempDir Path tempDir) throws IOException {
 		Path configDirectory = tempDir.resolve("jei");
 		UUID profileId = UUID.randomUUID();
 		Path rootLegacyFile = configDirectory.resolve("jei-colors.ini");
@@ -34,7 +34,7 @@ public class ColorNameConfigMigrationTest {
 			""");
 		Files.writeString(legacyFile, """
 			[colors]
-			searchColors = Exact:123456, Other:654321
+			searchColors = Exact:123456, Invalid:not-a-color, Other:654321
 			""");
 
 		ConfigFileWatcherSettings disabledWatcher = ConfigFileWatcherSettings.clientDefaults().withEnabled(false);

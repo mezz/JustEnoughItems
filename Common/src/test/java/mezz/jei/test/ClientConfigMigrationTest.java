@@ -227,6 +227,36 @@ public class ClientConfigMigrationTest {
 		assertEquals(IngredientGridNavigationMode.SCROLLING, reloaded.getBookmarkListConfig().navigationMode().get());
 	}
 
+	@Test
+	public void migratesValidLegacyValuesWhenAnotherValueIsInvalid(@TempDir Path tempDir) throws IOException {
+		Path configDirectory = tempDir.resolve("jei");
+		Path legacyFile = configDirectory.resolve("jei-client.ini");
+		Path configFile = configDirectory.resolve("client").resolve("jei-client.ini");
+		Files.createDirectories(configDirectory);
+		Files.writeString(legacyFile, """
+			[appearance]
+			centerSearch = true
+			recipeGuiHeight = invalid
+			""");
+
+		ConfigFileWatcherSettings disabledWatcher = ConfigFileWatcherSettings.clientDefaults().withEnabled(false);
+		ConfigManager configManager = new ConfigManager("Partial JEI Config Migration Test", disabledWatcher, disabledWatcher);
+		ISortingConfig<String> recipeSorting = configManager.createInMemorySortingConfig(Comparator.naturalOrder(), true);
+		ConfigSchemaBuilder schemaBuilder = new ConfigSchemaBuilder("jei", configFile, "jei.config.client", configManager);
+		schemaBuilder.setLegacySources(LegacyConfigPaths.get(configDirectory, UUID.randomUUID(), "jei-client.ini"));
+		ClientConfigs configs = new ClientConfigs(
+			schemaBuilder,
+			false,
+			recipeSorting
+		);
+
+		IClientConfig client = configs.getClientConfig();
+		assertEquals(SearchBarPosition.CENTERED, client.searchBarPosition().get());
+		assertEquals(IClientConfig.defaultRecipeGuiHeight, client.maxRecipeGuiHeight().get());
+		assertTrue(Files.exists(configFile));
+		assertEquals(Files.readString(legacyFile), Files.readString(ConfigFileUtil.getBackupPath(legacyFile, 1)));
+	}
+
 	private static void assertGridConfig(
 		IIngredientGridConfig config,
 		int maxRows,
