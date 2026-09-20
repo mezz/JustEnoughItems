@@ -46,21 +46,26 @@ public class RegistryUtil {
 	}
 
 	/**
-	 * Returns a registry provider that includes reloadable registries used by loot context providers.
-	 * The client level does not receive these registries from the server, so vanilla defaults are used as a fallback.
+	 * Gets the combined connection and client registry data used by JEI.
 	 */
 	public static HolderLookup.Provider getRegistryProvider() {
 		if (REGISTRY_PROVIDER == null) {
-			Map<ResourceKey<? extends Registry<?>>, HolderLookup.RegistryLookup<?>> lookups = new HashMap<>();
-			// Loot tables also reference world-generation registries that are not synced to the client.
-			VanillaRegistries.createWorldLookup().listRegistries()
-				.forEach(lookup -> lookups.put(lookup.key(), lookup));
-			getRegistryAccess().listRegistries()
-				.forEach(lookup -> lookups.put(lookup.key(), lookup));
-			HolderLookup.Provider context = HolderLookup.Provider.create(lookups.values().stream());
-			REGISTRY_PROVIDER = VanillaRegistries.createReloadableLookup(context);
+			REGISTRY_PROVIDER = createRegistryProvider(getRegistryAccess());
 		}
 		return REGISTRY_PROVIDER;
+	}
+
+	static HolderLookup.Provider createRegistryProvider(HolderLookup.Provider registryProvider) {
+		Map<ResourceKey<? extends Registry<?>>, HolderLookup.RegistryLookup<?>> lookups = new HashMap<>();
+		// Start with data from the current connection, including data added by mods.
+		registryProvider.listRegistries()
+			.forEach(lookup -> lookups.put(lookup.key(), lookup));
+		// Then replace matching world data with the client's full copy.
+		// The client may need entries that an older server does not have.
+		VanillaRegistries.createWorldLookup().listRegistries()
+			.forEach(lookup -> lookups.put(lookup.key(), lookup));
+		HolderLookup.Provider context = HolderLookup.Provider.create(lookups.values().stream());
+		return VanillaRegistries.createReloadableLookup(context);
 	}
 
 	public static void setRegistryAccess(@Nullable RegistryAccess registryAccess) {
