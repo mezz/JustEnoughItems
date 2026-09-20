@@ -322,13 +322,19 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
+	protected void renderMenuBackground(GuiGraphics guiGraphics) {
+		renderTransparentBackground(guiGraphics);
+	}
+
+	@Override
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (minecraft == null) {
 			return;
 		}
 		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 
-		renderTransparentBackground(guiGraphics);
+		// The screen background has already been drawn, followed by the JEI overlay hook.
+		// Another background pass here would darken the overlay controls.
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		this.background.draw(guiGraphics, area);
 

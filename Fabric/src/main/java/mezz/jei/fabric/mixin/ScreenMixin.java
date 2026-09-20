@@ -12,6 +12,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Screen.class)
 public class ScreenMixin {
 	@Inject(
+		method = "renderMenuBackground(Lnet/minecraft/client/gui/GuiGraphics;)V",
+		at = @At("TAIL")
+	)
+	private void drawMenuBackground(GuiGraphics graphics, CallbackInfo ci) {
+		drawJeiBackground(graphics);
+	}
+
+	@Inject(
 		method = "renderTransparentBackground(Lnet/minecraft/client/gui/GuiGraphics;)V",
 		at = @At(
 			value = "INVOKE",
@@ -21,6 +29,10 @@ public class ScreenMixin {
 		)
 	)
 	private void drawBackground(GuiGraphics graphics, CallbackInfo ci) {
+		drawJeiBackground(graphics);
+	}
+
+	private void drawJeiBackground(GuiGraphics graphics) {
 		@SuppressWarnings("DataFlowIssue")
 		Screen screen = (Screen) (Object) this;
 		runWithIdentityPose(
