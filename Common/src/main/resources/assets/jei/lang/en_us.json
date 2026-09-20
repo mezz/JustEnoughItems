@@ -244,6 +244,8 @@
   "jei.config.client.bookmarkList.addBookmarksToFrontEnabled.end.description": "Add new bookmarks to the end of the bookmark list.",
   "jei.config.client.bookmarkList.addBookmarksToFrontEnabled.front": "Front of List",
   "jei.config.client.bookmarkList.addBookmarksToFrontEnabled.front.description": "Add new bookmarks to the front of the bookmark list.",
+  "jei.config.client.bookmarkList.bookmarkOutputAsRecipe": "Bookmark Output as Recipe",
+  "jei.config.client.bookmarkList.bookmarkOutputAsRecipe.description": "When true, pressing the bookmark key on a recipe's output will bookmark the recipe instead of the ingredient.",
   "jei.config.client.bookmarkList.dragToRearrangeBookmarksEnabled": "Drag to Rearrange Bookmarks",
   "jei.config.client.bookmarkList.dragToRearrangeBookmarksEnabled.description": "Allow bookmarks to be reordered by dragging them in the bookmark list.",
   "jei.config.client.bookmarkList.dragToRearrangeBookmarksEnabled.value.true.description": "Allow bookmarks to be reordered by dragging.",
