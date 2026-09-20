@@ -23,6 +23,8 @@ import net.mezzdev.config.file.ConfigFileUtil;
 import net.mezzdev.config.file.ConfigManager;
 import net.mezzdev.config.schema.ConfigSchemaBuilder;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
@@ -37,8 +39,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ClientConfigMigrationTest {
-	@Test
-	public void loadsEveryReleasedClientConfigValue(@TempDir Path tempDir) throws IOException {
+	@ParameterizedTest
+	@ValueSource(strings = {"resourceLocationSearchMode", "identifierSearchMode"})
+	public void loadsEveryReleasedClientConfigValue(String identifierSearchKey, @TempDir Path tempDir) throws IOException {
 		Path configDirectory = tempDir.resolve("jei");
 		UUID profileId = UUID.randomUUID();
 		Path rootLegacyFile = configDirectory.resolve("jei-client.ini");
@@ -102,7 +105,7 @@ public class ClientConfigMigrationTest {
 			tagSearchMode = DISABLED
 			tooltipSearchMode = REQUIRE_PREFIX
 			colorSearchMode = ENABLED
-			identifierSearchMode = REQUIRE_PREFIX
+			%s = REQUIRE_PREFIX
 			creativeTabSearchMode = ENABLED
 			searchAdvancedTooltips = true
 			searchModIds = false
@@ -129,7 +132,7 @@ public class ClientConfigMigrationTest {
 			drawBackground = true
 			layoutMode = MAXIMIZE_AVAILABLE_SPACE
 			navigationMode = SMOOTH_SCROLLING
-			""");
+			""".formatted(identifierSearchKey));
 
 		ConfigFileWatcherSettings disabledWatcher = ConfigFileWatcherSettings.clientDefaults().withEnabled(false);
 		ConfigManager configManager = new ConfigManager("JEI Config Migration Test", disabledWatcher, disabledWatcher);
