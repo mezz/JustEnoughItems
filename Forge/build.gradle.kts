@@ -164,8 +164,7 @@ dependencies {
 		}
 	}
 	compileOnly(mezzConfigGuiApiDependency)
-	// GUI 0.4.0's thin Forge jar loads its shared Minecraft classes in the bootstrap layer.
-	// Keep it out of development runs until a complete Forge release is published.
+	mezzConfigLocalRuntime(mezzConfigGuiForgeDependency)
 	dependencyProjects.forEach {
 		compileOnly(it)
 	}
