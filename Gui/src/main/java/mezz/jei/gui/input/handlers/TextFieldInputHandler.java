@@ -29,7 +29,7 @@ public class TextFieldInputHandler implements IUserInputHandler {
 			return handleSetFocused(input, false);
 		}
 
-		if (input.is(keyBindings.getFocusSearch())) {
+		if (!textFieldFilter.isFocused() && input.is(keyBindings.getFocusSearch())) {
 			return handleSetFocused(input, true);
 		}
 

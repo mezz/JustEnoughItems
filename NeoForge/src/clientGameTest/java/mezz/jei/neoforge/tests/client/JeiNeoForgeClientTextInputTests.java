@@ -68,20 +68,15 @@ public final class JeiNeoForgeClientTextInputTests {
 				.findFirst()
 				.orElseThrow(() -> new AssertionError("Expected JEI's ingredient overlay to contain a search field."));
 
-			focusSearchWithHotkey(client.keyboardHandler, client.getWindow().getWindow());
-			if (!ingredientListOverlay.hasKeyboardFocus()) {
-				throw new AssertionError("Expected the focus-search hotkey to focus JEI's search field.");
-			}
-
 			try {
-				TextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().getWindow(), searchField);
+				assertFocusSearchAndTextInput(client.keyboardHandler, client.getWindow().getWindow(), searchField);
 			} finally {
 				client.setScreen(null);
 			}
 		});
 	}
 
-	private static void focusSearchWithHotkey(KeyboardHandler keyboardHandler, long windowHandle) {
+	private static void assertFocusSearchAndTextInput(KeyboardHandler keyboardHandler, long windowHandle, GuiTextFieldFilter searchField) {
 		KeyMapping focusSearch = Arrays.stream(Minecraft.getInstance().options.keyMappings)
 			.filter(mapping -> mapping.getName().equals(FOCUS_SEARCH_KEY_MAPPING))
 			.findFirst().orElse(null);
@@ -97,6 +92,10 @@ public final class JeiNeoForgeClientTextInputTests {
 			int key = GLFW.GLFW_KEY_F;
 			KeyMapping.resetMapping();
 			TextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, key);
+			if (!searchField.isFocused()) {
+				throw new AssertionError("Expected the focus-search hotkey to focus JEI's search field.");
+			}
+			TextInputTestUtil.typePlainText(keyboardHandler, windowHandle, searchField);
 		} finally {
 			focusSearch.setKeyModifierAndCode(originalModifier, originalKey);
 			KeyMapping.resetMapping();
