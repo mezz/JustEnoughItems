@@ -58,7 +58,7 @@ pipeline {
         timeout(time: 1, unit: 'HOURS')
     }
     tools {
-        jdk "jdk-21"
+        jdk "jdk-25"
     }
 
     environment {

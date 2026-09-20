@@ -11,6 +11,7 @@ val minecraftVersion: String by extra
 val neoformTimestamp: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val mixinVersion: String by extra
 val neoformVersionAndTimestamp = "$minecraftVersion-$neoformTimestamp"
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common-api"
@@ -37,7 +38,7 @@ dependencies {
     compileOnly(
         group = "org.spongepowered",
         name = "mixin",
-        version = "0.8.5"
+        version = mixinVersion
     )
 }
 

@@ -14,6 +14,7 @@ val minecraftVersion: String by extra
 val neoformTimestamp: String by extra
 val modId: String by extra
 val modJavaVersion: String by extra
+val mixinVersion: String by extra
 val neoformVersionAndTimestamp = "$minecraftVersion-$neoformTimestamp"
 val deduplicatingRunnerVersion: String by extra
 val mezzConfigApiDependency: String by rootProject.extra
@@ -49,7 +50,7 @@ dependencies {
     compileOnly(
         group = "org.spongepowered",
         name = "mixin",
-        version = "0.8.5"
+        version = mixinVersion
     )
     implementation(mezzConfigApiDependency)
     compileOnly(mezzConfigGuiApiDependency)

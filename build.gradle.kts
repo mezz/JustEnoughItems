@@ -10,10 +10,10 @@ plugins {
     id("com.dorongold.task-tree") version("4.0.2")
 
     // https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml
-    id("fabric-loom") version("1.13.6") apply(false)
+    id("fabric-loom") version("1.18.2") apply(false)
 
     // https://projects.neoforged.net/neoforged/moddevgradle
-    id("net.neoforged.moddev") version("2.0.144") apply(false)
+    id("net.neoforged.moddev") version("2.0.147") apply(false)
 
     id("net.mezzdev.modshade") version("0.7.0") apply(false)
 
@@ -25,7 +25,7 @@ plugins {
     id("net.minecraftforge.gradle") version("7.0.40") apply(false)
     id("net.minecraftforge.jarjar") version("0.2.3") apply(false)
 
-    id("net.neoforged.jarcompatibilitychecker") version("0.1.19") apply(false)
+    id("net.neoforged.jarcompatibilitychecker") version("0.1.22") apply(false)
 }
 
 javaFormatting {

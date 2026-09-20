@@ -200,7 +200,7 @@ dependencies {
         name = "amecs-key-modifiers-${amecsMinecraftVersion}",
         version = amecsKeyModifiersVersionFabric
     )
-    "clientGameTestCompileOnly"("org.jspecify:jspecify:1.0.0")
+    "clientGameTestCompileOnly"("org.jspecify:jspecify:1.0.1")
     compileOnly(mezzConfigApiDependency)
     modLocalRuntime(mezzConfigFabricDependency)
     include(mezzConfigFabricDependency)

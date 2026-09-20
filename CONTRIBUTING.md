@@ -4,7 +4,7 @@ Thanks for helping improve JEI. Please keep pull requests focused and target the
 
 ## Build requirements for 1.21.1
 
-Use Java 21 and the checked-in Gradle wrapper. Gradle downloads additional Java versions when needed.
+Use Java 25 and the checked-in Gradle wrapper. Gradle downloads Java 21 for compilation and Minecraft development runs when needed.
 
 Run `./gradlew build` to build all loaders and check API compatibility.
 
