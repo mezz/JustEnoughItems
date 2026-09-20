@@ -321,6 +321,8 @@
   "jei.config.client.recipes.showTagRecipesEnabled.value.false.description": "Hide recipe pages for tags.",
   "jei.config.client.bookmarkList.addBookmarksToFrontEnabled": "New Bookmark Placement",
   "jei.config.client.bookmarkList.addBookmarksToFrontEnabled.description": "Choose where newly added bookmarks appear in the bookmark list.",
+  "jei.config.client.bookmarkList.bookmarkOutputAsRecipe": "Bookmark Output as Recipe",
+  "jei.config.client.bookmarkList.bookmarkOutputAsRecipe.description": "When true, pressing the bookmark key on a recipe's output will bookmark the recipe instead of the ingredient.",
   "jei.config.client.bookmarkList.dragToRearrangeBookmarksEnabled": "Drag to Rearrange Bookmarks",
   "jei.config.client.bookmarkList.dragToRearrangeBookmarksEnabled.description": "Allow bookmarks to be reordered by dragging them in the bookmark list.",
   "jei.config.client.bookmarkList.dragToRearrangeBookmarksEnabled.value.true.description": "Allow bookmarks to be reordered by dragging.",
