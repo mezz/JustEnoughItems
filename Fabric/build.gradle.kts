@@ -511,7 +511,7 @@ publishing {
         }
         register<MavenPublication>("fabricJar") {
             artifactId = baseArchivesName
-            from(components["modShade"])
+            from(components["java"])
 
             val mezzConfigGuiDependencyInfo =
                 dependencyInfo(mezzConfigGuiFabricDependency) + ("optional" to "true")
