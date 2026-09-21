@@ -59,6 +59,7 @@ val mezzConfigVersion: String by extra
 val mezzConfigVersionRange: String by extra
 val mezzConfigFabricVersionRange: String by extra
 val mezzConfigGuiVersion: String by extra
+val mezzConfigGuiMinimumVersion: String by extra
 val specificationVersion: String by extra
 
 val mezzConfigApiDependency = "$configModGroup:${configModId}-${minecraftVersion}-config-api:$mezzConfigVersion"
@@ -130,6 +131,9 @@ subprojects {
             "modId" to modId,
             "modJavaVersion" to modJavaVersion,
             "modName" to modName,
+            "mezzConfigGuiVersionRange" to "[$mezzConfigGuiMinimumVersion,)",
+            "mezzConfigGuiFabricVersionRange" to ">=$mezzConfigGuiMinimumVersion",
+            "mezzConfigGuiFabricBreaksVersionRange" to "<$mezzConfigGuiMinimumVersion",
             "mezzConfigVersionRange" to mezzConfigVersionRange,
             "mezzConfigFabricVersionRange" to mezzConfigFabricVersionRange,
             "version" to version,

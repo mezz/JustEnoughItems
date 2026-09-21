@@ -61,6 +61,13 @@ ${modDescription}
     side="BOTH"
 
 [[dependencies.jei]]
+    modId="${configGuiModId}"
+    mandatory=false
+    versionRange="${mezzConfigGuiVersionRange}"
+    ordering="AFTER"
+    side="CLIENT"
+
+[[dependencies.jei]]
     modId="forge" #mandatory
     mandatory=true #mandatory
     versionRange="${forgeVersionRange}" #mandatory

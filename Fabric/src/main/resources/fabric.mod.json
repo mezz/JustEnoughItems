@@ -47,7 +47,11 @@
     "java": ">=${modJavaVersion}"
   },
   "suggests": {
+    "${configGuiModId}": "${mezzConfigGuiFabricVersionRange}",
     "amecsapi": ">=${amecsVersionFabric}",
     "amecs_key_modifiers": ">=${amecsKeyModifiersVersionFabric}"
+  },
+  "breaks": {
+    "${configGuiModId}": "${mezzConfigGuiFabricBreaksVersionRange}"
   }
 }
