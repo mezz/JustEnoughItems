@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
@@ -139,11 +138,6 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 	}
 
 	@Override
-	public ITooltipCallback<T> createRecipeIdTooltipCallback(@Nullable ResourceLocation recipeId) {
-		return new RecipeIdTooltipCallback<>(recipeId, ingredientHelper);
-	}
-
-	@Override
 	public Map<Integer, GuiIngredient<T>> getGuiIngredients() {
 		return guiIngredients;
 	}
@@ -175,5 +169,24 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		} else {
 			this.focus = Focus.check(focus);
 		}
+	}
+
+	/**
+	 * @since JEI 4.16.6
+	 */
+	public IIngredientHelper<T> getIngredientHelper() {
+		return ingredientHelper;
+	}
+
+	/**
+	 * Adds the tooltip callback after any existing tooltip callback
+	 * @since JEI 4.16.6
+	 */
+	public void addTooltipCallbackAfter(ITooltipCallback<T> tooltipCallback) {
+		ITooltipCallback<T> before = this.tooltipCallback;
+		this.tooltipCallback = before == null ? tooltipCallback : (slotIndex, input, ingredient, tooltip) -> {
+			before.onTooltip(slotIndex, input, ingredient, tooltip);
+			tooltipCallback.onTooltip(slotIndex, input, ingredient, tooltip);
+		};
 	}
 }

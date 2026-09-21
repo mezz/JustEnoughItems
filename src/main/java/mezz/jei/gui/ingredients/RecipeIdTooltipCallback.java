@@ -1,6 +1,5 @@
 package mezz.jei.gui.ingredients;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -15,25 +14,28 @@ import mezz.jei.util.Translator;
 
 public class RecipeIdTooltipCallback<T> implements ITooltipCallback<T>
 {
-    @Nullable
     private final ResourceLocation recipeId;
+    private final boolean includeRecipeBy;
     private final IIngredientHelper<T> ingredientHelper;
 
-    public RecipeIdTooltipCallback(@Nullable ResourceLocation recipeId, IIngredientHelper<T> ingredientHelper) {
+    public RecipeIdTooltipCallback(ResourceLocation recipeId, boolean includeRecipeBy, IIngredientHelper<T> ingredientHelper) {
         this.recipeId = recipeId;
+        this.includeRecipeBy = includeRecipeBy;
         this.ingredientHelper = ingredientHelper;
     }
 
     @Override
     public void onTooltip(int slotIndex, boolean input, T ingredient, List<String> tooltip) {
-        if (recipeId != null && !input) {
-            String recipeModId = recipeId.getNamespace();
-            String ingredientModId = ingredientHelper.getDisplayModId(ingredient);
+        if (!input) {
+            if (includeRecipeBy) {
+                String recipeModId = recipeId.getNamespace();
+                String ingredientModId = ingredientHelper.getDisplayModId(ingredient);
 
-            if (!ingredientModId.isEmpty() && !recipeModId.equals(ingredientModId)) {
-                String modName = ForgeModIdHelper.getInstance().getFormattedModNameForModId(recipeModId);
-                if (modName != null) {
-                    tooltip.add(TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.by", modName));
+                if (!ingredientModId.isEmpty() && !recipeModId.equals(ingredientModId)) {
+                    String modName = ForgeModIdHelper.getInstance().getFormattedModNameForModId(recipeModId);
+                    if (modName != null) {
+                        tooltip.add(TextFormatting.GRAY + Translator.translateToLocalFormatted("jei.tooltip.recipe.by", modName));
+                    }
                 }
             }
 

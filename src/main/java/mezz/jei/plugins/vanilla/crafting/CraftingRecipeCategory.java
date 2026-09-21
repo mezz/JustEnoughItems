@@ -101,7 +101,7 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 
 		if (recipeWrapper instanceof ICraftingRecipeWrapper) {
 			ICraftingRecipeWrapper craftingRecipeWrapper = (ICraftingRecipeWrapper) recipeWrapper;
-			guiItemStacks.addRecipeIdTooltipCallback(craftingRecipeWrapper.getRegistryName());
+			recipeLayout.setRecipeId(craftingRecipeWrapper.getRegistryName());
 		}
 	}
 
