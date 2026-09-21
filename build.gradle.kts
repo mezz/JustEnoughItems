@@ -18,7 +18,7 @@ plugins {
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
     id("me.modmuss50.mod-publish-plugin") version("2.2.0") apply(false)
 
-    id("net.neoforged.jarcompatibilitychecker") version("0.1.19") apply(false)
+    id("net.neoforged.jarcompatibilitychecker") version("0.1.22") apply(false)
 }
 
 javaFormatting {

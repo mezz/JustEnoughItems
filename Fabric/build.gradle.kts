@@ -584,17 +584,21 @@ publishing {
             @Suppress("UnstableApiUsage")
             loom.disableDeprecatedPomGeneration(this)
             artifactId = baseArchivesName
-            artifact(shadedJar)
-            artifact(shadedSourcesJar)
+            from(components["java"])
 
-            val mezzConfigGuiDependencyInfo =
+            val dependencyInfos = listOf(
+                dependencyInfo(mezzConfigDependency("fabric")) + ("scope" to "runtime"),
                 dependencyInfo(mezzConfigGuiFabricDependency) + ("optional" to "true")
+            )
             pom.withXml {
                 val dependenciesNode =
-                    (asNode().get("dependencies") as groovy.util.NodeList).first() as groovy.util.Node
-                val dependencyNode = dependenciesNode.appendNode("dependency")
-                mezzConfigGuiDependencyInfo.forEach { (key, value) ->
-                    dependencyNode.appendNode(key, value)
+                    ((asNode().get("dependencies") as groovy.util.NodeList).firstOrNull() as? groovy.util.Node)
+                        ?: asNode().appendNode("dependencies")
+                dependencyInfos.forEach {
+                    val dependencyNode = dependenciesNode.appendNode("dependency")
+                    it.forEach { (key, value) ->
+                        dependencyNode.appendNode(key, value)
+                    }
                 }
             }
         }
