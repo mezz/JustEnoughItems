@@ -11,6 +11,10 @@ plugins {
 }
 
 repositories {
+	maven("https://repo.maven.apache.org/maven2/") {
+		name = "MavenCentralLWJGL"
+		content { includeGroup("org.lwjgl") }
+	}
 	maven("https://maven.blamejared.com/") {
 		content { includeGroup("net.mezzdev.config") }
 	}
