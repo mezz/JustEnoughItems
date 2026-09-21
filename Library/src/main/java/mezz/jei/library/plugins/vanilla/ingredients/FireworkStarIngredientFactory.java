@@ -72,9 +72,16 @@ public final class FireworkStarIngredientFactory {
 		int shapeId = tag.getByte("Type");
 		FireworkRocketItem.Shape[] shapes = FireworkRocketItem.Shape.values();
 		FireworkRocketItem.Shape shape = shapes[Math.max(0, Math.min(shapeId, shapes.length - 1))];
-		List<Integer> colors = tag.contains("Colors", Tag.TAG_INT_ARRAY) ? Arrays.stream(tag.getIntArray("Colors")).boxed().toList() : List.of();
-		List<Integer> fadeColors = tag.contains("FadeColors", Tag.TAG_INT_ARRAY) ? Arrays.stream(tag.getIntArray("FadeColors")).boxed().toList() : List.of();
+		List<Integer> colors = readColors(tag, "Colors");
+		List<Integer> fadeColors = readColors(tag, "FadeColors");
 		return new Explosion(shape, colors, fadeColors, tag.getBoolean("Trail"), tag.getBoolean("Flicker"));
+	}
+
+	private static List<Integer> readColors(CompoundTag tag, String key) {
+		if (!tag.contains(key, Tag.TAG_INT_ARRAY)) {
+			return List.of();
+		}
+		return Arrays.stream(tag.getIntArray(key)).boxed().toList();
 	}
 
 	public record Explosion(

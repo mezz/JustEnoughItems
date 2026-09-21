@@ -39,14 +39,16 @@ public final class FireworkRocketRecipeManagerPlugin implements ISimpleRecipeMan
 				var data = recipeHelper.getFireworkRocketRecipeData((FireworkRocketRecipe) recipe);
 				return data.shell().test(stack) || data.fuel().test(stack) || data.star().test(stack);
 			})
-			.toList()).orElse(List.of());
+			.toList())
+			.orElse(List.of());
 	}
 
 	@Override
 	public List<CraftingRecipe> getRecipesForOutput(ITypedIngredient<?> output) {
 		return output.getItemStack().map(stack -> recipes.stream()
 			.filter(recipe -> ItemStack.isSameItem(stack, recipeHelper.getFireworkRocketRecipeData((FireworkRocketRecipe) recipe).result()))
-			.toList()).orElse(List.of());
+			.toList())
+			.orElse(List.of());
 	}
 
 	@Override

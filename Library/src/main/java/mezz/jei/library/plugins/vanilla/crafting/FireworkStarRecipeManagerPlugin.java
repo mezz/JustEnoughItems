@@ -39,7 +39,8 @@ public final class FireworkStarRecipeManagerPlugin implements ISimpleRecipeManag
 	public List<CraftingRecipe> getRecipesForInput(ITypedIngredient<?> input) {
 		return input.getItemStack().map(stack -> recipes.stream()
 			.filter(recipe -> handlesInput(recipe, stack))
-			.toList()).orElse(List.of());
+			.toList())
+			.orElse(List.of());
 	}
 
 	private boolean handlesInput(CraftingRecipe recipe, ItemStack stack) {
@@ -58,16 +59,22 @@ public final class FireworkStarRecipeManagerPlugin implements ISimpleRecipeManag
 	@Override
 	public List<CraftingRecipe> getRecipesForOutput(ITypedIngredient<?> output) {
 		return output.getItemStack().map(stack -> {
-			if (!stack.is(Items.FIREWORK_STAR)) {
-				return List.<CraftingRecipe>of();
-			}
-			boolean hasFade = FireworkStarIngredientFactory.getExplosion(stack)
-				.map(explosion -> !explosion.fadeColors().isEmpty())
-				.orElse(false);
-			return recipes.stream()
-				.filter(recipe -> hasFade ? recipe instanceof FireworkStarFadeRecipe : recipe instanceof FireworkStarRecipe)
-				.toList();
-		}).orElse(List.of());
+				if (!stack.is(Items.FIREWORK_STAR)) {
+					return List.<CraftingRecipe>of();
+				}
+				boolean hasFade = FireworkStarIngredientFactory.getExplosion(stack)
+					.map(explosion -> !explosion.fadeColors().isEmpty())
+					.orElse(false);
+				return recipes.stream()
+					.filter(recipe -> {
+						if (hasFade) {
+							return recipe instanceof FireworkStarFadeRecipe;
+						}
+						return recipe instanceof FireworkStarRecipe;
+					})
+					.toList();
+			})
+			.orElse(List.of());
 	}
 
 	@Override

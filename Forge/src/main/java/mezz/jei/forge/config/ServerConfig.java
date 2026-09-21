@@ -27,9 +27,9 @@ public final class ServerConfig implements IServerConfig {
 		builder.push("cheat mode");
 		{
 			builder.comment(
-				"Enable the cheat mode for players who have an operator status (/op).",
-				"Permission providers may override this with the jei.cheat permission."
-			)
+					"Enable the cheat mode for players who have an operator status (/op).",
+					"Permission providers may override this with the jei.cheat permission."
+				)
 				.translation(TRANSLATION_KEY_PREFIX + "enableCheatModeForOp");
 			enableCheatModeForOp = builder.define("enableCheatModeForOp", true);
 
