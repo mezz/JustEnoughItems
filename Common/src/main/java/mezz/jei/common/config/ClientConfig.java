@@ -9,7 +9,6 @@ import net.mezzdev.config.api.value.serializer.IConfigListValueSerializer;
 import net.mezzdev.config.api.value.IConfigValue;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -421,4 +420,3 @@ public final class ClientConfig implements IClientConfig {
 		return hideSingleTagContentTooltipEnabled;
 	}
 }
-

@@ -74,10 +74,11 @@ public interface IIngredientFilterConfig {
 
 	default void addSearchConfigListener(Runnable listener) {
 		List.of(
-			modNameSearchMode(), tooltipSearchMode(), tagSearchMode(), colorSearchMode(),
-			resourceLocationSearchMode(), creativeTabSearchMode(), searchAdvancedTooltips(),
-			searchModIds(), searchModAliases(), searchIngredientAliases(), searchShortModNames()
-		).forEach(value -> Internal.registerRuntimeListenerRemoval(value.addListener(change -> listener.run())));
+				modNameSearchMode(), tooltipSearchMode(), tagSearchMode(), colorSearchMode(),
+				resourceLocationSearchMode(), creativeTabSearchMode(), searchAdvancedTooltips(),
+				searchModIds(), searchModAliases(), searchIngredientAliases(), searchShortModNames()
+			)
+			.forEach(value -> Internal.registerRuntimeListenerRemoval(value.addListener(change -> listener.run())));
 	}
 }
 
