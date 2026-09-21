@@ -10,12 +10,14 @@ import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.library.transfer.RecipeTransferHandlerHelper;
+import mezz.jei.forge.tests.lib.TestIngredientManagers;
 import mezz.jei.forge.tests.lib.TestStackHelper;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 final class TestRecipeTransferRegistration implements IRecipeTransferRegistration {
@@ -24,7 +26,8 @@ final class TestRecipeTransferRegistration implements IRecipeTransferRegistratio
 
 	public TestRecipeTransferRegistration(IConnectionToServer serverConnection) {
 		var stackHelper = new TestStackHelper();
-		this.handlerHelper = new RecipeTransferHandlerHelper(stackHelper, serverConnection);
+		var ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(List.of());
+		this.handlerHelper = new RecipeTransferHandlerHelper(stackHelper, ingredientManager, null, serverConnection);
 	}
 
 	@Override

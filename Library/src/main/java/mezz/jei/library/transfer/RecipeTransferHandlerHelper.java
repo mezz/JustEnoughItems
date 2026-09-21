@@ -1,59 +1,59 @@
 package mezz.jei.library.transfer;
 
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IStackHelper;
 import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.transfer.IRecipeTransferContext;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
-import mezz.jei.common.Internal;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.transfer.RecipeTransferContext;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.library.gui.helpers.CraftingGridHelper;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper {
 	private final IStackHelper stackHelper;
-	private final IConnectionToServer serverConnection;
+	private final IIngredientManager ingredientManager;
 	private final @Nullable CraftingRecipeCategory craftingRecipeCategory;
-
-	public RecipeTransferHandlerHelper(IStackHelper stackHelper) {
-		this(stackHelper, Internal.getServerConnection(), null);
-	}
+	private final IConnectionToServer serverConnection;
 
 	public RecipeTransferHandlerHelper(
 		IStackHelper stackHelper,
+		IIngredientManager ingredientManager,
+		@Nullable CraftingRecipeCategory craftingRecipeCategory,
 		IConnectionToServer serverConnection
 	) {
-		this(stackHelper, serverConnection, null);
-	}
-
-	public RecipeTransferHandlerHelper(IStackHelper stackHelper, CraftingRecipeCategory craftingRecipeCategory) {
-		this(stackHelper, Internal.getServerConnection(), craftingRecipeCategory);
-	}
-
-	public RecipeTransferHandlerHelper(
-		IStackHelper stackHelper,
-		IConnectionToServer serverConnection,
-		@Nullable CraftingRecipeCategory craftingRecipeCategory
-	) {
 		this.stackHelper = stackHelper;
-		this.serverConnection = serverConnection;
+		this.ingredientManager = ingredientManager;
 		this.craftingRecipeCategory = craftingRecipeCategory;
+		this.serverConnection = serverConnection;
 	}
 
 	@Override
@@ -91,6 +91,39 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 	}
 
 	@Override
+	public <C extends AbstractContainerMenu, R> @Nullable IRecipeTransferError transferRecipeWithInputAlternatives(
+		IRecipeTransferHandler<C, R> recipeTransferHandler,
+		IRecipeTransferContext<R, C> context,
+		List<IRecipeSlotsView> inputAlternatives,
+		boolean doTransfer
+	) {
+		ErrorUtil.checkNotNull(recipeTransferHandler, "recipeTransferHandler");
+		ErrorUtil.checkNotNull(context, "context");
+		ErrorUtil.checkNotNull(inputAlternatives, "inputAlternatives");
+		if (inputAlternatives.isEmpty()) {
+			return recipeTransferHandler.transferRecipe(context, doTransfer);
+		}
+
+		IRecipeTransferError firstError = null;
+		for (IRecipeSlotsView inputAlternative : inputAlternatives) {
+			IRecipeTransferContext<R, C> inputContext = RecipeTransferContext.copyWithRecipeSlots(context, inputAlternative);
+			IRecipeTransferError error = recipeTransferHandler.transferRecipe(inputContext, false);
+			if (error != null) {
+				if (firstError == null) {
+					firstError = error;
+				}
+				continue;
+			}
+
+			if (doTransfer) {
+				return recipeTransferHandler.transferRecipe(inputContext, true);
+			}
+			return null;
+		}
+		return firstError;
+	}
+
+	@Override
 	public IRecipeTransferError createUserErrorForMissingSlots(Component tooltipMessage, Collection<IRecipeSlotView> missingItemSlots) {
 		ErrorUtil.checkNotNull(tooltipMessage, "tooltipMessage");
 		ErrorUtil.checkNotEmpty(missingItemSlots, "missingItemSlots");
@@ -101,6 +134,21 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 	@Override
 	public IRecipeSlotsView createRecipeSlotsView(List<IRecipeSlotView> slotViews) {
 		return () -> slotViews;
+	}
+
+	@Override
+	public IRecipeSlotView copyWithIngredients(IRecipeSlotView recipeSlot, List<ItemStack> ingredients) {
+		ErrorUtil.checkNotNull(recipeSlot, "recipeSlot");
+		ErrorUtil.checkNotNull(ingredients, "ingredients");
+		List<ITypedIngredient<?>> typedIngredients = Collections.unmodifiableList(
+			TypedIngredient.createAndFilterInvalidNonnullList(
+				ingredientManager,
+				VanillaTypes.ITEM_STACK,
+				ingredients,
+				false
+			)
+		);
+		return new RecipeSlotViewWithIngredients(recipeSlot, typedIngredients);
 	}
 
 	@Override
@@ -115,5 +163,50 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 			recipeSize = craftingRecipeCategory.getRecipeSize(recipe);
 		}
 		return CraftingGridHelper.getGuiSlotToIngredientMap(recipe, recipeSize.width(), recipeSize.height());
+	}
+
+	private record RecipeSlotViewWithIngredients(
+		IRecipeSlotView original,
+		List<ITypedIngredient<?>> ingredients
+	) implements IRecipeSlotView {
+		@Override
+		public Stream<ITypedIngredient<?>> getAllIngredients() {
+			return ingredients.stream();
+		}
+
+		@Override
+		public List<ITypedIngredient<?>> getAllIngredientsList() {
+			return ingredients;
+		}
+
+		@Override
+		public Optional<ITypedIngredient<?>> getDisplayedIngredient() {
+			return ingredients.stream().findFirst();
+		}
+
+		@Override
+		public Stream<ITypedIngredient<?>> getDisplayedIngredients() {
+			return ingredients.stream();
+		}
+
+		@Override
+		public Optional<TagKey<?>> getTagKey() {
+			return Optional.empty();
+		}
+
+		@Override
+		public RecipeIngredientRole getRole() {
+			return original.getRole();
+		}
+
+		@Override
+		public void drawHighlight(PoseStack poseStack, int color) {
+			original.drawHighlight(poseStack, color);
+		}
+
+		@Override
+		public Optional<String> getSlotName() {
+			return original.getSlotName();
+		}
 	}
 }
