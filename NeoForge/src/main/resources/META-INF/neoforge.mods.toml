@@ -63,6 +63,13 @@ ${modDescription}
     side="BOTH"
 
 [[dependencies.jei]]
+    modId="${configGuiModId}"
+    type="optional"
+    versionRange="${mezzConfigGuiVersionRange}"
+    ordering="AFTER"
+    side="CLIENT"
+
+[[dependencies.jei]]
     modId="neoforge" #mandatory
     type="required" #mandatory
     versionRange="${neoforgeVersionRange}" #mandatory
