@@ -57,9 +57,10 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
 import net.neoforged.neoforge.network.connection.ConnectionType;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -134,7 +135,6 @@ public final class RecipeTransferGameTests {
 	@GameTest
 	@EmptyTemplate
 	@TestHolder(description = "Transfers recipe ingredients into an empty item-handler slot.")
-	@SuppressWarnings("removal")
 	public static void transfersIntoEmptyItemHandlerSlot(RecipeTransferTestHelper helper) {
 		// Setup: the target is a real NeoForge item-handler slot whose empty contents cannot be modified.
 		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
@@ -142,7 +142,7 @@ public final class RecipeTransferGameTests {
 		Slot targetSlot = replaceSlot(
 			menu,
 			craftingSlots.get(CRAFTING_GRID_TOP_LEFT),
-			itemHandlerSlot(craftingSlots.get(CRAFTING_GRID_TOP_LEFT), new ItemStackHandler(1))
+			itemHandlerSlot(craftingSlots.get(CRAFTING_GRID_TOP_LEFT), new ItemStacksResourceHandler(1))
 		);
 		helper.getStandardInventorySlots(menu).getFirst().set(new ItemStack(Items.OAK_PLANKS));
 		helper.assertTrue(!targetSlot.allowModification(helper.getPlayer()), "Expected the empty item-handler slot to reject content modification");
@@ -172,21 +172,27 @@ public final class RecipeTransferGameTests {
 	@GameTest
 	@EmptyTemplate
 	@TestHolder(description = "Validates the requested transfer count instead of the source stack count.")
-	@SuppressWarnings("removal")
 	public static void transfersRequestedCountIntoCountSensitiveItemHandlerSlot(RecipeTransferTestHelper helper) {
 		// Setup: the target accepts the one requested ingredient but rejects the four-item source stack as a whole.
 		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
 		List<Slot> craftingSlots = menu.getInputGridSlots();
-		ItemStackHandler countSensitiveItemHandler = new ItemStackHandler(1) {
+		ItemStacksResourceHandler countSensitiveItemHandler = new ItemStacksResourceHandler(1);
+		Slot countSensitiveSlot = new ResourceHandlerSlot(
+			countSensitiveItemHandler,
+			countSensitiveItemHandler::set,
+			0,
+			craftingSlots.get(CRAFTING_GRID_TOP_LEFT).x,
+			craftingSlots.get(CRAFTING_GRID_TOP_LEFT).y
+		) {
 			@Override
-			public boolean isItemValid(int slot, ItemStack stack) {
+			public boolean mayPlace(ItemStack stack) {
 				return stack.getCount() == 1;
 			}
 		};
 		replaceSlot(
 			menu,
 			craftingSlots.get(CRAFTING_GRID_TOP_LEFT),
-			itemHandlerSlot(craftingSlots.get(CRAFTING_GRID_TOP_LEFT), countSensitiveItemHandler)
+			countSensitiveSlot
 		);
 		helper.getStandardInventorySlots(menu).getFirst().set(new ItemStack(Items.OAK_PLANKS, 4));
 
@@ -2027,15 +2033,14 @@ public final class RecipeTransferGameTests {
 	@GameTest
 	@EmptyTemplate
 	@TestHolder(description = "Does not insert into an item-handler slot that refuses the ingredient.")
-	@SuppressWarnings("removal")
 	public static void doesNotInsertIntoRejectingItemHandlerSlot(RecipeTransferTestHelper helper) {
 		// Setup: the target is a real item-handler slot configured to reject every ingredient.
 		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
 		List<Slot> craftingSlots = menu.getInputGridSlots();
 		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
-		ItemStackHandler rejectingItemHandler = new ItemStackHandler(1) {
+		ItemStacksResourceHandler rejectingItemHandler = new ItemStacksResourceHandler(1) {
 			@Override
-			public boolean isItemValid(int slot, ItemStack stack) {
+			public boolean isValid(int slot, ItemResource resource) {
 				return false;
 			}
 		};
@@ -2218,14 +2223,13 @@ public final class RecipeTransferGameTests {
 	@GameTest
 	@EmptyTemplate
 	@TestHolder(description = "A malicious packet cannot partially move a recipe when one target rejects it.")
-	@SuppressWarnings("removal")
 	public static void maliciousPacketCannotPartiallyTransferIntoRejectingRecipeSlot(RecipeTransferTestHelper helper) {
 		// Setup: the crafting-table pattern has one item-handler target that refuses planks.
 		CraftingMenu menu = helper.openMenu(RecipeTransferGameTests::createCraftingMenu);
 		List<Slot> craftingSlots = menu.getInputGridSlots();
-		ItemStackHandler rejectingItemHandler = new ItemStackHandler(1) {
+		ItemStacksResourceHandler rejectingItemHandler = new ItemStacksResourceHandler(1) {
 			@Override
-			public boolean isItemValid(int slot, ItemStack stack) {
+			public boolean isValid(int slot, ItemResource resource) {
 				return false;
 			}
 		};
@@ -2975,9 +2979,8 @@ public final class RecipeTransferGameTests {
 		};
 	}
 
-	@SuppressWarnings("removal")
-	private static Slot itemHandlerSlot(Slot slot, ItemStackHandler itemHandler) {
-		return new SlotItemHandler(itemHandler, 0, slot.x, slot.y);
+	private static Slot itemHandlerSlot(Slot slot, ItemStacksResourceHandler itemHandler) {
+		return new ResourceHandlerSlot(itemHandler, itemHandler::set, 0, slot.x, slot.y);
 	}
 
 	private static List<Slot> getCraftingResultSlots(AbstractCraftingMenu menu) {

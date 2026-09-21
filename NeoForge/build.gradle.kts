@@ -527,7 +527,7 @@ publishing {
 		}
 		register<MavenPublication>("neoforgeJar") {
 			artifactId = baseArchivesName
-			from(components["modShade"])
+			from(components["java"])
 
 			val mezzConfigGuiDependencyInfo =
 				dependencyInfo(mezzConfigGuiNeoForgeDependency) + ("optional" to "true")

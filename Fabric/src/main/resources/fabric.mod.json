@@ -44,5 +44,11 @@
     "fabricloader": "${fabricLoaderVersionRange}",
     "fabric-api": "${fabricApiVersionRange}",
     "java": ">=${modJavaVersion}"
+  },
+  "suggests": {
+    "${configGuiModId}": "${mezzConfigGuiFabricVersionRange}"
+  },
+  "breaks": {
+    "${configGuiModId}": "${mezzConfigGuiFabricBreaksVersionRange}"
   }
 }

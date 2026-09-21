@@ -89,7 +89,7 @@ dependencies {
     add(apiSourceSet.compileOnlyConfigurationName, "net.fabricmc:fabric-loader:${fabricLoaderVersion}")
     add(apiSourceSet.compileOnlyConfigurationName, "com.google.code.findbugs:jsr305:3.0.2")
     add(apiSourceSet.compileOnlyConfigurationName, "org.jetbrains:annotations:26.0.2")
-    add(apiSourceSet.compileOnlyConfigurationName, "org.jspecify:jspecify:1.0.0")
+    add(apiSourceSet.compileOnlyConfigurationName, "org.jspecify:jspecify:1.0.1")
     implementation("org.jetbrains:annotations:26.0.2")
     implementation("com.google.guava:guava:33.5.0-jre")
     implementation("it.unimi.dsi:fastutil:8.5.18")
@@ -100,7 +100,7 @@ dependencies {
     implementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
     }
-    testFixturesCompileOnly("org.jspecify:jspecify:1.0.0")
+    testFixturesCompileOnly("org.jspecify:jspecify:1.0.1")
     testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

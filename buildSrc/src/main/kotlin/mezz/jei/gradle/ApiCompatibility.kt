@@ -51,7 +51,7 @@ private fun Project.configureApiCompatibility() {
 	val modId = property("modId").toString()
 	val specificationVersion = property("specificationVersion").toString()
 
-	val apiCompatibilityCheckerVersion = "0.1.19"
+	val apiCompatibilityCheckerVersion = "0.1.22"
 	val apiCompatibilityAsmVersion = "9.10.1"
 	val apiCompatibilityBaselineRepository = "https://maven.blamejared.com"
 	val apiCompatibilityMajorVersion = specificationVersion.substringBefore('.').toInt()
