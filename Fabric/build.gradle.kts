@@ -17,6 +17,10 @@ plugins {
 }
 
 repositories {
+	maven("https://repo.maven.apache.org/maven2/") {
+		name = "MavenCentralLWJGL"
+		content { includeGroup("org.lwjgl") }
+	}
     fun exclusiveMaven(url: String, filter: Action<InclusiveRepositoryContentDescriptor>) =
         exclusiveContent {
             forRepository { maven(url) }
