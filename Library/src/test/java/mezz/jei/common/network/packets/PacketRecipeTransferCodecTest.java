@@ -5,11 +5,13 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import mezz.jei.common.network.packets.legacy.PacketRecipeTransfer;
 import mezz.jei.common.network.packets.legacy.PacketRecipeTransferCounted;
+import mezz.jei.common.transfer.RecipeTransferRequirement;
 import mezz.jei.common.transfer.TransferOperation;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -40,6 +42,23 @@ public class PacketRecipeTransferCodecTest {
 
 		assertRoundTrip(PacketRecipeTransferWithResult.STREAM_CODEC, packet);
 		assertRoundTrip(PacketRecipeTransferCountedWithResult.STREAM_CODEC, countedPacket);
+	}
+
+	@Test
+	public void itemHandlerRequirementsRoundTrip() {
+		List<RecipeTransferRequirement> requirements = List.of(
+			new RecipeTransferRequirement(4, List.of(ItemStack.EMPTY))
+		);
+		PacketRecipeTransferItemHandlerWithResult packet = new PacketRecipeTransferItemHandlerWithResult(
+			requirements,
+			List.of(4),
+			List.of(3),
+			true,
+			false,
+			44
+		);
+
+		assertRoundTrip(PacketRecipeTransferItemHandlerWithResult.STREAM_CODEC, packet);
 	}
 
 	@Test

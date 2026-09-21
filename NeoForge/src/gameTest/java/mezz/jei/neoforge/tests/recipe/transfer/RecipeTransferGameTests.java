@@ -25,6 +25,7 @@ import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.TransferOperation;
 import mezz.jei.library.transfer.RecipeTransferErrorMissingSlots;
 import mezz.jei.library.transfer.RecipeTransferErrorTooltip;
+import mezz.jei.neoforge.tests.JeiTests;
 import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
 import mezz.jei.neoforge.tests.lib.StackPlacement;
 import mezz.jei.neoforge.tests.lib.TestRecipes.TestRecipe;
@@ -126,6 +127,98 @@ public final class RecipeTransferGameTests {
 			)
 			.assertPlayerInventory(
 				List.of()
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Transfers recipe ingredients from UUID-backed external storage like Sophisticated Backpacks.")
+	public static void transfersFromBackpackItemHandler(RecipeTransferTestHelper helper) {
+		// Setup: the backpack stack only has a storage UUID; its planks live in an external item handler.
+		TransferRecipe<?> recipe = craftingTableRecipe();
+		ItemStack backpack = JeiTests.createBackpack(new ItemStack(Items.OAK_PLANKS, 4));
+		var menu = helper.openMenu(RecipeTransferGameTests::createCraftingMenu, backpack);
+
+		// Operation: transfer the recipe through the normal client planning and server packet path.
+		var result = helper.transfer(RecipeTypes.CRAFTING, recipe, menu, false);
+
+		// Assertions: the backpack remains in place, its contents are consumed, and the grid is filled.
+		helper.assertTransferSucceeded(result);
+		ItemStack transferredBackpack = helper.getStandardInventorySlots(menu).getFirst().getItem();
+		helper.assertTrue(
+			JeiTests.getBackpackContents(transferredBackpack).stream().allMatch(ItemStack::isEmpty),
+			"Expected the backpack item handler to be empty after recipe transfer"
+		);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of(stackAt(0, Items.CRAFTING_TABLE))
+			)
+			.assertCraftingArea(
+				CraftingMenu::getInputGridSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_TOP_CENTER, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_MIDDLE_LEFT, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_CENTER, Items.OAK_PLANKS)
+				)
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, backpack))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Rolls back backpack and inventory extraction together when a recipe set is incomplete.")
+	public static void rollsBackBackpackAndInventoryExtractionTogether(RecipeTransferTestHelper helper) {
+		// Setup: two operations request the same single backpack item, with an ordinary item between them.
+		ItemStack backpack = JeiTests.createBackpack(new ItemStack(Items.OAK_PLANKS));
+		CraftingMenu menu = helper.openMenu(
+			RecipeTransferGameTests::createCraftingMenu,
+			backpack,
+			new ItemStack(Items.STICK)
+		);
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		List<Slot> craftingSlots = menu.getInputGridSlots();
+		Slot backpackSlot = inventorySlots.get(0);
+		Slot stickSlot = inventorySlots.get(1);
+		List<TransferOperation> operations = List.of(
+			new TransferOperation(backpackSlot.index, craftingSlots.get(CRAFTING_GRID_TOP_LEFT).index, 1, 0),
+			new TransferOperation(stickSlot.index, craftingSlots.get(CRAFTING_GRID_TOP_CENTER).index),
+			new TransferOperation(backpackSlot.index, craftingSlots.get(CRAFTING_GRID_MIDDLE_LEFT).index, 1, 0)
+		);
+
+		// Operation: the second backpack extraction fails after both source types have been modified.
+		boolean transferred = BasicRecipeTransferHandlerServer.setItemsWithResult(
+			helper.getPlayer(),
+			operations,
+			craftingSlots,
+			inventorySlots,
+			false,
+			true
+		);
+
+		// Assertions: the existing recipe-transfer transaction restores both source types as one unit.
+		helper.assertTrue(!transferred, "Expected the incomplete recipe set to be rejected");
+		List<ItemStack> contents = JeiTests.getBackpackContents(backpackSlot.getItem());
+		helper.assertTrue(
+			contents.size() == 9 &&
+				contents.getFirst().is(Items.OAK_PLANKS) && contents.getFirst().getCount() == 1,
+			"Expected the recipe-transfer transaction to restore the backpack contents"
+		);
+		helper.createMenuChecker(menu)
+			.assertResults(RecipeTransferGameTests::getCraftingResultSlots, List.of())
+			.assertCraftingArea(CraftingMenu::getInputGridSlots, List.of())
+			.assertPlayerInventory(
+				List.of(
+					stackAt(0, backpack),
+					stackAt(1, Items.STICK)
+				)
 			)
 			.assertAllSlotsChecked();
 		helper.succeed();

@@ -1,5 +1,8 @@
 package mezz.jei.common.transfer;
 
+import mezz.jei.common.platform.IPlatformTransactionHelper.ITransaction;
+import mezz.jei.common.platform.Services;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -16,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class BasicRecipeTransferHandlerServer {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -37,6 +41,50 @@ public final class BasicRecipeTransferHandlerServer {
 		setItemsWithResult(player, transferOperations, craftingSlots, inventorySlots, maxTransfer, requireCompleteSets);
 	}
 
+	public static boolean setItemsFromItemHandlersWithResult(
+		Player player,
+		List<RecipeTransferRequirement> requirements,
+		List<Slot> craftingSlots,
+		List<Slot> inventorySlots,
+		boolean maxTransfer,
+		boolean requireCompleteSets
+	) {
+		try {
+			if (!RecipeTransferUtil.validateSlots(player, List.of(), craftingSlots, inventorySlots) ||
+				!validateRequirements(requirements, craftingSlots)
+			) {
+				return false;
+			}
+
+			Map<RecipeTransferSource, ItemStack> availableItemStacks = getAvailableItemStacks(
+				player,
+				craftingSlots,
+				inventorySlots
+			);
+			List<TransferOperation> transferOperations = RecipeTransferUtil.getExactRecipeTransferOperations(
+				availableItemStacks,
+				requirements,
+				craftingSlots
+			);
+			if (transferOperations == null) {
+				return false;
+			}
+
+			return setItemsWithResult(
+				player,
+				transferOperations,
+				craftingSlots,
+				inventorySlots,
+				maxTransfer,
+				requireCompleteSets,
+				true
+			);
+		} catch (RuntimeException e) {
+			LOGGER.error("Failed to plan recipe transfer from item handlers", e);
+			return false;
+		}
+	}
+
 	/**
 	 * Called server-side to put the items in place and report whether the transfer was applied.
 	 */
@@ -47,6 +95,26 @@ public final class BasicRecipeTransferHandlerServer {
 		List<Slot> inventorySlots,
 		boolean maxTransfer,
 		boolean requireCompleteSets
+	) {
+		return setItemsWithResult(
+			player,
+			transferOperations,
+			craftingSlots,
+			inventorySlots,
+			maxTransfer,
+			requireCompleteSets,
+			false
+		);
+	}
+
+	private static boolean setItemsWithResult(
+		Player player,
+		List<TransferOperation> transferOperations,
+		List<Slot> craftingSlots,
+		List<Slot> inventorySlots,
+		boolean maxTransfer,
+		boolean requireCompleteSets,
+		boolean allowItemHandlerFallback
 	) {
 		if (!RecipeTransferUtil.validateSlots(player, transferOperations, craftingSlots, inventorySlots)) {
 			return false;
@@ -64,33 +132,132 @@ public final class BasicRecipeTransferHandlerServer {
 		// and a max-transfer operation has been requested by the player.
 		boolean transferAsCompleteSets = requireCompleteSets || !maxTransfer;
 
-		Map<Slot, ItemStack> recipeSlotToTakenStacks = takeItemsFromInventory(
-			player,
-			requiredTransfers,
-			craftingSlots,
-			inventorySlots,
-			transferAsCompleteSets,
-			maxTransfer
-		);
+		try (ITransaction transaction = Services.PLATFORM.getTransactionHelper().openTransaction()) {
+			Map<Slot, ItemStack> recipeSlotToTakenStacks = takeItemsFromInventory(
+				transaction,
+				player,
+				requiredTransfers,
+				craftingSlots,
+				inventorySlots,
+				transferAsCompleteSets,
+				maxTransfer,
+				allowItemHandlerFallback
+			);
 
-		if (recipeSlotToTakenStacks.isEmpty()) {
-			LOGGER.error("Tried to transfer recipe but was unable to remove any items from the inventory.");
+			if (recipeSlotToTakenStacks.isEmpty()) {
+				LOGGER.error("Tried to transfer recipe but was unable to remove any items from the inventory.");
+				return false;
+			}
+
+			// clear the crafting grid
+			List<ItemStack> clearedCraftingItems = clearCraftingGrid(transaction, craftingSlots, player);
+			if (clearedCraftingItems == null) {
+				LOGGER.error("Tried to transfer recipe but was unable to clear the crafting grid.");
+				return false;
+			}
+
+			// put items into the crafting grid
+			List<ItemStack> remainderItems = putItemsIntoCraftingGrid(
+				transaction,
+				recipeSlotToTakenStacks,
+				requireCompleteSets
+			);
+			if (remainderItems == null) {
+				LOGGER.error("Tried to transfer recipe but was unable to put items into the crafting grid.");
+				return false;
+			}
+
+			// put leftover items back into the inventory before committing the transaction
+			List<Slot> stowSlots = getStowSlots(player, inventorySlots);
+			if (!stowItems(transaction, player, stowSlots, clearedCraftingItems) ||
+				!stowItems(transaction, player, stowSlots, remainderItems)
+			) {
+				LOGGER.error("Tried to transfer recipe but was unable to stow leftover items.");
+				return false;
+			}
+			transaction.commit();
+		} catch (RuntimeException e) {
+			LOGGER.error("Failed to apply recipe transfer transaction", e);
 			return false;
 		}
-
-		// clear the crafting grid
-		List<ItemStack> clearedCraftingItems = clearCraftingGrid(craftingSlots, player);
-
-		// put items into the crafting grid
-		List<ItemStack> remainderItems = putItemsIntoCraftingGrid(recipeSlotToTakenStacks, requireCompleteSets);
-
-		// put leftover items back into the inventory
-		stowItems(player, inventorySlots, clearedCraftingItems);
-		stowItems(player, inventorySlots, remainderItems);
 
 		AbstractContainerMenu container = player.containerMenu;
 		container.broadcastChanges();
 		return true;
+	}
+
+	private static boolean validateRequirements(
+		List<RecipeTransferRequirement> requirements,
+		List<Slot> craftingSlots
+	) {
+		if (requirements.isEmpty() ||
+			requirements.size() > RecipeTransferRequirement.MAX_REQUIREMENTS ||
+			requirements.size() > craftingSlots.size()
+		) {
+			return false;
+		}
+
+		Set<Integer> craftingSlotIndexes = craftingSlots.stream()
+			.map(slot -> slot.index)
+			.collect(Collectors.toSet());
+		Set<Integer> seenSlotIndexes = new HashSet<>();
+		int totalAlternatives = 0;
+		for (RecipeTransferRequirement requirement : requirements) {
+			int alternativeCount = requirement.acceptedStacks().size();
+			if (!craftingSlotIndexes.contains(requirement.craftingSlotId()) ||
+				!seenSlotIndexes.add(requirement.craftingSlotId()) ||
+				alternativeCount == 0 ||
+				alternativeCount > RecipeTransferRequirement.MAX_ALTERNATIVES ||
+				requirement.acceptedStacks().stream().anyMatch(ItemStack::isEmpty)
+			) {
+				return false;
+			}
+			totalAlternatives += alternativeCount;
+			if (totalAlternatives > RecipeTransferRequirement.MAX_TOTAL_ALTERNATIVES) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static Map<RecipeTransferSource, ItemStack> getAvailableItemStacks(
+		Player player,
+		List<Slot> craftingSlots,
+		List<Slot> inventorySlots
+	) {
+		Map<RecipeTransferSource, ItemStack> availableItemStacks = new HashMap<>();
+		for (Slot craftingSlot : craftingSlots) {
+			ItemStack stack = craftingSlot.getItem();
+			if (!stack.isEmpty() && craftingSlot.allowModification(player)) {
+				availableItemStacks.put(new RecipeTransferSource(craftingSlot), stack.copy());
+			}
+		}
+
+		for (Slot inventorySlot : inventorySlots) {
+			ItemStack stack = inventorySlot.getItem();
+			if (stack.isEmpty() || !inventorySlot.allowModification(player)) {
+				continue;
+			}
+
+			Optional<List<ItemStack>> itemHandlerContents = Services.PLATFORM.getRecipeTransferHelper()
+				.getItemHandlerContents(stack);
+			if (itemHandlerContents.isEmpty()) {
+				availableItemStacks.put(new RecipeTransferSource(inventorySlot), stack.copy());
+				continue;
+			}
+
+			List<ItemStack> contents = itemHandlerContents.get();
+			for (int itemHandlerSlotId = 0; itemHandlerSlotId < contents.size(); itemHandlerSlotId++) {
+				ItemStack content = contents.get(itemHandlerSlotId);
+				if (!content.isEmpty()) {
+					availableItemStacks.put(
+						new RecipeTransferSource(inventorySlot, itemHandlerSlotId),
+						content
+					);
+				}
+			}
+		}
+		return availableItemStacks;
 	}
 
 	private static boolean canClearCraftingSlots(Player player, List<Slot> craftingSlots) {
@@ -129,7 +296,12 @@ public final class BasicRecipeTransferHandlerServer {
 			.orElse(Integer.MAX_VALUE);
 	}
 
-	private static List<ItemStack> clearCraftingGrid(List<Slot> craftingSlots, Player player) {
+	@Nullable
+	private static List<ItemStack> clearCraftingGrid(
+		ITransaction transaction,
+		List<Slot> craftingSlots,
+		Player player
+	) {
 		List<ItemStack> clearedCraftingItems = new ArrayList<>();
 		for (Slot craftingSlot : craftingSlots) {
 			if (!craftingSlot.mayPickup(player)) {
@@ -138,26 +310,37 @@ public final class BasicRecipeTransferHandlerServer {
 
 			ItemStack item = craftingSlot.getItem();
 			if (!item.isEmpty() && craftingSlot.mayPlace(item)) {
-				ItemStack craftingItem = craftingSlot.safeTake(Integer.MAX_VALUE, Integer.MAX_VALUE, player);
-				clearedCraftingItems.add(craftingItem);
+				Optional<ItemStack> craftingItem = extractExactFromSlot(transaction, craftingSlot, item.getCount(), player);
+				if (craftingItem.isEmpty()) {
+					return null;
+				}
+				clearedCraftingItems.add(craftingItem.get());
 			}
 		}
 		return clearedCraftingItems;
 	}
 
+	@Nullable
 	private static List<ItemStack> putItemsIntoCraftingGrid(
+		ITransaction transaction,
 		Map<Slot, ItemStack> recipeSlotToTakenStacks,
 		boolean requireCompleteSets
 	) {
 		final int slotStackLimit = getSlotStackLimit(recipeSlotToTakenStacks, requireCompleteSets);
 		List<ItemStack> remainderItems = new ArrayList<>();
 
-		recipeSlotToTakenStacks.forEach((slot, stack) -> {
-			ItemStack remainder = slot.safeInsert(stack, slotStackLimit);
+		for (Map.Entry<Slot, ItemStack> entry : recipeSlotToTakenStacks.entrySet()) {
+			Slot slot = entry.getKey();
+			ItemStack stack = entry.getValue();
+			ItemStack remainder = transaction.insertIntoSlot(slot, stack, slotStackLimit);
+			int insertedCount = stack.getCount() - remainder.getCount();
+			if (insertedCount <= 0) {
+				return null;
+			}
 			if (!remainder.isEmpty()) {
 				remainderItems.add(remainder);
 			}
-		});
+		}
 
 		return remainderItems;
 	}
@@ -166,6 +349,7 @@ public final class BasicRecipeTransferHandlerServer {
 	private static List<RequiredTransfer> calculateRequiredTransfers(List<TransferOperation> transferOperations, Player player) {
 		List<RequiredTransfer> requiredTransfers = new ArrayList<>(transferOperations.size());
 		Map<Slot, ItemStack> targetSlotStacks = new HashMap<>();
+		Map<Slot, Boolean> itemHandlerSourceModes = new HashMap<>();
 		for (TransferOperation transferOperation : transferOperations) {
 			Slot recipeSlot = transferOperation.craftingSlot(player.containerMenu);
 			Slot inventorySlot = transferOperation.inventorySlot(player.containerMenu);
@@ -176,15 +360,26 @@ public final class BasicRecipeTransferHandlerServer {
 				);
 				return null;
 			}
-			final ItemStack slotStack = inventorySlot.getItem();
-			if (slotStack.isEmpty()) {
+			boolean itemHandlerSource = transferOperation.hasItemHandlerSource();
+			Boolean previousSourceMode = itemHandlerSourceModes.putIfAbsent(inventorySlot, itemHandlerSource);
+			if (previousSourceMode != null && previousSourceMode != itemHandlerSource) {
 				LOGGER.error(
-					"Tried to transfer recipe but was given an empty inventory slot as an ingredient source: {}",
+					"Tried to use inventory slot {} as both a direct and item handler recipe source",
 					inventorySlot.index
 				);
 				return null;
 			}
-			ItemStack stack = slotStack.copy();
+
+			RecipeTransferSource source = new RecipeTransferSource(inventorySlot, transferOperation.itemHandlerSlotId());
+			final ItemStack sourceStack = getSourceStack(source);
+			if (sourceStack.isEmpty() || sourceStack.getCount() < transferOperation.count()) {
+				LOGGER.error(
+					"Tried to transfer recipe but was given an empty or insufficient ingredient source: {}",
+					source
+				);
+				return null;
+			}
+			ItemStack stack = sourceStack.copy();
 			stack.setCount(transferOperation.count());
 			if (!recipeSlot.mayPlace(stack)) {
 				LOGGER.error(
@@ -204,26 +399,30 @@ public final class BasicRecipeTransferHandlerServer {
 				);
 				return null;
 			}
-			requiredTransfers.add(new RequiredTransfer(recipeSlot, inventorySlot, stack));
+			requiredTransfers.add(new RequiredTransfer(recipeSlot, source, stack));
 		}
 		return requiredTransfers;
 	}
 
 	private static Map<Slot, ItemStack> takeItemsFromInventory(
+		ITransaction transaction,
 		Player player,
 		List<RequiredTransfer> requiredTransfers,
 		List<Slot> craftingSlots,
 		List<Slot> inventorySlots,
 		boolean transferAsCompleteSets,
-		boolean maxTransfer
+		boolean maxTransfer,
+		boolean allowItemHandlerFallback
 	) {
 		if (!maxTransfer) {
 			return removeOneSetOfItemsFromInventory(
+				transaction,
 				player,
 				requiredTransfers,
 				craftingSlots,
 				inventorySlots,
-				transferAsCompleteSets
+				transferAsCompleteSets,
+				allowItemHandlerFallback
 			);
 		}
 
@@ -236,11 +435,13 @@ public final class BasicRecipeTransferHandlerServer {
 			}
 
 			final Map<Slot, ItemStack> foundItemsInSet = removeOneSetOfItemsFromInventory(
+				transaction,
 				player,
 				remainingRequiredTransfers,
 				craftingSlots,
 				inventorySlots,
-				transferAsCompleteSets
+				transferAsCompleteSets,
+				allowItemHandlerFallback
 			);
 
 			if (foundItemsInSet.isEmpty()) {
@@ -282,58 +483,105 @@ public final class BasicRecipeTransferHandlerServer {
 	}
 
 	private static Map<Slot, ItemStack> removeOneSetOfItemsFromInventory(
+		ITransaction transaction,
 		Player player,
 		List<RequiredTransfer> requiredTransfers,
 		List<Slot> craftingSlots,
 		List<Slot> inventorySlots,
-		boolean transferAsCompleteSets
+		boolean transferAsCompleteSets,
+		boolean allowItemHandlerFallback
 	) {
-		Map<Slot, ItemStack> originalSlotContents = null;
-		if (transferAsCompleteSets) {
-			// We only need to create a new map for each set iteration if we're transferring as complete sets.
-			originalSlotContents = new HashMap<>();
-		}
-
 		// This map holds items found for each set iteration. Its contents are added to the result map
 		// after each complete set iteration. If we are transferring as complete sets, this allows
 		// us to simply ignore the map's contents when a complete set isn't found.
 		final Map<Slot, ItemStack> foundItemsInSet = new HashMap<>(requiredTransfers.size());
+		ItemHandlerSources itemHandlerSources = ItemHandlerSources.EMPTY;
+		if (allowItemHandlerFallback) {
+			itemHandlerSources = getItemHandlerSources(player, inventorySlots);
+		}
+		ITransaction activeTransaction = transaction;
+		if (transferAsCompleteSets) {
+			activeTransaction = transaction.openNested();
+		}
+		try {
+			for (RequiredTransfer requiredTransfer : requiredTransfers) {
+				final Slot recipeSlot = requiredTransfer.recipeSlot;
+				final ItemStack requiredStack = requiredTransfer.stack;
+				final RecipeTransferSource hint = requiredTransfer.hint;
 
-		for (RequiredTransfer requiredTransfer : requiredTransfers) {
-			final Slot recipeSlot = requiredTransfer.recipeSlot;
-			final ItemStack requiredStack = requiredTransfer.stack;
-			final Slot hint = requiredTransfer.hint;
-
-			// Locate a slot that has what we need.
-			final Slot sourceSlot = getSlotWithStack(player, requiredStack, craftingSlots, inventorySlots, hint)
-				.orElse(null);
-			if (sourceSlot != null) {
-				// the item was found
-
-				// Keep a copy of the slot's original contents in case we need to roll back.
-				if (originalSlotContents != null && !originalSlotContents.containsKey(sourceSlot)) {
-					originalSlotContents.put(sourceSlot, sourceSlot.getItem().copy());
+				RecipeTransferSource source = getSourceWithStack(player, requiredStack, craftingSlots, inventorySlots, hint, itemHandlerSources)
+					.orElse(null);
+				if (source != null) {
+					Optional<ItemStack> removedItemStack = extractExactFromSource(
+						activeTransaction,
+						player,
+						source,
+						requiredStack
+					);
+					if (removedItemStack.isPresent()) {
+						merge(foundItemsInSet, recipeSlot, removedItemStack.get());
+						continue;
+					}
 				}
 
-				// Reduce the size of the found slot.
-				ItemStack removedItemStack = sourceSlot.safeTake(requiredStack.getCount(), Integer.MAX_VALUE, player);
-				merge(foundItemsInSet, recipeSlot, removedItemStack);
-			} else {
-				// We can't find any more slots to fulfill the requirements.
-
 				if (transferAsCompleteSets) {
-					// Since the full set requirement wasn't satisfied, we need to roll back any
-					// slot changes we've made during this set iteration.
-					for (Map.Entry<Slot, ItemStack> slotEntry : originalSlotContents.entrySet()) {
-						ItemStack stack = slotEntry.getValue();
-						Slot slot = slotEntry.getKey();
-						slot.set(stack);
-					}
 					return Map.of();
 				}
 			}
+
+			if (transferAsCompleteSets) {
+				activeTransaction.commit();
+			}
+			return foundItemsInSet;
+		} finally {
+			if (transferAsCompleteSets) {
+				activeTransaction.close();
+			}
 		}
-		return foundItemsInSet;
+	}
+
+	private static Optional<ItemStack> extractExactFromSource(
+		ITransaction transaction,
+		Player player,
+		RecipeTransferSource source,
+		ItemStack requiredStack
+	) {
+		try (ITransaction nestedTransaction = transaction.openNested()) {
+			ItemStack extracted;
+			if (source.isItemHandlerSource()) {
+				extracted = nestedTransaction.extractFromItemHandler(
+					source.slot().getItem(),
+					source.itemHandlerSlotId(),
+					requiredStack
+				);
+			} else {
+				extracted = nestedTransaction.extractFromSlot(source.slot(), requiredStack.getCount(), player);
+			}
+
+			if (extracted.getCount() != requiredStack.getCount() ||
+				!ItemStack.isSameItemSameComponents(extracted, requiredStack)
+			) {
+				return Optional.empty();
+			}
+			nestedTransaction.commit();
+			return Optional.of(extracted);
+		}
+	}
+
+	private static Optional<ItemStack> extractExactFromSlot(
+		ITransaction transaction,
+		Slot slot,
+		int count,
+		Player player
+	) {
+		try (ITransaction nestedTransaction = transaction.openNested()) {
+			ItemStack extracted = nestedTransaction.extractFromSlot(slot, count, player);
+			if (extracted.getCount() != count) {
+				return Optional.empty();
+			}
+			nestedTransaction.commit();
+			return Optional.of(extracted);
+		}
 	}
 
 	private static void merge(Map<Slot, ItemStack> result, Map<Slot, ItemStack> addition) {
@@ -354,13 +602,56 @@ public final class BasicRecipeTransferHandlerServer {
 		return resultItemStack;
 	}
 
-	private static Optional<Slot> getSlotWithStack(Player player, ItemStack stack, List<Slot> craftingSlots, List<Slot> inventorySlots, Slot hint) {
-		return getValidatedHintSlot(player, stack, hint)
-			.or(() -> getSlotWithStack(player, craftingSlots, stack))
-			.or(() -> getSlotWithStack(player, inventorySlots, stack));
+	private static Optional<RecipeTransferSource> getSourceWithStack(
+		Player player,
+		ItemStack stack,
+		List<Slot> craftingSlots,
+		List<Slot> inventorySlots,
+		RecipeTransferSource hint,
+		ItemHandlerSources itemHandlerSources
+	) {
+		return getValidatedHintSource(player, stack, hint)
+			.or(() -> getSlotWithStack(player, craftingSlots, stack, Set.of()))
+			.or(() -> getSlotWithStack(player, inventorySlots, stack, itemHandlerSources.slots()))
+			.or(() -> getItemHandlerSourceWithStack(player, itemHandlerSources.sources(), stack));
 	}
 
-	private static Optional<Slot> getValidatedHintSlot(Player player, ItemStack stack, Slot hint) {
+	private static ItemHandlerSources getItemHandlerSources(Player player, List<Slot> inventorySlots) {
+		List<RecipeTransferSource> sources = new ArrayList<>();
+		Set<Slot> slots = new HashSet<>();
+		for (Slot inventorySlot : inventorySlots) {
+			ItemStack stack = inventorySlot.getItem();
+			if (stack.isEmpty() || !inventorySlot.allowModification(player)) {
+				continue;
+			}
+
+			Optional<List<ItemStack>> itemHandlerContents = Services.PLATFORM.getRecipeTransferHelper()
+				.getItemHandlerContents(stack);
+			if (itemHandlerContents.isEmpty()) {
+				continue;
+			}
+			slots.add(inventorySlot);
+			List<ItemStack> contents = itemHandlerContents.get();
+			for (int itemHandlerSlotId = 0; itemHandlerSlotId < contents.size(); itemHandlerSlotId++) {
+				if (!contents.get(itemHandlerSlotId).isEmpty()) {
+					sources.add(new RecipeTransferSource(inventorySlot, itemHandlerSlotId));
+				}
+			}
+		}
+		return new ItemHandlerSources(sources, slots);
+	}
+
+	private static Optional<RecipeTransferSource> getItemHandlerSourceWithStack(
+		Player player,
+		List<RecipeTransferSource> sources,
+		ItemStack stack
+	) {
+		return sources.stream()
+			.filter(source -> isValidAndMatches(player, source, stack))
+			.findFirst();
+	}
+
+	private static Optional<RecipeTransferSource> getValidatedHintSource(Player player, ItemStack stack, RecipeTransferSource hint) {
 		if (isValidAndMatches(player, hint, stack)) {
 			return Optional.of(hint);
 		}
@@ -368,22 +659,64 @@ public final class BasicRecipeTransferHandlerServer {
 		return Optional.empty();
 	}
 
-	private static void stowItems(Player player, List<Slot> inventorySlots, List<ItemStack> itemStacks) {
-		for (ItemStack itemStack : itemStacks) {
-			ItemStack remainder = stowItem(player, inventorySlots, itemStack);
-			if (!remainder.isEmpty()) {
-				if (!player.getInventory().add(remainder)) {
-					player.drop(remainder, false, net.minecraft.util.Prediction.SERVER_ONLY);
-				}
+	private static List<Slot> getStowSlots(Player player, List<Slot> inventorySlots) {
+		List<Slot> stowSlots = new ArrayList<>(inventorySlots);
+		for (Slot playerInventorySlot : getPlayerInventorySlots(player)) {
+			if (!stowSlots.contains(playerInventorySlot)) {
+				stowSlots.add(playerInventorySlot);
 			}
+		}
+		return stowSlots;
+	}
+
+	private static List<Slot> getPlayerInventorySlots(Player player) {
+		AbstractContainerMenu container = player.containerMenu;
+		return container.slots.stream()
+			.filter(slot -> slot.container == player.getInventory())
+			.filter(slot -> slot.getContainerSlot() < Inventory.INVENTORY_SIZE)
+			.toList();
+	}
+
+	private static boolean stowItems(
+		ITransaction transaction,
+		Player player,
+		List<Slot> inventorySlots,
+		List<ItemStack> itemStacks
+	) {
+		for (ItemStack itemStack : itemStacks) {
+			if (!stowItem(transaction, player, inventorySlots, itemStack)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static boolean stowItem(
+		ITransaction transaction,
+		Player player,
+		Collection<Slot> slots,
+		ItemStack stack
+	) {
+		if (stack.isEmpty()) {
+			return true;
+		}
+
+		try (ITransaction nestedTransaction = transaction.openNested()) {
+			ItemStack remainder = insertIntoSlots(nestedTransaction, player, slots, stack);
+			if (!remainder.isEmpty()) {
+				return false;
+			}
+			nestedTransaction.commit();
+			return true;
 		}
 	}
 
-	private static ItemStack stowItem(Player player, Collection<Slot> slots, ItemStack stack) {
-		if (stack.isEmpty()) {
-			return ItemStack.EMPTY;
-		}
-
+	private static ItemStack insertIntoSlots(
+		ITransaction transaction,
+		Player player,
+		Collection<Slot> slots,
+		ItemStack stack
+	) {
 		ItemStack remainder = stack.copy();
 
 		// Add to existing stacks first
@@ -392,8 +725,11 @@ public final class BasicRecipeTransferHandlerServer {
 				continue;
 			}
 			final ItemStack inventoryStack = slot.getItem();
-			if (!inventoryStack.isEmpty() && inventoryStack.isStackable()) {
-				remainder = slot.safeInsert(remainder);
+			if (!inventoryStack.isEmpty() &&
+				inventoryStack.isStackable() &&
+				ItemStack.isSameItemSameComponents(inventoryStack, remainder)
+			) {
+				remainder = transaction.insertIntoSlot(slot, remainder, remainder.getCount());
 				if (remainder.isEmpty()) {
 					return ItemStack.EMPTY;
 				}
@@ -403,7 +739,7 @@ public final class BasicRecipeTransferHandlerServer {
 		// Try adding to empty slots
 		for (Slot slot : slots) {
 			if (slot.getItem().isEmpty()) {
-				remainder = slot.safeInsert(remainder);
+				remainder = transaction.insertIntoSlot(slot, remainder, remainder.getCount());
 				if (remainder.isEmpty()) {
 					return ItemStack.EMPTY;
 				}
@@ -420,18 +756,42 @@ public final class BasicRecipeTransferHandlerServer {
 	 * @param itemStack the itemStack to find
 	 * @return the slot that contains the itemStack. returns null if no slot contains the itemStack.
 	 */
-	private static Optional<Slot> getSlotWithStack(Player player, Collection<Slot> slots, ItemStack itemStack) {
+	private static Optional<RecipeTransferSource> getSlotWithStack(Player player, Collection<Slot> slots, ItemStack itemStack, Set<Slot> excludedSlots) {
 		return slots.stream()
-			.filter(slot -> isValidAndMatches(player, slot, itemStack))
+			.filter(slot -> !excludedSlots.contains(slot))
+			.map(RecipeTransferSource::new)
+			.filter(source -> isValidAndMatches(player, source, itemStack))
 			.findFirst();
 	}
 
-	private static boolean isValidAndMatches(Player player, Slot slot, ItemStack stack) {
-		ItemStack containedStack = slot.getItem();
+	private static boolean isValidAndMatches(Player player, RecipeTransferSource source, ItemStack stack) {
+		ItemStack containedStack = getSourceStack(source);
 		return ItemStack.isSameItemSameComponents(stack, containedStack) &&
 			containedStack.getCount() >= stack.getCount() &&
-			slot.allowModification(player);
+			source.slot().allowModification(player);
 	}
 
-	private record RequiredTransfer(Slot recipeSlot, Slot hint, ItemStack stack) {}
+	private static ItemStack getSourceStack(RecipeTransferSource source) {
+		if (!source.isItemHandlerSource()) {
+			return source.slot().getItem();
+		}
+
+		Optional<List<ItemStack>> itemHandlerContents = Services.PLATFORM.getRecipeTransferHelper()
+			.getItemHandlerContents(source.slot().getItem());
+		if (itemHandlerContents.isEmpty()) {
+			return ItemStack.EMPTY;
+		}
+		List<ItemStack> contents = itemHandlerContents.get();
+		int itemHandlerSlotId = source.itemHandlerSlotId();
+		if (itemHandlerSlotId < 0 || itemHandlerSlotId >= contents.size()) {
+			return ItemStack.EMPTY;
+		}
+		return contents.get(itemHandlerSlotId);
+	}
+
+	private record RequiredTransfer(Slot recipeSlot, RecipeTransferSource hint, ItemStack stack) {}
+
+	private record ItemHandlerSources(List<RecipeTransferSource> sources, Set<Slot> slots) {
+		private static final ItemHandlerSources EMPTY = new ItemHandlerSources(List.of(), Set.of());
+	}
 }

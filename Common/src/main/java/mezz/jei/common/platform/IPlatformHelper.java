@@ -23,5 +23,9 @@ public interface IPlatformHelper {
 
 	IPlatformWorldHelper getWorldHelper();
 
+	IPlatformRecipeTransferHelper getRecipeTransferHelper();
+
+	IPlatformTransactionHelper getTransactionHelper();
+
 	ITestHelper getTestHelper();
 }
