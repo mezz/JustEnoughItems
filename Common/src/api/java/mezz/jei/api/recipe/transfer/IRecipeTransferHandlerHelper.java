@@ -9,6 +9,7 @@ import mezz.jei.api.registration.IRecipeTransferRegistration;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -78,12 +79,46 @@ public interface IRecipeTransferHandlerHelper {
 	<C extends AbstractContainerMenu, R> IRecipeTransferHandler<C, R> createUnregisteredRecipeTransferHandler(IRecipeTransferInfo<C, R> recipeTransferInfo);
 
 	/**
+	 * Try transferring a recipe with alternative sets of inputs.
+	 * Each {@link IRecipeSlotsView} describes one complete input alternative. They are checked in order without
+	 * transferring, and the first successful alternative is used for the transfer. If every alternative fails,
+	 * the error from the first one is returned. If there are no alternatives, the original recipe slots from the
+	 * context are used.
+	 *
+	 * @param recipeTransferHandler the handler to check and perform the transfer, typically one created by
+	 * {@link #createUnregisteredRecipeTransferHandler(IRecipeTransferInfo)}
+	 * @param context the original recipe transfer context
+	 * @param inputAlternatives complete sets of recipe inputs to try, in priority order
+	 * @param doTransfer if true, transfer the first successful alternative; if false, only check for errors
+	 * @return a recipe transfer error if none of the alternatives can be transferred. Return null on success.
+	 *
+	 * @since 29.41.0
+	 */
+	<C extends AbstractContainerMenu, R> @Nullable IRecipeTransferError transferRecipeWithInputAlternatives(
+		IRecipeTransferHandler<C, R> recipeTransferHandler,
+		IRecipeTransferContext<R, C> context,
+		List<IRecipeSlotsView> inputAlternatives,
+		boolean doTransfer
+	);
+
+	/**
 	 * Create a recipe slots view from a list of slot views.
 	 * This is useful for altering the slot results from other recipe transfer handlers.
 	 *
 	 * @since 11.3.0
 	 */
 	IRecipeSlotsView createRecipeSlotsView(List<IRecipeSlotView> slotViews);
+
+	/**
+	 * Create a copy of a recipe slot view with replacement item stacks.
+	 * The copy retains the original slot's role, name, and error highlight behavior.
+	 *
+	 * This is useful together with {@link #createRecipeSlotsView(List)} when creating input alternatives for
+	 * {@link #transferRecipeWithInputAlternatives(IRecipeTransferHandler, IRecipeTransferContext, List, boolean)}.
+	 *
+	 * @since 29.41.0
+	 */
+	IRecipeSlotView copyWithIngredients(IRecipeSlotView recipeSlot, List<ItemStack> ingredients);
 
 	/**
 	 * @return true if JEI is currently present on the server and supports recipe transfer.
