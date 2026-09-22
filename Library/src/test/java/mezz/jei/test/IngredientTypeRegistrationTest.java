@@ -10,7 +10,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.TooltipFlag;
@@ -117,7 +117,7 @@ class IngredientTypeRegistrationTest {
 
 	private static class TestRenderer<T> implements IIngredientRenderer<T> {
 		@Override
-		public void render(GuiGraphics guiGraphics, T ingredient) {
+		public void render(PoseStack poseStack, T ingredient) {
 		}
 
 		@SuppressWarnings("removal")

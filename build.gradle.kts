@@ -24,6 +24,10 @@ javaFormatting {
 	all()
 }
 
+tasks.named("spotlessJava") {
+	mustRunAfter(":Forge:copyGameTestStructures")
+}
+
 apply {
 	from("buildtools/ColoredOutput.gradle")
 }
