@@ -101,7 +101,7 @@ public class CraftingRecipeCategory implements IRecipeCategory<IRecipeWrapper> {
 
 		if (recipeWrapper instanceof ICraftingRecipeWrapper) {
 			ICraftingRecipeWrapper craftingRecipeWrapper = (ICraftingRecipeWrapper) recipeWrapper;
-			recipeLayout.setRecipeId(craftingRecipeWrapper.getRegistryName());
+			recipeLayout.setRecipeId(Constants.MINECRAFT_ID, craftingRecipeWrapper.getRegistryName());
 		}
 	}
 

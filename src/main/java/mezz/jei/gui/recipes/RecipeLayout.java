@@ -30,7 +30,11 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.gui.Focus;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.gui.ingredients.*;
+import mezz.jei.gui.ingredients.GuiFluidStackGroup;
+import mezz.jei.gui.ingredients.GuiIngredient;
+import mezz.jei.gui.ingredients.GuiIngredientGroup;
+import mezz.jei.gui.ingredients.GuiItemStackGroup;
+import mezz.jei.gui.ingredients.RecipeIdTooltipCallback;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.LegacyUtil;
@@ -55,6 +59,8 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	@Nullable
 	private ShapelessIcon shapelessIcon;
 	private final DrawableNineSliceTexture recipeBorder;
+	@Nullable
+	private String recipeCategoryModId;
 	@Nullable
 	private ResourceLocation recipeId;
 
@@ -338,17 +344,18 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	}
 
 	@Override
-	public void setRecipeId(@Nullable ResourceLocation recipeId) {
+	public void setRecipeId(String recipeCategoryModId, @Nullable ResourceLocation recipeId) {
+		this.recipeCategoryModId = recipeCategoryModId;
 		this.recipeId = recipeId;
 	}
 
 	private void addRecipeIdTooltip() {
 		if (recipeId != null) {
-			ResourceLocation recipeCategoryId = new ResourceLocation(recipeCategory.getUid());
-			boolean recipeCategoryIdDifferent = !recipeId.getNamespace().equals(recipeCategoryId.getNamespace());
+			String recipeModId = recipeId.getNamespace();
+			boolean recipeCategoryIdDifferent = !recipeModId.equals(recipeCategoryModId);
 
 			for (GuiIngredientGroup guiIngredientGroup : guiIngredientGroups.values()) {
-				IIngredientHelper ingredientHelper = guiItemStackGroup.getIngredientHelper();
+				IIngredientHelper ingredientHelper = guiIngredientGroup.getIngredientHelper();
 				RecipeIdTooltipCallback tooltipCallback = new RecipeIdTooltipCallback(recipeId, recipeCategoryIdDifferent, ingredientHelper);
 				guiIngredientGroup.addTooltipCallbackAfter(tooltipCallback);
 			}

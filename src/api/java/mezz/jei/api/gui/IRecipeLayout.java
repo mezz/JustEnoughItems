@@ -77,10 +77,11 @@ public interface IRecipeLayout {
 	 * <p>
 	 * Should be used by recipe categories whose recipes have an id.
 	 *
+	 * @param recipeCategoryModId mod id of the recipe category
 	 * @param recipeId registry id of the recipe
 	 * @since JEI 4.16.6
 	 */
-	default void setRecipeId(@Nullable ResourceLocation recipeId) {
+	default void setRecipeId(String recipeCategoryModId, @Nullable ResourceLocation recipeId) {
 
 	}
 

@@ -171,16 +171,12 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 		}
 	}
 
-	/**
-	 * @since JEI 4.16.6
-	 */
 	public IIngredientHelper<T> getIngredientHelper() {
 		return ingredientHelper;
 	}
 
 	/**
 	 * Adds the tooltip callback after any existing tooltip callback
-	 * @since JEI 4.16.6
 	 */
 	public void addTooltipCallbackAfter(ITooltipCallback<T> tooltipCallback) {
 		ITooltipCallback<T> before = this.tooltipCallback;
