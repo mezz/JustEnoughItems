@@ -1,7 +1,7 @@
 package mezz.jei.gui.config;
 
 import net.mezzdev.config.gui.api.IConfigValuePopup;
-import net.minecraft.client.gui.GuiGraphics;
+import net.mezzdev.config.gui.api.LegacyGuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 
 import java.util.Optional;
@@ -51,7 +51,7 @@ final class AlignmentSelectorPopup implements IConfigValuePopup<Alignment> {
 	}
 
 	@Override
-	public void draw(GuiGraphics guiGraphics, Rect2i area, double mouseX, double mouseY) {
+	public void draw(LegacyGuiGraphics guiGraphics, Rect2i area, double mouseX, double mouseY) {
 		if (isEmpty(area)) {
 			return;
 		}
@@ -71,7 +71,7 @@ final class AlignmentSelectorPopup implements IConfigValuePopup<Alignment> {
 		}
 	}
 
-	private static void drawBackground(GuiGraphics guiGraphics, Rect2i area) {
+	private static void drawBackground(LegacyGuiGraphics guiGraphics, Rect2i area) {
 		int x = area.getX();
 		int y = area.getY();
 		int right = x + area.getWidth();

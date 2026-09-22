@@ -1,6 +1,6 @@
 package mezz.jei.gui.config;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.mezzdev.config.gui.api.LegacyGuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 
 /**
@@ -16,7 +16,7 @@ final class AlignmentGridRenderer {
 
 	}
 
-	public static void drawIcon(GuiGraphics guiGraphics, Rect2i area, Alignment alignment) {
+	public static void drawIcon(LegacyGuiGraphics guiGraphics, Rect2i area, Alignment alignment) {
 		int boundsX = area.getX() + SELECTOR_INSET;
 		int boundsY = area.getY() + SELECTOR_INSET;
 		int boundsWidth = Math.max(1, area.getWidth() - SELECTOR_INSET * 2);

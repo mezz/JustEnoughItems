@@ -7,7 +7,7 @@ import net.mezzdev.config.gui.api.ConfigValueLocalization;
 import net.mezzdev.config.gui.api.IConfigScreenValue;
 import net.mezzdev.config.gui.api.IConfigValueEditor;
 import net.mezzdev.config.gui.api.IConfigValuePopup;
-import net.minecraft.client.gui.GuiGraphics;
+import net.mezzdev.config.gui.api.LegacyGuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 
 import java.util.Optional;
@@ -32,7 +32,7 @@ final class AlignmentConfigValueEditor implements IConfigValueEditor<Alignment> 
 
 	@Override
 	public void draw(
-		GuiGraphics guiGraphics,
+		LegacyGuiGraphics guiGraphics,
 		Rect2i area,
 		IConfigScreenValue<Alignment> configValue,
 		Alignment value,

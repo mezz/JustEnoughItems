@@ -4,7 +4,7 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientConfigs;
-import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.config.IWorldConfig;
 import mezz.jei.gui.util.CheatModeUtil;
 import net.mezzdev.config.api.value.serializer.IConfigValueSerializer;
 import net.mezzdev.config.gui.api.ConfigGuiPlugin;
@@ -70,7 +70,7 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 	private static void configureRuntimeToggleValues(IConfigScreenBuilder screenBuilder) {
 		IClientConfigs clientConfigs = Internal.getClientConfigs();
 		IClientConfig clientConfig = clientConfigs.getClientConfig();
-		IClientToggleState toggleState = Internal.getClientToggleState();
+		IWorldConfig toggleState = Internal.getWorldConfig();
 		IConfigValueSerializer<Boolean> serializer = clientConfig.cheatToHotbarUsingHotkeysEnabled().getEditorInfo().getSerializer();
 
 		screenBuilder.configureCategory("ingredientList")
