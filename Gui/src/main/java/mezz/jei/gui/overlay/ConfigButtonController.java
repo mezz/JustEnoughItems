@@ -119,7 +119,7 @@ public class ConfigButtonController implements IIconButtonController {
 	}
 
 	private static Component getMissingConfigScreenMessage(IPlatformConfigHelper configHelper) {
-		return Component.translatable("jei.message.configured")
+		return Component.translatable("jei.message.mezzConfigGui")
 			.setStyle(
 				Style.EMPTY
 					.withColor(ChatFormatting.DARK_BLUE)
@@ -127,7 +127,7 @@ public class ConfigButtonController implements IIconButtonController {
 					.withClickEvent(
 						new ClickEvent(
 							ClickEvent.Action.OPEN_URL,
-							"https://www.curseforge.com/minecraft/mc-mods/configured"
+							"https://www.curseforge.com/minecraft/mc-mods/mezzconfiggui"
 						)
 					)
 			)
