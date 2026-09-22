@@ -30,7 +30,6 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -123,6 +122,11 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 
 	@Override
 	public void createFocusLink(IIngredientAcceptor<?>... slots) {
+		createFocusLink(List.of(slots));
+	}
+
+	@Override
+	public void createFocusLink(Collection<? extends IIngredientAcceptor<?>> slots) {
 		List<RecipeSlotBuilder> builders = new ArrayList<>();
 		// The focus-linked slots should have the same number of ingredients.
 		// Users can technically add more ingredients to the slots later,
@@ -137,7 +141,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			if (count == -1) {
 				count = ingredientCount;
 			} else if (count != ingredientCount) {
-				IntSummaryStatistics stats = Arrays.stream(slots)
+				IntSummaryStatistics stats = slots.stream()
 					.map(RecipeSlotBuilder.class::cast)
 					.map(RecipeSlotBuilder::getIngredientAcceptor)
 					.map(DisplayIngredientAcceptor::getAllIngredients)
