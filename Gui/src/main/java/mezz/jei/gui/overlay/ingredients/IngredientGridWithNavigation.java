@@ -282,6 +282,13 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 		this.ingredientGrid.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 	}
 
+	public void tick() {
+		if (!this.active) {
+			return;
+		}
+		this.ingredientGrid.tick();
+	}
+
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return this.backgroundArea.contains(mouseX, mouseY) &&
 			this.guiExclusionAreas.stream()
