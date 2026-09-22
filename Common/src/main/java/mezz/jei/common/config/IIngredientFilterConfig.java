@@ -81,4 +81,3 @@ public interface IIngredientFilterConfig {
 			.forEach(value -> Internal.registerRuntimeListenerRemoval(value.addListener(change -> listener.run())));
 	}
 }
-

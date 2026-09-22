@@ -8,7 +8,6 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.handlers.CombinedInputHandler;
-import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.recipes.layouts.RecipeLayoutDrawableErrored;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
@@ -110,4 +109,3 @@ public final class RecipeLayoutWithButtonsErrored<R> implements IRecipeLayoutWit
 		}
 	}
 }
-

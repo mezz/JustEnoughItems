@@ -16,7 +16,6 @@ import mezz.jei.common.network.packets.PacketRecipeTransferResult;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.recipes.VanillaClientRecipeLoader;
 import mezz.jei.common.util.ChatUtil;
-import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IWorldConfig;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.LoggedTimer;

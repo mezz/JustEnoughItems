@@ -98,4 +98,3 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 		return sharedConfig.navigationVisibility();
 	}
 }
-

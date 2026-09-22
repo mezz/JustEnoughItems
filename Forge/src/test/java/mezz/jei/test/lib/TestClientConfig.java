@@ -213,4 +213,3 @@ public class TestClientConfig implements IClientConfig {
 		return hideSingleTagContentTooltipEnabled;
 	}
 }
-

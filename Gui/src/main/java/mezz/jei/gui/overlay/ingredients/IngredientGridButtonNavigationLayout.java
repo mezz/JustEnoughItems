@@ -481,4 +481,3 @@ public final class IngredientGridButtonNavigationLayout {
 		return new ImmutableRect2i(x, y, right - x, height);
 	}
 }
-

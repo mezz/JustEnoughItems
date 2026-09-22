@@ -97,4 +97,3 @@ public class IngredientFilterConfig implements IIngredientFilterConfig {
 		return searchShortModNames;
 	}
 }
-

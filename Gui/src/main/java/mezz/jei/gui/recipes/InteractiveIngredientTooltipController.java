@@ -9,9 +9,7 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IMouseOverable;
-import mezz.jei.gui.input.IPinnedTooltipHolder;
 import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.gui.input.PinnedTooltipManager;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.client.gui.screens.Screen;
@@ -162,4 +160,3 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer {
 		}
 	}
 }
-

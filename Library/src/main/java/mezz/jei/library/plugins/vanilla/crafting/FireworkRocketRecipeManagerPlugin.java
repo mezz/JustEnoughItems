@@ -3,7 +3,6 @@ package mezz.jei.library.plugins.vanilla.crafting;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.advanced.ISimpleRecipeManagerPlugin;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.FireworkRocketRecipe;
 import net.minecraft.world.item.crafting.RecipeManager;
