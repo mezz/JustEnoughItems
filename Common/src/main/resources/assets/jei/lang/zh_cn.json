@@ -303,4 +303,3 @@
   "jei.config.client.bookmarkList.navigationVisibility": "导航按钮可见性",
   "jei.config.client.bookmarkList.navigationVisibility.description": "顶部翻页按钮的可见性。AUTO_HIDE：仅在存在多页时显示按钮。"
 }
-

@@ -288,4 +288,3 @@
   "jei.message.server.recipe.sync.unavailable": "Det här %s-servern tillhandahåller inte recept till JEI. JEI visar standardrecept från din klient, vilka kan skilja sig åt på servern.",
   "jei.message.server.recipe.sync.jei.missing": "Den här %s-servern har inte JEI installerat. JEI visar standardrecept från din klient, vilka kan skilja sig åt på servern. Installera JEI på servern för att visa serverns recept korrekt."
 }
-

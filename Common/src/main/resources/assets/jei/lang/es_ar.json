@@ -266,4 +266,3 @@
   "jei.message.server.recipe.sync.unavailable": "Este servidor de %s no envía recetas a JEI. JEI está mostrando las recetas predeterminadas de tu cliente, que podrían ser distintas en el servidor.",
   "jei.message.server.recipe.sync.jei.missing": "Este servidor de %s no tiene JEI instalado. JEI está mostrando las recetas predeterminadas de tu cliente, que podrían ser distintas en el servidor. Instalá JEI en el servidor para mostrar las recetas correctamente."
 }
-
