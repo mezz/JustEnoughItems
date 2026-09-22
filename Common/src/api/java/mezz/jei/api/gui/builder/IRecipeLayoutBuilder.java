@@ -6,6 +6,8 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.Collection;
+
 /**
  * A builder passed to plugins that implement
  * {@link IRecipeCategory#setRecipe(IRecipeLayoutBuilder, Object, IFocusGroup)}.
@@ -144,4 +146,16 @@ public interface IRecipeLayoutBuilder {
 	 * @since 9.5.1
 	 */
 	void createFocusLink(IIngredientAcceptor<?>... slots);
+
+	/**
+	 * Link slots together so that if one slot matches the current focus, the others will be limited too.
+	 * This can only be set on slots that contain the same number of ingredients.
+	 *
+	 * @param slots the slots to link together.
+	 *
+	 * @see #createFocusLink(IIngredientAcceptor[])
+	 *
+	 * @since 30.37.0
+	 */
+	void createFocusLink(Collection<? extends IIngredientAcceptor<?>> slots);
 }

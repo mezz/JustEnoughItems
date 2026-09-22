@@ -11,7 +11,6 @@ import mezz.jei.library.ingredients.SlotIngredient;
 import net.minecraft.util.context.ContextMap;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
@@ -69,9 +68,16 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 
 	@Override
 	public void createFocusLink(IIngredientAcceptor<?>... slots) {
-		List<IngredientSlotBuilder> builders = Arrays.stream(slots)
-			.map(IngredientSlotBuilder.class::cast)
-			.toList();
+		createFocusLink(List.of(slots));
+	}
+
+	@Override
+	public void createFocusLink(Collection<? extends IIngredientAcceptor<?>> slots) {
+		List<IngredientSlotBuilder> builders = new ArrayList<>(slots.size());
+		for (IIngredientAcceptor<?> slot : slots) {
+			IngredientSlotBuilder builder = (IngredientSlotBuilder) slot;
+			builders.add(builder);
+		}
 		long ingredientCounts = builders.stream()
 			.map(IngredientSlotBuilder::getAllSlotIngredients)
 			.mapToInt(Collection::size)
