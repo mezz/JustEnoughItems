@@ -108,7 +108,7 @@ public class RecipeFocusLinkTest {
 	}
 
 	@Test
-	void ingredientSupplierRecordsFocusLinksForRecipeVisibility() {
+	void ingredientSupplierRecordsCollectionFocusLinksForRecipeVisibility() {
 		IIngredientManager ingredientManager = createIngredientManagerForFocusMatching();
 		IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager);
 		var firstSlot = builder.addSlot(RecipeIngredientRole.INPUT)
@@ -117,7 +117,7 @@ public class RecipeFocusLinkTest {
 		var secondSlot = builder.addSlot(RecipeIngredientRole.OUTPUT)
 			.addTypedIngredient(createTypedIngredient("visible"))
 			.addTypedIngredient(createTypedIngredient("hidden"));
-		builder.createFocusLink(firstSlot, secondSlot);
+		builder.createFocusLink(List.of(firstSlot, secondSlot));
 		RecipeIngredientSupplier ingredientSupplier = builder.buildIngredientSupplier();
 
 		var visibleIndexes = ingredientSupplier.getFocusLinks()
