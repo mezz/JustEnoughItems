@@ -4,6 +4,12 @@ plugins {
 	id("org.spongepowered.gradle.vanilla")
 }
 
+repositories {
+	maven("https://maven.blamejared.com/") {
+		content { includeGroup("net.mezzdev.config") }
+	}
+}
+
 // gradle.properties
 val jUnitVersion: String by extra
 val minecraftVersion: String by extra
