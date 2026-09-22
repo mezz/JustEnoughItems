@@ -4,6 +4,12 @@ plugins {
 	id("org.spongepowered.gradle.vanilla")
 }
 
+repositories {
+	maven("https://maven.blamejared.com/") {
+		content { includeGroup("net.mezzdev.config") }
+	}
+}
+
 // gradle.properties
 val minecraftVersion: String by extra
 val modId: String by extra
