@@ -208,6 +208,7 @@ dependencies {
     modLocalRuntime(mezzConfigFabricDependency)
     include(mezzConfigFabricDependency)
     compileOnly(mezzConfigGuiApiDependency)
+    modCompileOnly(mezzConfigGuiFabricDependency)
     modRuntimeOnly(mezzConfigGuiFabricDependency)
     vanillaDependencyProjects.forEach {
         compileOnly(it)
@@ -340,6 +341,7 @@ val writeClientGameTestWithoutAmecsOptions = registerWriteClientTestOptionsTask(
 
 val cleanClientGameTestResults = tasks.register<Delete>("cleanClientGameTestResults") {
     delete(
+        layout.buildDirectory.dir("test-results/fabric-client-config-screen"),
         layout.buildDirectory.dir("test-results/fabric-client-creative-inventory"),
         layout.buildDirectory.dir("test-results/fabric-client-key-mapping"),
         layout.buildDirectory.dir("test-results/fabric-client-gametest")

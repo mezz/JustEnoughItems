@@ -14,6 +14,7 @@ import java.util.Optional;
 public class ConfigHelper implements IPlatformConfigHelper {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final String MOD_MENU_MOD_ID = "modmenu";
+	private static final String MEZZ_CONFIG_GUI_MOD_ID = "mezz_config_gui";
 
 	@Override
 	public Path getModConfigDir() {
@@ -23,10 +24,26 @@ public class ConfigHelper implements IPlatformConfigHelper {
 
 	@Override
 	public Optional<Screen> getConfigScreen(String modId, @Nullable Screen parent) {
-		if (FabricLoader.getInstance().isModLoaded(MOD_MENU_MOD_ID)) {
+		FabricLoader loader = FabricLoader.getInstance();
+		if (loader.isModLoaded(MEZZ_CONFIG_GUI_MOD_ID)) {
+			Optional<Screen> configScreen = getMezzConfigScreen(modId, parent);
+			if (configScreen.isPresent()) {
+				return configScreen;
+			}
+		}
+		if (loader.isModLoaded(MOD_MENU_MOD_ID)) {
 			return getModMenuConfigScreen(modId, parent);
 		}
 		return Optional.empty();
+	}
+
+	private static Optional<Screen> getMezzConfigScreen(String modId, @Nullable Screen parent) {
+		try {
+			return MezzConfigGuiHelper.getConfigScreen(modId, parent);
+		} catch (RuntimeException | LinkageError e) {
+			LOGGER.error("Failed to load the MezzConfig GUI config screen:", e);
+			return Optional.empty();
+		}
 	}
 
 	private static Optional<Screen> getModMenuConfigScreen(String modId, @Nullable Screen parent) {
