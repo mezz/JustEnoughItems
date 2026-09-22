@@ -3,6 +3,7 @@ package mezz.jei.fabric.mixin;
 import mezz.jei.fabric.events.JeiScreenEvents;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.joml.Matrix3x2fStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -41,6 +42,9 @@ public class ScreenMixin {
 	private void drawForeground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
 		@SuppressWarnings("DataFlowIssue")
 		Screen screen = (Screen) (Object) this;
+		if (screen instanceof AbstractContainerScreen<?>) {
+			return;
+		}
 		graphics.nextStratum();
 		runWithIdentityPose(
 			graphics,

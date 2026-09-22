@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_25",
   "mixins": [],
   "client": [
+    "AbstractContainerScreenMixin",
     "ClientPacketListenerRecipeUpdateMixin",
     "EffectsInInventoryMixin",
     "GuiGraphicsExtractorMixin",
