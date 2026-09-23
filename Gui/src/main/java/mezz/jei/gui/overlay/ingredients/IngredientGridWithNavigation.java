@@ -103,6 +103,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 		this.ingredientSource.addSourceListChangedListener(this::markLayoutDirty);
 		addGridConfigListeners(gridConfig);
+		Internal.registerRuntimeListenerRemoval(clientConfig.smoothScrollingEnabled().addListener(v -> markLayoutDirty()));
 	}
 
 	private void addGridConfigListeners(IIngredientGridConfig gridConfig) {

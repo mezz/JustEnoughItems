@@ -319,7 +319,7 @@
   "jei.config.client.input.dragDelayInMilliseconds": "Mouse Drag Start Delay",
   "jei.config.client.input.dragDelayInMilliseconds.description": "How long a mouse button must be held before JEI treats the action as dragging.",
   "jei.config.client.input.smoothScrollRate": "Smooth Scroll Distance",
-  "jei.config.client.input.smoothScrollRate.description": "How far JEI scrolls for each mouse-wheel step in smooth-scrolling lists.",
+  "jei.config.client.input.smoothScrollRate.description": "How far JEI scrolls for each mouse-wheel step when smooth scrolling is enabled.",
   "jei.config.client.input.recipeSlotCyclingEnabled": "Recipe Slot Cycling",
   "jei.config.client.input.recipeSlotCyclingEnabled.description": "Automatically cycle through ingredients in recipe slots over time.",
 
@@ -437,8 +437,7 @@
   "jei.config.client.lists.navigationMode": "Navigation Mode",
   "jei.config.client.lists.navigationMode.description": "Choose how to move through the ingredient and bookmark lists.",
   "jei.config.client.lists.navigationMode.paged.description": "Use page buttons to move through both lists.",
-  "jei.config.client.lists.navigationMode.scrolling.description": "Use scroll bars that move one row at a time.",
-  "jei.config.client.lists.navigationMode.smooth_scrolling.description": "Use scroll bars that move smoothly.",
+  "jei.config.client.lists.navigationMode.scrolling.description": "Use scroll bars to move through both lists.",
   "jei.config.client.lists.navigationVisibility": "List Navigation",
   "jei.config.client.lists.navigationVisibility.description": "Choose when navigation controls are shown for both lists.",
   "jei.config.client.lists.navigationVisibility.enabled": "Always Show",
@@ -598,5 +597,7 @@
   "jei.search.completion.operator.not": "NOT: exclude results matching this token",
   "jei.search.completion.operator.or": "OR: combine with another search group",
   "jei.config.client.search.maxSearchCompletionRows": "Maximum Visible Suggestions",
-  "jei.config.client.search.maxSearchCompletionRows.description": "Maximum number of search completion suggestions shown at once."
+  "jei.config.client.search.maxSearchCompletionRows.description": "Maximum number of search completion suggestions shown at once.",
+  "jei.config.client.input.smoothScrollingEnabled": "Smooth Scrolling",
+  "jei.config.client.input.smoothScrollingEnabled.description": "Scroll JEI lists smoothly instead of moving one row at a time."
 }
