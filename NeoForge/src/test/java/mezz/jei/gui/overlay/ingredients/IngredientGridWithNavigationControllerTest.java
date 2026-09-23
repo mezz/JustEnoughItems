@@ -252,6 +252,19 @@ public class IngredientGridWithNavigationControllerTest {
 	}
 
 	@Test
+	public void scrollingModeUsesVanillaCreativeMenuWheelRate() {
+		Fixture fixture = Fixture.create(3, 1, 15, true, IngredientGridNavigationMode.SCROLLING);
+		fixture.controller.updateLayoutToFirstPage();
+
+		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, -2);
+
+		assertEquals(Optional.of(fixture.controller), handler);
+		assertEquals(2, fixture.controller.getPageNumber());
+		assertEquals(6, fixture.grid.firstItemIndex);
+		assertEquals(0, fixture.grid.scrollOffsetY);
+	}
+
+	@Test
 	public void scrollingModeKeepsScrolledRowWhenOverlayReopensAfterGridSizeChanges() {
 		// Setup: the user scrolls down to the fourth row, then the overlay closes so the grid no longer exposes
 		// visible elements as a fallback anchor.
@@ -274,21 +287,21 @@ public class IngredientGridWithNavigationControllerTest {
 	}
 
 	@Test
-	public void smoothScrollingModeScrollsByPixels() {
-		// Setup: smooth scrollbar mode is enabled for a three-column grid with three rows of ingredients.
-		Fixture fixture = Fixture.create(3, 9, true, IngredientGridNavigationMode.SMOOTH_SCROLLING);
+	public void smoothScrollingScrollsByTheConfiguredPixelDistance() {
+		// Setup: scrolling navigation and global smooth scrolling are enabled for a three-column grid.
+		Fixture fixture = Fixture.create(3, 1, 9, true, IngredientGridNavigationMode.SCROLLING, true);
 		fixture.controller.updateLayoutToFirstPage();
 		fixture.clearLayoutChanges();
 
 		// Operation: scroll down by one wheel notch.
 		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, -1);
 
-		// Assertions: smooth mode consumes the scroll and moves by pixels instead of snapping to the next row.
+		// Assertions: smooth scrolling moves by the configured nine pixels instead of snapping to the next row.
 		assertEquals(Optional.of(fixture.controller), handler);
 		assertEquals(1, fixture.layoutChanges);
 		assertEquals(0, fixture.controller.getPageNumber());
 		assertEquals(0, fixture.grid.firstItemIndex);
-		assertEquals(6, fixture.grid.scrollOffsetY);
+		assertEquals(9, fixture.grid.scrollOffsetY);
 	}
 
 	@Test
@@ -326,9 +339,9 @@ public class IngredientGridWithNavigationControllerTest {
 	}
 
 	@Test
-	public void smoothScrollingModeConsumesScrollAtBottom() {
+	public void smoothScrollingConsumesScrollAtBottom() {
 		// Setup: smooth scrollbar mode is already at the bottom of a multi-row list.
-		Fixture fixture = Fixture.create(3, 9, true, IngredientGridNavigationMode.SMOOTH_SCROLLING);
+		Fixture fixture = Fixture.create(3, 1, 9, true, IngredientGridNavigationMode.SCROLLING, true);
 		fixture.controller.updateLayoutToFirstPage();
 		fixture.controller.setScrollOffsetY(1);
 		fixture.clearLayoutChanges();
@@ -377,9 +390,9 @@ public class IngredientGridWithNavigationControllerTest {
 	}
 
 	@Test
-	public void smoothScrollingModeBottomShowsLastItemsWhenExclusionReducesVisibleSlots() {
+	public void smoothScrollingBottomShowsLastItemsWhenExclusionReducesVisibleSlots() {
 		// Setup: smooth scrolling uses a separate pixel-offset render path.
-		Fixture fixture = Fixture.create(9, 6, 100, true, IngredientGridNavigationMode.SMOOTH_SCROLLING);
+		Fixture fixture = Fixture.create(9, 6, 100, true, IngredientGridNavigationMode.SCROLLING, true);
 		fixture.grid.setVisibleSlotCount(45);
 		fixture.controller.updateLayoutToFirstPage();
 		fixture.clearLayoutChanges();
@@ -486,8 +499,8 @@ public class IngredientGridWithNavigationControllerTest {
 
 	@Test
 	public void pageElementsFollowTheFirstVisibleRowInScrollingModes() {
-		for (IngredientGridNavigationMode navigationMode : List.of(IngredientGridNavigationMode.SCROLLING, IngredientGridNavigationMode.SMOOTH_SCROLLING)) {
-			Fixture fixture = Fixture.create(3, 2, 12, true, navigationMode);
+		for (boolean smoothScrolling : List.of(false, true)) {
+			Fixture fixture = Fixture.create(3, 2, 12, true, IngredientGridNavigationMode.SCROLLING, smoothScrolling);
 			fixture.controller.updateLayoutToFirstPage();
 			fixture.controller.nextPage();
 
@@ -497,10 +510,10 @@ public class IngredientGridWithNavigationControllerTest {
 
 	@Test
 	public void dragScrollingMovesGraduallyAndSurvivesRelayout() {
-		for (IngredientGridNavigationMode mode : List.of(IngredientGridNavigationMode.SCROLLING, IngredientGridNavigationMode.SMOOTH_SCROLLING)) {
-			Fixture fixture = Fixture.create(3, 3, 30, true, mode);
+		for (boolean smoothScrolling : List.of(false, true)) {
+			Fixture fixture = Fixture.create(3, 3, 30, true, IngredientGridNavigationMode.SCROLLING, smoothScrolling);
 			fixture.controller.updateLayoutToFirstPage();
-			if (mode.usesSmoothScrolling()) {
+			if (smoothScrolling) {
 				for (int i = 0; i < 3; i++) {
 					assertTrue(fixture.controller.scrollByPixels(6));
 					fixture.controller.updateLayoutKeepingPageAnchorVisible(fixture.controller.getPageAnchorElement());
@@ -518,8 +531,8 @@ public class IngredientGridWithNavigationControllerTest {
 
 	@Test
 	public void dragScrollingStopsAtBothEndsOfTheList() {
-		for (IngredientGridNavigationMode mode : List.of(IngredientGridNavigationMode.SCROLLING, IngredientGridNavigationMode.SMOOTH_SCROLLING)) {
-			Fixture fixture = Fixture.create(3, 3, 30, true, mode);
+		for (boolean smoothScrolling : List.of(false, true)) {
+			Fixture fixture = Fixture.create(3, 3, 30, true, IngredientGridNavigationMode.SCROLLING, smoothScrolling);
 			fixture.controller.updateLayoutToFirstPage();
 			assertFalse(fixture.controller.scrollByPixels(-18));
 			fixture.controller.setScrollOffsetY(1);
@@ -563,11 +576,23 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		static Fixture create(int gridSlots, int itemCount, boolean mouseOver, IngredientGridNavigationMode navigationMode) {
-			return create(gridSlots, 1, itemCount, mouseOver, navigationMode);
+			return create(gridSlots, 1, itemCount, mouseOver, navigationMode, false);
 		}
 
 		static Fixture create(int columns, int rows, int itemCount, boolean mouseOver, IngredientGridNavigationMode navigationMode) {
+			return create(columns, rows, itemCount, mouseOver, navigationMode, false);
+		}
+
+		static Fixture create(
+			int columns,
+			int rows,
+			int itemCount,
+			boolean mouseOver,
+			IngredientGridNavigationMode navigationMode,
+			boolean smoothScrolling
+		) {
 			TestClientConfig clientConfig = new TestClientConfig(false);
+			clientConfig.smoothScrollingEnabled().set(smoothScrolling);
 			TestConnectionToServer connection = new TestConnectionToServer();
 			IIngredientManager ingredientManager = createIngredientManager();
 			FocusUtil focusUtil = new FocusUtil(new FocusFactory(ingredientManager), clientConfig, ingredientManager);

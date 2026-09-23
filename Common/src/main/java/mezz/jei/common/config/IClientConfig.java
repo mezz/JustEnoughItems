@@ -59,6 +59,8 @@ public interface IClientConfig {
 
 	IConfigValue<Integer> dragDelayMs();
 
+	IConfigValue<Boolean> smoothScrollingEnabled();
+
 	IConfigValue<Integer> smoothScrollRate();
 
 	IConfigValue<Boolean> recipeSlotCyclingEnabled();

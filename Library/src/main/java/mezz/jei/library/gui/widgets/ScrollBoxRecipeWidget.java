@@ -15,6 +15,7 @@ import net.minecraft.network.chat.FormattedText;
 import java.util.List;
 
 public class ScrollBoxRecipeWidget extends AbstractScrollWidget implements IScrollBoxWidget, IJeiInputHandler {
+	private static final int DISCRETE_SCROLL_DISTANCE = 18;
 	private IDrawable contents = DrawableBlank.EMPTY;
 
 	public ScrollBoxRecipeWidget(int width, int height, int xPos, int yPos) {
@@ -78,10 +79,15 @@ public class ScrollBoxRecipeWidget extends AbstractScrollWidget implements IScro
 	protected float calculateScrollAmount(double scrollDeltaY) {
 		IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-		int smoothScrollRate = clientConfig.smoothScrollRate().get();
-
-		int totalHeight = contents.getHeight();
-		double scrollAmount = scrollDeltaY * smoothScrollRate;
-		return (float) (scrollAmount / (double) totalHeight);
+		int hiddenHeight = getHiddenAmount();
+		if (hiddenHeight == 0) {
+			return 0;
+		}
+		int scrollDistance = DISCRETE_SCROLL_DISTANCE;
+		if (clientConfig.smoothScrollingEnabled().get()) {
+			scrollDistance = clientConfig.smoothScrollRate().get();
+		}
+		double scrollAmount = scrollDeltaY * scrollDistance;
+		return (float) (scrollAmount / (double) hiddenHeight);
 	}
 }

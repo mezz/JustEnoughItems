@@ -32,6 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -173,6 +174,7 @@ public class ClientConfigMigrationTest {
 		assertFalse(client.catchRenderErrorsEnabled().get());
 		assertFalse(client.recipeSyncWarningEnabled().get());
 		assertEquals(234, client.dragDelayMs().get());
+		assertTrue(client.smoothScrollingEnabled().get());
 		assertEquals(17, client.smoothScrollRate().get());
 		assertFalse(client.recipeSlotCyclingEnabled().get());
 		assertEquals(List.of(IngredientSortStage.ALPHABETICAL, IngredientSortStage.MOD_NAME), client.ingredientSorterStages().get());
@@ -228,6 +230,33 @@ public class ClientConfigMigrationTest {
 		assertFalse(reloaded.getClientConfig().recipeSlotCyclingEnabled().get());
 		assertEquals(IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE, reloaded.getIngredientListConfig().layoutMode().get());
 		assertEquals(IngredientGridNavigationMode.SCROLLING, reloaded.getBookmarkListConfig().navigationMode().get());
+	}
+
+	@Test
+	public void migratesSmoothScrollingNavigationModeFromCurrentConfig(@TempDir Path tempDir) throws IOException {
+		Path configFile = tempDir.resolve("jei-client.ini");
+		Files.writeString(configFile, """
+			[lists]
+			navigationMode = SMOOTH_SCROLLING
+			""");
+
+		ConfigFileWatcherSettings disabledWatcher = ConfigFileWatcherSettings.clientDefaults().withEnabled(false);
+		ConfigManager configManager = new ConfigManager("JEI Navigation Mode Migration Test", disabledWatcher, disabledWatcher);
+		ISortingConfig<String> recipeSorting = configManager.createInMemorySortingConfig(Comparator.naturalOrder(), true);
+		ClientConfigs configs = new ClientConfigs(
+			new ConfigSchemaBuilder("jei", configFile, "jei.config.client", configManager),
+			false,
+			recipeSorting
+		);
+
+		assertEquals(
+			IngredientGridNavigationMode.SCROLLING,
+			configs.getIngredientListConfig().navigationMode().get()
+		);
+		assertEquals(
+			Optional.of(List.of(IngredientGridNavigationMode.PAGED, IngredientGridNavigationMode.SCROLLING)),
+			configs.getIngredientListConfig().navigationMode().getEditorInfo().getSerializer().getAllValidValues()
+		);
 	}
 
 	@Test

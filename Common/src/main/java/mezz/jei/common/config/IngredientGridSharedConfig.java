@@ -1,5 +1,6 @@
 package mezz.jei.common.config;
 
+import mezz.jei.common.config.legacy.LegacyEnumSerializers;
 import net.mezzdev.config.api.schema.builder.IConfigCategoryBuilder;
 import net.mezzdev.config.api.value.editor.ConfigValueEditMode;
 import net.mezzdev.config.api.value.IConfigValue;
@@ -18,7 +19,15 @@ final class IngredientGridSharedConfig {
 			.addLegacyValue("ingredientList", "drawBackground")
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
-		navigationMode = category.addEnum("navigationMode", defaultNavigationMode)
+		navigationMode = category.addValue(
+				"navigationMode",
+				defaultNavigationMode,
+				LegacyEnumSerializers.enumWithLegacyName(
+					IngredientGridNavigationMode.class,
+					"SMOOTH_SCROLLING",
+					IngredientGridNavigationMode.SCROLLING
+				)
+			)
 			.addLegacyValue("ingredientList", "navigationMode")
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();

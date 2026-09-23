@@ -53,6 +53,7 @@ public final class ClientConfig implements IClientConfig {
 
 	// input
 	private final IConfigValue<Integer> dragDelayMs;
+	private final IConfigValue<Boolean> smoothScrollingEnabled;
 	private final IConfigValue<Integer> smoothScrollRate;
 	private final IConfigValue<Boolean> recipeSlotCyclingEnabled;
 
@@ -143,6 +144,9 @@ public final class ClientConfig implements IClientConfig {
 			.build();
 
 		dragDelayMs = input.addInteger("dragDelayInMilliseconds", 150, 0, 1000)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
+		smoothScrollingEnabled = input.addBoolean("smoothScrollingEnabled", true)
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
 		smoothScrollRate = input.addInteger("smoothScrollRate", 9, 1, 50)
@@ -380,6 +384,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Integer> dragDelayMs() {
 		return dragDelayMs;
+	}
+
+	@Override
+	public IConfigValue<Boolean> smoothScrollingEnabled() {
+		return smoothScrollingEnabled;
 	}
 
 	@Override

@@ -23,12 +23,31 @@ public final class LegacyEnumSerializers {
 		Class<T> enumClass,
 		Function<Boolean, T> legacyBooleanMigration
 	) {
-		return new EnumOrBooleanSerializer<>(enumClass, legacyBooleanMigration);
+		return new EnumWithLegacyValueSerializer<>(
+			enumClass,
+			value -> legacyBooleanMigration.apply(parseBoolean(value))
+		);
 	}
 
-	private record EnumOrBooleanSerializer<T extends Enum<T>>(
+	public static <T extends Enum<T>> IConfigValueSerializer<T> enumWithLegacyName(
 		Class<T> enumClass,
-		Function<Boolean, T> legacyBooleanMigration
+		String legacyName,
+		T migratedValue
+	) {
+		return new EnumWithLegacyValueSerializer<>(
+			enumClass,
+			value -> {
+				if (value.equals(legacyName)) {
+					return migratedValue;
+				}
+				throw new IllegalArgumentException("Invalid enum name: " + value);
+			}
+		);
+	}
+
+	private record EnumWithLegacyValueSerializer<T extends Enum<T>>(
+		Class<T> enumClass,
+		Function<String, T> legacyValueMigration
 	) implements IConfigValueSerializer<T> {
 		@Override
 		public String serialize(T value) {
@@ -42,7 +61,7 @@ public final class LegacyEnumSerializers {
 				return IDeserializeResult.success(Enum.valueOf(enumClass, value));
 			} catch (IllegalArgumentException ignored) {
 				try {
-					return IDeserializeResult.success(legacyBooleanMigration.apply(parseBoolean(value)));
+					return IDeserializeResult.success(legacyValueMigration.apply(value));
 				} catch (IllegalArgumentException e) {
 					return IDeserializeResult.failure(e.getMessage());
 				}
