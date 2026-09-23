@@ -120,7 +120,7 @@ public final class SortingOrderConfigValues {
 		if (pluginUid.isPresent()) {
 			String modName = runtime.getJeiHelpers().getModIdHelper()
 				.getModNameForModId(pluginUid.get().getNamespace());
-			return Component.translatable("jei.config.client.sorting.ingredientTypeSortOrder.value", modName, typeName);
+			return Component.translatable("jei.config.client.sorting.ingredientTypeSortOrder.value", typeName, modName);
 		}
 		return Component.literal(typeName);
 	}
