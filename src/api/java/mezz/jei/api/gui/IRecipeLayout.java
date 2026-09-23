@@ -2,6 +2,8 @@ package mezz.jei.api.gui;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.util.ResourceLocation;
+
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
 import mezz.jei.api.recipe.IFocus;
@@ -69,6 +71,19 @@ public interface IRecipeLayout {
 	 * @since JEI 4.0.2
 	 */
 	void setShapeless();
+
+	/**
+	 * Adds recipe id and "recipe by" text to all output ingredients of the recipe, as seen in crafting table recipes.
+	 * <p>
+	 * Should be used by recipe categories whose recipes have an id.
+	 *
+	 * @param recipeCategoryModId mod id of the recipe category
+	 * @param recipeId registry id of the recipe
+	 * @since JEI 4.16.6
+	 */
+	default void setRecipeId(String recipeCategoryModId, @Nullable ResourceLocation recipeId) {
+
+	}
 
 	/**
 	 * Get all the ingredients of one class that are displayed on this recipe layout.

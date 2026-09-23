@@ -12,12 +12,14 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
@@ -32,6 +34,7 @@ import mezz.jei.gui.ingredients.GuiFluidStackGroup;
 import mezz.jei.gui.ingredients.GuiIngredient;
 import mezz.jei.gui.ingredients.GuiIngredientGroup;
 import mezz.jei.gui.ingredients.GuiItemStackGroup;
+import mezz.jei.gui.ingredients.RecipeIdTooltipCallback;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.util.ErrorUtil;
 import mezz.jei.util.LegacyUtil;
@@ -56,6 +59,10 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	@Nullable
 	private ShapelessIcon shapelessIcon;
 	private final DrawableNineSliceTexture recipeBorder;
+	@Nullable
+	private String recipeCategoryModId;
+	@Nullable
+	private ResourceLocation recipeId;
 
 	private int posX;
 	private int posY;
@@ -67,6 +74,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 			IIngredients ingredients = new Ingredients();
 			recipeWrapper.getIngredients(ingredients);
 			recipeCategory.setRecipe(recipeLayout, recipeWrapper, ingredients);
+			recipeLayout.addRecipeIdTooltip();
 			return recipeLayout;
 		} catch (RuntimeException | LinkageError e) {
 			Log.get().error("Error caught from Recipe Category: {}", recipeCategory.getClass().getCanonicalName(), e);
@@ -333,5 +341,24 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 
 	public int getPosY() {
 		return posY;
+	}
+
+	@Override
+	public void setRecipeId(String recipeCategoryModId, @Nullable ResourceLocation recipeId) {
+		this.recipeCategoryModId = recipeCategoryModId;
+		this.recipeId = recipeId;
+	}
+
+	private void addRecipeIdTooltip() {
+		if (recipeId != null) {
+			String recipeModId = recipeId.getNamespace();
+			boolean recipeCategoryIdDifferent = !recipeModId.equals(recipeCategoryModId);
+
+			for (GuiIngredientGroup guiIngredientGroup : guiIngredientGroups.values()) {
+				IIngredientHelper ingredientHelper = guiIngredientGroup.getIngredientHelper();
+				RecipeIdTooltipCallback tooltipCallback = new RecipeIdTooltipCallback(recipeId, recipeCategoryIdDifferent, ingredientHelper);
+				guiIngredientGroup.addTooltipCallbackAfter(tooltipCallback);
+			}
+		}
 	}
 }

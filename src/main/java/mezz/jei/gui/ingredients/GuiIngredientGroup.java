@@ -170,4 +170,19 @@ public class GuiIngredientGroup<T> implements IGuiIngredientGroup<T> {
 			this.focus = Focus.check(focus);
 		}
 	}
+
+	public IIngredientHelper<T> getIngredientHelper() {
+		return ingredientHelper;
+	}
+
+	/**
+	 * Adds the tooltip callback after any existing tooltip callback
+	 */
+	public void addTooltipCallbackAfter(ITooltipCallback<T> tooltipCallback) {
+		ITooltipCallback<T> before = this.tooltipCallback;
+		this.tooltipCallback = before == null ? tooltipCallback : (slotIndex, input, ingredient, tooltip) -> {
+			before.onTooltip(slotIndex, input, ingredient, tooltip);
+			tooltipCallback.onTooltip(slotIndex, input, ingredient, tooltip);
+		};
+	}
 }
