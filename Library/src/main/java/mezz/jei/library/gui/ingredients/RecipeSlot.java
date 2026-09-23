@@ -62,11 +62,13 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	private @Nullable TooltipData tooltipData;
 	private Runnable displayOverridesChangedListener = () -> {};
 	private ImmutableRect2i rect;
+	private ImmutableRect2i hoverBounds;
 
 	public RecipeSlot(
 		IIngredientManagerInternal ingredientManager,
 		RecipeIngredientRole role,
 		ImmutableRect2i rect,
+		ImmutableRect2i hoverBounds,
 		ICycler cycler,
 		List<IRecipeSlotRichTooltipCallback> tooltipCallbacks,
 		List<? extends @Nullable SlotIngredient<?>> allIngredients,
@@ -93,6 +95,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		this.rendererOverrides = rendererOverrides;
 		this.role = role;
 		this.rect = rect;
+		this.hoverBounds = hoverBounds;
 		this.cycler = cycler;
 		this.tooltipCallbacks = tooltipCallbacks;
 		this.tagKey = new LazySupplier<>(this::calculateTagKey);
@@ -499,12 +502,18 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return this.rect.contains(mouseX, mouseY);
+		return this.hoverBounds.contains(mouseX, mouseY);
 	}
 
 	@Override
 	public void setPosition(int x, int y) {
+		if (this.rect.x() == x && this.rect.y() == y) {
+			return;
+		}
+		int xOffset = x - this.rect.x();
+		int yOffset = y - this.rect.y();
 		this.rect = this.rect.setPosition(x, y);
+		this.hoverBounds = this.hoverBounds.addOffset(xOffset, yOffset);
 	}
 
 	@Override
@@ -543,6 +552,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	public String toString() {
 		return "RecipeSlot{" +
 			"rect=" + rect +
+			", hoverBounds=" + hoverBounds +
 			'}';
 	}
 }

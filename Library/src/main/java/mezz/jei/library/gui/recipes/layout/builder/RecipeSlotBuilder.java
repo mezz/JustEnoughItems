@@ -53,6 +53,10 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	private final List<IRecipeSlotRichTooltipCallback> tooltipCallbacks = new ArrayList<>();
 	private final int slotIndex;
 	private ImmutableRect2i rect;
+	private int hoverPaddingTop;
+	private int hoverPaddingBottom;
+	private int hoverPaddingLeft;
+	private int hoverPaddingRight;
 	private @Nullable RendererOverrides rendererOverrides;
 	private @Nullable OffsetDrawable background;
 	private @Nullable IDrawable overlay;
@@ -178,7 +182,7 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 		IGuiHelper guiHelper = Internal.getJeiRuntime().getJeiHelpers().getGuiHelper();
 		IDrawableStatic background = guiHelper.getSlotDrawable();
 		this.background = new OffsetDrawable(background, -1, -1);
-		return this;
+		return setHoverPadding(1, 1, 1, 1);
 	}
 
 	@Override
@@ -194,6 +198,20 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 		ErrorUtil.checkNotNull(background, "background");
 
 		this.background = new OffsetDrawable(background, xOffset, yOffset);
+		return this;
+	}
+
+	@Override
+	public IRecipeSlotBuilder setHoverPadding(int paddingTop, int paddingBottom, int paddingLeft, int paddingRight) {
+		Preconditions.checkArgument(paddingTop >= 0, "paddingTop must be non-negative");
+		Preconditions.checkArgument(paddingBottom >= 0, "paddingBottom must be non-negative");
+		Preconditions.checkArgument(paddingLeft >= 0, "paddingLeft must be non-negative");
+		Preconditions.checkArgument(paddingRight >= 0, "paddingRight must be non-negative");
+
+		this.hoverPaddingTop = paddingTop;
+		this.hoverPaddingBottom = paddingBottom;
+		this.hoverPaddingLeft = paddingLeft;
+		this.hoverPaddingRight = paddingRight;
 		return this;
 	}
 
@@ -317,11 +335,13 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 	public Pair<Integer, RecipeSlot> build(Set<Integer> focusMatches, IFocusGroup focusGroup, ICycler cycler) {
 		List<@Nullable SlotIngredient<?>> allIngredients = this.ingredients.getAllSlotIngredients();
 		var focusedIngredients = getFocusedIngredients(allIngredients, focusMatches);
+		ImmutableRect2i hoverBounds = getHoverBounds();
 
 		RecipeSlot recipeSlot = new RecipeSlot(
 			ingredientManager,
 			role,
 			rect,
+			hoverBounds,
 			cycler,
 			tooltipCallbacks,
 			allIngredients,
@@ -334,6 +354,15 @@ public class RecipeSlotBuilder implements IRecipeSlotBuilder {
 			getContextMap()
 		);
 		return new Pair<>(slotIndex, recipeSlot);
+	}
+
+	private ImmutableRect2i getHoverBounds() {
+		return new ImmutableRect2i(
+			Math.subtractExact(this.rect.x(), this.hoverPaddingLeft),
+			Math.subtractExact(this.rect.y(), this.hoverPaddingTop),
+			Math.addExact(Math.addExact(this.rect.width(), this.hoverPaddingLeft), this.hoverPaddingRight),
+			Math.addExact(Math.addExact(this.rect.height(), this.hoverPaddingTop), this.hoverPaddingBottom)
+		);
 	}
 
 	private static @Nullable List<@Nullable SlotIngredient<?>> getFocusedIngredients(

@@ -135,15 +135,15 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 
 		try {
 			for (int row = 0; row < renderedRows; row++) {
-				final int y = (row * slotHeight) - rowPixelOffset;
 				for (int column = 0; column < columns; column++) {
-					final int x = column * slotWidth;
 					final int slotIndex = firstIndex + (row * columns) + column;
-					slotBackground.draw(guiGraphics, x, y);
+					ImmutableRect2i slotArea = getSlotArea(column, row, rowPixelOffset);
+					slotBackground.draw(guiGraphics, slotArea.x(), slotArea.y());
 					if (slotIndex < totalSlots) {
 						IRecipeSlotDrawable slot = slots.get(slotIndex);
-						slot.setPosition(x + 1, y + 1);
-						slot.draw(guiGraphics, slot.isMouseOver(mouseX, mouseY));
+						setSlotPosition(slot, slotArea);
+						boolean hovered = isMouseOverSlot(slot, slotArea, mouseX, mouseY);
+						slot.draw(guiGraphics, hovered);
 					}
 				}
 			}
@@ -156,20 +156,49 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 
 	@Override
 	public Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY) {
+		if (!contentsArea.contains(mouseX, mouseY)) {
+			return Optional.empty();
+		}
 		final int firstRow = getFirstRow();
 		final int startIndex = firstRow * columns;
+		final int rowPixelOffset = getRowPixelOffset();
 		int visibleRowCount = visibleRows;
-		if (getRowPixelOffset() > 0) {
+		if (rowPixelOffset > 0) {
 			visibleRowCount++;
 		}
 		final int endIndex = Math.min(startIndex + (visibleRowCount * columns), slots.size());
 		for (int i = startIndex; i < endIndex; i++) {
+			int visibleIndex = i - startIndex;
+			int column = visibleIndex % columns;
+			int row = visibleIndex / columns;
+			ImmutableRect2i slotArea = getSlotArea(column, row, rowPixelOffset);
 			IRecipeSlotDrawable slot = slots.get(i);
-			if (slot.isMouseOver(mouseX, mouseY)) {
+			setSlotPosition(slot, slotArea);
+			if (isMouseOverSlot(slot, slotArea, mouseX, mouseY)) {
 				return Optional.of(new RecipeSlotUnderMouse(slot, getPosition()));
 			}
 		}
 		return Optional.empty();
+	}
+
+	private ImmutableRect2i getSlotArea(int column, int row, int rowPixelOffset) {
+		int slotWidth = slotBackground.getWidth();
+		int slotHeight = slotBackground.getHeight();
+		return new ImmutableRect2i(
+			column * slotWidth,
+			(row * slotHeight) - rowPixelOffset,
+			slotWidth,
+			slotHeight
+		);
+	}
+
+	private static void setSlotPosition(IRecipeSlotDrawable slot, ImmutableRect2i slotArea) {
+		slot.setPosition(slotArea.x() + 1, slotArea.y() + 1);
+	}
+
+	private boolean isMouseOverSlot(IRecipeSlotDrawable slot, ImmutableRect2i slotArea, double mouseX, double mouseY) {
+		return contentsArea.contains(mouseX, mouseY) &&
+			(slotArea.contains(mouseX, mouseY) || slot.isMouseOver(mouseX, mouseY));
 	}
 
 	@Override
