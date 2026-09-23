@@ -71,34 +71,6 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		}
 	}
 
-	private int getCraftingIndex(int i, int width, int height) {
-		int index;
-		if (width == 1) {
-			if (height == 3) {
-				index = (i * 3) + 1;
-			} else if (height == 2) {
-				index = (i * 3) + 1;
-			} else {
-				index = 4;
-			}
-		} else if (height == 1) {
-			index = i + 3;
-		} else if (width == 2) {
-			index = i;
-			if (i > 1) {
-				index++;
-				if (i > 3) {
-					index++;
-				}
-			}
-		} else if (height == 2) {
-			index = i + 3;
-		} else {
-			index = i;
-		}
-		return index;
-	}
-
 	@Override
 	public void setOutput(IGuiItemStackGroup guiItemStacks, List<ItemStack> output) {
 		guiItemStacks.set(craftOutputSlot, output);

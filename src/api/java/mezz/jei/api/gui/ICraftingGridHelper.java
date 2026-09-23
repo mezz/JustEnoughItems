@@ -28,6 +28,43 @@ public interface ICraftingGridHelper {
 	<T> void setInputs(IGuiIngredientGroup<T> ingredientGroup, List<List<T>> inputs, int width, int height);
 
 	/**
+	 * Gets the slot index for an input in the centered 3x3 crafting grid.
+	 *
+	 * @param inputIndex the input's index in the recipe's ingredient list, from zero to width * height - 1
+	 * @param width the recipe width, from 1 to 3
+	 * @param height the recipe height, from 1 to 3
+	 * @return the grid index, from 0 to 8, without the helper's input-slot offset
+	 * @since JEI 4.23.0
+	 */
+	default int getCraftingIndex(int inputIndex, int width, int height) {
+		int index;
+		if (width == 1) {
+			if (height == 3) {
+				index = (inputIndex * 3) + 1;
+			} else if (height == 2) {
+				index = (inputIndex * 3) + 1;
+			} else {
+				index = 4;
+			}
+		} else if (height == 1) {
+			index = inputIndex + 3;
+		} else if (width == 2) {
+			index = inputIndex;
+			if (inputIndex > 1) {
+				index++;
+				if (inputIndex > 3) {
+					index++;
+				}
+			}
+		} else if (height == 2) {
+			index = inputIndex + 3;
+		} else {
+			index = inputIndex;
+		}
+		return index;
+	}
+
+	/**
 	 * Place inputs ingredients onto the crafting grid in a consistent way.
 	 *
 	 * @since JEI 3.11.2
