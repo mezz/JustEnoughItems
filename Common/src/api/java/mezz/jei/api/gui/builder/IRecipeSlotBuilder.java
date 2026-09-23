@@ -49,6 +49,7 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	/**
 	 * Set a normal slot background to draw behind the slot's ingredients.
 	 * This background is 18x18 pixels and offset by (-1, -1) to match vanilla slots.
+	 * The slot's hover bounds are expanded by 1 pixel in every direction to match the background.
 	 *
 	 * @see IGuiHelper#getSlotDrawable() for the slot background drawable.
 	 *
@@ -77,6 +78,21 @@ public interface IRecipeSlotBuilder extends IIngredientAcceptor<IRecipeSlotBuild
 	 * @since 9.3.0
 	 */
 	IRecipeSlotBuilder setBackground(IDrawable background, int xOffset, int yOffset);
+
+	/**
+	 * Add padding to the bounds used to detect when the mouse is hovering over this slot.
+	 * This is useful for making a background that extends beyond the ingredient fully interactive.
+	 *
+	 * Calling {@link #setStandardSlotBackground()} sets 1 pixel of hover padding in every direction.
+	 *
+	 * @param paddingTop the non-negative padding above the slot
+	 * @param paddingBottom the non-negative padding below the slot
+	 * @param paddingLeft the non-negative padding to the left of the slot
+	 * @param paddingRight the non-negative padding to the right of the slot
+	 *
+	 * @since 31.7.0
+	 */
+	IRecipeSlotBuilder setHoverPadding(int paddingTop, int paddingBottom, int paddingLeft, int paddingRight);
 
 	/**
 	 * Set an overlay to draw on top of the slot's ingredient.
