@@ -96,6 +96,18 @@ public interface ICraftingGridHelper {
 	<T> void setInputs(List<IRecipeSlotBuilder> slotBuilders, IIngredientType<T> ingredientType, List<@Nullable List<@Nullable T>> inputs, int width, int height);
 
 	/**
+	 * Get the index of an input in the centered 3x3 crafting grid.
+	 *
+	 * @param inputIndex the index of the input in a recipe's ingredient list.
+	 * @param width the recipe width, from 1 to 3.
+	 * @param height the recipe height, from 1 to 3.
+	 * @return the index of the corresponding slot in the 3x3 crafting grid.
+	 *
+	 * @since 31.6.0
+	 */
+	int getCraftingIndex(int inputIndex, int width, int height);
+
+	/**
 	 * Place output ItemStacks at the right location.
 	 *
 	 * @see #createAndSetOutputs(IRecipeLayoutBuilder, IIngredientType, List) to set other ingredient types.
