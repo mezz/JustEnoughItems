@@ -170,6 +170,11 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 	}
 
 	@Override
+	public IRecipeSlotBuilder setHoverPadding(int paddingTop, int paddingBottom, int paddingLeft, int paddingRight) {
+		return this;
+	}
+
+	@Override
 	public IRecipeSlotBuilder setOverlay(IDrawable overlay, int xOffset, int yOffset) {
 		return this;
 	}
