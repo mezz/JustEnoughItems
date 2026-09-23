@@ -18,7 +18,9 @@ import net.minecraft.network.chat.Component;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -29,6 +31,7 @@ public class ElementPrefixParser {
 	private static final Pattern MOD_NAME_SEPARATOR_PATTERN = Pattern.compile("(?=[A-Z_-])|\\s+");
 
 	private final Char2ObjectMap<PrefixInfo<IListElementInfo<?>, IListElement<?>>> map = new Char2ObjectLinkedOpenHashMap<>();
+	private final Map<ElementSearchIndex, PrefixInfo<IListElementInfo<?>, IListElement<?>>> prefixInfoBySearchIndex = new EnumMap<>(ElementSearchIndex.class);
 	private final PrefixInfo<IListElementInfo<?>, IListElement<?>> noPrefix;
 
 	public ElementPrefixParser(
@@ -49,8 +52,9 @@ public class ElementPrefixParser {
 			IListElementInfo::getNames,
 			searchStorageBuilderFactory
 		);
+		this.prefixInfoBySearchIndex.put(ElementSearchIndex.UNPREFIXED, noPrefix);
 
-		addPrefix(new PrefixInfo<>(
+		addPrefix(ElementSearchIndex.MOD_NAMES, new PrefixInfo<>(
 			"mod_names",
 			'@',
 			Component.translatable("jei.search.completion.prefix.modName"),
@@ -87,7 +91,7 @@ public class ElementPrefixParser {
 			},
 			limitedStringStorageBuilderFactory
 		));
-		addPrefix(new PrefixInfo<>(
+		addPrefix(ElementSearchIndex.TAGS, new PrefixInfo<>(
 			"tags",
 			'#',
 			Component.translatable("jei.search.completion.prefix.tag"),
@@ -96,7 +100,7 @@ public class ElementPrefixParser {
 			e -> e.getTagStrings(ingredientManager),
 			limitedStringStorageBuilderFactory
 		));
-		addPrefix(new PrefixInfo<>(
+		addPrefix(ElementSearchIndex.TOOLTIPS, new PrefixInfo<>(
 			"tooltips",
 			'$',
 			Component.translatable("jei.search.completion.prefix.tooltip"),
@@ -105,7 +109,7 @@ public class ElementPrefixParser {
 			e -> e.getTooltipStrings(config, ingredientManager),
 			searchStorageBuilderFactory
 		));
-		addPrefix(new PrefixInfo<>(
+		addPrefix(ElementSearchIndex.CREATIVE_TABS, new PrefixInfo<>(
 			"creative_tabs",
 			'%',
 			Component.translatable("jei.search.completion.prefix.creativeTab"),
@@ -114,7 +118,7 @@ public class ElementPrefixParser {
 			e -> e.getCreativeTabsStrings(ingredientManager),
 			limitedStringStorageBuilderFactory
 		));
-		addPrefix(new PrefixInfo<>(
+		addPrefix(ElementSearchIndex.COLORS, new PrefixInfo<>(
 			"colors",
 			'^',
 			Component.translatable("jei.search.completion.prefix.color"),
@@ -130,7 +134,7 @@ public class ElementPrefixParser {
 			},
 			limitedStringStorageBuilderFactory
 		));
-		addPrefix(new PrefixInfo<>(
+		addPrefix(ElementSearchIndex.IDENTIFIERS, new PrefixInfo<>(
 			"identifiers",
 			'&',
 			Component.translatable("jei.search.completion.prefix.identifier"),
@@ -157,8 +161,13 @@ public class ElementPrefixParser {
 		};
 	}
 
-	private void addPrefix(PrefixInfo<IListElementInfo<?>, IListElement<?>> info) {
+	private void addPrefix(ElementSearchIndex searchIndex, PrefixInfo<IListElementInfo<?>, IListElement<?>> info) {
 		this.map.put(info.getPrefix(), info);
+		this.prefixInfoBySearchIndex.put(searchIndex, info);
+	}
+
+	PrefixInfo<IListElementInfo<?>, IListElement<?>> getPrefixInfo(ElementSearchIndex searchIndex) {
+		return prefixInfoBySearchIndex.get(searchIndex);
 	}
 
 	public Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> allPrefixInfos() {
