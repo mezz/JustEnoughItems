@@ -519,7 +519,7 @@
   "jei.config.client.sorting.ingredientModNameSortOrder.value.description": "Ingredients from %s.",
   "jei.config.client.sorting.ingredientTypeSortOrder": "Ingredient Type Sort Order",
   "jei.config.client.sorting.ingredientTypeSortOrder.description": "Choose the order that JEI uses for ingredient types.",
-  "jei.config.client.sorting.ingredientTypeSortOrder.value": "%s: %s",
+  "jei.config.client.sorting.ingredientTypeSortOrder.value": "%s (%s)",
   "jei.config.client.sorting.ingredientTypeSortOrder.value.description": "Ingredient type class: %s",
   "jei.config.client.search.searchAdvancedTooltips.value.true.description": "Include advanced tooltip text.",
   "jei.config.client.search.searchAdvancedTooltips.value.false.description": "Ignore advanced tooltip text.",
