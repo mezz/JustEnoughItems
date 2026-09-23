@@ -17,6 +17,14 @@ import mezz.jei.gui.overlay.elements.IngredientElement;
 import mezz.jei.gui.overlay.TestConfigValue;
 import net.mezzdev.config.api.value.IConfigValue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import mezz.jei.common.config.ClientConfigs;
+import mezz.jei.common.config.IClientConfig;
+import net.mezzdev.config.file.ConfigManager;
+import net.mezzdev.config.schema.ConfigSchemaBuilder;
+import net.mezzdev.config.file.ConfigFileWatcherSettings;
+import java.nio.file.Path;
+import java.util.Comparator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +34,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IngredientGridScrollControllerTest {
+	@TempDir
+	public Path tempDir;
+
 	private static final IIngredientType<Integer> INTEGER_TYPE = () -> Integer.class;
 
 	@Test
@@ -39,7 +50,7 @@ public class IngredientGridScrollControllerTest {
 			source,
 			grid,
 			new TestGridConfig(IngredientGridNavigationMode.SCROLLING),
-			null
+			createClientConfig(false, 9)
 		);
 		controller.updateLayoutStartingAt(0);
 		int hiddenRows = GridScrollMath.getHiddenRows(elements.size(), grid.getColumnCount(), grid.getRowCount());
@@ -55,6 +66,73 @@ public class IngredientGridScrollControllerTest {
 		assertEquals(9, grid.firstItemIndex);
 		assertEquals(0, grid.scrollOffsetY);
 		assertEquals(3, controller.getFirstVisibleScrollRow());
+	}
+
+	@Test
+	public void smoothScrollingMovesByConfiguredPixels() {
+		TestIngredientGrid grid = new TestIngredientGrid(3, 3);
+		IngredientGridScrollController controller = createController(grid, true);
+		controller.updateLayoutStartingAt(0);
+
+		IngredientGridScrollController.ScrollResult result = controller.scrollByMouse(-1);
+
+		assertTrue(result.consumed());
+		assertTrue(result.changed());
+		assertEquals(0, grid.firstItemIndex);
+		assertEquals(9, grid.scrollOffsetY, "The configured wheel distance must be measured against hidden pixels");
+	}
+
+	@Test
+	public void disablingSmoothScrollingMovesWholeRows() {
+		TestIngredientGrid grid = new TestIngredientGrid(3, 3);
+		IngredientGridScrollController controller = createController(grid, false);
+		controller.updateLayoutStartingAt(0);
+
+		IngredientGridScrollController.ScrollResult result = controller.scrollByMouse(-1);
+
+		assertTrue(result.consumed());
+		assertEquals(3, grid.firstItemIndex);
+		assertEquals(0, grid.scrollOffsetY);
+	}
+
+	@Test
+	public void scrollingAtBottomConsumesWheelWithoutMoving() {
+		TestIngredientGrid grid = new TestIngredientGrid(3, 3);
+		IngredientGridScrollController controller = createController(grid, true);
+		controller.updateLayoutStartingAt(0);
+		controller.setScrollOffsetY(1);
+		int firstItemIndex = grid.firstItemIndex;
+		int pixelOffset = grid.scrollOffsetY;
+
+		IngredientGridScrollController.ScrollResult result = controller.scrollByMouse(-1);
+
+		assertTrue(result.consumed(), "A wheel event over the list must not scroll the underlying screen");
+		assertTrue(!result.changed());
+		assertEquals(firstItemIndex, grid.firstItemIndex);
+		assertEquals(pixelOffset, grid.scrollOffsetY);
+	}
+
+	private IngredientGridScrollController createController(TestIngredientGrid grid, boolean smoothScrolling) {
+		return new IngredientGridScrollController(
+			new TestIngredientGridSource(createElements(30)),
+			grid,
+			new TestGridConfig(IngredientGridNavigationMode.SCROLLING),
+			createClientConfig(smoothScrolling, 9)
+		);
+	}
+
+	private IClientConfig createClientConfig(boolean smoothScrolling, int wheelRate) {
+		ConfigFileWatcherSettings disabledWatcher = ConfigFileWatcherSettings.clientDefaults().withEnabled(false);
+		ConfigManager manager = new ConfigManager("Grid Scroll Test", disabledWatcher, disabledWatcher);
+		ClientConfigs configs = new ClientConfigs(
+			new ConfigSchemaBuilder("jei", tempDir.resolve("jei-client.toml"), "jei.config.client", manager),
+			false,
+			manager.createInMemorySortingConfig(Comparator.<String>naturalOrder(), true)
+		);
+		IClientConfig config = configs.getClientConfig();
+		config.smoothScrollingEnabled().set(smoothScrolling);
+		config.smoothScrollRate().set(wheelRate);
+		return config;
 	}
 
 	private static List<IElement<?>> createElements(int itemCount) {

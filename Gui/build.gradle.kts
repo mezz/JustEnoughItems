@@ -22,6 +22,7 @@ val modJavaVersion: String by extra
 val deduplicatingRunnerVersion: String by extra
 val mezzConfigApiDependency: String by rootProject.extra
 val mezzConfigGuiApiDependency: String by rootProject.extra
+val mezzConfigForgeDependency: String by rootProject.extra
 
 val baseArchivesName = "${modId}-${minecraftVersion}-gui"
 base {
@@ -64,6 +65,7 @@ dependencies {
         isTransitive = false
     }
     testImplementation(mezzConfigGuiApiDependency)
+    testImplementation(mezzConfigForgeDependency)
     testImplementation(
         group = "org.junit.jupiter",
         name = "junit-jupiter",

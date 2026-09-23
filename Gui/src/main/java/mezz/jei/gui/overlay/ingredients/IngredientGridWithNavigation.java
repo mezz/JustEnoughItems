@@ -1,5 +1,7 @@
 package mezz.jei.gui.overlay.ingredients;
 
+import mezz.jei.common.Internal;
+
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -111,6 +113,11 @@ public class IngredientGridWithNavigation implements IRecipeFocusSource {
 				updateLayoutKeepingPageAnchorVisible(getPageAnchorElement());
 			}
 		});
+		Internal.registerRuntimeListenerRemoval(clientConfig.smoothScrollingEnabled().addListener(v -> {
+			if (isActive()) {
+				updateLayoutKeepingPageAnchorVisible(getPageAnchorElement());
+			}
+		}));
 	}
 
 	private boolean isActive() {
