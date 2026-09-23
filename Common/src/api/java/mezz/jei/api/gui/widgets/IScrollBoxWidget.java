@@ -8,7 +8,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.List;
 
 /**
- * A smooth-scrolling area with a scrollbar.
+ * A scrolling area with a scrollbar.
  *
  * Create one with {@link IRecipeExtrasBuilder#addScrollBoxWidget}.
  *

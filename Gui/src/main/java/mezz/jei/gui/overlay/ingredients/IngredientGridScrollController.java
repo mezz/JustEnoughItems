@@ -179,17 +179,16 @@ public final class IngredientGridScrollController {
 	}
 
 	private boolean isSmoothScrolling() {
-		return this.gridConfig.navigationMode().get()
-			.usesSmoothScrolling();
+		return this.clientConfig.smoothScrollingEnabled().get();
 	}
 
 	private float getMouseWheelScrollAmount(double scrollDeltaY) {
 		if (isSmoothScrolling()) {
-			int totalHeight = getTotalScrollRows() * IngredientGridLayout.INGREDIENT_HEIGHT;
-			if (totalHeight == 0) {
+			int hiddenHeight = getHiddenScrollRows() * IngredientGridLayout.INGREDIENT_HEIGHT;
+			if (hiddenHeight == 0) {
 				return 0;
 			}
-			return (float) (scrollDeltaY * this.clientConfig.smoothScrollRate().get() / (double) totalHeight);
+			return (float) (scrollDeltaY * this.clientConfig.smoothScrollRate().get() / (double) hiddenHeight);
 		}
 		int hiddenRows = getHiddenScrollRows();
 		if (hiddenRows == 0) {
@@ -282,13 +281,6 @@ public final class IngredientGridScrollController {
 			visibleIngredientCount
 		);
 		return new ScrollRenderPosition(firstItemIndex, 0);
-	}
-
-	private int getTotalScrollRows() {
-		return GridScrollMath.getTotalRows(
-			ingredientSource.getElements().size(),
-			ingredientGrid.getColumnCount()
-		);
 	}
 
 	private float getScrollAnchorPositionY(IElement<?> element) {

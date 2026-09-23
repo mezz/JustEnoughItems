@@ -9,6 +9,7 @@ import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.gui.widgets.IScrollGridWidget;
 import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.GridScrollMath;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
@@ -94,43 +95,74 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 
 	@Override
 	protected int getVisibleAmount() {
+		if (isSmoothScrolling()) {
+			return visibleRows * slotBackground.getHeight();
+		}
 		return visibleRows;
 	}
 
 	@Override
 	protected int getHiddenAmount() {
+		if (isSmoothScrolling()) {
+			return hiddenRows * slotBackground.getHeight();
+		}
 		return hiddenRows;
 	}
 
 	@Override
 	protected void drawContents(GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY, float scrollOffsetY) {
 		final int totalSlots = slots.size();
-		final int firstRow = GridScrollMath.getFirstRowForScrollOffset(hiddenRows, getScrollOffsetY());
-		final int firstIndex = columns * firstRow;
+		final int scrollPixelOffset = getScrollPixelOffset();
 
 		final int slotWidth = slotBackground.getWidth();
 		final int slotHeight = slotBackground.getHeight();
+		final int firstRow = scrollPixelOffset / slotHeight;
+		final int firstIndex = columns * firstRow;
+		final int rowPixelOffset = scrollPixelOffset % slotHeight;
+		int renderedRows = visibleRows;
+		if (rowPixelOffset > 0) {
+			renderedRows++;
+		}
 
-		for (int row = 0; row < visibleRows; row++) {
-			final int y = row * slotHeight;
-			for (int column = 0; column < columns; column++) {
-				final int x = column * slotWidth;
-				final int slotIndex = firstIndex + (row * columns) + column;
-				slotBackground.draw(guiGraphics, x, y);
-				if (slotIndex < totalSlots) {
-					IRecipeSlotDrawable slot = slots.get(slotIndex);
-					slot.setPosition(x + 1, y + 1);
-					slot.draw(guiGraphics, slot.isMouseOver(mouseX, mouseY));
+		if (rowPixelOffset > 0) {
+			guiGraphics.enableScissor(
+				contentsArea.x(),
+				contentsArea.y(),
+				contentsArea.x() + contentsArea.width(),
+				contentsArea.y() + contentsArea.height()
+			);
+		}
+
+		try {
+			for (int row = 0; row < renderedRows; row++) {
+				final int y = (row * slotHeight) - rowPixelOffset;
+				for (int column = 0; column < columns; column++) {
+					final int x = column * slotWidth;
+					final int slotIndex = firstIndex + (row * columns) + column;
+					slotBackground.draw(guiGraphics, x, y);
+					if (slotIndex < totalSlots) {
+						IRecipeSlotDrawable slot = slots.get(slotIndex);
+						slot.setPosition(x + 1, y + 1);
+						slot.draw(guiGraphics, slot.isMouseOver(mouseX, mouseY));
+					}
 				}
+			}
+		} finally {
+			if (rowPixelOffset > 0) {
+				guiGraphics.disableScissor();
 			}
 		}
 	}
 
 	@Override
 	public Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY) {
-		final int firstRow = GridScrollMath.getFirstRowForScrollOffset(hiddenRows, getScrollOffsetY());
+		final int firstRow = getFirstRow();
 		final int startIndex = firstRow * columns;
-		final int endIndex = Math.min(startIndex + (visibleRows * columns), slots.size());
+		int visibleRowCount = visibleRows;
+		if (getRowPixelOffset() > 0) {
+			visibleRowCount++;
+		}
+		final int endIndex = Math.min(startIndex + (visibleRowCount * columns), slots.size());
 		for (int i = startIndex; i < endIndex; i++) {
 			IRecipeSlotDrawable slot = slots.get(i);
 			if (slot.isMouseOver(mouseX, mouseY)) {
@@ -142,7 +174,39 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 
 	@Override
 	protected float calculateScrollAmount(double scrollDeltaY) {
-		int hiddenRows = getHiddenAmount();
+		if (isSmoothScrolling()) {
+			int hiddenPixels = hiddenRows * slotBackground.getHeight();
+			if (hiddenPixels == 0) {
+				return 0;
+			}
+			IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
+			return (float) (scrollDeltaY * clientConfig.smoothScrollRate().get() / (double) hiddenPixels);
+		}
 		return (float) (scrollDeltaY / (double) hiddenRows);
+	}
+
+	private boolean isSmoothScrolling() {
+		return Internal.getClientConfigs()
+			.getClientConfig()
+			.smoothScrollingEnabled()
+			.get();
+	}
+
+	private int getScrollPixelOffset() {
+		if (isSmoothScrolling()) {
+			return GridScrollMath.getSmoothScrollPixelOffset(hiddenRows, slotBackground.getHeight(), getScrollOffsetY());
+		}
+		return getFirstRow() * slotBackground.getHeight();
+	}
+
+	private int getFirstRow() {
+		if (isSmoothScrolling()) {
+			return GridScrollMath.getFirstRowForSmoothScrollPixelOffset(getScrollPixelOffset(), slotBackground.getHeight());
+		}
+		return GridScrollMath.getFirstRowForScrollOffset(hiddenRows, getScrollOffsetY());
+	}
+
+	private int getRowPixelOffset() {
+		return getScrollPixelOffset() % slotBackground.getHeight();
 	}
 }

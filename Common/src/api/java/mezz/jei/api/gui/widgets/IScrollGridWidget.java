@@ -11,7 +11,6 @@ import java.util.Optional;
 
 /**
  * A scrolling area for ingredients with a scrollbar.
- * Modeled after the vanilla creative menu.
  *
  * Create one with {@link IRecipeExtrasBuilder#addScrollGridWidget}.
  * @since 19.19.3

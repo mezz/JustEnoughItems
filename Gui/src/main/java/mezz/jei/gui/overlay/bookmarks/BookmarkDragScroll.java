@@ -1,6 +1,5 @@
 package mezz.jei.gui.overlay.bookmarks;
 
-import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.overlay.ingredients.IngredientGridLayout;
 
@@ -19,17 +18,17 @@ final class BookmarkDragScroll {
 		this.lastUpdateTime = nanoTime.getAsLong();
 	}
 
-	double update(ImmutableRect2i area, IngredientGridNavigationMode navigationMode, double mouseX, double mouseY) {
+	double update(ImmutableRect2i area, boolean usesScrollbar, boolean smoothScrolling, double mouseX, double mouseY) {
 		long now = this.nanoTime.getAsLong();
 		// Limit catch-up after a stalled frame so the list cannot jump past the intended drop target.
 		double elapsedSeconds = Math.clamp((now - this.lastUpdateTime) / 1_000_000_000.0, 0, 0.05);
 		this.lastUpdateTime = now;
-		double speed = getScrollSpeed(area, navigationMode, mouseX, mouseY);
+		double speed = getScrollSpeed(area, usesScrollbar, mouseX, mouseY);
 		if (speed == 0 || Math.signum(speed) != Math.signum(this.pendingPixels)) {
 			this.pendingPixels = 0;
 		}
 		double pixels = speed * elapsedSeconds;
-		if (navigationMode.usesSmoothScrolling()) {
+		if (smoothScrolling) {
 			this.pendingPixels = 0;
 			return pixels;
 		}
@@ -40,8 +39,8 @@ final class BookmarkDragScroll {
 		return rowPixels;
 	}
 
-	private static double getScrollSpeed(ImmutableRect2i area, IngredientGridNavigationMode navigationMode, double mouseX, double mouseY) {
-		if (!navigationMode.usesScrollbar() || area.isEmpty() || mouseX < area.x() || mouseX >= area.x() + area.width()) {
+	private static double getScrollSpeed(ImmutableRect2i area, boolean usesScrollbar, double mouseX, double mouseY) {
+		if (!usesScrollbar || area.isEmpty() || mouseX < area.x() || mouseX >= area.x() + area.width()) {
 			return 0;
 		}
 		double edgeSize = Math.min(EDGE_SIZE, area.height() / 2.0);

@@ -532,7 +532,13 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	void scrollDuringDrag(BookmarkDragScroll dragScroll, double mouseX, double mouseY) {
-		double pixels = dragScroll.update(this.contents.getSlotBackgroundArea(), this.bookmarkListConfig.navigationMode().get(), mouseX, mouseY);
+		double pixels = dragScroll.update(
+			this.contents.getSlotBackgroundArea(),
+			this.bookmarkListConfig.navigationMode().get().usesScrollbar(),
+			this.clientConfig.smoothScrollingEnabled().get(),
+			mouseX,
+			mouseY
+		);
 		if (pixels != 0) {
 			this.contents.scrollByPixels(pixels);
 		}
