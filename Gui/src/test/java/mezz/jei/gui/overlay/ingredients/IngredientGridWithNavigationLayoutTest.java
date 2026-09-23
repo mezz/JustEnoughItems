@@ -925,7 +925,7 @@ public class IngredientGridWithNavigationLayoutTest {
 			.maxColumns(4)
 			.maxRows(3)
 			.drawBackground(true)
-			.navigationMode(IngredientGridNavigationMode.SMOOTH_SCROLLING)
+			.navigationMode(IngredientGridNavigationMode.SCROLLING)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 
 		IngredientGridWithNavigationLayout layout = IngredientGridScrollbarLayout.calculate(
