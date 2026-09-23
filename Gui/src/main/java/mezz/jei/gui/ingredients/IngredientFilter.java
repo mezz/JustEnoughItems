@@ -21,10 +21,12 @@ import mezz.jei.gui.overlay.elements.IngredientElement;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.search.ElementPrefixParser;
 import mezz.jei.gui.search.ElementSearch;
+import mezz.jei.gui.search.ElementSearchIndex;
 import mezz.jei.gui.search.ElementSearchLowMem;
 import mezz.jei.gui.search.IElementSearch;
 import mezz.jei.gui.search.SearchTokenizer;
 import mezz.jei.gui.search.Token;
+import net.mezzdev.config.api.value.IConfigValue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
@@ -34,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Optional;
@@ -66,7 +69,8 @@ public class IngredientFilter
 	@Nullable
 	private List<IElement<?>> ingredientListCached;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
-	private boolean searchIndexDirty;
+	private final Set<ElementSearchIndex> dirtySearchIndexes = EnumSet.noneOf(ElementSearchIndex.class);
+	private boolean searchImplementationDirty;
 	private boolean sortIndexesDirty;
 
 	public IngredientFilter(
@@ -116,20 +120,24 @@ public class IngredientFilter
 	}
 
 	private void addConfigListeners(IClientConfig clientConfig, IIngredientFilterConfig config) {
-		Internal.registerRuntimeListenerRemoval(clientConfig.lowMemorySlowSearchEnabled().addListener(v -> markSearchIndexDirty()));
+		Internal.registerRuntimeListenerRemoval(clientConfig.lowMemorySlowSearchEnabled().addListener(v -> markSearchImplementationDirty()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.ingredientSorterStages().addListener(v -> markSortIndexesDirty()));
 
-		Internal.registerRuntimeListenerRemoval(config.modNameSearchMode().addListener(v -> markSearchIndexDirty()));
-		Internal.registerRuntimeListenerRemoval(config.tooltipSearchMode().addListener(v -> markSearchIndexDirty()));
-		Internal.registerRuntimeListenerRemoval(config.tagSearchMode().addListener(v -> markSearchIndexDirty()));
-		Internal.registerRuntimeListenerRemoval(config.colorSearchMode().addListener(v -> markSearchIndexDirty()));
-		Internal.registerRuntimeListenerRemoval(config.identifierSearchMode().addListener(v -> markSearchIndexDirty()));
-		Internal.registerRuntimeListenerRemoval(config.creativeTabSearchMode().addListener(v -> markSearchIndexDirty()));
-		Internal.registerRuntimeListenerRemoval(config.searchAdvancedTooltips().addListener(v -> markSearchIndexDirty()));
-		Internal.registerRuntimeListenerRemoval(config.searchModIds().addListener(v -> markSearchIndexDirty()));
-		Internal.registerRuntimeListenerRemoval(config.searchModAliases().addListener(v -> markSearchIndexDirty()));
-		Internal.registerRuntimeListenerRemoval(config.searchIngredientAliases().addListener(v -> markSearchIndexDirty()));
-		Internal.registerRuntimeListenerRemoval(config.searchShortModNames().addListener(v -> markSearchIndexDirty()));
+		addSearchIndexConfigListener(config.modNameSearchMode(), ElementSearchIndex.MOD_NAMES);
+		addSearchIndexConfigListener(config.tooltipSearchMode(), ElementSearchIndex.TOOLTIPS);
+		addSearchIndexConfigListener(config.tagSearchMode(), ElementSearchIndex.TAGS);
+		addSearchIndexConfigListener(config.colorSearchMode(), ElementSearchIndex.COLORS);
+		addSearchIndexConfigListener(config.identifierSearchMode(), ElementSearchIndex.IDENTIFIERS);
+		addSearchIndexConfigListener(config.creativeTabSearchMode(), ElementSearchIndex.CREATIVE_TABS);
+		addSearchIndexConfigListener(config.searchAdvancedTooltips(), ElementSearchIndex.TOOLTIPS);
+		addSearchIndexConfigListener(config.searchModIds(), ElementSearchIndex.MOD_NAMES);
+		addSearchIndexConfigListener(config.searchModAliases(), ElementSearchIndex.MOD_NAMES);
+		addSearchIndexConfigListener(config.searchIngredientAliases(), ElementSearchIndex.UNPREFIXED);
+		addSearchIndexConfigListener(config.searchShortModNames(), ElementSearchIndex.MOD_NAMES);
+	}
+
+	private <T> void addSearchIndexConfigListener(IConfigValue<T> configValue, ElementSearchIndex searchIndex) {
+		Internal.registerRuntimeListenerRemoval(configValue.addListener(v -> markSearchIndexDirty(searchIndex)));
 	}
 
 	private static IElementSearch createElementSearch(IClientConfig clientConfig, ElementPrefixParser elementPrefixParser, List<IListElementInfo<?>> elementInfos, IIngredientManager ingredientManager) {
@@ -159,12 +167,18 @@ public class IngredientFilter
 		List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, config, modIdHelper);
 		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser, elementInfos, ingredientManager);
 		this.sortIndexUpdater.apply(elementInfos);
-		this.searchIndexDirty = false;
+		this.dirtySearchIndexes.clear();
+		this.searchImplementationDirty = false;
 		this.sortIndexesDirty = false;
 	}
 
-	private void markSearchIndexDirty() {
-		this.searchIndexDirty = true;
+	private void markSearchIndexDirty(ElementSearchIndex searchIndex) {
+		this.dirtySearchIndexes.add(searchIndex);
+		notifyListenersOfChange();
+	}
+
+	private void markSearchImplementationDirty() {
+		this.searchImplementationDirty = true;
 		notifyListenersOfChange();
 	}
 
@@ -183,16 +197,33 @@ public class IngredientFilter
 	}
 
 	private void updateDirtyState() {
-		if (searchIndexDirty) {
+		if (searchImplementationDirty) {
 			rebuildItemFilter();
+			return;
 		}
-		if (sortIndexesDirty) {
-			List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(
+
+		List<IListElementInfo<?>> elementInfos = null;
+		if (!dirtySearchIndexes.isEmpty()) {
+			elementInfos = IngredientListElementFactory.rebuildList(
 				ingredientManager,
 				this.elementSearch.getAllIngredients(),
 				config,
 				modIdHelper
 			);
+			this.elementSearch.rebuildSearchIndexes(dirtySearchIndexes, elementInfos);
+			this.dirtySearchIndexes.clear();
+			invalidateCache();
+		}
+
+		if (sortIndexesDirty) {
+			if (elementInfos == null) {
+				elementInfos = IngredientListElementFactory.rebuildList(
+					ingredientManager,
+					this.elementSearch.getAllIngredients(),
+					config,
+					modIdHelper
+				);
+			}
 			this.sortIndexUpdater.apply(elementInfos);
 			this.sortIndexesDirty = false;
 			invalidateCache();

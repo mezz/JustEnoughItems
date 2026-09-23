@@ -15,6 +15,11 @@ public interface IElementSearch {
 
 	Collection<IListElement<?>> getAllIngredients();
 
+	void rebuildSearchIndexes(
+		Set<ElementSearchIndex> searchIndexes,
+		Collection<IListElementInfo<?>> elementInfos
+	);
+
 	Set<IListElement<?>> getSearchResults(ElementPrefixParser.TokenInfo tokenInfo);
 
 	@Nullable

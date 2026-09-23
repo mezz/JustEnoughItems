@@ -12,13 +12,14 @@ import mezz.jei.common.search.PrefixInfo;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class ElementPrefixParser {
 	private final Char2ObjectMap<PrefixInfo<IListElementInfo<?>, IListElement<?>>> map = new Char2ObjectOpenHashMap<>();
+	private final Map<ElementSearchIndex, PrefixInfo<IListElementInfo<?>, IListElement<?>>> prefixInfoBySearchIndex = new EnumMap<>(ElementSearchIndex.class);
 	private final PrefixInfo<IListElementInfo<?>, IListElement<?>> noPrefix;
 
 	public ElementPrefixParser(
@@ -36,43 +37,44 @@ public class ElementPrefixParser {
 			IListElementInfo::getNames,
 			searchStorageBuilderFactory
 		);
+		this.prefixInfoBySearchIndex.put(ElementSearchIndex.UNPREFIXED, noPrefix);
 
-		addPrefix(new PrefixInfo<>(
+		addPrefix(ElementSearchIndex.MOD_NAMES, new PrefixInfo<>(
 			"mod_names",
 			'@',
 			config.modNameSearchMode()::get,
 			info -> info.getModNames(config),
 			limitedStringStorageBuilderFactory
 		));
-		addPrefix(new PrefixInfo<>(
+		addPrefix(ElementSearchIndex.TAGS, new PrefixInfo<>(
 			"tags",
 			'#',
 			config.tagSearchMode()::get,
 			e -> e.getTagStrings(ingredientManager),
 			limitedStringStorageBuilderFactory
 		));
-		addPrefix(new PrefixInfo<>(
+		addPrefix(ElementSearchIndex.TOOLTIPS, new PrefixInfo<>(
 			"tooltips",
 			'$',
 			config.tooltipSearchMode()::get,
 			e -> e.getTooltipStrings(config, ingredientManager),
 			searchStorageBuilderFactory
 		));
-		addPrefix(new PrefixInfo<>(
+		addPrefix(ElementSearchIndex.CREATIVE_TABS, new PrefixInfo<>(
 			"creative_tabs",
 			'%',
 			config.creativeTabSearchMode()::get,
 			e -> e.getCreativeTabsStrings(ingredientManager),
 			limitedStringStorageBuilderFactory
 		));
-		addPrefix(new PrefixInfo<>(
+		addPrefix(ElementSearchIndex.COLORS, new PrefixInfo<>(
 			"colors",
 			'^',
 			config.colorSearchMode()::get,
 			e -> e.getColorNames(ingredientManager, colorHelper),
 			limitedStringStorageBuilderFactory
 		));
-		addPrefix(new PrefixInfo<>(
+		addPrefix(ElementSearchIndex.IDENTIFIERS, new PrefixInfo<>(
 			"identifiers",
 			'&',
 			config.identifierSearchMode()::get,
@@ -97,14 +99,13 @@ public class ElementPrefixParser {
 		};
 	}
 
-	private void addPrefix(PrefixInfo<IListElementInfo<?>, IListElement<?>> info) {
+	private void addPrefix(ElementSearchIndex searchIndex, PrefixInfo<IListElementInfo<?>, IListElement<?>> info) {
 		this.map.put(info.getPrefix(), info);
+		this.prefixInfoBySearchIndex.put(searchIndex, info);
 	}
 
-	public Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> allPrefixInfos() {
-		Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> values = new ArrayList<>(map.values());
-		values.add(noPrefix);
-		return values;
+	PrefixInfo<IListElementInfo<?>, IListElement<?>> getPrefixInfo(ElementSearchIndex searchIndex) {
+		return prefixInfoBySearchIndex.get(searchIndex);
 	}
 
 	public PrefixInfo<IListElementInfo<?>, IListElement<?>> getNoPrefix() {

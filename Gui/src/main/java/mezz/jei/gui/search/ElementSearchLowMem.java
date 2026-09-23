@@ -73,6 +73,17 @@ public class ElementSearchLowMem implements IElementSearch {
 	}
 
 	@Override
+	public void rebuildSearchIndexes(
+		Set<ElementSearchIndex> searchIndexes,
+		Collection<IListElementInfo<?>> elementInfos
+	) {
+		if (searchIndexes.contains(ElementSearchIndex.UNPREFIXED)) {
+			this.elementInfoList.clear();
+			this.elementInfoList.addAll(elementInfos);
+		}
+	}
+
+	@Override
 	public @Nullable <T> IListElement<T> findElement(ITypedIngredient<T> typedIngredient, IIngredientHelper<T> ingredientHelper) {
 		T ingredient = typedIngredient.getIngredient();
 		IIngredientType<T> type = typedIngredient.getType();

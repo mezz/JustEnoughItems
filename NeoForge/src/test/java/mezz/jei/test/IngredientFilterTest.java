@@ -17,6 +17,7 @@ import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.ClientToggleState;
+import mezz.jei.common.config.SearchMode;
 import mezz.jei.common.search.GeneralizedSuffixTreeSearchStorage;
 import mezz.jei.common.search.SearchStorageBuilderAdapter;
 import mezz.jei.gui.filter.FilterTextSource;
@@ -80,6 +81,8 @@ public class IngredientFilterTest {
 	private ClientToggleState toggleState;
 	@Nullable
 	private TestSortingConfig ingredientTypeSortingConfig;
+	@Nullable
+	private RecordingSearchStorageBuilderFactory searchStorageBuilderFactory;
 
 	private static final TestIngredient ALIASED_INGREDIENT = new TestIngredient(0);
 	private static final String INGREDIENT_ALIAS = "aliasedingredientzero";
@@ -139,6 +142,7 @@ public class IngredientFilterTest {
 
 		this.ingredientVisibility = new IngredientVisibility(blacklist, toggleState, editModeConfig, ingredientManager);
 		this.filterTextSource = new FilterTextSource();
+		this.searchStorageBuilderFactory = new RecordingSearchStorageBuilderFactory();
 		this.ingredientFilter = new IngredientFilter(
 			filterTextSource,
 			clientConfig,
@@ -150,14 +154,10 @@ public class IngredientFilterTest {
 			ingredientVisibility,
 			new IngredientTypeSortingConfig(ingredientTypeSortingConfig),
 			colorHelper,
-			new ISearchStorageBuilderFactory() {
-				@Override
-				public <T> ISearchStorageBuilder<T> create() {
-					return new SearchStorageBuilderAdapter<>(new GeneralizedSuffixTreeSearchStorage<>());
-				}
-			},
+			searchStorageBuilderFactory,
 			toggleState
 		);
+		searchStorageBuilderFactory.clearCreatedIds();
 
 		this.ingredientManager.registerIngredientListener(blacklist);
 		this.ingredientManager.registerIngredientListener(ingredientFilter);
@@ -392,6 +392,7 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(ingredientFilter);
 		Assertions.assertNotNull(filterTextSource);
 		Assertions.assertNotNull(ingredientFilterConfig);
+		Assertions.assertNotNull(searchStorageBuilderFactory);
 
 		filterTextSource.setFilterText(INGREDIENT_ALIAS);
 		List<TestIngredient> filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
@@ -400,10 +401,29 @@ public class IngredientFilterTest {
 		ingredientFilterConfig.searchIngredientAliases().set(true);
 		filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
 		Assertions.assertEquals(List.of(ALIASED_INGREDIENT), filteredIngredients);
+		Assertions.assertEquals(List.of("unprefixed"), searchStorageBuilderFactory.getAndClearCreatedIds());
 
 		ingredientFilterConfig.searchIngredientAliases().set(false);
 		filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
 		Assertions.assertFalse(filteredIngredients.contains(ALIASED_INGREDIENT));
+		Assertions.assertEquals(List.of("unprefixed"), searchStorageBuilderFactory.getAndClearCreatedIds());
+	}
+
+	@Test
+	public void testIngredientAliasesCanBeToggledWithLowMemorySearch() {
+		setup(true);
+		Assertions.assertNotNull(ingredientFilter);
+		Assertions.assertNotNull(filterTextSource);
+		Assertions.assertNotNull(ingredientFilterConfig);
+		Assertions.assertNotNull(searchStorageBuilderFactory);
+
+		filterTextSource.setFilterText(INGREDIENT_ALIAS);
+		Assertions.assertFalse(ingredientFilter.getFilteredIngredients(TestIngredient.TYPE).contains(ALIASED_INGREDIENT));
+
+		ingredientFilterConfig.searchIngredientAliases().set(true);
+		List<TestIngredient> filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
+		Assertions.assertEquals(List.of(ALIASED_INGREDIENT), filteredIngredients);
+		Assertions.assertTrue(searchStorageBuilderFactory.getAndClearCreatedIds().isEmpty());
 	}
 
 	@Test
@@ -411,6 +431,7 @@ public class IngredientFilterTest {
 		Assertions.assertNotNull(ingredientFilter);
 		Assertions.assertNotNull(filterTextSource);
 		Assertions.assertNotNull(ingredientFilterConfig);
+		Assertions.assertNotNull(searchStorageBuilderFactory);
 
 		filterTextSource.setFilterText("@" + MOD_ALIAS);
 		List<TestIngredient> filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
@@ -421,10 +442,26 @@ public class IngredientFilterTest {
 		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, filteredIngredients.size());
 		Assertions.assertTrue(filteredIngredients.contains(new TestIngredient(0)));
 		Assertions.assertTrue(filteredIngredients.contains(new TestIngredient(1)));
+		Assertions.assertEquals(List.of("mod_names"), searchStorageBuilderFactory.getAndClearCreatedIds());
 
 		ingredientFilterConfig.searchModAliases().set(false);
 		filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
 		Assertions.assertTrue(filteredIngredients.isEmpty());
+		Assertions.assertEquals(List.of("mod_names"), searchStorageBuilderFactory.getAndClearCreatedIds());
+	}
+
+	@Test
+	public void testSearchConfigChangesRebuildEachAffectedIndexOnce() {
+		Assertions.assertNotNull(ingredientFilter);
+		Assertions.assertNotNull(ingredientFilterConfig);
+		Assertions.assertNotNull(searchStorageBuilderFactory);
+
+		ingredientFilterConfig.searchModIds().set(true);
+		ingredientFilterConfig.searchModAliases().set(true);
+		ingredientFilterConfig.tagSearchMode().set(SearchMode.DISABLED);
+
+		ingredientFilter.getElements();
+		Assertions.assertEquals(List.of("mod_names", "tags"), searchStorageBuilderFactory.getAndClearCreatedIds());
 	}
 
 	@Test
@@ -581,6 +618,31 @@ public class IngredientFilterTest {
 		@Override
 		public void load(EditModeConfig config) {
 
+		}
+	}
+
+	private static class RecordingSearchStorageBuilderFactory implements ISearchStorageBuilderFactory {
+		private final List<String> createdIds = new ArrayList<>();
+
+		@Override
+		public <T> ISearchStorageBuilder<T> create() {
+			return new SearchStorageBuilderAdapter<>(new GeneralizedSuffixTreeSearchStorage<>());
+		}
+
+		@Override
+		public <T> ISearchStorageBuilder<T> create(String id) {
+			createdIds.add(id);
+			return create();
+		}
+
+		public List<String> getAndClearCreatedIds() {
+			List<String> result = List.copyOf(createdIds);
+			clearCreatedIds();
+			return result;
+		}
+
+		public void clearCreatedIds() {
+			createdIds.clear();
 		}
 	}
 
