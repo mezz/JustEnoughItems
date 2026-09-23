@@ -31,7 +31,7 @@ public abstract class IngredientGridTooltipComponent<T> implements ClientTooltip
 	private final int height;
 
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
-	private int rowOffset;
+	private float scrollOffsetY;
 	private double mouseX;
 	private double mouseY;
 	private boolean mousePositionSet;
@@ -75,19 +75,40 @@ public abstract class IngredientGridTooltipComponent<T> implements ClientTooltip
 		int gridX = x + GRID_PADDING;
 		int gridY = y + GRID_PADDING;
 
-		int firstIndex = this.rowOffset * this.columns;
-		int lastIndex = Math.min(firstIndex + (this.visibleRows * this.columns), this.ingredients.size());
+		int scrollPixelOffset = getScrollPixelOffset();
+		int firstRow = scrollPixelOffset / CELL_SIZE;
+		int rowPixelOffset = scrollPixelOffset % CELL_SIZE;
+		int firstIndex = firstRow * this.columns;
+		int renderedRows = this.visibleRows;
+		if (rowPixelOffset > 0) {
+			renderedRows++;
+		}
+		int lastIndex = Math.min(firstIndex + (renderedRows * this.columns), this.ingredients.size());
 		int hoveredIndex = -1;
 		if (this.mousePositionSet) {
 			hoveredIndex = getIngredientIndexUnderMouse(this.mouseX, this.mouseY);
 		}
-		for (int i = firstIndex; i < lastIndex; i++) {
-			int column = i % this.columns;
-			int displayRow = (i / this.columns) - this.rowOffset;
-			int cellX = gridX + (column * CELL_SIZE);
-			int cellY = gridY + (displayRow * CELL_SIZE);
-			this.slotBackground.draw(guiGraphics, cellX, cellY);
-			drawIngredient(guiGraphics, this.ingredients.get(i), i, cellX + 1, cellY + 1, i == hoveredIndex);
+		if (rowPixelOffset > 0) {
+			guiGraphics.enableScissor(
+				gridX,
+				gridY,
+				gridX + (this.columns * CELL_SIZE),
+				gridY + (this.visibleRows * CELL_SIZE)
+			);
+		}
+		try {
+			for (int i = firstIndex; i < lastIndex; i++) {
+				int column = i % this.columns;
+				int displayRow = (i / this.columns) - firstRow;
+				int cellX = gridX + (column * CELL_SIZE);
+				int cellY = gridY + (displayRow * CELL_SIZE) - rowPixelOffset;
+				this.slotBackground.draw(guiGraphics, cellX, cellY);
+				drawIngredient(guiGraphics, this.ingredients.get(i), i, cellX + 1, cellY + 1, i == hoveredIndex);
+			}
+		} finally {
+			if (rowPixelOffset > 0) {
+				guiGraphics.disableScissor();
+			}
 		}
 
 		if (this.maxRowOffset > 0) {
@@ -111,18 +132,22 @@ public abstract class IngredientGridTooltipComponent<T> implements ClientTooltip
 	}
 
 	public boolean mouseScrolled(double scrollDeltaY) {
-		if (scrollDeltaY == 0) {
+		if (scrollDeltaY == 0 || this.maxRowOffset == 0) {
 			return false;
 		}
-		int delta = 1;
-		if (scrollDeltaY > 0) {
-			delta = -1;
+		float scrollAmount;
+		if (isSmoothScrolling()) {
+			int hiddenPixels = this.maxRowOffset * CELL_SIZE;
+			int smoothScrollRate = Internal.getClientConfigs().getClientConfig().smoothScrollRate().get();
+			scrollAmount = (float) (scrollDeltaY * smoothScrollRate / (double) hiddenPixels);
+		} else {
+			scrollAmount = (float) (scrollDeltaY / this.maxRowOffset);
 		}
-		int newRowOffset = Math.clamp(this.rowOffset + delta, 0, this.maxRowOffset);
-		if (newRowOffset == this.rowOffset) {
+		float newScrollOffsetY = Math.clamp(this.scrollOffsetY - scrollAmount, 0, 1);
+		if (Float.compare(newScrollOffsetY, this.scrollOffsetY) == 0) {
 			return false;
 		}
-		this.rowOffset = newRowOffset;
+		this.scrollOffsetY = newScrollOffsetY;
 		return true;
 	}
 
@@ -179,11 +204,11 @@ public abstract class IngredientGridTooltipComponent<T> implements ClientTooltip
 			return -1;
 		}
 		int column = localX / CELL_SIZE;
-		int row = localY / CELL_SIZE;
-		if (column >= this.columns || row >= this.visibleRows) {
+		int row = (localY + getScrollPixelOffset()) / CELL_SIZE;
+		if (column >= this.columns || localY >= this.visibleRows * CELL_SIZE) {
 			return -1;
 		}
-		int index = ((this.rowOffset + row) * this.columns) + column;
+		int index = (row * this.columns) + column;
 		if (index >= this.ingredients.size()) {
 			return -1;
 		}
@@ -198,17 +223,41 @@ public abstract class IngredientGridTooltipComponent<T> implements ClientTooltip
 		int scrollAreaX = gridX + (this.columns * CELL_SIZE) + SCROLLBAR_GAP;
 		ImmutableRect2i scrollbarArea = new ImmutableRect2i(scrollAreaX, gridY, Scrollbar.WIDTH, this.visibleRows * CELL_SIZE);
 		this.scrollbar.updateBounds(scrollbarArea);
-		this.scrollbar.draw(guiGraphics, this.visibleRows, this.maxRowOffset, getScrollOffsetY());
+		int amountMultiplier = 1;
+		if (isSmoothScrolling()) {
+			amountMultiplier = CELL_SIZE;
+		}
+		this.scrollbar.draw(
+			guiGraphics,
+			this.visibleRows * amountMultiplier,
+			this.maxRowOffset * amountMultiplier,
+			getScrollOffsetY()
+		);
 	}
 
 	private float getScrollOffsetY() {
 		if (this.maxRowOffset == 0) {
 			return 0;
 		}
-		return this.rowOffset / (float) this.maxRowOffset;
+		return this.scrollOffsetY;
 	}
 
 	private void setScrollOffsetY(float scrollOffsetY) {
-		this.rowOffset = GridScrollMath.getFirstRowForScrollOffset(this.maxRowOffset, scrollOffsetY);
+		this.scrollOffsetY = Math.clamp(scrollOffsetY, 0, 1);
+	}
+
+	private boolean isSmoothScrolling() {
+		return Internal.getClientConfigs()
+			.getClientConfig()
+			.smoothScrollingEnabled()
+			.get();
+	}
+
+	private int getScrollPixelOffset() {
+		if (isSmoothScrolling()) {
+			return GridScrollMath.getSmoothScrollPixelOffset(this.maxRowOffset, CELL_SIZE, this.scrollOffsetY);
+		}
+		int rowOffset = GridScrollMath.getFirstRowForScrollOffset(this.maxRowOffset, this.scrollOffsetY);
+		return rowOffset * CELL_SIZE;
 	}
 }

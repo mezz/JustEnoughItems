@@ -36,6 +36,7 @@ public class TestClientConfig implements IClientConfig {
 	private final IConfigValue<Boolean> lookupBlockTagsEnabled = value("lookupBlockTagsEnabled", false);
 	private final IConfigValue<Boolean> showCreativeTabNamesEnabled = value("showCreativeTabNamesEnabled", false);
 	private final IConfigValue<Integer> dragDelayMs = value("dragDelayMs", 0);
+	private final IConfigValue<Boolean> smoothScrollingEnabled = value("smoothScrollingEnabled", true);
 	private final IConfigValue<Integer> smoothScrollRate = value("smoothScrollRate", 9);
 	private final IConfigValue<Boolean> searchCompletionEnabled = value("searchCompletionEnabled", false);
 	private final IConfigValue<Integer> maxSearchCompletionRows = value("maxSearchCompletionRows", 5);
@@ -177,6 +178,11 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Integer> dragDelayMs() {
 		return dragDelayMs;
+	}
+
+	@Override
+	public IConfigValue<Boolean> smoothScrollingEnabled() {
+		return smoothScrollingEnabled;
 	}
 
 	@Override
