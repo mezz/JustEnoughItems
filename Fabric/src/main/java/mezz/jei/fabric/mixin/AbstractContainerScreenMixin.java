@@ -12,13 +12,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractContainerScreen.class)
 public class AbstractContainerScreenMixin {
 	@Inject(
-		method = "extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;extractCarriedItem(Lnet/minecraft/client/gui/GuiGraphicsExtractor;II)V"
-		)
+		method = "extractCarriedItem(Lnet/minecraft/client/gui/GuiGraphicsExtractor;II)V",
+		at = @At("HEAD")
 	)
-	private void drawForeground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci) {
+	private void drawForeground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, CallbackInfo ci) {
 		@SuppressWarnings("DataFlowIssue")
 		AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
 		graphics.nextStratum();
