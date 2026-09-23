@@ -3,6 +3,7 @@ package mezz.jei.neoforge;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.DarkModeResourcePack;
 import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.RecipeSlotOptionsTooltipComponent;
 import mezz.jei.common.gui.IngredientTooltipComponent;
@@ -29,7 +30,11 @@ import mezz.jei.neoforge.startup.ForgePluginFinder;
 import mezz.jei.neoforge.startup.StartEventObserver;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -40,6 +45,7 @@ import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStoppingEvent;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
@@ -73,6 +79,7 @@ public class JustEnoughItemsClient {
 	}
 
 	public void register() {
+		subscriptions.register(AddPackFindersEvent.class, this::onAddPackFinders);
 		subscriptions.register(AddClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 		subscriptions.register(RegisterClientTooltipComponentFactoriesEvent.class, this::onRegisterClientTooltipEvent);
 		subscriptions.register(ClientStoppingEvent.class, e -> onClientStopping());
@@ -96,6 +103,17 @@ public class JustEnoughItemsClient {
 		Supplier<RecipeSerializer<? extends CraftingRecipe>> jeiShaped = deferredRegister.register("jei_shaped", () -> JeiShapedRecipe.SERIALIZER);
 		Supplier<RecipeSerializer<? extends SmeltingRecipe>> jeiSmelting = deferredRegister.register("jei_smelting", () -> JeiSmeltingRecipe.SERIALIZER);
 		RecipeSerializers.register(jeiShaped, jeiSmelting);
+	}
+
+	private void onAddPackFinders(AddPackFindersEvent event) {
+		event.addPackFinders(
+			Identifier.fromNamespaceAndPath(ModIds.JEI_ID, DarkModeResourcePack.RESOURCE_PACK_PATH),
+			PackType.CLIENT_RESOURCES,
+			Component.translatable("jei.resourcePack.darkMode"),
+			PackSource.DEFAULT,
+			false,
+			Pack.Position.TOP
+		);
 	}
 
 	private void onClientStopping() {

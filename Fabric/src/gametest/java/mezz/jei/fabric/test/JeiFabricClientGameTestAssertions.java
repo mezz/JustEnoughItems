@@ -1,6 +1,7 @@
 package mezz.jei.fabric.test;
 
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.DarkModeResourcePack;
 import mezz.jei.common.network.ClientConnectionHelper;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.fabric.events.JeiLifecycleEvents;
@@ -174,6 +175,10 @@ final class JeiFabricClientGameTestAssertions {
 
 	private static void assertJeiTexturesLoaded(ClientGameTestContext context) {
 		String error = context.computeOnClient(client -> {
+			if (client.getResourcePackRepository().getPack(DarkModeResourcePack.FABRIC_PACK_ID) == null) {
+				return "Expected JEI's dark mode resource pack to be registered.";
+			}
+
 			var atlas = client.getAtlasManager().getAtlasOrThrow(AtlasIds.GUI);
 			Identifier slotId = Identifier.fromNamespaceAndPath("jei", "slot");
 			if (atlas.getSprite(slotId) != atlas.missingSprite()) {

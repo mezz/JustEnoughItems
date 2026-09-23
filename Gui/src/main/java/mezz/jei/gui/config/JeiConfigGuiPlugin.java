@@ -6,6 +6,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.gui.DarkModeResourcePack;
 import mezz.jei.gui.config.sorting.SortingOrderConfigValues;
 import mezz.jei.gui.util.CheatModeUtil;
 import net.mezzdev.config.api.value.serializer.IConfigValueSerializer;
@@ -35,6 +36,7 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 			screenBuilder.setTitle(Component.translatable("jei.config"));
 			screenBuilder.configureCategory("debug")
 				.clearDefaultValues();
+			configureListsValues(screenBuilder);
 			configureAlignmentValues(screenBuilder);
 			screenBuilder.configureCategory("input")
 				.addKeyMappings(Internal.getKeyMappings().getConfigKeyMappings());
@@ -46,6 +48,21 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 					}
 				});
 		});
+	}
+
+	private static void configureListsValues(IConfigScreenBuilder screenBuilder) {
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
+		IConfigValueSerializer<Boolean> serializer = clientConfig.cheatToHotbarUsingHotkeysEnabled().getEditorInfo().getSerializer();
+		screenBuilder.configureCategory("lists")
+			.addScreenValue(new RuntimeToggleScreenValue(
+				"darkModeEnabled",
+				"jei.config.client.lists.darkModeEnabled",
+				false,
+				DarkModeResourcePack::isEnabled,
+				DarkModeResourcePack::setEnabled,
+				DarkModeResourcePack::addListener,
+				serializer
+			));
 	}
 
 	private static void configureAlignmentValues(IConfigScreenBuilder screenBuilder) {
