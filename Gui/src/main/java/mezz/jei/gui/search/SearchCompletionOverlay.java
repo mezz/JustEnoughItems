@@ -518,10 +518,11 @@ public class SearchCompletionOverlay {
 
 		boolean hasDynamic = filteredCandidates.stream().anyMatch(c -> c.category() == CandidateCategory.DYNAMIC);
 		int maxWidth;
+		int availableScreenWidth = Math.max(0, screenWidth - SCREEN_MARGIN * 2);
 		if (hasDynamic) {
-			maxWidth = Math.min(MAX_OVERLAY_WIDTH_DYNAMIC, screenWidth);
+			maxWidth = Math.min(MAX_OVERLAY_WIDTH_DYNAMIC, availableScreenWidth);
 		} else {
-			maxWidth = Math.min(MAX_OVERLAY_WIDTH, screenWidth);
+			maxWidth = Math.min(MAX_OVERLAY_WIDTH, availableScreenWidth);
 		}
 		int minContentWidth = fieldWidth;
 
@@ -531,7 +532,7 @@ public class SearchCompletionOverlay {
 			if (candidate.category() != CandidateCategory.DYNAMIC) {
 				descW = font.width(candidate.description());
 			}
-			int rowWidth = PADDING + symbolW + PADDING + descW + PADDING;
+			int rowWidth = PADDING * 3 + Math.max(symbolW, SYMBOL_COLUMN_WIDTH) + descW;
 			if (rowWidth > minContentWidth) {
 				minContentWidth = rowWidth;
 			}
