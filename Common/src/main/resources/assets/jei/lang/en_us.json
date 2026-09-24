@@ -619,5 +619,7 @@
   "jei.search.completion.prefix.color": "Search colors",
   "jei.search.completion.prefix.identifier": "Search identifiers",
   "jei.search.completion.operator.not": "NOT: exclude results matching this token",
-  "jei.search.completion.operator.or": "OR: combine with another search group"
+  "jei.search.completion.operator.or": "OR: combine with another search group",
+  "jei.config.client.search.maxSearchCompletionRows": "Maximum Visible Suggestions",
+  "jei.config.client.search.maxSearchCompletionRows.description": "Maximum number of search completion suggestions shown at once."
 }
