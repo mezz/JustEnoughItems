@@ -66,6 +66,7 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMapping leftClick;
 	private final IJeiKeyMapping rightClick;
 	private final IJeiKeyMapping enterKey;
+	private final IJeiKeyMapping tabKey;
 
 	private final List<KeyMapping> configKeyMappings;
 
@@ -368,6 +369,10 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 				.setContext(JeiKeyConflictContext.GUI)
 				.buildKeyboardKey(GLFW.GLFW_KEY_KP_ENTER)
 		);
+
+		tabKey = jeiHidden.createMapping("key.jei.internal.tab.key")
+			.setContext(JeiKeyConflictContext.GUI)
+			.buildKeyboardKey(GLFW.GLFW_KEY_TAB);
 	}
 
 	@Override
@@ -548,5 +553,10 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	@Override
 	public IJeiKeyMapping getEnterKey() {
 		return enterKey;
+	}
+
+	@Override
+	public IJeiKeyMapping getTabKey() {
+		return tabKey;
 	}
 }

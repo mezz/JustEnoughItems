@@ -25,9 +25,11 @@ import mezz.jei.gui.input.handlers.NullDragHandler;
 import mezz.jei.gui.input.handlers.NullInputHandler;
 import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
+import mezz.jei.gui.input.handlers.SearchInputLayer;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.ingredients.IIngredientListOverlayContents;
+import mezz.jei.gui.search.ISearchCompletionProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -44,6 +46,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final LookupHistoryOverlay lookupHistoryOverlay;
 	private final IClientToggleState toggleState;
 	private final GuiTextFieldFilter searchField;
+	private final SearchInputLayer searchInputLayer;
 	private final IngredientListOverlayController controller;
 	private boolean screenPropertiesDirty;
 
@@ -56,7 +59,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IIngredientGridConfig ingredientGridConfig,
 		IClientConfig clientConfig,
 		IClientToggleState toggleState,
-		IInternalKeyMappings keyBindings
+		IInternalKeyMappings keyBindings,
+		ISearchCompletionProvider searchCompletionProvider
 	) {
 		GuiPropertiesCache<Screen> guiPropertiesCache = new GuiPropertiesCache<>(
 			screen -> screenHelper.getGuiProperties(screen)
@@ -66,7 +70,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.lookupHistoryOverlay = lookupHistoryOverlay;
 		this.toggleState = toggleState;
 
-		this.searchField = new GuiTextFieldFilter(contents::isEmpty);
+		this.searchField = new GuiTextFieldFilter(contents::isEmpty, clientConfig, searchCompletionProvider);
+		this.searchInputLayer = new SearchInputLayer(this.searchField, this::isListDisplayed);
 		this.configButton = new IconButton(new ConfigButtonController(this::isListDisplayed, toggleState, keyBindings));
 		this.controller = IngredientListOverlayController.create(
 			guiPropertiesCache,
@@ -125,6 +130,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return this.controller.getScreenPropertiesUpdater();
 	}
 
+	public SearchInputLayer getSearchInputLayer() {
+		return this.searchInputLayer;
+	}
+
 	public void drawScreen(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		drawBackground(guiGraphics);
 		drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
@@ -132,8 +141,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	public void drawBackground(GuiGraphics guiGraphics) {
 		if (isListDisplayed()) {
-			this.searchField.drawBackground(guiGraphics);
 			this.contents.drawBackground(guiGraphics);
+			this.searchField.drawBackground(guiGraphics);
 		}
 		if (this.controller.hasValidScreen() && toggleState.isOverlayEnabled()) {
 			this.lookupHistoryOverlay.drawBackground(guiGraphics);
@@ -142,8 +151,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	public void drawForeground(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
-			this.searchField.drawForeground(guiGraphics, mouseX, mouseY, partialTicks);
 			this.contents.drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+			this.searchField.drawForeground(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (this.controller.hasValidScreen()) {
 			this.configButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
@@ -212,7 +221,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	public IUserInputHandler createInputHandler() {
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
 			"IngredientListOverlay",
-			this.searchField.createInputHandler(),
 			this.configButton.createInputHandler(),
 			this.contents.createInputHandler()
 		);

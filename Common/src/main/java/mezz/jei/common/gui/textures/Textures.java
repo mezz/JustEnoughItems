@@ -31,6 +31,7 @@ public class Textures {
 	private final ScalableDrawable interactiveIngredientTooltipBackground;
 	private final ScalableDrawable recipePreviewBackground;
 	private final ScalableDrawable searchBackground;
+	private final ScalableDrawable completionOverlayBackground;
 	private final ScalableDrawable scrollbarBackground;
 	private final ScalableDrawable scrollbarMarker;
 
@@ -90,6 +91,7 @@ public class Textures {
 		this.scrollbarMarker = createScalableGuiSprite("scrollbar_marker_v2");
 		this.catalystTab = createScalableGuiSprite("catalyst_tab_v2");
 		this.recipeOptionsTab = createScalableGuiSprite("recipe_options_tab_v2");
+		this.completionOverlayBackground = createScalableGuiSprite("completion_overlay_background");
 		this.recipeArrow = createGuiSprite("recipe_arrow", 22, 16);
 		this.recipeArrowFilled = createGuiSprite("recipe_arrow_filled", 22, 16);
 		this.recipePlusSign = createGuiSprite("recipe_plus_sign", 13, 13);
@@ -258,6 +260,10 @@ public class Textures {
 
 	public ScalableDrawable getSearchBackground() {
 		return searchBackground;
+	}
+
+	public ScalableDrawable getCompletionOverlayBackground() {
+		return completionOverlayBackground;
 	}
 
 	public IDrawableStatic getInfoIcon() {

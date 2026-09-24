@@ -2,6 +2,7 @@ package mezz.jei.gui.input;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.elements.ScalableDrawable;
@@ -12,6 +13,9 @@ import mezz.jei.common.util.TextHistory;
 import mezz.jei.gui.input.focus.ScreenFocusHandler;
 import mezz.jei.gui.input.handlers.TextFieldInputHandler;
 import mezz.jei.gui.overlay.ISearchField;
+import mezz.jei.gui.search.ISearchCompletionProvider;
+import mezz.jei.gui.search.SearchCompletionOverlay;
+import mezz.jei.gui.search.SearchSyntaxHighlighter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -25,7 +29,9 @@ import java.util.function.BooleanSupplier;
 public class GuiTextFieldFilter extends EditBox implements ISearchField {
 	private static final int maxSearchLength = 128;
 	private static final TextHistory history = new TextHistory();
+
 	private final BooleanSupplier filterEmpty;
+	private final IClientConfig clientConfig;
 
 	private ImmutableRect2i area;
 	private final ScalableDrawable background;
@@ -33,16 +39,21 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 
 	private @Nullable ScreenFocusHandler screenUnfocusHandler;
 
-	public GuiTextFieldFilter(BooleanSupplier filterEmpty) {
+	private final SearchCompletionOverlay completionOverlay;
+
+	public GuiTextFieldFilter(BooleanSupplier filterEmpty, IClientConfig clientConfig, ISearchCompletionProvider searchCompletionProvider) {
 		super(Minecraft.getInstance().font, 0, 0, 0, 0, Component.translatable("gui.jei.search"));
 		this.filterEmpty = filterEmpty;
+		this.clientConfig = clientConfig;
 
 		setMaxLength(maxSearchLength);
 		this.area = ImmutableRect2i.EMPTY;
 		Textures textures = Internal.getTextures();
 		this.background = textures.getSearchBackground();
+		this.completionOverlay = new SearchCompletionOverlay(searchCompletionProvider, textures.getCompletionOverlayBackground());
 		this.backgroundBounds = ImmutableRect2i.EMPTY;
 		setBordered(false);
+		setFormatter(new SearchSyntaxHighlighter(filterEmpty, this::getValue, searchCompletionProvider)::format);
 	}
 
 	@Override
@@ -53,6 +64,7 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 		this.width = Math.max(0, area.getWidth() - 12);
 		this.height = area.getHeight();
 		this.area = area;
+		this.completionOverlay.updateBounds(area);
 	}
 
 	@Override
@@ -123,5 +135,50 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 
 	public void drawForeground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		super.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
+	}
+
+	public void updateCompletion(int mouseX, int mouseY) {
+		if (clientConfig.searchCompletionEnabled().get() && isFocused()) {
+			completionOverlay.update(getValue(), getCursorPosition());
+			completionOverlay.updateLayout(mouseX, mouseY);
+		} else {
+			completionOverlay.close();
+		}
+	}
+
+	public void drawCompletion(GuiGraphics guiGraphics) {
+		completionOverlay.draw(guiGraphics);
+	}
+
+	public void hideCompletion() {
+		completionOverlay.close();
+	}
+
+	public boolean isCompletionVisible() {
+		return isFocused() && completionOverlay.isVisible();
+	}
+
+	public void moveCompletion(int delta) {
+		completionOverlay.moveSelection(delta);
+	}
+
+	public void scrollCompletion(int delta) {
+		completionOverlay.scroll(delta);
+	}
+
+	public void acceptCompletion() {
+		completionOverlay.accept(this);
+	}
+
+	public void closeCompletion() {
+		completionOverlay.dismiss(getValue(), getCursorPosition());
+	}
+
+	public boolean handleCompletionClick(double mouseX, double mouseY) {
+		return completionOverlay.handleMouseClicked(mouseX, mouseY, this);
+	}
+
+	public boolean isCompletionMouseOver(double mouseX, double mouseY) {
+		return completionOverlay.isMouseOver(mouseX, mouseY);
 	}
 }
