@@ -36,6 +36,7 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 			screenBuilder.setTitle(Component.translatable("jei.config"));
 			screenBuilder.configureCategory("debug")
 				.clearDefaultValues();
+			configureSearchValues(screenBuilder);
 			configureListsValues(screenBuilder);
 			configureAlignmentValues(screenBuilder);
 			screenBuilder.configureCategory("input")
@@ -48,6 +49,13 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 					}
 				});
 		});
+	}
+
+	private static void configureSearchValues(IConfigScreenBuilder screenBuilder) {
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
+		screenBuilder.configureCategory("search")
+			.getValueBuilder(clientConfig.searchCompletionEnabled())
+			.insertAfter(clientConfig.maxSearchCompletionRows());
 	}
 
 	private static void configureListsValues(IConfigScreenBuilder screenBuilder) {

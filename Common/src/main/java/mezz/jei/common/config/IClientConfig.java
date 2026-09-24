@@ -65,6 +65,8 @@ public interface IClientConfig {
 
 	IConfigValue<Boolean> searchCompletionEnabled();
 
+	IConfigValue<Integer> maxSearchCompletionRows();
+
 	IConfigValue<Boolean> recipeSlotCyclingEnabled();
 
 	IConfigValue<List<IngredientSortStage>> ingredientSorterStages();
