@@ -33,13 +33,13 @@ public class TextFieldInputHandler implements IUserInputHandler {
 				}
 				return true;
 			}
-			if (input.is(keyBindings.getPreviousCompletion())) {
+			if (input.is(keyBindings.getPreviousSearch())) {
 				if (!input.isSimulate()) {
 					textFieldFilter.moveCompletion(-1);
 				}
 				return true;
 			}
-			if (input.is(keyBindings.getNextCompletion())) {
+			if (input.is(keyBindings.getNextSearch())) {
 				if (!input.isSimulate()) {
 					textFieldFilter.moveCompletion(1);
 				}

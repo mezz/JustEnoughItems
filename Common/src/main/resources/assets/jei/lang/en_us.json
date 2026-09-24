@@ -105,8 +105,6 @@
   "key.jei.clearSearchBar": "Clear Search Filter",
   "key.jei.previousSearch": "Previous Search",
   "key.jei.nextSearch": "Next Search",
-  "key.jei.previousCompletion": "Previous Completion",
-  "key.jei.nextCompletion": "Next Completion",
 
   "key.category.jei.dev.tools": "JEI (Dev Tools)",
   "key.jei.copy.recipe.id": "Copy Recipe ID to Clipboard",
