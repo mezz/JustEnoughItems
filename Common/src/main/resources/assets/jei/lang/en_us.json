@@ -252,6 +252,8 @@
   "jei.config.client.search.description": "Options for what JEI checks when filtering the ingredient list.",
   "jei.config.client.search.searchCompletionEnabled": "Search Completion",
   "jei.config.client.search.searchCompletionEnabled.description": "Show search completion suggestions in the JEI search bar.",
+  "jei.config.client.search.maxSearchCompletionRows": "Maximum Visible Suggestions",
+  "jei.config.client.search.maxSearchCompletionRows.description": "Maximum number of search completion suggestions shown at once.",
   "jei.config.client.search.modNameSearchMode": "Search Mod Names",
   "jei.config.client.search.modNameSearchMode.description": "Search by the name of the mod that adds each ingredient. Prefix: @",
   "jei.config.client.search.tagSearchMode": "Search Ingredient Tags",
