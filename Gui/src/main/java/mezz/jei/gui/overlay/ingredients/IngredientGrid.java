@@ -25,11 +25,9 @@ import mezz.jei.common.config.IWorldConfig;
 import mezz.jei.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
-import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.DeleteItemInputHandler;
 import mezz.jei.gui.overlay.elements.IElement;
-import mezz.jei.gui.util.AlignmentUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
@@ -37,7 +35,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -47,10 +44,9 @@ import java.util.stream.Stream;
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.
  * It does not draw a background or have external padding, those are left up to a higher-level element.
  */
-public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
-	private static final int INGREDIENT_PADDING = 1;
-	public static final int INGREDIENT_WIDTH = GuiIngredientProperties.getWidth(INGREDIENT_PADDING);
-	public static final int INGREDIENT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
+public class IngredientGrid implements IIngredientGrid {
+	public static final int INGREDIENT_WIDTH = IngredientGridLayout.INGREDIENT_WIDTH;
+	public static final int INGREDIENT_HEIGHT = IngredientGridLayout.INGREDIENT_HEIGHT;
 
 	private final IIngredientManager ingredientManager;
 	private final IIngredientGridConfig gridConfig;
@@ -95,22 +91,35 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 
 	@Override
 	public int getColumnCount() {
-		return this.area.getWidth() / INGREDIENT_WIDTH;
+		return this.area.width() / IngredientGridLayout.INGREDIENT_WIDTH;
 	}
 
 	@Override
 	public int getRowCount() {
-		return this.area.getHeight() / INGREDIENT_HEIGHT;
+		return this.area.height() / IngredientGridLayout.INGREDIENT_HEIGHT;
+	}
+
+	@Override
+	public int getVisibleHeight() {
+		return this.area.height();
 	}
 
 	public void updateBounds(ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
-		this.area = calculateBounds(this.gridConfig, availableArea);
+		updateBounds(availableArea, guiExclusionAreas, mouseExclusionPoint, false);
+	}
+
+	public void updateBounds(
+		ImmutableRect2i availableArea,
+		Set<ImmutableRect2i> guiExclusionAreas,
+		@Nullable ImmutablePoint2i mouseExclusionPoint,
+		boolean allowPartialRows
+	) {
+		this.area = IngredientGridLayout.calculateBounds(this.gridConfig, availableArea, allowPartialRows);
 		this.guiExclusionAreas = guiExclusionAreas;
 		this.mouseExclusionPoint = mouseExclusionPoint;
-		this.visibleSlotCount = calculateAvailableSlotCount(
+		this.visibleSlotCount = IngredientGridLayout.calculateAvailableSlotCount(
 			this.area,
-			this.guiExclusionAreas,
-			null
+			this.guiExclusionAreas
 		);
 		updateSlots(0);
 	}
@@ -119,110 +128,24 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		this.smoothScrollRowPixelOffset = smoothScrollRowPixelOffset;
 		this.ingredientListRenderer.clear();
 
-		List<SlotLayout> slotLayouts = calculateSlots(
+		List<IngredientGridLayout.SlotLayout> slotLayouts = IngredientGridLayout.calculateSlots(
 			this.area,
 			this.guiExclusionAreas,
 			this.mouseExclusionPoint,
 			smoothScrollRowPixelOffset
 		);
-		for (SlotLayout slotLayout : slotLayouts) {
+		for (IngredientGridLayout.SlotLayout slotLayout : slotLayouts) {
 			ImmutableRect2i slotArea = slotLayout.area();
 			IngredientListSlot ingredientListSlot = new IngredientListSlot(
-				slotArea.getX(),
-				slotArea.getY(),
-				slotArea.getWidth(),
-				slotArea.getHeight(),
-				INGREDIENT_PADDING
+				slotArea.x(),
+				slotArea.y(),
+				slotArea.width(),
+				slotArea.height(),
+				IngredientGridLayout.INGREDIENT_PADDING
 			);
 			ingredientListSlot.setBlocked(slotLayout.blocked());
 			this.ingredientListRenderer.add(ingredientListSlot);
 		}
-	}
-
-	public static ImmutableSize2i calculateSize(IIngredientGridConfig config, ImmutableRect2i availableArea) {
-		final int columns = Math.min(availableArea.getWidth() / INGREDIENT_WIDTH, config.getMaxColumns());
-		final int rows = Math.min(availableArea.getHeight() / INGREDIENT_HEIGHT, config.getMaxRows());
-		if (rows < config.getMinRows() || columns < config.getMinColumns()) {
-			return ImmutableSize2i.EMPTY;
-		}
-		return new ImmutableSize2i(
-			columns * INGREDIENT_WIDTH,
-			rows * INGREDIENT_HEIGHT
-		);
-	}
-
-	public static ImmutableRect2i calculateBounds(IIngredientGridConfig config, ImmutableRect2i availableArea) {
-		ImmutableSize2i size = calculateSize(config, availableArea);
-		return AlignmentUtil.align(size, availableArea, config.getHorizontalAlignment(), config.getVerticalAlignment());
-	}
-
-	public record SlotInfo(int total, int blocked) {
-		public int available() {
-			return total - blocked;
-		}
-
-		public float percentBlocked() {
-			return blocked / (float) total;
-		}
-	}
-
-	public static SlotInfo calculateBlockedSlotPercentage(IIngredientGridConfig config, ImmutableRect2i availableArea, Set<ImmutableRect2i> exclusionAreas) {
-		ImmutableRect2i area = calculateBounds(config, availableArea);
-		return calculateSlotInfo(area, exclusionAreas, null);
-	}
-
-	public static int calculateAvailableSlotCount(ImmutableRect2i area, Set<ImmutableRect2i> exclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
-		return calculateSlotInfo(area, exclusionAreas, mouseExclusionPoint).available();
-	}
-
-	public static SlotInfo calculateSlotInfo(ImmutableRect2i area, Set<ImmutableRect2i> exclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
-		int total = 0;
-		int blocked = 0;
-		List<SlotLayout> slotLayouts = calculateSlots(area, exclusionAreas, mouseExclusionPoint, 0);
-		for (SlotLayout slotLayout : slotLayouts) {
-			if (slotLayout.blocked()) {
-				blocked++;
-			}
-			total++;
-		}
-		return new SlotInfo(total, blocked);
-	}
-
-	public static List<SlotLayout> calculateSlots(
-		ImmutableRect2i area,
-		Set<ImmutableRect2i> exclusionAreas,
-		@Nullable ImmutablePoint2i mouseExclusionPoint,
-		int smoothScrollRowPixelOffset
-	) {
-		List<SlotLayout> slotLayouts = new ArrayList<>();
-		int rowPixelOffset = clamp(smoothScrollRowPixelOffset, 0, INGREDIENT_HEIGHT - 1);
-		for (int y = area.getY() - rowPixelOffset; y < area.getY() + area.getHeight(); y += INGREDIENT_HEIGHT) {
-			for (int x = area.getX(); x < area.getX() + area.getWidth(); x += INGREDIENT_WIDTH) {
-				ImmutableRect2i slotArea = new ImmutableRect2i(x, y, INGREDIENT_WIDTH, INGREDIENT_HEIGHT);
-				slotLayouts.add(new SlotLayout(
-					slotArea,
-					isSlotBlocked(slotArea, exclusionAreas, mouseExclusionPoint)
-				));
-			}
-		}
-		return slotLayouts;
-	}
-
-	private static boolean isSlotBlocked(
-		ImmutableRect2i stackArea,
-		Set<ImmutableRect2i> exclusionAreas,
-		@Nullable ImmutablePoint2i mouseExclusionPoint
-	) {
-		return MathUtil.intersects(exclusionAreas, stackArea.expandBy(2)) ||
-			(mouseExclusionPoint != null && stackArea.contains(mouseExclusionPoint));
-	}
-
-	private static int clamp(int value, int min, int max) {
-		return Math.max(min, Math.min(value, max));
-	}
-
-	public record SlotLayout(ImmutableRect2i area, boolean blocked) {
-
 	}
 
 	public ImmutableRect2i getArea() {
@@ -230,12 +153,17 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 	}
 
 	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
-		if (this.smoothScrollRowPixelOffset > 0) {
-			enableScissor(this.area);
+		if (this.smoothScrollRowPixelOffset > 0 || this.area.height() % IngredientGridLayout.INGREDIENT_HEIGHT != 0) {
+			mezz.jei.common.gui.ScissorHelper.enableScissor(poseStack,
+				this.area.x(),
+				this.area.y(),
+				this.area.x() + this.area.width(),
+				this.area.y() + this.area.height()
+			);
 			try {
 				drawContents(minecraft, poseStack, mouseX, mouseY);
 			} finally {
-				RenderSystem.disableScissor();
+				mezz.jei.common.gui.ScissorHelper.disableScissor();
 			}
 		} else {
 			drawContents(minecraft, poseStack, mouseX, mouseY);
@@ -257,7 +185,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 
 		Optional<IngredientListSlot> highlightedSlot = getHighlightedSlot(minecraft, mouseX, mouseY);
 
-		ingredientListRenderer.render(poseStack);
+		this.ingredientListRenderer.render(poseStack);
 
 		highlightedSlot.ifPresent(s -> drawHighlight(poseStack, s.getArea()));
 	}
@@ -296,9 +224,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 					.map(IngredientListSlot::getOptionalElement)
 					.flatMap(Optional::stream)
 					.findFirst()
-					.ifPresent(element -> {
-						drawTooltip(poseStack, mouseX, mouseY, element);
-					});
+					.ifPresent(element -> drawTooltip(poseStack, mouseX, mouseY, element));
 			}
 		}
 	}
@@ -322,7 +248,7 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 		IIngredientHelper<T> ingredientHelper
 	) {
 		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
-		if (!clientConfig.isShowCreativeTabNamesEnabled()) {
+		if (!clientConfig.showCreativeTabNamesEnabled().get()) {
 			return;
 		}
 
@@ -341,6 +267,9 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		if (!isMouseOver(mouseX, mouseY)) {
+			return Stream.empty();
+		}
 		return ingredientListRenderer.getSlots()
 			.filter(s -> s.isMouseOver(mouseX, mouseY))
 			.map(IngredientListSlot::getClickableIngredient)
@@ -349,6 +278,9 @@ public class IngredientGrid implements IRecipeFocusSource, IIngredientGrid {
 
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		if (!isMouseOver(mouseX, mouseY)) {
+			return Stream.empty();
+		}
 		return ingredientListRenderer.getSlots()
 			.filter(s -> s.isMouseOver(mouseX, mouseY))
 			.map(IngredientListSlot::getDraggableIngredient)

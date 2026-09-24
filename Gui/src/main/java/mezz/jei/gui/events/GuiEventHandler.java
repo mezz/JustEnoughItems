@@ -204,7 +204,8 @@ public class GuiEventHandler {
 	}
 
 	public void onClientTick() {
-		ingredientListOverlay.handleTick();
+		ingredientListOverlay.tick();
+		bookmarkOverlay.tick();
 	}
 
 	public boolean renderCompactPotionIndicators() {

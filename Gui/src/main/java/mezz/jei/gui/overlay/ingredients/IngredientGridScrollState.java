@@ -31,7 +31,8 @@ public final class IngredientGridScrollState {
 		int visibleRows,
 		int visibleIngredientCount,
 		boolean smoothScrolling,
-		int rowHeight
+		int rowHeight,
+		int visibleHeight
 	) {
 		int anchorIndex = IngredientGridPageState.findIndexOfIngredientElement(scrollAnchorElement, ingredientList);
 		if (anchorIndex < 0) {
@@ -48,7 +49,8 @@ public final class IngredientGridScrollState {
 			visibleIngredientCount,
 			anchorPositionY,
 			smoothScrolling,
-			rowHeight
+			rowHeight,
+			visibleHeight
 		);
 	}
 
@@ -65,7 +67,7 @@ public final class IngredientGridScrollState {
 
 	public void setScrollAnchorElement(IElement<?> scrollAnchorElement, float scrollAnchorPositionY) {
 		this.scrollAnchorElement = scrollAnchorElement;
-		this.scrollAnchorPositionY = clamp(scrollAnchorPositionY, 0, 1);
+		this.scrollAnchorPositionY = net.minecraft.util.Mth.clamp(scrollAnchorPositionY, 0, 1);
 	}
 
 	private float getStoredScrollAnchorPositionY(@Nullable IElement<?> scrollAnchorElement) {
@@ -76,9 +78,5 @@ public final class IngredientGridScrollState {
 			return this.scrollAnchorPositionY;
 		}
 		return 0;
-	}
-
-	private static float clamp(float value, float min, float max) {
-		return Math.max(min, Math.min(value, max));
 	}
 }

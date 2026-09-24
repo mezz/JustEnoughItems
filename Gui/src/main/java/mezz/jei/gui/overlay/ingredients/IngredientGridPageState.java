@@ -62,6 +62,15 @@ final class IngredientGridPageState {
 		return -1;
 	}
 
+	static int getFirstItemIndexForValidPage(int firstItemIndex, int itemCount, int itemsPerPage) {
+		if (itemCount == 0 || itemsPerPage == 0) {
+			return 0;
+		}
+		int requestedPageStart = (Math.max(0, firstItemIndex) / itemsPerPage) * itemsPerPage;
+		int lastPageIndex = ((itemCount - 1) / itemsPerPage) * itemsPerPage;
+		return Math.min(requestedPageStart, lastPageIndex);
+	}
+
 	/**
 	 * Page anchors only need to find the same in-memory element after filtering or relayout.
 	 * A full UID comparison would call ingredient helpers and subtype interpreters for every candidate here,
@@ -77,15 +86,6 @@ final class IngredientGridPageState {
 		return firstIngredient == secondIngredient ||
 			(firstIngredient.getType().equals(secondIngredient.getType()) &&
 				firstIngredient.getIngredient() == secondIngredient.getIngredient());
-	}
-
-	static int getFirstItemIndexForValidPage(int firstItemIndex, int itemCount, int itemsPerPage) {
-		if (itemCount == 0 || itemsPerPage == 0) {
-			return 0;
-		}
-		int requestedPageStart = (Math.max(0, firstItemIndex) / itemsPerPage) * itemsPerPage;
-		int lastPageIndex = ((itemCount - 1) / itemsPerPage) * itemsPerPage;
-		return Math.min(requestedPageStart, lastPageIndex);
 	}
 
 	static int getPageCount(int itemCount, int itemsPerPage) {

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static mezz.jei.common.gui.GridScrollMath.getFirstItemIndexForScrollOffset;
 import static mezz.jei.common.gui.GridScrollMath.getFirstRowForScrollOffset;
 import static mezz.jei.common.gui.GridScrollMath.getFirstRowForSmoothScrollPixelOffset;
+import static mezz.jei.common.gui.GridScrollMath.getHiddenScrollPixels;
 import static mezz.jei.common.gui.GridScrollMath.getHiddenRows;
 import static mezz.jei.common.gui.GridScrollMath.getRowPixelOffset;
 import static mezz.jei.common.gui.GridScrollMath.getScrollOffsetYKeepingAnchorVisible;
@@ -80,6 +81,17 @@ public class GridScrollMathTest {
 	}
 
 	@Test
+	public void hiddenPixelsAccountForPartialVisibleRow() {
+		int rowHeight = 18;
+		int hiddenRows = 3;
+		int visibleHeight = (2 * rowHeight) + 7;
+
+		int hiddenPixels = getHiddenScrollPixels(hiddenRows, rowHeight, visibleHeight);
+
+		assertEquals((3 * rowHeight) - 7, hiddenPixels);
+	}
+
+	@Test
 	public void scrollOffsetKeepingAnchorVisiblePreservesRelativeRowPosition() {
 		int itemCount = 1000;
 		int columns = 10;
@@ -91,7 +103,8 @@ public class GridScrollMathTest {
 			visibleRows,
 			0.1f,
 			false,
-			18
+			18,
+			visibleRows * 18
 		);
 
 		int hiddenRows = getHiddenRows(itemCount, columns, visibleRows);
@@ -113,7 +126,8 @@ public class GridScrollMathTest {
 			visibleRows,
 			0.15f,
 			true,
-			rowHeight
+			rowHeight,
+			visibleRows * rowHeight
 		);
 
 		int hiddenRows = getHiddenRows(itemCount, columns, visibleRows);
@@ -134,7 +148,8 @@ public class GridScrollMathTest {
 			visibleRows,
 			0.1f,
 			false,
-			18
+			18,
+			visibleRows * 18
 		);
 
 		int hiddenRows = getHiddenRows(itemCount, columns, visibleRows);

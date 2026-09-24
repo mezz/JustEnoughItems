@@ -30,6 +30,7 @@ public class Textures {
 	private final DrawableNineSliceTexture recipePreviewBackground;
 	private final DrawableNineSliceTexture searchBackground;
 	private final DrawableNineSliceTexture completionOverlayBackground;
+	private final DrawableNineSliceTexture exclusionAreaShadow;
 	private final DrawableNineSliceTexture scrollbarBackground;
 	private final DrawableNineSliceTexture scrollbarMarker;
 
@@ -92,6 +93,7 @@ public class Textures {
 		this.recipeArrowFilled = registerGuiSprite("recipe_arrow_filled", 22, 16);
 		this.completionOverlayBackground = registerNineSliceGuiSprite("completion_overlay_background", 20, 20, 1, 1, 1, 1);
 		this.recipePlusSign = registerGuiSprite("recipe_plus_sign", 13, 13);
+		this.exclusionAreaShadow = registerNineSliceGuiSprite("exclusion_area_shadow", 12, 12, 4, 4, 4, 4);
 
 		this.brewingStandBackground = registerGuiSprite("brewing_stand_background", 64, 60);
 		this.brewingStandBlazeHeat = registerGuiSprite("brewing_stand_blaze_heat", 18, 4);
@@ -262,6 +264,10 @@ public class Textures {
 
 	public DrawableNineSliceTexture getSearchBackground() {
 		return searchBackground;
+	}
+
+	public DrawableNineSliceTexture getExclusionAreaShadow() {
+		return exclusionAreaShadow;
 	}
 
 	public DrawableNineSliceTexture getCompletionOverlayBackground() {

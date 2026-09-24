@@ -1,7 +1,6 @@
 package mezz.jei.gui.overlay.bookmarks;
 
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.overlay.ingredients.IngredientGrid;
 
 import java.util.function.LongSupplier;
 
@@ -33,8 +32,8 @@ final class BookmarkDragScroll {
 			return pixels;
 		}
 		this.pendingPixels += pixels;
-		int rows = (int) (this.pendingPixels / IngredientGrid.INGREDIENT_HEIGHT);
-		int rowPixels = rows * IngredientGrid.INGREDIENT_HEIGHT;
+		int rows = (int) (this.pendingPixels / mezz.jei.gui.overlay.ingredients.IngredientGridLayout.INGREDIENT_HEIGHT);
+		int rowPixels = rows * mezz.jei.gui.overlay.ingredients.IngredientGridLayout.INGREDIENT_HEIGHT;
 		this.pendingPixels -= rowPixels;
 		return rowPixels;
 	}

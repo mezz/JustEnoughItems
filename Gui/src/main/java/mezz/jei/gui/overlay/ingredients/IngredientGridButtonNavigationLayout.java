@@ -2,7 +2,6 @@ package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.IngredientGridLayoutMode;
-import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,17 +17,25 @@ public final class IngredientGridButtonNavigationLayout {
 		IngredientGridWithNavigationLayout.INNER_PADDING;
 
 	private IngredientGridButtonNavigationLayout() {
-
 	}
 
 	public static IngredientGridWithNavigationLayout calculate(
 		IIngredientGridConfig gridConfig,
 		ImmutableRect2i availableArea,
 		Set<ImmutableRect2i> guiExclusionAreas,
-		@Nullable ImmutablePoint2i mouseExclusionPoint,
+		@org.jetbrains.annotations.Nullable mezz.jei.common.util.ImmutablePoint2i mouseExclusionPoint,
 		int ingredientCount
 	) {
-		return switch (gridConfig.getNavigationVisibility()) {
+		return calculate(gridConfig, availableArea, guiExclusionAreas, ingredientCount);
+	}
+
+	public static IngredientGridWithNavigationLayout calculate(
+		IIngredientGridConfig gridConfig,
+		ImmutableRect2i availableArea,
+		Set<ImmutableRect2i> guiExclusionAreas,
+		int ingredientCount
+	) {
+		return switch (gridConfig.navigationVisibility().get()) {
 			case ENABLED -> calculateForNavigation(gridConfig, availableArea, guiExclusionAreas, true);
 			case DISABLED -> calculateForNavigation(gridConfig, availableArea, guiExclusionAreas, false);
 			case AUTO_HIDE -> calculateAutoHide(
@@ -69,7 +76,7 @@ public final class IngredientGridButtonNavigationLayout {
 		Set<ImmutableRect2i> guiExclusionAreas,
 		boolean navigationEnabled
 	) {
-		if (navigationEnabled && gridConfig.getLayoutMode() == IngredientGridLayoutMode.RECTANGULAR) {
+		if (navigationEnabled && gridConfig.layoutMode().get() == IngredientGridLayoutMode.RECTANGULAR) {
 			return calculateRectangularLayout(
 				gridConfig,
 				availableArea,
@@ -79,11 +86,10 @@ public final class IngredientGridButtonNavigationLayout {
 
 		ImmutableRect2i effectiveArea = availableArea;
 		ImmutableRect2i availableGridArea = IngredientGridWithNavigationLayout.getAvailableGridArea(gridConfig, effectiveArea);
-		ImmutableRect2i ingredientGridArea = IngredientGrid.calculateBounds(gridConfig, availableGridArea);
-		int availableSlotCount = IngredientGrid.calculateAvailableSlotCount(
+		ImmutableRect2i ingredientGridArea = IngredientGridLayout.calculateBounds(gridConfig, availableGridArea, false);
+		int availableSlotCount = IngredientGridLayout.calculateAvailableSlotCount(
 			ingredientGridArea,
-			guiExclusionAreas,
-			null
+			guiExclusionAreas
 		);
 
 		ImmutableRect2i slotBackgroundArea = IngredientGridWithNavigationLayout.calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
@@ -102,9 +108,9 @@ public final class IngredientGridButtonNavigationLayout {
 					effectiveArea.getWidth(), effectiveAreaBottom - shiftY
 				);
 				availableGridArea = IngredientGridWithNavigationLayout.getAvailableGridArea(gridConfig, effectiveArea);
-				ingredientGridArea = IngredientGrid.calculateBounds(gridConfig, availableGridArea);
-				availableSlotCount = IngredientGrid.calculateAvailableSlotCount(
-					ingredientGridArea, guiExclusionAreas, null
+				ingredientGridArea = IngredientGridLayout.calculateBounds(gridConfig, availableGridArea, false);
+				availableSlotCount = IngredientGridLayout.calculateAvailableSlotCount(
+					ingredientGridArea, guiExclusionAreas
 				);
 				slotBackgroundArea = IngredientGridWithNavigationLayout.calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
 				defaultNavigationArea = IngredientGridWithNavigationLayout.calculateNavigationArea(slotBackgroundArea, navigationEnabled);
@@ -136,7 +142,7 @@ public final class IngredientGridButtonNavigationLayout {
 		Set<ImmutableRect2i> guiExclusionAreas
 	) {
 		ImmutableRect2i availableGridArea = IngredientGridWithNavigationLayout.getAvailableGridArea(gridConfig, availableArea);
-		ImmutableRect2i initialGridArea = IngredientGrid.calculateBounds(gridConfig, availableGridArea);
+		ImmutableRect2i initialGridArea = IngredientGridLayout.calculateBounds(gridConfig, availableGridArea, false);
 		IngredientGridWithNavigationLayout initialLayout = createRectangularLayout(
 			gridConfig,
 			initialGridArea,
@@ -147,12 +153,12 @@ public final class IngredientGridButtonNavigationLayout {
 		}
 
 		int maxColumns = Math.min(
-			availableGridArea.width() / IngredientGrid.INGREDIENT_WIDTH,
-			gridConfig.getMaxColumns()
+			availableGridArea.width() / IngredientGridLayout.INGREDIENT_WIDTH,
+			gridConfig.maxColumns().get()
 		);
 		int maxRows = Math.min(
-			availableGridArea.height() / IngredientGrid.INGREDIENT_HEIGHT,
-			gridConfig.getMaxRows()
+			availableGridArea.height() / IngredientGridLayout.INGREDIENT_HEIGHT,
+			gridConfig.maxRows().get()
 		);
 		if (maxColumns < gridConfig.getMinColumns() || maxRows < gridConfig.getMinRows()) {
 			return initialLayout;
@@ -173,7 +179,7 @@ public final class IngredientGridButtonNavigationLayout {
 		Set<Integer> yPositions = new LinkedHashSet<>();
 		yPositions.add(initialGridArea.y());
 		yPositions.add(availableGridArea.y());
-		yPositions.add(availableGridBottom - (maxRows * IngredientGrid.INGREDIENT_HEIGHT));
+		yPositions.add(availableGridBottom - (maxRows * IngredientGridLayout.INGREDIENT_HEIGHT));
 		for (ImmutableRect2i exclusionArea : guiExclusionAreas) {
 			yPositions.add(exclusionArea.y() + exclusionArea.height() + navigationToGridOffset);
 			yPositions.add(
@@ -183,14 +189,14 @@ public final class IngredientGridButtonNavigationLayout {
 
 		RectangularLayoutCandidate bestCandidate = null;
 		for (int columns = gridConfig.getMinColumns(); columns <= maxColumns; columns++) {
-			int gridWidth = columns * IngredientGrid.INGREDIENT_WIDTH;
+			int gridWidth = columns * IngredientGridLayout.INGREDIENT_WIDTH;
 			// Keep navigation at the grid's full width and place it immediately beside exclusions.
 			Set<Integer> xPositions = new LinkedHashSet<>();
 			xPositions.add(initialGridArea.x());
 			xPositions.add(availableGridArea.x());
 			xPositions.add(availableGridRight - gridWidth);
 			xPositions.add(
-				availableGridArea.x() + gridConfig.getHorizontalAlignment().getXPos(availableGridArea.width(), gridWidth)
+				availableGridArea.x() + gridConfig.horizontalAlignment().get().getXPos(availableGridArea.width(), gridWidth)
 			);
 			for (ImmutableRect2i exclusionArea : guiExclusionAreas) {
 				xPositions.add(exclusionArea.x() + exclusionArea.width() + gridPadding);
@@ -199,12 +205,12 @@ public final class IngredientGridButtonNavigationLayout {
 
 			for (int gridY : yPositions) {
 				int availableHeight = availableGridBottom - gridY;
-				int rows = Math.min(availableHeight / IngredientGrid.INGREDIENT_HEIGHT, maxRows);
+				int rows = Math.min(availableHeight / IngredientGridLayout.INGREDIENT_HEIGHT, maxRows);
 				if (rows < gridConfig.getMinRows()) {
 					continue;
 				}
 
-				int gridHeight = rows * IngredientGrid.INGREDIENT_HEIGHT;
+				int gridHeight = rows * IngredientGridLayout.INGREDIENT_HEIGHT;
 				for (int gridX : xPositions) {
 					ImmutableRect2i ingredientGridArea = new ImmutableRect2i(gridX, gridY, gridWidth, gridHeight);
 					if (!contains(availableGridArea, ingredientGridArea)) {
@@ -241,10 +247,9 @@ public final class IngredientGridButtonNavigationLayout {
 		ImmutableRect2i ingredientGridArea,
 		Set<ImmutableRect2i> guiExclusionAreas
 	) {
-		int availableSlotCount = IngredientGrid.calculateAvailableSlotCount(
+		int availableSlotCount = IngredientGridLayout.calculateAvailableSlotCount(
 			ingredientGridArea,
-			guiExclusionAreas,
-			null
+			guiExclusionAreas
 		);
 		ImmutableRect2i slotBackgroundArea = IngredientGridWithNavigationLayout.calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
 		ImmutableRect2i defaultNavigationArea = IngredientGridWithNavigationLayout.calculateNavigationArea(slotBackgroundArea, true);
@@ -309,8 +314,8 @@ public final class IngredientGridButtonNavigationLayout {
 		}
 
 		private static int getRawSlotCount(ImmutableRect2i ingredientGridArea) {
-			int columns = ingredientGridArea.width() / IngredientGrid.INGREDIENT_WIDTH;
-			int rows = ingredientGridArea.height() / IngredientGrid.INGREDIENT_HEIGHT;
+			int columns = ingredientGridArea.width() / IngredientGridLayout.INGREDIENT_WIDTH;
+			int rows = ingredientGridArea.height() / IngredientGridLayout.INGREDIENT_HEIGHT;
 			return columns * rows;
 		}
 	}
@@ -441,7 +446,7 @@ public final class IngredientGridButtonNavigationLayout {
 				continue;
 			}
 			int navWidthInGap = Math.min(originalWidth, gapWidth);
-			int navStart = clamp(originalX, gapStart, gapEnd - navWidthInGap);
+			int navStart = net.minecraft.util.Mth.clamp(originalX, gapStart, gapEnd - navWidthInGap);
 			int distance = Math.abs(navStart - originalX);
 			if (distance < bestDistance) {
 				bestGapStart = navStart;
@@ -460,10 +465,6 @@ public final class IngredientGridButtonNavigationLayout {
 			bestGapWidth,
 			height
 		);
-	}
-
-	private static int clamp(int value, int min, int max) {
-		return Math.max(min, Math.min(value, max));
 	}
 
 	private static ImmutableRect2i calculateNavigationStripArea(

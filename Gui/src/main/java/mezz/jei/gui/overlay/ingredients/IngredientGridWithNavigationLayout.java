@@ -1,8 +1,8 @@
 package mezz.jei.gui.overlay.ingredients;
 
-import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.common.config.IIngredientGridConfig;
 
 import java.util.Set;
 
@@ -44,7 +44,7 @@ public record IngredientGridWithNavigationLayout(
 			availableGridArea = availableGridArea.insetBy(BORDER_PADDING + INNER_PADDING);
 		}
 
-		ImmutableRect2i estimatedGridArea = IngredientGrid.calculateBounds(gridConfig, availableGridArea);
+		ImmutableRect2i estimatedGridArea = IngredientGridLayout.calculateBounds(gridConfig, availableGridArea, false);
 		if (estimatedGridArea.isEmpty()) {
 			return ImmutableRect2i.EMPTY;
 		}
@@ -62,7 +62,7 @@ public record IngredientGridWithNavigationLayout(
 		return fromGridArea(
 			gridConfig,
 			ingredientGridArea,
-			IngredientGrid.calculateAvailableSlotCount(ingredientGridArea, Set.of(), null),
+			IngredientGridLayout.calculateAvailableSlotCount(ingredientGridArea, Set.of()),
 			navigationArea,
 			navigationArea,
 			navigationEnabled,
