@@ -68,29 +68,23 @@ body:
       required: false
   - type: markdown
     attributes:
-      value: >-
+      value: |
         ## Sharing your `latest.log`
 
-        In order to diagnose a bug, we will need to see your `latest.log`.  
+        The log tells us which Minecraft, mod loader, and JEI versions you are using,
+        as well as which other mods are installed and any errors that occurred.
 
-        To share your `latest.log` here, please follow these steps:
-
-
-        1. If you don't have it already, find your `latest.log` file.  
-
-        a. [Find your minecraft
-        folder](https://stickypiston.co/account/knowledgebase/130/How-do-I-find-my-Minecraft-Folder.html)   
-
-        b. In the minecraft folder, go into the `logs` folder and find the
-        `latest.log` file.
-
-        1. Create a Gist from the `latest.log`, and copy the url.  
-
-        [Click here for instructions on creating a
-        Gist](https://gist.github.com/mezz/c3f0931344d81afd366e0d85a8ed1031)
+        1. Reproduce the bug, then close Minecraft so the log is complete.
+        2. Use your launcher to open the folder for the Minecraft instance or modpack
+           where the bug occurred.
+        3. Open the `logs` folder and find `latest.log`.
+        4. [Create a Gist from `latest.log`](https://gist.github.com/mezz/c3f0931344d81afd366e0d85a8ed1031),
+           then paste the Gist URL below.
   - type: input
     id: crashlog
     attributes:
       label: latest.log
       description: Please paste the url to the gist containing your `latest.log` file.
       placeholder: https://gist.github.com/<your_user_name>/<gist_id>
+    validations:
+      required: true
