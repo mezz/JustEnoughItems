@@ -30,6 +30,10 @@ public class DrawableNineSliceTexture {
 		int bottomHeight = info.getSliceBottom();
 		int textureWidth = info.getWidth();
 		int textureHeight = info.getHeight();
+		int trimLeft = info.getTrimLeft();
+		int trimRight = info.getTrimRight();
+		int trimTop = info.getTrimTop();
+		int trimBottom = info.getTrimBottom();
 
 		TextureManager textureManager = minecraft.getTextureManager();
 		textureManager.bindTexture(location);
@@ -41,39 +45,46 @@ public class DrawableNineSliceTexture {
 		float uSize = uMax - uMin;
 		float vSize = vMax - vMin;
 
-		float uLeft = uMin + uSize * (leftWidth / (float) textureWidth);
-		float uRight = uMax - uSize * (rightWidth / (float) textureWidth);
-		float vTop = vMin + vSize * (topHeight / (float) textureHeight);
-		float vBottom = vMax - vSize * (bottomHeight / (float) textureHeight);
+		// the effective texture area after trimming
+		float uOuterLeft = uMin + uSize * (trimLeft / (float) textureWidth);
+		float uOuterRight = uMax - uSize * (trimRight / (float) textureWidth);
+		float vOuterTop = vMin + vSize * (trimTop / (float) textureHeight);
+		float vOuterBottom = vMax - vSize * (trimBottom / (float) textureHeight);
+
+		// within the trimmed area
+		float uLeft = uOuterLeft + uSize * (leftWidth / (float) textureWidth);
+		float uRight = uOuterRight - uSize * (rightWidth / (float) textureWidth);
+		float vTop = vOuterTop + vSize * (topHeight / (float) textureHeight);
+		float vBottom = vOuterBottom - vSize * (bottomHeight / (float) textureHeight);
 
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
 
 		// left top
-		draw(bufferBuilder, uMin, vMin, uLeft, vTop, xOffset, yOffset, leftWidth, topHeight);
+		draw(bufferBuilder, uOuterLeft, vOuterTop, uLeft, vTop, xOffset, yOffset, leftWidth, topHeight);
 		// left bottom
-		draw(bufferBuilder, uMin, vBottom, uLeft, vMax, xOffset, yOffset + height - bottomHeight, leftWidth, bottomHeight);
+		draw(bufferBuilder, uOuterLeft, vBottom, uLeft, vOuterBottom, xOffset, yOffset + height - bottomHeight, leftWidth, bottomHeight);
 		// right top
-		draw(bufferBuilder, uRight, vMin, uMax, vTop, xOffset + width - rightWidth, yOffset, rightWidth, topHeight);
+		draw(bufferBuilder, uRight, vOuterTop, uOuterRight, vTop, xOffset + width - rightWidth, yOffset, rightWidth, topHeight);
 		// right bottom
-		draw(bufferBuilder, uRight, vBottom, uMax, vMax, xOffset + width - rightWidth, yOffset + height - bottomHeight, rightWidth, bottomHeight);
+		draw(bufferBuilder, uRight, vBottom, uOuterRight, vOuterBottom, xOffset + width - rightWidth, yOffset + height - bottomHeight, rightWidth, bottomHeight);
 
-		int middleWidth = textureWidth - leftWidth - rightWidth;
-		int middleHeight = textureWidth - topHeight - bottomHeight;
+		int middleWidth = textureWidth - trimLeft - trimRight - leftWidth - rightWidth;
+		int middleHeight = textureHeight - trimTop - trimBottom - topHeight - bottomHeight;
 		int tiledMiddleWidth = width - leftWidth - rightWidth;
 		int tiledMiddleHeight = height - topHeight - bottomHeight;
 		if (tiledMiddleWidth > 0) {
 			// top edge
-			drawTiled(bufferBuilder, uLeft, vMin, uRight, vTop, xOffset + leftWidth, yOffset, tiledMiddleWidth, topHeight, middleWidth, topHeight);
+			drawTiled(bufferBuilder, uLeft, vOuterTop, uRight, vTop, xOffset + leftWidth, yOffset, tiledMiddleWidth, topHeight, middleWidth, topHeight);
 			// bottom edge
-			drawTiled(bufferBuilder, uLeft, vBottom, uRight, vMax, xOffset + leftWidth, yOffset + height - bottomHeight, tiledMiddleWidth, bottomHeight, middleWidth, bottomHeight);
+			drawTiled(bufferBuilder, uLeft, vBottom, uRight, vOuterBottom, xOffset + leftWidth, yOffset + height - bottomHeight, tiledMiddleWidth, bottomHeight, middleWidth, bottomHeight);
 		}
 		if (tiledMiddleHeight > 0) {
 			// left side
-			drawTiled(bufferBuilder, uMin, vTop, uLeft, vBottom, xOffset, yOffset + topHeight, leftWidth, tiledMiddleHeight, leftWidth, middleHeight);
+			drawTiled(bufferBuilder, uOuterLeft, vTop, uLeft, vBottom, xOffset, yOffset + topHeight, leftWidth, tiledMiddleHeight, leftWidth, middleHeight);
 			// right side
-			drawTiled(bufferBuilder, uRight, vTop, uMax, vBottom, xOffset + width - rightWidth, yOffset + topHeight, rightWidth, tiledMiddleHeight, rightWidth, middleHeight);
+			drawTiled(bufferBuilder, uRight, vTop, uOuterRight, vBottom, xOffset + width - rightWidth, yOffset + topHeight, rightWidth, tiledMiddleHeight, rightWidth, middleHeight);
 		}
 		if (tiledMiddleHeight > 0 && tiledMiddleWidth > 0) {
 			// middle area
