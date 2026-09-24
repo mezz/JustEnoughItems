@@ -1,30 +1,21 @@
 package mezz.jei.gui.overlay.bookmarks.history;
 
-import mezz.jei.api.helpers.IColorHelper;
-import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.config.IClientToggleState;
-import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.JeiGuiColors.GuiColor;
-import mezz.jei.common.gui.elements.ScalableDrawable;
-import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
+import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.history.LookupHistoryOverlayLayout;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
-import mezz.jei.gui.overlay.ingredients.GuiExclusionAreaShadow;
-import mezz.jei.gui.overlay.ingredients.IngredientGrid;
-import mezz.jei.gui.overlay.elements.IElement;
+import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Mth;
@@ -37,67 +28,30 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryOverlay {
-
-	public static final int SLOT_HEIGHT = LookupHistoryOverlayLayout.SLOT_HEIGHT;
-
-	// display elements
-	private final IngredientGrid contents;
-	private final ScalableDrawable background;
-	private final ScalableDrawable slotBackground;
-	private final ScalableDrawable exclusionAreaShadow;
-
-	// data
+	private final IngredientGridWithNavigation contents;
 	private final IIngredientGridSource lookupHistory;
 	private final IIngredientGridConfig historyListConfig;
 	private final IClientConfig clientConfig;
 	private final HistoryDisplaySide ownerDisplaySide;
-	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private Set<ImmutableRect2i> guiExclusionAreas = Set.of();
-	private ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
-	private ImmutableRect2i slotBackgroundArea = ImmutableRect2i.EMPTY;
-	private int rows;
-	private boolean layoutDirty = true;
+	@Nullable
+	private IElement<?> pageAnchorElement;
 
 	public LookupHistoryOverlay(
-		IIngredientManager ingredientManager,
 		IIngredientGridSource lookupHistory,
-		IInternalKeyMappings keyMappings,
+		IngredientGridWithNavigation contents,
 		IIngredientGridConfig historyListConfig,
-		IIngredientFilterConfig ingredientFilterConfig,
-		ScalableDrawable background,
-		ScalableDrawable slotBackground,
-		ScalableDrawable exclusionAreaShadow,
 		IClientConfig clientConfig,
-		HistoryDisplaySide ownerDisplaySide,
-		IClientToggleState toggleState,
-		IScreenHelper screenHelper,
-		IConnectionToServer serverConnection,
-		IColorHelper colorHelper
+		HistoryDisplaySide ownerDisplaySide
 	) {
-		this.clientConfig = clientConfig;
 		this.lookupHistory = lookupHistory;
+		this.contents = contents;
 		this.historyListConfig = historyListConfig;
-		this.background = background;
-		this.slotBackground = slotBackground;
-		this.exclusionAreaShadow = exclusionAreaShadow;
-		this.contents = new IngredientGrid(
-			ingredientManager,
-			historyListConfig,
-			ingredientFilterConfig,
-			clientConfig,
-			toggleState,
-			serverConnection,
-			keyMappings,
-			colorHelper,
-			false
-		);
-		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.contents, screenHelper, ingredientManager, toggleState);
+		this.clientConfig = clientConfig;
 		this.ownerDisplaySide = ownerDisplaySide;
-		lookupHistory.addSourceListChangedListener(this::markLayoutDirty);
 	}
 
 	public boolean isListDisplayed() {
-		updateLayoutIfDirty();
 		return clientConfig.lookupHistoryEnabled().get() &&
 			isDisplayedOnThisSide() &&
 			contents.hasRoom();
@@ -114,39 +68,33 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 
 	@Override
 	public int getDisplayHeight() {
-		return getDisplayHeight(clientConfig.maxLookupHistoryRows().get(), historyListConfig.drawBackground().get());
-	}
-
-	public static int getDisplayHeight(int maxRows, boolean drawBackground) {
-		return LookupHistoryOverlayLayout.getDisplayHeight(maxRows, drawBackground);
+		return LookupHistoryOverlayLayout.getDisplayHeight(
+			historyListConfig.maxRows().get(),
+			historyListConfig.drawBackground().get(),
+			historyListConfig.navigationMode().get().usesScrollbar()
+		);
 	}
 
 	@Override
-	public void updateBounds(final ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
+	public boolean isBackgroundEnabled() {
+		return this.historyListConfig.drawBackground().get();
+	}
+
+	@Override
+	public void updateBounds(
+		ImmutableRect2i availableArea,
+		Set<ImmutableRect2i> guiExclusionAreas,
+		@Nullable ImmutablePoint2i mouseExclusionPoint
+	) {
 		this.guiExclusionAreas = guiExclusionAreas;
-		LookupHistoryOverlayLayout layout = LookupHistoryOverlayLayout.calculate(this.historyListConfig, availableArea);
-		this.contents.updateBounds(layout.availableGridArea(), guiExclusionAreas, mouseExclusionPoint);
-		this.backgroundArea = layout.backgroundArea();
-		this.slotBackgroundArea = layout.slotBackgroundArea();
-		int rows = this.contents.getArea().getHeight() / SLOT_HEIGHT;
-		this.rows = Math.min(rows, clientConfig.maxLookupHistoryRows().get());
+		this.pageAnchorElement = this.contents.getPageAnchorElement();
+		this.contents.updateBounds(availableArea, guiExclusionAreas, mouseExclusionPoint);
 	}
 
 	@Override
 	public void updateLayout() {
-		List<IElement<?>> ingredientList = lookupHistory.getElements();
-		this.contents.set(0, ingredientList);
-		this.layoutDirty = false;
-	}
-
-	private void markLayoutDirty() {
-		this.layoutDirty = true;
-	}
-
-	private void updateLayoutIfDirty() {
-		if (this.layoutDirty) {
-			updateLayout();
-		}
+		this.contents.updateLayoutKeepingPageAnchorVisible(this.pageAnchorElement);
+		this.pageAnchorElement = null;
 	}
 
 	private void drawLine(GuiGraphicsExtractor guiGraphics, ImmutableRect2i lineArea, int argbColor) {
@@ -167,7 +115,6 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 			return;
 		}
 
-		// space out the dashes so that we always start and end with whole dashes
 		final int interval = dashWidth + spacing;
 		final int dashCount = availableWidth / interval + 1;
 		final float floatInterval = (availableWidth - dashWidth) / (float) (dashCount - 1);
@@ -221,32 +168,19 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	}
 
 	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		updateLayoutIfDirty();
 		if (isListDisplayed()) {
-			this.contents.draw(minecraft, guiGraphics, mouseX, mouseY);
+			this.contents.drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
 			if (!this.historyListConfig.drawBackground().get()) {
-				ImmutableRect2i area = this.contents.getArea();
-				int startY = area.getY() + area.getHeight() - rows * SLOT_HEIGHT - 3;
+				ImmutableRect2i area = this.contents.getBackgroundArea();
 				int color = JeiGuiColors.getColor(GuiColor.LOOKUP_HISTORY_LINE);
-				ImmutableRect2i lineArea = new ImmutableRect2i(area.getX(), startY, area.getWidth(), 1);
+				ImmutableRect2i lineArea = new ImmutableRect2i(area.x(), area.y() - 3, area.width(), 1);
 				drawLine(guiGraphics, lineArea, color);
 			}
 		}
 	}
 
-	public void drawBackground(GuiGraphicsExtractor guiGraphics) {
-		updateLayoutIfDirty();
-		if (isListDisplayed() && this.historyListConfig.drawBackground().get()) {
-			this.background.draw(guiGraphics, this.backgroundArea);
-			this.slotBackground.draw(guiGraphics, this.slotBackgroundArea);
-			GuiExclusionAreaShadow.draw(guiGraphics, this.exclusionAreaShadow, this.backgroundArea, this.guiExclusionAreas);
-		}
-	}
-
 	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		updateLayoutIfDirty();
 		if (isListDisplayed()) {
-			this.ghostIngredientDragManager.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 			this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		}
 	}
@@ -258,27 +192,33 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	}
 
 	public ImmutableRect2i getArea() {
-		return this.contents.getArea();
+		return this.contents.getIngredientGridArea();
+	}
+
+	@Override
+	public ImmutableRect2i getBackgroundArea() {
+		return this.contents.getBackgroundArea();
+	}
+
+	public ImmutableRect2i getSlotBackgroundArea() {
+		return this.contents.getSlotBackgroundArea();
 	}
 
 	@Override
 	public void close() {
 		this.guiExclusionAreas = Set.of();
-		this.backgroundArea = ImmutableRect2i.EMPTY;
-		this.slotBackgroundArea = ImmutableRect2i.EMPTY;
-		this.ghostIngredientDragManager.stopDrag();
+		this.pageAnchorElement = null;
+		this.contents.close();
 	}
 
 	public void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		updateLayoutIfDirty();
 		if (isListDisplayed()) {
-			this.ghostIngredientDragManager.drawOnForeground(guiGraphics, mouseX, mouseY);
+			this.contents.drawOnForeground(guiGraphics, mouseX, mouseY);
 		}
 	}
 
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
-		updateLayoutIfDirty();
 		if (isListDisplayed()) {
 			return contents.getIngredientUnderMouse(mouseX, mouseY);
 		}
@@ -287,15 +227,18 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
-		updateLayoutIfDirty();
 		if (isListDisplayed()) {
 			return contents.getDraggableIngredientUnderMouse(mouseX, mouseY);
 		}
 		return Stream.empty();
 	}
 
+	public IUserInputHandler createInputHandler() {
+		return this.contents.createInputHandler();
+	}
+
 	public IDragHandler createDragHandler() {
-		return this.ghostIngredientDragManager.createDragHandler();
+		return this.contents.createDragHandler();
 	}
 
 	record LineSegment(int x1, int x2) {

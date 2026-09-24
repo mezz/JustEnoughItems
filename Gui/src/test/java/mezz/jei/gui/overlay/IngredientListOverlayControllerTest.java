@@ -13,6 +13,7 @@ import mezz.jei.gui.overlay.elements.IngredientElement;
 import mezz.jei.gui.overlay.history.LookupHistoryOverlayLayout;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridPageNavigation;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridView;
+import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigationLayout;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
@@ -65,7 +66,7 @@ public class IngredientListOverlayControllerTest {
 		Fixture fixture = Fixture.create();
 		fixture.config.lookupHistoryEnabled = true;
 		fixture.lookupHistory.displayedOnThisSide = true;
-		fixture.lookupHistory.displayHeight = LookupHistoryOverlayLayout.getDisplayHeight(2, false);
+		fixture.lookupHistory.displayHeight = LookupHistoryOverlayLayout.getDisplayHeight(2, false, false);
 		fixture.contents.backgroundArea = new ImmutableRect2i(160, 8, 40, 40);
 		fixture.controller.init();
 		IGuiProperties guiProperties = guiProperties(50, 20, 100, 50, 200, 100);
@@ -96,6 +97,30 @@ public class IngredientListOverlayControllerTest {
 	}
 
 	@Test
+	public void screenUpdateMovesLookupHistoryNextToContentsBackground() {
+		Fixture fixture = Fixture.create();
+		fixture.config.lookupHistoryEnabled = true;
+		fixture.lookupHistory.displayedOnThisSide = true;
+		fixture.lookupHistory.backgroundEnabled = true;
+		fixture.contents.backgroundEnabled = true;
+		fixture.contents.backgroundArea = new ImmutableRect2i(160, 20, 40, 80);
+		fixture.controller.init();
+
+		fixture.updateScreen(guiProperties(50, 20, 100, 50, 220, 240));
+
+		assertEquals(2, fixture.lookupHistory.layoutUpdates);
+		assertEquals(2, fixture.lookupHistory.availableAreas.size());
+		ImmutableRect2i initialArea = fixture.lookupHistory.availableAreas.getFirst();
+		ImmutableRect2i positionedArea = fixture.lookupHistory.availableAreas.getLast();
+		assertTrue(positionedArea.y() < initialArea.y());
+		int ownerContentBottom = bottom(fixture.contents.backgroundArea) -
+			IngredientGridWithNavigationLayout.BORDER_PADDING;
+		int historyContentTop = fixture.lookupHistory.backgroundArea.y() +
+			IngredientGridWithNavigationLayout.BORDER_PADDING;
+		assertEquals(IngredientGridWithNavigationLayout.INNER_PADDING, historyContentTop - ownerContentBottom);
+	}
+
+	@Test
 	public void screenUpdateKeepsPageAnchorVisibleAfterBoundsChange() {
 		// Setup: the grid has a page anchor before bounds are recalculated, but updating bounds clears it.
 		Fixture fixture = Fixture.create();
@@ -119,7 +144,7 @@ public class IngredientListOverlayControllerTest {
 		Fixture fixture = Fixture.create();
 		fixture.config.lookupHistoryEnabled = true;
 		fixture.lookupHistory.displayedOnThisSide = true;
-		fixture.lookupHistory.displayHeight = LookupHistoryOverlayLayout.getDisplayHeight(1, false);
+		fixture.lookupHistory.displayHeight = LookupHistoryOverlayLayout.getDisplayHeight(1, false, false);
 		Set<ImmutableRect2i> guiExclusionAreas = Set.of(new ImmutableRect2i(170, 10, 10, 10));
 		fixture.guiPropertiesCache.guiProperties = guiProperties(50, 20, 100, 50, 200, 100);
 		fixture.guiPropertiesCache.guiExclusionAreas = guiExclusionAreas;
@@ -435,7 +460,7 @@ public class IngredientListOverlayControllerTest {
 		@Nullable
 		IElement<?> layoutPageAnchorElement;
 		ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
-		ImmutableRect2i ingredientGridArea = ImmutableRect2i.EMPTY;
+		boolean backgroundEnabled = false;
 		@Nullable
 		ImmutableRect2i availableArea;
 
@@ -483,16 +508,24 @@ public class IngredientListOverlayControllerTest {
 		}
 
 		@Override
-		public ImmutableRect2i getIngredientGridArea() {
-			return ingredientGridArea;
+		public ImmutableRect2i getSlotBackgroundArea() {
+			return ImmutableRect2i.EMPTY;
+		}
+
+		@Override
+		public boolean isBackgroundEnabled() {
+			return backgroundEnabled;
 		}
 	}
 
 	private static class TestLookupHistory implements ILookupHistoryOverlay {
 		boolean displayedOnThisSide = false;
-		int displayHeight = LookupHistoryOverlayLayout.getDisplayHeight(2, false);
+		int displayHeight = LookupHistoryOverlayLayout.getDisplayHeight(2, false, false);
 		int closeCount = 0;
 		int layoutUpdates = 0;
+		boolean backgroundEnabled = false;
+		ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
+		final List<ImmutableRect2i> availableAreas = new ArrayList<>();
 		Set<ImmutableRect2i> guiExclusionAreas = Set.of();
 		@Nullable
 		ImmutableRect2i availableArea;
@@ -508,6 +541,16 @@ public class IngredientListOverlayControllerTest {
 		}
 
 		@Override
+		public boolean isBackgroundEnabled() {
+			return backgroundEnabled;
+		}
+
+		@Override
+		public ImmutableRect2i getBackgroundArea() {
+			return backgroundArea;
+		}
+
+		@Override
 		public void close() {
 			closeCount++;
 		}
@@ -515,6 +558,8 @@ public class IngredientListOverlayControllerTest {
 		@Override
 		public void updateBounds(ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
 			this.availableArea = availableArea;
+			this.availableAreas.add(availableArea);
+			this.backgroundArea = availableArea.insetBy(6);
 			this.guiExclusionAreas = guiExclusionAreas;
 		}
 
