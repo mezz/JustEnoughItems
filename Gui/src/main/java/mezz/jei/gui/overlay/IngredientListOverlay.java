@@ -25,6 +25,7 @@ import mezz.jei.gui.input.handlers.NullDragHandler;
 import mezz.jei.gui.input.handlers.NullInputHandler;
 import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
+import mezz.jei.gui.input.handlers.SearchInputLayer;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.ingredients.IIngredientListOverlayContents;
@@ -46,6 +47,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final LookupHistoryOverlay lookupHistoryOverlay;
 	private final IClientToggleState toggleState;
 	private final GuiTextFieldFilter searchField;
+	private final SearchInputLayer searchInputLayer;
 	private final IngredientListOverlayController controller;
 	private boolean screenPropertiesDirty;
 
@@ -70,6 +72,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.toggleState = toggleState;
 
 		this.searchField = new GuiTextFieldFilter(contents::isEmpty, clientConfig, searchCompletionProvider);
+		this.searchInputLayer = new SearchInputLayer(this.searchField, this::isListDisplayed);
 		this.configButton = new IconButton(new ConfigButtonController(this::isListDisplayed, toggleState, keyBindings));
 		this.controller = IngredientListOverlayController.create(
 			guiPropertiesCache,
@@ -130,6 +133,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return this.controller.getScreenPropertiesUpdater();
 	}
 
+	public SearchInputLayer getSearchInputLayer() {
+		return this.searchInputLayer;
+	}
+
 	public void drawScreen(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		updateScreenPropertiesIfDirty();
 		drawBackground(guiGraphics);
@@ -163,9 +170,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		updateScreenPropertiesIfDirty();
-		if (searchField.isCompletionMouseOver(mouseX, mouseY)) {
-			return;
-		}
 		if (isListDisplayed()) {
 			this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		}
@@ -198,9 +202,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		updateScreenPropertiesIfDirty();
-		if (searchField.isCompletionMouseOver(mouseX, mouseY)) {
-			return Stream.empty();
-		}
 		if (isListDisplayed()) {
 			return Stream.concat(this.contents.getIngredientUnderMouse(mouseX, mouseY), this.lookupHistoryOverlay.getIngredientUnderMouse(mouseX, mouseY));
 		}
@@ -213,9 +214,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		updateScreenPropertiesIfDirty();
-		if (searchField.isCompletionMouseOver(mouseX, mouseY)) {
-			return Stream.empty();
-		}
 		if (isListDisplayed()) {
 			return Stream.concat(this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY), this.lookupHistoryOverlay.getDraggableIngredientUnderMouse(mouseX, mouseY));
 		}
@@ -228,7 +226,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	public IUserInputHandler createInputHandler() {
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
 			"IngredientListOverlay",
-			this.searchField.createInputHandler(),
 			this.configButton.createInputHandler(),
 			this.contents.createInputHandler()
 		);
@@ -286,9 +283,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		if (isListDisplayed()) {
 			double mouseX = MouseUtil.getX();
 			double mouseY = MouseUtil.getY();
-			if (searchField.isCompletionMouseOver(mouseX, mouseY)) {
-				return Optional.empty();
-			}
 			return this.contents.getIngredientUnderMouse(mouseX, mouseY)
 				.<ITypedIngredient<?>>map(IClickableIngredientInternal::getTypedIngredient)
 				.findFirst();
@@ -302,9 +296,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		if (isListDisplayed()) {
 			double mouseX = MouseUtil.getX();
 			double mouseY = MouseUtil.getY();
-			if (searchField.isCompletionMouseOver(mouseX, mouseY)) {
-				return null;
-			}
 			return this.contents.getIngredientUnderMouse(mouseX, mouseY)
 				.map(IClickableIngredientInternal::getTypedIngredient)
 				.map(i -> i.getIngredient(ingredientType))

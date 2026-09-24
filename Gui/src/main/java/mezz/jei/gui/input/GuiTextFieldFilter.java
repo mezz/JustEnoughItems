@@ -140,11 +140,23 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 
 	public void extractForegroundRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		super.extractWidgetRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+	}
+
+	public void updateCompletion(int mouseX, int mouseY) {
 		if (clientConfig.searchCompletionEnabled().get() && isFocused()) {
-			completionOverlay.render(guiGraphics, getValue(), getCursorPosition(), mouseX, mouseY);
+			completionOverlay.update(getValue(), getCursorPosition());
+			completionOverlay.updateLayout(mouseX, mouseY);
 		} else {
 			completionOverlay.close();
 		}
+	}
+
+	public void drawCompletion(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+		completionOverlay.draw(guiGraphics, mouseX, mouseY);
+	}
+
+	public void hideCompletion() {
+		completionOverlay.close();
 	}
 
 	public boolean isCompletionVisible() {

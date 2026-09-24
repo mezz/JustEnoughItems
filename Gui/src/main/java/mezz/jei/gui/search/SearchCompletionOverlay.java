@@ -71,12 +71,7 @@ public class SearchCompletionOverlay {
 		this.background = background;
 	}
 
-	public void render(GuiGraphicsExtractor guiGraphics, String text, int cursorPos, int mouseX, int mouseY) {
-		update(text, cursorPos);
-		draw(guiGraphics, mouseX, mouseY);
-	}
-
-	private void update(String text, int cursorPos) {
+	public void update(String text, int cursorPos) {
 		if (text.equals(dismissedText) && cursorPos == dismissedCursorPos) {
 			visible = false;
 			return;
@@ -473,7 +468,7 @@ public class SearchCompletionOverlay {
 		return Math.min(minContentWidth, maxWidth);
 	}
 
-	private void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void updateLayout(int mouseX, int mouseY) {
 		if (!visible || searchFieldArea == null || filteredCandidates.isEmpty()) {
 			overlayArea = null;
 			rowLayouts.clear();
@@ -538,7 +533,6 @@ public class SearchCompletionOverlay {
 		}
 
 		overlayArea = new ImmutableRect2i(x, y, overlayWidth, overlayHeight);
-		background.draw(guiGraphics, overlayArea);
 
 		if (overlayArea.contains(mouseX, mouseY)) {
 			for (int i = 0; i < rowLayouts.size(); i++) {
@@ -550,6 +544,22 @@ public class SearchCompletionOverlay {
 				}
 			}
 		}
+	}
+
+	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+		if (!visible || overlayArea == null || filteredCandidates.isEmpty()) {
+			return;
+		}
+
+		Minecraft minecraft = Minecraft.getInstance();
+		Font font = minecraft.font;
+		int x = overlayArea.getX();
+		int y = overlayArea.getY();
+		int overlayWidth = overlayArea.getWidth();
+		int overlayHeight = overlayArea.getHeight();
+		int visibleRowCount = rowLayouts.size();
+
+		background.draw(guiGraphics, overlayArea);
 
 		for (int i = 0; i < rowLayouts.size(); i++) {
 			int candidateIndex = scrollOffset + i;
