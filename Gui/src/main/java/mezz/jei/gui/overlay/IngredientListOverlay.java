@@ -132,6 +132,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+		if (searchField.isCompletionMouseOver(mouseX, mouseY)) {
+			return;
+		}
 		if (isListDisplayed()) {
 			this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 		}
@@ -161,6 +164,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		if (searchField.isCompletionMouseOver(mouseX, mouseY)) {
+			return Stream.empty();
+		}
 		if (isListDisplayed()) {
 			return Stream.concat(this.contents.getIngredientUnderMouse(mouseX, mouseY), this.lookupHistoryOverlay.getIngredientUnderMouse(mouseX, mouseY));
 		}
@@ -172,6 +178,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		if (searchField.isCompletionMouseOver(mouseX, mouseY)) {
+			return Stream.empty();
+		}
 		if (isListDisplayed()) {
 			return Stream.concat(this.contents.getDraggableIngredientUnderMouse(mouseX, mouseY), this.lookupHistoryOverlay.getDraggableIngredientUnderMouse(mouseX, mouseY));
 		}
@@ -231,6 +240,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		if (isListDisplayed()) {
 			double mouseX = MouseUtil.getX();
 			double mouseY = MouseUtil.getY();
+			if (searchField.isCompletionMouseOver(mouseX, mouseY)) {
+				return Optional.empty();
+			}
 			return this.contents.getIngredientUnderMouse(mouseX, mouseY)
 				.<ITypedIngredient<?>>map(IClickableIngredientInternal::getTypedIngredient)
 				.findFirst();
@@ -244,6 +256,9 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		if (isListDisplayed()) {
 			double mouseX = MouseUtil.getX();
 			double mouseY = MouseUtil.getY();
+			if (searchField.isCompletionMouseOver(mouseX, mouseY)) {
+				return null;
+			}
 			return this.contents.getIngredientUnderMouse(mouseX, mouseY)
 				.map(IClickableIngredientInternal::getTypedIngredient)
 				.map(i -> i.getIngredient(ingredientType))
