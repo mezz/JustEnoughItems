@@ -61,6 +61,8 @@ public interface IClientConfig {
 
 	IConfigValue<Integer> smoothScrollRate();
 
+	IConfigValue<Boolean> searchCompletionEnabled();
+
 	IConfigValue<Boolean> recipeSlotCyclingEnabled();
 
 	IConfigValue<List<IngredientSortStage>> ingredientSorterStages();
