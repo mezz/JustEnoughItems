@@ -174,7 +174,7 @@ public class SearchCompletionOverlay {
 		}
 
 		addNotOperatorIfMatches(currentToken);
-		if (hasPredicateBefore && !currentToken.equals("|")) {
+		if (hasPredicateBefore && currentToken.isEmpty()) {
 			filteredCandidates.add(new CompletionCandidate("|", "|", Component.translatable("jei.search.completion.operator.or"), CandidateCategory.OPERATOR));
 		}
 	}
