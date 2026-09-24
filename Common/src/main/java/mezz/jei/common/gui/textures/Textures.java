@@ -30,6 +30,7 @@ public class Textures {
 	private final DrawableNineSliceTexture interactiveIngredientTooltipBackground;
 	private final DrawableNineSliceTexture recipePreviewBackground;
 	private final DrawableNineSliceTexture searchBackground;
+	private final DrawableNineSliceTexture completionOverlayBackground;
 	private final DrawableNineSliceTexture scrollbarBackground;
 	private final DrawableNineSliceTexture scrollbarMarker;
 
@@ -90,6 +91,7 @@ public class Textures {
 		this.recipeOptionsTab = createNineSliceGuiSprite("recipe_options_tab", 28, 28, 8, 9, 8, 8);
 		this.recipeArrow = createGuiSprite("recipe_arrow", 22, 16);
 		this.recipeArrowFilled = createGuiSprite("recipe_arrow_filled", 22, 16);
+		this.completionOverlayBackground = createNineSliceGuiSprite("completion_overlay_background", 20, 20, 1, 1, 1, 1);
 		this.recipePlusSign = createGuiSprite("recipe_plus_sign", 13, 13);
 
 		this.brewingStandBackground = createGuiSprite("brewing_stand_background", 64, 60);
@@ -251,6 +253,10 @@ public class Textures {
 
 	public DrawableNineSliceTexture getSearchBackground() {
 		return searchBackground;
+	}
+
+	public DrawableNineSliceTexture getCompletionOverlayBackground() {
+		return completionOverlayBackground;
 	}
 
 	public IDrawableStatic getInfoIcon() {
