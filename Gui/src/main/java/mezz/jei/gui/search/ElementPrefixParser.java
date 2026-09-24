@@ -34,7 +34,7 @@ public class ElementPrefixParser {
 			"unprefixed",
 			'\0',
 			Component.empty(),
-			false,
+			true,
 			() -> SearchMode.ENABLED,
 			IListElementInfo::getNames,
 			searchStorageBuilderFactory
@@ -117,8 +117,9 @@ public class ElementPrefixParser {
 	}
 
 	public Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> allPrefixInfos() {
-		Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> values = new ArrayList<>(map.values());
+		Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> values = new ArrayList<>();
 		values.add(noPrefix);
+		values.addAll(map.values());
 		return values;
 	}
 
