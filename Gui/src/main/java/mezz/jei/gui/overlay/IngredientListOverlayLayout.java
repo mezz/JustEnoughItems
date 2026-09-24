@@ -11,7 +11,6 @@ class IngredientListOverlayLayout {
 	private static final int BUTTON_SIZE = 20;
 	private static final int SEARCH_HEIGHT = BUTTON_SIZE;
 	private static final int LOOKUP_HISTORY_BOTTOM_PADDING = BORDER_MARGIN;
-	private static final int LOOKUP_HISTORY_PADDING_EXTRA = LOOKUP_HISTORY_BOTTOM_PADDING - INNER_PADDING;
 
 	static Layout calculate(
 		IGuiProperties guiProperties,
@@ -30,7 +29,7 @@ class IngredientListOverlayLayout {
 				ImmutableRect2i area = getLookupHistoryArea(displayArea, searchBarCentered, lookupHistoryDisplayHeight);
 				availableContentsArea = cropBottomTo(
 					availableContentsArea,
-					area.y() - LOOKUP_HISTORY_PADDING_EXTRA
+					area.y()
 				);
 				lookupHistoryArea = Optional.of(area);
 			}
@@ -62,7 +61,6 @@ class IngredientListOverlayLayout {
 			bottomReservedHeight = SEARCH_HEIGHT + LOOKUP_HISTORY_BOTTOM_PADDING;
 		}
 		return displayArea
-			.insetBy(BORDER_MARGIN)
 			.cropBottom(bottomReservedHeight)
 			.keepBottom(lookupHistoryHeight);
 	}

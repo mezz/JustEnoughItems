@@ -21,6 +21,10 @@ public interface ILookupHistoryOverlay {
 	 */
 	int getDisplayHeight();
 
+	boolean isBackgroundEnabled();
+
+	ImmutableRect2i getBackgroundArea();
+
 	/**
 	 * Closes the lookup-history panel and clears any screen-specific state.
 	 */

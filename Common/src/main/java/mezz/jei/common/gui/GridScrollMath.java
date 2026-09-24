@@ -32,7 +32,8 @@ public final class GridScrollMath {
 		int visibleRows,
 		float anchorPositionY,
 		boolean smoothScrolling,
-		int rowHeight
+		int rowHeight,
+		int visibleHeight
 	) {
 		int visibleItemCount = columns * visibleRows;
 		return getScrollOffsetYKeepingAnchorVisible(
@@ -43,7 +44,8 @@ public final class GridScrollMath {
 			visibleItemCount,
 			anchorPositionY,
 			smoothScrolling,
-			rowHeight
+			rowHeight,
+			visibleHeight
 		);
 	}
 
@@ -55,7 +57,8 @@ public final class GridScrollMath {
 		int visibleItemCount,
 		float anchorPositionY,
 		boolean smoothScrolling,
-		int rowHeight
+		int rowHeight,
+		int visibleHeight
 	) {
 		int hiddenRows = getHiddenRows(itemCount, columns, visibleRows, visibleItemCount);
 		if (anchorIndex < 0 || hiddenRows == 0 || columns == 0 || visibleRows == 0) {
@@ -68,9 +71,9 @@ public final class GridScrollMath {
 			return getSmoothScrollOffsetYKeepingAnchorVisible(
 				anchorRow,
 				hiddenRows,
-				visibleRows,
 				validAnchorPositionY,
-				rowHeight
+				rowHeight,
+				visibleHeight
 			);
 		}
 
@@ -86,20 +89,22 @@ public final class GridScrollMath {
 	private static float getSmoothScrollOffsetYKeepingAnchorVisible(
 		int anchorRow,
 		int hiddenRows,
-		int visibleRows,
 		float anchorPositionY,
-		int rowHeight
+		int rowHeight,
+		int visibleHeight
 	) {
 		if (rowHeight == 0) {
 			return 0;
 		}
 
-		int hiddenPixels = hiddenRows * rowHeight;
-		int visiblePixels = visibleRows * rowHeight;
+		int hiddenPixels = getHiddenScrollPixels(hiddenRows, rowHeight, visibleHeight);
+		if (hiddenPixels == 0) {
+			return 0;
+		}
 		int anchorTopPixel = anchorRow * rowHeight;
-		int targetAnchorTopPixel = Math.round(anchorPositionY * visiblePixels);
+		int targetAnchorTopPixel = Math.round(anchorPositionY * visibleHeight);
 		int desiredScrollPixelOffset = anchorTopPixel - targetAnchorTopPixel;
-		int minScrollPixelOffset = Math.max(0, anchorTopPixel - ((visibleRows - 1) * rowHeight));
+		int minScrollPixelOffset = Math.max(0, anchorTopPixel - (visibleHeight - rowHeight));
 		int maxScrollPixelOffset = Math.min(hiddenPixels, anchorTopPixel);
 		int validScrollPixelOffset = Math.clamp(desiredScrollPixelOffset, minScrollPixelOffset, maxScrollPixelOffset);
 		return validScrollPixelOffset / (float) hiddenPixels;
@@ -136,6 +141,14 @@ public final class GridScrollMath {
 	public static int getSmoothScrollPixelOffset(int hiddenRows, int rowHeight, float scrollOffsetY) {
 		int hiddenPixels = hiddenRows * rowHeight;
 		return Math.clamp(Math.round(hiddenPixels * scrollOffsetY), 0, hiddenPixels);
+	}
+
+	public static int getHiddenScrollPixels(int hiddenRows, int rowHeight, int visibleHeight) {
+		if (rowHeight <= 0) {
+			return 0;
+		}
+		int partialVisibleRowHeight = Math.max(0, visibleHeight) % rowHeight;
+		return Math.max(0, hiddenRows * rowHeight - partialVisibleRowHeight);
 	}
 
 	public static int getFirstRowForSmoothScrollPixelOffset(int scrollPixelOffset, int rowHeight) {

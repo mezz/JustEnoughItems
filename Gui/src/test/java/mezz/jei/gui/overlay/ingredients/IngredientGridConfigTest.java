@@ -5,6 +5,7 @@ import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
+import mezz.jei.common.config.NavigationVisibility;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
@@ -13,10 +14,12 @@ import net.mezzdev.config.api.value.editor.ConfigValueEditMode;
 import net.mezzdev.config.api.value.editor.IConfigValueEditorInfo;
 import net.mezzdev.config.api.value.editor.ConfigValueRestartRequirement;
 import net.mezzdev.config.api.value.change.IConfigValueBatchChangeListener;
+import mezz.jei.gui.overlay.TestJeiConfigValue;
+import mezz.jei.gui.overlay.history.LookupHistoryGridConfig;
+import mezz.jei.gui.overlay.history.LookupHistoryOverlayLayout;
 import net.mezzdev.config.api.value.IConfigValue;
 import net.mezzdev.config.api.value.change.IConfigValueChangeListener;
 import net.mezzdev.config.api.value.serializer.IConfigValueSerializer;
-import mezz.jei.common.config.NavigationVisibility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -33,6 +36,28 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IngredientGridConfigTest {
+	@Test
+	public void lookupHistoryRowsAreIndependentFromOwnerGridRows() {
+		TestGridConfig ownerConfig = config()
+			.maxColumns(4)
+			.maxRows(1)
+			.drawBackground(true)
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		TestJeiConfigValue<Integer> lookupHistoryRows = new TestJeiConfigValue<>("lookupHistoryRows", 2);
+		IIngredientGridConfig lookupHistoryConfig = new LookupHistoryGridConfig(ownerConfig, lookupHistoryRows);
+		int displayHeight = LookupHistoryOverlayLayout.getDisplayHeight(2, true, false);
+		ImmutableRect2i availableArea = largeAvailableArea().keepTop(displayHeight);
+
+		IngredientGridWithNavigationLayout layout = IngredientGridButtonNavigationLayout.calculate(
+			lookupHistoryConfig,
+			availableArea,
+			Set.of(),
+			100
+		);
+
+		assertEquals(2 * IngredientGridLayout.INGREDIENT_HEIGHT, layout.ingredientGridArea().height());
+	}
+
 	@Test
 	public void maxColumnsAndRowsLimitGridSize() {
 		// Setup: the available area could fit many more slots than the configured maximum.
@@ -55,10 +80,30 @@ public class IngredientGridConfigTest {
 		);
 
 		// Operation: calculate the grid size from the configured limits.
-		ImmutableSize2i size = IngredientGridLayout.calculateSize(gridConfig, availableArea);
+		ImmutableSize2i size = IngredientGridLayout.calculateSize(gridConfig, availableArea, false);
 
 		// Assertions: the grid is capped by max columns and rows.
 		assertEquals(expectedGridArea.getSize(), size);
+	}
+
+	@Test
+	public void smoothScrollingUsesPartialAvailableRowHeight() {
+		TestGridConfig gridConfig = config()
+			.maxColumns(3)
+			.maxRows(6);
+		int partialHeight = (2 * IngredientGridLayout.INGREDIENT_HEIGHT) + 7;
+		ImmutableRect2i availableArea = new ImmutableRect2i(
+			0,
+			0,
+			3 * IngredientGridLayout.INGREDIENT_WIDTH,
+			partialHeight
+		);
+
+		ImmutableSize2i pagedSize = IngredientGridLayout.calculateSize(gridConfig, availableArea, false);
+		ImmutableSize2i smoothScrollingSize = IngredientGridLayout.calculateSize(gridConfig, availableArea, true);
+
+		assertEquals(2 * IngredientGridLayout.INGREDIENT_HEIGHT, pagedSize.height());
+		assertEquals(partialHeight, smoothScrollingSize.height());
 	}
 
 	@Test
@@ -89,9 +134,9 @@ public class IngredientGridConfigTest {
 		);
 
 		// Operation: calculate sizes around the minimum configured dimensions.
-		ImmutableSize2i tooNarrowSize = IngredientGridLayout.calculateSize(gridConfig, tooNarrowArea);
-		ImmutableSize2i tooShortSize = IngredientGridLayout.calculateSize(gridConfig, tooShortArea);
-		ImmutableSize2i exactMinimumSize = IngredientGridLayout.calculateSize(gridConfig, exactMinimumArea);
+		ImmutableSize2i tooNarrowSize = IngredientGridLayout.calculateSize(gridConfig, tooNarrowArea, false);
+		ImmutableSize2i tooShortSize = IngredientGridLayout.calculateSize(gridConfig, tooShortArea, false);
+		ImmutableSize2i exactMinimumSize = IngredientGridLayout.calculateSize(gridConfig, exactMinimumArea, false);
 
 		// Assertions: the grid has no room below the minimum, and exactly enough room at the minimum.
 		assertEquals(ImmutableSize2i.EMPTY, tooNarrowSize);
@@ -111,26 +156,29 @@ public class IngredientGridConfigTest {
 		TestGridConfig gridConfig = config()
 			.maxColumns(3)
 			.maxRows(2);
-		ImmutableSize2i expectedGridSize = IngredientGridLayout.calculateSize(gridConfig, availableArea);
+		ImmutableSize2i expectedGridSize = IngredientGridLayout.calculateSize(gridConfig, availableArea, false);
 
 		// Operation: calculate bounds for every configured alignment value.
 		ImmutableRect2i topLeft = IngredientGridLayout.calculateBounds(
 			gridConfig
 				.horizontalAlignment(HorizontalAlignment.LEFT)
 				.verticalAlignment(VerticalAlignment.TOP),
-			availableArea
+			availableArea,
+			false
 		);
 		ImmutableRect2i centered = IngredientGridLayout.calculateBounds(
 			gridConfig
 				.horizontalAlignment(HorizontalAlignment.CENTER)
 				.verticalAlignment(VerticalAlignment.CENTER),
-			availableArea
+			availableArea,
+			false
 		);
 		ImmutableRect2i bottomRight = IngredientGridLayout.calculateBounds(
 			gridConfig
 				.horizontalAlignment(HorizontalAlignment.RIGHT)
 				.verticalAlignment(VerticalAlignment.BOTTOM),
-			availableArea
+			availableArea,
+			false
 		);
 
 		// Assertions: each configured alignment controls the grid's position without changing its slot size.
@@ -254,7 +302,7 @@ public class IngredientGridConfigTest {
 			null,
 			false
 		);
-		ingredientGrid.updateBounds(availableArea, Set.of(), null);
+		ingredientGrid.updateBounds(availableArea, Set.of(), null, false);
 		int capacity = ingredientGrid.size();
 		ImmutableRect2i firstSlot = ingredientGrid.getSlots()
 			.findFirst()
@@ -263,7 +311,7 @@ public class IngredientGridConfigTest {
 		ImmutablePoint2i mouseExclusionPoint = new ImmutablePoint2i(firstSlot.x(), firstSlot.y());
 
 		// Operation: update the same grid with its first slot under the drag cursor.
-		ingredientGrid.updateBounds(availableArea, Set.of(), mouseExclusionPoint);
+		ingredientGrid.updateBounds(availableArea, Set.of(), mouseExclusionPoint, false);
 
 		// Assertions: pagination capacity stays fixed, but the slot under the mouse is unavailable for rendering.
 		assertEquals(capacity, ingredientGrid.size());
@@ -330,7 +378,8 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			100
+			100,
+			false
 		);
 
 		// Assertions: scrollbar mode reserves side scrollbar space and suppresses page-button navigation.
@@ -358,7 +407,8 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			100
+			100,
+			false
 		);
 
 		// Assertions: the reserved scrollbar space shifts the grid left so nothing renders offscreen.
@@ -381,7 +431,8 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			100
+			100,
+			false
 		);
 
 		// Assertions: the scrollbar background spans the same top and bottom as the slot background.
@@ -403,7 +454,8 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			100
+			100,
+			false
 		);
 
 		// Assertions: the gap between the slot background and scrollbar keeps the controls visually separated.
@@ -425,7 +477,8 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			100
+			100,
+			false
 		);
 
 		// Assertions: the outer background has the same screen-edge padding on top and right.
@@ -463,7 +516,8 @@ public class IngredientGridConfigTest {
 			scrollbarGridConfig,
 			availableArea,
 			Set.of(),
-			100
+			100,
+			false
 		);
 
 		assertSharedAlignedEdges(
@@ -489,7 +543,8 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			100
+			100,
+			false
 		);
 
 		// Assertions: disabled navigation suppresses the visible scrollbar and its reserved space.
@@ -518,7 +573,8 @@ public class IngredientGridConfigTest {
 				.navigationVisibility(NavigationVisibility.DISABLED),
 			availableArea,
 			Set.of(),
-			0
+			0,
+			false
 		);
 		int onePageIngredientCount = referenceLayout.availableSlotCount();
 
@@ -527,13 +583,15 @@ public class IngredientGridConfigTest {
 			gridConfig,
 			availableArea,
 			Set.of(),
-			onePageIngredientCount
+			onePageIngredientCount,
+			false
 		);
 		IngredientGridWithNavigationLayout shownWithOverflow = IngredientGridScrollbarLayout.calculate(
 			gridConfig,
 			availableArea,
 			Set.of(),
-			onePageIngredientCount + 1
+			onePageIngredientCount + 1,
+			false
 		);
 
 		// Assertions: auto-hide only reserves the scrollbar when the ingredient list overflows.
@@ -541,6 +599,35 @@ public class IngredientGridConfigTest {
 		assertEquals(ImmutableRect2i.EMPTY, hiddenWithOnePage.scrollbarArea());
 		assertEquals(ImmutableRect2i.EMPTY, shownWithOverflow.navigationArea());
 		assertPositiveArea(shownWithOverflow.scrollbarArea());
+	}
+
+	@Test
+	public void partialRowTriggersAutoHideScrollbarWhenItContainsIngredients() {
+		TestGridConfig gridConfig = config()
+			.maxColumns(3)
+			.maxRows(6)
+			.drawBackground(false)
+			.navigationMode(IngredientGridNavigationMode.SCROLLING)
+			.navigationVisibility(NavigationVisibility.AUTO_HIDE);
+		ImmutableRect2i availableArea = new ImmutableRect2i(
+			0,
+			0,
+			(3 * IngredientGridLayout.INGREDIENT_WIDTH) +
+				(2 * IngredientGridWithNavigationLayout.BORDER_MARGIN),
+			(2 * IngredientGridLayout.INGREDIENT_HEIGHT) + 9 +
+				(2 * IngredientGridWithNavigationLayout.BORDER_MARGIN)
+		);
+
+		IngredientGridWithNavigationLayout layout = IngredientGridScrollbarLayout.calculate(
+			gridConfig,
+			availableArea,
+			Set.of(),
+			7,
+			true
+		);
+
+		assertEquals(9, layout.ingredientGridArea().height() % IngredientGridLayout.INGREDIENT_HEIGHT);
+		assertPositiveArea(layout.scrollbarArea());
 	}
 
 	@Test
@@ -563,7 +650,8 @@ public class IngredientGridConfigTest {
 			disabledGridConfig,
 			availableArea,
 			Set.of(),
-			0
+			0,
+			false
 		);
 		Set<ImmutableRect2i> guiExclusionAreas = Set.of(new ImmutableRect2i(
 			unblockedLayout.ingredientGridArea().x(),
@@ -577,13 +665,15 @@ public class IngredientGridConfigTest {
 			disabledGridConfig,
 			availableArea,
 			guiExclusionAreas,
-			0
+			0,
+			false
 		);
 		IngredientGridWithNavigationLayout autoHideLayout = IngredientGridScrollbarLayout.calculate(
 			autoHideGridConfig,
 			availableArea,
 			guiExclusionAreas,
-			unblockedLayout.availableSlotCount()
+			unblockedLayout.availableSlotCount(),
+			false
 		);
 
 		// Assertions: the blocked slot reduces capacity, so auto-hide reserves the scrollbar for the overflow item.
@@ -614,7 +704,8 @@ public class IngredientGridConfigTest {
 			scrollbarConfig,
 			availableArea,
 			Set.of(),
-			100
+			100,
+			false
 		);
 
 		// Assertions: without page buttons, the scrollable grid can start higher in the same available area.
