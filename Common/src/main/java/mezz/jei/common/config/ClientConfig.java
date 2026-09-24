@@ -53,6 +53,7 @@ public final class ClientConfig implements IClientConfig {
 
 	// search
 	private final IConfigValue<Boolean> searchCompletionEnabled;
+	private final IConfigValue<Integer> maxSearchCompletionRows;
 
 	// input
 	private final IConfigValue<Integer> dragDelayMs;
@@ -84,6 +85,9 @@ public final class ClientConfig implements IClientConfig {
 		instance = this;
 
 		searchCompletionEnabled = search.addBoolean("searchCompletionEnabled", false)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
+		maxSearchCompletionRows = search.addInteger("maxSearchCompletionRows", 5, 1, 100)
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
 		searchBarPosition = search.addValue(
@@ -396,6 +400,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Boolean> searchCompletionEnabled() {
 		return searchCompletionEnabled;
+	}
+
+	@Override
+	public IConfigValue<Integer> maxSearchCompletionRows() {
+		return maxSearchCompletionRows;
 	}
 
 	@Override
