@@ -1,5 +1,5 @@
 library(
-    identifier: 'jenkins-release-notifier@v0.2.2',
+    identifier: 'jenkins-release-notifier@v0.3.0',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         remote: 'https://github.com/mezz/jenkins-release-notifier.git'
