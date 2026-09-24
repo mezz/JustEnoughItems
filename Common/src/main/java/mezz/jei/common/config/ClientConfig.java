@@ -51,6 +51,9 @@ public final class ClientConfig implements IClientConfig {
 	private final IConfigValue<Boolean> lookupBlockTagsEnabled;
 	private final IConfigValue<Boolean> showCreativeTabNamesEnabled;
 
+	// search
+	private final IConfigValue<Boolean> searchCompletionEnabled;
+
 	// input
 	private final IConfigValue<Integer> dragDelayMs;
 	private final IConfigValue<Integer> smoothScrollRate;
@@ -80,6 +83,9 @@ public final class ClientConfig implements IClientConfig {
 	) {
 		instance = this;
 
+		searchCompletionEnabled = search.addBoolean("searchCompletionEnabled", false)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
 		searchBarPosition = search.addValue(
 				"centerSearch",
 				SearchBarPosition.fromCentered(defaultCenterSearchBar),
@@ -385,6 +391,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Integer> smoothScrollRate() {
 		return smoothScrollRate;
+	}
+
+	@Override
+	public IConfigValue<Boolean> searchCompletionEnabled() {
+		return searchCompletionEnabled;
 	}
 
 	@Override
