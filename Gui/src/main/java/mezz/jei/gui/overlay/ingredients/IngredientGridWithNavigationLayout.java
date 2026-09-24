@@ -44,7 +44,7 @@ public record IngredientGridWithNavigationLayout(
 			availableGridArea = availableGridArea.insetBy(BORDER_PADDING + INNER_PADDING);
 		}
 
-		ImmutableRect2i estimatedGridArea = IngredientGridLayout.calculateBounds(gridConfig, availableGridArea);
+		ImmutableRect2i estimatedGridArea = IngredientGridLayout.calculateBounds(gridConfig, availableGridArea, false);
 		if (estimatedGridArea.isEmpty()) {
 			return ImmutableRect2i.EMPTY;
 		}

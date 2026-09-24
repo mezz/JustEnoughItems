@@ -34,7 +34,8 @@ public class IngredientGridScrollStateTest {
 			visibleRows,
 			visibleIngredientCount,
 			false,
-			IngredientGridLayout.INGREDIENT_HEIGHT
+			IngredientGridLayout.INGREDIENT_HEIGHT,
+			visibleRows * IngredientGridLayout.INGREDIENT_HEIGHT
 		);
 
 		// Assertions: the reopen/layout pass keeps the current scroll position instead of resetting to top.

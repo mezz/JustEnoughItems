@@ -60,7 +60,6 @@ class IngredientListOverlayLayout {
 			bottomReservedHeight = SEARCH_HEIGHT + LOOKUP_HISTORY_BOTTOM_PADDING;
 		}
 		return displayArea
-			.insetBy(BORDER_MARGIN)
 			.cropBottom(bottomReservedHeight)
 			.keepBottom(lookupHistoryHeight);
 	}

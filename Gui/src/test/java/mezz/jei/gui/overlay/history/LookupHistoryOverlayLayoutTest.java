@@ -1,344 +1,77 @@
 package mezz.jei.gui.overlay.history;
 
-import mezz.jei.gui.overlay.TestJeiConfigValue;
-import mezz.jei.api.gui.placement.HorizontalAlignment;
-import mezz.jei.api.gui.placement.VerticalAlignment;
-import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.config.IngredientGridLayoutMode;
-import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.overlay.ingredients.IngredientGridButtonNavigationLayout;
 import mezz.jei.gui.overlay.ingredients.IngredientGridLayout;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigationLayout;
-import net.mezzdev.config.api.value.IConfigValue;
-import mezz.jei.common.config.NavigationVisibility;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.Set;
-import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LookupHistoryOverlayLayoutTest {
-	private static final int BORDER_MARGIN = 6;
-	private static final int INNER_PADDING = 2;
-	private static final int BUTTON_SIZE = 20;
-	private static final int LOOKUP_HISTORY_BOTTOM_PADDING = BORDER_MARGIN;
-	private static final int LOOKUP_HISTORY_PADDING_EXTRA = LOOKUP_HISTORY_BOTTOM_PADDING - INNER_PADDING;
-	private static final int LOOKUP_HISTORY_ROWS = 5;
+	@Test
+	public void pagedHistoryReservesNavigationHeight() {
+		int maxRows = 3;
+		int scrollingHeight = LookupHistoryOverlayLayout.getDisplayHeight(maxRows, true, true);
+		int pagedHeight = LookupHistoryOverlayLayout.getDisplayHeight(maxRows, true, false);
 
-	@ParameterizedTest(name = "alignment={0}")
-	@MethodSource("gridAlignments")
-	public void visualBottomEdgeDoesNotChangeWhenBackgroundIsEnabled(GridAlignment alignment) {
-		// Setup: lookup history has less content height than its reserved area, so vertical alignment is observable.
-		TestGridConfig withoutBackgroundConfig = config()
-			.drawBackground(false)
-			.maxRows(2)
-			.horizontalAlignment(alignment.horizontalAlignment())
-			.verticalAlignment(alignment.verticalAlignment());
-		TestGridConfig withBackgroundConfig = config()
-			.drawBackground(true)
-			.maxRows(2)
-			.horizontalAlignment(alignment.horizontalAlignment())
-			.verticalAlignment(alignment.verticalAlignment());
-
-		// Operation: calculate the visual lookup-history areas with and without a drawn background.
-		LookupHistoryOverlayLayout withoutBackground = LookupHistoryOverlayLayout.calculate(
-			withoutBackgroundConfig,
-			lookupHistoryAvailableArea(false)
-		);
-		LookupHistoryOverlayLayout withBackground = LookupHistoryOverlayLayout.calculate(
-			withBackgroundConfig,
-			lookupHistoryAvailableArea(true)
-		);
-
-		// Assertions: enabling the background adds padding around the panel without moving its visual bottom edge.
 		assertEquals(
-			bottom(withoutBackground.backgroundArea()),
-			bottom(withBackground.backgroundArea())
+			IngredientGridWithNavigationLayout.NAVIGATION_HEIGHT + IngredientGridWithNavigationLayout.INNER_PADDING,
+			pagedHeight - scrollingHeight
 		);
 	}
 
-	@ParameterizedTest(name = "drawBackground={0}, horizontalAlignment={1}")
-	@MethodSource("horizontalAlignmentConfigs")
-	public void visualAreaFollowsIngredientListHorizontalAlignment(
-		boolean drawBackground,
-		HorizontalAlignment horizontalAlignment
-	) {
-		// Setup: lookup history is below the ingredient list and uses the same grid alignment config.
-		TestGridConfig gridConfig = config()
-			.drawBackground(drawBackground)
-			.maxColumns(4)
-			.navigationVisibility(NavigationVisibility.DISABLED)
-			.horizontalAlignment(horizontalAlignment);
+	@Test
+	public void displayHeightIncludesRowsAndPanelPadding() {
+		int maxRows = 3;
+		int expectedHeight = (maxRows * IngredientGridLayout.INGREDIENT_HEIGHT) +
+			(2 * IngredientGridWithNavigationLayout.BORDER_MARGIN) +
+			(2 * (IngredientGridWithNavigationLayout.BORDER_PADDING +
+				IngredientGridWithNavigationLayout.INNER_PADDING));
 
-		// Operation: calculate the visual areas for the ingredient list and its lookup history.
-		IngredientGridWithNavigationLayout ingredientListLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig,
-			ingredientListAvailableArea(drawBackground),
-			Set.of(),
-			100
-		);
-		LookupHistoryOverlayLayout lookupHistoryLayout = LookupHistoryOverlayLayout.calculate(
-			gridConfig,
-			ingredientListLookupHistoryAvailableArea(drawBackground)
+		int displayHeight = LookupHistoryOverlayLayout.getDisplayHeight(maxRows, true, true);
+
+		assertEquals(expectedHeight, displayHeight);
+	}
+
+	@Test
+	public void availableAreaAlignsToOwnerBackground() {
+		ImmutableRect2i ownerBackgroundArea = new ImmutableRect2i(20, 30, 100, 80);
+		ImmutableRect2i lookupHistoryArea = new ImmutableRect2i(0, 180, 200, 50);
+
+		ImmutableRect2i result = LookupHistoryOverlayLayout.alignToOwnerBackground(
+			lookupHistoryArea,
+			ownerBackgroundArea
 		);
 
-		// Assertions: lookup history shares the same aligned horizontal edge as the ingredient list above it.
-		assertSharedHorizontalAlignedEdge(
-			horizontalAlignment,
-			ingredientListLayout.backgroundArea(),
-			lookupHistoryLayout.backgroundArea()
+		assertEquals(ownerBackgroundArea.x() - IngredientGridWithNavigationLayout.BORDER_MARGIN, result.x());
+		assertEquals(
+			ownerBackgroundArea.width() + (2 * IngredientGridWithNavigationLayout.BORDER_MARGIN),
+			result.width()
 		);
 	}
 
-	@ParameterizedTest(name = "drawBackground={0}, horizontalAlignment={1}")
-	@MethodSource("horizontalAlignmentConfigs")
-	public void visualAreaFollowsBookmarkListHorizontalAlignment(
-		boolean drawBackground,
-		HorizontalAlignment horizontalAlignment
-	) {
-		// Setup: lookup history is below the bookmark list and uses the same grid alignment config.
-		TestGridConfig gridConfig = config()
-			.drawBackground(drawBackground)
-			.maxColumns(4)
-			.navigationVisibility(NavigationVisibility.DISABLED)
-			.horizontalAlignment(horizontalAlignment);
+	@Test
+	public void panelContentsUseTheSameGapAsGridAndScrollbar() {
+		ImmutableRect2i ownerBackgroundArea = new ImmutableRect2i(10, 20, 100, 80);
+		ImmutableRect2i lookupHistoryArea = new ImmutableRect2i(4, 170, 112, 70);
+		ImmutableRect2i lookupHistoryBackgroundArea = new ImmutableRect2i(10, 180, 100, 50);
 
-		// Operation: calculate the visual areas for the bookmark list and its lookup history.
-		IngredientGridWithNavigationLayout bookmarkListLayout = IngredientGridButtonNavigationLayout.calculate(
-			gridConfig,
-			bookmarkListAvailableArea(drawBackground),
-			Set.of(),
-			100
-		);
-		LookupHistoryOverlayLayout lookupHistoryLayout = LookupHistoryOverlayLayout.calculate(
-			gridConfig,
-			bookmarkListLookupHistoryAvailableArea(drawBackground)
+		ImmutableRect2i result = LookupHistoryOverlayLayout.moveNextToOwner(
+			lookupHistoryArea,
+			lookupHistoryBackgroundArea,
+			ownerBackgroundArea
 		);
 
-		// Assertions: lookup history shares the same aligned horizontal edge as the bookmark list above it.
-		assertSharedHorizontalAlignedEdge(
-			horizontalAlignment,
-			bookmarkListLayout.backgroundArea(),
-			lookupHistoryLayout.backgroundArea()
+		int offset = lookupHistoryArea.y() - result.y();
+		int ownerContentBottom = ownerBackgroundArea.y() + ownerBackgroundArea.height() -
+			IngredientGridWithNavigationLayout.BORDER_PADDING;
+		int lookupHistoryContentTop = lookupHistoryBackgroundArea.y() - offset +
+			IngredientGridWithNavigationLayout.BORDER_PADDING;
+		assertEquals(
+			IngredientGridWithNavigationLayout.INNER_PADDING,
+			lookupHistoryContentTop - ownerContentBottom
 		);
+		assertEquals(lookupHistoryArea.width(), result.width());
+		assertEquals(lookupHistoryArea.height(), result.height());
 	}
-
-	private static Stream<GridAlignment> gridAlignments() {
-		return Stream.of(HorizontalAlignment.values())
-			.flatMap(horizontalAlignment -> Stream.of(VerticalAlignment.values())
-				.map(verticalAlignment -> new GridAlignment(horizontalAlignment, verticalAlignment)));
-	}
-
-	private static Stream<Arguments> horizontalAlignmentConfigs() {
-		return Stream.of(false, true)
-			.flatMap(drawBackground -> Stream.of(HorizontalAlignment.values())
-				.map(horizontalAlignment -> Arguments.of(drawBackground, horizontalAlignment)));
-	}
-
-	private static ImmutableRect2i ingredientListAvailableArea(boolean lookupHistoryDrawBackground) {
-		return overlayContentsAvailableArea(ingredientListDisplayArea(), lookupHistoryDrawBackground);
-	}
-
-	private static ImmutableRect2i bookmarkListAvailableArea(boolean lookupHistoryDrawBackground) {
-		return overlayContentsAvailableArea(bookmarkListDisplayArea(), lookupHistoryDrawBackground);
-	}
-
-	private static ImmutableRect2i overlayContentsAvailableArea(
-		ImmutableRect2i displayArea,
-		boolean lookupHistoryDrawBackground
-	) {
-		int lookupHistoryDisplayHeight = LookupHistoryOverlayLayout.getDisplayHeight(
-			LOOKUP_HISTORY_ROWS,
-			lookupHistoryDrawBackground
-		);
-		return displayArea
-			.cropBottom(BUTTON_SIZE + INNER_PADDING)
-			.cropBottom(lookupHistoryDisplayHeight + LOOKUP_HISTORY_PADDING_EXTRA);
-	}
-
-	private static ImmutableRect2i lookupHistoryAvailableArea(boolean drawBackground) {
-		return lookupHistoryAvailableArea(ingredientListDisplayArea(), drawBackground);
-	}
-
-	private static ImmutableRect2i ingredientListLookupHistoryAvailableArea(boolean drawBackground) {
-		return lookupHistoryAvailableArea(ingredientListDisplayArea(), drawBackground);
-	}
-
-	private static ImmutableRect2i bookmarkListLookupHistoryAvailableArea(boolean drawBackground) {
-		return lookupHistoryAvailableArea(bookmarkListDisplayArea(), drawBackground);
-	}
-
-	private static ImmutableRect2i lookupHistoryAvailableArea(ImmutableRect2i displayArea, boolean drawBackground) {
-		return displayArea
-			.insetBy(BORDER_MARGIN)
-			.moveUp(BUTTON_SIZE + LOOKUP_HISTORY_BOTTOM_PADDING)
-			.keepBottom(LookupHistoryOverlayLayout.getDisplayHeight(LOOKUP_HISTORY_ROWS, drawBackground));
-	}
-
-	private static ImmutableRect2i ingredientListDisplayArea() {
-		return new ImmutableRect2i(
-			150,
-			0,
-			14 * IngredientGridLayout.INGREDIENT_WIDTH,
-			14 * IngredientGridLayout.INGREDIENT_HEIGHT
-		);
-	}
-
-	private static ImmutableRect2i bookmarkListDisplayArea() {
-		return new ImmutableRect2i(
-			0,
-			0,
-			13 * IngredientGridLayout.INGREDIENT_WIDTH,
-			14 * IngredientGridLayout.INGREDIENT_HEIGHT
-		);
-	}
-
-	private static void assertSharedHorizontalAlignedEdge(
-		HorizontalAlignment horizontalAlignment,
-		ImmutableRect2i ownerListArea,
-		ImmutableRect2i lookupHistoryArea
-	) {
-		switch (horizontalAlignment) {
-			case LEFT -> assertEquals(
-				ownerListArea.x(),
-				lookupHistoryArea.x(),
-				"left-aligned lookup history should share the owner list's left edge"
-			);
-			case CENTER -> assertEquals(
-				centerX(ownerListArea),
-				centerX(lookupHistoryArea),
-				"center-aligned lookup history should share the owner list's center"
-			);
-			case RIGHT -> assertEquals(
-				right(ownerListArea),
-				right(lookupHistoryArea),
-				"right-aligned lookup history should share the owner list's right edge"
-			);
-		}
-	}
-
-	private static int right(ImmutableRect2i area) {
-		return area.x() + area.width();
-	}
-
-	private static int centerX(ImmutableRect2i area) {
-		return area.x() + area.width() / 2;
-	}
-
-	private static int bottom(ImmutableRect2i area) {
-		return area.y() + area.height();
-	}
-
-	private static TestGridConfig config() {
-		return new TestGridConfig();
-	}
-
-	private record GridAlignment(HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
-		@Override
-		public String toString() {
-			return horizontalAlignment + " " + verticalAlignment;
-		}
-	}
-
-	private static class TestGridConfig implements IIngredientGridConfig {
-		private final TestJeiConfigValue<Integer> maxColumns = value("maxColumns", 9);
-		private int minColumns = 1;
-		private final TestJeiConfigValue<Integer> maxRows = value("maxRows", 6);
-		private int minRows = 1;
-		private final TestJeiConfigValue<Boolean> drawBackground = value("drawBackground", true);
-		private final TestJeiConfigValue<IngredientGridLayoutMode> layoutMode = value("layoutMode", IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE);
-		private final TestJeiConfigValue<IngredientGridNavigationMode> navigationMode = value("navigationMode", IngredientGridNavigationMode.PAGED);
-		private final TestJeiConfigValue<HorizontalAlignment> horizontalAlignment = value("horizontalAlignment", HorizontalAlignment.LEFT);
-		private final TestJeiConfigValue<VerticalAlignment> verticalAlignment = value("verticalAlignment", VerticalAlignment.TOP);
-		private final TestJeiConfigValue<NavigationVisibility> navigationVisibility = value("navigationVisibility", NavigationVisibility.AUTO_HIDE);
-
-		public TestGridConfig maxColumns(int maxColumns) {
-			this.maxColumns.set(maxColumns);
-			return this;
-		}
-
-		public TestGridConfig maxRows(int maxRows) {
-			this.maxRows.set(maxRows);
-			return this;
-		}
-
-		public TestGridConfig drawBackground(boolean drawBackground) {
-			this.drawBackground.set(drawBackground);
-			return this;
-		}
-
-		public TestGridConfig horizontalAlignment(HorizontalAlignment horizontalAlignment) {
-			this.horizontalAlignment.set(horizontalAlignment);
-			return this;
-		}
-
-		public TestGridConfig verticalAlignment(VerticalAlignment verticalAlignment) {
-			this.verticalAlignment.set(verticalAlignment);
-			return this;
-		}
-
-		public TestGridConfig navigationVisibility(NavigationVisibility navigationVisibility) {
-			this.navigationVisibility.set(navigationVisibility);
-			return this;
-		}
-
-		@Override
-		public IConfigValue<Integer> maxColumns() {
-			return maxColumns;
-		}
-
-		@Override
-		public int getMinColumns() {
-			return minColumns;
-		}
-
-		@Override
-		public IConfigValue<Integer> maxRows() {
-			return maxRows;
-		}
-
-		@Override
-		public int getMinRows() {
-			return minRows;
-		}
-
-		@Override
-		public IConfigValue<Boolean> drawBackground() {
-			return drawBackground;
-		}
-
-		@Override
-		public IConfigValue<IngredientGridLayoutMode> layoutMode() {
-			return layoutMode;
-		}
-
-		@Override
-		public IConfigValue<IngredientGridNavigationMode> navigationMode() {
-			return navigationMode;
-		}
-
-		@Override
-		public IConfigValue<HorizontalAlignment> horizontalAlignment() {
-			return horizontalAlignment;
-		}
-
-		@Override
-		public IConfigValue<VerticalAlignment> verticalAlignment() {
-			return verticalAlignment;
-		}
-
-		@Override
-		public IConfigValue<NavigationVisibility> navigationVisibility() {
-			return navigationVisibility;
-		}
-
-		private static <T> TestJeiConfigValue<T> value(String name, T defaultValue) {
-			return new TestJeiConfigValue<>(name, defaultValue);
-		}
-	}
-
 }

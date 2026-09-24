@@ -27,6 +27,7 @@ import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import mezz.jei.gui.input.handlers.SearchInputLayer;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
+import mezz.jei.gui.overlay.ingredients.IngredientGridBackgroundRenderer;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.ingredients.IIngredientListOverlayContents;
 import mezz.jei.gui.search.ISearchCompletionProvider;
@@ -36,6 +37,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +48,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IIngredientListOverlayContents contents;
 	private final LookupHistoryOverlay lookupHistoryOverlay;
 	private final IClientToggleState toggleState;
+	private final GuiPropertiesCache<Screen> guiPropertiesCache;
+	private final IngredientGridBackgroundRenderer backgroundRenderer;
 	private final GuiTextFieldFilter searchField;
 	private final SearchInputLayer searchInputLayer;
 	private final IngredientListOverlayController controller;
@@ -57,25 +61,27 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IScreenHelper screenHelper,
 		IIngredientListOverlayContents contents,
 		LookupHistoryOverlay lookupHistoryOverlay,
+		IngredientGridBackgroundRenderer backgroundRenderer,
 		IIngredientGridConfig ingredientGridConfig,
 		IClientConfig clientConfig,
 		IClientToggleState toggleState,
 		IInternalKeyMappings keyBindings,
 		ISearchCompletionProvider searchCompletionProvider
 	) {
-		GuiPropertiesCache<Screen> guiPropertiesCache = new GuiPropertiesCache<>(
+		this.guiPropertiesCache = new GuiPropertiesCache<>(
 			screen -> screenHelper.getGuiProperties(screen)
 				.orElse(null)
 		);
 		this.contents = contents;
 		this.lookupHistoryOverlay = lookupHistoryOverlay;
+		this.backgroundRenderer = backgroundRenderer;
 		this.toggleState = toggleState;
 
 		this.searchField = new GuiTextFieldFilter(contents::isEmpty, clientConfig, searchCompletionProvider);
 		this.searchInputLayer = new SearchInputLayer(this.searchField, this::isListDisplayed);
 		this.configButton = new IconButton(new ConfigButtonController(this::isListDisplayed, toggleState, keyBindings));
 		this.controller = IngredientListOverlayController.create(
-			guiPropertiesCache,
+			this.guiPropertiesCache,
 			clientConfig,
 			toggleState,
 			keyBindings,
@@ -90,6 +96,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.searchField.setResponder(filterTextSource::setFilterText);
 
 		ingredientGridSource.addSourceListChangedListener(this::markScreenPropertiesDirty);
+		lookupHistoryOverlay.getLookupHistory().addSourceListChangedListener(this::markScreenPropertiesDirty);
 
 		Internal.registerRuntimeListenerRemoval(clientConfig.searchBarPosition().addListener(v -> markScreenPropertiesDirty()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.lookupHistoryEnabled().addListener(v -> markScreenPropertiesDirty()));
@@ -145,13 +152,31 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	public void drawBackground(GuiGraphicsExtractor guiGraphics) {
 		updateScreenPropertiesIfDirty();
-		if (isListDisplayed()) {
-			this.contents.drawBackground(guiGraphics);
+		boolean contentsDisplayed = isListDisplayed();
+		List<IngredientGridBackgroundRenderer.Panel> backgroundPanels = new ArrayList<>(2);
+		if (contentsDisplayed) {
 			this.searchField.extractBackgroundRenderState(guiGraphics);
+			if (this.contents.isBackgroundEnabled()) {
+				backgroundPanels.add(new IngredientGridBackgroundRenderer.Panel(
+					this.contents.getBackgroundArea(),
+					this.contents.getSlotBackgroundArea()
+				));
+			}
 		}
-		if (this.controller.hasValidScreen() && toggleState.isOverlayEnabled()) {
-			this.lookupHistoryOverlay.drawBackground(guiGraphics);
+		boolean lookupHistoryDisplayed = this.controller.hasValidScreen() &&
+			toggleState.isOverlayEnabled() &&
+			this.lookupHistoryOverlay.isListDisplayed();
+		if (lookupHistoryDisplayed && this.lookupHistoryOverlay.isBackgroundEnabled()) {
+			backgroundPanels.add(new IngredientGridBackgroundRenderer.Panel(
+				this.lookupHistoryOverlay.getBackgroundArea(),
+				this.lookupHistoryOverlay.getSlotBackgroundArea()
+			));
 		}
+		this.backgroundRenderer.draw(
+			guiGraphics,
+			backgroundPanels,
+			this.guiPropertiesCache.getGuiExclusionAreas()
+		);
 	}
 
 	public void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
@@ -224,20 +249,35 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	public IUserInputHandler createInputHandler() {
+		final IUserInputHandler lookupHistoryInputHandler = this.lookupHistoryOverlay.createInputHandler();
+		final IUserInputHandler displayedLookupHistoryInputHandler = new ProxyInputHandler(() -> {
+			if (this.controller.hasValidScreen() &&
+				toggleState.isOverlayEnabled() &&
+				this.lookupHistoryOverlay.isListDisplayed()
+			) {
+				return lookupHistoryInputHandler;
+			}
+			return NullInputHandler.INSTANCE;
+		});
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
 			"IngredientListOverlay",
 			this.configButton.createInputHandler(),
-			this.contents.createInputHandler()
+			this.contents.createInputHandler(),
+			displayedLookupHistoryInputHandler
 		);
 
-		final IUserInputHandler configButtonInputHandler = this.configButton.createInputHandler();
+		final IUserInputHandler configAndLookupHistoryInputHandler = new CombinedInputHandler(
+			"IngredientListOverlayControls",
+			this.configButton.createInputHandler(),
+			displayedLookupHistoryInputHandler
+		);
 
 		return new ProxyInputHandler(() -> {
 			if (isListDisplayed()) {
 				return displayedInputHandler;
 			}
 			if (this.controller.hasValidScreen()) {
-				return configButtonInputHandler;
+				return configAndLookupHistoryInputHandler;
 			}
 			return NullInputHandler.INSTANCE;
 		});
@@ -255,14 +295,21 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	public IDragHandler createDragHandler() {
+		final IDragHandler lookupHistoryDragHandler = this.lookupHistoryOverlay.createDragHandler();
 		final IDragHandler combinedDragHandlers = new CombinedDragHandler(
 			this.contents.createDragHandler(),
-			this.lookupHistoryOverlay.createDragHandler()
+			lookupHistoryDragHandler
 		);
 
 		return new ProxyDragHandler(() -> {
 			if (isListDisplayed()) {
 				return combinedDragHandlers;
+			}
+			if (this.controller.hasValidScreen() &&
+				toggleState.isOverlayEnabled() &&
+				this.lookupHistoryOverlay.isListDisplayed()
+			) {
+				return lookupHistoryDragHandler;
 			}
 			return NullDragHandler.INSTANCE;
 		});

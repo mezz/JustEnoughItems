@@ -31,7 +31,8 @@ public final class IngredientGridScrollState {
 		int visibleRows,
 		int visibleIngredientCount,
 		boolean smoothScrolling,
-		int rowHeight
+		int rowHeight,
+		int visibleHeight
 	) {
 		int anchorIndex = IngredientGridPageState.findIndexOfIngredientElement(scrollAnchorElement, ingredientList);
 		if (anchorIndex < 0) {
@@ -48,7 +49,8 @@ public final class IngredientGridScrollState {
 			visibleIngredientCount,
 			anchorPositionY,
 			smoothScrolling,
-			rowHeight
+			rowHeight,
+			visibleHeight
 		);
 	}
 

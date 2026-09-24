@@ -96,8 +96,18 @@ public class IngredientGrid implements IIngredientGrid {
 		return this.area.height() / IngredientGridLayout.INGREDIENT_HEIGHT;
 	}
 
-	public void updateBounds(ImmutableRect2i availableArea, Set<ImmutableRect2i> guiExclusionAreas, @Nullable ImmutablePoint2i mouseExclusionPoint) {
-		this.area = IngredientGridLayout.calculateBounds(this.gridConfig, availableArea);
+	@Override
+	public int getVisibleHeight() {
+		return this.area.height();
+	}
+
+	public void updateBounds(
+		ImmutableRect2i availableArea,
+		Set<ImmutableRect2i> guiExclusionAreas,
+		@Nullable ImmutablePoint2i mouseExclusionPoint,
+		boolean allowPartialRows
+	) {
+		this.area = IngredientGridLayout.calculateBounds(this.gridConfig, availableArea, allowPartialRows);
 		this.guiExclusionAreas = guiExclusionAreas;
 		this.mouseExclusionPoint = mouseExclusionPoint;
 		this.visibleSlotCount = IngredientGridLayout.calculateAvailableSlotCount(
@@ -136,7 +146,7 @@ public class IngredientGrid implements IIngredientGrid {
 	}
 
 	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		if (this.smoothScrollRowPixelOffset > 0) {
+		if (this.smoothScrollRowPixelOffset > 0 || this.area.height() % IngredientGridLayout.INGREDIENT_HEIGHT != 0) {
 			guiGraphics.enableScissor(
 				this.area.x(),
 				this.area.y(),
@@ -246,6 +256,9 @@ public class IngredientGrid implements IIngredientGrid {
 
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		if (!isMouseOver(mouseX, mouseY)) {
+			return Stream.empty();
+		}
 		return ingredientListRenderer.getSlots()
 			.filter(s -> s.isMouseOver(mouseX, mouseY))
 			.map(IngredientListSlot::getClickableIngredient)
@@ -254,6 +267,9 @@ public class IngredientGrid implements IIngredientGrid {
 
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		if (!isMouseOver(mouseX, mouseY)) {
+			return Stream.empty();
+		}
 		return ingredientListRenderer.getSlots()
 			.filter(s -> s.isMouseOver(mouseX, mouseY))
 			.map(IngredientListSlot::getDraggableIngredient)
