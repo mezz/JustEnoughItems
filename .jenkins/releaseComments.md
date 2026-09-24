@@ -7,7 +7,7 @@ queues a Discord build summary from its `post` block. The worker owns the
 GitHub and Discord credentials, durable retry queues, target discovery,
 idempotency markers, and delivery.
 
-The integration loads the notifier's `v0.2.0` SCM tag before the Pipeline and
+The integration loads the notifier's `v0.3.1` SCM tag before the Pipeline and
 schedules the Jenkins job at `/mezz/release-notifier-worker`. Each Minecraft
 version uses an independent notifier channel. The project records the last
 submitted release commit in its build description so successful
@@ -23,6 +23,6 @@ available release links.
 Worker setup, parameter details, retry behavior, and troubleshooting are
 documented in the notifier repository:
 
-- [Setup](https://github.com/mezz/jenkins-release-notifier/blob/v0.2.0/docs/setup.md)
-- [Discord notifications](https://github.com/mezz/jenkins-release-notifier/blob/v0.2.0/docs/discord.md)
-- [Troubleshooting](https://github.com/mezz/jenkins-release-notifier/blob/v0.2.0/docs/operations.md)
+- [Setup](https://github.com/mezz/jenkins-release-notifier/blob/v0.3.1/docs/setup.md)
+- [Discord notifications](https://github.com/mezz/jenkins-release-notifier/blob/v0.3.1/docs/discord.md)
+- [Troubleshooting](https://github.com/mezz/jenkins-release-notifier/blob/v0.3.1/docs/operations.md)
