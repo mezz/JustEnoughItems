@@ -523,6 +523,17 @@ public class SearchCompletionOverlay {
 		overlayArea = new ImmutableRect2i(x, y, overlayWidth, overlayHeight);
 		background.draw(guiGraphics, overlayArea);
 
+		if (overlayArea.contains(mouseX, mouseY)) {
+			for (int i = 0; i < rowLayouts.size(); i++) {
+				RowLayout row = rowLayouts.get(i);
+				int rowY = y + BORDER + row.y();
+				if (mouseY >= rowY && mouseY < rowY + row.height()) {
+					selectedIndex = scrollOffset + i;
+					break;
+				}
+			}
+		}
+
 		for (int i = 0; i < rowLayouts.size(); i++) {
 			int candidateIndex = scrollOffset + i;
 			if (candidateIndex >= filteredCandidates.size()) {

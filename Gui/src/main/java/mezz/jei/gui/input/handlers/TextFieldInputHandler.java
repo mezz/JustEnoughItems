@@ -27,7 +27,7 @@ public class TextFieldInputHandler implements IUserInputHandler {
 
 	private boolean handleUserInputBoolean(UserInput input, IInternalKeyMappings keyBindings) {
 		if (textFieldFilter.isCompletionVisible()) {
-			if (input.is(keyBindings.getEnterKey())) {
+			if (input.is(keyBindings.getEnterKey()) || input.is(keyBindings.getTabKey())) {
 				if (!input.isSimulate()) {
 					textFieldFilter.acceptCompletion();
 				}
