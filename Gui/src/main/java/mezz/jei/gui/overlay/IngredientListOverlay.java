@@ -29,10 +29,12 @@ import mezz.jei.gui.input.handlers.NullDragHandler;
 import mezz.jei.gui.input.handlers.NullInputHandler;
 import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
+import mezz.jei.gui.input.handlers.SearchInputLayer;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
+import mezz.jei.gui.search.ISearchCompletionProvider;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,6 +59,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IClientConfig clientConfig;
 	private final IWorldConfig worldConfig;
 	private final GuiTextFieldFilter searchField;
+	private final SearchInputLayer searchInputLayer;
 	private final IInternalKeyMappings keyBindings;
 	private final ScreenPropertiesCache screenPropertiesCache;
 	private final IFilterTextSource filterTextSource;
@@ -77,7 +80,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IIngredientGridConfig ingredientGridConfig,
 		IClientConfig clientConfig,
 		IWorldConfig worldConfig,
-		IInternalKeyMappings keyBindings
+		IInternalKeyMappings keyBindings,
+		ISearchCompletionProvider searchCompletionProvider
 	) {
 		this.screenPropertiesCache = new ScreenPropertiesCache(screenHelper);
 		this.contents = contents;
@@ -85,7 +89,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.clientConfig = clientConfig;
 		this.worldConfig = worldConfig;
 
-		this.searchField = new GuiTextFieldFilter(contents::isEmpty);
+		this.searchField = new GuiTextFieldFilter(contents::isEmpty, clientConfig, searchCompletionProvider);
+		this.searchInputLayer = new SearchInputLayer(this.searchField, this::isListDisplayed);
 		this.keyBindings = keyBindings;
 		this.filterTextSource = filterTextSource;
 		this.searchField.setValue(filterTextSource.getFilterText());
@@ -253,6 +258,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		}
 	}
 
+	public SearchInputLayer getSearchInputLayer() {
+		return this.searchInputLayer;
+	}
+
 	public void drawScreen(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
 			this.searchField.render(poseStack, mouseX, mouseY, partialTicks);
@@ -323,7 +332,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	public IUserInputHandler createInputHandler() {
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
 			"IngredientListOverlay",
-			this.searchField.createInputHandler(),
 			this.configButton.createInputHandler(),
 			this.contents.createInputHandler()
 		);

@@ -79,11 +79,11 @@ public class GuiEventHandler {
 	}
 
 	/**
-	 * Updates the pinned tooltip before the screen can render its own tooltip.
+	 * Updates input layers before the screen can render its tooltip.
 	 */
 	public void updateForScreenRender(Screen screen, int mouseX, int mouseY) {
 		updateOverlayProperties(screen);
-		bookmarkOverlay.getPreviewTooltipController().update(mouseX, mouseY);
+		this.inputLayers.forEach(inputLayer -> inputLayer.update(mouseX, mouseY));
 	}
 
 	public void onDrawBackgroundPost(Screen screen, PoseStack poseStack) {

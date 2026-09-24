@@ -186,7 +186,8 @@ public class JeiGuiStarter {
 			serverConnection,
 			ingredientFilterConfig,
 			textures,
-			colorHelper
+			colorHelper,
+			ingredientFilter
 		);
 		registration.setIngredientListOverlay(ingredientListOverlay);
 
@@ -241,6 +242,7 @@ public class JeiGuiStarter {
 			focusUtil
 		);
 		registration.setRecipesGui(recipesGui);
+		var searchInputLayer = ingredientListOverlay.getSearchInputLayer();
 		var recipesGuiForegroundInputLayer = recipesGui.getForegroundInputLayer();
 		var bookmarkPreviewTooltipController = bookmarkOverlay.getPreviewTooltipController();
 
@@ -248,11 +250,13 @@ public class JeiGuiStarter {
 			screenHelper,
 			bookmarkOverlay,
 			ingredientListOverlay,
+			searchInputLayer,
 			bookmarkPreviewTooltipController,
 			recipesGuiForegroundInputLayer
 		);
 
 		CombinedRecipeFocusSource recipeFocusSource = new CombinedRecipeFocusSource(
+			searchInputLayer,
 			bookmarkPreviewTooltipController,
 			recipesGui,
 			ingredientListOverlay,
@@ -266,6 +270,7 @@ public class JeiGuiStarter {
 
 		UserInputRouter userInputRouter = new UserInputRouter(
 			"JEIGlobal",
+			searchInputLayer,
 			bookmarkPreviewTooltipController,
 			recipesGuiForegroundInputLayer,
 			new EditInputHandler(recipeFocusSource, worldConfig, editModeConfig),
@@ -282,6 +287,7 @@ public class JeiGuiStarter {
 		);
 
 		DragRouter dragRouter = new DragRouter(
+			searchInputLayer,
 			ingredientListOverlay.createDragHandler(),
 			bookmarkOverlay.createDragHandler()
 		);

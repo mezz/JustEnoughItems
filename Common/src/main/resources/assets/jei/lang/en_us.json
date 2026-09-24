@@ -609,5 +609,15 @@
   "jei.config.debug.debug.crashingTestItemsEnabled": "Enable Crashing Test Items",
   "jei.config.debug.debug.crashingTestItemsEnabled.description": "Adds ingredients to JEI that intentionally crash, to help debug JEI.",
   "jei.tooltip.bookmarks": "JEI Bookmarks",
-  "jei.message.missing.recipes.from.server": "JEI is missing recipes. Please install JEI on the server to sync recipes to the client."
+  "jei.message.missing.recipes.from.server": "JEI is missing recipes. Please install JEI on the server to sync recipes to the client.",
+  "jei.config.client.search.searchCompletionEnabled": "Search Completion",
+  "jei.config.client.search.searchCompletionEnabled.description": "Show search completion suggestions in the JEI search bar.",
+  "jei.search.completion.prefix.modName": "Search mod names",
+  "jei.search.completion.prefix.tag": "Search tag names",
+  "jei.search.completion.prefix.tooltip": "Search tooltips",
+  "jei.search.completion.prefix.creativeTab": "Search creative tabs",
+  "jei.search.completion.prefix.color": "Search colors",
+  "jei.search.completion.prefix.identifier": "Search identifiers",
+  "jei.search.completion.operator.not": "NOT: exclude results matching this token",
+  "jei.search.completion.operator.or": "OR: combine with another search group"
 }

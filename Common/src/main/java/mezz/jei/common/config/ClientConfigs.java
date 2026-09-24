@@ -36,7 +36,6 @@ public class ClientConfigs implements IClientConfigs {
 		IConfigCategoryBuilder cheating = builder.addCategory("cheating");
 		IConfigCategoryBuilder advanced = builder.addCategory("advanced");
 
-		IngredientFilterConfig ingredientFilterConfig = new IngredientFilterConfig(search);
 		IngredientGridSharedConfig ingredientGridSharedConfig = new IngredientGridSharedConfig(lists);
 		IngredientGridConfig ingredientListConfig = new IngredientGridConfig(
 			ingredientList,
@@ -62,6 +61,7 @@ public class ClientConfigs implements IClientConfigs {
 			advanced,
 			isDev
 		);
+		IngredientFilterConfig ingredientFilterConfig = new IngredientFilterConfig(search);
 		this.ingredientFilterConfig = ingredientFilterConfig;
 		this.ingredientListConfig = ingredientListConfig;
 		this.bookmarkListConfig = bookmarkListConfig;
