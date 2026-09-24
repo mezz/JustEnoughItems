@@ -1,6 +1,7 @@
 package mezz.jei.gui.ingredients;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +19,9 @@ public interface IIngredientListElement<V> {
 
 	String getDisplayName();
 
-	Collection<String> getNameStrings();
+	default Collection<String> getNameStrings() {
+		return Collections.singleton(getDisplayName());
+	}
 
 	String getModNameForSorting();
 
