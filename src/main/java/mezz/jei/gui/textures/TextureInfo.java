@@ -33,10 +33,10 @@ public class TextureInfo {
 	}
 
 	public TextureInfo trim(int left, int right, int top, int bottom) {
-		this.trimLeft = sliceLeft;
-		this.trimRight = sliceRight;
-		this.trimTop = sliceTop;
-		this.trimBottom = sliceBottom;
+		this.trimLeft = left;
+		this.trimRight = right;
+		this.trimTop = top;
+		this.trimBottom = bottom;
 		return this;
 	}
 
