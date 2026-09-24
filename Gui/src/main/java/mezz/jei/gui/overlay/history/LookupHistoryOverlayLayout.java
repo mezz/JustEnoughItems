@@ -1,56 +1,64 @@
 package mezz.jei.gui.overlay.history;
 
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.gui.overlay.ingredients.IngredientGridLayout;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigationLayout;
-import mezz.jei.common.config.IIngredientGridConfig;
 
-public record LookupHistoryOverlayLayout(
-	ImmutableRect2i availableGridArea,
-	ImmutableRect2i ingredientGridArea,
-	ImmutableRect2i slotBackgroundArea,
-	ImmutableRect2i backgroundArea
-) {
-	private static final int INGREDIENT_PADDING = 1;
-	public static final int SLOT_HEIGHT = GuiIngredientProperties.getHeight(INGREDIENT_PADDING);
-	private static final int BACKGROUND_PADDING = IngredientGridWithNavigationLayout.BORDER_PADDING +
-		IngredientGridWithNavigationLayout.INNER_PADDING;
+public final class LookupHistoryOverlayLayout {
+	private LookupHistoryOverlayLayout() {
+	}
 
-	public static int getDisplayHeight(int maxRows, boolean drawBackground) {
-		int height = Math.max(0, maxRows) * SLOT_HEIGHT;
+	public static ImmutableRect2i alignToOwnerBackground(
+		ImmutableRect2i lookupHistoryArea,
+		ImmutableRect2i ownerBackgroundArea
+	) {
+		if (ownerBackgroundArea.isEmpty()) {
+			return lookupHistoryArea;
+		}
+		ImmutableRect2i ownerAvailableArea = ownerBackgroundArea.expandBy(
+			IngredientGridWithNavigationLayout.BORDER_MARGIN
+		);
+		int left = Math.max(lookupHistoryArea.x(), ownerAvailableArea.x());
+		int right = Math.min(
+			lookupHistoryArea.x() + lookupHistoryArea.width(),
+			ownerAvailableArea.x() + ownerAvailableArea.width()
+		);
+		if (left >= right) {
+			return lookupHistoryArea;
+		}
+		return new ImmutableRect2i(left, lookupHistoryArea.y(), right - left, lookupHistoryArea.height());
+	}
+
+	public static ImmutableRect2i moveNextToOwner(
+		ImmutableRect2i lookupHistoryArea,
+		ImmutableRect2i lookupHistoryBackgroundArea,
+		ImmutableRect2i ownerBackgroundArea
+	) {
+		if (lookupHistoryBackgroundArea.isEmpty() || ownerBackgroundArea.isEmpty()) {
+			return lookupHistoryArea;
+		}
+		int ownerBottom = ownerBackgroundArea.y() + ownerBackgroundArea.height();
+		int backgroundOverlap = (2 * IngredientGridWithNavigationLayout.BORDER_PADDING) -
+			IngredientGridWithNavigationLayout.INNER_PADDING;
+		int targetY = ownerBottom - backgroundOverlap;
+		int gap = lookupHistoryBackgroundArea.y() - targetY;
+		if (gap <= 0) {
+			return lookupHistoryArea;
+		}
+		return lookupHistoryArea.moveUp(gap);
+	}
+
+	public static int getDisplayHeight(int maxRows, boolean drawBackground, boolean usesScrollbar) {
+		int height = Math.max(0, maxRows) * IngredientGridLayout.INGREDIENT_HEIGHT;
+		height += 2 * IngredientGridWithNavigationLayout.BORDER_MARGIN;
 		if (drawBackground) {
-			height += 2 * BACKGROUND_PADDING;
+			height += 2 * (IngredientGridWithNavigationLayout.BORDER_PADDING +
+				IngredientGridWithNavigationLayout.INNER_PADDING);
+		}
+		if (!usesScrollbar) {
+			height += IngredientGridWithNavigationLayout.NAVIGATION_HEIGHT +
+				IngredientGridWithNavigationLayout.INNER_PADDING;
 		}
 		return height;
-	}
-
-	public static LookupHistoryOverlayLayout calculate(IIngredientGridConfig historyListConfig, ImmutableRect2i availableArea) {
-		ImmutableRect2i availableGridArea = getAvailableGridArea(historyListConfig, availableArea);
-		ImmutableRect2i ingredientGridArea = IngredientGridLayout.calculateBounds(historyListConfig, availableGridArea);
-		ImmutableRect2i slotBackgroundArea = IngredientGridWithNavigationLayout.calculateSlotBackgroundArea(
-			ingredientGridArea,
-			historyListConfig
-		);
-		ImmutableRect2i backgroundArea;
-		if (historyListConfig.drawBackground().get() && !slotBackgroundArea.isEmpty()) {
-			backgroundArea = slotBackgroundArea.expandBy(IngredientGridWithNavigationLayout.BORDER_PADDING);
-		} else {
-			backgroundArea = slotBackgroundArea;
-		}
-
-		return new LookupHistoryOverlayLayout(
-			availableGridArea,
-			ingredientGridArea,
-			slotBackgroundArea,
-			backgroundArea
-		);
-	}
-
-	private static ImmutableRect2i getAvailableGridArea(IIngredientGridConfig historyListConfig, ImmutableRect2i availableArea) {
-		if (historyListConfig.drawBackground().get()) {
-			return availableArea.insetBy(BACKGROUND_PADDING);
-		}
-		return availableArea;
 	}
 }
