@@ -4,3 +4,5 @@ onboardAccessibility:false
 soundCategory_master:0.0
 soundCategory_music:0.0
 useNativeTransport:false
+resourcePacks:["mod_resources","file/jei-client-test-pack"]
+incompatibleResourcePacks:[]

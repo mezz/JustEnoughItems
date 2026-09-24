@@ -9,6 +9,8 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.collect.ListMultiMap;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
@@ -16,13 +18,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Optional;
 
 public class IngredientInfo<T> {
 	private final IIngredientType<T> ingredientType;
 	private final IIngredientHelper<T> ingredientHelper;
 	private final IIngredientRenderer<T> ingredientRenderer;
 	private final Codec<T> ingredientCodec;
-	private final TypedIngredientSet<T> ingredientSet;
+	@Nullable
+	private final Identifier registeringPluginUid;
+	private final RegisteredIngredientIndex<T> ingredientIndex;
 	private final ListMultiMap<Object, String> aliases;
 	private final ListMultiMap<Object, String> baseAliases;
 
@@ -31,15 +36,17 @@ public class IngredientInfo<T> {
 		Collection<ITypedIngredient<T>> ingredients,
 		IIngredientHelper<T> ingredientHelper,
 		IIngredientRenderer<T> ingredientRenderer,
-		Codec<T> ingredientCodec
+		Codec<T> ingredientCodec,
+		@Nullable Identifier registeringPluginUid
 	) {
 		this.ingredientType = ingredientType;
 		this.ingredientHelper = ingredientHelper;
 		this.ingredientRenderer = ingredientRenderer;
 		this.ingredientCodec = ingredientCodec;
+		this.registeringPluginUid = registeringPluginUid;
 
-		this.ingredientSet = new TypedIngredientSet<>(ingredientHelper, UidContext.Ingredient);
-		this.ingredientSet.addAll(ingredients);
+		this.ingredientIndex = new RegisteredIngredientIndex<>(ingredientHelper);
+		this.ingredientIndex.addAll(ingredients);
 
 		this.aliases = new ListMultiMap<>();
 		this.baseAliases = new ListMultiMap<>(new IdentityHashMap<>(), ArrayList::new);
@@ -61,23 +68,33 @@ public class IngredientInfo<T> {
 		return ingredientCodec;
 	}
 
+	public Optional<Identifier> getRegisteringPluginUid() {
+		return Optional.ofNullable(registeringPluginUid);
+	}
+
 	@Unmodifiable
 	public Collection<ITypedIngredient<T>> getAllTypedIngredients() {
-		return Collections.unmodifiableCollection(ingredientSet);
+		return ingredientIndex.getAllIngredients();
 	}
 
 	@Unmodifiable
 	public Collection<T> getAllIngredients() {
-		Collection<T> transform = Collections2.transform(ingredientSet, ITypedIngredient::getIngredient);
+		Collection<T> transform = Collections2.transform(ingredientIndex.getAllIngredients(), ITypedIngredient::getIngredient);
 		return Collections.unmodifiableCollection(transform);
 	}
 
 	public void addIngredients(Collection<ITypedIngredient<T>> ingredients) {
-		this.ingredientSet.addAll(ingredients);
+		this.ingredientIndex.addAll(ingredients);
 	}
 
 	public void removeIngredients(Collection<ITypedIngredient<T>> ingredients) {
-		this.ingredientSet.removeAll(ingredients);
+		this.ingredientIndex.removeAll(ingredients);
+	}
+
+	@Unmodifiable
+	public List<ITypedIngredient<T>> getGroupedIngredients(ITypedIngredient<T> ingredient) {
+		Object groupingUid = ingredientHelper.getGroupingUid(ingredient);
+		return ingredientIndex.getIngredientsByGroupingUid(groupingUid);
 	}
 
 	@Unmodifiable

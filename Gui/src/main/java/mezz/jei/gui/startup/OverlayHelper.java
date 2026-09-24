@@ -12,6 +12,7 @@ import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
@@ -20,6 +21,7 @@ import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
+import mezz.jei.gui.search.ISearchCompletionProvider;
 
 public final class OverlayHelper {
 	private OverlayHelper() {}
@@ -82,7 +84,8 @@ public final class OverlayHelper {
 		IConnectionToServer serverConnection,
 		IIngredientFilterConfig ingredientFilterConfig,
 		Textures textures,
-		IColorHelper colorHelper
+		IColorHelper colorHelper,
+		ISearchCompletionProvider searchCompletionProvider
 	) {
 		IngredientGridWithNavigation ingredientListGridNavigation = createIngredientGridWithNavigation(
 			"IngredientListOverlay",
@@ -125,9 +128,11 @@ public final class OverlayHelper {
 			screenHelper,
 			ingredientListGridNavigation,
 			lookupHistoryOverlay,
+			ingredientGridConfig,
 			clientConfig,
 			toggleState,
-			keyMappings
+			keyMappings,
+			searchCompletionProvider
 		);
 	}
 
@@ -135,6 +140,7 @@ public final class OverlayHelper {
 		IIngredientManager ingredientManager,
 		IScreenHelper screenHelper,
 		BookmarkList bookmarkList,
+		RecipeTransferService recipeTransferService,
 		IIngredientGridSource lookupHistory,
 		IInternalKeyMappings keyMappings,
 		IIngredientGridConfig bookmarkListConfig,
@@ -182,10 +188,12 @@ public final class OverlayHelper {
 
 		return new BookmarkOverlay(
 			bookmarkList,
+			recipeTransferService,
 			bookmarkListGridNavigation,
 			lookupHistoryOverlay,
 			toggleState,
 			clientConfig,
+			bookmarkListConfig,
 			screenHelper,
 			keyMappings
 		);

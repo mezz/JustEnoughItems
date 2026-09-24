@@ -8,6 +8,24 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 
 public class JeiScreenEvents {
+	public static final Event<AllowDeferredTooltip> ALLOW_DEFERRED_TOOLTIP = EventFactory.createArrayBacked(
+		AllowDeferredTooltip.class,
+		callbacks -> guiGraphics -> {
+			for (AllowDeferredTooltip callback : callbacks) {
+				if (!callback.allow(guiGraphics)) {
+					return false;
+				}
+			}
+			return true;
+		}
+	);
+
+	@Environment(EnvType.CLIENT)
+	@FunctionalInterface
+	public interface AllowDeferredTooltip {
+		boolean allow(GuiGraphicsExtractor guiGraphics);
+	}
+
 	public static final Event<DrawForeground> DRAW_FOREGROUND = createDrawForegroundEvent();
 
 	private static Event<DrawForeground> createDrawForegroundEvent() {

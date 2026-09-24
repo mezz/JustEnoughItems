@@ -8,7 +8,7 @@ import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.bookmarks.BookmarkList;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.overlay.elements.IngredientElement;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.client.gui.screens.ChatScreen;
@@ -143,7 +143,7 @@ public class ChatLinkInputHandler {
 		switch (action) {
 			case SHOW_RECIPE -> show(typedIngredient, List.of(RecipeIngredientRole.OUTPUT));
 			case SHOW_USES -> show(typedIngredient, List.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.CRAFTING_STATION));
-			case BOOKMARK -> bookmarkList.addIngredientBookmark(typedIngredient);
+			case BOOKMARK -> bookmarkList.add(typedIngredient);
 		}
 	}
 

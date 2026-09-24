@@ -29,4 +29,9 @@ public interface IIngredientGridView {
 	 * Returns the rendered background area used to align nearby overlay controls.
 	 */
 	ImmutableRect2i getBackgroundArea();
+
+	/**
+	 * Returns the exact area used for ingredient slots.
+	 */
+	ImmutableRect2i getIngredientGridArea();
 }

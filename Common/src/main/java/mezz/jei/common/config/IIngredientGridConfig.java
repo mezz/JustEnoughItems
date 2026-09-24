@@ -2,16 +2,26 @@ package mezz.jei.common.config;
 
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
-import mezz.jei.common.util.NavigationVisibility;
+import net.mezzdev.config.api.value.IConfigValue;
 
 public interface IIngredientGridConfig {
-	int getMaxColumns();
+	IConfigValue<Integer> maxColumns();
+
 	int getMinColumns();
-	int getMaxRows();
+
+	IConfigValue<Integer> maxRows();
+
 	int getMinRows();
-	boolean drawBackground();
-	IngredientGridNavigationMode getNavigationMode();
-	HorizontalAlignment getHorizontalAlignment();
-	VerticalAlignment getVerticalAlignment();
-	NavigationVisibility getNavigationVisibility();
+
+	IConfigValue<Boolean> drawBackground();
+
+	IConfigValue<IngredientGridLayoutMode> layoutMode();
+
+	IConfigValue<HorizontalAlignment> horizontalAlignment();
+
+	IConfigValue<VerticalAlignment> verticalAlignment();
+
+	IConfigValue<NavigationVisibility> navigationVisibility();
+
+	IConfigValue<IngredientGridNavigationMode> navigationMode();
 }

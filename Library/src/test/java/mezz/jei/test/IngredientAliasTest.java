@@ -1,6 +1,7 @@
 package mezz.jei.test;
 
 import com.mojang.serialization.Codec;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -9,13 +10,17 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.ingredients.IngredientInfo;
-import mezz.jei.library.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.TypedIngredient;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextKeySet;
+import net.minecraft.util.context.ContextMap;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -221,7 +226,8 @@ public class IngredientAliasTest {
 			List.of(typedIngredients),
 			TEST_HELPER,
 			createTestRenderer(),
-			TEST_CODEC
+			TEST_CODEC,
+			null
 		);
 	}
 
@@ -231,7 +237,11 @@ public class IngredientAliasTest {
 
 	private static IngredientManagerBuilder createIngredientManagerBuilder() {
 		SubtypeManager subtypeManager = new SubtypeManager(new SubtypeInterpreters());
-		return new IngredientManagerBuilder(subtypeManager, DummyColorHelper.INSTANCE);
+		return new IngredientManagerBuilder(
+			subtypeManager,
+			DummyColorHelper.INSTANCE,
+			new ContextMap.Builder().create(new ContextKeySet.Builder().build())
+		);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -247,7 +257,21 @@ public class IngredientAliasTest {
 			}
 
 			@Override
+			@Deprecated(since = "30.26.0", forRemoval = true)
+			@SuppressWarnings("removal")
 			public List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag) {
+				return getTooltip(ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+			}
+
+			@Override
+			@Deprecated(since = "30.26.0", forRemoval = true)
+			@SuppressWarnings("removal")
+			public void getTooltip(ITooltipBuilder tooltip, T ingredient, TooltipFlag tooltipFlag) {
+				getTooltip(tooltip, ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+			}
+
+			@Override
+			public List<Component> getTooltip(T ingredient, Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
 				return List.of();
 			}
 		};

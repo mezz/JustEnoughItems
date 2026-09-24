@@ -4,8 +4,8 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.TextHistory;
 import mezz.jei.gui.input.GuiTextFieldFilter;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;
@@ -30,7 +30,7 @@ public class TextFieldInputHandler implements IUserInputHandler {
 			return handleSetFocused(input, false);
 		}
 
-		if (input.is(keyBindings.getFocusSearch())) {
+		if (!textFieldFilter.isFocused() && input.is(keyBindings.getFocusSearch())) {
 			return handleSetFocused(input, true);
 		}
 

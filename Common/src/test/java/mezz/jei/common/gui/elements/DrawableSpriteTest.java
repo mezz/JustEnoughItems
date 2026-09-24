@@ -8,6 +8,8 @@ import net.minecraft.resources.Identifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public class DrawableSpriteTest {
 	@Test
 	public void usesSpriteSizeByDefault() {
@@ -19,12 +21,31 @@ public class DrawableSpriteTest {
 	}
 
 	@Test
-	public void usesLogicalSizeWhenSupplied() {
-		TextureAtlasSprite sprite = createSprite(36, 42);
-		DrawableSprite drawable = new DrawableSprite(() -> sprite, 18, 21);
+	public void usesLogicalSizeWithoutResolvingSprite() {
+		DrawableSprite drawable = new DrawableSprite(
+			() -> {
+				throw new AssertionError("Sprite must not be resolved when the logical size is supplied");
+			},
+			18,
+			21
+		);
 
 		Assertions.assertEquals(18, drawable.getWidth());
 		Assertions.assertEquals(21, drawable.getHeight());
+	}
+
+	@Test
+	public void refreshesSpriteFromSupplier() {
+		AtomicReference<TextureAtlasSprite> sprite = new AtomicReference<>(createSprite(18, 21));
+		DrawableSprite drawable = new DrawableSprite(sprite::get);
+
+		Assertions.assertEquals(18, drawable.getWidth());
+		Assertions.assertEquals(21, drawable.getHeight());
+
+		sprite.set(createSprite(36, 42));
+
+		Assertions.assertEquals(36, drawable.getWidth());
+		Assertions.assertEquals(42, drawable.getHeight());
 	}
 
 	@Test

@@ -1,6 +1,7 @@
 package mezz.jei.library.render;
 
 import com.google.common.base.Preconditions;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.TilingDirection;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
@@ -21,6 +22,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import org.jspecify.annotations.Nullable;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -194,15 +196,30 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	}
 
 	@Override
+	@Deprecated(since = "30.26.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public List<Component> getTooltip(T fluidStack, TooltipFlag tooltipFlag) {
+		Minecraft minecraft = Minecraft.getInstance();
+		Item.TooltipContext tooltipContext = Item.TooltipContext.of(minecraft.level);
+		return getTooltip(fluidStack, tooltipContext, minecraft.player, tooltipFlag);
+	}
+
+	@Override
+	@Deprecated(since = "30.26.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	public void getTooltip(ITooltipBuilder tooltip, T fluidStack, TooltipFlag tooltipFlag) {
+		Minecraft minecraft = Minecraft.getInstance();
+		Item.TooltipContext tooltipContext = Item.TooltipContext.of(minecraft.level);
+		getTooltip(tooltip, fluidStack, tooltipContext, minecraft.player, tooltipFlag);
+	}
+
+	@Override
+	public List<Component> getTooltip(T fluidStack, Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
 		Fluid fluidType = type.getBase(fluidStack);
 		if (fluidType.isSame(Fluids.EMPTY)) {
 			return new ArrayList<>();
 		}
 
-		Minecraft minecraft = Minecraft.getInstance();
-		Player player = minecraft.player;
-		Item.TooltipContext tooltipContext = Item.TooltipContext.of(minecraft.level);
 		List<Component> tooltip = new ArrayList<>(fluidHelper.getTooltip(fluidStack, player, tooltipContext, tooltipFlag));
 
 		long amount = fluidHelper.getAmount(fluidStack);

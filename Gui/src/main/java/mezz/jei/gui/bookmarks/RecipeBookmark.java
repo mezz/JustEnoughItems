@@ -8,12 +8,14 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class RecipeBookmark<R, I> implements IBookmark {
 	private final IElement<I> element;
@@ -27,7 +29,8 @@ public class RecipeBookmark<R, I> implements IBookmark {
 	@Nullable
 	public static <T> RecipeBookmark<T, ?> create(
 		IRecipeLayoutDrawable<T> recipeLayoutDrawable,
-		IIngredientManager ingredientManager
+		IIngredientManager ingredientManager,
+		RecipeTransferService recipeTransferService
 	) {
 		T recipe = recipeLayoutDrawable.getRecipe();
 		IRecipeCategory<T> recipeCategory = recipeLayoutDrawable.getRecipeCategory();
@@ -41,7 +44,7 @@ public class RecipeBookmark<R, I> implements IBookmark {
 			ITypedIngredient<?> output = findFirst(recipeSlotsView, RecipeIngredientRole.OUTPUT);
 			if (output != null) {
 				output = ingredientManager.normalizeTypedIngredient(output);
-				return new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, true);
+				return new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, true, recipeTransferService);
 			}
 		}
 
@@ -49,7 +52,7 @@ public class RecipeBookmark<R, I> implements IBookmark {
 			ITypedIngredient<?> input = findFirst(recipeSlotsView, RecipeIngredientRole.INPUT);
 			if (input != null) {
 				input = ingredientManager.normalizeTypedIngredient(input);
-				return new RecipeBookmark<>(recipeCategory, recipe, recipeUid, input, false);
+				return new RecipeBookmark<>(recipeCategory, recipe, recipeUid, input, false, recipeTransferService);
 			}
 		}
 
@@ -62,10 +65,10 @@ public class RecipeBookmark<R, I> implements IBookmark {
 			if (slotView.getRole() != role) {
 				continue;
 			}
-			for (ITypedIngredient<?> ingredient : slotView.getAllIngredientsList()) {
-				if (ingredient != null) {
-					return ingredient;
-				}
+			Optional<ITypedIngredient<?>> ingredient = slotView.getDisplayedIngredient()
+				.or(() -> slotView.getAllIngredients().findFirst());
+			if (ingredient.isPresent()) {
+				return ingredient.get();
 			}
 		}
 		return null;
@@ -76,13 +79,14 @@ public class RecipeBookmark<R, I> implements IBookmark {
 		R recipe,
 		Identifier recipeUid,
 		ITypedIngredient<I> displayIngredient,
-		boolean displayIsOutput
+		boolean displayIsOutput,
+		RecipeTransferService recipeTransferService
 	) {
 		this.recipeCategory = recipeCategory;
 		this.recipe = recipe;
 		this.recipeUid = recipeUid;
 		this.displayIngredient = displayIngredient;
-		this.element = new RecipeBookmarkElement<>(this);
+		this.element = new RecipeBookmarkElement<>(this, recipeTransferService);
 		this.displayIsOutput = displayIsOutput;
 	}
 

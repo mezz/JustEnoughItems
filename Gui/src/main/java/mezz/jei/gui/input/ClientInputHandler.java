@@ -4,10 +4,11 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.common.util.ReflectionUtil;
 import mezz.jei.gui.input.handlers.ChatLinkInputHandler;
 import mezz.jei.gui.input.handlers.DragRouter;
-import mezz.jei.gui.input.handlers.UserInputRouter;
+import mezz.jei.common.input.handlers.UserInputRouter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -55,7 +56,8 @@ public class ClientInputHandler {
 			return true;
 		}
 
-		if (!isContainerTextFieldFocused(screen)) {
+		// Focus-search explicitly transfers focus, including from the creative inventory's always-focused search box.
+		if (input.is(keybindings.getFocusSearch()) || !isContainerTextFieldFocused(screen)) {
 			IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
 			if (guiProperties != null) {
 				return this.inputRouter.handleUserInput(screen, guiProperties, input, keybindings);
@@ -104,6 +106,11 @@ public class ClientInputHandler {
 		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
 		if (guiProperties == null) {
 			return false;
+		}
+
+		if (this.dragRouter.isDragging() && input.is(keybindings.getLeftClick())) {
+			// an extra left click during a drag (i.e. multi-touch) must not cancel it; it ends on release
+			return true;
 		}
 
 		boolean handled = this.inputRouter.handleUserInput(screen, guiProperties, input, keybindings);

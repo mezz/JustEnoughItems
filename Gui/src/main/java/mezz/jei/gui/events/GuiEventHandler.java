@@ -9,6 +9,7 @@ import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.RectDebugger;
+import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import net.minecraft.client.DeltaTracker;
@@ -20,6 +21,8 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 
 import org.jspecify.annotations.Nullable;
+
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,15 +30,18 @@ public class GuiEventHandler {
 	private final IngredientListOverlay ingredientListOverlay;
 	private final IScreenHelper screenHelper;
 	private final BookmarkOverlay bookmarkOverlay;
+	private final List<IGuiInputLayer> inputLayers;
 
 	public GuiEventHandler(
 		IScreenHelper screenHelper,
 		BookmarkOverlay bookmarkOverlay,
-		IngredientListOverlay ingredientListOverlay
+		IngredientListOverlay ingredientListOverlay,
+		IGuiInputLayer... inputLayers
 	) {
 		this.screenHelper = screenHelper;
 		this.bookmarkOverlay = bookmarkOverlay;
 		this.ingredientListOverlay = ingredientListOverlay;
+		this.inputLayers = List.of(inputLayers);
 	}
 
 	public void onGuiInit(Screen screen) {
@@ -67,12 +73,25 @@ public class GuiEventHandler {
 	}
 
 	/**
-	 * Draws the JEI overlay backgrounds, before the screen contents are drawn.
+	 * Updates input layers before the screen can schedule its deferred tooltip.
+	 */
+	public void updateForScreenRender(Screen screen, int mouseX, int mouseY) {
+		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
+		updateOverlayProperties(screen, guiProperties);
+		this.inputLayers.forEach(inputLayer -> inputLayer.update(mouseX, mouseY));
+	}
+
+	/**
+	 * Draws the JEI overlay backgrounds for container screens, before the screen contents are drawn.
+	 * Non-container screens may draw translucent backgrounds as part of their contents, so their JEI backgrounds
+	 * are drawn later with the overlay foregrounds.
 	 */
 	public void drawForScreenBackground(Screen screen, GuiGraphicsExtractor guiGraphics) {
 		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
 		updateOverlayProperties(screen, guiProperties);
-		drawOverlayBackgrounds(guiGraphics);
+		if (screen instanceof AbstractContainerScreen<?>) {
+			drawOverlayBackgrounds(guiGraphics);
+		}
 	}
 
 	/**
@@ -81,6 +100,9 @@ public class GuiEventHandler {
 	public void drawForScreenForeground(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
 		boolean drawScreenForeground = screen instanceof AbstractContainerScreen<?>;
+		if (!drawScreenForeground) {
+			drawOverlayBackgrounds(guiGraphics);
+		}
 		drawOverlayForegrounds(guiGraphics, mouseX, mouseY, drawScreenForeground);
 		drawPostForeground(screen, guiProperties, guiGraphics, mouseX, mouseY);
 	}
@@ -120,8 +142,10 @@ public class GuiEventHandler {
 
 	private void drawPostForeground(Screen screen, @Nullable IGuiProperties guiProperties, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		Minecraft minecraft = Minecraft.getInstance();
+		boolean mouseOverInputLayer = this.inputLayers.stream()
+			.anyMatch(inputLayer -> inputLayer.isMouseOver(mouseX, mouseY));
 
-		if (guiProperties != null && screen instanceof AbstractContainerScreen<?> guiContainer) {
+		if (!mouseOverInputLayer && guiProperties != null && screen instanceof AbstractContainerScreen<?> guiContainer) {
 			int guiLeft = guiProperties.guiLeft();
 			int guiTop = guiProperties.guiTop();
 			this.screenHelper.getGuiClickableArea(guiContainer, mouseX - guiLeft, mouseY - guiTop)
@@ -137,8 +161,14 @@ public class GuiEventHandler {
 				});
 		}
 
-		ingredientListOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
-		bookmarkOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+		if (!mouseOverInputLayer) {
+			ingredientListOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+			bookmarkOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+		}
+
+		for (int i = this.inputLayers.size() - 1; i >= 0; i--) {
+			this.inputLayers.get(i).draw(guiGraphics, mouseX, mouseY);
+		}
 
 		if (DebugConfig.isDebugGuisEnabled()) {
 			drawDebugInfoForScreen(screen, guiProperties, guiGraphics);

@@ -1,3 +1,5 @@
+import mezz.jei.gradle.dependencyInfo
+import mezz.jei.gradle.mezzConfigDependency
 import mezz.jei.gradle.gradleProperty
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -10,10 +12,13 @@ plugins {
     id("net.neoforged.moddev")
 }
 
+val mezzConfigApiDependency = mezzConfigDependency("config-api")
+
 // gradle.properties
 val jUnitVersion = gradleProperty("jUnitVersion")
 val minecraftVersion = gradleProperty("minecraftVersion")
 val neoformVersionAndTimestamp = gradleProperty("neoformVersionAndTimestamp")
+val modGroup = gradleProperty("modGroup")
 val modId = gradleProperty("modId")
 val modJavaVersion = gradleProperty("modJavaVersion")
 
@@ -22,7 +27,7 @@ base {
     archivesName.set(baseArchivesName)
 }
 
-val dependencyProjectPaths = listOf(":Common", ":CommonApi")
+val dependencyProjectPaths = listOf(":Common")
 
 neoForge {
     neoFormVersion = neoformVersionAndTimestamp
@@ -37,6 +42,9 @@ sourceSets {
 }
 
 dependencies {
+    implementation(mezzConfigApiDependency)
+    testImplementation(mezzConfigDependency("fabric"))
+    implementation(project(path = ":Common", configuration = "apiClassesElements"))
     dependencyProjectPaths.forEach {
         implementation(project(it))
     }
@@ -79,6 +87,19 @@ publishing {
             artifactId = baseArchivesName
             artifact(tasks.jar.get())
             artifact(sourcesJarTask.get())
+
+            val dependencyInfos = listOf(
+                dependencyInfo(mezzConfigApiDependency),
+                dependencyInfo("$modGroup:${modId}-${minecraftVersion}-common:${project.version}"),
+                dependencyInfo("$modGroup:${modId}-${minecraftVersion}-common-api:${project.version}")
+            )
+            pom.withXml {
+                val dependenciesNode = asNode().appendNode("dependencies")
+                dependencyInfos.forEach { dependency ->
+                    val dependencyNode = dependenciesNode.appendNode("dependency")
+                    dependency.forEach { (key, value) -> dependencyNode.appendNode(key, value) }
+                }
+            }
         }
     }
     repositories {

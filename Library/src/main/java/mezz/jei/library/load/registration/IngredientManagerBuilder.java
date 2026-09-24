@@ -2,6 +2,7 @@ package mezz.jei.library.load.registration;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
+import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -12,16 +13,21 @@ import mezz.jei.api.ingredients.subtypes.ISubtypeManager;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.api.registration.ISlotDisplayInterpreterRegistration;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.ingredients.IngredientInfo;
 import mezz.jei.library.ingredients.IngredientManager;
 import mezz.jei.library.ingredients.RegisteredIngredients;
-import mezz.jei.library.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.TypedIngredient;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.level.material.Fluid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,10 +41,26 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 	private final SequencedMap<IIngredientType<?>, IngredientInfo<?>> ingredientInfos = new LinkedHashMap<>();
 	private final ISubtypeManager subtypeManager;
 	private final IColorHelper colorHelper;
+	private final ContextMap contextMap;
+	private final SlotDisplayInterpreterRegistration slotDisplayInterpreterRegistration = new SlotDisplayInterpreterRegistration();
+	@Nullable
+	private Identifier registeringPluginUid;
 
-	public IngredientManagerBuilder(ISubtypeManager subtypeManager, IColorHelper colorHelper) {
+	public IngredientManagerBuilder(ISubtypeManager subtypeManager, IColorHelper colorHelper, ContextMap contextMap) {
 		this.subtypeManager = subtypeManager;
 		this.colorHelper = colorHelper;
+		this.contextMap = contextMap;
+	}
+
+	public void registerIngredients(IModPlugin plugin) {
+		@Nullable
+		Identifier previousPluginUid = registeringPluginUid;
+		registeringPluginUid = plugin.getPluginUid();
+		try {
+			plugin.registerIngredients(this);
+		} finally {
+			registeringPluginUid = previousPluginUid;
+		}
 	}
 
 	@Override
@@ -83,7 +105,14 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 			allTypedIngredients.add(typedIngredient);
 		}
 
-		ingredientInfos.put(ingredientType, new IngredientInfo<>(ingredientType, allTypedIngredients, ingredientHelper, ingredientRenderer, ingredientCodec));
+		ingredientInfos.put(ingredientType, new IngredientInfo<>(
+			ingredientType,
+			allTypedIngredients,
+			ingredientHelper,
+			ingredientRenderer,
+			ingredientCodec,
+			registeringPluginUid
+		));
 	}
 
 	@Override
@@ -151,7 +180,9 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(alias, "alias");
 
 		IngredientInfo<I> ingredientInfo = getIngredientInfo(typedIngredient.getType());
-		ingredientInfo.addIngredientAlias(typedIngredient, alias);
+		IIngredientHelper<I> ingredientHelper = ingredientInfo.getIngredientHelper();
+		ITypedIngredient<I> checkedIngredient = TypedIngredientUtil.checkTypedIngredientFromApi(ingredientHelper, typedIngredient);
+		ingredientInfo.addIngredientAlias(checkedIngredient, alias);
 	}
 
 	@Override
@@ -192,7 +223,9 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(aliases, "aliases");
 
 		IngredientInfo<I> ingredientInfo = getIngredientInfo(typedIngredient.getType());
-		ingredientInfo.addIngredientAliases(typedIngredient, aliases);
+		IIngredientHelper<I> ingredientHelper = ingredientInfo.getIngredientHelper();
+		ITypedIngredient<I> checkedIngredient = TypedIngredientUtil.checkTypedIngredientFromApi(ingredientHelper, typedIngredient);
+		ingredientInfo.addIngredientAliases(checkedIngredient, aliases);
 	}
 
 	@Override
@@ -212,13 +245,8 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(typedIngredients, "typedIngredients");
 		ErrorUtil.checkNotNull(alias, "alias");
 
-		IngredientInfo<I> ingredientInfo = null;
 		for (ITypedIngredient<I> typedIngredient : typedIngredients) {
-			IIngredientType<I> ingredientType = typedIngredient.getType();
-			if (ingredientInfo == null) {
-				ingredientInfo = getIngredientInfo(ingredientType);
-			}
-			ingredientInfo.addIngredientAlias(typedIngredient, alias);
+			addAlias(typedIngredient, alias);
 		}
 	}
 
@@ -239,13 +267,8 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		ErrorUtil.checkNotNull(typedIngredients, "typedIngredients");
 		ErrorUtil.checkNotNull(aliases, "aliases");
 
-		IngredientInfo<I> ingredientInfo = null;
 		for (ITypedIngredient<I> typedIngredient : typedIngredients) {
-			IIngredientType<I> ingredientType = typedIngredient.getType();
-			if (ingredientInfo == null) {
-				ingredientInfo = getIngredientInfo(ingredientType);
-			}
-			ingredientInfo.addIngredientAliases(typedIngredient, aliases);
+			addAliases(typedIngredient, aliases);
 		}
 	}
 
@@ -283,8 +306,20 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 		return colorHelper;
 	}
 
+	@Override
+	public ContextMap getContextMap() {
+		return contextMap;
+	}
+
+	public ISlotDisplayInterpreterRegistration getSlotDisplayInterpreterRegistration() {
+		return slotDisplayInterpreterRegistration;
+	}
+
 	public IngredientManager build() {
 		RegisteredIngredients registeredIngredients = new RegisteredIngredients(ingredientInfos);
-		return new IngredientManager(registeredIngredients);
+		return new IngredientManager(
+			registeredIngredients,
+			slotDisplayInterpreterRegistration.createRegistry()
+		);
 	}
 }

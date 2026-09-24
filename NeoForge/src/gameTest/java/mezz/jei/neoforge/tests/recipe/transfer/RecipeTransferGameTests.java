@@ -7,12 +7,19 @@ import static mezz.jei.neoforge.tests.lib.TestRecipes.ingredient;
 import static mezz.jei.neoforge.tests.lib.TestRecipes.testRecipe;
 import static mezz.jei.neoforge.tests.lib.StackPlacement.stackAt;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.api.recipe.transfer.RecipeTransferResult;
 import mezz.jei.common.config.IServerConfig;
 import mezz.jei.common.network.IConnectionToClient;
 import mezz.jei.common.network.ServerPacketContext;
-import mezz.jei.common.network.packets.PacketRecipeTransfer;
+import mezz.jei.common.network.packets.PacketRecipeTransferWithResult;
+import mezz.jei.common.network.packets.PacketRecipeTransferResult;
 import mezz.jei.common.network.packets.PlayToClientPacket;
+import mezz.jei.common.network.packets.PlayToServerPacket;
+import mezz.jei.common.network.packets.legacy.PacketRecipeTransfer;
+import mezz.jei.common.network.packets.legacy.PacketRecipeTransferCounted;
 import mezz.jei.common.transfer.BasicRecipeTransferHandlerServer;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.TransferOperation;
@@ -25,6 +32,7 @@ import mezz.jei.neoforge.tests.lib.TestRecipeSlotView;
 import mezz.jei.neoforge.tests.lib.TransferRecipe;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -49,6 +57,9 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -115,6 +126,90 @@ public final class RecipeTransferGameTests {
 			)
 			.assertPlayerInventory(
 				List.of()
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Transfers recipe ingredients into an empty item-handler slot.")
+	@SuppressWarnings("removal")
+	public static void transfersIntoEmptyItemHandlerSlot(RecipeTransferTestHelper helper) {
+		// Setup: the target is a real NeoForge item-handler slot whose empty contents cannot be modified.
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		List<Slot> craftingSlots = menu.getInputGridSlots();
+		Slot targetSlot = replaceSlot(
+			menu,
+			craftingSlots.get(CRAFTING_GRID_TOP_LEFT),
+			itemHandlerSlot(craftingSlots.get(CRAFTING_GRID_TOP_LEFT), new ItemStackHandler(1))
+		);
+		helper.getStandardInventorySlots(menu).getFirst().set(new ItemStack(Items.OAK_PLANKS));
+		helper.assertTrue(!targetSlot.allowModification(helper.getPlayer()), "Expected the empty item-handler slot to reject content modification");
+
+		TransferRecipe<TestRecipe> recipe = basicRecipe("empty_item_handler_slot", Items.OAK_PLANKS);
+		// Operation: transfer through the normal client and server recipe-transfer path.
+		var result = helper.transfer(RecipeTypes.CRAFTING, recipe, menu);
+
+		// Assertions: the ingredient moves from inventory into the item handler.
+		helper.assertTransferSucceeded(result);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				CraftingMenu::getInputGridSlots,
+				List.of(stackAt(CRAFTING_GRID_TOP_LEFT, Items.OAK_PLANKS))
+			)
+			.assertPlayerInventory(
+				List.of()
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Validates the requested transfer count instead of the source stack count.")
+	@SuppressWarnings("removal")
+	public static void transfersRequestedCountIntoCountSensitiveItemHandlerSlot(RecipeTransferTestHelper helper) {
+		// Setup: the target accepts the one requested ingredient but rejects the four-item source stack as a whole.
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		List<Slot> craftingSlots = menu.getInputGridSlots();
+		ItemStackHandler countSensitiveItemHandler = new ItemStackHandler(1) {
+			@Override
+			public boolean isItemValid(int slot, ItemStack stack) {
+				return stack.getCount() == 1;
+			}
+		};
+		replaceSlot(
+			menu,
+			craftingSlots.get(CRAFTING_GRID_TOP_LEFT),
+			itemHandlerSlot(craftingSlots.get(CRAFTING_GRID_TOP_LEFT), countSensitiveItemHandler)
+		);
+		helper.getStandardInventorySlots(menu).getFirst().set(new ItemStack(Items.OAK_PLANKS, 4));
+
+		TransferRecipe<TestRecipe> recipe = basicRecipe("count_sensitive_item_handler_slot", Items.OAK_PLANKS);
+		// Operation: transfer one recipe ingredient from the larger source stack.
+		var result = helper.transfer(RecipeTypes.CRAFTING, recipe, menu);
+
+		// Assertions: one plank moves and the other three remain in inventory.
+		helper.assertSuccessfulTransfer(
+			result,
+			(testMenu, player) -> List.of(testMenu.getInputGridSlots().get(CRAFTING_GRID_TOP_LEFT))
+		);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				CraftingMenu::getInputGridSlots,
+				List.of(stackAt(CRAFTING_GRID_TOP_LEFT, Items.OAK_PLANKS))
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, new ItemStack(Items.OAK_PLANKS, 3)))
 			)
 			.assertAllSlotsChecked();
 		helper.succeed();
@@ -1667,11 +1762,57 @@ public final class RecipeTransferGameTests {
 
 	@GameTest
 	@EmptyTemplate
-	@TestHolder(description = "Server transfers from a movable inventory slot when another matching slot is locked.")
+	@TestHolder(description = "Transfers while an unrelated occupied inventory slot is locked.")
+	public static void transfersWhenUnrelatedInventorySlotIsLocked(RecipeTransferTestHelper helper) {
+		// Setup: an unrelated dirt stack is locked, while a movable plank can satisfy the recipe.
+		CraftingMenu menu = helper.openMenu(RecipeTransferGameTests::createCraftingMenu);
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		Slot lockedSlot = replaceSlot(
+			menu,
+			inventorySlots.get(0),
+			lockedSlot(inventorySlots.get(0))
+		);
+		lockedSlot.set(new ItemStack(Items.DIRT));
+		inventorySlots = helper.getStandardInventorySlots(menu);
+		inventorySlots.get(1).set(new ItemStack(Items.OAK_PLANKS, 4));
+
+		TransferRecipe<RecipeHolder<CraftingRecipe>> recipe = craftingTableRecipe();
+		// Operation: transfer normally through planning, validation, the packet, and the server executor.
+		var result = helper.transfer(
+			RecipeTypes.CRAFTING,
+			recipe,
+			menu
+		);
+
+		// Assertions: the unrelated locked stack is ignored and the movable ingredient is transferred.
+		helper.assertSuccessfulTransfer(result, helper::getCraftingGridSlots);
+		helper.createMenuChecker(result.menu())
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of(stackAt(0, Items.CRAFTING_TABLE))
+			)
+			.assertCraftingArea(
+				CraftingMenu::getInputGridSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_TOP_CENTER, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_MIDDLE_LEFT, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_CENTER, Items.OAK_PLANKS)
+				)
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, Items.DIRT))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Transfers from a movable inventory slot when another matching slot is locked.")
 	public static void transfersFromMovableInventorySlotWhenMatchingSlotIsLocked(RecipeTransferTestHelper helper) {
 		// Setup: the first matching plank stack cannot be moved, but another matching stack is available.
-		ServerPlayer player = helper.getPlayer();
-		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		CraftingMenu menu = helper.openMenu(RecipeTransferGameTests::createCraftingMenu);
 		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
 		Slot lockedSlot = replaceSlot(
 			menu,
@@ -1680,35 +1821,30 @@ public final class RecipeTransferGameTests {
 		);
 		lockedSlot.set(new ItemStack(Items.OAK_PLANKS));
 		inventorySlots = helper.getStandardInventorySlots(menu);
-		Slot sourceSlot = inventorySlots.get(1);
-		sourceSlot.set(new ItemStack(Items.OAK_PLANKS));
+		inventorySlots.get(1).set(new ItemStack(Items.OAK_PLANKS, 4));
 
-		List<Slot> craftingSlots = menu.getInputGridSlots();
-		List<TransferOperation> operations = List.of(
-			new TransferOperation(sourceSlot.index, craftingSlots.get(CRAFTING_GRID_TOP_LEFT).index)
+		TransferRecipe<RecipeHolder<CraftingRecipe>> recipe = craftingTableRecipe();
+		// Operation: transfer normally through planning, validation, the packet, and the server executor.
+		var result = helper.transfer(
+			RecipeTypes.CRAFTING,
+			recipe,
+			menu
 		);
 
-		// Operation: call the server transfer with the movable slot as the source.
-		// The normal helper rejects any non-empty locked inventory slot before sending a packet.
-		BasicRecipeTransferHandlerServer.setItems(
-			player,
-			operations,
-			craftingSlots,
-			inventorySlots,
-			false,
-			true
-		);
-
-		// Assertions: the locked stack remains untouched and no duplicate plank appears in inventory.
-		helper.createMenuChecker(menu)
+		// Assertions: the movable stack is transferred while the matching locked stack remains untouched.
+		helper.assertSuccessfulTransfer(result, helper::getCraftingGridSlots);
+		helper.createMenuChecker(result.menu())
 			.assertResults(
 				RecipeTransferGameTests::getCraftingResultSlots,
-				List.of()
+				List.of(stackAt(0, Items.CRAFTING_TABLE))
 			)
 			.assertCraftingArea(
 				CraftingMenu::getInputGridSlots,
 				List.of(
-					stackAt(CRAFTING_GRID_TOP_LEFT, Items.OAK_PLANKS)
+					stackAt(CRAFTING_GRID_TOP_LEFT, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_TOP_CENTER, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_MIDDLE_LEFT, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_CENTER, Items.OAK_PLANKS)
 				)
 			)
 			.assertPlayerInventory(
@@ -1723,7 +1859,7 @@ public final class RecipeTransferGameTests {
 	@TestHolder(description = "Reports an error when the required inventory item cannot be moved.")
 	public static void reportsErrorWhenRequiredInventoryItemIsLocked(RecipeTransferTestHelper helper) {
 		// Setup: the only required ingredient is in an inventory slot that cannot be moved.
-		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		CraftingMenu menu = helper.openMenu(RecipeTransferGameTests::createCraftingMenu);
 		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
 		Slot lockedSourceSlot = replaceSlot(
 			menu,
@@ -1731,8 +1867,9 @@ public final class RecipeTransferGameTests {
 			lockedSlot(inventorySlots.get(0))
 		);
 		lockedSourceSlot.set(new ItemStack(Items.OAK_PLANKS));
+		helper.getStandardInventorySlots(menu).get(1).set(new ItemStack(Items.OAK_PLANKS, 3));
 
-		TransferRecipe<TestRecipe> recipe = basicRecipe("locked_required_inventory_item", Items.OAK_PLANKS);
+		TransferRecipe<RecipeHolder<CraftingRecipe>> recipe = craftingTableRecipe();
 		// Operation: attempt a normal transfer with the required item locked in inventory.
 		var result = helper.transfer(
 			RecipeTypes.CRAFTING,
@@ -1741,7 +1878,7 @@ public final class RecipeTransferGameTests {
 		);
 
 		// Assertions: the transfer fails before moving the locked source item.
-		helper.assertTransferError(result, RecipeTransferErrorInternal.class);
+		helper.assertFailedTransfer(result, helper::getCraftingGridSlots, RecipeTransferErrorMissingSlots.class);
 		helper.createMenuChecker(result.menu())
 			.assertResults(
 				RecipeTransferGameTests::getCraftingResultSlots,
@@ -1752,7 +1889,10 @@ public final class RecipeTransferGameTests {
 				List.of()
 			)
 			.assertPlayerInventory(
-				List.of(stackAt(0, Items.OAK_PLANKS))
+				List.of(
+					stackAt(0, Items.OAK_PLANKS),
+					stackAt(1, new ItemStack(Items.OAK_PLANKS, 3))
+				)
 			)
 			.assertAllSlotsChecked();
 		helper.succeed();
@@ -1886,20 +2026,27 @@ public final class RecipeTransferGameTests {
 
 	@GameTest
 	@EmptyTemplate
-	@TestHolder(description = "Does not delete items when a crafting slot refuses the ingredient.")
-	public static void doesNotDeleteItemWhenCraftingSlotRejectsIngredient(RecipeTransferTestHelper helper) {
-		// Setup: the target crafting slot refuses items, but it is still registered as a recipe slot.
+	@TestHolder(description = "Does not insert into an item-handler slot that refuses the ingredient.")
+	@SuppressWarnings("removal")
+	public static void doesNotInsertIntoRejectingItemHandlerSlot(RecipeTransferTestHelper helper) {
+		// Setup: the target is a real item-handler slot configured to reject every ingredient.
 		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
 		List<Slot> craftingSlots = menu.getInputGridSlots();
 		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		ItemStackHandler rejectingItemHandler = new ItemStackHandler(1) {
+			@Override
+			public boolean isItemValid(int slot, ItemStack stack) {
+				return false;
+			}
+		};
 		replaceSlot(
 			menu,
 			craftingSlots.get(CRAFTING_GRID_TOP_LEFT),
-			rejectingSlot(craftingSlots.get(CRAFTING_GRID_TOP_LEFT))
+			itemHandlerSlot(craftingSlots.get(CRAFTING_GRID_TOP_LEFT), rejectingItemHandler)
 		);
 		inventorySlots.get(0).set(new ItemStack(Items.OAK_PLANKS));
 
-		TransferRecipe<TestRecipe> recipe = basicRecipe("rejecting_crafting_slot", Items.OAK_PLANKS);
+		TransferRecipe<TestRecipe> recipe = basicRecipe("rejecting_item_handler_slot", Items.OAK_PLANKS);
 		// Operation: transfer through the normal helper path so the server receives the generated packet.
 		var result = helper.transfer(
 			RecipeTypes.CRAFTING,
@@ -1920,6 +2067,353 @@ public final class RecipeTransferGameTests {
 			)
 			.assertPlayerInventory(
 				List.of(stackAt(0, Items.OAK_PLANKS))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Does not insert recipe ingredients into a crafting result slot.")
+	public static void doesNotInsertIntoCraftingResultSlot(RecipeTransferTestHelper helper) {
+		// Setup: a server transfer operation maliciously names the crafting output as its destination.
+		ServerPlayer player = helper.getPlayer();
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		Slot sourceSlot = inventorySlots.getFirst();
+		Slot resultSlot = menu.getResultSlot();
+		sourceSlot.set(new ItemStack(Items.OAK_PLANKS));
+
+		// Operation: execute the invalid transfer through the complete server transfer path.
+		BasicRecipeTransferHandlerServer.setItems(
+			player,
+			List.of(new TransferOperation(sourceSlot.index, resultSlot.index)),
+			List.of(resultSlot),
+			inventorySlots,
+			false,
+			true
+		);
+
+		// Assertions: the output remains empty and the source ingredient is untouched.
+		helper.createMenuChecker(menu)
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				CraftingMenu::getInputGridSlots,
+				List.of()
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, Items.OAK_PLANKS))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "A malicious packet cannot move a locked item to complete a craft.")
+	public static void maliciousPacketCannotCraftWithLockedInventoryItem(RecipeTransferTestHelper helper) {
+		// Setup: three planks are already in the crafting-table pattern, but the final plank is locked in inventory.
+		CraftingMenu menu = helper.openMenu(RecipeTransferGameTests::createCraftingMenu);
+		List<Slot> craftingSlots = menu.getInputGridSlots();
+		craftingSlots.get(CRAFTING_GRID_TOP_CENTER).set(new ItemStack(Items.OAK_PLANKS));
+		craftingSlots.get(CRAFTING_GRID_MIDDLE_LEFT).set(new ItemStack(Items.OAK_PLANKS));
+		craftingSlots.get(CRAFTING_GRID_CENTER).set(new ItemStack(Items.OAK_PLANKS));
+
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		Slot lockedSourceSlot = replaceSlot(
+			menu,
+			inventorySlots.get(0),
+			lockedSlot(inventorySlots.get(0))
+		);
+		lockedSourceSlot.set(new ItemStack(Items.OAK_PLANKS));
+		inventorySlots = helper.getStandardInventorySlots(menu);
+
+		PacketRecipeTransfer packet = PacketRecipeTransfer.fromSlots(
+			List.of(new TransferOperation(lockedSourceSlot.index, craftingSlots.get(CRAFTING_GRID_TOP_LEFT).index)),
+			craftingSlots,
+			inventorySlots,
+			false,
+			true
+		);
+
+		// Operation: bypass the client planner and send the forged operation directly to the server.
+		helper.sendPacketToServer(packet);
+
+		// Assertions: the locked plank does not move, the recipe stays incomplete, and no output is created.
+		helper.createMenuChecker(menu)
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				CraftingMenu::getInputGridSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_CENTER, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_MIDDLE_LEFT, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_CENTER, Items.OAK_PLANKS)
+				)
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, Items.OAK_PLANKS))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "A malicious packet cannot partially move a recipe around a locked crafting item.")
+	public static void maliciousPacketCannotPartiallyTransferAroundLockedCraftingItem(RecipeTransferTestHelper helper) {
+		// Setup: a locked dirt item occupies one crafting-table target, while four planks are movable.
+		CraftingMenu menu = helper.openMenu(RecipeTransferGameTests::createCraftingMenu);
+		List<Slot> craftingSlots = menu.getInputGridSlots();
+		Slot lockedCraftingSlot = replaceSlot(
+			menu,
+			craftingSlots.get(CRAFTING_GRID_TOP_LEFT),
+			lockedSlot(craftingSlots.get(CRAFTING_GRID_TOP_LEFT))
+		);
+		lockedCraftingSlot.set(new ItemStack(Items.DIRT));
+		craftingSlots = menu.getInputGridSlots();
+
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		Slot sourceSlot = inventorySlots.getFirst();
+		sourceSlot.set(new ItemStack(Items.OAK_PLANKS, 4));
+		List<TransferOperation> operations = List.of(
+			new TransferOperation(sourceSlot.index, craftingSlots.get(CRAFTING_GRID_TOP_LEFT).index),
+			new TransferOperation(sourceSlot.index, craftingSlots.get(CRAFTING_GRID_TOP_CENTER).index),
+			new TransferOperation(sourceSlot.index, craftingSlots.get(CRAFTING_GRID_MIDDLE_LEFT).index),
+			new TransferOperation(sourceSlot.index, craftingSlots.get(CRAFTING_GRID_CENTER).index)
+		);
+		PacketRecipeTransfer packet = PacketRecipeTransfer.fromSlots(
+			operations,
+			craftingSlots,
+			inventorySlots,
+			false,
+			true
+		);
+
+		// Operation: forge a packet that tries to fill the recipe around the immovable grid item.
+		helper.sendPacketToServer(packet);
+
+		// Assertions: the locked dirt and all four source planks remain untouched, with no output created.
+		helper.createMenuChecker(menu)
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				CraftingMenu::getInputGridSlots,
+				List.of(stackAt(CRAFTING_GRID_TOP_LEFT, Items.DIRT))
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, new ItemStack(Items.OAK_PLANKS, 4)))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "A malicious packet cannot partially move a recipe when one target rejects it.")
+	@SuppressWarnings("removal")
+	public static void maliciousPacketCannotPartiallyTransferIntoRejectingRecipeSlot(RecipeTransferTestHelper helper) {
+		// Setup: the crafting-table pattern has one item-handler target that refuses planks.
+		CraftingMenu menu = helper.openMenu(RecipeTransferGameTests::createCraftingMenu);
+		List<Slot> craftingSlots = menu.getInputGridSlots();
+		ItemStackHandler rejectingItemHandler = new ItemStackHandler(1) {
+			@Override
+			public boolean isItemValid(int slot, ItemStack stack) {
+				return false;
+			}
+		};
+		replaceSlot(
+			menu,
+			craftingSlots.get(CRAFTING_GRID_TOP_LEFT),
+			itemHandlerSlot(craftingSlots.get(CRAFTING_GRID_TOP_LEFT), rejectingItemHandler)
+		);
+		craftingSlots = menu.getInputGridSlots();
+
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		Slot sourceSlot = inventorySlots.getFirst();
+		sourceSlot.set(new ItemStack(Items.OAK_PLANKS, 4));
+		List<TransferOperation> operations = List.of(
+			new TransferOperation(sourceSlot.index, craftingSlots.get(CRAFTING_GRID_TOP_LEFT).index),
+			new TransferOperation(sourceSlot.index, craftingSlots.get(CRAFTING_GRID_TOP_CENTER).index),
+			new TransferOperation(sourceSlot.index, craftingSlots.get(CRAFTING_GRID_MIDDLE_LEFT).index),
+			new TransferOperation(sourceSlot.index, craftingSlots.get(CRAFTING_GRID_CENTER).index)
+		);
+		PacketRecipeTransfer packet = PacketRecipeTransfer.fromSlots(
+			operations,
+			craftingSlots,
+			inventorySlots,
+			false,
+			true
+		);
+
+		// Operation: forge a packet that combines the rejecting destination with three valid destinations.
+		helper.sendPacketToServer(packet);
+
+		// Assertions: validation is atomic, so no plank moves and no crafting output is created.
+		helper.createMenuChecker(menu)
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				CraftingMenu::getInputGridSlots,
+				List.of()
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, new ItemStack(Items.OAK_PLANKS, 4)))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "A malicious packet cannot merge different source items into one recipe target.")
+	public static void maliciousPacketCannotDuplicateByMergingDifferentItemsIntoOneTarget(RecipeTransferTestHelper helper) {
+		// Setup: two different one-item source stacks are both advertised for the same empty target.
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		List<Slot> craftingSlots = menu.getInputGridSlots();
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		Slot diamondSlot = inventorySlots.get(0);
+		Slot dirtSlot = inventorySlots.get(1);
+		diamondSlot.set(new ItemStack(Items.DIAMOND));
+		dirtSlot.set(new ItemStack(Items.DIRT));
+
+		Slot targetSlot = craftingSlots.get(CRAFTING_GRID_TOP_LEFT);
+		PacketRecipeTransfer packet = PacketRecipeTransfer.fromSlots(
+			List.of(
+				new TransferOperation(diamondSlot.index, targetSlot.index),
+				new TransferOperation(dirtSlot.index, targetSlot.index)
+			),
+			craftingSlots,
+			inventorySlots,
+			false,
+			true
+		);
+
+		// Operation: forge a packet that would merge unlike source stacks in the server transfer map.
+		helper.sendPacketToServer(packet);
+
+		// Assertions: neither source moves, so dirt cannot be converted into a second diamond.
+		helper.createMenuChecker(menu)
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				CraftingMenu::getInputGridSlots,
+				List.of()
+			)
+			.assertPlayerInventory(
+				List.of(
+					stackAt(0, Items.DIAMOND),
+					stackAt(1, Items.DIRT)
+				)
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "A malicious packet cannot merge different item components into one recipe target.")
+	public static void maliciousPacketCannotDuplicateByMergingDifferentComponentsIntoOneTarget(RecipeTransferTestHelper helper) {
+		// Setup: two lingering potions share an item type but have different potion components.
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		List<Slot> craftingSlots = menu.getInputGridSlots();
+		List<Slot> inventorySlots = helper.getStandardInventorySlots(menu);
+		Slot waterPotionSlot = inventorySlots.get(0);
+		Slot healingPotionSlot = inventorySlots.get(1);
+		ItemStack waterPotion = lingeringPotion(Potions.WATER);
+		ItemStack healingPotion = lingeringPotion(Potions.HEALING);
+		waterPotionSlot.set(waterPotion.copy());
+		healingPotionSlot.set(healingPotion.copy());
+
+		Slot targetSlot = craftingSlots.get(CRAFTING_GRID_TOP_LEFT);
+		PacketRecipeTransfer packet = PacketRecipeTransfer.fromSlots(
+			List.of(
+				new TransferOperation(waterPotionSlot.index, targetSlot.index),
+				new TransferOperation(healingPotionSlot.index, targetSlot.index)
+			),
+			craftingSlots,
+			inventorySlots,
+			false,
+			true
+		);
+
+		// Operation: forge a packet that would merge unlike components in the server transfer map.
+		helper.sendPacketToServer(packet);
+
+		// Assertions: both original potion subtypes remain and neither is converted into a duplicate.
+		helper.createMenuChecker(menu)
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				CraftingMenu::getInputGridSlots,
+				List.of()
+			)
+			.assertPlayerInventory(
+				List.of(
+					stackAt(0, waterPotion),
+					stackAt(1, healingPotion)
+				)
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "A malicious packet cannot take a crafting result as an ingredient source.")
+	public static void maliciousPacketCannotTakeCraftingResultAsSource(RecipeTransferTestHelper helper) {
+		// Setup: a valid crafting-table result is ready to take from the result slot.
+		CraftingMenu menu = helper.openMenu(RecipeTransferGameTests::createCraftingMenu);
+		List<Slot> craftingSlots = menu.getInputGridSlots();
+		craftingSlots.get(CRAFTING_GRID_TOP_LEFT).set(new ItemStack(Items.OAK_PLANKS));
+		craftingSlots.get(CRAFTING_GRID_TOP_CENTER).set(new ItemStack(Items.OAK_PLANKS));
+		craftingSlots.get(CRAFTING_GRID_MIDDLE_LEFT).set(new ItemStack(Items.OAK_PLANKS));
+		craftingSlots.get(CRAFTING_GRID_CENTER).set(new ItemStack(Items.OAK_PLANKS));
+		Slot resultSlot = menu.getResultSlot();
+		helper.assertTrue(resultSlot.getItem().is(Items.CRAFTING_TABLE), "Expected a crafting-table result before sending the packet");
+
+		Slot targetSlot = craftingSlots.get(CRAFTING_GRID_BOTTOM_RIGHT);
+		PacketRecipeTransfer packet = PacketRecipeTransfer.fromSlots(
+			List.of(new TransferOperation(resultSlot.index, targetSlot.index)),
+			List.of(targetSlot),
+			List.of(resultSlot),
+			false,
+			true
+		);
+
+		// Operation: forge a packet that advertises the output slot as ordinary inventory.
+		helper.sendPacketToServer(packet);
+
+		// Assertions: the output is not taken, its ingredients are not consumed, and no copy is inserted elsewhere.
+		helper.createMenuChecker(menu)
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of(stackAt(0, Items.CRAFTING_TABLE))
+			)
+			.assertCraftingArea(
+				CraftingMenu::getInputGridSlots,
+				List.of(
+					stackAt(CRAFTING_GRID_TOP_LEFT, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_TOP_CENTER, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_MIDDLE_LEFT, Items.OAK_PLANKS),
+					stackAt(CRAFTING_GRID_CENTER, Items.OAK_PLANKS)
+				)
+			)
+			.assertPlayerInventory(
+				List.of()
 			)
 			.assertAllSlotsChecked();
 		helper.succeed();
@@ -2004,6 +2498,87 @@ public final class RecipeTransferGameTests {
 
 	@GameTest
 	@EmptyTemplate
+	@TestHolder(description = "Acknowledges a correlated recipe transfer after the server applies it.")
+	public static void acknowledgesSuccessfulRecipeTransfer(RecipeTransferTestHelper helper) {
+		// Setup: correlate a valid one-item transfer with a client transfer id.
+		ServerPlayer player = helper.getPlayer();
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		Slot targetSlot = menu.getInputGridSlots().get(CRAFTING_GRID_TOP_LEFT);
+		Slot sourceSlot = helper.getStandardInventorySlots(menu).get(0);
+		sourceSlot.set(new ItemStack(Items.OAK_PLANKS));
+		PacketRecipeTransferWithResult packet = PacketRecipeTransferWithResult.fromSlots(
+			List.of(new TransferOperation(sourceSlot.index, targetSlot.index)),
+			List.of(targetSlot),
+			List.of(sourceSlot),
+			false,
+			true,
+			42
+		);
+		var connection = new RecordingConnectionToClient();
+		var context = new ServerPacketContext(player, SERVER_CONFIG, connection);
+
+		// Operation: process the transfer packet with its correlation id.
+		encodeAndDecode(player, packet).process(context);
+
+		// Assertions: the server applies the transfer and acknowledges the matching id afterward.
+		helper.assertTrue(connection.result != null, "Expected a recipe transfer result packet");
+		helper.assertEquals(42, connection.result.transferId, "Expected matching transfer id");
+		helper.assertEquals(RecipeTransferResult.SUCCESS, connection.result.result, "Expected successful transfer result");
+		helper.createMenuChecker(menu)
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				CraftingMenu::getInputGridSlots,
+				List.of(stackAt(CRAFTING_GRID_TOP_LEFT, Items.OAK_PLANKS))
+			)
+			.assertPlayerInventory(List.of())
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Acknowledges a correlated recipe transfer when the server rejects it.")
+	public static void acknowledgesRejectedRecipeTransfer(RecipeTransferTestHelper helper) {
+		// Setup: correlate a transfer packet whose allowed-slot list contains an invalid id.
+		ServerPlayer player = helper.getPlayer();
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		Slot targetSlot = menu.getInputGridSlots().get(CRAFTING_GRID_TOP_LEFT);
+		Slot sourceSlot = helper.getStandardInventorySlots(menu).get(0);
+		sourceSlot.set(new ItemStack(Items.OAK_PLANKS));
+		PacketRecipeTransferWithResult packet = new PacketRecipeTransferWithResult(
+			List.of(new TransferOperation(sourceSlot.index, targetSlot.index)),
+			List.of(targetSlot.index, menu.slots.size()),
+			List.of(sourceSlot.index),
+			false,
+			true,
+			43
+		);
+		var connection = new RecordingConnectionToClient();
+		var context = new ServerPacketContext(player, SERVER_CONFIG, connection);
+
+		// Operation: process the invalid transfer packet with its correlation id.
+		encodeAndDecode(player, packet).process(context);
+
+		// Assertions: the server rejects the transfer without moving items and acknowledges the matching id.
+		helper.assertTrue(connection.result != null, "Expected a recipe transfer result packet");
+		helper.assertEquals(43, connection.result.transferId, "Expected matching transfer id");
+		helper.assertEquals(RecipeTransferResult.REJECTED, connection.result.result, "Expected rejected transfer result");
+		helper.createMenuChecker(menu)
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(CraftingMenu::getInputGridSlots, List.of())
+			.assertPlayerInventory(List.of(stackAt(0, Items.OAK_PLANKS)))
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
 	@TestHolder(description = "Ignores malicious recipe transfer operations with invalid slot ids.")
 	public static void ignoresMaliciousPacketWithInvalidOperationSlotId(RecipeTransferTestHelper helper) {
 		// Setup: the allowed slot lists are valid, but the transfer operation references an invalid source.
@@ -2080,6 +2655,50 @@ public final class RecipeTransferGameTests {
 			)
 			.assertPlayerInventory(
 				List.of(stackAt(0, Items.OAK_PLANKS))
+			)
+			.assertAllSlotsChecked();
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Does not duplicate a counted stack across multiple targets from a malicious packet.")
+	public static void maliciousCountedPacketCannotDuplicateStackAcrossTargets(RecipeTransferTestHelper helper) {
+		// Setup: the counted packet claims the same two-item source stack can satisfy two two-item targets.
+		CraftingMenu menu = helper.openMenu(CraftingMenu::new);
+		List<Slot> craftingSlots = menu.getInputGridSlots();
+		Slot sourceSlot = helper.getStandardInventorySlots(menu).get(0);
+		sourceSlot.set(new ItemStack(Items.OAK_PLANKS, 2));
+
+		PacketRecipeTransferCounted packet = new PacketRecipeTransferCounted(
+			List.of(
+				new TransferOperation(sourceSlot.index, craftingSlots.get(CRAFTING_GRID_TOP_LEFT).index, 2),
+				new TransferOperation(sourceSlot.index, craftingSlots.get(CRAFTING_GRID_TOP_CENTER).index, 2)
+			),
+			List.of(
+				craftingSlots.get(CRAFTING_GRID_TOP_LEFT).index,
+				craftingSlots.get(CRAFTING_GRID_TOP_CENTER).index
+			),
+			List.of(sourceSlot.index),
+			false,
+			true
+		);
+
+		// Operation: send the forged counted packet directly to the server packet handler.
+		helper.sendPacketToServer(packet);
+
+		// Assertions: the incomplete counted set rolls back, preserving exactly the two real source items.
+		helper.createMenuChecker(menu)
+			.assertResults(
+				RecipeTransferGameTests::getCraftingResultSlots,
+				List.of()
+			)
+			.assertCraftingArea(
+				CraftingMenu::getInputGridSlots,
+				List.of()
+			)
+			.assertPlayerInventory(
+				List.of(stackAt(0, new ItemStack(Items.OAK_PLANKS, 2)))
 			)
 			.assertAllSlotsChecked();
 		helper.succeed();
@@ -2356,13 +2975,9 @@ public final class RecipeTransferGameTests {
 		};
 	}
 
-	private static Slot rejectingSlot(Slot slot) {
-		return new Slot(slot.container, slot.getContainerSlot(), slot.x, slot.y) {
-			@Override
-			public boolean mayPlace(ItemStack stack) {
-				return false;
-			}
-		};
+	@SuppressWarnings("removal")
+	private static Slot itemHandlerSlot(Slot slot, ItemStackHandler itemHandler) {
+		return new SlotItemHandler(itemHandler, 0, slot.x, slot.y);
 	}
 
 	private static List<Slot> getCraftingResultSlots(AbstractCraftingMenu menu) {
@@ -2464,6 +3079,17 @@ public final class RecipeTransferGameTests {
 		packet.process(new ServerPacketContext(helper.getPlayer(), SERVER_CONFIG, CONNECTION_TO_CLIENT));
 	}
 
+	private static <T extends PlayToServerPacket<T>> T encodeAndDecode(ServerPlayer player, T packet) {
+		ByteBuf byteBuf = Unpooled.buffer();
+		try {
+			RegistryFriendlyByteBuf buffer = RegistryFriendlyByteBuf.decorator(player.level().registryAccess(), ConnectionType.OTHER).apply(byteBuf);
+			packet.streamCodec().encode(buffer, packet);
+			return packet.streamCodec().decode(buffer);
+		} finally {
+			byteBuf.release();
+		}
+	}
+
 	private static final class EmptyServerConfig implements IServerConfig {
 		@Override
 		public boolean isCheatModeEnabledForOp() {
@@ -2484,6 +3110,17 @@ public final class RecipeTransferGameTests {
 	private static final class EmptyConnectionToClient implements IConnectionToClient {
 		@Override
 		public <T extends PlayToClientPacket<T>> void sendPacketToClient(T packet, ServerPlayer player) {
+		}
+	}
+
+	private static final class RecordingConnectionToClient implements IConnectionToClient {
+		private PacketRecipeTransferResult result;
+
+		@Override
+		public <T extends PlayToClientPacket<T>> void sendPacketToClient(T packet, ServerPlayer player) {
+			if (packet instanceof PacketRecipeTransferResult result) {
+				this.result = result;
+			}
 		}
 	}
 

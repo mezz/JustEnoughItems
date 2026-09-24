@@ -1,0 +1,18 @@
+package mezz.jei.common.input;
+
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+
+/**
+ * A foreground layer that owns its rendering, hit testing, and input handling.
+ * While the mouse is over this layer, pointer input is captured so that it cannot reach obscured handlers below it.
+ */
+public interface IGuiInputLayer extends IUserInputHandler, IMouseOverable {
+	/**
+	 * Updates this layer before foreground tooltip hit testing and extraction.
+	 */
+	default void update(double mouseX, double mouseY) {
+
+	}
+
+	void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
+}

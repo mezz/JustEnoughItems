@@ -1,19 +1,20 @@
 package mezz.jei.gui.recipes;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
-import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.common.recipes.IRecipeVisibility;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IngredientBookmark;
@@ -25,6 +26,7 @@ import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import mezz.jei.gui.recipes.lookups.ILookupState;
 import mezz.jei.gui.recipes.lookups.IngredientLookupState;
 import mezz.jei.gui.recipes.lookups.SingleCategoryLookupState;
+import mezz.jei.gui.recipes.lookups.StaticFocusedRecipes;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jspecify.annotations.Nullable;
@@ -32,18 +34,18 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class RecipeGuiLogic implements IRecipeGuiLogic {
 	private final IRecipeManager recipeManager;
 	private final IIngredientManager ingredientManager;
-	private final IRecipeTransferManager recipeTransferManager;
+	private final RecipeTransferService recipeTransferService;
 	private final IRecipeLogicStateListener stateListener;
 
 	private boolean initialState = true;
 	private ILookupState state;
-	private final Stack<ILookupState> stateHistory = new Stack<>();
+	private final NavigationHistory<ILookupState> stateHistory = new NavigationHistory<>();
 	private final LookupHistory lookupHistory;
 	private final IFocusFactory focusFactory;
 	private final BookmarkFactory bookmarkFactory;
@@ -56,7 +58,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		IRecipeManager recipeManager,
 		IIngredientManager ingredientManager,
 		LookupHistory lookupHistory,
-		IRecipeTransferManager recipeTransferManager,
+		RecipeTransferService recipeTransferService,
 		IRecipeLogicStateListener stateListener,
 		IFocusFactory focusFactory,
 		BookmarkFactory bookmarkFactory
@@ -64,7 +66,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		this.recipeManager = recipeManager;
 		this.ingredientManager = ingredientManager;
 		this.lookupHistory = lookupHistory;
-		this.recipeTransferManager = recipeTransferManager;
+		this.recipeTransferService = recipeTransferService;
 		this.stateListener = stateListener;
 		List<IRecipeCategory<?>> recipeCategories = recipeManager.createRecipeCategoryLookup()
 			.get()
@@ -73,7 +75,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			recipeManager,
 			focusFactory.getEmptyFocusGroup(),
 			recipeCategories,
-			recipeTransferManager
+			recipeTransferService
 		);
 		this.focusFactory = focusFactory;
 		this.bookmarkFactory = bookmarkFactory;
@@ -97,7 +99,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			recipeManager,
 			focuses,
 			recipeCategories,
-			recipeTransferManager
+			recipeTransferService
 		);
 
 		for (IFocus<?> focus : allFocuses) {
@@ -110,7 +112,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public boolean showRecipes(IFocusedRecipes<?> focusedRecipes, IFocusGroup focuses) {
-		var recipeBookmark = createRecipeBookmark(recipeManager, ingredientManager, focusedRecipes, focuses);
+		focusedRecipes = filterVisibleRecipes(focusedRecipes, focuses);
+		if (focusedRecipes.getRecipes().isEmpty()) {
+			return false;
+		}
+		var recipeBookmark = createRecipeBookmark(recipeManager, ingredientManager, recipeTransferService, focusedRecipes, focuses);
 		if (recipeBookmark != null) {
 			this.lookupHistory.add(recipeBookmark);
 		} else {
@@ -123,9 +129,21 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		return setState(state, true);
 	}
 
+	private <T> IFocusedRecipes<T> filterVisibleRecipes(IFocusedRecipes<T> focusedRecipes, IFocusGroup focuses) {
+		if (!(recipeManager instanceof IRecipeVisibility recipeVisibility)) {
+			return focusedRecipes;
+		}
+		IRecipeCategory<T> recipeCategory = focusedRecipes.getRecipeCategory();
+		List<T> visibleRecipes = focusedRecipes.getRecipes().stream()
+			.filter(recipe -> recipeVisibility.isRecipeVisible(recipeCategory, recipe, focuses))
+			.toList();
+		return new StaticFocusedRecipes<>(recipeCategory, visibleRecipes);
+	}
+
 	private static <T> @Nullable RecipeBookmark<T, ?> createRecipeBookmark(
 		IRecipeManager recipeManager,
 		IIngredientManager ingredientManager,
+		RecipeTransferService recipeTransferService,
 		IFocusedRecipes<T> focusedRecipes,
 		IFocusGroup focusGroup
 	) {
@@ -136,25 +154,27 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 		T recipe = recipes.getFirst();
 		return recipeManager.createRecipeLayoutDrawable(recipeCategory, recipe, focusGroup)
-			.map(drawable -> RecipeBookmark.create(drawable, ingredientManager))
+			.map(drawable -> RecipeBookmark.create(drawable, ingredientManager, recipeTransferService))
 			.orElse(null);
 	}
 
 	@Override
 	public boolean back() {
-		if (stateHistory.empty()) {
-			return false;
-		}
-		final ILookupState state = stateHistory.pop();
-		setState(state, false);
-		return true;
+		return stateHistory.goBack(state)
+			.map(previousState -> setState(previousState, false))
+			.orElse(false);
+	}
+
+	@Override
+	public boolean forward() {
+		return stateHistory.goForward(state)
+			.map(nextState -> setState(nextState, false))
+			.orElse(false);
 	}
 
 	@Override
 	public void clearHistory() {
-		while (!stateHistory.empty()) {
-			stateHistory.pop();
-		}
+		stateHistory.clear();
 	}
 
 	private boolean setState(ILookupState state, boolean saveHistory) {
@@ -164,7 +184,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		}
 
 		if (saveHistory && !initialState) {
-			stateHistory.push(this.state);
+			stateHistory.record(this.state);
 		}
 		this.state = state;
 		this.initialState = false;
@@ -186,7 +206,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			recipeManager,
 			focusFactory.getEmptyFocusGroup(),
 			recipeCategories,
-			recipeTransferManager
+			recipeTransferService
 		);
 		state.moveToRecipeCategory(recipeCategory);
 		setState(state, true);
@@ -205,7 +225,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			recipeManager,
 			focusFactory.getEmptyFocusGroup(),
 			recipeCategories,
-			recipeTransferManager
+			recipeTransferService
 		);
 		if (state.getRecipeCategories().isEmpty()) {
 			return false;
@@ -217,16 +237,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public Stream<ITypedIngredient<?>> getRecipeCatalysts() {
+	public Stream<Consumer<IIngredientAcceptor<?>>> getCraftingStations() {
 		IRecipeCategory<?> category = getSelectedRecipeCategory();
-		return getRecipeCatalysts(category);
-	}
-
-	@Override
-	public Stream<ITypedIngredient<?>> getRecipeCatalysts(IRecipeCategory<?> recipeCategory) {
-		IRecipeType<?> recipeType = recipeCategory.getRecipeType();
+		IRecipeType<?> recipeType = category.getRecipeType();
 		return recipeManager.createCraftingStationLookup(recipeType)
-			.get();
+			.getGroups();
 	}
 
 	@Override
@@ -250,9 +265,9 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	) {
 		IRecipeCategory<?> recipeCategory = getSelectedRecipeCategory();
 
-		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+		IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-		Set<RecipeSorterStage> recipeSorterStages = clientConfig.getRecipeSorterStages();
+		Set<RecipeSorterStage> recipeSorterStages = RecipeSorterStage.getEnabled(clientConfig);
 
 		int containerId = -1;
 		if (container != null) {
@@ -272,6 +287,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 				state.getFocuses(),
 				bookmarkList,
 				recipeManager,
+				recipeTransferService,
 				recipesGui
 			);
 			this.cachedRecipeCategory = recipeCategory;

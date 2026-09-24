@@ -77,6 +77,16 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	}
 
 	@Override
+	public boolean isValidIngredient(T ingredient) {
+		if (platformFluidHelper.isEmpty(ingredient)) {
+			return false;
+		}
+
+		Fluid fluid = fluidType.getBase(ingredient);
+		return fluid.isSource(fluid.defaultFluidState());
+	}
+
+	@Override
 	public T copyWithAmount(T ingredient, long amount) {
 		return platformFluidHelper.copyWithAmount(ingredient, amount);
 	}

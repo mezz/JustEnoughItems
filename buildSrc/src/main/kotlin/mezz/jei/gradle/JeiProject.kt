@@ -18,6 +18,7 @@ class JeiProjectPlugin : Plugin<Project> {
 
 private fun Project.configureJeiProject() {
 	val buildNumber = findProperty("BUILD_NUMBER") ?: "9999"
+	val amecsVersionFabric = property("amecsVersionFabric")
 	val specificationVersion = property("specificationVersion").toString()
 	val modGroup = property("modGroup").toString()
 	val modJavaVersion = property("modJavaVersion").toString()
@@ -35,6 +36,11 @@ private fun Project.configureJeiProject() {
 	val minecraftVersionRange = property("minecraftVersionRange")
 	val modDescription = property("modDescription")
 	val modId = property("modId")
+
+	repositories.maven {
+		url = uri("https://maven.blamejared.com")
+		content { includeGroup(gradleProperty("configModGroup")) }
+	}
 
 	version = "$specificationVersion.$buildNumber"
 	group = modGroup
@@ -67,7 +73,16 @@ private fun Project.configureJeiProject() {
 	}
 
 	tasks.withType(ProcessResources::class.java).configureEach {
+		val mezzConfigGuiMinimumVersion = gradleProperty("mezzConfigGuiMinimumVersion")
 		val resourceProperties = mapOf(
+			"amecsVersionFabric" to amecsVersionFabric,
+			"configGuiModId" to gradleProperty("configGuiModId"),
+			"configModId" to gradleProperty("configModId"),
+			"mezzConfigGuiVersionRange" to "[$mezzConfigGuiMinimumVersion,)",
+			"mezzConfigGuiFabricVersionRange" to ">=$mezzConfigGuiMinimumVersion",
+			"mezzConfigGuiFabricBreaksVersionRange" to "<$mezzConfigGuiMinimumVersion",
+			"mezzConfigVersionRange" to gradleProperty("mezzConfigVersionRange"),
+			"mezzConfigFabricVersionRange" to gradleProperty("mezzConfigFabricVersionRange"),
 			"curseHomepageUrl" to curseHomepageUrl,
 			"fabricApiVersion" to fabricApiVersion,
 			"fabricApiVersionRange" to fabricApiVersionRange,

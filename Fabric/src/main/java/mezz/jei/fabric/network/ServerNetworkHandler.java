@@ -6,11 +6,14 @@ import mezz.jei.common.network.ServerPacketContext;
 import mezz.jei.common.network.packets.PacketCheatPermission;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.network.packets.PacketGiveItemStack;
-import mezz.jei.common.network.packets.PacketRecipeTransfer;
-import mezz.jei.common.network.packets.PacketRecipeTransferCounted;
+import mezz.jei.common.network.packets.PacketRecipeTransferCountedWithResult;
+import mezz.jei.common.network.packets.PacketRecipeTransferResult;
+import mezz.jei.common.network.packets.PacketRecipeTransferWithResult;
 import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.network.packets.PacketSetHotbarItemStack;
 import mezz.jei.common.network.packets.PlayToServerPacket;
+import mezz.jei.common.network.packets.legacy.PacketRecipeTransfer;
+import mezz.jei.common.network.packets.legacy.PacketRecipeTransferCounted;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,6 +28,9 @@ public final class ServerNetworkHandler {
 		PayloadTypeRegistry.clientboundPlay().register(PacketGiveItemStack.TYPE, PacketGiveItemStack.STREAM_CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(PacketRecipeTransfer.TYPE, PacketRecipeTransfer.STREAM_CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(PacketRecipeTransferCounted.TYPE, PacketRecipeTransferCounted.STREAM_CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(PacketRecipeTransferWithResult.TYPE, PacketRecipeTransferWithResult.STREAM_CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(PacketRecipeTransferCountedWithResult.TYPE, PacketRecipeTransferCountedWithResult.STREAM_CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(PacketRecipeTransferResult.TYPE, PacketRecipeTransferResult.STREAM_CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(PacketSetHotbarItemStack.TYPE, PacketSetHotbarItemStack.STREAM_CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(PacketRequestCheatPermission.TYPE, PacketRequestCheatPermission.STREAM_CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(PacketCheatPermission.TYPE, PacketCheatPermission.STREAM_CODEC);
@@ -33,6 +39,8 @@ public final class ServerNetworkHandler {
 		PayloadTypeRegistry.serverboundPlay().register(PacketGiveItemStack.TYPE, PacketGiveItemStack.STREAM_CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(PacketRecipeTransfer.TYPE, PacketRecipeTransfer.STREAM_CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(PacketRecipeTransferCounted.TYPE, PacketRecipeTransferCounted.STREAM_CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(PacketRecipeTransferWithResult.TYPE, PacketRecipeTransferWithResult.STREAM_CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(PacketRecipeTransferCountedWithResult.TYPE, PacketRecipeTransferCountedWithResult.STREAM_CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(PacketSetHotbarItemStack.TYPE, PacketSetHotbarItemStack.STREAM_CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(PacketRequestCheatPermission.TYPE, PacketRequestCheatPermission.STREAM_CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(PacketCheatPermission.TYPE, PacketCheatPermission.STREAM_CODEC);
@@ -41,6 +49,8 @@ public final class ServerNetworkHandler {
 		ServerPlayNetworking.registerGlobalReceiver(PacketGiveItemStack.TYPE, wrapServerHandler(connection, serverConfig, PacketGiveItemStack::process));
 		ServerPlayNetworking.registerGlobalReceiver(PacketRecipeTransfer.TYPE, wrapServerHandler(connection, serverConfig, PacketRecipeTransfer::process));
 		ServerPlayNetworking.registerGlobalReceiver(PacketRecipeTransferCounted.TYPE, wrapServerHandler(connection, serverConfig, PacketRecipeTransferCounted::process));
+		ServerPlayNetworking.registerGlobalReceiver(PacketRecipeTransferWithResult.TYPE, wrapServerHandler(connection, serverConfig, PacketRecipeTransferWithResult::process));
+		ServerPlayNetworking.registerGlobalReceiver(PacketRecipeTransferCountedWithResult.TYPE, wrapServerHandler(connection, serverConfig, PacketRecipeTransferCountedWithResult::process));
 		ServerPlayNetworking.registerGlobalReceiver(PacketSetHotbarItemStack.TYPE, wrapServerHandler(connection, serverConfig, PacketSetHotbarItemStack::process));
 		ServerPlayNetworking.registerGlobalReceiver(PacketRequestCheatPermission.TYPE, wrapServerHandler(connection, serverConfig, PacketRequestCheatPermission::process));
 	}

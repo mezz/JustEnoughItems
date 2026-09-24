@@ -77,6 +77,31 @@ public class IngredientListOverlayLayoutTest {
 	}
 
 	@Test
+	public void rightSideControlsAreHiddenWhenDisplayAreaCannotFitButton() {
+		// Setup: the GUI leaves only a very narrow strip on the right side.
+		TestGuiProperties guiProperties = new TestGuiProperties(20, 20, 176, 50, 200, 100);
+		ImmutableRect2i staleContentsArea = new ImmutableRect2i(196, 8, 4, 40);
+
+		// Operation: calculate the search/config row when there is no room for a full-size config button.
+		IngredientListOverlayLayout.Layout layout = calculate(
+			guiProperties,
+			false,
+			false,
+			false,
+			0
+		);
+
+		IngredientListOverlayLayout.SearchAndConfigAreas searchAndConfigAreas = layout.getSearchAndConfigAreas(
+			false,
+			staleContentsArea
+		);
+
+		// Assertions: JEI controls should hide instead of drawing squeezed buttons.
+		assertEquals(ImmutableRect2i.EMPTY, searchAndConfigAreas.searchArea());
+		assertEquals(ImmutableRect2i.EMPTY, searchAndConfigAreas.configButtonArea());
+	}
+
+	@Test
 	public void centeredSearchBarUsesGuiWidthAndLeavesContentsFullHeight() {
 		// Setup: center-search is enabled and there is enough room below the GUI to place the search field.
 		TestGuiProperties guiProperties = new TestGuiProperties(50, 20, 100, 50, 260, 100);

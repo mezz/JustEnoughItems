@@ -6,10 +6,11 @@ import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.common.gui.elements.DrawableSprite;
 import mezz.jei.common.gui.elements.HighResolutionDrawable;
 import mezz.jei.common.gui.elements.ScalableDrawable;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.Identifier;
 
 public class Textures {
-	private final JeiAtlasManager jeiAtlasManager;
+	private final TextureAtlas guiAtlas;
 
 	private final IDrawableStatic slot;
 	private final IDrawableStatic outputSlot;
@@ -23,8 +24,10 @@ public class Textures {
 	private final ScalableDrawable bookmarkListBackground;
 	private final ScalableDrawable exclusionAreaShadow;
 	private final ScalableDrawable recipeBackground;
+	private final ScalableDrawable interactiveIngredientTooltipBackground;
 	private final ScalableDrawable recipePreviewBackground;
 	private final ScalableDrawable searchBackground;
+	private final ScalableDrawable completionOverlayBackground;
 	private final ScalableDrawable scrollbarBackground;
 	private final ScalableDrawable scrollbarMarker;
 
@@ -49,17 +52,22 @@ public class Textures {
 	private final IDrawableStatic recipePlusSign;
 	private final IDrawableStatic bookmarksFirst;
 	private final IDrawableStatic craftableFirst;
+	private final IDrawableStatic tagBadgeIcon;
+	private final IDrawableStatic listBadgeIcon;
 
 	private final IDrawableStatic brewingStandBackground;
 	private final IDrawableStatic brewingStandBlazeHeat;
 	private final IDrawableStatic brewingStandBubbles;
 	private final IDrawableStatic brewingStandArrow;
 
+	private final IScalableDrawable buttonDisabled;
+	private final IScalableDrawable buttonEnabled;
+	private final IScalableDrawable buttonHighlight;
 	private final IScalableDrawable buttonPressed;
 	private final IScalableDrawable buttonPressedHighlight;
 
-	public Textures(JeiAtlasManager jeiAtlasManager) {
-		this.jeiAtlasManager = jeiAtlasManager;
+	public Textures(TextureAtlas guiAtlas) {
+		this.guiAtlas = guiAtlas;
 
 		this.slot = createGuiSprite("slot", 18, 18);
 		this.outputSlot = createGuiSprite("output_slot", 26, 26);
@@ -73,8 +81,10 @@ public class Textures {
 		this.bookmarkListBackground = createScalableGuiSprite("bookmark_list_background");
 		this.exclusionAreaShadow = createScalableGuiSprite("exclusion_area_shadow");
 		this.recipeBackground = createScalableGuiSprite("single_recipe_background");
+		this.interactiveIngredientTooltipBackground = createScalableGuiSprite("interactive_ingredient_tooltip_background");
 		this.recipePreviewBackground = createScalableGuiSprite("recipe_preview_background");
 		this.searchBackground = createScalableGuiSprite("search_background");
+		this.completionOverlayBackground = createScalableGuiSprite("completion_overlay_background");
 		this.scrollbarBackground = createScalableGuiSprite("scrollbar_background");
 		this.scrollbarMarker = createScalableGuiSprite("scrollbar_marker");
 		this.catalystTab = createScalableGuiSprite("catalyst_tab");
@@ -88,6 +98,9 @@ public class Textures {
 		this.brewingStandBubbles = createGuiSprite("brewing_stand_bubbles", 11, 28);
 		this.brewingStandArrow = createGuiSprite("brewing_stand_arrow", 7, 27);
 
+		this.buttonDisabled = createScalableGuiSprite("button_disabled");
+		this.buttonEnabled = createScalableGuiSprite("button_enabled");
+		this.buttonHighlight = createScalableGuiSprite("button_highlight");
 		this.buttonPressed = createScalableGuiSprite("button_pressed");
 		this.buttonPressedHighlight = createScalableGuiSprite("button_pressed_highlighted");
 
@@ -109,6 +122,8 @@ public class Textures {
 		this.flameEmptyIcon = createGuiSprite("icons/flame_empty", 14, 14);
 		this.bookmarksFirst = createGuiSprite("icons/bookmarks_first", 16, 16);
 		this.craftableFirst = createGuiSprite("icons/craftable_first", 16, 16);
+		this.tagBadgeIcon = createGuiSprite("icons/tag_badge", 9, 9);
+		this.listBadgeIcon = createGuiSprite("icons/list_badge", 9, 9);
 	}
 
 	private Identifier createSpriteId(String name) {
@@ -117,12 +132,12 @@ public class Textures {
 
 	private IDrawableStatic createGuiSprite(String name, int width, int height) {
 		Identifier id = createSpriteId(name);
-		return new DrawableSprite(jeiAtlasManager.getAtlas(), id, width, height);
+		return new DrawableSprite(guiAtlas, id, width, height);
 	}
 
 	private ScalableDrawable createScalableGuiSprite(String name) {
 		Identifier id = createSpriteId(name);
-		return new ScalableDrawable(jeiAtlasManager.getAtlas(), id);
+		return new ScalableDrawable(guiAtlas, id);
 	}
 
 	public IDrawableStatic getSlot() {
@@ -169,6 +184,14 @@ public class Textures {
 		return craftableFirst;
 	}
 
+	public IDrawableStatic getTagBadgeIcon() {
+		return tagBadgeIcon;
+	}
+
+	public IDrawableStatic getListBadgeIcon() {
+		return listBadgeIcon;
+	}
+
 	public IDrawableStatic getConfigButtonIcon() {
 		return configButtonIcon;
 	}
@@ -213,12 +236,20 @@ public class Textures {
 		return recipeBackground;
 	}
 
+	public ScalableDrawable getInteractiveIngredientTooltipBackground() {
+		return interactiveIngredientTooltipBackground;
+	}
+
 	public ScalableDrawable getRecipePreviewBackground() {
 		return recipePreviewBackground;
 	}
 
 	public ScalableDrawable getSearchBackground() {
 		return searchBackground;
+	}
+
+	public ScalableDrawable getCompletionOverlayBackground() {
+		return completionOverlayBackground;
 	}
 
 	public IDrawableStatic getInfoIcon() {
@@ -289,6 +320,18 @@ public class Textures {
 		return brewingStandArrow;
 	}
 
+	public IScalableDrawable getButtonDisabled() {
+		return buttonDisabled;
+	}
+
+	public IScalableDrawable getButtonEnabled() {
+		return buttonEnabled;
+	}
+
+	public IScalableDrawable getButtonHighlight() {
+		return buttonHighlight;
+	}
+
 	public IScalableDrawable getButtonPressed() {
 		return buttonPressed;
 	}
@@ -297,7 +340,4 @@ public class Textures {
 		return buttonPressedHighlight;
 	}
 
-	public JeiAtlasManager getAtlasManager() {
-		return jeiAtlasManager;
-	}
 }

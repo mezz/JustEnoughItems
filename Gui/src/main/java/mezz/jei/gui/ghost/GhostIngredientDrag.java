@@ -11,7 +11,7 @@ import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.SafeIngredientUtil;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.common.input.UserInput;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.phys.Vec2;
@@ -41,8 +41,8 @@ public class GhostIngredientDrag<T> {
 		this.origin = origin;
 		this.mouseStartX = mouseX;
 		this.mouseStartY = mouseY;
-		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		this.dragCanStartTime = System.currentTimeMillis() + clientConfig.getDragDelayMs();
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
+		this.dragCanStartTime = System.currentTimeMillis() + clientConfig.dragDelayMs().get();
 	}
 
 	public void drawTargets(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {

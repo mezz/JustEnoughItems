@@ -3,6 +3,11 @@ package mezz.jei.common.input;
 import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.api.runtime.IJeiKeyMappings;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
+import mezz.jei.common.input.keys.IJeiKeyMappingWithExtraModifiers;
+import net.minecraft.client.KeyMapping;
+import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.List;
 
 public interface IInternalKeyMappings extends IJeiKeyMappings {
 	IJeiKeyMapping getToggleOverlay();
@@ -13,6 +18,7 @@ public interface IInternalKeyMappings extends IJeiKeyMappings {
 	IJeiKeyMapping getToggleCheatModeConfigButton();
 
 	IJeiKeyMapping getRecipeBack();
+	IJeiKeyMapping getRecipeForward();
 	IJeiKeyMapping getPreviousCategory();
 	IJeiKeyMapping getNextCategory();
 	IJeiKeyMapping getPreviousRecipePage();
@@ -24,20 +30,20 @@ public interface IInternalKeyMappings extends IJeiKeyMappings {
 
 	IJeiKeyMapping getCloseRecipeGui();
 
-	IJeiKeyMapping getBookmark();
+	@Override
+	IJeiKeyMappingWithExtraModifiers getBookmark();
 	IJeiKeyMapping getToggleBookmarkOverlay();
 
 	@Override
-	IJeiKeyMapping getShowRecipe();
+	IJeiKeyMappingWithExtraModifiers getShowRecipe();
 
 	@Override
-	IJeiKeyMapping getShowUses();
+	IJeiKeyMappingWithExtraModifiers getShowUses();
 
 	IJeiKeyMapping getTransferRecipeBookmark();
 	IJeiKeyMapping getMaxTransferRecipeBookmark();
 	IJeiKeyMapping getTransferRecipeGui();
 	IJeiKeyMapping getMaxTransferRecipeGui();
-	IJeiKeyMappingInternal getShowBookmarkTooltipFeatures();
 	IJeiKeyMapping getQuickMove();
 	IJeiKeyMapping getShareToChat();
 
@@ -53,9 +59,13 @@ public interface IInternalKeyMappings extends IJeiKeyMappings {
 
 	IJeiKeyMapping getCopyRecipeId();
 
+	@Unmodifiable
+	List<KeyMapping> getConfigKeyMappings();
+
 	// internal only, unregistered and can't be changed because they match vanilla Minecraft hard-coded keys:
 	IJeiKeyMapping getEscapeKey();
 	IJeiKeyMapping getLeftClick();
 	IJeiKeyMapping getRightClick();
 	IJeiKeyMapping getEnterKey();
+	IJeiKeyMapping getTabKey();
 }

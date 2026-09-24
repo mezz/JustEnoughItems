@@ -10,8 +10,8 @@ import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.buttons.IIconButtonController;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.input.IPaged;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.handlers.CombinedInputHandler;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.handlers.CombinedInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -109,6 +109,11 @@ public class PageNavigation {
 			nextButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 			backButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		}
+	}
+
+	public void setForcePressed(boolean nextButton, boolean backButton) {
+		this.nextButton.setForcePressed(nextButton);
+		this.backButton.setForcePressed(backButton);
 	}
 
 	public ImmutableRect2i getNextButtonArea() {

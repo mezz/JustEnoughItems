@@ -1,18 +1,18 @@
 package mezz.jei.gui.overlay;
 
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.gui.buttons.IButtonState;
+import mezz.jei.api.gui.buttons.IIconButtonController;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.common.network.packets.PacketRequestCheatPermission;
 import mezz.jei.common.platform.IPlatformConfigHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.api.gui.buttons.IButtonState;
-import mezz.jei.api.gui.buttons.IIconButtonController;
+import mezz.jei.gui.util.CheatModeUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -92,11 +92,7 @@ public class ConfigButtonController implements IIconButtonController {
 		if (toggleState.isOverlayEnabled()) {
 			if (!input.isSimulate()) {
 				if (input.is(keyBindings.getToggleCheatModeConfigButton())) {
-					toggleState.toggleCheatItemsEnabled();
-					if (toggleState.isCheatItemsEnabled()) {
-						IConnectionToServer serverConnection = Internal.getServerConnection();
-						serverConnection.sendPacketToServer(PacketRequestCheatPermission.INSTANCE);
-					}
+					CheatModeUtil.toggleCheatMode(toggleState);
 				} else {
 					openSettings();
 				}
@@ -113,7 +109,7 @@ public class ConfigButtonController implements IIconButtonController {
 		}
 
 		IPlatformConfigHelper configHelper = Services.PLATFORM.getConfigHelper();
-		Optional<Screen> configScreen = configHelper.getConfigScreen();
+		Optional<Screen> configScreen = configHelper.getConfigScreen(ModIds.JEI_ID, mc.gui.screen());
 
 		if (configScreen.isPresent()) {
 			mc.gui.setScreen(configScreen.get());
@@ -124,14 +120,14 @@ public class ConfigButtonController implements IIconButtonController {
 	}
 
 	private static Component getMissingConfigScreenMessage(IPlatformConfigHelper configHelper) {
-		return Component.translatable("jei.message.configured")
+		return Component.translatable("jei.message.mezzConfigGui")
 			.setStyle(
 				Style.EMPTY
 					.withColor(ChatFormatting.DARK_BLUE)
 					.withUnderlined(true)
 					.withClickEvent(
 						new ClickEvent.OpenUrl(
-							URI.create("https://www.curseforge.com/minecraft/mc-mods/configured")
+							URI.create("https://www.curseforge.com/minecraft/mc-mods/mezzconfiggui")
 						)
 					)
 			)

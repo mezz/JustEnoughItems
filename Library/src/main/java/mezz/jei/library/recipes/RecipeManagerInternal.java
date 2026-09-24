@@ -1,18 +1,22 @@
 package mezz.jei.library.recipes;
 
 import com.google.common.collect.ImmutableListMultimap;
-import mezz.jei.api.ingredients.IIngredientSupplier;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
+import mezz.jei.library.ingredients.IIngredientManagerInternal;
+import mezz.jei.library.ingredients.RecipeIngredientSupplier;
+import mezz.jei.library.ingredients.RecipeIngredientSupplier.FocusLink;
+import mezz.jei.library.ingredients.SimpleIngredientAcceptor;
 import mezz.jei.library.recipes.collect.RecipeIngredientRoleMap;
 import mezz.jei.library.recipes.collect.RecipeTypeData;
 import mezz.jei.library.recipes.collect.RecipeTypeDataMap;
@@ -33,20 +37,25 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class RecipeManagerInternal {
+public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	@Unmodifiable
 	private final List<IRecipeCategory<?>> recipeCategories;
-	private final IIngredientManager ingredientManager;
+	private final IIngredientManagerInternal ingredientManager;
+	private final ContextMap contextMap;
 	private final RecipeTypeDataMap recipeTypeDataMap;
 	private final Comparator<IRecipeCategory<?>> recipeCategoryComparator;
 	private final EnumMap<RecipeIngredientRole, RecipeIngredientRoleMap> recipeIngredientRoleMaps;
 	private final PluginManager pluginManager;
 	private final Set<IRecipeType<?>> hiddenRecipeTypes = new HashSet<>();
 	private final IIngredientVisibility ingredientVisibility;
+	private final RecipeCategorySortingConfig recipeCategorySortingConfig;
+	private final List<IRecipeType<?>> recipeTypes;
+	private final Runnable removeRecipeCategorySortingConfigChangeListener;
 
 	@Nullable
 	@Unmodifiable
@@ -54,17 +63,24 @@ public class RecipeManagerInternal {
 
 	public RecipeManagerInternal(
 		List<IRecipeCategory<?>> recipeCategories,
-		ImmutableListMultimap<IRecipeType<?>, ITypedIngredient<?>> recipeCatalysts,
-		IIngredientManager ingredientManager,
+		ImmutableListMultimap<IRecipeType<?>, Consumer<IIngredientAcceptor<?>>> craftingStations,
+		IIngredientManagerInternal ingredientManager,
+		ContextMap contextMap,
 		RecipeCategorySortingConfig recipeCategorySortingConfig,
 		IIngredientVisibility ingredientVisibility
 	) {
 		ErrorUtil.checkNotEmpty(recipeCategories, "recipeCategories");
 
 		this.ingredientManager = ingredientManager;
+		this.contextMap = contextMap;
 		this.ingredientVisibility = ingredientVisibility;
+		this.ingredientVisibility.registerListener(this);
+		this.recipeCategorySortingConfig = recipeCategorySortingConfig;
+		this.removeRecipeCategorySortingConfigChangeListener = this.recipeCategorySortingConfig.addChangeListener(
+			this::onRecipeCategorySortingConfigChanged
+		);
 
-		Collection<IRecipeType<?>> recipeTypes = recipeCategories.stream()
+		this.recipeTypes = recipeCategories.stream()
 			.<IRecipeType<?>>map(IRecipeCategory::getRecipeType)
 			.toList();
 		Comparator<IRecipeType<?>> recipeTypeComparator = recipeCategorySortingConfig.getComparator(recipeTypes);
@@ -80,15 +96,18 @@ public class RecipeManagerInternal {
 			.sorted(this.recipeCategoryComparator)
 			.toList();
 
-		CraftingStationBuilder craftingStationBuilder = new CraftingStationBuilder(this.recipeIngredientRoleMaps.get(RecipeIngredientRole.CRAFTING_STATION));
+		RecipeIngredientRoleMap craftingStationRoleMap = this.recipeIngredientRoleMaps.get(RecipeIngredientRole.CRAFTING_STATION);
+		CraftingStationBuilder craftingStationBuilder = new CraftingStationBuilder(craftingStationRoleMap);
 		for (IRecipeCategory<?> recipeCategory : recipeCategories) {
 			IRecipeType<?> recipeType = recipeCategory.getRecipeType();
-			if (recipeCatalysts.containsKey(recipeType)) {
-				List<ITypedIngredient<?>> catalysts = recipeCatalysts.get(recipeType);
-				craftingStationBuilder.addCategoryCatalysts(recipeCategory, catalysts);
-			}
+			List<Consumer<IIngredientAcceptor<?>>> categoryCraftingStations = craftingStations.get(recipeType);
+			craftingStationBuilder.addCategoryCraftingStations(
+				recipeCategory,
+				categoryCraftingStations,
+				this::resolveCraftingStation
+			);
 		}
-		ImmutableListMultimap<IRecipeCategory<?>, ITypedIngredient<?>> craftingStationMap = craftingStationBuilder.build();
+		ImmutableListMultimap<IRecipeCategory<?>, Consumer<IIngredientAcceptor<?>>> craftingStationMap = craftingStationBuilder.build();
 		this.recipeTypeDataMap = new RecipeTypeDataMap(recipeCategories, craftingStationMap);
 
 		IRecipeManagerPlugin internalRecipeManagerPlugin = new InternalRecipeManagerPlugin(
@@ -111,8 +130,10 @@ public class RecipeManagerInternal {
 
 		List<T> addedRecipes = new ArrayList<>(recipes.size());
 		for (T recipe : recipes) {
-			if (addRecipe(recipeCategory, recipe, hiddenRecipes, contextMap)) {
+			RecipeIngredientSupplier ingredientSupplier = addRecipe(recipeCategory, recipe, hiddenRecipes, contextMap);
+			if (ingredientSupplier != null) {
 				addedRecipes.add(recipe);
+				recipeTypeData.addFocusLinks(recipe, ingredientSupplier.getFocusLinks());
 			}
 		}
 
@@ -122,46 +143,46 @@ public class RecipeManagerInternal {
 		}
 	}
 
-	private <T> boolean addRecipe(IRecipeCategory<T> recipeCategory, T recipe, Set<T> hiddenRecipes, ContextMap contextMap) {
+	private <T> @Nullable RecipeIngredientSupplier addRecipe(IRecipeCategory<T> recipeCategory, T recipe, Set<T> hiddenRecipes, ContextMap contextMap) {
 		IRecipeType<T> recipeType = recipeCategory.getRecipeType();
 		if (hiddenRecipes.contains(recipe)) {
 			if (LOGGER.isDebugEnabled()) {
 				String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipe, recipeCategory, ingredientManager, contextMap);
 				LOGGER.debug("Recipe not added because it is hidden: {}", recipeInfo);
 			}
-			return false;
+			return null;
 		}
 		if (!recipeCategory.isHandled(recipe)) {
 			if (LOGGER.isDebugEnabled()) {
 				String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipe, recipeCategory, ingredientManager, contextMap);
 				LOGGER.debug("Recipe not added because the recipe category cannot handle it: {}", recipeInfo);
 			}
-			return false;
+			return null;
 		}
-		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager, contextMap);
+		RecipeIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager, contextMap);
 
 		try {
 			for (RecipeIngredientRoleMap recipeIngredientRoleMap : recipeIngredientRoleMaps.values()) {
 				recipeIngredientRoleMap.addRecipe(recipeType, recipe, ingredientSupplier);
 			}
-			return true;
+			return ingredientSupplier;
 		} catch (RuntimeException | LinkageError e) {
 			String recipeInfo = RecipeDebugUtil.getDebugInfoFromRecipe(recipe, recipeCategory, ingredientManager, contextMap);
 			LOGGER.error("Found a broken recipe, failed to addRecipe: {}\n", recipeInfo, e);
-			return false;
+			return null;
 		}
 	}
 
 	public boolean isCategoryHidden(IRecipeCategory<?> recipeCategory, IFocusGroup focuses) {
 		// hide the category if it has been explicitly hidden
 		IRecipeType<?> recipeType = recipeCategory.getRecipeType();
-		if (hiddenRecipeTypes.contains(recipeType)) {
+		if (isRecipeTypeHidden(recipeType)) {
 			return true;
 		}
 
 		// hide the category if it has crafting stations, but they have all been hidden
-		if (getCraftingStations(recipeType, true).findAny().isPresent() &&
-			getCraftingStations(recipeType, false).findAny().isEmpty()
+		if (hasCraftingStations(recipeType, true) &&
+			!hasCraftingStations(recipeType, false)
 		) {
 			return true;
 		}
@@ -169,6 +190,10 @@ public class RecipeManagerInternal {
 		// hide the category if it has no recipes, or if the recipes have all been hidden
 		Stream<?> visibleRecipes = getRecipesStream(recipeType, focuses, false);
 		return visibleRecipes.findAny().isEmpty();
+	}
+
+	private boolean hasCraftingStations(IRecipeType<?> recipeType, boolean includeHidden) {
+		return getCraftingStations(recipeType, includeHidden).findAny().isPresent();
 	}
 
 	public Stream<IRecipeCategory<?>> getRecipeCategoriesForTypes(Collection<IRecipeType<?>> recipeTypes, IFocusGroup focuses, boolean includeHidden) {
@@ -228,18 +253,114 @@ public class RecipeManagerInternal {
 	}
 
 	public <T> Stream<T> getRecipesStream(IRecipeType<T> recipeType, IFocusGroup focuses, boolean includeHidden) {
+		if (!includeHidden && isRecipeTypeHidden(recipeType)) {
+			return Stream.empty();
+		}
 		RecipeTypeData<T> recipeTypeData = this.recipeTypeDataMap.get(recipeType);
-		return this.pluginManager.getRecipes(recipeType, recipeTypeData, focuses, includeHidden);
+		Stream<T> recipes = this.pluginManager.getRecipes(recipeType, recipeTypeData, focuses, includeHidden);
+		if (!includeHidden) {
+			recipes = recipes.filter(recipe -> isRecipeVisible(recipeTypeData, recipe, focuses));
+		}
+		return recipes;
 	}
 
-	public <T> Stream<ITypedIngredient<?>> getCraftingStations(IRecipeType<T> recipeType, boolean includeHidden) {
-		RecipeTypeData<T> recipeTypeData = recipeTypeDataMap.get(recipeType);
-		List<ITypedIngredient<?>> craftingStations = recipeTypeData.getCraftingStations();
-		if (includeHidden) {
-			return craftingStations.stream();
+	public <T> boolean isRecipeVisible(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses) {
+		RecipeTypeData<T> recipeTypeData = this.recipeTypeDataMap.get(recipeCategory.getRecipeType());
+		if (recipeTypeData.getHiddenRecipes().contains(recipe)) {
+			return false;
 		}
-		return craftingStations.stream()
-			.filter(ingredientVisibility::isIngredientVisible);
+		return isRecipeVisible(recipeTypeData, recipe, focuses);
+	}
+
+	private <T> boolean isRecipeVisible(RecipeTypeData<T> recipeTypeData, T recipe, IFocusGroup focuses) {
+		List<FocusLink> focusLinks = getFocusLinks(recipeTypeData, recipe);
+		for (FocusLink focusLink : focusLinks) {
+			Set<Integer> visibleIndexes = focusLink.getVisibleIngredientIndexes(
+				focuses,
+				ingredientManager,
+				ingredient -> ingredientVisibility.isIngredientVisible(ingredient, UidContext.Recipe)
+			);
+			if (visibleIndexes == null) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private <T> List<FocusLink> getFocusLinks(RecipeTypeData<T> recipeTypeData, T recipe) {
+		List<FocusLink> focusLinks = recipeTypeData.getFocusLinks(recipe);
+		if (focusLinks != null) {
+			return focusLinks;
+		}
+		RecipeIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(
+			recipe,
+			recipeTypeData.getRecipeCategory(),
+			ingredientManager,
+			contextMap
+		);
+		return ingredientSupplier.getFocusLinks();
+	}
+
+	public <T> Stream<Consumer<IIngredientAcceptor<?>>> getCraftingStations(IRecipeType<T> recipeType, boolean includeHidden) {
+		Stream<Consumer<IIngredientAcceptor<?>>> craftingStations = recipeTypeDataMap.get(recipeType)
+			.getCraftingStations()
+			.stream();
+		if (!includeHidden) {
+			craftingStations = craftingStations.filter(craftingStation -> getCraftingStationIngredients(craftingStation, false).findAny().isPresent());
+		}
+		return craftingStations;
+	}
+
+	public Stream<ITypedIngredient<?>> getCraftingStationIngredients(
+		Consumer<IIngredientAcceptor<?>> craftingStation,
+		boolean includeHidden
+	) {
+		Stream<ITypedIngredient<?>> ingredients = resolveCraftingStation(craftingStation);
+		if (!includeHidden) {
+			ingredients = ingredients.filter(this::isCraftingStationVisible);
+		}
+		return ingredients;
+	}
+
+	private Stream<ITypedIngredient<?>> resolveCraftingStation(Consumer<IIngredientAcceptor<?>> craftingStation) {
+		SimpleIngredientAcceptor acceptor = new SimpleIngredientAcceptor(ingredientManager, contextMap, RecipeIngredientRole.CRAFTING_STATION);
+		craftingStation.accept(acceptor);
+		return acceptor.getAllSlotIngredients().stream()
+			.map(slotIngredient -> slotIngredient.typedIngredient())
+			.<ITypedIngredient<?>>map(ingredientManager::normalizeTypedIngredient);
+	}
+
+	private boolean isCraftingStationVisible(ITypedIngredient<?> craftingStation) {
+		return ingredientVisibility.isIngredientVisible(craftingStation, UidContext.Recipe);
+	}
+
+	@Override
+	public <V> void onIngredientVisibilityChanged(ITypedIngredient<V> ingredient, boolean visible) {
+		recipeCategoriesVisibleCache = null;
+	}
+
+	@Override
+	public <V> void onIngredientsVisibilityChanged(
+		Collection<ITypedIngredient<V>> ingredients,
+		Collection<UidContext> contexts,
+		boolean visible
+	) {
+		if (contexts.contains(UidContext.Recipe)) {
+			recipeCategoriesVisibleCache = null;
+		}
+	}
+
+	private boolean isRecipeTypeHidden(IRecipeType<?> recipeType) {
+		return hiddenRecipeTypes.contains(recipeType) ||
+			!recipeCategorySortingConfig.isRecipeCategoryVisible(recipeTypes, recipeType);
+	}
+
+	private void onRecipeCategorySortingConfigChanged() {
+		recipeCategoriesVisibleCache = null;
+	}
+
+	public void onRuntimeStopped() {
+		removeRecipeCategorySortingConfigChangeListener.run();
 	}
 
 	public <T> void hideRecipes(IRecipeType<T> recipeType, Collection<T> recipes) {

@@ -2,27 +2,26 @@ package mezz.jei.common;
 
 import com.google.common.base.Preconditions;
 import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.config.ClientToggleState;
 import mezz.jei.common.config.IClientToggleState;
-import mezz.jei.common.config.IJeiClientConfigs;
-import mezz.jei.common.gui.textures.JeiAtlasManager;
+import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.DelayedExecutor;
 import mezz.jei.common.util.IDelayedExecutor;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
-import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.data.AtlasIds;
 import net.minecraft.network.Connection;
 import net.minecraft.world.item.crafting.RecipeMap;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * For JEI internal use only, these are normally accessed from the API.
@@ -37,9 +36,15 @@ public final class Internal {
 	@Nullable
 	private static IClientToggleState toggleState;
 	@Nullable
-	private static IJeiClientConfigs jeiClientConfigs;
+	private static IClientConfigs jeiClientConfigs;
 	@Nullable
 	private static IJeiRuntime jeiRuntime;
+	/**
+	 * Null means that no recipe source has been selected for the current connection yet.
+	 * A present value may have an empty recipe map when the server explicitly synchronizes zero recipes.
+	 */
+	@Nullable
+	private static Runnable restartJeiRunnable;
 	@Nullable
 	private static ClientRecipes clientRecipes = null;
 	private static final JeiFeatures jeiFeatures = new JeiFeatures();
@@ -52,15 +57,8 @@ public final class Internal {
 	public static Textures getTextures() {
 		if (textures == null) {
 			Minecraft minecraft = Minecraft.getInstance();
-			TextureManager textureManager = minecraft.getTextureManager();
-			JeiAtlasManager jeiAtlasManager = new JeiAtlasManager(textureManager,
-				new JeiAtlasManager.Config(
-					Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS,
-					Constants.JEI_GUI_TEXTURE_ATLAS_ID,
-					Set.of(AnimationMetadataSection.TYPE, GuiMetadataSection.TYPE)
-				)
-			);
-			textures = new Textures(jeiAtlasManager);
+			TextureAtlas guiAtlas = minecraft.getAtlasManager().getAtlasOrThrow(AtlasIds.GUI);
+			textures = new Textures(guiAtlas);
 		}
 		return textures;
 	}
@@ -90,17 +88,21 @@ public final class Internal {
 		return toggleState;
 	}
 
-	public static IJeiClientConfigs getJeiClientConfigs() {
+	public static IClientConfigs getClientConfigs() {
 		Preconditions.checkState(jeiClientConfigs != null, "Jei Client Configs have not been created yet.");
 		return jeiClientConfigs;
 	}
 
-	public static Optional<IJeiClientConfigs> getOptionalJeiClientConfigs() {
+	public static Optional<IClientConfigs> getOptionalClientConfigs() {
 		return Optional.ofNullable(jeiClientConfigs);
 	}
 
-	public static void setJeiClientConfigs(IJeiClientConfigs jeiClientConfigs) {
+	public static void setClientConfigs(IClientConfigs jeiClientConfigs) {
 		Internal.jeiClientConfigs = jeiClientConfigs;
+	}
+
+	public static void registerRuntimeListenerRemoval(Runnable listenerRemoval) {
+		getClientConfigs().registerRuntimeListenerRemoval(listenerRemoval);
 	}
 
 	public static JeiFeatures getJeiFeatures() {
@@ -116,13 +118,22 @@ public final class Internal {
 	}
 
 	public static IJeiRuntime getJeiRuntime() {
-		Preconditions.checkState(jeiRuntime != null, "Jei Client Configs have not been created yet.");
+		Preconditions.checkState(jeiRuntime != null, "Jei Runtime has not been created yet.");
 
 		return jeiRuntime;
 	}
 
 	public static Optional<IJeiRuntime> getOptionalJeiRuntime() {
 		return Optional.ofNullable(jeiRuntime);
+	}
+
+	public static void setRestartJeiRunnable(Runnable restartJeiRunnable) {
+		Internal.restartJeiRunnable = restartJeiRunnable;
+	}
+
+	public static void restartJei() {
+		Preconditions.checkState(restartJeiRunnable != null, "JEI restart handler has not been created yet.");
+		restartJeiRunnable.run();
 	}
 
 	@Nullable
@@ -143,6 +154,10 @@ public final class Internal {
 
 	public static void setClientFallbackRecipes(RecipeMap clientRecipes) {
 		setClientRecipes(clientRecipes, false);
+	}
+
+	public static void clearClientRecipes() {
+		clientRecipes = null;
 	}
 
 	private static void setClientRecipes(RecipeMap recipes, boolean syncedWithServer) {
@@ -186,6 +201,8 @@ public final class Internal {
 	}
 
 	public static void onRuntimeStopped() {
+		closeRecipeGuiIfOpen();
+
 		if (clientRecipes != null) {
 			var connectionId = getRemoteConnectionId();
 			if (!clientRecipes.connectionId().equals(connectionId)) {
@@ -206,8 +223,24 @@ public final class Internal {
 		}
 	}
 
+	private static void closeRecipeGuiIfOpen() {
+		IJeiRuntime jeiRuntime = Internal.jeiRuntime;
+		if (jeiRuntime == null) {
+			return;
+		}
+
+		IRecipesGui recipesGui = jeiRuntime.getRecipesGui();
+		if (recipesGui instanceof Screen recipesScreen) {
+			Minecraft minecraft = Minecraft.getInstance();
+			if (minecraft.gui.screen() == recipesScreen) {
+				recipesScreen.onClose();
+			}
+		}
+	}
+
 	public static void onClientStopping() {
 		onRuntimeStopped();
+		restartJeiRunnable = null;
 		delayedExecutor.shutdown();
 	}
 

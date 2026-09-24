@@ -14,4 +14,8 @@ public final class DebugConfig {
 	public static boolean isCrashingTestRecipesEnabled() {
 		return Boolean.getBoolean(PROPERTY_PREFIX + "crashingTestRecipesEnabled");
 	}
+
+	public static boolean isDebugGuisEnabled() {
+		return Boolean.getBoolean(PROPERTY_PREFIX + "debugGuisEnabled");
+	}
 }

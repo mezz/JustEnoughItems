@@ -29,7 +29,6 @@
 
   "_comment": "Config",
   "jei.config": "JEI הגדרות",
-  "jei.config.default": "ברירת מחדל",
   "jei.config.valid": "תקף",
   "jei.config.title": "%MODNAME הגדרות",
   "jei.config.mode": "מצב",
@@ -56,8 +55,6 @@
   "jei.config.client.advanced.description": "הגדרות מתכדמות כדי לשנות את האופן שJEI מתנהג.",
   "jei.config.client.advanced.itemBlacklist": "רשימה שחורה של חפצים",
   "jei.config.client.advanced.itemBlacklist.description": "רישמה של חפצים שלא יוצגו ברשימת החפצים. פורמט: modId[:name[:meta]]. מצב עריכה אוטומטית יוסיף או יוריד דברים מפה.",
-  "jei.config.client.appearance.centerSearch": "בר חיפוש מרכזי",
-  "jei.config.client.appearance.centerSearch.description": "הזז את בר החיפוש של JEI לתחתית מרכז המסך.",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI מצב עריכת רשימת חפצים:",

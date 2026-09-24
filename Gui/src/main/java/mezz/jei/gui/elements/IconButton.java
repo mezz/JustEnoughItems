@@ -5,8 +5,8 @@ import mezz.jei.api.gui.buttons.IIconButtonController;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -32,6 +32,10 @@ public final class IconButton {
 	public void updateBounds(ImmutableRect2i area) {
 		this.button.updateBounds(area);
 		this.area = area;
+	}
+
+	public void setForcePressed(boolean forcePressed) {
+		this.button.setForcePressed(forcePressed);
 	}
 
 	public ImmutableRect2i getArea() {

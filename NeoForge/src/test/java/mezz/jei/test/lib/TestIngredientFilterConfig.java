@@ -1,61 +1,78 @@
 package mezz.jei.test.lib;
 
+import net.mezzdev.config.api.value.IConfigValue;
 import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.common.search.SearchMode;
+import mezz.jei.common.config.SearchMode;
 
 public class TestIngredientFilterConfig implements IIngredientFilterConfig {
-	@Override
-	public SearchMode getModNameSearchMode() {
-		return SearchMode.ENABLED;
+	private final IConfigValue<SearchMode> modNameSearchMode = value("modNameSearchMode", SearchMode.ENABLED);
+	private final IConfigValue<SearchMode> tooltipSearchMode = value("tooltipSearchMode", SearchMode.ENABLED);
+	private final IConfigValue<SearchMode> tagSearchMode = value("tagSearchMode", SearchMode.ENABLED);
+	private final IConfigValue<SearchMode> colorSearchMode = value("colorSearchMode", SearchMode.REQUIRE_PREFIX);
+	private final IConfigValue<SearchMode> identifierSearchMode = value("identifierSearchMode", SearchMode.ENABLED);
+	private final IConfigValue<SearchMode> creativeTabSearchMode = value("creativeTabSearchMode", SearchMode.DISABLED);
+	private final IConfigValue<Boolean> searchAdvancedTooltips = value("searchAdvancedTooltips", false);
+	private final IConfigValue<Boolean> searchModIds = value("searchModIds", false);
+	private final IConfigValue<Boolean> searchModAliases = value("searchModAliases", false);
+	private final IConfigValue<Boolean> searchIngredientAliases = value("searchIngredientAliases", false);
+	private final IConfigValue<Boolean> searchShortModNames = value("searchShortModNames", false);
+
+	private static <T> IConfigValue<T> value(String name, T value) {
+		return new TestJeiConfigValue<>(name, value);
 	}
 
 	@Override
-	public SearchMode getTooltipSearchMode() {
-		return SearchMode.ENABLED;
+	public IConfigValue<SearchMode> modNameSearchMode() {
+		return modNameSearchMode;
 	}
 
 	@Override
-	public SearchMode getTagSearchMode() {
-		return SearchMode.ENABLED;
+	public IConfigValue<SearchMode> tooltipSearchMode() {
+		return tooltipSearchMode;
 	}
 
 	@Override
-	public SearchMode getColorSearchMode() {
-		return SearchMode.REQUIRE_PREFIX;
+	public IConfigValue<SearchMode> tagSearchMode() {
+		return tagSearchMode;
 	}
 
 	@Override
-	public SearchMode getIdentifierSearchMode() {
-		return SearchMode.ENABLED;
+	public IConfigValue<SearchMode> colorSearchMode() {
+		return colorSearchMode;
 	}
 
 	@Override
-	public SearchMode getCreativeTabSearchMode() {
-		return SearchMode.DISABLED;
+	public IConfigValue<SearchMode> identifierSearchMode() {
+		return identifierSearchMode;
 	}
 
 	@Override
-	public boolean getSearchAdvancedTooltips() {
-		return false;
+	public IConfigValue<SearchMode> creativeTabSearchMode() {
+		return creativeTabSearchMode;
 	}
 
 	@Override
-	public boolean getSearchModIds() {
-		return false;
+	public IConfigValue<Boolean> searchAdvancedTooltips() {
+		return searchAdvancedTooltips;
 	}
 
 	@Override
-	public boolean getSearchModAliases() {
-		return false;
+	public IConfigValue<Boolean> searchModIds() {
+		return searchModIds;
 	}
 
 	@Override
-	public boolean getSearchIngredientAliases() {
-		return false;
+	public IConfigValue<Boolean> searchModAliases() {
+		return searchModAliases;
 	}
 
 	@Override
-	public boolean getSearchShortModNames() {
-		return false;
+	public IConfigValue<Boolean> searchIngredientAliases() {
+		return searchIngredientAliases;
+	}
+
+	@Override
+	public IConfigValue<Boolean> searchShortModNames() {
+		return searchShortModNames;
 	}
 }

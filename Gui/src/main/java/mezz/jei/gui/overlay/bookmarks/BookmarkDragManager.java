@@ -9,7 +9,7 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -18,7 +18,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
-import java.util.List;
 import java.util.Optional;
 
 public class BookmarkDragManager {
@@ -33,6 +32,10 @@ public class BookmarkDragManager {
 		if (bookmarkDrag != null) {
 			bookmarkDrag.update(mouseX, mouseY);
 		}
+	}
+
+	boolean isDragging() {
+		return bookmarkDrag != null && bookmarkDrag.isDragging();
 	}
 
 	public boolean drawDraggedItem(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
@@ -57,13 +60,11 @@ public class BookmarkDragManager {
 				ITypedIngredient<V> ingredient = clicked.getTypedIngredient();
 				IIngredientType<V> type = ingredient.getType();
 
-				List<IBookmarkDragTarget> targets = bookmarkOverlay.createBookmarkDragTargets();
 				IIngredientManager ingredientManager = Internal.getJeiRuntime().getIngredientManager();
 				IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
 				ImmutableRect2i clickedArea = clicked.getArea();
 				this.bookmarkDrag = new BookmarkDrag<>(
 					bookmarkOverlay,
-					targets,
 					ingredientRenderer,
 					ingredient,
 					bookmark,
@@ -83,8 +84,8 @@ public class BookmarkDragManager {
 	private class DragHandler implements IDragHandler {
 		@Override
 		public Optional<IDragHandler> handleDragStart(Screen screen, UserInput input) {
-			IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-			if (!clientConfig.isDragToRearrangeBookmarksEnabled()) {
+			IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
+			if (!clientConfig.dragToRearrangeBookmarksEnabled().get()) {
 				stopDrag();
 				return Optional.empty();
 			}

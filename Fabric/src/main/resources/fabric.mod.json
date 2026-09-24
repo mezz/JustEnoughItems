@@ -29,6 +29,9 @@
       "mezz.jei.library.plugins.jei.JeiInternalPlugin",
       "mezz.jei.fabric.plugins.fabric.FabricGuiPlugin",
       "mezz.jei.gui.plugins.JeiGuiPlugin"
+    ],
+    "mezz_config_gui_plugin": [
+      "mezz.jei.gui.config.JeiConfigGuiPlugin"
     ]
   },
   "mixins": [
@@ -37,11 +40,16 @@
   "accessWidener" : "jei.accesswidener",
 
   "depends": {
+    "${configModId}": "${mezzConfigFabricVersionRange}",
     "fabricloader": "${fabricLoaderVersionRange}",
     "fabric-api": "${fabricApiVersionRange}",
     "java": ">=${modJavaVersion}"
   },
   "suggests": {
-    "amecs_key_modifiers": "*"
+    "${configGuiModId}": "${mezzConfigGuiFabricVersionRange}",
+    "amecs_key_modifiers": ">=${amecsVersionFabric}"
+  },
+  "breaks": {
+    "${configGuiModId}": "${mezzConfigGuiFabricBreaksVersionRange}"
   }
 }

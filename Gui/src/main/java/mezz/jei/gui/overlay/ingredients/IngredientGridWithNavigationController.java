@@ -11,11 +11,11 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.ghost.GhostIngredientQuickMoveManager;
 import mezz.jei.gui.input.DelegatingClickableIngredientInternal;
 import mezz.jei.gui.input.IClickableIngredientInternal;
-import mezz.jei.gui.input.IMouseOverable;
+import mezz.jei.common.input.IMouseOverable;
 import mezz.jei.gui.input.IPaged;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.UserInput;
-import mezz.jei.gui.input.handlers.SameElementInputHandler;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.handlers.SameElementInputHandler;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.util.CommandUtil;
@@ -92,6 +92,28 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 		this.onLayoutChanged.run();
 	}
 
+	public void setPageAnchorElement(IElement<?> pageAnchorElement) {
+		if (usesScrollbar()) {
+			this.scrollController.setScrollAnchorElement(pageAnchorElement);
+		} else {
+			this.pageState.setPageAnchorElement(pageAnchorElement);
+		}
+	}
+
+	/** Includes temporarily hidden elements, such as the bookmark currently being dragged. */
+	public List<IElement<?>> getPageElements() {
+		List<IElement<?>> elements = this.ingredientSource.getElements();
+		int firstIndex;
+		if (usesScrollbar()) {
+			firstIndex = this.scrollController.getFirstVisibleScrollRow() * this.ingredientGrid.getColumnCount();
+		} else {
+			firstIndex = this.pageState.getFirstItemIndex();
+		}
+		firstIndex = Math.min(firstIndex, elements.size());
+		int endIndex = Math.min(firstIndex + this.ingredientGrid.size(), elements.size());
+		return elements.subList(firstIndex, endIndex);
+	}
+
 	@Nullable
 	public IElement<?> getPageAnchorElement() {
 		if (usesScrollbar()) {
@@ -123,9 +145,18 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 	}
 
 	private void rememberFirstVisibleElementAsPageAnchor() {
-		this.ingredientGrid.getVisibleElements()
-			.findFirst()
-			.ifPresent(this.pageState::setPageAnchorElement);
+		Optional<IElement<?>> firstVisibleElement = this.ingredientGrid.getVisibleElements()
+			.findFirst();
+		if (firstVisibleElement.isPresent()) {
+			this.pageState.setPageAnchorElement(firstVisibleElement.get());
+			return;
+		}
+		// the page can render empty while a drag hides its only bookmark
+		List<IElement<?>> ingredientList = ingredientSource.getElements();
+		int firstItemIndex = this.pageState.getFirstItemIndex();
+		if (firstItemIndex < ingredientList.size()) {
+			this.pageState.setPageAnchorElement(ingredientList.get(firstItemIndex));
+		}
 	}
 
 	@Override
@@ -263,7 +294,7 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 	}
 
 	private boolean usesScrollbar() {
-		return this.gridConfig.getNavigationMode()
+		return this.gridConfig.navigationMode().get()
 			.usesScrollbar();
 	}
 
@@ -287,6 +318,10 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 		updateLayoutWhenChanged(this.scrollController.setScrollOffsetY(scrollOffsetY));
 	}
 
+	public boolean scrollByPixels(double pixels) {
+		return usesScrollbar() && updateLayoutWhenChanged(this.scrollController.scrollByPixels(pixels));
+	}
+
 	private boolean updateLayoutWhenChanged(boolean layoutChanged) {
 		if (layoutChanged) {
 			this.onLayoutChanged.run();
@@ -299,7 +334,7 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 	 * Sets the stack in a hotbar slot to the one that's hovered over.
 	 */
 	private Optional<IUserInputHandler> checkHotbarKeys(Screen screen, UserInput input) {
-		if (!clientConfig.isCheatToHotbarUsingHotkeysEnabled() ||
+		if (!clientConfig.cheatToHotbarUsingHotkeysEnabled().get() ||
 			!this.toggleState.isCheatItemsEnabled() ||
 			screen instanceof RecipesGui
 		) {

@@ -21,7 +21,7 @@ import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
-import mezz.jei.gui.input.IUserInputHandler;
+import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.DeleteItemInputHandler;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.ChatFormatting;
@@ -102,8 +102,7 @@ public class IngredientGrid implements IIngredientGrid {
 		this.mouseExclusionPoint = mouseExclusionPoint;
 		this.visibleSlotCount = IngredientGridLayout.calculateAvailableSlotCount(
 			this.area,
-			this.guiExclusionAreas,
-			this.mouseExclusionPoint
+			this.guiExclusionAreas
 		);
 		updateSlots(0);
 	}
@@ -217,8 +216,8 @@ public class IngredientGrid implements IIngredientGrid {
 	}
 
 	private <T> void addCreativeTabs(ITooltipBuilder tooltipBuilder, ITypedIngredient<T> typedIngredient) {
-		IClientConfig clientConfig = Internal.getJeiClientConfigs().getClientConfig();
-		if (!clientConfig.isShowCreativeTabNamesEnabled()) {
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
+		if (!clientConfig.showCreativeTabNamesEnabled().get()) {
 			return;
 		}
 
@@ -263,6 +262,10 @@ public class IngredientGrid implements IIngredientGrid {
 
 	public Stream<IngredientListSlot> getSlots() {
 		return ingredientListRenderer.getSlots();
+	}
+
+	public List<IngredientListSlot> getAllSlots() {
+		return ingredientListRenderer.getAllSlots();
 	}
 
 	@Override

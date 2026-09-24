@@ -1,0 +1,7 @@
+{
+    "pack": {
+        "description": "JEI client startup resource-pack test",
+        "min_format": [88, 0],
+        "max_format": [88, 0]
+    }
+}

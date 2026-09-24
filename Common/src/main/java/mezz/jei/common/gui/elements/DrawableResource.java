@@ -59,8 +59,8 @@ public class DrawableResource implements IDrawableStatic {
 		guiGraphics.blit(
 			RenderPipelines.GUI_TEXTURED,
 			this.id,
-			xOffset + maskLeft,
-			yOffset + maskTop,
+			xOffset + paddingLeft + maskLeft,
+			yOffset + paddingTop + maskTop,
 			u + maskLeft,
 			v + maskTop,
 			uWidth,

@@ -7,6 +7,7 @@ import mezz.jei.fabric.events.JeiLifecycleEvents;
 import mezz.jei.fabric.network.ClientNetworkHandler;
 import mezz.jei.fabric.network.ConnectionToServer;
 import mezz.jei.gui.config.InternalKeyMappings;
+import mezz.jei.library.config.JeiConfigData;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -15,6 +16,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.world.item.crafting.RecipeMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,8 +27,9 @@ public class ClientLifecycleHandler {
 
 	private final JeiStarter jeiStarter;
 	private boolean running;
+	private boolean receivedRecipeSync;
 
-	public ClientLifecycleHandler() {
+	public ClientLifecycleHandler(JeiConfigData configData) {
 		IConnectionToServer serverConnection = new ConnectionToServer();
 		Internal.setServerConnection(serverConnection);
 
@@ -38,7 +41,8 @@ public class ClientLifecycleHandler {
 		List<IModPlugin> plugins = FabricPluginFinder.getModPlugins();
 		StartData startData = new StartData(
 			plugins,
-			serverConnection
+			serverConnection,
+			configData
 		);
 
 		this.jeiStarter = new JeiStarter(startData);
@@ -46,6 +50,10 @@ public class ClientLifecycleHandler {
 
 	public void registerEvents() {
 		JeiLifecycleEvents.AFTER_RECIPES_UPDATED.register(() -> {
+			if (!receivedRecipeSync) {
+				Internal.clearClientRecipes();
+			}
+			receivedRecipeSync = false;
 			if (running) {
 				stopJei();
 			}
@@ -57,7 +65,15 @@ public class ClientLifecycleHandler {
 				startJei();
 			}
 		});
-		JeiLifecycleEvents.GAME_STOP.register(this::stopJei);
+		JeiLifecycleEvents.GAME_STOP.register(() -> {
+			receivedRecipeSync = false;
+			stopJei();
+		});
+	}
+
+	public void onRecipesSynchronized(RecipeMap recipes) {
+		Internal.setClientSyncedRecipes(recipes);
+		receivedRecipeSync = true;
 	}
 
 	public ResourceManagerReloadListener getReloadListener() {
@@ -72,6 +88,14 @@ public class ClientLifecycleHandler {
 				startJei();
 			}
 		};
+	}
+
+	public void restartJei() {
+		if (!running) {
+			return;
+		}
+		stopJei();
+		startJei();
 	}
 
 	private void startJei() {

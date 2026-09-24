@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @SuppressWarnings("UnstableApiUsage")
 public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 	private static final KeyMapping.Category CATEGORY = new KeyMapping.Category(Identifier.fromNamespaceAndPath("jei-test", "key_mapping"));
-	private static final Identifier GUI_BACKGROUND_TEXTURE = Identifier.fromNamespaceAndPath("jei", "textures/jei/atlas/gui/gui_background.png");
+	private static final Identifier GUI_BACKGROUND_TEXTURE = Identifier.fromNamespaceAndPath("jei", "textures/gui/sprites/gui_background.png");
 	private static final String FOCUS_SEARCH_TRANSLATION_KEY = "key.jei.focusSearch";
 
 	@Override
@@ -100,7 +100,6 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 
 	private static void assertFocusSearchHotkeyDoesNotTypeItsCharacter(ClientGameTestContext context) {
 		try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
-			singleplayer.getClientLevel().waitForChunksRender();
 			context.waitFor(
 				client -> Internal.getOptionalJeiRuntime().isPresent(),
 				ClientGameTestContext.DEFAULT_TIMEOUT
@@ -213,7 +212,7 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 			CATEGORY,
 			JeiKeyConflictContext.UNIVERSAL
 		);
-		FabricJeiKeyMapping jeiMapping = new FabricJeiKeyMapping(fabricMapping, JeiKeyConflictContext.UNIVERSAL);
+		IJeiKeyMappingInternal jeiMapping = new FabricJeiKeyMapping<>(fabricMapping);
 		assertJeiKeyMappingIsDiscoverableAndRebindable("Fabric", fabricMapping, jeiMapping, boundKey, reboundKey);
 	}
 
@@ -279,7 +278,6 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 
 	private static void assertJeiMouseMappingsDoNotHideVanillaMouseClicks(ClientGameTestContext context) {
 		try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
-			singleplayer.getClientLevel().waitForChunksRender();
 			context.runOnClient(client -> client.gui.setScreen(null));
 			context.waitFor(
 				client -> client.level != null &&
@@ -492,13 +490,16 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 			CATEGORY,
 			JeiKeyConflictContext.GUI
 		);
-		FabricJeiKeyMapping jeiMapping = new FabricJeiKeyMapping(fabricMapping, JeiKeyConflictContext.GUI);
+		IJeiKeyMappingInternal jeiMapping = new FabricJeiKeyMapping<>(fabricMapping);
 
 		if (jeiMapping.isUnbound()) {
 			throw new AssertionError("Expected bound Fabric-backed JEI mouse mapping to report bound: " + mouseKey.getName());
 		}
 		if (jeiMapping.isActiveAndMatches(mouseKey)) {
 			throw new AssertionError("Expected bound Fabric-backed JEI mouse mapping to reject input while its GUI context is inactive: " + mouseKey.getName());
+		}
+		if (fabricMapping.isActiveAndMatches(mouseKey)) {
+			throw new AssertionError("Expected the platform mapping to reject input while its GUI context is inactive: " + mouseKey.getName());
 		}
 	}
 
@@ -511,7 +512,7 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 			CATEGORY,
 			JeiKeyConflictContext.GUI
 		);
-		FabricJeiKeyMapping jeiMapping = new FabricJeiKeyMapping(fabricMapping, JeiKeyConflictContext.GUI);
+		IJeiKeyMappingInternal jeiMapping = new FabricJeiKeyMapping<>(fabricMapping);
 
 		fabricMapping.setKey(InputConstants.UNKNOWN);
 		KeyMapping.resetMapping();

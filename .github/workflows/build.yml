@@ -2,11 +2,16 @@ name: 'Build'
 
 on:
   push:
+    branches:
+      - '26.2'
   pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -20,7 +25,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up JDK 25
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: 'microsoft'
           java-version: '25'
@@ -35,7 +40,7 @@ jobs:
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
       - name: Build with Gradle
-        run: ./gradlew assemble :Fabric:validateAccessWidener :FabricApi:validateAccessWidener --no-daemon
+        run: ./gradlew assemble :Fabric:validateAccessWidener --no-daemon
 
       - name: Copy together artifacts
         if: github.event_name == 'push'
@@ -43,11 +48,8 @@ jobs:
         run: |
           mkdir dist
           cp Common/build/libs/*.jar dist
-          cp CommonApi/build/libs/*.jar dist
           cp Fabric/build/libs/*.jar dist
-          cp FabricApi/build/libs/*.jar dist
           cp NeoForge/build/libs/*.jar dist
-          cp NeoForgeApi/build/libs/*.jar dist
           cp Gui/build/libs/*.jar dist
           cp Library/build/libs/*.jar dist
 
