@@ -2,11 +2,16 @@ name: 'Spotless'
 
 on:
   push:
+    branches:
+      - '26.2'
   pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   spotless:
@@ -19,7 +24,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up JDK 25
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: 'microsoft'
           java-version: '25'

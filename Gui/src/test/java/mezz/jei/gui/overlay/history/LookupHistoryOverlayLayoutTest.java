@@ -1,14 +1,17 @@
 package mezz.jei.gui.overlay.history;
 
+import mezz.jei.gui.overlay.TestJeiConfigValue;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.NavigationVisibility;
 import mezz.jei.gui.overlay.ingredients.IngredientGridButtonNavigationLayout;
 import mezz.jei.gui.overlay.ingredients.IngredientGridLayout;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigationLayout;
+import net.mezzdev.config.api.value.IConfigValue;
+import mezz.jei.common.config.NavigationVisibility;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -76,7 +79,6 @@ public class LookupHistoryOverlayLayoutTest {
 			gridConfig,
 			ingredientListAvailableArea(drawBackground),
 			Set.of(),
-			null,
 			100
 		);
 		LookupHistoryOverlayLayout lookupHistoryLayout = LookupHistoryOverlayLayout.calculate(
@@ -110,7 +112,6 @@ public class LookupHistoryOverlayLayoutTest {
 			gridConfig,
 			bookmarkListAvailableArea(drawBackground),
 			Set.of(),
-			null,
 			100
 		);
 		LookupHistoryOverlayLayout lookupHistoryLayout = LookupHistoryOverlayLayout.calculate(
@@ -244,48 +245,49 @@ public class LookupHistoryOverlayLayoutTest {
 	}
 
 	private static class TestGridConfig implements IIngredientGridConfig {
-		private int maxColumns = 9;
+		private final TestJeiConfigValue<Integer> maxColumns = value("maxColumns", 9);
 		private int minColumns = 1;
-		private int maxRows = 6;
+		private final TestJeiConfigValue<Integer> maxRows = value("maxRows", 6);
 		private int minRows = 1;
-		private boolean drawBackground = true;
-		private IngredientGridNavigationMode navigationMode = IngredientGridNavigationMode.PAGED;
-		private HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
-		private VerticalAlignment verticalAlignment = VerticalAlignment.TOP;
-		private NavigationVisibility navigationVisibility = NavigationVisibility.AUTO_HIDE;
+		private final TestJeiConfigValue<Boolean> drawBackground = value("drawBackground", true);
+		private final TestJeiConfigValue<IngredientGridLayoutMode> layoutMode = value("layoutMode", IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE);
+		private final TestJeiConfigValue<IngredientGridNavigationMode> navigationMode = value("navigationMode", IngredientGridNavigationMode.PAGED);
+		private final TestJeiConfigValue<HorizontalAlignment> horizontalAlignment = value("horizontalAlignment", HorizontalAlignment.LEFT);
+		private final TestJeiConfigValue<VerticalAlignment> verticalAlignment = value("verticalAlignment", VerticalAlignment.TOP);
+		private final TestJeiConfigValue<NavigationVisibility> navigationVisibility = value("navigationVisibility", NavigationVisibility.AUTO_HIDE);
 
 		public TestGridConfig maxColumns(int maxColumns) {
-			this.maxColumns = maxColumns;
+			this.maxColumns.set(maxColumns);
 			return this;
 		}
 
 		public TestGridConfig maxRows(int maxRows) {
-			this.maxRows = maxRows;
+			this.maxRows.set(maxRows);
 			return this;
 		}
 
 		public TestGridConfig drawBackground(boolean drawBackground) {
-			this.drawBackground = drawBackground;
+			this.drawBackground.set(drawBackground);
 			return this;
 		}
 
 		public TestGridConfig horizontalAlignment(HorizontalAlignment horizontalAlignment) {
-			this.horizontalAlignment = horizontalAlignment;
+			this.horizontalAlignment.set(horizontalAlignment);
 			return this;
 		}
 
 		public TestGridConfig verticalAlignment(VerticalAlignment verticalAlignment) {
-			this.verticalAlignment = verticalAlignment;
+			this.verticalAlignment.set(verticalAlignment);
 			return this;
 		}
 
 		public TestGridConfig navigationVisibility(NavigationVisibility navigationVisibility) {
-			this.navigationVisibility = navigationVisibility;
+			this.navigationVisibility.set(navigationVisibility);
 			return this;
 		}
 
 		@Override
-		public int getMaxColumns() {
+		public IConfigValue<Integer> maxColumns() {
 			return maxColumns;
 		}
 
@@ -295,7 +297,7 @@ public class LookupHistoryOverlayLayoutTest {
 		}
 
 		@Override
-		public int getMaxRows() {
+		public IConfigValue<Integer> maxRows() {
 			return maxRows;
 		}
 
@@ -305,28 +307,38 @@ public class LookupHistoryOverlayLayoutTest {
 		}
 
 		@Override
-		public boolean drawBackground() {
+		public IConfigValue<Boolean> drawBackground() {
 			return drawBackground;
 		}
 
 		@Override
-		public IngredientGridNavigationMode getNavigationMode() {
+		public IConfigValue<IngredientGridLayoutMode> layoutMode() {
+			return layoutMode;
+		}
+
+		@Override
+		public IConfigValue<IngredientGridNavigationMode> navigationMode() {
 			return navigationMode;
 		}
 
 		@Override
-		public HorizontalAlignment getHorizontalAlignment() {
+		public IConfigValue<HorizontalAlignment> horizontalAlignment() {
 			return horizontalAlignment;
 		}
 
 		@Override
-		public VerticalAlignment getVerticalAlignment() {
+		public IConfigValue<VerticalAlignment> verticalAlignment() {
 			return verticalAlignment;
 		}
 
 		@Override
-		public NavigationVisibility getNavigationVisibility() {
+		public IConfigValue<NavigationVisibility> navigationVisibility() {
 			return navigationVisibility;
 		}
+
+		private static <T> TestJeiConfigValue<T> value(String name, T defaultValue) {
+			return new TestJeiConfigValue<>(name, defaultValue);
+		}
 	}
+
 }

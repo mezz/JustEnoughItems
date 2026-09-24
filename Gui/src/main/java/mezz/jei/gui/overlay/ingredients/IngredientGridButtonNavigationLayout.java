@@ -1,12 +1,13 @@
 package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.util.ImmutablePoint2i;
+import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.util.ImmutableRect2i;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -22,17 +23,15 @@ public final class IngredientGridButtonNavigationLayout {
 		IIngredientGridConfig gridConfig,
 		ImmutableRect2i availableArea,
 		Set<ImmutableRect2i> guiExclusionAreas,
-		@Nullable ImmutablePoint2i mouseExclusionPoint,
 		int ingredientCount
 	) {
-		return switch (gridConfig.getNavigationVisibility()) {
-			case ENABLED -> calculateForNavigation(gridConfig, availableArea, guiExclusionAreas, mouseExclusionPoint, true);
-			case DISABLED -> calculateForNavigation(gridConfig, availableArea, guiExclusionAreas, mouseExclusionPoint, false);
+		return switch (gridConfig.navigationVisibility().get()) {
+			case ENABLED -> calculateForNavigation(gridConfig, availableArea, guiExclusionAreas, true);
+			case DISABLED -> calculateForNavigation(gridConfig, availableArea, guiExclusionAreas, false);
 			case AUTO_HIDE -> calculateAutoHide(
 				gridConfig,
 				availableArea,
 				guiExclusionAreas,
-				mouseExclusionPoint,
 				ingredientCount
 			);
 		};
@@ -42,14 +41,12 @@ public final class IngredientGridButtonNavigationLayout {
 		IIngredientGridConfig gridConfig,
 		ImmutableRect2i availableArea,
 		Set<ImmutableRect2i> guiExclusionAreas,
-		@Nullable ImmutablePoint2i mouseExclusionPoint,
 		int ingredientCount
 	) {
 		IngredientGridWithNavigationLayout layoutWithoutNavigation = calculateForNavigation(
 			gridConfig,
 			availableArea,
 			guiExclusionAreas,
-			mouseExclusionPoint,
 			false
 		);
 		int pageCountWithoutNavigation = IngredientGridPageState.getPageCount(
@@ -58,7 +55,7 @@ public final class IngredientGridButtonNavigationLayout {
 		);
 		boolean navigationEnabled = layoutWithoutNavigation.hasRoom() && pageCountWithoutNavigation > 1;
 		if (navigationEnabled) {
-			return calculateForNavigation(gridConfig, availableArea, guiExclusionAreas, mouseExclusionPoint, true);
+			return calculateForNavigation(gridConfig, availableArea, guiExclusionAreas, true);
 		}
 		return layoutWithoutNavigation;
 	}
@@ -67,16 +64,22 @@ public final class IngredientGridButtonNavigationLayout {
 		IIngredientGridConfig gridConfig,
 		ImmutableRect2i availableArea,
 		Set<ImmutableRect2i> guiExclusionAreas,
-		@Nullable ImmutablePoint2i mouseExclusionPoint,
 		boolean navigationEnabled
 	) {
+		if (navigationEnabled && gridConfig.layoutMode().get() == IngredientGridLayoutMode.RECTANGULAR) {
+			return calculateRectangularLayout(
+				gridConfig,
+				availableArea,
+				guiExclusionAreas
+			);
+		}
+
 		ImmutableRect2i effectiveArea = availableArea;
 		ImmutableRect2i availableGridArea = IngredientGridWithNavigationLayout.getAvailableGridArea(gridConfig, effectiveArea);
 		ImmutableRect2i ingredientGridArea = IngredientGridLayout.calculateBounds(gridConfig, availableGridArea);
 		int availableSlotCount = IngredientGridLayout.calculateAvailableSlotCount(
 			ingredientGridArea,
-			guiExclusionAreas,
-			mouseExclusionPoint
+			guiExclusionAreas
 		);
 
 		ImmutableRect2i slotBackgroundArea = IngredientGridWithNavigationLayout.calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
@@ -97,7 +100,7 @@ public final class IngredientGridButtonNavigationLayout {
 				availableGridArea = IngredientGridWithNavigationLayout.getAvailableGridArea(gridConfig, effectiveArea);
 				ingredientGridArea = IngredientGridLayout.calculateBounds(gridConfig, availableGridArea);
 				availableSlotCount = IngredientGridLayout.calculateAvailableSlotCount(
-					ingredientGridArea, guiExclusionAreas, mouseExclusionPoint
+					ingredientGridArea, guiExclusionAreas
 				);
 				slotBackgroundArea = IngredientGridWithNavigationLayout.calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
 				defaultNavigationArea = IngredientGridWithNavigationLayout.calculateNavigationArea(slotBackgroundArea, navigationEnabled);
@@ -107,15 +110,206 @@ public final class IngredientGridButtonNavigationLayout {
 			}
 		}
 
+		ImmutableRect2i backgroundNavigationArea;
+		if (navigationArea.isEmpty()) {
+			backgroundNavigationArea = ImmutableRect2i.EMPTY;
+		} else {
+			backgroundNavigationArea = defaultNavigationArea;
+		}
 		return IngredientGridWithNavigationLayout.fromGridArea(
 			gridConfig,
 			ingredientGridArea,
 			availableSlotCount,
 			navigationArea,
+			backgroundNavigationArea,
 			navigationEnabled,
 			ImmutableRect2i.EMPTY,
 			false
 		);
+	}
+
+	private static IngredientGridWithNavigationLayout calculateRectangularLayout(
+		IIngredientGridConfig gridConfig,
+		ImmutableRect2i availableArea,
+		Set<ImmutableRect2i> guiExclusionAreas
+	) {
+		ImmutableRect2i availableGridArea = IngredientGridWithNavigationLayout.getAvailableGridArea(gridConfig, availableArea);
+		ImmutableRect2i initialGridArea = IngredientGridLayout.calculateBounds(gridConfig, availableGridArea);
+		IngredientGridWithNavigationLayout initialLayout = createRectangularLayout(
+			gridConfig,
+			initialGridArea,
+			guiExclusionAreas
+		);
+		if (initialLayout.hasRoom() || initialGridArea.isEmpty()) {
+			return initialLayout;
+		}
+
+		int maxColumns = Math.min(
+			availableGridArea.width() / IngredientGridLayout.INGREDIENT_WIDTH,
+			gridConfig.maxColumns().get()
+		);
+		int maxRows = Math.min(
+			availableGridArea.height() / IngredientGridLayout.INGREDIENT_HEIGHT,
+			gridConfig.maxRows().get()
+		);
+		if (maxColumns < gridConfig.getMinColumns() || maxRows < gridConfig.getMinRows()) {
+			return initialLayout;
+		}
+
+		int gridPadding = 0;
+		if (gridConfig.drawBackground().get()) {
+			gridPadding = IngredientGridWithNavigationLayout.INNER_PADDING;
+		}
+		int navigationToGridOffset = IngredientGridWithNavigationLayout.NAVIGATION_HEIGHT +
+			IngredientGridWithNavigationLayout.INNER_PADDING +
+			gridPadding;
+		int availableGridRight = availableGridArea.x() + availableGridArea.width();
+		int availableGridBottom = availableGridArea.y() + availableGridArea.height();
+
+		// A clear navigation strip starts or ends at an exclusion edge, so these positions cover
+		// the useful vertical alternatives without scanning every screen pixel.
+		Set<Integer> yPositions = new LinkedHashSet<>();
+		yPositions.add(initialGridArea.y());
+		yPositions.add(availableGridArea.y());
+		yPositions.add(availableGridBottom - (maxRows * IngredientGridLayout.INGREDIENT_HEIGHT));
+		for (ImmutableRect2i exclusionArea : guiExclusionAreas) {
+			yPositions.add(exclusionArea.y() + exclusionArea.height() + navigationToGridOffset);
+			yPositions.add(
+				exclusionArea.y() - IngredientGridWithNavigationLayout.NAVIGATION_HEIGHT + navigationToGridOffset
+			);
+		}
+
+		RectangularLayoutCandidate bestCandidate = null;
+		for (int columns = gridConfig.getMinColumns(); columns <= maxColumns; columns++) {
+			int gridWidth = columns * IngredientGridLayout.INGREDIENT_WIDTH;
+			// Keep navigation at the grid's full width and place it immediately beside exclusions.
+			Set<Integer> xPositions = new LinkedHashSet<>();
+			xPositions.add(initialGridArea.x());
+			xPositions.add(availableGridArea.x());
+			xPositions.add(availableGridRight - gridWidth);
+			xPositions.add(
+				availableGridArea.x() + gridConfig.horizontalAlignment().get().getXPos(availableGridArea.width(), gridWidth)
+			);
+			for (ImmutableRect2i exclusionArea : guiExclusionAreas) {
+				xPositions.add(exclusionArea.x() + exclusionArea.width() + gridPadding);
+				xPositions.add(exclusionArea.x() - gridWidth - gridPadding);
+			}
+
+			for (int gridY : yPositions) {
+				int availableHeight = availableGridBottom - gridY;
+				int rows = Math.min(availableHeight / IngredientGridLayout.INGREDIENT_HEIGHT, maxRows);
+				if (rows < gridConfig.getMinRows()) {
+					continue;
+				}
+
+				int gridHeight = rows * IngredientGridLayout.INGREDIENT_HEIGHT;
+				for (int gridX : xPositions) {
+					ImmutableRect2i ingredientGridArea = new ImmutableRect2i(gridX, gridY, gridWidth, gridHeight);
+					if (!contains(availableGridArea, ingredientGridArea)) {
+						continue;
+					}
+
+					IngredientGridWithNavigationLayout layout = createRectangularLayout(
+						gridConfig,
+						ingredientGridArea,
+						guiExclusionAreas
+					);
+					if (!layout.hasRoom()) {
+						continue;
+					}
+
+					int displacement = Math.abs(ingredientGridArea.x() - initialGridArea.x()) +
+						Math.abs(ingredientGridArea.y() - initialGridArea.y());
+					RectangularLayoutCandidate candidate = new RectangularLayoutCandidate(layout, displacement);
+					if (candidate.isBetterThan(bestCandidate)) {
+						bestCandidate = candidate;
+					}
+				}
+			}
+		}
+
+		if (bestCandidate == null) {
+			return initialLayout;
+		}
+		return bestCandidate.layout();
+	}
+
+	private static IngredientGridWithNavigationLayout createRectangularLayout(
+		IIngredientGridConfig gridConfig,
+		ImmutableRect2i ingredientGridArea,
+		Set<ImmutableRect2i> guiExclusionAreas
+	) {
+		int availableSlotCount = IngredientGridLayout.calculateAvailableSlotCount(
+			ingredientGridArea,
+			guiExclusionAreas
+		);
+		ImmutableRect2i slotBackgroundArea = IngredientGridWithNavigationLayout.calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
+		ImmutableRect2i defaultNavigationArea = IngredientGridWithNavigationLayout.calculateNavigationArea(slotBackgroundArea, true);
+		boolean navigationBlocked = guiExclusionAreas.stream()
+			.anyMatch(defaultNavigationArea::intersects);
+		ImmutableRect2i navigationArea = defaultNavigationArea;
+		if (navigationBlocked) {
+			navigationArea = ImmutableRect2i.EMPTY;
+		}
+		return IngredientGridWithNavigationLayout.fromGridArea(
+			gridConfig,
+			ingredientGridArea,
+			availableSlotCount,
+			navigationArea,
+			navigationArea,
+			true,
+			ImmutableRect2i.EMPTY,
+			false
+		);
+	}
+
+	private static boolean contains(ImmutableRect2i outer, ImmutableRect2i inner) {
+		return inner.x() >= outer.x() &&
+			inner.y() >= outer.y() &&
+			inner.x() + inner.width() <= outer.x() + outer.width() &&
+			inner.y() + inner.height() <= outer.y() + outer.height();
+	}
+
+	private record RectangularLayoutCandidate(
+		IngredientGridWithNavigationLayout layout,
+		int displacement
+	) {
+		public boolean isBetterThan(@Nullable RectangularLayoutCandidate other) {
+			if (other == null) {
+				return true;
+			}
+
+			int slotCountComparison = Integer.compare(layout.availableSlotCount(), other.layout.availableSlotCount());
+			if (slotCountComparison != 0) {
+				return slotCountComparison > 0;
+			}
+
+			int rawSlotCount = getRawSlotCount(layout.ingredientGridArea());
+			int otherRawSlotCount = getRawSlotCount(other.layout.ingredientGridArea());
+			if (rawSlotCount != otherRawSlotCount) {
+				return rawSlotCount > otherRawSlotCount;
+			}
+
+			if (displacement != other.displacement) {
+				return displacement < other.displacement;
+			}
+
+			ImmutableRect2i ingredientGridArea = layout.ingredientGridArea();
+			ImmutableRect2i otherIngredientGridArea = other.layout.ingredientGridArea();
+			if (ingredientGridArea.width() != otherIngredientGridArea.width()) {
+				return ingredientGridArea.width() > otherIngredientGridArea.width();
+			}
+			if (ingredientGridArea.y() != otherIngredientGridArea.y()) {
+				return ingredientGridArea.y() < otherIngredientGridArea.y();
+			}
+			return ingredientGridArea.x() < otherIngredientGridArea.x();
+		}
+
+		private static int getRawSlotCount(ImmutableRect2i ingredientGridArea) {
+			int columns = ingredientGridArea.width() / IngredientGridLayout.INGREDIENT_WIDTH;
+			int rows = ingredientGridArea.height() / IngredientGridLayout.INGREDIENT_HEIGHT;
+			return columns * rows;
+		}
 	}
 
 	private static int calculateNavigationShiftY(
@@ -125,7 +319,7 @@ public final class IngredientGridButtonNavigationLayout {
 		IIngredientGridConfig gridConfig
 	) {
 		int padding = 0;
-		if (gridConfig.drawBackground()) {
+		if (gridConfig.drawBackground().get()) {
 			padding = IngredientGridWithNavigationLayout.BORDER_PADDING + IngredientGridWithNavigationLayout.INNER_PADDING;
 		}
 		int stripTop = availableArea.y() + IngredientGridWithNavigationLayout.BORDER_MARGIN;
@@ -206,18 +400,45 @@ public final class IngredientGridButtonNavigationLayout {
 
 		int originalX = defaultNavigationArea.x();
 		int originalWidth = defaultNavigationArea.width();
+		int originalRight = originalX + originalWidth;
 
+		ImmutableRect2i navigationArea = calculateNavigationAreaInGaps(
+			gaps,
+			originalX,
+			originalRight,
+			originalX,
+			originalWidth,
+			navigationStripArea.y(),
+			navigationStripArea.height()
+		);
+		if (!navigationArea.isEmpty()) {
+			return navigationArea;
+		}
+
+		return ImmutableRect2i.EMPTY;
+	}
+
+	private static ImmutableRect2i calculateNavigationAreaInGaps(
+		List<int[]> gaps,
+		int minX,
+		int maxX,
+		int originalX,
+		int originalWidth,
+		int y,
+		int height
+	) {
 		int bestGapStart = -1;
 		int bestGapWidth = 0;
 		int bestDistance = Integer.MAX_VALUE;
 		for (int[] gap : gaps) {
-			int gapStart = gap[0];
-			int gapWidth = gap[1] - gap[0];
+			int gapStart = Math.max(gap[0], minX);
+			int gapEnd = Math.min(gap[1], maxX);
+			int gapWidth = gapEnd - gapStart;
 			if (gapWidth < NAVIGATION_MIN_WIDTH) {
 				continue;
 			}
 			int navWidthInGap = Math.min(originalWidth, gapWidth);
-			int navStart = Math.clamp(originalX, gapStart, gap[1] - navWidthInGap);
+			int navStart = Math.clamp(originalX, gapStart, gapEnd - navWidthInGap);
 			int distance = Math.abs(navStart - originalX);
 			if (distance < bestDistance) {
 				bestGapStart = navStart;
@@ -232,9 +453,9 @@ public final class IngredientGridButtonNavigationLayout {
 
 		return new ImmutableRect2i(
 			bestGapStart,
-			navigationStripArea.y(),
+			y,
 			bestGapWidth,
-			navigationStripArea.height()
+			height
 		);
 	}
 
@@ -246,7 +467,7 @@ public final class IngredientGridButtonNavigationLayout {
 	) {
 		int x = slotBackgroundArea.x();
 		int right = slotBackgroundArea.x() + slotBackgroundArea.width();
-		if (gridConfig.drawBackground()) {
+		if (gridConfig.drawBackground().get()) {
 			x -= IngredientGridWithNavigationLayout.BORDER_PADDING;
 			right += IngredientGridWithNavigationLayout.BORDER_PADDING;
 		}

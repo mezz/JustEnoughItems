@@ -17,8 +17,25 @@ public class NeoForgeJeiKeyMapping implements IJeiKeyMappingInternal {
 	}
 
 	@Override
+	public KeyMapping getKeyMapping() {
+		return keyMapping;
+	}
+
+	@Override
 	public boolean isActiveAndMatches(InputConstants.Key key) {
 		return keyMapping.isActiveAndMatches(key);
+	}
+
+	@Override
+	public boolean isActiveAndMatchesAllowingExtraModifiers(InputConstants.Key key) {
+		if (keyMapping.isUnbound() || !keyMapping.getKey().equals(key)) {
+			return false;
+		}
+		if (!keyMapping.getKeyConflictContext().isActive()) {
+			return false;
+		}
+		KeyModifier keyModifier = keyMapping.getKeyModifier();
+		return keyModifier == KeyModifier.NONE || isKeyModifierActive(key);
 	}
 
 	@Override

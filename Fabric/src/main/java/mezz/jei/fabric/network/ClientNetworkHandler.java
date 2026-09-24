@@ -3,6 +3,7 @@ package mezz.jei.fabric.network;
 import mezz.jei.common.network.ClientPacketContext;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketCheatPermission;
+import mezz.jei.common.network.packets.PacketRecipeTransferResult;
 import mezz.jei.common.network.packets.PlayToClientPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
@@ -13,6 +14,7 @@ public final class ClientNetworkHandler {
 
 	public static void registerClientPacketHandler(IConnectionToServer connection) {
 		ClientPlayNetworking.registerGlobalReceiver(PacketCheatPermission.TYPE, wrapClientHandler(connection, PacketCheatPermission::process));
+		ClientPlayNetworking.registerGlobalReceiver(PacketRecipeTransferResult.TYPE, wrapClientHandler(connection, PacketRecipeTransferResult::process));
 	}
 
 	private static <T extends PlayToClientPacket<T>> ClientPlayNetworking.PlayPayloadHandler<T> wrapClientHandler(IConnectionToServer connection, BiConsumer<T, ClientPacketContext> consumer) {

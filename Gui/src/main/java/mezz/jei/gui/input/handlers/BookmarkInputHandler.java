@@ -6,12 +6,15 @@ import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.handlers.SameElementInputHandler;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.input.CombinedRecipeFocusSource;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.gui.input.PinnedTooltipManager;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
+import mezz.jei.gui.overlay.bookmarks.BookmarkPreviewTooltipController;
 import mezz.jei.gui.recipes.IRecipeLayoutWithButtons;
 import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.screens.Screen;
@@ -22,6 +25,7 @@ public class BookmarkInputHandler implements IUserInputHandler {
 	private final CombinedRecipeFocusSource focusSource;
 	private final BookmarkList bookmarkList;
 	private final BookmarkOverlay bookmarkOverlay;
+	private final BookmarkPreviewTooltipController bookmarkPreviewTooltipController;
 	private final IClientConfig clientConfig;
 	private final RecipesGui recipesGui;
 
@@ -29,19 +33,21 @@ public class BookmarkInputHandler implements IUserInputHandler {
 		CombinedRecipeFocusSource focusSource,
 		BookmarkList bookmarkList,
 		BookmarkOverlay bookmarkOverlay,
+		BookmarkPreviewTooltipController bookmarkPreviewTooltipController,
 		IClientConfig clientConfig,
 		RecipesGui recipesGui
 	) {
 		this.focusSource = focusSource;
 		this.bookmarkList = bookmarkList;
 		this.bookmarkOverlay = bookmarkOverlay;
+		this.bookmarkPreviewTooltipController = bookmarkPreviewTooltipController;
 		this.clientConfig = clientConfig;
 		this.recipesGui = recipesGui;
 	}
 
 	@Override
 	public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
-		if (input.is(keyBindings.getBookmark())) {
+		if (PinnedTooltipManager.matchesInput(input.getKey(), keyBindings.getBookmark(), keyBindings.getPauseRecipeCycling())) {
 			Optional<IUserInputHandler> recipeHandler = handleRecipeBookmark(input);
 			if (recipeHandler.isPresent()) {
 				return recipeHandler;
@@ -54,6 +60,9 @@ public class BookmarkInputHandler implements IUserInputHandler {
 	private Optional<IUserInputHandler> handleRecipeBookmark(UserInput input) {
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
+		if (bookmarkPreviewTooltipController.isMouseOver(mouseX, mouseY)) {
+			return Optional.empty();
+		}
 		Optional<IRecipeLayoutWithButtons<?>> layoutWithButtons = recipesGui.getRecipeLayoutUnderMouse(mouseX, mouseY);
 		if (layoutWithButtons.isEmpty()) {
 			return Optional.empty();
@@ -67,7 +76,7 @@ public class BookmarkInputHandler implements IUserInputHandler {
 
 		IRecipeLayoutDrawable<?> layout = recipeLayoutWithButtons.getRecipeLayout();
 		Optional<RecipeSlotUnderMouse> slotUnderMouse = layout.getSlotUnderMouse(mouseX, mouseY);
-		if (!shouldBookmarkRecipe(slotUnderMouse, clientConfig.isBookmarkOutputAsRecipeEnabled())) {
+		if (!shouldBookmarkRecipe(slotUnderMouse, clientConfig.bookmarkOutputAsRecipe().get())) {
 			return Optional.empty();
 		}
 
@@ -77,14 +86,14 @@ public class BookmarkInputHandler implements IUserInputHandler {
 		return Optional.of(new SameElementInputHandler(this, layout::isMouseOver));
 	}
 
-	static boolean shouldBookmarkRecipe(Optional<RecipeSlotUnderMouse> slotUnderMouse, boolean bookmarkOutputAsRecipeEnabled) {
+	static boolean shouldBookmarkRecipe(Optional<RecipeSlotUnderMouse> slotUnderMouse, boolean bookmarkOutputAsRecipe) {
 		return slotUnderMouse
-			.map(slot -> shouldBookmarkRecipe(slot.slot().getRole(), bookmarkOutputAsRecipeEnabled))
+			.map(slot -> shouldBookmarkRecipe(slot.slot().getRole(), bookmarkOutputAsRecipe))
 			.orElse(true);
 	}
 
-	static boolean shouldBookmarkRecipe(RecipeIngredientRole role, boolean bookmarkOutputAsRecipeEnabled) {
-		return role == RecipeIngredientRole.OUTPUT && bookmarkOutputAsRecipeEnabled;
+	static boolean shouldBookmarkRecipe(RecipeIngredientRole role, boolean bookmarkOutputAsRecipe) {
+		return role == RecipeIngredientRole.OUTPUT && bookmarkOutputAsRecipe;
 	}
 
 	private Optional<IUserInputHandler> handleIngredientBookmark(UserInput input, IInternalKeyMappings keyBindings) {

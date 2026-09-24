@@ -6,9 +6,9 @@ import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.config.SearchMode;
 import mezz.jei.common.search.LimitedStringStorageBuilder;
 import mezz.jei.common.search.PrefixInfo;
-import mezz.jei.common.search.SearchMode;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
 import net.minecraft.network.chat.Component;
@@ -45,7 +45,7 @@ public class ElementPrefixParser {
 			'@',
 			Component.translatable("jei.search.completion.prefix.modName"),
 			true,
-			config::getModNameSearchMode,
+			config.modNameSearchMode()::get,
 			info -> info.getModNames(config),
 			limitedStringStorageBuilderFactory
 		));
@@ -54,7 +54,7 @@ public class ElementPrefixParser {
 			'#',
 			Component.translatable("jei.search.completion.prefix.tag"),
 			true,
-			config::getTagSearchMode,
+			config.tagSearchMode()::get,
 			e -> e.getTagStrings(ingredientManager),
 			limitedStringStorageBuilderFactory
 		));
@@ -63,7 +63,7 @@ public class ElementPrefixParser {
 			'$',
 			Component.translatable("jei.search.completion.prefix.tooltip"),
 			false,
-			config::getTooltipSearchMode,
+			config.tooltipSearchMode()::get,
 			e -> e.getTooltipStrings(config, ingredientManager),
 			searchStorageBuilderFactory
 		));
@@ -72,7 +72,7 @@ public class ElementPrefixParser {
 			'%',
 			Component.translatable("jei.search.completion.prefix.creativeTab"),
 			true,
-			config::getCreativeTabSearchMode,
+			config.creativeTabSearchMode()::get,
 			e -> e.getCreativeTabsStrings(ingredientManager),
 			limitedStringStorageBuilderFactory
 		));
@@ -81,7 +81,7 @@ public class ElementPrefixParser {
 			'^',
 			Component.translatable("jei.search.completion.prefix.color"),
 			true,
-			config::getColorSearchMode,
+			config.colorSearchMode()::get,
 			e -> e.getColorNames(ingredientManager, colorHelper),
 			limitedStringStorageBuilderFactory
 		));
@@ -90,7 +90,7 @@ public class ElementPrefixParser {
 			'&',
 			Component.translatable("jei.search.completion.prefix.identifier"),
 			true,
-			config::getIdentifierSearchMode,
+			config.identifierSearchMode()::get,
 			element -> List.of(element.getIdentifier().toString()),
 			searchStorageBuilderFactory
 		));
@@ -144,5 +144,4 @@ public class ElementPrefixParser {
 		}
 		return Optional.of(new TokenInfo(token.substring(1), prefixInfo));
 	}
-
 }

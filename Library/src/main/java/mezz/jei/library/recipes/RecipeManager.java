@@ -17,15 +17,16 @@ import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.recipe.types.IRecipeType;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.RecipeLayoutDrawableErrored;
 import mezz.jei.common.gui.elements.DrawableBlank;
+import mezz.jei.common.recipes.IRecipeVisibility;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.Pair;
 import mezz.jei.library.gui.ingredients.CycleTimer;
+import mezz.jei.library.focus.FocusGroup;
 import mezz.jei.library.gui.recipes.RecipeLayout;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
+import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.util.IngredientSupplierHelper;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
@@ -36,16 +37,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public class RecipeManager implements IRecipeManager {
+public class RecipeManager implements IRecipeManager, IRecipeVisibility {
 	private final RecipeManagerInternal internal;
-	private final IIngredientManager ingredientManager;
+	private final IIngredientManagerInternal ingredientManager;
 	private final ImmutableListMultimap<IRecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators;
 	private final List<IRecipeButtonControllerFactory> recipeButtonControllerFactories;
 	private final ContextMap contextMap;
 
 	public RecipeManager(
 		RecipeManagerInternal internal,
-		IIngredientManager ingredientManager,
+		IIngredientManagerInternal ingredientManager,
 		ImmutableListMultimap<IRecipeType<?>, IRecipeCategoryDecorator<?>> recipeCategoryDecorators,
 		List<IRecipeButtonControllerFactory> recipeButtonControllerFactories,
 		ContextMap contextMap
@@ -57,10 +58,19 @@ public class RecipeManager implements IRecipeManager {
 		this.contextMap = contextMap;
 	}
 
+	public void onRuntimeStopped() {
+		internal.onRuntimeStopped();
+	}
+
 	@Override
 	public <R> IRecipeLookup<R> createRecipeLookup(IRecipeType<R> recipeType) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		return new RecipeLookup<>(recipeType, internal, ingredientManager);
+	}
+
+	@Override
+	public <T> boolean isRecipeVisible(IRecipeCategory<T> recipeCategory, T recipe, IFocusGroup focuses) {
+		return internal.isRecipeVisible(recipeCategory, recipe, focuses);
 	}
 
 	@Override
@@ -120,16 +130,8 @@ public class RecipeManager implements IRecipeManager {
 			borderPadding = 0;
 		}
 
-		return RecipeLayout.create(
-			recipeCategory,
-			decorators,
-			recipe,
-			focusGroup,
-			ingredientManager,
-			recipeBackground,
-			borderPadding,
-			contextMap
-		)
+		IFocusGroup checkedFocusGroup = FocusGroup.checkOne(focusGroup, ingredientManager);
+		return RecipeLayout.create(recipeCategory, decorators, recipe, checkedFocusGroup, ingredientManager, recipeBackground, borderPadding, contextMap)
 			.orElseGet(() -> {
 				return new RecipeLayoutDrawableErrored<>(recipeCategory, recipe, recipeBackground, borderPadding);
 			});
@@ -154,11 +156,12 @@ public class RecipeManager implements IRecipeManager {
 			borderPadding = 0;
 		}
 
+		IFocusGroup checkedFocusGroup = FocusGroup.checkOne(focusGroup, ingredientManager);
 		return RecipeLayout.create(
 			recipeCategory,
 			decorators,
 			recipe,
-			focusGroup,
+			checkedFocusGroup,
 			ingredientManager,
 			recipeBackground,
 			borderPadding,
@@ -181,11 +184,12 @@ public class RecipeManager implements IRecipeManager {
 
 		IRecipeType<T> recipeType = recipeCategory.getRecipeType();
 		Collection<IRecipeCategoryDecorator<T>> decorators = getRecipeCategoryDecorators(recipeType);
+		IFocusGroup checkedFocusGroup = FocusGroup.checkOne(focusGroup, ingredientManager);
 		return RecipeLayout.create(
 			recipeCategory,
 			decorators,
 			recipe,
-			focusGroup,
+			checkedFocusGroup,
 			ingredientManager,
 			background,
 			borderSize,
@@ -193,13 +197,14 @@ public class RecipeManager implements IRecipeManager {
 		);
 	}
 
+	@SuppressWarnings("removal")
 	@Override
+	@Deprecated(since = "30.32.0", forRemoval = true)
 	public IRecipeSlotDrawable createRecipeSlotDrawable(RecipeIngredientRole role, List<Optional<ITypedIngredient<?>>> ingredients, Set<Integer> focusedIngredients, int ingredientCycleOffset) {
 		RecipeSlotBuilder builder = new RecipeSlotBuilder(ingredientManager, contextMap, 0, role);
 		builder.addOptionalTypedIngredients(ingredients);
 		CycleTimer cycleTimer = CycleTimer.create(ingredientCycleOffset);
-		Pair<Integer, IRecipeSlotDrawable> result = builder.build(focusedIngredients, cycleTimer);
-		return result.second();
+		return builder.build(focusedIngredients, FocusGroup.EMPTY, cycleTimer).second();
 	}
 
 	@Override

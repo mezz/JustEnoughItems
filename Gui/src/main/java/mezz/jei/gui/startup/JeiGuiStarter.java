@@ -15,17 +15,18 @@ import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
-import mezz.jei.api.search.ISearchStorageBuilderFactory;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.gui.bookmarks.BookmarkCodec;
@@ -35,6 +36,7 @@ import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.gui.config.ILookupHistoryConfig;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
+import mezz.jei.gui.config.JeiGuiSortingConfigData;
 import mezz.jei.gui.config.ModNameSortingConfig;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.filter.FilterTextSource;
@@ -51,17 +53,20 @@ import mezz.jei.gui.input.GuiContainerWrapper;
 import mezz.jei.gui.input.ICharTypedHandler;
 import mezz.jei.gui.input.handlers.BookmarkInputHandler;
 import mezz.jei.gui.input.handlers.ChatLinkInputHandler;
+import mezz.jei.gui.input.handlers.CheatInputHandler;
 import mezz.jei.gui.input.handlers.DragRouter;
 import mezz.jei.gui.input.handlers.EditInputHandler;
+import mezz.jei.gui.input.handlers.ElementInputHandler;
 import mezz.jei.gui.input.handlers.FocusInputHandler;
 import mezz.jei.gui.input.handlers.GlobalInputHandler;
 import mezz.jei.gui.input.handlers.GuiAreaInputHandler;
-import mezz.jei.gui.input.handlers.UserInputRouter;
+import mezz.jei.common.input.handlers.UserInputRouter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.util.FocusUtil;
+import net.mezzdev.config.api.value.change.IConfigValueBatchChangeListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
@@ -70,11 +75,15 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 
 public class JeiGuiStarter {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static JeiEventHandlers start(IRuntimeRegistration registration) {
+	public static JeiEventHandlers start(
+		IRuntimeRegistration registration,
+		JeiGuiSortingConfigData sortingConfigData
+	) {
 		LOGGER.info("Starting JEI GUI");
 		LoggedTimer timer = new LoggedTimer();
 
@@ -84,6 +93,7 @@ public class JeiGuiStarter {
 
 		IScreenHelper screenHelper = registration.getScreenHelper();
 		IRecipeTransferManager recipeTransferManager = registration.getRecipeTransferManager();
+		RecipeTransferService recipeTransferService = new RecipeTransferService(recipeTransferManager);
 		IRecipeManager recipeManager = registration.getRecipeManager();
 		IIngredientManager ingredientManager = registration.getIngredientManager();
 		IEditModeConfig editModeConfig = registration.getEditModeConfig();
@@ -105,12 +115,19 @@ public class JeiGuiStarter {
 
 		RegistryAccess registryAccess = level.registryAccess();
 
+		IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
+		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+		registerJeiRestartingConfigListeners(jeiClientConfigs);
+		IIngredientGridConfig ingredientListConfig = jeiClientConfigs.getIngredientListConfig();
+		IIngredientGridConfig bookmarkListConfig = jeiClientConfigs.getBookmarkListConfig();
+		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
+
 		timer.start("Building ingredient list");
-		List<IListElementInfo<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager, modIdHelper);
+		List<IListElementInfo<?>> ingredientList = IngredientListElementFactory.createBaseList(ingredientManager, ingredientFilterConfig, modIdHelper);
 		timer.stop();
 
 		timer.start("Building ingredient filter");
-		GuiConfigData configData = GuiConfigData.create();
+		GuiConfigData configData = GuiConfigData.create(sortingConfigData);
 
 		ModNameSortingConfig modNameSortingConfig = configData.modNameSortingConfig();
 		IngredientTypeSortingConfig ingredientTypeSortingConfig = configData.ingredientTypeSortingConfig();
@@ -118,18 +135,12 @@ public class JeiGuiStarter {
 		IBookmarkConfig bookmarkConfig = configData.bookmarkConfig();
 		ILookupHistoryConfig lookupHistoryConfig = configData.lookupHistoryConfig();
 
-		IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
-		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-		IIngredientGridConfig ingredientListConfig = jeiClientConfigs.getIngredientListConfig();
-		IIngredientGridConfig bookmarkListConfig = jeiClientConfigs.getBookmarkListConfig();
-		IIngredientFilterConfig ingredientFilterConfig = jeiClientConfigs.getIngredientFilterConfig();
-
-		Comparator<IListElement<?>> ingredientComparator = IngredientSorter.sortIngredients(
+		Function<List<IListElementInfo<?>>, Comparator<IListElement<?>>> sortIndexUpdater = ingredients -> IngredientSorter.sortIngredients(
 			clientConfig,
 			modNameSortingConfig,
 			ingredientTypeSortingConfig,
 			ingredientManager,
-			ingredientList
+			ingredients
 		);
 
 		IngredientFilter ingredientFilter = new IngredientFilter(
@@ -137,13 +148,20 @@ public class JeiGuiStarter {
 			clientConfig,
 			ingredientFilterConfig,
 			ingredientManager,
-			ingredientComparator,
+			sortIndexUpdater,
 			ingredientList,
 			modIdHelper,
 			ingredientVisibility,
+			ingredientTypeSortingConfig,
 			colorHelper,
 			searchStorageBuilderFactory,
 			toggleState
+		);
+		jeiClientConfigs.registerRuntimeListenerRemoval(
+			modNameSortingConfig.addChangeListener(ingredientFilter::onIngredientSortOrderConfigChanged)
+		);
+		jeiClientConfigs.registerRuntimeListenerRemoval(
+			ingredientTypeSortingConfig.addChangeListener(ingredientFilter::onIngredientTypeSortOrderConfigChanged)
 		);
 		ingredientManager.registerIngredientListener(ingredientFilter);
 		ingredientVisibility.registerListener(ingredientFilter);
@@ -153,14 +171,14 @@ public class JeiGuiStarter {
 		registration.setIngredientFilter(ingredientFilterApi);
 
 		BookmarkFactory bookmarkFactory = new BookmarkFactory(codecHelper, registryAccess, ingredientManager);
-		Codec<IBookmark> bookmarkCodec = BookmarkCodec.create(codecHelper, ingredientManager, recipeManager, bookmarkFactory).codec();
+		Codec<IBookmark> bookmarkCodec = BookmarkCodec.create(codecHelper, ingredientManager, recipeManager, recipeTransferService, bookmarkFactory).codec();
 
 		LookupHistory lookupHistory = new LookupHistory(
 			recipeManager,
 			ingredientManager,
 			registryAccess,
 			codecHelper,
-			clientConfig::getMaxLookupHistoryIngredients,
+			clientConfig.maxLookupHistoryIngredients(),
 			lookupHistoryConfig,
 			bookmarkCodec
 		);
@@ -185,11 +203,13 @@ public class JeiGuiStarter {
 
 		BookmarkList bookmarkList = new BookmarkList(recipeManager, focusFactory, ingredientManager, registryAccess, bookmarkConfig, clientConfig, guiHelper, codecHelper, bookmarkFactory, bookmarkCodec);
 		bookmarkConfig.loadBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarkList, codecHelper, bookmarkCodec);
+		registration.setBookmarkManager(bookmarkList);
 
 		BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
 			ingredientManager,
 			screenHelper,
 			bookmarkList,
+			recipeTransferService,
 			lookupHistory,
 			keyMappings,
 			bookmarkListConfig,
@@ -202,26 +222,34 @@ public class JeiGuiStarter {
 		);
 		registration.setBookmarkOverlay(bookmarkOverlay);
 
-		GuiEventHandler guiEventHandler = new GuiEventHandler(
-			screenHelper,
-			bookmarkOverlay,
-			ingredientListOverlay
-		);
+		FocusUtil focusUtil = new FocusUtil(focusFactory, clientConfig, ingredientManager);
 
 		RecipesGui recipesGui = new RecipesGui(
 			recipeManager,
 			ingredientManager,
-			recipeTransferManager,
+			recipeTransferService,
 			keyMappings,
 			focusFactory,
 			bookmarkList,
 			lookupHistory,
 			guiHelper,
-			bookmarkFactory
+			bookmarkFactory,
+			focusUtil
 		);
 		registration.setRecipesGui(recipesGui);
+		var recipesGuiForegroundInputLayer = recipesGui.getForegroundInputLayer();
+		var bookmarkPreviewTooltipController = bookmarkOverlay.getPreviewTooltipController();
+
+		GuiEventHandler guiEventHandler = new GuiEventHandler(
+			screenHelper,
+			bookmarkOverlay,
+			ingredientListOverlay,
+			recipesGuiForegroundInputLayer,
+			bookmarkPreviewTooltipController
+		);
 
 		CombinedRecipeFocusSource recipeFocusSource = new CombinedRecipeFocusSource(
+			bookmarkPreviewTooltipController,
 			recipesGui,
 			ingredientListOverlay,
 			bookmarkOverlay,
@@ -232,15 +260,26 @@ public class JeiGuiStarter {
 			ingredientListOverlay
 		);
 
-		FocusUtil focusUtil = new FocusUtil(focusFactory, clientConfig, ingredientManager);
-
 		UserInputRouter userInputRouter = new UserInputRouter(
 			"JEIGlobal",
+			recipesGuiForegroundInputLayer,
+			bookmarkPreviewTooltipController,
 			new EditInputHandler(recipeFocusSource, toggleState, editModeConfig),
+			ingredientListOverlay.createDeleteItemInputHandler(),
+			bookmarkOverlay.createDeleteItemInputHandler(),
+			new CheatInputHandler(recipeFocusSource, clientConfig, ingredientManager, toggleState, serverConnection),
+			new ElementInputHandler(recipeFocusSource),
 			ingredientListOverlay.createInputHandler(),
 			bookmarkOverlay.createInputHandler(),
-			new FocusInputHandler(recipeFocusSource, recipesGui, focusUtil, clientConfig, ingredientManager, toggleState, serverConnection),
-			new BookmarkInputHandler(recipeFocusSource, bookmarkList, bookmarkOverlay, clientConfig, recipesGui),
+			new FocusInputHandler(recipeFocusSource, recipesGui, focusUtil, ingredientManager),
+			new BookmarkInputHandler(
+				recipeFocusSource,
+				bookmarkList,
+				bookmarkOverlay,
+				bookmarkPreviewTooltipController,
+				clientConfig,
+				recipesGui
+			),
 			new GlobalInputHandler(toggleState),
 			new GuiAreaInputHandler(screenHelper, recipesGui, focusFactory)
 		);
@@ -266,6 +305,17 @@ public class JeiGuiStarter {
 			guiEventHandler,
 			clientInputHandler,
 			resourceReloadHandler
+		);
+	}
+
+	private static void registerJeiRestartingConfigListeners(IClientConfigs clientConfigs) {
+		IClientConfig clientConfig = clientConfigs.getClientConfig();
+		IConfigValueBatchChangeListener restartJei = changes -> Internal.restartJei();
+		clientConfigs.registerRuntimeListenerRemoval(
+			clientConfig.showTagRecipesEnabled().addBatchListener(restartJei)
+		);
+		clientConfigs.registerRuntimeListenerRemoval(
+			clientConfig.showHiddenIngredients().addBatchListener(restartJei)
 		);
 	}
 }

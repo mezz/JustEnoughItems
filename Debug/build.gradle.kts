@@ -1,3 +1,5 @@
+import mezz.jei.gradle.gradleProperty
+
 plugins {
 	id("idea")
 	id("java")
@@ -5,22 +7,14 @@ plugins {
 }
 
 // gradle.properties
-val minecraftVersion: String by extra
-val modId: String by extra
-val modJavaVersion: String by extra
-val neoformVersionAndTimestamp: String by extra
+val minecraftVersion = gradleProperty("minecraftVersion")
+val modId = gradleProperty("modId")
+val modJavaVersion = gradleProperty("modJavaVersion")
+val neoformVersionAndTimestamp = gradleProperty("neoformVersionAndTimestamp")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-debug"
 base {
 	archivesName.set(baseArchivesName)
-}
-
-val dependencyProjects: List<Project> = listOf(
-	project(":CommonApi"),
-)
-
-dependencyProjects.forEach {
-	project.evaluationDependsOn(it.path)
 }
 
 neoForge {
@@ -35,9 +29,7 @@ sourceSets {
 }
 
 dependencies {
-	dependencyProjects.forEach {
-		implementation(it)
-	}
+	implementation(project(path = ":Common", configuration = "apiClassesElements"))
 }
 
 java {

@@ -5,6 +5,7 @@ import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
@@ -16,15 +17,16 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.gui.GridScrollMath;
+import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
+import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PlayToServerPacket;
-import mezz.jei.common.util.NavigationVisibility;
 import mezz.jei.gui.ghost.GhostIngredientQuickMoveManager;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
-import mezz.jei.gui.input.IUserInputHandler;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
 import mezz.jei.gui.util.CommandUtil;
@@ -37,11 +39,16 @@ import mezz.jei.test.lib.TestClientConfig;
 import mezz.jei.test.lib.TestClientToggleState;
 import mezz.jei.test.lib.TestColorHelper;
 import mezz.jei.test.lib.TestIngredient;
+import net.mezzdev.config.api.value.IConfigValue;
+import mezz.jei.common.config.NavigationVisibility;
+import mezz.jei.test.lib.TestJeiConfigValue;
 import mezz.jei.test.lib.TestPlugin;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.util.context.ContextKeySet;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import org.junit.jupiter.api.Test;
 
@@ -251,7 +258,7 @@ public class IngredientGridWithNavigationControllerTest {
 		// visible elements as a fallback anchor.
 		Fixture fixture = Fixture.create(3, 3, 30, true, IngredientGridNavigationMode.SCROLLING);
 		fixture.controller.updateLayoutToFirstPage();
-		int hiddenRows = IngredientGridScrollState.getHiddenRows(30, 3, 3);
+		int hiddenRows = GridScrollMath.getHiddenRows(30, 3, 3);
 		fixture.controller.setScrollOffsetY(3 / (float) hiddenRows);
 		fixture.closeOverlay();
 
@@ -392,7 +399,7 @@ public class IngredientGridWithNavigationControllerTest {
 		// Setup: a clicked ingredient is one row down in a ten-row viewport.
 		Fixture fixture = Fixture.create(10, 10, 1000, true, IngredientGridNavigationMode.SCROLLING);
 		fixture.controller.updateLayoutToFirstPage();
-		int hiddenRows = IngredientGridScrollState.getHiddenRows(1000, 10, 10);
+		int hiddenRows = GridScrollMath.getHiddenRows(1000, 10, 10);
 		fixture.controller.setScrollOffsetY(20 / (float) hiddenRows);
 		IElement<?> clickedElement = fixture.source.getElements().get(210);
 		IClickableIngredientInternal<?> clickableIngredient = fixture.controller.createPageAnchorIngredient(
@@ -408,6 +415,126 @@ public class IngredientGridWithNavigationControllerTest {
 		// Assertions: the clicked ingredient is kept near 10% down the new viewport instead of moving to the top.
 		assertEquals(1, fixture.layoutChanges);
 		assertEquals(190, fixture.grid.firstItemIndex);
+	}
+
+	@Test
+	public void navigatingToAPageWithOnlyHiddenElementsKeepsThatPageAfterRelayout() {
+		// Setup: four ingredients in a three-slot grid put the fourth ingredient alone on the
+		// second page, hidden like a bookmark that is currently being dragged.
+		Fixture fixture = Fixture.create(3, 4, true);
+		fixture.controller.updateLayoutToFirstPage();
+		HideableElement draggedElement = (HideableElement) fixture.source.getElements().get(3);
+		draggedElement.visible = false;
+
+		// Operation: page onto the second page, then relayout with the page anchor like a
+		// bounds update does when the drag ends.
+		fixture.controller.nextPage();
+		assertEquals(3, fixture.grid.firstItemIndex);
+		fixture.controller.updateLayoutKeepingPageAnchorVisible(fixture.controller.getPageAnchorElement());
+
+		// Assertions: the page with only the hidden element is kept instead of resetting to the
+		// first page.
+		assertEquals(3, fixture.grid.firstItemIndex);
+		assertEquals(1, fixture.controller.getPageNumber());
+	}
+
+	@Test
+	public void reAnchoringOnADroppedBookmarkKeepsThePageItWasDroppedOn() {
+		// Setup: seven ingredients in a three-slot grid, viewing the second page, with a bookmark
+		// from the first page dragged onto the first slot of the second page.
+		Fixture fixture = Fixture.create(3, 7, true);
+		fixture.controller.updateLayoutToFirstPage();
+		fixture.controller.nextPage();
+		assertEquals(3, fixture.grid.firstItemIndex);
+		IElement<?> draggedElement = fixture.source.getElements().get(1);
+		IElement<?> oldPageAnchor = fixture.controller.getPageAnchorElement();
+
+		// Operation: the drop moves the dragged element after the page anchor, like the drag
+		// target does, then re-anchors on the dropped element and relayouts like the drag end.
+		fixture.source.moveElementAfter(draggedElement, oldPageAnchor);
+		fixture.controller.setPageAnchorElement(draggedElement);
+		fixture.controller.updateLayoutKeepingPageAnchorVisible(fixture.controller.getPageAnchorElement());
+
+		// Assertions: the page keeps the dropped element's page instead of following the old
+		// anchor across the page boundary.
+		assertEquals(3, fixture.grid.firstItemIndex);
+		assertEquals(1, fixture.controller.getPageNumber());
+
+		// Operation: without the re-anchor, following the old anchor alone resets the page.
+		fixture.controller.setPageAnchorElement(oldPageAnchor);
+		fixture.controller.updateLayoutKeepingPageAnchorVisible(fixture.controller.getPageAnchorElement());
+
+		// Assertions: the old anchor moved onto the previous page, and following it alone
+		// returns the grid to the first page.
+		assertEquals(0, fixture.grid.firstItemIndex);
+		assertEquals(0, fixture.controller.getPageNumber());
+	}
+
+	@Test
+	public void pageElementsIncludeHiddenBookmarksOnlyOnTheirOwnPage() {
+		Fixture fixture = Fixture.create(3, 7, true);
+		List<IElement<?>> elements = fixture.source.getElements();
+		((HideableElement) elements.getFirst()).visible = false;
+		((HideableElement) elements.getLast()).visible = false;
+		fixture.controller.updateLayoutToFirstPage();
+
+		assertEquals(elements.subList(0, 3), fixture.controller.getPageElements());
+		fixture.controller.nextPage();
+		assertEquals(elements.subList(3, 6), fixture.controller.getPageElements());
+		fixture.controller.nextPage();
+		assertEquals(List.of(elements.getLast()), fixture.controller.getPageElements());
+	}
+
+	@Test
+	public void pageElementsFollowTheFirstVisibleRowInScrollingModes() {
+		for (IngredientGridNavigationMode navigationMode : List.of(IngredientGridNavigationMode.SCROLLING, IngredientGridNavigationMode.SMOOTH_SCROLLING)) {
+			Fixture fixture = Fixture.create(3, 2, 12, true, navigationMode);
+			fixture.controller.updateLayoutToFirstPage();
+			fixture.controller.nextPage();
+
+			assertEquals(fixture.source.getElements().subList(6, 12), fixture.controller.getPageElements());
+		}
+	}
+
+	@Test
+	public void dragScrollingMovesGraduallyAndSurvivesRelayout() {
+		for (IngredientGridNavigationMode mode : List.of(IngredientGridNavigationMode.SCROLLING, IngredientGridNavigationMode.SMOOTH_SCROLLING)) {
+			Fixture fixture = Fixture.create(3, 3, 30, true, mode);
+			fixture.controller.updateLayoutToFirstPage();
+			if (mode.usesSmoothScrolling()) {
+				for (int i = 0; i < 3; i++) {
+					assertTrue(fixture.controller.scrollByPixels(6));
+					fixture.controller.updateLayoutKeepingPageAnchorVisible(fixture.controller.getPageAnchorElement());
+				}
+			} else {
+				assertTrue(fixture.controller.scrollByPixels(18));
+				fixture.controller.updateLayoutKeepingPageAnchorVisible(fixture.controller.getPageAnchorElement());
+			}
+			assertEquals(3, fixture.grid.firstItemIndex);
+			assertEquals(0, fixture.grid.scrollOffsetY);
+			assertTrue(fixture.controller.scrollByPixels(-18));
+			assertEquals(0, fixture.grid.firstItemIndex);
+		}
+	}
+
+	@Test
+	public void dragScrollingStopsAtBothEndsOfTheList() {
+		for (IngredientGridNavigationMode mode : List.of(IngredientGridNavigationMode.SCROLLING, IngredientGridNavigationMode.SMOOTH_SCROLLING)) {
+			Fixture fixture = Fixture.create(3, 3, 30, true, mode);
+			fixture.controller.updateLayoutToFirstPage();
+			assertFalse(fixture.controller.scrollByPixels(-18));
+			fixture.controller.setScrollOffsetY(1);
+			assertFalse(fixture.controller.scrollByPixels(18));
+			assertEquals(21, fixture.grid.firstItemIndex);
+		}
+	}
+
+	@Test
+	public void dragScrollingDoesNotChangePagedNavigation() {
+		Fixture fixture = Fixture.create(3, 3, 30, true, IngredientGridNavigationMode.PAGED);
+		fixture.controller.updateLayoutToFirstPage();
+		assertFalse(fixture.controller.scrollByPixels(18));
+		assertEquals(0, fixture.grid.firstItemIndex);
 	}
 
 	private static class Fixture {
@@ -478,10 +605,10 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 	}
 
-	private record TestGridConfig(IngredientGridNavigationMode navigationMode) implements IIngredientGridConfig {
+	private record TestGridConfig(IngredientGridNavigationMode navigationModeValue) implements IIngredientGridConfig {
 		@Override
-		public int getMaxColumns() {
-			return 9;
+		public IConfigValue<Integer> maxColumns() {
+			return value("maxColumns", 9);
 		}
 
 		@Override
@@ -490,8 +617,8 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		@Override
-		public int getMaxRows() {
-			return 16;
+		public IConfigValue<Integer> maxRows() {
+			return value("maxRows", 16);
 		}
 
 		@Override
@@ -500,35 +627,48 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		@Override
-		public boolean drawBackground() {
-			return false;
+		public IConfigValue<Boolean> drawBackground() {
+			return value("drawBackground", false);
 		}
 
 		@Override
-		public IngredientGridNavigationMode getNavigationMode() {
-			return navigationMode;
+		public IConfigValue<IngredientGridLayoutMode> layoutMode() {
+			return value("layoutMode", IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE);
 		}
 
 		@Override
-		public HorizontalAlignment getHorizontalAlignment() {
-			return HorizontalAlignment.RIGHT;
+		public IConfigValue<IngredientGridNavigationMode> navigationMode() {
+			return value("navigationMode", navigationModeValue);
 		}
 
 		@Override
-		public VerticalAlignment getVerticalAlignment() {
-			return VerticalAlignment.TOP;
+		public IConfigValue<HorizontalAlignment> horizontalAlignment() {
+			return value("horizontalAlignment", HorizontalAlignment.RIGHT);
 		}
 
 		@Override
-		public NavigationVisibility getNavigationVisibility() {
-			return NavigationVisibility.ENABLED;
+		public IConfigValue<VerticalAlignment> verticalAlignment() {
+			return value("verticalAlignment", VerticalAlignment.TOP);
+		}
+
+		@Override
+		public IConfigValue<NavigationVisibility> navigationVisibility() {
+			return value("navigationVisibility", NavigationVisibility.ENABLED);
+		}
+
+		private static <T> IConfigValue<T> value(String name, T value) {
+			return new TestJeiConfigValue<>(name, value);
 		}
 	}
 
 	private static IIngredientManager createIngredientManager() {
 		SubtypeInterpreters subtypeInterpreters = new SubtypeInterpreters();
 		SubtypeManager subtypeManager = new SubtypeManager(subtypeInterpreters);
-		IngredientManagerBuilder builder = new IngredientManagerBuilder(subtypeManager, new TestColorHelper());
+		IngredientManagerBuilder builder = new IngredientManagerBuilder(
+			subtypeManager,
+			new TestColorHelper(),
+			new ContextMap.Builder().create(new ContextKeySet.Builder().build())
+		);
 		new TestPlugin().registerIngredients(builder);
 		return builder.build();
 	}
@@ -596,7 +736,9 @@ public class IngredientGridWithNavigationControllerTest {
 			this.scrollOffsetY = scrollOffsetY;
 			int startIndex = Math.clamp(firstItemIndex, 0, ingredientList.size());
 			int endIndex = Math.min(startIndex + this.visibleSlotCount, ingredientList.size());
-			this.visibleElements = List.copyOf(ingredientList.subList(startIndex, endIndex));
+			this.visibleElements = ingredientList.subList(startIndex, endIndex).stream()
+				.filter(IElement::isVisible)
+				.toList();
 		}
 
 		@Override
@@ -684,7 +826,7 @@ public class IngredientGridWithNavigationControllerTest {
 
 	private record TestIngredientGridSource(List<IElement<?>> elements) implements IIngredientGridSource {
 		private TestIngredientGridSource(int itemCount) {
-			this(createElements(itemCount));
+			this(new ArrayList<>(createElements(itemCount)));
 		}
 
 		@Override
@@ -695,19 +837,44 @@ public class IngredientGridWithNavigationControllerTest {
 		@Override
 		public void addSourceListChangedListener(SourceListChangedListener listener) {
 		}
+
+		void moveElementAfter(IElement<?> moved, IElement<?> anchor) {
+			elements.remove(moved);
+			int anchorIndex = elements.indexOf(anchor);
+			elements.add(anchorIndex + 1, moved);
+		}
 	}
 
 	private static List<IElement<?>> createElements(int itemCount) {
 		List<IElement<?>> elements = new ArrayList<>();
 		for (int i = 0; i < itemCount; i++) {
-			elements.add(new IngredientElement<>(new TestTypedIngredient(new TestIngredient(i))));
+			elements.add(new HideableElement(new TestTypedIngredient(new TestIngredient(i))));
 		}
 		return List.copyOf(elements);
 	}
 
-	private record TestTypedIngredient(TestIngredient ingredient) implements mezz.jei.api.ingredients.ITypedIngredient<TestIngredient> {
+	private static class HideableElement extends IngredientElement<TestIngredient> {
+		private boolean visible = true;
+
+		private HideableElement(ITypedIngredient<TestIngredient> ingredient) {
+			super(ingredient);
+		}
+
 		@Override
-		public mezz.jei.api.ingredients.IIngredientType<TestIngredient> getType() {
+		public boolean isVisible() {
+			return visible;
+		}
+	}
+
+	private record TestTypedIngredient(TestIngredient ingredient) implements ITypedIngredient<TestIngredient> {
+		@Override
+		public ITypedIngredient<TestIngredient> normalize(IIngredientHelper<TestIngredient> ingredientHelper) {
+			TestIngredient normalized = ingredientHelper.normalizeIngredient(ingredient);
+			return new TestTypedIngredient(normalized);
+		}
+
+		@Override
+		public IIngredientType<TestIngredient> getType() {
 			return TestIngredient.TYPE;
 		}
 

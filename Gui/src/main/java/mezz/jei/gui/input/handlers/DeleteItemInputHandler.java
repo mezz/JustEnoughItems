@@ -10,8 +10,8 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.util.ServerCommandUtil;
-import mezz.jei.gui.input.IUserInputHandler;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.overlay.ingredients.IIngredientGrid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -96,7 +96,7 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 		if (itemStack.isEmpty()) {
 			return false;
 		}
-		GiveMode giveMode = this.clientConfig.getGiveMode();
+		GiveMode giveMode = this.clientConfig.giveMode().get();
 		if (giveMode == GiveMode.MOUSE_PICKUP) {
 			return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY)
 				.findFirst()

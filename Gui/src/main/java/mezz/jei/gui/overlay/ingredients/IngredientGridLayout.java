@@ -23,8 +23,8 @@ public final class IngredientGridLayout {
 	}
 
 	public static ImmutableSize2i calculateSize(IIngredientGridConfig config, ImmutableRect2i availableArea) {
-		final int columns = Math.min(availableArea.getWidth() / INGREDIENT_WIDTH, config.getMaxColumns());
-		final int rows = Math.min(availableArea.getHeight() / INGREDIENT_HEIGHT, config.getMaxRows());
+		final int columns = Math.min(availableArea.getWidth() / INGREDIENT_WIDTH, config.maxColumns().get());
+		final int rows = Math.min(availableArea.getHeight() / INGREDIENT_HEIGHT, config.maxRows().get());
 		if (rows < config.getMinRows() || columns < config.getMinColumns()) {
 			return ImmutableSize2i.EMPTY;
 		}
@@ -36,16 +36,15 @@ public final class IngredientGridLayout {
 
 	public static ImmutableRect2i calculateBounds(IIngredientGridConfig config, ImmutableRect2i availableArea) {
 		ImmutableSize2i size = calculateSize(config, availableArea);
-		return AlignmentUtil.align(size, availableArea, config.getHorizontalAlignment(), config.getVerticalAlignment());
+		return AlignmentUtil.align(size, availableArea, config.horizontalAlignment().get(), config.verticalAlignment().get());
 	}
 
 	public static int calculateAvailableSlotCount(
 		ImmutableRect2i area,
-		Set<ImmutableRect2i> exclusionAreas,
-		@Nullable ImmutablePoint2i mouseExclusionPoint
+		Set<ImmutableRect2i> exclusionAreas
 	) {
 		int blocked = 0;
-		List<SlotLayout> slotLayouts = calculateSlots(area, exclusionAreas, mouseExclusionPoint, 0);
+		List<SlotLayout> slotLayouts = calculateSlots(area, exclusionAreas, null, 0);
 		for (SlotLayout slotLayout : slotLayouts) {
 			if (slotLayout.blocked()) {
 				blocked++;

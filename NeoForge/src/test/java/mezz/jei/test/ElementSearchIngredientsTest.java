@@ -21,6 +21,8 @@ import mezz.jei.test.lib.TestIngredient;
 import mezz.jei.test.lib.TestIngredientFilterConfig;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
+import net.minecraft.util.context.ContextKeySet;
+import net.minecraft.util.context.ContextMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -63,7 +65,7 @@ public class ElementSearchIngredientsTest {
 	public void addAllIndexesBaseIngredientsFromBuilder() {
 		// Setup: IngredientManagerBuilder registered the base test plugin ingredients.
 		SearchFixture fixture = createFixture();
-		List<IListElementInfo<?>> baseList = IngredientListElementFactory.createBaseList(fixture.ingredientManager(), MOD_ID_HELPER);
+		List<IListElementInfo<?>> baseList = IngredientListElementFactory.createBaseList(fixture.ingredientManager(), FILTER_CONFIG, MOD_ID_HELPER);
 
 		// Operation: add the whole base list to the search index.
 		fixture = fixture.withInitialIngredients(baseList);
@@ -76,7 +78,7 @@ public class ElementSearchIngredientsTest {
 	public void addAllIndexesExtraIngredientsFromBuilder() {
 		// Setup: extra ingredients are added through IngredientManagerBuilder before the manager is built.
 		SearchFixture fixture = createFixture(List.of(new TestIngredient(10), new TestIngredient(11)));
-		List<IListElementInfo<?>> baseList = IngredientListElementFactory.createBaseList(fixture.ingredientManager(), MOD_ID_HELPER);
+		List<IListElementInfo<?>> baseList = IngredientListElementFactory.createBaseList(fixture.ingredientManager(), FILTER_CONFIG, MOD_ID_HELPER);
 
 		// Operation: add the whole manager-backed list to the search index.
 		fixture = fixture.withInitialIngredients(baseList);
@@ -313,7 +315,11 @@ public class ElementSearchIngredientsTest {
 	private static IngredientManagerBuilder createIngredientManagerBuilder() {
 		SubtypeInterpreters subtypeInterpreters = new SubtypeInterpreters();
 		SubtypeManager subtypeManager = new SubtypeManager(subtypeInterpreters);
-		return new IngredientManagerBuilder(subtypeManager, COLOR_HELPER);
+		return new IngredientManagerBuilder(
+			subtypeManager,
+			COLOR_HELPER,
+			new ContextMap.Builder().create(new ContextKeySet.Builder().build())
+		);
 	}
 
 	private static void assertIngredientNumbers(Collection<IListElement<?>> allIngredients, Set<Integer> expectedNumbers) {
@@ -342,6 +348,7 @@ public class ElementSearchIngredientsTest {
 				ingredientManager,
 				TestIngredient.TYPE,
 				ingredients,
+				FILTER_CONFIG,
 				MOD_ID_HELPER
 			);
 			return new ArrayList<>(infos);
@@ -367,6 +374,12 @@ public class ElementSearchIngredientsTest {
 		IIngredientType<TestIngredient> type,
 		TestIngredient ingredient
 	) implements ITypedIngredient<TestIngredient> {
+		@Override
+		public ITypedIngredient<TestIngredient> normalize(IIngredientHelper<TestIngredient> ingredientHelper) {
+			TestIngredient normalized = ingredientHelper.normalizeIngredient(ingredient);
+			return new TestTypedIngredient(type, normalized);
+		}
+
 		@Override
 		public IIngredientType<TestIngredient> getType() {
 			return type;

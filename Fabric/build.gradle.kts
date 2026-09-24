@@ -1,11 +1,25 @@
+import mezz.jei.gradle.dependencyInfo
+import mezz.jei.gradle.mezzConfigDependency
+import mezz.jei.gradle.mezzConfigGuiDependency
+import mezz.jei.gradle.UnpackArchives
+import mezz.jei.gradle.gradleProperty
+import mezz.jei.gradle.isolatedProjectDirectory
+import mezz.jei.gradle.optionalGradleProperty
+import net.fabricmc.loom.task.ManifestModificationAction
+import net.fabricmc.loom.task.service.JarManifestService
+import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
+import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
+import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 plugins {
     java
     idea
     `maven-publish`
     id("net.fabricmc.fabric-loom")
+    id("net.neoforged.jarcompatibilitychecker")
     id("net.mezzdev.modshade")
     id("me.modmuss50.mod-publish-plugin")
 }
@@ -19,53 +33,66 @@ repositories {
     }
 }
 
+val mezzConfigApiDependency = mezzConfigDependency("config-api")
+val mezzConfigGuiApiDependency = mezzConfigGuiDependency("config-gui-api")
+val mezzConfigGuiFabricDependency = mezzConfigGuiDependency("fabric")
+
 // gradle.properties
-val curseHomepageUrl: String by extra
-val curseProjectId: String by extra
-val fabricApiVersion: String by extra
-val fabricLoaderVersion: String by extra
-val minecraftVersionRangeStart: String by extra
-val minecraftVersion: String by extra
-val modId: String by extra
-val modJavaVersion: String by extra
-val modrinthId: String by extra
-val amecsVersionFabric: String by extra
-val amecsMinecraftVersion: String by extra
-val bakedSubstringIndexVersion: String by extra
-val suffixtreeVersion: String by extra
+val curseHomepageUrl = gradleProperty("curseHomepageUrl")
+val curseProjectId = gradleProperty("curseProjectId")
+val fabricApiVersion = gradleProperty("fabricApiVersion")
+val fabricLoaderVersion = gradleProperty("fabricLoaderVersion")
+val minecraftVersionRangeStart = gradleProperty("minecraftVersionRangeStart")
+val minecraftVersion = gradleProperty("minecraftVersion")
+val modId = gradleProperty("modId")
+val modGroup = gradleProperty("modGroup")
+val modJavaVersion = gradleProperty("modJavaVersion")
+val modrinthId = gradleProperty("modrinthId")
+val amecsVersionFabric = gradleProperty("amecsVersionFabric")
+val amecsMinecraftVersion = gradleProperty("amecsMinecraftVersion")
+val mezzConfigCurseForgeProjectSlug = gradleProperty("mezzConfigCurseForgeProjectSlug")
+val mezzConfigModrinthProjectId = gradleProperty("mezzConfigModrinthProjectId")
+val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForgeProjectSlug")
+val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
+val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
+val suffixtreeVersion = gradleProperty("suffixtreeVersion")
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
-val modrinthToken: String? by project
+val modrinthToken = optionalGradleProperty("modrinthToken")
 // set by ORG_GRADLE_PROJECT_curseforgeApikey in Jenkinsfile
-val curseforgeApikey: String? by project
+val curseforgeApikey = optionalGradleProperty("curseforgeApikey")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-fabric"
+val apiArchivesName = "${modId}-${minecraftVersion}-fabric-api"
 base {
     archivesName.set(baseArchivesName)
 }
 
-val vanillaDependencyProjects: List<Project> = listOf(
-    project(":Common"),
-    project(":CommonApi"),
-    project(":Library"),
-    project(":Gui"),
-)
-val loomDependencyProjects: List<Project> = listOf(
-    project(":FabricApi"),
-)
-val dependencyProjects = vanillaDependencyProjects + loomDependencyProjects
-val debugProject = project(":Debug")
+val dependencyProjectPaths = listOf(":Common", ":Library", ":Gui")
+val commonProjectDirectory = isolatedProjectDirectory(":Common")
+val debugProjectDirectory = isolatedProjectDirectory(":Debug")
 
 val keyMappingGametestModId = "${modId}-key-mapping-test"
-val commonClientTestFixturesSource = project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java")
+val commonClientTestFixturesSource = commonProjectDirectory.dir("src/clientTestFixtures/java")
 val clientGameTestRunDirectory = layout.buildDirectory.dir("run/clientGameTest")
 val clientGameTestWithoutAmecsRunDirectory = layout.buildDirectory.dir("run/clientGameTestWithoutAmecs")
 
-dependencyProjects.forEach {
-    project.evaluationDependsOn(it.path)
+val apiSourceSet = sourceSets.create("api") {
+    resources.setSrcDirs(emptyList<String>())
+    output.setResourcesDir(layout.buildDirectory.dir("classes/java/api"))
 }
-project.evaluationDependsOn(debugProject.path)
-val debugSourceSet = debugProject.sourceSets.main.get()
+val debugSourceSet = sourceSets.create("debug") {
+    java.srcDir(debugProjectDirectory.dir("src/main/java"))
+    resources.srcDir(debugProjectDirectory.dir("src/main/resources"))
+    compileClasspath += sourceSets.main.get().compileClasspath
+    runtimeClasspath += output + compileClasspath
+}
+
+afterEvaluate {
+    configurations.named(apiSourceSet.compileClasspathConfigurationName) {
+        extendsFrom(configurations.getByName("minecraftNamedCompile"))
+    }
+}
 
 java {
     toolchain {
@@ -74,7 +101,7 @@ java {
     withSourcesJar()
 }
 
-val changelogHtml: Configuration by configurations.creating {
+val changelogHtml = configurations.create("changelogHtml") {
     isCanBeConsumed = false
     isCanBeResolved = true
     attributes {
@@ -82,11 +109,41 @@ val changelogHtml: Configuration by configurations.creating {
     }
 }
 
-val changelogMarkdown: Configuration by configurations.creating {
+val changelogMarkdown = configurations.create("changelogMarkdown") {
     isCanBeConsumed = false
     isCanBeResolved = true
     attributes {
         attribute(Usage.USAGE_ATTRIBUTE, objects.named<Usage>("changelogMarkdown"))
+    }
+}
+
+val dependencyClasses = configurations.create("dependencyClasses") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.CLASSES))
+    }
+}
+
+val dependencyResources = configurations.create("dependencyResources") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.RESOURCES))
+    }
+}
+
+val dependencySources = configurations.create("dependencySources") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.DOCUMENTATION))
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+        attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType.SOURCES))
     }
 }
 
@@ -107,11 +164,38 @@ tasks.withType<JavaCompile> {
 }
 
 dependencies {
+    compileOnly(mezzConfigApiDependency)
+    runtimeOnly(mezzConfigDependency("fabric"))
+    include(mezzConfigDependency("fabric"))
+    compileOnly(mezzConfigGuiApiDependency)
+    add("localRuntime", mezzConfigGuiFabricDependency)
     minecraft("com.mojang:minecraft:${minecraftVersion}")
     implementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
     implementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
-    dependencyProjects.forEach {
-        implementation(it)
+    implementation(apiSourceSet.output)
+    implementation(project(path = ":Common", configuration = "apiClassesElements"))
+    add(apiSourceSet.implementationConfigurationName, "net.fabricmc:fabric-loader:${fabricLoaderVersion}")
+    add(apiSourceSet.implementationConfigurationName, "net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
+    add(apiSourceSet.implementationConfigurationName, "org.jetbrains:annotations:26.0.2")
+    add(apiSourceSet.implementationConfigurationName, "org.jspecify:jspecify:1.0.0")
+    add(apiSourceSet.implementationConfigurationName, project(path = ":Common", configuration = "apiClassesElements"))
+    dependencyProjectPaths.forEach {
+        implementation(project(it))
+        dependencyClasses(project(it)) {
+            isTransitive = false
+        }
+        dependencyResources(project(it)) {
+            isTransitive = false
+        }
+        dependencySources(project(it)) {
+            isTransitive = false
+        }
+    }
+    dependencyClasses(project(path = ":Common", configuration = "apiClassesElements")) {
+        isTransitive = false
+    }
+    dependencySources(project(path = ":Common", configuration = "apiSourcesElements")) {
+        isTransitive = false
     }
     modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
         isTransitive = false
@@ -119,7 +203,13 @@ dependencies {
     modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
     }
-    implementation("de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric")
+    val amecsKeyModifiers = "de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric"
+    compileOnly(amecsKeyModifiers) {
+        isTransitive = false
+    }
+    localRuntime(amecsKeyModifiers) {
+        isTransitive = false
+    }
     changelogHtml(project(":Changelog"))
     changelogMarkdown(project(":Changelog"))
 }
@@ -139,6 +229,11 @@ val keyMappingGametestSourceSet = sourceSets.create("keyMappingGametest") {
     compileClasspath += sourceSets.main.get().output + gametestSourceSet.compileClasspath
     runtimeClasspath += output + compileClasspath + gametestSourceSet.runtimeClasspath.minus(gametestSourceSet.output)
 }
+val keyMappingGametestWithoutAmecsSourceSet = sourceSets.create("keyMappingGametestWithoutAmecs") {
+    runtimeClasspath += keyMappingGametestSourceSet.runtimeClasspath.filter {
+        !it.name.startsWith("amecs-key-modifiers-")
+    }
+}
 
 dependencies {
     "gametestImplementation"(testFixtures(project(":Common")))
@@ -148,9 +243,7 @@ loom {
     mods {
         create("jei") {
             sourceSet(sourceSets.main.get())
-            for (dependencyProject in loomDependencyProjects) {
-                sourceSet(dependencyProject.sourceSets.main.get())
-            }
+            sourceSet(apiSourceSet)
         }
         create(keyMappingGametestModId) {
             sourceSet(keyMappingGametestSourceSet)
@@ -204,8 +297,8 @@ loom {
         create("clientGameTestWithoutAmecs") {
             inherit(named("clientGameTest").get())
             displayName.set("Fabric Client GameTest Without AMECS")
+            sourceSet.set(keyMappingGametestWithoutAmecsSourceSet.name)
             runDirectory.set(clientGameTestWithoutAmecsRunDirectory.get().asFile)
-            systemProperties.put("jei.fabric.disableAmecsSupport", "true")
             systemProperties.put("fabric.client.gametest.modid", keyMappingGametestModId)
         }
     }
@@ -215,15 +308,11 @@ loom {
 
 sourceSets {
     named("main") {
-        resources {
-            for (p in dependencyProjects) {
-                srcDir(p.sourceSets.main.get().resources)
-            }
-        }
+        resources.srcDir(dependencyResources)
     }
     named("gametest") {
         java.srcDir(commonClientTestFixturesSource)
-        runtimeClasspath += keyMappingGametestSourceSet.output
+        runtimeClasspath += keyMappingGametestSourceSet.output + configurations.named("localRuntime").get()
     }
 }
 
@@ -259,8 +348,8 @@ tasks.named("runClientGameTestWithoutAmecs") {
     dependsOn(writeClientGameTestWithoutAmecsOptions)
 }
 
-val debugClassesTask = debugProject.tasks.named(debugSourceSet.classesTaskName)
-val debugModPath = debugProject.layout.buildDirectory.dir("resources/main").get().asFile.absolutePath
+val debugClassesTask = tasks.named(debugSourceSet.classesTaskName)
+val debugModPath = layout.buildDirectory.dir("resources/${debugSourceSet.name}").get().asFile.absolutePath
 val debugRunTasks = setOf("runClient", "runServer", "runClientDebug", "runServerDebug")
 tasks.matching { it.name in debugRunTasks }.configureEach {
     dependsOn(debugClassesTask)
@@ -272,23 +361,69 @@ tasks.matching { it.name in debugRunTasks }.configureEach {
 
 tasks.jar {
     from(sourceSets.main.get().output)
-    for (p in dependencyProjects) {
-        from(p.sourceSets.main.get().output)
-    }
+    from(apiSourceSet.output)
+    from(dependencyClasses)
+    from(dependencyResources)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+val unpackDependencySources = tasks.register<UnpackArchives>("unpackDependencySources") {
+    archives.from(dependencySources)
+    excludedPatterns.add("META-INF/MANIFEST.MF")
+    outputDirectory.set(layout.buildDirectory.dir("generated/dependencySources"))
 }
 
 tasks.named<Jar>("sourcesJar") {
     from(sourceSets.main.get().allJava)
-    for (p in dependencyProjects) {
-        from(p.sourceSets.main.get().allJava)
-    }
+    from(apiSourceSet.allSource)
+    from(unpackDependencySources)
+    exclude("**/Readme.md")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveClassifier.set("sources")
 }
 
 val shadedJar = modShade.shadeJar()
 val shadedSourcesJar = modShade.shadeSourcesJar()
+
+val apiJarTask = tasks.register<Jar>("apiJar") {
+    archiveBaseName.set(apiArchivesName)
+    from(apiSourceSet.output)
+    manifest {
+        attributes["Implementation-Title"] = "jar"
+        attributes["Fabric-Loom-Remap"] = true
+    }
+    val manifestService = JarManifestService.get(project)
+    doLast(ManifestModificationAction(
+        manifestService,
+        "official",
+        providers.provider { loom.areEnvironmentSourceSetsSplit() },
+        providers.provider { emptyList() }
+    ))
+    usesService(manifestService)
+}
+
+val apiSourcesJarTask = tasks.register<Jar>("apiSourcesJar") {
+    archiveBaseName.set(apiArchivesName)
+    archiveClassifier.set("sources")
+    from(apiSourceSet.allSource)
+    manifest {
+        attributes["Implementation-Title"] = "sourcesJar"
+        attributes["Fabric-Loom-Remap"] = true
+    }
+}
+
+tasks.named<CompatibilityTask>("checkJarCompatibility") {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    description = "Checks the Fabric API against the latest published API jar in the same major version."
+    mavens.set(listOf("https://maven.blamejared.com"))
+    // The plugin defaults auxiliary libraries to the main compile classpath.
+    // This API check intentionally runs without them, avoiding the full Minecraft classpath.
+    libraries.setFrom(emptyList<Any>())
+    nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
+    fail.set(true)
+    inputJar.set(apiJarTask.flatMap { it.archiveFile })
+    artifact.set("${project.group}:$apiArchivesName")
+}
 
 publishMods {
     file.set(shadedJar.flatMap { it.archiveFile })
@@ -302,6 +437,8 @@ publishMods {
         projectId = curseProjectId
         projectSlug = curseHomepageUrl.substringAfterLast("/")
         accessToken.set(curseforgeApikey ?: "0")
+        requires(mezzConfigCurseForgeProjectSlug)
+        optional(mezzConfigGuiCurseForgeProjectSlug)
         changelog.set(changelogHtml.singleFileContents())
         changelogType = "html"
         minecraftVersionRange {
@@ -317,6 +454,8 @@ publishMods {
     modrinth {
         projectId = modrinthId
         accessToken = modrinthToken
+        requires(mezzConfigModrinthProjectId)
+        optional(mezzConfigGuiModrinthProjectId)
         changelog.set(changelogMarkdown.singleFileContents())
         minecraftVersionRange {
             start = minecraftVersionRangeStart
@@ -338,14 +477,52 @@ tasks.named<Test>("test") {
 }
 
 tasks.assemble {
-    dependsOn(tasks.named("sourcesJar"))
+    dependsOn(tasks.named("sourcesJar"), apiJarTask, apiSourcesJarTask)
 }
 
 publishing {
     publications {
+        register<MavenPublication>("fabricApi") {
+            // Project dependencies should resolve to the main publication's coordinates.
+            (this as MavenPublicationInternal).isAlias = true
+            artifactId = apiArchivesName
+            @Suppress("UnstableApiUsage")
+            loom.disableDeprecatedPomGeneration(this)
+            artifact(apiJarTask)
+            artifact(apiSourcesJarTask)
+
+            val dependencyInfos = listOf("common-api").map {
+                mapOf(
+                    "groupId" to modGroup,
+                    "artifactId" to "${modId}-${minecraftVersion}-$it",
+                    "version" to project.version
+                )
+            }
+
+            pom.withXml {
+                val dependenciesNode = asNode().appendNode("dependencies")
+                dependencyInfos.forEach {
+                    val dependencyNode = dependenciesNode.appendNode("dependency")
+                    it.forEach { (key, value) ->
+                        dependencyNode.appendNode(key, value)
+                    }
+                }
+            }
+        }
         register<MavenPublication>("fabricJar") {
             artifactId = baseArchivesName
-            from(components["modShade"])
+            from(components["java"])
+
+            val mezzConfigGuiDependencyInfo =
+                dependencyInfo(mezzConfigGuiFabricDependency) + ("optional" to "true")
+            pom.withXml {
+                val dependenciesNode =
+                    (asNode().get("dependencies") as groovy.util.NodeList).first() as groovy.util.Node
+                val dependencyNode = dependenciesNode.appendNode("dependency")
+                mezzConfigGuiDependencyInfo.forEach { (key, value) ->
+                    dependencyNode.appendNode(key, value)
+                }
+            }
         }
     }
     repositories {

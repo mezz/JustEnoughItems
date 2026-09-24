@@ -1,80 +1,77 @@
 package mezz.jei.common.config;
 
-import mezz.jei.common.config.file.IConfigListener;
+import net.mezzdev.config.api.value.IConfigValue;
 
 import java.util.List;
-import java.util.Set;
 
 public interface IClientConfig {
 	int minRecipeGuiHeight = 175;
 	int defaultRecipeGuiHeight = 350;
 	boolean defaultCenterSearchBar = false;
 
-	boolean isCenterSearchBarEnabled();
+	IConfigValue<SearchBarPosition> searchBarPosition();
 
-	boolean isLowMemorySlowSearchEnabled();
+	IConfigValue<Integer> maxRecipeGuiHeight();
 
-	boolean isCatchRenderErrorsEnabled();
+	IConfigValue<Boolean> toastReflowEnabled();
 
-	boolean isCheatToHotbarUsingHotkeysEnabled();
+	IConfigValue<GiveMode> giveMode();
 
-	boolean isAddingBookmarksToFrontEnabled();
+	IConfigValue<Boolean> cheatToHotbarUsingHotkeysEnabled();
 
-	boolean isBookmarkOutputAsRecipeEnabled();
+	IConfigValue<Boolean> showHiddenIngredients();
 
-	boolean isLookupFluidContentsEnabled();
+	IConfigValue<BookmarkAddPosition> bookmarkAddPosition();
 
-	boolean isLookupBlockTagsEnabled();
+	IConfigValue<Boolean> bookmarkOutputAsRecipe();
 
-	GiveMode getGiveMode();
+	IConfigValue<Boolean> bookmarkTooltipPreviewEnabled();
 
-	boolean getShowHiddenIngredients();
+	IConfigValue<Boolean> bookmarkTooltipIngredientsEnabled();
 
-	List<BookmarkTooltipFeature> getBookmarkTooltipFeatures();
+	IConfigValue<Boolean> holdShiftToShowBookmarkTooltipFeaturesEnabled();
 
-	boolean isHoldShiftToShowBookmarkTooltipFeaturesEnabled();
+	IConfigValue<Boolean> dragToRearrangeBookmarksEnabled();
 
-	boolean isDragToRearrangeBookmarksEnabled();
+	IConfigValue<Boolean> lookupHistoryEnabled();
 
-	boolean isLookupHistoryEnabled();
+	IConfigValue<Integer> maxLookupHistoryRows();
 
-	void setLookupHistoryEnabled(boolean enabled);
+	IConfigValue<Integer> maxLookupHistoryIngredients();
 
-	void addLookupHistoryEnabledListener(IConfigListener<Boolean> listener);
+	IConfigValue<HistoryDisplaySide> lookupHistoryDisplaySide();
 
-	int getMaxLookupHistoryRows();
+	IConfigValue<Boolean> ingredientsSummaryEnabled();
 
-	int getMaxLookupHistoryIngredients();
+	IConfigValue<Boolean> showTagRecipesEnabled();
 
-	HistoryDisplaySide getLookupHistoryDisplaySide();
+	IConfigValue<Boolean> lowMemorySlowSearchEnabled();
 
-	void addLookupHistoryDisplaySideListener(IConfigListener<HistoryDisplaySide> listener);
+	IConfigValue<Boolean> catchRenderErrorsEnabled();
 
-	boolean isIngredientsSummaryEnabled();
+	IConfigValue<Boolean> recipeSyncWarningEnabled();
 
-	int getDragDelayMs();
+	IConfigValue<Boolean> lookupFluidContentsEnabled();
 
-	int getSmoothScrollRate();
+	IConfigValue<Boolean> lookupBlockTagsEnabled();
 
-	int getMaxRecipeGuiHeight();
+	IConfigValue<Boolean> showCreativeTabNamesEnabled();
 
-	List<IngredientSortStage> getIngredientSorterStages();
+	IConfigValue<Integer> dragDelayMs();
 
-	Set<RecipeSorterStage> getRecipeSorterStages();
+	IConfigValue<Integer> smoothScrollRate();
 
-	void enableRecipeSorterStage(RecipeSorterStage stage);
+	IConfigValue<Boolean> searchCompletionEnabled();
 
-	void disableRecipeSorterStage(RecipeSorterStage stage);
+	IConfigValue<Boolean> recipeSlotCyclingEnabled();
 
-	boolean isTagContentTooltipEnabled();
+	IConfigValue<List<IngredientSortStage>> ingredientSorterStages();
 
-	boolean getHideSingleTagContentTooltipEnabled();
+	IConfigValue<Boolean> recipeSortingBookmarksEnabled();
 
-	boolean isShowTagRecipesEnabled();
+	IConfigValue<Boolean> recipeSortingCraftableEnabled();
 
-	boolean isShowCreativeTabNamesEnabled();
+	IConfigValue<Boolean> tagContentTooltipEnabled();
 
-	boolean isToastReflowEnabled();
-
-	boolean isSearchCompletionEnabled();
+	IConfigValue<Boolean> hideSingleTagContentTooltipEnabled();
 }

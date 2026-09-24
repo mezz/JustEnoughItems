@@ -8,9 +8,9 @@ repositories {
 
 gradlePlugin {
 	plugins {
-		create("apiCompatibility") {
-			id = "mezz.jei.api-compatibility"
-			implementationClass = "mezz.jei.gradle.ApiCompatibilityPlugin"
+		create("jeiProject") {
+			id = "mezz.jei.project"
+			implementationClass = "mezz.jei.gradle.JeiProjectPlugin"
 		}
 	}
 }

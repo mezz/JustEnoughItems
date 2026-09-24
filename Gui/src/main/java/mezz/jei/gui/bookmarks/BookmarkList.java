@@ -7,10 +7,11 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.runtime.IBookmarkManager;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.gui.config.IBookmarkConfig;
-import mezz.jei.gui.input.UserInput;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.elements.IElement;
@@ -21,9 +22,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
-public class BookmarkList implements IIngredientGridSource {
+public class BookmarkList implements IIngredientGridSource, IBookmarkManager {
 	private final List<IBookmark> bookmarksList = new LinkedList<>();
 	private final Set<IBookmark> bookmarksSet = new HashSet<>();
 
@@ -64,7 +66,7 @@ public class BookmarkList implements IIngredientGridSource {
 	}
 
 	public boolean add(IBookmark value) {
-		if (!addToListWithoutNotifying(value, clientConfig.isAddingBookmarksToFrontEnabled())) {
+		if (!addToListWithoutNotifying(value, clientConfig.bookmarkAddPosition().get().isFront())) {
 			return false;
 		}
 		notifyListenersOfChange();
@@ -77,30 +79,37 @@ public class BookmarkList implements IIngredientGridSource {
 			return;
 		}
 		int i = bookmarksList.indexOf(previousBookmark);
-		int j = bookmarksList.indexOf(newBookmark);
-		int newIndex = i + offset;
-		if (newIndex == j) {
+		moveBookmark(newBookmark, Math.floorMod(i + offset, bookmarksList.size()));
+	}
+
+	public void moveBookmark(IBookmark bookmark, int index) {
+		int oldIndex = bookmarksList.indexOf(bookmark);
+		if (oldIndex < 0 || oldIndex == index) {
 			return;
 		}
-
-		if (newIndex < 0) {
-			newIndex += bookmarksList.size();
-		}
-		newIndex %= bookmarksList.size();
-
-		bookmarksList.remove(newBookmark);
-		bookmarksList.add(newIndex, newBookmark);
+		Objects.checkIndex(index, bookmarksList.size());
+		bookmarksList.remove(oldIndex);
+		bookmarksList.add(index, bookmark);
 
 		notifyListenersOfChange();
 		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, codecHelper, bookmarksList, bookmarkCodec);
+	}
+
+	public void moveBookmarkToFront(IBookmark value) {
+		moveBookmark(value, 0);
 	}
 
 	public boolean contains(IBookmark value) {
 		return this.bookmarksSet.contains(value);
 	}
 
+	@Override
+	public boolean contains(ITypedIngredient<?> ingredient) {
+		return contains(bookmarkFactory.create(ingredient));
+	}
+
 	public <T> boolean onElementBookmarked(IElement<T> element, UserInput input, BookmarkOverlay bookmarkOverlay) {
-		if (bookmarkOverlay.isMouseOver(input.getMouseX(), input.getMouseY())) {
+		if (bookmarkOverlay.isBookmarkElementUnderMouse(element, input.getMouseX(), input.getMouseY())) {
 			return element.getBookmark()
 				.map(this::remove)
 				.orElse(false);
@@ -111,7 +120,8 @@ public class BookmarkList implements IIngredientGridSource {
 		return add(bookmark);
 	}
 
-	public <T> boolean addIngredientBookmark(ITypedIngredient<T> ingredient) {
+	@Override
+	public boolean add(ITypedIngredient<?> ingredient) {
 		IBookmark bookmark = bookmarkFactory.create(ingredient);
 		return add(bookmark);
 	}
@@ -132,6 +142,11 @@ public class BookmarkList implements IIngredientGridSource {
 		notifyListenersOfChange();
 		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, codecHelper, bookmarksList, bookmarkCodec);
 		return true;
+	}
+
+	@Override
+	public boolean remove(ITypedIngredient<?> ingredient) {
+		return remove(bookmarkFactory.create(ingredient));
 	}
 
 	public void setFromConfigFile(List<IBookmark> bookmarks) {
@@ -166,6 +181,12 @@ public class BookmarkList implements IIngredientGridSource {
 		return bookmarksList.stream()
 			.<IElement<?>>map(IBookmark::getElement)
 			.toList();
+	}
+
+	@Override
+	public boolean containsElement(IElement<?> element) {
+		return bookmarksList.stream()
+			.anyMatch(bookmark -> bookmark.getElement() == element);
 	}
 
 	@Nullable

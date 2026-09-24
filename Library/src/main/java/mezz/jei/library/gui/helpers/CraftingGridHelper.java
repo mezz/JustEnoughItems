@@ -100,7 +100,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		}
 
 		for (int i = 0; i < displays.size(); i++) {
-			int index = getCraftingIndex(i, width, height);
+			int index = INSTANCE.getCraftingIndex(i, width, height);
 			IRecipeSlotBuilder slot = slotBuilders.get(index);
 
 			SlotDisplay display = displays.get(i);
@@ -152,7 +152,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		}
 
 		for (int i = 0; i < namedIngredients.size(); i++) {
-			int index = getCraftingIndex(i, width, height);
+			int index = INSTANCE.getCraftingIndex(i, width, height);
 			IRecipeSlotBuilder slot = slotBuilders.get(index);
 
 			Pair<String, Ingredient> value = namedIngredients.get(i);
@@ -192,7 +192,7 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		for (int i = 0; i < ingredients.size(); i++) {
 			SlotDisplay slotDisplay = ingredients.get(i);
 			if (slotDisplay != SlotDisplay.Empty.INSTANCE) {
-				int craftingIndex = CraftingGridHelper.getCraftingIndex(i, width, height);
+				int craftingIndex = INSTANCE.getCraftingIndex(i, width, height);
 				result.put(craftingIndex, slotDisplay);
 			}
 		}
@@ -209,7 +209,8 @@ public class CraftingGridHelper implements ICraftingGridHelper {
 		}
 	}
 
-	private static int getCraftingIndex(int i, int width, int height) {
+	@Override
+	public int getCraftingIndex(int i, int width, int height) {
 		int index;
 		if (width == 1) {
 			if (height == 3) {

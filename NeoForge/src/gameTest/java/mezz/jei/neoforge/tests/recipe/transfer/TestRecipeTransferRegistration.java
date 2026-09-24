@@ -4,6 +4,7 @@ import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
+import mezz.jei.api.recipe.transfer.IRecipeTransferListener;
 import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
@@ -12,6 +13,7 @@ import mezz.jei.library.plugins.vanilla.crafting.CraftingCategoryExtension;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.library.transfer.RecipeTransferHandlerHelper;
 import mezz.jei.neoforge.tests.lib.TestGuiHelper;
+import mezz.jei.neoforge.tests.lib.TestIngredientManagers;
 import mezz.jei.neoforge.tests.lib.TestStackHelper;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -19,6 +21,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 final class TestRecipeTransferRegistration implements IRecipeTransferRegistration {
@@ -27,7 +30,8 @@ final class TestRecipeTransferRegistration implements IRecipeTransferRegistratio
 
 	public TestRecipeTransferRegistration(IConnectionToServer serverConnection) {
 		var stackHelper = new TestStackHelper();
-		this.handlerHelper = new RecipeTransferHandlerHelper(stackHelper, createCraftingCategory(), serverConnection);
+		var ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(List.of());
+		this.handlerHelper = new RecipeTransferHandlerHelper(stackHelper, ingredientManager, createCraftingCategory(), serverConnection);
 	}
 
 	@Override
@@ -68,6 +72,11 @@ final class TestRecipeTransferRegistration implements IRecipeTransferRegistratio
 
 	@Override
 	public <C extends AbstractContainerMenu> void addUniversalRecipeTransferHandler(IUniversalRecipeTransferHandler<C> universalRecipeTransferHandler) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void addRecipeTransferListener(IRecipeTransferListener recipeTransferListener) {
 		throw new UnsupportedOperationException();
 	}
 

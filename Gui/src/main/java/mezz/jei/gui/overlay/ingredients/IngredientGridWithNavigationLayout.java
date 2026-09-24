@@ -1,8 +1,8 @@
 package mezz.jei.gui.overlay.ingredients;
 
-import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.common.config.IIngredientGridConfig;
 
 import java.util.Set;
 
@@ -40,7 +40,7 @@ public record IngredientGridWithNavigationLayout(
 			availableGridArea = availableGridArea.cropTop(NAVIGATION_HEIGHT + INNER_PADDING);
 		}
 
-		if (gridConfig.drawBackground()) {
+		if (gridConfig.drawBackground().get()) {
 			availableGridArea = availableGridArea.insetBy(BORDER_PADDING + INNER_PADDING);
 		}
 
@@ -62,7 +62,8 @@ public record IngredientGridWithNavigationLayout(
 		return fromGridArea(
 			gridConfig,
 			ingredientGridArea,
-			IngredientGridLayout.calculateAvailableSlotCount(ingredientGridArea, Set.of(), null),
+			IngredientGridLayout.calculateAvailableSlotCount(ingredientGridArea, Set.of()),
+			navigationArea,
 			navigationArea,
 			navigationEnabled,
 			ImmutableRect2i.EMPTY,
@@ -70,18 +71,19 @@ public record IngredientGridWithNavigationLayout(
 		);
 	}
 
-	public static IngredientGridWithNavigationLayout fromGridArea(
+	static IngredientGridWithNavigationLayout fromGridArea(
 		IIngredientGridConfig gridConfig,
 		ImmutableRect2i ingredientGridArea,
 		int availableSlotCount,
 		ImmutableRect2i navigationArea,
+		ImmutableRect2i backgroundNavigationArea,
 		boolean navigationEnabled,
 		ImmutableRect2i scrollbarArea,
 		boolean scrollbarEnabled
 	) {
 		ImmutableRect2i slotBackgroundArea = calculateSlotBackgroundArea(ingredientGridArea, gridConfig);
-		ImmutableRect2i backgroundArea = MathUtil.union(MathUtil.union(slotBackgroundArea, navigationArea), scrollbarArea);
-		if (gridConfig.drawBackground() && !backgroundArea.isEmpty()) {
+		ImmutableRect2i backgroundArea = MathUtil.union(MathUtil.union(slotBackgroundArea, backgroundNavigationArea), scrollbarArea);
+		if (gridConfig.drawBackground().get() && !backgroundArea.isEmpty()) {
 			backgroundArea = backgroundArea.expandBy(BORDER_PADDING);
 		}
 		return new IngredientGridWithNavigationLayout(
@@ -100,7 +102,7 @@ public record IngredientGridWithNavigationLayout(
 		if (ingredientGridArea.isEmpty()) {
 			return ImmutableRect2i.EMPTY;
 		}
-		if (gridConfig.drawBackground()) {
+		if (gridConfig.drawBackground().get()) {
 			return ingredientGridArea.expandBy(INNER_PADDING);
 		} else {
 			return ingredientGridArea;

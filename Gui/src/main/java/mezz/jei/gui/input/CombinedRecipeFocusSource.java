@@ -1,6 +1,8 @@
 package mezz.jei.gui.input;
 
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.IGuiInputLayer;
+import mezz.jei.common.input.UserInput;
 import net.minecraft.client.Minecraft;
 
 import java.util.List;
@@ -17,14 +19,24 @@ public class CombinedRecipeFocusSource {
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
 
-		Stream<IClickableIngredientInternal<?>> stream = handlers.stream()
-			.flatMap(handler -> handler.getIngredientUnderMouse(mouseX, mouseY));
+		Stream<IClickableIngredientInternal<?>> stream = getIngredientUnderMouse(mouseX, mouseY);
 
 		if (isConflictingVanillaMouseButton(input, keyBindings)) {
 			stream = stream.filter(IClickableIngredientInternal::canClickToFocus);
 		}
 
 		return stream;
+	}
+
+	Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		Stream<IClickableIngredientInternal<?>> result = Stream.empty();
+		for (IRecipeFocusSource handler : handlers) {
+			result = Stream.concat(result, handler.getIngredientUnderMouse(mouseX, mouseY));
+			if (handler instanceof IGuiInputLayer inputLayer && inputLayer.isMouseOver(mouseX, mouseY)) {
+				break;
+			}
+		}
+		return result;
 	}
 
 	/**

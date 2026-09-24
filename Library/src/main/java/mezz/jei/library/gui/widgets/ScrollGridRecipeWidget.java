@@ -4,12 +4,15 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.gui.widgets.IScrollGridWidget;
 import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.GridScrollMath;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
-import mezz.jei.common.util.MathUtil;
+import mezz.jei.common.util.PlaceableUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 
@@ -44,13 +47,33 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 
 		this.columns = columns;
 		this.visibleRows = visibleRows;
-		int totalRows = MathUtil.divideCeil(slots.size(), columns);
-		this.hiddenRows = Math.max(totalRows - visibleRows, 0);
+		this.hiddenRows = GridScrollMath.getHiddenRows(slots.size(), columns, visibleRows);
 	}
 
 	@Override
 	public ScrollGridRecipeWidget setPosition(int xPos, int yPos) {
 		this.area = area.setPosition(xPos, yPos);
+		return this;
+	}
+
+	@Override
+	public ScrollGridRecipeWidget setPosition(
+		int areaX,
+		int areaY,
+		int areaWidth,
+		int areaHeight,
+		HorizontalAlignment horizontalAlignment,
+		VerticalAlignment verticalAlignment
+	) {
+		PlaceableUtil.setPosition(
+			this,
+			areaX,
+			areaY,
+			areaWidth,
+			areaHeight,
+			horizontalAlignment,
+			verticalAlignment
+		);
 		return this;
 	}
 
@@ -82,7 +105,7 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 	@Override
 	protected void drawContents(GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY, float scrollOffsetY) {
 		final int totalSlots = slots.size();
-		final int firstRow = getRowIndexForScroll(hiddenRows, getScrollOffsetY());
+		final int firstRow = GridScrollMath.getFirstRowForScrollOffset(hiddenRows, getScrollOffsetY());
 		final int firstIndex = columns * firstRow;
 
 		final int slotWidth = slotBackground.getWidth();
@@ -105,7 +128,7 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 
 	@Override
 	public Optional<RecipeSlotUnderMouse> getSlotUnderMouse(double mouseX, double mouseY) {
-		final int firstRow = getRowIndexForScroll(hiddenRows, getScrollOffsetY());
+		final int firstRow = GridScrollMath.getFirstRowForScrollOffset(hiddenRows, getScrollOffsetY());
 		final int startIndex = firstRow * columns;
 		final int endIndex = Math.min(startIndex + (visibleRows * columns), slots.size());
 		for (int i = startIndex; i < endIndex; i++) {
@@ -115,11 +138,6 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 			}
 		}
 		return Optional.empty();
-	}
-
-	private int getRowIndexForScroll(int hiddenRows, float scrollOffset) {
-		int rowIndex = (int) ((double) (scrollOffset * (float) hiddenRows) + 0.5D);
-		return Math.max(rowIndex, 0);
 	}
 
 	@Override

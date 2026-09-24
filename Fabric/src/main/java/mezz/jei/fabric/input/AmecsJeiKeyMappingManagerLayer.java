@@ -10,7 +10,8 @@ import java.util.stream.Stream;
 public class AmecsJeiKeyMappingManagerLayer extends AmecsKeyMappingManagerLayer {
 	@Override
 	public boolean accepts(KeyMapping keyMapping) {
-		return keyMapping instanceof AmecsKeyMappingWithContext;
+		return keyMapping instanceof AmecsKeyMappingWithContext ||
+			keyMapping instanceof FabricKeyMapping;
 	}
 
 	@Override
@@ -26,7 +27,10 @@ public class AmecsJeiKeyMappingManagerLayer extends AmecsKeyMappingManagerLayer 
 	}
 
 	private static boolean isActive(KeyMapping keyMapping) {
-		return keyMapping instanceof AmecsKeyMappingWithContext jeiKeyMapping &&
-			jeiKeyMapping.isContextActive();
+		return switch (keyMapping) {
+			case AmecsKeyMappingWithContext jeiKeyMapping -> jeiKeyMapping.isContextActive();
+			case FabricKeyMapping jeiKeyMapping -> jeiKeyMapping.isContextActive();
+			default -> false;
+		};
 	}
 }

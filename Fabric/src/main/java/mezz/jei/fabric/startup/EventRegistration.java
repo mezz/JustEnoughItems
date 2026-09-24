@@ -1,12 +1,15 @@
 package mezz.jei.fabric.startup;
 
 import com.mojang.blaze3d.platform.Window;
+import mezz.jei.common.Internal;
 import mezz.jei.fabric.events.JeiCharTypedEvents;
 import mezz.jei.fabric.events.JeiScreenEvents;
+import mezz.jei.fabric.input.KeyboardHandlerExtension;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
-import mezz.jei.gui.input.InputType;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.common.input.InputType;
+import mezz.jei.gui.input.PinnedTooltipManager;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
@@ -41,6 +44,7 @@ public class EventRegistration {
 		ScreenEvents.AFTER_INIT.register(this::afterInit);
 		JeiScreenEvents.DRAW_FOREGROUND.register(this::drawForeground);
 		JeiScreenEvents.DRAW_BACKGROUND.register(this::drawBackground);
+		JeiScreenEvents.ALLOW_DEFERRED_TOOLTIP.register(this::allowDeferredTooltip);
 	}
 
 	private void registerScreenEvents(Screen screen) {
@@ -54,6 +58,17 @@ public class EventRegistration {
 		ScreenMouseEvents.allowMouseDrag(screen).register(this::allowMouseDrag);
 		ScreenMouseEvents.allowMouseScroll(screen).register(this::allowMouseScroll);
 		ScreenEvents.afterTick(screen).register(this::afterTick);
+		ScreenEvents.beforeExtract(screen).register(this::beforeExtract);
+	}
+
+	private void beforeExtract(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+		if (guiEventHandler != null) {
+			guiEventHandler.updateForScreenRender(screen, mouseX, mouseY);
+		}
+	}
+
+	private boolean allowDeferredTooltip(GuiGraphicsExtractor guiGraphics) {
+		return guiEventHandler == null || !PinnedTooltipManager.shouldSuppressExternalTooltip();
 	}
 
 	private boolean allowMouseClick(Screen screen, MouseButtonEvent event) {
@@ -76,10 +91,16 @@ public class EventRegistration {
 
 	private boolean allowKeyPress(Screen screen, KeyEvent keyEvent) {
 		if (clientInputHandler == null) {
+			getKeyboardHandlerExtension().jei$setConsumeNextCharTyped(false);
 			return true;
 		}
+		boolean hadKeyboardFocus = hasJeiKeyboardFocus();
 		UserInput userInput = UserInput.fromVanilla(keyEvent, InputType.IMMEDIATE);
-		return !clientInputHandler.onKeyboardKeyPressedPre(screen, userInput);
+		boolean consumed = clientInputHandler.onKeyboardKeyPressedPre(screen, userInput);
+		boolean acquiredKeyboardFocus = !hadKeyboardFocus && hasJeiKeyboardFocus();
+		boolean consumeNextCharTyped = consumed && acquiredKeyboardFocus;
+		getKeyboardHandlerExtension().jei$setConsumeNextCharTyped(consumeNextCharTyped);
+		return !consumed;
 	}
 
 	private boolean allowMouseScroll(Screen screen, double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
@@ -137,5 +158,16 @@ public class EventRegistration {
 	public void clear() {
 		this.clientInputHandler = null;
 		this.guiEventHandler = null;
+		getKeyboardHandlerExtension().jei$setConsumeNextCharTyped(false);
+	}
+
+	private static KeyboardHandlerExtension getKeyboardHandlerExtension() {
+		return (KeyboardHandlerExtension) Minecraft.getInstance().keyboardHandler;
+	}
+
+	private static boolean hasJeiKeyboardFocus() {
+		return Internal.getOptionalJeiRuntime()
+			.map(runtime -> runtime.getIngredientListOverlay().hasKeyboardFocus())
+			.orElse(false);
 	}
 }

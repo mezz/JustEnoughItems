@@ -10,7 +10,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeMap;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.LevelSettings;
 import net.minecraft.world.level.WorldDataConfiguration;
@@ -18,6 +20,7 @@ import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +29,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -40,6 +44,7 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Duration ASSERTION_TIMEOUT = Duration.ofSeconds(60);
 	private static final Duration WORLD_LOAD_TIMEOUT = Duration.ofSeconds(120);
+	private static final Duration CLIENT_SHUTDOWN_TIMEOUT = Duration.ofSeconds(30);
 	private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 	private static final ResourceKey<Recipe<?>> CRAFTING_TABLE_RECIPE_KEY = ResourceKey.create(Registries.RECIPE, Identifier.withDefaultNamespace("crafting_table"));
 
@@ -61,8 +66,11 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 
 	private static void runTests() {
 		int exitCode = 0;
-		String testName = TestCase.fromSystemPropertyId();
+		String testName = "NeoForge client resources";
 		try {
+			JeiNeoForgeClientResourceTests.run();
+			LOGGER.info("JEI NeoForge client resource test passed");
+			testName = TestCase.fromSystemPropertyId();
 			for (TestCase currentTestCase : TestCase.fromSystemProperty()) {
 				testName = currentTestCase.displayName;
 				JUnitXmlTestReporter.runAndReport(
@@ -148,6 +156,55 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 		);
 	}
 
+	private static void assertRecipeUpdatesReplaceRecipesOnSameConnection() {
+		RecipeMap updatedRecipes = ClientTestUtil.computeOnClient(client -> {
+			RecipeMap syncedRecipes = Internal.getClientSyncedRecipes();
+			List<RecipeHolder<?>> recipes = syncedRecipes.values().stream()
+				.filter(recipe -> !recipe.id().equals(CRAFTING_TABLE_RECIPE_KEY))
+				.toList();
+			if (recipes.size() == syncedRecipes.values().size()) {
+				throw new AssertionError("Expected the synced recipes to contain the crafting table recipe before the update.");
+			}
+			return RecipeMap.create(recipes);
+		});
+
+		Object initialRuntime = ClientTestUtil.computeOnClient(client -> Internal.getJeiRuntime());
+		ClientTestUtil.runOnClient(client -> NeoForge.EVENT_BUS.post(
+			new RecipesReceivedEvent(Set.<RecipeType<?>>of(RecipeType.CRAFTING), updatedRecipes)
+		));
+		ClientTestUtil.waitUntil(
+			() -> ClientTestUtil.computeOnClient(client -> Internal.hasClientSyncedRecipes() &&
+				Internal.getClientSyncedRecipes().byKey(CRAFTING_TABLE_RECIPE_KEY) == null &&
+				Internal.getJeiRuntime() != initialRuntime),
+			ASSERTION_TIMEOUT,
+			() -> "Expected JEI to replace synced recipes after an update on the same connection. " + describeRecipeState()
+		);
+
+		Object updatedRuntime = ClientTestUtil.computeOnClient(client -> Internal.getJeiRuntime());
+		ClientTestUtil.runOnClient(client -> NeoForge.EVENT_BUS.post(
+			new RecipesReceivedEvent(Set.of(), RecipeMap.EMPTY)
+		));
+		ClientTestUtil.waitUntil(
+			() -> ClientTestUtil.computeOnClient(client -> Internal.hasClientFallbackRecipes() &&
+				Internal.getClientSyncedRecipes().byKey(CRAFTING_TABLE_RECIPE_KEY) != null &&
+				Internal.getJeiRuntime() != updatedRuntime),
+			ASSERTION_TIMEOUT,
+			() -> "Expected JEI to clear synced recipes after an empty update on the same connection. " + describeRecipeState()
+		);
+
+		Object fallbackRuntime = ClientTestUtil.computeOnClient(client -> Internal.getJeiRuntime());
+		ClientTestUtil.runOnClient(client -> NeoForge.EVENT_BUS.post(
+			new RecipesReceivedEvent(Set.<RecipeType<?>>of(RecipeType.CRAFTING), RecipeMap.EMPTY)
+		));
+		ClientTestUtil.waitUntil(
+			() -> ClientTestUtil.computeOnClient(client -> Internal.hasClientSyncedRecipes() &&
+				Internal.getClientSyncedRecipes().values().isEmpty() &&
+				Internal.getJeiRuntime() != fallbackRuntime),
+			ASSERTION_TIMEOUT,
+			() -> "Expected JEI to preserve an explicitly synchronized empty recipe map. " + describeRecipeState()
+		);
+	}
+
 	private static boolean hasVanillaRecipes(RecipeMap recipeMap) {
 		return !recipeMap.values().isEmpty() &&
 			recipeMap.byKey(CRAFTING_TABLE_RECIPE_KEY) != null;
@@ -222,23 +279,44 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 			exitCode = 1;
 			LOGGER.error("Failed to stop Minecraft after JEI NeoForge client recipe sync tests.", t);
 		}
+		startClientShutdownWatchdog();
 		if (exitCode != 0) {
 			System.exit(exitCode);
 		}
+	}
+
+	private static void startClientShutdownWatchdog() {
+		Thread watchdog = new Thread(() -> {
+			try {
+				Thread.sleep(CLIENT_SHUTDOWN_TIMEOUT);
+			} catch (InterruptedException ignored) {
+				return;
+			}
+			System.err.println("Minecraft client did not exit within " + CLIENT_SHUTDOWN_TIMEOUT + "; failing the client test JVM.");
+			Runtime.getRuntime().halt(1);
+		}, "JEI NeoForge Client Test Shutdown Watchdog");
+		watchdog.setDaemon(true);
+		watchdog.start();
 	}
 
 	private enum TestCase {
 		SINGLEPLAYER("singleplayer", "NeoForge singleplayer") {
 			@Override
 			public void run() {
-				runSingleplayerTestCase(displayName(), JeiNeoForgeClientRecipeSyncTests::assertSyncedRecipesFromSingleplayer);
+				runSingleplayerTestCase(displayName(), () -> {
+					assertSyncedRecipesFromSingleplayer();
+					JeiNeoForgeClientTextInputTests.run();
+				});
 			}
 		},
 		NEOFORGE_SERVER_WITH_JEI("neoforgeServerWithJei", "NeoForge server with JEI") {
 			@Override
 			public void run() {
 				try (NeoForgeExternalTestServer server = NeoForgeExternalTestServer.startNeoForgeWithJei()) {
-					runTestCase(displayName(), server, JeiNeoForgeClientRecipeSyncTests::assertSyncedRecipesFromJeiServer);
+					runTestCase(displayName(), server, () -> {
+						assertSyncedRecipesFromJeiServer();
+						assertRecipeUpdatesReplaceRecipesOnSameConnection();
+					});
 				}
 			}
 		},

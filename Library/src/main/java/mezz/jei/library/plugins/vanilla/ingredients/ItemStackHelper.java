@@ -10,7 +10,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.config.IJeiClientConfigs;
+import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
@@ -188,9 +188,9 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			.map(TagKey::location);
 
 		if (ingredient.getItem() instanceof BlockItem blockItem) {
-			IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+			IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-			if (clientConfig.isLookupBlockTagsEnabled()) {
+			if (clientConfig.lookupBlockTagsEnabled().get()) {
 				Stream<Identifier> blockTagStream = blockItem.getBlock()
 					.defaultBlockState()
 					.typeHolder()
@@ -220,9 +220,9 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 			return true;
 		}
 		if (itemHolder.value() instanceof BlockItem blockItem) {
-			IJeiClientConfigs jeiClientConfigs = Internal.getJeiClientConfigs();
+			IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
 			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
-			if (clientConfig.isLookupBlockTagsEnabled()) {
+			if (clientConfig.lookupBlockTagsEnabled().get()) {
 				Block block = blockItem.getBlock();
 				@SuppressWarnings("deprecation")
 				Holder.Reference<Block> blockHolder = block.builtInRegistryHolder();

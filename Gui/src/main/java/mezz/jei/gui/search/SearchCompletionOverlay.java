@@ -2,7 +2,7 @@ package mezz.jei.gui.search;
 
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.search.PrefixInfo;
-import mezz.jei.common.search.SearchMode;
+import mezz.jei.common.config.SearchMode;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;

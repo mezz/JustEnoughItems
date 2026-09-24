@@ -5,7 +5,7 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.vanilla.IJeiIngredientInfoRecipe;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.StringUtil;
-import mezz.jei.library.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.TypedIngredient;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 

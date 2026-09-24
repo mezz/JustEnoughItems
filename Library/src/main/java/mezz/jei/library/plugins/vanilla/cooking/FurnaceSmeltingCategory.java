@@ -7,6 +7,6 @@ import net.minecraft.world.level.block.Blocks;
 
 public class FurnaceSmeltingCategory extends AbstractCookingCategory<SmeltingRecipe> {
 	public FurnaceSmeltingCategory(IGuiHelper guiHelper) {
-		super(guiHelper, RecipeTypes.SMELTING, Blocks.FURNACE, "gui.jei.category.smelting", 200);
+		super(guiHelper, RecipeTypes.SMELTING, Blocks.FURNACE, "gui.jei.category.smelting", 200, 116, 54);
 	}
 }

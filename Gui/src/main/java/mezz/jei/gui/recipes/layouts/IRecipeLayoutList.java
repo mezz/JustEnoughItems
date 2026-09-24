@@ -3,6 +3,7 @@ package mezz.jei.gui.recipes.layouts;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.recipes.IRecipeLayoutWithButtons;
 import mezz.jei.gui.recipes.RecipesGui;
@@ -22,6 +23,7 @@ public interface IRecipeLayoutList {
 		IFocusGroup focusGroup,
 		BookmarkList bookmarkList,
 		IRecipeManager recipeManager,
+		RecipeTransferService recipeTransferService,
 		RecipesGui recipesGui
 	) {
 		return new LazyRecipeLayoutList<>(
@@ -30,6 +32,7 @@ public interface IRecipeLayoutList {
 			selectedRecipes,
 			bookmarkList,
 			recipeManager,
+			recipeTransferService,
 			recipesGui,
 			focusGroup
 		);

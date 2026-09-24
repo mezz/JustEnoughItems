@@ -1,7 +1,7 @@
 package mezz.jei.gui.input.handlers;
 
 import mezz.jei.gui.input.IDragHandler;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.common.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
 import org.jspecify.annotations.Nullable;
 
@@ -19,6 +19,10 @@ public class DragRouter {
 
 	public void handleGuiChange() {
 		cancelDrag();
+	}
+
+	public boolean isDragging() {
+		return this.dragStartedCallback != null;
 	}
 
 	public boolean startDrag(Screen screen, UserInput input) {
@@ -43,9 +47,15 @@ public class DragRouter {
 	}
 
 	public void cancelDrag() {
+		IDragHandler dragStartedCallback = this.dragStartedCallback;
+		this.dragStartedCallback = null;
+
 		for (IDragHandler handler : this.handlers) {
 			handler.handleDragCanceled();
 		}
-		this.dragStartedCallback = null;
+
+		if (dragStartedCallback != null) {
+			dragStartedCallback.handleDragCanceled();
+		}
 	}
 }

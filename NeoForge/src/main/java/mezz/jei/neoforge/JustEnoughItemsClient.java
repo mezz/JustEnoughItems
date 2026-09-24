@@ -4,14 +4,18 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.gui.RecipeSlotOptionsTooltipComponent;
 import mezz.jei.common.gui.IngredientTooltipComponent;
 import mezz.jei.common.gui.IngredientsTooltipComponent;
-import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
+import mezz.jei.gui.recipes.InteractiveIngredientGridTooltipComponent;
 import mezz.jei.library.gui.ingredients.TagContentTooltipComponent;
+import mezz.jei.library.config.JeiConfigData;
+import mezz.jei.library.config.JeiConfigRegistration;
 import mezz.jei.library.plugins.vanilla.crafting.JeiShapedRecipe;
+import mezz.jei.library.plugins.vanilla.cooking.JeiSmeltingRecipe;
 import mezz.jei.library.recipes.RecipeSerializers;
 import mezz.jei.library.startup.JeiStarter;
 import mezz.jei.library.startup.StartData;
@@ -29,11 +33,10 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
-import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.lifecycle.ClientStoppingEvent;
@@ -45,31 +48,34 @@ import java.util.function.Supplier;
 
 public class JustEnoughItemsClient {
 	private final PermanentEventSubscriptions subscriptions;
+	private final JeiStarter jeiStarter;
 
 	public JustEnoughItemsClient(
 		NetworkHandler networkHandler,
 		PermanentEventSubscriptions subscriptions
 	) {
 		this.subscriptions = subscriptions;
+		JeiConfigData configData = JeiConfigRegistration.register();
 		IConnectionToServer serverConnection = networkHandler.getConnectionToServer();
 
 		List<IModPlugin> plugins = ForgePluginFinder.getModPlugins();
 		StartData startData = new StartData(
 			plugins,
-			serverConnection
+			serverConnection,
+			configData
 		);
 
-		JeiStarter jeiStarter = new JeiStarter(startData);
+		this.jeiStarter = new JeiStarter(startData);
 
-		StartEventObserver startEventObserver = new StartEventObserver(serverConnection, jeiStarter::start, jeiStarter::stop);
+		StartEventObserver startEventObserver = new StartEventObserver(serverConnection, this.jeiStarter::start, this.jeiStarter::stop);
+		Internal.setRestartJeiRunnable(startEventObserver::restart);
 		startEventObserver.register(subscriptions);
 	}
 
 	public void register() {
 		subscriptions.register(AddClientReloadListenersEvent.class, this::onRegisterReloadListenerEvent);
 		subscriptions.register(RegisterClientTooltipComponentFactoriesEvent.class, this::onRegisterClientTooltipEvent);
-		subscriptions.register(RecipesReceivedEvent.class, this::onRecipesReceivedEvent);
-		subscriptions.register(ClientStoppingEvent.class, e -> Internal.onClientStopping());
+		subscriptions.register(ClientStoppingEvent.class, e -> onClientStopping());
 		subscriptions.register(RegisterKeyMappingsEvent.class, e -> {
 			InternalKeyMappings keyMappings = new InternalKeyMappings(e::register, id -> {
 				KeyMapping.Category category = new KeyMapping.Category(id);
@@ -88,19 +94,16 @@ public class JustEnoughItemsClient {
 		deferredRegister.register(modEventBus);
 
 		Supplier<RecipeSerializer<? extends CraftingRecipe>> jeiShaped = deferredRegister.register("jei_shaped", () -> JeiShapedRecipe.SERIALIZER);
-		RecipeSerializers.register(jeiShaped);
+		Supplier<RecipeSerializer<? extends SmeltingRecipe>> jeiSmelting = deferredRegister.register("jei_smelting", () -> JeiSmeltingRecipe.SERIALIZER);
+		RecipeSerializers.register(jeiShaped, jeiSmelting);
 	}
 
-	private void onRecipesReceivedEvent(RecipesReceivedEvent event) {
-		RecipeMap recipeMap = event.getRecipeMap();
-		if (!recipeMap.values().isEmpty()) {
-			Internal.setClientSyncedRecipes(recipeMap);
-		}
+	private void onClientStopping() {
+		jeiStarter.stop();
+		Internal.onClientStopping();
 	}
 
 	private void onRegisterReloadListenerEvent(AddClientReloadListenersEvent event) {
-		Textures textures = Internal.getTextures();
-		event.addListener(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "gui_sprite_manager"), textures.getAtlasManager());
 		event.addListener(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "jei_client"), createReloadListener());
 	}
 
@@ -108,7 +111,9 @@ public class JustEnoughItemsClient {
 		event.register(IngredientTooltipComponent.class, Function.identity());
 		event.register(IngredientsTooltipComponent.class, Function.identity());
 		event.register(PreviewTooltipComponent.class, Function.identity());
+		event.register(RecipeSlotOptionsTooltipComponent.class, Function.identity());
 		event.register(TagContentTooltipComponent.class, Function.identity());
+		event.register(InteractiveIngredientGridTooltipComponent.class, Function.identity());
 	}
 
 	private ResourceManagerReloadListener createReloadListener() {

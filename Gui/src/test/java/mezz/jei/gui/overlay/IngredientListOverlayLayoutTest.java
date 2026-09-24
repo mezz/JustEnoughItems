@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IngredientListOverlayLayoutTest {
+	private static final int BORDER_MARGIN = 6;
+
 	@Test
 	public void rightSideLayoutReservesBottomSearchRow() {
 		// Setup: a regular GUI leaves JEI room on the right, and the ingredient grid has a background area.
@@ -72,6 +74,31 @@ public class IngredientListOverlayLayoutTest {
 		assertPositiveArea(searchAndConfigAreas.searchArea());
 		assertPositiveArea(searchAndConfigAreas.configButtonArea());
 		assertSharedControlRow(searchAndConfigAreas);
+	}
+
+	@Test
+	public void rightSideControlsAreHiddenWhenDisplayAreaCannotFitButton() {
+		// Setup: the GUI leaves only a very narrow strip on the right side.
+		TestGuiProperties guiProperties = new TestGuiProperties(20, 20, 176, 50, 200, 100);
+		ImmutableRect2i staleContentsArea = new ImmutableRect2i(196, 8, 4, 40);
+
+		// Operation: calculate the search/config row when there is no room for a full-size config button.
+		IngredientListOverlayLayout.Layout layout = calculate(
+			guiProperties,
+			false,
+			false,
+			false,
+			0
+		);
+
+		IngredientListOverlayLayout.SearchAndConfigAreas searchAndConfigAreas = layout.getSearchAndConfigAreas(
+			false,
+			staleContentsArea
+		);
+
+		// Assertions: JEI controls should hide instead of drawing squeezed buttons.
+		assertEquals(ImmutableRect2i.EMPTY, searchAndConfigAreas.searchArea());
+		assertEquals(ImmutableRect2i.EMPTY, searchAndConfigAreas.configButtonArea());
 	}
 
 	@Test
@@ -160,8 +187,12 @@ public class IngredientListOverlayLayoutTest {
 		assertContainedBy(layout.availableContentsArea(), layout.displayArea());
 		assertContainedBy(lookupHistoryArea, layout.displayArea());
 		assertPositiveArea(lookupHistoryArea);
+		assertFalse(
+			layout.availableContentsArea().intersects(lookupHistoryArea),
+			"side lookup history should not overlap the main contents area"
+		);
 		assertTrue(
-			bottom(layout.availableContentsArea()) <= bottom(lookupHistoryArea),
+			bottom(layout.availableContentsArea()) <= lookupHistoryArea.y(),
 			"side lookup history should be reserved below the main contents area"
 		);
 	}
@@ -207,6 +238,37 @@ public class IngredientListOverlayLayoutTest {
 		assertTrue(
 			bottom(withBackground.availableContentsArea()) < bottom(withoutBackground.availableContentsArea()),
 			"main contents should reserve the extra lookup-history background padding"
+		);
+	}
+
+	@Test
+	public void sideLookupHistoryUsesBottomOfSideAreaWhenSearchIsCentered() {
+		// Setup: center-search is enabled, so there is no search row at the bottom of the side overlay.
+		TestGuiProperties guiProperties = new TestGuiProperties(50, 20, 100, 50, 260, 100);
+
+		// Operation: calculate the overlay layout with lookup history on this side.
+		IngredientListOverlayLayout.Layout layout = calculate(
+			guiProperties,
+			true,
+			true,
+			true,
+			2
+		);
+
+		// Assertions: lookup history uses the bottom of the side area and does not overlap contents.
+		ImmutableRect2i lookupHistoryArea = layout.lookupHistoryArea()
+			.orElseThrow(() -> new AssertionError("lookup history area should be reserved"));
+		assertTrue(layout.searchBarCentered());
+		assertContainedBy(layout.availableContentsArea(), layout.displayArea());
+		assertContainedBy(lookupHistoryArea, layout.displayArea());
+		assertFalse(
+			layout.availableContentsArea().intersects(lookupHistoryArea),
+			"centered search should not leave side lookup history overlapping the main contents area"
+		);
+		assertEquals(
+			bottom(layout.displayArea()) - BORDER_MARGIN,
+			bottom(lookupHistoryArea),
+			"centered search should not reserve a side search row below lookup history"
 		);
 	}
 

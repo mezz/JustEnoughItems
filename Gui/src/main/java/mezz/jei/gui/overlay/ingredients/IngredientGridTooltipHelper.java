@@ -10,7 +10,7 @@ import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.SafeIngredientUtil;
-import mezz.jei.common.search.SearchMode;
+import mezz.jei.common.config.SearchMode;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -48,11 +48,11 @@ public final class IngredientGridTooltipHelper {
 	) {
 		SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, typedIngredient);
 
-		if (ingredientFilterConfig.getColorSearchMode() != SearchMode.DISABLED) {
+		if (ingredientFilterConfig.colorSearchMode().get() != SearchMode.DISABLED) {
 			addColorSearchInfoToTooltip(tooltip, typedIngredient, ingredientHelper);
 		}
 
-		if (ingredientFilterConfig.getSearchIngredientAliases()) {
+		if (ingredientFilterConfig.searchIngredientAliases().get()) {
 			addIngredientAliasesToTooltip(tooltip, typedIngredient, ingredientManager);
 		}
 

@@ -35,15 +35,21 @@ pluginManagement {
 	}
 }
 
-val minecraftVersion: String by settings
+val minecraftVersion = providers.gradleProperty("minecraftVersion").get()
 
 rootProject.name = "jei-${minecraftVersion}"
 include(
 	"Changelog",
-	"Common", "CommonApi",
-	"Fabric", "FabricApi",
-	"NeoForge", "NeoForgeApi",
+	"Common",
+	"Fabric",
+	"NeoForge",
 	"Library",
 	"Debug",
 	"Gui"
 )
+
+gradle.lifecycle.beforeProject {
+	if (path != ":") {
+		pluginManager.apply("mezz.jei.project")
+	}
+}

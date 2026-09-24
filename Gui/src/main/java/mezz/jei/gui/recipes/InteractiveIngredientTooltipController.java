@@ -1,0 +1,169 @@
+package mezz.jei.gui.recipes;
+
+import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.api.gui.handlers.IGuiProperties;
+import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.IGuiInputLayer;
+import mezz.jei.gui.input.IClickableIngredientInternal;
+import mezz.jei.common.input.IMouseOverable;
+import mezz.jei.gui.input.IPinnedTooltipHolder;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.gui.input.PinnedTooltipManager;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.gui.util.FocusUtil;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import org.jspecify.annotations.Nullable;
+
+import java.util.Optional;
+import java.util.stream.Stream;
+
+final class InteractiveIngredientTooltipController implements IGuiInputLayer, IPinnedTooltipHolder {
+	private final RecipesGui recipesGui;
+	private final FocusUtil focusUtil;
+	private final IGuiHelper guiHelper;
+	private final IIngredientManager ingredientManager;
+	private final RecipeSlotClickTargetFactory clickTargetFactory;
+
+	private @Nullable InteractiveIngredientTooltip activeTooltip;
+
+	public InteractiveIngredientTooltipController(
+		RecipesGui recipesGui,
+		FocusUtil focusUtil,
+		IGuiHelper guiHelper,
+		IIngredientManager ingredientManager,
+		RecipeSlotClickTargetFactory clickTargetFactory
+	) {
+		this.recipesGui = recipesGui;
+		this.focusUtil = focusUtil;
+		this.guiHelper = guiHelper;
+		this.ingredientManager = ingredientManager;
+		this.clickTargetFactory = clickTargetFactory;
+	}
+
+	public boolean isVisible() {
+		return this.activeTooltip != null;
+	}
+
+	boolean isActive(InteractiveIngredientTooltip tooltip) {
+		return this.activeTooltip == tooltip;
+	}
+
+	public void hide() {
+		InteractiveIngredientTooltip activeTooltip = this.activeTooltip;
+		if (activeTooltip != null) {
+			activeTooltip.unfocus();
+			this.activeTooltip = null;
+			PinnedTooltipManager.closed(this);
+		}
+	}
+
+	void hide(InteractiveIngredientTooltip tooltip) {
+		if (isActive(tooltip)) {
+			hide();
+		}
+	}
+
+	public boolean show(
+		RecipeSlotUnderMouse sourceSlot,
+		IMouseOverable sourceMouseOverable,
+		double mouseX,
+		double mouseY
+	) {
+		Optional<InteractiveIngredientTooltip> tooltip = InteractiveIngredientTooltip.create(
+			this,
+			this.recipesGui,
+			this.focusUtil,
+			this.guiHelper,
+			this.ingredientManager,
+			this.clickTargetFactory,
+			sourceSlot,
+			sourceMouseOverable,
+			mouseX,
+			mouseY
+		);
+		if (tooltip.isEmpty()) {
+			return false;
+		}
+		hide();
+		this.activeTooltip = tooltip.get();
+		PinnedTooltipManager.opened(this);
+		return true;
+	}
+
+	@Override
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		InteractiveIngredientTooltip activeTooltip = this.activeTooltip;
+		return activeTooltip != null && activeTooltip.isMouseOver(mouseX, mouseY);
+	}
+
+	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
+		InteractiveIngredientTooltip activeTooltip = this.activeTooltip;
+		if (activeTooltip == null) {
+			return Stream.empty();
+		}
+		return activeTooltip.getIngredientUnderMouse(mouseX, mouseY);
+	}
+
+	@Override
+	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+		InteractiveIngredientTooltip activeTooltip = this.activeTooltip;
+		if (activeTooltip != null) {
+			PinnedTooltipManager.draw(this, () -> activeTooltip.draw(guiGraphics, mouseX, mouseY));
+		}
+	}
+
+	@Override
+	public Optional<IUserInputHandler> handleUserInput(
+		Screen screen,
+		IGuiProperties guiProperties,
+		UserInput input,
+		IInternalKeyMappings keyBindings
+	) {
+		InteractiveIngredientTooltip activeTooltip = this.activeTooltip;
+		if (activeTooltip == null) {
+			return Optional.empty();
+		}
+		return activeTooltip.handleUserInput(screen, guiProperties, input, keyBindings);
+	}
+
+	@Override
+	public Optional<IUserInputHandler> handleMouseScrolled(
+		double mouseX,
+		double mouseY,
+		double scrollDeltaX,
+		double scrollDeltaY
+	) {
+		InteractiveIngredientTooltip activeTooltip = this.activeTooltip;
+		if (activeTooltip == null) {
+			return Optional.empty();
+		}
+		return activeTooltip.handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
+	}
+
+	@Override
+	public Optional<IUserInputHandler> handleMouseDragged(
+		double mouseX,
+		double mouseY,
+		InputConstants.Key mouseKey,
+		double dragX,
+		double dragY
+	) {
+		InteractiveIngredientTooltip activeTooltip = this.activeTooltip;
+		if (activeTooltip == null) {
+			return Optional.empty();
+		}
+		return activeTooltip.handleMouseDragged(mouseX, mouseY, mouseKey, dragX, dragY);
+	}
+
+	@Override
+	public void unfocus() {
+		InteractiveIngredientTooltip activeTooltip = this.activeTooltip;
+		if (activeTooltip != null) {
+			activeTooltip.unfocus();
+		}
+	}
+}

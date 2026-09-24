@@ -28,7 +28,6 @@
 
   "_comment": "Config",
   "jei.config": "JEI Config",
-  "jei.config.default": "Výchozí",
   "jei.config.valid": "Platné",
   "jei.config.title": "%MODNAME Config",
   "jei.config.mode": "Mód",
@@ -55,8 +54,6 @@
   "jei.config.client.advanced.description": "Pokročilé funkce pro JEI.",
   "jei.config.client.advanced.itemBlacklist": "Černý list itemů",
   "jei.config.client.advanced.itemBlacklist.description": "List itemů které se nezobrazí na listu itemů. Formát: modId[:jméno[:data]]. Edit Mód automaticky přidá/odstraní záznamy.",
-  "jei.config.client.appearance.centerSearch": "Hýbat s vyhledávacím polem",
-  "jei.config.client.appearance.centerSearch.description": "Přesune JEI bar dolů doprostřed obrazovky.",
 
   "_comment": "Hide Ingredients Mode",
   "gui.jei.editMode.description": "JEI Item List Editovací Mód:",

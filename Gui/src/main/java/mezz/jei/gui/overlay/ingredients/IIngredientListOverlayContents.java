@@ -3,7 +3,7 @@ package mezz.jei.gui.overlay.ingredients;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IRecipeFocusSource;
-import mezz.jei.gui.input.IUserInputHandler;
+import mezz.jei.common.input.IUserInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
@@ -39,6 +39,11 @@ public interface IIngredientListOverlayContents extends IIngredientGridView, IIn
 	void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
 
 	void tick();
+
+	/**
+	 * Creates the high-priority input handler for deleting a carried item over these contents.
+	 */
+	IUserInputHandler createDeleteItemInputHandler();
 
 	/**
 	 * Creates the input handler for the ingredient-list contents.

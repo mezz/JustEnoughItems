@@ -38,12 +38,12 @@ public class CodecHelper implements ICodecHelper {
 		RecipeMap recipes = Internal.getClientSyncedRecipes();
 
 		return Codec.either(
-			ResourceKey.codec(Registries.RECIPE),
-			TupleCodec.of(
 				ResourceKey.codec(Registries.RECIPE),
-				Recipe.CODEC
+				TupleCodec.of(
+					ResourceKey.codec(Registries.RECIPE),
+					Recipe.CODEC
+				)
 			)
-		)
 			.flatXmap(
 				either -> {
 					return either.map(
@@ -124,13 +124,14 @@ public class CodecHelper implements ICodecHelper {
 	private <T> Codec<T> createDefaultRecipeCategoryCodec(IRecipeManager recipeManager, IRecipeCategory<T> recipeCategory) {
 		Codec<Data> dataCodec = RecordCodecBuilder.create((builder) -> {
 			return builder.group(
-				Identifier.CODEC.fieldOf("registryId")
-					.forGetter(Data::registryId),
-				getTypedIngredientCodec().codec().fieldOf("ingredient")
-					.forGetter(Data::ingredient),
-				EnumCodec.create(RecipeIngredientRole.class).fieldOf("ingredient_role")
-					.forGetter(Data::ingredientRole)
-			).apply(builder, Data::new);
+					Identifier.CODEC.fieldOf("registryId")
+						.forGetter(Data::registryId),
+					getTypedIngredientCodec().codec().fieldOf("ingredient")
+						.forGetter(Data::ingredient),
+					EnumCodec.create(RecipeIngredientRole.class).fieldOf("ingredient_role")
+						.forGetter(Data::ingredientRole)
+				)
+				.apply(builder, Data::new);
 		});
 		return dataCodec.flatXmap(
 			data -> {

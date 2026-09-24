@@ -47,16 +47,16 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	private final Identifier id;
 
 	@Nullable
-	public static <V> IListElementInfo<V> create(ITypedIngredient<V> value, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	public static <V> IListElementInfo<V> create(ITypedIngredient<V> value, IIngredientManager ingredientManager, IIngredientFilterConfig config, IModIdHelper modIdHelper) {
 		int createdIndex = elementCount++;
 		ListElement<V> element = new ListElement<>(value, createdIndex);
-		return createFromElement(element, ingredientManager, modIdHelper);
+		return createFromElement(element, ingredientManager, config, modIdHelper);
 	}
 
 	@Nullable
-	public static <V> IListElementInfo<V> createFromElement(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	public static <V> IListElementInfo<V> createFromElement(IListElement<V> element, IIngredientManager ingredientManager, IIngredientFilterConfig config, IModIdHelper modIdHelper) {
 		try {
-			return new ListElementInfo<>(element, ingredientManager, modIdHelper);
+			return new ListElementInfo<>(element, ingredientManager, config, modIdHelper);
 		} catch (RuntimeException e) {
 			try {
 				ITypedIngredient<V> typedIngredient = element.getTypedIngredient();
@@ -70,7 +70,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		}
 	}
 
-	protected ListElementInfo(IListElement<V> element, IIngredientManager ingredientManager, IModIdHelper modIdHelper) {
+	protected ListElementInfo(IListElement<V> element, IIngredientManager ingredientManager, IIngredientFilterConfig config, IModIdHelper modIdHelper) {
 		this.element = element;
 		this.modIdHelper = modIdHelper;
 		ITypedIngredient<V> value = element.getTypedIngredient();
@@ -91,6 +91,10 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		}
 
 		String displayNameLowercase = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
+		if (!config.searchIngredientAliases().get()) {
+			this.names = List.of(displayNameLowercase);
+			return;
+		}
 		Collection<String> aliases = ingredientManager.getIngredientAliases(value);
 		if (aliases.isEmpty()) {
 			this.names = List.of(displayNameLowercase);
@@ -118,18 +122,18 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	public Collection<String> getModNames(IIngredientFilterConfig config) {
 		Set<String> modNames = new HashSet<>(this.modNames);
 
-		if (config.getSearchModIds()) {
+		if (config.searchModIds().get()) {
 			modNames.addAll(this.modIds);
 		}
 
-		if (config.getSearchModAliases()) {
+		if (config.searchModAliases().get()) {
 			for (String modId : this.modIds) {
 				Set<String> modAliases = modIdHelper.getModAliases(modId);
 				modNames.addAll(modAliases);
 			}
 		}
 
-		if (config.getSearchShortModNames()) {
+		if (config.searchShortModNames().get()) {
 			for (String modName : this.modNames) {
 				List<String> shortModNames = getShortModNames(modName);
 				modNames.addAll(shortModNames);
@@ -151,9 +155,11 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 	public final Set<String> getTooltipStrings(IIngredientFilterConfig config, IIngredientManager ingredientManager) {
 		ITypedIngredient<V> value = element.getTypedIngredient();
 		IIngredientRenderer<V> ingredientRenderer = ingredientManager.getIngredientRenderer(value.getType());
-		TooltipFlag.Default tooltipFlag = TooltipFlag.Default.NORMAL;
-		if (config.getSearchAdvancedTooltips()) {
+		TooltipFlag.Default tooltipFlag;
+		if (config.searchAdvancedTooltips().get()) {
 			tooltipFlag = TooltipFlag.Default.ADVANCED;
+		} else {
+			tooltipFlag = TooltipFlag.Default.NORMAL;
 		}
 		tooltipFlag = tooltipFlag.asCreative();
 

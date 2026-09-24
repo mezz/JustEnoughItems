@@ -38,6 +38,11 @@ public class ScreenHelperTest {
 		public <T> Optional<ITypedIngredient<T>> createTypedIngredient(IIngredientType<T> ingredientType, T ingredient, boolean normalize) {
 			return Optional.empty();
 		}
+
+		@Override
+		public <T> ITypedIngredient<T> checkTypedIngredientFromApi(ITypedIngredient<T> typedIngredient) {
+			return typedIngredient;
+		}
 	};
 
 	@Test

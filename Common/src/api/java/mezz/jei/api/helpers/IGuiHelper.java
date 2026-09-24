@@ -1,0 +1,283 @@
+package mezz.jei.api.helpers;
+
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.ITickTimer;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.drawable.IDrawableAnimated;
+import mezz.jei.api.gui.drawable.IDrawableBuilder;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
+import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
+import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.gui.widgets.IScrollBoxWidget;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.IIngredientRenderer;
+import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
+import org.jetbrains.annotations.ApiStatus;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+
+/**
+ * Helps with the implementation of GUIs.
+ * Get the instance from {@link IJeiHelpers#getGuiHelper()}.
+ */
+@ApiStatus.NonExtendable
+public interface IGuiHelper {
+	/**
+	 * Create a drawable from part of a standard 256x256 gui texture.
+	 *
+	 * If your texture is not exactly 256x256, you will need to create a `{@link IDrawableBuilder} instead
+	 * with {@link #drawableBuilder(Identifier, int, int, int, int)}
+	 * and then specify the texture size with {@link IDrawableBuilder#setTextureSize(int, int)}
+	 */
+	default IDrawableStatic createDrawable(Identifier id, int u, int v, int width, int height) {
+		return drawableBuilder(id, u, v, width, height).build();
+	}
+
+	/**
+	 * Create a {@link IDrawableBuilder} which gives more control over drawable creation.
+	 *
+	 * @return a new {@link IDrawableBuilder} with the given resource location
+	 */
+	IDrawableBuilder drawableBuilder(Identifier id, int u, int v, int width, int height);
+
+	/**
+	 * Create a drawable from a gui sprite.
+	 *
+	 * @return a new {@link IDrawableStatic} with the given texture atlas and sprite location
+	 *
+	 * @since 30.2.0
+	 * @deprecated Use {@link #createDrawableSprite(TextureAtlas, Identifier, int, int)} instead.
+	 * The drawable size from this method comes from the sprite's texture size, so higher-resolution
+	 * resource pack replacements can make the drawable render too large.
+	 */
+	@Deprecated(since = "30.11.0", forRemoval = true)
+	IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, Identifier spriteId);
+
+	/**
+	 * Create a drawable from a gui sprite with an explicit logical size.
+	 * Use this when the sprite may be replaced by higher-resolution resource packs,
+	 * so the texture can be drawn at the intended gui size.
+	 *
+	 * @return a new {@link IDrawableStatic} with the given texture atlas, sprite location, and size
+	 *
+	 * @since 30.11.0
+	 */
+	@SuppressWarnings("deprecation")
+	default IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, Identifier spriteId, int width, int height) {
+		return createDrawableSprite(textureAtlas, spriteId);
+	}
+
+	/**
+	 * Create a scalable drawable from a gui sprite.
+	 *
+	 * @return a new {@link IScalableDrawable} with the given texture atlas and sprite location
+	 *
+	 * @since 30.2.0
+	 */
+	IScalableDrawable createScalableDrawableSprite(TextureAtlas textureAtlas, Identifier spriteId);
+
+	/**
+	 * Creates an animated texture for a gui, revealing the texture over time.
+	 *
+	 * @param drawable       the underlying texture to draw
+	 * @param ticksPerCycle  the number of ticks for the animation to run before starting over
+	 * @param startDirection the direction that the animation starts drawing the texture
+	 * @param inverted       when inverted is true, the texture will start fully drawn and be hidden over time
+	 */
+	IDrawableAnimated createAnimatedDrawable(IDrawableStatic drawable, int ticksPerCycle, IDrawableAnimated.StartDirection startDirection, boolean inverted);
+
+	/**
+	 * Creates an animated texture for a gui, revealing the texture over time.
+	 *
+	 * @param drawable       the underlying texture to draw
+	 * @param tickTimer      a timer to help render things that normally depend on ticks
+	 * @param startDirection the direction that the animation starts drawing the texture
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableAnimated createAnimatedDrawable(IDrawableStatic drawable, ITickTimer tickTimer, IDrawableAnimated.StartDirection startDirection);
+
+	/**
+	 * Returns a vanilla-style slot for drawing on guis.
+	 */
+	IDrawableStatic getSlotDrawable();
+
+	/**
+	 * Returns a vanilla-style large output slot for drawing on guis.
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableStatic getOutputSlot();
+
+	/**
+	 * Returns a vanilla-style recipe arrow for drawing on guis.
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableStatic getRecipeArrow();
+
+	/**
+	 * Returns a vanilla-style filled (white) recipe arrow for drawing on guis.
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableStatic getRecipeArrowFilled();
+
+	/**
+	 * Returns a vanilla-style recipe arrow that fills over time, for drawing on guis.
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableAnimated createAnimatedRecipeArrow(int ticksPerCycle);
+
+	/**
+	 * Returns a vanilla-style grey plus sign for drawing on guis.
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableStatic getRecipePlusSign();
+
+	/**
+	 * Returns a vanilla-style recipe flame (red) for drawing on guis.
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableStatic getRecipeFlameFilled();
+
+	/**
+	 * Returns a vanilla-style recipe flame background (grey) for drawing on guis.
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableStatic getRecipeFlameEmpty();
+
+	/**
+	 * Returns a vanilla-style recipe flame that empties over time, for drawing on guis.
+	 *
+	 * @since 19.18.8
+	 */
+	IDrawableAnimated createAnimatedRecipeFlame(int ticksPerCycle);
+
+	/**
+	 * Returns a blank drawable for using as a blank recipe background.
+	 */
+	IDrawableStatic createBlankDrawable(int width, int height);
+
+	/**
+	 * Returns a 16x16 drawable for the given ItemStack,
+	 * matching the one JEI draws in the ingredient list.
+	 *
+	 * @see #createDrawableIngredient(IIngredientType, Object) for other ingredient types.
+	 * @since 11.1.1
+	 */
+	default IDrawable createDrawableItemStack(ItemStack ingredient) {
+		return createDrawableIngredient(VanillaTypes.ITEM_STACK, ingredient);
+	}
+
+	/**
+	 * Returns a 16x16 drawable for the given ItemLike,
+	 * matching the one JEI draws in the ingredient list.
+	 *
+	 * @see #createDrawableIngredient(IIngredientType, Object) for other ingredient types.
+	 * @since 19.18.1
+	 */
+	default IDrawable createDrawableItemLike(ItemLike itemLike) {
+		return createDrawableIngredient(VanillaTypes.ITEM_STACK, itemLike.asItem().getDefaultInstance());
+	}
+
+	/**
+	 * Returns a 16x16 drawable for the given ingredient,
+	 * matching the one JEI draws in the ingredient list.
+	 * @since 9.1.1
+	 */
+	<V> IDrawable createDrawableIngredient(IIngredientType<V> type, V ingredient);
+
+	/**
+	 * Returns a 16x16 drawable for the given ingredient,
+	 * matching the one JEI draws in the ingredient list.
+	 * @since 19.1.0
+	 */
+	<V> IDrawable createDrawableIngredient(ITypedIngredient<V> ingredient);
+
+	/**
+	 * Returns a drawable that uses the given ingredient renderer and ingredient directly.
+	 *
+	 * This is useful for slotless icons and other renderer-owned visuals that do not have a registered
+	 * or displayed ingredient.
+	 *
+	 * The drawable calls the renderer's positional
+	 * {@link IIngredientRenderer#render(net.minecraft.client.gui.GuiGraphicsExtractor, Object, int, int)}
+	 * overload with the requested draw offsets.
+	 *
+	 * @since 30.29.0
+	 */
+	<V> IDrawable createDrawableIngredient(IIngredientRenderer<V> ingredientRenderer, V ingredient);
+
+	/**
+	 * Create a drawable recipe slot from a list of optional typed ingredients.
+	 *
+	 * @param role                  the recipe ingredient role of this slot
+	 * @param ingredients           a non-null list of optional ingredients for the slot
+	 * @param focusedIngredients    indexes of the focused ingredients in {@code ingredients}
+	 * @param ingredientCycleOffset the starting index for cycling the ingredients when rendering
+	 *
+	 * @since 30.32.0
+	 */
+	IRecipeSlotDrawable createRecipeSlotDrawable(
+		RecipeIngredientRole role,
+		List<Optional<ITypedIngredient<?>>> ingredients,
+		Set<Integer> focusedIngredients,
+		int ingredientCycleOffset
+	);
+
+	/**
+	 * Create a drawable recipe slot with ingredients added through an {@link IIngredientAcceptor}.
+	 * This supports both typed ingredients and slot displays, preserving display information such as tag identity.
+	 *
+	 * @param role                  the recipe ingredient role of this slot
+	 * @param ingredientAdder       adds the ingredients to the slot
+	 * @param focusedIngredients    indexes of the focused ingredients
+	 * @param ingredientCycleOffset the starting index for cycling the ingredients when rendering
+	 *
+	 * @since 30.32.0
+	 */
+	IRecipeSlotDrawable createRecipeSlotDrawable(
+		RecipeIngredientRole role,
+		Consumer<IIngredientAcceptor<?>> ingredientAdder,
+		Set<Integer> focusedIngredients,
+		int ingredientCycleOffset
+	);
+
+	/**
+	 * Create a crafting grid helper.
+	 * Helps set crafting-grid-style GuiItemStackGroup.
+	 */
+	ICraftingGridHelper createCraftingGridHelper();
+
+	/**
+	 * Create a scroll box widget.
+	 * Handles displaying drawable contents in a scrolling area.
+	 *
+	 * @since 26.2.0
+	 */
+	IScrollBoxWidget createScrollBoxWidget(int width, int height, int xPos, int yPos);
+
+	/**
+	 * Create a timer to help with rendering things that normally depend on ticks.
+	 *
+	 * @param ticksPerCycle the number of ticks for timer to run before starting over at 0
+	 * @param maxValue      the number to count up to before starting over at 0
+	 * @param countDown     if true, the tick timer will count backwards from maxValue
+	 */
+	ITickTimer createTickTimer(int ticksPerCycle, int maxValue, boolean countDown);
+}

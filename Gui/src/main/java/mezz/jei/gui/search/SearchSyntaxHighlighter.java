@@ -1,7 +1,7 @@
 package mezz.jei.gui.search;
 
 import mezz.jei.common.search.PrefixInfo;
-import mezz.jei.common.search.SearchMode;
+import mezz.jei.common.config.SearchMode;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
 import net.minecraft.network.chat.Style;

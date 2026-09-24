@@ -19,7 +19,8 @@ public class ClickableIngredientFactory implements IClickableIngredientFactory {
 
 	@Override
 	public <T> IBuilder<T> createBuilder(ITypedIngredient<T> value) {
-		return new WithIngredient<>(value);
+		ITypedIngredient<T> checkedValue = typedIngredientFactory.checkTypedIngredientFromApi(value);
+		return new WithIngredient<>(checkedValue);
 	}
 
 	@Override

@@ -13,11 +13,12 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
+import mezz.jei.common.ingredients.TypedIngredient;
+import mezz.jei.common.ingredients.itemStacks.TypedItemStack;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.library.ingredients.itemStacks.TypedItemStack;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.util.context.ContextMap;
@@ -36,17 +37,30 @@ import java.util.List;
 import java.util.Optional;
 
 public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIngredientAcceptor> {
-	private final IIngredientManager ingredientManager;
+	private final IIngredientManagerInternal ingredientManager;
 	private final ContextMap contextMap;
+	private final RecipeIngredientRole role;
+	private final Runnable onChange;
 	/**
 	 * A list of ingredients, including "blank" ingredients represented by {@link Optional#empty()}.
 	 * Blank ingredients are drawn as "nothing" in a rotation of ingredients, but aren't considered in lookups.
 	 */
-	private final List<@Nullable ITypedIngredient<?>> ingredients = new ArrayList<>();
+	private final List<@Nullable SlotIngredient<?>> ingredients = new ArrayList<>();
 
-	public DisplayIngredientAcceptor(IIngredientManager ingredientManager, ContextMap contextMap) {
+	public DisplayIngredientAcceptor(IIngredientManagerInternal ingredientManager, ContextMap contextMap, RecipeIngredientRole role) {
+		this(ingredientManager, contextMap, role, () -> {});
+	}
+
+	public DisplayIngredientAcceptor(
+		IIngredientManagerInternal ingredientManager,
+		ContextMap contextMap,
+		RecipeIngredientRole role,
+		Runnable onChange
+	) {
 		this.ingredientManager = ingredientManager;
 		this.contextMap = contextMap;
+		this.role = role;
+		this.onChange = onChange;
 	}
 
 	@Override
@@ -60,7 +74,9 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 
 		for (Object ingredient : ingredients) {
 			ITypedIngredient<?> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredient, false);
-			this.ingredients.add(typedIngredient);
+			if (ingredient == null || typedIngredient != null) {
+				addSlotIngredient(createSlotIngredient(typedIngredient));
+			}
 		}
 
 		return this;
@@ -70,8 +86,8 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	public DisplayIngredientAcceptor add(SlotDisplay slotDisplay) {
 		Preconditions.checkNotNull(slotDisplay, "slotDisplay");
 
-		TypedIngredient.createAndFilterInvalidList(ingredientManager, contextMap, slotDisplay, false)
-			.forEach(this.ingredients::add);
+		ingredientManager.resolveSlotDisplay(contextMap, role, slotDisplay)
+			.forEach(this::addSlotIngredient);
 
 		return this;
 	}
@@ -81,8 +97,8 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Preconditions.checkNotNull(ingredientType, "ingredientType");
 		Preconditions.checkNotNull(slotDisplay, "slotDisplay");
 
-		TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredientType, contextMap, slotDisplay, false)
-			.forEach(this.ingredients::add);
+		ingredientManager.resolveSlotDisplay(ingredientType, contextMap, role, slotDisplay)
+			.forEach(this::addSlotIngredient);
 
 		return this;
 	}
@@ -106,7 +122,13 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Preconditions.checkNotNull(ingredients, "ingredients");
 
 		List<@Nullable ITypedIngredient<T>> typedIngredients = TypedIngredient.createAndFilterInvalidList(ingredientManager, ingredientType, ingredients, false);
-		this.ingredients.addAll(typedIngredients);
+		for (int i = 0; i < typedIngredients.size(); i++) {
+			T ingredient = ingredients.get(i);
+			ITypedIngredient<T> typedIngredient = typedIngredients.get(i);
+			if (ingredient == null || typedIngredient != null) {
+				addSlotIngredient(createSlotIngredient(typedIngredient));
+			}
+		}
 
 		return this;
 	}
@@ -136,8 +158,8 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 	public <I> DisplayIngredientAcceptor add(ITypedIngredient<I> typedIngredient) {
 		ErrorUtil.checkNotNull(typedIngredient, "typedIngredient");
 
-		ITypedIngredient<I> copy = TypedIngredient.defensivelyCopyTypedIngredientFromApi(ingredientManager, typedIngredient);
-		this.ingredients.add(copy);
+		ITypedIngredient<I> copy = TypedIngredientUtil.checkAndValidateTypedIngredientFromApi(ingredientManager, typedIngredient);
+		addSlotIngredient(createSlotIngredient(copy));
 
 		return this;
 	}
@@ -147,7 +169,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		Preconditions.checkNotNull(itemLike, "itemLike");
 
 		ITypedIngredient<ItemStack> ingredient = TypedItemStack.create(itemLike);
-		this.ingredients.add(ingredient);
+		addSlotIngredient(new SlotIngredient<>(ingredient));
 
 		return this;
 	}
@@ -157,7 +179,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 		ErrorUtil.checkNotNull(itemStackTemplate, "itemStackTemplate");
 
 		ITypedIngredient<ItemStack> ingredient = TypedItemStack.create(itemStackTemplate);
-		this.ingredients.add(ingredient);
+		addSlotIngredient(new SlotIngredient<>(ingredient));
 
 		return this;
 	}
@@ -208,7 +230,7 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 			if (o.isPresent()) {
 				this.add(o.get());
 			} else {
-				this.ingredients.add(null);
+				addSlotIngredient(null);
 			}
 		}
 
@@ -217,47 +239,111 @@ public class DisplayIngredientAcceptor implements IIngredientAcceptor<DisplayIng
 
 	private <T> void addIngredientInternal(IIngredientType<T> ingredientType, @Nullable T ingredient) {
 		ITypedIngredient<T> result = TypedIngredient.createAndFilterInvalid(ingredientManager, ingredientType, ingredient, false);
-		this.ingredients.add(result);
+		addSlotIngredient(createSlotIngredient(result));
+	}
+
+	private void addSlotIngredient(@Nullable SlotIngredient<?> ingredient) {
+		this.ingredients.add(ingredient);
+		onChange.run();
 	}
 
 	@UnmodifiableView
-	public List<@Nullable ITypedIngredient<?>> getAllIngredients() {
+	public List<? extends @Nullable ITypedIngredient<?>> getAllIngredients() {
+		return this.ingredients.stream()
+			.map(DisplayIngredientAcceptor::getTypedIngredient)
+			.toList();
+	}
+
+	@UnmodifiableView
+	public List<@Nullable SlotIngredient<?>> getAllSlotIngredients() {
 		return Collections.unmodifiableList(this.ingredients);
 	}
 
 	public IntSet getMatches(IFocusGroup focusGroup, RecipeIngredientRole role) {
+		return getMatches(getAllSlotIngredients(), focusGroup, role, ingredientManager);
+	}
+
+	static IntSet getMatches(
+		List<? extends @Nullable SlotIngredient<?>> ingredients,
+		IFocusGroup focusGroup,
+		RecipeIngredientRole role,
+		IIngredientManagerInternal ingredientManager
+	) {
 		List<IFocus<?>> focuses = focusGroup.getFocuses(role).toList();
 		IntSet results = new IntOpenHashSet();
 		for (IFocus<?> focus : focuses) {
-			getMatches(focus, results);
+			boolean foundExactMatch = getMatches(ingredients, focus, UidContext.Ingredient, results, ingredientManager);
+			if (!foundExactMatch) {
+				getMatches(ingredients, focus, UidContext.Recipe, results, ingredientManager);
+			}
 		}
 		return results;
 	}
 
-	private <T> void getMatches(IFocus<T> focus, IntSet results) {
-		List<@Nullable ITypedIngredient<?>> ingredients = getAllIngredients();
+	private static <T> boolean getMatches(
+		List<? extends @Nullable SlotIngredient<?>> ingredients,
+		IFocus<T> focus,
+		UidContext uidContext,
+		IntSet results,
+		IIngredientManagerInternal ingredientManager
+	) {
 		if (ingredients.isEmpty()) {
-			return;
+			return false;
 		}
 
 		ITypedIngredient<T> focusValue = focus.getTypedValue();
 		IIngredientType<T> ingredientType = focusValue.getType();
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
-		Object focusUid = ingredientHelper.getUid(focusValue, UidContext.Ingredient);
+		Object focusUid = ingredientHelper.getUid(focusValue, uidContext);
+		boolean foundMatch = false;
 
 		for (int i = 0; i < ingredients.size(); i++) {
-			ITypedIngredient<?> typedIngredient = ingredients.get(i);
-			if (typedIngredient == null) {
+			SlotIngredient<?> slotIngredient = ingredients.get(i);
+			if (slotIngredient == null) {
 				continue;
 			}
+			ITypedIngredient<?> typedIngredient = slotIngredient.typedIngredient();
 			ITypedIngredient<T> ingredient = typedIngredient.cast(ingredientType);
 			if (ingredient == null) {
 				continue;
 			}
-			Object uniqueId = ingredientHelper.getUid(ingredient, UidContext.Ingredient);
-			if (focusUid.equals(uniqueId)) {
+			Object uniqueId = ingredientHelper.getUid(ingredient, uidContext);
+			if (focusUid.equals(uniqueId) ||
+				(uidContext == UidContext.Recipe && matchesAllSubtypes(focusValue, ingredient, ingredientHelper, slotIngredient))
+			) {
 				results.add(i);
+				foundMatch = true;
 			}
 		}
+		return foundMatch;
+	}
+
+	private static <T> boolean matchesAllSubtypes(
+		ITypedIngredient<T> focus,
+		ITypedIngredient<T> ingredient,
+		IIngredientHelper<T> ingredientHelper,
+		SlotIngredient<?> slotIngredient
+	) {
+		SlotDisplayData<?> slotDisplayData = slotIngredient.slotDisplayData();
+		if (slotDisplayData == null || !slotDisplayData.info().matchesAllSubtypes()) {
+			return false;
+		}
+		Object focusGroupingUid = ingredientHelper.getGroupingUid(focus);
+		Object ingredientGroupingUid = ingredientHelper.getGroupingUid(ingredient);
+		return focusGroupingUid.equals(ingredientGroupingUid);
+	}
+
+	private static <T> @Nullable SlotIngredient<T> createSlotIngredient(@Nullable ITypedIngredient<T> typedIngredient) {
+		if (typedIngredient == null) {
+			return null;
+		}
+		return new SlotIngredient<>(typedIngredient);
+	}
+
+	private static @Nullable ITypedIngredient<?> getTypedIngredient(@Nullable SlotIngredient<?> slotIngredient) {
+		if (slotIngredient == null) {
+			return null;
+		}
+		return slotIngredient.typedIngredient();
 	}
 }

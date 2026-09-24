@@ -1,7 +1,6 @@
 package mezz.jei.common.gui.elements;
 
 import mezz.jei.api.gui.drawable.IScalableDrawable;
-import mezz.jei.common.gui.textures.JeiAtlasManager;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -17,10 +16,6 @@ public class ScalableDrawable implements IScalableDrawable {
 	private final TextureAtlas textureAtlas;
 	private final Identifier spriteId;
 
-	public ScalableDrawable(JeiAtlasManager atlasManager, Identifier spriteId) {
-		this(atlasManager.getAtlas(), spriteId);
-	}
-
 	public ScalableDrawable(TextureAtlas textureAtlas, Identifier spriteId) {
 		this.textureAtlas = textureAtlas;
 		this.spriteId = spriteId;
@@ -33,10 +28,7 @@ public class ScalableDrawable implements IScalableDrawable {
 	@Override
 	public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset, int width, int height) {
 		TextureAtlasSprite sprite = textureAtlas.getSprite(spriteId);
-		GuiSpriteScaling scaling = sprite.contents()
-			.getAdditionalMetadata(GuiMetadataSection.TYPE)
-			.orElse(GuiMetadataSection.DEFAULT)
-			.scaling();
+		GuiSpriteScaling scaling = getSpriteScaling(sprite);
 
 		switch (scaling) {
 			case GuiSpriteScaling.Tile tileScaling -> {
@@ -77,5 +69,12 @@ public class ScalableDrawable implements IScalableDrawable {
 				);
 			}
 		}
+	}
+
+	private static GuiSpriteScaling getSpriteScaling(TextureAtlasSprite sprite) {
+		return sprite.contents()
+			.getAdditionalMetadata(GuiMetadataSection.TYPE)
+			.orElse(GuiMetadataSection.DEFAULT)
+			.scaling();
 	}
 }

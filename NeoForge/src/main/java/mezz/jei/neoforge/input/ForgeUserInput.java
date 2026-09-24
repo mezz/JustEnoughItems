@@ -1,9 +1,9 @@
 package mezz.jei.neoforge.input;
 
-import mezz.jei.gui.input.InputType;
-import mezz.jei.gui.input.KeyUserInput;
-import mezz.jei.gui.input.MouseUserInput;
-import mezz.jei.gui.input.UserInput;
+import mezz.jei.common.input.InputType;
+import mezz.jei.common.input.KeyUserInput;
+import mezz.jei.common.input.MouseUserInput;
+import mezz.jei.common.input.UserInput;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 
 import java.util.Optional;

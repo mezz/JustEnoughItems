@@ -3,8 +3,10 @@ package mezz.jei.neoforge.tests.commands;
 import mezz.jei.common.util.ServerCommandUtil;
 import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -120,8 +122,30 @@ public final class ServerCommandUtilGameTests {
 		helper.succeed();
 	}
 
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Mouse pickup updates and synchronizes a ServerPlayer menu containing modded slots.")
+	public static void mousePickupUpdatesServerPlayerMenuWithModdedSlots(JeiGameTestHelper helper) {
+		// Setup: a real ServerPlayer has a menu with additional slots registered through the normal menu API.
+		ServerPlayer player = helper.getPlayer();
+		TestMenu menu = openMenu(player, ItemStack.EMPTY, 8);
+		helper.assertEquals(8, menu.slots.size(), "Expected the ServerPlayer menu to contain the modded slots");
+
+		// Operation: give an item stack through the ServerPlayer mouse-pickup path.
+		ServerCommandUtil.mousePickupItemStack(player, new ItemStack(Items.APPLE, 3));
+
+		// Assertions: the intended cursor update and server synchronization both complete without crashing.
+		assertCarried(helper, menu, Items.APPLE, 3);
+		helper.assertEquals(1, menu.broadcastChangeCount, "Expected the ServerPlayer menu to broadcast the cursor change");
+		helper.succeed();
+	}
+
 	private static TestMenu openMenu(ServerPlayer player, ItemStack carriedStack) {
-		TestMenu menu = new TestMenu();
+		return openMenu(player, carriedStack, 0);
+	}
+
+	private static TestMenu openMenu(ServerPlayer player, ItemStack carriedStack, int slotCount) {
+		TestMenu menu = new TestMenu(slotCount);
 		player.containerMenu = menu;
 		menu.setCarried(carriedStack.copy());
 		return menu;
@@ -134,8 +158,12 @@ public final class ServerCommandUtilGameTests {
 	private static class TestMenu extends AbstractContainerMenu {
 		private int broadcastChangeCount;
 
-		private TestMenu() {
+		private TestMenu(int slotCount) {
 			super(null, 0);
+			SimpleContainer moddedInventory = new SimpleContainer(slotCount);
+			for (int i = 0; i < slotCount; i++) {
+				addSlot(new Slot(moddedInventory, i, 0, 0));
+			}
 		}
 
 		@Override
