@@ -407,6 +407,21 @@ public class IngredientGridWithNavigationControllerTest {
 	}
 
 	@Test
+	public void smoothScrollingUsesPartialRowViewportAtBottom() {
+		Fixture fixture = Fixture.create(3, 2, 9, true, IngredientGridNavigationMode.SCROLLING, true);
+		fixture.grid.setVisibleSlotCount(9);
+		fixture.grid.setVisibleHeight((2 * IngredientGridLayout.INGREDIENT_HEIGHT) + 9);
+		fixture.controller.updateLayoutToFirstPage();
+
+		fixture.controller.setScrollOffsetY(1);
+
+		assertEquals(9, fixture.controller.getHiddenScrollAmount());
+		assertEquals((2 * IngredientGridLayout.INGREDIENT_HEIGHT) + 9, fixture.controller.getVisibleScrollAmount());
+		assertEquals(0, fixture.grid.firstItemIndex);
+		assertEquals(9, fixture.grid.scrollOffsetY);
+	}
+
+	@Test
 	public void scrollingModeKeepsClickedAnchorAtRelativePositionWhenVisibleRowsChange() {
 		// Setup: a clicked ingredient is one row down in a ten-row viewport.
 		Fixture fixture = Fixture.create(10, 10, 1000, true, IngredientGridNavigationMode.SCROLLING);
@@ -700,6 +715,7 @@ public class IngredientGridWithNavigationControllerTest {
 	private static class TestNavigationGrid implements IIngredientGrid {
 		private int columns;
 		private int rows;
+		private int visibleHeight;
 		private int visibleSlotCount;
 		private int firstItemIndex;
 		private int scrollOffsetY;
@@ -712,13 +728,19 @@ public class IngredientGridWithNavigationControllerTest {
 		private TestNavigationGrid(int columns, int rows) {
 			this.columns = columns;
 			this.rows = rows;
+			this.visibleHeight = rows * IngredientGridLayout.INGREDIENT_HEIGHT;
 			this.visibleSlotCount = columns * rows;
 		}
 
 		private void setGridSize(int columns, int rows) {
 			this.columns = columns;
 			this.rows = rows;
+			this.visibleHeight = rows * IngredientGridLayout.INGREDIENT_HEIGHT;
 			this.visibleSlotCount = columns * rows;
+		}
+
+		private void setVisibleHeight(int visibleHeight) {
+			this.visibleHeight = visibleHeight;
 		}
 
 		private void setVisibleSlotCount(int visibleSlotCount) {
@@ -747,6 +769,11 @@ public class IngredientGridWithNavigationControllerTest {
 		@Override
 		public int getRowCount() {
 			return rows;
+		}
+
+		@Override
+		public int getVisibleHeight() {
+			return visibleHeight;
 		}
 
 		@Override

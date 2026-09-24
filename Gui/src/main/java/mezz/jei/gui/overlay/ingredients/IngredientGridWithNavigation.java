@@ -7,7 +7,6 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -38,11 +37,9 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	private final PageNavigation navigation;
 	private final IngredientGridScrollbar scrollbar;
 	private final IIngredientGridConfig gridConfig;
+	private final IClientConfig clientConfig;
 	private final IngredientGrid ingredientGrid;
 	private final IIngredientGridSource ingredientSource;
-	private final ScalableDrawable background;
-	private final ScalableDrawable slotBackground;
-	private final ScalableDrawable exclusionAreaShadow;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
 	private final IUserInputHandler inputHandler;
 
@@ -64,18 +61,13 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		IClientConfig clientConfig,
 		IConnectionToServer serverConnection,
 		IIngredientGridConfig gridConfig,
-		ScalableDrawable background,
-		ScalableDrawable slotBackground,
-		ScalableDrawable exclusionAreaShadow,
 		IScreenHelper screenHelper,
 		IIngredientManager ingredientManager
 	) {
 		this.ingredientGrid = ingredientGrid;
 		this.ingredientSource = ingredientSource;
 		this.gridConfig = gridConfig;
-		this.background = background;
-		this.slotBackground = slotBackground;
-		this.exclusionAreaShadow = exclusionAreaShadow;
+		this.clientConfig = clientConfig;
 		CommandUtil commandUtil = new CommandUtil(clientConfig, serverConnection);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.ingredientGrid, screenHelper, ingredientManager, toggleState);
 		GhostIngredientQuickMoveManager ghostIngredientQuickMoveManager = new GhostIngredientQuickMoveManager(this.ingredientGrid, screenHelper);
@@ -182,7 +174,8 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 				this.gridConfig,
 				availableArea,
 				guiExclusionAreas,
-				ingredientCount
+				ingredientCount,
+				isSmoothScrolling()
 			);
 		}
 
@@ -205,7 +198,12 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 			return;
 		}
 
-		this.ingredientGrid.updateBounds(layout.ingredientGridArea(), guiExclusionAreas, mouseExclusionPoint);
+		this.ingredientGrid.updateBounds(
+			layout.ingredientGridArea(),
+			guiExclusionAreas,
+			mouseExclusionPoint,
+			isSmoothScrolling()
+		);
 		this.slotBackgroundArea = layout.slotBackgroundArea();
 		this.navigation.updateBounds(layout.navigationArea());
 		this.scrollbar.updateBounds(layout.scrollbarArea());
@@ -214,7 +212,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	private void clearLayout() {
-		this.ingredientGrid.updateBounds(ImmutableRect2i.EMPTY, Set.of(), null);
+		this.ingredientGrid.updateBounds(ImmutableRect2i.EMPTY, Set.of(), null, false);
 		this.slotBackgroundArea = ImmutableRect2i.EMPTY;
 		this.navigation.updateBounds(ImmutableRect2i.EMPTY);
 		this.scrollbar.updateBounds(ImmutableRect2i.EMPTY);
@@ -228,12 +226,17 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		return this.backgroundArea;
 	}
 
-	@Override
 	public ImmutableRect2i getIngredientGridArea() {
 		updateLayoutIfDirty();
 		return this.ingredientGrid.getArea();
 	}
 
+	@Override
+	public boolean isBackgroundEnabled() {
+		return this.gridConfig.drawBackground().get();
+	}
+
+	@Override
 	public ImmutableRect2i getSlotBackgroundArea() {
 		updateLayoutIfDirty();
 		return this.slotBackgroundArea;
@@ -258,21 +261,13 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.controller.scrollByPixels(pixels);
 	}
 
-	public void setPageButtonsForcePressed(boolean nextButton, boolean backButton) {
-		this.navigation.setForcePressed(nextButton, backButton);
+	private boolean isSmoothScrolling() {
+		return this.gridConfig.navigationMode().get().usesScrollbar() &&
+			this.clientConfig.smoothScrollingEnabled().get();
 	}
 
-	@Override
-	public void drawBackground(GuiGraphicsExtractor guiGraphics) {
-		updateLayoutIfDirty();
-		if (!this.active) {
-			return;
-		}
-		if (this.gridConfig.drawBackground().get()) {
-			this.background.draw(guiGraphics, this.backgroundArea);
-			this.slotBackground.draw(guiGraphics, this.slotBackgroundArea);
-			GuiExclusionAreaShadow.draw(guiGraphics, this.exclusionAreaShadow, this.backgroundArea, this.guiExclusionAreas);
-		}
+	public void setPageButtonsForcePressed(boolean nextButton, boolean backButton) {
+		this.navigation.setForcePressed(nextButton, backButton);
 	}
 
 	@Override

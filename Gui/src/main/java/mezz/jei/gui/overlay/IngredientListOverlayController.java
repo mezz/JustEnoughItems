@@ -8,6 +8,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.bookmarks.history.ILookupHistoryOverlay;
 import mezz.jei.gui.overlay.elements.IElement;
+import mezz.jei.gui.overlay.history.LookupHistoryOverlayLayout;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridPageNavigation;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridView;
 import org.apache.logging.log4j.LogManager;
@@ -175,8 +176,14 @@ class IngredientListOverlayController {
 
 		layout.lookupHistoryArea()
 			.ifPresent(lookupHistoryArea -> {
-				this.lookupHistory.updateBounds(alignLookupHistoryArea(lookupHistoryArea), guiExclusionAreas, null);
+				ImmutableRect2i alignedArea = alignLookupHistoryArea(lookupHistoryArea);
+				this.lookupHistory.updateBounds(alignedArea, guiExclusionAreas, null);
 				this.lookupHistory.updateLayout();
+				ImmutableRect2i positionedArea = positionLookupHistoryArea(alignedArea);
+				if (!positionedArea.equals(alignedArea)) {
+					this.lookupHistory.updateBounds(positionedArea, guiExclusionAreas, null);
+					this.lookupHistory.updateLayout();
+				}
 			});
 
 		IngredientListOverlayLayout.SearchAndConfigAreas searchAndConfigAreas = layout.getSearchAndConfigAreas(
@@ -189,11 +196,24 @@ class IngredientListOverlayController {
 	}
 
 	private ImmutableRect2i alignLookupHistoryArea(ImmutableRect2i lookupHistoryArea) {
-		ImmutableRect2i ingredientGridArea = this.contentsView.getIngredientGridArea();
-		if (ingredientGridArea.isEmpty()) {
+		return LookupHistoryOverlayLayout.alignToOwnerBackground(
+			lookupHistoryArea,
+			this.contentsView.getBackgroundArea()
+		);
+	}
+
+	private ImmutableRect2i positionLookupHistoryArea(ImmutableRect2i lookupHistoryArea) {
+		boolean combineBackgrounds = this.contentsView.isBackgroundEnabled() &&
+			this.lookupHistory.isBackgroundEnabled() &&
+			this.contentsView.hasRoom();
+		if (!combineBackgrounds) {
 			return lookupHistoryArea;
 		}
-		return lookupHistoryArea.matchWidthAndX(ingredientGridArea);
+		return LookupHistoryOverlayLayout.moveNextToOwner(
+			lookupHistoryArea,
+			this.lookupHistory.getBackgroundArea(),
+			this.contentsView.getBackgroundArea()
+		);
 	}
 
 	interface Config {

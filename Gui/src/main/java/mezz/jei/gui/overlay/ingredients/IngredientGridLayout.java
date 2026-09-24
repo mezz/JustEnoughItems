@@ -22,20 +22,32 @@ public final class IngredientGridLayout {
 
 	}
 
-	public static ImmutableSize2i calculateSize(IIngredientGridConfig config, ImmutableRect2i availableArea) {
+	public static ImmutableSize2i calculateSize(
+		IIngredientGridConfig config,
+		ImmutableRect2i availableArea,
+		boolean allowPartialRows
+	) {
 		final int columns = Math.min(availableArea.getWidth() / INGREDIENT_WIDTH, config.maxColumns().get());
 		final int rows = Math.min(availableArea.getHeight() / INGREDIENT_HEIGHT, config.maxRows().get());
 		if (rows < config.getMinRows() || columns < config.getMinColumns()) {
 			return ImmutableSize2i.EMPTY;
 		}
+		int height = rows * INGREDIENT_HEIGHT;
+		if (allowPartialRows && rows < config.maxRows().get()) {
+			height = availableArea.height();
+		}
 		return new ImmutableSize2i(
 			columns * INGREDIENT_WIDTH,
-			rows * INGREDIENT_HEIGHT
+			height
 		);
 	}
 
-	public static ImmutableRect2i calculateBounds(IIngredientGridConfig config, ImmutableRect2i availableArea) {
-		ImmutableSize2i size = calculateSize(config, availableArea);
+	public static ImmutableRect2i calculateBounds(
+		IIngredientGridConfig config,
+		ImmutableRect2i availableArea,
+		boolean allowPartialRows
+	) {
+		ImmutableSize2i size = calculateSize(config, availableArea, allowPartialRows);
 		return AlignmentUtil.align(size, availableArea, config.horizontalAlignment().get(), config.verticalAlignment().get());
 	}
 

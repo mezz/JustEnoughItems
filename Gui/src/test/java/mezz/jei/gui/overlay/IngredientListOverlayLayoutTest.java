@@ -11,8 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IngredientListOverlayLayoutTest {
-	private static final int BORDER_MARGIN = 6;
-
 	@Test
 	public void rightSideLayoutReservesBottomSearchRow() {
 		// Setup: a regular GUI leaves JEI room on the right, and the ingredient grid has a background area.
@@ -226,15 +224,13 @@ public class IngredientListOverlayLayoutTest {
 			.orElseThrow(() -> new AssertionError("lookup history area should be reserved"));
 		ImmutableRect2i withBackgroundArea = withBackground.lookupHistoryArea()
 			.orElseThrow(() -> new AssertionError("lookup history area should be reserved"));
-		assertEquals(LookupHistoryOverlayLayout.getDisplayHeight(maxRows, true), withBackgroundArea.height());
+		assertEquals(LookupHistoryOverlayLayout.getDisplayHeight(maxRows, true, false), withBackgroundArea.height());
 		assertTrue(withBackgroundArea.height() > withoutBackgroundArea.height());
 		IngredientListOverlayLayout.SearchAndConfigAreas withBackgroundControls = withBackground.getSearchAndConfigAreas(
 			false,
 			ImmutableRect2i.EMPTY
 		);
-		int screenEdgePadding = withBackgroundArea.x() - withBackground.displayArea().x();
-		int lookupHistoryToButtonPadding = withBackgroundControls.searchArea().y() - bottom(withBackgroundArea);
-		assertEquals(screenEdgePadding, lookupHistoryToButtonPadding);
+		assertEquals(withBackgroundControls.searchArea().y(), bottom(withBackgroundArea));
 		assertTrue(
 			bottom(withBackground.availableContentsArea()) < bottom(withoutBackground.availableContentsArea()),
 			"main contents should reserve the extra lookup-history background padding"
@@ -266,7 +262,7 @@ public class IngredientListOverlayLayoutTest {
 			"centered search should not leave side lookup history overlapping the main contents area"
 		);
 		assertEquals(
-			bottom(layout.displayArea()) - BORDER_MARGIN,
+			bottom(layout.displayArea()),
 			bottom(lookupHistoryArea),
 			"centered search should not reserve a side search row below lookup history"
 		);
@@ -370,7 +366,7 @@ public class IngredientListOverlayLayoutTest {
 			centerSearchBarEnabled,
 			lookupHistoryEnabled,
 			lookupHistoryDisplayedOnThisSide,
-			LookupHistoryOverlayLayout.getDisplayHeight(maxLookupHistoryRows, lookupHistoryDrawBackground)
+			LookupHistoryOverlayLayout.getDisplayHeight(maxLookupHistoryRows, lookupHistoryDrawBackground, false)
 		);
 	}
 }
