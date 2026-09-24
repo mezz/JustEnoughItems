@@ -14,6 +14,7 @@ import mezz.jei.common.config.DebugConfig;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
+import mezz.jei.common.search.PrefixInfo;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.elements.IElement;
@@ -24,6 +25,7 @@ import mezz.jei.gui.search.ElementSearch;
 import mezz.jei.gui.search.ElementSearchIndex;
 import mezz.jei.gui.search.ElementSearchLowMem;
 import mezz.jei.gui.search.IElementSearch;
+import mezz.jei.gui.search.ISearchCompletionProvider;
 import mezz.jei.gui.search.SearchTokenizer;
 import mezz.jei.gui.search.Token;
 import net.mezzdev.config.api.value.IConfigValue;
@@ -32,7 +34,6 @@ import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -49,9 +50,9 @@ public class IngredientFilter
 		IIngredientGridSource,
 		IIngredientManager.IIngredientListener,
 		IIngredientVisibility.IListener,
-		IClientToggleState.IEditModeListener {
+		IClientToggleState.IEditModeListener,
+		ISearchCompletionProvider {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final SearchTokenizer searchTokenizer = new SearchTokenizer();
 
 	private final IClientConfig clientConfig;
 	private final IIngredientFilterConfig config;
@@ -69,6 +70,9 @@ public class IngredientFilter
 	@Nullable
 	private List<IElement<?>> ingredientListCached;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
+	@Nullable
+	private List<IListElementInfo<?>> elementInfoCache;
+	private long completionRevision;
 	private final Set<ElementSearchIndex> dirtySearchIndexes = EnumSet.noneOf(ElementSearchIndex.class);
 	private boolean searchImplementationDirty;
 	private boolean sortIndexesDirty;
@@ -101,6 +105,7 @@ public class IngredientFilter
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
 		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser, ingredients, ingredientManager);
+		this.elementInfoCache = List.copyOf(ingredients);
 
 		for (IListElementInfo<?> ingredient : ingredients) {
 			updateHiddenState(ingredient.getElement());
@@ -155,6 +160,7 @@ public class IngredientFilter
 		this.elementSearch.add(info, ingredientManager);
 
 		invalidateCache();
+		invalidateCandidateCache();
 	}
 
 	public void invalidateCache() {
@@ -163,6 +169,7 @@ public class IngredientFilter
 
 	public void rebuildItemFilter() {
 		this.invalidateCache();
+		invalidateCandidateCache();
 		Collection<IListElement<?>> ingredients = this.elementSearch.getAllIngredients();
 		List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, config, modIdHelper);
 		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser, elementInfos, ingredientManager);
@@ -213,6 +220,7 @@ public class IngredientFilter
 			this.elementSearch.rebuildSearchIndexes(dirtySearchIndexes, elementInfos);
 			this.dirtySearchIndexes.clear();
 			invalidateCache();
+			invalidateCandidateCache();
 		}
 
 		if (sortIndexesDirty) {
@@ -317,8 +325,8 @@ public class IngredientFilter
 	}
 
 	private Stream<ITypedIngredient<?>> getIngredientListUncached(String filterText) {
-		String[] filters = filterText.split("\\|");
-		List<SearchTokens> searchTokens = Arrays.stream(filters)
+		List<Token> tokens = SearchTokenizer.tokenize(filterText);
+		List<SearchTokens> searchTokens = SearchTokenizer.splitByOperators(tokens).stream()
 			.map(this::parseSearchTokens)
 			.filter(s -> !s.isEmpty())
 			.toList();
@@ -360,6 +368,7 @@ public class IngredientFilter
 			}
 		}
 		invalidateCache();
+		invalidateCandidateCache();
 	}
 
 	@Override
@@ -373,14 +382,8 @@ public class IngredientFilter
 		}
 	}
 
-	private SearchTokens parseSearchTokens(String filterText) {
+	private SearchTokens parseSearchTokens(List<Token> tokens) {
 		SearchTokens searchTokens = new SearchTokens(new ArrayList<>(), new ArrayList<>());
-
-		if (filterText.isEmpty()) {
-			return searchTokens;
-		}
-
-		List<Token> tokens = searchTokenizer.tokenize(filterText);
 		for (Token token : tokens) {
 			if (token.isEmpty()) {
 				continue;
@@ -451,5 +454,32 @@ public class IngredientFilter
 		for (SourceListChangedListener listener : listeners) {
 			listener.onSourceListChanged();
 		}
+	}
+
+	@Override
+	public Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> getAllPrefixInfos() {
+		return elementPrefixParser.allPrefixInfos();
+	}
+
+	@Override
+	public Collection<IListElementInfo<?>> getAllElementInfos() {
+		updateDirtyState();
+		if (elementInfoCache != null) {
+			return elementInfoCache;
+		}
+		Collection<IListElement<?>> elements = this.elementSearch.getAllIngredients();
+		List<IListElementInfo<?>> infos = IngredientListElementFactory.rebuildList(ingredientManager, elements, config, modIdHelper);
+		elementInfoCache = infos;
+		return infos;
+	}
+
+	private void invalidateCandidateCache() {
+		elementInfoCache = null;
+		completionRevision++;
+	}
+
+	@Override
+	public long getCompletionRevision() {
+		return completionRevision;
 	}
 }

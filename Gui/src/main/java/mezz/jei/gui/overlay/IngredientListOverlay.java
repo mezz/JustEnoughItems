@@ -25,10 +25,12 @@ import mezz.jei.gui.input.handlers.NullDragHandler;
 import mezz.jei.gui.input.handlers.NullInputHandler;
 import mezz.jei.gui.input.handlers.ProxyDragHandler;
 import mezz.jei.gui.input.handlers.ProxyInputHandler;
+import mezz.jei.gui.input.handlers.SearchInputLayer;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 import mezz.jei.gui.overlay.ingredients.IngredientGridBackgroundRenderer;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.ingredients.IIngredientListOverlayContents;
+import mezz.jei.gui.search.ISearchCompletionProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -49,6 +51,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final GuiPropertiesCache<Screen> guiPropertiesCache;
 	private final IngredientGridBackgroundRenderer backgroundRenderer;
 	private final GuiTextFieldFilter searchField;
+	private final SearchInputLayer searchInputLayer;
 	private final IngredientListOverlayController controller;
 	private boolean screenPropertiesDirty;
 
@@ -62,7 +65,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		IIngredientGridConfig ingredientGridConfig,
 		IClientConfig clientConfig,
 		IClientToggleState toggleState,
-		IInternalKeyMappings keyBindings
+		IInternalKeyMappings keyBindings,
+		ISearchCompletionProvider searchCompletionProvider
 	) {
 		this.guiPropertiesCache = new GuiPropertiesCache<>(
 			screen -> screenHelper.getGuiProperties(screen)
@@ -73,7 +77,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.backgroundRenderer = backgroundRenderer;
 		this.toggleState = toggleState;
 
-		this.searchField = new GuiTextFieldFilter(contents::isEmpty);
+		this.searchField = new GuiTextFieldFilter(contents::isEmpty, clientConfig, searchCompletionProvider);
+		this.searchInputLayer = new SearchInputLayer(this.searchField, this::isListDisplayed);
 		this.configButton = new IconButton(new ConfigButtonController(this::isListDisplayed, toggleState, keyBindings));
 		this.controller = IngredientListOverlayController.create(
 			this.guiPropertiesCache,
@@ -135,6 +140,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return this.controller.getScreenPropertiesUpdater();
 	}
 
+	public SearchInputLayer getSearchInputLayer() {
+		return this.searchInputLayer;
+	}
+
 	public void drawScreen(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		updateScreenPropertiesIfDirty();
 		drawBackground(guiGraphics);
@@ -172,8 +181,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	public void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
-			this.searchField.extractForegroundRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 			this.contents.drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+			this.searchField.extractForegroundRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (this.controller.hasValidScreen()) {
 			this.configButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
@@ -252,7 +261,6 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		});
 		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
 			"IngredientListOverlay",
-			this.searchField.createInputHandler(),
 			this.configButton.createInputHandler(),
 			this.contents.createInputHandler(),
 			displayedLookupHistoryInputHandler
