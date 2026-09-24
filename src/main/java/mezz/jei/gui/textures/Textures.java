@@ -54,10 +54,8 @@ public class Textures {
 
 		this.shapelessIcon = registerGuiSprite("icons/shapeless_icon", 36, 36)
 			.trim(1, 2, 1, 1);
-		this.arrowPrevious = registerGuiSprite("icons/arrow_previous", 9, 9)
-			.trim(0, 0, 1, 1);
-		this.arrowNext = registerGuiSprite("icons/arrow_next", 9, 9)
-			.trim(0, 0, 1, 1);
+		this.arrowPrevious = registerGuiSprite("icons/arrow_previous", 9, 9);
+		this.arrowNext = registerGuiSprite("icons/arrow_next", 9, 9);
 		this.recipeTransfer = registerGuiSprite("icons/recipe_transfer", 7, 7);
 		this.configButtonIcon = registerGuiSprite("icons/config_button", 16, 16);
 		this.configButtonCheatIcon = registerGuiSprite("icons/config_button_cheat", 16, 16);
