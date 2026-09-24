@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.IntSupplier;
 
 public class SearchCompletionOverlay {
 	private static final int LINE_HEIGHT = 11;
@@ -36,7 +37,6 @@ public class SearchCompletionOverlay {
 	private static final int BORDER = 1;
 	private static final int MAX_OVERLAY_WIDTH = 200;
 	private static final int MAX_OVERLAY_WIDTH_DYNAMIC = 320;
-	private static final int MAX_VISIBLE_ROWS = 9;
 	private static final int DYNAMIC_CANDIDATE_BATCH_SIZE = 100;
 	private static final int SCREEN_MARGIN = 4;
 	private static final int SELECTED_COLOR = 0xFF4040A0;
@@ -49,6 +49,7 @@ public class SearchCompletionOverlay {
 
 	private final ISearchCompletionProvider completionProvider;
 	private final ScalableDrawable background;
+	private final IntSupplier maxVisibleRows;
 
 	private final List<CompletionCandidate> filteredCandidates = new ArrayList<>();
 	private final Map<PrefixInfo<IListElementInfo<?>, IListElement<?>>, List<String>> dynamicStrings = new IdentityHashMap<>();
@@ -74,9 +75,10 @@ public class SearchCompletionOverlay {
 
 	private final List<RowLayout> rowLayouts = new ArrayList<>();
 
-	public SearchCompletionOverlay(ISearchCompletionProvider completionProvider, ScalableDrawable background) {
+	public SearchCompletionOverlay(ISearchCompletionProvider completionProvider, ScalableDrawable background, IntSupplier maxVisibleRows) {
 		this.completionProvider = completionProvider;
 		this.background = background;
+		this.maxVisibleRows = maxVisibleRows;
 	}
 
 	public void update(String text, int cursorPos) {
@@ -396,7 +398,7 @@ public class SearchCompletionOverlay {
 
 	private void loadMoreCandidatesIfNeeded(int navigatedIndex) {
 		int remainingCandidates = filteredCandidates.size() - navigatedIndex - 1;
-		if (remainingCandidates <= MAX_VISIBLE_ROWS) {
+		if (remainingCandidates <= maxVisibleRows.getAsInt()) {
 			loadMoreCandidates();
 		}
 	}
@@ -559,7 +561,7 @@ public class SearchCompletionOverlay {
 		int availableHeightBelow = screenHeight - (searchFieldArea.getY() + searchFieldArea.getHeight()) - SCREEN_MARGIN;
 		int maxAvailableHeight = Math.max(availableHeightAbove, availableHeightBelow);
 		int maxRowsByHeight = (maxAvailableHeight - BORDER * 2) / MIN_ROW_HEIGHT;
-		int visibleRowCount = Math.min(Math.min(MAX_VISIBLE_ROWS, maxRowsByHeight), filteredCandidates.size());
+		int visibleRowCount = Math.min(Math.min(maxVisibleRows.getAsInt(), maxRowsByHeight), filteredCandidates.size());
 		if (visibleRowCount <= 0) {
 			overlayArea = null;
 			rowLayouts.clear();

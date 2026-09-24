@@ -50,7 +50,11 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 		this.area = ImmutableRect2i.EMPTY;
 		Textures textures = Internal.getTextures();
 		this.background = textures.getSearchBackground();
-		this.completionOverlay = new SearchCompletionOverlay(searchCompletionProvider, textures.getCompletionOverlayBackground());
+		this.completionOverlay = new SearchCompletionOverlay(
+			searchCompletionProvider,
+			textures.getCompletionOverlayBackground(),
+			() -> clientConfig.maxSearchCompletionRows().get()
+		);
 		this.backgroundBounds = ImmutableRect2i.EMPTY;
 		setBordered(false);
 		setFormatter(new SearchSyntaxHighlighter(filterEmpty, this::getValue, searchCompletionProvider)::format);
