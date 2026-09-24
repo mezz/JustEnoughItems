@@ -21,6 +21,7 @@ import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
+import mezz.jei.gui.search.ISearchCompletionProvider;
 
 public final class OverlayHelper {
 	private OverlayHelper() {}
@@ -83,7 +84,8 @@ public final class OverlayHelper {
 		IConnectionToServer serverConnection,
 		IIngredientFilterConfig ingredientFilterConfig,
 		Textures textures,
-		IColorHelper colorHelper
+		IColorHelper colorHelper,
+		ISearchCompletionProvider searchCompletionProvider
 	) {
 		IngredientGridWithNavigation ingredientListGridNavigation = createIngredientGridWithNavigation(
 			"IngredientListOverlay",
@@ -129,7 +131,8 @@ public final class OverlayHelper {
 			ingredientGridConfig,
 			clientConfig,
 			toggleState,
-			keyMappings
+			keyMappings,
+			searchCompletionProvider
 		);
 	}
 
