@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
-public class GuiTextFieldFilter extends EditBox {
+public class GuiTextFieldFilter extends EditBox implements mezz.jei.gui.overlay.ISearchField {
 	private static final int maxSearchLength = 128;
 	private static final TextHistory history = new TextHistory();
 
@@ -124,10 +124,18 @@ public class GuiTextFieldFilter extends EditBox {
 
 	@Override
 	public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		if (this.isVisible()) {
+		drawBackground(guiGraphics);
+		drawForeground(guiGraphics, mouseX, mouseY, partialTicks);
+	}
+
+	public void drawBackground(GuiGraphics guiGraphics) {
+		if (isVisible()) {
 			RenderSystem.setShaderColor(1, 1, 1, 1);
 			background.draw(guiGraphics, this.backgroundBounds);
 		}
+	}
+
+	public void drawForeground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		super.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
 	}
 

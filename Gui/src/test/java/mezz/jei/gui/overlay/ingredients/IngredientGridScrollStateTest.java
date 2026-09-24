@@ -34,7 +34,8 @@ public class IngredientGridScrollStateTest {
 			visibleRows,
 			visibleIngredientCount,
 			false,
-			IngredientGrid.INGREDIENT_HEIGHT
+			IngredientGridLayout.INGREDIENT_HEIGHT,
+			visibleRows * IngredientGridLayout.INGREDIENT_HEIGHT
 		);
 
 		// Assertions: the reopen/layout pass keeps the current scroll position instead of resetting to top.
@@ -63,16 +64,6 @@ public class IngredientGridScrollStateTest {
 		@Override
 		public Integer getIngredient() {
 			return ingredient;
-		}
-
-		@Override
-		public <V> ITypedIngredient<V> cast(IIngredientType<V> ingredientType) {
-			if (getType().equals(ingredientType)) {
-				@SuppressWarnings("unchecked")
-				ITypedIngredient<V> cast = (ITypedIngredient<V>) this;
-				return cast;
-			}
-			return null;
 		}
 	}
 }

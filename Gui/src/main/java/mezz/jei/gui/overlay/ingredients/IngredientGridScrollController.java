@@ -38,13 +38,18 @@ public final class IngredientGridScrollController {
 		if (columnCount > 0) {
 			firstRow = firstItemIndex / columnCount;
 		}
-		float scrollOffsetY = GridScrollMath.getScrollOffsetYForFirstRow(
-			firstRow,
-			ingredientList.size(),
-			columnCount,
-			rowCount,
-			visibleIngredientCount
-		);
+		float scrollOffsetY;
+		if (isSmoothScrolling()) {
+			scrollOffsetY = getScrollOffsetYForPixelOffset(firstRow * IngredientGridLayout.INGREDIENT_HEIGHT);
+		} else {
+			scrollOffsetY = GridScrollMath.getScrollOffsetYForFirstRow(
+				firstRow,
+				ingredientList.size(),
+				columnCount,
+				rowCount,
+				visibleIngredientCount
+			);
+		}
 		this.scrollState.updateForScrollOffset(
 			scrollOffsetY,
 			ingredientList.size(),
@@ -65,13 +70,13 @@ public final class IngredientGridScrollController {
 			ingredientGrid.getRowCount(),
 			ingredientGrid.size(),
 			isSmoothScrolling(),
-			IngredientGrid.INGREDIENT_HEIGHT
+			IngredientGridLayout.INGREDIENT_HEIGHT,
+			ingredientGrid.getVisibleHeight()
 		);
 		updateGridFromScrollState(ingredientList);
 	}
 
-	@Nullable
-	public IElement<?> getScrollAnchorElement() {
+	public @Nullable IElement<?> getScrollAnchorElement() {
 		return this.scrollState.getScrollAnchorElement(ingredientSource.getElements());
 	}
 
@@ -80,6 +85,9 @@ public final class IngredientGridScrollController {
 	}
 
 	public boolean canScroll() {
+		if (isSmoothScrolling()) {
+			return getHiddenScrollPixels() > 0;
+		}
 		return getHiddenScrollRows() > 0;
 	}
 
@@ -99,17 +107,16 @@ public final class IngredientGridScrollController {
 	public int getVisibleScrollAmount() {
 		int visibleRows = getVisibleScrollRows();
 		if (isSmoothScrolling()) {
-			return visibleRows * IngredientGrid.INGREDIENT_HEIGHT;
+			return ingredientGrid.getVisibleHeight();
 		}
 		return visibleRows;
 	}
 
 	public int getHiddenScrollAmount() {
-		int hiddenRows = getHiddenScrollRows();
 		if (isSmoothScrolling()) {
-			return hiddenRows * IngredientGrid.INGREDIENT_HEIGHT;
+			return getHiddenScrollPixels();
 		}
-		return hiddenRows;
+		return getHiddenScrollRows();
 	}
 
 	public float getScrollOffsetY() {
@@ -144,20 +151,25 @@ public final class IngredientGridScrollController {
 		if (!canScroll() || rows == 0) {
 			return false;
 		}
-		List<IElement<?>> ingredientList = ingredientSource.getElements();
 		int firstRow = getFirstVisibleScrollRow() + rows;
-		float scrollOffsetY = GridScrollMath.getScrollOffsetYForFirstRow(
-			firstRow,
-			ingredientList.size(),
-			ingredientGrid.getColumnCount(),
-			ingredientGrid.getRowCount(),
-			ingredientGrid.size()
-		);
+		float scrollOffsetY;
+		if (isSmoothScrolling()) {
+			scrollOffsetY = getScrollOffsetYForPixelOffset(firstRow * IngredientGridLayout.INGREDIENT_HEIGHT);
+		} else {
+			List<IElement<?>> ingredientList = ingredientSource.getElements();
+			scrollOffsetY = GridScrollMath.getScrollOffsetYForFirstRow(
+				firstRow,
+				ingredientList.size(),
+				ingredientGrid.getColumnCount(),
+				ingredientGrid.getRowCount(),
+				ingredientGrid.size()
+			);
+		}
 		return updateScrollOffset(scrollOffsetY);
 	}
 
 	public boolean scrollByPixels(double pixels) {
-		int hiddenPixels = getHiddenScrollRows() * IngredientGrid.INGREDIENT_HEIGHT;
+		int hiddenPixels = getHiddenScrollPixels();
 		if (hiddenPixels == 0 || pixels == 0) {
 			return false;
 		}
@@ -166,14 +178,10 @@ public final class IngredientGridScrollController {
 
 	public int getFirstVisibleScrollRow() {
 		if (isSmoothScrolling()) {
-			int scrollPixelOffset = GridScrollMath.getSmoothScrollPixelOffset(
-				getHiddenScrollRows(),
-				IngredientGrid.INGREDIENT_HEIGHT,
-				this.scrollState.getScrollOffsetY()
-			);
+			int scrollPixelOffset = getSmoothScrollPixelOffset();
 			return GridScrollMath.getFirstRowForSmoothScrollPixelOffset(
 				scrollPixelOffset,
-				IngredientGrid.INGREDIENT_HEIGHT
+				IngredientGridLayout.INGREDIENT_HEIGHT
 			);
 		}
 		return GridScrollMath.getFirstRowForScrollOffset(getHiddenScrollRows(), this.scrollState.getScrollOffsetY());
@@ -185,7 +193,7 @@ public final class IngredientGridScrollController {
 
 	private float getMouseWheelScrollAmount(double scrollDeltaY) {
 		if (isSmoothScrolling()) {
-			int hiddenHeight = getHiddenScrollRows() * IngredientGrid.INGREDIENT_HEIGHT;
+			int hiddenHeight = getHiddenScrollPixels();
 			if (hiddenHeight == 0) {
 				return 0;
 			}
@@ -243,17 +251,12 @@ public final class IngredientGridScrollController {
 		int columnCount = ingredientGrid.getColumnCount();
 		int rowCount = ingredientGrid.getRowCount();
 		int visibleIngredientCount = ingredientGrid.size();
-		int hiddenRows = GridScrollMath.getHiddenRows(ingredientList.size(), columnCount, rowCount, visibleIngredientCount);
 		float scrollOffsetY = this.scrollState.getScrollOffsetY();
 		if (isSmoothScrolling()) {
-			int scrollPixelOffset = GridScrollMath.getSmoothScrollPixelOffset(
-				hiddenRows,
-				IngredientGrid.INGREDIENT_HEIGHT,
-				scrollOffsetY
-			);
+			int scrollPixelOffset = getSmoothScrollPixelOffset();
 			int firstRow = GridScrollMath.getFirstRowForSmoothScrollPixelOffset(
 				scrollPixelOffset,
-				IngredientGrid.INGREDIENT_HEIGHT
+				IngredientGridLayout.INGREDIENT_HEIGHT
 			);
 			int firstItemIndex = GridScrollMath.getFirstItemIndexForRow(firstRow, ingredientList.size(), columnCount);
 			int maxFirstItemIndex = GridScrollMath.getMaxFirstItemIndex(
@@ -262,14 +265,10 @@ public final class IngredientGridScrollController {
 				rowCount,
 				visibleIngredientCount
 			);
-			if (Float.compare(scrollOffsetY, 1.0f) >= 0) {
-				firstItemIndex = maxFirstItemIndex;
-			} else {
-				firstItemIndex = Math.min(firstItemIndex, maxFirstItemIndex);
-			}
+			firstItemIndex = Math.min(firstItemIndex, maxFirstItemIndex);
 			int rowPixelOffset = GridScrollMath.getRowPixelOffset(
 				scrollPixelOffset,
-				IngredientGrid.INGREDIENT_HEIGHT
+				IngredientGridLayout.INGREDIENT_HEIGHT
 			);
 			return new ScrollRenderPosition(firstItemIndex, rowPixelOffset);
 		}
@@ -293,11 +292,14 @@ public final class IngredientGridScrollController {
 			return 0;
 		}
 
-		int visibleHeight = rowCount * IngredientGrid.INGREDIENT_HEIGHT;
+		int visibleHeight = ingredientGrid.getVisibleHeight();
+		if (visibleHeight == 0) {
+			return 0;
+		}
 		int anchorRow = anchorIndex / columnCount;
 		int scrollPixelOffset = getCurrentScrollPixelOffset(ingredientList);
-		int anchorTopY = (anchorRow * IngredientGrid.INGREDIENT_HEIGHT) - scrollPixelOffset;
-		return clamp(anchorTopY / (float) visibleHeight, 0, 1);
+		int anchorTopY = (anchorRow * IngredientGridLayout.INGREDIENT_HEIGHT) - scrollPixelOffset;
+		return net.minecraft.util.Mth.clamp(anchorTopY / (float) visibleHeight, 0, 1);
 	}
 
 	private int getCurrentScrollPixelOffset(List<IElement<?>> ingredientList) {
@@ -306,18 +308,31 @@ public final class IngredientGridScrollController {
 		int hiddenRows = GridScrollMath.getHiddenRows(ingredientList.size(), columnCount, rowCount, ingredientGrid.size());
 		float scrollOffsetY = this.scrollState.getScrollOffsetY();
 		if (isSmoothScrolling()) {
-			return GridScrollMath.getSmoothScrollPixelOffset(
-				hiddenRows,
-				IngredientGrid.INGREDIENT_HEIGHT,
-				scrollOffsetY
-			);
+			return getSmoothScrollPixelOffset();
 		}
 		int firstRow = GridScrollMath.getFirstRowForScrollOffset(hiddenRows, scrollOffsetY);
-		return firstRow * IngredientGrid.INGREDIENT_HEIGHT;
+		return firstRow * IngredientGridLayout.INGREDIENT_HEIGHT;
 	}
 
-	private static float clamp(float value, float min, float max) {
-		return Math.max(min, Math.min(value, max));
+	private int getHiddenScrollPixels() {
+		return GridScrollMath.getHiddenScrollPixels(
+			getHiddenScrollRows(),
+			IngredientGridLayout.INGREDIENT_HEIGHT,
+			ingredientGrid.getVisibleHeight()
+		);
+	}
+
+	private int getSmoothScrollPixelOffset() {
+		int hiddenPixels = getHiddenScrollPixels();
+		return net.minecraft.util.Mth.clamp(Math.round(hiddenPixels * this.scrollState.getScrollOffsetY()), 0, hiddenPixels);
+	}
+
+	private float getScrollOffsetYForPixelOffset(int scrollPixelOffset) {
+		int hiddenPixels = getHiddenScrollPixels();
+		if (hiddenPixels == 0) {
+			return 0;
+		}
+		return net.minecraft.util.Mth.clamp(scrollPixelOffset / (float) hiddenPixels, 0, 1);
 	}
 
 	private record ScrollRenderPosition(int firstItemIndex, int rowPixelOffset) {

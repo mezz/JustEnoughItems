@@ -14,13 +14,11 @@ import java.util.Optional;
 public class IngredientGridScrollbar implements IUserInputHandler {
 	public static final int SCROLLBAR_WIDTH = Scrollbar.WIDTH;
 
-	private final IngredientGridScrollController controller;
-	private final Runnable onLayoutChanged;
+	private final IngredientGridWithNavigationController controller;
 	private final Scrollbar scrollbar;
 
-	public IngredientGridScrollbar(IngredientGridScrollController controller, Runnable onLayoutChanged) {
+	public IngredientGridScrollbar(IngredientGridWithNavigationController controller) {
 		this.controller = controller;
-		this.onLayoutChanged = onLayoutChanged;
 		this.scrollbar = new Scrollbar(ImmutableRect2i.EMPTY);
 	}
 
@@ -70,9 +68,7 @@ public class IngredientGridScrollbar implements IUserInputHandler {
 		if (!result.handled()) {
 			return Optional.empty();
 		}
-		if (this.controller.setScrollOffsetY(result.scrollOffsetY())) {
-			this.onLayoutChanged.run();
-		}
+		this.controller.setScrollOffsetY(result.scrollOffsetY());
 		return Optional.of(this);
 	}
 
@@ -91,9 +87,7 @@ public class IngredientGridScrollbar implements IUserInputHandler {
 		if (!result.handled()) {
 			return Optional.empty();
 		}
-		if (this.controller.setScrollOffsetY(result.scrollOffsetY())) {
-			this.onLayoutChanged.run();
-		}
+		this.controller.setScrollOffsetY(result.scrollOffsetY());
 		return Optional.of(this);
 	}
 

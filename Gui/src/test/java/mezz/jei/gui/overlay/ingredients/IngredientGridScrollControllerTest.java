@@ -288,6 +288,11 @@ public class IngredientGridScrollControllerTest {
 		}
 
 		@Override
+		public int getVisibleHeight() {
+			return getRowCount() * IngredientGridLayout.INGREDIENT_HEIGHT;
+		}
+
+		@Override
 		public void set(int firstItemIndex, List<IElement<?>> ingredientList) {
 			set(firstItemIndex, 0, ingredientList);
 		}

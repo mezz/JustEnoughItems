@@ -8,7 +8,6 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
@@ -16,24 +15,23 @@ import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
+import mezz.jei.gui.overlay.ingredients.IngredientGridBackgroundRenderer;
 import mezz.jei.gui.overlay.ingredients.IngredientGrid;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryGridConfig;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 import mezz.jei.gui.search.ISearchCompletionProvider;
 
 public final class OverlayHelper {
-	private OverlayHelper() {
-	}
+	private OverlayHelper() {}
 
 	public static IngredientGridWithNavigation createIngredientGridWithNavigation(
 		String debugName,
 		IIngredientGridSource ingredientFilter,
 		IIngredientManager ingredientManager,
 		IIngredientGridConfig ingredientGridConfig,
-		DrawableNineSliceTexture background,
-		DrawableNineSliceTexture slotBackground,
 		IInternalKeyMappings keyMappings,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IClientConfig clientConfig,
@@ -63,8 +61,6 @@ public final class OverlayHelper {
 			clientConfig,
 			serverConnection,
 			ingredientGridConfig,
-			background,
-			slotBackground,
 			screenHelper,
 			ingredientManager
 		);
@@ -91,8 +87,6 @@ public final class OverlayHelper {
 			ingredientFilter,
 			ingredientManager,
 			ingredientGridConfig,
-			textures.getIngredientListBackground(),
-			textures.getIngredientListSlotBackground(),
 			keyMappings,
 			ingredientFilterConfig,
 			clientConfig,
@@ -103,20 +97,35 @@ public final class OverlayHelper {
 			true
 		);
 
-		LookupHistoryOverlay lookupHistoryOverlay = new LookupHistoryOverlay(
-			ingredientManager,
-			historyList,
-			keyMappings,
+		IIngredientGridConfig lookupHistoryGridConfig = new LookupHistoryGridConfig(
 			ingredientGridConfig,
+			clientConfig.maxLookupHistoryRows()
+		);
+		IngredientGridWithNavigation lookupHistoryGridNavigation = createIngredientGridWithNavigation(
+			"IngredientListLookupHistory",
+			historyList,
+			ingredientManager,
+			lookupHistoryGridConfig,
+			keyMappings,
 			ingredientFilterConfig,
+			clientConfig,
+			toggleState,
+			serverConnection,
+			colorHelper,
+			screenHelper,
+			false
+		);
+		LookupHistoryOverlay lookupHistoryOverlay = new LookupHistoryOverlay(
+			historyList,
+			lookupHistoryGridNavigation,
+			lookupHistoryGridConfig,
+			clientConfig,
+			HistoryDisplaySide.RIGHT
+		);
+		IngredientGridBackgroundRenderer backgroundRenderer = new IngredientGridBackgroundRenderer(
 			textures.getIngredientListBackground(),
 			textures.getIngredientListSlotBackground(),
-			clientConfig,
-			HistoryDisplaySide.RIGHT,
-			toggleState,
-			screenHelper,
-			serverConnection,
-			colorHelper
+			textures.getExclusionAreaShadow()
 		);
 
 		return new IngredientListOverlay(
@@ -125,6 +134,7 @@ public final class OverlayHelper {
 			screenHelper,
 			ingredientListGridNavigation,
 			lookupHistoryOverlay,
+			backgroundRenderer,
 			ingredientGridConfig,
 			clientConfig,
 			toggleState,
@@ -153,8 +163,6 @@ public final class OverlayHelper {
 			bookmarkList,
 			ingredientManager,
 			bookmarkListConfig,
-			textures.getBookmarkListBackground(),
-			textures.getBookmarkListSlotBackground(),
 			keyMappings,
 			ingredientFilterConfig,
 			clientConfig,
@@ -165,20 +173,35 @@ public final class OverlayHelper {
 			false
 		);
 
-		LookupHistoryOverlay lookupHistoryOverlay = new LookupHistoryOverlay(
-			ingredientManager,
-			lookupHistory,
-			keyMappings,
+		IIngredientGridConfig lookupHistoryGridConfig = new LookupHistoryGridConfig(
 			bookmarkListConfig,
+			clientConfig.maxLookupHistoryRows()
+		);
+		IngredientGridWithNavigation lookupHistoryGridNavigation = createIngredientGridWithNavigation(
+			"BookmarkLookupHistory",
+			lookupHistory,
+			ingredientManager,
+			lookupHistoryGridConfig,
+			keyMappings,
 			ingredientFilterConfig,
+			clientConfig,
+			toggleState,
+			serverConnection,
+			colorHelper,
+			screenHelper,
+			false
+		);
+		LookupHistoryOverlay lookupHistoryOverlay = new LookupHistoryOverlay(
+			lookupHistory,
+			lookupHistoryGridNavigation,
+			lookupHistoryGridConfig,
+			clientConfig,
+			HistoryDisplaySide.LEFT
+		);
+		IngredientGridBackgroundRenderer backgroundRenderer = new IngredientGridBackgroundRenderer(
 			textures.getBookmarkListBackground(),
 			textures.getBookmarkListSlotBackground(),
-			clientConfig,
-			HistoryDisplaySide.LEFT,
-			toggleState,
-			screenHelper,
-			serverConnection,
-			colorHelper
+			textures.getExclusionAreaShadow()
 		);
 
 		return new BookmarkOverlay(
@@ -186,6 +209,7 @@ public final class OverlayHelper {
 			recipeTransferService,
 			bookmarkListGridNavigation,
 			lookupHistoryOverlay,
+			backgroundRenderer,
 			toggleState,
 			clientConfig,
 			bookmarkListConfig,
