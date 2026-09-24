@@ -55,6 +55,7 @@ public final class ClientConfig implements IClientConfig {
 	private final IConfigValue<Integer> dragDelayMs;
 	private final IConfigValue<Integer> smoothScrollRate;
 	private final IConfigValue<Boolean> searchCompletionEnabled;
+	private final IConfigValue<Boolean> searchCompletionSuggestionsWhenEmptyEnabled;
 	private final IConfigValue<Boolean> recipeSlotCyclingEnabled;
 
 	// sorting
@@ -150,6 +151,9 @@ public final class ClientConfig implements IClientConfig {
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
 		searchCompletionEnabled = input.addBoolean("searchCompletionEnabled", true)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
+		searchCompletionSuggestionsWhenEmptyEnabled = input.addBoolean("searchCompletionSuggestionsWhenEmptyEnabled", true)
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
 		recipeSlotCyclingEnabled = input.addBoolean("recipeSlotCyclingEnabled", true)
@@ -394,6 +398,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Boolean> searchCompletionEnabled() {
 		return searchCompletionEnabled;
+	}
+
+	@Override
+	public IConfigValue<Boolean> searchCompletionSuggestionsWhenEmptyEnabled() {
+		return searchCompletionSuggestionsWhenEmptyEnabled;
 	}
 
 	@Override

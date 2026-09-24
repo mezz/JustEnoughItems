@@ -83,7 +83,7 @@ public class SearchCompletionOverlay {
 		}
 		dismissedText = null;
 		dismissedCursorPos = -1;
-		if (text.isBlank()) {
+		if (text.isBlank() && !text.isEmpty()) {
 			filteredCandidates.clear();
 			visible = false;
 			lastText = null;
@@ -114,7 +114,10 @@ public class SearchCompletionOverlay {
 		boolean hasPredicateBefore = hasPredicateBefore(tokens, cursorPos);
 
 		filteredCandidates.clear();
-		if (!currentToken.isEmpty()) {
+		if (text.isEmpty()) {
+			addPrefixCandidates(prefixInfos, currentToken);
+			selectedIndex = 0;
+		} else if (!currentToken.isEmpty()) {
 			PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo = findPrefixInfo(prefixInfos, currentToken.charAt(0));
 			if (prefixInfo != null && prefixInfo.getMode() != SearchMode.DISABLED) {
 				if (prefixInfo.supportsDynamicCompletion()) {
@@ -166,6 +169,18 @@ public class SearchCompletionOverlay {
 		String currentToken,
 		boolean hasPredicateBefore
 	) {
+		addPrefixCandidates(prefixInfos, currentToken);
+
+		addNotOperatorIfMatches(currentToken);
+		if (hasPredicateBefore && currentToken.isEmpty()) {
+			filteredCandidates.add(new CompletionCandidate("|", "|", Component.translatable("jei.search.completion.operator.or"), CandidateCategory.OPERATOR));
+		}
+	}
+
+	private void addPrefixCandidates(
+		Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> prefixInfos,
+		String currentToken
+	) {
 		for (PrefixInfo<IListElementInfo<?>, IListElement<?>> info : prefixInfos) {
 			if (info.getMode() == SearchMode.DISABLED) {
 				continue;
@@ -178,11 +193,6 @@ public class SearchCompletionOverlay {
 			if (prefixStr.startsWith(currentToken)) {
 				filteredCandidates.add(new CompletionCandidate(prefixStr, prefixStr, info.getDescription(), CandidateCategory.PREFIX));
 			}
-		}
-
-		addNotOperatorIfMatches(currentToken);
-		if (hasPredicateBefore && currentToken.isEmpty()) {
-			filteredCandidates.add(new CompletionCandidate("|", "|", Component.translatable("jei.search.completion.operator.or"), CandidateCategory.OPERATOR));
 		}
 	}
 

@@ -238,6 +238,8 @@
   "jei.config.client.input.smoothScrollRate.description": "How far JEI scrolls for each mouse-wheel step in smooth-scrolling lists.",
   "jei.config.client.input.searchCompletionEnabled": "Search Completion",
   "jei.config.client.input.searchCompletionEnabled.description": "Show search completion suggestions when typing in the JEI search bar.",
+  "jei.config.client.input.searchCompletionSuggestionsWhenEmptyEnabled": "Show Search Prefixes Before Typing",
+  "jei.config.client.input.searchCompletionSuggestionsWhenEmptyEnabled.description": "Show search prefixes and short explanations when the focused search bar is empty.",
   "jei.config.client.input.recipeSlotCyclingEnabled": "Recipe Slot Cycling",
   "jei.config.client.input.recipeSlotCyclingEnabled.description": "Automatically cycle through ingredients in recipe slots over time.",
   "jei.config.client.performance": "Performance",
