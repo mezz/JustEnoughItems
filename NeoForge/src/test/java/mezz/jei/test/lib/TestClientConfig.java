@@ -38,6 +38,7 @@ public class TestClientConfig implements IClientConfig {
 	private final IConfigValue<Integer> dragDelayMs = value("dragDelayMs", 0);
 	private final IConfigValue<Integer> smoothScrollRate = value("smoothScrollRate", 9);
 	private final IConfigValue<Boolean> searchCompletionEnabled = value("searchCompletionEnabled", false);
+	private final IConfigValue<Integer> maxSearchCompletionRows = value("maxSearchCompletionRows", 5);
 	private final IConfigValue<Boolean> recipeSlotCyclingEnabled = value("recipeSlotCyclingEnabled", true);
 	private final IConfigValue<List<IngredientSortStage>> ingredientSorterStages = value("ingredientSorterStages", List.<IngredientSortStage>of());
 	private final IConfigValue<Boolean> recipeSortingBookmarksEnabled = value("recipeSortingBookmarksEnabled", false);
@@ -186,6 +187,11 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Boolean> searchCompletionEnabled() {
 		return searchCompletionEnabled;
+	}
+
+	@Override
+	public IConfigValue<Integer> maxSearchCompletionRows() {
+		return maxSearchCompletionRows;
 	}
 
 	@Override
