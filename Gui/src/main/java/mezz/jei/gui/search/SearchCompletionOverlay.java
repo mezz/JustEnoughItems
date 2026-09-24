@@ -20,11 +20,11 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class SearchCompletionOverlay {
@@ -37,7 +37,7 @@ public class SearchCompletionOverlay {
 	private static final int MAX_OVERLAY_WIDTH = 200;
 	private static final int MAX_OVERLAY_WIDTH_DYNAMIC = 320;
 	private static final int MAX_VISIBLE_ROWS = 9;
-	private static final int MAX_DYNAMIC_CANDIDATES = 100;
+	private static final int INITIAL_DYNAMIC_CANDIDATE_LIMIT = 100;
 	private static final int SCREEN_MARGIN = 4;
 	private static final int SELECTED_COLOR = 0xFF4040A0;
 	private static final int SYMBOL_COLOR = 0xFFFFFF00;
@@ -59,6 +59,12 @@ public class SearchCompletionOverlay {
 	private int lastCursorPos = -1;
 	private long lastCompletionRevision = Long.MIN_VALUE;
 	private int lastPrefixModesHash;
+	private int dynamicCandidateLimit = INITIAL_DYNAMIC_CANDIDATE_LIMIT;
+	private boolean dynamicCandidatesTruncated;
+	private @Nullable String candidateLimitText;
+	private int candidateLimitCursorPos = -1;
+	private long candidateLimitCompletionRevision = Long.MIN_VALUE;
+	private int candidateLimitPrefixModesHash;
 	private @Nullable String dismissedText;
 	private int dismissedCursorPos = -1;
 	private int lastMouseX = Integer.MIN_VALUE;
@@ -74,6 +80,10 @@ public class SearchCompletionOverlay {
 	}
 
 	public void update(String text, int cursorPos) {
+		update(text, cursorPos, false);
+	}
+
+	private void update(String text, int cursorPos, boolean force) {
 		if (text.equals(dismissedText) && cursorPos == dismissedCursorPos) {
 			hide();
 			return;
@@ -91,7 +101,19 @@ public class SearchCompletionOverlay {
 		Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> prefixInfos = completionProvider.getAllPrefixInfos();
 		long completionRevision = completionProvider.getCompletionRevision();
 		int prefixModesHash = getPrefixModesHash(prefixInfos);
-		if (text.equals(lastText) &&
+		if (!text.equals(candidateLimitText) ||
+			cursorPos != candidateLimitCursorPos ||
+			completionRevision != candidateLimitCompletionRevision ||
+			prefixModesHash != candidateLimitPrefixModesHash
+		) {
+			dynamicCandidateLimit = INITIAL_DYNAMIC_CANDIDATE_LIMIT;
+			candidateLimitText = text;
+			candidateLimitCursorPos = cursorPos;
+			candidateLimitCompletionRevision = completionRevision;
+			candidateLimitPrefixModesHash = prefixModesHash;
+		}
+		if (!force &&
+			text.equals(lastText) &&
 			cursorPos == lastCursorPos &&
 			completionRevision == lastCompletionRevision &&
 			prefixModesHash == lastPrefixModesHash
@@ -111,6 +133,7 @@ public class SearchCompletionOverlay {
 		boolean hasPredicateBefore = hasPredicateBefore(tokens, cursorPos);
 
 		filteredCandidates.clear();
+		dynamicCandidatesTruncated = false;
 		if (text.isEmpty()) {
 			addPrefixCandidates(prefixInfos, currentToken);
 			selectedIndex = 0;
@@ -211,9 +234,6 @@ public class SearchCompletionOverlay {
 		boolean quoteWrapper = currentToken.length() > 1 && currentToken.charAt(1) == '"';
 		int count = 0;
 		for (String s : getDynamicStrings(prefixInfo)) {
-			if (count >= MAX_DYNAMIC_CANDIDATES) {
-				break;
-			}
 			if (s.toLowerCase(Locale.ENGLISH).startsWith(queryLower)) {
 				String insertion;
 				if (quoteWrapper) {
@@ -223,6 +243,10 @@ public class SearchCompletionOverlay {
 				}
 				if (insertion.equals(currentToken)) {
 					continue;
+				}
+				if (count >= dynamicCandidateLimit) {
+					dynamicCandidatesTruncated = true;
+					break;
 				}
 				filteredCandidates.add(new CompletionCandidate(insertion, s, prefixInfo.getDescription(), CandidateCategory.DYNAMIC));
 				count++;
@@ -237,23 +261,28 @@ public class SearchCompletionOverlay {
 		String query = stripMatchingQuotes(currentToken);
 		String queryLower = query.toLowerCase(Locale.ENGLISH);
 		boolean quoteWrapper = currentToken.startsWith("\"");
-		Map<String, CompletionCandidate> uniqueCandidates = new TreeMap<>();
+		// Preserve candidate order when the on-demand limit expands.
+		Map<String, CompletionCandidate> uniqueCandidates = new LinkedHashMap<>();
 		outer : for (PrefixInfo<IListElementInfo<?>, IListElement<?>> info : prefixInfos) {
 			if (info.getMode() != SearchMode.ENABLED || !info.supportsDynamicCompletion()) {
 				continue;
 			}
 			for (String s : getDynamicStrings(info)) {
-				if (uniqueCandidates.size() >= MAX_DYNAMIC_CANDIDATES) {
-					break outer;
-				}
 				if (s.toLowerCase(Locale.ENGLISH).startsWith(queryLower)) {
+					if (uniqueCandidates.containsKey(s)) {
+						continue;
+					}
+					if (uniqueCandidates.size() >= dynamicCandidateLimit) {
+						dynamicCandidatesTruncated = true;
+						break outer;
+					}
 					String insertion;
 					if (quoteWrapper) {
 						insertion = '"' + s + '"';
 					} else {
 						insertion = s;
 					}
-					uniqueCandidates.computeIfAbsent(s, ignored -> new CompletionCandidate(insertion, s, info.getDescription(), CandidateCategory.DYNAMIC));
+					uniqueCandidates.put(s, new CompletionCandidate(insertion, s, info.getDescription(), CandidateCategory.DYNAMIC));
 				}
 			}
 		}
@@ -342,6 +371,9 @@ public class SearchCompletionOverlay {
 		if (filteredCandidates.isEmpty()) {
 			return;
 		}
+		if (delta > 0 && selectedIndex + delta >= filteredCandidates.size()) {
+			loadMoreCandidates();
+		}
 		int count = filteredCandidates.size();
 		selectedIndex = Math.floorMod(selectedIndex + delta, count);
 	}
@@ -352,10 +384,29 @@ public class SearchCompletionOverlay {
 		}
 		int visibleRowCount = rowLayouts.size();
 		int maxScroll = Math.max(0, filteredCandidates.size() - visibleRowCount);
+		if (delta > 0 && scrollOffset + delta > maxScroll && loadMoreCandidates()) {
+			maxScroll = Math.max(0, filteredCandidates.size() - visibleRowCount);
+		}
 		int newScrollOffset = Math.clamp(scrollOffset + delta, 0, maxScroll);
 		int selectedRow = Math.clamp(selectedIndex - scrollOffset, 0, visibleRowCount - 1);
 		scrollOffset = newScrollOffset;
 		selectedIndex = Math.min(scrollOffset + selectedRow, filteredCandidates.size() - 1);
+	}
+
+	private boolean loadMoreCandidates() {
+		if (!dynamicCandidatesTruncated || lastText == null || dynamicCandidateLimit == Integer.MAX_VALUE) {
+			return false;
+		}
+		int previousSize = filteredCandidates.size();
+		if (dynamicCandidateLimit > Integer.MAX_VALUE / 2) {
+			dynamicCandidateLimit = Integer.MAX_VALUE;
+		} else {
+			dynamicCandidateLimit *= 2;
+		}
+		String text = lastText;
+		int cursorPos = lastCursorPos;
+		update(text, cursorPos, true);
+		return filteredCandidates.size() > previousSize;
 	}
 
 	public void accept(GuiTextFieldFilter searchField) {
