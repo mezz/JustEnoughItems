@@ -152,7 +152,7 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 	}
 
 	public void closeCompletion() {
-		completionOverlay.close();
+		completionOverlay.dismiss(getValue(), getCursorPosition());
 	}
 
 	public boolean handleCompletionClick(double mouseX, double mouseY) {

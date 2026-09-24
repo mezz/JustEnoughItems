@@ -59,6 +59,8 @@ public class SearchCompletionOverlay {
 	private int lastCursorPos = -1;
 	private long lastCompletionRevision = Long.MIN_VALUE;
 	private int lastPrefixModesHash;
+	private @Nullable String dismissedText;
+	private int dismissedCursorPos = -1;
 	private @Nullable ImmutableRect2i overlayArea;
 	private @Nullable ImmutableRect2i searchFieldArea;
 
@@ -75,6 +77,13 @@ public class SearchCompletionOverlay {
 	}
 
 	private void update(String text, int cursorPos) {
+		if (text.equals(dismissedText) && cursorPos == dismissedCursorPos) {
+			visible = false;
+			return;
+		}
+		dismissedText = null;
+		dismissedCursorPos = -1;
+
 		Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> prefixInfos = completionProvider.getAllPrefixInfos();
 		long completionRevision = completionProvider.getCompletionRevision();
 		int prefixModesHash = getPrefixModesHash(prefixInfos);
@@ -305,6 +314,14 @@ public class SearchCompletionOverlay {
 	public void close() {
 		visible = false;
 		lastText = null;
+		dismissedText = null;
+		dismissedCursorPos = -1;
+	}
+
+	public void dismiss(String text, int cursorPos) {
+		visible = false;
+		dismissedText = text;
+		dismissedCursorPos = cursorPos;
 	}
 
 	public void moveSelection(int delta) {
@@ -348,7 +365,7 @@ public class SearchCompletionOverlay {
 		searchField.setCursorPosition(newCursorPos);
 
 		if (candidate.category() == CandidateCategory.DYNAMIC || candidate.category() == CandidateCategory.OPERATOR) {
-			close();
+			dismiss(newText, newCursorPos);
 		} else {
 			update(newText, newCursorPos);
 		}
