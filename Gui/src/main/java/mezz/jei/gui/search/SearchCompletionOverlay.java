@@ -83,6 +83,13 @@ public class SearchCompletionOverlay {
 		}
 		dismissedText = null;
 		dismissedCursorPos = -1;
+		if (text.isBlank()) {
+			filteredCandidates.clear();
+			visible = false;
+			lastText = null;
+			lastCursorPos = -1;
+			return;
+		}
 
 		Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> prefixInfos = completionProvider.getAllPrefixInfos();
 		long completionRevision = completionProvider.getCompletionRevision();
