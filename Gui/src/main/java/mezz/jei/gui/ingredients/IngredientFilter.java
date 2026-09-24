@@ -63,6 +63,7 @@ public class IngredientFilter
 
 	@Nullable
 	private List<IListElementInfo<?>> elementInfoCache;
+	private long completionRevision;
 
 	public IngredientFilter(
 		IFilterTextSource filterTextSource,
@@ -87,6 +88,7 @@ public class IngredientFilter
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
 		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser, ingredients, ingredientManager);
+		this.elementInfoCache = List.copyOf(ingredients);
 
 		for (IListElementInfo<?> ingredient : ingredients) {
 			updateHiddenState(ingredient.getElement());
@@ -363,6 +365,12 @@ public class IngredientFilter
 
 	private void invalidateCandidateCache() {
 		elementInfoCache = null;
+		completionRevision++;
+	}
+
+	@Override
+	public long getCompletionRevision() {
+		return completionRevision;
 	}
 
 }

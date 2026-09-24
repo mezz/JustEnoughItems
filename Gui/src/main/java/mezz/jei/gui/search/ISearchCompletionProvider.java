@@ -7,6 +7,7 @@ import mezz.jei.gui.ingredients.IListElementInfo;
 import java.util.Collection;
 
 public interface ISearchCompletionProvider {
+	long getCompletionRevision();
 
 	Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> getAllPrefixInfos();
 

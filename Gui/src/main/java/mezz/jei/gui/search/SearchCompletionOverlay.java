@@ -19,6 +19,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -50,9 +51,14 @@ public class SearchCompletionOverlay {
 	private final ScalableDrawable background;
 
 	private final List<CompletionCandidate> filteredCandidates = new ArrayList<>();
+	private final Map<PrefixInfo<IListElementInfo<?>, IListElement<?>>, List<String>> dynamicStrings = new IdentityHashMap<>();
 	private boolean visible = false;
 	private int selectedIndex = 0;
 	private int scrollOffset = 0;
+	private @Nullable String lastText;
+	private int lastCursorPos = -1;
+	private long lastCompletionRevision = Long.MIN_VALUE;
+	private int lastPrefixModesHash;
 	private @Nullable ImmutableRect2i overlayArea;
 	private @Nullable ImmutableRect2i searchFieldArea;
 
@@ -69,24 +75,40 @@ public class SearchCompletionOverlay {
 	}
 
 	private void update(String text, int cursorPos) {
+		Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> prefixInfos = completionProvider.getAllPrefixInfos();
+		long completionRevision = completionProvider.getCompletionRevision();
+		int prefixModesHash = getPrefixModesHash(prefixInfos);
+		if (text.equals(lastText) &&
+			cursorPos == lastCursorPos &&
+			completionRevision == lastCompletionRevision &&
+			prefixModesHash == lastPrefixModesHash
+		) {
+			return;
+		}
+		if (completionRevision != lastCompletionRevision) {
+			dynamicStrings.clear();
+		}
+		lastText = text;
+		lastCursorPos = cursorPos;
+		lastCompletionRevision = completionRevision;
+		lastPrefixModesHash = prefixModesHash;
+
 		List<Token> tokens = SearchTokenizer.tokenize(text);
 		String currentToken = extractCurrentToken(tokens, text, cursorPos);
 		boolean hasPredicateBefore = hasPredicateBefore(tokens, cursorPos);
-		Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> prefixInfos = completionProvider.getAllPrefixInfos();
-		Collection<IListElementInfo<?>> elementInfos = completionProvider.getAllElementInfos();
 
 		filteredCandidates.clear();
 		if (!currentToken.isEmpty()) {
 			PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo = findPrefixInfo(prefixInfos, currentToken.charAt(0));
 			if (prefixInfo != null && prefixInfo.getMode() != SearchMode.DISABLED) {
 				if (prefixInfo.supportsDynamicCompletion()) {
-					addDynamicCandidates(prefixInfo, currentToken, elementInfos);
+					addDynamicCandidates(prefixInfo, currentToken);
 				} else {
 					addStaticCandidates(prefixInfos, currentToken, hasPredicateBefore);
 				}
 			} else {
 				addStaticCandidates(prefixInfos, currentToken, hasPredicateBefore);
-				addNoPrefixDynamicCandidates(prefixInfos, currentToken, elementInfos);
+				addNoPrefixDynamicCandidates(prefixInfos, currentToken);
 			}
 		} else {
 			addStaticCandidates(prefixInfos, currentToken, hasPredicateBefore);
@@ -100,6 +122,15 @@ public class SearchCompletionOverlay {
 		if (selectedIndex >= filteredCandidates.size()) {
 			selectedIndex = 0;
 		}
+	}
+
+	private static int getPrefixModesHash(Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> prefixInfos) {
+		int hash = 1;
+		for (PrefixInfo<IListElementInfo<?>, IListElement<?>> info : prefixInfos) {
+			hash = 31 * hash + info.getPrefix();
+			hash = 31 * hash + info.getMode().hashCode();
+		}
+		return hash;
 	}
 
 	private @Nullable PrefixInfo<IListElementInfo<?>, IListElement<?>> findPrefixInfo(
@@ -148,20 +179,15 @@ public class SearchCompletionOverlay {
 
 	private void addDynamicCandidates(
 		PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo,
-		String currentToken,
-		Collection<IListElementInfo<?>> elementInfos
+		String currentToken
 	) {
 		String query = stripMatchingQuotes(currentToken.substring(1));
 		String queryLower = query.toLowerCase(Locale.ENGLISH);
-		Set<String> uniqueStrings = new TreeSet<>();
-		for (IListElementInfo<?> info : elementInfos) {
-			uniqueStrings.addAll(prefixInfo.getStrings(info));
-		}
 
 		String prefixStr = String.valueOf(prefixInfo.getPrefix());
 		boolean quoteWrapper = currentToken.length() > 1 && currentToken.charAt(1) == '"';
 		int count = 0;
-		for (String s : uniqueStrings) {
+		for (String s : getDynamicStrings(prefixInfo)) {
 			if (count >= MAX_DYNAMIC_CANDIDATES) {
 				break;
 			}
@@ -183,8 +209,7 @@ public class SearchCompletionOverlay {
 
 	private void addNoPrefixDynamicCandidates(
 		Collection<PrefixInfo<IListElementInfo<?>, IListElement<?>>> prefixInfos,
-		String currentToken,
-		Collection<IListElementInfo<?>> elementInfos
+		String currentToken
 	) {
 		String query = stripMatchingQuotes(currentToken);
 		String queryLower = query.toLowerCase(Locale.ENGLISH);
@@ -194,11 +219,7 @@ public class SearchCompletionOverlay {
 			if (info.getMode() != SearchMode.ENABLED || !info.supportsDynamicCompletion()) {
 				continue;
 			}
-			Set<String> strings = new TreeSet<>();
-			for (IListElementInfo<?> elementInfo : elementInfos) {
-				strings.addAll(info.getStrings(elementInfo));
-			}
-			for (String s : strings) {
+			for (String s : getDynamicStrings(info)) {
 				if (uniqueCandidates.size() >= MAX_DYNAMIC_CANDIDATES) {
 					break outer;
 				}
@@ -214,6 +235,16 @@ public class SearchCompletionOverlay {
 			}
 		}
 		filteredCandidates.addAll(uniqueCandidates.values());
+	}
+
+	private List<String> getDynamicStrings(PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo) {
+		return dynamicStrings.computeIfAbsent(prefixInfo, info -> {
+			Set<String> uniqueStrings = new TreeSet<>();
+			for (IListElementInfo<?> elementInfo : completionProvider.getAllElementInfos()) {
+				uniqueStrings.addAll(info.getStrings(elementInfo));
+			}
+			return List.copyOf(uniqueStrings);
+		});
 	}
 
 	private static int findTokenBoundary(List<Token> tokens, int cursorPos, boolean start) {
@@ -273,6 +304,7 @@ public class SearchCompletionOverlay {
 
 	public void close() {
 		visible = false;
+		lastText = null;
 	}
 
 	public void moveSelection(int delta) {
