@@ -1,0 +1,90 @@
+name: Bug report
+description: >-
+  Please use this template when you have encountered a bug in JEI.
+  If the issue seems to affect only one mod, please report to them first instead of here.
+title: '[Bug]: '
+body:
+  - type: textarea
+    id: repro_steps
+    attributes:
+      label: Steps to Reproduce the Bug
+      description: Please explain what we need to do to cause the bug.
+      placeholder: >-
+        Example:
+
+        1. Hold Shift
+        2. Click the anvil in the JEI ingredient list on the left side.
+    validations:
+      required: true
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+      description: >-
+        Please explain what should happen when you follow the steps, if the bug
+        were fixed.
+      placeholder: >-
+        Example:
+        Following the steps to reproduce the bug, JEI should just show
+        the anvil recipe.
+    validations:
+      required: true
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: Actual Behavior
+      description: >-
+        Please briefly explain what actually happens when you follow the steps,
+        because of the bug.
+      placeholder: >-
+        Example:
+        Nothing happens, the anvil recipe isn't shown.
+    validations:
+      required: true
+  - type: input
+    id: modpack_url
+    attributes:
+      label: Mod Pack URL (Optional)
+      description: >-
+        If you're playing with a mod pack, please include a link to it here.
+      placeholder: http://www.Biggest-Modpack-Ever.com
+  - type: input
+    id: modpack_version
+    attributes:
+      label: Mod Pack Version (Optional)
+      description: >-
+        If you're playing with a mod pack, please include its version here.
+      placeholder: 0.0.1 Alpha
+  - type: textarea
+    id: notes
+    attributes:
+      label: Extra Notes (Optional)
+      description: >-
+        Optionally, please include anything else you'd like to say about the bug.
+      placeholder: >-
+        Example:
+        You can work around this bug for now by avoiding holding shift.
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        ## Sharing your `latest.log`
+
+        The log tells us which Minecraft, mod loader, and JEI versions you are using,
+        as well as which other mods are installed and any errors that occurred.
+
+        1. Reproduce the bug, then close Minecraft so the log is complete.
+        2. Use your launcher to open the folder for the Minecraft instance or modpack
+           where the bug occurred.
+        3. Open the `logs` folder and find `latest.log`.
+        4. [Create a Gist from `latest.log`](https://gist.github.com/mezz/c3f0931344d81afd366e0d85a8ed1031),
+           then paste the Gist URL below.
+  - type: input
+    id: crashlog
+    attributes:
+      label: latest.log
+      description: Please paste the url to the gist containing your `latest.log` file.
+      placeholder: https://gist.github.com/<your_user_name>/<gist_id>
+    validations:
+      required: true
