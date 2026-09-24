@@ -151,8 +151,8 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 		}
 	}
 
-	public void drawCompletion(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		completionOverlay.draw(guiGraphics, mouseX, mouseY);
+	public void drawCompletion(GuiGraphicsExtractor guiGraphics) {
+		completionOverlay.draw(guiGraphics);
 	}
 
 	public void hideCompletion() {
@@ -165,6 +165,10 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 
 	public void moveCompletion(int delta) {
 		completionOverlay.moveSelection(delta);
+	}
+
+	public void scrollCompletion(int delta) {
+		completionOverlay.scroll(delta);
 	}
 
 	public void acceptCompletion() {

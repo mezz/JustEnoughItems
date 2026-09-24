@@ -61,6 +61,8 @@ public class SearchCompletionOverlay {
 	private int lastPrefixModesHash;
 	private @Nullable String dismissedText;
 	private int dismissedCursorPos = -1;
+	private int lastMouseX = Integer.MIN_VALUE;
+	private int lastMouseY = Integer.MIN_VALUE;
 	private @Nullable ImmutableRect2i overlayArea;
 	private @Nullable ImmutableRect2i searchFieldArea;
 
@@ -73,14 +75,14 @@ public class SearchCompletionOverlay {
 
 	public void update(String text, int cursorPos) {
 		if (text.equals(dismissedText) && cursorPos == dismissedCursorPos) {
-			visible = false;
+			hide();
 			return;
 		}
 		dismissedText = null;
 		dismissedCursorPos = -1;
 		if (text.isBlank() && !text.isEmpty()) {
 			filteredCandidates.clear();
-			visible = false;
+			hide();
 			lastText = null;
 			lastCursorPos = -1;
 			return;
@@ -129,7 +131,7 @@ public class SearchCompletionOverlay {
 		}
 
 		if (filteredCandidates.isEmpty()) {
-			visible = false;
+			hide();
 			return;
 		}
 		visible = true;
@@ -324,14 +326,14 @@ public class SearchCompletionOverlay {
 	}
 
 	public void close() {
-		visible = false;
+		hide();
 		lastText = null;
 		dismissedText = null;
 		dismissedCursorPos = -1;
 	}
 
 	public void dismiss(String text, int cursorPos) {
-		visible = false;
+		hide();
 		dismissedText = text;
 		dismissedCursorPos = cursorPos;
 	}
@@ -342,6 +344,18 @@ public class SearchCompletionOverlay {
 		}
 		int count = filteredCandidates.size();
 		selectedIndex = Math.floorMod(selectedIndex + delta, count);
+	}
+
+	public void scroll(int delta) {
+		if (delta == 0 || rowLayouts.isEmpty()) {
+			return;
+		}
+		int visibleRowCount = rowLayouts.size();
+		int maxScroll = Math.max(0, filteredCandidates.size() - visibleRowCount);
+		int newScrollOffset = Math.clamp(scrollOffset + delta, 0, maxScroll);
+		int selectedRow = Math.clamp(selectedIndex - scrollOffset, 0, visibleRowCount - 1);
+		scrollOffset = newScrollOffset;
+		selectedIndex = Math.min(scrollOffset + selectedRow, filteredCandidates.size() - 1);
 	}
 
 	public void accept(GuiTextFieldFilter searchField) {
@@ -534,7 +548,10 @@ public class SearchCompletionOverlay {
 
 		overlayArea = new ImmutableRect2i(x, y, overlayWidth, overlayHeight);
 
-		if (overlayArea.contains(mouseX, mouseY)) {
+		boolean mouseMoved = mouseX != lastMouseX || mouseY != lastMouseY;
+		lastMouseX = mouseX;
+		lastMouseY = mouseY;
+		if (mouseMoved && overlayArea.contains(mouseX, mouseY)) {
 			for (int i = 0; i < rowLayouts.size(); i++) {
 				RowLayout row = rowLayouts.get(i);
 				int rowY = y + BORDER + row.y();
@@ -546,7 +563,13 @@ public class SearchCompletionOverlay {
 		}
 	}
 
-	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	private void hide() {
+		visible = false;
+		lastMouseX = Integer.MIN_VALUE;
+		lastMouseY = Integer.MIN_VALUE;
+	}
+
+	public void draw(GuiGraphicsExtractor guiGraphics) {
 		if (!visible || overlayArea == null || filteredCandidates.isEmpty()) {
 			return;
 		}
@@ -570,10 +593,8 @@ public class SearchCompletionOverlay {
 			RowLayout row = rowLayouts.get(i);
 			int rowY = y + BORDER + row.y();
 			boolean selected = (candidateIndex == selectedIndex);
-			boolean hovered = overlayArea.contains(mouseX, mouseY) &&
-				mouseY >= rowY && mouseY < rowY + row.height();
 
-			if (selected || hovered) {
+			if (selected) {
 				guiGraphics.fill(x + BORDER, rowY, x + overlayWidth - BORDER, rowY + row.height(), SELECTED_COLOR);
 			}
 

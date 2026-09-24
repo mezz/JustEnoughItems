@@ -40,7 +40,7 @@ public class SearchInputLayer implements IGuiInputLayer, IRecipeFocusSource, IDr
 	@Override
 	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		if (active.getAsBoolean()) {
-			textFieldFilter.drawCompletion(guiGraphics, mouseX, mouseY);
+			textFieldFilter.drawCompletion(guiGraphics);
 		}
 	}
 
@@ -98,6 +98,19 @@ public class SearchInputLayer implements IGuiInputLayer, IRecipeFocusSource, IDr
 	@Override
 	public void unfocus() {
 		textFieldInputHandler.unfocus();
+	}
+
+	@Override
+	public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+		if (!isMouseOver(mouseX, mouseY)) {
+			return Optional.empty();
+		}
+		if (scrollDeltaY < 0) {
+			textFieldFilter.scrollCompletion(1);
+		} else if (scrollDeltaY > 0) {
+			textFieldFilter.scrollCompletion(-1);
+		}
+		return Optional.of(this);
 	}
 
 	@Override
