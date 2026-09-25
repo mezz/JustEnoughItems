@@ -2,7 +2,6 @@ package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.List;
@@ -31,22 +30,19 @@ public final class IngredientGridBackgroundRenderer {
 		List<Panel> panels,
 		Set<ImmutableRect2i> guiExclusionAreas
 	) {
-		ImmutableRect2i backgroundArea = panels.stream()
-			.map(Panel::backgroundArea)
-			.reduce(ImmutableRect2i.EMPTY, MathUtil::union);
-		if (backgroundArea.isEmpty()) {
-			return;
-		}
-		this.background.draw(guiGraphics, backgroundArea);
 		for (Panel panel : panels) {
+			if (panel.backgroundArea().isEmpty()) {
+				continue;
+			}
+			this.background.draw(guiGraphics, panel.backgroundArea());
 			this.slotBackground.draw(guiGraphics, panel.slotBackgroundArea());
+			GuiExclusionAreaShadow.draw(
+				guiGraphics,
+				this.exclusionAreaShadow,
+				panel.backgroundArea(),
+				guiExclusionAreas
+			);
 		}
-		GuiExclusionAreaShadow.draw(
-			guiGraphics,
-			this.exclusionAreaShadow,
-			backgroundArea,
-			guiExclusionAreas
-		);
 	}
 
 	public record Panel(ImmutableRect2i backgroundArea, ImmutableRect2i slotBackgroundArea) {

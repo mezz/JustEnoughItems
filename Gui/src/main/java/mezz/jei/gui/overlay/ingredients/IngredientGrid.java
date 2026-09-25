@@ -11,7 +11,6 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
-import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
@@ -46,7 +45,6 @@ import java.util.stream.Stream;
  */
 public class IngredientGrid implements IIngredientGrid {
 	private final IIngredientManager ingredientManager;
-	private final IIngredientGridConfig gridConfig;
 	private final boolean searchable;
 	private final IngredientListRenderer ingredientListRenderer;
 	private final DeleteItemInputHandler deleteItemHandler;
@@ -60,7 +58,6 @@ public class IngredientGrid implements IIngredientGrid {
 
 	public IngredientGrid(
 		IIngredientManager ingredientManager,
-		IIngredientGridConfig gridConfig,
 		IIngredientFilterConfig ingredientFilterConfig,
 		IClientConfig clientConfig,
 		IClientToggleState toggleState,
@@ -70,7 +67,6 @@ public class IngredientGrid implements IIngredientGrid {
 		boolean searchable
 	) {
 		this.ingredientManager = ingredientManager;
-		this.gridConfig = gridConfig;
 		this.searchable = searchable;
 		this.ingredientListRenderer = new IngredientListRenderer(ingredientManager, searchable);
 		this.tooltipHelper = new IngredientGridTooltipHelper(ingredientManager, ingredientFilterConfig, toggleState, keyBindings, colorHelper);
@@ -101,13 +97,13 @@ public class IngredientGrid implements IIngredientGrid {
 		return this.area.height();
 	}
 
+	/** Applies the grid bounds already calculated by the navigation layout. */
 	public void updateBounds(
-		ImmutableRect2i availableArea,
+		ImmutableRect2i gridArea,
 		Set<ImmutableRect2i> guiExclusionAreas,
-		@Nullable ImmutablePoint2i mouseExclusionPoint,
-		boolean allowPartialRows
+		@Nullable ImmutablePoint2i mouseExclusionPoint
 	) {
-		this.area = IngredientGridLayout.calculateBounds(this.gridConfig, availableArea, allowPartialRows);
+		this.area = gridArea;
 		this.guiExclusionAreas = guiExclusionAreas;
 		this.mouseExclusionPoint = mouseExclusionPoint;
 		this.visibleSlotCount = IngredientGridLayout.calculateAvailableSlotCount(

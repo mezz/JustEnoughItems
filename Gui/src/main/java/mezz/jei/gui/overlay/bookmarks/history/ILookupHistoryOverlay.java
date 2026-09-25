@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay.bookmarks.history;
 
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import org.jspecify.annotations.Nullable;
@@ -22,6 +23,8 @@ public interface ILookupHistoryOverlay {
 	int getDisplayHeight();
 
 	boolean isBackgroundEnabled();
+
+	void setResizeBounds(ImmutableRect2i area, VerticalAlignment verticalAlignment);
 
 	ImmutableRect2i getBackgroundArea();
 

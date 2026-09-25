@@ -43,7 +43,6 @@ public final class OverlayHelper {
 	) {
 		IngredientGrid ingredientListGrid = new IngredientGrid(
 			ingredientManager,
-			ingredientGridConfig,
 			ingredientFilterConfig,
 			clientConfig,
 			toggleState,
@@ -99,7 +98,8 @@ public final class OverlayHelper {
 
 		IIngredientGridConfig lookupHistoryGridConfig = new LookupHistoryGridConfig(
 			ingredientGridConfig,
-			clientConfig.maxLookupHistoryRows()
+			clientConfig.maxLookupHistoryRows(),
+			clientConfig.maxLookupHistoryColumns()
 		);
 		IngredientGridWithNavigation lookupHistoryGridNavigation = createIngredientGridWithNavigation(
 			"IngredientListLookupHistory",
@@ -175,7 +175,8 @@ public final class OverlayHelper {
 
 		IIngredientGridConfig lookupHistoryGridConfig = new LookupHistoryGridConfig(
 			bookmarkListConfig,
-			clientConfig.maxLookupHistoryRows()
+			clientConfig.maxLookupHistoryRows(),
+			clientConfig.maxLookupHistoryColumns()
 		);
 		IngredientGridWithNavigation lookupHistoryGridNavigation = createIngredientGridWithNavigation(
 			"BookmarkLookupHistory",

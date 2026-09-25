@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay.bookmarks;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IBookmarkOverlay;
@@ -36,7 +37,6 @@ import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.ingredients.IngredientGridBackgroundRenderer;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.ingredients.IngredientGridLayout;
-import mezz.jei.gui.overlay.history.LookupHistoryOverlayLayout;
 import mezz.jei.gui.overlay.IScreenPropertiesUpdater;
 import mezz.jei.gui.overlay.GuiPropertiesCache;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryButtonController;
@@ -119,6 +119,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 		Internal.registerRuntimeListenerRemoval(clientConfig.lookupHistoryEnabled().addListener(v -> markScreenPropertiesDirty()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.maxLookupHistoryRows().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(clientConfig.maxLookupHistoryColumns().addListener(v -> markScreenPropertiesDirty()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.lookupHistoryDisplaySide().addListener(v -> markScreenPropertiesDirty()));
 		addGridConfigListeners(bookmarkListConfig);
 	}
@@ -134,6 +135,23 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	public boolean hasRoom() {
 		updateScreenPropertiesIfDirty();
 		return contents.hasRoom();
+	}
+
+	public IUserInputHandler getResizeInputHandler() {
+		IUserInputHandler historyResize = new ProxyInputHandler(() -> {
+			updateScreenPropertiesIfDirty();
+			if (guiPropertiesCache.hasValidScreen() && toggleState.isOverlayEnabled() && lookupHistoryOverlay.isListDisplayed()) {
+				return lookupHistoryOverlay.getResizeInputHandler();
+			}
+			return NullInputHandler.INSTANCE;
+		});
+		IUserInputHandler contentsResize = new ProxyInputHandler(() -> {
+			if (isListDisplayed()) {
+				return contents.getResizeInputHandler();
+			}
+			return NullInputHandler.INSTANCE;
+		});
+		return new CombinedInputHandler("BookmarkResize", historyResize, contentsResize);
 	}
 
 	private void markScreenPropertiesDirty() {
@@ -198,14 +216,10 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		this.contents.updateLayoutKeepingPageAnchorVisible(pageAnchorElement);
 
 		historyArea.ifPresent(area -> {
-			ImmutableRect2i alignedArea = alignLookupHistoryArea(area);
-			this.lookupHistoryOverlay.updateBounds(alignedArea, guiExclusionAreas, mouseExclusionArea);
+			this.lookupHistoryOverlay.updateBounds(area, guiExclusionAreas, mouseExclusionArea);
 			this.lookupHistoryOverlay.updateLayout();
-			ImmutableRect2i positionedArea = positionLookupHistoryArea(alignedArea);
-			if (!positionedArea.equals(alignedArea)) {
-				this.lookupHistoryOverlay.updateBounds(positionedArea, guiExclusionAreas, mouseExclusionArea);
-				this.lookupHistoryOverlay.updateLayout();
-			}
+			ImmutableRect2i resizeArea = displayArea.cropBottom(BUTTON_SIZE + LOOKUP_HISTORY_BOTTOM_PADDING);
+			this.lookupHistoryOverlay.setResizeBounds(resizeArea, VerticalAlignment.BOTTOM);
 		});
 
 		ImmutableRect2i insetDisplayArea = displayArea.insetBy(BORDER_MARGIN);
@@ -229,29 +243,6 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			ImmutableRect2i historyButtonArea = bookmarkButtonArea.moveRight(BUTTON_GAP + BUTTON_SIZE);
 			this.historyButton.updateBounds(historyButtonArea);
 		}
-	}
-
-	private ImmutableRect2i alignLookupHistoryArea(ImmutableRect2i lookupHistoryArea) {
-		return LookupHistoryOverlayLayout.alignToOwnerBackground(
-			lookupHistoryArea,
-			this.contents.getBackgroundArea()
-		);
-	}
-
-	private ImmutableRect2i positionLookupHistoryArea(ImmutableRect2i lookupHistoryArea) {
-		boolean combineBackgrounds = this.contents.isBackgroundEnabled() &&
-			this.lookupHistoryOverlay.isBackgroundEnabled() &&
-			toggleState.isBookmarkOverlayEnabled() &&
-			this.contents.hasRoom() &&
-			!bookmarkList.isEmpty();
-		if (!combineBackgrounds) {
-			return lookupHistoryArea;
-		}
-		return LookupHistoryOverlayLayout.moveNextToOwner(
-			lookupHistoryArea,
-			this.lookupHistoryOverlay.getBackgroundArea(),
-			this.contents.getBackgroundArea()
-		);
 	}
 
 	private static ImmutableRect2i cropBottomTo(ImmutableRect2i area, int bottomY) {
