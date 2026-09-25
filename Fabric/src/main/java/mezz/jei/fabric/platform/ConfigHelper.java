@@ -1,6 +1,8 @@
 package mezz.jei.fabric.platform;
 
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.platform.IPlatformConfigHelper;
+import mezz.jei.gui.config.JeiConfigGuiPlugin;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.Screen;
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +16,7 @@ import java.util.Optional;
 public class ConfigHelper implements IPlatformConfigHelper {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final String MOD_MENU_MOD_ID = "modmenu";
+	private static final String MEZZ_CONFIG_GUI_MOD_ID = "mezz_config_gui";
 
 	@Override
 	public Path getModConfigDir() {
@@ -23,6 +26,12 @@ public class ConfigHelper implements IPlatformConfigHelper {
 
 	@Override
 	public Optional<Screen> getConfigScreen(String modId, @Nullable Screen parent) {
+		if (ModIds.JEI_ID.equals(modId) && FabricLoader.getInstance().isModLoaded(MEZZ_CONFIG_GUI_MOD_ID)) {
+			Optional<Screen> screen = JeiConfigGuiPlugin.createScreen(parent);
+			if (screen.isPresent()) {
+				return screen;
+			}
+		}
 		if (FabricLoader.getInstance().isModLoaded(MOD_MENU_MOD_ID)) {
 			return getModMenuConfigScreen(modId, parent);
 		}

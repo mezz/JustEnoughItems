@@ -15,15 +15,35 @@ import net.mezzdev.config.gui.api.IConfigGuiPlugin;
 import net.mezzdev.config.gui.api.IConfigGuiRegistration;
 import net.mezzdev.config.gui.api.IConfigScreenCategoryBuilder;
 import net.mezzdev.config.gui.api.IConfigScreenBuilder;
+import net.mezzdev.config.gui.api.IConfigScreenFactory;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * JEI config GUI customizations.
  */
 @ConfigGuiPlugin
 public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
+	@Nullable
+	private static IConfigScreenFactory screenFactory;
+
+	@Override
+	public void onScreenFactoryAvailable(IConfigScreenFactory screenFactory) {
+		JeiConfigGuiPlugin.screenFactory = screenFactory;
+	}
+
+	public static Optional<Screen> createScreen(@Nullable Screen parent) {
+		IConfigScreenFactory factory = screenFactory;
+		if (factory == null) {
+			return Optional.empty();
+		}
+		return Optional.of(factory.create(parent));
+	}
+
 	@Override
 	public String getModId() {
 		return ModIds.JEI_ID;

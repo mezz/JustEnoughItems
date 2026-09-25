@@ -21,6 +21,7 @@ public class JeiFabricSingleplayerClientGameTest implements FabricClientGameTest
 				try (TestSingleplayerContext ignored = context.worldBuilder().create()) {
 					JeiFabricClientGameTestAssertions.assertJeiStartedWithSyncedRecipes(context);
 					JeiFabricClientGameTestAssertions.assertServerHasJei(context);
+					ConfigScreenClientTest.run(context);
 					RecipeSlotTooltipClientTest.run(context);
 				}
 				JeiFabricClientGameTestAssertions.assertClientRecipesCleared(context, "Fabric singleplayer");
