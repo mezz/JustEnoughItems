@@ -258,8 +258,9 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 					boolean transferOnce = input.is(keyMappings.getTransferRecipeGui());
 					boolean transferMax = input.is(keyMappings.getMaxTransferRecipeGui());
 					if (transferOnce || transferMax) {
-						transferButton.transferRecipe(transferMax, simulate);
-						return Optional.of(this);
+						if (transferButton.transferRecipe(transferMax, simulate)) {
+							return Optional.of(this);
+						}
 					}
 				}
 			}
