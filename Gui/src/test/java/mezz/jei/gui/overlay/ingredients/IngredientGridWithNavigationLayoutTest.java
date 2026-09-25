@@ -30,7 +30,6 @@ public class IngredientGridWithNavigationLayoutTest {
 		ImmutableRect2i availableArea = largeAvailableArea();
 		IngredientGrid ingredientGrid = new IngredientGrid(
 			null,
-			gridConfig,
 			null,
 			null,
 			null,

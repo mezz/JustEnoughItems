@@ -11,15 +11,17 @@ import net.mezzdev.config.api.value.IConfigValue;
 public final class LookupHistoryGridConfig implements IIngredientGridConfig {
 	private final IIngredientGridConfig ownerConfig;
 	private final IConfigValue<Integer> maxRows;
+	private final IConfigValue<Integer> maxColumns;
 
-	public LookupHistoryGridConfig(IIngredientGridConfig ownerConfig, IConfigValue<Integer> maxRows) {
+	public LookupHistoryGridConfig(IIngredientGridConfig ownerConfig, IConfigValue<Integer> maxRows, IConfigValue<Integer> maxColumns) {
 		this.ownerConfig = ownerConfig;
 		this.maxRows = maxRows;
+		this.maxColumns = maxColumns;
 	}
 
 	@Override
 	public IConfigValue<Integer> maxColumns() {
-		return ownerConfig.maxColumns();
+		return maxColumns;
 	}
 
 	@Override
