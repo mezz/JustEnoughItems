@@ -101,6 +101,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		Internal.registerRuntimeListenerRemoval(clientConfig.searchBarPosition().addListener(v -> markScreenPropertiesDirty()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.lookupHistoryEnabled().addListener(v -> markScreenPropertiesDirty()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.maxLookupHistoryRows().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(clientConfig.maxLookupHistoryColumns().addListener(v -> markScreenPropertiesDirty()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.lookupHistoryDisplaySide().addListener(v -> markScreenPropertiesDirty()));
 		addGridConfigListeners(ingredientGridConfig);
 	}
@@ -281,6 +282,23 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			}
 			return NullInputHandler.INSTANCE;
 		});
+	}
+
+	public IUserInputHandler getResizeInputHandler() {
+		IUserInputHandler historyResize = new ProxyInputHandler(() -> {
+			updateScreenPropertiesIfDirty();
+			if (controller.hasValidScreen() && toggleState.isOverlayEnabled() && lookupHistoryOverlay.isListDisplayed()) {
+				return lookupHistoryOverlay.getResizeInputHandler();
+			}
+			return NullInputHandler.INSTANCE;
+		});
+		IUserInputHandler contentsResize = new ProxyInputHandler(() -> {
+			if (isListDisplayed()) {
+				return contents.getResizeInputHandler();
+			}
+			return NullInputHandler.INSTANCE;
+		});
+		return new CombinedInputHandler("IngredientListResize", historyResize, contentsResize);
 	}
 
 	public IUserInputHandler createDeleteItemInputHandler() {

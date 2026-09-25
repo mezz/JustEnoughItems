@@ -137,6 +137,10 @@ public class RecipeGuiTabs implements IPaged {
 		return new ProxyInputHandler(() -> inputHandler);
 	}
 
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		return area.contains(mouseX, mouseY);
+	}
+
 	@Override
 	public boolean nextPage() {
 		if (hasNext()) {
