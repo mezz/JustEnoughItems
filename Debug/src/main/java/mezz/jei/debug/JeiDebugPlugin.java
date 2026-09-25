@@ -10,6 +10,7 @@ import mezz.jei.api.gui.builder.IClickableIngredientFactory;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.buttons.IIconButtonController;
+import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -366,6 +367,13 @@ public class JeiDebugPlugin implements IModPlugin {
 
 		registration.addTypedRecipeManagerPlugin(RecipeTypes.CRAFTING, new DebugSimpleRecipeManagerPlugin(jeiHelpers));
 
+		if (DebugConfig.isDebugRecipeButtonsEnabled()) {
+			registerDebugRecipeButtons(registration);
+		}
+	}
+
+	private static void registerDebugRecipeButtons(IAdvancedRegistration registration) {
+		IDrawable debugButtonIcon = registration.getJeiHelpers().getGuiHelper().createDrawableItemStack(new ItemStack(Items.OAK_SAPLING));
 		IRecipeButtonControllerFactory debugButton = new IRecipeButtonControllerFactory() {
 			@Override
 			public <T> IIconButtonController createButtonController(IRecipeLayoutDrawable<T> recipeLayoutDrawable) {
