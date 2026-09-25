@@ -268,7 +268,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		double scrollDeltaX,
 		double scrollDeltaY
 	) {
-		if (this.controller.isActive(this) && this.recipesGui.isOpen() && this.ingredientGrid.isMouseOver(mouseX, mouseY)) {
+		if (this.controller.isActive(this) && this.recipesGui.isOpen()) {
 			double scrollDelta = scrollDeltaY;
 			if (Math.abs(scrollDeltaX) > Math.abs(scrollDeltaY)) {
 				scrollDelta = scrollDeltaX;
