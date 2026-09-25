@@ -186,6 +186,7 @@ final class JeiFabricClientRecipeSyncTests {
 			public void run() {
 				runSingleplayerTestCase(displayName(), () -> {
 					assertSyncedRecipesFromSingleplayer();
+					ConfigScreenClientTest.run();
 					RecipeSlotTooltipClientTest.run();
 				});
 			}
