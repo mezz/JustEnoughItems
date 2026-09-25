@@ -38,7 +38,7 @@ final class IngredientGridResizer implements IUserInputHandler {
 
 	private ImmutableRect2i getArea() {
 		ImmutableRect2i area = grid.getBackgroundArea();
-		if (!area.isEmpty() && !config.drawBackground().get()) {
+		if (!area.isEmpty() && !config.backgroundStyle().get().isEnabled()) {
 			// Unframed grids reserve their surrounding margin for resizing, never ingredient pixels.
 			return area.expandBy(ResizeHandle.SIZE);
 		}

@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -41,7 +42,7 @@ import java.util.stream.Stream;
 
 /**
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.
- * It does not draw a background or have external padding, those are left up to a higher-level element.
+ * Panel backgrounds and external padding are left up to a higher-level element.
  */
 public class IngredientGrid implements IIngredientGrid {
 	private final IIngredientManager ingredientManager;
@@ -141,7 +142,7 @@ public class IngredientGrid implements IIngredientGrid {
 		return area;
 	}
 
-	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean drawSlotBackgrounds) {
 		if (this.smoothScrollRowPixelOffset > 0 || this.area.height() % IngredientGridLayout.INGREDIENT_HEIGHT != 0) {
 			guiGraphics.enableScissor(
 				this.area.x(),
@@ -150,16 +151,22 @@ public class IngredientGrid implements IIngredientGrid {
 				this.area.y() + this.area.height()
 			);
 			try {
-				drawContents(minecraft, guiGraphics, mouseX, mouseY);
+				drawContents(minecraft, guiGraphics, mouseX, mouseY, drawSlotBackgrounds);
 			} finally {
 				guiGraphics.disableScissor();
 			}
 		} else {
-			drawContents(minecraft, guiGraphics, mouseX, mouseY);
+			drawContents(minecraft, guiGraphics, mouseX, mouseY, drawSlotBackgrounds);
 		}
 	}
 
-	private void drawContents(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	private void drawContents(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean drawSlotBackgrounds) {
+		if (drawSlotBackgrounds) {
+			IDrawableStatic slotBackground = Internal.getTextures().getSlot();
+			this.ingredientListRenderer.getSlots()
+				.map(IngredientListSlot::getArea)
+				.forEach(area -> slotBackground.draw(guiGraphics, area.x(), area.y()));
+		}
 		Optional<IngredientListSlot> highlightedSlot = getHighlightedSlot(minecraft, mouseX, mouseY);
 		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
 		highlightedSlot.ifPresent(s -> drawHighlight(guiGraphics, s.getArea(), screenHelper.getSlotHighlightBackSprite()));
