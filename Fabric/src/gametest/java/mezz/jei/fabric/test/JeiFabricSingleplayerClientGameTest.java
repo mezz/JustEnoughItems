@@ -23,7 +23,7 @@ public class JeiFabricSingleplayerClientGameTest implements FabricClientGameTest
 			getClass().getSimpleName(),
 			() -> {
 				assertConfigScreenRenders(context, "jei-config-menu");
-				try (TestSingleplayerContext ignored = context.worldBuilder().create()) {
+				try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
 					JeiFabricClientGameTestAssertions.assertJeiStartedWithSyncedRecipes(context);
 					JeiFabricClientGameTestAssertions.assertServerHasJei(context);
 					ConfigScreenClientTest.run(context);
@@ -34,6 +34,7 @@ public class JeiFabricSingleplayerClientGameTest implements FabricClientGameTest
 					RecipeSourceIdsClientTest.run(context);
 					CookingCategoryExtensionClientTest.run(context);
 					RecipeGuiScrollingClientTest.run(context);
+					RecipeTransferShortcutsClientTest.run(context, singleplayer.getServer());
 				}
 				JeiFabricClientGameTestAssertions.assertClientRecipesCleared(context, "Fabric singleplayer");
 			}
