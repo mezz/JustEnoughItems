@@ -10,6 +10,7 @@ import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridBackgroundStyle;
 import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.config.IngredientSortStage;
@@ -258,6 +259,36 @@ public class ClientConfigMigrationTest {
 		assertEquals(IngredientGridNavigationMode.SCROLLING, reloaded.getBookmarkListConfig().navigationMode().get());
 	}
 
+	@ParameterizedTest
+	@CsvSource({
+		"true, BACKGROUND",
+		"false, NONE",
+		"NONE, NONE",
+		"BACKGROUND, BACKGROUND",
+		"BORDER_ONLY, BORDER_ONLY",
+		"GRID, GRID",
+		"invalid, NONE"
+	})
+	public void loadsBackgroundStylesAndLegacyBooleans(String savedValue, IngredientGridBackgroundStyle expected, @TempDir Path tempDir) throws IOException {
+		Path configFile = tempDir.resolve("jei-client.ini");
+		Files.writeString(configFile, "[lists]\ndrawBackground = " + savedValue + "\n");
+		ConfigFileWatcherSettings disabledWatcher = ConfigFileWatcherSettings.clientDefaults().withEnabled(false);
+		ConfigManager configManager = new ConfigManager("JEI Background Style Migration Test", disabledWatcher, disabledWatcher);
+		ISortingConfig<String> recipeSorting = configManager.createInMemorySortingConfig(Comparator.naturalOrder(), true);
+		ClientConfigs configs = new ClientConfigs(
+			new ConfigSchemaBuilder("jei", configFile, "jei.config.client", configManager),
+			false,
+			recipeSorting
+		);
+
+		assertEquals(expected, configs.getIngredientListConfig().backgroundStyle().get());
+		assertEquals(expected, configs.getBookmarkListConfig().backgroundStyle().get());
+		assertEquals(
+			Optional.of(List.of(IngredientGridBackgroundStyle.values())),
+			configs.getIngredientListConfig().backgroundStyle().getEditorInfo().getSerializer().getAllValidValues()
+		);
+	}
+
 	@Test
 	public void migratesSmoothScrollingNavigationModeFromCurrentConfig(@TempDir Path tempDir) throws IOException {
 		Path configFile = tempDir.resolve("jei-client.ini");
@@ -330,7 +361,7 @@ public class ClientConfigMigrationTest {
 		assertEquals(horizontalAlignment, config.horizontalAlignment().get());
 		assertEquals(verticalAlignment, config.verticalAlignment().get());
 		assertEquals(navigationVisibility, config.navigationVisibility().get());
-		assertTrue(config.drawBackground().get());
+		assertEquals(IngredientGridBackgroundStyle.BACKGROUND, config.backgroundStyle().get());
 		assertEquals(layoutMode, config.layoutMode().get());
 		assertEquals(navigationMode, config.navigationMode().get());
 	}

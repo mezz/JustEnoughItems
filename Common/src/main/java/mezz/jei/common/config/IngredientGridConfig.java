@@ -69,8 +69,8 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	}
 
 	@Override
-	public IConfigValue<Boolean> drawBackground() {
-		return sharedConfig.drawBackground();
+	public IConfigValue<IngredientGridBackgroundStyle> backgroundStyle() {
+		return sharedConfig.backgroundStyle();
 	}
 
 	@Override

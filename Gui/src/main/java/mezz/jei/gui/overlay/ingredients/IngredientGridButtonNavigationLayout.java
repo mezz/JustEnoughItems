@@ -157,7 +157,7 @@ public final class IngredientGridButtonNavigationLayout {
 		}
 
 		int gridPadding = 0;
-		if (gridConfig.drawBackground().get()) {
+		if (gridConfig.backgroundStyle().get().isEnabled()) {
 			gridPadding = IngredientGridWithNavigationLayout.INNER_PADDING;
 		}
 		int navigationToGridOffset = IngredientGridWithNavigationLayout.NAVIGATION_HEIGHT +
@@ -319,7 +319,7 @@ public final class IngredientGridButtonNavigationLayout {
 		IIngredientGridConfig gridConfig
 	) {
 		int padding = 0;
-		if (gridConfig.drawBackground().get()) {
+		if (gridConfig.backgroundStyle().get().isEnabled()) {
 			padding = IngredientGridWithNavigationLayout.BORDER_PADDING + IngredientGridWithNavigationLayout.INNER_PADDING;
 		}
 		int stripTop = availableArea.y() + IngredientGridWithNavigationLayout.BORDER_MARGIN;
@@ -467,7 +467,7 @@ public final class IngredientGridButtonNavigationLayout {
 	) {
 		int x = slotBackgroundArea.x();
 		int right = slotBackgroundArea.x() + slotBackgroundArea.width();
-		if (gridConfig.drawBackground().get()) {
+		if (gridConfig.backgroundStyle().get().isEnabled()) {
 			x -= IngredientGridWithNavigationLayout.BORDER_PADDING;
 			right += IngredientGridWithNavigationLayout.BORDER_PADDING;
 		}

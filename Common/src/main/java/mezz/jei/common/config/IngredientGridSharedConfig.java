@@ -6,16 +6,20 @@ import net.mezzdev.config.api.value.editor.ConfigValueEditMode;
 import net.mezzdev.config.api.value.IConfigValue;
 
 final class IngredientGridSharedConfig {
-	private static final boolean defaultDrawBackground = false;
+	private static final IngredientGridBackgroundStyle defaultBackgroundStyle = IngredientGridBackgroundStyle.NONE;
 	private static final IngredientGridNavigationMode defaultNavigationMode = IngredientGridNavigationMode.PAGED;
 	private static final NavigationVisibility defaultNavigationVisibility = NavigationVisibility.ENABLED;
 
-	private final IConfigValue<Boolean> drawBackground;
+	private final IConfigValue<IngredientGridBackgroundStyle> backgroundStyle;
 	private final IConfigValue<IngredientGridNavigationMode> navigationMode;
 	private final IConfigValue<NavigationVisibility> navigationVisibility;
 
 	IngredientGridSharedConfig(IConfigCategoryBuilder category) {
-		drawBackground = category.addBoolean("drawBackground", defaultDrawBackground)
+		backgroundStyle = category.addValue(
+				"drawBackground",
+				defaultBackgroundStyle,
+				LegacyEnumSerializers.enumOrBoolean(IngredientGridBackgroundStyle.class, IngredientGridBackgroundStyle::fromBoolean)
+			)
 			.addLegacyValue("ingredientList", "drawBackground")
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
@@ -38,8 +42,8 @@ final class IngredientGridSharedConfig {
 			.build();
 	}
 
-	IConfigValue<Boolean> drawBackground() {
-		return drawBackground;
+	IConfigValue<IngredientGridBackgroundStyle> backgroundStyle() {
+		return backgroundStyle;
 	}
 
 	IConfigValue<IngredientGridNavigationMode> navigationMode() {
