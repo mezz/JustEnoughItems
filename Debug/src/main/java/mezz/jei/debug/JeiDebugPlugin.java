@@ -357,7 +357,6 @@ public class JeiDebugPlugin implements IModPlugin {
 	@Override
 	public void registerAdvanced(IAdvancedRegistration registration) {
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
-		IDrawable debugButtonIcon = jeiHelpers.getGuiHelper().createDrawableItemStack(new ItemStack(Items.OAK_SAPLING));
 
 		jeiHelpers
 			.getAllRecipeTypes()
@@ -366,6 +365,13 @@ public class JeiDebugPlugin implements IModPlugin {
 
 		registration.addSimpleRecipeManagerPlugin(RecipeTypes.CRAFTING, new DebugSimpleRecipeManagerPlugin(jeiHelpers));
 
+		if (DebugConfig.isDebugRecipeButtonsEnabled()) {
+			registerDebugRecipeButtons(registration);
+		}
+	}
+
+	private static void registerDebugRecipeButtons(IAdvancedRegistration registration) {
+		IDrawable debugButtonIcon = registration.getJeiHelpers().getGuiHelper().createDrawableItemStack(new ItemStack(Items.OAK_SAPLING));
 		IRecipeButtonControllerFactory debugButton = new IRecipeButtonControllerFactory() {
 			@Override
 			public <T> IIconButtonController createButtonController(IRecipeLayoutDrawable<T> recipeLayoutDrawable) {
