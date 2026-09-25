@@ -256,6 +256,7 @@ val keyMappingGametestWithoutAmecsSourceSet = sourceSets.create("keyMappingGamet
 
 dependencies {
     "gametestImplementation"(testFixtures(project(":Common")))
+    "modGametestImplementation"(mezzConfigGuiFabricDependency)
 }
 
 loom {
