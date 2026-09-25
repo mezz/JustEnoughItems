@@ -239,7 +239,7 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 		public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
 			final double mouseX = input.getMouseX();
 			final double mouseY = input.getMouseY();
-			if (recipeLayout.isMouseOver(mouseX, mouseY) && recipeLayout.getSlotUnderMouse(mouseX, mouseY).isEmpty()) {
+			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
 				InputConstants.Key key = input.getKey();
 				boolean simulate = input.isSimulate();
 
@@ -254,11 +254,13 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 					}
 				}
 
-				boolean transferOnce = input.is(keyMappings.getTransferRecipeGui());
-				boolean transferMax = input.is(keyMappings.getMaxTransferRecipeGui());
-				if (transferOnce || transferMax) {
-					transferButton.transferRecipe(transferMax, simulate);
-					return Optional.of(this);
+				if (recipeLayout.getSlotUnderMouse(mouseX, mouseY).isEmpty()) {
+					boolean transferOnce = input.is(keyMappings.getTransferRecipeGui());
+					boolean transferMax = input.is(keyMappings.getMaxTransferRecipeGui());
+					if (transferOnce || transferMax) {
+						transferButton.transferRecipe(transferMax, simulate);
+						return Optional.of(this);
+					}
 				}
 			}
 			return Optional.empty();
