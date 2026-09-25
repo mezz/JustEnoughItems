@@ -39,6 +39,7 @@ final class JeiFabricClientRecipeSyncTests {
 	}
 
 	private static void runSingleplayerTestCase(String name, Runnable assertions) {
+		ConfigScreenClientTest.runFromMenu();
 		try (FabricClientTestWorld ignored = FabricClientTestWorld.create()) {
 			assertions.run();
 		}

@@ -5,6 +5,7 @@ import mezz.jei.fabric.test.mixin.MouseHandlerAccessor;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
+import net.minecraft.client.gui.screens.Screen;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /** Runs client assertions and real mouse callbacks through the 1.21.1 test harness. */
 final class FabricClientTestContext {
@@ -35,6 +37,11 @@ final class FabricClientTestContext {
 
 	<T> T computeOnClient(Function<Minecraft, T> task) {
 		return ClientTestUtil.computeOnClient(task);
+	}
+
+	void setScreen(Supplier<Screen> screen) {
+		runOnClient(client -> client.setScreen(screen.get()));
+		waitTicks(2);
 	}
 
 	void waitTick() {

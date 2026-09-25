@@ -288,7 +288,7 @@
   "jei.config.client.recipes.enableRecipesGuiIngredientsSummary.value.true.description": "Show the ingredient summary on recipe outputs.",
   "jei.config.client.recipes.enableRecipesGuiIngredientsSummary.value.false.description": "Hide the ingredient summary on recipe outputs.",
 
-  "jei.config.client.lookups": "Lookups & History",
+  "jei.config.client.lookups": "Lookups",
   "jei.config.client.lookups.description": "Options for choosing which related recipes and uses JEI includes.",
   "jei.config.client.lookups.lookupFluidContentsEnabled": "Look Up Fluids Inside Items",
   "jei.config.client.lookups.lookupFluidContentsEnabled.description": "When looking up recipes for a bucket or other fluid container, also include recipes for the fluid inside.",
@@ -299,7 +299,7 @@
   "jei.config.client.lookups.lookupBlockTagsEnabled.value.true.description": "Include recipes that use matching block tags.",
   "jei.config.client.lookups.lookupBlockTagsEnabled.value.false.description": "Only use item tags when looking up block items.",
 
-  "jei.config.client.lookupHistory": "Lookup History",
+  "jei.config.client.lookupHistory": "History",
   "jei.config.client.lookupHistory.description": "Options for the list of ingredients recently used for recipe and use lookups.",
   "jei.config.client.lookups.enabled": "Show Lookup History",
   "jei.config.client.lookups.enabled.description": "Show a list of ingredients recently used for recipe and use lookups.",
@@ -613,5 +613,17 @@
   "jei.config.client.lists.drawBackground.grid": "Background with Grid",
   "jei.config.client.lists.drawBackground.grid.description": "Show a panel background with a grid of ingredient slots.",
   "jei.config.client.recipes.maxRecipeGuiColumns": "Maximum Recipe Columns",
-  "jei.config.client.recipes.maxRecipeGuiColumns.description": "Limit how many columns of recipes can appear when the recipe screen is wide enough. Drag its edges or corners to make room for more columns."
+  "jei.config.client.recipes.maxRecipeGuiColumns.description": "Limit how many columns of recipes can appear when the recipe screen is wide enough. Drag its edges or corners to make room for more columns.",
+  "jei.config.client.input.mouse": "Mouse",
+  "jei.config.client.input.mouse.description": "Options for dragging and resizing with the mouse.",
+  "jei.config.client.input.scrolling": "Scrolling",
+  "jei.config.client.input.scrolling.description": "Options for mouse-wheel scrolling.",
+  "jei.config.client.input.keyBindings": "Key Bindings",
+  "jei.config.client.input.keyBindings.description": "Keyboard and mouse shortcuts for JEI actions.",
+  "jei.config.client.search.completion": "Completion",
+  "jei.config.client.search.completion.description": "Options for suggestions shown while typing in the search bar.",
+  "jei.config.client.search.matching": "Matching",
+  "jei.config.client.search.matching.description": "Choose which ingredient details and alternate names are searched.",
+  "jei.config.client.recipes.appearance": "Appearance",
+  "jei.config.client.recipes.appearance.description": "Options for recipe screen size and ingredient animations."
 }
