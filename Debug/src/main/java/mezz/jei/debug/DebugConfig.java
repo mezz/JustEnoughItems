@@ -18,4 +18,8 @@ public final class DebugConfig {
 	public static boolean isDebugGuisEnabled() {
 		return Boolean.getBoolean(PROPERTY_PREFIX + "debugGuisEnabled");
 	}
+
+	public static boolean isDebugRecipeButtonsEnabled() {
+		return Boolean.getBoolean(PROPERTY_PREFIX + "debugRecipeButtonsEnabled");
+	}
 }
