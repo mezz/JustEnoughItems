@@ -39,6 +39,9 @@ final class ClientTestUtil {
 
 	public static <T> T computeOnClient(Function<Minecraft, T> task, Duration timeout) {
 		Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft.isSameThread()) {
+			return task.apply(minecraft);
+		}
 		CompletableFuture<T> future = new CompletableFuture<>();
 		minecraft.execute(() -> {
 			try {

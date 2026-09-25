@@ -188,6 +188,7 @@ final class JeiFabricClientRecipeSyncTests {
 					assertSyncedRecipesFromSingleplayer();
 					ConfigScreenClientTest.run();
 					RecipeSlotTooltipClientTest.run();
+					JeiGuiResizeClientGameTest.run();
 				});
 			}
 		},

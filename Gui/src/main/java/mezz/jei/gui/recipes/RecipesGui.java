@@ -31,6 +31,7 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.common.gui.GuiProperties;
@@ -39,6 +40,8 @@ import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.buttons.IIconButtonController;
 import mezz.jei.gui.elements.IconButton;
+import mezz.jei.gui.elements.ResizeDrag;
+import mezz.jei.gui.elements.ResizeHandle;
 import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
@@ -73,7 +76,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private static final int titleInnerPadding = 14;
 	private static final int smallButtonWidth = 13;
 	private static final int smallButtonHeight = 13;
-	private static final int minGuiWidth = 198;
+	private static final int minGuiWidth = IClientConfig.minRecipeGuiWidth;
+	private final ResizeInputHandler resizeInputHandler = new ResizeInputHandler();
+	private @Nullable ResizeDrag resizeDrag;
 
 	private final IInternalKeyMappings keyBindings;
 	private final BookmarkList bookmarks;
@@ -163,6 +168,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 		Internal.registerRuntimeListenerRemoval(clientConfig.searchBarPosition().addListener(v -> reopenIfOpen()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.maxRecipeGuiHeight().addListener(v -> reopenIfOpen()));
+		Internal.registerRuntimeListenerRemoval(clientConfig.recipeGuiWidth().addListener(v -> reopenIfOpen()));
+		Internal.registerRuntimeListenerRemoval(clientConfig.guiResizeEnabled().addListener(v -> resizeInputHandler.unfocus()));
 
 		Textures textures = Internal.getTextures();
 		IDrawableStatic arrowNext = textures.getArrowNext();
@@ -256,6 +263,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		inputHandler = new UserInputRouter(
 			"RecipesGui",
 			this.interactiveIngredientTooltipController,
+			this.resizeInputHandler,
 			layouts.createInputHandler(),
 			new UserInputHandler(this),
 			optionButtons.createInputHandler(),
@@ -286,9 +294,14 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	@Override
 	public void init() {
 		super.init();
+		this.resizeDrag = null;
+		updateSize();
+	}
 
-		final int xSize = minGuiWidth;
+	private void updateSize() {
 		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
+		int maxWidth = Math.max(minGuiWidth, this.width - 2 * Math.max(borderPadding, getLeftSideExtraWidth()));
+		int xSize = Math.clamp(clientConfig.recipeGuiWidth().get(), minGuiWidth, maxWidth);
 		RecipeGuiSizing.Size recipeGuiSize = RecipeGuiSizing.calculateInitialSize(
 			this.height,
 			clientConfig.searchBarPosition().get().isCentered(),
@@ -302,7 +315,15 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		this.idealArea = new ImmutableRect2i(guiLeft, guiTop, xSize, ySize);
 		this.area = this.idealArea;
+		updateNavigation();
+		this.init = true;
+		updateLayout();
+	}
 
+	private void updateNavigation() {
+		int guiLeft = idealArea.x();
+		int guiTop = idealArea.y();
+		int xSize = idealArea.width();
 		final int rightButtonX = guiLeft + xSize - borderPadding - smallButtonWidth;
 		final int leftButtonX = guiLeft + borderPadding;
 
@@ -316,9 +337,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		previousPage.updateBounds(previousPage.getArea().setPosition(leftButtonX, pageButtonTop));
 
 		this.headerHeight = (pageButtonTop + smallButtonHeight) - guiTop;
-
-		this.init = true;
-		updateLayout();
 	}
 
 	@Override
@@ -332,7 +350,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			return;
 		}
 		super.render(guiGraphics, mouseX, mouseY, partialTicks);
-
 		// The screen background has already been drawn, followed by the JEI overlay hook.
 		// Another background pass here would darken the overlay controls.
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -437,7 +454,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			return idealArea;
 		}
 		final int padding = 2 * borderPadding;
-		int width = minGuiWidth - padding;
+		int width = idealArea.getWidth() - padding;
 
 		width = Math.max(recipeWidth, width);
 
@@ -509,9 +526,83 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		return this.interactiveIngredientTooltipController;
 	}
 
+	public IUserInputHandler getResizeInputHandler() {
+		return resizeInputHandler;
+	}
+
+	private ResizeHandle getResizeHandle(double mouseX, double mouseY) {
+		if (!Internal.getClientConfigs().getClientConfig().guiResizeEnabled().get() || !isOpen() || recipeGuiTabs.isMouseOver(mouseX, mouseY) || optionButtons.getArea().contains(mouseX, mouseY)) {
+			return ResizeHandle.NONE;
+		}
+		return ResizeHandle.at(area, mouseX, mouseY);
+	}
+
+	private class ResizeInputHandler implements IUserInputHandler {
+		private ImmutableSize2i initialPreferredSize = ImmutableSize2i.EMPTY;
+
+		@Override
+		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+			if (!isOpen() || !Internal.getClientConfigs().getClientConfig().guiResizeEnabled().get() || !input.is(keyBindings.getLeftClick())) {
+				return Optional.empty();
+			}
+			if (input.isSimulate()) {
+				ResizeHandle handle = getResizeHandle(input.getMouseX(), input.getMouseY());
+				if (!handle.isPresent()) {
+					return Optional.empty();
+				}
+				resizeDrag = new ResizeDrag(handle, input.getMouseX(), input.getMouseY(), area.getSize());
+				IClientConfig config = Internal.getClientConfigs().getClientConfig();
+				initialPreferredSize = new ImmutableSize2i(config.recipeGuiWidth().get(), config.maxRecipeGuiHeight().get());
+				interactiveIngredientTooltipController.hide();
+				return Optional.of(this);
+			}
+			if (resizeDrag == null) {
+				return Optional.empty();
+			}
+			resizeDrag = null;
+			return Optional.of(this);
+		}
+
+		@Override
+		public Optional<IUserInputHandler> handleMouseDragged(double mouseX, double mouseY, InputConstants.Key mouseKey, double dragX, double dragY) {
+			ResizeDrag drag = resizeDrag;
+			if (drag == null || mouseKey.getValue() != InputConstants.MOUSE_BUTTON_LEFT) {
+				return Optional.empty();
+			}
+			IClientConfig config = Internal.getClientConfigs().getClientConfig();
+			int maxHeight = RecipeGuiSizing.calculateInitialSize(height, config.searchBarPosition().get().isCentered(), Integer.MAX_VALUE).ySize();
+			int maxWidth = Math.max(minGuiWidth, width - 2 * Math.max(borderPadding, getLeftSideExtraWidth()));
+			ImmutableSize2i size = drag.resize(mouseX, mouseY, true, true,
+				new ImmutableSize2i(minGuiWidth, IClientConfig.minRecipeGuiHeight), new ImmutableSize2i(maxWidth, maxHeight));
+			int preferredWidth = initialPreferredSize.width();
+			int preferredHeight = initialPreferredSize.height();
+			// Preserve the configured size on untouched axes and when dragging back to the starting size.
+			if (drag.handle().horizontal() && size.width() != drag.size().width()) {
+				preferredWidth = size.width();
+			}
+			if (drag.handle().vertical() && size.height() != drag.size().height()) {
+				preferredHeight = size.height();
+			}
+			if (preferredWidth != config.recipeGuiWidth().get() || preferredHeight != config.maxRecipeGuiHeight().get()) {
+				config.recipeGuiWidth().set(preferredWidth);
+				config.maxRecipeGuiHeight().set(preferredHeight);
+				updateSize();
+			}
+			return Optional.of(this);
+		}
+
+		@Override
+		public void unfocus() {
+			resizeDrag = null;
+		}
+	}
+
 	@Override
 	public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
 		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
+		if (resizeInputHandler.handleMouseDragged(mouseX, mouseY, input, dragX, dragY).isPresent()) {
+			return true;
+		}
 		return layouts.mouseDragged(mouseX, mouseY, input, dragX, dragY);
 	}
 
@@ -563,7 +654,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	private void reopenIfOpen() {
-		if (isOpen() && minecraft != null) {
+		if (resizeDrag == null && isOpen() && minecraft != null) {
 			Screen currentParentScreen = parentScreen;
 			minecraft.setScreen(currentParentScreen);
 			parentScreen = currentParentScreen;
@@ -582,6 +673,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Override
 	public void onClose() {
+		resizeDrag = null;
 		if (isOpen() && minecraft != null) {
 			minecraft.setScreen(parentScreen);
 			parentScreen = null;

@@ -1,0 +1,93 @@
+package mezz.jei.fabric.test;
+
+import com.mojang.blaze3d.platform.NativeImage;
+import mezz.jei.fabric.test.mixin.MouseHandlerAccessor;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.Screenshot;
+import org.lwjgl.glfw.GLFW;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
+/** Runs client assertions and real mouse callbacks through the 1.21.1 test harness. */
+final class FabricClientTestContext {
+	private static final AtomicBoolean REGISTERED = new AtomicBoolean();
+	private static final AtomicLong TICKS = new AtomicLong();
+	private final Input input = new Input();
+
+	FabricClientTestContext() {
+		if (REGISTERED.compareAndSet(false, true)) {
+			ClientTestUtil.runOnClient(client -> ClientTickEvents.END_CLIENT_TICK.register(ignored -> TICKS.incrementAndGet()));
+		}
+	}
+
+	void runOnClient(Consumer<Minecraft> task) {
+		ClientTestUtil.runOnClient(task);
+	}
+
+	<T> T computeOnClient(Function<Minecraft, T> task) {
+		return ClientTestUtil.computeOnClient(task);
+	}
+
+	void waitTick() {
+		waitTicks(1);
+	}
+
+	void waitTicks(int count) {
+		long target = TICKS.get() + count;
+		ClientTestUtil.waitUntil(() -> TICKS.get() >= target, Duration.ofSeconds(30), () -> "Timed out waiting for " + count + " client ticks");
+	}
+
+	Input getInput() {
+		return input;
+	}
+
+	Path takeScreenshot(String name) {
+		return computeOnClient(client -> {
+			Path path = client.gameDirectory.toPath().resolve("screenshots").resolve(name + ".png");
+			try (NativeImage image = Screenshot.takeScreenshot(client.getMainRenderTarget())) {
+				Files.createDirectories(path.getParent());
+				image.writeToFile(path);
+				return path;
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		});
+	}
+
+	static final class Input {
+		void setCursorPos(double x, double y) {
+			ClientTestUtil.runOnClient(client -> {
+				long window = client.getWindow().getWindow();
+				GLFW.glfwSetCursorPos(window, x, y);
+				((MouseHandlerAccessor) client.mouseHandler).jei$invokeOnMove(window, x, y);
+				client.mouseHandler.handleAccumulatedMovement();
+			});
+		}
+
+		void holdMouse(int button) {
+			mouseButton(button, GLFW.GLFW_PRESS);
+		}
+
+		void releaseMouse(int button) {
+			mouseButton(button, GLFW.GLFW_RELEASE);
+		}
+
+		private void mouseButton(int button, int action) {
+			ClientTestUtil.runOnClient(client -> ((MouseHandlerAccessor) client.mouseHandler)
+				.jei$invokeOnPress(client.getWindow().getWindow(), button, action, 0));
+		}
+
+		void resizeWindow(int width, int height) {
+			ClientTestUtil.runOnClient(client -> GLFW.glfwSetWindowSize(client.getWindow().getWindow(), width, height));
+		}
+	}
+}
