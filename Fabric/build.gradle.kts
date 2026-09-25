@@ -90,7 +90,7 @@ val debugSourceSet = debugProject.sourceSets.main.get()
 val commonClientTestFixturesSource = project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java")
 val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
     java.srcDir(commonClientTestFixturesSource)
-    compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
+    compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath + sourceSets.main.get().runtimeClasspath
     runtimeClasspath += output + sourceSets.main.get().runtimeClasspath
 }
 val clientGameTestWithoutAmecsSourceSet = sourceSets.create("clientGameTestWithoutAmecs") {
