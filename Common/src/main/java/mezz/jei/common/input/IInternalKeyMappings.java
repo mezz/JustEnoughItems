@@ -40,6 +40,8 @@ public interface IInternalKeyMappings extends IJeiKeyMappings {
 	@Override
 	IJeiKeyMappingWithExtraModifiers getShowUses();
 
+	IJeiKeyMapping getTransferRecipeGui();
+	IJeiKeyMapping getMaxTransferRecipeGui();
 	IJeiKeyMapping getQuickMove();
 	IJeiKeyMapping getShareToChat();
 
