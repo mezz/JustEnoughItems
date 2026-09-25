@@ -3,6 +3,7 @@ package mezz.jei.gui.overlay.history;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridBackgroundStyle;
 import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.config.NavigationVisibility;
@@ -40,8 +41,8 @@ public final class LookupHistoryGridConfig implements IIngredientGridConfig {
 	}
 
 	@Override
-	public IConfigValue<Boolean> drawBackground() {
-		return ownerConfig.drawBackground();
+	public IConfigValue<IngredientGridBackgroundStyle> backgroundStyle() {
+		return ownerConfig.backgroundStyle();
 	}
 
 	@Override

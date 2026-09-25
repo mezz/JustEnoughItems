@@ -13,7 +13,7 @@ public interface IIngredientGridConfig {
 
 	int getMinRows();
 
-	IConfigValue<Boolean> drawBackground();
+	IConfigValue<IngredientGridBackgroundStyle> backgroundStyle();
 
 	IConfigValue<IngredientGridLayoutMode> layoutMode();
 

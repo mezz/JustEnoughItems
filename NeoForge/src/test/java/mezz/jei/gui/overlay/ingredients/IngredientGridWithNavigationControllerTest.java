@@ -17,6 +17,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridBackgroundStyle;
 import mezz.jei.common.gui.GridScrollMath;
 import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
@@ -666,8 +667,8 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		@Override
-		public IConfigValue<Boolean> drawBackground() {
-			return value("drawBackground", false);
+		public IConfigValue<IngredientGridBackgroundStyle> backgroundStyle() {
+			return value("drawBackground", IngredientGridBackgroundStyle.NONE);
 		}
 
 		@Override

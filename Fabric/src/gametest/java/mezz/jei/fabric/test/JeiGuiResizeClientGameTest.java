@@ -7,6 +7,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridBackgroundStyle;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ReflectionUtil;
@@ -64,14 +65,14 @@ public class JeiGuiResizeClientGameTest implements FabricClientGameTest {
 					context.getInput().resizeWindow(1400, 1000);
 					context.runOnClient(client -> client.gui.setScreen(new InventoryScreen(Objects.requireNonNull(client.player))));
 					for (IngredientGridNavigationMode mode : IngredientGridNavigationMode.values()) {
-						for (boolean background : List.of(false, true)) {
+						for (IngredientGridBackgroundStyle backgroundStyle : IngredientGridBackgroundStyle.values()) {
 							context.runOnClient(client -> {
 								for (boolean bookmarks : List.of(false, true)) {
 									IIngredientGridConfig config = gridConfig(bookmarks);
 									set(cleanup, config.maxColumns(), 6);
 									set(cleanup, config.maxRows(), 6);
 									set(cleanup, config.navigationMode(), mode);
-									set(cleanup, config.drawBackground(), background);
+									set(cleanup, config.backgroundStyle(), backgroundStyle);
 								}
 							});
 							context.waitTicks(3);
@@ -119,7 +120,7 @@ public class JeiGuiResizeClientGameTest implements FabricClientGameTest {
 	private static void assertGridResize(ClientGameTestContext context, boolean bookmarks) {
 		ImmutableRect2i initial = context.computeOnClient(client -> {
 			ImmutableRect2i area = grid(bookmarks).getBackgroundArea();
-			if (!gridConfig(bookmarks).drawBackground().get()) {
+			if (!gridConfig(bookmarks).backgroundStyle().get().isEnabled()) {
 				return area.expandBy(5);
 			}
 			return area;
@@ -197,7 +198,8 @@ public class JeiGuiResizeClientGameTest implements FabricClientGameTest {
 		});
 		for (boolean bookmarks : List.of(false, true)) {
 			for (IngredientGridNavigationMode mode : IngredientGridNavigationMode.values()) {
-				for (boolean background : List.of(false, true)) {
+				for (IngredientGridBackgroundStyle backgroundStyle : IngredientGridBackgroundStyle.values()) {
+					boolean background = backgroundStyle.isEnabled();
 					// Include history displayed on its own, with the bookmark panel hidden.
 					boolean ownerVisible = !bookmarks || mode == IngredientGridNavigationMode.PAGED;
 					final int ownerRows;
@@ -218,7 +220,7 @@ public class JeiGuiResizeClientGameTest implements FabricClientGameTest {
 						set(cleanup, gridConfig(bookmarks).maxColumns(), 6);
 						set(cleanup, gridConfig(bookmarks).maxRows(), ownerRows);
 						set(cleanup, gridConfig(bookmarks).navigationMode(), mode);
-						set(cleanup, gridConfig(bookmarks).drawBackground(), background);
+						set(cleanup, gridConfig(bookmarks).backgroundStyle(), backgroundStyle);
 						Internal.getClientToggleState().setBookmarkEnabled(ownerVisible);
 					});
 					context.waitTicks(3);
