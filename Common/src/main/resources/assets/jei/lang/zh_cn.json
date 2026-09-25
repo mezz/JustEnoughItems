@@ -312,5 +312,7 @@
   "description.jei.debug.formatting.2": "测试%s %s多重格式化替换。",
   "description.jei.debug.formatting.3": "%s嵌套测试",
   "jei.alias.panda.spawn.egg": "濒危物种",
-  "jei.alias.villager.spawn.egg": "HMMM"
+  "jei.alias.villager.spawn.egg": "HMMM",
+  "key.jei.transferRecipeGui": "合成配方（配方界面）",
+  "key.jei.maxTransferRecipeGui": "合成配方（最大数量，配方界面）"
 }
