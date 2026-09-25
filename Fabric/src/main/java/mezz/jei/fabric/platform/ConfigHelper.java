@@ -1,6 +1,8 @@
 package mezz.jei.fabric.platform;
 
+import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.platform.IPlatformConfigHelper;
+import mezz.jei.gui.config.JeiConfigGuiPlugin;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.Screen;
 import org.apache.logging.log4j.LogManager;
@@ -24,26 +26,16 @@ public class ConfigHelper implements IPlatformConfigHelper {
 
 	@Override
 	public Optional<Screen> getConfigScreen(String modId, @Nullable Screen parent) {
-		FabricLoader loader = FabricLoader.getInstance();
-		if (loader.isModLoaded(MEZZ_CONFIG_GUI_MOD_ID)) {
-			Optional<Screen> configScreen = getMezzConfigScreen(modId, parent);
-			if (configScreen.isPresent()) {
-				return configScreen;
+		if (ModIds.JEI_ID.equals(modId) && FabricLoader.getInstance().isModLoaded(MEZZ_CONFIG_GUI_MOD_ID)) {
+			Optional<Screen> screen = JeiConfigGuiPlugin.createScreen(parent);
+			if (screen.isPresent()) {
+				return screen;
 			}
 		}
-		if (loader.isModLoaded(MOD_MENU_MOD_ID)) {
+		if (FabricLoader.getInstance().isModLoaded(MOD_MENU_MOD_ID)) {
 			return getModMenuConfigScreen(modId, parent);
 		}
 		return Optional.empty();
-	}
-
-	private static Optional<Screen> getMezzConfigScreen(String modId, @Nullable Screen parent) {
-		try {
-			return MezzConfigGuiHelper.getConfigScreen(modId, parent);
-		} catch (RuntimeException | LinkageError e) {
-			LOGGER.error("Failed to load the MezzConfig GUI config screen:", e);
-			return Optional.empty();
-		}
 	}
 
 	private static Optional<Screen> getModMenuConfigScreen(String modId, @Nullable Screen parent) {

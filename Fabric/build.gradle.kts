@@ -208,7 +208,6 @@ dependencies {
     modLocalRuntime(mezzConfigFabricDependency)
     include(mezzConfigFabricDependency)
     compileOnly(mezzConfigGuiApiDependency)
-    modCompileOnly(mezzConfigGuiFabricDependency)
     modRuntimeOnly(mezzConfigGuiFabricDependency)
     vanillaDependencyProjects.forEach {
         compileOnly(it)
