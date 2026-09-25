@@ -123,6 +123,7 @@ public final class OverlayHelper {
 			HistoryDisplaySide.RIGHT
 		);
 		IngredientGridBackgroundRenderer backgroundRenderer = new IngredientGridBackgroundRenderer(
+			ingredientGridConfig.backgroundStyle(),
 			textures.getIngredientListBackground(),
 			textures.getIngredientListSlotBackground(),
 			textures.getExclusionAreaShadow()
@@ -200,6 +201,7 @@ public final class OverlayHelper {
 			HistoryDisplaySide.LEFT
 		);
 		IngredientGridBackgroundRenderer backgroundRenderer = new IngredientGridBackgroundRenderer(
+			bookmarkListConfig.backgroundStyle(),
 			textures.getBookmarkListBackground(),
 			textures.getBookmarkListSlotBackground(),
 			textures.getExclusionAreaShadow()
