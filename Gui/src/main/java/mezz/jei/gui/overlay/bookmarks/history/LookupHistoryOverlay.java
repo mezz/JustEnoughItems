@@ -79,14 +79,14 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	public int getDisplayHeight() {
 		return LookupHistoryOverlayLayout.getDisplayHeight(
 			historyListConfig.maxRows().get(),
-			historyListConfig.drawBackground().get(),
+			historyListConfig.backgroundStyle().get().isEnabled(),
 			historyListConfig.navigationMode().get().usesScrollbar()
 		);
 	}
 
 	@Override
 	public boolean isBackgroundEnabled() {
-		return this.historyListConfig.drawBackground().get();
+		return this.historyListConfig.backgroundStyle().get().isEnabled();
 	}
 
 	@Override
@@ -179,7 +179,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
 			this.contents.drawForeground(minecraft, poseStack, mouseX, mouseY, partialTicks);
-			if (!this.historyListConfig.drawBackground().get()) {
+			if (!this.historyListConfig.backgroundStyle().get().isEnabled()) {
 				ImmutableRect2i area = this.contents.getBackgroundArea();
 				int color = JeiGuiColors.getColor(GuiColor.LOOKUP_HISTORY_LINE);
 				ImmutableRect2i lineArea = new ImmutableRect2i(area.x(), area.y() - 3, area.width(), 1);

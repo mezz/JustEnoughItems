@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.helpers.IColorHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -41,7 +42,7 @@ import java.util.stream.Stream;
 
 /**
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.
- * It does not draw a background or have external padding, those are left up to a higher-level element.
+ * Panel backgrounds and external padding are left up to a higher-level element.
  */
 public class IngredientGrid implements IIngredientGrid {
 	public static final int INGREDIENT_WIDTH = IngredientGridLayout.INGREDIENT_WIDTH;
@@ -144,7 +145,7 @@ public class IngredientGrid implements IIngredientGrid {
 		return area;
 	}
 
-	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+	public void draw(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, boolean drawSlotBackgrounds) {
 		if (this.smoothScrollRowPixelOffset > 0 || this.area.height() % IngredientGridLayout.INGREDIENT_HEIGHT != 0) {
 			mezz.jei.common.gui.ScissorHelper.enableScissor(poseStack,
 				this.area.x(),
@@ -153,26 +154,22 @@ public class IngredientGrid implements IIngredientGrid {
 				this.area.y() + this.area.height()
 			);
 			try {
-				drawContents(minecraft, poseStack, mouseX, mouseY);
+				drawContents(minecraft, poseStack, mouseX, mouseY, drawSlotBackgrounds);
 			} finally {
 				mezz.jei.common.gui.ScissorHelper.disableScissor();
 			}
 		} else {
-			drawContents(minecraft, poseStack, mouseX, mouseY);
+			drawContents(minecraft, poseStack, mouseX, mouseY, drawSlotBackgrounds);
 		}
 	}
 
-	private static void enableScissor(ImmutableRect2i area) {
-		Window window = Minecraft.getInstance().getWindow();
-		double scale = window.getGuiScale();
-		int x = (int) (area.getX() * scale);
-		int y = (int) (window.getHeight() - ((area.getY() + area.getHeight()) * scale));
-		int width = (int) (area.getWidth() * scale);
-		int height = (int) (area.getHeight() * scale);
-		RenderSystem.enableScissor(x, y, width, height);
-	}
-
-	private void drawContents(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+	private void drawContents(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, boolean drawSlotBackgrounds) {
+		if (drawSlotBackgrounds) {
+			IDrawableStatic slotBackground = Internal.getTextures().getSlot();
+			this.ingredientListRenderer.getSlots()
+				.map(IngredientListSlot::getArea)
+				.forEach(area -> slotBackground.draw(poseStack, area.x(), area.y()));
+		}
 		RenderSystem.disableBlend();
 
 		Optional<IngredientListSlot> highlightedSlot = getHighlightedSlot(minecraft, mouseX, mouseY);

@@ -14,7 +14,7 @@ public interface IIngredientGridConfig {
 
 	int getMinRows();
 
-	IConfigValue<Boolean> drawBackground();
+	IConfigValue<IngredientGridBackgroundStyle> backgroundStyle();
 
 	IConfigValue<IngredientGridLayoutMode> layoutMode();
 
@@ -35,7 +35,7 @@ public interface IIngredientGridConfig {
 	}
 
 	default boolean isBackgroundDrawn() {
-		return drawBackground().get();
+		return backgroundStyle().get().isEnabled();
 	}
 
 	default HorizontalAlignment getHorizontalAlignment() {
@@ -61,7 +61,7 @@ public interface IIngredientGridConfig {
 	default void addLayoutListener(Runnable listener) {
 		Internal.registerRuntimeListenerRemoval(maxColumns().addListener(change -> listener.run()));
 		Internal.registerRuntimeListenerRemoval(maxRows().addListener(change -> listener.run()));
-		Internal.registerRuntimeListenerRemoval(drawBackground().addListener(change -> listener.run()));
+		Internal.registerRuntimeListenerRemoval(backgroundStyle().addListener(change -> listener.run()));
 		Internal.registerRuntimeListenerRemoval(horizontalAlignment().addListener(change -> listener.run()));
 		Internal.registerRuntimeListenerRemoval(verticalAlignment().addListener(change -> listener.run()));
 		Internal.registerRuntimeListenerRemoval(navigationVisibility().addListener(change -> listener.run()));

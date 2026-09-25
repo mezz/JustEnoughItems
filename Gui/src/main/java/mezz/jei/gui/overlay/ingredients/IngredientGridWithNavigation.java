@@ -8,6 +8,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IWorldConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridBackgroundStyle;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -108,7 +109,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	private void addGridConfigListeners(IIngredientGridConfig gridConfig) {
 		Internal.registerRuntimeListenerRemoval(gridConfig.maxColumns().addListener(v -> markLayoutDirty()));
 		Internal.registerRuntimeListenerRemoval(gridConfig.maxRows().addListener(v -> markLayoutDirty()));
-		Internal.registerRuntimeListenerRemoval(gridConfig.drawBackground().addListener(v -> markLayoutDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.backgroundStyle().addListener(v -> markLayoutDirty()));
 		Internal.registerRuntimeListenerRemoval(gridConfig.layoutMode().addListener(v -> markLayoutDirty()));
 		Internal.registerRuntimeListenerRemoval(gridConfig.horizontalAlignment().addListener(v -> markLayoutDirty()));
 		Internal.registerRuntimeListenerRemoval(gridConfig.verticalAlignment().addListener(v -> markLayoutDirty()));
@@ -279,7 +280,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public boolean isBackgroundEnabled() {
-		return this.gridConfig.drawBackground().get();
+		return this.gridConfig.backgroundStyle().get().isEnabled();
 	}
 
 	@Override
@@ -322,7 +323,8 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		if (!this.active) {
 			return;
 		}
-		this.ingredientGrid.draw(minecraft, poseStack, mouseX, mouseY);
+		boolean drawSlotBackgrounds = this.gridConfig.backgroundStyle().get() == IngredientGridBackgroundStyle.GRID;
+		this.ingredientGrid.draw(minecraft, poseStack, mouseX, mouseY, drawSlotBackgrounds);
 		this.scrollbar.draw(poseStack, mouseX, mouseY);
 		this.navigation.draw(minecraft, poseStack, mouseX, mouseY, partialTicks);
 	}
