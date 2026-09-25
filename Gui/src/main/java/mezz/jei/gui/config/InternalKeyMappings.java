@@ -43,6 +43,8 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMappingInternal toggleBookmarkOverlay;
 	private final IJeiKeyMappingInternal transferRecipeBookmark;
 	private final IJeiKeyMappingInternal maxTransferRecipeBookmark;
+	private final IJeiKeyMappingInternal transferRecipeGui;
+	private final IJeiKeyMappingInternal maxTransferRecipeGui;
 	private final IJeiKeyMappingInternal quickMove;
 	private final IJeiKeyMappingInternal shareToChat;
 
@@ -181,6 +183,16 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER_BOOKMARK)
 			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
 			.buildMouseLeft()
+			.register(registerMethod);
+
+		transferRecipeGui = recipeGui.createMapping("key.jei.transferRecipeGui")
+			.setContext(JeiKeyConflictContext.GUI)
+			.buildUnbound()
+			.register(registerMethod);
+
+		maxTransferRecipeGui = recipeGui.createMapping("key.jei.maxTransferRecipeGui")
+			.setContext(JeiKeyConflictContext.GUI)
+			.buildUnbound()
 			.register(registerMethod);
 
 		quickMove = mouseHover.createMapping("key.jei.quickMove")
@@ -323,6 +335,8 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 				bookmark,
 				transferRecipeBookmark,
 				maxTransferRecipeBookmark,
+				transferRecipeGui,
+				maxTransferRecipeGui,
 				quickMove,
 				shareToChat,
 				toggleOverlay,
@@ -489,6 +503,16 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	@Override
 	public IJeiKeyMapping getMaxTransferRecipeBookmark() {
 		return maxTransferRecipeBookmark;
+	}
+
+	@Override
+	public IJeiKeyMapping getTransferRecipeGui() {
+		return transferRecipeGui;
+	}
+
+	@Override
+	public IJeiKeyMapping getMaxTransferRecipeGui() {
+		return maxTransferRecipeGui;
 	}
 
 	@Override
