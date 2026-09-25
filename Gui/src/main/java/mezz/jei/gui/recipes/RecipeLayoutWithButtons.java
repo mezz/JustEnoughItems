@@ -93,7 +93,7 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 	}
 
 	private void drawRecipeTransferError(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		IRecipeTransferError recipeTransferError = transferButton.updateRecipeTransferError();
+		IRecipeTransferError recipeTransferError = transferButton.getRecipeTransferError();
 		if (recipeTransferError == null || !recipeTransferError.getType().allowsTransfer) {
 			return;
 		}
@@ -213,7 +213,7 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 			return;
 		}
 
-		IRecipeTransferError recipeTransferError = transferButton.updateRecipeTransferError();
+		IRecipeTransferError recipeTransferError = transferButton.getRecipeTransferError();
 		if (recipeTransferError != null && !recipeTransferError.getType().allowsTransfer) {
 			return;
 		}
