@@ -4,9 +4,13 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.buttons.IIconButtonController;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.transfer.IRecipeTransferError;
+import mezz.jei.api.runtime.IJeiKeyMapping;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
@@ -61,6 +65,9 @@ public record RecipeLayoutWithButtons<R>(
 	@Override
 	public void draw(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		recipeLayout.drawRecipe(guiGraphics, mouseX, mouseY);
+		if (isMouseOverNonSlotLayout(mouseX, mouseY)) {
+			drawRecipeTransferError(guiGraphics, mouseX, mouseY);
+		}
 		transferButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		bookmarkButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		for (IconButton button : extraButtons) {
@@ -68,6 +75,24 @@ public record RecipeLayoutWithButtons<R>(
 				button.draw(guiGraphics, mouseX, mouseY, partialTicks);
 			}
 		}
+	}
+
+	private void drawRecipeTransferError(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		IRecipeTransferError recipeTransferError = transferButton.getRecipeTransferError();
+		if (recipeTransferError == null || !recipeTransferError.getType().allowsTransfer) {
+			return;
+		}
+
+		Rect2i recipeRect = recipeLayout.getRect();
+		IRecipeSlotsView recipeSlotsView = recipeLayout.getRecipeSlotsView();
+		RecipeTransferButton.runWithRestoredPose(
+			guiGraphics.pose(), () -> recipeTransferError.showError(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY())
+		);
+	}
+
+	private boolean isMouseOverNonSlotLayout(int mouseX, int mouseY) {
+		return recipeLayout.isMouseOver(mouseX, mouseY) &&
+			recipeLayout.getSlotUnderMouse(mouseX, mouseY).isEmpty();
 	}
 
 	private ImmutableRect2i getAbsoluteButtonArea(int buttonIndex) {
@@ -152,7 +177,7 @@ public record RecipeLayoutWithButtons<R>(
 		for (IconButton button : extraButtons) {
 			inputHandlers.add(button.createInputHandler());
 		}
-		inputHandlers.add(new RecipeLayoutUserInputHandler<>(recipeLayout));
+		inputHandlers.add(new RecipeLayoutUserInputHandler<>(transferButton, recipeLayout));
 
 		return new CombinedInputHandler("RecipeLayoutWithButtons", inputHandlers);
 	}
@@ -193,6 +218,33 @@ public record RecipeLayoutWithButtons<R>(
 				return;
 			}
 		}
+
+		if (isMouseOverNonSlotLayout(mouseX, mouseY)) {
+			drawRecipeTransferTooltip(guiGraphics, mouseX, mouseY);
+		}
+	}
+
+	private void drawRecipeTransferTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+		IInternalKeyMappings keyMappings = Internal.getKeyMappings();
+		IJeiKeyMapping transferRecipeGui = keyMappings.getTransferRecipeGui();
+		IJeiKeyMapping maxTransferRecipeGui = keyMappings.getMaxTransferRecipeGui();
+		if (transferRecipeGui.isUnbound() && maxTransferRecipeGui.isUnbound()) {
+			return;
+		}
+
+		IRecipeTransferError recipeTransferError = transferButton.getRecipeTransferError();
+		if (recipeTransferError != null && !recipeTransferError.getType().allowsTransfer) {
+			return;
+		}
+
+		JeiTooltip tooltip = new JeiTooltip();
+		if (!transferRecipeGui.isUnbound()) {
+			tooltip.addKeyUsageComponent("jei.tooltip.bookmarks.tooltips.transfer.usage", transferRecipeGui);
+		}
+		if (!maxTransferRecipeGui.isUnbound()) {
+			tooltip.addKeyUsageComponent("jei.tooltip.bookmarks.tooltips.transfer.max.usage", maxTransferRecipeGui);
+		}
+		tooltip.draw(guiGraphics, mouseX, mouseY);
 	}
 
 	@Override
@@ -210,7 +262,7 @@ public record RecipeLayoutWithButtons<R>(
 		return transferButton.getMissingCountHint();
 	}
 
-	private record RecipeLayoutUserInputHandler<R>(IRecipeLayoutDrawable<R> recipeLayout) implements IUserInputHandler {
+	private record RecipeLayoutUserInputHandler<R>(RecipeTransferButton transferButton, IRecipeLayoutDrawable<R> recipeLayout) implements IUserInputHandler {
 
 		@Override
 		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
@@ -235,6 +287,16 @@ public record RecipeLayoutWithButtons<R>(
 				if (keyMappings.getCopyRecipeId().isActiveAndMatches(key)) {
 					if (handleCopyRecipeId(recipeLayout, simulate)) {
 						return Optional.of(this);
+					}
+				}
+
+				if (recipeLayout.getSlotUnderMouse(mouseX, mouseY).isEmpty()) {
+					boolean transferOnce = input.is(keyMappings.getTransferRecipeGui());
+					boolean transferMax = input.is(keyMappings.getMaxTransferRecipeGui());
+					if (transferOnce || transferMax) {
+						if (transferButton.transferRecipe(transferMax, simulate)) {
+							return Optional.of(this);
+						}
 					}
 				}
 			}

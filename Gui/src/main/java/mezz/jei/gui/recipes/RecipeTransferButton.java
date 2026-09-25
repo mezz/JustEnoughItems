@@ -5,6 +5,8 @@ import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
+import mezz.jei.api.runtime.IJeiKeyMapping;
+import mezz.jei.common.input.keys.JeiKeyModifier;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.JeiGuiColors.GuiColor;
@@ -61,7 +63,7 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 			recipeLayout,
 			recipeTransferService,
 			RecipeTransferButton::getCurrentContainerScreen,
-			transferState::shouldTransferMax,
+			transferState,
 			transferState::onSuccessfulTransfer
 		);
 	}
@@ -93,10 +95,11 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 		return null;
 	}
 
-	private static class PinnedTransferState {
+	private static class PinnedTransferState implements BooleanSupplier {
 		private boolean transferred;
 
-		public boolean shouldTransferMax() {
+		@Override
+		public boolean getAsBoolean() {
 			return transferred;
 		}
 
@@ -165,20 +168,43 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 
 	@Override
 	protected boolean onMouseClicked(UserInput input) {
-		if (!input.isSimulate()) {
-			LocalPlayer player = Minecraft.getInstance().player;
-			AbstractContainerScreen<?> parentScreen = parentScreenSupplier.get();
-			boolean maxTransfer = maxTransferSupplier.getAsBoolean();
-			if (parentScreen != null && player != null && recipeTransferService.transferRecipe(parentScreen, recipeLayout, player, maxTransfer)) {
-				onSuccessfulTransfer.run();
-			}
+		return transferRecipe(maxTransferSupplier.getAsBoolean(), input.isSimulate());
+	}
+
+	public boolean transferRecipe(boolean maxTransfer, boolean simulate) {
+		LocalPlayer player = Minecraft.getInstance().player;
+		AbstractContainerScreen<?> parentScreen = parentScreenSupplier.get();
+		if (parentScreen == null || player == null) {
+			return false;
 		}
-		return true;
+
+		if (simulate) {
+			IRecipeTransferError recipeTransferError = recipeTransferService.getTransferRecipeError(parentScreen, recipeLayout, player)
+				.orElse(null);
+			return recipeTransferError == null || recipeTransferError.getType().allowsTransfer;
+		}
+
+		if (recipeTransferService.transferRecipe(parentScreen, recipeLayout, player, maxTransfer)) {
+			onSuccessfulTransfer.run();
+			return true;
+		}
+		return false;
 	}
 
 	@Override
 	protected void getTooltips(JeiTooltip tooltip) {
 		RecipeTransferUtil.addTransferRecipeTooltip(this.recipeTransferError, tooltip);
+		if (this.maxTransferSupplier instanceof PinnedTransferState ||
+			(this.recipeTransferError != null && !this.recipeTransferError.getType().allowsTransfer)
+		) {
+			return;
+		}
+		IJeiKeyMapping leftClick = Internal.getKeyMappings().getLeftClick();
+		tooltip.addKeyUsageComponent("jei.tooltip.bookmarks.tooltips.transfer.usage", leftClick);
+		tooltip.add(JeiTooltip.createKeyUsageComponent(
+			"jei.tooltip.bookmarks.tooltips.transfer.max.usage",
+			JeiKeyModifier.SHIFT.getCombinedName(leftClick.getTranslatedKeyMessage()).copy()
+		));
 	}
 
 	@Override
@@ -214,13 +240,17 @@ public class RecipeTransferButton extends GuiIconToggleButton {
 		}
 	}
 
-	private static void runWithRestoredPose(PoseStack poseStack, Runnable action) {
+	static void runWithRestoredPose(PoseStack poseStack, Runnable action) {
 		poseStack.pushPose();
 		try {
 			action.run();
 		} finally {
 			poseStack.popPose();
 		}
+	}
+
+	public @Nullable IRecipeTransferError getRecipeTransferError() {
+		return this.recipeTransferError;
 	}
 
 	public boolean isInitialized() {

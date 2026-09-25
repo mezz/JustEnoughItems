@@ -301,5 +301,7 @@
   "jei.config.client.ingredientList.navigationVisibility": "导航按钮可见性",
   "jei.config.client.ingredientList.navigationVisibility.description": "顶部翻页按钮的可见性。AUTO_HIDE：仅在存在多页时显示按钮。",
   "jei.config.client.bookmarkList.navigationVisibility": "导航按钮可见性",
-  "jei.config.client.bookmarkList.navigationVisibility.description": "顶部翻页按钮的可见性。AUTO_HIDE：仅在存在多页时显示按钮。"
+  "jei.config.client.bookmarkList.navigationVisibility.description": "顶部翻页按钮的可见性。AUTO_HIDE：仅在存在多页时显示按钮。",
+  "key.jei.transferRecipeGui": "合成配方（配方界面）",
+  "key.jei.maxTransferRecipeGui": "合成配方（最大数量，配方界面）"
 }
