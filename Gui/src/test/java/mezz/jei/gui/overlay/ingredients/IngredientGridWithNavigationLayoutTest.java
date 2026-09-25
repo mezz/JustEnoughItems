@@ -1053,8 +1053,8 @@ public class IngredientGridWithNavigationLayoutTest {
 		}
 
 		@Override
-		public IConfigValue<Boolean> drawBackground() {
-			return new TestConfigValue<>(drawBackground);
+		public IConfigValue<mezz.jei.common.config.IngredientGridBackgroundStyle> backgroundStyle() {
+			return new TestConfigValue<>(mezz.jei.common.config.IngredientGridBackgroundStyle.fromBoolean(drawBackground));
 		}
 
 		@Override

@@ -210,8 +210,8 @@ public class IngredientGridScrollControllerTest {
 		}
 
 		@Override
-		public IConfigValue<Boolean> drawBackground() {
-			return new TestConfigValue<>(false);
+		public IConfigValue<mezz.jei.common.config.IngredientGridBackgroundStyle> backgroundStyle() {
+			return new TestConfigValue<>(mezz.jei.common.config.IngredientGridBackgroundStyle.NONE);
 		}
 
 		@Override
