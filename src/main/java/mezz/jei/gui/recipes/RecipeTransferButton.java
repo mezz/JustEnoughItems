@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -10,6 +11,7 @@ import net.minecraft.inventory.Container;
 
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
+import mezz.jei.config.KeyBindings;
 import mezz.jei.gui.TooltipRenderer;
 import mezz.jei.gui.elements.GuiIconButtonSmall;
 import mezz.jei.transfer.RecipeTransferErrorInternal;
@@ -59,6 +61,29 @@ public class RecipeTransferButton extends GuiIconButtonSmall {
 				}
 				GlStateManager.popMatrix();
 			}
+		}
+	}
+
+	public void drawRecipeError(Minecraft minecraft, int mouseX, int mouseY) {
+		if (enabled && recipeTransferError != null) {
+			GlStateManager.pushMatrix();
+			try {
+				recipeTransferError.showError(minecraft, mouseX, mouseY, recipeLayout, recipeLayout.getPosX(), recipeLayout.getPosY());
+			} finally {
+				GlStateManager.popMatrix();
+			}
+		}
+	}
+
+	public void addShortcutTooltips(List<String> tooltip) {
+		if (!enabled) {
+			return;
+		}
+		if (KeyBindings.transferRecipeGui.getKeyCode() != 0) {
+			tooltip.add(Translator.translateToLocalFormatted("jei.tooltip.transfer.key", KeyBindings.transferRecipeGui.getDisplayName()));
+		}
+		if (KeyBindings.maxTransferRecipeGui.getKeyCode() != 0) {
+			tooltip.add(Translator.translateToLocalFormatted("jei.tooltip.transfer.max.key", KeyBindings.maxTransferRecipeGui.getDisplayName()));
 		}
 	}
 

@@ -229,7 +229,11 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 				tooltipStrings.addAll(wrapperTooltips);
 			}
 			if (tooltipStrings.isEmpty() && shapelessIcon != null) {
-				tooltipStrings = shapelessIcon.getTooltipStrings(recipeMouseX, recipeMouseY);
+				tooltipStrings = new ArrayList<>(shapelessIcon.getTooltipStrings(recipeMouseX, recipeMouseY));
+			}
+			if (recipeTransferButton != null) {
+				recipeTransferButton.drawRecipeError(minecraft, mouseX, mouseY);
+				recipeTransferButton.addShortcutTooltips(tooltipStrings);
 			}
 			if (tooltipStrings != null && !tooltipStrings.isEmpty()) {
 				TooltipRenderer.drawHoveringText(minecraft, tooltipStrings, mouseX, mouseY);

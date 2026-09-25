@@ -128,3 +128,6 @@ key.jei.ctrl.mac=CMD
 description.jei.wooden.door.1=木门可以阻止怪物进入你的建筑。\n测试用语句。
 description.jei.wooden.door.2=右击木门会将其从关闭状态变为打开状态，反之亦然。
 description.jei.wooden.door.3=可通过红石电路开/关木门。
+
+key.jei.transferRecipeGui=合成配方（配方界面）
+key.jei.maxTransferRecipeGui=合成配方（最大数量，配方界面）

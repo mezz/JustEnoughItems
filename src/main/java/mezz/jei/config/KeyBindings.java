@@ -25,6 +25,8 @@ public final class KeyBindings {
 	public static final KeyBinding nextPage;
 	public static final KeyBinding previousCategory;
 	public static final KeyBinding nextCategory;
+	public static final KeyBinding transferRecipeGui;
+	public static final KeyBinding maxTransferRecipeGui;
 	public static final KeyBinding closeRecipeGui;
 	public static final KeyBinding bookmark;
 	public static final KeyBinding toggleBookmarkOverlay;
@@ -45,6 +47,8 @@ public final class KeyBindings {
 			nextPage = new KeyBinding("key.jei.nextPage", KeyConflictContext.GUI, Keyboard.KEY_NEXT, categoryName),
 			previousCategory = new KeyBinding("key.jei.previousCategory", KeyConflictContext.GUI, KeyModifier.SHIFT, Keyboard.KEY_PRIOR, categoryName),
 			nextCategory = new KeyBinding("key.jei.nextCategory", KeyConflictContext.GUI, KeyModifier.SHIFT, Keyboard.KEY_NEXT, categoryName),
+			transferRecipeGui = new KeyBinding("key.jei.transferRecipeGui", KeyConflictContext.GUI, Keyboard.KEY_NONE, categoryName),
+			maxTransferRecipeGui = new KeyBinding("key.jei.maxTransferRecipeGui", KeyConflictContext.GUI, Keyboard.KEY_NONE, categoryName),
 			closeRecipeGui = new KeyBinding("key.jei.closeRecipeGui", KeyConflictContext.GUI, Keyboard.KEY_ESCAPE, categoryName),
 			bookmark = new KeyBinding("key.jei.bookmark", KeyConflictContext.GUI, Keyboard.KEY_A, categoryName),
 			toggleBookmarkOverlay = new KeyBinding("key.jei.toggleBookmarkOverlay", KeyConflictContext.GUI, Keyboard.KEY_NONE, categoryName),

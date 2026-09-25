@@ -393,6 +393,17 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 	}
 
 	private boolean handleKeybinds(int eventKey) {
+		boolean transferOnce = KeyBindings.transferRecipeGui.isActiveAndMatches(eventKey);
+		boolean transferMax = KeyBindings.maxTransferRecipeGui.isActiveAndMatches(eventKey);
+		if (transferOnce || transferMax) {
+			int mouseX = MouseHelper.getX();
+			int mouseY = MouseHelper.getY();
+			for (RecipeLayout recipeLayout : recipeLayouts) {
+				if (recipeLayout.isMouseOver(mouseX, mouseY) && recipeLayout.getIngredientUnderMouse(mouseX, mouseY) == null) {
+					return transferRecipe(recipeLayout, transferMax);
+				}
+			}
+		}
 		if (KeyBindings.closeRecipeGui.isActiveAndMatches(eventKey) || KeyBindings.isInventoryToggleKey(eventKey)) {
 			close();
 			return true;
@@ -502,12 +513,18 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			int recipeIndex = guibutton.id - RecipeLayout.recipeTransferButtonIndex;
 			RecipeLayout recipeLayout = recipeLayouts.get(recipeIndex);
 			boolean maxTransfer = GuiScreen.isShiftKeyDown();
-			Container container = getParentContainer();
-			EntityPlayerSP player = mc.player;
-			if (container != null && player != null && RecipeTransferUtil.transferRecipe(container, recipeLayout, player, maxTransfer)) {
-				close();
-			}
+			transferRecipe(recipeLayout, maxTransfer);
 		}
+	}
+
+	private boolean transferRecipe(RecipeLayout recipeLayout, boolean maxTransfer) {
+		Container container = getParentContainer();
+		EntityPlayerSP player = mc == null ? null : mc.player;
+		if (container != null && player != null && RecipeTransferUtil.transferRecipe(container, recipeLayout, player, maxTransfer)) {
+			close();
+			return true;
+		}
+		return false;
 	}
 
 	private void updateLayout() {
