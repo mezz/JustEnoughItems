@@ -220,10 +220,10 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 
 		JeiTooltip tooltip = new JeiTooltip();
 		if (!transferRecipeGui.isUnbound()) {
-			tooltip.addKeyUsageComponent("jei.tooltip.transfer.usage", transferRecipeGui);
+			tooltip.addKeyUsageComponent("jei.tooltip.bookmarks.tooltips.transfer.usage", transferRecipeGui);
 		}
 		if (!maxTransferRecipeGui.isUnbound()) {
-			tooltip.addKeyUsageComponent("jei.tooltip.transfer.max.usage", maxTransferRecipeGui);
+			tooltip.addKeyUsageComponent("jei.tooltip.bookmarks.tooltips.transfer.max.usage", maxTransferRecipeGui);
 		}
 		tooltip.draw(guiGraphics, mouseX, mouseY);
 	}

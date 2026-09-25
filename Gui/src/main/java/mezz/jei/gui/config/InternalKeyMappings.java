@@ -187,14 +187,12 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 
 		transferRecipeGui = recipeGui.createMapping("key.jei.transferRecipeGui")
 			.setContext(JeiKeyConflictContext.GUI)
-			.setModifier(JeiKeyModifier.SHIFT)
-			.buildMouseLeft()
+			.buildUnbound()
 			.register(registerMethod);
 
 		maxTransferRecipeGui = recipeGui.createMapping("key.jei.maxTransferRecipeGui")
 			.setContext(JeiKeyConflictContext.GUI)
-			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
-			.buildMouseLeft()
+			.buildUnbound()
 			.register(registerMethod);
 
 		quickMove = mouseHover.createMapping("key.jei.quickMove")
