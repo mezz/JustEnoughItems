@@ -49,6 +49,8 @@ private fun Project.configureJeiProject() {
 		val standardJavadocDocletOptions = options as StandardJavadocDocletOptions
 		// prevent java 8's strict doclint for javadocs from failing builds
 		standardJavadocDocletOptions.addStringOption("Xdoclint:none", "-quiet")
+		// Omit bundled web fonts to reduce the size of the generated documentation.
+		standardJavadocDocletOptions.addBooleanOption("-no-fonts", true)
 	}
 
 	tasks.withType(JavaCompile::class.java).configureEach {
