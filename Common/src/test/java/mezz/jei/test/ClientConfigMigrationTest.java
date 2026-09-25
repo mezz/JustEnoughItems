@@ -24,6 +24,7 @@ import net.mezzdev.config.file.ConfigManager;
 import net.mezzdev.config.schema.ConfigSchemaBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -40,6 +41,31 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ClientConfigMigrationTest {
+	@ParameterizedTest
+	@CsvSource({"0, 9", "5, 5"})
+	public void loadsIndependentHistoryWidthFromExistingConfig(int savedColumns, int expectedColumns, @TempDir Path tempDir) throws IOException {
+		Path configFile = tempDir.resolve("jei-client.ini");
+		Files.writeString(configFile, """
+			[lookups]
+			maxColumns = %d
+			maxRows = 3
+
+			[ingredientList]
+			maxColumns = 4
+			""".formatted(savedColumns));
+		ConfigFileWatcherSettings disabledWatcher = ConfigFileWatcherSettings.clientDefaults().withEnabled(false);
+		ConfigManager configManager = new ConfigManager("JEI History Width Test", disabledWatcher, disabledWatcher);
+		ClientConfigs configs = new ClientConfigs(
+			new ConfigSchemaBuilder("jei", configFile, "jei.config.client", configManager),
+			false,
+			configManager.createInMemorySortingConfig(Comparator.naturalOrder(), true)
+		);
+
+		assertEquals(expectedColumns, configs.getClientConfig().maxLookupHistoryColumns().get());
+		assertEquals(3, configs.getClientConfig().maxLookupHistoryRows().get());
+		assertEquals(4, configs.getIngredientListConfig().maxColumns().get());
+	}
+
 	@ParameterizedTest
 	@ValueSource(strings = {"resourceLocationSearchMode", "identifierSearchMode"})
 	public void loadsEveryReleasedClientConfigValue(String identifierSearchKey, @TempDir Path tempDir) throws IOException {

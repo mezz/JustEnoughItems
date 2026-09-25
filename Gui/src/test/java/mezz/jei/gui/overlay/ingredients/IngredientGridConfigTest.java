@@ -29,14 +29,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IngredientGridConfigTest {
 	@Test
-	public void lookupHistoryRowsAreIndependentFromOwnerGridRows() {
+	public void lookupHistorySizeIsIndependentFromOwnerGridSize() {
 		TestGridConfig ownerConfig = config()
 			.maxColumns(4)
 			.maxRows(1)
 			.drawBackground(true)
 			.navigationVisibility(NavigationVisibility.ENABLED);
 		TestJeiConfigValue<Integer> lookupHistoryRows = new TestJeiConfigValue<>("lookupHistoryRows", 2);
-		IIngredientGridConfig lookupHistoryConfig = new LookupHistoryGridConfig(ownerConfig, lookupHistoryRows);
+		IIngredientGridConfig lookupHistoryConfig = new LookupHistoryGridConfig(ownerConfig, lookupHistoryRows, new TestJeiConfigValue<>("lookupHistoryColumns", 7));
 		int displayHeight = LookupHistoryOverlayLayout.getDisplayHeight(2, true, false);
 		ImmutableRect2i availableArea = largeAvailableArea().keepTop(displayHeight);
 
@@ -48,6 +48,7 @@ public class IngredientGridConfigTest {
 		);
 
 		assertEquals(2 * IngredientGridLayout.INGREDIENT_HEIGHT, layout.ingredientGridArea().height());
+		assertEquals(7 * IngredientGridLayout.INGREDIENT_WIDTH, layout.ingredientGridArea().width());
 	}
 
 	@Test
@@ -285,7 +286,6 @@ public class IngredientGridConfigTest {
 		ImmutableRect2i availableArea = largeAvailableArea();
 		IngredientGrid ingredientGrid = new IngredientGrid(
 			null,
-			gridConfig,
 			null,
 			null,
 			null,
@@ -294,7 +294,8 @@ public class IngredientGridConfigTest {
 			null,
 			false
 		);
-		ingredientGrid.updateBounds(availableArea, Set.of(), null, false);
+		ImmutableRect2i gridArea = IngredientGridLayout.calculateBounds(gridConfig, availableArea, false);
+		ingredientGrid.updateBounds(gridArea, Set.of(), null);
 		int capacity = ingredientGrid.size();
 		ImmutableRect2i firstSlot = ingredientGrid.getSlots()
 			.findFirst()
@@ -303,7 +304,7 @@ public class IngredientGridConfigTest {
 		ImmutablePoint2i mouseExclusionPoint = new ImmutablePoint2i(firstSlot.x(), firstSlot.y());
 
 		// Operation: update the same grid with its first slot under the drag cursor.
-		ingredientGrid.updateBounds(availableArea, Set.of(), mouseExclusionPoint, false);
+		ingredientGrid.updateBounds(gridArea, Set.of(), mouseExclusionPoint);
 
 		// Assertions: pagination capacity stays fixed, but the slot under the mouse is unavailable for rendering.
 		assertEquals(capacity, ingredientGrid.size());

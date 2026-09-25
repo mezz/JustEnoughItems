@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay.bookmarks.history;
 
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
@@ -64,6 +65,15 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 
 	public IIngredientGridSource getLookupHistory() {
 		return lookupHistory;
+	}
+
+	public IUserInputHandler getResizeInputHandler() {
+		return contents.getResizeInputHandler();
+	}
+
+	@Override
+	public void setResizeBounds(ImmutableRect2i area, VerticalAlignment verticalAlignment) {
+		contents.setResizeBounds(area, verticalAlignment);
 	}
 
 	@Override

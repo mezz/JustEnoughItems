@@ -45,6 +45,8 @@ public interface IIngredientListOverlayContents extends IIngredientGridView, IIn
 	 */
 	IUserInputHandler createInputHandler();
 
+	IUserInputHandler getResizeInputHandler();
+
 	/**
 	 * Creates the drag handler for the ingredient-list contents.
 	 */

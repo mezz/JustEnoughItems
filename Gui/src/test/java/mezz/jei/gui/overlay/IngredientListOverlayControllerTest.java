@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -13,7 +14,6 @@ import mezz.jei.gui.overlay.elements.IngredientElement;
 import mezz.jei.gui.overlay.history.LookupHistoryOverlayLayout;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridPageNavigation;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridView;
-import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigationLayout;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
@@ -97,7 +97,7 @@ public class IngredientListOverlayControllerTest {
 	}
 
 	@Test
-	public void screenUpdateMovesLookupHistoryNextToContentsBackground() {
+	public void screenUpdateKeepsLookupHistoryAtBottomWithIndependentWidth() {
 		Fixture fixture = Fixture.create();
 		fixture.config.lookupHistoryEnabled = true;
 		fixture.lookupHistory.displayedOnThisSide = true;
@@ -108,16 +108,15 @@ public class IngredientListOverlayControllerTest {
 
 		fixture.updateScreen(guiProperties(50, 20, 100, 50, 220, 240));
 
-		assertEquals(2, fixture.lookupHistory.layoutUpdates);
-		assertEquals(2, fixture.lookupHistory.availableAreas.size());
-		ImmutableRect2i initialArea = fixture.lookupHistory.availableAreas.getFirst();
-		ImmutableRect2i positionedArea = fixture.lookupHistory.availableAreas.getLast();
-		assertTrue(positionedArea.y() < initialArea.y());
-		int ownerContentBottom = bottom(fixture.contents.backgroundArea) -
-			IngredientGridWithNavigationLayout.BORDER_PADDING;
-		int historyContentTop = fixture.lookupHistory.backgroundArea.y() +
-			IngredientGridWithNavigationLayout.BORDER_PADDING;
-		assertEquals(IngredientGridWithNavigationLayout.INNER_PADDING, historyContentTop - ownerContentBottom);
+		assertEquals(1, fixture.lookupHistory.layoutUpdates);
+		ImmutableRect2i historyArea = fixture.lookupHistory.availableAreas.getFirst();
+		assertEquals(new ImmutableRect2i(150, 144, 70, 70), historyArea);
+		assertTrue(fixture.lookupHistory.backgroundArea.y() > bottom(fixture.contents.backgroundArea));
+		assertTrue(fixture.lookupHistory.backgroundArea.width() > fixture.contents.backgroundArea.width());
+
+		fixture.contents.backgroundArea = new ImmutableRect2i(170, 20, 30, 120);
+		fixture.updateScreen(guiProperties(50, 20, 100, 50, 220, 240));
+		assertEquals(historyArea, fixture.lookupHistory.availableAreas.getLast());
 	}
 
 	@Test
@@ -533,6 +532,10 @@ public class IngredientListOverlayControllerTest {
 		@Override
 		public boolean isDisplayedOnThisSide() {
 			return displayedOnThisSide;
+		}
+
+		@Override
+		public void setResizeBounds(ImmutableRect2i area, VerticalAlignment verticalAlignment) {
 		}
 
 		@Override

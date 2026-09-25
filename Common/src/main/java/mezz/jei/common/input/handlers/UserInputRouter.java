@@ -105,6 +105,9 @@ public class UserInputRouter {
 		if (DebugConfig.isDebugInputsEnabled()) {
 			LOGGER.debug("{}: The GUI has changed, clearing all pending clicks", debugName);
 		}
+		// End drags on the old screen before discarding their mouse-down handlers.
+		// Hidden overlays are no longer reachable through the combined handler's proxies.
+		this.pending.values().forEach(IUserInputHandler::unfocus);
 		this.combinedInputHandler.unfocus();
 		this.pending.clear();
 	}

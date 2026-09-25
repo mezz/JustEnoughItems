@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
@@ -10,6 +11,7 @@ import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.ghost.GhostIngredientQuickMoveManager;
@@ -37,6 +39,9 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	private final PageNavigation navigation;
 	private final IngredientGridScrollbar scrollbar;
 	private final IIngredientGridConfig gridConfig;
+	private final IngredientGridResizer resizer;
+	private @Nullable ImmutableRect2i resizeArea;
+	private @Nullable VerticalAlignment resizeVerticalAlignment;
 	private final IClientConfig clientConfig;
 	private final IngredientGrid ingredientGrid;
 	private final IIngredientGridSource ingredientSource;
@@ -67,6 +72,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.ingredientGrid = ingredientGrid;
 		this.ingredientSource = ingredientSource;
 		this.gridConfig = gridConfig;
+		this.resizer = new IngredientGridResizer(this, gridConfig, clientConfig);
 		this.clientConfig = clientConfig;
 		CommandUtil commandUtil = new CommandUtil(clientConfig, serverConnection);
 		this.ghostIngredientDragManager = new GhostIngredientDragManager(this.ingredientGrid, screenHelper, ingredientManager, toggleState);
@@ -94,6 +100,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 		this.ingredientSource.addSourceListChangedListener(this::markLayoutDirty);
 		addGridConfigListeners(gridConfig);
+		Internal.registerRuntimeListenerRemoval(clientConfig.guiResizeEnabled().addListener(v -> resizer.unfocus()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.smoothScrollingEnabled().addListener(v -> markLayoutDirty()));
 	}
 
@@ -110,6 +117,44 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	private void markLayoutDirty() {
 		this.layoutDirty = true;
+	}
+
+	public void setResizeBounds(ImmutableRect2i area, VerticalAlignment verticalAlignment) {
+		this.resizeArea = area;
+		this.resizeVerticalAlignment = verticalAlignment;
+	}
+
+	VerticalAlignment getResizeVerticalAlignment() {
+		if (resizeVerticalAlignment != null) {
+			return resizeVerticalAlignment;
+		}
+		return gridConfig.verticalAlignment().get();
+	}
+
+	@Override
+	public IUserInputHandler getResizeInputHandler() {
+		return resizer;
+	}
+
+	boolean isResizeExcluded(double mouseX, double mouseY) {
+		return guiExclusionAreas.stream().anyMatch(area -> area.contains(mouseX, mouseY)) ||
+			(mouseExclusionPoint != null && mouseExclusionPoint.x() == (int) mouseX && mouseExclusionPoint.y() == (int) mouseY);
+	}
+
+	ImmutableSize2i getMaximumResizeSize() {
+		ImmutableRect2i area = resizeArea;
+		if (area == null) {
+			area = availableArea;
+		}
+		if (area == null) {
+			return ImmutableSize2i.EMPTY;
+		}
+		ImmutableRect2i gridArea = ingredientGrid.getArea();
+		int margin = 2 * IngredientGridWithNavigationLayout.BORDER_MARGIN;
+		return new ImmutableSize2i(
+			Math.max(0, area.width() - margin - (backgroundArea.width() - gridArea.width())),
+			Math.max(0, area.height() - margin - (backgroundArea.height() - gridArea.height()))
+		);
 	}
 
 	private void updateLayoutIfDirty() {
@@ -201,8 +246,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.ingredientGrid.updateBounds(
 			layout.ingredientGridArea(),
 			guiExclusionAreas,
-			mouseExclusionPoint,
-			isSmoothScrolling()
+			mouseExclusionPoint
 		);
 		this.slotBackgroundArea = layout.slotBackgroundArea();
 		this.navigation.updateBounds(layout.navigationArea());
@@ -212,7 +256,8 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	private void clearLayout() {
-		this.ingredientGrid.updateBounds(ImmutableRect2i.EMPTY, Set.of(), null, false);
+		this.resizer.unfocus();
+		this.ingredientGrid.updateBounds(ImmutableRect2i.EMPTY, Set.of(), null);
 		this.slotBackgroundArea = ImmutableRect2i.EMPTY;
 		this.navigation.updateBounds(ImmutableRect2i.EMPTY);
 		this.scrollbar.updateBounds(ImmutableRect2i.EMPTY);
@@ -278,6 +323,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.ingredientGrid.draw(minecraft, guiGraphics, mouseX, mouseY);
 		this.scrollbar.draw(guiGraphics, mouseX, mouseY);
 		this.navigation.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+		this.resizer.requestCursor(guiGraphics, mouseX, mouseY);
 	}
 
 	@Override
@@ -287,6 +333,9 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 			return;
 		}
 		this.ghostIngredientDragManager.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+		if (this.resizer.isMouseOver(mouseX, mouseY)) {
+			return;
+		}
 		this.ingredientGrid.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
 	}
 
@@ -319,7 +368,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		updateLayoutIfDirty();
-		if (!this.active) {
+		if (!this.active || this.resizer.isMouseOver(mouseX, mouseY)) {
 			return Stream.empty();
 		}
 		return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY)
@@ -329,7 +378,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		updateLayoutIfDirty();
-		if (!this.active) {
+		if (!this.active || this.resizer.isMouseOver(mouseX, mouseY)) {
 			return Stream.empty();
 		}
 		return this.ingredientGrid.getDraggableIngredientUnderMouse(mouseX, mouseY);

@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -8,7 +9,6 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.bookmarks.history.ILookupHistoryOverlay;
 import mezz.jei.gui.overlay.elements.IElement;
-import mezz.jei.gui.overlay.history.LookupHistoryOverlayLayout;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridPageNavigation;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridView;
 import org.apache.logging.log4j.LogManager;
@@ -141,7 +141,7 @@ class IngredientListOverlayController {
 			);
 		} catch (RuntimeException e) {
 			LOGGER.error("Failed to update JEI bounds for screen with properties : {}", guiProperties, e);
-			clearScreenAfterUpdateError();
+			clearScreen();
 		}
 	}
 
@@ -153,12 +153,8 @@ class IngredientListOverlayController {
 	void clearScreen() {
 		this.hasValidScreen = false;
 		this.contentsView.close();
-		this.searchField.setFocused(false);
-	}
-
-	void clearScreenAfterUpdateError() {
-		clearScreen();
 		this.lookupHistory.close();
+		this.searchField.setFocused(false);
 	}
 
 	private void updateBounds(IGuiProperties guiProperties, Set<ImmutableRect2i> guiExclusionAreas) {
@@ -176,14 +172,13 @@ class IngredientListOverlayController {
 
 		layout.lookupHistoryArea()
 			.ifPresent(lookupHistoryArea -> {
-				ImmutableRect2i alignedArea = alignLookupHistoryArea(lookupHistoryArea);
-				this.lookupHistory.updateBounds(alignedArea, guiExclusionAreas, null);
+				this.lookupHistory.updateBounds(lookupHistoryArea, guiExclusionAreas, null);
 				this.lookupHistory.updateLayout();
-				ImmutableRect2i positionedArea = positionLookupHistoryArea(alignedArea);
-				if (!positionedArea.equals(alignedArea)) {
-					this.lookupHistory.updateBounds(positionedArea, guiExclusionAreas, null);
-					this.lookupHistory.updateLayout();
-				}
+				ImmutableRect2i resizeArea = new ImmutableRect2i(
+					layout.displayArea().x(), layout.displayArea().y(), layout.displayArea().width(),
+					lookupHistoryArea.y() + lookupHistoryArea.height() - layout.displayArea().y()
+				);
+				this.lookupHistory.setResizeBounds(resizeArea, VerticalAlignment.BOTTOM);
 			});
 
 		IngredientListOverlayLayout.SearchAndConfigAreas searchAndConfigAreas = layout.getSearchAndConfigAreas(
@@ -193,27 +188,6 @@ class IngredientListOverlayController {
 		this.searchField.setValue(filterTextSource.getFilterText());
 		this.searchField.updateBounds(searchAndConfigAreas.searchArea());
 		this.configButton.updateBounds(searchAndConfigAreas.configButtonArea());
-	}
-
-	private ImmutableRect2i alignLookupHistoryArea(ImmutableRect2i lookupHistoryArea) {
-		return LookupHistoryOverlayLayout.alignToOwnerBackground(
-			lookupHistoryArea,
-			this.contentsView.getBackgroundArea()
-		);
-	}
-
-	private ImmutableRect2i positionLookupHistoryArea(ImmutableRect2i lookupHistoryArea) {
-		boolean combineBackgrounds = this.contentsView.isBackgroundEnabled() &&
-			this.lookupHistory.isBackgroundEnabled() &&
-			this.contentsView.hasRoom();
-		if (!combineBackgrounds) {
-			return lookupHistoryArea;
-		}
-		return LookupHistoryOverlayLayout.moveNextToOwner(
-			lookupHistoryArea,
-			this.lookupHistory.getBackgroundArea(),
-			this.contentsView.getBackgroundArea()
-		);
 	}
 
 	interface Config {

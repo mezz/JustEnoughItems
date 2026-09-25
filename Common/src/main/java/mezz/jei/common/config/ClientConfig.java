@@ -18,6 +18,7 @@ public final class ClientConfig implements IClientConfig {
 	// appearance
 	private final IConfigValue<SearchBarPosition> searchBarPosition;
 	private final IConfigValue<Integer> maxRecipeGuiHeight;
+	private final IConfigValue<Integer> recipeGuiWidth;
 	private final IConfigValue<Boolean> toastReflowEnabled;
 
 	// cheat_mode
@@ -36,6 +37,7 @@ public final class ClientConfig implements IClientConfig {
 	// lookup history
 	private final IConfigValue<Boolean> lookupHistoryEnabled;
 	private final IConfigValue<Integer> maxLookupHistoryRows;
+	private final IConfigValue<Integer> maxLookupHistoryColumns;
 	private final IConfigValue<Integer> maxLookupHistoryIngredients;
 	private final IConfigValue<HistoryDisplaySide> lookupHistoryDisplaySide;
 
@@ -56,6 +58,7 @@ public final class ClientConfig implements IClientConfig {
 	private final IConfigValue<Integer> maxSearchCompletionRows;
 
 	// input
+	private final IConfigValue<Boolean> guiResizeEnabled;
 	private final IConfigValue<Integer> dragDelayMs;
 	private final IConfigValue<Boolean> smoothScrollingEnabled;
 	private final IConfigValue<Integer> smoothScrollRate;
@@ -153,6 +156,9 @@ public final class ClientConfig implements IClientConfig {
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
 
+		guiResizeEnabled = input.addBoolean("guiResizeEnabled", true)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
 		dragDelayMs = input.addInteger("dragDelayInMilliseconds", 150, 0, 1000)
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
@@ -172,6 +178,9 @@ public final class ClientConfig implements IClientConfig {
 			.build();
 		maxRecipeGuiHeight = recipes.addInteger("recipeGuiHeight", defaultRecipeGuiHeight, minRecipeGuiHeight, Integer.MAX_VALUE)
 			.addLegacyValue("appearance", "recipeGuiHeight")
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
+		recipeGuiWidth = recipes.addInteger("recipeGuiWidth", minRecipeGuiWidth, minRecipeGuiWidth, Integer.MAX_VALUE)
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
 		IConfigListValueSerializer<RecipeSorterStage> recipeSorterStagesSerializer = LegacyEnumSerializers.list(RecipeSorterStage.class);
@@ -222,6 +231,9 @@ public final class ClientConfig implements IClientConfig {
 			.build();
 		maxLookupHistoryRows = lookups.addInteger("maxRows", 2, 1, 7)
 			.addLegacyValue("lookupHistory", "maxRows")
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
+		maxLookupHistoryColumns = lookups.addInteger("maxColumns", 9, 2, 100)
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
 		maxLookupHistoryIngredients = lookups.addInteger("maxIngredients", 100, 10, 1_000)
@@ -279,6 +291,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Integer> maxRecipeGuiHeight() {
 		return maxRecipeGuiHeight;
+	}
+
+	@Override
+	public IConfigValue<Integer> recipeGuiWidth() {
+		return recipeGuiWidth;
 	}
 
 	@Override
@@ -347,6 +364,11 @@ public final class ClientConfig implements IClientConfig {
 	}
 
 	@Override
+	public IConfigValue<Integer> maxLookupHistoryColumns() {
+		return maxLookupHistoryColumns;
+	}
+
+	@Override
 	public IConfigValue<Integer> maxLookupHistoryIngredients() {
 		return maxLookupHistoryIngredients;
 	}
@@ -389,6 +411,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Boolean> showCreativeTabNamesEnabled() {
 		return showCreativeTabNamesEnabled;
+	}
+
+	@Override
+	public IConfigValue<Boolean> guiResizeEnabled() {
+		return guiResizeEnabled;
 	}
 
 	@Override

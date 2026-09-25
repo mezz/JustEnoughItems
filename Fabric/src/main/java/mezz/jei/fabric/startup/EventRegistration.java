@@ -137,6 +137,9 @@ public class EventRegistration {
 	}
 
 	private void afterInit(Minecraft client, Screen screen, int scaledWidth, int scaledHeight) {
+		if (clientInputHandler != null) {
+			clientInputHandler.onInitGui();
+		}
 		if (guiEventHandler != null) {
 			guiEventHandler.onGuiInit(screen);
 			guiEventHandler.onGuiOpen(screen);
