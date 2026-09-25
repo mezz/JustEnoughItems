@@ -202,6 +202,7 @@ fabricApi {
 
 dependencies {
     "gametestImplementation"(testFixtures(project(":Common")))
+    "gametestImplementation"(mezzConfigGuiFabricDependency)
 }
 
 loom {
