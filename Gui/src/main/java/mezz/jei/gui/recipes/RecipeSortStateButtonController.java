@@ -1,0 +1,77 @@
+package mezz.jei.gui.recipes;
+
+import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.inputs.IJeiUserInput;
+import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.config.IClientConfigs;
+import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.api.gui.buttons.IButtonState;
+import mezz.jei.api.gui.buttons.IIconButtonController;
+import net.minecraft.network.chat.Component;
+
+public class RecipeSortStateButtonController implements IIconButtonController {
+	private final IDrawable offIcon;
+	private final IDrawable onIcon;
+	private final RecipeSorterStage recipeSorterStage;
+	private final Component disabledTooltip;
+	private final Component enabledTooltip;
+	private final Runnable onValueChanged;
+	private boolean toggledOn;
+
+	public RecipeSortStateButtonController(
+		RecipeSorterStage recipeSorterStage,
+		IDrawable offIcon,
+		IDrawable onIcon,
+		Component disabledTooltip,
+		Component enabledTooltip,
+		Runnable onValueChanged
+	) {
+		this.offIcon = offIcon;
+		this.onIcon = onIcon;
+		this.recipeSorterStage = recipeSorterStage;
+		this.disabledTooltip = disabledTooltip;
+		this.enabledTooltip = enabledTooltip;
+		this.onValueChanged = onValueChanged;
+	}
+
+	@Override
+	public void getTooltips(ITooltipBuilder tooltip) {
+		if (toggledOn) {
+			tooltip.add(enabledTooltip);
+		} else {
+			tooltip.add(disabledTooltip);
+		}
+	}
+
+	@Override
+	public void updateState(IButtonState state) {
+		IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
+		IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+		boolean toggledOn = recipeSorterStage.isEnabled(clientConfig);
+		if (toggledOn != this.toggledOn) {
+			this.toggledOn = toggledOn;
+			this.onValueChanged.run();
+		}
+		if (toggledOn) {
+			state.setForcePressed(true);
+			state.setIcon(onIcon);
+		} else {
+			state.setForcePressed(false);
+			state.setIcon(offIcon);
+		}
+	}
+
+	@Override
+	public boolean onPress(IJeiUserInput input) {
+		if (!input.isSimulate()) {
+			IClientConfigs jeiClientConfigs = Internal.getClientConfigs();
+			IClientConfig clientConfig = jeiClientConfigs.getClientConfig();
+			this.toggledOn = !this.toggledOn;
+			recipeSorterStage.setEnabled(clientConfig, this.toggledOn);
+			this.onValueChanged.run();
+		}
+		return true;
+	}
+}

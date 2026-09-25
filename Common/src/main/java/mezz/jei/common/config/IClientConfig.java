@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public interface IClientConfig {
+	int minRecipeGuiWidth = 198;
 	int minRecipeGuiHeight = 175;
 	int defaultRecipeGuiHeight = 350;
 	int maximumRecipeGuiHeight = 7680;
@@ -17,6 +18,8 @@ public interface IClientConfig {
 	IConfigValue<SearchBarPosition> searchBarPosition();
 
 	IConfigValue<Integer> maxRecipeGuiHeight();
+
+	IConfigValue<Integer> recipeGuiWidth();
 
 	IConfigValue<Boolean> toastReflowEnabled();
 
@@ -42,6 +45,8 @@ public interface IClientConfig {
 
 	IConfigValue<Integer> maxLookupHistoryRows();
 
+	IConfigValue<Integer> maxLookupHistoryColumns();
+
 	IConfigValue<Integer> maxLookupHistoryIngredients();
 
 	IConfigValue<HistoryDisplaySide> lookupHistoryDisplaySide();
@@ -61,6 +66,8 @@ public interface IClientConfig {
 	IConfigValue<Boolean> lookupBlockTagsEnabled();
 
 	IConfigValue<Boolean> showCreativeTabNamesEnabled();
+
+	IConfigValue<Boolean> guiResizeEnabled();
 
 	IConfigValue<Integer> dragDelayMs();
 

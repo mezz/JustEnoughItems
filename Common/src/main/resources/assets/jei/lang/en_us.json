@@ -628,5 +628,11 @@
   "jei.config.client.search.maxSearchCompletionRows": "Maximum Visible Suggestions",
   "jei.config.client.search.maxSearchCompletionRows.description": "Maximum number of search completion suggestions shown at once.",
   "jei.config.client.input.smoothScrollingEnabled": "Smooth Scrolling",
-  "jei.config.client.input.smoothScrollingEnabled.description": "Scroll JEI lists smoothly instead of moving one row at a time."
+  "jei.config.client.input.smoothScrollingEnabled.description": "Scroll JEI lists smoothly instead of moving one row at a time.",
+  "jei.config.client.input.guiResizeEnabled": "Enable GUI Resizing",
+  "jei.config.client.input.guiResizeEnabled.description": "Resize the recipe screen, ingredient list, bookmarks, and lookup history by dragging their edges or corners.",
+  "jei.config.client.recipes.recipeGuiWidth": "Recipe Screen Width",
+  "jei.config.client.recipes.recipeGuiWidth.description": "Preferred recipe screen width. The screen expands when a recipe needs more room. Drag its edges or corners to resize it.",
+  "jei.config.client.lookups.maxColumns": "Maximum Lookup History Columns",
+  "jei.config.client.lookups.maxColumns.description": "Limit how many columns of recent lookups are shown."
 }

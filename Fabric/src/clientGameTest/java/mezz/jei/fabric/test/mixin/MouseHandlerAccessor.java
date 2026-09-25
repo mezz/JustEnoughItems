@@ -11,4 +11,7 @@ public interface MouseHandlerAccessor {
 
 	@Invoker("onMove")
 	void jei$invokeOnMove(long window, double x, double y);
+
+	@Invoker("onScroll")
+	void jei$invokeOnScroll(long window, double horizontal, double vertical);
 }

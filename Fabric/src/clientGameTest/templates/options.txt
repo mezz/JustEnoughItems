@@ -7,3 +7,4 @@ simulationDistance:5
 soundCategory_master:0.0
 soundCategory_music:0.0
 useNativeTransport:false
+tutorialStep:none
