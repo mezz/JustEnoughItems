@@ -3,6 +3,7 @@ package mezz.jei.gui.overlay.ingredients;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.config.IngredientGridBackgroundStyle;
 import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.config.NavigationVisibility;
@@ -23,6 +24,7 @@ import net.mezzdev.config.api.value.serializer.IConfigValueSerializer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -812,8 +814,9 @@ public class IngredientGridConfigTest {
 		assertEquals(gridArea, disabledLayout.backgroundArea());
 	}
 
-	@Test
-	public void drawBackgroundAddsPaddingAroundSlotsAndOuterBackground() {
+	@ParameterizedTest
+	@EnumSource(value = IngredientGridBackgroundStyle.class, names = "NONE", mode = EnumSource.Mode.EXCLUDE)
+	public void drawBackgroundAddsPaddingAroundSlotsAndOuterBackground(IngredientGridBackgroundStyle backgroundStyle) {
 		// Setup: the same grid area is laid out with and without the ingredient-list background.
 		ImmutableRect2i gridArea = new ImmutableRect2i(
 			30,
@@ -824,7 +827,7 @@ public class IngredientGridConfigTest {
 		TestGridConfig withoutBackgroundConfig = config()
 			.drawBackground(false);
 		TestGridConfig withBackgroundConfig = config()
-			.drawBackground(true);
+			.backgroundStyle(backgroundStyle);
 
 		// Operation: calculate layout with navigation disabled so background padding is isolated.
 		IngredientGridWithNavigationLayout withoutBackground = IngredientGridWithNavigationLayout.fromGridArea(withoutBackgroundConfig, gridArea, false);
@@ -839,11 +842,12 @@ public class IngredientGridConfigTest {
 		assertTrue(withBackground.backgroundArea().width() > withBackground.slotBackgroundArea().width());
 	}
 
-	@Test
-	public void drawBackgroundAndNavigationCombineIntoOneOuterBackgroundArea() {
+	@ParameterizedTest
+	@EnumSource(value = IngredientGridBackgroundStyle.class, names = "NONE", mode = EnumSource.Mode.EXCLUDE)
+	public void drawBackgroundAndNavigationCombineIntoOneOuterBackgroundArea(IngredientGridBackgroundStyle backgroundStyle) {
 		// Setup: both the background and button navigation are enabled.
 		TestGridConfig gridConfig = config()
-			.drawBackground(true);
+			.backgroundStyle(backgroundStyle);
 		ImmutableRect2i gridArea = new ImmutableRect2i(
 			30,
 			50,
@@ -864,8 +868,9 @@ public class IngredientGridConfigTest {
 		);
 	}
 
-	@Test
-	public void drawBackgroundReducesAvailableGridAreaBeforeSizing() {
+	@ParameterizedTest
+	@EnumSource(value = IngredientGridBackgroundStyle.class, names = "NONE", mode = EnumSource.Mode.EXCLUDE)
+	public void drawBackgroundReducesAvailableGridAreaBeforeSizing(IngredientGridBackgroundStyle backgroundStyle) {
 		// Setup: the same screen area is available with and without background padding.
 		ImmutableRect2i availableArea = new ImmutableRect2i(
 			0,
@@ -876,7 +881,7 @@ public class IngredientGridConfigTest {
 		TestGridConfig withoutBackgroundConfig = config()
 			.drawBackground(false);
 		TestGridConfig withBackgroundConfig = config()
-			.drawBackground(true);
+			.backgroundStyle(backgroundStyle);
 
 		// Operation: calculate the area passed down to ingredient grid sizing.
 		ImmutableRect2i withoutBackground = IngredientGridWithNavigationLayout.getAvailableGridArea(
@@ -1992,7 +1997,7 @@ public class IngredientGridConfigTest {
 	private static class TestGridConfig implements IIngredientGridConfig {
 		private final TestConfigValue<Integer> maxColumns = value("maxColumns", 9);
 		private final TestConfigValue<Integer> maxRows = value("maxRows", 6);
-		private final TestConfigValue<Boolean> drawBackground = value("drawBackground", true);
+		private final TestConfigValue<IngredientGridBackgroundStyle> backgroundStyle = value("drawBackground", IngredientGridBackgroundStyle.BACKGROUND);
 		private final TestConfigValue<IngredientGridLayoutMode> layoutMode = value("layoutMode", IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE);
 		private final TestConfigValue<HorizontalAlignment> horizontalAlignment = value("horizontalAlignment", HorizontalAlignment.LEFT);
 		private final TestConfigValue<VerticalAlignment> verticalAlignment = value("verticalAlignment", VerticalAlignment.TOP);
@@ -2022,7 +2027,12 @@ public class IngredientGridConfigTest {
 		}
 
 		public TestGridConfig drawBackground(boolean drawBackground) {
-			this.drawBackground.set(drawBackground);
+			this.backgroundStyle.set(IngredientGridBackgroundStyle.fromBoolean(drawBackground));
+			return this;
+		}
+
+		public TestGridConfig backgroundStyle(IngredientGridBackgroundStyle backgroundStyle) {
+			this.backgroundStyle.set(backgroundStyle);
 			return this;
 		}
 
@@ -2072,8 +2082,8 @@ public class IngredientGridConfigTest {
 		}
 
 		@Override
-		public IConfigValue<Boolean> drawBackground() {
-			return drawBackground;
+		public IConfigValue<IngredientGridBackgroundStyle> backgroundStyle() {
+			return backgroundStyle;
 		}
 
 		@Override
