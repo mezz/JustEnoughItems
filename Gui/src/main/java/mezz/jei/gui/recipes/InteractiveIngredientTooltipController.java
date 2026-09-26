@@ -9,7 +9,9 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IMouseOverable;
+import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IPinnedTooltipHolder;
+import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.gui.input.PinnedTooltipManager;
 import mezz.jei.common.input.UserInput;
@@ -21,7 +23,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-final class InteractiveIngredientTooltipController implements IGuiInputLayer, IPinnedTooltipHolder {
+public final class InteractiveIngredientTooltipController implements IGuiInputLayer, IPinnedTooltipHolder, IRecipeFocusSource {
 	private final RecipesGui recipesGui;
 	private final FocusUtil focusUtil;
 	private final IGuiHelper guiHelper;
@@ -100,12 +102,18 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer, IP
 		return activeTooltip != null && activeTooltip.isMouseOver(mouseX, mouseY);
 	}
 
+	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		InteractiveIngredientTooltip activeTooltip = this.activeTooltip;
 		if (activeTooltip == null) {
 			return Stream.empty();
 		}
 		return activeTooltip.getIngredientUnderMouse(mouseX, mouseY);
+	}
+
+	@Override
+	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		return Stream.empty();
 	}
 
 	@Override
