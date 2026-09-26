@@ -6,6 +6,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.gui.bookmarks.BookmarkList;
+import mezz.jei.gui.elements.IScrollbarController;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jspecify.annotations.Nullable;
@@ -15,9 +16,15 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public interface IRecipeGuiLogic {
+public interface IRecipeGuiLogic extends IScrollbarController {
 
 	String getPageString();
+
+	boolean isScrolling();
+
+	RecipeGuiScrollState getScrollState();
+
+	boolean scrollRecipes(double pixels);
 
 	boolean hasMultipleCategories();
 

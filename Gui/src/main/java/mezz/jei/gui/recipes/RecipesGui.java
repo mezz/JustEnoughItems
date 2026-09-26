@@ -34,6 +34,7 @@ import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.common.gui.GuiProperties;
+import mezz.jei.common.gui.elements.Scrollbar;
 import mezz.jei.gui.bookmarks.BookmarkFactory;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.api.gui.buttons.IButtonState;
@@ -41,6 +42,7 @@ import mezz.jei.api.gui.buttons.IIconButtonController;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.elements.ResizeDrag;
 import mezz.jei.gui.elements.ResizeHandle;
+import mezz.jei.gui.elements.ScrollbarWidget;
 import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.InputType;
@@ -91,6 +93,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	/* List of RecipeLayout to display */
 	private final RecipeGuiLayouts layouts;
+	private final ScrollbarWidget scrollbar;
 
 	private String pageString = "1/1";
 	private final ScalableDrawable background;
@@ -147,6 +150,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			focusFactory,
 			bookmarkFactory
 		);
+		this.scrollbar = new ScrollbarWidget(this.logic);
 		this.craftingStations = new CraftingStations(guiHelper);
 		this.recipeGuiTabs = new RecipeGuiTabs(this.logic, recipeManager, guiHelper);
 		this.optionButtons = new RecipeOptionButtons(this.logic::goToFirstPage);
@@ -167,6 +171,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		Internal.registerRuntimeListenerRemoval(clientConfig.searchBarPosition().addListener(v -> reopenIfOpen()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.maxRecipeGuiHeight().addListener(v -> reopenIfOpen()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.recipeGuiWidth().addListener(v -> reopenIfOpen()));
+		Internal.registerRuntimeListenerRemoval(clientConfig.recipeGuiNavigationMode().addListener(v -> reopenIfOpen()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.maxRecipeGuiColumns().addListener(v -> reopenIfOpen()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.guiResizeEnabled().addListener(v -> resizeInputHandler.unfocus()));
 
@@ -231,7 +236,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 				@Override
 				public void updateState(IButtonState state) {
-					state.setActive(logic.hasMultiplePages());
+					state.setVisible(!logic.isScrolling());
+					state.setActive(!logic.isScrolling() && logic.hasMultiplePages());
 				}
 			},
 			buttonSize
@@ -251,7 +257,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 				@Override
 				public void updateState(IButtonState state) {
-					state.setActive(logic.hasMultiplePages());
+					state.setVisible(!logic.isScrolling());
+					state.setActive(!logic.isScrolling() && logic.hasMultiplePages());
 				}
 			},
 			buttonSize
@@ -263,7 +270,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			"RecipesGui",
 			this.interactiveIngredientTooltipController,
 			this.resizeInputHandler,
-			layouts.createInputHandler(),
+			this.scrollbar,
+			this.layouts,
 			new UserInputHandler(this),
 			optionButtons.createInputHandler(),
 			recipeGuiTabs.createInputHandler(),
@@ -299,6 +307,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	public void init() {
 		super.init();
 		this.resizeDrag = null;
+		this.scrollbar.unfocus();
 		updateSize();
 	}
 
@@ -340,7 +349,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		nextPage.updateBounds(nextPage.getArea().setPosition(rightButtonX, pageButtonTop));
 		previousPage.updateBounds(previousPage.getArea().setPosition(leftButtonX, pageButtonTop));
 
-		this.headerHeight = (pageButtonTop + smallButtonHeight) - guiTop;
+		int headerBottom = pageButtonTop;
+		if (logic.isScrolling()) {
+			headerBottom = recipeClassButtonTop;
+		}
+		this.headerHeight = (headerBottom + smallButtonHeight) - guiTop;
 	}
 
 	@Override
@@ -365,23 +378,30 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			nextRecipeCategory.getY() + nextRecipeCategory.getHeight(),
 			JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_BACKGROUND)
 		);
-		guiGraphics.fill(
-			previousPage.getX() + previousPage.getWidth(),
-			previousPage.getY(),
-			nextPage.getX(),
-			nextPage.getY() + nextPage.getHeight(),
-			JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_BACKGROUND)
-		);
+		if (!logic.isScrolling()) {
+			guiGraphics.fill(
+				previousPage.getX() + previousPage.getWidth(),
+				previousPage.getY(),
+				nextPage.getX(),
+				nextPage.getY() + nextPage.getHeight(),
+				JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_BACKGROUND)
+			);
+		}
 
 		this.recipeCategoryTitle.draw(guiGraphics, font);
 
-		ImmutableRect2i pageArea = MathUtil.union(previousPage.getArea(), nextPage.getArea());
-		StringUtil.drawCenteredStringWithShadow(guiGraphics, font, pageString, pageArea, JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_TEXT));
+		if (!logic.isScrolling()) {
+			ImmutableRect2i pageArea = MathUtil.union(previousPage.getArea(), nextPage.getArea());
+			StringUtil.drawCenteredStringWithShadow(guiGraphics, font, pageString, pageArea, JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_TEXT));
+		}
 
 		nextRecipeCategory.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		previousRecipeCategory.draw(guiGraphics, mouseX, mouseY, partialTicks);
-		nextPage.draw(guiGraphics, mouseX, mouseY, partialTicks);
-		previousPage.draw(guiGraphics, mouseX, mouseY, partialTicks);
+		if (!logic.isScrolling()) {
+			nextPage.draw(guiGraphics, mouseX, mouseY, partialTicks);
+			previousPage.draw(guiGraphics, mouseX, mouseY, partialTicks);
+		}
+		this.scrollbar.draw(guiGraphics, mouseX, mouseY);
 
 		updateInteractiveIngredientTooltip(mouseX, mouseY);
 
@@ -591,7 +611,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	@Override
 	public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
 		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(event.button());
-		if (resizeInputHandler.handleMouseDragged(event.x(), event.y(), input, dragX, dragY).isPresent()) {
+		if (inputHandler.handleMouseDragged(event.x(), event.y(), input, dragX, dragY)) {
 			return true;
 		}
 		return layouts.mouseDragged(event.x(), event.y(), input, dragX, dragY);
@@ -667,6 +687,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	@Override
 	public void onClose() {
 		resizeDrag = null;
+		inputHandler.handleGuiChange();
 		if (isOpen()) {
 			minecraft.gui.setScreen(parentScreen);
 			parentScreen = null;
@@ -747,7 +768,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			.flatMap(layout -> layout.getSlotUnderMouse(mouseX, mouseY)
 				.map(slotUnderMouse -> interactiveIngredientTooltipController.show(
 					slotUnderMouse,
-					RecipeSlotClickTargetFactory.createMouseOverable(layout, slotUnderMouse),
+					(x, y) -> layouts.isInsideViewport(x, y) && RecipeSlotClickTargetFactory.createMouseOverable(layout, slotUnderMouse).isMouseOver(x, y),
 					mouseX,
 					mouseY
 				)))
@@ -781,10 +802,20 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		this.layouts.setRecipeLayoutsWithButtons(recipeLayoutsWithButtons);
 		this.layouts.tick();
-		this.area = calculateAreaToFitLayouts(this.idealArea, this.width, this.layouts.getWidth());
+		int scrollbarSpace = getScrollbarSpace();
+		this.area = calculateAreaToFitLayouts(this.idealArea, this.width, this.layouts.getWidth() + scrollbarSpace);
 		recipeLayoutsArea = getRecipeLayoutsArea(this.area);
 
-		this.layouts.updateLayout(recipeLayoutsArea, grid);
+		RecipeGuiScrollState scrollState = null;
+		if (logic.isScrolling()) {
+			scrollState = logic.getScrollState();
+		}
+		this.layouts.updateLayout(recipeLayoutsArea, grid, scrollState);
+		ImmutableRect2i scrollbarArea = ImmutableRect2i.EMPTY;
+		if (logic.isScrolling()) {
+			scrollbarArea = new ImmutableRect2i(recipeLayoutsArea.x() + recipeLayoutsArea.width() + navBarPadding + 1, recipeLayoutsArea.y(), Scrollbar.WIDTH, recipeLayoutsArea.height());
+		}
+		this.scrollbar.updateBounds(scrollbarArea);
 
 		this.nextRecipeCategory.tick();
 		this.previousRecipeCategory.tick();
@@ -800,11 +831,18 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		recipeGuiTabs.initLayout(this.idealArea);
 	}
 
+	private int getScrollbarSpace() {
+		if (logic.isScrolling()) {
+			return Scrollbar.WIDTH + navBarPadding;
+		}
+		return 0;
+	}
+
 	private ImmutableRect2i getRecipeLayoutsArea(ImmutableRect2i area) {
 		return new ImmutableRect2i(
 			area.getX() + borderPadding,
 			area.getY() + headerHeight + navBarPadding,
-			area.getWidth() - (2 * borderPadding),
+			area.getWidth() - (2 * borderPadding) - getScrollbarSpace(),
 			area.getHeight() - (headerHeight + borderPadding + navBarPadding)
 		);
 	}
@@ -934,6 +972,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 						recipesGui.logic.previousRecipeCategory();
 						return Optional.of(this);
 					}
+				} else if (recipesGui.logic.isScrolling() && scrollDeltaY != 0) {
+					int scrollRate = Internal.getClientConfigs().getClientConfig().smoothScrollRate().get();
+					recipesGui.logic.scrollRecipes(-scrollDeltaY * scrollRate);
+					return Optional.of(this);
 				} else {
 					if (scrollDeltaY < 0) {
 						recipesGui.logic.nextPage();
