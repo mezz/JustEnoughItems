@@ -36,43 +36,16 @@ public class RecipeGuiLayouts {
 		this.cachedInputHandler = NullInputHandler.INSTANCE;
 	}
 
-	public void updateLayout(ImmutableRect2i recipeLayoutsArea, final int recipesPerPage) {
+	public void updateLayout(ImmutableRect2i recipeLayoutsArea, RecipeGuiGrid grid) {
 		if (this.recipeLayoutsWithButtons.isEmpty()) {
 			return;
 		}
 		IRecipeLayoutWithButtons<?> firstLayout = this.recipeLayoutsWithButtons.getFirst();
 		ImmutableRect2i layoutAreaWithBorder = new ImmutableRect2i(firstLayout.getRecipeLayout().getRectWithBorder());
-		final int recipeXOffset = getRecipeXOffset(layoutAreaWithBorder, recipeLayoutsArea);
-
-		final int recipeHeight = layoutAreaWithBorder.getHeight();
-		final int availableHeight = Math.max(recipeLayoutsArea.getHeight(), recipeHeight);
-		final int remainingHeight = availableHeight - (recipesPerPage * recipeHeight);
-		final int recipeSpacing = remainingHeight / (recipesPerPage + 1);
-
-		final int spacingY = recipeHeight + recipeSpacing;
-		int recipeYOffset = recipeLayoutsArea.getY() + recipeSpacing;
-		for (IRecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			recipeLayoutWithButtons.updateBounds(recipeXOffset, recipeYOffset);
-			recipeYOffset += spacingY;
-		}
-	}
-
-	private int getRecipeXOffset(ImmutableRect2i layoutRect, ImmutableRect2i layoutsArea) {
-		if (recipeLayoutsWithButtons.isEmpty()) {
-			return layoutsArea.getX();
-		}
-
-		final int recipeWidth = layoutRect.getWidth();
-		final int recipeWidthWithButtons = recipeLayoutsWithButtons.getFirst().totalWidth();
-		final int buttonSpace = recipeWidthWithButtons - recipeWidth;
-
-		final int availableArea = layoutsArea.getWidth();
-		if (availableArea > recipeWidth + (2 * buttonSpace)) {
-			// we have enough room to nicely draw the recipe centered with the buttons off to the side
-			return layoutsArea.getX() + (layoutsArea.getWidth() - recipeWidth) / 2;
-		} else {
-			// we can just barely fit, center the recipe and buttons all together in the available area
-			return layoutsArea.getX() + (layoutsArea.getWidth() - recipeWidthWithButtons) / 2;
+		for (int i = 0; i < recipeLayoutsWithButtons.size(); i++) {
+			IRecipeLayoutWithButtons<?> recipeLayoutWithButtons = recipeLayoutsWithButtons.get(i);
+			ImmutableRect2i recipeArea = grid.getRecipeArea(i, recipeLayoutsArea, layoutAreaWithBorder.getSize(), recipeLayoutWithButtons.totalWidth());
+			recipeLayoutWithButtons.updateBounds(recipeArea.x(), recipeArea.y());
 		}
 	}
 
