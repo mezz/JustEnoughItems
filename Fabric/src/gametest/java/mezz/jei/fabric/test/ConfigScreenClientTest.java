@@ -1,7 +1,11 @@
 package mezz.jei.fabric.test;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.constants.ModIds;
+import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.platform.Services;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.loader.api.FabricLoader;
@@ -12,7 +16,9 @@ import net.mezzdev.config.gui.ConfigScreen;
 import net.mezzdev.config.gui.ConfigValueCategoryPath;
 import net.mezzdev.config.gui.api.IConfigScreenValue;
 import net.mezzdev.config.gui.api.IConfigValueEditorSerializer;
+import net.mezzdev.config.gui.entries.ConfigEntryWidget;
 import net.mezzdev.config.gui.model.ConfigScreenModel;
+import net.mezzdev.config.gui.util.ImmutableRect2i;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -191,9 +197,100 @@ final class ConfigScreenClientTest {
 				}
 			});
 			context.takeScreenshot(screenshotName + "-alignment");
+			assertAlignmentPopup(context, screenshotName);
 		} finally {
 			context.runOnClient(client -> search.setValue(originalSearch));
 		}
+	}
+
+	private static void assertAlignmentPopup(ClientGameTestContext context, String screenshotName) {
+		ConfigScreen screen = context.computeOnClient(client -> (ConfigScreen) Objects.requireNonNull(client.gui.screen()));
+		var entries = context.computeOnClient(client -> getScreenModel(screen).getVisibleEntryWidgets());
+		var configs = Internal.getClientConfigs();
+		Map<String, IIngredientGridConfig> gridConfigs = Map.of(
+			"jei.config.client.ingredientList.alignment", configs.getIngredientListConfig(),
+			"jei.config.client.bookmarkList.alignment", configs.getBookmarkListConfig()
+		);
+		List<HorizontalAlignment> horizontalAlignments = List.of(HorizontalAlignment.LEFT, HorizontalAlignment.CENTER, HorizontalAlignment.RIGHT);
+		List<VerticalAlignment> verticalAlignments = List.of(VerticalAlignment.TOP, VerticalAlignment.CENTER, VerticalAlignment.BOTTOM);
+		for (var entry : entries) {
+			IIngredientGridConfig config = Objects.requireNonNull(gridConfigs.get(entry.getConfigValue().getLocalizationKey()));
+			HorizontalAlignment originalHorizontal = context.computeOnClient(client -> config.horizontalAlignment().get());
+			VerticalAlignment originalVertical = context.computeOnClient(client -> config.verticalAlignment().get());
+			ImmutableRect2i control = context.computeOnClient(client -> getAlignmentControlArea(entry));
+			try {
+				for (int row = 0; row < 3; row++) {
+					for (int column = 0; column < 3; column++) {
+						Object previousValue = context.computeOnClient(client -> entry.getConfigValue().getValue());
+						context.runOnClient(client -> {
+							var topLeftInfo = entry.getTooltipInfo(control.getX() + 2, control.getY() + 2);
+							var bottomRightInfo = entry.getTooltipInfo(control.getX() + control.getWidth() - 2, control.getY() + control.getHeight() - 2);
+							if (topLeftInfo == null || !topLeftInfo.equals(bottomRightInfo)) {
+								throw new AssertionError("The compact alignment button must describe the current value throughout its area");
+							}
+						});
+						click(context, control.getX() + (column + 0.5) * control.getWidth() / 3,
+							control.getY() + (row + 0.5) * control.getHeight() / 3);
+						var popup = context.computeOnClient(client -> {
+							if (!entry.getConfigValue().getValue().equals(previousValue)) {
+								throw new AssertionError("Opening the alignment popup must not change the alignment");
+							}
+							return Objects.requireNonNull(screen.getValueSelectorArea(), "Clicking the alignment button must open a popup");
+						});
+						if (row == 0 && column == 0) {
+							context.takeScreenshot(screenshotName + "-" + entry.getConfigValue().getLocalizationKey() + "-popup");
+						}
+						click(context, popup.getX() + (column + 0.5) * popup.getWidth() / 3,
+							popup.getY() + (row + 0.5) * popup.getHeight() / 3);
+						HorizontalAlignment horizontal = horizontalAlignments.get(column);
+						VerticalAlignment vertical = verticalAlignments.get(row);
+						context.runOnClient(client -> {
+							if (config.horizontalAlignment().get() != horizontal || config.verticalAlignment().get() != vertical) {
+								throw new AssertionError("Selecting an alignment must update both axes to " + horizontal + "/" + vertical);
+							}
+							if (screen.getValueSelectorArea() != null) {
+								throw new AssertionError("Selecting an alignment must close the popup");
+							}
+						});
+					}
+				}
+			} finally {
+				context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+				context.runOnClient(client -> {
+					config.horizontalAlignment().set(originalHorizontal);
+					config.verticalAlignment().set(originalVertical);
+				});
+			}
+		}
+	}
+
+	private static void click(ClientGameTestContext context, double x, double y) {
+		moveMouse(context, x, y);
+		context.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		try {
+			context.waitTick();
+		} finally {
+			context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		}
+		context.waitTick();
+	}
+
+	private static ImmutableRect2i getAlignmentControlArea(ConfigEntryWidget<?> entry) {
+		try {
+			Field valueArea = entry.getClass().getDeclaredField("valueArea");
+			valueArea.setAccessible(true);
+			return (ImmutableRect2i) valueArea.get(entry);
+		} catch (ReflectiveOperationException e) {
+			throw new AssertionError("Unable to find the alignment control", e);
+		}
+	}
+
+	private static void moveMouse(ClientGameTestContext context, double x, double y) {
+		double[] position = context.computeOnClient(client -> new double[]{
+			x * client.getWindow().getScreenWidth() / client.getWindow().getGuiScaledWidth(),
+			y * client.getWindow().getScreenHeight() / client.getWindow().getGuiScaledHeight()
+		});
+		context.getInput().setCursorPos(position[0], position[1]);
 	}
 
 	private static ConfigScreenModel getScreenModel(Screen screen) {
