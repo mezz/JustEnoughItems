@@ -23,6 +23,8 @@ public interface IClientConfig {
 
 	IConfigValue<Integer> maxRecipeGuiColumns();
 
+	IConfigValue<RecipeGuiNavigationMode> recipeGuiNavigationMode();
+
 	IConfigValue<Boolean> toastReflowEnabled();
 
 	IConfigValue<GiveMode> giveMode();

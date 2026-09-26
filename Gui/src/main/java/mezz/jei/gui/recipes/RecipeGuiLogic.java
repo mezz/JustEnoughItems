@@ -14,6 +14,7 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
+import mezz.jei.common.config.RecipeGuiNavigationMode;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.MathUtil;
@@ -43,6 +44,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	private boolean initialState = true;
 	private ILookupState state;
+	private boolean scrolling;
 	private RecipeGuiGrid recipeGuiGrid = new RecipeGuiGrid(1, 1);
 	private final NavigationHistory<ILookupState> stateHistory = new NavigationHistory<>();
 	private final LookupHistory lookupHistory;
@@ -284,7 +286,8 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 				state.getFocuses(),
 				bookmarks,
 				recipeManager,
-				recipeLayoutFactory
+				recipeLayoutFactory,
+				container
 			);
 			this.cachedRecipeCategory = recipeCategory;
 			this.cachedSorterStages = Set.copyOf(recipeSorterStages);
@@ -298,7 +301,63 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 		this.recipeGuiGrid = RecipeGuiGrid.calculate(availableSize, recipeSizeWithButtons, clientConfig.maxRecipeGuiColumns().get());
 		this.state.setRecipesPerPage(recipeGuiGrid.recipesPerPage());
 
+		boolean scrolling = isScrolling();
+		RecipeGuiScrollState scrollState = getScrollState();
+		scrollState.update(recipeGuiGrid.columns(), recipeSizeWithButtons.height(), cachedRecipeLayoutsWithButtons.size(), availableSize.height());
+		if (this.scrolling != scrolling) {
+			if (scrolling) {
+				int pageStart = state.getRecipeIndex() - state.getRecipeIndex() % state.getRecipesPerPage();
+				scrollState.scrollToRecipe(pageStart);
+			} else {
+				state.setRecipeIndex(scrollState.getFirstRecipeIndex());
+			}
+			this.scrolling = scrolling;
+		}
+		if (scrolling) {
+			return this.cachedRecipeLayoutsWithButtons.subList(scrollState.getFirstRecipeIndex(), scrollState.getEndRecipeIndex(), container);
+		}
 		return this.state.getVisible(this.cachedRecipeLayoutsWithButtons, container);
+	}
+
+	@Override
+	public boolean isScrolling() {
+		return Internal.getClientConfigs().getClientConfig().recipeGuiNavigationMode().get() == RecipeGuiNavigationMode.SCROLLING;
+	}
+
+	@Override
+	public RecipeGuiScrollState getScrollState() {
+		return state.getScrollState();
+	}
+
+	@Override
+	public boolean scrollRecipes(double pixels) {
+		if (getScrollState().scroll(pixels)) {
+			stateListener.onStateChange();
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public int getVisibleScrollAmount() {
+		return getScrollState().getVisibleHeight();
+	}
+
+	@Override
+	public int getHiddenScrollAmount() {
+		return getScrollState().getMaxScroll();
+	}
+
+	@Override
+	public float getScrollOffsetY() {
+		return getScrollState().getScrollOffset();
+	}
+
+	@Override
+	public void setScrollOffsetY(float scrollOffsetY) {
+		if (getScrollState().setScrollOffset(scrollOffsetY)) {
+			stateListener.onStateChange();
+		}
 	}
 
 	@Override
@@ -307,9 +366,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public void nextRecipeCategory() {
+	public boolean nextRecipeCategory() {
+		IRecipeCategory<?> previous = getSelectedRecipeCategory();
 		state.nextRecipeCategory();
 		stateListener.onStateChange();
+		return previous != getSelectedRecipeCategory();
 	}
 
 	@Override
@@ -326,9 +387,11 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public void previousRecipeCategory() {
+	public boolean previousRecipeCategory() {
+		IRecipeCategory<?> previous = getSelectedRecipeCategory();
 		state.previousRecipeCategory();
 		stateListener.onStateChange();
+		return previous != getSelectedRecipeCategory();
 	}
 
 	@Override
@@ -338,15 +401,27 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 	}
 
 	@Override
-	public void nextPage() {
-		state.nextPage();
-		stateListener.onStateChange();
+	public boolean nextPage() {
+		if (isScrolling()) {
+			return scrollRecipes(getScrollState().getVisibleHeight());
+		}
+		if (state.nextPage()) {
+			stateListener.onStateChange();
+			return true;
+		}
+		return false;
 	}
 
 	@Override
-	public void previousPage() {
-		state.previousPage();
-		stateListener.onStateChange();
+	public boolean previousPage() {
+		if (isScrolling()) {
+			return scrollRecipes(-getScrollState().getVisibleHeight());
+		}
+		if (state.previousPage()) {
+			stateListener.onStateChange();
+			return true;
+		}
+		return false;
 	}
 
 	@Override
