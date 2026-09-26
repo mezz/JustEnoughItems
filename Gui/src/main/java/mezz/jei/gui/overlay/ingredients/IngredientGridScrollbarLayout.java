@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.gui.elements.Scrollbar;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.gui.util.AlignmentUtil;
@@ -152,7 +153,7 @@ public final class IngredientGridScrollbarLayout {
 	}
 
 	private static int calculateScrollbarExtraWidth(IIngredientGridConfig gridConfig) {
-		return calculateScrollbarOffsetFromGrid(gridConfig) + IngredientGridScrollbar.SCROLLBAR_WIDTH;
+		return calculateScrollbarOffsetFromGrid(gridConfig) + Scrollbar.WIDTH;
 	}
 
 	private static int calculateScrollbarReservedGridWidth(IIngredientGridConfig gridConfig) {
@@ -181,10 +182,10 @@ public final class IngredientGridScrollbarLayout {
 		}
 
 		return new ImmutableRect2i(
-			ingredientGridArea.getX() + ingredientGridArea.getWidth() + calculateScrollbarOffsetFromGrid(gridConfig),
-			slotBackgroundArea.getY(),
-			IngredientGridScrollbar.SCROLLBAR_WIDTH,
-			slotBackgroundArea.getHeight()
+			ingredientGridArea.x() + ingredientGridArea.width() + calculateScrollbarOffsetFromGrid(gridConfig),
+			slotBackgroundArea.y(),
+			Scrollbar.WIDTH,
+			slotBackgroundArea.height()
 		);
 	}
 }

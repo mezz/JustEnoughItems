@@ -8,7 +8,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ReflectionUtil;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.ingredients.IngredientGrid;
-import mezz.jei.gui.overlay.ingredients.IngredientGridScrollbar;
+import mezz.jei.gui.elements.ScrollbarWidget;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import net.mezzdev.config.api.value.IConfigValue;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -130,7 +130,7 @@ final class IngredientNavigationClientTest {
 		IIngredientGridSource source = reflection.getFieldWithClass(contents, IIngredientGridSource.class).findFirst().orElseThrow();
 		ImmutableRect2i area;
 		if (mode.usesScrollbar()) {
-			IngredientGridScrollbar navigation = reflection.getFieldWithClass(contents, IngredientGridScrollbar.class).findFirst().orElseThrow();
+			ScrollbarWidget navigation = reflection.getFieldWithClass(contents, ScrollbarWidget.class).findFirst().orElseThrow();
 			area = reflection.getFieldWithClass(navigation, Scrollbar.class).findFirst().orElseThrow().getArea();
 		} else {
 			area = contents.getNextPageButtonArea();
