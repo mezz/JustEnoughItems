@@ -70,21 +70,25 @@ public class SingleCategoryLookupState implements ILookupState {
 	}
 
 	@Override
-	public void nextPage() {
+	public boolean nextPage() {
+		int oldIndex = this.recipeIndex - this.recipeIndex % recipesPerPage;
 		int recipeCount = recipeCount();
-		this.recipeIndex = recipeIndex + recipesPerPage;
+		this.recipeIndex = oldIndex + recipesPerPage;
 		if (recipeIndex >= recipeCount) {
 			this.recipeIndex = 0;
 		}
+		return this.recipeIndex != oldIndex;
 	}
 
 	@Override
-	public void previousPage() {
-		this.recipeIndex = recipeIndex - recipesPerPage;
+	public boolean previousPage() {
+		int oldIndex = this.recipeIndex - this.recipeIndex % recipesPerPage;
+		this.recipeIndex = oldIndex - recipesPerPage;
 		if (recipeIndex < 0) {
 			final int pageCount = pageCount();
 			this.recipeIndex = (pageCount - 1) * recipesPerPage;
 		}
+		return this.recipeIndex != oldIndex;
 	}
 
 	public int recipeCount() {

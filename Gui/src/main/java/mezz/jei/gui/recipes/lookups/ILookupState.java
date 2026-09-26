@@ -30,9 +30,9 @@ public interface ILookupState {
 
 	void goToFirstPage();
 
-	void nextPage();
+	boolean nextPage();
 
-	void previousPage();
+	boolean previousPage();
 
 	int pageCount();
 
