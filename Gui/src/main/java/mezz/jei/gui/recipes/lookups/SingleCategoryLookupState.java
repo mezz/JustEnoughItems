@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes.lookups;
 
 import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.gui.recipes.RecipeGuiScrollState;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.util.MathUtil;
@@ -11,6 +12,7 @@ public class SingleCategoryLookupState implements ILookupState {
 	private final IFocusedRecipes<?> focusedRecipes;
 	private final IFocusGroup focusGroup;
 	private int recipesPerPage = 1;
+	private final RecipeGuiScrollState scrollState = new RecipeGuiScrollState();
 	private int recipeIndex;
 
 	public SingleCategoryLookupState(IFocusedRecipes<?> focusedRecipes, IFocusGroup focusGroup) {
@@ -37,6 +39,16 @@ public class SingleCategoryLookupState implements ILookupState {
 	@Override
 	public void setRecipesPerPage(int recipesPerPage) {
 		this.recipesPerPage = recipesPerPage;
+	}
+
+	@Override
+	public RecipeGuiScrollState getScrollState() {
+		return scrollState;
+	}
+
+	@Override
+	public void setRecipeIndex(int recipeIndex) {
+		this.recipeIndex = recipeIndex;
 	}
 
 	@Override
@@ -67,6 +79,7 @@ public class SingleCategoryLookupState implements ILookupState {
 	@Override
 	public void goToFirstPage() {
 		this.recipeIndex = 0;
+		this.scrollState.scrollToRecipe(0);
 	}
 
 	@Override

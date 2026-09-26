@@ -7,6 +7,7 @@ import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IngredientSortStage;
 import mezz.jei.common.config.SearchBarPosition;
+import mezz.jei.common.config.RecipeGuiNavigationMode;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ public class TestClientConfig implements IClientConfig {
 	private final IConfigValue<SearchBarPosition> searchBarPosition = value("searchBarPosition", SearchBarPosition.STANDARD);
 	private final IConfigValue<Integer> maxRecipeGuiHeight = value("maxRecipeGuiHeight", 500);
 	private final IConfigValue<Integer> recipeGuiWidth = value("recipeGuiWidth", minRecipeGuiWidth);
+	private final IConfigValue<RecipeGuiNavigationMode> recipeGuiNavigationMode = value("navigationMode", RecipeGuiNavigationMode.PAGED);
 	private final IConfigValue<Integer> maxRecipeGuiColumns = value("maxRecipeGuiColumns", 2);
 	private final IConfigValue<Boolean> toastReflowEnabled = value("toastReflowEnabled", true);
 	private final IConfigValue<GiveMode> giveMode = value("giveMode", GiveMode.INVENTORY);
@@ -72,6 +74,11 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Integer> recipeGuiWidth() {
 		return recipeGuiWidth;
+	}
+
+	@Override
+	public IConfigValue<RecipeGuiNavigationMode> recipeGuiNavigationMode() {
+		return recipeGuiNavigationMode;
 	}
 
 	@Override

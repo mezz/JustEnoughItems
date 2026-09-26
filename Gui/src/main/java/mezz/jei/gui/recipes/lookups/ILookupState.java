@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes.lookups;
 
 import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.gui.recipes.RecipeGuiScrollState;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.gui.recipes.IRecipeLayoutWithButtons;
 import mezz.jei.gui.recipes.layouts.IRecipeLayoutList;
@@ -17,6 +18,10 @@ public interface ILookupState {
 	void setRecipesPerPage(int recipesPerPage);
 
 	int getRecipeIndex();
+
+	void setRecipeIndex(int recipeIndex);
+
+	RecipeGuiScrollState getScrollState();
 
 	IFocusGroup getFocuses();
 
