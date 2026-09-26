@@ -43,7 +43,6 @@ import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.elements.ResizeDrag;
 import mezz.jei.gui.elements.ResizeHandle;
 import mezz.jei.gui.elements.ScrollbarWidget;
-import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.InputType;
 import mezz.jei.common.input.MouseUserInput;
@@ -533,7 +532,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		}
 	}
 
-	public IGuiInputLayer getForegroundInputLayer() {
+	public InteractiveIngredientTooltipController getForegroundInputLayer() {
 		return this.interactiveIngredientTooltipController;
 	}
 

@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class IngredientFilterTest {
@@ -171,6 +172,24 @@ public class IngredientFilterTest {
 
 		List<?> ingredientList = ingredientFilter.getElements();
 		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientList.size());
+	}
+
+	@Test
+	public void testSearchTextIsLowercasedWithTheSameLocaleAsTheSearchIndex() {
+		Assertions.assertNotNull(ingredientFilter);
+		Assertions.assertNotNull(filterTextSource);
+
+		// The search index is lowercased with the Minecraft language locale,
+		// so the search text must be lowercased with that locale too.
+		// A Turkish system locale lowercases 'I' to a dotless i, which never matches the index.
+		Locale defaultLocale = Locale.getDefault();
+		try {
+			Locale.setDefault(Locale.of("tr", "TR"));
+			filterTextSource.setFilterText("Ingredient");
+			Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientFilter.getElements().size());
+		} finally {
+			Locale.setDefault(defaultLocale);
+		}
 	}
 
 	@Test

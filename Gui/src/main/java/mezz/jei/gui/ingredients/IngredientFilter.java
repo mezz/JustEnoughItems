@@ -15,6 +15,7 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.search.PrefixInfo;
+import mezz.jei.common.util.Translator;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.overlay.elements.IElement;
@@ -306,7 +307,7 @@ public class IngredientFilter
 	public List<IElement<?>> getElements() {
 		updateDirtyState();
 		String filterText = this.filterTextSource.getFilterText();
-		filterText = filterText.toLowerCase();
+		filterText = Translator.toLowercaseWithLocale(filterText);
 		if (ingredientListCached == null) {
 			ingredientListCached = getIngredientListUncached(filterText)
 				.<IElement<?>>map(IngredientElement::new)
