@@ -87,21 +87,25 @@ public class IngredientLookupState implements ILookupState {
 	}
 
 	@Override
-	public void nextPage() {
+	public boolean nextPage() {
+		int originalIndex = this.recipeIndex - this.recipeIndex % recipesPerPage;
 		int recipeCount = recipeCount();
-		this.recipeIndex = recipeIndex + recipesPerPage;
+		this.recipeIndex = originalIndex + recipesPerPage;
 		if (recipeIndex >= recipeCount) {
 			this.recipeIndex = 0;
 		}
+		return this.recipeIndex != originalIndex;
 	}
 
 	@Override
-	public void previousPage() {
-		this.recipeIndex = recipeIndex - recipesPerPage;
+	public boolean previousPage() {
+		int originalIndex = this.recipeIndex - this.recipeIndex % recipesPerPage;
+		this.recipeIndex = originalIndex - recipesPerPage;
 		if (recipeIndex < 0) {
 			final int pageCount = pageCount();
 			this.recipeIndex = (pageCount - 1) * recipesPerPage;
 		}
+		return this.recipeIndex != originalIndex;
 	}
 
 	public int recipeCount() {

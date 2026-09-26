@@ -43,6 +43,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ClientConfigMigrationTest {
 	@ParameterizedTest
+	@CsvSource({"'', 2", "1, 1", "2, 2", "10, 10", "0, 2", "11, 2"})
+	public void loadsRecipeColumnLimitWithDefaultAndRangeValidation(String savedColumns, int expectedColumns, @TempDir Path tempDir) throws IOException {
+		Path configFile = tempDir.resolve("jei-client.ini");
+		String content = "";
+		if (!savedColumns.isEmpty()) {
+			content = "[recipes]\nmaxRecipeGuiColumns = " + savedColumns + "\n";
+		}
+		Files.writeString(configFile, content);
+		ConfigFileWatcherSettings disabledWatcher = ConfigFileWatcherSettings.clientDefaults().withEnabled(false);
+		ConfigManager configManager = new ConfigManager("JEI Recipe Columns Test", disabledWatcher, disabledWatcher);
+		ClientConfigs configs = new ClientConfigs(
+			new ConfigSchemaBuilder("jei", configFile, "jei.config.client", configManager),
+			false,
+			configManager.createInMemorySortingConfig(Comparator.naturalOrder(), true)
+		);
+
+		assertEquals(expectedColumns, configs.getClientConfig().maxRecipeGuiColumns().get());
+	}
+
+	@ParameterizedTest
 	@CsvSource({"0, 9", "5, 5"})
 	public void loadsIndependentHistoryWidthFromExistingConfig(int savedColumns, int expectedColumns, @TempDir Path tempDir) throws IOException {
 		Path configFile = tempDir.resolve("jei-client.ini");

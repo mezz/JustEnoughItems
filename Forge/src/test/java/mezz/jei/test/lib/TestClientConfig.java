@@ -15,6 +15,7 @@ public class TestClientConfig implements IClientConfig {
 	private final IConfigValue<SearchBarPosition> searchBarPosition = value("searchBarPosition", SearchBarPosition.STANDARD);
 	private final IConfigValue<Integer> maxRecipeGuiHeight = value("maxRecipeGuiHeight", 500);
 	private final IConfigValue<Integer> recipeGuiWidth = value("recipeGuiWidth", minRecipeGuiWidth);
+	private final IConfigValue<Integer> maxRecipeGuiColumns = value("maxRecipeGuiColumns", 2);
 	private final IConfigValue<Boolean> toastReflowEnabled = value("toastReflowEnabled", true);
 	private final IConfigValue<GiveMode> giveMode = value("giveMode", GiveMode.INVENTORY);
 	private final IConfigValue<Boolean> cheatToHotbarUsingHotkeysEnabled = value("cheatToHotbarUsingHotkeysEnabled", false);
@@ -72,6 +73,11 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Integer> recipeGuiWidth() {
 		return recipeGuiWidth;
+	}
+
+	@Override
+	public IConfigValue<Integer> maxRecipeGuiColumns() {
+		return maxRecipeGuiColumns;
 	}
 
 	@Override
