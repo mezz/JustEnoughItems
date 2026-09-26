@@ -1,5 +1,8 @@
 package mezz.jei.gui.recipes.layouts;
 
+import java.util.Comparator;
+import java.util.Collections;
+
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
@@ -7,6 +10,7 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.common.Internal;
+import mezz.jei.common.util.LazyMappedList;
 import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
@@ -26,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
+	private static final int LAYOUT_CACHE_SIZE = 128;
 	private final IRecipeManager recipeManager;
 	private final IRecipeCategory<T> recipeCategory;
 	private final IFocusGroup focusGroup;
@@ -35,6 +40,7 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 	private final Iterator<T> unsortedIterator;
 	private final int size;
 	private final boolean sortCraftable;
+	private final @Nullable List<IRecipeLayoutWithButtons<?>> directLayouts;
 
 	LazyRecipeLayoutList(
 		Set<RecipeSorterStage> recipeSorterStages,
@@ -42,7 +48,8 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 		IFocusGroup focusGroup,
 		BookmarkList bookmarkList,
 		IRecipeManager recipeManager,
-		IRecipeLayoutWithButtonsFactory recipeLayoutFactory
+		IRecipeLayoutWithButtonsFactory recipeLayoutFactory,
+		@Nullable AbstractContainerMenu container
 	) {
 		boolean matchingBookmarks = recipeSorterStages.contains(RecipeSorterStage.BOOKMARKED);
 		this.sortCraftable = recipeSorterStages.contains(RecipeSorterStage.CRAFTABLE);
@@ -55,6 +62,18 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 
 		List<T> recipes = selectedRecipes.getRecipes();
 		this.size = recipes.size();
+
+		if (!isMatchingCraftable(container)) {
+			if (matchingBookmarks) {
+				RecipeType<T> recipeType = recipeCategory.getRecipeType();
+				recipes = new ArrayList<>(recipes);
+				recipes.sort(Comparator.comparing(recipe -> bookmarkList.getMatchingBookmark(recipeType, recipe) == null));
+			}
+			this.directLayouts = new LazyMappedList<>(recipes, recipe -> createRecipeLayoutWithButtons(recipe, bookmarkList.getMatchingBookmark(recipeCategory.getRecipeType(), recipe)), LAYOUT_CACHE_SIZE);
+			this.unsortedIterator = Collections.emptyIterator();
+			return;
+		}
+		this.directLayouts = null;
 
 		if (matchingBookmarks) {
 			RecipeType<T> recipeType = recipeCategory.getRecipeType();
@@ -86,6 +105,9 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 
 	@Override
 	public List<IRecipeLayoutWithButtons<?>> subList(int from, int to, @Nullable AbstractContainerMenu container) {
+		if (directLayouts != null) {
+			return List.copyOf(directLayouts.subList(from, to));
+		}
 		ensureResults(to - 1, container);
 		return results.subList(from, to);
 	}
@@ -100,6 +122,12 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 
 	@Override
 	public Optional<IRecipeLayoutWithButtons<?>> findFirst(@Nullable AbstractContainerMenu container) {
+		if (directLayouts != null) {
+			if (directLayouts.isEmpty()) {
+				return Optional.empty();
+			}
+			return Optional.of(directLayouts.get(0));
+		}
 		ensureResults(0, container);
 		if (results.isEmpty()) {
 			return Optional.empty();
@@ -109,7 +137,9 @@ public class LazyRecipeLayoutList<T> implements IRecipeLayoutList {
 
 	@Override
 	public void tick(@Nullable AbstractContainerMenu container) {
-		calculateNextResult(container);
+		if (directLayouts == null) {
+			calculateNextResult(container);
+		}
 	}
 
 	private boolean calculateNextResult(@Nullable AbstractContainerMenu container) {

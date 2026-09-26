@@ -20,6 +20,7 @@ final class UiResizeClientTests {
 				() -> "Timed out waiting for JEI to start for GUI resizing"
 			);
 			JeiGuiResizeClientGameTest.run();
+			RecipeGuiScrollingClientTest.run();
 		}
 	}
 }

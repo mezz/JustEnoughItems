@@ -21,9 +21,10 @@ public interface IRecipeLayoutList {
 		IFocusGroup focusGroup,
 		BookmarkList bookmarks,
 		IRecipeManager recipeManager,
-		IRecipeLayoutWithButtonsFactory recipeLayoutFactory
+		IRecipeLayoutWithButtonsFactory recipeLayoutFactory,
+		@Nullable AbstractContainerMenu container
 	) {
-		return createTyped(recipeSorterStages, selectedRecipes, focusGroup, bookmarks, recipeManager, recipeLayoutFactory);
+		return createTyped(recipeSorterStages, selectedRecipes, focusGroup, bookmarks, recipeManager, recipeLayoutFactory, container);
 	}
 
 	private static <T> IRecipeLayoutList createTyped(
@@ -32,7 +33,8 @@ public interface IRecipeLayoutList {
 		IFocusGroup focusGroup,
 		BookmarkList bookmarks,
 		IRecipeManager recipeManager,
-		IRecipeLayoutWithButtonsFactory recipeLayoutFactory
+		IRecipeLayoutWithButtonsFactory recipeLayoutFactory,
+		@Nullable AbstractContainerMenu container
 	) {
 		return new LazyRecipeLayoutList<>(
 			recipeSorterStages,
@@ -40,7 +42,8 @@ public interface IRecipeLayoutList {
 			focusGroup,
 			bookmarks,
 			recipeManager,
-			recipeLayoutFactory
+			recipeLayoutFactory,
+			container
 		);
 	}
 

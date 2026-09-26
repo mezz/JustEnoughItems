@@ -92,6 +92,11 @@ final class FabricClientTestContext {
 				.jei$invokeOnPress(client.getWindow().getWindow(), button, action, 0));
 		}
 
+		void scroll(double vertical) {
+			ClientTestUtil.runOnClient(client -> ((MouseHandlerAccessor) client.mouseHandler)
+				.jei$invokeOnScroll(client.getWindow().getWindow(), 0, vertical));
+		}
+
 		void resizeWindow(int width, int height) {
 			ClientTestUtil.runOnClient(client -> GLFW.glfwSetWindowSize(client.getWindow().getWindow(), width, height));
 		}

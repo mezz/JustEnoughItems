@@ -654,5 +654,11 @@
   "jei.config.client.search.matching": "Matching",
   "jei.config.client.search.matching.description": "Choose which ingredient details and alternate names are searched.",
   "jei.config.client.recipes.appearance": "Appearance",
-  "jei.config.client.recipes.appearance.description": "Options for recipe screen size and ingredient animations."
+  "jei.config.client.recipes.appearance.description": "Options for recipe screen size and ingredient animations.",
+  "jei.config.client.recipes.navigationMode": "Recipe Navigation Mode",
+  "jei.config.client.recipes.navigationMode.description": "Choose how to move through recipes within a category. Categories always use pages.",
+  "jei.config.client.recipes.navigationMode.paged": "Paged",
+  "jei.config.client.recipes.navigationMode.paged.description": "Use page buttons to move through recipes.",
+  "jei.config.client.recipes.navigationMode.scrolling": "Scrolling",
+  "jei.config.client.recipes.navigationMode.scrolling.description": "Use the mouse wheel or scroll bar to move through recipes within the selected category."
 }
