@@ -16,6 +16,8 @@ public interface IClientConfig {
 
 	IConfigValue<Integer> recipeGuiWidth();
 
+	IConfigValue<Integer> maxRecipeGuiColumns();
+
 	IConfigValue<Boolean> toastReflowEnabled();
 
 	IConfigValue<GiveMode> giveMode();

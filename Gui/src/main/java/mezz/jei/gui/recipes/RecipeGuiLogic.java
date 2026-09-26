@@ -1,6 +1,5 @@
 package mezz.jei.gui.recipes;
 
-import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusFactory;
@@ -15,6 +14,7 @@ import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.common.recipes.IRecipeVisibility;
 import mezz.jei.common.transfer.RecipeTransferService;
+import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IngredientBookmark;
@@ -27,7 +27,6 @@ import mezz.jei.gui.recipes.lookups.ILookupState;
 import mezz.jei.gui.recipes.lookups.IngredientLookupState;
 import mezz.jei.gui.recipes.lookups.SingleCategoryLookupState;
 import mezz.jei.gui.recipes.lookups.StaticFocusedRecipes;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -45,6 +44,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	private boolean initialState = true;
 	private ILookupState state;
+	private RecipeGuiGrid recipeGuiGrid = new RecipeGuiGrid(1, 1);
 	private final NavigationHistory<ILookupState> stateHistory = new NavigationHistory<>();
 	private final LookupHistory lookupHistory;
 	private final IFocusFactory focusFactory;
@@ -257,8 +257,7 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 
 	@Override
 	public List<IRecipeLayoutWithButtons<?>> getVisibleRecipeLayoutsWithButtons(
-		int availableHeight,
-		int minRecipePadding,
+		ImmutableSize2i availableSize,
 		@Nullable AbstractContainerMenu container,
 		BookmarkList bookmarkList,
 		RecipesGui recipesGui
@@ -295,21 +294,19 @@ public class RecipeGuiLogic implements IRecipeGuiLogic {
 			this.cachedContainerId = containerId;
 		}
 
-		final int recipeHeight = this.cachedRecipeLayoutsWithButtons.findFirst()
-			.map(IRecipeLayoutWithButtons::getRecipeLayout)
-			.map(IRecipeLayoutDrawable::getRectWithBorder)
-			.map(Rect2i::getHeight)
-			.orElseGet(recipeCategory::getHeight);
+		ImmutableSize2i recipeSizeWithButtons = this.cachedRecipeLayoutsWithButtons.findFirst()
+			.map(layout -> new ImmutableSize2i(layout.totalWidth(), layout.getRecipeLayout().getRectWithBorder().getHeight()))
+			.orElseGet(() -> new ImmutableSize2i(recipeCategory.getWidth(), recipeCategory.getHeight()));
 
-		final int recipesPerPage = Math.max(1, 1 + ((availableHeight - recipeHeight) / (recipeHeight + minRecipePadding)));
-		this.state.setRecipesPerPage(recipesPerPage);
+		this.recipeGuiGrid = RecipeGuiGrid.calculate(availableSize, recipeSizeWithButtons, clientConfig.maxRecipeGuiColumns().get());
+		this.state.setRecipesPerPage(recipeGuiGrid.recipesPerPage());
 
 		return this.state.getVisible(this.cachedRecipeLayoutsWithButtons);
 	}
 
 	@Override
-	public int getRecipesPerPage() {
-		return this.state.getRecipesPerPage();
+	public RecipeGuiGrid getRecipeGuiGrid() {
+		return recipeGuiGrid;
 	}
 
 	@Override

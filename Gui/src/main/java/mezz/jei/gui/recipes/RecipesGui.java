@@ -72,7 +72,6 @@ import java.util.stream.Stream;
 
 public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSource {
 	private static final int borderPadding = 6;
-	private static final int minRecipePadding = 4;
 	private static final int navBarPadding = 2;
 	private static final int titleInnerPadding = 14;
 	private static final int smallButtonWidth = 13;
@@ -168,6 +167,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		Internal.registerRuntimeListenerRemoval(clientConfig.searchBarPosition().addListener(v -> reopenIfOpen()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.maxRecipeGuiHeight().addListener(v -> reopenIfOpen()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.recipeGuiWidth().addListener(v -> reopenIfOpen()));
+		Internal.registerRuntimeListenerRemoval(clientConfig.maxRecipeGuiColumns().addListener(v -> reopenIfOpen()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.guiResizeEnabled().addListener(v -> resizeInputHandler.unfocus()));
 
 		Textures textures = Internal.getTextures();
@@ -429,7 +429,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 				JeiGuiColors.getColor(GuiColor.DEBUG_RECIPE_GUI_AREA)
 			);
 
-			ImmutableRect2i recipeLayoutsArea = getRecipeLayoutsArea();
+			ImmutableRect2i recipeLayoutsArea = getRecipeLayoutsArea(this.area);
 			guiGraphics.fill(
 				recipeLayoutsArea.getX(),
 				recipeLayoutsArea.getY(),
@@ -767,25 +767,24 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		IRecipeCategory<?> recipeCategory = logic.getSelectedRecipeCategory();
 		this.recipeCategoryTitle = RecipeCategoryTitle.create(recipeCategory, font, titleArea);
 
-		ImmutableRect2i recipeLayoutsArea = getRecipeLayoutsArea();
-		final int availableHeight = recipeLayoutsArea.getHeight();
+		// Base column capacity on the preferred area, without any expansion for the previous category.
+		ImmutableRect2i recipeLayoutsArea = getRecipeLayoutsArea(this.idealArea);
 
 		AbstractContainerMenu containerMenu = getParentContainerMenu();
 		List<IRecipeLayoutWithButtons<?>> recipeLayoutsWithButtons = logic.getVisibleRecipeLayoutsWithButtons(
-			availableHeight,
-			minRecipePadding,
+			recipeLayoutsArea.getSize(),
 			containerMenu,
 			bookmarks,
 			this
 		);
-		int recipesPerPage = this.logic.getRecipesPerPage();
+		RecipeGuiGrid grid = this.logic.getRecipeGuiGrid();
 
 		this.layouts.setRecipeLayoutsWithButtons(recipeLayoutsWithButtons);
 		this.layouts.tick();
 		this.area = calculateAreaToFitLayouts(this.idealArea, this.width, this.layouts.getWidth());
-		recipeLayoutsArea = getRecipeLayoutsArea();
+		recipeLayoutsArea = getRecipeLayoutsArea(this.area);
 
-		this.layouts.updateLayout(recipeLayoutsArea, recipesPerPage);
+		this.layouts.updateLayout(recipeLayoutsArea, grid);
 
 		this.nextRecipeCategory.tick();
 		this.previousRecipeCategory.tick();
@@ -801,7 +800,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		recipeGuiTabs.initLayout(this.idealArea);
 	}
 
-	private ImmutableRect2i getRecipeLayoutsArea() {
+	private ImmutableRect2i getRecipeLayoutsArea(ImmutableRect2i area) {
 		return new ImmutableRect2i(
 			area.getX() + borderPadding,
 			area.getY() + headerHeight + navBarPadding,
