@@ -190,6 +190,7 @@ final class JeiFabricClientRecipeSyncTests {
 					ConfigScreenClientTest.run();
 					RecipeSlotTooltipClientTest.run();
 					JeiGuiResizeClientGameTest.run();
+					RecipeGuiScrollingClientTest.run();
 				});
 			}
 		},
