@@ -452,6 +452,8 @@
   "jei.config.client.recipes.recipeGuiHeight.description": "Limit how tall the recipe screen can grow.",
   "jei.config.client.recipes.recipeGuiWidth": "Recipe Screen Width",
   "jei.config.client.recipes.recipeGuiWidth.description": "Preferred recipe screen width. The screen expands when a recipe needs more room. Drag its edges or corners to resize it.",
+  "jei.config.client.recipes.maxRecipeGuiColumns": "Maximum Recipe Columns",
+  "jei.config.client.recipes.maxRecipeGuiColumns.description": "Limit how many columns of recipes can appear when the recipe screen is wide enough. Drag its edges or corners to make room for more columns.",
   "jei.config.client.cheating.cheatToHotbarUsingHotkeysEnabled.value.true.description": "Allow cheating ingredients into hotbar slots.",
   "jei.config.client.cheating.cheatToHotbarUsingHotkeysEnabled.value.false.description": "Do not cheat ingredients directly into hotbar slots.",
   "jei.config.client.cheating.showHiddenIngredients.value.true.description": "Show ingredients that are hidden from the creative inventory.",

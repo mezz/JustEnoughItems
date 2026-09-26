@@ -19,6 +19,7 @@ public final class ClientConfig implements IClientConfig {
 	private final IConfigValue<SearchBarPosition> searchBarPosition;
 	private final IConfigValue<Integer> maxRecipeGuiHeight;
 	private final IConfigValue<Integer> recipeGuiWidth;
+	private final IConfigValue<Integer> maxRecipeGuiColumns;
 	private final IConfigValue<Boolean> toastReflowEnabled;
 
 	// cheat_mode
@@ -183,6 +184,9 @@ public final class ClientConfig implements IClientConfig {
 		recipeGuiWidth = recipes.addInteger("recipeGuiWidth", minRecipeGuiWidth, minRecipeGuiWidth, Integer.MAX_VALUE)
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
+		maxRecipeGuiColumns = recipes.addInteger("maxRecipeGuiColumns", 2, 1, 10)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
 		IConfigListValueSerializer<RecipeSorterStage> recipeSorterStagesSerializer = LegacyEnumSerializers.list(RecipeSorterStage.class);
 		recipeSortingBookmarksEnabled = recipes.addBoolean("recipeSortingBookmarks", true)
 			.addLegacyValue("sorting", "recipeSortingBookmarks")
@@ -296,6 +300,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Integer> recipeGuiWidth() {
 		return recipeGuiWidth;
+	}
+
+	@Override
+	public IConfigValue<Integer> maxRecipeGuiColumns() {
+		return maxRecipeGuiColumns;
 	}
 
 	@Override
