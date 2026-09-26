@@ -14,6 +14,7 @@ import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.gui.PageNavigation;
+import mezz.jei.gui.elements.ScrollbarWidget;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.ghost.GhostIngredientQuickMoveManager;
 import mezz.jei.gui.input.IClickableIngredientInternal;
@@ -38,7 +39,7 @@ import java.util.stream.Stream;
 public class IngredientGridWithNavigation implements IIngredientListOverlayContents {
 	private final IngredientGridWithNavigationController controller;
 	private final PageNavigation navigation;
-	private final IngredientGridScrollbar scrollbar;
+	private final ScrollbarWidget scrollbar;
 	private final IIngredientGridConfig gridConfig;
 	private final IngredientGridResizer resizer;
 	private @Nullable ImmutableRect2i resizeArea;
@@ -90,7 +91,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 			ghostIngredientQuickMoveManager
 		);
 		this.navigation = new PageNavigation(this.controller, false);
-		this.scrollbar = new IngredientGridScrollbar(this.controller);
+		this.scrollbar = new ScrollbarWidget(this.controller);
 		this.controller.setOnLayoutChanged(this.navigation::updatePageNumber);
 		this.inputHandler = new CombinedInputHandler(
 			debugName,

@@ -8,6 +8,7 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.gui.elements.IScrollbarController;
 import mezz.jei.gui.ghost.GhostIngredientQuickMoveManager;
 import mezz.jei.gui.input.DelegatingClickableIngredientInternal;
 import mezz.jei.gui.input.IClickableIngredientInternal;
@@ -31,7 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class IngredientGridWithNavigationController implements IPaged, IUserInputHandler {
+public class IngredientGridWithNavigationController implements IPaged, IUserInputHandler, IScrollbarController {
 	private final IngredientGridPageState pageState = new IngredientGridPageState();
 	private final IngredientGridScrollController scrollController;
 	private final IIngredientGridSource ingredientSource;
@@ -302,18 +303,22 @@ public class IngredientGridWithNavigationController implements IPaged, IUserInpu
 		return this.scrollController.canScroll();
 	}
 
+	@Override
 	public int getVisibleScrollAmount() {
 		return this.scrollController.getVisibleScrollAmount();
 	}
 
+	@Override
 	public int getHiddenScrollAmount() {
 		return this.scrollController.getHiddenScrollAmount();
 	}
 
+	@Override
 	public float getScrollOffsetY() {
 		return this.scrollController.getScrollOffsetY();
 	}
 
+	@Override
 	public void setScrollOffsetY(float scrollOffsetY) {
 		updateLayoutWhenChanged(this.scrollController.setScrollOffsetY(scrollOffsetY));
 	}
