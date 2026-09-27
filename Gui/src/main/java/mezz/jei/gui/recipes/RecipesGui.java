@@ -269,7 +269,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		inputHandler = new UserInputRouter(
 			"RecipesGui",
-			this.interactiveIngredientTooltipController,
 			this.resizeInputHandler,
 			this.scrollbar,
 			this.layouts,
@@ -499,18 +498,9 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
-		if (minecraft != null && minecraft.screen == this) {
-			return area.contains(mouseX, mouseY) ||
-				optionButtons.getArea().contains(mouseX, mouseY);
-		}
-		return false;
-	}
-
-	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isOpen()) {
-			if (interactiveIngredientTooltipController.isVisible()) {
+			if (interactiveIngredientTooltipController.isMouseOver(mouseX, mouseY)) {
 				return interactiveIngredientTooltipController.getIngredientUnderMouse(mouseX, mouseY);
 			}
 			return Stream.concat(
@@ -519,6 +509,17 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			);
 		}
 		return Stream.empty();
+	}
+
+	@Override
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		if (!isOpen()) {
+			return false;
+		}
+		return area.contains(mouseX, mouseY) ||
+			optionButtons.getArea().contains(mouseX, mouseY) ||
+			recipeGuiTabs.isMouseOver(mouseX, mouseY) ||
+			recipeCatalysts.isMouseOver(mouseX, mouseY);
 	}
 
 	@Override
@@ -692,6 +693,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
+	public void removed() {
+		interactiveIngredientTooltipController.hide();
+		super.removed();
+	}
+
+	@Override
 	public void onClose() {
 		resizeDrag = null;
 		inputHandler.handleGuiChange();
@@ -745,7 +752,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	public Optional<IRecipeLayoutWithButtons<?>> getRecipeLayoutUnderMouse(double mouseX, double mouseY) {
-		if (!isOpen()) {
+		if (!isOpen() || interactiveIngredientTooltipController.isMouseOver(mouseX, mouseY)) {
 			return Optional.empty();
 		}
 		return layouts.getRecipeLayoutUnderMouse(mouseX, mouseY);

@@ -2,7 +2,6 @@ package mezz.jei.common.input.handlers;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
 import net.minecraft.client.gui.screens.Screen;
@@ -44,7 +43,6 @@ public class CombinedInputHandler implements IUserInputHandler {
 	private Optional<IUserInputHandler> handleClickInternal(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 		return handleClickInternal(this.inputHandlers, inputHandler -> inputHandler
 			.handleUserInput(screen, input, keyBindings)
-			.or(() -> getInputLayerUnderMouse(inputHandler, input))
 		);
 	}
 
@@ -78,7 +76,6 @@ public class CombinedInputHandler implements IUserInputHandler {
 		return inputHandlers.stream()
 			.flatMap(inputHandler -> inputHandler
 				.handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY)
-				.or(() -> getInputLayerUnderMouse(inputHandler, mouseX, mouseY))
 				.stream()
 			)
 			.findFirst();
@@ -89,24 +86,9 @@ public class CombinedInputHandler implements IUserInputHandler {
 		return inputHandlers.stream()
 			.flatMap(inputHandler -> inputHandler
 				.handleMouseDragged(mouseX, mouseY, mouseKey, dragX, dragY)
-				.or(() -> getInputLayerUnderMouse(inputHandler, mouseX, mouseY))
 				.stream()
 			)
 			.findFirst();
-	}
-
-	private static Optional<IUserInputHandler> getInputLayerUnderMouse(IUserInputHandler inputHandler, UserInput input) {
-		if (input.getKey().getType() != InputConstants.Type.MOUSE) {
-			return Optional.empty();
-		}
-		return getInputLayerUnderMouse(inputHandler, input.getMouseX(), input.getMouseY());
-	}
-
-	private static Optional<IUserInputHandler> getInputLayerUnderMouse(IUserInputHandler inputHandler, double mouseX, double mouseY) {
-		if (inputHandler instanceof IGuiInputLayer inputLayer && inputLayer.isMouseOver(mouseX, mouseY)) {
-			return Optional.of(inputLayer);
-		}
-		return Optional.empty();
 	}
 
 	@Override

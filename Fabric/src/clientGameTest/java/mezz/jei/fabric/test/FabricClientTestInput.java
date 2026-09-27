@@ -48,6 +48,16 @@ public final class FabricClientTestInput {
 		});
 	}
 
+	public static void holdKey(int key) {
+		setKey(key, true);
+		ClientTestUtil.runOnClient(client -> invokeKeyPress(client, key, GLFW.GLFW_PRESS));
+	}
+
+	public static void releaseKey(int key) {
+		setKey(key, false);
+		ClientTestUtil.runOnClient(client -> invokeKeyPress(client, key, GLFW.GLFW_RELEASE));
+	}
+
 	public static void typeChar(char codepoint) {
 		ClientTestUtil.runOnClient(client -> {
 			long window = client.getWindow().getWindow();

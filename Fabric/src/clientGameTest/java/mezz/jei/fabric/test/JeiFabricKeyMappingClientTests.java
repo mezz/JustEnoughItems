@@ -442,11 +442,14 @@ final class JeiFabricKeyMappingClientTests {
 		// Operation: ask JEI whether the mapping accepts the real input key before and after holding the modifier.
 		boolean isUnbound = ClientTestUtil.computeOnClient(client -> jeiMapping.isUnbound());
 		boolean matchesWithoutModifier = ClientTestUtil.computeOnClient(client -> jeiMapping.isActiveAndMatches(mapping.boundKey()));
+		boolean relaxedMatchesWithoutModifier = ClientTestUtil.computeOnClient(client -> jeiMapping.isActiveAndMatchesAllowingExtraModifiers(mapping.boundKey()));
 		FabricClientTestInput.holdModifier(modifier);
 		boolean matchesWithModifier;
+		boolean relaxedMatchesWithModifier;
 		boolean matchesUnknownKey;
 		try {
 			matchesWithModifier = ClientTestUtil.computeOnClient(client -> jeiMapping.isActiveAndMatches(mapping.boundKey()));
+			relaxedMatchesWithModifier = ClientTestUtil.computeOnClient(client -> jeiMapping.isActiveAndMatchesAllowingExtraModifiers(mapping.boundKey()));
 			matchesUnknownKey = ClientTestUtil.computeOnClient(client -> jeiMapping.isActiveAndMatches(InputConstants.UNKNOWN));
 		} finally {
 			FabricClientTestInput.releaseModifier(modifier);
@@ -475,6 +478,9 @@ final class JeiFabricKeyMappingClientTests {
 				if (matchesWithModifier) {
 					throw new AssertionError("Expected unsupported modified key mapping to reject input with its modifier held.");
 				}
+			}
+			if (relaxedMatchesWithoutModifier || relaxedMatchesWithModifier != matchesWithModifier) {
+				throw new AssertionError("Relaxed matching must preserve required modifiers and unsupported mappings");
 			}
 			if (matchesUnknownKey) {
 				throw new AssertionError("Expected modified key mapping to reject the UNKNOWN key.");

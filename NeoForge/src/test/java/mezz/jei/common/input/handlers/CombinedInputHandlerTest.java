@@ -4,7 +4,9 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.IMouseOverable;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.gui.input.GuiInputSurfaceStack;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import org.junit.jupiter.api.Assertions;
@@ -122,14 +124,18 @@ public class CombinedInputHandlerTest {
 	public void hoveredInputLayerBlocksScrollFromLaterHandlers() {
 		RecordingInputLayer inputLayer = new RecordingInputLayer(true);
 		RecordingInputHandler laterHandler = new RecordingInputHandler(false, true);
+		IMouseOverable laterSurface = (x, y) -> true;
+		GuiInputSurfaceStack surfaces = new GuiInputSurfaceStack(inputLayer, laterSurface);
 		CombinedInputHandler combinedInputHandler = new CombinedInputHandler(
 			"scroll handlers",
-			List.of(inputLayer, laterHandler)
+			surfaces.routeInput(inputLayer, inputLayer),
+			surfaces.routeInput(laterHandler, laterSurface),
+			surfaces.createPointerBarrier()
 		);
 
 		Optional<IUserInputHandler> handled = combinedInputHandler.handleMouseScrolled(1, 2, 0, -1);
 
-		Assertions.assertSame(inputLayer, handled.orElseThrow());
+		Assertions.assertTrue(handled.isPresent());
 		Assertions.assertEquals(1, inputLayer.getScrollCount());
 		Assertions.assertEquals(0, laterHandler.scrollCount);
 	}
@@ -138,15 +144,19 @@ public class CombinedInputHandlerTest {
 	public void unhoveredInputLayerAllowsScrollToReachLaterHandlers() {
 		RecordingInputLayer inputLayer = new RecordingInputLayer(false);
 		RecordingInputHandler laterHandler = new RecordingInputHandler(false, true);
+		IMouseOverable laterSurface = (x, y) -> true;
+		GuiInputSurfaceStack surfaces = new GuiInputSurfaceStack(inputLayer, laterSurface);
 		CombinedInputHandler combinedInputHandler = new CombinedInputHandler(
 			"scroll handlers",
-			List.of(inputLayer, laterHandler)
+			surfaces.routeInput(inputLayer, inputLayer),
+			surfaces.routeInput(laterHandler, laterSurface),
+			surfaces.createPointerBarrier()
 		);
 
 		Optional<IUserInputHandler> handled = combinedInputHandler.handleMouseScrolled(1, 2, 0, -1);
 
 		Assertions.assertSame(laterHandler, handled.orElseThrow());
-		Assertions.assertEquals(1, inputLayer.getScrollCount());
+		Assertions.assertEquals(0, inputLayer.getScrollCount());
 		Assertions.assertEquals(1, laterHandler.scrollCount);
 	}
 
