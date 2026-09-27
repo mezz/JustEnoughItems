@@ -28,14 +28,6 @@ public final class FabricClientTestInput {
 		setModifier(modifier, false);
 	}
 
-	public static void holdKey(int key) {
-		setKey(key, true);
-	}
-
-	public static void releaseKey(int key) {
-		setKey(key, false);
-	}
-
 	public static void clear() {
 		KEY_STATES.clear();
 	}
@@ -53,6 +45,16 @@ public final class FabricClientTestInput {
 			invokeKeyPress(client, key, GLFW.GLFW_PRESS);
 			invokeKeyPress(client, key, GLFW.GLFW_RELEASE);
 		});
+	}
+
+	public static void holdKey(int key) {
+		setKey(key, true);
+		ClientTestUtil.runOnClient(client -> invokeKeyPress(client, key, GLFW.GLFW_PRESS));
+	}
+
+	public static void releaseKey(int key) {
+		setKey(key, false);
+		ClientTestUtil.runOnClient(client -> invokeKeyPress(client, key, GLFW.GLFW_RELEASE));
 	}
 
 	public static void typeChar(char codepoint) {

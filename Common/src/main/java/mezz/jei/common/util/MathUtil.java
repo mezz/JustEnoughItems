@@ -2,6 +2,7 @@ package mezz.jei.common.util;
 
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector4f;
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.FormattedText;
@@ -30,6 +31,13 @@ public final class MathUtil {
 			y >= rect.getY() &&
 			x < rect.getX() + rect.getWidth() &&
 			y < rect.getY() + rect.getHeight();
+	}
+
+	public static boolean contains(IGuiProperties properties, double x, double y) {
+		return x >= properties.getGuiLeft() &&
+			x < (properties.getGuiLeft() + properties.getGuiXSize()) &&
+			y >= properties.getGuiTop() &&
+			y < (properties.getGuiTop() + properties.getGuiYSize());
 	}
 
 	public static ImmutableRect2i union(ImmutableRect2i rect1, ImmutableRect2i rect2) {

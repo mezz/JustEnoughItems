@@ -79,6 +79,18 @@ final class FabricClientTestContext {
 			});
 		}
 
+		void holdKey(int key) {
+			FabricClientTestInput.holdKey(key);
+		}
+
+		void releaseKey(int key) {
+			FabricClientTestInput.releaseKey(key);
+		}
+
+		void pressKey(int key) {
+			FabricClientTestInput.pressKey(key);
+		}
+
 		void holdMouse(int button) {
 			mouseButton(button, GLFW.GLFW_PRESS);
 		}

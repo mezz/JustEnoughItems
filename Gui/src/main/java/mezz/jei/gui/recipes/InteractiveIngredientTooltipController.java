@@ -1,24 +1,28 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.gui.input.IClickableIngredientInternal;
+import mezz.jei.gui.input.IDraggableIngredientInternal;
+import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.common.input.IMouseOverable;
+import mezz.jei.gui.input.IPinnedTooltipHolder;
 import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.gui.input.PinnedTooltipManager;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.util.FocusUtil;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
-final class InteractiveIngredientTooltipController implements IGuiInputLayer {
+final class InteractiveIngredientTooltipController implements IGuiInputLayer, IPinnedTooltipHolder, IRecipeFocusSource {
 	private final RecipesGui recipesGui;
 	private final FocusUtil focusUtil;
 	private final IGuiHelper guiHelper;
@@ -54,6 +58,7 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer {
 		if (activeTooltip != null) {
 			activeTooltip.unfocus();
 			this.activeTooltip = null;
+			PinnedTooltipManager.closed(this);
 		}
 	}
 
@@ -86,6 +91,7 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer {
 		}
 		hide();
 		this.activeTooltip = tooltip.get();
+		PinnedTooltipManager.opened(this);
 		return true;
 	}
 
@@ -95,6 +101,7 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer {
 		return activeTooltip != null && activeTooltip.isMouseOver(mouseX, mouseY);
 	}
 
+	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		InteractiveIngredientTooltip activeTooltip = this.activeTooltip;
 		if (activeTooltip == null) {
@@ -104,10 +111,15 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer {
 	}
 
 	@Override
+	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
+		return Stream.empty();
+	}
+
+	@Override
 	public void draw(PoseStack poseStack, int mouseX, int mouseY) {
 		InteractiveIngredientTooltip activeTooltip = this.activeTooltip;
 		if (activeTooltip != null) {
-			activeTooltip.draw(poseStack, mouseX, mouseY);
+			PinnedTooltipManager.draw(this, () -> activeTooltip.draw(poseStack, mouseX, mouseY));
 		}
 	}
 

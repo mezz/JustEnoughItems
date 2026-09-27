@@ -22,6 +22,7 @@ import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.handlers.CombinedInputHandler;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.config.IWorldConfig;
 import mezz.jei.common.transfer.RecipeTransferService;
@@ -45,6 +46,8 @@ import mezz.jei.gui.ingredients.IngredientSorter;
 import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.gui.input.CombinedRecipeFocusSource;
 import mezz.jei.gui.input.GuiContainerWrapper;
+import mezz.jei.gui.input.GuiInputSurfaceStack;
+import mezz.jei.gui.input.GuiInputSurfaceStack.KeyboardRouting;
 import mezz.jei.gui.input.ICharTypedHandler;
 import mezz.jei.gui.input.handlers.BookmarkInputHandler;
 import mezz.jei.gui.input.handlers.ChatLinkInputHandler;
@@ -245,54 +248,80 @@ public class JeiGuiStarter {
 		var searchInputLayer = ingredientListOverlay.getSearchInputLayer();
 		var recipesGuiForegroundInputLayer = recipesGui.getForegroundInputLayer();
 		var bookmarkPreviewTooltipController = bookmarkOverlay.getPreviewTooltipController();
+		var container = new GuiContainerWrapper(screenHelper);
+		GuiInputSurfaceStack inputSurfaces = new GuiInputSurfaceStack(
+			searchInputLayer,
+			recipesGuiForegroundInputLayer,
+			bookmarkPreviewTooltipController,
+			recipesGui,
+			ingredientListOverlay,
+			bookmarkOverlay,
+			container
+		);
+		var foregroundLayers = inputSurfaces.getForegroundLayers();
 
 		GuiEventHandler guiEventHandler = new GuiEventHandler(
 			screenHelper,
 			bookmarkOverlay,
 			ingredientListOverlay,
-			searchInputLayer,
-			bookmarkPreviewTooltipController,
-			recipesGuiForegroundInputLayer
+			foregroundLayers
 		);
 
-		CombinedRecipeFocusSource recipeFocusSource = new CombinedRecipeFocusSource(
-			searchInputLayer,
-			bookmarkPreviewTooltipController,
-			recipesGui,
-			ingredientListOverlay,
-			bookmarkOverlay,
-			new GuiContainerWrapper(screenHelper)
-		);
+		CombinedRecipeFocusSource recipeFocusSource = new CombinedRecipeFocusSource(inputSurfaces);
 
 		List<ICharTypedHandler> charTypedHandlers = List.of(
 			ingredientListOverlay
 		);
 
+		var foregroundInputHandlers = foregroundLayers.stream()
+			.map(layer -> {
+				if (layer == searchInputLayer) {
+					// Search owns keyboard focus, the completion popup, and the search field in the ingredient panel.
+					return inputSurfaces.routeInput(layer, KeyboardRouting.GLOBAL, layer, ingredientListOverlay);
+				}
+				return inputSurfaces.routeInput(layer, KeyboardRouting.GLOBAL, layer);
+			})
+			.toList();
+
 		UserInputRouter userInputRouter = new UserInputRouter(
 			"JEIGlobal",
-			searchInputLayer,
-			bookmarkPreviewTooltipController,
-			recipesGuiForegroundInputLayer,
+			new CombinedInputHandler("Foreground", foregroundInputHandlers),
 			new EditInputHandler(recipeFocusSource, worldConfig, editModeConfig),
-			recipesGui.getResizeInputHandler(),
-			ingredientListOverlay.getResizeInputHandler(),
-			bookmarkOverlay.getResizeInputHandler(),
-			ingredientListOverlay.createDeleteItemInputHandler(),
-			bookmarkOverlay.createDeleteItemInputHandler(),
+			inputSurfaces.routeInput(recipesGui.getResizeInputHandler(), recipesGui),
+			inputSurfaces.routeInput(ingredientListOverlay.getResizeInputHandler(), ingredientListOverlay),
+			inputSurfaces.routeInput(bookmarkOverlay.getResizeInputHandler(), bookmarkOverlay),
+			inputSurfaces.routeInput(ingredientListOverlay.createDeleteItemInputHandler(), ingredientListOverlay),
+			inputSurfaces.routeInput(bookmarkOverlay.createDeleteItemInputHandler(), bookmarkOverlay),
 			new CheatInputHandler(recipeFocusSource, clientConfig, ingredientManager, worldConfig, serverConnection),
 			new ElementInputHandler(recipeFocusSource),
-			ingredientListOverlay.createInputHandler(),
-			bookmarkOverlay.createInputHandler(),
+			inputSurfaces.routeInput(
+				ingredientListOverlay.createInputHandler(),
+				KeyboardRouting.PAGE_NAVIGATION,
+				ingredientListOverlay
+			),
+			inputSurfaces.routeInput(
+				bookmarkOverlay.createInputHandler(),
+				KeyboardRouting.PAGE_NAVIGATION,
+				bookmarkOverlay
+			),
 			new FocusInputHandler(recipeFocusSource, recipesGui, focusUtil, ingredientManager),
-			new BookmarkInputHandler(recipeFocusSource, bookmarkList, bookmarkOverlay, clientConfig, recipesGui),
+			new BookmarkInputHandler(
+				recipeFocusSource,
+				bookmarkList,
+				bookmarkOverlay,
+				inputSurfaces,
+				clientConfig,
+				recipesGui
+			),
 			new GlobalInputHandler(worldConfig),
-			new GuiAreaInputHandler(screenHelper, recipesGui, focusFactory)
+			inputSurfaces.routeInput(new GuiAreaInputHandler(screenHelper, recipesGui, focusFactory), container),
+			inputSurfaces.createPointerBarrier(recipesGui, container)
 		);
 
 		DragRouter dragRouter = new DragRouter(
-			searchInputLayer,
-			ingredientListOverlay.createDragHandler(),
-			bookmarkOverlay.createDragHandler()
+			inputSurfaces.routeDrag(searchInputLayer, searchInputLayer),
+			inputSurfaces.routeDrag(ingredientListOverlay.createDragHandler(), ingredientListOverlay),
+			inputSurfaces.routeDrag(bookmarkOverlay.createDragHandler(), bookmarkOverlay)
 		);
 		ClientInputHandler clientInputHandler = new ClientInputHandler(
 			charTypedHandlers,
