@@ -1,6 +1,7 @@
 package mezz.jei.common.util;
 
 import java.util.Locale;
+import java.util.function.Supplier;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
@@ -10,6 +11,7 @@ import net.minecraft.client.resources.language.LanguageManager;
 import javax.annotation.Nullable;
 
 public final class Translator {
+	private static Supplier<Locale> localeSupplier = Translator::getLocale;
 	@Nullable
 	private static String cachedLocaleCode;
 	@Nullable
@@ -27,7 +29,11 @@ public final class Translator {
 	}
 
 	public static String toLowercaseWithLocale(String string) {
-		return string.toLowerCase(getLocale());
+		return string.toLowerCase(localeSupplier.get());
+	}
+
+	public static void setLocaleSupplier(Supplier<Locale> localeSupplier) {
+		Translator.localeSupplier = localeSupplier;
 	}
 
 	@SuppressWarnings("ConstantConditions")
