@@ -20,6 +20,7 @@ import mezz.jei.common.config.ClientToggleState;
 import mezz.jei.common.config.SearchMode;
 import mezz.jei.common.search.GeneralizedSuffixTreeSearchStorage;
 import mezz.jei.common.search.SearchStorageBuilderAdapter;
+import mezz.jei.common.util.Translator;
 import mezz.jei.gui.filter.FilterTextSource;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
@@ -51,6 +52,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -174,20 +177,32 @@ public class IngredientFilterTest {
 		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientList.size());
 	}
 
-	@Test
-	public void testSearchTextIsLowercasedWithTheSameLocaleAsTheSearchIndex() {
-		Assertions.assertNotNull(ingredientFilter);
-		Assertions.assertNotNull(filterTextSource);
-
-		// The search index is lowercased with the Minecraft language locale,
-		// so the search text must be lowercased with that locale too.
-		// A Turkish system locale lowercases 'I' to a dotless i, which never matches the index.
+	@ParameterizedTest
+	@CsvSource({
+		"tr-TR, en-US, ingredient",
+		"en-US, tr-TR, ıngredient"
+	})
+	public void testSearchTextIsLowercasedWithTheSameLocaleAsTheSearchIndex(String systemLanguageTag, String minecraftLanguageTag, String expectedLowercase) {
 		Locale defaultLocale = Locale.getDefault();
 		try {
-			Locale.setDefault(Locale.of("tr", "TR"));
-			filterTextSource.setFilterText("Ingredient");
+			Locale.setDefault(Locale.forLanguageTag(systemLanguageTag));
+			Locale minecraftLocale = Locale.forLanguageTag(minecraftLanguageTag);
+			Translator.setLocaleSupplier(() -> minecraftLocale);
+			// Build the search index with the same language that JEI uses for the query.
+			setup(false);
+			Assertions.assertNotNull(ingredientFilter);
+			Assertions.assertNotNull(filterTextSource);
+			Assertions.assertNotNull(ingredientFilterConfig);
+			// Lowercase ASCII in identifiers or tooltips must not mask a mismatched display-name query.
+			ingredientFilterConfig.identifierSearchMode().set(SearchMode.REQUIRE_PREFIX);
+			ingredientFilterConfig.tooltipSearchMode().set(SearchMode.REQUIRE_PREFIX);
+
+			String filterText = "Ingredient";
+			Assertions.assertEquals(expectedLowercase, Translator.toLowercaseWithLocale(filterText));
+			filterTextSource.setFilterText(filterText);
 			Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientFilter.getElements().size());
 		} finally {
+			Translator.setLocaleSupplier(() -> Locale.ROOT);
 			Locale.setDefault(defaultLocale);
 		}
 	}
