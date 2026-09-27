@@ -21,6 +21,7 @@ final class UiResizeClientTests {
 			);
 			JeiGuiResizeClientGameTest.run();
 			RecipeGuiScrollingClientTest.run();
+			InteractiveIngredientTooltipClientGameTest.run();
 		}
 	}
 }

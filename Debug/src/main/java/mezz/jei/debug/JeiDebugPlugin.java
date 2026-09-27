@@ -6,7 +6,6 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
-import mezz.jei.api.gui.builder.IClickableIngredientFactory;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.buttons.IIconButtonController;
@@ -28,7 +27,6 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
-import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
@@ -38,7 +36,6 @@ import mezz.jei.common.platform.IPlatformRegistry;
 import mezz.jei.common.platform.IPlatformScreenHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.MathUtil;
 import mezz.jei.debug.ingredients.DebugIngredient;
 import mezz.jei.debug.ingredients.DebugIngredientHelper;
 import mezz.jei.debug.ingredients.DebugIngredientListFactory;
@@ -69,7 +66,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @JeiPlugin
 public class JeiDebugPlugin implements IModPlugin {
@@ -292,15 +288,6 @@ public class JeiDebugPlugin implements IModPlugin {
 				);
 			}
 
-			@Override
-			public Optional<? extends IClickableIngredient<?>> getClickableIngredientUnderMouse(IClickableIngredientFactory factory, BrewingStandScreen containerScreen, double mouseX, double mouseY) {
-				Rect2i area = new Rect2i(0, 0, 10, 10);
-				if (MathUtil.contains(area, mouseX, mouseY)) {
-					return factory.createBuilder(new ItemStack(Items.BOW))
-						.buildWithArea(area);
-				}
-				return Optional.empty();
-			}
 		});
 
 		registration.addGhostIngredientHandler(BrewingStandScreen.class, new DebugGhostIngredientHandler<>(ingredientManager));
