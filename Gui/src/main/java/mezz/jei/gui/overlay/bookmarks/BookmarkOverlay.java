@@ -396,6 +396,21 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	@Override
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		updateScreenPropertiesIfDirty();
+		if (!this.guiPropertiesCache.hasValidScreen()) {
+			return false;
+		}
+		if (this.bookmarkButton.isMouseOver(mouseX, mouseY) || this.historyButton.isMouseOver(mouseX, mouseY)) {
+			return true;
+		}
+		if (isListDisplayed() && this.contents.isMouseOver(mouseX, mouseY)) {
+			return true;
+		}
+		return toggleState.isOverlayEnabled() && this.lookupHistoryOverlay.isMouseOver(mouseX, mouseY);
+	}
+
+	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		updateScreenPropertiesIfDirty();
 		if (isListDisplayed()) {
@@ -577,10 +592,6 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		if (pixels != 0) {
 			this.contents.scrollByPixels(pixels);
 		}
-	}
-
-	public boolean isMouseOver(double mouseX, double mouseY) {
-		return this.contents.isMouseOver(mouseX, mouseY);
 	}
 
 	public boolean isBookmarkElementUnderMouse(IElement<?> element, double mouseX, double mouseY) {

@@ -47,6 +47,14 @@ public class AmecsKeyMappingWithContext extends AmecsKeyMappingWithKeyModifiers 
 
 	@Override
 	public boolean isActiveAndMatches(InputConstants.Key key) {
+		return isActiveAndMatches(key, false);
+	}
+
+	public boolean isActiveAndMatchesAllowingExtraModifiers(InputConstants.Key key) {
+		return isActiveAndMatches(key, true);
+	}
+
+	private boolean isActiveAndMatches(InputConstants.Key key, boolean allowExtraModifiers) {
 		if (isUnbound()) {
 			return false;
 		}
@@ -60,6 +68,10 @@ public class AmecsKeyMappingWithContext extends AmecsKeyMappingWithKeyModifiers 
 		AmecsKeyModifierCombination combination = AmecsKeyModifiersApi.getBoundModifiers(this);
 		List<JeiKeyModifier> jeiKeyModifiers = AmecsHelper.getJeiModifiers(combination);
 		for (JeiKeyModifier jeiKeyModifier : jeiKeyModifiers) {
+			// Pinning a tooltip must not prevent its unmodified focus and bookmark keys from matching.
+			if (allowExtraModifiers && jeiKeyModifier == JeiKeyModifier.NONE) {
+				continue;
+			}
 			if (!jeiKeyModifier.isActive(context)) {
 				return false;
 			}

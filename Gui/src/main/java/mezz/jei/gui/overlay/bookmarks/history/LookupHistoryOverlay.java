@@ -236,6 +236,11 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	}
 
 	@Override
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		return isListDisplayed() && contents.isMouseOver(mouseX, mouseY);
+	}
+
+	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isListDisplayed()) {
 			return contents.getDraggableIngredientUnderMouse(mouseX, mouseY);
