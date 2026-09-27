@@ -1,5 +1,6 @@
 package mezz.jei.common.util;
 
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.Rect2i;
@@ -39,6 +40,13 @@ public final class MathUtil {
 			x <= rect.right() &&
 			y >= rect.top() &&
 			y <= rect.bottom();
+	}
+
+	public static boolean contains(IGuiProperties properties, double x, double y) {
+		return x >= properties.guiLeft() &&
+			x < properties.guiRight() &&
+			y >= properties.guiTop() &&
+			y < properties.guiBottom();
 	}
 
 	public static ImmutableRect2i union(ImmutableRect2i rect1, ImmutableRect2i rect2) {

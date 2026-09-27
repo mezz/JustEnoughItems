@@ -20,7 +20,7 @@ public class CombinedRecipeFocusSourceTest {
 		// Setup: a foreground focus source covers another focus source at the mouse position.
 		TestInputLayer foreground = new TestInputLayer(true);
 		TestFocusSource obscured = new TestFocusSource();
-		CombinedRecipeFocusSource combined = new CombinedRecipeFocusSource(foreground, obscured);
+		CombinedRecipeFocusSource combined = new CombinedRecipeFocusSource(new GuiInputSurfaceStack(foreground, obscured));
 
 		// Operation: query the focus sources under the foreground layer.
 		combined.getIngredientUnderMouse(10, 10).count();
@@ -35,13 +35,13 @@ public class CombinedRecipeFocusSourceTest {
 		// Setup: a foreground focus source does not cover the mouse position.
 		TestInputLayer foreground = new TestInputLayer(false);
 		TestFocusSource following = new TestFocusSource();
-		CombinedRecipeFocusSource combined = new CombinedRecipeFocusSource(foreground, following);
+		CombinedRecipeFocusSource combined = new CombinedRecipeFocusSource(new GuiInputSurfaceStack(foreground, following));
 
 		// Operation: query the focus sources outside the foreground layer.
 		combined.getIngredientUnderMouse(10, 10).count();
 
-		// Assertions: the query continues through both sources.
-		assertEquals(1, foreground.getIngredientQueries());
+		// Assertions: only the source under the mouse participates in the query.
+		assertEquals(0, foreground.getIngredientQueries());
 		assertEquals(1, following.getIngredientQueries());
 	}
 
@@ -52,6 +52,11 @@ public class CombinedRecipeFocusSourceTest {
 		public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 			ingredientQueries++;
 			return Stream.empty();
+		}
+
+		@Override
+		public boolean isMouseOver(double mouseX, double mouseY) {
+			return true;
 		}
 
 		@Override
