@@ -754,11 +754,6 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		@Override
-		public boolean isMouseOver(double mouseX, double mouseY) {
-			return false;
-		}
-
-		@Override
 		public int size() {
 			return visibleSlotCount;
 		}
@@ -806,6 +801,11 @@ public class IngredientGridWithNavigationControllerTest {
 		@Override
 		public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 			return Stream.of();
+		}
+
+		@Override
+		public boolean isMouseOver(double mouseX, double mouseY) {
+			return false;
 		}
 
 		@Override
@@ -941,6 +941,11 @@ public class IngredientGridWithNavigationControllerTest {
 		@Override
 		public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 			return Stream.of();
+		}
+
+		@Override
+		public boolean isMouseOver(double mouseX, double mouseY) {
+			return false;
 		}
 
 		@Override

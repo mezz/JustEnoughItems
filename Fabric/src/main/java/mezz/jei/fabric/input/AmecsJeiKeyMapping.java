@@ -12,6 +12,11 @@ public class AmecsJeiKeyMapping extends FabricJeiKeyMapping<AmecsKeyMappingWithC
 	}
 
 	@Override
+	public boolean isActiveAndMatchesAllowingExtraModifiers(InputConstants.Key key) {
+		return mapping.isActiveAndMatchesAllowingExtraModifiers(key);
+	}
+
+	@Override
 	public Component getTranslatedKeyMessage() {
 		InputConstants.Key key = KeyMappingHelper.getBoundKeyOf(this.mapping);
 		AmecsKeyModifierCombination combination = AmecsKeyModifiersApi.getBoundModifiers(this.mapping);
