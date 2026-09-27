@@ -419,11 +419,14 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 		// Operation: ask JEI whether the mapping accepts the real input key before and after holding the modifier.
 		boolean isUnbound = context.computeOnClient(client -> jeiMapping.isUnbound());
 		boolean matchesWithoutModifier = context.computeOnClient(client -> jeiMapping.isActiveAndMatches(mapping.boundKey()));
+		boolean relaxedMatchesWithoutModifier = context.computeOnClient(client -> jeiMapping.isActiveAndMatchesAllowingExtraModifiers(mapping.boundKey()));
 		holdModifier(context.getInput(), modifier);
 		boolean matchesWithModifier;
+		boolean relaxedMatchesWithModifier;
 		boolean matchesUnknownKey;
 		try {
 			matchesWithModifier = context.computeOnClient(client -> jeiMapping.isActiveAndMatches(mapping.boundKey()));
+			relaxedMatchesWithModifier = context.computeOnClient(client -> jeiMapping.isActiveAndMatchesAllowingExtraModifiers(mapping.boundKey()));
 			matchesUnknownKey = context.computeOnClient(client -> jeiMapping.isActiveAndMatches(InputConstants.UNKNOWN));
 		} finally {
 			releaseModifier(context.getInput(), modifier);
@@ -454,6 +457,10 @@ public class JeiFabricKeyMappingClientGameTest implements FabricClientGameTest {
 		}
 		if (matchesUnknownKey) {
 			throw new AssertionError("Expected modified key mapping to reject the UNKNOWN key.");
+		}
+		// Allowing an extra pin modifier must still require the mapping's configured modifier.
+		if (relaxedMatchesWithoutModifier || relaxedMatchesWithModifier != matchesWithModifier) {
+			throw new AssertionError("Expected relaxed modifier matching to preserve required modifiers and unsupported mappings.");
 		}
 	}
 

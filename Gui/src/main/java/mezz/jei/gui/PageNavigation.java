@@ -81,6 +81,10 @@ public class PageNavigation {
 		this.nextButton.updateBounds(nextArea);
 	}
 
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		return isVisible() && area.contains(mouseX, mouseY);
+	}
+
 	public void updatePageNumber() {
 		int pageNum = this.paged.getPageNumber();
 		int pageCount = this.paged.getPageCount();

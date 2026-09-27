@@ -36,12 +36,12 @@ public class GuiEventHandler {
 		IScreenHelper screenHelper,
 		BookmarkOverlay bookmarkOverlay,
 		IngredientListOverlay ingredientListOverlay,
-		IGuiInputLayer... inputLayers
+		List<IGuiInputLayer> inputLayers
 	) {
 		this.screenHelper = screenHelper;
 		this.bookmarkOverlay = bookmarkOverlay;
 		this.ingredientListOverlay = ingredientListOverlay;
-		this.inputLayers = List.of(inputLayers);
+		this.inputLayers = List.copyOf(inputLayers);
 	}
 
 	public void onGuiInit(Screen screen) {

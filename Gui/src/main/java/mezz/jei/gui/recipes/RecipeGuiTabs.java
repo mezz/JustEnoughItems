@@ -138,7 +138,7 @@ public class RecipeGuiTabs implements IPaged {
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return area.contains(mouseX, mouseY);
+		return area.contains(mouseX, mouseY) || pageNavigation.isMouseOver(mouseX, mouseY);
 	}
 
 	@Override

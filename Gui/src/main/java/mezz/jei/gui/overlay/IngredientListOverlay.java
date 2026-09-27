@@ -238,6 +238,23 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	@Override
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		updateScreenPropertiesIfDirty();
+		if (!this.controller.hasValidScreen()) {
+			return false;
+		}
+		if (this.configButton.isMouseOver(mouseX, mouseY)) {
+			return true;
+		}
+		if (isListDisplayed()) {
+			if (this.contents.isMouseOver(mouseX, mouseY) || this.searchField.isMouseOver(mouseX, mouseY)) {
+				return true;
+			}
+		}
+		return toggleState.isOverlayEnabled() && this.lookupHistoryOverlay.isMouseOver(mouseX, mouseY);
+	}
+
+	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		updateScreenPropertiesIfDirty();
 		if (isListDisplayed()) {

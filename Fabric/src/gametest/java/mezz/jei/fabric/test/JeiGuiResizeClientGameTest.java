@@ -11,6 +11,7 @@ import mezz.jei.common.config.IngredientGridBackgroundStyle;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ReflectionUtil;
+import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.overlay.ingredients.IngredientGrid;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
@@ -359,6 +360,13 @@ public class JeiGuiResizeClientGameTest implements FabricClientGameTest {
 		context.runOnClient(client -> {
 			IngredientGrid grid = historyGrid(bookmarks);
 			check(grid.getColumnCount() == columns && grid.getRowCount() == rows, "Live history should be " + columns + "x" + rows + ", got " + grid.getColumnCount() + "x" + grid.getRowCount());
+			ImmutableRect2i area = grid.getArea();
+			IRecipeFocusSource overlay = (IRecipeFocusSource) Internal.getJeiRuntime().getIngredientListOverlay();
+			if (bookmarks) {
+				overlay = (IRecipeFocusSource) Internal.getJeiRuntime().getBookmarkOverlay();
+			}
+			check(historyOverlay(bookmarks).isMouseOver(area.x() + 1, area.y() + 1), "Visible history must block ingredient lookup");
+			check(overlay.isMouseOver(area.x() + 1, area.y() + 1), "The owning overlay must block lookup over history, even when its main panel is hidden");
 			check(grid.getVisibleElements().count() == columns * rows, "History should populate new slots during the drag");
 			IClientConfig config = Internal.getClientConfigs().getClientConfig();
 			check(config.maxLookupHistoryColumns().get() == columns && config.maxLookupHistoryRows().get() == rows, "History dimensions must update during the drag");

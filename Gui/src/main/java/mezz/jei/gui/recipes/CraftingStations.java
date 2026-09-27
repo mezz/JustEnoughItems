@@ -178,6 +178,15 @@ public class CraftingStations implements IRecipeFocusSource {
 	}
 
 	@Override
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		if (isEmpty()) {
+			return false;
+		}
+		ImmutableRect2i area = new ImmutableRect2i(left, top, width, height);
+		return area.contains(mouseX, mouseY);
+	}
+
+	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
 		return Stream.empty();
 	}
