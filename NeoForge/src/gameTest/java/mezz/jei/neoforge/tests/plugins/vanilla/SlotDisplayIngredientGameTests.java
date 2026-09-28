@@ -23,12 +23,15 @@ import mezz.jei.library.ingredients.SlotIngredient;
 import mezz.jei.library.recipes.collect.RecipeIngredientRoleMap;
 import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
 import mezz.jei.neoforge.tests.lib.TestIngredientManagers;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.context.ContextMap;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
@@ -38,6 +41,8 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplayContext;
+import net.neoforged.neoforge.common.crafting.ICustomIngredient;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.testframework.annotation.ForEachTest;
 import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
@@ -133,6 +138,66 @@ public final class SlotDisplayIngredientGameTests {
 		// Assertions: the grouping index and rotation retain only the remaining subtype.
 		helper.assertEquals(1, expandedAfterRemoval.size(), "Expected the grouping index to update after runtime removal");
 		helper.assertTrue(containsStack(expandedAfterRemoval, healingPotion), "Expected the remaining subtype after removal");
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Custom ingredient displays retain component-specific variants without expanding to other subtypes.")
+	public static void customIngredientDisplayKeepsComponentVariants(JeiGameTestHelper helper) {
+		ItemStack waterPotion = PotionContents.createItemStack(Items.POTION, Potions.WATER);
+		ItemStack healingPotion = PotionContents.createItemStack(Items.POTION, Potions.HEALING);
+		ItemStack strengthPotion = PotionContents.createItemStack(Items.POTION, Potions.STRENGTH);
+		IIngredientManagerInternal ingredientManager = createIngredientManager(waterPotion, healingPotion, strengthPotion);
+		// Like Iron Jetpacks' tier ingredient, use NeoForge's default display with component-bearing holders.
+		Ingredient ingredient = new ComponentIngredient(List.of(waterPotion, healingPotion)).toVanilla();
+		ContextMap contextMap = SlotDisplayContext.fromLevel(helper.getLevel());
+		RecipeSlotBuilder builder = new RecipeSlotBuilder(ingredientManager, contextMap, 0, RecipeIngredientRole.INPUT);
+		builder.add(ingredient);
+		IRecipeSlotDrawable slot = builder.build(FocusGroup.EMPTY, CycleTicker.createWithRandomOffset()).second();
+
+		List<PotionContents> displayedPotions = slot.getItemStacks()
+			.map(stack -> stack.get(DataComponents.POTION_CONTENTS))
+			.toList();
+		helper.assertEquals(
+			List.of(waterPotion.get(DataComponents.POTION_CONTENTS), healingPotion.get(DataComponents.POTION_CONTENTS)),
+			displayedPotions,
+			"Expected only the two potion variants supplied by the custom ingredient"
+		);
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Custom ingredient components restrict Uses lookup and recipe focus to the declared variants.")
+	public static void customIngredientComponentsRestrictLookupAndFocus(JeiGameTestHelper helper) {
+		ItemStack waterPotion = PotionContents.createItemStack(Items.POTION, Potions.WATER);
+		ItemStack healingPotion = PotionContents.createItemStack(Items.POTION, Potions.HEALING);
+		ItemStack strengthPotion = PotionContents.createItemStack(Items.POTION, Potions.STRENGTH);
+		IIngredientManagerInternal ingredientManager = createIngredientManager(waterPotion, healingPotion, strengthPotion);
+		Ingredient ingredient = new ComponentIngredient(List.of(waterPotion, healingPotion)).toVanilla();
+		ContextMap contextMap = SlotDisplayContext.fromLevel(helper.getLevel());
+		IngredientSupplierBuilder supplierBuilder = new IngredientSupplierBuilder(ingredientManager, contextMap);
+		supplierBuilder.addSlot(RecipeIngredientRole.INPUT).add(ingredient);
+		RecipeIngredientRoleMap roleMap = new RecipeIngredientRoleMap(
+			Comparator.comparing(recipeType -> recipeType.getUid().toString()),
+			ingredientManager,
+			RecipeIngredientRole.INPUT
+		);
+		roleMap.addRecipe(RECIPE_TYPE, "component recipe", supplierBuilder.buildIngredientSupplier());
+		DisplayIngredientAcceptor acceptor = new DisplayIngredientAcceptor(ingredientManager, contextMap, RecipeIngredientRole.INPUT);
+		acceptor.add(ingredient);
+
+		for (ItemStack accepted : List.of(waterPotion, healingPotion)) {
+			ITypedIngredient<ItemStack> typedIngredient = ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, accepted, false).orElseThrow();
+			Focus<ItemStack> focus = new Focus<>(RecipeIngredientRole.INPUT, typedIngredient);
+			helper.assertEquals(List.of("component recipe"), roleMap.getRecipes(RECIPE_TYPE, typedIngredient), "Expected Uses lookup to find a declared variant");
+			helper.assertTrue(!acceptor.getMatches(focus, RecipeIngredientRole.INPUT).isEmpty(), "Expected a declared variant to match the slot");
+		}
+		ITypedIngredient<ItemStack> excludedIngredient = ingredientManager.createTypedIngredient(VanillaTypes.ITEM_STACK, strengthPotion, false).orElseThrow();
+		Focus<ItemStack> excludedFocus = new Focus<>(RecipeIngredientRole.INPUT, excludedIngredient);
+		helper.assertTrue(roleMap.getRecipes(RECIPE_TYPE, excludedIngredient).isEmpty(), "Expected Uses lookup to exclude other potion variants");
+		helper.assertTrue(acceptor.getMatches(excludedFocus, RecipeIngredientRole.INPUT).isEmpty(), "Expected other potion variants not to match the slot");
 		helper.succeed();
 	}
 
@@ -626,6 +691,32 @@ public final class SlotDisplayIngredientGameTests {
 
 	private static <T> SlotDisplayData<T> getSlotDisplayData(SlotIngredient<T> ingredient) {
 		return Objects.requireNonNull(ingredient.slotDisplayData(), "Expected slot display data");
+	}
+
+	private record ComponentIngredient(List<ItemStack> stacks) implements ICustomIngredient {
+		private static final IngredientType<ComponentIngredient> TYPE = new IngredientType<>(
+			ItemStack.CODEC.listOf().fieldOf("stacks").xmap(ComponentIngredient::new, ComponentIngredient::stacks)
+		);
+
+		@Override
+		public Stream<Holder<Item>> items() {
+			return stacks.stream().map(stack -> Holder.direct(stack.getItem(), stack.getComponents()));
+		}
+
+		@Override
+		public boolean test(ItemStack stack) {
+			return containsItemStack(stacks, stack);
+		}
+
+		@Override
+		public boolean isSimple() {
+			return false;
+		}
+
+		@Override
+		public IngredientType<?> getType() {
+			return TYPE;
+		}
 	}
 
 	private static final class WrappingSlotDisplay implements SlotDisplay {
