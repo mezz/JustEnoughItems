@@ -101,6 +101,7 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -220,8 +221,10 @@ public class VanillaPlugin implements IModPlugin {
 				interpretationBuilder.addChildDisplay(childDisplay);
 			}
 		});
-		registration.register(SlotDisplay.ItemSlotDisplay.TYPE, (ignoredSlotDisplay, ignoredContext, interpretationBuilder) -> {
-			interpretationBuilder.setWildcardForSubtypes(true);
+		registration.register(SlotDisplay.ItemSlotDisplay.TYPE, (slotDisplay, ignoredContext, interpretationBuilder) -> {
+			// A REFERENCE names only the item, so allow all its variants.
+			// Otherwise (for DIRECT), keep the specified variants.
+			interpretationBuilder.setWildcardForSubtypes(slotDisplay.item().kind() == Holder.Kind.REFERENCE);
 		});
 		registration.register(SlotDisplay.TagSlotDisplay.TYPE, (slotDisplay, ignoredContext, interpretationBuilder) -> {
 			interpretationBuilder
