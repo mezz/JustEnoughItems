@@ -376,7 +376,8 @@ public final class FireworkStarRecipeCategoryExtension implements ICraftingCateg
 	}
 
 	private static int getColor(ItemStack dye) {
-		return dye.getOrDefault(DataComponents.DYE, DyeColor.WHITE).getFireworkColor();
+		DyeColor dyeColor = dye.getOrDefault(DataComponents.DYE, DyeColor.WHITE);
+		return FireworkExplosion.defaultFireworkTint(dyeColor);
 	}
 
 	private List<ItemStack> getDyes(Ingredient ingredient, ItemStack focus) {

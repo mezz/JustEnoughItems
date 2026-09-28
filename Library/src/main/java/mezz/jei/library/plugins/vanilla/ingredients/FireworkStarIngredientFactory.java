@@ -26,11 +26,11 @@ public final class FireworkStarIngredientFactory {
 
 	public static List<FireworkExplosion> createExplosions() {
 		List<FireworkExplosion> explosions = new ArrayList<>();
-		IntList red = IntList.of(DyeColor.RED.getFireworkColor());
-		IntList blue = IntList.of(DyeColor.BLUE.getFireworkColor());
-		IntList yellow = IntList.of(DyeColor.YELLOW.getFireworkColor());
-		IntList multicolor = IntList.of(DyeColor.RED.getFireworkColor(), DyeColor.BLUE.getFireworkColor());
-		IntList fadeColors = IntList.of(DyeColor.YELLOW.getFireworkColor(), DyeColor.WHITE.getFireworkColor());
+		IntList red = IntList.of(FireworkExplosion.defaultFireworkTint(DyeColor.RED));
+		IntList blue = IntList.of(FireworkExplosion.defaultFireworkTint(DyeColor.BLUE));
+		IntList yellow = IntList.of(FireworkExplosion.defaultFireworkTint(DyeColor.YELLOW));
+		IntList multicolor = IntList.of(FireworkExplosion.defaultFireworkTint(DyeColor.RED), FireworkExplosion.defaultFireworkTint(DyeColor.BLUE));
+		IntList fadeColors = IntList.of(FireworkExplosion.defaultFireworkTint(DyeColor.YELLOW), FireworkExplosion.defaultFireworkTint(DyeColor.WHITE));
 
 		// Cover each shape and a few effects without enumerating every possible combination.
 		for (FireworkExplosion.Shape shape : FireworkExplosion.Shape.values()) {
