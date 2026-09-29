@@ -1,7 +1,7 @@
 package mezz.jei.gui.overlay.ingredients;
 
-import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.gui.placement.VerticalAlignment;
+import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.Internal;
@@ -9,6 +9,11 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.IngredientGridBackgroundStyle;
+import mezz.jei.common.input.IInputTarget;
+import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.handlers.InputGroup;
+import mezz.jei.common.input.interaction.IInputInteraction;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -18,19 +23,20 @@ import mezz.jei.gui.elements.ScrollbarWidget;
 import mezz.jei.gui.ghost.GhostIngredientDragManager;
 import mezz.jei.gui.ghost.GhostIngredientQuickMoveManager;
 import mezz.jei.gui.input.IClickableIngredientInternal;
-import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IPaged;
-import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.input.handlers.CombinedInputHandler;
+import mezz.jei.gui.input.InputCommands;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.util.CommandUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
 /**
@@ -48,7 +54,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	private final IngredientGrid ingredientGrid;
 	private final IIngredientGridSource ingredientSource;
 	private final GhostIngredientDragManager ghostIngredientDragManager;
-	private final IUserInputHandler inputHandler;
+	private final IInputTarget inputHandler;
 
 	private ImmutableRect2i backgroundArea = ImmutableRect2i.EMPTY;
 	private ImmutableRect2i slotBackgroundArea = ImmutableRect2i.EMPTY;
@@ -93,7 +99,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.navigation = new PageNavigation(this.controller, false);
 		this.scrollbar = new ScrollbarWidget(this.controller);
 		this.controller.setOnLayoutChanged(this.navigation::updatePageNumber);
-		this.inputHandler = new CombinedInputHandler(
+		this.inputHandler = new InputGroup(
 			debugName,
 			this.scrollbar,
 			this.controller,
@@ -102,7 +108,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 		this.ingredientSource.addSourceListChangedListener(this::markLayoutDirty);
 		addGridConfigListeners(gridConfig);
-		Internal.registerRuntimeListenerRemoval(clientConfig.guiResizeEnabled().addListener(v -> resizer.unfocus()));
+		Internal.registerRuntimeListenerRemoval(clientConfig.guiResizeEnabled().addListener(v -> resizer.resetInput()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.smoothScrollingEnabled().addListener(v -> markLayoutDirty()));
 	}
 
@@ -135,7 +141,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	@Override
-	public IUserInputHandler getResizeInputHandler() {
+	public IInputTarget getResizeInputHandler() {
 		return resizer;
 	}
 
@@ -259,7 +265,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	private void clearLayout() {
-		this.resizer.unfocus();
+		this.resizer.resetInput();
 		this.ingredientGrid.updateBounds(ImmutableRect2i.EMPTY, Set.of(), null);
 		this.slotBackgroundArea = ImmutableRect2i.EMPTY;
 		this.navigation.updateBounds(ImmutableRect2i.EMPTY);
@@ -354,19 +360,24 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		updateLayoutIfDirty();
 		return this.active &&
-			this.backgroundArea.contains(mouseX, mouseY) &&
+			(this.backgroundArea.contains(mouseX, mouseY) || this.resizer.isOverResizeHandle(mouseX, mouseY)) &&
 			this.guiExclusionAreas.stream()
 				.noneMatch(area -> area.contains(mouseX, mouseY));
 	}
 
 	@Override
-	public IUserInputHandler createDeleteItemInputHandler() {
+	public IInputTarget createDeleteItemInputHandler() {
 		return this.ingredientGrid.getInputHandler();
 	}
 
 	@Override
-	public IUserInputHandler createInputHandler() {
+	public IInputTarget createInputHandler() {
 		return this.inputHandler;
+	}
+
+	@Override
+	public void registerInputCommands(InputCommands commands, IInternalKeyMappings keys, BooleanSupplier active) {
+		controller.registerInputCommands(commands, keys, active);
 	}
 
 	@Override
@@ -418,8 +429,8 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	@Override
-	public IDragHandler createDragHandler() {
-		return this.ghostIngredientDragManager.createDragHandler();
+	public Optional<IInputInteraction> beginDrag(Screen screen, UserInput input) {
+		return this.ghostIngredientDragManager.beginDrag(screen, input);
 	}
 
 	public int size() {

@@ -4,23 +4,27 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.input.IInputTarget;
+import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.handlers.InputGroup;
+import mezz.jei.common.input.interaction.IInputInteraction;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.input.IPaged;
-import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.input.handlers.CombinedInputHandler;
-import mezz.jei.gui.input.handlers.ProxyInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The area drawn on top and bottom of the {@link RecipesGui} that show the recipe categories.
  */
-public class RecipeGuiTabs implements IPaged {
+public class RecipeGuiTabs implements IPaged, IInputTarget {
 	private static final int TAB_GUI_OVERLAP = 3;
 	private static final int TAB_HORIZONTAL_INSET = 2;
 	private static final int NAVIGATION_HEIGHT = 20;
@@ -30,7 +34,7 @@ public class RecipeGuiTabs implements IPaged {
 	private final PageNavigation pageNavigation;
 	private final IRecipeManager recipeManager;
 	private final IGuiHelper guiHelper;
-	private IUserInputHandler inputHandler;
+	private IInputTarget inputHandler;
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
 	private int pageCount = 1;
@@ -81,7 +85,7 @@ public class RecipeGuiTabs implements IPaged {
 
 	private void updateLayout() {
 		tabs.clear();
-		List<IUserInputHandler> inputHandlers = new ArrayList<>();
+		List<IInputTarget> inputHandlers = new ArrayList<>();
 
 		List<IRecipeCategory<?>> categories = recipeGuiLogic.getRecipeCategories();
 
@@ -108,7 +112,7 @@ public class RecipeGuiTabs implements IPaged {
 		}
 
 		inputHandlers.add(this.pageNavigation.createInputHandler());
-		this.inputHandler = new CombinedInputHandler("RecipeGuiTabs", inputHandlers);
+		this.inputHandler = new InputGroup("RecipeGuiTabs", inputHandlers);
 
 		pageNavigation.updatePageNumber();
 	}
@@ -133,8 +137,19 @@ public class RecipeGuiTabs implements IPaged {
 		}
 	}
 
-	public IUserInputHandler createInputHandler() {
-		return new ProxyInputHandler(() -> inputHandler);
+	@Override
+	public Optional<IInputInteraction> beginInput(Screen screen, UserInput input, IInternalKeyMappings keys) {
+		return inputHandler.beginInput(screen, input, keys);
+	}
+
+	@Override
+	public boolean scroll(double mouseX, double mouseY, double scrollX, double scrollY) {
+		return inputHandler.scroll(mouseX, mouseY, scrollX, scrollY);
+	}
+
+	@Override
+	public void resetInput() {
+		inputHandler.resetInput();
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {

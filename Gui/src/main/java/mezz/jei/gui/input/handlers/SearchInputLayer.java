@@ -1,31 +1,31 @@
 package mezz.jei.gui.input.handlers;
 
-import mezz.jei.api.gui.handlers.IGuiProperties;
+import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.ConsumedInput;
+import mezz.jei.common.input.interaction.IInputInteraction;
+import mezz.jei.common.input.interaction.InputAction;
+import mezz.jei.common.util.TextHistory;
 import mezz.jei.gui.input.GuiTextFieldFilter;
-import mezz.jei.gui.input.IClickableIngredientInternal;
-import mezz.jei.gui.input.IDragHandler;
-import mezz.jei.gui.input.IDraggableIngredientInternal;
-import mezz.jei.gui.input.IRecipeFocusSource;
+import mezz.jei.gui.input.ITextInputHandler;
+import mezz.jei.gui.input.InputArea;
+import mezz.jei.gui.input.InputCommands;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
 
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
-import java.util.stream.Stream;
 
-public class SearchInputLayer implements IGuiInputLayer, IRecipeFocusSource, IDragHandler {
+public class SearchInputLayer implements IGuiInputLayer, ITextInputHandler {
 	private final GuiTextFieldFilter textFieldFilter;
 	private final BooleanSupplier active;
-	private final IUserInputHandler textFieldInputHandler;
 
 	public SearchInputLayer(GuiTextFieldFilter textFieldFilter, BooleanSupplier active) {
 		this.textFieldFilter = textFieldFilter;
 		this.active = active;
-		this.textFieldInputHandler = textFieldFilter.createInputHandler();
 	}
 
 	@Override
@@ -34,6 +34,7 @@ public class SearchInputLayer implements IGuiInputLayer, IRecipeFocusSource, IDr
 			textFieldFilter.updateCompletion((int) mouseX, (int) mouseY);
 		} else {
 			textFieldFilter.hideCompletion();
+			clearFocus();
 		}
 	}
 
@@ -46,93 +47,120 @@ public class SearchInputLayer implements IGuiInputLayer, IRecipeFocusSource, IDr
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return active.getAsBoolean() && textFieldFilter.isCompletionMouseOver(mouseX, mouseY);
+		return active.getAsBoolean() &&
+			(textFieldFilter.isMouseOver(mouseX, mouseY) || textFieldFilter.isCompletionMouseOver(mouseX, mouseY));
+	}
+
+	/** Creates input handling for the search field and its suggestions. */
+	public InputArea createInputArea(IInternalKeyMappings keys) {
+		InputCommands commands = new InputCommands();
+		commands.add("Focus Search", keys.getFocusSearch(), active, () -> textFieldFilter.setFocused(true));
+		return InputArea.builder("Search", this)
+			.blockUnhandledMouseInput()
+			.controls(this)
+			.commands(commands)
+			.build();
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(
-		Screen screen,
-		IGuiProperties guiProperties,
-		UserInput input,
-		IInternalKeyMappings keyBindings
-	) {
+	public Optional<IInputInteraction> beginInput(Screen screen, UserInput input, IInternalKeyMappings keys) {
 		if (!active.getAsBoolean()) {
 			return Optional.empty();
 		}
-		if (textFieldFilter.isCompletionVisible() && (input.is(keyBindings.getEnterKey()) || input.is(keyBindings.getTabKey()))) {
-			if (!input.isSimulate()) {
-				textFieldFilter.acceptCompletion();
+		if (textFieldFilter.isCompletionVisible()) {
+			if (input.is(keys.getEnterKey()) || input.is(keys.getTabKey())) {
+				return Optional.of(InputAction.run(textFieldFilter::acceptCompletion));
 			}
-			return Optional.of(this);
-		}
-		if (textFieldFilter.isCompletionVisible() && input.is(keyBindings.getPreviousSearch())) {
-			if (!input.isSimulate()) {
-				textFieldFilter.moveCompletion(-1);
+			if (input.is(keys.getPreviousSearch())) {
+				return Optional.of(InputAction.run(() -> textFieldFilter.moveCompletion(-1)));
 			}
-			return Optional.of(this);
-		}
-		if (textFieldFilter.isCompletionVisible() && input.is(keyBindings.getNextSearch())) {
-			if (!input.isSimulate()) {
-				textFieldFilter.moveCompletion(1);
+			if (input.is(keys.getNextSearch())) {
+				return Optional.of(InputAction.run(() -> textFieldFilter.moveCompletion(1)));
 			}
-			return Optional.of(this);
-		}
-		if (textFieldFilter.isCompletionVisible() && input.is(keyBindings.getEscapeKey())) {
-			if (!input.isSimulate()) {
-				textFieldFilter.closeCompletion();
+			if (input.is(keys.getEscapeKey())) {
+				return Optional.of(InputAction.run(textFieldFilter::closeCompletion));
 			}
-			return Optional.of(this);
-		}
-		if (textFieldFilter.isCompletionVisible() && input.ifMouseEvent((event, doubleClicked) -> {
-			if (input.isSimulate()) {
-			return isMouseOver(event.x(), event.y());
+			if (input.isMouseInput() && textFieldFilter.isCompletionMouseOver(input.getMouseX(), input.getMouseY())) {
+				return Optional.of(new InputAction(release -> textFieldFilter.handleCompletionClick(release.getMouseX(), release.getMouseY()))
+					.within(textFieldFilter::isCompletionMouseOver));
 			}
-			return textFieldFilter.handleCompletionClick(event.x(), event.y());
-			})
-		) {
-			return Optional.of(this);
 		}
-		return textFieldInputHandler.handleUserInput(screen, guiProperties, input, keyBindings);
-	}
-
-	@Override
-	public void unfocus() {
-		textFieldInputHandler.unfocus();
-	}
-
-	@Override
-	public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
-		if (!isMouseOver(mouseX, mouseY)) {
+		if (hasKeyboardFocus() && (input.is(keys.getEnterKey()) || input.is(keys.getEscapeKey()))) {
+			return Optional.of(InputAction.run(this::clearFocus));
+		}
+		if (input.is(keys.getHoveredClearSearchBar()) && textFieldFilter.isMouseOver(input.getMouseX(), input.getMouseY())) {
+			return Optional.of(InputAction.run(() -> {
+					textFieldFilter.setValue("");
+					textFieldFilter.setFocused(true);
+				})
+				.within(textFieldFilter::isMouseOver));
+		}
+		boolean searchFieldClick = input.ifMouseEvent((event, ignoredDoubleClick) -> textFieldFilter.isActive() &&
+			textFieldFilter.isMouseOver(event.x(), event.y()) &&
+			event.button() == InputConstants.MOUSE_BUTTON_LEFT
+		);
+		if (searchFieldClick) {
+			return Optional.of(new InputAction(release -> {
+					UserInput click = input.withMousePosition(release.getMouseX(), release.getMouseY());
+					if (click.ifMouseEvent(textFieldFilter::mouseClicked)) {
+						textFieldFilter.setFocused(true);
+					}
+				})
+				.within(textFieldFilter::isMouseOver)
+				.when(active));
+		}
+		if (!hasKeyboardFocus()) {
 			return Optional.empty();
+		}
+		if (input.ifKeyboardEvent(textFieldFilter::keyPressed)) {
+			return Optional.of(ConsumedInput.INSTANCE);
+		}
+		if (input.is(keys.getPreviousSearch())) {
+			return prepareSearchHistoryAction(TextHistory.Direction.PREVIOUS);
+		}
+		if (input.is(keys.getNextSearch())) {
+			return prepareSearchHistoryAction(TextHistory.Direction.NEXT);
+		}
+		if (textFieldFilter.canConsumeInput() && input.isAllowedChatCharacter()) {
+			return Optional.of(ConsumedInput.INSTANCE);
+		}
+		return Optional.empty();
+	}
+
+	private Optional<IInputInteraction> prepareSearchHistoryAction(TextHistory.Direction direction) {
+		return textFieldFilter.getHistory(direction).map(text -> InputAction.run(() -> textFieldFilter.setValue(text)));
+	}
+
+	@Override
+	public void clearFocus() {
+		textFieldFilter.setFocused(false);
+	}
+
+	@Override
+	public void resetInput() {
+		clearFocus();
+	}
+
+	@Override
+	public boolean scroll(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+		if (!active.getAsBoolean() || !textFieldFilter.isCompletionMouseOver(mouseX, mouseY)) {
+			return false;
 		}
 		if (scrollDeltaY < 0) {
 			textFieldFilter.scrollCompletion(1);
 		} else if (scrollDeltaY > 0) {
 			textFieldFilter.scrollCompletion(-1);
 		}
-		return Optional.of(this);
-	}
-
-	@Override
-	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
-		return Stream.empty();
-	}
-
-	@Override
-	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
-		return Stream.empty();
-	}
-
-	@Override
-	public Optional<IDragHandler> handleDragStart(Screen screen, UserInput input) {
-		if (isMouseOver(input.getMouseX(), input.getMouseY())) {
-			return Optional.of(this);
-		}
-		return Optional.empty();
-	}
-
-	@Override
-	public boolean handleDragComplete(Screen screen, UserInput input) {
 		return true;
+	}
+
+	@Override
+	public boolean hasKeyboardFocus() {
+		return active.getAsBoolean() && textFieldFilter.isFocused();
+	}
+
+	@Override
+	public boolean onCharTyped(CharacterEvent event) {
+		return textFieldFilter.charTyped(event);
 	}
 }

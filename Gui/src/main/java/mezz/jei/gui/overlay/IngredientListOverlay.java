@@ -9,35 +9,31 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.gui.InventoryEffectRenderer;
-import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.MouseUtil;
+import mezz.jei.common.input.handlers.InputGroup.Child;
+import mezz.jei.common.input.handlers.InputGroup;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.filter.IFilterTextSource;
+import mezz.jei.gui.input.DragSource;
 import mezz.jei.gui.input.GuiTextFieldFilter;
-import mezz.jei.gui.input.ICharTypedHandler;
 import mezz.jei.gui.input.IClickableIngredientInternal;
-import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
-import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.input.MouseUtil;
-import mezz.jei.gui.input.handlers.CombinedDragHandler;
-import mezz.jei.common.input.handlers.CombinedInputHandler;
-import mezz.jei.gui.input.handlers.NullDragHandler;
-import mezz.jei.gui.input.handlers.NullInputHandler;
-import mezz.jei.gui.input.handlers.ProxyDragHandler;
-import mezz.jei.gui.input.handlers.ProxyInputHandler;
+import mezz.jei.gui.input.InputArea;
+import mezz.jei.gui.input.InputCommands;
 import mezz.jei.gui.input.handlers.SearchInputLayer;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
-import mezz.jei.gui.overlay.ingredients.IngredientGridBackgroundRenderer;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.ingredients.IIngredientListOverlayContents;
+import mezz.jei.gui.overlay.ingredients.IngredientGridBackgroundRenderer;
 import mezz.jei.gui.search.ISearchCompletionProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.input.CharacterEvent;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -46,7 +42,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFocusSource, ICharTypedHandler {
+public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFocusSource {
 	private final IconButton configButton;
 	private final IIngredientListOverlayContents contents;
 	private final LookupHistoryOverlay lookupHistoryOverlay;
@@ -305,98 +301,50 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return Stream.empty();
 	}
 
-	public IUserInputHandler createInputHandler() {
-		final IUserInputHandler lookupHistoryInputHandler = this.lookupHistoryOverlay.createInputHandler();
-		final IUserInputHandler displayedLookupHistoryInputHandler = new ProxyInputHandler(() -> {
-			if (this.controller.hasValidScreen() &&
-				toggleState.isOverlayEnabled() &&
-				this.lookupHistoryOverlay.isListDisplayed()
-			) {
-				return lookupHistoryInputHandler;
-			}
-			return NullInputHandler.INSTANCE;
-		});
-		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
+	/** Creates this overlay's controls, shortcuts, and ingredient drag sources. */
+	public InputArea createInputArea(IInternalKeyMappings keys) {
+		InputCommands commands = new InputCommands();
+		registerInputCommands(commands, keys);
+		return InputArea.builder("Ingredients", this)
+			.blockUnhandledMouseInput()
+			.controls(createInputHandler())
+			.commands(commands)
+			.dragSources(createDragSources())
+			.build();
+	}
+
+	private void registerInputCommands(InputCommands commands, IInternalKeyMappings keys) {
+		contents.registerInputCommands(commands, keys, this::isListDisplayed);
+		lookupHistoryOverlay.registerInputCommands(commands, keys, this::isHistoryDisplayed);
+	}
+
+	private boolean isHistoryDisplayed() {
+		updateScreenPropertiesIfDirty();
+		return controller.hasValidScreen() && toggleState.isOverlayEnabled() && lookupHistoryOverlay.isListDisplayed();
+	}
+
+	private IInputTarget createInputHandler() {
+		return new InputGroup(
 			"IngredientListOverlay",
-			this.configButton.createInputHandler(),
-			this.contents.createInputHandler(),
-			displayedLookupHistoryInputHandler
+			new Child(this::isHistoryDisplayed, lookupHistoryOverlay.getResizeInputHandler()),
+			new Child(this::isListDisplayed, contents.getResizeInputHandler()),
+			new Child(this::isListDisplayed, contents.createDeleteItemInputHandler()),
+			new Child(controller::hasValidScreen, configButton.createInputHandler()),
+			new Child(this::isListDisplayed, contents.createInputHandler()),
+			new Child(this::isHistoryDisplayed, lookupHistoryOverlay.createInputHandler())
 		);
-
-		final IUserInputHandler configAndLookupHistoryInputHandler = new CombinedInputHandler(
-			"IngredientListOverlayControls",
-			this.configButton.createInputHandler(),
-			displayedLookupHistoryInputHandler
-		);
-
-		return new ProxyInputHandler(() -> {
-			if (isListDisplayed()) {
-				return displayedInputHandler;
-			}
-			if (this.controller.hasValidScreen()) {
-				return configAndLookupHistoryInputHandler;
-			}
-			return NullInputHandler.INSTANCE;
-		});
 	}
 
-	public IUserInputHandler getResizeInputHandler() {
-		IUserInputHandler historyResize = new ProxyInputHandler(() -> {
-			updateScreenPropertiesIfDirty();
-			if (controller.hasValidScreen() && toggleState.isOverlayEnabled() && lookupHistoryOverlay.isListDisplayed()) {
-				return lookupHistoryOverlay.getResizeInputHandler();
-			}
-			return NullInputHandler.INSTANCE;
-		});
-		IUserInputHandler contentsResize = new ProxyInputHandler(() -> {
-			if (isListDisplayed()) {
-				return contents.getResizeInputHandler();
-			}
-			return NullInputHandler.INSTANCE;
-		});
-		return new CombinedInputHandler("IngredientListResize", historyResize, contentsResize);
-	}
-
-	public IUserInputHandler createDeleteItemInputHandler() {
-		final IUserInputHandler deleteItemInputHandler = this.contents.createDeleteItemInputHandler();
-
-		return new ProxyInputHandler(() -> {
-			if (isListDisplayed()) {
-				return deleteItemInputHandler;
-			}
-			return NullInputHandler.INSTANCE;
-		});
-	}
-
-	public IDragHandler createDragHandler() {
-		final IDragHandler lookupHistoryDragHandler = this.lookupHistoryOverlay.createDragHandler();
-		final IDragHandler combinedDragHandlers = new CombinedDragHandler(
-			this.contents.createDragHandler(),
-			lookupHistoryDragHandler
+	private List<DragSource> createDragSources() {
+		return List.of(
+			new DragSource(this::isListDisplayed, contents::beginDrag),
+			new DragSource(this::isHistoryDisplayed, lookupHistoryOverlay::beginDrag)
 		);
-
-		return new ProxyDragHandler(() -> {
-			if (isListDisplayed()) {
-				return combinedDragHandlers;
-			}
-			if (this.controller.hasValidScreen() &&
-				toggleState.isOverlayEnabled() &&
-				this.lookupHistoryOverlay.isListDisplayed()
-			) {
-				return lookupHistoryDragHandler;
-			}
-			return NullDragHandler.INSTANCE;
-		});
 	}
 
 	@Override
 	public boolean hasKeyboardFocus() {
 		return isSearchDisplayed() && this.searchField.isFocused();
-	}
-
-	@Override
-	public boolean onCharTyped(CharacterEvent event) {
-		return searchField.charTyped(event);
 	}
 
 	@Override

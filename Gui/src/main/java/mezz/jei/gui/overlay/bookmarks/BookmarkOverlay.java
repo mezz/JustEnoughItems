@@ -10,9 +10,13 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.JeiGuiColors.GuiColor;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.MouseUtil;
+import mezz.jei.common.input.handlers.InputGroup.Child;
+import mezz.jei.common.input.handlers.InputGroup;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -20,28 +24,22 @@ import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.elements.IconButton;
+import mezz.jei.gui.input.DragSource;
 import mezz.jei.gui.input.IClickableIngredientInternal;
-import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.input.IRecipeFocusSource;
-import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.input.MouseUtil;
-import mezz.jei.gui.input.handlers.CombinedDragHandler;
-import mezz.jei.common.input.handlers.CombinedInputHandler;
-import mezz.jei.gui.input.handlers.NullDragHandler;
-import mezz.jei.gui.input.handlers.NullInputHandler;
-import mezz.jei.gui.input.handlers.ProxyDragHandler;
-import mezz.jei.gui.input.handlers.ProxyInputHandler;
-import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
-import mezz.jei.gui.overlay.ingredients.IngredientGridBackgroundRenderer;
-import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
-import mezz.jei.gui.overlay.ingredients.IngredientGridLayout;
-import mezz.jei.gui.overlay.IScreenPropertiesUpdater;
+import mezz.jei.gui.input.InputArea;
+import mezz.jei.gui.input.InputCommands;
 import mezz.jei.gui.overlay.GuiPropertiesCache;
+import mezz.jei.gui.overlay.IScreenPropertiesUpdater;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryButtonController;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 import mezz.jei.gui.overlay.elements.IElement;
+import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
+import mezz.jei.gui.overlay.ingredients.IngredientGridBackgroundRenderer;
+import mezz.jei.gui.overlay.ingredients.IngredientGridLayout;
+import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -139,23 +137,6 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	public boolean hasRoom() {
 		updateScreenPropertiesIfDirty();
 		return contents.hasRoom();
-	}
-
-	public IUserInputHandler getResizeInputHandler() {
-		IUserInputHandler historyResize = new ProxyInputHandler(() -> {
-			updateScreenPropertiesIfDirty();
-			if (guiPropertiesCache.hasValidScreen() && toggleState.isOverlayEnabled() && lookupHistoryOverlay.isListDisplayed()) {
-				return lookupHistoryOverlay.getResizeInputHandler();
-			}
-			return NullInputHandler.INSTANCE;
-		});
-		IUserInputHandler contentsResize = new ProxyInputHandler(() -> {
-			if (isListDisplayed()) {
-				return contents.getResizeInputHandler();
-			}
-			return NullInputHandler.INSTANCE;
-		});
-		return new CombinedInputHandler("BookmarkResize", historyResize, contentsResize);
 	}
 
 	private void markScreenPropertiesDirty() {
@@ -335,8 +316,9 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		);
 	}
 
-	public BookmarkPreviewTooltipController getPreviewTooltipController() {
-		return previewTooltipController;
+	/** Creates input handling for the bookmark preview. */
+	public InputArea createTooltipInputArea() {
+		return previewTooltipController.createInputArea();
 	}
 
 	Stream<PreviewSource> getPreviewSourcesUnderMouse(double mouseX, double mouseY) {
@@ -449,50 +431,39 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			.orElse(null);
 	}
 
-	public IUserInputHandler createInputHandler() {
-		final IUserInputHandler bookmarkButtonInputHandler = this.bookmarkButton.createInputHandler();
-		final IUserInputHandler historyButtonInputHandler = this.historyButton.createInputHandler();
-		final IUserInputHandler lookupHistoryInputHandler = this.lookupHistoryOverlay.createInputHandler();
-		final IUserInputHandler displayedLookupHistoryInputHandler = new ProxyInputHandler(() -> {
-			if (guiPropertiesCache.hasValidScreen() &&
-				toggleState.isOverlayEnabled() &&
-				this.lookupHistoryOverlay.isListDisplayed()
-			) {
-				return lookupHistoryInputHandler;
-			}
-			return NullInputHandler.INSTANCE;
-		});
-
-		final IUserInputHandler buttonInputHandler = new CombinedInputHandler(
-			"BookmarkOverlayControls",
-			bookmarkButtonInputHandler,
-			historyButtonInputHandler,
-			displayedLookupHistoryInputHandler
-		);
-
-		final IUserInputHandler displayedInputHandler = new CombinedInputHandler(
-			"BookmarkOverlay",
-			this.contents.createInputHandler(),
-			buttonInputHandler
-		);
-
-		return new ProxyInputHandler(() -> {
-			if (isListDisplayed()) {
-				return displayedInputHandler;
-			}
-			return buttonInputHandler;
-		});
+	/** Creates this overlay's controls, shortcuts, and ingredient drag sources. */
+	public InputArea createInputArea(IInternalKeyMappings keys) {
+		InputCommands commands = new InputCommands();
+		registerInputCommands(commands, keys);
+		return InputArea.builder("Bookmarks", this)
+			.blockUnhandledMouseInput()
+			.controls(createInputHandler())
+			.commands(commands)
+			.dragSources(createDragSources())
+			.build();
 	}
 
-	public IUserInputHandler createDeleteItemInputHandler() {
-		final IUserInputHandler deleteItemInputHandler = this.contents.createDeleteItemInputHandler();
+	private void registerInputCommands(InputCommands commands, IInternalKeyMappings keys) {
+		contents.registerInputCommands(commands, keys, this::isListDisplayed);
+		lookupHistoryOverlay.registerInputCommands(commands, keys, this::isHistoryDisplayed);
+	}
 
-		return new ProxyInputHandler(() -> {
-			if (isListDisplayed()) {
-				return deleteItemInputHandler;
-			}
-			return NullInputHandler.INSTANCE;
-		});
+	private boolean isHistoryDisplayed() {
+		updateScreenPropertiesIfDirty();
+		return guiPropertiesCache.hasValidScreen() && toggleState.isOverlayEnabled() && lookupHistoryOverlay.isListDisplayed();
+	}
+
+	private IInputTarget createInputHandler() {
+		return new InputGroup(
+			"BookmarkOverlay",
+			new Child(this::isHistoryDisplayed, lookupHistoryOverlay.getResizeInputHandler()),
+			new Child(this::isListDisplayed, contents.getResizeInputHandler()),
+			new Child(this::isListDisplayed, contents.createDeleteItemInputHandler()),
+			new Child(this::isListDisplayed, contents.createInputHandler()),
+			new Child(() -> true, bookmarkButton.createInputHandler()),
+			new Child(() -> true, historyButton.createInputHandler()),
+			new Child(this::isHistoryDisplayed, lookupHistoryOverlay.createInputHandler())
+		);
 	}
 
 	/** Returns whether a bookmark drag is pending or active. */
@@ -500,23 +471,12 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		return bookmarkDragManager.hasDrag();
 	}
 
-	public IDragHandler createDragHandler() {
-		final IDragHandler lookupHistoryDragHandler = this.lookupHistoryOverlay.createDragHandler();
-		final IDragHandler combinedDragHandlers = new CombinedDragHandler(
-			this.contents.createDragHandler(),
-			lookupHistoryDragHandler,
-			this.bookmarkDragManager.createDragHandler()
+	private List<DragSource> createDragSources() {
+		return List.of(
+			new DragSource(this::isListDisplayed, contents::beginDrag),
+			new DragSource(this::isHistoryDisplayed, lookupHistoryOverlay::beginDrag),
+			new DragSource(this::isListDisplayed, bookmarkDragManager::beginDrag)
 		);
-
-		return new ProxyDragHandler(() -> {
-			if (isListDisplayed()) {
-				return combinedDragHandlers;
-			}
-			if (lookupHistoryOverlay.isListDisplayed()) {
-				return lookupHistoryDragHandler;
-			}
-			return NullDragHandler.INSTANCE;
-		});
 	}
 
 	public void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
@@ -551,7 +511,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 
 	public void moveBookmark(IBookmark bookmark, int index) {
 		this.bookmarkList.moveBookmark(bookmark, index);
-		// Keep the dropped bookmark visible when its visibility and the cursor's slot are restored.
+		// Keep the dropped bookmark visible when its visibility and the slot under the mouse pointer are restored.
 		this.contents.setPageAnchorElement(bookmark.getElement());
 	}
 

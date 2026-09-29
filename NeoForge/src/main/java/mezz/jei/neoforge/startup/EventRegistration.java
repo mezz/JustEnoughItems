@@ -1,10 +1,10 @@
 package mezz.jei.neoforge.startup;
 
+import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.input.PinnedTooltipManager;
-import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.neoforge.events.RuntimeEventSubscriptions;
 import mezz.jei.neoforge.input.ForgeUserInput;
@@ -22,6 +22,7 @@ import org.joml.Matrix3x2fStack;
 public class EventRegistration {
 	public static void registerEvents(RuntimeEventSubscriptions subscriptions, JeiEventHandlers eventHandlers) {
 		ClientInputHandler clientInputHandler = eventHandlers.clientInputHandler();
+		subscriptions.onClear(clientInputHandler::onGuiChanged);
 		registerClientInputHandler(subscriptions, clientInputHandler);
 
 		GuiEventHandler guiEventHandler = eventHandlers.guiEventHandler();
@@ -29,7 +30,8 @@ public class EventRegistration {
 	}
 
 	private static void registerClientInputHandler(RuntimeEventSubscriptions subscriptions, ClientInputHandler handler) {
-		subscriptions.register(ScreenEvent.Init.Post.class, event -> handler.onInitGui());
+		subscriptions.register(ScreenEvent.Init.Post.class, event -> handler.onGuiChanged());
+		subscriptions.register(ScreenEvent.Closing.class, event -> handler.onGuiChanged());
 
 		subscriptions.register(ScreenEvent.KeyPressed.Pre.class, event -> {
 			Screen screen = event.getScreen();

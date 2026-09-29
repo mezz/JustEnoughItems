@@ -6,13 +6,21 @@ import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.Scrollbar;
+import mezz.jei.common.input.IInputTarget;
+import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.IInputInteraction;
+import mezz.jei.common.input.interaction.MouseDrag;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
 
-public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHandler {
+import java.util.Optional;
+
+public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHandler, IInputTarget {
 	private static final int SCROLLBAR_PADDING = 2;
 
 	public static int getScrollBoxScrollbarExtraWidth() {
@@ -104,6 +112,19 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public final Optional<IInputInteraction> beginInput(Screen screen, UserInput input, IInternalKeyMappings keys) {
+		if (!input.isMouseInput() || !input.is(keys.getLeftClick()) || getHiddenAmount() == 0) {
+			return Optional.empty();
+		}
+		Scrollbar.ScrollResult result = scrollbar.startDrag(input.getMouseX(), input.getMouseY(), getVisibleAmount(), getHiddenAmount(), scrollOffsetY);
+		if (!result.handled()) {
+			return Optional.empty();
+		}
+		scrollOffsetY = result.scrollOffsetY();
+		return Optional.of(MouseDrag.forWidget(this::handleMouseDragged, scrollbar::stopDrag));
 	}
 
 	@Override
