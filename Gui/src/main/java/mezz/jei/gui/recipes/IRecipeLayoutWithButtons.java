@@ -1,7 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
-import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.IInputTarget;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.jspecify.annotations.Nullable;
@@ -13,7 +13,7 @@ public interface IRecipeLayoutWithButtons<R> {
 
 	int totalWidth();
 
-	IUserInputHandler createUserInputHandler();
+	IInputTarget createUserInputHandler();
 
 	void tick();
 

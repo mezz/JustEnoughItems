@@ -2,18 +2,19 @@ package mezz.jei.gui.elements;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
-import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.common.gui.elements.Scrollbar;
+import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.IInputInteraction;
+import mezz.jei.common.input.interaction.MouseDrag;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;
 
-public final class ScrollbarWidget implements IUserInputHandler {
+public final class ScrollbarWidget implements IInputTarget {
 	private final IScrollbarController controller;
 	private final Scrollbar scrollbar = new Scrollbar(ImmutableRect2i.EMPTY);
 
@@ -46,16 +47,8 @@ public final class ScrollbarWidget implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
+	public Optional<IInputInteraction> beginInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 		if (!input.is(keyBindings.getLeftClick())) {
-			return Optional.empty();
-		}
-		if (!input.isSimulate()) {
-			boolean dragging = scrollbar.isDragging();
-			scrollbar.stopDrag();
-			if (dragging) {
-				return Optional.of(this);
-			}
 			return Optional.empty();
 		}
 		Scrollbar.ScrollResult result = scrollbar.startDrag(
@@ -65,15 +58,17 @@ public final class ScrollbarWidget implements IUserInputHandler {
 			controller.getHiddenScrollAmount(),
 			controller.getScrollOffsetY()
 		);
-		return apply(result);
-	}
-
-	@Override
-	public Optional<IUserInputHandler> handleMouseDragged(double mouseX, double mouseY, InputConstants.Key mouseKey, double dragX, double dragY) {
-		if (mouseKey.getValue() != InputConstants.MOUSE_BUTTON_LEFT) {
+		if (!apply(result)) {
 			return Optional.empty();
 		}
-		return apply(scrollbar.dragTo(
+		return Optional.of(MouseDrag.forWidget(this::drag, this::resetInput));
+	}
+
+	private void drag(double mouseX, double mouseY, InputConstants.Key mouseKey, double dragX, double dragY) {
+		if (mouseKey.getValue() != InputConstants.MOUSE_BUTTON_LEFT) {
+			return;
+		}
+		apply(scrollbar.dragTo(
 			mouseY,
 			controller.getVisibleScrollAmount(),
 			controller.getHiddenScrollAmount(),
@@ -81,16 +76,16 @@ public final class ScrollbarWidget implements IUserInputHandler {
 		));
 	}
 
-	private Optional<IUserInputHandler> apply(Scrollbar.ScrollResult result) {
+	private boolean apply(Scrollbar.ScrollResult result) {
 		if (!result.handled()) {
-			return Optional.empty();
+			return false;
 		}
 		controller.setScrollOffsetY(result.scrollOffsetY());
-		return Optional.of(this);
+		return true;
 	}
 
 	@Override
-	public void unfocus() {
+	public void resetInput() {
 		scrollbar.stopDrag();
 	}
 }

@@ -1,17 +1,17 @@
 package mezz.jei.gui;
 
-import mezz.jei.api.gui.inputs.IJeiUserInput;
-import mezz.jei.common.Internal;
-import mezz.jei.common.gui.JeiGuiColors;
-import mezz.jei.common.gui.JeiGuiColors.GuiColor;
-import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.MathUtil;
 import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.buttons.IIconButtonController;
+import mezz.jei.api.gui.inputs.IJeiUserInput;
+import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiGuiColors.GuiColor;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.input.IInputTarget;
+import mezz.jei.common.input.handlers.InputGroup;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.input.IPaged;
-import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.input.handlers.CombinedInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -128,8 +128,8 @@ public class PageNavigation {
 		return backButton.getArea();
 	}
 
-	public IUserInputHandler createInputHandler() {
-		return new CombinedInputHandler(
+	public IInputTarget createInputHandler() {
+		return new InputGroup(
 			"PageNavigation",
 			this.nextButton.createInputHandler(),
 			this.backButton.createInputHandler()

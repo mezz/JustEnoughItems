@@ -2,9 +2,12 @@ package mezz.jei.gui.input;
 
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.recipe.IFocusFactory;
+import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.gui.input.handlers.GuiAreaInputHandler;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.elements.IngredientElement;
 import net.minecraft.client.Minecraft;
@@ -17,6 +20,13 @@ public class GuiContainerWrapper implements IRecipeFocusSource {
 
 	public GuiContainerWrapper(IScreenHelper screenHelper) {
 		this.screenHelper = screenHelper;
+	}
+
+	/** Creates JEI's input handling for ingredients and recipe links in the Minecraft screen. */
+	public InputArea createInputArea(IRecipesGui recipesGui, IFocusFactory focusFactory) {
+		return InputArea.builder("Container", this)
+			.controls(new GuiAreaInputHandler(screenHelper, recipesGui, focusFactory))
+			.build();
 	}
 
 	@Override

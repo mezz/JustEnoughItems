@@ -4,12 +4,12 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.bookmarks.IBookmark;
-import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.input.IPaged;
 import mezz.jei.gui.overlay.bookmarks.PageFlipHover.Direction;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -112,26 +112,20 @@ public class BookmarkDrag<T> {
 		return true;
 	}
 
-	public boolean onClick(UserInput input) {
+	public void complete(UserInput input) {
 		if (bookmark.isVisible()) {
-			return false;
+			return;
 		}
 
 		List<BookmarkDragTarget> targets = bookmarkOverlay.createBookmarkDragTargets(bookmark);
 		for (BookmarkDragTarget target : targets) {
 			ImmutableRect2i area = target.area();
 			if (MathUtil.contains(area, input.getMouseX(), input.getMouseY())) {
-				if (!input.isSimulate()) {
-					bookmarkOverlay.moveBookmark(bookmark, target.index());
-					stop();
-					return true;
-				}
+				bookmarkOverlay.moveBookmark(bookmark, target.index());
+				break;
 			}
 		}
-		if (!input.isSimulate()) {
-			stop();
-		}
-		return false;
+		stop();
 	}
 
 	public void stop() {

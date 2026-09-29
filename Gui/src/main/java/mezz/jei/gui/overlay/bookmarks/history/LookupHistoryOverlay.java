@@ -4,28 +4,34 @@ import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.config.HistoryDisplaySide;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.JeiGuiColors.GuiColor;
-import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.input.IInputTarget;
+import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.IInputInteraction;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IClickableIngredientInternal;
-import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
+import mezz.jei.gui.input.InputCommands;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.history.LookupHistoryOverlayLayout;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
 public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryOverlay {
@@ -67,7 +73,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		return lookupHistory;
 	}
 
-	public IUserInputHandler getResizeInputHandler() {
+	public IInputTarget getResizeInputHandler() {
 		return contents.getResizeInputHandler();
 	}
 
@@ -248,12 +254,16 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		return Stream.empty();
 	}
 
-	public IUserInputHandler createInputHandler() {
+	public IInputTarget createInputHandler() {
 		return this.contents.createInputHandler();
 	}
 
-	public IDragHandler createDragHandler() {
-		return this.contents.createDragHandler();
+	public void registerInputCommands(InputCommands commands, IInternalKeyMappings keys, BooleanSupplier active) {
+		this.contents.registerInputCommands(commands, keys, active);
+	}
+
+	public Optional<IInputInteraction> beginDrag(Screen screen, UserInput input) {
+		return this.contents.beginDrag(screen, input);
 	}
 
 	record LineSegment(int x1, int x2) {

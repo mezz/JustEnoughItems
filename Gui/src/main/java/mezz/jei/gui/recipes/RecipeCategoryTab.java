@@ -1,7 +1,6 @@
 package mezz.jei.gui.recipes;
 
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.recipe.IRecipeManager;
@@ -9,8 +8,9 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.IInputInteraction;
+import mezz.jei.common.input.interaction.InputAction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -44,17 +44,17 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
+	public Optional<IInputInteraction> beginInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 		if (!isMouseOver(input.getMouseX(), input.getMouseY())) {
 			return Optional.empty();
 		}
 		if (input.is(keyBindings.getLeftClick())) {
-			if (!input.isSimulate()) {
-				logic.setRecipeCategory(category);
-				SoundManager soundHandler = Minecraft.getInstance().getSoundManager();
-				soundHandler.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-			}
-			return Optional.of(this);
+			return Optional.of(InputAction.run(() -> {
+					logic.setRecipeCategory(category);
+					SoundManager soundHandler = Minecraft.getInstance().getSoundManager();
+					soundHandler.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+				})
+				.within(this::isMouseOver));
 		}
 		return Optional.empty();
 	}

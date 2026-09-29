@@ -6,10 +6,11 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
-import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.input.IDragHandler;
-import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.IInputInteraction;
+import mezz.jei.common.input.interaction.MouseDrag;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -56,7 +57,7 @@ public class BookmarkDragManager {
 		}
 	}
 
-	private <V> boolean handleClickIngredient(IDraggableIngredientInternal<V> clicked, UserInput input) {
+	private <V> boolean startDrag(IDraggableIngredientInternal<V> clicked, UserInput input) {
 		IElement<V> element = clicked.getElement();
 		return element
 			.getBookmark()
@@ -81,51 +82,37 @@ public class BookmarkDragManager {
 			.orElse(false);
 	}
 
-	public IDragHandler createDragHandler() {
-		return new DragHandler();
+	public Optional<IInputInteraction> beginDrag(Screen ignoredScreen, UserInput input) {
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
+		if (!clientConfig.dragToRearrangeBookmarksEnabled().get()) {
+			stopDrag();
+			return Optional.empty();
+		}
+
+		Minecraft minecraft = Minecraft.getInstance();
+		LocalPlayer player = minecraft.player;
+		if (player == null) {
+			return Optional.empty();
+		}
+
+		return bookmarkOverlay.getDraggableIngredientUnderMouse(input.getMouseX(), input.getMouseY())
+			.findFirst()
+			.flatMap(clicked -> {
+				ItemStack mouseItem = player.containerMenu.getCarried();
+				if (mouseItem.isEmpty() &&
+					startDrag(clicked, input)
+				) {
+					return Optional.of(MouseDrag.forIngredient(this::finishDrag, this::stopDrag));
+				}
+				return Optional.empty();
+			});
 	}
 
-	private class DragHandler implements IDragHandler {
-		@Override
-		public Optional<IDragHandler> handleDragStart(Screen screen, UserInput input) {
-			IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
-			if (!clientConfig.dragToRearrangeBookmarksEnabled().get()) {
-				stopDrag();
-				return Optional.empty();
-			}
-
-			Minecraft minecraft = Minecraft.getInstance();
-			LocalPlayer player = minecraft.player;
-			if (player == null) {
-				return Optional.empty();
-			}
-
-			return bookmarkOverlay.getDraggableIngredientUnderMouse(input.getMouseX(), input.getMouseY())
-				.findFirst()
-				.flatMap(clicked -> {
-					ItemStack mouseItem = player.containerMenu.getCarried();
-					if (mouseItem.isEmpty() &&
-						handleClickIngredient(clicked, input)
-					) {
-						return Optional.of(this);
-					}
-					return Optional.empty();
-				});
+	private void finishDrag(UserInput input) {
+		if (bookmarkDrag == null) {
+			return;
 		}
-
-		@Override
-		public boolean handleDragComplete(Screen screen, UserInput input) {
-			if (bookmarkDrag == null) {
-				return false;
-			}
-			boolean success = bookmarkDrag.onClick(input);
-			bookmarkDrag = null;
-			return success;
-		}
-
-		@Override
-		public void handleDragCanceled() {
-			stopDrag();
-		}
+		bookmarkDrag.complete(input);
+		bookmarkDrag = null;
 	}
 }
