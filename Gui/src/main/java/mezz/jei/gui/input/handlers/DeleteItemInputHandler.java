@@ -1,17 +1,18 @@
 package mezz.jei.gui.input.handlers;
 
-import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.GiveMode;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.IInputInteraction;
+import mezz.jei.common.input.interaction.InputAction;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.util.ServerCommandUtil;
-import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.overlay.ingredients.IIngredientGrid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -24,7 +25,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
-public class DeleteItemInputHandler implements IUserInputHandler {
+public class DeleteItemInputHandler implements IInputTarget {
 	private final IIngredientGrid ingredientGrid;
 	private final IClientToggleState toggleState;
 	private final IClientConfig clientConfig;
@@ -46,7 +47,7 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput userInput, IInternalKeyMappings keyBindings) {
+	public Optional<IInputInteraction> beginInput(Screen screen, UserInput userInput, IInternalKeyMappings keyBindings) {
 		if (!userInput.is(keyBindings.getLeftClick())) {
 			return Optional.empty();
 		}
@@ -67,14 +68,13 @@ public class DeleteItemInputHandler implements IUserInputHandler {
 		if (itemStack.isEmpty()) {
 			return Optional.empty();
 		}
-		if (!userInput.isSimulate()) {
+		return Optional.of(new InputAction(release -> {
 			player.containerMenu.setCarried(ItemStack.EMPTY);
 			if (!(player.containerMenu instanceof CreativeModeInventoryScreen.ItemPickerMenu)) {
-				var packet = new PacketDeletePlayerItem(itemStack);
-				serverConnection.sendPacketToServer(packet);
+				serverConnection.sendPacketToServer(new PacketDeletePlayerItem(itemStack));
 			}
-		}
-		return Optional.of(this);
+		}, release -> player.containerMenu.getCarried() == itemStack && shouldDeleteItemOnClick(minecraft, release.getMouseX(), release.getMouseY()))
+			.within(ingredientGrid::isMouseOver));
 	}
 
 	@SuppressWarnings("MethodMayBeStatic")

@@ -13,6 +13,7 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.platform.IPlatformScreenHelper;
@@ -21,7 +22,6 @@ import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
-import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.gui.input.handlers.DeleteItemInputHandler;
 import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.ChatFormatting;
@@ -42,7 +42,7 @@ import java.util.stream.Stream;
 
 /**
  * An ingredient grid displays a rectangular area of clickable recipe ingredients.
- * Panel backgrounds and external padding are left up to a higher-level element.
+ * The containing control draws the background and adds padding around the grid.
  */
 public class IngredientGrid implements IIngredientGrid {
 	private final IIngredientManager ingredientManager;
@@ -74,7 +74,7 @@ public class IngredientGrid implements IIngredientGrid {
 		this.deleteItemHandler = new DeleteItemInputHandler(this, toggleState, clientConfig, serverConnection, ingredientManager);
 	}
 
-	public IUserInputHandler getInputHandler() {
+	public IInputTarget getInputHandler() {
 		return deleteItemHandler;
 	}
 

@@ -7,12 +7,13 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.IClientToggleState;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.IInputInteraction;
+import mezz.jei.common.input.interaction.MouseDrag;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IClickableIngredientInternal;
-import mezz.jei.gui.input.IDragHandler;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
-import mezz.jei.common.input.UserInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -126,7 +127,7 @@ public class GhostIngredientDragManager {
 		this.hoveredTargetAreas = List.of();
 	}
 
-	private <T extends Screen, V> boolean handleClickGhostIngredient(T currentScreen, IDraggableIngredientInternal<V> clicked, UserInput input) {
+	private <T extends Screen, V> boolean startDrag(T currentScreen, IDraggableIngredientInternal<V> clicked, UserInput input) {
 		List<IGhostIngredientHandler<T>> handlers = screenHelper.getGhostIngredientHandlers(currentScreen);
 
 		List<GhostIngredientDrag.HandlerData<V>> handlerDataList = new ArrayList<>();
@@ -150,52 +151,38 @@ public class GhostIngredientDragManager {
 		return true;
 	}
 
-	public IDragHandler createDragHandler() {
-		return new DragHandler();
+	public Optional<IInputInteraction> beginDrag(Screen screen, UserInput input) {
+		Minecraft minecraft = Minecraft.getInstance();
+		LocalPlayer player = minecraft.player;
+		if (player == null) {
+			return Optional.empty();
+		}
+
+		return source.getDraggableIngredientUnderMouse(input.getMouseX(), input.getMouseY())
+			.findFirst()
+			.flatMap(clicked -> {
+				ItemStack mouseItem = player.containerMenu.getCarried();
+				if (mouseItem.isEmpty() &&
+					startDrag(screen, clicked, input)
+				) {
+					return Optional.of(MouseDrag.forIngredient(this::finishDrag, this::stopDrag));
+				}
+				return Optional.empty();
+			});
 	}
 
-	private class DragHandler implements IDragHandler {
-		@Override
-		public Optional<IDragHandler> handleDragStart(Screen screen, UserInput input) {
-			Minecraft minecraft = Minecraft.getInstance();
-			LocalPlayer player = minecraft.player;
-			if (player == null) {
-				return Optional.empty();
-			}
-
-			return source.getDraggableIngredientUnderMouse(input.getMouseX(), input.getMouseY())
-				.findFirst()
-				.flatMap(clicked -> {
-					ItemStack mouseItem = player.containerMenu.getCarried();
-					if (mouseItem.isEmpty() &&
-						handleClickGhostIngredient(screen, clicked, input)
-					) {
-						return Optional.of(this);
-					}
-					return Optional.empty();
-				});
+	private void finishDrag(UserInput input) {
+		if (ghostIngredientDrag == null) {
+			return;
 		}
-
-		@Override
-		public boolean handleDragComplete(Screen screen, UserInput input) {
-			if (ghostIngredientDrag == null) {
-				return false;
-			}
-			boolean success = ghostIngredientDrag.onClick(input);
-			double mouseX = input.getMouseX();
-			double mouseY = input.getMouseY();
-			if (!success && GhostIngredientDrag.canStart(ghostIngredientDrag, mouseX, mouseY)) {
-				GhostIngredientReturning.create(ghostIngredientDrag, mouseX, mouseY)
-					.ifPresent(ghostIngredientsReturning::add);
-			}
-			ghostIngredientDrag = null;
-			hoveredTargetAreas = List.of();
-			return success;
+		boolean success = ghostIngredientDrag.complete(input);
+		double mouseX = input.getMouseX();
+		double mouseY = input.getMouseY();
+		if (!success && GhostIngredientDrag.canStart(ghostIngredientDrag, mouseX, mouseY)) {
+			GhostIngredientReturning.create(ghostIngredientDrag, mouseX, mouseY)
+				.ifPresent(ghostIngredientsReturning::add);
 		}
-
-		@Override
-		public void handleDragCanceled() {
-			stopDrag();
-		}
+		ghostIngredientDrag = null;
+		hoveredTargetAreas = List.of();
 	}
 }

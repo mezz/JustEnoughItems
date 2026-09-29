@@ -2,13 +2,14 @@ package mezz.jei.gui.recipes;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
-import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.RecipeLayoutDrawableErrored;
+import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
-import mezz.jei.common.input.handlers.CombinedInputHandler;
+import mezz.jei.common.input.interaction.ApiInputAdapter;
+import mezz.jei.common.input.interaction.IInputInteraction;
+import mezz.jei.common.input.interaction.ReleaseInsideBounds;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -52,11 +53,8 @@ public final class RecipeLayoutWithButtonsErrored<R> implements IRecipeLayoutWit
 	}
 
 	@Override
-	public IUserInputHandler createUserInputHandler() {
-		return new CombinedInputHandler(
-			"RecipeLayoutWithButtonsErrored",
-			new UserInputHandler<>(errorLayout)
-		);
+	public IInputTarget createUserInputHandler() {
+		return new ErroredRecipeInputTarget<>(errorLayout);
 	}
 
 	@Override
@@ -84,28 +82,26 @@ public final class RecipeLayoutWithButtonsErrored<R> implements IRecipeLayoutWit
 		return Integer.MAX_VALUE;
 	}
 
-	private record UserInputHandler<R>(IRecipeLayoutDrawable<R> recipeLayout) implements IUserInputHandler {
+	/**
+	 * Lets the mod's recipe handler receive input when JEI could not build the recipe's normal controls.
+	 *
+	 * @param recipeLayout the recipe whose handler receives input and whose area is checked on release
+	 * @param <R> recipe type displayed by the layout
+	 */
+	private record ErroredRecipeInputTarget<R>(IRecipeLayoutDrawable<R> recipeLayout) implements IInputTarget {
 		@Override
-		public Optional<IUserInputHandler> handleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings) {
-			final double mouseX = input.getMouseX();
-			final double mouseY = input.getMouseY();
-			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
-				if (recipeLayout.getInputHandler().handleInput(mouseX, mouseY, input)) {
-					return Optional.of(this);
-				}
+		public Optional<IInputInteraction> beginInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+			if (!recipeLayout.isMouseOver(input.getMouseX(), input.getMouseY())) {
+				return Optional.empty();
 			}
-			return Optional.empty();
+			return ApiInputAdapter.beginInput(screen, input, keyBindings, recipeLayout.getInputHandler())
+				.map(interaction -> new ReleaseInsideBounds(interaction, recipeLayout::isMouseOver));
 		}
 
 		@Override
-		public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
-			if (recipeLayout.isMouseOver(mouseX, mouseY) &&
-				recipeLayout.getInputHandler().handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY)
-			) {
-				return Optional.of(this);
-			}
-
-			return Optional.empty();
+		public boolean scroll(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+			return recipeLayout.isMouseOver(mouseX, mouseY) &&
+				recipeLayout.getInputHandler().handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
 		}
 	}
 }

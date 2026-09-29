@@ -1,15 +1,14 @@
 package mezz.jei.gui.ghost;
 
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
-import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.InputAction;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
-import mezz.jei.common.input.UserInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
@@ -25,39 +24,29 @@ public class GhostIngredientQuickMoveManager {
 		this.screenHelper = screenHelper;
 	}
 
-	private <T extends Screen, V> boolean quickMoveInternal(T currentScreen, UserInput input, IDraggableIngredientInternal<V> clicked) {
-		for (IGhostIngredientHandler<T> handler : screenHelper.getGhostIngredientHandlers(currentScreen)) {
-			if (input.isSimulate()) {
-				return true;
-			}
-			ITypedIngredient<V> ingredient = clicked.getTypedIngredient();
-			if (handler.quickMove(currentScreen, ingredient)) {
-				return true;
-			}
+	private <T extends Screen, V> Optional<InputAction> prepare(T screen, IDraggableIngredientInternal<V> clicked) {
+		var handlers = screenHelper.getGhostIngredientHandlers(screen);
+		if (handlers.isEmpty()) {
+			return Optional.empty();
 		}
-
-		return false;
-	}
-
-	public <T extends Screen> boolean quickMove(T screen, UserInput input) {
-		Minecraft minecraft = Minecraft.getInstance();
-		LocalPlayer player = minecraft.player;
-		if (player == null) {
-			return false;
-		}
-
-		return source.getDraggableIngredientUnderMouse(input.getMouseX(), input.getMouseY())
-			.findFirst()
-			.flatMap(clicked -> {
-				ItemStack mouseItem = player.containerMenu.getCarried();
-				if (mouseItem.isEmpty()) {
-					if (quickMoveInternal(screen, input, clicked)) {
-						return Optional.of(true);
+		return Optional.of(InputAction.run(() -> {
+				for (IGhostIngredientHandler<T> handler : handlers) {
+					if (handler.quickMove(screen, clicked.getTypedIngredient())) {
+						break;
 					}
 				}
-				return Optional.empty();
 			})
-			.isPresent();
+			.within(clicked.getArea()::contains).when(clicked.getElement()::isVisible));
 	}
 
+	public <T extends Screen> Optional<InputAction> prepareQuickMove(T screen, UserInput input) {
+		LocalPlayer player = Minecraft.getInstance().player;
+		if (player == null || !player.containerMenu.getCarried().isEmpty()) {
+			return Optional.empty();
+		}
+		return source.getDraggableIngredientUnderMouse(input.getMouseX(), input.getMouseY())
+			.findFirst()
+			.flatMap(clicked -> prepare(screen, clicked))
+			.map(action -> action.when(() -> player.containerMenu.getCarried().isEmpty()));
+	}
 }

@@ -18,10 +18,10 @@ import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.IngredientGridBackgroundStyle;
-import mezz.jei.common.gui.GridScrollMath;
 import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.config.IngredientGridNavigationMode;
-import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.config.NavigationVisibility;
+import mezz.jei.common.gui.GridScrollMath;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PlayToServerPacket;
 import mezz.jei.gui.ghost.GhostIngredientQuickMoveManager;
@@ -40,10 +40,9 @@ import mezz.jei.test.lib.TestClientConfig;
 import mezz.jei.test.lib.TestClientToggleState;
 import mezz.jei.test.lib.TestColorHelper;
 import mezz.jei.test.lib.TestIngredient;
-import net.mezzdev.config.api.value.IConfigValue;
-import mezz.jei.common.config.NavigationVisibility;
 import mezz.jei.test.lib.TestJeiConfigValue;
 import mezz.jei.test.lib.TestPlugin;
+import net.mezzdev.config.api.value.IConfigValue;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
@@ -92,10 +91,10 @@ public class IngredientGridWithNavigationControllerTest {
 		fixture.clearLayoutChanges();
 
 		// Operation: scroll toward the next page.
-		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, -1);
+		boolean handled = fixture.controller.scroll(1, 1, 0, -1);
 
 		// Assertions: the grid does not consume scroll events that cannot change pages.
-		assertEquals(Optional.empty(), handler);
+		assertFalse(handled);
 		assertEquals(0, fixture.layoutChanges);
 		assertEquals(0, fixture.controller.getPageNumber());
 	}
@@ -108,10 +107,10 @@ public class IngredientGridWithNavigationControllerTest {
 		fixture.clearLayoutChanges();
 
 		// Operation: scroll toward the previous page.
-		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, 1);
+		boolean handled = fixture.controller.scroll(1, 1, 0, 1);
 
 		// Assertions: the grid does not consume scroll events that cannot change pages.
-		assertEquals(Optional.empty(), handler);
+		assertFalse(handled);
 		assertEquals(0, fixture.layoutChanges);
 		assertEquals(0, fixture.controller.getPageNumber());
 	}
@@ -124,10 +123,10 @@ public class IngredientGridWithNavigationControllerTest {
 		fixture.clearLayoutChanges();
 
 		// Operation: scroll toward the next page outside the grid.
-		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, -1);
+		boolean handled = fixture.controller.scroll(1, 1, 0, -1);
 
 		// Assertions: page state is unchanged because the grid was not under the mouse.
-		assertEquals(Optional.empty(), handler);
+		assertFalse(handled);
 		assertEquals(0, fixture.layoutChanges);
 		assertEquals(0, fixture.controller.getPageNumber());
 	}
@@ -140,10 +139,10 @@ public class IngredientGridWithNavigationControllerTest {
 		fixture.clearLayoutChanges();
 
 		// Operation: scroll toward the next page.
-		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, -1);
+		boolean handled = fixture.controller.scroll(1, 1, 0, -1);
 
 		// Assertions: the controller consumes the scroll and advances one page.
-		assertEquals(Optional.of(fixture.controller), handler);
+		assertTrue(handled);
 		assertEquals(1, fixture.layoutChanges);
 		assertEquals(1, fixture.controller.getPageNumber());
 	}
@@ -157,10 +156,10 @@ public class IngredientGridWithNavigationControllerTest {
 		fixture.clearLayoutChanges();
 
 		// Operation: scroll toward the previous page.
-		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, 1);
+		boolean handled = fixture.controller.scroll(1, 1, 0, 1);
 
 		// Assertions: the controller consumes the scroll and moves back to page one.
-		assertEquals(Optional.of(fixture.controller), handler);
+		assertTrue(handled);
 		assertEquals(1, fixture.layoutChanges);
 		assertEquals(0, fixture.controller.getPageNumber());
 	}
@@ -226,10 +225,10 @@ public class IngredientGridWithNavigationControllerTest {
 		fixture.clearLayoutChanges();
 
 		// Operation: send a scroll event with no vertical delta.
-		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, 0);
+		boolean handled = fixture.controller.scroll(1, 1, 0, 0);
 
 		// Assertions: no page movement is requested and the event is not consumed.
-		assertEquals(Optional.empty(), handler);
+		assertFalse(handled);
 		assertEquals(0, fixture.layoutChanges);
 		assertEquals(0, fixture.controller.getPageNumber());
 	}
@@ -242,10 +241,10 @@ public class IngredientGridWithNavigationControllerTest {
 		fixture.clearLayoutChanges();
 
 		// Operation: scroll down by one wheel notch.
-		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, -1);
+		boolean handled = fixture.controller.scroll(1, 1, 0, -1);
 
 		// Assertions: scrollbar mode consumes the scroll and moves down one row instead of a page.
-		assertEquals(Optional.of(fixture.controller), handler);
+		assertTrue(handled);
 		assertEquals(1, fixture.layoutChanges);
 		assertEquals(1, fixture.controller.getPageNumber());
 		assertEquals(3, fixture.grid.firstItemIndex);
@@ -257,9 +256,9 @@ public class IngredientGridWithNavigationControllerTest {
 		Fixture fixture = Fixture.create(3, 1, 15, true, IngredientGridNavigationMode.SCROLLING);
 		fixture.controller.updateLayoutToFirstPage();
 
-		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, -2);
+		boolean handled = fixture.controller.scroll(1, 1, 0, -2);
 
-		assertEquals(Optional.of(fixture.controller), handler);
+		assertTrue(handled);
 		assertEquals(2, fixture.controller.getPageNumber());
 		assertEquals(6, fixture.grid.firstItemIndex);
 		assertEquals(0, fixture.grid.scrollOffsetY);
@@ -295,10 +294,10 @@ public class IngredientGridWithNavigationControllerTest {
 		fixture.clearLayoutChanges();
 
 		// Operation: scroll down by one wheel notch.
-		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, -1);
+		boolean handled = fixture.controller.scroll(1, 1, 0, -1);
 
 		// Assertions: smooth scrolling moves by the configured nine pixels instead of snapping to the next row.
-		assertEquals(Optional.of(fixture.controller), handler);
+		assertTrue(handled);
 		assertEquals(1, fixture.layoutChanges);
 		assertEquals(0, fixture.controller.getPageNumber());
 		assertEquals(0, fixture.grid.firstItemIndex);
@@ -330,10 +329,10 @@ public class IngredientGridWithNavigationControllerTest {
 		fixture.clearLayoutChanges();
 
 		// Operation: scroll farther toward the bottom.
-		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, -1);
+		boolean handled = fixture.controller.scroll(1, 1, 0, -1);
 
 		// Assertions: JEI consumes the scroll even though the clamped position does not change.
-		assertEquals(Optional.of(fixture.controller), handler);
+		assertTrue(handled);
 		assertEquals(0, fixture.layoutChanges);
 		assertEquals(2, fixture.controller.getPageNumber());
 		assertEquals(6, fixture.grid.firstItemIndex);
@@ -348,10 +347,10 @@ public class IngredientGridWithNavigationControllerTest {
 		fixture.clearLayoutChanges();
 
 		// Operation: scroll farther toward the bottom.
-		Optional<IUserInputHandler> handler = fixture.controller.handleMouseScrolled(1, 1, 0, -1);
+		boolean handled = fixture.controller.scroll(1, 1, 0, -1);
 
 		// Assertions: JEI consumes the scroll even though the clamped position does not change.
-		assertEquals(Optional.of(fixture.controller), handler);
+		assertTrue(handled);
 		assertEquals(0, fixture.layoutChanges);
 		assertEquals(2, fixture.controller.getPageNumber());
 		assertEquals(6, fixture.grid.firstItemIndex);

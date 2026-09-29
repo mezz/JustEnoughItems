@@ -1,51 +1,57 @@
 package mezz.jei.gui.overlay.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.gui.input.IDragHandler;
+import mezz.jei.common.input.IInputTarget;
+import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.IInputInteraction;
 import mezz.jei.gui.input.IRecipeFocusSource;
-import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.gui.input.InputCommands;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
 
+import java.util.Optional;
+import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
 /**
- * Renderable ingredient-list contents with paging, input handling, dragging, and visible-ingredient queries.
+ * Ingredient display and input handling for an overlay.
  */
 public interface IIngredientListOverlayContents extends IIngredientGridView, IIngredientGridPageNavigation, IRecipeFocusSource {
 	/**
-	 * Draws foreground elements for the ingredient-list contents.
+	 * Draws the visible ingredients and their navigation controls.
 	 */
 	void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks);
 
-	/**
-	 * Draws tooltips for the ingredient-list contents.
-	 */
+	/** Draws ingredient tooltips and drag animations. */
 	void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
 
 	/**
-	 * Draws foreground elements for the ingredient-list contents.
+	 * Highlights where the hovered or dragged ingredient can be dropped.
 	 */
 	void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
 
 	void tick();
 
 	/**
-	 * Creates the high-priority input handler for deleting a carried item over these contents.
+	 * Creates the input handler for deleting the item held by the mouse pointer.
 	 */
-	IUserInputHandler createDeleteItemInputHandler();
+	IInputTarget createDeleteItemInputHandler();
 
 	/**
-	 * Creates the input handler for the ingredient-list contents.
+	 * Creates the input handler for the ingredient list contents.
 	 */
-	IUserInputHandler createInputHandler();
+	IInputTarget createInputHandler();
 
-	IUserInputHandler getResizeInputHandler();
+	void registerInputCommands(InputCommands commands, IInternalKeyMappings keys, BooleanSupplier active);
+
+	IInputTarget getResizeInputHandler();
 
 	/**
-	 * Creates the drag handler for the ingredient-list contents.
+	 * Tries to start an ingredient drag and returns its interaction, or empty if no drag can start.
 	 */
-	IDragHandler createDragHandler();
+	Optional<IInputInteraction> beginDrag(Screen screen, UserInput input);
 
 	/**
 	 * Returns the currently visible ingredients matching the requested type.

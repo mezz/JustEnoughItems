@@ -1,10 +1,9 @@
 package mezz.jei.gui.input;
 
-import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.IInputInteraction;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import org.junit.jupiter.api.Test;
@@ -14,15 +13,18 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CombinedRecipeFocusSourceTest {
+public class IngredientFocusSourceTest {
 	@Test
 	public void foregroundInputLayerBlocksObscuredFocusSources() {
-		// Setup: a foreground focus source covers another focus source at the mouse position.
+		// Setup: an input area that supplies ingredients covers another input area under the mouse pointer.
 		TestInputLayer foreground = new TestInputLayer(true);
 		TestFocusSource obscured = new TestFocusSource();
-		CombinedRecipeFocusSource combined = new CombinedRecipeFocusSource(new GuiInputSurfaceStack(foreground, obscured));
+		IngredientFocusSource combined = new IngredientFocusSource(new GuiInputScene(
+			InputArea.builder("Foreground", foreground).blockUnhandledMouseInput().build(),
+			InputArea.builder("Following", obscured).blockUnhandledMouseInput().build()
+		));
 
-		// Operation: query the focus sources under the foreground layer.
+		// Operation: query the ingredient sources under the front input area.
 		combined.getIngredientUnderMouse(10, 10).count();
 
 		// Assertions: only the foreground source participates in the query.
@@ -32,12 +34,15 @@ public class CombinedRecipeFocusSourceTest {
 
 	@Test
 	public void inactiveForegroundInputLayerAllowsFollowingFocusSources() {
-		// Setup: a foreground focus source does not cover the mouse position.
+		// Setup: the front input area does not cover the mouse pointer.
 		TestInputLayer foreground = new TestInputLayer(false);
 		TestFocusSource following = new TestFocusSource();
-		CombinedRecipeFocusSource combined = new CombinedRecipeFocusSource(new GuiInputSurfaceStack(foreground, following));
+		IngredientFocusSource combined = new IngredientFocusSource(new GuiInputScene(
+			InputArea.builder("Foreground", foreground).blockUnhandledMouseInput().build(),
+			InputArea.builder("Following", following).blockUnhandledMouseInput().build()
+		));
 
-		// Operation: query the focus sources outside the foreground layer.
+		// Operation: query the ingredient sources outside the front input area.
 		combined.getIngredientUnderMouse(10, 10).count();
 
 		// Assertions: only the source under the mouse participates in the query.
@@ -87,9 +92,8 @@ public class CombinedRecipeFocusSourceTest {
 		}
 
 		@Override
-		public Optional<IUserInputHandler> handleUserInput(
+		public Optional<IInputInteraction> beginInput(
 			Screen screen,
-			IGuiProperties guiProperties,
 			UserInput input,
 			IInternalKeyMappings keyBindings
 		) {

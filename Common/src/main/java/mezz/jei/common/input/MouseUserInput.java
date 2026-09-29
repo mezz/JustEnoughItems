@@ -2,19 +2,18 @@ package mezz.jei.common.input;
 
 import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.datafixers.util.Either;
-import net.minecraft.client.input.InputWithModifiers;
-import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 
 public class MouseUserInput extends UserInput {
-	private final MouseButtonEventData eventData;
+	private final MouseButtonEvent event;
+	private final boolean doubleClick;
 	private final InputConstants.Key key;
-	private final InputType inputType;
+	private final InputPhase phase;
 
-	public MouseUserInput(MouseButtonEvent event, boolean doubleClick, InputType inputType) {
-		this.eventData = new MouseButtonEventData(event, doubleClick);
-		this.inputType = inputType;
+	public MouseUserInput(MouseButtonEvent event, boolean doubleClick, InputPhase phase) {
+		this.event = event;
+		this.doubleClick = doubleClick;
+		this.phase = phase;
 		this.key = InputConstants.Type.MOUSE.getOrCreate(event.input());
 	}
 
@@ -24,33 +23,33 @@ public class MouseUserInput extends UserInput {
 	}
 
 	@Override
+	public UserInput withMousePosition(double mouseX, double mouseY) {
+		return new MouseUserInput(new MouseButtonEvent(mouseX, mouseY, event.buttonInfo()), doubleClick, phase);
+	}
+
+	@Override
 	public double getMouseX() {
-		return eventData.event().x();
+		return event.x();
 	}
 
 	@Override
 	public double getMouseY() {
-		return eventData.event().y();
+		return event.y();
 	}
 
 	@Override
-	public InputType getInputType() {
-		return inputType;
+	public InputPhase getPhase() {
+		return phase;
 	}
 
 	@Override
 	public int getModifiers() {
-		return eventData.event().modifiers();
+		return event.modifiers();
 	}
 
 	@Override
-	public InputWithModifiers getInputWithModifiers() {
-		return eventData.event();
-	}
-
-	@Override
-	public boolean isSimulate() {
-		return inputType == InputType.SIMULATE;
+	public MouseButtonEvent getInputWithModifiers() {
+		return event;
 	}
 
 	@Override
@@ -59,16 +58,17 @@ public class MouseUserInput extends UserInput {
 	}
 
 	@Override
-	public Either<MouseButtonEventData, KeyEvent> getEvent() {
-		return Either.left(eventData);
+	public boolean ifMouseEvent(IMouseClickable handler) {
+		return handler.mouseClicked(event, doubleClick);
 	}
 
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
-			.add("inputType", inputType)
+			.add("phase", phase)
 			.add("key", KeyNameUtil.getKeyDisplayName(key).getString())
-			.add("eventData", eventData)
+			.add("event", event)
+			.add("doubleClick", doubleClick)
 			.toString();
 	}
 }

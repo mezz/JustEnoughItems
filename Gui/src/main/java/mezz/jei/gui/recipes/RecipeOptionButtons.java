@@ -4,15 +4,15 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.RecipeSorterStage;
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.input.handlers.CombinedInputHandler;
+import mezz.jei.common.input.IInputTarget;
+import mezz.jei.common.input.handlers.InputGroup;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.elements.IconButton;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
-import javax.annotation.Nonnegative;
 import java.util.List;
+import javax.annotation.Nonnegative;
 
 public class RecipeOptionButtons {
 	private static final int buttonSize = 16;
@@ -92,11 +92,11 @@ public class RecipeOptionButtons {
 		return Math.max(0, area.getWidth() - overlapSize);
 	}
 
-	public IUserInputHandler createInputHandler() {
-		List<IUserInputHandler> handlers = buttons.stream()
+	public IInputTarget createInputHandler() {
+		List<IInputTarget> handlers = buttons.stream()
 			.map(IconButton::createInputHandler)
 			.toList();
-		return new CombinedInputHandler("RecipeOptionButtons", handlers);
+		return new InputGroup("RecipeOptionButtons", handlers);
 	}
 
 	public void drawTooltips(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {

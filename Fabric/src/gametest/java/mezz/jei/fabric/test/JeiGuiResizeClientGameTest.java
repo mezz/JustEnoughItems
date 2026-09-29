@@ -4,29 +4,39 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.common.Internal;
-import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.HistoryDisplaySide;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.IngredientGridBackgroundStyle;
 import mezz.jei.common.config.IngredientGridNavigationMode;
+import mezz.jei.common.config.RecipeGuiNavigationMode;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ReflectionUtil;
-import mezz.jei.gui.input.IRecipeFocusSource;
-import mezz.jei.gui.overlay.ingredients.IngredientGrid;
+import mezz.jei.fabric.input.FabricKeyMapping;
 import mezz.jei.gui.bookmarks.BookmarkList;
+import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
-import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import mezz.jei.gui.overlay.ingredients.IIngredientListOverlayContents;
+import mezz.jei.gui.overlay.ingredients.IngredientGrid;
+import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
+import mezz.jei.gui.recipes.IRecipeGuiLogic;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.mezzdev.config.api.value.IConfigValue;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,8 +92,13 @@ public class JeiGuiResizeClientGameTest implements FabricClientGameTest {
 							assertGridResize(context, true);
 						}
 					}
+					assertBookmarkDragCapture(context, cleanup);
+					assertPageShortcuts(context, cleanup);
+					assertShortcutPriority(context);
 					assertHistoryResize(context, cleanup);
 					assertRecipeResize(context);
+					assertRecipeShortcuts(context, cleanup);
+					RecipeInputCaptureClientTest.run(context);
 				} finally {
 					context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
 					context.runOnClient(client -> {
@@ -100,6 +115,205 @@ public class JeiGuiResizeClientGameTest implements FabricClientGameTest {
 		T original = config.get();
 		cleanup.add(() -> config.set(original));
 		config.set(value);
+	}
+
+	private static void assertBookmarkDragCapture(ClientGameTestContext context, List<Runnable> cleanup) {
+		var bookmark = context.computeOnClient(client -> {
+			var config = Internal.getClientConfigs().getClientConfig();
+			set(cleanup, config.dragDelayMs(), 0);
+			set(cleanup, config.dragToRearrangeBookmarksEnabled(), true);
+			var firstSlot = grid(true).getAllSlots().getFirst();
+			return firstSlot.getOptionalElement().orElseThrow().getBookmark().orElseThrow();
+		});
+		List<ImmutableRect2i> slots = context.computeOnClient(client -> grid(true).getAllSlots().stream().limit(2).map(slot -> slot.getArea()).toList());
+		int originalIndex = context.computeOnClient(client -> {
+			BookmarkList bookmarks = ((BookmarkOverlay) Internal.getJeiRuntime().getBookmarkOverlay()).getBookmarkList();
+			int index = bookmarks.getElements().indexOf(bookmark.getElement());
+			cleanup.add(() -> bookmarks.moveBookmark(bookmark, index));
+			return index;
+		});
+		ImmutableRect2i origin = slots.getFirst();
+		ImmutableRect2i target = slots.get(1);
+		move(context, origin.x() + 9, origin.y() + 9);
+		context.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.waitTick();
+		context.runOnClient(client -> {
+			var screen = Objects.requireNonNull(client.gui.screen());
+			var extraPress = new MouseButtonEvent(-1, -1, new MouseButtonInfo(InputConstants.MOUSE_BUTTON_LEFT, 0));
+			check(!ScreenMouseEvents.allowMouseClick(screen).invoker().allowMouseClick(screen, extraPress),
+				"An extra press outside JEI must preserve the active bookmark drag");
+			check(!ScreenMouseEvents.allowMouseDrag(screen).invoker().allowMouseDrag(screen, extraPress, -1, -1),
+				"A captured drag must not reach the container outside JEI");
+		});
+		move(context, target.x() + 9, target.y() + 9);
+		context.waitTicks(2);
+		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.waitTick();
+		context.runOnClient(client -> {
+			BookmarkList bookmarks = ((BookmarkOverlay) Internal.getJeiRuntime().getBookmarkOverlay()).getBookmarkList();
+			check(bookmarks.getElements().indexOf(bookmark.getElement()) == originalIndex + 1,
+				"Releasing the captured drag must reorder the original bookmark");
+		});
+
+		context.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.waitTick();
+		move(context, origin.x() + 9, origin.y() + 9);
+		context.waitTicks(2);
+		context.runOnClient(client -> {
+			check(!bookmark.isVisible(), "The second drag must lift the bookmark from its slot");
+			client.gui.setScreen(null);
+			check(bookmark.isVisible(), "Closing directly to gameplay must restore the dragged bookmark");
+			client.gui.setScreen(new InventoryScreen(Objects.requireNonNull(client.player)));
+		});
+		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.waitTick();
+	}
+
+	private static void assertPageShortcuts(ClientGameTestContext context, List<Runnable> cleanup) {
+		context.runOnClient(client -> {
+			set(cleanup, gridConfig(false).navigationMode(), IngredientGridNavigationMode.PAGED);
+			set(cleanup, gridConfig(true).navigationMode(), IngredientGridNavigationMode.PAGED);
+		});
+		var bookmarkArea = context.computeOnClient(client -> grid(true).getIngredientGridArea());
+		move(context, bookmarkArea.x() + 9, bookmarkArea.y() + 9);
+		context.waitTick();
+		context.runOnClient(client -> {
+			var grid = grid(false);
+			var area = grid.getIngredientGridArea();
+			var pages = grid.getPageDelegate();
+			check(pages.getPageCount() > 2, "Expected several pages for shortcut navigation");
+			var screen = Objects.requireNonNull(client.gui.screen());
+			FabricKeyMapping mapping = (FabricKeyMapping) Objects.requireNonNull(KeyMapping.get("key.jei.nextPage"));
+			var originalKey = mapping.getRealKey();
+			try {
+				mapping.setKey(InputConstants.Type.MOUSE.getOrCreate(4));
+				int initialPage = pages.getPageNumber();
+				var click = new MouseButtonEvent(area.x() + 9, area.y() + 9, new MouseButtonInfo(4, 0));
+				check(!ScreenMouseEvents.allowMouseClick(screen).invoker().allowMouseClick(screen, click), "The remapped page press must be consumed");
+				check(pages.getPageNumber() == initialPage, "A mouse-bound page shortcut must wait for release");
+				mapping.setKey(InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_P));
+				check(!ScreenMouseEvents.allowMouseRelease(screen).invoker().allowMouseRelease(screen, click), "The captured page release must be consumed");
+				int nextPage = (initialPage + 1) % pages.getPageCount();
+				check(pages.getPageNumber() == nextPage, "A captured action must execute once even if its binding changes before release");
+
+				var bookmarkPages = grid(true).getPageDelegate();
+				check(bookmarkPages.getPageCount() > 1, "Expected several bookmark pages for shortcut navigation");
+				int bookmarkPage = bookmarkPages.getPageNumber();
+				check(!ScreenKeyboardEvents.allowKeyPress(screen).invoker().allowKeyPress(screen, new KeyEvent(InputConstants.KEY_P, 0, 0)),
+					"The keyboard page shortcut must work while the pointer is over bookmarks");
+				check(bookmarkPages.getPageNumber() == (bookmarkPage + 1) % bookmarkPages.getPageCount(), "The hovered list's keyboard shortcut must advance immediately");
+				check(pages.getPageNumber() == nextPage, "Only the hovered list must advance when both lists use the same shortcut");
+			} finally {
+				mapping.setKey(originalKey);
+			}
+		});
+	}
+
+	private static void assertShortcutPriority(ClientGameTestContext context) {
+		context.runOnClient(client -> {
+			var screen = Objects.requireNonNull(client.gui.screen());
+			var grid = grid(false);
+			var pages = grid.getPageDelegate();
+			FabricKeyMapping nextPage = (FabricKeyMapping) Objects.requireNonNull(KeyMapping.get("key.jei.nextPage"));
+			FabricKeyMapping previousPage = (FabricKeyMapping) Objects.requireNonNull(KeyMapping.get("key.jei.previousPage"));
+			FabricKeyMapping editMode = (FabricKeyMapping) Objects.requireNonNull(KeyMapping.get("key.jei.toggleEditMode"));
+			var originalNext = nextPage.getRealKey();
+			var originalPrevious = previousPage.getRealKey();
+			var originalEdit = editMode.getRealKey();
+			var toggles = Internal.getClientToggleState();
+			boolean originalEditMode = toggles.isEditModeEnabled();
+			try {
+				toggles.setEditModeEnabled(false);
+				check(pages.getPageCount() > 2, "Conflicting next/previous bindings require more than two pages");
+
+				// The next-page button must beat both a hovered previous-page shortcut and a global toggle.
+				var leftClick = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_LEFT);
+				previousPage.setKey(leftClick);
+				editMode.setKey(leftClick);
+				var button = grid.getNextPageButtonArea();
+				int initialPage = pages.getPageNumber();
+				var click = new MouseButtonEvent(button.x() + button.width() / 2.0, button.y() + button.height() / 2.0,
+					new MouseButtonInfo(InputConstants.MOUSE_BUTTON_LEFT, 0));
+				check(!ScreenMouseEvents.allowMouseClick(screen).invoker().allowMouseClick(screen, click), "The page button must accept the press");
+				check(pages.getPageNumber() == initialPage, "The public button callback must simulate on mouse press");
+				check(!ScreenMouseEvents.allowMouseRelease(screen).invoker().allowMouseRelease(screen, click), "The page button must consume its release");
+				check(pages.getPageNumber() == (initialPage + 1) % pages.getPageCount(), "The page button must win over the conflicting previous-page command");
+				check(!toggles.isEditModeEnabled(), "A handled control must prevent the global command");
+
+				var shortcut = InputConstants.Type.MOUSE.getOrCreate(4);
+				nextPage.setKey(shortcut);
+				editMode.setKey(shortcut);
+				var area = grid.getIngredientGridArea();
+				initialPage = pages.getPageNumber();
+				clickShortcut(screen, area.x() + 9, area.y() + 9);
+				check(pages.getPageNumber() == (initialPage + 1) % pages.getPageCount(), "The hovered input area's command must win over a global command");
+				check(!toggles.isEditModeEnabled(), "The conflicting global command must not also execute");
+
+				initialPage = pages.getPageNumber();
+				clickShortcut(screen, 0, 0);
+				check(toggles.isEditModeEnabled(), "A global command must win over a non-hovered input area's command");
+				check(pages.getPageNumber() == initialPage, "The conflicting non-hovered page command must not also execute");
+				toggles.setEditModeEnabled(false);
+
+				editMode.setKey(InputConstants.UNKNOWN);
+				initialPage = pages.getPageNumber();
+				clickShortcut(screen, 0, 0);
+				check(pages.getPageNumber() == (initialPage + 1) % pages.getPageCount(), "An unbound global command must allow the screen-scoped page command");
+			} finally {
+				nextPage.setKey(originalNext);
+				previousPage.setKey(originalPrevious);
+				editMode.setKey(originalEdit);
+				toggles.setEditModeEnabled(originalEditMode);
+			}
+		});
+	}
+
+	private static void clickShortcut(Screen screen, double x, double y) {
+		var click = new MouseButtonEvent(x, y, new MouseButtonInfo(4, 0));
+		check(!ScreenMouseEvents.allowMouseClick(screen).invoker().allowMouseClick(screen, click), "The shortcut press must be consumed");
+		check(!ScreenMouseEvents.allowMouseRelease(screen).invoker().allowMouseRelease(screen, click), "The shortcut release must be consumed");
+	}
+
+	private static void assertRecipeShortcuts(ClientGameTestContext context, List<Runnable> cleanup) {
+		move(context, 0, 0);
+		context.runOnClient(client -> {
+			set(cleanup, Internal.getClientConfigs().getClientConfig().recipeGuiNavigationMode(), RecipeGuiNavigationMode.PAGED);
+			RecipesGui recipes = (RecipesGui) Internal.getJeiRuntime().getRecipesGui();
+			recipes.showTypes(List.of(RecipeTypes.CRAFTING));
+			IRecipeGuiLogic logic = new ReflectionUtil().getFieldWithClass(recipes, IRecipeGuiLogic.class).findFirst().orElseThrow();
+			logic.goToFirstPage();
+			check(!recipes.isMouseOver(0, 0), "Shortcut test must run outside the recipe panel");
+			check(logic.hasMultiplePages(), "Expected multiple crafting pages");
+			String firstPage = logic.getPageString();
+			String secondPage = "2/" + firstPage.split("/")[1];
+			assertMouseRecipeShortcut("key.jei.nextRecipePage", logic::getPageString, secondPage);
+			assertMouseRecipeShortcut("key.jei.previousRecipePage", logic::getPageString, firstPage);
+
+			recipes.showTypes(List.of(RecipeTypes.SMELTING));
+			assertMouseRecipeShortcut("key.jei.recipeBack", () -> logic.getSelectedRecipeCategory().getRecipeType(), RecipeTypes.CRAFTING);
+			assertMouseRecipeShortcut("key.jei.recipeForward", () -> logic.getSelectedRecipeCategory().getRecipeType(), RecipeTypes.SMELTING);
+			assertMouseRecipeShortcut("key.jei.closeRecipeGui", recipes::isOpen, false);
+
+			var parent = Objects.requireNonNull(client.gui.screen());
+			check(parent instanceof InventoryScreen, "Close shortcut must restore the parent screen");
+		});
+	}
+
+	private static <T> void assertMouseRecipeShortcut(String keyName, Supplier<T> state, T expected) {
+		var screen = Objects.requireNonNull(Minecraft.getInstance().gui.screen());
+		FabricKeyMapping mapping = (FabricKeyMapping) Objects.requireNonNull(KeyMapping.get(keyName));
+		var originalKey = mapping.getRealKey();
+		try {
+			mapping.setKey(InputConstants.Type.MOUSE.getOrCreate(4));
+			T initial = state.get();
+			var click = new MouseButtonEvent(0, 0, new MouseButtonInfo(4, 0));
+			check(!ScreenMouseEvents.allowMouseClick(screen).invoker().allowMouseClick(screen, click), keyName + " must accept presses outside the panel");
+			check(Objects.equals(state.get(), initial), keyName + " must wait for release");
+			check(!ScreenMouseEvents.allowMouseRelease(screen).invoker().allowMouseRelease(screen, click), keyName + " must consume the captured release");
+			check(Objects.equals(state.get(), expected), keyName + " must execute outside the panel");
+		} finally {
+			mapping.setKey(originalKey);
+		}
 	}
 
 	private static IngredientGridWithNavigation grid(boolean bookmarks) {
@@ -144,6 +358,10 @@ public class JeiGuiResizeClientGameTest implements FabricClientGameTest {
 		move(context, x - deltaX, y + 18);
 		context.waitTicks(2);
 		assertGridSize(context, bookmarks, 7);
+		context.runOnClient(client -> {
+			var screen = Objects.requireNonNull(client.gui.screen());
+			ScreenKeyboardEvents.allowKeyPress(screen).invoker().allowKeyPress(screen, new KeyEvent(InputConstants.KEY_LSHIFT, 0, 0));
+		});
 		move(context, x - 2 * deltaX, y + 36);
 		context.waitTicks(2);
 		assertGridSize(context, bookmarks, 8);
@@ -202,7 +420,7 @@ public class JeiGuiResizeClientGameTest implements FabricClientGameTest {
 			for (IngredientGridNavigationMode mode : IngredientGridNavigationMode.values()) {
 				for (IngredientGridBackgroundStyle backgroundStyle : IngredientGridBackgroundStyle.values()) {
 					boolean background = backgroundStyle.isEnabled();
-					// Include history displayed on its own, with the bookmark panel hidden.
+					// Include history displayed on its own, with the bookmark list hidden.
 					boolean ownerVisible = !bookmarks || mode == IngredientGridNavigationMode.PAGED;
 					final int ownerRows;
 					if (!bookmarks && mode == IngredientGridNavigationMode.SCROLLING && background) {

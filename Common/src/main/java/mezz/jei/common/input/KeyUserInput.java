@@ -2,24 +2,32 @@ package mezz.jei.common.input;
 
 import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.datafixers.util.Either;
 import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.util.StringUtil;
+
+import java.util.function.Predicate;
 
 public class KeyUserInput extends UserInput {
 	private final InputConstants.Key key;
 	private final KeyEvent event;
 	private final double mouseX;
 	private final double mouseY;
-	private final InputType inputType;
 
-	public KeyUserInput(KeyEvent event, InputType inputType) {
+	public KeyUserInput(KeyEvent event) {
+		this(event, MouseUtil.getX(), MouseUtil.getY());
+	}
+
+	private KeyUserInput(KeyEvent event, double mouseX, double mouseY) {
 		this.key = InputConstants.getKey(event);
 		this.event = event;
-		this.mouseX = MouseUtil.getX();
-		this.mouseY = MouseUtil.getY();
-		this.inputType = inputType;
+		this.mouseX = mouseX;
+		this.mouseY = mouseY;
+	}
+
+	@Override
+	public UserInput withMousePosition(double mouseX, double mouseY) {
+		return new KeyUserInput(event, mouseX, mouseY);
 	}
 
 	@Override
@@ -38,8 +46,8 @@ public class KeyUserInput extends UserInput {
 	}
 
 	@Override
-	public InputType getInputType() {
-		return inputType;
+	public InputPhase getPhase() {
+		return InputPhase.PRESS;
 	}
 
 	@Override
@@ -49,13 +57,8 @@ public class KeyUserInput extends UserInput {
 	}
 
 	@Override
-	public InputWithModifiers getInputWithModifiers() {
+	public KeyEvent getInputWithModifiers() {
 		return event;
-	}
-
-	@Override
-	public boolean isSimulate() {
-		return inputType == InputType.SIMULATE;
 	}
 
 	@Override
@@ -65,14 +68,14 @@ public class KeyUserInput extends UserInput {
 	}
 
 	@Override
-	public Either<MouseButtonEventData, KeyEvent> getEvent() {
-		return Either.right(event);
+	public boolean ifKeyboardEvent(Predicate<KeyEvent> handler) {
+		return handler.test(event);
 	}
 
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
-			.add("inputType", inputType)
+			.add("phase", getPhase())
 			.add("key", KeyNameUtil.getKeyDisplayName(key).getString())
 			.add("event", event)
 			.add("mouse", String.format("%s, %s", mouseX, mouseY))
