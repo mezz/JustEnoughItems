@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 public class RuntimeEventSubscriptions {
 	private final List<EventSubscription<?>> subscriptions = new ArrayList<>();
 	private final IEventBus eventBus;
+	private final List<Runnable> cleanupActions = new ArrayList<>();
 
 	public RuntimeEventSubscriptions(IEventBus eventBus) {
 		ErrorUtil.checkNotNull(eventBus, "eventBus");
@@ -35,7 +36,13 @@ public class RuntimeEventSubscriptions {
 		return subscriptions.isEmpty();
 	}
 
+	public void onClear(Runnable cleanup) {
+		cleanupActions.add(cleanup);
+	}
+
 	public void clear() {
+		cleanupActions.forEach(Runnable::run);
+		cleanupActions.clear();
 		subscriptions.forEach(EventSubscription::unregister);
 		subscriptions.clear();
 	}

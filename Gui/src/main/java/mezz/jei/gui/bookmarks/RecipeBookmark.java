@@ -96,7 +96,7 @@ public class RecipeBookmark<R, I> implements IBookmark {
 		this.recipe = recipe;
 		this.recipeUid = recipeUid;
 		this.recipeOutput = recipeOutput;
-		this.element = new RecipeBookmarkElement<>(this, icon, recipeTransferService);
+		this.element = new RecipeBookmarkElement<>(this, recipeTransferService);
 		this.displayRole = displayRole;
 	}
 

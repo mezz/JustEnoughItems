@@ -1,5 +1,6 @@
 package mezz.jei.gui.ghost;
 
+import net.minecraft.client.gui.GuiComponent;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
@@ -10,11 +11,11 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.JeiGuiColors.GuiColor;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.SafeIngredientUtil;
-import mezz.jei.common.input.UserInput;
-import net.minecraft.client.gui.GuiComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.phys.Vec2;
 
@@ -109,7 +110,7 @@ public class GhostIngredientDrag<T> {
 		RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 	}
 
-	public boolean onClick(UserInput input) {
+	public boolean complete(UserInput input) {
 		if (!canStart(this, input.getMouseX(), input.getMouseY())) {
 			return false;
 		}
@@ -118,17 +119,13 @@ public class GhostIngredientDrag<T> {
 			for (Target<T> target : data.targets) {
 				Rect2i area = target.getArea();
 				if (MathUtil.contains(area, input.getMouseX(), input.getMouseY())) {
-					if (!input.isSimulate()) {
-						target.accept(ingredient.getIngredient());
-						data.handler.onComplete();
-					}
+					target.accept(ingredient.getIngredient());
+					data.handler.onComplete();
 					return true;
 				}
 			}
 
-			if (!input.isSimulate()) {
-				data.handler.onComplete();
-			}
+			data.handler.onComplete();
 		}
 		return false;
 	}

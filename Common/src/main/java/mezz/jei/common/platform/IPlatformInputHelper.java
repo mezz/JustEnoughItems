@@ -1,12 +1,12 @@
 package mezz.jei.common.platform;
 
-import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.keys.IJeiKeyMappingCategoryBuilder;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
 
 public interface IPlatformInputHelper {
-	boolean isActiveAndMatches(KeyMapping keyMapping, InputConstants.Key key);
+	boolean isActiveAndMatches(KeyMapping keyMapping, UserInput input);
 
 	boolean isSendRepeatsToGui(KeyboardHandler keyboardHandler);
 

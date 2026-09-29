@@ -1,18 +1,21 @@
 package mezz.jei.gui.recipes;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
-import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.input.UserInput;
-import mezz.jei.common.input.handlers.CombinedInputHandler;
 import mezz.jei.gui.recipes.layouts.RecipeLayoutDrawableErrored;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.Rect2i;
+import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.common.input.IInputTarget;
+import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.ApiInputAdapter;
+import mezz.jei.common.input.interaction.IInputInteraction;
+import mezz.jei.common.input.interaction.ReleaseInsideBounds;
+import mezz.jei.gui.bookmarks.RecipeBookmark;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -52,26 +55,23 @@ public final class RecipeLayoutWithButtonsErrored<R> implements IRecipeLayoutWit
 	}
 
 	@Override
-	public IUserInputHandler createUserInputHandler() {
-		return new CombinedInputHandler(
-			"RecipeLayoutWithButtonsErrored",
-			new UserInputHandler<>(errorLayout)
-		);
+	public IInputTarget createUserInputHandler() {
+		return new ErroredRecipeInputTarget<>(errorLayout);
 	}
 
 	@Override
-	public void tick(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player) {
+	public void tick(@Nullable AbstractContainerMenu container, @Nullable Player player) {
 		errorLayout.tick();
-	}
-
-	@Override
-	public void updateTransferButton(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player) {
-
 	}
 
 	@Override
 	public IRecipeLayoutDrawable<R> getRecipeLayout() {
 		return errorLayout;
+	}
+
+	@Override
+	public @Nullable RecipeBookmark<?, ?> getRecipeBookmark() {
+		return null;
 	}
 
 	@Override
@@ -81,31 +81,38 @@ public final class RecipeLayoutWithButtonsErrored<R> implements IRecipeLayoutWit
 
 	@Override
 	public int getMissingCountHint() {
-		return -1;
+		return Integer.MAX_VALUE;
 	}
 
-	private record UserInputHandler<R>(IRecipeLayoutDrawable<R> recipeLayout) implements IUserInputHandler {
+	/**
+	 * Lets the mod's recipe handler receive input when JEI could not build the recipe's normal controls.
+	 *
+	 * @param recipeLayout the recipe whose handler receives input and whose area is checked on release
+	 * @param <R> recipe type displayed by the layout
+	 */
+	private record ErroredRecipeInputTarget<R>(IRecipeLayoutDrawable<R> recipeLayout) implements IInputTarget {
 		@Override
-		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-			final double mouseX = input.getMouseX();
-			final double mouseY = input.getMouseY();
-			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
-				if (recipeLayout.getInputHandler().handleInput(mouseX, mouseY, input)) {
-					return Optional.of(this);
-				}
+		public Optional<IInputInteraction> beginInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+			if (!recipeLayout.isMouseOver(input.getMouseX(), input.getMouseY())) {
+				return Optional.empty();
 			}
-			return Optional.empty();
+			return ApiInputAdapter.beginInput(screen, input, keyBindings, recipeLayout.getInputHandler())
+				.map(interaction -> new ReleaseInsideBounds(interaction, recipeLayout::isMouseOver));
 		}
 
 		@Override
-		public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollDelta) {
-			if (recipeLayout.isMouseOver(mouseX, mouseY) &&
-				recipeLayout.getInputHandler().handleMouseScrolled(mouseX, mouseY, scrollDelta)
-			) {
-				return Optional.of(this);
-			}
-
-			return Optional.empty();
+		public boolean scroll(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+			return recipeLayout.isMouseOver(mouseX, mouseY) &&
+				ApiInputAdapter.handleMouseScrolled(recipeLayout.getInputHandler(), mouseX, mouseY, scrollDeltaX, scrollDeltaY);
 		}
 	}
+	@Override
+	public void updateTransferButton(@Nullable AbstractContainerMenu container, @Nullable Player player) {
+	}
+
+	@Override
+	public boolean isBookmarked() {
+		return false;
+	}
+
 }

@@ -2,8 +2,9 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.common.input.IInputTarget;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
-import mezz.jei.common.input.IUserInputHandler;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +16,7 @@ public interface IRecipeLayoutWithButtons<R> {
 
 	int totalWidth();
 
-	IUserInputHandler createUserInputHandler();
+	IInputTarget createUserInputHandler();
 
 	void tick(@Nullable AbstractContainerMenu parentContainer, @Nullable Player player);
 

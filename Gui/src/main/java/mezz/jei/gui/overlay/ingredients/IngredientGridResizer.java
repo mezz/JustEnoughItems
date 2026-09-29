@@ -5,9 +5,11 @@ import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.IInputInteraction;
+import mezz.jei.common.input.interaction.MouseDrag;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
 import mezz.jei.gui.elements.ResizeDrag;
@@ -19,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-final class IngredientGridResizer implements IUserInputHandler {
+final class IngredientGridResizer implements IInputTarget {
 	private final IngredientGridWithNavigation grid;
 	private final IIngredientGridConfig config;
 	private final IClientConfig clientConfig;
@@ -60,34 +62,30 @@ final class IngredientGridResizer implements IUserInputHandler {
 		return drag != null || getHandle(mouseX, mouseY).isPresent();
 	}
 
-	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
-		if (!clientConfig.guiResizeEnabled().get() || !input.is(keyBindings.getLeftClick())) {
-			return Optional.empty();
-		}
-		if (input.isSimulate()) {
-			ResizeHandle handle = getHandle(input.getMouseX(), input.getMouseY());
-			if (!handle.isPresent()) {
-				return Optional.empty();
-			}
-			drag = new ResizeDrag(handle, input.getMouseX(), input.getMouseY(), grid.getIngredientGridArea().getSize());
-			maximum = grid.getMaximumResizeSize();
-			initialColumns = config.maxColumns().get();
-			initialRows = config.maxRows().get();
-			return Optional.of(this);
-		}
-		if (this.drag == null) {
-			return Optional.empty();
-		}
-		this.drag = null;
-		return Optional.of(this);
+	boolean isOverResizeHandle(double mouseX, double mouseY) {
+		return getHandle(mouseX, mouseY).isPresent();
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleMouseDragged(double mouseX, double mouseY, InputConstants.Key mouseKey, double dragX, double dragY) {
+	public Optional<IInputInteraction> beginInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+		if (!clientConfig.guiResizeEnabled().get() || !input.is(keyBindings.getLeftClick())) {
+			return Optional.empty();
+		}
+		ResizeHandle handle = getHandle(input.getMouseX(), input.getMouseY());
+		if (!handle.isPresent()) {
+			return Optional.empty();
+		}
+		drag = new ResizeDrag(handle, input.getMouseX(), input.getMouseY(), grid.getIngredientGridArea().getSize());
+		maximum = grid.getMaximumResizeSize();
+		initialColumns = config.maxColumns().get();
+		initialRows = config.maxRows().get();
+		return Optional.of(MouseDrag.forWidget(this::drag, this::resetInput));
+	}
+
+	private void drag(double mouseX, double mouseY, InputConstants.Key mouseKey, double dragX, double dragY) {
 		ResizeDrag drag = this.drag;
 		if (drag == null || !clientConfig.guiResizeEnabled().get() || mouseKey.getValue() != InputConstants.MOUSE_BUTTON_LEFT) {
-			return Optional.empty();
+			return;
 		}
 		int slotWidth = IngredientGridLayout.INGREDIENT_WIDTH;
 		int slotHeight = IngredientGridLayout.INGREDIENT_HEIGHT;
@@ -115,7 +113,6 @@ final class IngredientGridResizer implements IUserInputHandler {
 		if (config.maxRows().get() != rows) {
 			config.maxRows().set(rows);
 		}
-		return Optional.of(this);
 	}
 
 	private static int getMaximum(IConfigValue<Integer> value) {
@@ -125,7 +122,7 @@ final class IngredientGridResizer implements IUserInputHandler {
 	}
 
 	@Override
-	public void unfocus() {
+	public void resetInput() {
 		drag = null;
 	}
 }

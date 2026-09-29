@@ -8,8 +8,9 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.InputAction;
+import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.overlay.ingredients.IngredientGridTooltipHelper;
 import mezz.jei.gui.util.FocusUtil;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +35,9 @@ public interface IElement<T> {
 
 	boolean isVisible();
 
-	default boolean handleClick(UserInput input, IInternalKeyMappings keyBindings) {
-		return false;
+	default void tick() {}
+
+	default Optional<InputAction> prepareAction(UserInput input, IInternalKeyMappings keyBindings) {
+		return Optional.empty();
 	}
 }

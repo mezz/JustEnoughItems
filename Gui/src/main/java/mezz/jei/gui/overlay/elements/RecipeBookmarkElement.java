@@ -1,9 +1,10 @@
 package mezz.jei.gui.overlay.elements;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.drawable.IScalableDrawable;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IModIdHelper;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -25,52 +26,52 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.IngredientsTooltipComponent;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.InputAction;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
-import mezz.jei.common.input.UserInput;
-import mezz.jei.gui.overlay.ingredients.IngredientGridTooltipHelper;
 import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
+import mezz.jei.gui.overlay.ingredients.IngredientGridTooltipHelper;
+import mezz.jei.gui.recipes.RecipeCategoryIconUtil;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class RecipeBookmarkElement<T, R> implements IElement<R> {
-	private final RecipeBookmark<T, R> recipeBookmark;
-	private final IDrawable icon;
+public class RecipeBookmarkElement<R, I> implements IElement<I> {
+	private final RecipeBookmark<R, I> recipeBookmark;
 	private final IClientConfig clientConfig;
 	private final RecipeTransferService recipeTransferService;
-	private final EnumMap<BookmarkTooltipFeature, TooltipComponent> cache = new EnumMap<>(BookmarkTooltipFeature.class);
+	private @Nullable PreviewTooltipComponent<R> previewTooltipComponent;
+	private @Nullable IngredientsTooltipComponent ingredientsTooltipComponent;
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-	private @Nullable Optional<IRecipeLayoutDrawable<T>> cachedLayoutDrawable;
+	private @Nullable Optional<IRecipeLayoutDrawable<R>> cachedLayoutDrawable;
 
 	public RecipeBookmarkElement(
-		RecipeBookmark<T, R> recipeBookmark,
-		IDrawable icon,
+		RecipeBookmark<R, I> recipeBookmark,
 		RecipeTransferService recipeTransferService
 	) {
 		this.recipeBookmark = recipeBookmark;
-		this.icon = icon;
 		this.recipeTransferService = recipeTransferService;
 		this.clientConfig = Internal.getClientConfigs().getClientConfig();
 	}
 
 	@Override
-	public ITypedIngredient<R> getTypedIngredient() {
+	public ITypedIngredient<I> getTypedIngredient() {
 		return recipeBookmark.getRecipeOutput();
 	}
 
@@ -80,12 +81,13 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 	}
 
 	@Override
-	public @Nullable IDrawable createRenderOverlay() {
-		return new RecipeBookmarkOverlay(icon);
+	public IDrawable createRenderOverlay() {
+		IRecipeCategory<R> recipeCategory = recipeBookmark.getRecipeCategory();
+		return new RecipeBookmarkIcon(recipeCategory);
 	}
 
 	@Override
-	public boolean handleClick(UserInput input, IInternalKeyMappings keyBindings) {
+	public Optional<InputAction> prepareAction(UserInput input, IInternalKeyMappings keyBindings) {
 		boolean transferOnce = input.is(keyBindings.getTransferRecipeBookmark());
 		boolean transferMax = input.is(keyBindings.getMaxTransferRecipeBookmark());
 		if (transferOnce || transferMax) {
@@ -93,72 +95,69 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 			Screen screen = minecraft.screen;
 			Player player = minecraft.player;
 			if (player != null && screen instanceof AbstractContainerScreen<?> containerScreen) {
-				IRecipeLayoutDrawable<T> recipeLayout = getRecipeLayoutDrawable().orElse(null);
+				IRecipeLayoutDrawable<R> recipeLayout = getRecipeLayoutDrawable().orElse(null);
 				if (recipeLayout == null) {
-					return false;
+					return Optional.empty();
 				}
 
-				if (input.isSimulate()) {
-					IRecipeTransferError recipeTransferError = recipeTransferService.getTransferRecipeError(containerScreen, recipeLayout, player).orElse(null);
-					return recipeTransferError == null || recipeTransferError.getType().allowsTransfer;
+				IRecipeTransferError error = recipeTransferService.getTransferRecipeError(containerScreen, recipeLayout, player).orElse(null);
+				if (error == null || error.getType().allowsTransfer) {
+					return Optional.of(InputAction.run(() -> recipeTransferService.transferRecipe(containerScreen, recipeLayout, player, transferMax)));
 				}
-				return recipeTransferService.transferRecipe(containerScreen, recipeLayout, player, transferMax);
 			}
 		}
-		return false;
+		return Optional.empty();
 	}
 
 	@Override
 	public void show(IRecipesGui recipesGui, FocusUtil focusUtil, List<RecipeIngredientRole> roles) {
 		// ignore roles, always display the bookmarked recipe if it's clicked
 
-		IRecipeCategory<T> recipeCategory = recipeBookmark.getRecipeCategory();
-		T recipe = recipeBookmark.getRecipe();
+		IRecipeCategory<R> recipeCategory = recipeBookmark.getRecipeCategory();
+		R recipe = recipeBookmark.getRecipe();
 		ITypedIngredient<?> ingredient = getTypedIngredient();
 		List<IFocus<?>> focuses = focusUtil.createFocuses(ingredient, List.of(RecipeIngredientRole.OUTPUT));
 		recipesGui.showRecipes(recipeCategory, List.of(recipe), focuses);
 	}
 
 	@Override
-	public void getTooltip(JeiTooltip tooltip, IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<R> ingredientRenderer, IIngredientHelper<R> ingredientHelper) {
+	public void getTooltip(JeiTooltip tooltip, IngredientGridTooltipHelper tooltipHelper, IIngredientRenderer<I> ingredientRenderer, IIngredientHelper<I> ingredientHelper) {
 		getTooltip(tooltip, ingredientRenderer, ingredientHelper, false);
 	}
 
 	public void getPinnedTooltip(JeiTooltip tooltip) {
 		IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
 		IIngredientManager ingredientManager = jeiRuntime.getIngredientManager();
-		ITypedIngredient<R> recipeOutput = recipeBookmark.getRecipeOutput();
-		IIngredientType<R> ingredientType = recipeOutput.getType();
-		IIngredientRenderer<R> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
-		IIngredientHelper<R> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
+		ITypedIngredient<I> displayIngredient = recipeBookmark.getRecipeOutput();
+		IIngredientType<I> ingredientType = displayIngredient.getType();
+		IIngredientRenderer<I> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
+		IIngredientHelper<I> ingredientHelper = ingredientManager.getIngredientHelper(ingredientType);
 		getTooltip(tooltip, ingredientRenderer, ingredientHelper, true);
 	}
 
-	public Optional<PreviewTooltipComponent<T>> getInteractivePreview() {
+	public Optional<PreviewTooltipComponent<R>> getInteractivePreview() {
 		IJeiKeyMappingInternal pauseRecipeCycling = Internal.getKeyMappings().getPauseRecipeCycling();
 		if (pauseRecipeCycling.isUnbound() ||
 			!getBookmarkTooltipFeatures().contains(BookmarkTooltipFeature.PREVIEW)
 		) {
 			return Optional.empty();
 		}
-		TooltipComponent component = getOrCreateTooltipComponent(BookmarkTooltipFeature.PREVIEW);
-		if (component instanceof PreviewTooltipComponent<?> previewTooltipComponent) {
-			@SuppressWarnings("unchecked")
-			PreviewTooltipComponent<T> typedPreviewTooltipComponent = (PreviewTooltipComponent<T>) previewTooltipComponent;
-			return Optional.of(typedPreviewTooltipComponent);
+		PreviewTooltipComponent<R> component = this.previewTooltipComponent;
+		if (component == null) {
+			component = createPreviewTooltipComponent();
+			if (component == null) {
+				return Optional.empty();
+			}
+			this.previewTooltipComponent = component;
 		}
-		return Optional.empty();
+		return Optional.of(component);
 	}
 
-	private void getTooltip(
-		JeiTooltip tooltip,
-		IIngredientRenderer<R> ingredientRenderer,
-		IIngredientHelper<R> ingredientHelper,
-		boolean pinned
-	) {
-		ITypedIngredient<R> recipeOutput = recipeBookmark.getRecipeOutput();
-		T recipe = recipeBookmark.getRecipe();
-		IRecipeCategory<T> recipeCategory = recipeBookmark.getRecipeCategory();
+	private void getTooltip(JeiTooltip tooltip, IIngredientRenderer<I> ingredientRenderer, IIngredientHelper<I> ingredientHelper, boolean pinned) {
+		ITypedIngredient<I> displayIngredient = recipeBookmark.getRecipeOutput();
+		R recipe = recipeBookmark.getRecipe();
+
+		IRecipeCategory<R> recipeCategory = recipeBookmark.getRecipeCategory();
 		JeiTooltip bookmarkTooltip = new JeiTooltip();
 		boolean previewAdded = addBookmarkTooltipFeaturesIfEnabled(bookmarkTooltip, pinned);
 
@@ -171,7 +170,7 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 			ResourceLocation recipeName = recipeCategory.getRegistryName(recipe);
 			if (recipeName != null) {
 				String recipeModId = recipeName.getNamespace();
-				ResourceLocation ingredientName = ingredientHelper.getResourceLocation(recipeOutput.getIngredient());
+				ResourceLocation ingredientName = ingredientHelper.getResourceLocation(displayIngredient.getIngredient());
 				String ingredientModId = ingredientName.getNamespace();
 				if (!recipeModId.equals(ingredientModId)) {
 					Component modName = modIdHelper.getFormattedModNameComponentForModId(recipeModId);
@@ -185,7 +184,7 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 				tooltip.add(Component.empty());
 			}
 
-			SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, recipeOutput);
+			SafeIngredientUtil.getRichTooltip(tooltip, ingredientManager, ingredientRenderer, displayIngredient);
 		}
 
 		if (previewAdded && !pinned) {
@@ -213,7 +212,7 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 			return false;
 		}
 
-		if (!pinned && clientConfig.isHoldShiftToShowBookmarkTooltipFeaturesEnabled()) {
+		if (!pinned && clientConfig.holdShiftToShowBookmarkTooltipFeaturesEnabled().get()) {
 			IJeiKeyMappingInternal pauseRecipeCycling = Internal.getKeyMappings().getPauseRecipeCycling();
 			if (pauseRecipeCycling.isUnbound()) {
 				return false;
@@ -233,44 +232,72 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 	}
 
 	private List<BookmarkTooltipFeature> getBookmarkTooltipFeatures() {
-		return clientConfig.getBookmarkTooltipFeatures();
+		List<BookmarkTooltipFeature> features = new ArrayList<>(2);
+		if (clientConfig.bookmarkTooltipPreviewEnabled().get()) {
+			features.add(BookmarkTooltipFeature.PREVIEW);
+		}
+		if (clientConfig.bookmarkTooltipIngredientsEnabled().get()) {
+			features.add(BookmarkTooltipFeature.INGREDIENTS);
+		}
+		return List.copyOf(features);
 	}
 
 	private boolean addBookmarkTooltipFeatures(JeiTooltip tooltip, List<BookmarkTooltipFeature> features) {
 		boolean previewAdded = false;
 		for (BookmarkTooltipFeature feature : features) {
-			TooltipComponent component = getOrCreateTooltipComponent(feature);
-			if (component == null) {
-				break;
-			}
-			if (component instanceof PreviewTooltipComponent<?> previewTooltipComponent) {
-				previewTooltipComponent.setStatic();
+			boolean added = addBookmarkTooltipFeature(tooltip, feature);
+			if (feature == BookmarkTooltipFeature.PREVIEW && added) {
 				previewAdded = true;
 			}
-			tooltip.add(component);
+			if (!added) {
+				break;
+			}
 		}
 		return previewAdded;
 	}
 
-	private @Nullable TooltipComponent getOrCreateTooltipComponent(BookmarkTooltipFeature feature) {
-		TooltipComponent component = cache.get(feature);
-		if (component != null) {
-			return component;
-		}
-		IRecipeLayoutDrawable<T> layoutDrawable = getRecipeLayoutDrawable().orElse(null);
-		if (layoutDrawable == null) {
-			return null;
-		}
-		component = createComponent(feature, layoutDrawable);
-		cache.put(feature, component);
-		return component;
+	private boolean addBookmarkTooltipFeature(JeiTooltip tooltip, BookmarkTooltipFeature feature) {
+		return switch (feature) {
+			case PREVIEW -> addPreviewTooltipComponent(tooltip);
+			case INGREDIENTS -> addIngredientsTooltipComponent(tooltip);
+		};
 	}
 
-	private TooltipComponent createComponent(BookmarkTooltipFeature feature, IRecipeLayoutDrawable<T> layoutDrawable) {
-		return switch (feature) {
-			case PREVIEW -> new PreviewTooltipComponent<>(layoutDrawable, recipeTransferService);
-			case INGREDIENTS -> new IngredientsTooltipComponent(layoutDrawable);
-		};
+	private boolean addPreviewTooltipComponent(JeiTooltip tooltip) {
+		PreviewTooltipComponent<R> component = previewTooltipComponent;
+		if (component == null) {
+			component = createPreviewTooltipComponent();
+			if (component == null) {
+				return false;
+			}
+			previewTooltipComponent = component;
+		}
+		component.setStatic();
+		tooltip.add(component);
+		return true;
+	}
+
+	private @Nullable PreviewTooltipComponent<R> createPreviewTooltipComponent() {
+		IRecipeLayoutDrawable<R> recipeLayout = getRecipeLayoutDrawable().orElse(null);
+		if (recipeLayout == null) {
+			return null;
+		}
+		return new PreviewTooltipComponent<>(recipeLayout, recipeTransferService);
+	}
+
+	private boolean addIngredientsTooltipComponent(JeiTooltip tooltip) {
+		IngredientsTooltipComponent component = ingredientsTooltipComponent;
+		if (component == null) {
+			IRecipeLayoutDrawable<R> recipeLayout = getRecipeLayoutDrawable().orElse(null);
+			if (recipeLayout == null) {
+				return false;
+			}
+			component = new IngredientsTooltipComponent(recipeLayout);
+			ingredientsTooltipComponent = component;
+		}
+
+		tooltip.add(component);
+		return true;
 	}
 
 	private JeiTooltip createTransferComponents() {
@@ -306,13 +333,13 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 		return results;
 	}
 
-	private Optional<IRecipeLayoutDrawable<T>> getRecipeLayoutDrawable() {
+	private Optional<IRecipeLayoutDrawable<R>> getRecipeLayoutDrawable() {
 		//noinspection OptionalAssignedToNull
 		if (cachedLayoutDrawable == null) {
 			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
 			IRecipeManager recipeManager = jeiRuntime.getRecipeManager();
 			IFocusFactory focusFactory = jeiRuntime.getJeiHelpers().getFocusFactory();
-			IScalableDrawable recipePreviewBackground = Internal.getTextures().getRecipePreviewBackground();
+			DrawableNineSliceTexture recipePreviewBackground = Internal.getTextures().getRecipePreviewBackground();
 
 			cachedLayoutDrawable = recipeManager.createRecipeLayoutDrawable(
 				recipeBookmark.getRecipeCategory(),
@@ -330,7 +357,29 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 		return recipeBookmark.isVisible();
 	}
 
-	private record RecipeBookmarkOverlay(IDrawable icon) implements IDrawable {
+	@Override
+	public void tick() {
+		PreviewTooltipComponent<R> component = previewTooltipComponent;
+		if (component != null) {
+			component.tick();
+		}
+	}
+
+	private static class RecipeBookmarkIcon implements IDrawable {
+		private final IDrawable icon;
+
+		public RecipeBookmarkIcon(IRecipeCategory<?> recipeCategory) {
+			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
+			IRecipeManager recipeManager = jeiRuntime.getRecipeManager();
+			IJeiHelpers jeiHelpers = jeiRuntime.getJeiHelpers();
+			IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+			icon = RecipeCategoryIconUtil.create(
+				recipeCategory,
+				recipeManager,
+				guiHelper
+			);
+		}
+
 		@Override
 		public int getWidth() {
 			return 16;
@@ -348,7 +397,7 @@ public class RecipeBookmarkElement<T, R> implements IElement<R> {
 				// this z level seems to be the sweet spot so that
 				// 2D icons draw above the items, and
 				// 3D icons draw still draw under tooltips.
-				poseStack.translate(xOffset + 8, yOffset + 8, 200);
+				poseStack.translate(8 + xOffset, 8 + yOffset, 200);
 				poseStack.scale(0.5f, 0.5f, 0.5f);
 				icon.draw(poseStack);
 			}

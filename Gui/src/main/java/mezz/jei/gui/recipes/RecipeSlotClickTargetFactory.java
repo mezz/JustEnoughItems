@@ -16,16 +16,16 @@ import net.minecraft.tags.TagKey;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
-final class RecipeSlotClickTargetFactory {
+public final class RecipeSlotClickTargetFactory {
 	private final IRecipeManager recipeManager;
 	private final BooleanSupplier isRecipeCyclingPaused;
 
-	RecipeSlotClickTargetFactory(IRecipeManager recipeManager, BooleanSupplier isRecipeCyclingPaused) {
+	public RecipeSlotClickTargetFactory(IRecipeManager recipeManager, BooleanSupplier isRecipeCyclingPaused) {
 		this.recipeManager = recipeManager;
 		this.isRecipeCyclingPaused = isRecipeCyclingPaused;
 	}
 
-	Optional<IClickableIngredientInternal<?>> create(
+	public Optional<IClickableIngredientInternal<?>> create(
 		IRecipeLayoutDrawable<?> recipeLayout,
 		double mouseX,
 		double mouseY

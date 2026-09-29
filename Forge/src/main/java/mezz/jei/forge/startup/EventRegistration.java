@@ -19,6 +19,7 @@ import net.minecraftforge.event.TickEvent;
 public class EventRegistration {
 	public static void registerEvents(RuntimeEventSubscriptions subscriptions, JeiEventHandlers eventHandlers) {
 		ClientInputHandler clientInputHandler = eventHandlers.clientInputHandler();
+		subscriptions.onClear(clientInputHandler::onGuiChanged);
 		registerClientInputHandler(subscriptions, clientInputHandler);
 
 		GuiEventHandler guiEventHandler = eventHandlers.guiEventHandler();
@@ -26,7 +27,8 @@ public class EventRegistration {
 	}
 
 	private static void registerClientInputHandler(RuntimeEventSubscriptions subscriptions, ClientInputHandler handler) {
-		subscriptions.register(ScreenEvent.Init.Post.class, event -> handler.onInitGui());
+		subscriptions.register(ScreenEvent.Init.Post.class, event -> handler.onGuiChanged());
+		subscriptions.register(ScreenEvent.Closing.class, event -> handler.onGuiChanged());
 
 		subscriptions.register(ScreenEvent.KeyPressed.Pre.class, event -> {
 			Screen screen = event.getScreen();

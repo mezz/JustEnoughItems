@@ -2,20 +2,20 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
-import mezz.jei.common.input.handlers.SameElementInputHandler;
-import mezz.jei.api.gui.inputs.IJeiInputHandler;
+import mezz.jei.common.input.handlers.InputGroup;
+import mezz.jei.common.input.interaction.IInputInteraction;
+import mezz.jei.common.input.interaction.ReleaseInsideBounds;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IClickableIngredientInternal;
-import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.input.handlers.CombinedInputHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.Screen;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,13 +27,13 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class RecipeGuiLayouts implements IUserInputHandler {
+public class RecipeGuiLayouts implements IInputTarget {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	private final RecipeSlotClickTargetFactory clickTargetFactory;
 	private final List<IRecipeLayoutWithButtons<?>> recipeLayoutsWithButtons = new ArrayList<>();
 	@Nullable
-	private IUserInputHandler cachedInputHandler;
+	private IInputTarget cachedInputHandler;
 	private @Nullable ImmutableRect2i viewport;
 
 	RecipeGuiLayouts(RecipeSlotClickTargetFactory clickTargetFactory) {
@@ -61,50 +61,49 @@ public class RecipeGuiLayouts implements IUserInputHandler {
 		}
 	}
 
-	private IUserInputHandler getRecipeInputHandler() {
+	private IInputTarget getRecipeInputHandler() {
 		if (cachedInputHandler == null) {
-			List<IUserInputHandler> handlers = this.recipeLayoutsWithButtons.stream()
+			List<IInputTarget> handlers = this.recipeLayoutsWithButtons.stream()
 				.map(IRecipeLayoutWithButtons::createUserInputHandler)
 				.toList();
-			cachedInputHandler = new CombinedInputHandler("RecipeGuiLayouts", handlers);
+			cachedInputHandler = new InputGroup("RecipeGuiLayouts", handlers);
 		}
 		return cachedInputHandler;
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+	public Optional<IInputInteraction> beginInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 		if (!isInsideViewport(input.getMouseX(), input.getMouseY())) {
 			return Optional.empty();
 		}
-		return getRecipeInputHandler().handleUserInput(screen, input, keyBindings)
-			.map(handler -> new SameElementInputHandler(handler, this::isInsideViewport));
+		return getRecipeInputHandler().beginInput(screen, input, keyBindings)
+			.map(interaction -> new ReleaseInsideBounds(interaction, this::isInsideViewport));
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleMouseScrolled(double mouseX, double mouseY, double scrollY) {
+	public boolean scroll(double mouseX, double mouseY, double scrollX, double scrollY) {
 		if (!isInsideViewport(mouseX, mouseY)) {
-			return Optional.empty();
+			return false;
 		}
-		return getRecipeInputHandler().handleMouseScrolled(mouseX, mouseY, scrollY);
+		return getRecipeInputHandler().scroll(mouseX, mouseY, scrollX, scrollY);
 	}
 
 	@Override
-	public void unfocus() {
-		getRecipeInputHandler().unfocus();
+	public void resetInput() {
+		getRecipeInputHandler().resetInput();
 	}
 
 	public boolean isInsideViewport(double mouseX, double mouseY) {
 		return viewport == null || viewport.contains(mouseX, mouseY);
 	}
 
-	public void tick(@Nullable AbstractContainerMenu parentContainer) {
-		Player player = Minecraft.getInstance().player;
-		safeCallOnRecipeLayouts(recipeLayout -> recipeLayout.tick(parentContainer, player));
+	public void tick(@Nullable AbstractContainerMenu container) {
+		safeCallOnRecipeLayouts(layout -> layout.tick(container, Minecraft.getInstance().player));
 	}
 
 	public void setRecipeLayoutsWithButtons(List<IRecipeLayoutWithButtons<?>> recipeLayoutsWithButtons) {
 		if (cachedInputHandler != null) {
-			cachedInputHandler.unfocus();
+			cachedInputHandler.resetInput();
 		}
 		this.recipeLayoutsWithButtons.clear();
 		this.recipeLayoutsWithButtons.addAll(recipeLayoutsWithButtons);
@@ -133,23 +132,16 @@ public class RecipeGuiLayouts implements IUserInputHandler {
 		return Optional.empty();
 	}
 
-	public boolean mouseDragged(double mouseX, double mouseY, InputConstants.Key input, double dragX, double dragY) {
+	/** Offers movement to public recipe handlers under the pointer, in layout order. */
+	public boolean handleApiMouseDragged(double mouseX, double mouseY, InputConstants.Key button, double dragX, double dragY) {
 		if (!isInsideViewport(mouseX, mouseY)) {
 			return false;
 		}
-		for (IRecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.getRecipeLayout();
-			if (mouseDragged(recipeLayout, mouseX, mouseY, input, dragX, dragY)) {
+		for (IRecipeLayoutWithButtons<?> layout : recipeLayoutsWithButtons) {
+			IRecipeLayoutDrawable<?> recipe = layout.getRecipeLayout();
+			if (recipe.isMouseOver(mouseX, mouseY) && recipe.getInputHandler().handleMouseDragged(mouseX, mouseY, button, dragX, dragY)) {
 				return true;
 			}
-		}
-		return false;
-	}
-
-	private <R> boolean mouseDragged(IRecipeLayoutDrawable<R> recipeLayout, double mouseX, double mouseY, InputConstants.Key input, double dragX, double dragY) {
-		if (recipeLayout.isMouseOver(mouseX, mouseY)) {
-			IJeiInputHandler inputHandler = recipeLayout.getInputHandler();
-			return inputHandler.handleMouseDragged(mouseX, mouseY, input, dragX, dragY);
 		}
 		return false;
 	}
@@ -186,31 +178,19 @@ public class RecipeGuiLayouts implements IUserInputHandler {
 		IRecipeLayoutDrawable<?> hoveredLayout = null;
 
 		Minecraft minecraft = Minecraft.getInstance();
-		float partialTicks = minecraft.getFrameTime();
+		float partialTicks = minecraft.getDeltaFrameTime();
 
-		safeCallOnRecipeLayouts(recipeLayout -> recipeLayout.draw(poseStack, mouseX, mouseY, partialTicks));
+		safeCallOnRecipeLayouts(r -> r.draw(poseStack, mouseX, mouseY, partialTicks));
 
-		for (int i = 0; i < recipeLayoutsWithButtons.size(); i++) {
-			IRecipeLayoutWithButtons<?> recipeLayoutWithButtons = recipeLayoutsWithButtons.get(i);
+		for (IRecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
 			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.getRecipeLayout();
-			try {
-				if (recipeLayout.isMouseOver(mouseX, mouseY)) {
-					hoveredLayout = recipeLayout;
-					break;
-				}
-			} catch (RuntimeException e) {
-				replaceCrashedRecipeLayout(i, recipeLayout, e);
+			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
+				hoveredLayout = recipeLayout;
+				break;
 			}
 		}
-
 		RenderSystem.disableBlend();
 		return Optional.ofNullable(hoveredLayout);
-	}
-
-	public void drawTooltips(PoseStack poseStack, int mouseX, int mouseY) {
-		if (isInsideViewport(mouseX, mouseY)) {
-			safeCallOnRecipeLayouts(r -> r.drawTooltips(poseStack, mouseX, mouseY));
-		}
 	}
 
 	private void safeCallOnRecipeLayouts(Consumer<IRecipeLayoutWithButtons<?>> consumer) {
@@ -220,16 +200,17 @@ public class RecipeGuiLayouts implements IUserInputHandler {
 			try {
 				consumer.accept(recipeLayoutWithButtons);
 			} catch (RuntimeException e) {
-				replaceCrashedRecipeLayout(i, recipeLayout, e);
+				String recipeInfo = ErrorUtil.getRecipeInfo(recipeLayout);
+				LOGGER.error("Recipe crashed:\n{}", recipeInfo, e);
+				recipeLayoutsWithButtons.set(i, new RecipeLayoutWithButtonsErrored<>(recipeLayout));
 			}
 		}
 	}
 
-	private void replaceCrashedRecipeLayout(int index, IRecipeLayoutDrawable<?> recipeLayout, RuntimeException e) {
-		String recipeInfo = ErrorUtil.getRecipeInfo(recipeLayout);
-		LOGGER.error("Recipe crashed:\n{}", recipeInfo, e);
-		recipeLayoutsWithButtons.set(index, new RecipeLayoutWithButtonsErrored<>(recipeLayout));
-		this.cachedInputHandler = null;
+	public void drawTooltips(PoseStack poseStack, int mouseX, int mouseY) {
+		if (isInsideViewport(mouseX, mouseY)) {
+			safeCallOnRecipeLayouts(r -> r.drawTooltips(poseStack, mouseX, mouseY));
+		}
 	}
 
 	public int getWidth() {
