@@ -1,8 +1,6 @@
 package mezz.jei.neoforge.input;
 
-import mezz.jei.common.input.InputType;
-import mezz.jei.common.input.KeyUserInput;
-import mezz.jei.common.input.MouseUserInput;
+import mezz.jei.common.input.InputPhase;
 import mezz.jei.common.input.UserInput;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 
@@ -11,26 +9,15 @@ import java.util.Optional;
 public final class ForgeUserInput {
 	private ForgeUserInput() {}
 
-	public static UserInput fromEvent(ScreenEvent.KeyPressed keyPressedEvent) {
-		// execute the input immediately, on key pressed. do not wait for key released
-		return new KeyUserInput(keyPressedEvent.getKeyEvent(), InputType.IMMEDIATE);
+	public static UserInput fromEvent(ScreenEvent.KeyPressed event) {
+		return UserInput.fromVanilla(event.getKeyEvent());
 	}
 
 	public static Optional<UserInput> fromEvent(ScreenEvent.MouseButtonPressed event) {
-		int button = event.getButton();
-		if (button < 0) {
-			return Optional.empty();
-		}
-		UserInput userInput = new MouseUserInput(event.getMouseButtonEvent(), event.isDoubleClick(), InputType.SIMULATE);
-		return Optional.of(userInput);
+		return UserInput.fromVanilla(event.getMouseButtonEvent(), event.isDoubleClick(), InputPhase.PRESS);
 	}
 
 	public static Optional<UserInput> fromEvent(ScreenEvent.MouseButtonReleased event) {
-		int button = event.getButton();
-		if (button < 0) {
-			return Optional.empty();
-		}
-		UserInput userInput = new MouseUserInput(event.getMouseButtonEvent(), false, InputType.EXECUTE);
-		return Optional.of(userInput);
+		return UserInput.fromVanilla(event.getMouseButtonEvent(), false, InputPhase.RELEASE);
 	}
 }

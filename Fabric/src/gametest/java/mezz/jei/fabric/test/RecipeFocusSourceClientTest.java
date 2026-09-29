@@ -185,11 +185,11 @@ final class RecipeFocusSourceClientTest {
 	static void assertPointerBlocked(Screen screen, double x, double y, boolean blocked) {
 		MouseButtonEvent event = new MouseButtonEvent(x, y, new MouseButtonInfo(InputConstants.MOUSE_BUTTON_LEFT, 0));
 		check(ScreenMouseEvents.allowMouseClick(screen).invoker().allowMouseClick(screen, event) != blocked,
-			"Click propagation must match the visible surface at " + x + ", " + y);
+			"Click propagation must match the visible input area at " + x + ", " + y);
 		check(ScreenMouseEvents.allowMouseRelease(screen).invoker().allowMouseRelease(screen, event) != blocked,
-			"Click release must follow its captured surface");
+			"Click release must follow its captured input area");
 		check(ScreenMouseEvents.allowMouseScroll(screen).invoker().allowMouseScroll(screen, x, y, 0, -1) != blocked,
-			"Scroll propagation must match the visible surface");
+			"Scroll propagation must match the visible input area");
 	}
 
 	private static void assertBlocks(IRecipeFocusSource source, ImmutableRect2i area, boolean expected, String description) {

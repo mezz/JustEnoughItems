@@ -23,17 +23,18 @@ import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.BookmarkTooltipFeature;
 import mezz.jei.common.config.IClientConfig;
+import mezz.jei.common.gui.IngredientsTooltipComponent;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.InputAction;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
-import mezz.jei.common.input.UserInput;
-import mezz.jei.gui.overlay.ingredients.IngredientGridTooltipHelper;
-import mezz.jei.common.gui.IngredientsTooltipComponent;
 import mezz.jei.gui.overlay.bookmarks.PreviewTooltipComponent;
+import mezz.jei.gui.overlay.ingredients.IngredientGridTooltipHelper;
 import mezz.jei.gui.recipes.RecipeCategoryIconUtil;
 import mezz.jei.gui.util.FocusUtil;
 import net.minecraft.ChatFormatting;
@@ -86,7 +87,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 	}
 
 	@Override
-	public boolean handleClick(UserInput input, IInternalKeyMappings keyBindings) {
+	public Optional<InputAction> prepareAction(UserInput input, IInternalKeyMappings keyBindings) {
 		boolean transferOnce = input.is(keyBindings.getTransferRecipeBookmark());
 		boolean transferMax = input.is(keyBindings.getMaxTransferRecipeBookmark());
 		if (transferOnce || transferMax) {
@@ -96,18 +97,16 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 			if (player != null && screen instanceof AbstractContainerScreen<?> containerScreen) {
 				IRecipeLayoutDrawable<R> recipeLayout = getRecipeLayoutDrawable().orElse(null);
 				if (recipeLayout == null) {
-					return false;
+					return Optional.empty();
 				}
 
-				if (input.isSimulate()) {
-					IRecipeTransferError recipeTransferError = recipeTransferService.getTransferRecipeError(containerScreen, recipeLayout, player).orElse(null);
-					return recipeTransferError == null || recipeTransferError.getType().allowsTransfer;
-				} else {
-					return recipeTransferService.transferRecipe(containerScreen, recipeLayout, player, transferMax);
+				IRecipeTransferError error = recipeTransferService.getTransferRecipeError(containerScreen, recipeLayout, player).orElse(null);
+				if (error == null || error.getType().allowsTransfer) {
+					return Optional.of(InputAction.run(() -> recipeTransferService.transferRecipe(containerScreen, recipeLayout, player, transferMax)));
 				}
 			}
 		}
-		return false;
+		return Optional.empty();
 	}
 
 	@Override
