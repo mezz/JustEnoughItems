@@ -4,13 +4,13 @@ import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.runtime.IJeiKeyMapping;
-import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.util.StringUtil;
 
 import java.util.Optional;
 
+/** A keyboard press or mouse button event with its phase and pointer position. */
 public class UserInput implements IJeiUserInput {
 	@FunctionalInterface
 	public interface KeyPressable {
@@ -22,32 +22,35 @@ public class UserInput implements IJeiUserInput {
 		boolean mouseClicked(double mouseX, double mouseY, int mouseButton);
 	}
 
-	public static UserInput fromVanilla(int keyCode, int scanCode, int modifiers, InputType inputType) {
-		InputConstants.Key input = InputConstants.getKey(keyCode, scanCode);
-		return new UserInput(input, MouseUtil.getX(), MouseUtil.getY(), modifiers, inputType);
+	public static UserInput fromVanilla(int keyCode, int scanCode, int modifiers) {
+		return new UserInput(InputConstants.getKey(keyCode, scanCode), MouseUtil.getX(), MouseUtil.getY(), modifiers, InputPhase.PRESS, scanCode);
 	}
 
-	public static Optional<UserInput> fromVanilla(double mouseX, double mouseY, int mouseButton, InputType inputType) {
+	public static Optional<UserInput> fromVanilla(double mouseX, double mouseY, int mouseButton, InputPhase phase) {
 		if (mouseButton < 0) {
 			return Optional.empty();
 		}
-		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(mouseButton);
-		UserInput userInput = new UserInput(input, mouseX, mouseY, 0, inputType);
-		return Optional.of(userInput);
+		return Optional.of(new UserInput(InputConstants.Type.MOUSE.getOrCreate(mouseButton), mouseX, mouseY, 0, phase));
 	}
 
 	private final InputConstants.Key key;
 	private final double mouseX;
 	private final double mouseY;
 	private final int modifiers;
-	private final InputType inputType;
+	private final InputPhase phase;
+	private final int scanCode;
 
-	public UserInput(InputConstants.Key key, double mouseX, double mouseY, int modifiers, InputType inputType) {
+	public UserInput(InputConstants.Key key, double mouseX, double mouseY, int modifiers, InputPhase phase) {
+		this(key, mouseX, mouseY, modifiers, phase, 0);
+	}
+
+	private UserInput(InputConstants.Key key, double mouseX, double mouseY, int modifiers, InputPhase phase, int scanCode) {
+		this.scanCode = scanCode;
 		this.key = key;
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
 		this.modifiers = modifiers;
-		this.inputType = inputType;
+		this.phase = phase;
 	}
 
 	@Override
@@ -63,8 +66,13 @@ public class UserInput implements IJeiUserInput {
 		return mouseY;
 	}
 
-	public InputType getInputType() {
-		return inputType;
+	/** Copies this input with coordinates relative to a parent control. */
+	public UserInput withMousePosition(double mouseX, double mouseY) {
+		return new UserInput(key, mouseX, mouseY, modifiers, phase, scanCode);
+	}
+
+	public InputPhase getPhase() {
+		return phase;
 	}
 
 	@Override
@@ -74,64 +82,49 @@ public class UserInput implements IJeiUserInput {
 
 	@Override
 	public boolean isSimulate() {
-		return inputType == InputType.SIMULATE;
+		return isMouseInput() && phase == InputPhase.PRESS;
 	}
 
-	private boolean isKeyboard() {
-		return this.key.getType() == InputConstants.Type.KEYSYM;
+	public boolean isKeyboardInput() {
+		return key.getType() != InputConstants.Type.MOUSE;
+	}
+
+	public boolean isMouseInput() {
+		return key.getType() == InputConstants.Type.MOUSE;
 	}
 
 	public boolean isAllowedChatCharacter() {
-		return isKeyboard() && StringUtil.isAllowedChatCharacter((char) this.key.getValue());
+		return isKeyboardInput() && StringUtil.isAllowedChatCharacter((char) key.getValue());
 	}
 
 	@Override
 	public boolean is(IJeiKeyMapping keyMapping) {
-		return keyMapping.isActiveAndMatches(this.key);
+		return keyMapping.isActiveAndMatches(key);
 	}
 
 	@Override
 	public boolean is(KeyMapping keyMapping) {
-		IPlatformInputHelper inputHelper = Services.PLATFORM.getInputHelper();
-		return inputHelper.isActiveAndMatches(keyMapping, this.key);
+		return Services.PLATFORM.getInputHelper().isActiveAndMatches(keyMapping, this);
 	}
 
-	public boolean callVanilla(IMouseOverable mouseOverable, MouseClickable mouseClickable) {
-		if (this.key.getType() == InputConstants.Type.MOUSE) {
-			if (mouseOverable.isMouseOver(mouseX, mouseY)) {
-				if (this.isSimulate()) {
-					// we can't easily simulate the click, just say we could handle it
-					return true;
-				}
-				return mouseClickable.mouseClicked(mouseX, mouseY, this.key.getValue());
-			}
+	public boolean ifKeyboardEvent(KeyPressable handler) {
+		if (key.getType() == InputConstants.Type.KEYSYM) {
+			return handler.keyPressed(key.getValue(), scanCode, modifiers);
+		}
+		if (key.getType() == InputConstants.Type.SCANCODE) {
+			return handler.keyPressed(InputConstants.UNKNOWN.getValue(), key.getValue(), modifiers);
 		}
 		return false;
 	}
 
-	public boolean callVanilla(KeyPressable keyPressable) {
-		if (this.key.getType() == InputConstants.Type.KEYSYM) {
-			if (this.isSimulate()) {
-				// key press simulate happens on key up, which we ignore
-				return false;
-			}
-			return keyPressable.keyPressed(this.key.getValue(), 0, this.modifiers);
-		}
-		return false;
-	}
-
-	public boolean callVanilla(IMouseOverable mouseOverable, MouseClickable mouseClickable, KeyPressable keyPressable) {
-		return switch (this.key.getType()) {
-			case KEYSYM -> callVanilla(keyPressable);
-			case MOUSE -> callVanilla(mouseOverable, mouseClickable);
-			default -> false;
-		};
+	public boolean ifMouseEvent(MouseClickable handler) {
+		return isMouseInput() && handler.mouseClicked(mouseX, mouseY, key.getValue());
 	}
 
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
-			.add("inputType", inputType)
+			.add("phase", phase)
 			.add("key", KeyNameUtil.getKeyDisplayName(key).getString())
 			.add("modifiers", modifiers)
 			.add("mouse", String.format("%s, %s", mouseX, mouseY))

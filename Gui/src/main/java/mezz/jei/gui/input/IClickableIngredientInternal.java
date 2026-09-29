@@ -28,11 +28,9 @@ public interface IClickableIngredientInternal<T> {
 	ItemStack getCheatItemStack(IIngredientManager ingredientManager);
 
 	/**
-	 * Most GUIs shouldn't allow JEI to click to set the focus,
-	 * because it would conflict with their normal behavior.
-	 *
-	 * JEI's recipe GUI has clickable slots that do allow click to focus,
-	 * in order to let players navigate recipes.
+	 * Whether JEI may use Minecraft's normal item controls to open recipes or usages for this ingredient.
+	 * For example, a player left-clicking an inventory slot should pick up its stack.
+	 * Left-clicking an ingredient in JEI's recipe display can instead show that ingredient's recipes.
 	 */
 	boolean canClickToFocus();
 

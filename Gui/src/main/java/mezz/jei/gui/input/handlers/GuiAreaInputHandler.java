@@ -1,21 +1,21 @@
 package mezz.jei.gui.input.handlers;
 
-import mezz.jei.common.input.handlers.SameElementInputHandler;
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
+import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
-import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.platform.IPlatformScreenHelper;
-import mezz.jei.common.platform.Services;
+import mezz.jei.common.input.interaction.IInputInteraction;
+import mezz.jei.common.input.interaction.InputAction;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 import java.util.Optional;
 
-public class GuiAreaInputHandler implements IUserInputHandler {
+public class GuiAreaInputHandler implements IInputTarget {
 	private final IFocusFactory focusFactory;
 	private final IScreenHelper screenHelper;
 	private final IRecipesGui recipesGui;
@@ -27,28 +27,27 @@ public class GuiAreaInputHandler implements IUserInputHandler {
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+	public Optional<IInputInteraction> beginInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 		if (input.is(keyBindings.getLeftClick())) {
 			if (screen instanceof AbstractContainerScreen<?> guiContainer) {
 				if (!guiContainer.getMenu().getCarried().isEmpty()) {
 					return Optional.empty();
 				}
 
-				IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-				final int guiLeft = screenHelper.getGuiLeft(guiContainer);
-				final int guiTop = screenHelper.getGuiTop(guiContainer);
+				IGuiProperties guiProperties = screenHelper.getGuiProperties(screen).orElse(null);
+				if (guiProperties == null) {
+					return Optional.empty();
+				}
+				final int guiLeft = guiProperties.guiLeft();
+				final int guiTop = guiProperties.guiTop();
 				final double guiMouseX = input.getMouseX() - guiLeft;
 				final double guiMouseY = input.getMouseY() - guiTop;
 				return this.screenHelper.getGuiClickableArea(guiContainer, guiMouseX, guiMouseY)
 					.findFirst()
 					.map(clickableArea -> {
-						if (!input.isSimulate()) {
-							clickableArea.onClick(focusFactory, recipesGui);
-						}
-
 						ImmutableRect2i screenArea = new ImmutableRect2i(clickableArea.getArea())
 							.addOffset(guiLeft, guiTop);
-						return new SameElementInputHandler(this, screenArea::contains);
+						return InputAction.run(() -> clickableArea.onClick(focusFactory, recipesGui)).within(screenArea::contains);
 					});
 			}
 		}

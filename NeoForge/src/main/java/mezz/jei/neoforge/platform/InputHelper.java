@@ -1,6 +1,6 @@
 package mezz.jei.neoforge.platform;
 
-import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.keys.IJeiKeyMappingCategoryBuilder;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.neoforge.input.ForgeJeiKeyMappingCategoryBuilder;
@@ -12,8 +12,8 @@ import net.neoforged.neoforge.common.extensions.TooltipFlagExtension;
 
 public class InputHelper implements IPlatformInputHelper {
 	@Override
-	public boolean isActiveAndMatches(KeyMapping keyMapping, InputConstants.Key key) {
-		return keyMapping.isActiveAndMatches(key);
+	public boolean isActiveAndMatches(KeyMapping keyMapping, UserInput input) {
+		return keyMapping.isActiveAndMatches(input.getKey());
 	}
 
 	@Override

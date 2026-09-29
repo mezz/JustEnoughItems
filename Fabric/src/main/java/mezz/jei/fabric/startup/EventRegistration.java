@@ -1,14 +1,14 @@
 package mezz.jei.fabric.startup;
 
 import mezz.jei.common.Internal;
+import mezz.jei.common.input.InputPhase;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.fabric.events.JeiCharTypedEvents;
 import mezz.jei.fabric.events.JeiScreenEvents;
 import mezz.jei.fabric.input.KeyboardHandlerExtension;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
-import mezz.jei.common.input.InputType;
 import mezz.jei.gui.input.PinnedTooltipManager;
-import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.startup.JeiEventHandlers;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
@@ -27,6 +27,7 @@ public class EventRegistration {
 	private boolean registered;
 
 	public void setEventHandlers(JeiEventHandlers eventHandlers) {
+		clear();
 		clientInputHandler = eventHandlers.clientInputHandler();
 		guiEventHandler = eventHandlers.guiEventHandler();
 		if (!registered) {
@@ -55,6 +56,11 @@ public class EventRegistration {
 		ScreenMouseEvents.allowMouseRelease(screen).register(this::allowMouseRelease);
 		ScreenMouseEvents.allowMouseScroll(screen).register(this::allowMouseScroll);
 		ScreenEvents.afterTick(screen).register(this::afterTick);
+		ScreenEvents.remove(screen).register(removed -> {
+			if (clientInputHandler != null) {
+				clientInputHandler.onGuiChanged();
+			}
+		});
 		ScreenEvents.beforeRender(screen).register(this::beforeRender);
 	}
 
@@ -72,7 +78,7 @@ public class EventRegistration {
 		if (clientInputHandler == null) {
 			return true;
 		}
-		return UserInput.fromVanilla(mouseX, mouseY, button, InputType.SIMULATE)
+		return UserInput.fromVanilla(mouseX, mouseY, button, InputPhase.PRESS)
 			.map(input -> !clientInputHandler.onGuiMouseClicked(screen, input))
 			.orElse(true);
 	}
@@ -81,7 +87,7 @@ public class EventRegistration {
 		if (clientInputHandler == null) {
 			return true;
 		}
-		return UserInput.fromVanilla(mouseX, mouseY, button, InputType.EXECUTE)
+		return UserInput.fromVanilla(mouseX, mouseY, button, InputPhase.RELEASE)
 			.map(input -> !clientInputHandler.onGuiMouseReleased(screen, input))
 			.orElse(true);
 	}
@@ -92,7 +98,7 @@ public class EventRegistration {
 			return true;
 		}
 		boolean hadKeyboardFocus = hasJeiKeyboardFocus();
-		UserInput userInput = UserInput.fromVanilla(key, scancode, modifiers, InputType.IMMEDIATE);
+		UserInput userInput = UserInput.fromVanilla(key, scancode, modifiers);
 		boolean consumed = clientInputHandler.onKeyboardKeyPressedPre(screen, userInput);
 		boolean acquiredKeyboardFocus = !hadKeyboardFocus && hasJeiKeyboardFocus();
 		getKeyboardHandlerExtension().jei$setConsumeNextCharTyped(consumed && acquiredKeyboardFocus);
@@ -101,7 +107,7 @@ public class EventRegistration {
 
 	private boolean allowMouseScroll(Screen screen, double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
 		if (clientInputHandler == null) {
-			return false;
+			return true;
 		}
 		return !clientInputHandler.onGuiMouseScroll(mouseX, mouseY, horizontalAmount, verticalAmount);
 	}
@@ -128,7 +134,7 @@ public class EventRegistration {
 
 	private void afterInit(Minecraft client, Screen screen, int scaledWidth, int scaledHeight) {
 		if (clientInputHandler != null) {
-			clientInputHandler.onInitGui();
+			clientInputHandler.onGuiChanged();
 		}
 		if (guiEventHandler != null) {
 			guiEventHandler.onGuiInit(screen);
@@ -149,6 +155,9 @@ public class EventRegistration {
 	}
 
 	public void clear() {
+		if (clientInputHandler != null) {
+			clientInputHandler.onGuiChanged();
+		}
 		this.clientInputHandler = null;
 		this.guiEventHandler = null;
 		getKeyboardHandlerExtension().jei$setConsumeNextCharTyped(false);

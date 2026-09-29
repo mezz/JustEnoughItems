@@ -6,15 +6,17 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.IMouseOverable;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.ConsumedInput;
+import mezz.jei.common.input.interaction.IInputInteraction;
+import mezz.jei.common.input.interaction.InputAction;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.input.IClickableIngredientInternal;
-import mezz.jei.common.input.IMouseOverable;
-import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.input.UserInput;
-import mezz.jei.common.input.handlers.SameElementInputHandler;
 import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
 import mezz.jei.gui.recipes.PinnedTooltipRenderer;
 import mezz.jei.gui.recipes.RecipeSlotClickTargetFactory;
@@ -29,7 +31,7 @@ import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
-final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable {
+final class BookmarkPreviewTooltip implements IInputTarget, IMouseOverable {
 	private static final InputConstants.Key LEFT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_LEFT);
 	private static final InputConstants.Key RIGHT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_RIGHT);
 
@@ -41,7 +43,7 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 	private final RecipeSlotClickTargetFactory clickTargetFactory;
 	private final PinnedTooltipRenderer tooltipRenderer;
 	private final IconButton transferButton;
-	private final IUserInputHandler transferButtonInputHandler;
+	private final IInputTarget transferButtonInputHandler;
 
 	BookmarkPreviewTooltip(
 		BookmarkPreviewTooltipController controller,
@@ -133,7 +135,7 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(
+	public Optional<IInputInteraction> beginInput(
 		Screen screen,
 		UserInput input,
 		IInternalKeyMappings keyBindings
@@ -142,7 +144,7 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 			return Optional.empty();
 		}
 
-		Optional<IUserInputHandler> transferButtonHandler = transferButtonInputHandler.handleUserInput(
+		Optional<IInputInteraction> transferButtonHandler = transferButtonInputHandler.beginInput(
 			screen,
 			input,
 			keyBindings
@@ -165,30 +167,30 @@ final class BookmarkPreviewTooltip implements IUserInputHandler, IMouseOverable 
 
 		if (this.drawable.getSlotUnderMouse(mouseX, mouseY).isEmpty()) {
 			// keep clicks on the tooltip itself from reaching the screen behind it
-			return Optional.of(this);
+			return Optional.of(ConsumedInput.INSTANCE);
 		}
 
 		IClickableIngredientInternal<?> ingredient = getClickableIngredientUnderMouse(mouseX, mouseY)
 			.orElse(null);
 		if (ingredient == null) {
-			return Optional.of(this);
+			return Optional.of(ConsumedInput.INSTANCE);
 		}
-		if (!input.isSimulate()) {
-			List<RecipeIngredientRole> roles;
-			if (leftClick) {
-				roles = List.of(RecipeIngredientRole.OUTPUT);
-			} else {
-				roles = List.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.CATALYST);
-			}
-			IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
-			FocusUtil focusUtil = new FocusUtil(
-				jeiRuntime.getJeiHelpers().getFocusFactory(),
-				Internal.getClientConfigs().getClientConfig(),
-				jeiRuntime.getIngredientManager()
-			);
-			ingredient.show(jeiRuntime.getRecipesGui(), focusUtil, roles);
-			this.controller.hide();
-		}
-		return Optional.of(new SameElementInputHandler(this, ingredient::isMouseOver));
+		return Optional.of(new InputAction(release -> {
+				List<RecipeIngredientRole> roles;
+				if (leftClick) {
+					roles = List.of(RecipeIngredientRole.OUTPUT);
+				} else {
+					roles = List.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.CATALYST);
+				}
+				IJeiRuntime jeiRuntime = Internal.getJeiRuntime();
+				FocusUtil focusUtil = new FocusUtil(
+					jeiRuntime.getJeiHelpers().getFocusFactory(),
+					Internal.getClientConfigs().getClientConfig(),
+					jeiRuntime.getIngredientManager()
+				);
+				ingredient.show(jeiRuntime.getRecipesGui(), focusUtil, roles);
+				this.controller.hide();
+			})
+			.within(ingredient::isMouseOver));
 	}
 }

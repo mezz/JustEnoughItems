@@ -1,16 +1,17 @@
 package mezz.jei.gui.overlay.bookmarks;
 
 import mezz.jei.common.Internal;
+import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.IInputInteraction;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
-import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.gui.input.IPinnedTooltipHolder;
 import mezz.jei.gui.input.IRecipeFocusSource;
-import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.gui.input.InputArea;
 import mezz.jei.gui.input.PinnedTooltipManager;
-import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,6 +30,13 @@ public class BookmarkPreviewTooltipController implements IGuiInputLayer, IPinned
 	public BookmarkPreviewTooltipController(BookmarkOverlay bookmarkOverlay, RecipeTransferService recipeTransferService) {
 		this.bookmarkOverlay = bookmarkOverlay;
 		this.recipeTransferService = recipeTransferService;
+	}
+
+	InputArea createInputArea() {
+		return InputArea.builder("Bookmark tooltip", this)
+			.blockUnhandledMouseInput()
+			.controls(this)
+			.build();
 	}
 
 	public boolean isVisible() {
@@ -126,7 +134,7 @@ public class BookmarkPreviewTooltipController implements IGuiInputLayer, IPinned
 	}
 
 	@Override
-	public Optional<IUserInputHandler> handleUserInput(
+	public Optional<IInputInteraction> beginInput(
 		Screen screen,
 		UserInput input,
 		IInternalKeyMappings keyBindings
@@ -135,6 +143,6 @@ public class BookmarkPreviewTooltipController implements IGuiInputLayer, IPinned
 		if (activeTooltip == null) {
 			return Optional.empty();
 		}
-		return activeTooltip.handleUserInput(screen, input, keyBindings);
+		return activeTooltip.beginInput(screen, input, keyBindings);
 	}
 }
