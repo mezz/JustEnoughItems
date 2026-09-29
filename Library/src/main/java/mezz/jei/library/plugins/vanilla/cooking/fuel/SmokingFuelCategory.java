@@ -12,8 +12,7 @@ public class SmokingFuelCategory extends AbstractFuelCategory {
 			textures,
 			RecipeTypes.SMOKING_FUEL,
 			Component.translatable("gui.jei.category.smoking_fuel"),
-			guiHelper.createDrawableItemLike(Items.SMOKER),
-			2
+			guiHelper.createDrawableItemLike(Items.SMOKER)
 		);
 	}
 }

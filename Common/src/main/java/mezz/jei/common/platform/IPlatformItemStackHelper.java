@@ -16,7 +16,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IPlatformItemStackHelper {
-	int getBurnTime(ItemStack itemStack, RecipeType<?> recipeType);
+	FuelProperties getFuelProperties(ItemStack itemStack, RecipeType<?> recipeType);
+
+	record FuelProperties(int burnTime, float speedMultiplier) {
+		public static final FuelProperties EMPTY = new FuelProperties(0, 1);
+	}
 
 	Optional<String> getCreatorModId(ItemStack stack);
 

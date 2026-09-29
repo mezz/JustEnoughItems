@@ -3,6 +3,7 @@ package mezz.jei.neoforge.tests.plugins.vanilla;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.vanilla.IJeiFuelingRecipe;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.RegistryUtil;
@@ -11,6 +12,7 @@ import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeMaker;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeTransferInfo;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceSmeltingCategory;
+import mezz.jei.library.plugins.vanilla.cooking.fuel.FuelRecipeMaker;
 import mezz.jei.library.util.IngredientSupplierHelper;
 import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
 import mezz.jei.neoforge.tests.lib.TestGuiHelper;
@@ -58,8 +60,8 @@ public final class FurnaceRecipeGameTests {
 
 		RegistryUtil.setRegistryProvider(null);
 		try {
-			helper.assertEquals(1600, itemStackHelper.getBurnTime(coal, RecipeType.SMELTING), "Normal furnace coal burn time");
-			helper.assertEquals(800, itemStackHelper.getBurnTime(coal, RecipeType.BLASTING), "Blast furnace coal burn time");
+			helper.assertEquals(1600, itemStackHelper.getFuelProperties(coal, RecipeType.SMELTING).burnTime(), "Normal furnace coal burn time");
+			helper.assertEquals(800, itemStackHelper.getFuelProperties(coal, RecipeType.BLASTING).burnTime(), "Blast furnace coal burn time");
 
 			CookingFuel coalFuel = Objects.requireNonNull(coal.get(DataComponents.COOKING_FUEL));
 			ItemStack registryBackedFuel = coal.copy();
@@ -72,11 +74,24 @@ public final class FurnaceRecipeGameTests {
 			);
 			helper.assertEquals(
 				1,
-				itemStackHelper.getBurnTime(registryBackedFuel, RecipeType.SMELTING),
+				itemStackHelper.getFuelProperties(registryBackedFuel, RecipeType.SMELTING).burnTime(),
 				"Registry-backed custom burn time"
 			);
 		} finally {
 			RegistryUtil.setRegistryProvider(helper.getRegistries());
+		}
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Fuel recipes show the same smelt count in every vanilla furnace type.")
+	public static void fuelRecipesAccountForFurnaceSpeed(JeiGameTestHelper helper) {
+		RegistryUtil.setRegistryProvider(helper.getRegistries());
+		var ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(List.of(new ItemStack(Items.COAL)));
+		for (RecipeType<?> recipeType : List.of(RecipeType.SMELTING, RecipeType.BLASTING, RecipeType.SMOKING)) {
+			IJeiFuelingRecipe recipe = FuelRecipeMaker.getFuelRecipes(ingredientManager, recipeType).getFirst();
+			helper.assertEquals(8f, recipe.getSmeltCount(), "Coal smelt count in " + recipeType);
 		}
 		helper.succeed();
 	}

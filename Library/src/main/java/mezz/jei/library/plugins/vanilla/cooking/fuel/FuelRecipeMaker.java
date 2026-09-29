@@ -18,9 +18,9 @@ public final class FuelRecipeMaker {
 		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
 		return ingredientManager.getAllItemStacks().stream()
 			.<IJeiFuelingRecipe>mapMulti((stack, consumer) -> {
-				int burnTime = itemStackHelper.getBurnTime(stack, recipeType);
-				if (burnTime > 0) {
-					consumer.accept(new FuelingRecipe(List.of(stack), burnTime));
+				var fuel = itemStackHelper.getFuelProperties(stack, recipeType);
+				if (fuel.burnTime() > 0) {
+					consumer.accept(new FuelingRecipe(List.of(stack), fuel.burnTime(), fuel.speedMultiplier()));
 				}
 			})
 			.sorted(Comparator.comparingInt(IJeiFuelingRecipe::getBurnTime))

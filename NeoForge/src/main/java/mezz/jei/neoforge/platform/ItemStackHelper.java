@@ -28,6 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.providers.number.floats.ResolvableFloat;
 import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.common.loot.NeoForgeLootContextParams;
@@ -45,14 +46,19 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	@Override
-	public int getBurnTime(ItemStack itemStack, RecipeType<?> recipeType) {
+	public FuelProperties getFuelProperties(ItemStack itemStack, RecipeType<?> recipeType) {
 		try {
 			LootContext context = createFuelContext(itemStack, recipeType);
-			return ResolvableInt.getFromItem(itemStack, DataComponents.COOKING_FUEL, CookingFuel::burnTime, context, 0);
+			int burnTime = ResolvableInt.getFromItem(itemStack, DataComponents.COOKING_FUEL, CookingFuel::burnTime, context, 0);
+			if (burnTime <= 0) {
+				return FuelProperties.EMPTY;
+			}
+			float speedMultiplier = ResolvableFloat.getFromItem(itemStack, DataComponents.COOKING_FUEL, CookingFuel::speedMultiplier, context, 1);
+			return new FuelProperties(burnTime, speedMultiplier);
 		} catch (RuntimeException | LinkageError e) {
 			String itemStackInfo = ErrorUtil.getItemStackInfo(itemStack);
 			LOGGER.error("Failed to check if item is fuel {}.", itemStackInfo, e);
-			return 0;
+			return FuelProperties.EMPTY;
 		}
 	}
 

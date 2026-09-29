@@ -12,8 +12,7 @@ public class BlastingFuelCategory extends AbstractFuelCategory {
 			textures,
 			RecipeTypes.BLASTING_FUEL,
 			Component.translatable("gui.jei.category.blasting_fuel"),
-			guiHelper.createDrawableItemLike(Items.BLAST_FURNACE),
-			2
+			guiHelper.createDrawableItemLike(Items.BLAST_FURNACE)
 		);
 	}
 }

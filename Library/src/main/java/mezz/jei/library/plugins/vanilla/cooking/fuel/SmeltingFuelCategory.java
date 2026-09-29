@@ -12,8 +12,7 @@ public class SmeltingFuelCategory extends AbstractFuelCategory {
 			textures,
 			RecipeTypes.SMELTING_FUEL,
 			Component.translatable("gui.jei.category.smelting_fuel"),
-			guiHelper.createDrawableItemLike(Items.FURNACE),
-			1
+			guiHelper.createDrawableItemLike(Items.FURNACE)
 		);
 	}
 }

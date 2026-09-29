@@ -23,8 +23,22 @@ public interface IJeiFuelingRecipe {
 	List<ItemStack> getInputs();
 
 	/**
-	 * @return the fuel's burn time in ticks. Always greater than 0.
+	 * @return the fuel's burn time in ticks for this furnace type. Always greater than 0.
 	 */
 	@Nonnegative
 	int getBurnTime();
+
+	/**
+	 * @return the number of items this fuel can cook, including partial items.
+	 * Uses a standard 200-tick recipe and accounts for the fuel's cooking speed
+	 * in this furnace type. Recipes with different cooking times may yield a different count.
+	 *
+	 * @implSpec The default assumes normal cooking speed for compatibility with older implementations.
+	 *
+	 * @since 31.8.0
+	 */
+	@Nonnegative
+	default float getSmeltCount() {
+		return getBurnTime() / 200f;
+	}
 }
