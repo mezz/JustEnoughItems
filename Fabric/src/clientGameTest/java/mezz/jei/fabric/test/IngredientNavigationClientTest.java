@@ -7,8 +7,9 @@ import mezz.jei.common.gui.elements.Scrollbar;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ReflectionUtil;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
+import mezz.jei.gui.overlay.ingredients.IIngredientListOverlayContents;
 import mezz.jei.gui.overlay.ingredients.IngredientGrid;
-import mezz.jei.gui.overlay.ingredients.IngredientGridScrollbar;
+import mezz.jei.gui.elements.ScrollbarWidget;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import net.mezzdev.config.api.value.IConfigValue;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -99,7 +100,7 @@ final class IngredientNavigationClientTest {
 	private static void assertNavigation(InventoryScreen inventory, IngredientGridNavigationMode mode, boolean expectedVisible, String operation) {
 		ClientTestUtil.runOnClient(client -> {
 			NavigationState state = getNavigationState(mode);
-			if (expectedVisible != (state.ingredientCount() > state.capacity()) || state.capacity() == 0) {
+			if (expectedVisible != (state.ingredientCount() > state.capacity()) || (state.ingredientCount() > 0 && state.capacity() == 0)) {
 				throw new AssertionError("Unexpected ingredient count for " + operation + ": " + state);
 			}
 		});
@@ -123,14 +124,14 @@ final class IngredientNavigationClientTest {
 
 	private static NavigationState getNavigationState(IngredientGridNavigationMode mode) {
 		ReflectionUtil reflection = new ReflectionUtil();
-		IngredientGridWithNavigation contents = reflection.getFieldWithClass(
-			Internal.getJeiRuntime().getIngredientListOverlay(), IngredientGridWithNavigation.class)
+		IngredientGridWithNavigation contents = (IngredientGridWithNavigation) reflection.getFieldWithClass(
+			Internal.getJeiRuntime().getIngredientListOverlay(), IIngredientListOverlayContents.class)
 			.findFirst().orElseThrow();
 		IngredientGrid grid = reflection.getFieldWithClass(contents, IngredientGrid.class).findFirst().orElseThrow();
 		IIngredientGridSource source = reflection.getFieldWithClass(contents, IIngredientGridSource.class).findFirst().orElseThrow();
 		ImmutableRect2i area;
 		if (mode.usesScrollbar()) {
-			IngredientGridScrollbar navigation = reflection.getFieldWithClass(contents, IngredientGridScrollbar.class).findFirst().orElseThrow();
+			ScrollbarWidget navigation = reflection.getFieldWithClass(contents, ScrollbarWidget.class).findFirst().orElseThrow();
 			area = reflection.getFieldWithClass(navigation, Scrollbar.class).findFirst().orElseThrow().getArea();
 		} else {
 			area = contents.getNextPageButtonArea();

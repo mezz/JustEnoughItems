@@ -1,15 +1,17 @@
 package mezz.jei.gui;
 
+import mezz.jei.api.gui.buttons.IButtonState;
+import mezz.jei.api.gui.buttons.IIconButtonController;
+import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.JeiGuiColors.GuiColor;
-import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.common.input.IInputTarget;
+import mezz.jei.common.input.handlers.InputGroup;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
-import mezz.jei.gui.elements.GuiIconButton;
+import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.input.IPaged;
-import mezz.jei.common.input.IUserInputHandler;
-import mezz.jei.common.input.handlers.CombinedInputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -17,17 +19,48 @@ import net.minecraft.client.renderer.RenderType;
 
 public class PageNavigation {
 	private final IPaged paged;
-	private final GuiIconButton nextButton;
-	private final GuiIconButton backButton;
+	private final IconButton nextButton;
+	private final IconButton backButton;
 	private final boolean hideOnSinglePage;
 	private String pageNumDisplayString = "1/1";
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 
 	public PageNavigation(IPaged paged, boolean hideOnSinglePage) {
 		this.paged = paged;
-		Textures textures = Internal.getTextures();
-		this.nextButton = new GuiIconButton(textures.getArrowNext(), b -> paged.nextPage());
-		this.backButton = new GuiIconButton(textures.getArrowPrevious(), b -> paged.previousPage());
+		this.nextButton = new IconButton(new IIconButtonController() {
+			@Override
+			public boolean onPress(IJeiUserInput b) {
+				return b.isSimulate() || paged.nextPage();
+			}
+
+			@Override
+			public void initState(IButtonState state) {
+				state.setIcon(Internal.getTextures().getArrowNext());
+				updateState(state);
+			}
+
+			@Override
+			public void updateState(IButtonState state) {
+				state.setActive(paged.getPageCount() > 1);
+			}
+		});
+		this.backButton = new IconButton(new IIconButtonController() {
+			@Override
+			public boolean onPress(IJeiUserInput b) {
+				return b.isSimulate() || paged.previousPage();
+			}
+
+			@Override
+			public void initState(IButtonState state) {
+				state.setIcon(Internal.getTextures().getArrowPrevious());
+				updateState(state);
+			}
+
+			@Override
+			public void updateState(IButtonState state) {
+				state.setActive(paged.getPageCount() > 1);
+			}
+		});
 		this.hideOnSinglePage = hideOnSinglePage;
 	}
 
@@ -57,8 +90,9 @@ public class PageNavigation {
 		int pageNum = this.paged.getPageNumber();
 		int pageCount = this.paged.getPageCount();
 		this.pageNumDisplayString = String.format("%d/%d", pageNum + 1, pageCount);
-		this.nextButton.active = pageCount > 1;
-		this.backButton.active = pageCount > 1;
+
+		this.nextButton.tick();
+		this.backButton.tick();
 	}
 
 	public void draw(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
@@ -78,8 +112,8 @@ public class PageNavigation {
 			if (centerArea.width() <= availableWidth) {
 				guiGraphics.drawString(font, pageNumDisplayString, centerArea.getX(), centerArea.getY(), JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_TEXT));
 			}
-			nextButton.render(guiGraphics, mouseX, mouseY, partialTicks);
-			backButton.render(guiGraphics, mouseX, mouseY, partialTicks);
+			nextButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
+			backButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 	}
 
@@ -96,8 +130,8 @@ public class PageNavigation {
 		return backButton.getArea();
 	}
 
-	public IUserInputHandler createInputHandler() {
-		return new CombinedInputHandler(
+	public IInputTarget createInputHandler() {
+		return new InputGroup(
 			"PageNavigation",
 			this.nextButton.createInputHandler(),
 			this.backButton.createInputHandler()

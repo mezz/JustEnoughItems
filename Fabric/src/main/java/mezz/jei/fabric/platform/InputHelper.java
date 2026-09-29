@@ -1,6 +1,6 @@
 package mezz.jei.fabric.platform;
 
-import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.keys.IJeiKeyMappingCategoryBuilder;
 import mezz.jei.common.platform.IPlatformInputHelper;
 import mezz.jei.fabric.input.FabricJeiKeyMappingCategoryBuilder;
@@ -8,14 +8,12 @@ import net.minecraft.client.KeyMapping;
 
 public class InputHelper implements IPlatformInputHelper {
 	@Override
-	public boolean isActiveAndMatches(KeyMapping keyMapping, InputConstants.Key key) {
+	public boolean isActiveAndMatches(KeyMapping keyMapping, UserInput input) {
 		if (keyMapping.isUnbound()) {
 			return false;
 		}
-		if (key.getType().equals(InputConstants.Type.MOUSE)) {
-			return keyMapping.matchesMouse(key.getValue());
-		}
-		return keyMapping.matches(key.getValue(), 0);
+		return input.ifKeyboardEvent((keyCode, scanCode, modifiers) -> keyMapping.matches(keyCode, scanCode)) ||
+			input.ifMouseEvent((mouseX, mouseY, mouseButton) -> keyMapping.matchesMouse(mouseButton));
 	}
 
 	@Override

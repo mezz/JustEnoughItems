@@ -7,10 +7,10 @@ import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.gui.widgets.IButtonWidget;
 import mezz.jei.common.Internal;
-import mezz.jei.common.input.IUserInputHandler;
 import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.IInputInteraction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -160,7 +160,7 @@ public abstract class AbstractRecipeButtonWidget<THIS extends IButtonWidget<THIS
 	}
 
 	@Override
-	public final Optional<IUserInputHandler> beginInput(Screen screen, UserInput input, IInternalKeyMappings keys) {
+	public final Optional<IInputInteraction> beginInput(Screen screen, UserInput input, IInternalKeyMappings keys) {
 		if (!input.isSimulate() || !acceptsInput(input.getMouseX(), input.getMouseY(), input)) {
 			return Optional.empty();
 		}
@@ -174,21 +174,20 @@ public abstract class AbstractRecipeButtonWidget<THIS extends IButtonWidget<THIS
 		pendingClick = null;
 	}
 
-	private final class ButtonPress implements IUserInputHandler {
+	private final class ButtonPress implements IInputInteraction {
 		@Override
-		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keys) {
+		public void complete(UserInput input) {
 			if (pendingClick != this) {
-				return Optional.of(this);
+				return;
 			}
 			pendingClick = null;
 			if (acceptsInput(input.getMouseX(), input.getMouseY(), input)) {
 				activate(input);
 			}
-			return Optional.of(this);
 		}
 
 		@Override
-		public void unfocus() {
+		public void cancel() {
 			if (pendingClick == this) {
 				pendingClick = null;
 			}

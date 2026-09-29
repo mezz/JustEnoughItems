@@ -74,6 +74,8 @@ final class FabricClientTestContext {
 		void setCursorPos(double x, double y) {
 			ClientTestUtil.runOnClient(client -> {
 				long window = client.getWindow().getWindow();
+				// Native mouse movement is ignored when the test window loses desktop focus.
+				client.setWindowActive(true);
 				GLFW.glfwSetCursorPos(window, x, y);
 				((MouseHandlerAccessor) client.mouseHandler).jei$invokeOnMove(window, x, y);
 			});

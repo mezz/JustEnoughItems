@@ -1,150 +1,95 @@
 package mezz.jei.gui.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.util.ReflectionUtil;
-import mezz.jei.gui.input.handlers.ChatLinkInputHandler;
-import mezz.jei.gui.input.handlers.DragRouter;
-import mezz.jei.common.input.handlers.UserInputRouter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 
-import java.util.List;
-
+/** Connects Minecraft's input callbacks to JEI's input controller. */
 public class ClientInputHandler {
-	private final List<ICharTypedHandler> charTypedHandlers;
-	private final ChatLinkInputHandler chatLinkInputHandler;
-	private final UserInputRouter inputRouter;
-	private final DragRouter dragRouter;
+	private final GuiInputController controller;
 	private final IInternalKeyMappings keybindings;
-	private final IScreenHelper screenHelper;
 	private final ReflectionUtil reflectionUtil = new ReflectionUtil();
 
-	public ClientInputHandler(
-		List<ICharTypedHandler> charTypedHandlers,
-		ChatLinkInputHandler chatLinkInputHandler,
-		UserInputRouter inputRouter,
-		DragRouter dragRouter,
-		IInternalKeyMappings keybindings,
-		IScreenHelper screenHelper
-	) {
-		this.charTypedHandlers = charTypedHandlers;
-		this.chatLinkInputHandler = chatLinkInputHandler;
-		this.inputRouter = inputRouter;
-		this.dragRouter = dragRouter;
+	public ClientInputHandler(GuiInputController controller, IInternalKeyMappings keybindings) {
+		this.controller = controller;
 		this.keybindings = keybindings;
-		this.screenHelper = screenHelper;
 	}
 
-	public void onInitGui() {
-		this.chatLinkInputHandler.handleGuiChange();
-		this.inputRouter.handleGuiChange();
-		this.dragRouter.handleGuiChange();
+	public void onGuiChanged() {
+		controller.screenChanged();
 	}
 
 	/**
-	 * When we have keyboard focus, use Pre
+	 * Offers key presses to JEI before the Minecraft screen handles them, when no Minecraft
+	 * text field has keyboard focus. The Focus Search shortcut and chat also get this early check.
+	 *
+	 * <p>For example, when a player uses Focus Search in the creative inventory, JEI can
+	 * select its search field before the creative inventory's search field handles the key.</p>
 	 */
 	public boolean onKeyboardKeyPressedPre(Screen screen, UserInput input) {
-		if (this.chatLinkInputHandler.handleUserInput(screen, input, keybindings)) {
-			return true;
-		}
-
-		// Focus-search explicitly transfers focus, including from the creative inventory's always-focused search box.
-		if (input.is(keybindings.getFocusSearch()) || !isContainerTextFieldFocused(screen)) {
-			if (screenHelper.getGuiProperties(screen).isPresent()) {
-				return this.inputRouter.handleUserInput(screen, input, keybindings);
-			}
+		// Focus Search transfers keyboard focus even when the creative inventory's search field is selected.
+		if (screen instanceof ChatScreen || input.is(keybindings.getFocusSearch()) || !isContainerTextFieldFocused(screen)) {
+			return controller.keyPressed(screen, input);
 		}
 		return false;
 	}
 
 	/**
-	 * Without keyboard focus, use Post
+	 * Offers a key press to JEI after the Minecraft screen has declined it, when a Minecraft
+	 * text field has keyboard focus. This lets that text field handle the key first.
 	 */
 	public boolean onKeyboardKeyPressedPost(Screen screen, UserInput input) {
-		if (isContainerTextFieldFocused(screen)) {
-			if (screenHelper.getGuiProperties(screen).isPresent()) {
-				return this.inputRouter.handleUserInput(screen, input, keybindings);
-			}
+		if (!(screen instanceof ChatScreen) && isContainerTextFieldFocused(screen)) {
+			return controller.keyPressed(screen, input);
 		}
 		return false;
 	}
 
 	/**
-	 * When we have keyboard focus, use Pre
+	 * Offers typed characters to JEI before the Minecraft screen handles them, when no
+	 * Minecraft text field has keyboard focus. JEI inserts them only if its search field
+	 * has keyboard focus.
 	 */
 	public boolean onKeyboardCharTypedPre(Screen screen, char codePoint, int modifiers) {
 		if (!isContainerTextFieldFocused(screen)) {
-			return handleCharTyped(codePoint, modifiers);
+			return controller.charTyped(codePoint, modifiers);
 		}
 		return false;
 	}
 
 	/**
-	 * Without keyboard focus, use Post
+	 * Offers typed characters to JEI after a Minecraft text field has had the first chance
+	 * to handle them. JEI inserts them only if its search field has keyboard focus.
 	 */
 	public void onKeyboardCharTypedPost(Screen screen, char codePoint, int modifiers) {
 		if (isContainerTextFieldFocused(screen)) {
-			handleCharTyped(codePoint, modifiers);
+			controller.charTyped(codePoint, modifiers);
 		}
 	}
 
 	public boolean onGuiMouseClicked(Screen screen, UserInput input) {
-		if (this.chatLinkInputHandler.handleUserInput(screen, input, keybindings)) {
-			return true;
-		}
-
-		if (screenHelper.getGuiProperties(screen).isEmpty()) {
-			return false;
-		}
-
-		if (this.dragRouter.isDragging() && input.is(keybindings.getLeftClick())) {
-			// an extra left click during a drag (i.e. multi-touch) must not cancel it; it ends on release
-			return true;
-		}
-
-		boolean handled = this.inputRouter.handleUserInput(screen, input, keybindings);
-
-		if (Minecraft.getInstance().screen == screen && input.is(keybindings.getLeftClick())) {
-			handled |= this.dragRouter.startDrag(screen, input);
-		}
-		return handled;
+		return controller.mousePressed(screen, input);
 	}
 
 	public boolean onGuiMouseReleased(Screen screen, UserInput input) {
-		if (this.chatLinkInputHandler.handleUserInput(screen, input, keybindings)) {
-			return true;
-		}
-
-		if (screenHelper.getGuiProperties(screen).isEmpty()) {
-			return false;
-		}
-
-		boolean handled = this.inputRouter.handleUserInput(screen, input, keybindings);
-
-		if (input.is(keybindings.getLeftClick())) {
-			handled |= this.dragRouter.completeDrag(screen, input);
-		}
-		return handled;
+		return controller.mouseReleased(screen, input);
 	}
 
-	public boolean onGuiMouseScroll(double mouseX, double mouseY, double scrollDelta) {
-		return this.inputRouter.handleMouseScrolled(mouseX, mouseY, scrollDelta);
+	public boolean onGuiMouseScroll(double mouseX, double mouseY, double scrollDeltaY) {
+		return onGuiMouseScroll(mouseX, mouseY, 0, scrollDeltaY);
+	}
+
+	public boolean onGuiMouseScroll(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+		return controller.mouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
 	}
 
 	public boolean onGuiMouseDragged(Screen screen, double mouseX, double mouseY, int button, double dragX, double dragY) {
 		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(button);
-		return this.inputRouter.handleMouseDragged(mouseX, mouseY, input, dragX, dragY);
-	}
-
-	private boolean handleCharTyped(char codePoint, int modifiers) {
-		return this.charTypedHandlers.stream()
-			.filter(ICharTypedHandler::hasKeyboardFocus)
-			.anyMatch(handler -> handler.onCharTyped(codePoint, modifiers));
+		return controller.mouseDragged(screen, mouseX, mouseY, input, dragX, dragY);
 	}
 
 	private boolean isContainerTextFieldFocused(Screen screen) {

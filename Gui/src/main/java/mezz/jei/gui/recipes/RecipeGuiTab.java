@@ -7,10 +7,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.util.ImmutableRect2i;
 
-public abstract class RecipeGuiTab implements IUserInputHandler {
+public abstract class RecipeGuiTab implements IInputTarget {
 	public static final int TAB_HEIGHT = 24;
 	public static final int TAB_WIDTH = 24;
 
