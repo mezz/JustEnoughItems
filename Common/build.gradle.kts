@@ -98,10 +98,7 @@ dependencies {
     implementation(mezzConfigApiDependency)
     testImplementation(mezzConfigDependency("fabric"))
     implementation(apiSourceSet.output)
-    implementation("org.jetbrains:annotations:26.0.2")
-    implementation("com.google.guava:guava:33.5.0-jre")
-    implementation("it.unimi.dsi:fastutil:8.5.18")
-    implementation("org.apache.logging.log4j:log4j-api:2.25.2")
+    implementation("org.jetbrains:annotations:26.1.0")
     implementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
         isTransitive = false
     }

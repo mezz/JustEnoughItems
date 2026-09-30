@@ -50,7 +50,6 @@ dependencies {
         implementation(project(it))
     }
     testImplementation(mezzConfigGuiApiDependency)
-    testCompileOnly("org.jspecify:jspecify:1.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

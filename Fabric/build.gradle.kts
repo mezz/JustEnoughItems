@@ -194,8 +194,7 @@ dependencies {
     implementation(project(path = ":Common", configuration = "apiClassesElements"))
     add("modApiImplementation", "net.fabricmc:fabric-loader:${fabricLoaderVersion}")
     add("modApiImplementation", "net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
-    add(apiSourceSet.implementationConfigurationName, "org.jetbrains:annotations:26.0.2")
-    add(apiSourceSet.implementationConfigurationName, "org.jspecify:jspecify:1.0.0")
+    add(apiSourceSet.implementationConfigurationName, "org.jetbrains:annotations:26.1.0")
     add(apiSourceSet.implementationConfigurationName, project(path = ":Common", configuration = "apiClassesElements"))
     dependencyProjectPaths.forEach {
         compileOnly(project(it))
