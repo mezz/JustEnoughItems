@@ -18,6 +18,7 @@ val mezzConfigGuiApiDependency = mezzConfigGuiDependency("config-gui-api")
 
 // gradle.properties
 val jUnitVersion = gradleProperty("jUnitVersion")
+val jspecifyVersion = gradleProperty("jspecifyVersion")
 val minecraftVersion = gradleProperty("minecraftVersion")
 val modGroup = gradleProperty("modGroup")
 val modId = gradleProperty("modId")
@@ -47,7 +48,7 @@ dependencies {
         implementation(project(it))
     }
     testImplementation(mezzConfigGuiApiDependency)
-    testCompileOnly("org.jspecify:jspecify:1.0.1")
+    testCompileOnly("org.jspecify:jspecify:${jspecifyVersion}")
     testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

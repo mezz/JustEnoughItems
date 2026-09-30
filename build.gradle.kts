@@ -9,12 +9,12 @@ plugins {
     id("net.fabricmc.fabric-loom-companion") version("1.18.2")
 
     // https://plugins.gradle.org/plugin/net.neoforged.moddev
-    id("net.neoforged.moddev") version("2.0.147") apply(false)
+    id("net.neoforged.moddev") version("2.0.148") apply(false)
 
     id("net.mezzdev.modshade") version("0.7.0") apply(false)
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
-    id("me.modmuss50.mod-publish-plugin") version("2.2.0") apply(false)
+    id("me.modmuss50.mod-publish-plugin") version("2.2.1") apply(false)
 
     id("mezz.jei.api-compatibility")
 }
