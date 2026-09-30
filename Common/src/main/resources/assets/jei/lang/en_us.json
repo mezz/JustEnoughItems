@@ -202,12 +202,6 @@
   "jei.config.client.advanced.editModeEnabled.description": "Turn ingredient hiding mode on or off for the current session. This value is not saved to the configuration file.",
   "jei.config.client.advanced.editModeEnabled.value.true.description": "Allow ingredients to be hidden or unhidden from JEI.",
   "jei.config.client.advanced.editModeEnabled.value.false.description": "Use ingredients normally without hiding or unhiding them.",
-  "jei.configuration.server.enableCheatModeForOp": "Allow Cheat Mode for Operators",
-  "jei.configuration.server.enableCheatModeForOp.tooltip": "Allow players with operator status (/op) to use JEI cheat mode.",
-  "jei.configuration.server.enableCheatModeForCreative": "Allow Cheat Mode in Creative Mode",
-  "jei.configuration.server.enableCheatModeForCreative.tooltip": "Allow players in Creative Mode to use JEI cheat mode.",
-  "jei.configuration.server.enableCheatModeForGive": "Allow Cheat Mode with Give Permission",
-  "jei.configuration.server.enableCheatModeForGive.tooltip": "Allow players who can use the /give command to use JEI cheat mode.",
 
   "jei.config.client.appearance": "Interface",
   "jei.config.client.appearance.description": "Options for JEI layout and screen behavior.",
@@ -660,5 +654,14 @@
   "jei.config.client.recipes.navigationMode.paged": "Paged",
   "jei.config.client.recipes.navigationMode.paged.description": "Use page buttons to move through recipes.",
   "jei.config.client.recipes.navigationMode.scrolling": "Scrolling",
-  "jei.config.client.recipes.navigationMode.scrolling.description": "Use the mouse wheel or scroll bar to move through recipes within the selected category."
+  "jei.config.client.recipes.navigationMode.scrolling.description": "Use the mouse wheel or scroll bar to move through recipes within the selected category.",
+  "jei.config.server": "JEI Server Config",
+  "jei.config.server.permissions": "Server Cheat Permissions",
+  "jei.config.server.permissions.description": "Choose who can use JEI cheat mode on this server.",
+  "jei.config.server.permissions.enableCheatModeForOp": "Allow Cheat Mode for Operators",
+  "jei.config.server.permissions.enableCheatModeForOp.description": "Allow players with operator status (/op) to use JEI cheat mode.",
+  "jei.config.server.permissions.enableCheatModeForCreative": "Allow Cheat Mode in Creative Mode",
+  "jei.config.server.permissions.enableCheatModeForCreative.description": "Allow players in Creative Mode to use JEI cheat mode.",
+  "jei.config.server.permissions.enableCheatModeForGive": "Allow Cheat Mode with Give Permission",
+  "jei.config.server.permissions.enableCheatModeForGive.description": "Allow players who can use the /give command to use JEI cheat mode."
 }
