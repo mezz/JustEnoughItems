@@ -7,7 +7,6 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
-import mezz.jei.common.gui.DarkModeResourcePack;
 import mezz.jei.gui.config.sorting.SortingOrderConfigValues;
 import mezz.jei.gui.util.CheatModeUtil;
 import net.mezzdev.config.api.value.serializer.IConfigValueSerializer;
@@ -190,16 +189,7 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 	}
 
 	private static void configureListsValues(IConfigScreenCategoryBuilder lists, IClientConfig clientConfig) {
-		IConfigValueSerializer<Boolean> serializer = clientConfig.cheatToHotbarUsingHotkeysEnabled().getEditorInfo().getSerializer();
-		lists.addScreenValue(new RuntimeToggleScreenValue(
-			"darkModeEnabled",
-			"jei.config.client.lists.darkModeEnabled",
-			false,
-			DarkModeResourcePack::isEnabled,
-			DarkModeResourcePack::setEnabled,
-			DarkModeResourcePack::addListener,
-			serializer
-		));
+		lists.addValue(clientConfig.darkModeEnabled());
 	}
 
 	private static void configureGridValues(

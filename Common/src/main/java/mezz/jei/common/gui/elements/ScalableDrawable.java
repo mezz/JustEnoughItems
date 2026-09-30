@@ -12,13 +12,17 @@ import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.resources.Identifier;
 
+import java.util.function.Supplier;
+
 public class ScalableDrawable implements IScalableDrawable {
-	private final TextureAtlas textureAtlas;
-	private final Identifier spriteId;
+	private final Supplier<TextureAtlasSprite> spriteSupplier;
 
 	public ScalableDrawable(TextureAtlas textureAtlas, Identifier spriteId) {
-		this.textureAtlas = textureAtlas;
-		this.spriteId = spriteId;
+		this(() -> textureAtlas.getSprite(spriteId));
+	}
+
+	public ScalableDrawable(Supplier<TextureAtlasSprite> spriteSupplier) {
+		this.spriteSupplier = spriteSupplier;
 	}
 
 	public void draw(GuiGraphicsExtractor guiGraphics, ImmutableRect2i area) {
@@ -27,7 +31,7 @@ public class ScalableDrawable implements IScalableDrawable {
 
 	@Override
 	public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset, int width, int height) {
-		TextureAtlasSprite sprite = textureAtlas.getSprite(spriteId);
+		TextureAtlasSprite sprite = spriteSupplier.get();
 		GuiSpriteScaling scaling = getSpriteScaling(sprite);
 
 		switch (scaling) {

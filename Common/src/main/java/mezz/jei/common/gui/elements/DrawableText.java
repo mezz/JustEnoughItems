@@ -5,13 +5,19 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
+import java.util.function.IntSupplier;
+
 public class DrawableText implements IDrawable {
 	private final String text;
 	private final int width;
 	private final int height;
-	private final int color;
+	private final IntSupplier color;
 
 	public DrawableText(String text, int width, int height, int color) {
+		this(text, width, height, () -> color);
+	}
+
+	public DrawableText(String text, int width, int height, IntSupplier color) {
 		this.text = text;
 		this.width = width;
 		this.height = height;
@@ -35,6 +41,6 @@ public class DrawableText implements IDrawable {
 		int textCenterX = xOffset + (width / 2);
 		int textCenterY = yOffset + (height / 2) - 3;
 		int stringCenter = fontRenderer.width(text) / 2;
-		guiGraphics.text(fontRenderer, text, textCenterX - stringCenter, textCenterY, color);
+		guiGraphics.text(fontRenderer, text, textCenterX - stringCenter, textCenterY, color.getAsInt());
 	}
 }

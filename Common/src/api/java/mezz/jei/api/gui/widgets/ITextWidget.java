@@ -8,6 +8,7 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
+import java.util.function.IntSupplier;
 
 /**
  * An interface to allow configuration of a text widget.
@@ -38,6 +39,16 @@ public interface ITextWidget extends IRecipeWidgetBuilder<ITextWidget> {
 	 * @since 19.19.0
 	 */
 	ITextWidget setColor(int color);
+
+	/**
+	 * Set a color that is evaluated each time this widget is drawn.
+	 * Use this when the color can change while the recipe is open.
+	 *
+	 * @since 31.8.0
+	 */
+	default ITextWidget setColor(IntSupplier color) {
+		return setColor(color.getAsInt());
+	}
 
 	/**
 	 * Set the space in between lines of text, in pixels.

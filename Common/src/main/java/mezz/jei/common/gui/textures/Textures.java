@@ -3,6 +3,7 @@ package mezz.jei.common.gui.textures;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
+import mezz.jei.common.gui.JeiTheme;
 import mezz.jei.common.gui.elements.DrawableSprite;
 import mezz.jei.common.gui.elements.HighResolutionDrawable;
 import mezz.jei.common.gui.elements.ScalableDrawable;
@@ -132,12 +133,14 @@ public class Textures {
 
 	private IDrawableStatic createGuiSprite(String name, int width, int height) {
 		Identifier id = createSpriteId(name);
-		return new DrawableSprite(guiAtlas, id, width, height);
+		Identifier darkId = createSpriteId("dark/" + name);
+		return new DrawableSprite(() -> JeiTheme.getSprite(guiAtlas, id, darkId), width, height);
 	}
 
 	private ScalableDrawable createScalableGuiSprite(String name) {
 		Identifier id = createSpriteId(name);
-		return new ScalableDrawable(guiAtlas, id);
+		Identifier darkId = createSpriteId("dark/" + name);
+		return new ScalableDrawable(() -> JeiTheme.getSprite(guiAtlas, id, darkId));
 	}
 
 	public IDrawableStatic getSlot() {

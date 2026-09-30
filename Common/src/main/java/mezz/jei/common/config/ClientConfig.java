@@ -16,6 +16,7 @@ public final class ClientConfig implements IClientConfig {
 	private static IClientConfig instance;
 
 	// appearance
+	private final IConfigValue<Boolean> darkModeEnabled;
 	private final IConfigValue<SearchBarPosition> searchBarPosition;
 	private final IConfigValue<Integer> maxRecipeGuiHeight;
 	private final IConfigValue<Integer> recipeGuiWidth;
@@ -77,6 +78,7 @@ public final class ClientConfig implements IClientConfig {
 
 	public ClientConfig(
 		IConfigCategoryBuilder search,
+		IConfigCategoryBuilder lists,
 		IConfigCategoryBuilder ingredientList,
 		IConfigEditorCategoryBuilder ingredientSorting,
 		IConfigCategoryBuilder bookmarkList,
@@ -89,6 +91,10 @@ public final class ClientConfig implements IClientConfig {
 		boolean isDev
 	) {
 		instance = this;
+
+		darkModeEnabled = lists.addBoolean("darkModeEnabled", false)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
 
 		searchCompletionEnabled = search.addBoolean("searchCompletionEnabled", false)
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
@@ -289,6 +295,11 @@ public final class ClientConfig implements IClientConfig {
 	public static IClientConfig getInstance() {
 		Preconditions.checkNotNull(instance);
 		return instance;
+	}
+
+	@Override
+	public IConfigValue<Boolean> darkModeEnabled() {
+		return darkModeEnabled;
 	}
 
 	@Override

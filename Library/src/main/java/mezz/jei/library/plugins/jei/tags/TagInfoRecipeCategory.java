@@ -20,8 +20,6 @@ import mezz.jei.common.platform.Services;
 import mezz.jei.library.util.ResourceLocationUtil;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Items;
@@ -72,14 +70,15 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends IRecipeTy
 
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 		Component tagName = renderHelper.getName(tag);
-		List<FormattedText> text = List.of(
-			tagName,
-			Component.literal(tag.location().toString())
-				.withStyle(style -> style.withColor(TextColor.fromRgb(JeiGuiColors.getColor(GuiColor.TAG_INFORMATION_IDENTIFIER_TEXT) & 0xFFFFFF)))
-		);
-		builder.addText(text, getWidth(), 20)
+		builder.addText(tagName, getWidth(), 10)
 			.setPosition(0, 0)
-			.setColor(JeiGuiColors.getColor(GuiColor.TAG_INFORMATION_TEXT))
+			.setColor(() -> JeiGuiColors.getColor(GuiColor.TAG_INFORMATION_TEXT))
+			.setLineSpacing(0)
+			.setTextAlignment(VerticalAlignment.CENTER)
+			.setTextAlignment(HorizontalAlignment.CENTER);
+		builder.addText(Component.literal(tag.location().toString()), getWidth(), 10)
+			.setPosition(0, 10)
+			.setColor(() -> JeiGuiColors.getColor(GuiColor.TAG_INFORMATION_IDENTIFIER_TEXT))
 			.setLineSpacing(0)
 			.setTextAlignment(VerticalAlignment.CENTER)
 			.setTextAlignment(HorizontalAlignment.CENTER);

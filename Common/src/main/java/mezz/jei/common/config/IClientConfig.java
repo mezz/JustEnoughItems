@@ -10,6 +10,8 @@ public interface IClientConfig {
 	int defaultRecipeGuiHeight = 350;
 	boolean defaultCenterSearchBar = false;
 
+	IConfigValue<Boolean> darkModeEnabled();
+
 	IConfigValue<SearchBarPosition> searchBarPosition();
 
 	IConfigValue<Integer> maxRecipeGuiHeight();

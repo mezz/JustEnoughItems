@@ -116,12 +116,12 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 				builder.addText(experienceString, getWidth() - 42, 10)
 					.setPosition(20, 0)
 					.setTextAlignment(HorizontalAlignment.CENTER)
-					.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_COOKING_EXPERIENCE_TEXT));
+					.setColor(() -> JeiGuiColors.getColor(GuiColor.RECIPE_COOKING_EXPERIENCE_TEXT));
 			} else {
 				builder.addText(experienceString, getWidth() - 20, 10)
 					.setPosition(0, 0, getWidth(), getHeight(), HorizontalAlignment.RIGHT, VerticalAlignment.TOP)
 					.setTextAlignment(HorizontalAlignment.RIGHT)
-					.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_COOKING_EXPERIENCE_TEXT));
+					.setColor(() -> JeiGuiColors.getColor(GuiColor.RECIPE_COOKING_EXPERIENCE_TEXT));
 			}
 		}
 	}
@@ -138,7 +138,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 				.setPosition(0, 0, getWidth(), getHeight(), HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM)
 				.setTextAlignment(HorizontalAlignment.CENTER)
 				.setTextAlignment(VerticalAlignment.BOTTOM)
-				.setColor(JeiGuiColors.getColor(GuiColor.RECIPE_COOKING_TIME_TEXT));
+				.setColor(() -> JeiGuiColors.getColor(GuiColor.RECIPE_COOKING_TIME_TEXT));
 		}
 	}
 

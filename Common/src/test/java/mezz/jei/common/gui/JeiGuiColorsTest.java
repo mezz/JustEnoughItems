@@ -11,7 +11,11 @@ import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
+import net.mezzdev.config.file.ConfigFileWatcherSettings;
+import net.mezzdev.config.file.ConfigManager;
+import net.mezzdev.config.schema.ConfigSchemaBuilder;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -23,11 +27,63 @@ import java.util.List;
 import java.util.Optional;
 
 public class JeiGuiColorsTest {
+	@BeforeEach
+	public void setupTheme(@TempDir Path tempDir) {
+		var watcher = ConfigFileWatcherSettings.clientDefaults().withEnabled(false);
+		var manager = new ConfigManager("JEI Theme Test", watcher, watcher);
+		var builder = new ConfigSchemaBuilder("jei", tempDir.resolve("theme.ini"), "jei.config.client", manager);
+		var value = builder.addCategory("lists").addBoolean("darkModeEnabled", false).build();
+		builder.build();
+		JeiTheme.setConfigValue(value);
+	}
+
 	@AfterEach
 	public void resetGuiColors() {
+		JeiTheme.setDarkModeEnabled(false);
 		try (CloseableResourceManager resourceManager = new MultiPackResourceManager(PackType.CLIENT_RESOURCES, List.of())) {
 			JeiGuiColors.onResourceManagerReload(resourceManager);
 		}
+	}
+
+	@Test
+	public void switchesLoadedPalettesWithoutReadingResourcesAgain(@TempDir Path tempDir) throws IOException {
+		Path pack = createResourcePack(tempDir, "{\"recipeTextWidgetText\":\"0x112233\",\"pageNavigationText\":\"0x445566\"}");
+		Path darkColors = pack.resolve("assets/jei/gui/dark/colors.json");
+		Files.createDirectories(darkColors.getParent());
+		Files.writeString(darkColors, "{\"recipeTextWidgetText\":\"0xAABBCC\"}");
+		try (CloseableResourceManager resourceManager = createResourceManager(pack)) {
+			JeiGuiColors.onResourceManagerReload(resourceManager);
+		}
+		Files.delete(darkColors);
+		Files.delete(pack.resolve("assets/jei/gui/colors.json"));
+
+		for (boolean dark : List.of(false, true, true, false)) {
+			JeiTheme.setDarkModeEnabled(dark);
+			int expected = 0xFF112233;
+			if (dark) {
+				expected = 0xFFAABBCC;
+			}
+			Assertions.assertEquals(expected, JeiGuiColors.getColor(GuiColor.RECIPE_TEXT_WIDGET_TEXT));
+			Assertions.assertEquals(0xFF445566, JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_TEXT));
+		}
+	}
+
+	@Test
+	public void reloadsBothPalettesWhileDarkModeIsSelected(@TempDir Path tempDir) throws IOException {
+		Path pack = createResourcePack(tempDir, "{\"recipeTextWidgetText\":\"0x112233\"}");
+		Path darkColors = pack.resolve("assets/jei/gui/dark/colors.json");
+		Files.createDirectories(darkColors.getParent());
+		Files.writeString(darkColors, "{\"recipeTextWidgetText\":\"0xAABBCC\"}");
+		JeiTheme.setDarkModeEnabled(true);
+		try (CloseableResourceManager resourceManager = createResourceManager(pack)) {
+			JeiGuiColors.onResourceManagerReload(resourceManager);
+			Assertions.assertEquals(0xFFAABBCC, JeiGuiColors.getColor(GuiColor.RECIPE_TEXT_WIDGET_TEXT));
+			Files.writeString(darkColors, "{\"recipeTextWidgetText\":\"0xDDEEFF\"}");
+			JeiGuiColors.onResourceManagerReload(resourceManager);
+		}
+		Assertions.assertEquals(0xFFDDEEFF, JeiGuiColors.getColor(GuiColor.RECIPE_TEXT_WIDGET_TEXT));
+		JeiTheme.setDarkModeEnabled(false);
+		Assertions.assertEquals(0xFF112233, JeiGuiColors.getColor(GuiColor.RECIPE_TEXT_WIDGET_TEXT));
 	}
 
 	@Test

@@ -2,6 +2,7 @@ package mezz.jei.fabric.test;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
+import mezz.jei.test.client.JeiThemeClientTest;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
@@ -24,6 +25,9 @@ public class JeiFabricSingleplayerClientGameTest implements FabricClientGameTest
 			"without-amecs",
 			getClass().getSimpleName(),
 			() -> {
+				Runnable assertNoThemeReload = context.computeOnClient(JeiThemeClientTest::run);
+				context.waitTicks(5);
+				assertNoThemeReload.run();
 				assertConfigScreenRenders(context, "jei-config-menu");
 				try (TestSingleplayerContext ignored = context.worldBuilder().create()) {
 					JeiFabricClientGameTestAssertions.assertJeiStartedWithSyncedRecipes(context);

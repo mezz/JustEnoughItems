@@ -3,8 +3,7 @@ package mezz.jei.neoforge.tests.client;
 import com.mojang.blaze3d.platform.NativeImage;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.DarkModeResourcePack;
-import mezz.jei.common.gui.JeiGuiColors;
+import mezz.jei.test.client.JeiThemeClientTest;
 import mezz.jei.common.platform.Services;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.minecraft.client.Minecraft;
@@ -16,15 +15,12 @@ import net.minecraft.data.AtlasIds;
 import net.minecraft.locale.Language;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Verifies that NeoForge development runs include JEI's shared client resources and refresh GUI sprites after resource reloads.
@@ -49,10 +45,8 @@ public final class JeiNeoForgeClientResourceTests {
 	private static final Identifier CONFIG_BUTTON_SPRITE = Identifier.fromNamespaceAndPath("jei", "icons/config_button");
 	private static final int CLIENT_TEST_TEXTURE_SIZE = 32;
 	private static final int DEFAULT_TEXTURE_SIZE = 16;
-	private static final int DARK_MODE_RECIPE_TEXT_COLOR = 0xFFD8DADC;
 	private static final int DARK_MODE_MONOCHROME_ICON_COLOR = 0xFFADADAD;
 	private static final String FOCUS_SEARCH_TRANSLATION_KEY = "key.jei.focusSearch";
-	private static final AtomicInteger darkModeResourceReloadCount = new AtomicInteger();
 
 	private JeiNeoForgeClientResourceTests() {
 
@@ -71,22 +65,9 @@ public final class JeiNeoForgeClientResourceTests {
 					RESOURCE_RELOAD_TIMEOUT,
 					() -> "Timed out waiting for JEI's default config-button sprite after disabling the client startup resource pack."
 				);
-				ClientTestUtil.runOnClient(JeiNeoForgeClientResourceTests::registerDarkModeResourceReloadCounter);
-				ClientTestUtil.runOnClient(JeiNeoForgeClientResourceTests::enableDarkModeResourcePack);
-				ClientTestUtil.waitUntil(
-					() -> ClientTestUtil.computeOnClient(JeiNeoForgeClientResourceTests::hasReloadedDarkModeResources),
-					RESOURCE_RELOAD_TIMEOUT,
-					() -> "Timed out waiting for JEI's dark mode resources."
-				);
-				assertDarkModeResourceReloadCount(1, "enabling");
+				Runnable assertNoThemeReload = ClientTestUtil.computeOnClient(JeiThemeClientTest::run);
 				ClientTestUtil.runOnClient(JeiNeoForgeClientResourceTests::assertDarkModeVisualContrast);
-				ClientTestUtil.runOnClient(JeiNeoForgeClientResourceTests::disableDarkModeResourcePack);
-				ClientTestUtil.waitUntil(
-					() -> ClientTestUtil.computeOnClient(JeiNeoForgeClientResourceTests::hasReloadedDefaultResources),
-					RESOURCE_RELOAD_TIMEOUT,
-					() -> "Timed out waiting for JEI's default resources after disabling dark mode."
-				);
-				assertDarkModeResourceReloadCount(2, "disabling");
+				ClientTestUtil.runOnClient(client -> assertNoThemeReload.run());
 				ClientTestUtil.runOnClient(JeiNeoForgeClientResourceTests::assertDefaultTestResourcesAreLoaded);
 			}
 		);
@@ -137,40 +118,9 @@ public final class JeiNeoForgeClientResourceTests {
 			.isPresent();
 	}
 
-	private static void enableDarkModeResourcePack(Minecraft client) {
-		DarkModeResourcePack.setEnabled(true);
-		if (!client.getResourcePackRepository().getSelectedIds().contains(DarkModeResourcePack.NEOFORGE_PACK_ID)) {
-			throw new AssertionError("Expected JEI's dark mode resource pack to be selected.");
-		}
-	}
-
-	@SuppressWarnings("deprecation")
-	private static void registerDarkModeResourceReloadCounter(Minecraft client) {
-		if (!(client.getResourceManager() instanceof ReloadableResourceManager resourceManager)) {
-			throw new AssertionError("Expected Minecraft's client resource manager to be reloadable.");
-		}
-		darkModeResourceReloadCount.set(0);
-		resourceManager.registerReloadListener((ResourceManagerReloadListener) ignored -> darkModeResourceReloadCount.incrementAndGet());
-	}
-
-	private static void assertDarkModeResourceReloadCount(int expected, String action) {
-		int actual = darkModeResourceReloadCount.get();
-		if (actual != expected) {
-			throw new AssertionError("Expected one resource reload when " + action + " dark mode, but found " + actual + ".");
-		}
-	}
-
-	private static boolean hasReloadedDarkModeResources(Minecraft client) {
-		return client.getResourceManager()
-			.getResource(GUI_BACKGROUND_TEXTURE)
-			.filter(resource -> resource.sourcePackId().equals(DarkModeResourcePack.NEOFORGE_PACK_ID))
-			.isPresent() &&
-			JeiGuiColors.getColor(JeiGuiColors.GuiColor.RECIPE_TEXT_WIDGET_TEXT) == DARK_MODE_RECIPE_TEXT_COLOR;
-	}
-
 	private static void assertDarkModeVisualContrast(Minecraft client) {
 		Resource background = client.getResourceManager()
-			.getResource(GUI_BACKGROUND_TEXTURE)
+			.getResource(Identifier.fromNamespaceAndPath("jei", "textures/gui/sprites/dark/gui_background.png"))
 			.orElseThrow(() -> new AssertionError("Expected JEI's dark mode background texture."));
 		assertOpaquePixelsAreNeutral(background);
 
@@ -180,10 +130,10 @@ public final class JeiNeoForgeClientResourceTests {
 	private static void assertDarkModeIcons(Minecraft client, List<Identifier> iconIds, int expectedColor) {
 		for (Identifier iconId : iconIds) {
 			Resource icon = client.getResourceManager()
-				.getResource(iconId)
-				.orElseThrow(() -> new AssertionError("Expected JEI's dark mode resource pack to provide " + iconId));
-			if (!icon.sourcePackId().equals(DarkModeResourcePack.NEOFORGE_PACK_ID)) {
-				throw new AssertionError("Expected " + iconId + " to come from JEI's dark mode resource pack, but it came from " + icon.sourcePackId());
+				.getResource(iconId.withPath(path -> path.replace("sprites/", "sprites/dark/")))
+				.orElseThrow(() -> new AssertionError("Expected JEI's dark theme assets to provide " + iconId));
+			if (!icon.sourcePackId().equals(JEI_MOD_RESOURCE_PACK_ID)) {
+				throw new AssertionError("Expected " + iconId + " to come from JEI's mod resources, but it came from " + icon.sourcePackId());
 			}
 			assertContainsPixelColor(icon, iconId, expectedColor);
 		}
@@ -218,21 +168,6 @@ public final class JeiNeoForgeClientResourceTests {
 			throw new AssertionError("Expected " + textureId + " to contain readable light pixels.");
 		} catch (IOException e) {
 			throw new AssertionError("Failed to read " + textureId, e);
-		}
-	}
-
-	private static boolean hasReloadedDefaultResources(Minecraft client) {
-		return client.getResourceManager()
-			.getResource(GUI_BACKGROUND_TEXTURE)
-			.filter(resource -> resource.sourcePackId().equals(JEI_MOD_RESOURCE_PACK_ID))
-			.isPresent() &&
-			JeiGuiColors.getColor(JeiGuiColors.GuiColor.RECIPE_TEXT_WIDGET_TEXT) == JeiGuiColors.GuiColor.RECIPE_TEXT_WIDGET_TEXT.getDefaultColor();
-	}
-
-	private static void disableDarkModeResourcePack(Minecraft client) {
-		DarkModeResourcePack.setEnabled(false);
-		if (client.getResourcePackRepository().getSelectedIds().contains(DarkModeResourcePack.NEOFORGE_PACK_ID)) {
-			throw new AssertionError("Expected JEI's dark mode resource pack to be deselected.");
 		}
 	}
 

@@ -21,28 +21,39 @@ import java.util.OptionalInt;
 public final class JeiGuiColors {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier COLORS_RESOURCE = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "gui/colors.json");
+	private static final Identifier DARK_COLORS_RESOURCE = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "gui/dark/colors.json");
 	private static final long MAX_COLOR = 0xFFFFFFFFL;
 
-	private static volatile Map<GuiColor, Integer> colors = createDefaultColors();
+	private static volatile Palettes palettes = new Palettes(createDefaultColors(), createDefaultColors());
 
 	private JeiGuiColors() {
 
 	}
 
 	public static void onResourceManagerReload(ResourceManager resourceManager) {
-		Map<GuiColor, Integer> loadedColors = createDefaultColors();
-		for (Resource resource : resourceManager.getResourceStack(COLORS_RESOURCE)) {
+		Map<GuiColor, Integer> light = loadColors(resourceManager, COLORS_RESOURCE, createDefaultColors());
+		Map<GuiColor, Integer> dark = loadColors(resourceManager, DARK_COLORS_RESOURCE, new EnumMap<>(light));
+		palettes = new Palettes(light, dark);
+	}
+
+	private static Map<GuiColor, Integer> loadColors(ResourceManager resourceManager, Identifier resourceId, Map<GuiColor, Integer> loadedColors) {
+		for (Resource resource : resourceManager.getResourceStack(resourceId)) {
 			try (Reader reader = resource.openAsReader()) {
 				JsonElement jsonElement = JsonParser.parseReader(reader);
-				loadColors(jsonElement, loadedColors);
+				loadColors(jsonElement, loadedColors, resourceId);
 			} catch (IOException | RuntimeException e) {
-				LOGGER.error("Failed to load JEI GUI colors from resource: {}", COLORS_RESOURCE, e);
+				LOGGER.error("Failed to load JEI GUI colors from resource: {}", resourceId, e);
 			}
 		}
-		colors = Map.copyOf(loadedColors);
+		return Map.copyOf(loadedColors);
 	}
 
 	public static int getColor(GuiColor color) {
+		Palettes palettes = JeiGuiColors.palettes;
+		Map<GuiColor, Integer> colors = palettes.light();
+		if (JeiTheme.isDarkModeEnabled()) {
+			colors = palettes.dark();
+		}
 		return colors.getOrDefault(color, color.defaultColor);
 	}
 
@@ -54,9 +65,9 @@ public final class JeiGuiColors {
 		return defaults;
 	}
 
-	private static void loadColors(JsonElement jsonElement, Map<GuiColor, Integer> loadedColors) {
+	private static void loadColors(JsonElement jsonElement, Map<GuiColor, Integer> loadedColors, Identifier resourceId) {
 		if (!jsonElement.isJsonObject()) {
-			LOGGER.error("JEI GUI colors resource must be a JSON object: {}", COLORS_RESOURCE);
+			LOGGER.error("JEI GUI colors resource must be a JSON object: {}", resourceId);
 			return;
 		}
 		JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -67,7 +78,7 @@ public final class JeiGuiColors {
 				if (colorValue.isPresent()) {
 					loadedColors.put(color, colorValue.getAsInt());
 				} else {
-					LOGGER.error("Invalid JEI GUI color '{}' in resource '{}': {}", color.key, COLORS_RESOURCE, colorJson);
+					LOGGER.error("Invalid JEI GUI color '{}' in resource '{}': {}", color.key, resourceId, colorJson);
 				}
 			}
 		}
@@ -106,6 +117,8 @@ public final class JeiGuiColors {
 		}
 		return OptionalInt.empty();
 	}
+
+	private record Palettes(Map<GuiColor, Integer> light, Map<GuiColor, Integer> dark) {}
 
 	public enum GuiColor {
 		RECIPE_TEXT_WIDGET_TEXT("recipeTextWidgetText", 0xFF000000),

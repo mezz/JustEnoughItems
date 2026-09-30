@@ -34,7 +34,7 @@ public class RecipeCategoryIconUtil {
 		} else {
 			Component title = recipeCategory.getTitle();
 			String text = title.getString().substring(0, 2);
-			return new DrawableText(text, 16, 16, JeiGuiColors.getColor(GuiColor.RECIPE_CATEGORY_ICON_TEXT));
+			return new DrawableText(text, 16, 16, () -> JeiGuiColors.getColor(GuiColor.RECIPE_CATEGORY_ICON_TEXT));
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package mezz.jei.common.config;
 
 import mezz.jei.api.gui.placement.HorizontalAlignment;
+import mezz.jei.common.gui.JeiTheme;
 import net.mezzdev.config.api.schema.builder.IConfigCategoryBuilder;
 import net.mezzdev.config.api.schema.builder.IConfigEditorCategoryBuilder;
 import net.mezzdev.config.api.schema.builder.IConfigSchemaBuilder;
@@ -50,6 +51,7 @@ public class ClientConfigs implements IClientConfigs {
 
 		this.clientConfig = new ClientConfig(
 			search,
+			lists,
 			ingredientList,
 			ingredientSorting,
 			bookmarkList,
@@ -67,6 +69,7 @@ public class ClientConfigs implements IClientConfigs {
 		this.bookmarkListConfig = bookmarkListConfig;
 		this.recipeCategorySortingConfig = Objects.requireNonNull(recipeCategorySortingConfig);
 		builder.build();
+		JeiTheme.setConfigValue(clientConfig.darkModeEnabled());
 	}
 
 	@Override

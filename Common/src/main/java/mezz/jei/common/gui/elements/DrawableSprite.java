@@ -29,7 +29,7 @@ public class DrawableSprite implements IDrawableStatic {
 		this(spriteSupplier, 0, 0);
 	}
 
-	DrawableSprite(Supplier<TextureAtlasSprite> spriteSupplier, int width, int height) {
+	public DrawableSprite(Supplier<TextureAtlasSprite> spriteSupplier, int width, int height) {
 		if (width < 0 || height < 0 || (width == 0) != (height == 0)) {
 			throw new IllegalArgumentException("DrawableSprite size must be positive, or both dimensions must be 0 to use the sprite size");
 		}

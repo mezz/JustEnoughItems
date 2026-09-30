@@ -193,6 +193,7 @@ dependencies {
 	}
 	"gameTestRuntimeOnly"(mezzConfigDependency("neoforge"))
 	"clientGameTestRuntimeOnly"(mezzConfigDependency("neoforge"))
+	"clientGameTestCompileOnly"(mezzConfigApiDependency)
 	testImplementation(mezzConfigApiDependency)
 	testImplementation(mezzConfigGuiApiDependency)
 	implementation(apiSourceSet.output)

@@ -19,6 +19,8 @@ import net.minecraft.util.FormattedCharSequence;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.function.IntSupplier;
 
 public class TextWidget extends AbstractRecipeWidgetBuilder<ITextWidget> implements ITextWidget {
 	private final List<FormattedText> text;
@@ -27,7 +29,7 @@ public class TextWidget extends AbstractRecipeWidgetBuilder<ITextWidget> impleme
 	private HorizontalAlignment horizontalAlignment;
 	private VerticalAlignment verticalAlignment;
 	private Font font;
-	private @Nullable Integer colorOverride;
+	private IntSupplier color = () -> JeiGuiColors.getColor(GuiColor.RECIPE_TEXT_WIDGET_TEXT);
 	private boolean shadow;
 	private int lineSpacing;
 
@@ -97,8 +99,12 @@ public class TextWidget extends AbstractRecipeWidgetBuilder<ITextWidget> impleme
 
 	@Override
 	public ITextWidget setColor(int color) {
-		this.colorOverride = color;
-		invalidateCachedValues();
+		return setColor(() -> color);
+	}
+
+	@Override
+	public ITextWidget setColor(IntSupplier color) {
+		this.color = Objects.requireNonNull(color);
 		return this;
 	}
 
@@ -142,13 +148,7 @@ public class TextWidget extends AbstractRecipeWidgetBuilder<ITextWidget> impleme
 		final int lineHeight = getLineHeight();
 		List<FormattedText> lines = calculateWrappedText();
 		int yPos = getYPosStart(lineHeight, lines);
-		Integer colorOverride = this.colorOverride;
-		int color;
-		if (colorOverride == null) {
-			color = JeiGuiColors.getColor(GuiColor.RECIPE_TEXT_WIDGET_TEXT);
-		} else {
-			color = colorOverride;
-		}
+		int color = this.color.getAsInt();
 		for (FormattedText line : lines) {
 			FormattedCharSequence charSequence = language.getVisualOrder(line);
 			int xPos = getXPos(charSequence);

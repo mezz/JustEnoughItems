@@ -12,6 +12,7 @@ import mezz.jei.common.config.RecipeGuiNavigationMode;
 import java.util.List;
 
 public class TestClientConfig implements IClientConfig {
+	private final IConfigValue<Boolean> darkModeEnabled = value("darkModeEnabled", false);
 	private final IConfigValue<SearchBarPosition> searchBarPosition = value("searchBarPosition", SearchBarPosition.STANDARD);
 	private final IConfigValue<Integer> maxRecipeGuiHeight = value("maxRecipeGuiHeight", 500);
 	private final IConfigValue<Integer> recipeGuiWidth = value("recipeGuiWidth", minRecipeGuiWidth);
@@ -59,6 +60,11 @@ public class TestClientConfig implements IClientConfig {
 
 	private static <T> IConfigValue<T> value(String name, T value) {
 		return new TestJeiConfigValue<>(name, value);
+	}
+
+	@Override
+	public IConfigValue<Boolean> darkModeEnabled() {
+		return darkModeEnabled;
 	}
 
 	@Override

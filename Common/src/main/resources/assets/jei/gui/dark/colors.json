@@ -1,5 +1,5 @@
 {
-  "_comment": "Accessible text colors for JEI's bundled dark mode resource pack.",
+  "_comment": "Accessible text colors for JEI's dark interface theme.",
   "recipeTextWidgetText": "0xFFD8DADC",
   "recipeScrollBoxText": "0xFFD8DADC",
   "anvilExperienceCostText": "0xFFA9E36E",
