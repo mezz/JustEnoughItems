@@ -1,58 +1,29 @@
 package mezz.jei.forge.config;
 
 import mezz.jei.common.config.IServerConfig;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
+import mezz.jei.forge.events.PermanentEventSubscriptions;
+import net.minecraft.world.level.storage.LevelResource;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
 
-import java.util.function.Supplier;
+import java.nio.file.Path;
+import java.util.List;
 
-public final class ServerConfig implements IServerConfig {
-	private static final String TRANSLATION_KEY_PREFIX = "jei.configuration.server.";
+public final class ServerConfig {
+	private ServerConfig() {}
 
-	// Forge config
-	private final Supplier<Boolean> enableCheatModeForOp;
-	private final Supplier<Boolean> enableCheatModeForCreative;
-	private final Supplier<Boolean> enableCheatModeForGive;
-
-	public static IServerConfig register(ModLoadingContext modLoadingContext) {
-		ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
-		ServerConfig instance = new ServerConfig(builder);
-		ForgeConfigSpec config = builder.build();
-		modLoadingContext.registerConfig(ModConfig.Type.SERVER, config);
-		return instance;
-	}
-
-	private ServerConfig(ForgeConfigSpec.Builder builder) {
-		builder.push("cheat mode");
-		{
-			builder.comment("Enable the cheat mode for players who have an operator status (/op).")
-				.translation(TRANSLATION_KEY_PREFIX + "enableCheatModeForOp");
-			enableCheatModeForOp = builder.define("enableCheatModeForOp", true);
-
-			builder.comment("Enable the cheat mode for players who are in the creative mode.")
-				.translation(TRANSLATION_KEY_PREFIX + "enableCheatModeForCreative");
-			enableCheatModeForCreative = builder.define("enableCheatModeForCreative", true);
-
-			builder.comment("Enable the cheat mode for players who can use the \"/give\" command.")
-				.translation(TRANSLATION_KEY_PREFIX + "enableCheatModeForGive");
-			enableCheatModeForGive = builder.define("enableCheatModeForGive", false);
-		}
-		builder.pop();
-	}
-
-	@Override
-	public boolean isCheatModeEnabledForOp() {
-		return enableCheatModeForOp.get();
-	}
-
-	@Override
-	public boolean isCheatModeEnabledForCreative() {
-		return enableCheatModeForCreative.get();
-	}
-
-	@Override
-	public boolean isCheatModeEnabledForGive() {
-		return enableCheatModeForGive.get();
+	public static IServerConfig register(PermanentEventSubscriptions subscriptions) {
+		var config = mezz.jei.common.config.ServerConfig.register();
+		subscriptions.register(ServerAboutToStartEvent.class, event -> {
+			Path worldConfigDirectory = event.getServer().getWorldPath(LevelResource.ROOT).resolve("serverconfig");
+			config.prepareLegacyMigration(worldConfigDirectory, List.of(
+				worldConfigDirectory.resolve("jei-server.toml"),
+				FMLPaths.GAMEDIR.get().resolve("defaultconfigs").resolve("jei-server.toml")
+			));
+		});
+		subscriptions.register(EventPriority.LOWEST, ServerStartedEvent.class, event -> config.migrateLegacyConfig());
+		return config;
 	}
 }
