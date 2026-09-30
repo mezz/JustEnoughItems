@@ -11,7 +11,7 @@ plugins {
 	id("eclipse")
 	id("java")
 	id("net.neoforged.jarcompatibilitychecker") version("0.1.23")
-	id("me.modmuss50.mod-publish-plugin") version("2.2.0")
+	id("me.modmuss50.mod-publish-plugin") version("2.2.1")
 	id("maven-publish")
 	id("org.jetbrains.gradle.plugin.idea-ext") version "1.4.1"
 	id("se.bjurr.gitchangelog.git-changelog-gradle-plugin") version("3.1.2")
