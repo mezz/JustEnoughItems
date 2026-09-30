@@ -14,19 +14,19 @@ plugins {
     id("fabric-loom") version("1.18.2") apply(false)
 
     // https://projects.neoforged.net/neoforged/moddevgradle
-    id("net.neoforged.moddev") version("2.0.147") apply(false)
+    id("net.neoforged.moddev") version("2.0.148") apply(false)
 
     id("net.mezzdev.modshade") version("0.7.0") apply(false)
 
     // https://plugins.gradle.org/plugin/me.modmuss50.mod-publish-plugin
-    id("me.modmuss50.mod-publish-plugin") version("2.2.0") apply(false)
+    id("me.modmuss50.mod-publish-plugin") version("2.2.1") apply(false)
 
     // https://plugins.gradle.org/plugin/net.minecraftforge.gradle
     id("net.minecraftforge.accesstransformers") version("5.0.3") apply(false)
     id("net.minecraftforge.gradle") version("7.0.40") apply(false)
     id("net.minecraftforge.jarjar") version("0.2.3") apply(false)
 
-    id("net.neoforged.jarcompatibilitychecker") version("0.1.22") apply(false)
+    id("net.neoforged.jarcompatibilitychecker") version("0.1.23") apply(false)
 }
 
 javaFormatting {

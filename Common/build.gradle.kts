@@ -92,24 +92,9 @@ dependencies {
         version = mixinVersion
     )
     implementation(
-        group = "com.google.guava",
-        name = "guava",
-        version = "31.1-jre"
-    )
-    implementation(
         group = "org.jetbrains",
         name = "annotations",
-        version = "23.0.0"
-    )
-    implementation(
-        group = "it.unimi.dsi",
-        name = "fastutil",
-        version = "8.5.6"
-    )
-    implementation(
-        group = "org.apache.logging.log4j",
-        name = "log4j-api",
-        version = "2.17.0"
+        version = "26.1.0"
     )
     implementation("net.mezzdev:deduplicating-runner:$deduplicatingRunnerVersion") {
         isTransitive = false
