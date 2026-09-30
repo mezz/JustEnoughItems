@@ -11,7 +11,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -23,8 +22,7 @@ public class JustEnoughItems {
 		PermanentEventSubscriptions subscriptions = new PermanentEventSubscriptions(eventBus, modEventBus);
 		ServerHelper.register(subscriptions);
 
-		ModLoadingContext modLoadingContext = ModLoadingContext.get();
-		IServerConfig serverConfig = ServerConfig.register(modLoadingContext);
+		IServerConfig serverConfig = ServerConfig.register(subscriptions);
 
 		NetworkHandler networkHandler = new NetworkHandler(Constants.NETWORK_CHANNEL_ID, "1.0.0");
 		JustEnoughItemsCommon jeiCommon = new JustEnoughItemsCommon(networkHandler, serverConfig);

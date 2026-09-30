@@ -17,7 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 public class JustEnoughItems implements ModInitializer {
 	@Override
 	public void onInitialize() {
-		IServerConfig serverConfig = ServerConfig.getInstance();
+		IServerConfig serverConfig = ServerConfig.register();
 		IConnectionToClient connection = new ConnectionToClient();
 		ServerPacketRouter packetRouter = new ServerPacketRouter(connection, serverConfig);
 		ServerNetworkHandler.registerServerPacketHandler(packetRouter);
