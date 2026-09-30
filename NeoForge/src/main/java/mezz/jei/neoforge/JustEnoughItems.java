@@ -10,7 +10,6 @@ import mezz.jei.neoforge.network.NetworkHandler;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
@@ -23,8 +22,7 @@ public class JustEnoughItems {
 		IEventBus eventBus = NeoForge.EVENT_BUS;
 		PermanentEventSubscriptions subscriptions = new PermanentEventSubscriptions(eventBus, modEventBus);
 
-		ModLoadingContext modLoadingContext = ModLoadingContext.get();
-		IServerConfig serverConfig = ServerConfig.register(modLoadingContext);
+		IServerConfig serverConfig = ServerConfig.register(subscriptions);
 
 		NetworkHandler networkHandler = new NetworkHandler("3", serverConfig);
 		networkHandler.registerPacketHandlers(subscriptions);

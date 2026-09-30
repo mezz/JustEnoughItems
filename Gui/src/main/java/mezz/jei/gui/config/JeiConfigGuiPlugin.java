@@ -176,6 +176,7 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 				.addKeyMappings(mappings));
 
 		IConfigScreenCategoryBuilder cheating = screenBuilder.addCategory("cheating");
+		screenBuilder.addCategory("permissions");
 
 		IConfigScreenCategoryBuilder advanced = screenBuilder.addCategory("advanced");
 

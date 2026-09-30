@@ -24,7 +24,7 @@ public class JustEnoughItems implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		IServerConfig serverConfig = ServerConfig.getInstance();
+		IServerConfig serverConfig = ServerConfig.register();
 		IConnectionToClient connection = new ConnectionToClient();
 		ServerNetworkHandler.registerServerPacketHandlers(connection, serverConfig);
 
