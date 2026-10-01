@@ -25,10 +25,6 @@ val modId = gradleProperty("modId")
 val modJavaVersion = gradleProperty("modJavaVersion")
 val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
 val suffixtreeVersion = gradleProperty("suffixtreeVersion")
-val guavaVersion = gradleProperty("guavaVersion")
-val fastutilVersion = gradleProperty("fastutilVersion")
-val log4jVersion = gradleProperty("log4jVersion")
-val jspecifyVersion = gradleProperty("jspecifyVersion")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
 val apiArchivesName = "${modId}-${minecraftVersion}-common-api"
@@ -93,18 +89,14 @@ dependencies {
     add(apiSourceSet.compileOnlyConfigurationName, "net.fabricmc:fabric-loader:${fabricLoaderVersion}")
     add(apiSourceSet.compileOnlyConfigurationName, "com.google.code.findbugs:jsr305:3.0.2")
     add(apiSourceSet.compileOnlyConfigurationName, "org.jetbrains:annotations:26.1.0")
-    add(apiSourceSet.compileOnlyConfigurationName, "org.jspecify:jspecify:${jspecifyVersion}")
     implementation("org.jetbrains:annotations:26.1.0")
-    implementation("com.google.guava:guava:${guavaVersion}")
-    implementation("it.unimi.dsi:fastutil:${fastutilVersion}")
-    implementation("org.apache.logging.log4j:log4j-api:${log4jVersion}")
     implementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
         isTransitive = false
     }
     implementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
         isTransitive = false
     }
-    testFixturesCompileOnly("org.jspecify:jspecify:${jspecifyVersion}")
+    testFixturesCompileOnly("org.jspecify:jspecify:1.0.1")
     testImplementation("org.junit.jupiter:junit-jupiter:${jUnitVersion}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

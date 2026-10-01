@@ -41,7 +41,6 @@ val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForge
 val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
 val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
 val suffixtreeVersion = gradleProperty("suffixtreeVersion")
-val jspecifyVersion = gradleProperty("jspecifyVersion")
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken = optionalGradleProperty("modrinthToken")
@@ -161,7 +160,6 @@ dependencies {
     add(apiSourceSet.implementationConfigurationName, "net.fabricmc:fabric-loader:${fabricLoaderVersion}")
     add(apiSourceSet.implementationConfigurationName, "net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
     add(apiSourceSet.implementationConfigurationName, "org.jetbrains:annotations:26.1.0")
-    add(apiSourceSet.implementationConfigurationName, "org.jspecify:jspecify:${jspecifyVersion}")
     add(apiSourceSet.implementationConfigurationName, project(path = ":Common", configuration = "apiClassesElements"))
     dependencyProjectPaths.forEach {
         implementation(project(it))
