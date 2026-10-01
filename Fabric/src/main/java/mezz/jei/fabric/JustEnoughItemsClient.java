@@ -2,7 +2,6 @@ package mezz.jei.fabric;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.DarkModeResourcePack;
 import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.util.MinecraftLocaleSupplier;
 import mezz.jei.common.util.Translator;
@@ -17,11 +16,8 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.recipe.v1.sync.ClientRecipeSynchronizedEvent;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
-import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.core.RegistrySetBuilder;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -32,7 +28,6 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		Translator.setLocaleSupplier(new MinecraftLocaleSupplier());
-		registerDarkModeResourcePack();
 
 		JeiConfigData configData = JeiConfigRegistration.register();
 
@@ -65,21 +60,6 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 			});
 			ClientLifecycleEvents.CLIENT_STOPPING.register(event -> Internal.onClientStopping());
 		});
-	}
-
-	private static void registerDarkModeResourcePack() {
-		var modContainer = FabricLoader.getInstance()
-			.getModContainer(ModIds.JEI_ID)
-			.orElseThrow();
-		boolean registered = ResourceLoader.registerBuiltinPack(
-			Identifier.fromNamespaceAndPath(ModIds.JEI_ID, DarkModeResourcePack.RESOURCE_PACK_NAME),
-			modContainer,
-			Component.translatable("jei.resourcePack.darkMode"),
-			PackActivationType.NORMAL
-		);
-		if (!registered) {
-			throw new IllegalStateException("Failed to register JEI's dark mode resource pack");
-		}
 	}
 
 	public ResourceManagerReloadListener createReloadListener() {
