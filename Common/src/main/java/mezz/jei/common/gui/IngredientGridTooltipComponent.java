@@ -1,6 +1,7 @@
 package mezz.jei.common.gui;
 
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.Scrollbar;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -13,16 +14,18 @@ import java.util.List;
 
 public abstract class IngredientGridTooltipComponent<T> implements ClientTooltipComponent, TooltipComponent {
 	private static final int CELL_SIZE = 18;
+	private static final int BACKGROUND_PADDING = 3;
 	private static final int GRID_PADDING = 1;
 	private static final int BOTTOM_PADDING = 2;
 	private static final int SCROLLBAR_GAP = 2;
 	private static final int MAX_COLUMNS = 10;
 	private static final int MAX_ROWS = 4;
 	protected static final int MAX_VISIBLE_INGREDIENTS = MAX_COLUMNS * MAX_ROWS;
-	private static final int MAX_WIDTH = (2 * GRID_PADDING) + (MAX_COLUMNS * CELL_SIZE) + SCROLLBAR_GAP + Scrollbar.WIDTH;
+	private static final int MAX_WIDTH = (2 * BACKGROUND_PADDING) + (2 * GRID_PADDING) + (MAX_COLUMNS * CELL_SIZE) + SCROLLBAR_GAP + Scrollbar.WIDTH;
 
 	private final Scrollbar scrollbar;
 	private final IDrawableStatic slotBackground;
+	private final IScalableDrawable background;
 	private final List<T> ingredients;
 	private final int columns;
 	private final int visibleRows;
@@ -48,11 +51,12 @@ public abstract class IngredientGridTooltipComponent<T> implements ClientTooltip
 		if (this.maxRowOffset > 0) {
 			scrollbarSpace = SCROLLBAR_GAP + Scrollbar.WIDTH;
 		}
-		this.width = (2 * GRID_PADDING) + (this.columns * CELL_SIZE) + scrollbarSpace;
-		this.height = (2 * GRID_PADDING) + (this.visibleRows * CELL_SIZE) + BOTTOM_PADDING;
+		this.width = (2 * BACKGROUND_PADDING) + (2 * GRID_PADDING) + (this.columns * CELL_SIZE) + scrollbarSpace;
+		this.height = (2 * BACKGROUND_PADDING) + (2 * GRID_PADDING) + (this.visibleRows * CELL_SIZE) + BOTTOM_PADDING;
 
 		this.scrollbar = new Scrollbar(ImmutableRect2i.EMPTY);
 		this.slotBackground = Internal.getTextures().getSlot();
+		this.background = Internal.getTextures().getRecipePreviewBackground();
 	}
 
 	static int getMaximumWidth() {
@@ -71,9 +75,18 @@ public abstract class IngredientGridTooltipComponent<T> implements ClientTooltip
 
 	@Override
 	public void extractImage(Font font, int x, int y, int w, int h, GuiGraphicsExtractor guiGraphics) {
-		this.area = new ImmutableRect2i(x, y, this.width, this.height - BOTTOM_PADDING);
-		int gridX = x + GRID_PADDING;
-		int gridY = y + GRID_PADDING;
+		this.background.draw(guiGraphics, x, y, this.width, this.height);
+
+		int contentX = x + BACKGROUND_PADDING;
+		int contentY = y + BACKGROUND_PADDING;
+		this.area = new ImmutableRect2i(
+			contentX,
+			contentY,
+			this.width - (2 * BACKGROUND_PADDING),
+			this.height - (2 * BACKGROUND_PADDING) - BOTTOM_PADDING
+		);
+		int gridX = contentX + GRID_PADDING;
+		int gridY = contentY + GRID_PADDING;
 
 		int scrollPixelOffset = getScrollPixelOffset();
 		int firstRow = scrollPixelOffset / CELL_SIZE;
