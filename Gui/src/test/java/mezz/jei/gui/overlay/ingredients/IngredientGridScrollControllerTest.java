@@ -190,6 +190,11 @@ public class IngredientGridScrollControllerTest {
 		}
 
 		@Override
+		public IConfigValue<Boolean> shrinkToFit() {
+			return new TestConfigValue<>(false);
+		}
+
+		@Override
 		public IConfigValue<Integer> maxColumns() {
 			return new TestConfigValue<>(0);
 		}

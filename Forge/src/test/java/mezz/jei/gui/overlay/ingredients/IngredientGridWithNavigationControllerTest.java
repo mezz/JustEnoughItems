@@ -700,8 +700,13 @@ public class IngredientGridWithNavigationControllerTest {
 			return value("navigationVisibility", NavigationVisibility.ENABLED);
 		}
 
-		private static <T> IConfigValue<T> value(String name, T defaultValue) {
-			return new TestJeiConfigValue<>(name, defaultValue);
+		@Override
+		public IConfigValue<Boolean> shrinkToFit() {
+			return value("shrinkToFit", true);
+		}
+
+		private static <T> IConfigValue<T> value(String name, T value) {
+			return new TestJeiConfigValue<>(name, value);
 		}
 	}
 
