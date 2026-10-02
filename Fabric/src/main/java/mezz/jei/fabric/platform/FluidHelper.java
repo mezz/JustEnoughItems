@@ -155,6 +155,9 @@ public class FluidHelper implements IPlatformFluidHelperInternal<IJeiFluidIngred
 
 	@Override
 	public IJeiFluidIngredient copyWithAmount(IJeiFluidIngredient ingredient, long amount) {
+		if (isEmpty(ingredient)) {
+			return new JeiFluidIngredient(Fluids.EMPTY, 0);
+		}
 		CompoundTag tag = ingredient.getTag().orElse(null);
 		return new JeiFluidIngredient(ingredient.getFluid(), amount, tag);
 	}

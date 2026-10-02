@@ -343,6 +343,7 @@ val cleanClientGameTestResults = tasks.register<Delete>("cleanClientGameTestResu
     delete(
         layout.buildDirectory.dir("test-results/fabric-client-config-screen"),
         layout.buildDirectory.dir("test-results/fabric-client-recipe-sync"),
+        layout.buildDirectory.dir("test-results/fabric-client-fluid-ingredients"),
         layout.buildDirectory.dir("test-results/fabric-client-creative-inventory"),
         layout.buildDirectory.dir("test-results/fabric-client-key-mapping"),
         layout.buildDirectory.dir("test-results/fabric-client-gametest")
