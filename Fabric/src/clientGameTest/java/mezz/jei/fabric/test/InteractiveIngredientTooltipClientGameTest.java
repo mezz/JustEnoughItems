@@ -5,13 +5,10 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.ReflectionUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.input.PinnedTooltipManager;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
-import mezz.jei.gui.overlay.bookmarks.BookmarkDrag;
-import mezz.jei.gui.overlay.bookmarks.BookmarkDragManager;
 import mezz.jei.gui.recipes.RecipeGuiLayouts;
 import mezz.jei.gui.recipes.RecipesGui;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -87,7 +84,7 @@ public class InteractiveIngredientTooltipClientGameTest {
 				.getIngredientUnderMouse(ingredientPoint.x(), ingredientPoint.y()).findFirst().orElseThrow().getTypedIngredient());
 			move(context, ingredientPoint);
 			context.getInput().pressKey(InputConstants.KEY_A);
-			boolean ingredientBookmarked = context.computeOnClient(client -> bookmarks().contains(ingredient));
+			boolean ingredientBookmarked = context.computeOnClient(client -> Internal.getJeiRuntime().getBookmarkManager().contains(ingredient));
 			context.takeScreenshot("jei-interactive-tooltip-bookmark");
 			boolean obscuredBookmarkIgnored = checkObscuredBookmark(context, source);
 
@@ -131,6 +128,7 @@ public class InteractiveIngredientTooltipClientGameTest {
 		context.getInput().releaseKey(InputConstants.KEY_LSHIFT);
 		move(context, source);
 		context.runOnClient(client -> {
+			var runtime = Internal.getJeiRuntime();
 			var slot = layouts().getRecipeLayoutUnderMouse(source.x(), source.y()).orElseThrow()
 				.getRecipeLayout().getSlotUnderMouse(source.x(), source.y()).orElseThrow().slot();
 			// A wide tooltip reaches across the bookmark list, as long translated item names can do.
@@ -142,8 +140,8 @@ public class InteractiveIngredientTooltipClientGameTest {
 				})
 				.toList();
 			slot.createDisplayOverrides().addItemStacks(candidates);
-			Internal.getJeiRuntime().getIngredientManager().getAllTypedIngredients(VanillaTypes.ITEM_STACK)
-				.stream().limit(80).forEach(bookmarks()::add);
+			runtime.getIngredientManager().getAllTypedIngredients(VanillaTypes.ITEM_STACK)
+				.stream().limit(80).forEach(runtime.getBookmarkManager()::add);
 		});
 		context.getInput().holdKey(InputConstants.KEY_LSHIFT);
 		move(context, new Point(source.x() + 1, source.y() + 1));
@@ -162,9 +160,7 @@ public class InteractiveIngredientTooltipClientGameTest {
 		move(context, new Point(covered.x() + 8, covered.y() + 8));
 		context.runOnClient(client -> {
 			var overlay = (BookmarkOverlay) Internal.getJeiRuntime().getBookmarkOverlay();
-			var dragManager = new ReflectionUtil().getFieldWithClass(overlay, BookmarkDragManager.class)
-				.findFirst().orElseThrow();
-			if (new ReflectionUtil().getFieldWithClass(dragManager, BookmarkDrag.class).findAny().isPresent()) {
+			if (overlay.hasBookmarkDrag()) {
 				throw new AssertionError("A blank pinned tooltip must not start dragging the bookmark underneath it");
 			}
 		});
@@ -185,11 +181,11 @@ public class InteractiveIngredientTooltipClientGameTest {
 	}
 
 	private static RecipeGuiLayouts layouts() {
-		return new ReflectionUtil().getFieldWithClass(gui(), RecipeGuiLayouts.class).findFirst().orElseThrow();
+		return gui().getRecipeLayouts();
 	}
 
 	private static BookmarkList bookmarks() {
-		return (BookmarkList) Internal.getJeiRuntime().getBookmarkManager();
+		return ((BookmarkOverlay) Internal.getJeiRuntime().getBookmarkOverlay()).getBookmarkList();
 	}
 
 	private static void replaceBookmarks(List<IBookmark> replacements) {
