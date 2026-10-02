@@ -115,6 +115,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		Internal.registerRuntimeListenerRemoval(gridConfig.horizontalAlignment().addListener(v -> markLayoutDirty()));
 		Internal.registerRuntimeListenerRemoval(gridConfig.verticalAlignment().addListener(v -> markLayoutDirty()));
 		Internal.registerRuntimeListenerRemoval(gridConfig.navigationVisibility().addListener(v -> markLayoutDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.shrinkToFit().addListener(v -> markLayoutDirty()));
 	}
 
 	private void markLayoutDirty() {
