@@ -77,8 +77,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.worldConfig = worldConfig;
 
 		this.searchField = new GuiTextFieldFilter(contents::isEmpty, clientConfig, searchCompletionProvider);
-		this.searchInputLayer = new SearchInputLayer(this.searchField, this::isListDisplayed);
-		this.configButton = new IconButton(new ConfigButtonController(this::isListDisplayed, worldConfig, keyBindings));
+		this.searchInputLayer = new SearchInputLayer(this.searchField, this::isSearchDisplayed);
+		this.configButton = new IconButton(new ConfigButtonController(this::isSearchDisplayed, worldConfig, keyBindings));
 		this.controller = IngredientListOverlayController.create(
 			this.guiPropertiesCache,
 			clientConfig,
@@ -109,6 +109,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	public boolean isListDisplayed() {
 		updateScreenPropertiesIfDirty();
 		return this.controller.isListDisplayed();
+	}
+
+	private boolean isSearchDisplayed() {
+		updateScreenPropertiesIfDirty();
+		return this.controller.isSearchDisplayed();
 	}
 
 	private void markScreenPropertiesDirty() {
@@ -154,14 +159,14 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		updateScreenPropertiesIfDirty();
 		boolean contentsDisplayed = isListDisplayed();
 		List<IngredientGridBackgroundRenderer.Panel> backgroundPanels = new ArrayList<>(2);
-		if (contentsDisplayed) {
+		if (isSearchDisplayed()) {
 			this.searchField.drawBackground(poseStack);
-			if (this.contents.isBackgroundEnabled()) {
-				backgroundPanels.add(new IngredientGridBackgroundRenderer.Panel(
-					this.contents.getBackgroundArea(),
-					this.contents.getSlotBackgroundArea()
-				));
-			}
+		}
+		if (contentsDisplayed && this.contents.isBackgroundEnabled()) {
+			backgroundPanels.add(new IngredientGridBackgroundRenderer.Panel(
+				this.contents.getBackgroundArea(),
+				this.contents.getSlotBackgroundArea()
+			));
 		}
 		boolean lookupHistoryDisplayed = this.controller.hasValidScreen() &&
 			worldConfig.isOverlayEnabled() &&
@@ -182,6 +187,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	public void drawForeground(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
 		if (isListDisplayed()) {
 			this.contents.drawForeground(minecraft, poseStack, mouseX, mouseY, partialTicks);
+		}
+		if (isSearchDisplayed()) {
 			this.searchField.drawForeground(poseStack, mouseX, mouseY, partialTicks);
 		}
 		if (this.controller.hasValidScreen()) {
@@ -245,10 +252,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		if (this.configButton.isMouseOver(mouseX, mouseY)) {
 			return true;
 		}
-		if (isListDisplayed()) {
-			if (this.contents.isMouseOver(mouseX, mouseY) || this.searchField.isMouseOver(mouseX, mouseY)) {
-				return true;
-			}
+		if (isListDisplayed() && this.contents.isMouseOver(mouseX, mouseY)) {
+			return true;
+		}
+		if (isSearchDisplayed() && this.searchField.isMouseOver(mouseX, mouseY)) {
+			return true;
 		}
 		return worldConfig.isOverlayEnabled() && this.lookupHistoryOverlay.isMouseOver(mouseX, mouseY);
 	}
@@ -351,7 +359,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 	@Override
 	public boolean hasKeyboardFocus() {
-		return isListDisplayed() && this.searchField.isFocused();
+		return isSearchDisplayed() && this.searchField.isFocused();
 	}
 
 	@Override
