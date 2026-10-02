@@ -3,11 +3,11 @@ package mezz.jei.gui.input.handlers;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.runtime.IBookmarkManager;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.common.input.IInternalKeyMappings;
-import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.gui.overlay.elements.IngredientElement;
 import mezz.jei.gui.util.FocusUtil;
@@ -22,7 +22,7 @@ public class ChatLinkInputHandler {
 	private final IRecipesGui recipesGui;
 	private final FocusUtil focusUtil;
 	private final IScreenHelper screenHelper;
-	private final BookmarkList bookmarkList;
+	private final IBookmarkManager bookmarkManager;
 
 	@Nullable
 	private PendingInput pendingInput;
@@ -31,12 +31,12 @@ public class ChatLinkInputHandler {
 		IRecipesGui recipesGui,
 		FocusUtil focusUtil,
 		IScreenHelper screenHelper,
-		BookmarkList bookmarkList
+		IBookmarkManager bookmarkManager
 	) {
 		this.recipesGui = recipesGui;
 		this.focusUtil = focusUtil;
 		this.screenHelper = screenHelper;
-		this.bookmarkList = bookmarkList;
+		this.bookmarkManager = bookmarkManager;
 	}
 
 	public boolean handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
@@ -143,7 +143,7 @@ public class ChatLinkInputHandler {
 		switch (action) {
 			case SHOW_RECIPE -> show(typedIngredient, List.of(RecipeIngredientRole.OUTPUT));
 			case SHOW_USES -> show(typedIngredient, List.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.CRAFTING_STATION));
-			case BOOKMARK -> bookmarkList.add(typedIngredient);
+			case BOOKMARK -> bookmarkManager.add(typedIngredient);
 		}
 	}
 

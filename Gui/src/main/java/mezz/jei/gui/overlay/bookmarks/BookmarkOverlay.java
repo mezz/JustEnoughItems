@@ -124,6 +124,10 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		addGridConfigListeners(bookmarkListConfig);
 	}
 
+	public BookmarkList getBookmarkList() {
+		return bookmarkList;
+	}
+
 	public boolean isListDisplayed() {
 		updateScreenPropertiesIfDirty();
 		return toggleState.isBookmarkOverlayEnabled() &&
@@ -489,6 +493,11 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 			}
 			return NullInputHandler.INSTANCE;
 		});
+	}
+
+	/** Returns whether a bookmark drag is pending or active. */
+	public boolean hasBookmarkDrag() {
+		return bookmarkDragManager.hasDrag();
 	}
 
 	public IDragHandler createDragHandler() {
