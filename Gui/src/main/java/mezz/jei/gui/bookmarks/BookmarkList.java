@@ -7,7 +7,6 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.types.IRecipeType;
-import mezz.jei.api.runtime.IBookmarkManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.config.IClientConfig;
@@ -25,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class BookmarkList implements IIngredientGridSource, IBookmarkManager {
+public class BookmarkList implements IIngredientGridSource {
 	private final List<IBookmark> bookmarksList = new LinkedList<>();
 	private final Set<IBookmark> bookmarksSet = new HashSet<>();
 
@@ -103,11 +102,6 @@ public class BookmarkList implements IIngredientGridSource, IBookmarkManager {
 		return this.bookmarksSet.contains(value);
 	}
 
-	@Override
-	public boolean contains(ITypedIngredient<?> ingredient) {
-		return contains(bookmarkFactory.create(ingredient));
-	}
-
 	public <T> boolean onElementBookmarked(IElement<T> element, UserInput input, BookmarkOverlay bookmarkOverlay) {
 		if (bookmarkOverlay.isBookmarkElementUnderMouse(element, input.getMouseX(), input.getMouseY())) {
 			return element.getBookmark()
@@ -116,12 +110,6 @@ public class BookmarkList implements IIngredientGridSource, IBookmarkManager {
 		}
 
 		ITypedIngredient<T> ingredient = element.getTypedIngredient();
-		IBookmark bookmark = bookmarkFactory.create(ingredient);
-		return add(bookmark);
-	}
-
-	@Override
-	public boolean add(ITypedIngredient<?> ingredient) {
 		IBookmark bookmark = bookmarkFactory.create(ingredient);
 		return add(bookmark);
 	}
@@ -142,11 +130,6 @@ public class BookmarkList implements IIngredientGridSource, IBookmarkManager {
 		notifyListenersOfChange();
 		bookmarkConfig.saveBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, codecHelper, bookmarksList, bookmarkCodec);
 		return true;
-	}
-
-	@Override
-	public boolean remove(ITypedIngredient<?> ingredient) {
-		return remove(bookmarkFactory.create(ingredient));
 	}
 
 	public void setFromConfigFile(List<IBookmark> bookmarks) {

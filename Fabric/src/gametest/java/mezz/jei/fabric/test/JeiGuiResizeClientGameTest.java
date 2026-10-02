@@ -14,6 +14,7 @@ import mezz.jei.common.util.ReflectionUtil;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.overlay.ingredients.IngredientGrid;
 import mezz.jei.gui.bookmarks.BookmarkList;
+import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
 import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
@@ -192,7 +193,7 @@ public class JeiGuiResizeClientGameTest implements FabricClientGameTest {
 			set(cleanup, config.lookupHistoryEnabled(), true);
 			set(cleanup, config.maxLookupHistoryIngredients(), 100);
 			LookupHistory history = (LookupHistory) historyOverlay(true).getLookupHistory();
-			BookmarkList bookmarks = (BookmarkList) Internal.getJeiRuntime().getBookmarkManager();
+			BookmarkList bookmarks = ((BookmarkOverlay) Internal.getJeiRuntime().getBookmarkOverlay()).getBookmarkList();
 			bookmarks.getElements().forEach(element -> element.getBookmark().ifPresent(history::add));
 			boolean bookmarkEnabled = Internal.getClientToggleState().isBookmarkEnabled();
 			cleanup.add(() -> Internal.getClientToggleState().setBookmarkEnabled(bookmarkEnabled));
