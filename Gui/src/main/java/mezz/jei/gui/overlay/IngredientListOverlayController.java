@@ -103,6 +103,10 @@ class IngredientListOverlayController {
 	}
 
 	boolean isListDisplayed() {
+		return isSearchDisplayed() && !contentsView.isEmpty();
+	}
+
+	boolean isSearchDisplayed() {
 		return (overlayEnabled.getAsBoolean() || toggleOverlayUnbound.getAsBoolean()) &&
 			hasValidScreen &&
 			contentsView.hasRoom();
