@@ -1033,6 +1033,11 @@ public class IngredientGridWithNavigationLayoutTest {
 		}
 
 		@Override
+		public IConfigValue<Boolean> shrinkToFit() {
+			return new TestConfigValue<>(false);
+		}
+
+		@Override
 		public IConfigValue<Integer> maxColumns() {
 			return new TestConfigValue<>(maxColumns);
 		}

@@ -663,5 +663,7 @@
   "jei.config.server.permissions.enableCheatModeForCreative": "Allow Cheat Mode in Creative Mode",
   "jei.config.server.permissions.enableCheatModeForCreative.description": "Allow players in Creative Mode to use JEI cheat mode.",
   "jei.config.server.permissions.enableCheatModeForGive": "Allow Cheat Mode with Give Permission",
-  "jei.config.server.permissions.enableCheatModeForGive.description": "Allow players who can use the /give command to use JEI cheat mode."
+  "jei.config.server.permissions.enableCheatModeForGive.description": "Allow players who can use the /give command to use JEI cheat mode.",
+  "jei.config.client.lists.shrinkToFit": "Shrink to Fit",
+  "jei.config.client.lists.shrinkToFit.description": "Reduce the height of the ingredient and bookmark lists when fewer rows are needed to show all ingredients."
 }

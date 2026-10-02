@@ -59,6 +59,7 @@ public interface IIngredientGridConfig {
 	}
 
 	default void addLayoutListener(Runnable listener) {
+		Internal.registerRuntimeListenerRemoval(shrinkToFit().addListener(change -> listener.run()));
 		Internal.registerRuntimeListenerRemoval(maxColumns().addListener(change -> listener.run()));
 		Internal.registerRuntimeListenerRemoval(maxRows().addListener(change -> listener.run()));
 		Internal.registerRuntimeListenerRemoval(backgroundStyle().addListener(change -> listener.run()));
@@ -66,4 +67,6 @@ public interface IIngredientGridConfig {
 		Internal.registerRuntimeListenerRemoval(verticalAlignment().addListener(change -> listener.run()));
 		Internal.registerRuntimeListenerRemoval(navigationVisibility().addListener(change -> listener.run()));
 	}
+
+	IConfigValue<Boolean> shrinkToFit();
 }
