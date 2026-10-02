@@ -5,10 +5,14 @@
   "name": "JEI Fabric Tests",
   "environment": "*",
   "entrypoints": {
+    "jei_mod_plugin": [
+      "mezz.jei.fabric.test.BookmarkManagerClientGameTest"
+    ],
     "fabric-gametest": [
       "mezz.jei.fabric.test.FluidIngredientGameTests"
     ],
     "fabric-client-gametest": [
+      "mezz.jei.fabric.test.BookmarkManagerClientGameTest",
       "mezz.jei.fabric.test.InteractiveIngredientTooltipClientGameTest",
       "mezz.jei.fabric.test.JeiGuiResizeClientGameTest",
       "mezz.jei.fabric.test.JeiFabricCreativeInventoryClientGameTest",
