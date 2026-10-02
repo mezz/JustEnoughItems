@@ -14,11 +14,6 @@ import java.util.stream.Stream;
  */
 public interface IIngredientListOverlayContents extends IIngredientGridView, IIngredientGridPageNavigation, IRecipeFocusSource {
 	/**
-	 * Returns true when there are no visible ingredients in the contents.
-	 */
-	boolean isEmpty();
-
-	/**
 	 * Draws foreground elements for the ingredient-list contents.
 	 */
 	void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks);

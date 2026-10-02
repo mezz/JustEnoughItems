@@ -11,6 +11,11 @@ import java.util.Set;
  */
 public interface IIngredientGridView {
 	/**
+	 * Returns true when there are no ingredients in the grid's source.
+	 */
+	boolean isEmpty();
+
+	/**
 	 * Returns true when the grid has enough space to render ingredients.
 	 */
 	boolean hasRoom();
