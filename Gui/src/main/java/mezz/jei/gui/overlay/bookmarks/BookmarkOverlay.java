@@ -167,6 +167,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		Internal.registerRuntimeListenerRemoval(gridConfig.horizontalAlignment().addListener(v -> markScreenPropertiesDirty()));
 		Internal.registerRuntimeListenerRemoval(gridConfig.verticalAlignment().addListener(v -> markScreenPropertiesDirty()));
 		Internal.registerRuntimeListenerRemoval(gridConfig.navigationVisibility().addListener(v -> markScreenPropertiesDirty()));
+		Internal.registerRuntimeListenerRemoval(gridConfig.shrinkToFit().addListener(v -> markScreenPropertiesDirty()));
 	}
 
 	private void updateScreenPropertiesIfDirty() {

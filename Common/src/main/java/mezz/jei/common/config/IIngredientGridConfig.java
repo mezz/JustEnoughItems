@@ -24,4 +24,6 @@ public interface IIngredientGridConfig {
 	IConfigValue<NavigationVisibility> navigationVisibility();
 
 	IConfigValue<IngredientGridNavigationMode> navigationMode();
+
+	IConfigValue<Boolean> shrinkToFit();
 }

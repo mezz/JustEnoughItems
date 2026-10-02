@@ -13,6 +13,7 @@ final class IngredientGridSharedConfig {
 	private final IConfigValue<IngredientGridBackgroundStyle> backgroundStyle;
 	private final IConfigValue<IngredientGridNavigationMode> navigationMode;
 	private final IConfigValue<NavigationVisibility> navigationVisibility;
+	private final IConfigValue<Boolean> shrinkToFit;
 
 	IngredientGridSharedConfig(IConfigCategoryBuilder category) {
 		backgroundStyle = category.addValue(
@@ -40,6 +41,9 @@ final class IngredientGridSharedConfig {
 			.addLegacyValue("ingredientList", "buttonNavigationVisibility")
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
+		shrinkToFit = category.addBoolean("shrinkToFit", true)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
 	}
 
 	IConfigValue<IngredientGridBackgroundStyle> backgroundStyle() {
@@ -52,5 +56,9 @@ final class IngredientGridSharedConfig {
 
 	IConfigValue<NavigationVisibility> navigationVisibility() {
 		return navigationVisibility;
+	}
+
+	IConfigValue<Boolean> shrinkToFit() {
+		return shrinkToFit;
 	}
 }

@@ -69,4 +69,9 @@ public final class LookupHistoryGridConfig implements IIngredientGridConfig {
 	public IConfigValue<IngredientGridNavigationMode> navigationMode() {
 		return ownerConfig.navigationMode();
 	}
+
+	@Override
+	public IConfigValue<Boolean> shrinkToFit() {
+		return ownerConfig.shrinkToFit();
+	}
 }

@@ -97,4 +97,9 @@ public class IngredientGridConfig implements IIngredientGridConfig {
 	public IConfigValue<NavigationVisibility> navigationVisibility() {
 		return sharedConfig.navigationVisibility();
 	}
+
+	@Override
+	public IConfigValue<Boolean> shrinkToFit() {
+		return sharedConfig.shrinkToFit();
+	}
 }

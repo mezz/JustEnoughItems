@@ -307,6 +307,8 @@
   "jei.config.client.lists.navigationMode.description": "Choose how to move through the ingredient and bookmark lists.",
   "jei.config.client.lists.navigationVisibility": "List Navigation",
   "jei.config.client.lists.navigationVisibility.description": "Choose when navigation controls are shown for both lists.",
+  "jei.config.client.lists.shrinkToFit": "Shrink to Fit",
+  "jei.config.client.lists.shrinkToFit.description": "Reduce the height of the ingredient and bookmark lists when fewer rows are needed to show all ingredients.",
   "jei.config.client.ingredientList": "Ingredient List",
   "jei.config.client.ingredientList.description": "Options for the ingredient list shown on the right side of the screen.",
   "jei.config.client.ingredientList.maxRows": "Maximum Ingredient List Rows",
