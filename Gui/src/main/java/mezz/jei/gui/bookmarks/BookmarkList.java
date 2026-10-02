@@ -5,7 +5,6 @@ import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.runtime.IBookmarkManager;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.config.IClientConfig;
@@ -23,7 +22,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class BookmarkList implements IIngredientGridSource, IBookmarkManager {
+public class BookmarkList implements IIngredientGridSource {
 	private final List<IBookmark> bookmarksList = new LinkedList<>();
 	private final Set<IBookmark> bookmarksSet = new HashSet<>();
 
@@ -92,7 +91,6 @@ public class BookmarkList implements IIngredientGridSource, IBookmarkManager {
 		return this.bookmarksSet.contains(value);
 	}
 
-	@Override
 	public boolean contains(ITypedIngredient<?> ingredient) {
 		return contains(IngredientBookmark.create(ingredient, ingredientManager));
 	}
@@ -109,7 +107,6 @@ public class BookmarkList implements IIngredientGridSource, IBookmarkManager {
 		return add(bookmark);
 	}
 
-	@Override
 	public boolean add(ITypedIngredient<?> ingredient) {
 		IBookmark bookmark = IngredientBookmark.create(ingredient, ingredientManager);
 		return add(bookmark);
@@ -133,12 +130,25 @@ public class BookmarkList implements IIngredientGridSource, IBookmarkManager {
 		return true;
 	}
 
-	@Override
 	public boolean remove(ITypedIngredient<?> ingredient) {
 		return remove(IngredientBookmark.create(ingredient, ingredientManager));
 	}
 
+	public void setFromConfigFile(List<IBookmark> bookmarks) {
+		bookmarksList.clear();
+		bookmarksSet.clear();
+
+		for (IBookmark bookmark : bookmarks) {
+			if (bookmarksSet.add(bookmark)) {
+				bookmarksList.add(bookmark);
+			}
+		}
+
+		notifyListenersOfChange();
+	}
+
 	public boolean addToListWithoutNotifying(IBookmark value, boolean addToFront) {
+
 		if (contains(value)) {
 			return false;
 		}

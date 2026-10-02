@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.Objects;
 public class RecipeBookmark<R, I> implements IBookmark {
 	private final IElement<I> element;
 	private final IRecipeCategory<R> recipeCategory;
@@ -137,13 +138,14 @@ public class RecipeBookmark<R, I> implements IBookmark {
 
 	@Override
 	public int hashCode() {
-		return recipeUid.hashCode();
+		return Objects.hash(recipeUid, recipeCategory.getRecipeType());
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof RecipeBookmark<?, ?> recipeBookmark) {
-			return recipeBookmark.recipeUid.equals(recipeUid);
+			return recipeBookmark.recipeUid.equals(recipeUid) &&
+				recipeCategory.getRecipeType().equals(recipeBookmark.recipeCategory.getRecipeType());
 		}
 		return false;
 	}

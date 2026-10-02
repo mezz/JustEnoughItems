@@ -192,6 +192,7 @@ final class JeiFabricClientRecipeSyncTests {
 					JeiGuiResizeClientGameTest.run();
 					RecipeGuiScrollingClientTest.run();
 					InteractiveIngredientTooltipClientGameTest.run();
+					BookmarkManagerClientGameTest.run();
 				});
 			}
 		},

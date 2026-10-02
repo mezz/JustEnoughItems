@@ -20,6 +20,7 @@ public final class JeiFabricClientTests implements ClientModInitializer {
 
 		switch (testSuite) {
 			case "all" -> registerAllTests();
+			case "bookmarks" -> BookmarkManagerClientGameTest.register();
 			case "fluidIngredients" -> FluidIngredientGameTests.register();
 			case "recipeSync" -> JeiFabricClientRecipeSyncTests.register();
 			case "creativeInventory" -> JeiFabricCreativeInventoryClientGameTest.register();

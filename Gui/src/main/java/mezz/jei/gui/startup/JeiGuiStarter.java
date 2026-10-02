@@ -8,6 +8,7 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.transfer.IRecipeTransferManager;
 import mezz.jei.api.registration.IRuntimeRegistration;
+import mezz.jei.api.runtime.IBookmarkManager;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -29,6 +30,7 @@ import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.gui.bookmarks.BookmarkList;
+import mezz.jei.gui.bookmarks.BookmarkManager;
 import mezz.jei.gui.config.IBookmarkConfig;
 import mezz.jei.gui.config.ILookupHistoryConfig;
 import mezz.jei.gui.config.IngredientTypeSortingConfig;
@@ -196,7 +198,8 @@ public class JeiGuiStarter {
 
 		BookmarkList bookmarkList = new BookmarkList(recipeManager, focusFactory, ingredientManager, registryAccess, bookmarkConfig, clientConfig, guiHelper);
 		bookmarkConfig.loadBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarkList, recipeTransferService);
-		registration.setBookmarkManager(bookmarkList);
+		IBookmarkManager bookmarkManager = new BookmarkManager(bookmarkList, recipeManager, focusFactory, ingredientManager, recipeTransferService);
+		registration.setBookmarkManager(bookmarkManager);
 
 		BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
 			ingredientManager,
@@ -309,7 +312,7 @@ public class JeiGuiStarter {
 		);
 		ClientInputHandler clientInputHandler = new ClientInputHandler(
 			charTypedHandlers,
-			new ChatLinkInputHandler(recipesGui, focusUtil, screenHelper, bookmarkList),
+			new ChatLinkInputHandler(recipesGui, focusUtil, screenHelper, bookmarkManager),
 			userInputRouter,
 			dragRouter,
 			keyMappings,

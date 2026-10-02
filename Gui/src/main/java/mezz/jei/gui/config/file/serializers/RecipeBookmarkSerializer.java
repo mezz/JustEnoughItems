@@ -140,7 +140,11 @@ public class RecipeBookmarkSerializer {
 			.limitFocus(focus)
 			.get()
 			.filter(r -> Objects.equals(recipeCategory.getRegistryName(r), recipeUid))
-			.findFirst();
+			.findFirst()
+			.or(() -> recipeManager.createRecipeLookup(recipeType)
+				.get()
+				.filter(r -> Objects.equals(recipeCategory.getRegistryName(r), recipeUid))
+				.findFirst());
 	}
 
 }

@@ -7,6 +7,9 @@
   "entrypoints": {
     "client": [
       "mezz.jei.fabric.test.JeiFabricClientTests"
+    ],
+    "jei_mod_plugin": [
+      "mezz.jei.fabric.test.BookmarkManagerClientGameTest"
     ]
   },
   "mixins": [
