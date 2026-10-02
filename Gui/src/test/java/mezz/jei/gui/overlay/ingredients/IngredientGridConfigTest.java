@@ -17,6 +17,7 @@ import net.mezzdev.config.api.value.IConfigValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -30,6 +31,159 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IngredientGridConfigTest {
+	@ParameterizedTest(name = "drawBackground={0}, alignment={1}")
+	@MethodSource("navigationLayoutAlignmentConfigs")
+	public void shrinkToFitKeepsGridNavigationAndBackgroundAligned(boolean drawBackground, GridAlignment alignment) {
+		for (IngredientGridNavigationMode navigationMode : IngredientGridNavigationMode.values()) {
+			for (NavigationVisibility navigationVisibility : NavigationVisibility.values()) {
+				for (IngredientGridLayoutMode layoutMode : IngredientGridLayoutMode.values()) {
+					TestGridConfig gridConfig = config()
+						.drawBackground(drawBackground)
+						.horizontalAlignment(alignment.horizontalAlignment())
+						.verticalAlignment(alignment.verticalAlignment())
+						.navigationMode(navigationMode)
+						.navigationVisibility(navigationVisibility)
+						.layoutMode(layoutMode);
+					IngredientGridWithNavigationLayout fullLayout = calculateLayout(gridConfig, largeAvailableArea(), Set.of(), 10, false);
+					gridConfig.shrinkToFit(true);
+					IngredientGridWithNavigationLayout layout = calculateLayout(gridConfig, largeAvailableArea(), Set.of(), 10, false);
+
+					assertTrue(layout.hasRoom());
+					assertEquals(2 * IngredientGridLayout.INGREDIENT_HEIGHT, layout.ingredientGridArea().height());
+					assertEquals(fullLayout.ingredientGridArea().width(), layout.ingredientGridArea().width());
+					assertEquals(18, layout.availableSlotCount());
+					assertEquals(fullLayout.navigationEnabled(), layout.navigationEnabled());
+					assertEquals(fullLayout.scrollbarEnabled(), layout.scrollbarEnabled());
+					assertEquals(4 * IngredientGridLayout.INGREDIENT_HEIGHT, fullLayout.backgroundArea().height() - layout.backgroundArea().height());
+					assertSharedVerticalAlignedEdge(
+						alignment.horizontalAlignment(), alignment.verticalAlignment(),
+						layout.backgroundArea(), fullLayout.backgroundArea(), fullLayout.backgroundArea()
+					);
+					assertContainedBy(layout.slotBackgroundArea(), layout.backgroundArea());
+					if (layout.navigationEnabled()) {
+						assertContainedBy(layout.navigationArea(), layout.backgroundArea());
+						assertEquals(fullLayout.navigationArea().height(), layout.navigationArea().height());
+					} else {
+						assertEquals(ImmutableRect2i.EMPTY, layout.navigationArea());
+					}
+					if (layout.scrollbarEnabled()) {
+						assertEquals(layout.slotBackgroundArea().y(), layout.scrollbarArea().y());
+						assertEquals(layout.slotBackgroundArea().height(), layout.scrollbarArea().height());
+						assertContainedBy(layout.scrollbarArea(), layout.backgroundArea());
+					} else {
+						assertEquals(ImmutableRect2i.EMPTY, layout.scrollbarArea());
+					}
+				}
+			}
+		}
+	}
+
+	@ParameterizedTest
+	@CsvSource({"0, 1", "1, 1", "9, 1", "10, 2", "18, 2", "19, 3", "54, 6", "55, 6"})
+	public void shrinkToFitUsesWholeRowsWithoutShrinkingOverflowingLists(int ingredientCount, int expectedRows) {
+		for (IngredientGridNavigationMode navigationMode : IngredientGridNavigationMode.values()) {
+			TestGridConfig gridConfig = config().shrinkToFit(true).navigationMode(navigationMode);
+			IngredientGridWithNavigationLayout layout = calculateLayout(gridConfig, largeAvailableArea(), Set.of(), ingredientCount, false);
+
+			assertTrue(layout.hasRoom());
+			assertEquals(expectedRows * IngredientGridLayout.INGREDIENT_HEIGHT, layout.ingredientGridArea().height());
+			assertEquals(ingredientCount > 54, layout.navigationEnabled() || layout.scrollbarEnabled());
+		}
+	}
+
+	@ParameterizedTest
+	@EnumSource(IngredientGridNavigationMode.class)
+	public void shrinkToFitKeepsEnoughUnblockedSlots(IngredientGridNavigationMode navigationMode) {
+		TestGridConfig gridConfig = config()
+			.maxColumns(3)
+			.drawBackground(false)
+			.navigationMode(navigationMode)
+			.navigationVisibility(NavigationVisibility.DISABLED);
+		IngredientGridWithNavigationLayout fullLayout = calculateLayout(gridConfig, largeAvailableArea(), Set.of(), 3, false);
+		ImmutableRect2i gridArea = fullLayout.ingredientGridArea();
+		ImmutableRect2i exclusion = new ImmutableRect2i(
+			gridArea.x() + IngredientGridLayout.INGREDIENT_WIDTH / 2,
+			gridArea.y() + IngredientGridLayout.INGREDIENT_HEIGHT / 2,
+			1, 1
+		);
+		gridConfig.shrinkToFit(true);
+		IngredientGridWithNavigationLayout layout = calculateLayout(gridConfig, largeAvailableArea(), Set.of(exclusion), 3, false);
+
+		assertTrue(layout.hasRoom());
+		assertEquals(2 * IngredientGridLayout.INGREDIENT_HEIGHT, layout.ingredientGridArea().height());
+		assertEquals(5, layout.availableSlotCount());
+		assertEquals(1, IngredientGridPageState.getPageCount(3, layout.availableSlotCount()));
+	}
+
+	@ParameterizedTest
+	@EnumSource(IngredientGridLayoutMode.class)
+	public void shrinkToFitAvoidsMovingNavigationIntoExclusions(IngredientGridLayoutMode layoutMode) {
+		TestGridConfig gridConfig = config()
+			.maxColumns(3)
+			.drawBackground(false)
+			.layoutMode(layoutMode)
+			.verticalAlignment(VerticalAlignment.BOTTOM)
+			.navigationVisibility(NavigationVisibility.ENABLED);
+		IngredientGridWithNavigationLayout fullLayout = calculateLayout(gridConfig, largeAvailableArea(), Set.of(), 1, false);
+		ImmutableRect2i navigationArea = fullLayout.navigationArea();
+		ImmutableRect2i exclusion = new ImmutableRect2i(
+			navigationArea.x() + navigationArea.width() / 2,
+			navigationArea.y() + 5 * IngredientGridLayout.INGREDIENT_HEIGHT + navigationArea.height() - 2,
+			1, 1
+		);
+		gridConfig.shrinkToFit(true);
+		IngredientGridWithNavigationLayout layout = calculateLayout(gridConfig, largeAvailableArea(), Set.of(exclusion), 1, false);
+
+		assertTrue(layout.hasRoom());
+		assertEquals(2 * IngredientGridLayout.INGREDIENT_HEIGHT, layout.ingredientGridArea().height());
+		assertFalse(layout.navigationArea().intersects(exclusion));
+		assertEquals(bottom(fullLayout.backgroundArea()), bottom(layout.backgroundArea()));
+	}
+
+	@Test
+	public void shrinkToFitRemovesUnusedPartialScrollingRowAndGrowsWhenNeeded() {
+		TestGridConfig gridConfig = config()
+			.shrinkToFit(true)
+			.maxRows(10)
+			.drawBackground(false)
+			.navigationMode(IngredientGridNavigationMode.SCROLLING);
+		ImmutableRect2i availableArea = largeAvailableArea().keepTop(
+			3 * IngredientGridLayout.INGREDIENT_HEIGHT + 7 + 2 * IngredientGridWithNavigationLayout.BORDER_MARGIN
+		);
+		IngredientGridWithNavigationLayout layout = calculateLayout(gridConfig, availableArea, Set.of(), 27, true);
+		IngredientGridWithNavigationLayout overflowingLayout = calculateLayout(gridConfig, availableArea, Set.of(), 28, true);
+
+		assertEquals(3 * IngredientGridLayout.INGREDIENT_HEIGHT, layout.ingredientGridArea().height());
+		assertFalse(layout.scrollbarEnabled());
+		assertEquals(3 * IngredientGridLayout.INGREDIENT_HEIGHT + 7, overflowingLayout.ingredientGridArea().height());
+		assertTrue(overflowingLayout.scrollbarEnabled());
+	}
+
+	@Test
+	public void shrinkToFitRespectsMinimumRowsAndInsufficientSpace() {
+		TestGridConfig gridConfig = config().shrinkToFit(true).minRows(3);
+		IngredientGridWithNavigationLayout layout = calculateLayout(gridConfig, largeAvailableArea(), Set.of(), 1, false);
+		IngredientGridWithNavigationLayout emptyLayout = assertDoesNotThrow(
+			() -> calculateLayout(gridConfig, ImmutableRect2i.EMPTY, Set.of(), 1, false)
+		);
+
+		assertEquals(3 * IngredientGridLayout.INGREDIENT_HEIGHT, layout.ingredientGridArea().height());
+		assertFalse(emptyLayout.hasRoom());
+	}
+
+	private static IngredientGridWithNavigationLayout calculateLayout(
+		IIngredientGridConfig config,
+		ImmutableRect2i availableArea,
+		Set<ImmutableRect2i> exclusions,
+		int ingredientCount,
+		boolean smoothScrolling
+	) {
+		if (config.navigationMode().get().usesScrollbar()) {
+			return IngredientGridScrollbarLayout.calculate(config, availableArea, exclusions, ingredientCount, smoothScrolling);
+		}
+		return IngredientGridButtonNavigationLayout.calculate(config, availableArea, exclusions, ingredientCount);
+	}
+
 	@Test
 	public void lookupHistorySizeIsIndependentFromOwnerGridSize() {
 		TestGridConfig ownerConfig = config()
@@ -1997,6 +2151,7 @@ public class IngredientGridConfigTest {
 		private final TestJeiConfigValue<HorizontalAlignment> horizontalAlignment = value("horizontalAlignment", HorizontalAlignment.LEFT);
 		private final TestJeiConfigValue<VerticalAlignment> verticalAlignment = value("verticalAlignment", VerticalAlignment.TOP);
 		private final TestJeiConfigValue<NavigationVisibility> navigationVisibility = value("navigationVisibility", NavigationVisibility.AUTO_HIDE);
+		private final TestJeiConfigValue<Boolean> shrinkToFit = value("shrinkToFit", false);
 
 		public TestGridConfig maxColumns(int maxColumns) {
 			this.maxColumns.set(maxColumns);
@@ -2053,6 +2208,11 @@ public class IngredientGridConfigTest {
 			return this;
 		}
 
+		public TestGridConfig shrinkToFit(boolean shrinkToFit) {
+			this.shrinkToFit.set(shrinkToFit);
+			return this;
+		}
+
 		@Override
 		public IConfigValue<Integer> maxColumns() {
 			return maxColumns;
@@ -2101,6 +2261,11 @@ public class IngredientGridConfigTest {
 		@Override
 		public IConfigValue<NavigationVisibility> navigationVisibility() {
 			return navigationVisibility;
+		}
+
+		@Override
+		public IConfigValue<Boolean> shrinkToFit() {
+			return shrinkToFit;
 		}
 
 		private static <T> TestJeiConfigValue<T> value(String name, T defaultValue) {
