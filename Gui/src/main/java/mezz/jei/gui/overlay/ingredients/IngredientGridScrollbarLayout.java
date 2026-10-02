@@ -19,7 +19,7 @@ public final class IngredientGridScrollbarLayout {
 		int ingredientCount,
 		boolean smoothScrolling
 	) {
-		return switch (gridConfig.navigationVisibility().get()) {
+		IngredientGridWithNavigationLayout layout = switch (gridConfig.navigationVisibility().get()) {
 			case ENABLED -> calculateForScrollbar(gridConfig, availableArea, guiExclusionAreas, true, smoothScrolling);
 			case DISABLED -> calculateForScrollbar(gridConfig, availableArea, guiExclusionAreas, false, smoothScrolling);
 			case AUTO_HIDE -> calculateAutoHideScrollbar(
@@ -30,6 +30,7 @@ public final class IngredientGridScrollbarLayout {
 				smoothScrolling
 			);
 		};
+		return layout.shrinkToFit(gridConfig, guiExclusionAreas, ingredientCount);
 	}
 
 	private static IngredientGridWithNavigationLayout calculateAutoHideScrollbar(

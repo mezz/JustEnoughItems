@@ -25,7 +25,7 @@ public final class IngredientGridButtonNavigationLayout {
 		Set<ImmutableRect2i> guiExclusionAreas,
 		int ingredientCount
 	) {
-		return switch (gridConfig.navigationVisibility().get()) {
+		IngredientGridWithNavigationLayout layout = switch (gridConfig.navigationVisibility().get()) {
 			case ENABLED -> calculateForNavigation(gridConfig, availableArea, guiExclusionAreas, true);
 			case DISABLED -> calculateForNavigation(gridConfig, availableArea, guiExclusionAreas, false);
 			case AUTO_HIDE -> calculateAutoHide(
@@ -35,6 +35,7 @@ public final class IngredientGridButtonNavigationLayout {
 				ingredientCount
 			);
 		};
+		return layout.shrinkToFit(gridConfig, guiExclusionAreas, ingredientCount);
 	}
 
 	private static IngredientGridWithNavigationLayout calculateAutoHide(
