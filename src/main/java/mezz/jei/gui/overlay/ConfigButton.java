@@ -35,7 +35,7 @@ public class ConfigButton extends GuiIconToggleButton {
 		if (!Config.isOverlayEnabled()) {
 			tooltip.add(TextFormatting.GOLD + Translator.translateToLocal("jei.tooltip.ingredient.list.disabled"));
 			tooltip.add(TextFormatting.GOLD + Translator.translateToLocalFormatted("jei.tooltip.ingredient.list.disabled.how.to.fix", KeyBindings.toggleOverlay.getDisplayName()));
-		} else if (!parent.isListDisplayed()) {
+		} else if (!parent.hasRoom()) {
 			tooltip.add(TextFormatting.GOLD + Translator.translateToLocal("jei.tooltip.not.enough.space"));
 		}
 		if (Config.isCheatItemsEnabled()) {
