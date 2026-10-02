@@ -281,6 +281,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		);
 	}
 
+	public RecipeGuiLayouts getRecipeLayouts() {
+		return layouts;
+	}
+
 	public ImmutableRect2i getArea() {
 		return this.area;
 	}

@@ -44,7 +44,7 @@ public interface IJeiRuntime {
 	IBookmarkOverlay getBookmarkOverlay();
 
 	/**
-	 * The {@link IBookmarkManager} gives access to JEI's ingredient bookmarks.
+	 * The {@link IBookmarkManager} gives access to JEI's ingredient and recipe bookmarks.
 	 *
 	 * @since 30.31.0
 	 */

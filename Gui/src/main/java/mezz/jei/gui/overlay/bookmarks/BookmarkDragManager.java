@@ -34,6 +34,10 @@ public class BookmarkDragManager {
 		}
 	}
 
+	boolean hasDrag() {
+		return bookmarkDrag != null;
+	}
+
 	boolean isDragging() {
 		return bookmarkDrag != null && bookmarkDrag.isDragging();
 	}
