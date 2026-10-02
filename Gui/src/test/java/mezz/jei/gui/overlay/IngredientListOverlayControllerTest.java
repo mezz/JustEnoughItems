@@ -464,6 +464,11 @@ public class IngredientListOverlayControllerTest {
 		ImmutableRect2i availableArea;
 
 		@Override
+		public boolean isEmpty() {
+			return false;
+		}
+
+		@Override
 		public boolean hasRoom() {
 			return hasRoom;
 		}
