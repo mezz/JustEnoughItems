@@ -38,6 +38,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	private final ISubtypeManager subtypeManager;
 	private final StackHelper stackHelper;
 	private final IColorHelper colorHelper;
+	private final IPlatformRegistry<Item> itemRegistry;
 	private final TagKey<Item> itemHiddenFromRecipeViewers;
 	private final TagKey<Block> blockHiddenFromRecipeViewers;
 
@@ -45,6 +46,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 		this.subtypeManager = subtypeManager;
 		this.stackHelper = stackHelper;
 		this.colorHelper = colorHelper;
+		this.itemRegistry = Services.PLATFORM.getRegistry(Registries.ITEM);
 		//noinspection deprecation
 		this.itemHiddenFromRecipeViewers = new TagKey<>(Registries.ITEM, Tags.HIDDEN_FROM_RECIPE_VIEWERS);
 		//noinspection deprecation
@@ -181,8 +183,7 @@ public class ItemStackHelper implements IIngredientHelper<ItemStack> {
 	@Override
 	public boolean isIngredientOnServer(ItemStack ingredient) {
 		Item item = ingredient.getItem();
-		IPlatformRegistry<Item> registry = Services.PLATFORM.getRegistry(Registries.ITEM);
-		return registry.contains(item);
+		return itemRegistry.contains(item);
 	}
 
 	@Override
