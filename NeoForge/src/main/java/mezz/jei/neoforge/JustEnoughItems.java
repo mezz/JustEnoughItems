@@ -34,7 +34,8 @@ public class JustEnoughItems {
 			RecipeType.SMOKING,
 			RecipeType.BLASTING,
 			RecipeType.CAMPFIRE_COOKING,
-			RecipeType.SMITHING
+			RecipeType.SMITHING,
+			RecipeType.BREWING
 		));
 
 		JustEnoughItemsClientSafeRunner clientSafeRunner = new JustEnoughItemsClientSafeRunner(networkHandler, subscriptions);

@@ -48,6 +48,7 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 	private static final Duration CLIENT_SHUTDOWN_TIMEOUT = Duration.ofSeconds(30);
 	private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 	private static final ResourceKey<Recipe<?>> CRAFTING_TABLE_RECIPE_KEY = ResourceKey.create(Registries.RECIPE, Identifier.withDefaultNamespace("crafting_table"));
+	private static final ResourceKey<Recipe<?>> AWKWARD_POTION_RECIPE_KEY = ResourceKey.create(Registries.RECIPE, Identifier.withDefaultNamespace("brewing/potion_water_nether_wart"));
 
 	private JeiNeoForgeClientRecipeSyncTests() {
 
@@ -214,7 +215,8 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 
 	private static boolean hasVanillaRecipes(RecipeMap recipeMap) {
 		return !recipeMap.values().isEmpty() &&
-			recipeMap.byKey(CRAFTING_TABLE_RECIPE_KEY) != null;
+			recipeMap.byKey(CRAFTING_TABLE_RECIPE_KEY) != null &&
+			recipeMap.byKey(AWKWARD_POTION_RECIPE_KEY) != null;
 	}
 
 	private static void assertJeiClientStateCleared(String name) {
@@ -261,6 +263,7 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 				", synced=" + hasSyncedRecipes +
 				", recipeCount=" + recipes.values().size() +
 				", hasCraftingTable=" + (recipes.byKey(CRAFTING_TABLE_RECIPE_KEY) != null) +
+				", hasAwkwardPotion=" + (recipes.byKey(AWKWARD_POTION_RECIPE_KEY) != null) +
 				", jeiOnServer=" + Internal.getServerConnection().isJeiOnServer() +
 				", sameModLoader=" + Internal.getServerConnection().isSameModLoader() +
 				", serverBrand=" + ClientConnectionHelper.getServerBrand() +
