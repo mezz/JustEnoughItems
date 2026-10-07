@@ -1,7 +1,7 @@
 package mezz.jei.fabric.platform;
 
 import mezz.jei.common.platform.IPlatformItemStackHelper;
-import mezz.jei.common.util.RegistryUtil;
+import mezz.jei.common.util.ClientCookingFuelRegistryProvider;
 import net.fabricmc.fabric.api.item.v1.EnchantingContext;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -46,7 +46,7 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 			.set(LootContextParams.BLOCK_STATE, blockState)
 			.build();
 		LootParams params = new LootParams(null, contextMap, Map.of(), 0);
-		return new LootContext(params, RandomSource.create(), RegistryUtil.getRegistryProvider());
+		return new LootContext(params, RandomSource.create(), ClientCookingFuelRegistryProvider.get());
 	}
 
 	private static BlockState getFurnaceBlockState(RecipeType<?> recipeType) {

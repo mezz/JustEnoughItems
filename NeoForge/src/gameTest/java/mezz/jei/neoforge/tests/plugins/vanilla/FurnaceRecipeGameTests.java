@@ -6,7 +6,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.vanilla.IJeiFuelingRecipe;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.common.util.RegistryUtil;
+import mezz.jei.common.util.ClientCookingFuelRegistryProvider;
 import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeMaker;
@@ -58,7 +58,7 @@ public final class FurnaceRecipeGameTests {
 		IPlatformItemStackHelper itemStackHelper = Services.PLATFORM.getItemStackHelper();
 		ItemStack coal = new ItemStack(Items.COAL);
 
-		RegistryUtil.setRegistryProvider(null);
+		ClientCookingFuelRegistryProvider.setProviderForTests(null);
 		try {
 			helper.assertEquals(1600, itemStackHelper.getFuelProperties(coal, RecipeType.SMELTING).burnTime(), "Normal furnace coal burn time");
 			helper.assertEquals(800, itemStackHelper.getFuelProperties(coal, RecipeType.BLASTING).burnTime(), "Blast furnace coal burn time");
@@ -78,7 +78,7 @@ public final class FurnaceRecipeGameTests {
 				"Registry-backed custom burn time"
 			);
 		} finally {
-			RegistryUtil.setRegistryProvider(helper.getRegistries());
+			ClientCookingFuelRegistryProvider.setProviderForTests(helper.getRegistries());
 		}
 		helper.succeed();
 	}
@@ -87,7 +87,7 @@ public final class FurnaceRecipeGameTests {
 	@EmptyTemplate
 	@TestHolder(description = "Fuel recipes show the same smelt count in every vanilla furnace type.")
 	public static void fuelRecipesAccountForFurnaceSpeed(JeiGameTestHelper helper) {
-		RegistryUtil.setRegistryProvider(helper.getRegistries());
+		ClientCookingFuelRegistryProvider.setProviderForTests(helper.getRegistries());
 		var ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(List.of(new ItemStack(Items.COAL)));
 		for (RecipeType<?> recipeType : List.of(RecipeType.SMELTING, RecipeType.BLASTING, RecipeType.SMOKING)) {
 			IJeiFuelingRecipe recipe = FuelRecipeMaker.getFuelRecipes(ingredientManager, recipeType).getFirst();

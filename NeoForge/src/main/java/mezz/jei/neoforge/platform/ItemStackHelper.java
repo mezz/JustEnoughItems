@@ -2,8 +2,8 @@ package mezz.jei.neoforge.platform;
 
 import com.mojang.datafixers.util.Either;
 import mezz.jei.common.platform.IPlatformItemStackHelper;
+import mezz.jei.common.util.ClientCookingFuelRegistryProvider;
 import mezz.jei.common.util.ErrorUtil;
-import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -69,7 +69,7 @@ public class ItemStackHelper implements IPlatformItemStackHelper {
 			.set(NeoForgeLootContextParams.QUERIED_STACK, itemStack)
 			.build();
 		LootParams params = new LootParams(null, contextMap, Map.of(), 0);
-		return new LootContext(params, RandomSource.create(), RegistryUtil.getRegistryProvider());
+		return new LootContext(params, RandomSource.create(), ClientCookingFuelRegistryProvider.get());
 	}
 
 	private static BlockState getFurnaceBlockState(RecipeType<?> recipeType) {

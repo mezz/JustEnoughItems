@@ -1,6 +1,7 @@
 package mezz.jei.neoforge.tests.lib;
 
 import mezz.jei.common.network.packets.PlayToServerPacket;
+import mezz.jei.common.util.ClientCookingFuelRegistryProvider;
 import mezz.jei.common.util.RegistryUtil;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
@@ -39,7 +40,7 @@ public class JeiGameTestHelper extends ExtendedGameTestHelper {
 	public JeiGameTestHelper(GameTestInfo info) {
 		super(info);
 		RegistryUtil.setRegistryAccess(getLevel().registryAccess());
-		RegistryUtil.setRegistryProvider(getRegistries());
+		ClientCookingFuelRegistryProvider.setProviderForTests(getRegistries());
 	}
 
 	public HolderLookup.Provider getRegistries() {
