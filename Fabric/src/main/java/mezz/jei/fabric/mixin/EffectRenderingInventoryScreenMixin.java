@@ -1,6 +1,6 @@
 package mezz.jei.fabric.mixin;
 
-import mezz.jei.api.runtime.IIngredientListOverlay;
+import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.fabric.plugins.fabric.FabricGuiPlugin;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -25,14 +25,15 @@ public abstract class EffectRenderingInventoryScreenMixin extends AbstractContai
 		at = @At("STORE")
 	)
 	public boolean modifyHasRoom(boolean bl) {
-		boolean ingredientListDisplayed = FabricGuiPlugin.getRuntime()
+		boolean compact = FabricGuiPlugin.getRuntime()
 			.map(IJeiRuntime::getIngredientListOverlay)
-			.map(IIngredientListOverlay::isListDisplayed)
+			.filter(IngredientListOverlay.class::isInstance)
+			.map(IngredientListOverlay.class::cast)
+			.map(overlay -> overlay.shouldRenderCompactInventoryEffects(this))
 			.orElse(false);
 
-		if (ingredientListDisplayed) {
-			// make the potion effects think that there is not enough room,
-			// so they render in compact mode.
+		if (compact) {
+			// Use the compact icons when the full bars overlap JEI.
 			return false;
 		}
 		return bl;

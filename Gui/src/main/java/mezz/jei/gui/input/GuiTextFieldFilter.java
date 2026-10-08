@@ -73,6 +73,10 @@ public class GuiTextFieldFilter extends EditBox implements mezz.jei.gui.overlay.
 		this.y = y;
 	}
 
+	public ImmutableRect2i getArea() {
+		return this.area;
+	}
+
 	@Override
 	public void setValue(String filterText) {
 		if (!filterText.equals(getValue())) {

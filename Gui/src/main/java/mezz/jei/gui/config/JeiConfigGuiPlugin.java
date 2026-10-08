@@ -104,7 +104,8 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 
 		IConfigScreenCategoryBuilder ingredientList = addNestedCategory(lists, "ingredientList", "jei.config.client.ingredientList");
 		configureGridValues(ingredientList, clientConfigs.getIngredientListConfig(), "jei.config.client.ingredientList.alignment");
-		ingredientList.addValue(clientConfig.toastReflowEnabled());
+		ingredientList.addValue(clientConfig.toastReflowEnabled())
+			.addValue(clientConfig.compactInventoryEffects());
 		IConfigScreenCategoryBuilder ingredientSorting = addNestedCategory(ingredientList, "ingredientSorting", "jei.config.client.ingredientSorting")
 			.addValue(clientConfig.ingredientSorterStages());
 
@@ -206,7 +207,7 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 	private static void configureRuntimeToggleValues(ConfigScreenCategories categories) {
 		IClientConfigs clientConfigs = Internal.getClientConfigs();
 		IClientConfig clientConfig = clientConfigs.getClientConfig();
-		IWorldConfig toggleState = Internal.getWorldConfig();
+		IWorldConfig worldConfig = Internal.getWorldConfig();
 		IConfigValueSerializer<Boolean> serializer = clientConfig.cheatToHotbarUsingHotkeysEnabled().getEditorInfo().getSerializer();
 
 		categories.ingredientList()
@@ -214,9 +215,9 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 				"overlaysEnabled",
 				"jei.config.client.ingredientList.overlaysEnabled",
 				true,
-				toggleState::isOverlayEnabled,
-				toggleState::setOverlayEnabled,
-				toggleState::addOverlayEnabledListener,
+				worldConfig::isOverlayEnabled,
+				worldConfig::setOverlayEnabled,
+				worldConfig::addOverlayEnabledListener,
 				serializer
 			));
 
@@ -225,9 +226,9 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 				"bookmarkOverlayEnabled",
 				"jei.config.client.bookmarkList.bookmarkOverlayEnabled",
 				true,
-				toggleState::isBookmarkEnabled,
-				toggleState::setBookmarkEnabled,
-				toggleState::addBookmarkEnabledListener,
+				worldConfig::isBookmarkEnabled,
+				worldConfig::setBookmarkEnabled,
+				worldConfig::addBookmarkEnabledListener,
 				serializer
 			));
 
@@ -237,9 +238,9 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 				"cheatModeEnabled",
 				"jei.config.client.cheating.cheatModeEnabled",
 				false,
-				toggleState::isCheatItemsEnabled,
-				value -> CheatModeUtil.setCheatModeEnabled(toggleState, value),
-				toggleState::addCheatItemsEnabledListener,
+				worldConfig::isCheatItemsEnabled,
+				value -> CheatModeUtil.setCheatModeEnabled(worldConfig, value),
+				worldConfig::addCheatItemsEnabledListener,
 				serializer
 			));
 
@@ -248,9 +249,9 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 				"editModeEnabled",
 				"jei.config.client.advanced.editModeEnabled",
 				false,
-				toggleState::isEditModeEnabled,
-				toggleState::setEditModeEnabled,
-				toggleState::addEditModeEnabledListener,
+				worldConfig::isEditModeEnabled,
+				worldConfig::setEditModeEnabled,
+				worldConfig::addEditModeEnabledListener,
 				serializer
 			));
 	}

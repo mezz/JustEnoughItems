@@ -10,6 +10,7 @@ import mezz.jei.gui.startup.JeiEventHandlers;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.input.ForgeUserInput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraftforge.client.event.ContainerScreenEvent;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -132,7 +133,7 @@ public class EventRegistration {
 			}
 		});
 		subscriptions.register(ScreenEvent.RenderInventoryMobEffects.class, event -> {
-			if (guiEventHandler.renderCompactPotionIndicators()) {
+			if (event.getScreen() instanceof AbstractContainerScreen<?> screen && guiEventHandler.renderCompactPotionIndicators(screen)) {
 				// Forcibly renders the potion indicators in compact mode.
 				// This gives the ingredient list overlay more room to display ingredients.
 				event.setCompact(true);
