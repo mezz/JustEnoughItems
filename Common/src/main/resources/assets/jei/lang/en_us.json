@@ -665,5 +665,9 @@
   "jei.config.server.permissions.enableCheatModeForGive": "Allow Cheat Mode with Give Permission",
   "jei.config.server.permissions.enableCheatModeForGive.description": "Allow players who can use the /give command to use JEI cheat mode.",
   "jei.config.client.lists.shrinkToFit": "Shrink to Fit",
-  "jei.config.client.lists.shrinkToFit.description": "Reduce the height of the ingredient and bookmark lists when fewer rows are needed to show all ingredients."
+  "jei.config.client.lists.shrinkToFit.description": "Reduce the height of the ingredient and bookmark lists when fewer rows are needed to show all ingredients.",
+  "jei.config.client.ingredientList.compactInventoryEffects": "Compact Inventory Effects When Needed",
+  "jei.config.client.ingredientList.compactInventoryEffects.description": "Use compact status effect icons when the full bars would overlap JEI. Disable to let JEI move around the full bars instead.",
+  "jei.config.client.ingredientList.compactInventoryEffects.value.true.description": "Compact status effects only when they overlap JEI.",
+  "jei.config.client.ingredientList.compactInventoryEffects.value.false.description": "Let Minecraft choose the status effect bar size."
 }

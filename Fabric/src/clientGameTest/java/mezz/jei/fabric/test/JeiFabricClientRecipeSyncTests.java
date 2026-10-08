@@ -188,6 +188,7 @@ final class JeiFabricClientRecipeSyncTests {
 				runSingleplayerTestCase(displayName(), () -> {
 					assertSyncedRecipesFromSingleplayer();
 					ConfigScreenClientTest.run();
+					InventoryEffectsClientTest.run();
 					RecipeSlotTooltipClientTest.run();
 					JeiGuiResizeClientGameTest.run();
 					RecipeGuiScrollingClientTest.run();

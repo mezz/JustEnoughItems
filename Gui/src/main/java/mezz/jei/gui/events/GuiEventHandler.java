@@ -179,8 +179,8 @@ public class GuiEventHandler {
 			.update();
 	}
 
-	public boolean renderCompactPotionIndicators() {
-		return ingredientListOverlay.isListDisplayed();
+	public boolean renderCompactPotionIndicators(AbstractContainerScreen<?> screen) {
+		return ingredientListOverlay.shouldRenderCompactInventoryEffects(screen);
 	}
 
 	private void drawDebugInfoForScreen(Screen screen, GuiGraphics guiGraphics) {

@@ -22,6 +22,7 @@ public final class ClientConfig implements IClientConfig {
 	private final IConfigValue<Integer> maxRecipeGuiColumns;
 	private final IConfigValue<RecipeGuiNavigationMode> recipeGuiNavigationMode;
 	private final IConfigValue<Boolean> toastReflowEnabled;
+	private final IConfigValue<Boolean> compactInventoryEffects;
 
 	// cheat_mode
 	private final IConfigValue<GiveMode> giveMode;
@@ -113,6 +114,9 @@ public final class ClientConfig implements IClientConfig {
 			.build();
 		toastReflowEnabled = ingredientList.addBoolean("toastReflowEnabled", true)
 			.addLegacyValue("appearance", "toastReflowEnabled")
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
+		compactInventoryEffects = ingredientList.addBoolean("compactInventoryEffects", true)
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
 
@@ -319,6 +323,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Boolean> toastReflowEnabled() {
 		return toastReflowEnabled;
+	}
+
+	@Override
+	public IConfigValue<Boolean> compactInventoryEffects() {
+		return compactInventoryEffects;
 	}
 
 	@Override
