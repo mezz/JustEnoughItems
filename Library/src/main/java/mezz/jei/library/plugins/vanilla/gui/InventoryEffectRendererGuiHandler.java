@@ -2,61 +2,23 @@ package mezz.jei.library.plugins.vanilla.gui;
 
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.common.Internal;
-import mezz.jei.common.platform.IPlatformRenderHelper;
-import mezz.jei.common.platform.IPlatformScreenHelper;
-import mezz.jei.common.platform.Services;
-import net.minecraft.client.Minecraft;
+import mezz.jei.common.gui.InventoryEffectRenderer;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.effect.MobEffectInstance;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public final class InventoryEffectRendererGuiHandler implements IGuiContainerHandler<AbstractContainerScreen<?>> {
-	/**
-	 * Modeled after {@link DisplayEffectsScreen#drawActivePotionEffects()}
-	 */
-	@SuppressWarnings("JavadocReference")
 	@Override
 	public List<Rect2i> getGuiExtraAreas(AbstractContainerScreen<?> containerScreen) {
 		if (!Internal.getJeiFeatures().getInventoryEffectRendererGuiHandlerEnabled()) {
 			return List.of();
 		}
-		if (!containerScreen.showsActiveEffects()) {
-			return List.of();
-		}
-		Minecraft minecraft = Minecraft.getInstance();
-		LocalPlayer player = minecraft.player;
-		if (player == null) {
-			return Collections.emptyList();
-		}
-		Collection<MobEffectInstance> activePotionEffects = player.getActiveEffects();
-		if (activePotionEffects.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		IPlatformScreenHelper screenHelper = Services.PLATFORM.getScreenHelper();
-		List<Rect2i> areas = new ArrayList<>();
-		int x = screenHelper.getLeftPos(containerScreen) + screenHelper.getImageWidth(containerScreen) + 2;
-		int y = screenHelper.getTopPos(containerScreen);
-		// JEI always forces the potion effect renderer to "compact" width mode when JEI is open.
-		int width = 32;
-
-		int height = 33;
-		if (activePotionEffects.size() > 5) {
-			height = 132 / (activePotionEffects.size() - 1);
-		}
-		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-		for (MobEffectInstance potionEffect : activePotionEffects) {
-			if (renderHelper.shouldRender(potionEffect)) {
-				areas.add(new Rect2i(x, y, width, height));
-				y += height;
-			}
-		}
-		return areas;
+		// Lay out JEI against compact bars when it may compact them. Measuring the expanded bars
+		// against that layout avoids changing the exclusions back and forth every frame.
+		boolean compact = Internal.getClientConfigs().getClientConfig().compactInventoryEffects().get();
+		return InventoryEffectRenderer.getEffectAreas(containerScreen, compact).stream()
+			.map(area -> area.toMutable())
+			.toList();
 	}
 }
