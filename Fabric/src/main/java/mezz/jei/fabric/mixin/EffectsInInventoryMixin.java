@@ -1,15 +1,23 @@
 package mezz.jei.fabric.mixin;
 
-import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.common.gui.InventoryEffectRenderer;
 import mezz.jei.fabric.plugins.fabric.FabricGuiPlugin;
+import mezz.jei.gui.overlay.IngredientListOverlay;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(EffectsInInventory.class)
 public abstract class EffectsInInventoryMixin {
+	@Shadow
+	@Final
+	private AbstractContainerScreen<?> screen;
+
 	@ModifyVariable(
 		method = "render(Lnet/minecraft/client/gui/GuiGraphics;II)V",
 		index = 7,
@@ -17,14 +25,15 @@ public abstract class EffectsInInventoryMixin {
 		at = @At("STORE")
 	)
 	public int modifyEffectWidth(int maxWidth) {
-		boolean ingredientListDisplayed = FabricGuiPlugin.getRuntime()
+		boolean compact = FabricGuiPlugin.getRuntime()
 			.map(IJeiRuntime::getIngredientListOverlay)
-			.map(IIngredientListOverlay::isListDisplayed)
+			.filter(IngredientListOverlay.class::isInstance)
+			.map(IngredientListOverlay.class::cast)
+			.map(overlay -> overlay.shouldRenderCompactInventoryEffects(this.screen))
 			.orElse(false);
 
-		if (ingredientListDisplayed) {
-			// make the potion effects render in compact mode.
-			return 32;
+		if (compact) {
+			return InventoryEffectRenderer.COMPACT_WIDTH;
 		}
 		return maxWidth;
 	}
