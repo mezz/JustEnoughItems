@@ -43,6 +43,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ClientConfigMigrationTest {
 	@ParameterizedTest
+	@CsvSource({"'', true", "true, true", "false, false"})
+	public void loadsInventoryEffectCompactingSetting(String savedValue, boolean expected, @TempDir Path tempDir) throws IOException {
+		Path configFile = tempDir.resolve("jei-client.ini");
+		if (!savedValue.isEmpty()) {
+			Files.writeString(configFile, "[ingredientList]\ncompactInventoryEffects = " + savedValue + "\n");
+		}
+		ConfigFileWatcherSettings disabledWatcher = ConfigFileWatcherSettings.clientDefaults().withEnabled(false);
+		ConfigManager configManager = new ConfigManager("JEI Inventory Effects Test", disabledWatcher, disabledWatcher);
+		ClientConfigs configs = new ClientConfigs(
+			new ConfigSchemaBuilder("jei", configFile, "jei.config.client", configManager),
+			false,
+			configManager.createInMemorySortingConfig(Comparator.naturalOrder(), true)
+		);
+
+		assertEquals(expected, configs.getClientConfig().compactInventoryEffects().get());
+	}
+
+	@ParameterizedTest
 	@CsvSource({"'', 2", "1, 1", "2, 2", "10, 10", "0, 2", "11, 2"})
 	public void loadsRecipeColumnLimitWithDefaultAndRangeValidation(String savedColumns, int expectedColumns, @TempDir Path tempDir) throws IOException {
 		Path configFile = tempDir.resolve("jei-client.ini");

@@ -22,6 +22,8 @@ public interface IClientConfig {
 
 	IConfigValue<Boolean> toastReflowEnabled();
 
+	IConfigValue<Boolean> compactInventoryEffects();
+
 	IConfigValue<GiveMode> giveMode();
 
 	IConfigValue<Boolean> cheatToHotbarUsingHotkeysEnabled();

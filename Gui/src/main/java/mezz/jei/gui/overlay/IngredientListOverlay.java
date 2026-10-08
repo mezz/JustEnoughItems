@@ -8,6 +8,8 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.gui.InventoryEffectRenderer;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.filter.IFilterTextSource;
@@ -34,6 +36,7 @@ import mezz.jei.gui.search.ISearchCompletionProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.CharacterEvent;
 import org.jspecify.annotations.Nullable;
 
@@ -48,6 +51,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final IIngredientListOverlayContents contents;
 	private final LookupHistoryOverlay lookupHistoryOverlay;
 	private final IClientToggleState toggleState;
+	private final IClientConfig clientConfig;
 	private final GuiPropertiesCache<Screen> guiPropertiesCache;
 	private final IngredientGridBackgroundRenderer backgroundRenderer;
 	private final GuiTextFieldFilter searchField;
@@ -76,6 +80,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.lookupHistoryOverlay = lookupHistoryOverlay;
 		this.backgroundRenderer = backgroundRenderer;
 		this.toggleState = toggleState;
+		this.clientConfig = clientConfig;
 
 		this.searchField = new GuiTextFieldFilter(contents::isEmpty, clientConfig, searchCompletionProvider);
 		this.searchInputLayer = new SearchInputLayer(this.searchField, this::isSearchDisplayed);
@@ -110,6 +115,31 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	public boolean isListDisplayed() {
 		updateScreenPropertiesIfDirty();
 		return this.controller.isListDisplayed();
+	}
+
+	/** Returns whether automatic compacting is enabled and full effect bars would overlap this overlay. */
+	public boolean shouldRenderCompactInventoryEffects(AbstractContainerScreen<?> screen) {
+		updateScreenPropertiesIfDirty();
+		return this.clientConfig.compactInventoryEffects().get() &&
+			InventoryEffectRenderer.getEffectAreas(screen, false).stream().anyMatch(this::intersects);
+	}
+
+	private boolean intersects(ImmutableRect2i area) {
+		if (isListDisplayed() && this.contents.getBackgroundArea().intersects(area)) {
+			return true;
+		}
+		if (isSearchDisplayed() && this.searchField.getArea().intersects(area)) {
+			return true;
+		}
+		if (this.controller.hasValidScreen()) {
+			if (this.configButton.isVisible() && this.configButton.getArea().intersects(area)) {
+				return true;
+			}
+			if (this.toggleState.isOverlayEnabled() && this.lookupHistoryOverlay.isListDisplayed()) {
+				return this.lookupHistoryOverlay.getBackgroundArea().intersects(area);
+			}
+		}
+		return false;
 	}
 
 	private boolean isSearchDisplayed() {

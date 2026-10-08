@@ -11,6 +11,7 @@ import mezz.jei.neoforge.input.ForgeUserInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.CharacterEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -147,9 +148,9 @@ public class EventRegistration {
 			});
 		});
 		subscriptions.register(ScreenEvent.RenderInventoryMobEffects.class, event -> {
-			if (guiEventHandler.renderCompactPotionIndicators()) {
-				// Forcibly renders the potion indicators in compact mode.
-				// This gives the ingredient list overlay more room to display ingredients.
+			if (event.getScreen() instanceof AbstractContainerScreen<?> screen &&
+				guiEventHandler.renderCompactPotionIndicators(screen)
+			) {
 				event.setCompact(true);
 			}
 		});
