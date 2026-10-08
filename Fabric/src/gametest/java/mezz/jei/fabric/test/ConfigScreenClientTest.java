@@ -104,6 +104,7 @@ final class ConfigScreenClientTest {
 			List.of("input", "mouse"), List.of(clientConfig.guiResizeEnabled(), clientConfig.dragDelayMs()),
 			List.of("input", "scrolling"), List.of(clientConfig.smoothScrollingEnabled(), clientConfig.smoothScrollRate()),
 			List.of("lists"), List.of(clientConfigs.getIngredientListConfig().backgroundStyle()),
+			List.of("lists", "ingredientList"), List.of(clientConfig.toastReflowEnabled(), clientConfig.compactInventoryEffects()),
 			List.of("search", "completion"), List.of(clientConfig.searchCompletionEnabled(), clientConfig.maxSearchCompletionRows()),
 			List.of("search", "matching"), List.of(
 				filterConfig.modNameSearchMode(), filterConfig.tagSearchMode(), filterConfig.tooltipSearchMode(),
