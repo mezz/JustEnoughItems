@@ -18,6 +18,7 @@ public class TestClientConfig implements IClientConfig {
 	private final IConfigValue<RecipeGuiNavigationMode> recipeGuiNavigationMode = value("navigationMode", RecipeGuiNavigationMode.PAGED);
 	private final IConfigValue<Integer> maxRecipeGuiColumns = value("maxRecipeGuiColumns", 2);
 	private final IConfigValue<Boolean> toastReflowEnabled = value("toastReflowEnabled", true);
+	private final IConfigValue<Boolean> compactInventoryEffects = value("compactInventoryEffects", true);
 	private final IConfigValue<GiveMode> giveMode = value("giveMode", GiveMode.INVENTORY);
 	private final IConfigValue<Boolean> cheatToHotbarUsingHotkeysEnabled = value("cheatToHotbarUsingHotkeysEnabled", false);
 	private final IConfigValue<Boolean> showHiddenIngredients = value("showHiddenIngredients", false);
@@ -89,6 +90,11 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Boolean> toastReflowEnabled() {
 		return toastReflowEnabled;
+	}
+
+	@Override
+	public IConfigValue<Boolean> compactInventoryEffects() {
+		return compactInventoryEffects;
 	}
 
 	@Override

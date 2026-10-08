@@ -134,7 +134,7 @@ public class EventRegistration {
 			runWithIdentityPose(guiGraphics, () -> guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY));
 		});
 		subscriptions.register(ScreenEvent.RenderInventoryMobEffects.class, event -> {
-			if (guiEventHandler.renderCompactPotionIndicators()) {
+			if (event.getScreen() instanceof AbstractContainerScreen<?> screen && guiEventHandler.renderCompactPotionIndicators(screen)) {
 				// Forcibly renders the potion indicators in compact mode.
 				// This gives the ingredient list overlay more room to display ingredients.
 				event.setCompact(true);

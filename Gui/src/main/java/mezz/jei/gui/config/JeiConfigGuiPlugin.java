@@ -104,7 +104,8 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 
 		IConfigScreenCategoryBuilder ingredientList = addNestedCategory(lists, "ingredientList", "jei.config.client.ingredientList");
 		configureGridValues(ingredientList, clientConfigs.getIngredientListConfig(), "jei.config.client.ingredientList.alignment");
-		ingredientList.addValue(clientConfig.toastReflowEnabled());
+		ingredientList.addValue(clientConfig.toastReflowEnabled())
+			.addValue(clientConfig.compactInventoryEffects());
 		IConfigScreenCategoryBuilder ingredientSorting = addNestedCategory(ingredientList, "ingredientSorting", "jei.config.client.ingredientSorting")
 			.addValue(clientConfig.ingredientSorterStages());
 
