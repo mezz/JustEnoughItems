@@ -10,6 +10,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
 
 public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHandler {
@@ -108,6 +109,9 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 
 	@Override
 	public final boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaY) {
+		if (Screen.hasShiftDown()) {
+			return false;
+		}
 		if (getHiddenAmount() > 0) {
 			scrollOffsetY -= calculateScrollAmount(scrollDeltaY);
 			scrollOffsetY = Mth.clamp(scrollOffsetY, 0.0F, 1.0F);
