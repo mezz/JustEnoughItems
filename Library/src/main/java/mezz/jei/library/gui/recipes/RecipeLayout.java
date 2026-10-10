@@ -557,7 +557,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 
 	@Override
 	public IScrollGridWidget addScrollGridWidget(List<IRecipeSlotDrawable> slots, int columns, int visibleRows) {
-		ScrollGridRecipeWidget widget = ScrollGridRecipeWidget.create(slots, columns, visibleRows);
+		ScrollGridRecipeWidget widget = ScrollGridRecipeWidget.create(slots, columns, visibleRows, this.recipeCategorySlots::removeAll);
 		addSlottedWidget(widget, slots);
 		addInputHandler(widget);
 		return widget;
