@@ -4,10 +4,14 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
+import mezz.jei.api.gui.widgets.IButtonWidget;
+import mezz.jei.api.gui.widgets.ICycleButtonWidget;
+import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
@@ -15,15 +19,21 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.RecipeGuiNavigationMode;
 import mezz.jei.common.gui.elements.DrawableBlank;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.Scrollbar;
 import mezz.jei.common.util.ReflectionUtil;
 import mezz.jei.gui.recipes.IRecipeLayoutWithButtons;
 import mezz.jei.gui.recipes.RecipeGuiLayouts;
 import mezz.jei.gui.recipes.RecipesGui;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
+import net.fabricmc.fabric.mixin.client.gametest.input.MouseHandlerAccessor;
 import net.mezzdev.config.api.value.IConfigValue;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.input.MouseButtonInfo;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -145,13 +155,205 @@ final class RecipeInputCaptureClientTest {
 			});
 			context.waitTick();
 			context.runOnClient(client -> check(reopenedControls.listener.releases == releasesBeforeClose, "Changing screens must not synthesize an API release"));
+			context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+			context.runOnClient(client -> client.gui.setScreen(gui()));
+			context.waitTicks(3);
+			assertRecipeButtons(context, category);
 		} finally {
 			context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+			context.getInput().releaseKey(InputConstants.KEY_LSHIFT);
 			context.runOnClient(client -> {
 				client.gui.setScreen(null);
 				cleanup.reversed().forEach(Runnable::run);
 			});
 		}
+	}
+
+	private static void assertRecipeButtons(ClientGameTestContext context, TestCategory<?> category) {
+		List<IRecipeLayoutDrawable<?>> layouts = context.computeOnClient(client -> visibleLayouts());
+		IRecipeLayoutDrawable<?> first = layouts.getFirst();
+		IRecipeLayoutDrawable<?> second = layouts.getLast();
+		ButtonControls a = context.computeOnClient(client -> Objects.requireNonNull(category.controls.get(first.getRecipe())).buttons);
+		ButtonControls b = context.computeOnClient(client -> Objects.requireNonNull(category.controls.get(second.getRecipe())).buttons);
+
+		move(context, first, 12, 40);
+		context.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> check(a.actions == 0, "Recipe buttons must wait for release before running their action"));
+		context.takeScreenshot("jei-recipe-button-pressed");
+		move(context, first, 44, 40);
+		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> check(a.actions == 0 && a.cycle.getValue() == -1,
+			"Releasing over a different button must not activate either button"));
+		click(context, first, 12, 40);
+		context.runOnClient(client -> check(a.actions == 1, "A complete recipe button click must run exactly once"));
+
+		move(context, first, 12, 40);
+		context.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		move(context, second, 12, 40);
+		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> check(a.actions == 1 && b.actions == 0, "A captured recipe button click must not move to another recipe"));
+
+		context.runOnClient(client -> a.button.setActive(false));
+		click(context, first, 12, 40);
+		context.runOnClient(client -> check(a.actions == 1, "Disabled recipe buttons must reject clicks"));
+		context.takeScreenshot("jei-recipe-button-disabled");
+		context.runOnClient(client -> a.button.setActive(true));
+		move(context, first, 12, 40);
+		context.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> {
+			a.button.setActive(false);
+			a.button.setActive(true);
+		});
+		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> check(a.actions == 1, "Deactivating and reactivating a held button must cancel its click"));
+
+		context.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> {
+			a.button.setVisible(false);
+			JeiTooltip tooltip = new JeiTooltip();
+			((IRecipeWidget) a.button).getTooltip(tooltip, 4, 4);
+			check(tooltip.isEmpty(), "Hidden buttons must not contribute tooltips");
+			a.button.setVisible(true);
+		});
+		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> check(a.actions == 1, "Hiding and showing a held button must cancel its click"));
+
+		assertIconButtons(context, first, second, a, b);
+		assertIconCycleButton(context, first, a);
+
+		for (int expected : List.of(0, 1, -1)) {
+			move(context, first, 44, 40);
+			context.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+			int changes = context.computeOnClient(client -> a.selected.size());
+			context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+			context.runOnClient(client -> {
+				check(a.cycle.getValue() == expected, "Cycle buttons must use a copy of their values and wrap to the first value");
+				check(a.selected.size() == changes + 1 && a.selected.getLast() == expected, "Cycling must notify exactly once, after selecting the new value");
+			});
+		}
+		context.getInput().holdKey(InputConstants.KEY_LSHIFT);
+		context.waitTick();
+		move(context, first, 44, 40);
+		context.runOnClient(client -> {
+			check(client.hasShiftDown(), "Shift must be held for backward cycling");
+			// Fabric's TestInput omits modifiers from mouse events.
+			MouseHandlerAccessor mouse = (MouseHandlerAccessor) client.mouseHandler;
+			MouseButtonInfo button = new MouseButtonInfo(InputConstants.MOUSE_BUTTON_LEFT, InputConstants.MOD_SHIFT);
+			mouse.invokeOnButton(client.getWindow().handle(), button, InputConstants.PRESS);
+			mouse.invokeOnButton(client.getWindow().handle(), button, InputConstants.RELEASE);
+		});
+		context.runOnClient(client -> check(a.cycle.getValue() == 1, "Shift + click must cycle backward and wrap to the last value"));
+		context.getInput().releaseKey(InputConstants.KEY_LSHIFT);
+		int changesBeforeKeys = context.computeOnClient(client -> a.selected.size());
+		int iconChangesBeforeKeys = context.computeOnClient(client -> a.iconSelected.size());
+		for (int x : List.of(12, 44, 76, 140)) {
+			move(context, first, x, 40);
+			for (int key : List.of(InputConstants.KEY_RETURN, InputConstants.KEY_NUMPADENTER, InputConstants.KEY_SPACE)) {
+				context.getInput().pressKey(key);
+				context.waitTick();
+				context.runOnClient(client -> {
+					check(a.actions == 1 && b.actions == 0, "Enter and Space must not activate recipe buttons while hovered");
+					check(a.iconActions == 1 && b.iconActions == 0, "Enter and Space must not activate hovered icon buttons");
+					check(a.cycle.getValue() == 1 && a.selected.size() == changesBeforeKeys,
+						"Enter and Space must not change hovered cycle buttons or notify their callback");
+					check(a.iconCycle.getValue() == 0 && a.iconSelected.size() == iconChangesBeforeKeys,
+						"Enter and Space must not change hovered icon cycle buttons");
+				});
+			}
+		}
+		context.runOnClient(client -> {
+			int changes = a.selected.size();
+			a.cycle.setValue(0);
+			check(a.selected.size() == changes, "Programmatic selection must not call the user-input callback");
+			a.button.setMessage(Component.literal("Long action label"));
+			JeiTooltip tooltip = new JeiTooltip();
+			((IRecipeWidget) a.button).getTooltip(tooltip, 4, 4);
+			check(tooltip.getLines().size() == 2, "A truncated button label must precede its configured tooltip");
+		});
+		move(context, first, 12, 40);
+		context.takeScreenshot("jei-recipe-button-tooltip");
+		context.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> client.gui.setScreen(new InventoryScreen(Objects.requireNonNull(client.player))));
+		context.waitTick();
+		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> check(a.actions == 1, "Changing screens must cancel a recipe button click"));
+	}
+
+	private static void assertIconButtons(ClientGameTestContext context, IRecipeLayoutDrawable<?> first,
+		IRecipeLayoutDrawable<?> second, ButtonControls a, ButtonControls b) {
+		move(context, first, 76, 40);
+		context.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> check(a.iconActions == 0, "Icon buttons must wait for release before running their action"));
+		context.takeScreenshot("jei-recipe-icon-button-pressed");
+		move(context, first, 12, 40);
+		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> check(a.iconActions == 0 && a.actions == 1,
+			"Releasing an icon button press over a text button must not activate either button"));
+		click(context, first, 76, 40);
+		context.runOnClient(client -> check(a.iconActions == 1, "A complete icon button click must run exactly once"));
+
+		context.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		move(context, second, 76, 40);
+		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> check(a.iconActions == 1 && b.iconActions == 0,
+			"A captured icon button click must not move to another recipe"));
+		context.runOnClient(client -> a.iconButton.setActive(false));
+		click(context, first, 76, 40);
+		context.runOnClient(client -> {
+			check(a.iconActions == 1, "Disabled icon buttons must reject clicks");
+			JeiTooltip tooltip = new JeiTooltip();
+			((IRecipeWidget) a.iconButton).getTooltip(tooltip, 4, 4);
+			check(tooltip.getLines().size() == 1, "Icon buttons must show their configured tooltip while disabled");
+			a.iconButton.setActive(true);
+		});
+
+		context.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> {
+			a.iconButton.setVisible(false);
+			JeiTooltip tooltip = new JeiTooltip();
+			((IRecipeWidget) a.iconButton).getTooltip(tooltip, 4, 4);
+			check(tooltip.isEmpty(), "Hidden icon buttons must not contribute tooltips");
+			a.iconButton.setVisible(true);
+		});
+		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> {
+			check(a.iconActions == 1, "Hiding and showing a held icon button must cancel its click");
+			var guiHelper = Internal.getJeiRuntime().getJeiHelpers().getGuiHelper();
+			a.iconButton.setIcon(guiHelper.createDrawableItemStack(new ItemStack(Items.GOLDEN_APPLE)));
+		});
+		context.takeScreenshot("jei-recipe-icon-button-tooltip");
+	}
+
+	private static void assertIconCycleButton(ClientGameTestContext context, IRecipeLayoutDrawable<?> layout, ButtonControls controls) {
+		move(context, layout, 140, 40);
+		context.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> check(controls.iconCycle.getValue() == -1 && controls.iconSelected.isEmpty(),
+			"Icon cycle buttons must wait for release before changing their selected value"));
+		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> check(controls.iconCycle.getValue() == 0 && controls.iconSelected.equals(List.of(0)),
+			"An icon cycle button click must select the next value and notify once"));
+		click(context, layout, 140, 40);
+		context.runOnClient(client -> check(controls.iconCycle.getValue() == 1 && controls.iconSelected.equals(List.of(0, 1)),
+			"Icon cycle buttons must cycle through the copied values"));
+		context.runOnClient(client -> {
+			JeiTooltip tooltip = new JeiTooltip();
+			((IRecipeWidget) controls.iconCycle).getTooltip(tooltip, 4, 4);
+			check(tooltip.getLines().size() == 1, "Choosing icon contents must replace the cycle button's earlier text formatter");
+		});
+		context.waitTick();
+		context.takeScreenshot("jei-recipe-icon-cycle-button");
+		context.runOnClient(client -> controls.iconCycle.setValue(0));
+		context.runOnClient(client -> check(controls.iconSelected.equals(List.of(0, 1)),
+			"Programmatic icon selection must update its contents without notifying the callback"));
+		context.waitTick();
+		context.takeScreenshot("jei-recipe-icon-cycle-button-programmatic");
+	}
+
+	private static void click(ClientGameTestContext context, IRecipeLayoutDrawable<?> layout, int x, int y) {
+		move(context, layout, x, y);
+		context.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.waitTick();
 	}
 
 	private static RecipesGui gui() {
@@ -218,12 +420,69 @@ final class RecipeInputCaptureClientTest {
 			builder.addGuiEventListener(fallback);
 			IScrollBoxWidget scrollbox = builder.addScrollBoxWidget(20, 40, 110, 8);
 			scrollbox.setContents(new DrawableBlank(scrollbox.getContentAreaWidth(), 200));
-			controls.put(recipe, new Controls(first, second, listener, fallback, scrollbox));
+			controls.put(recipe, new Controls(first, second, listener, fallback, scrollbox, new ButtonControls(builder)));
 		}
 	}
 
-	/** Two separate mod controls, a listener, an overlapping fallback listener, and a JEI scrollbar in one recipe. */
-	private record Controls(RecordingHandler first, RecordingHandler second, RecordingListener listener, RecordingListener fallback, IScrollBoxWidget scrollbox) {
+	private record Controls(RecordingHandler first, RecordingHandler second, RecordingListener listener, RecordingListener fallback, IScrollBoxWidget scrollbox, ButtonControls buttons) {
+	}
+
+	private static final class ButtonControls {
+		private final IButtonWidget<?> button;
+		private final IButtonWidget<?> iconButton;
+		private final ICycleButtonWidget<Integer> cycle;
+		private final ICycleButtonWidget<Integer> iconCycle;
+		private final List<Integer> selected = new ArrayList<>();
+		private final List<Integer> iconSelected = new ArrayList<>();
+		private int actions;
+		private int iconActions;
+
+		private ButtonControls(IRecipeExtrasBuilder builder) {
+			button = builder.addButton(24, 20, () -> actions++)
+				.setMessage(Component.literal("Run"))
+				.setPosition(8, 36).setTooltip(Component.literal("Action help"));
+			var guiHelper = Internal.getJeiRuntime().getJeiHelpers().getGuiHelper();
+			var icons = Map.of(
+				-1, guiHelper.createDrawableItemStack(new ItemStack(Items.APPLE)),
+				0, guiHelper.createDrawableItemStack(new ItemStack(Items.GOLDEN_APPLE)),
+				1, guiHelper.createDrawableItemStack(new ItemStack(Items.DIAMOND))
+			);
+			iconButton = builder.addButton(24, 20, () -> iconActions++)
+				.setMessage(Component.literal("Ignored"))
+				.setIcon(Objects.requireNonNull(icons.get(-1)))
+				.setPosition(72, 36).setTooltip(Component.literal("Icon action help"));
+			List<Integer> values = new ArrayList<>(List.of(-1, 0, 1));
+			cycle = builder.addCycleButton(values, -1, 24, 20, this::onValueChanged)
+				.setIcon(value -> Objects.requireNonNull(icons.get(value)))
+				.setMessage(ButtonControls::layerMessage)
+				.setPosition(40, 36).setTooltip(this::addCycleTooltip);
+			iconCycle = builder.addCycleButton(values, -1, 20, 20, this::onIconValueChanged)
+				.setMessage(value -> Component.literal("Ignored cycle " + value))
+				.setIcon(value -> Objects.requireNonNull(icons.get(value)))
+				.setPosition(136, 36).setTooltip(Component.literal("Icon layer help"));
+			values.clear();
+		}
+
+		private static Component layerMessage(Integer value) {
+			if (value < 0) {
+				return Component.literal("All");
+			}
+			return Component.literal(Integer.toString(value + 1));
+		}
+
+		private void onValueChanged(Integer value) {
+			check(cycle.getValue().equals(value), "The cycle callback must observe the selected value");
+			selected.add(value);
+		}
+
+		private void addCycleTooltip(ITooltipBuilder tooltip) {
+			tooltip.add(Component.literal("Layer " + cycle.getValue()));
+		}
+
+		private void onIconValueChanged(Integer value) {
+			check(iconCycle.getValue().equals(value), "The icon cycle callback must observe the selected value");
+			iconSelected.add(value);
+		}
 	}
 
 	private static final class RecordingHandler implements IJeiInputHandler {
