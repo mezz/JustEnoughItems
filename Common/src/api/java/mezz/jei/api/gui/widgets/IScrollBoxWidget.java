@@ -17,6 +17,14 @@ import java.util.List;
 @ApiStatus.NonExtendable
 public interface IScrollBoxWidget extends IRecipeWidget, IJeiInputHandler {
 	/**
+	 * Set when the scrollbar is shown. Defaults to {@link ScrollbarVisibility#DEFAULT}.
+	 * The content area keeps its width when the scrollbar is hidden.
+	 *
+	 * @since 31.10.0
+	 */
+	IScrollBoxWidget setScrollbarVisibility(ScrollbarVisibility visibility);
+
+	/**
 	 * Get the width available for displaying contents in the scroll box.
 	 * The scroll bar takes up some of the space, so this can be used in order to create accurately-sized contents.
 	 *

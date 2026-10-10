@@ -122,6 +122,7 @@ public interface IRecipeExtrasBuilder {
 	/**
 	 * Create and add a new scroll box widget.
 	 * Handles displaying drawable contents in a scrolling area with a scrollbar.
+	 * By default, scrollbar visibility follows JEI's shared ingredient navigation visibility setting.
 	 *
 	 * Set the contents by using the methods in {@link IScrollBoxWidget}.
 	 *
@@ -132,6 +133,8 @@ public interface IRecipeExtrasBuilder {
 	/**
 	 * Create and add a new scroll grid widget.
 	 * Handles displaying ingredients in a scrolling area with a scrollbar, similar to the vanilla creative menu.
+	 * By default, scrollbar visibility follows JEI's shared ingredient navigation visibility setting.
+	 * Replace the displayed slots later with {@link IScrollGridWidget#setSlots(List)}.
 	 *
 	 * Get slots for this from {@link #getRecipeSlots()}.
 	 *

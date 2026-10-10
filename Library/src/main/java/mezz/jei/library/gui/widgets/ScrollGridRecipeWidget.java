@@ -8,24 +8,27 @@ import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.gui.widgets.IScrollGridWidget;
 import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
+import mezz.jei.api.gui.widgets.ScrollbarVisibility;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.GridScrollMath;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
-import mezz.jei.common.util.PlaceableUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScrollGridWidget, ISlottedRecipeWidget, IJeiInputHandler {
 	private final IDrawable slotBackground;
 	private final int columns;
 	private final int visibleRows;
-	private final int hiddenRows;
-	private final List<IRecipeSlotDrawable> slots;
+	private final Consumer<List<IRecipeSlotDrawable>> claimSlots;
+	private List<IRecipeSlotDrawable> slots;
+	private @Nullable Placement placement;
 
 	public static ImmutableSize2i calculateSize(int columns, int visibleRows) {
 		IDrawable slotBackground = Internal.getTextures().getSlot();
@@ -36,24 +39,64 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 	}
 
 	public static ScrollGridRecipeWidget create(List<IRecipeSlotDrawable> slots, int columns, int visibleRows) {
+		return create(slots, columns, visibleRows, ignored -> {});
+	}
+
+	public static ScrollGridRecipeWidget create(List<IRecipeSlotDrawable> slots, int columns, int visibleRows, Consumer<List<IRecipeSlotDrawable>> claimSlots) {
 		ImmutableSize2i size = calculateSize(columns, visibleRows);
 		ImmutableRect2i area = new ImmutableRect2i(0, 0, size.width(), size.height());
-		return new ScrollGridRecipeWidget(area, columns, visibleRows, slots);
+		return new ScrollGridRecipeWidget(area, columns, visibleRows, slots, claimSlots);
 	}
 
 	public ScrollGridRecipeWidget(ImmutableRect2i area, int columns, int visibleRows, List<IRecipeSlotDrawable> slots) {
+		this(area, columns, visibleRows, slots, ignored -> {});
+	}
+
+	private ScrollGridRecipeWidget(ImmutableRect2i area, int columns, int visibleRows, List<IRecipeSlotDrawable> slots, Consumer<List<IRecipeSlotDrawable>> claimSlots) {
 		super(area);
-		this.slots = slots;
+		this.claimSlots = claimSlots;
 		this.slotBackground = Internal.getTextures().getSlot();
 
 		this.columns = columns;
 		this.visibleRows = visibleRows;
-		this.hiddenRows = GridScrollMath.getHiddenRows(slots.size(), columns, visibleRows);
+		this.slots = List.copyOf(slots);
+		claimSlots.accept(this.slots);
+	}
+
+	@Override
+	public ScrollGridRecipeWidget setSlots(List<IRecipeSlotDrawable> slots) {
+		this.slots = List.copyOf(slots);
+		claimSlots.accept(this.slots);
+		resetScroll();
+		return this;
+	}
+
+	@Override
+	public ScrollGridRecipeWidget setScrollbarVisibility(ScrollbarVisibility visibility) {
+		super.setScrollbarVisibility(visibility);
+		return this;
+	}
+
+	@Override
+	protected ImmutableRect2i getWidgetArea() {
+		ImmutableRect2i widgetArea = area;
+		if (!isScrollbarVisible()) {
+			widgetArea = widgetArea.cropRight(getScrollBoxScrollbarExtraWidth());
+		}
+		if (placement != null) {
+			return placement.align(widgetArea);
+		}
+		return widgetArea;
+	}
+
+	private int getHiddenRows() {
+		return GridScrollMath.getHiddenRows(slots.size(), columns, visibleRows);
 	}
 
 	@Override
 	public ScrollGridRecipeWidget setPosition(int xPos, int yPos) {
 		this.area = area.setPosition(xPos, yPos);
+		this.placement = null;
 		return this;
 	}
 
@@ -66,21 +109,13 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 		HorizontalAlignment horizontalAlignment,
 		VerticalAlignment verticalAlignment
 	) {
-		PlaceableUtil.setPosition(
-			this,
-			areaX,
-			areaY,
-			areaWidth,
-			areaHeight,
-			horizontalAlignment,
-			verticalAlignment
-		);
+		this.placement = new Placement(new ImmutableRect2i(areaX, areaY, areaWidth, areaHeight), horizontalAlignment, verticalAlignment);
 		return this;
 	}
 
 	@Override
 	public int getWidth() {
-		return area.width();
+		return getWidgetArea().width();
 	}
 
 	@Override
@@ -90,7 +125,7 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 
 	@Override
 	public ScreenRectangle getScreenRectangle() {
-		return area.toScreenRectangle();
+		return getArea();
 	}
 
 	@Override
@@ -103,6 +138,7 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 
 	@Override
 	protected int getHiddenAmount() {
+		int hiddenRows = getHiddenRows();
 		if (isSmoothScrolling()) {
 			return hiddenRows * slotBackground.getHeight();
 		}
@@ -203,6 +239,7 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 
 	@Override
 	protected float calculateScrollAmount(double scrollDeltaY) {
+		int hiddenRows = getHiddenRows();
 		if (isSmoothScrolling()) {
 			int hiddenPixels = hiddenRows * slotBackground.getHeight();
 			if (hiddenPixels == 0) {
@@ -223,7 +260,7 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 
 	private int getScrollPixelOffset() {
 		if (isSmoothScrolling()) {
-			return GridScrollMath.getSmoothScrollPixelOffset(hiddenRows, slotBackground.getHeight(), getScrollOffsetY());
+			return GridScrollMath.getSmoothScrollPixelOffset(getHiddenRows(), slotBackground.getHeight(), getScrollOffsetY());
 		}
 		return getFirstRow() * slotBackground.getHeight();
 	}
@@ -232,10 +269,18 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 		if (isSmoothScrolling()) {
 			return GridScrollMath.getFirstRowForSmoothScrollPixelOffset(getScrollPixelOffset(), slotBackground.getHeight());
 		}
-		return GridScrollMath.getFirstRowForScrollOffset(hiddenRows, getScrollOffsetY());
+		return GridScrollMath.getFirstRowForScrollOffset(getHiddenRows(), getScrollOffsetY());
 	}
 
 	private int getRowPixelOffset() {
 		return getScrollPixelOffset() % slotBackground.getHeight();
+	}
+
+	private record Placement(ImmutableRect2i area, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
+		private ImmutableRect2i align(ImmutableRect2i widgetArea) {
+			int x = area.x() + horizontalAlignment.getXPos(area.width(), widgetArea.width());
+			int y = area.y() + verticalAlignment.getYPos(area.height(), widgetArea.height());
+			return widgetArea.setPosition(x, y);
+		}
 	}
 }

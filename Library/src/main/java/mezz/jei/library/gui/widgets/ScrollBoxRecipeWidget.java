@@ -3,6 +3,7 @@ package mezz.jei.library.gui.widgets;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
+import mezz.jei.api.gui.widgets.ScrollbarVisibility;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientConfigs;
@@ -20,6 +21,12 @@ public class ScrollBoxRecipeWidget extends AbstractScrollWidget implements IScro
 
 	public ScrollBoxRecipeWidget(int width, int height, int xPos, int yPos) {
 		super(new ImmutableRect2i(xPos, yPos, width, height));
+	}
+
+	@Override
+	public ScrollBoxRecipeWidget setScrollbarVisibility(ScrollbarVisibility visibility) {
+		super.setScrollbarVisibility(visibility);
+		return this;
 	}
 
 	@Override
