@@ -269,6 +269,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 		inputHandler = new InputGroup(
 			"RecipesGui",
+			new RecipeCategoryScrollInputHandler(this),
 			this.resizeInputHandler,
 			this.scrollbar,
 			this.layouts,
@@ -879,6 +880,34 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		);
 	}
 
+	private static final class RecipeCategoryScrollInputHandler implements IInputTarget {
+		private final RecipesGui recipesGui;
+
+		private RecipeCategoryScrollInputHandler(RecipesGui recipesGui) {
+			this.recipesGui = recipesGui;
+		}
+
+		@Override
+		public Optional<IInputInteraction> beginInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
+			return Optional.empty();
+		}
+
+		@Override
+		public boolean scroll(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+			if (!recipesGui.isMouseOver(mouseX, mouseY) || !Minecraft.getInstance().hasShiftDown()) {
+				return false;
+			}
+			if (scrollDeltaY < 0) {
+				recipesGui.logic.nextRecipeCategory();
+				return true;
+			} else if (scrollDeltaY > 0) {
+				recipesGui.logic.previousRecipeCategory();
+				return true;
+			}
+			return false;
+		}
+	}
+
 	private static final class RecipeNavigationInputHandler implements IInputTarget {
 		private final RecipesGui recipesGui;
 
@@ -903,16 +932,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		@Override
 		public boolean scroll(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
 			if (recipesGui.isMouseOver(mouseX, mouseY)) {
-				Minecraft minecraft = Minecraft.getInstance();
-				if (minecraft.hasShiftDown()) {
-					if (scrollDeltaY < 0) {
-						recipesGui.logic.nextRecipeCategory();
-						return true;
-					} else if (scrollDeltaY > 0) {
-						recipesGui.logic.previousRecipeCategory();
-						return true;
-					}
-				} else if (recipesGui.logic.isScrolling() && scrollDeltaY != 0) {
+				if (recipesGui.logic.isScrolling() && scrollDeltaY != 0) {
 					int scrollRate = Internal.getClientConfigs().getClientConfig().smoothScrollRate().get();
 					recipesGui.logic.scrollRecipes(-scrollDeltaY * scrollRate);
 					return true;

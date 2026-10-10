@@ -4,20 +4,26 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.RecipeGuiNavigationMode;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.Scrollbar;
+import mezz.jei.common.recipes.TagRecipeUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ReflectionUtil;
 import mezz.jei.gui.recipes.IRecipeGuiLogic;
 import mezz.jei.gui.recipes.RecipeGuiLayouts;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.library.plugins.jei.tags.ITagInfoRecipe;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.mezzdev.config.api.value.IConfigValue;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -101,8 +107,10 @@ final class RecipeGuiScrollingClientTest {
 				gui().back();
 				check(logic().getScrollState().getFirstRecipeIndex() > 9_900, "Back must restore the scrolled lookup");
 			});
+			assertCategoryScrollingOverTagGrids(context);
 		} finally {
 			context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+			context.getInput().releaseKey(InputConstants.KEY_LSHIFT);
 			context.runOnClient(client -> {
 				gui().onClose();
 				client.gui.setScreen(null);
@@ -110,6 +118,71 @@ final class RecipeGuiScrollingClientTest {
 			});
 		}
 	}
+
+	private static void assertCategoryScrollingOverTagGrids(ClientGameTestContext context) {
+		for (RecipeGuiNavigationMode mode : RecipeGuiNavigationMode.values()) {
+			context.runOnClient(client -> {
+				var config = Internal.getClientConfigs().getClientConfig();
+				config.recipeGuiNavigationMode().set(mode);
+				config.maxRecipeGuiColumns().set(1);
+			});
+			for (Identifier registry : List.of(Registries.ITEM.identifier(), Registries.BLOCK.identifier())) {
+				IRecipeType<ITagInfoRecipe> type = IRecipeType.create(TagRecipeUtil.getRecipeTypeUid(registry), ITagInfoRecipe.class);
+				IRecipeCategory<?> category = context.computeOnClient(client -> {
+					gui().showTypes(List.of(type, RecipeTypes.CRAFTING, RecipeTypes.SMELTING));
+					var tags = Internal.getJeiRuntime().getRecipeManager().getRecipeCategory(type);
+					logic().setRecipeCategory(tags);
+					return tags;
+				});
+				moveToTagGrid(context);
+				String page = context.computeOnClient(client -> logic().getPageString());
+				context.getInput().scroll(-1);
+				context.waitTick();
+				context.runOnClient(client -> {
+					check(logic().getSelectedRecipeCategory() == category, "Regular scrolling over a tag grid must stay in its category");
+					check(logic().getPageString().equals(page), "Regular scrolling over a tag grid must not turn recipe pages");
+				});
+				context.getInput().holdKey(InputConstants.KEY_LSHIFT);
+				context.waitTick();
+				context.runOnClient(client -> check(client.hasShiftDown(), "The category shortcut must receive held Shift input"));
+				for (int direction : List.of(-1, 1)) {
+					IRecipeCategory<?> expected = context.computeOnClient(client -> {
+						logic().setRecipeCategory(category);
+						var categories = logic().getRecipeCategories();
+						int index = categories.indexOf(category);
+						return categories.get(Math.floorMod(index - direction, categories.size()));
+					});
+					moveToTagGrid(context);
+					context.getInput().scroll(direction);
+					context.waitTick();
+					context.runOnClient(client -> check(logic().getSelectedRecipeCategory() == expected,
+						"Shift + scroll over " + registry + " tags must change category in " + mode + " mode (direction " + direction + ")"));
+				}
+				context.getInput().releaseKey(InputConstants.KEY_LSHIFT);
+			}
+		}
+	}
+
+	private static void moveToTagGrid(ClientGameTestContext context) {
+		Point point = context.computeOnClient(client -> {
+			var area = gui().getArea();
+			for (int y = area.y(); y < area.y() + area.height(); y += 2) {
+				for (int x = area.x(); x < area.x() + area.width(); x += 2) {
+					var layout = gui().getRecipeLayoutUnderMouse(x, y).orElse(null);
+					if (layout != null && layout.getRecipeLayout().getSlotUnderMouse(x, y)
+						.filter(slot -> slot.slot().getRole() == RecipeIngredientRole.RENDER_ONLY)
+						.isPresent()
+					) {
+						return new Point(x, y);
+					}
+				}
+			}
+			throw new AssertionError("Expected a visible tag ingredient grid");
+		});
+		move(context, point.x(), point.y());
+	}
+
+	private record Point(int x, int y) {}
 
 	private static RecipesGui gui() {
 		return (RecipesGui) Internal.getJeiRuntime().getRecipesGui();
