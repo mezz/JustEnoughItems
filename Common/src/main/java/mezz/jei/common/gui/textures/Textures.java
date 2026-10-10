@@ -320,24 +320,18 @@ public class Textures {
 		return brewingStandArrow;
 	}
 
-	public IScalableDrawable getButtonDisabled() {
+	public IScalableDrawable getButtonBackground(boolean enabled, boolean hovered, boolean pressed) {
+		if (pressed) {
+			if (hovered) {
+				return buttonPressedHighlight;
+			}
+			return buttonPressed;
+		} else if (enabled) {
+			if (hovered) {
+				return buttonHighlight;
+			}
+			return buttonEnabled;
+		}
 		return buttonDisabled;
 	}
-
-	public IScalableDrawable getButtonEnabled() {
-		return buttonEnabled;
-	}
-
-	public IScalableDrawable getButtonHighlight() {
-		return buttonHighlight;
-	}
-
-	public IScalableDrawable getButtonPressed() {
-		return buttonPressed;
-	}
-
-	public IScalableDrawable getButtonPressedHighlight() {
-		return buttonPressedHighlight;
-	}
-
 }

@@ -2,7 +2,6 @@ package mezz.jei.debug;
 
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.runtime.IIngredientManager;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -15,7 +14,7 @@ import java.util.List;
 public class DebugRecipe {
 	private static int NEXT_ID = 0;
 
-	private final Button button;
+	private final Component buttonText;
 	private final Identifier id;
 	private final boolean slotDisplayComparison;
 	private final List<ItemStack> largeIngredientList;
@@ -25,9 +24,7 @@ public class DebugRecipe {
 	}
 
 	private DebugRecipe(Component buttonText, boolean slotDisplayComparison, List<ItemStack> largeIngredientList) {
-		this.button = Button.builder(buttonText, b -> {})
-			.bounds(0, 0, 40, 20)
-			.build();
+		this.buttonText = buttonText;
 		this.id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "debug_recipe_" + NEXT_ID);
 		this.slotDisplayComparison = slotDisplayComparison;
 		this.largeIngredientList = List.copyOf(largeIngredientList);
@@ -67,12 +64,8 @@ public class DebugRecipe {
 		return slotDisplayComparison;
 	}
 
-	public Button getButton() {
-		return button;
-	}
-
-	public boolean checkHover(double mouseX, double mouseY) {
-		return this.button.isMouseOver(mouseX, mouseY);
+	public Component getButtonText() {
+		return buttonText;
 	}
 
 	public Identifier getId() {
