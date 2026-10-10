@@ -34,6 +34,7 @@ public class JeiFabricSingleplayerClientGameTest implements FabricClientGameTest
 					InventoryEffectsClientTest.run(context);
 					assertConfigScreenRenders(context, "jei-config-world");
 					RecipeSlotTooltipClientTest.run(context);
+					RecipeScrollGridClientTest.run(context);
 					RecipeGuiScrollingClientTest.run(context);
 				}
 				JeiFabricClientGameTestAssertions.assertClientRecipesCleared(context, "Fabric singleplayer");
