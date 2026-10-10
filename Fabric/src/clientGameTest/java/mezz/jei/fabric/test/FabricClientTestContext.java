@@ -106,6 +106,11 @@ final class FabricClientTestContext {
 				.jei$invokeOnPress(client.getWindow().getWindow(), button, action, 0));
 		}
 
+		void scroll(double horizontal, double vertical) {
+			ClientTestUtil.runOnClient(client -> ((MouseHandlerAccessor) client.mouseHandler)
+				.jei$invokeOnScroll(client.getWindow().getWindow(), horizontal, vertical));
+		}
+
 		void scroll(double vertical) {
 			ClientTestUtil.runOnClient(client -> ((MouseHandlerAccessor) client.mouseHandler)
 				.jei$invokeOnScroll(client.getWindow().getWindow(), 0, vertical));
