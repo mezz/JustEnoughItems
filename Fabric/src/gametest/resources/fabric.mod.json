@@ -5,11 +5,15 @@
   "name": "JEI Fabric Tests",
   "environment": "*",
   "entrypoints": {
+    "main": [
+      "mezz.jei.fabric.test.NetherBiomeTestMod"
+    ],
     "jei_mod_plugin": [
       "mezz.jei.fabric.test.BookmarkManagerClientGameTest"
     ],
     "fabric-gametest": [
-      "mezz.jei.fabric.test.FluidIngredientGameTests"
+      "mezz.jei.fabric.test.FluidIngredientGameTests",
+      "mezz.jei.fabric.test.NetherBiomeFuelGameTests"
     ],
     "fabric-client-gametest": [
       "mezz.jei.fabric.test.BookmarkManagerClientGameTest",
