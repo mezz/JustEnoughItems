@@ -46,6 +46,7 @@ public class UserInputRouter {
 	private boolean handleImmediateClick(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 		IUserInputHandler oldClick = this.pending.remove(input.getKey());
 		if (oldClick != null) {
+			oldClick.unfocus();
 			if (DebugConfig.isDebugInputsEnabled()) {
 				LOGGER.debug("{} canceled previous user input: {}", debugName, oldClick);
 			}
@@ -72,6 +73,7 @@ public class UserInputRouter {
 	private boolean handleSimulateClick(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 		IUserInputHandler oldClick = this.pending.remove(input.getKey());
 		if (oldClick != null) {
+			oldClick.unfocus();
 			if (DebugConfig.isDebugInputsEnabled()) {
 				LOGGER.debug("{} canceled pending user input: {}", debugName, oldClick);
 			}
@@ -104,6 +106,7 @@ public class UserInputRouter {
 		if (DebugConfig.isDebugInputsEnabled()) {
 			LOGGER.debug("{}: The GUI has changed, clearing all pending clicks", debugName);
 		}
+		this.pending.values().forEach(IUserInputHandler::unfocus);
 		this.combinedInputHandler.unfocus();
 		this.pending.clear();
 	}

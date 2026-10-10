@@ -5,13 +5,19 @@ import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.common.input.IInternalKeyMappings;
+import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.IInputTarget;
+import mezz.jei.common.input.UserInput;
 import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.gui.screens.Screen;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class RecipeLayoutInputHandler<T> implements IJeiInputHandler {
+public class RecipeLayoutInputHandler<T> implements IJeiInputHandler, IInputTarget {
 	private final RecipeLayout<T> recipeLayout;
 	private final List<IJeiInputHandler> inputHandlers;
 	private final List<IJeiGuiEventListener> guiEventListeners;
@@ -27,6 +33,60 @@ public class RecipeLayoutInputHandler<T> implements IJeiInputHandler {
 	@Override
 	public Rect2i getArea() {
 		return recipeLayout.getRect();
+	}
+
+	@Override
+	public Optional<IUserInputHandler> beginInput(Screen screen, UserInput input, IInternalKeyMappings keys) {
+		if (!recipeLayout.isMouseOver(input.getMouseX(), input.getMouseY())) {
+			return Optional.empty();
+		}
+		Rect2i recipeArea = recipeLayout.getRect();
+		double mouseX = input.getMouseX() - recipeArea.getX();
+		double mouseY = input.getMouseY() - recipeArea.getY();
+		for (IJeiInputHandler handler : inputHandlers) {
+			if (handler instanceof IInputTarget target && MathUtil.contains(handler.getArea(), mouseX, mouseY)) {
+				UserInput relativeInput = relativeInput(input, recipeLayout, handler);
+				Optional<IUserInputHandler> accepted = target.beginInput(screen, relativeInput, keys);
+				if (accepted.isPresent()) {
+					return accepted.map(click -> new WidgetInputHandler(click, recipeLayout, handler));
+				}
+			}
+		}
+		return Optional.empty();
+	}
+
+	@Override
+	public void resetInput() {
+		for (IJeiInputHandler handler : inputHandlers) {
+			if (handler instanceof IInputTarget target) {
+				target.resetInput();
+			}
+		}
+	}
+
+	private static UserInput relativeInput(UserInput input, RecipeLayout<?> layout, IJeiInputHandler widget) {
+		Rect2i recipeArea = layout.getRect();
+		Rect2i position = widget.getArea();
+		return new UserInput(input.getKey(),
+			input.getMouseX() - recipeArea.getX() - position.getX(),
+			input.getMouseY() - recipeArea.getY() - position.getY(),
+			input.getModifiers(), input.getInputType());
+	}
+
+	private record WidgetInputHandler(IUserInputHandler click, RecipeLayout<?> layout, IJeiInputHandler widget) implements IUserInputHandler {
+		@Override
+		public Optional<IUserInputHandler> handleUserInput(Screen screen, UserInput input, IInternalKeyMappings keys) {
+			if (!layout.isMouseOver(input.getMouseX(), input.getMouseY())) {
+				click.unfocus();
+				return Optional.of(this);
+			}
+			return click.handleUserInput(screen, relativeInput(input, layout, widget), keys);
+		}
+
+		@Override
+		public void unfocus() {
+			click.unfocus();
+		}
 	}
 
 	@Override

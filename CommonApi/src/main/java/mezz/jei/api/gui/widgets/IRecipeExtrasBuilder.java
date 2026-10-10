@@ -12,6 +12,7 @@ import net.minecraft.network.chat.FormattedText;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Create per-recipe extras like {@link IRecipeWidget} and {@link IJeiInputHandler}.
@@ -89,6 +90,35 @@ public interface IRecipeExtrasBuilder {
 	 * @since 11.61.0
 	 */
 	IDrawableWidget addTooltipArea(int xPos, int yPos, int width, int height);
+
+	/**
+	 * Add a button to the recipe layout.
+	 *
+	 * The button is initially empty. Set its contents and configure it with methods in {@link IButtonWidget}.
+	 *
+	 * @param width positive button width in pixels
+	 * @param height positive button height in pixels
+	 * @param onPress called when a left click is released inside the button
+	 *
+	 * @since 11.69.0
+	 */
+	IButtonWidget<?> addButton(int width, int height, Runnable onPress);
+
+	/**
+	 * Add a cycle button to the recipe layout.
+	 *
+	 * The button is initially empty. Set its contents and configure it with methods in {@link ICycleButtonWidget}.
+	 *
+	 * @param values the values to cycle through, in order. The list is copied and must not be empty.
+	 * @param initialValue a value equal to one of {@code values}
+	 * @param width positive button width in pixels
+	 * @param height positive button height in pixels
+	 * @param onValueChanged called with the new value after clicking the button changes the selection
+	 * @param <T> the type of values the button cycles through
+	 *
+	 * @since 11.69.0
+	 */
+	<T> ICycleButtonWidget<T> addCycleButton(List<T> values, T initialValue, int width, int height, Consumer<T> onValueChanged);
 
 	/**
 	 * Add a {@link IRecipeWidget} for the recipe category.
