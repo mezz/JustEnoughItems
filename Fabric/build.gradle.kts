@@ -302,7 +302,7 @@ loom {
             configName = "Fabric Client Game Tests Without AMECS"
             ideConfigGenerated(false)
             runDir(loomRunDir.resolve("clientGameTestWithoutAmecs").toString())
-            property("jei.fabric.clientTest", "keyMapping")
+            property("jei.fabric.clientTest", "withoutAmecs")
             vmArgs(
                 "-Dfabric.log.level=info"
             )

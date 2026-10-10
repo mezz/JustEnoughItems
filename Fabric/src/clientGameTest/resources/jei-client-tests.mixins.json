@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "InputConstantsMixin",
-    "KeyboardHandlerAccessor"
+    "KeyboardHandlerAccessor",
+    "MouseHandlerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

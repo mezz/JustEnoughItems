@@ -15,6 +15,8 @@ import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.gui.placement.IPlaceable;
 import mezz.jei.api.gui.widgets.IDrawableWidget;
+import mezz.jei.api.gui.widgets.IButtonWidget;
+import mezz.jei.api.gui.widgets.ICycleButtonWidget;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
@@ -34,6 +36,9 @@ import mezz.jei.common.gui.elements.DrawableCombined;
 import mezz.jei.common.gui.elements.DrawableRecipeWidget;
 import mezz.jei.common.gui.elements.OffsetDrawable;
 import mezz.jei.common.gui.elements.TextWidget;
+import mezz.jei.common.gui.elements.AbstractRecipeButtonWidget;
+import mezz.jei.common.gui.elements.RecipeButtonWidget;
+import mezz.jei.common.gui.elements.RecipeCycleButtonWidget;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutablePoint2i;
@@ -61,6 +66,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasBuilder {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -495,6 +501,25 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		widget.setPosition(xPos, yPos);
 		addWidget(widget);
 		return widget;
+	}
+
+	@Override
+	public IButtonWidget<?> addButton(int width, int height, Runnable onPress) {
+		RecipeButtonWidget widget = new RecipeButtonWidget(width, height, onPress);
+		registerButton(widget);
+		return widget;
+	}
+
+	@Override
+	public <T> ICycleButtonWidget<T> addCycleButton(List<T> values, T initialValue, int width, int height, Consumer<T> onValueChanged) {
+		RecipeCycleButtonWidget<T> widget = new RecipeCycleButtonWidget<>(values, initialValue, width, height, onValueChanged);
+		registerButton(widget);
+		return widget;
+	}
+
+	private void registerButton(AbstractRecipeButtonWidget<?> widget) {
+		addWidget(widget);
+		addInputHandler(widget);
 	}
 
 	@Override

@@ -521,6 +521,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
+	public void removed() {
+		inputHandler.handleGuiChange();
+		super.removed();
+	}
+
+	@Override
 	public void show(List<IFocus<?>> focuses) {
 		IFocusGroup checkedFocuses = focusFactory.createFocusGroup(focuses);
 		if (logic.showFocus(checkedFocuses)) {

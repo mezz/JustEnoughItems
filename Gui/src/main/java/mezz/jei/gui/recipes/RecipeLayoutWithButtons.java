@@ -2,6 +2,7 @@ package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.buttons.IIconButtonController;
 import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -11,6 +12,7 @@ import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.bookmarks.RecipeBookmark;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.common.input.IUserInputHandler;
+import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.handlers.CombinedInputHandler;
 import net.minecraft.client.Minecraft;
@@ -218,7 +220,14 @@ public record RecipeLayoutWithButtons<R>(
 				InputConstants.Key key = input.getKey();
 				boolean simulate = input.isSimulate();
 
-				if (recipeLayout.getInputHandler().handleInput(mouseX, mouseY, input)) {
+				IJeiInputHandler inputHandler = recipeLayout.getInputHandler();
+				if (inputHandler instanceof IInputTarget target && input.isSimulate()) {
+					Optional<IUserInputHandler> accepted = target.beginInput(screen, input, keyBindings);
+					if (accepted.isPresent()) {
+						return accepted;
+					}
+				}
+				if (inputHandler.handleInput(mouseX, mouseY, input)) {
 					return Optional.of(this);
 				}
 
@@ -230,6 +239,13 @@ public record RecipeLayoutWithButtons<R>(
 				}
 			}
 			return Optional.empty();
+		}
+
+		@Override
+		public void unfocus() {
+			if (recipeLayout.getInputHandler() instanceof IInputTarget target) {
+				target.resetInput();
+			}
 		}
 
 		private boolean handleCopyRecipeId(IRecipeLayoutDrawable<R> recipeLayout, boolean simulate) {

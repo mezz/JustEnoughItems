@@ -96,6 +96,9 @@ public class RecipeGuiLayouts {
 	}
 
 	public void setRecipeLayoutsWithButtons(List<IRecipeLayoutWithButtons<?>> recipeLayoutsWithButtons) {
+		if (cachedInputHandler != null) {
+			cachedInputHandler.unfocus();
+		}
 		this.recipeLayoutsWithButtons.clear();
 		this.recipeLayoutsWithButtons.addAll(recipeLayoutsWithButtons);
 		this.cachedInputHandler = null;
