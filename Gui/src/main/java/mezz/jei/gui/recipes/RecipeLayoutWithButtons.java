@@ -264,7 +264,8 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 						.within((x, y) -> recipeLayout.isMouseOver(x, y) && recipeLayout.getSlotUnderMouse(x, y).isEmpty()));
 				}
 			}
-			return Optional.empty();
+			return ApiInputAdapter.beginLegacyInput(screen, input, keyBindings, recipeLayout.getInputHandler())
+				.map(interaction -> new ReleaseInsideBounds(interaction, recipeLayout::isMouseOver));
 		}
 
 		private void copyRecipeId() {
@@ -272,16 +273,20 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 			LocalPlayer player = minecraft.player;
 			IRecipeCategory<R> recipeCategory = recipeLayout.getRecipeCategory();
 			R recipe = recipeLayout.getRecipe();
-			ResourceLocation registryName = recipeCategory.getRegistryName(recipe);
-			if (registryName == null) {
+			List<ResourceLocation> sourceRecipeIds = recipeCategory.getSourceRecipeIds(recipe);
+			if (sourceRecipeIds.isEmpty()) {
 				MutableComponent message = Component.translatable("jei.message.copy.recipe.id.failure");
 				if (player != null) {
 					player.displayClientMessage(message, false);
 				}
 				return;
 			}
-
-			String recipeId = registryName.toString();
+			String recipeId;
+			if (sourceRecipeIds.size() == 1) {
+				recipeId = sourceRecipeIds.getFirst().toString();
+			} else {
+				recipeId = sourceRecipeIds.toString();
+			}
 			minecraft.keyboardHandler.setClipboard(recipeId);
 			MutableComponent message = Component.translatable("jei.message.copy.recipe.id.success", Component.literal(recipeId));
 			if (player != null) {

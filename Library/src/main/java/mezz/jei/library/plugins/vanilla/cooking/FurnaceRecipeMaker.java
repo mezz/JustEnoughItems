@@ -13,8 +13,8 @@ import net.minecraft.world.item.crafting.SmeltingRecipe;
 import java.util.List;
 
 public final class FurnaceRecipeMaker {
-	private static final ResourceLocation SPONGE_RECIPE = ResourceLocation.withDefaultNamespace("sponge");
-	private static final ResourceLocation SPONGE_WITH_BUCKET = ResourceLocation.withDefaultNamespace("sponge_with_bucket");
+	static final ResourceLocation SPONGE_RECIPE = ResourceLocation.withDefaultNamespace("sponge");
+	static final ResourceLocation SPONGE_WITH_BUCKET = ResourceLocation.withDefaultNamespace("sponge_with_bucket");
 
 	private FurnaceRecipeMaker() {
 	}

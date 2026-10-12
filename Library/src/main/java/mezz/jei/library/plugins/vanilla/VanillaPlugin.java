@@ -306,7 +306,7 @@ public class VanillaPlugin implements IModPlugin {
 		var craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
 		var handledCraftingRecipes = craftingRecipes.get(true);
 		var unhandledCraftingRecipes = craftingRecipes.get(false);
-		var specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, jeiHelpers);
+		var specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, jeiHelpers, craftingCategory);
 
 		registration.addRecipes(RecipeTypes.CRAFTING, handledCraftingRecipes);
 		registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes);
@@ -426,7 +426,7 @@ public class VanillaPlugin implements IModPlugin {
 	 * If a special recipe we know how to replace is not present (because it has been removed),
 	 * we do not replace it.
 	 */
-	private static List<RecipeHolder<CraftingRecipe>> replaceSpecialCraftingRecipes(List<RecipeHolder<CraftingRecipe>> unhandledCraftingRecipes, IJeiHelpers jeiHelpers) {
+	private static List<RecipeHolder<CraftingRecipe>> replaceSpecialCraftingRecipes(List<RecipeHolder<CraftingRecipe>> unhandledCraftingRecipes, IJeiHelpers jeiHelpers, CraftingRecipeCategory craftingCategory) {
 		List<RecipeHolder<CraftingRecipe>> recipes = new ArrayList<>();
 		boolean tippedArrowRecipesAdded = false;
 		boolean shulkerBoxColoringRecipesAdded = false;
@@ -436,7 +436,10 @@ public class VanillaPlugin implements IModPlugin {
 			CraftingRecipe recipe = recipeHolder.value();
 			if (recipe instanceof TippedArrowRecipe && !tippedArrowRecipesAdded) {
 				try {
-					recipes.addAll(TippedArrowRecipeMaker.createRecipes(jeiHelpers));
+					for (RecipeHolder<CraftingRecipe> replacement : TippedArrowRecipeMaker.createRecipes(jeiHelpers)) {
+						craftingCategory.addReplacementSource(replacement, recipeHolder);
+						recipes.add(replacement);
+					}
 					tippedArrowRecipesAdded = true;
 				} catch (RuntimeException e) {
 					LOGGER.error("Failed to create JEI recipes for {}", recipe.getClass(), e);
@@ -457,7 +460,10 @@ public class VanillaPlugin implements IModPlugin {
 				}
 			} else if (recipe instanceof ShieldDecorationRecipe && !shieldDecorationRecipesAdded) {
 				try {
-					recipes.addAll(ShieldDecorationRecipeMaker.createRecipes());
+					for (RecipeHolder<CraftingRecipe> replacement : ShieldDecorationRecipeMaker.createRecipes()) {
+						craftingCategory.addReplacementSource(replacement, recipeHolder);
+						recipes.add(replacement);
+					}
 					shieldDecorationRecipesAdded = true;
 				} catch (RuntimeException e) {
 					LOGGER.error("Failed to create JEI recipes for {}", recipe.getClass(), e);

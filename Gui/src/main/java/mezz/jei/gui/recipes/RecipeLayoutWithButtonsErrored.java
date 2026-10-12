@@ -95,6 +95,7 @@ public final class RecipeLayoutWithButtonsErrored<R> implements IRecipeLayoutWit
 				return Optional.empty();
 			}
 			return ApiInputAdapter.beginInput(screen, input, keyBindings, recipeLayout.getInputHandler())
+				.or(() -> ApiInputAdapter.beginLegacyInput(screen, input, keyBindings, recipeLayout.getInputHandler()))
 				.map(interaction -> new ReleaseInsideBounds(interaction, recipeLayout::isMouseOver));
 		}
 
