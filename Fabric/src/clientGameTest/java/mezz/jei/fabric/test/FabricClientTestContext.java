@@ -76,7 +76,8 @@ final class FabricClientTestContext {
 				long window = client.getWindow().getWindow();
 				// Native mouse movement is ignored when the test window loses desktop focus.
 				client.setWindowActive(true);
-				GLFW.glfwSetCursorPos(window, x, y);
+				// Inject one movement event; desktop cursor warps can enqueue a second,
+				// clipped event when the test window is larger than the virtual display.
 				((MouseHandlerAccessor) client.mouseHandler).jei$invokeOnMove(window, x, y);
 				client.mouseHandler.handleAccumulatedMovement();
 			});
