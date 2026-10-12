@@ -105,4 +105,9 @@ public class GrindstoneRecipeCategory extends AbstractRecipeCategory<IJeiGrindst
 	public @Nullable Identifier getIdentifier(IJeiGrindstoneRecipe recipe) {
 		return recipe.getUid();
 	}
+
+	@Override
+	public List<Identifier> getSourceRecipeIds(IJeiGrindstoneRecipe recipe) {
+		return List.of();
+	}
 }

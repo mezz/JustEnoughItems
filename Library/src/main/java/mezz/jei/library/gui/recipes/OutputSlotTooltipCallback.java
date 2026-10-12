@@ -21,17 +21,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 
 public class OutputSlotTooltipCallback implements IRecipeSlotRichTooltipCallback {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final Identifier recipeId;
+	private final @Nullable Identifier recipeId;
+	private final List<Identifier> sourceRecipeIds;
 	private final boolean recipeFromSameModAsCategory;
 
-	public OutputSlotTooltipCallback(Identifier recipeId, IRecipeType<?> recipeType) {
+	public OutputSlotTooltipCallback(@Nullable Identifier recipeId, List<Identifier> sourceRecipeIds, IRecipeType<?> recipeType) {
 		this.recipeId = recipeId;
-		this.recipeFromSameModAsCategory = recipeId.getNamespace().equals(recipeType.getUid().getNamespace());
+		this.sourceRecipeIds = List.copyOf(sourceRecipeIds);
+		this.recipeFromSameModAsCategory = recipeId != null && recipeId.getNamespace().equals(recipeType.getUid().getNamespace());
 	}
 
 	@Override
@@ -49,13 +52,15 @@ public class OutputSlotTooltipCallback implements IRecipeSlotRichTooltipCallback
 		Minecraft minecraft = Minecraft.getInstance();
 		boolean showAdvanced = minecraft.options.advancedItemTooltips || minecraft.hasShiftDown();
 		if (showAdvanced) {
-			MutableComponent recipeId = Component.translatable("jei.tooltip.recipe.id", Component.literal(this.recipeId.toString()));
-			tooltip.add(recipeId.withStyle(ChatFormatting.DARK_GRAY));
+			for (Identifier sourceRecipeId : sourceRecipeIds) {
+				MutableComponent recipeId = Component.translatable("jei.tooltip.recipe.id", Component.literal(sourceRecipeId.toString()));
+				tooltip.add(recipeId.withStyle(ChatFormatting.DARK_GRAY));
+			}
 		}
 	}
 
 	private void addRecipeBy(ITooltipBuilder tooltip, ITypedIngredient<?> displayedIngredient) {
-		if (recipeFromSameModAsCategory) {
+		if (recipeId == null || recipeFromSameModAsCategory) {
 			return;
 		}
 		IModIdHelper modIdHelper = Internal.getJeiRuntime().getJeiHelpers().getModIdHelper();
