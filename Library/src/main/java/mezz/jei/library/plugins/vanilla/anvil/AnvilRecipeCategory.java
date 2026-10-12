@@ -117,6 +117,11 @@ public class AnvilRecipeCategory extends AbstractRecipeCategory<IJeiAnvilRecipe>
 		return recipe.getUid();
 	}
 
+	@Override
+	public List<ResourceLocation> getSourceRecipeIds(IJeiAnvilRecipe recipe) {
+		return List.of();
+	}
+
 	private static boolean playerHasEnoughLevels(@Nullable LocalPlayer player, int cost) {
 		if (player == null) {
 			return true;

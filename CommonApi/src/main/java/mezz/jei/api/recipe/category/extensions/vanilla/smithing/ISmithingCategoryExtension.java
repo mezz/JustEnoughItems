@@ -7,7 +7,11 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.SmithingRecipe;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * Implement this interface instead of just {@link IRecipeCategoryExtension}
@@ -65,6 +69,17 @@ public interface ISmithingCategoryExtension<R extends SmithingRecipe> {
 	 */
 	default <T extends IIngredientAcceptor<T>> void setOutput(R recipe, T ingredientAcceptor) {
 
+	}
+
+	/**
+	 * Override the underlying recipe identifiers shown in advanced tooltips and copied as recipe IDs.
+	 * See {@link IRecipeCategory#getSourceRecipeIds(Object)} for the identifier contract.
+	 *
+	 * @return source identifiers, an empty list for no underlying recipe, or null to use the category default
+	 * @since 15.70.0
+	 */
+	default @Nullable List<ResourceLocation> getSourceRecipeIds(R recipe) {
+		return null;
 	}
 
 	/**

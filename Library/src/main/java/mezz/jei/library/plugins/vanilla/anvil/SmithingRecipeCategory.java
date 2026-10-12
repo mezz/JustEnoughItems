@@ -96,6 +96,18 @@ public class SmithingRecipeCategory extends AbstractRecipeCategory<SmithingRecip
 	}
 
 	@Override
+	public List<ResourceLocation> getSourceRecipeIds(SmithingRecipe recipe) {
+		ISmithingCategoryExtension<? super SmithingRecipe> extension = getExtension(recipe);
+		if (extension != null) {
+			List<ResourceLocation> sourceRecipeIds = extension.getSourceRecipeIds(recipe);
+			if (sourceRecipeIds != null) {
+				return sourceRecipeIds;
+			}
+		}
+		return List.of(recipe.getId());
+	}
+
+	@Override
 	public <R extends SmithingRecipe> void addExtension(Class<? extends R> recipeClass, ISmithingCategoryExtension<R> extension) {
 		ErrorUtil.checkNotNull(recipeClass, "recipeClass");
 		ErrorUtil.checkNotNull(extension, "extension");

@@ -12,6 +12,8 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -84,4 +86,15 @@ public interface IRecipeCategoryExtension {
 	default boolean handleInput(double mouseX, double mouseY, InputConstants.Key input) {
 		return false;
 	}
+	/**
+	 * Overrides the source identifiers shown in advanced tooltips and copied as recipe IDs.
+	 * See {@link IRecipeCategory#getSourceRecipeIds(Object)} for the identifier contract.
+	 *
+	 * @return source identifiers, an empty list for no underlying recipe, or null for the category default
+	 * @since 15.70.0
+	 */
+	default @Nullable List<ResourceLocation> getSourceRecipeIds() {
+		return null;
+	}
+
 }

@@ -22,17 +22,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 
 public class OutputSlotTooltipCallback implements IRecipeSlotRichTooltipCallback {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final ResourceLocation recipeName;
+	private final @Nullable ResourceLocation recipeId;
+	private final List<ResourceLocation> sourceRecipeIds;
 	private final boolean recipeFromSameModAsCategory;
 
-	public OutputSlotTooltipCallback(ResourceLocation recipeName, RecipeType<?> recipeType) {
-		this.recipeName = recipeName;
-		this.recipeFromSameModAsCategory = recipeName.getNamespace().equals(recipeType.getUid().getNamespace());
+	public OutputSlotTooltipCallback(@Nullable ResourceLocation recipeId, List<ResourceLocation> sourceRecipeIds, RecipeType<?> recipeType) {
+		this.recipeId = recipeId;
+		this.sourceRecipeIds = List.copyOf(sourceRecipeIds);
+		this.recipeFromSameModAsCategory = recipeId != null && recipeId.getNamespace().equals(recipeType.getUid().getNamespace());
 	}
 
 	@Override
@@ -50,13 +53,15 @@ public class OutputSlotTooltipCallback implements IRecipeSlotRichTooltipCallback
 		Minecraft minecraft = Minecraft.getInstance();
 		boolean showAdvanced = minecraft.options.advancedItemTooltips || Screen.hasShiftDown();
 		if (showAdvanced) {
-			MutableComponent recipeId = Component.translatable("jei.tooltip.recipe.id", Component.literal(recipeName.toString()));
-			tooltip.add(recipeId.withStyle(ChatFormatting.DARK_GRAY));
+			for (ResourceLocation sourceRecipeId : sourceRecipeIds) {
+				MutableComponent recipeId = Component.translatable("jei.tooltip.recipe.id", Component.literal(sourceRecipeId.toString()));
+				tooltip.add(recipeId.withStyle(ChatFormatting.DARK_GRAY));
+			}
 		}
 	}
 
 	private void addRecipeBy(ITooltipBuilder tooltip, ITypedIngredient<?> displayedIngredient) {
-		if (recipeFromSameModAsCategory) {
+		if (recipeId == null || recipeFromSameModAsCategory) {
 			return;
 		}
 		IModIdHelper modIdHelper = Internal.getJeiRuntime().getJeiHelpers().getModIdHelper();
@@ -67,7 +72,7 @@ public class OutputSlotTooltipCallback implements IRecipeSlotRichTooltipCallback
 		if (ingredientModId == null) {
 			return;
 		}
-		String recipeModId = recipeName.getNamespace();
+		String recipeModId = recipeId.getNamespace();
 		if (recipeModId.equals(ingredientModId)) {
 			return;
 		}
