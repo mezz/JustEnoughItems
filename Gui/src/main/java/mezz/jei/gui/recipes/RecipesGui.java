@@ -897,10 +897,10 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			if (!recipesGui.isMouseOver(mouseX, mouseY) || !Minecraft.getInstance().hasShiftDown()) {
 				return false;
 			}
-			// Match vanilla's wheel direction when Shift-wheel is reported as horizontal scrolling.
+			// Preserve wheel direction when Shift-wheel is reported as horizontal scrolling.
 			double scrollDelta = scrollDeltaY;
 			if (scrollDelta == 0) {
-				scrollDelta = -scrollDeltaX;
+				scrollDelta = scrollDeltaX;
 			}
 			if (scrollDelta < 0) {
 				recipesGui.logic.nextRecipeCategory();

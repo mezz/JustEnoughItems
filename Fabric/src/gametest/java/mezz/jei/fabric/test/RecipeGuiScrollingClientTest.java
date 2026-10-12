@@ -157,8 +157,8 @@ final class RecipeGuiScrollingClientTest {
 			context.waitTick();
 			context.runOnClient(client -> check(client.hasShiftDown(), "The category shortcut must receive held Shift input"));
 			for (int direction : List.of(-1, 1)) {
-				// Shift-wheel can arrive on either axis. Match vanilla's horizontal fallback and prefer vertical input on diagonals.
-				for (Point wheel : List.of(new Point(0, direction), new Point(-direction, 0), new Point(direction, direction))) {
+				// Moving Shift-wheel input between axes must preserve its direction. Vertical input wins on diagonals.
+				for (Point wheel : List.of(new Point(0, direction), new Point(direction, 0), new Point(direction, direction), new Point(-direction, direction))) {
 					IRecipeCategory<?> expected = context.computeOnClient(client -> {
 						logic().setRecipeCategory(category);
 						var categories = logic().getRecipeCategories();
@@ -169,7 +169,7 @@ final class RecipeGuiScrollingClientTest {
 					context.getInput().scroll(wheel.x(), wheel.y());
 					context.waitTick();
 					context.runOnClient(client -> check(logic().getSelectedRecipeCategory() == expected,
-						"Shift + scroll over " + description + " must change category in " + mode + " mode (x=" + wheel.x() + ", y=" + wheel.y() + ", shift=" + shiftKey + ")"));
+						"Shift + scroll over " + description + " must select " + expected.getRecipeType() + " in " + mode + " mode (x=" + wheel.x() + ", y=" + wheel.y() + ", shift=" + shiftKey + ")"));
 				}
 			}
 			context.getInput().releaseKey(shiftKey);
