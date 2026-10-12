@@ -1,5 +1,7 @@
 package mezz.jei.library.plugins.vanilla.crafting;
 
+import mezz.jei.api.recipe.category.extensions.IRecipeCategoryExtension;
+
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.RecipeTypes;
@@ -27,10 +29,12 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.Blocks;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.Map;
 
 public class CraftingRecipeCategory extends AbstractRecipeCategory<CraftingRecipe> implements IExtendableRecipeCategory<CraftingRecipe, ICraftingCategoryExtension> {
 	public static final int width = 116;
@@ -38,6 +42,7 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<CraftingRecip
 
 	private final ICraftingGridHelper craftingGridHelper;
 	private final ExtendableRecipeCategoryHelper<Recipe<?>, ICraftingCategoryExtension> extendableHelper = new ExtendableRecipeCategoryHelper<>(CraftingRecipe.class);
+	private final Map<ResourceLocation, ResourceLocation> replacementSources = new HashMap<>();
 
 	public CraftingRecipeCategory(IGuiHelper guiHelper) {
 		super(
@@ -107,6 +112,20 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<CraftingRecip
 		ErrorUtil.checkNotNull(extensionFilter, "extensionFilter");
 		ErrorUtil.checkNotNull(extensionFactory, "extensionFactory");
 		extendableHelper.addRecipeExtensionFactory(recipeClass, extensionFilter, extensionFactory);
+	}
+
+	@Override
+	public List<ResourceLocation> getSourceRecipeIds(CraftingRecipe recipe) {
+		return extendableHelper.getOptionalRecipeExtension(recipe)
+			.map(IRecipeCategoryExtension::getSourceRecipeIds)
+			.orElseGet(() -> {
+				ResourceLocation identifier = getRegistryName(recipe);
+				return List.of(replacementSources.getOrDefault(identifier, identifier));
+			});
+	}
+
+	public void addReplacementSource(CraftingRecipe replacement, CraftingRecipe source) {
+		replacementSources.put(replacement.getId(), source.getId());
 	}
 
 	@Override

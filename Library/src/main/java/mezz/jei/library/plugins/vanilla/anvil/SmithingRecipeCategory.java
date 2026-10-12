@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 public class SmithingRecipeCategory extends AbstractRecipeCategory<UpgradeRecipe> implements IExtendableSmithingRecipeCategory {
 	private final Map<Class<? extends UpgradeRecipe>, ISmithingCategoryExtension<?>> extensions = new HashMap<>();
@@ -66,6 +67,18 @@ public class SmithingRecipeCategory extends AbstractRecipeCategory<UpgradeRecipe
 	@Override
 	public ResourceLocation getRegistryName(UpgradeRecipe recipe) {
 		return recipe.getId();
+	}
+
+	@Override
+	public List<ResourceLocation> getSourceRecipeIds(UpgradeRecipe recipe) {
+		ISmithingCategoryExtension<? super UpgradeRecipe> extension = getExtension(recipe);
+		if (extension != null) {
+			List<ResourceLocation> sourceRecipeIds = extension.getSourceRecipeIds(recipe);
+			if (sourceRecipeIds != null) {
+				return sourceRecipeIds;
+			}
+		}
+		return List.of(recipe.getId());
 	}
 
 	@Override

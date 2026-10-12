@@ -12,8 +12,8 @@ import net.minecraft.world.item.crafting.SmeltingRecipe;
 import java.util.List;
 
 public final class FurnaceRecipeMaker {
-	private static final ResourceLocation SPONGE_RECIPE = new ResourceLocation("minecraft", "sponge");
-	private static final ResourceLocation SPONGE_WITH_BUCKET = new ResourceLocation("minecraft", "sponge_with_bucket");
+	static final ResourceLocation SPONGE_RECIPE = new ResourceLocation("minecraft", "sponge");
+	static final ResourceLocation SPONGE_WITH_BUCKET = new ResourceLocation("minecraft", "sponge_with_bucket");
 
 	private FurnaceRecipeMaker() {
 	}

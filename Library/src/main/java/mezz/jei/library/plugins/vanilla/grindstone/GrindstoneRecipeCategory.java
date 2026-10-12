@@ -126,4 +126,9 @@ public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneR
 	public @Nullable ResourceLocation getRegistryName(IJeiGrindstoneRecipe recipe) {
 		return recipe.getUid();
 	}
+
+	@Override
+	public List<ResourceLocation> getSourceRecipeIds(IJeiGrindstoneRecipe recipe) {
+		return List.of();
+	}
 }
