@@ -239,7 +239,7 @@ final class RecipeGuiScrollingClientTest {
 	}
 
 	private static void move(ClientGameTestContext context, double x, double y) {
-		double scale = context.computeOnClient(client -> client.getWindow().getGuiScale());
+		int scale = context.computeOnClient(client -> client.getWindow().getGuiScale());
 		context.getInput().setCursorPos(x * scale, y * scale);
 	}
 
