@@ -10,6 +10,10 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * An extension to a recipe category with methods that allow JEI to make sense of it.
@@ -68,5 +72,16 @@ public interface IRecipeCategoryExtension<T> {
 	 */
 	default boolean isHandled(T recipe) {
 		return true;
+	}
+
+	/**
+	 * Override the underlying recipe identifiers shown in advanced tooltips and copied as recipe IDs.
+	 * See {@link IRecipeCategory#getSourceRecipeIds(Object)} for the identifier contract.
+	 *
+	 * @return source identifiers, an empty list for no underlying recipe, or null to use the category default
+	 * @since 31.11.0
+	 */
+	default @Nullable List<Identifier> getSourceRecipeIds(T recipe) {
+		return null;
 	}
 }

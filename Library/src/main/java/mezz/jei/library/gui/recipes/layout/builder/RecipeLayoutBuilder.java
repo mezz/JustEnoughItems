@@ -77,9 +77,10 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 
 	private void addOutputSlotTooltipCallback(RecipeSlotBuilder slot) {
 		Identifier recipeId = recipeCategory.getIdentifier(recipe);
-		if (recipeId != null) {
+		List<Identifier> sourceRecipeIds = recipeCategory.getSourceRecipeIds(recipe);
+		if (recipeId != null || !sourceRecipeIds.isEmpty()) {
 			IRecipeType<T> recipeType = recipeCategory.getRecipeType();
-			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeId, recipeType);
+			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeId, sourceRecipeIds, recipeType);
 			slot.addRichTooltipCallback(callback);
 		}
 	}

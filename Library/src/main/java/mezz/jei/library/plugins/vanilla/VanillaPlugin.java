@@ -354,7 +354,7 @@ public class VanillaPlugin implements IModPlugin {
 		var craftingRecipes = vanillaRecipes.getCraftingRecipes(craftingCategory);
 		var handledCraftingRecipes = craftingRecipes.getHandled();
 		var unhandledCraftingRecipes = craftingRecipes.getUnhandled();
-		var specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, jeiHelpers, recipeHelper);
+		var specialCraftingRecipes = replaceSpecialCraftingRecipes(unhandledCraftingRecipes, jeiHelpers, recipeHelper, craftingCategory);
 
 		registration.addRecipes(RecipeTypes.CRAFTING, handledCraftingRecipes);
 		registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipes);
@@ -474,7 +474,7 @@ public class VanillaPlugin implements IModPlugin {
 	 * If a special recipe we know how to replace is not present (because it has been removed),
 	 * we do not replace it.
 	 */
-	private static List<RecipeHolder<CraftingRecipe>> replaceSpecialCraftingRecipes(List<RecipeHolder<CraftingRecipe>> unhandledCraftingRecipes, IJeiHelpers jeiHelpers, IPlatformRecipeHelper recipeHelper) {
+	private static List<RecipeHolder<CraftingRecipe>> replaceSpecialCraftingRecipes(List<RecipeHolder<CraftingRecipe>> unhandledCraftingRecipes, IJeiHelpers jeiHelpers, IPlatformRecipeHelper recipeHelper, CraftingRecipeCategory craftingCategory) {
 		List<IRecipeReplacer> replacers = new ArrayList<>();
 		replacers.add(new TippedArrowRecipeMaker(jeiHelpers.getVanillaRecipeFactory()));
 		replacers.add(new ShieldDecorationRecipeMaker(recipeHelper));
@@ -484,7 +484,10 @@ public class VanillaPlugin implements IModPlugin {
 		for (RecipeHolder<CraftingRecipe> recipe : unhandledCraftingRecipes) {
 			replacers.removeIf(replacer -> {
 				try {
-					return replacer.replace(recipe, recipes::add);
+					return replacer.replace(recipe, replacement -> {
+						craftingCategory.addReplacementSource(replacement, recipe);
+						recipes.add(replacement);
+					});
 				} catch (RuntimeException e) {
 					LOGGER.error("Failed to create JEI recipes for {}", recipe.id(), e);
 					return true;
