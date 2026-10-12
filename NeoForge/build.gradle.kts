@@ -71,6 +71,12 @@ val gameTestJunitResultsDir = layout.buildDirectory.dir("test-results/gameTest")
 val dependencyProjectPaths = listOf(":Common", ":Library", ":Gui")
 val dependencyProjectDirectories = dependencyProjectPaths.map { isolatedProjectDirectory(it) }
 val commonProjectDirectory = isolatedProjectDirectory(":Common")
+val sharedJavaSources = files(
+	dependencyProjectDirectories.map { it.dir("src/main/java") },
+	commonProjectDirectory.dir("src/api/java")
+).asFileTree.matching {
+	include("**/*.java")
+}
 val debugProjectDirectory = isolatedProjectDirectory(":Debug")
 val commonClientTestFixturesSource = commonProjectDirectory.dir("src/clientTestFixtures/java")
 val apiSourceSet = sourceSets.create("api") {
@@ -79,14 +85,6 @@ val apiSourceSet = sourceSets.create("api") {
 }
 
 sourceSets {
-	named("main") {
-		java {
-			dependencyProjectDirectories.forEach {
-				srcDir(it.dir("src/main/java"))
-			}
-			srcDir(commonProjectDirectory.dir("src/api/java"))
-		}
-	}
 	named("test") {
 		resources {
 			//The test module has no resources
@@ -100,6 +98,15 @@ sourceSets {
 	create("clientGameTest") {
 		java.srcDir(commonClientTestFixturesSource)
 	}
+}
+
+// Keep shared source roots in their own IDE modules while compiling them against NeoForge.
+tasks.compileJava {
+	source(sharedJavaSources)
+}
+
+tasks.javadoc {
+	source(sharedJavaSources)
 }
 
 listOf("runtimeClasspath", "testRuntimeClasspath", "gameTestRuntimeClasspath", "clientGameTestRuntimeClasspath").forEach {
@@ -408,6 +415,7 @@ tasks.jar {
 
 val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 	from(sourceSets.main.get().allJava)
+	from(sharedJavaSources)
 	from(apiSourceSet.allJava)
 	exclude("**/Readme.md")
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
