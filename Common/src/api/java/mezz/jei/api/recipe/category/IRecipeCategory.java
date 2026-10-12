@@ -169,15 +169,16 @@ public interface IRecipeCategory<T> {
 	}
 
 	/**
-	 * Return the registry identifier of the recipe here.
-	 * With advanced tooltips on, this will show on the output item's tooltip.
+	 * Return the identifier of this JEI recipe display.
+	 * The identifier must be stable and unique within this recipe type for bookmarking recipes.
 	 * <p>
 	 * This will also show the modId when the recipe modId and output item modId do not match.
 	 * This lets the player know where the recipe came from.
 	 * <p>
-	 * Since 19.1.0, this is also used for bookmarking recipes.
+	 * A generated display may use a synthetic identifier. Return its underlying recipe identifiers
+	 * from {@link #getSourceRecipeIds(Object)} for advanced tooltips and copying recipe IDs.
 	 *
-	 * @return the registry identifier of the recipe, or null if there is none
+	 * @return the JEI display identifier, or null if there is none
 	 * @since 27.0.0
 	 */
 	@Nullable
@@ -189,15 +190,32 @@ public interface IRecipeCategory<T> {
 	}
 
 	/**
-	 * Return the registry identifier of the recipe here.
-	 * With advanced tooltips on, this will show on the output item's tooltip.
+	 * Return the identifiers of the underlying recipes represented by this JEI display.
+	 * These identifiers are shown in advanced tooltips and used when copying recipe IDs.
 	 * <p>
-	 * This will also show the modId when the recipe modId and output item modId do not match.
-	 * This lets the player know where the recipe came from.
+	 * Return only actual recipe identifiers, excluding synthetic JEI display identifiers,
+	 * serializer identifiers, and auxiliary recipes consulted to calculate the display.
+	 * Return an empty list if the display has no underlying recipe.
+	 * The list and its elements must not be null, and identifiers must be distinct and in a stable order.
 	 * <p>
-	 * Since 19.1.0, this is also used for bookmarking recipes.
+	 * The default uses {@link #getIdentifier(Object)} when present. Categories with synthetic
+	 * identifiers should override this method. Source identifiers do not affect bookmarks.
 	 *
-	 * @return the registry identifier of the recipe, or null if there is none
+	 * @since 30.42.0
+	 */
+	default List<Identifier> getSourceRecipeIds(T recipe) {
+		Identifier identifier = getIdentifier(recipe);
+		if (identifier == null) {
+			return List.of();
+		}
+		return List.of(identifier);
+	}
+
+	/**
+	 * Return the identifier of this JEI recipe display.
+	 * See {@link #getIdentifier(Object)} for its bookmarking and attribution behavior.
+	 *
+	 * @return the JEI display identifier, or null if there is none
 	 * @since 9.3.0
 	 * @deprecated use {@link #getIdentifier(Object)}
 	 */

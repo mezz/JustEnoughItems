@@ -14,6 +14,7 @@ import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.IExtendableSmithingRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.ISmithingCategoryExtension;
 import mezz.jei.common.util.ErrorUtil;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.level.block.Blocks;
@@ -93,6 +94,19 @@ public class SmithingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 	@Override
 	public Codec<RecipeHolder<SmithingRecipe>> getCodec(ICodecHelper codecHelper, IRecipeManager recipeManager) {
 		return codecHelper.getRecipeHolderCodec();
+	}
+
+	@Override
+	public List<Identifier> getSourceRecipeIds(RecipeHolder<SmithingRecipe> recipeHolder) {
+		SmithingRecipe recipe = recipeHolder.value();
+		ISmithingCategoryExtension<? super SmithingRecipe> extension = getExtension(recipe);
+		if (extension != null) {
+			List<Identifier> sourceRecipeIds = extension.getSourceRecipeIds(recipe);
+			if (sourceRecipeIds != null) {
+				return sourceRecipeIds;
+			}
+		}
+		return List.of(recipeHolder.id().identifier());
 	}
 
 	@Override
