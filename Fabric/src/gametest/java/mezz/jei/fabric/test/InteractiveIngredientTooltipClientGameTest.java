@@ -180,7 +180,7 @@ public class InteractiveIngredientTooltipClientGameTest implements FabricClientG
 	}
 
 	private static void move(ClientGameTestContext context, Point point) {
-		double scale = context.computeOnClient(client -> client.getWindow().getGuiScale());
+		int scale = context.computeOnClient(client -> client.getWindow().getGuiScale());
 		context.getInput().setCursorPos(point.x() * scale, point.y() * scale);
 		context.waitTick();
 	}
