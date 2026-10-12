@@ -375,7 +375,7 @@ final class RecipeInputCaptureClientTest {
 	}
 
 	private static void move(ClientGameTestContext context, IRecipeLayoutDrawable<?> layout, int x, int y) {
-		double scale = context.computeOnClient(client -> client.getWindow().getGuiScale());
+		int scale = context.computeOnClient(client -> client.getWindow().getGuiScale());
 		var area = context.computeOnClient(client -> layout.getRect());
 		context.getInput().setCursorPos((area.getX() + x) * scale, (area.getY() + y) * scale);
 		context.waitTick();
