@@ -15,6 +15,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Blocks;
 
+import java.util.List;
+
 public class CompostableRecipeCategory extends AbstractRecipeCategory<IJeiCompostingRecipe> {
 	public CompostableRecipeCategory(IGuiHelper guiHelper) {
 		super(
@@ -48,5 +50,10 @@ public class CompostableRecipeCategory extends AbstractRecipeCategory<IJeiCompos
 	@Override
 	public Identifier getIdentifier(IJeiCompostingRecipe recipe) {
 		return recipe.getUid();
+	}
+
+	@Override
+	public List<Identifier> getSourceRecipeIds(IJeiCompostingRecipe recipe) {
+		return List.of();
 	}
 }

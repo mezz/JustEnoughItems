@@ -31,7 +31,9 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.block.Blocks;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<CraftingRecipe>> implements IExtendableCraftingRecipeCategory {
 	public static final int width = 116;
@@ -39,6 +41,7 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 
 	private final ICraftingGridHelper craftingGridHelper;
 	private final CraftingExtensionHelper extendableHelper = new CraftingExtensionHelper();
+	private final Map<Identifier, Identifier> replacementSources = new HashMap<>();
 
 	public CraftingRecipeCategory(IGuiHelper guiHelper) {
 		super(
@@ -98,6 +101,20 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 	public Identifier getIdentifier(RecipeHolder<CraftingRecipe> recipeHolder) {
 		ErrorUtil.checkNotNull(recipeHolder, "recipeHolder");
 		return recipeHolder.id().identifier();
+	}
+
+	@Override
+	public List<Identifier> getSourceRecipeIds(RecipeHolder<CraftingRecipe> recipeHolder) {
+		return extendableHelper.getOptionalRecipeExtension(recipeHolder)
+			.map(extension -> extension.getSourceRecipeIds(recipeHolder))
+			.orElseGet(() -> {
+				Identifier identifier = getIdentifier(recipeHolder);
+				return List.of(replacementSources.getOrDefault(identifier, identifier));
+			});
+	}
+
+	public void addReplacementSource(RecipeHolder<CraftingRecipe> replacement, RecipeHolder<CraftingRecipe> source) {
+		replacementSources.put(replacement.id().identifier(), source.id().identifier());
 	}
 
 	@Override

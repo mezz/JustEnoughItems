@@ -17,11 +17,11 @@ import net.minecraft.world.item.crafting.display.SlotDisplay;
 import java.util.List;
 
 public final class FurnaceRecipeMaker {
-	private static final ResourceKey<Recipe<?>> SPONGE_RECIPE = ResourceKey.create(
+	static final ResourceKey<Recipe<?>> SPONGE_RECIPE = ResourceKey.create(
 		Registries.RECIPE,
 		Identifier.withDefaultNamespace("sponge")
 	);
-	private static final Identifier SPONGE_WITH_BUCKET = Identifier.withDefaultNamespace("sponge_with_bucket");
+	static final Identifier SPONGE_WITH_BUCKET = Identifier.withDefaultNamespace("sponge_with_bucket");
 
 	private FurnaceRecipeMaker() {
 	}

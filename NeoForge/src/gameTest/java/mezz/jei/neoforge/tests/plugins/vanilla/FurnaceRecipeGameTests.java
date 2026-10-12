@@ -86,6 +86,7 @@ public final class FurnaceRecipeGameTests {
 
 		IIngredientManagerInternal ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel());
 		FurnaceSmeltingCategory recipeCategory = new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE);
+		helper.assertEquals(List.of(spongeRecipeId), recipeCategory.getSourceRecipeIds(recipeHolder), "Underlying sponge recipe ID");
 		IIngredientSupplier ingredients = IngredientSupplierHelper.getIngredientSupplier(
 			recipeHolder,
 			recipeCategory,
