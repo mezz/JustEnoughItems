@@ -80,6 +80,16 @@ public class RecipeGuiLayouts implements IInputTarget {
 			.map(interaction -> new ReleaseInsideBounds(interaction, this::isInsideViewport));
 	}
 
+	/**
+	 * Routes otherwise unhandled input to the hovered recipe's deprecated category callback.
+	 * Mouse callbacks run only when released inside the original recipe and the visible viewport.
+	 */
+	public Optional<IInputInteraction> beginLegacyCategoryInput(UserInput input) {
+		return getRecipeLayoutUnderMouse(input.getMouseX(), input.getMouseY())
+			.flatMap(layout -> layout.beginLegacyCategoryInput(input))
+			.map(interaction -> new ReleaseInsideBounds(interaction, this::isInsideViewport));
+	}
+
 	@Override
 	public boolean scroll(double mouseX, double mouseY, double scrollX, double scrollY) {
 		if (!isInsideViewport(mouseX, mouseY)) {

@@ -3,7 +3,6 @@ package mezz.jei.common.input.interaction;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.common.input.IInputTarget;
-import mezz.jei.common.input.ILegacyRecipeInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.util.MathUtil;
@@ -41,14 +40,6 @@ public final class ApiInputAdapter {
 			return Optional.of(ConsumedInput.INSTANCE);
 		}
 		return Optional.of(new InputAction(release -> handler.handleInput(release.getMouseX(), release.getMouseY(), release)));
-	}
-
-	/** Offers input to a retained category callback after recipe controls and JEI shortcuts. */
-	public static Optional<IInputInteraction> beginLegacyInput(Screen screen, UserInput input, IInternalKeyMappings keys, IJeiInputHandler handler) {
-		if (handler instanceof ILegacyRecipeInputTarget target) {
-			return target.beginLegacyInput(screen, input, keys);
-		}
-		return Optional.empty();
 	}
 
 	/**
