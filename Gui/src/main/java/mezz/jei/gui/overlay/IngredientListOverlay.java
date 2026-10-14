@@ -98,7 +98,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			Minecraft minecraft = Minecraft.getInstance();
 			getScreenPropertiesUpdater()
 				.updateScreen(minecraft.screen)
-				.update();
+				.forceUpdate();
 		});
 
 		this.configButton = ConfigButton.create(this::isListDisplayed, worldConfig, keyBindings);
