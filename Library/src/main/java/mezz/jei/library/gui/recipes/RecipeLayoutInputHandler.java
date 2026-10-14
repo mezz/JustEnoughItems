@@ -6,7 +6,6 @@ import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.input.IInputTarget;
-import mezz.jei.common.input.ILegacyRecipeInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.interaction.ApiInputAdapter;
@@ -22,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class RecipeLayoutInputHandler<T> implements IJeiInputHandler, ILegacyRecipeInputTarget {
+public class RecipeLayoutInputHandler<T> implements IJeiInputHandler, IInputTarget {
 	private final RecipeLayout<T> recipeLayout;
 	private final List<IJeiInputHandler> inputHandlers;
 	private final List<IJeiGuiEventListener> guiEventListeners;
@@ -69,29 +68,6 @@ public class RecipeLayoutInputHandler<T> implements IJeiInputHandler, ILegacyRec
 			}
 		}
 		return Optional.empty();
-	}
-
-	@Override
-	public Optional<IInputInteraction> beginLegacyInput(Screen screen, UserInput input, IInternalKeyMappings keys) {
-		if (!recipeLayout.isMouseOver(input.getMouseX(), input.getMouseY())) {
-			return Optional.empty();
-		}
-		// The legacy category callback has no simulation flag, so execute it on release.
-		if (input.isMouseInput()) {
-			return Optional.of(new InputAction(this::handleLegacyCategoryInput));
-		}
-		if (handleLegacyCategoryInput(input)) {
-			return Optional.of(ConsumedInput.INSTANCE);
-		}
-		return Optional.empty();
-	}
-
-	private boolean handleLegacyCategoryInput(UserInput input) {
-		IRecipeCategory<T> category = recipeLayout.getRecipeCategory();
-		Rect2i recipeArea = recipeLayout.getRect();
-		@SuppressWarnings("removal")
-		boolean handled = category.handleInput(recipeLayout.getRecipe(), input.getMouseX() - recipeArea.getX(), input.getMouseY() - recipeArea.getY(), input.getKey());
-		return handled;
 	}
 
 	/** Public callbacks check the controls under the pointer again when a click is released inside this recipe. */

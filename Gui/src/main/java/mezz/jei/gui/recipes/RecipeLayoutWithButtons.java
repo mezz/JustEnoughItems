@@ -14,6 +14,7 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.handlers.InputGroup;
 import mezz.jei.common.input.interaction.ApiInputAdapter;
+import mezz.jei.common.input.interaction.ConsumedInput;
 import mezz.jei.common.input.interaction.IInputInteraction;
 import mezz.jei.common.input.interaction.InputAction;
 import mezz.jei.common.input.interaction.ReleaseInsideBounds;
@@ -189,6 +190,27 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 	}
 
 	@Override
+	public Optional<IInputInteraction> beginLegacyCategoryInput(UserInput input) {
+		if (!recipeLayout.isMouseOver(input.getMouseX(), input.getMouseY())) {
+			return Optional.empty();
+		}
+		if (input.isMouseInput()) {
+			return Optional.of(new InputAction(this::invokeLegacyCategoryInput).within(recipeLayout::isMouseOver));
+		}
+		if (invokeLegacyCategoryInput(input)) {
+			return Optional.of(ConsumedInput.INSTANCE);
+		}
+		return Optional.empty();
+	}
+
+	@SuppressWarnings("removal")
+	private boolean invokeLegacyCategoryInput(UserInput input) {
+		Rect2i area = recipeLayout.getRect();
+		return recipeLayout.getRecipeCategory().handleInput(recipeLayout.getRecipe(),
+			input.getMouseX() - area.getX(), input.getMouseY() - area.getY(), input.getKey());
+	}
+
+	@Override
 	public IRecipeLayoutDrawable<R> getRecipeLayout() {
 		return recipeLayout;
 	}
@@ -275,8 +297,7 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 						.within((x, y) -> recipeLayout.isMouseOver(x, y) && recipeLayout.getSlotUnderMouse(x, y).isEmpty()));
 				}
 			}
-			return ApiInputAdapter.beginLegacyInput(screen, input, keyBindings, recipeLayout.getInputHandler())
-				.map(interaction -> new ReleaseInsideBounds(interaction, recipeLayout::isMouseOver));
+			return Optional.empty();
 		}
 
 		private void copyRecipeId() {

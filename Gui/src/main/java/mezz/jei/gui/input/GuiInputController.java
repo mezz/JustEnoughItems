@@ -30,7 +30,7 @@ public final class GuiInputController {
 	private static final Logger LOGGER = LogManager.getLogger();
 	/** Input areas from front to back, shared with ingredient lookup. */
 	private final GuiInputScene scene;
-	/** Shortcuts shared by input areas, such as looking up recipes and showing or hiding overlays. */
+	/** Remaining commands in priority order, including shared shortcuts and other areas' screen shortcuts. */
 	private final InputCommands commands;
 	private final ITextInputHandler editor;
 	private final IInternalKeyMappings keys;
@@ -117,19 +117,7 @@ public final class GuiInputController {
 				return shortcut;
 			}
 		}
-		Optional<IInputInteraction> global = commands.resolve(screen, input, false);
-		if (global.isPresent()) {
-			return global;
-		}
-		for (InputArea inputArea : scene.getInputAreas()) {
-			if (inputArea != target) {
-				Optional<IInputInteraction> shortcut = inputArea.commands().resolve(screen, input, false);
-				if (shortcut.isPresent()) {
-					return shortcut;
-				}
-			}
-		}
-		return Optional.empty();
+		return commands.resolve(screen, input, false);
 	}
 
 	public boolean mouseReleased(Screen screen, UserInput input) {

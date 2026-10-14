@@ -71,7 +71,7 @@ public record JeiInputSetup(GuiInputScene scene, ClientInputHandler handler) {
 			chatInputArea
 		);
 
-		InputCommands commands = new InputCommands(screen -> screenHelper.getGuiProperties(screen).isPresent());
+		InputCommands sharedCommands = new InputCommands(screen -> screenHelper.getGuiProperties(screen).isPresent());
 		IngredientFocusSource focusSource = new IngredientFocusSource(inputScene);
 		IngredientCommands ingredientCommands = new IngredientCommands(
 			focusSource,
@@ -84,7 +84,7 @@ public record JeiInputSetup(GuiInputScene scene, ClientInputHandler handler) {
 			clientConfig,
 			serverConnection
 		);
-		ingredientCommands.registerInputCommands(commands);
+		ingredientCommands.registerInputCommands(sharedCommands);
 		BookmarkCommands bookmarkCommands = new BookmarkCommands(
 			focusSource,
 			bookmarkList,
@@ -93,31 +93,43 @@ public record JeiInputSetup(GuiInputScene scene, ClientInputHandler handler) {
 			clientConfig,
 			recipesGui
 		);
-		bookmarkCommands.registerInputCommands(commands, keyMappings);
-		commands.add(
+		bookmarkCommands.registerInputCommands(sharedCommands, keyMappings);
+		sharedCommands.add(
 			"Toggle Overlay",
 			keyMappings.getToggleOverlay(),
 			() -> true,
 			worldConfig::toggleOverlayEnabled
 		);
-		commands.add(
+		sharedCommands.add(
 			"Toggle Bookmark Overlay",
 			keyMappings.getToggleBookmarkOverlay(),
 			() -> true,
 			worldConfig::toggleBookmarkEnabled
 		);
-		commands.add(
+		sharedCommands.add(
 			"Toggle Cheat Mode",
 			keyMappings.getToggleCheatMode(),
 			() -> true,
 			() -> CheatModeUtil.toggleCheatMode(worldConfig)
 		);
-		commands.add(
+		sharedCommands.add(
 			"Toggle Edit Mode",
 			keyMappings.getToggleEditMode(),
 			() -> true,
 			worldConfig::toggleEditModeEnabled
 		);
+
+		InputCommands commands = new InputCommands();
+		commands.add("Shared shortcuts", input -> true,
+			(screen, input) -> sharedCommands.resolve(screen, input, false));
+		for (InputArea inputArea : inputScene.getInputAreas()) {
+			commands.add(inputArea.name() + " screen shortcuts",
+				input -> inputScene.getTarget(input.getMouseX(), input.getMouseY()).orElse(null) != inputArea,
+				(screen, input) -> inputArea.commands().resolve(screen, input, false));
+		}
+		commands.add("Legacy recipe category callback",
+			input -> inputScene.isTarget(recipesGui, input.getMouseX(), input.getMouseY()),
+			(screen, input) -> recipesGui.getRecipeLayouts().beginLegacyCategoryInput(input));
 
 		GuiInputController controller = new GuiInputController(inputScene, commands, searchInputLayer, keyMappings);
 		ClientInputHandler handler = new ClientInputHandler(controller, keyMappings);
