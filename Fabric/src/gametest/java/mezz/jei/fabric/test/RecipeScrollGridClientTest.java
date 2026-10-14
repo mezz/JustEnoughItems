@@ -1,6 +1,13 @@
 package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.common.transfer.RecipeTransferService;
+import mezz.jei.gui.bookmarks.RecipeBookmark;
+import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
+import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
+import net.minecraft.client.gui.navigation.ScreenPosition;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
@@ -26,6 +33,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jspecify.annotations.Nullable;
@@ -35,7 +43,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-/** Checks changing grid contents and navigation preferences against real recipe layouts and slots. */
+/** Checks grid contents, navigation preferences, and scrolling in pinned recipe previews. */
 @SuppressWarnings("UnstableApiUsage")
 final class RecipeScrollGridClientTest {
 	private RecipeScrollGridClientTest() {}
@@ -149,6 +157,74 @@ final class RecipeScrollGridClientTest {
 				scrollRate.set(originalScrollRate);
 			}
 		});
+		assertPinnedRecipeScrolling(context);
+	}
+
+	private static void assertPinnedRecipeScrolling(ClientGameTestContext context) {
+		var originalScreen = context.computeOnClient(client -> client.gui.screen());
+		var runtime = Internal.getJeiRuntime();
+		var overlay = (BookmarkOverlay) runtime.getBookmarkOverlay();
+		var bookmarks = overlay.getBookmarkList();
+		var originalBookmarks = context.computeOnClient(client -> bookmarks.getElements().stream().flatMap(element -> element.getBookmark().stream()).toList());
+		var config = Internal.getClientConfigs().getClientConfig();
+		boolean originalSmoothScrolling = config.smoothScrollingEnabled().get();
+		boolean originalPreview = config.bookmarkTooltipPreviewEnabled().get();
+		try {
+			var element = context.computeOnClient(client -> {
+				config.smoothScrollingEnabled().set(false);
+				config.bookmarkTooltipPreviewEnabled().set(true);
+				client.gui.setScreen(new InventoryScreen(Objects.requireNonNull(client.player)));
+				var category = new TestCategory(runtime.getJeiHelpers().getGuiHelper());
+				var layout = runtime.getRecipeManager().createRecipeLayoutDrawable(category, "pinned", FocusGroup.EMPTY).orElseThrow();
+				var bookmark = Objects.requireNonNull(RecipeBookmark.create(layout, runtime.getIngredientManager(), new RecipeTransferService(runtime.getRecipeTransferManager())));
+				bookmarks.setFromConfigFile(List.of());
+				bookmarks.add(bookmark);
+				return (RecipeBookmarkElement<?, ?>) bookmark.getElement();
+			});
+			context.waitTicks(3);
+			ScreenPosition source = context.computeOnClient(client -> {
+				for (int y = 0; y < client.getWindow().getGuiScaledHeight(); y++) {
+					for (int x = 0; x < client.getWindow().getGuiScaledWidth(); x++) {
+						if (overlay.getIngredientUnderMouse(x, y).findAny().isPresent()) {
+							return new ScreenPosition(x + 4, y + 4);
+						}
+					}
+				}
+				throw new AssertionError("The recipe bookmark must be visible");
+			});
+			context.getInput().holdKey(InputConstants.KEY_LSHIFT);
+			double scale = context.computeOnClient(client -> client.getWindow().getGuiScale());
+			context.getInput().setCursorPos(source.x() * scale, source.y() * scale);
+			context.waitTicks(3);
+			var pinnedLayout = context.computeOnClient(client -> element.getInteractivePreview().orElseThrow().getRecipeLayout());
+			ScreenPosition point = context.computeOnClient(client -> new ScreenPosition(pinnedLayout.getRect().getX() + 12, pinnedLayout.getRect().getY() + 12));
+			context.getInput().setCursorPos(point.x() * scale, point.y() * scale);
+			int original = pinnedSlotCount(context, pinnedLayout, point);
+			context.getInput().scroll(-1, 0);
+			context.waitTicks(2);
+			int horizontal = pinnedSlotCount(context, pinnedLayout, point);
+			context.getInput().scroll(1, 0);
+			context.waitTicks(2);
+			int restored = pinnedSlotCount(context, pinnedLayout, point);
+			context.getInput().scroll(0, -1);
+			context.waitTicks(2);
+			int vertical = pinnedSlotCount(context, pinnedLayout, point);
+			check(original == 1 && horizontal == 4 && restored == 1 && vertical == 4,
+				"Pinned recipe widgets must receive both wheel axes: original=" + original + ", horizontal=" + horizontal + ", restored=" + restored + ", vertical=" + vertical);
+		} finally {
+			context.getInput().releaseKey(InputConstants.KEY_LSHIFT);
+			context.runOnClient(client -> {
+				bookmarks.setFromConfigFile(originalBookmarks);
+				client.gui.setScreen(originalScreen);
+				config.smoothScrollingEnabled().set(originalSmoothScrolling);
+				config.bookmarkTooltipPreviewEnabled().set(originalPreview);
+			});
+		}
+	}
+
+	private static int pinnedSlotCount(ClientGameTestContext context, IRecipeLayoutDrawable<?> layout, ScreenPosition point) {
+		return context.computeOnClient(client -> layout.getSlotUnderMouse(point.x(), point.y()).orElseThrow().slot()
+			.getDisplayedIngredient(VanillaTypes.ITEM_STACK).orElseThrow().getCount());
 	}
 
 	private static UserInput press(double x, double y) {
@@ -169,6 +245,11 @@ final class RecipeScrollGridClientTest {
 
 		private TestCategory(IGuiHelper helper) {
 			super(IRecipeType.create("jei", "scroll_grid_test", String.class), Component.literal("Scroll grid test"), helper.getSlotDrawable(), 160, 80);
+		}
+
+		@Override
+		public Identifier getIdentifier(String recipe) {
+			return Identifier.fromNamespaceAndPath("jei", "scroll_grid_test/" + recipe);
 		}
 
 		@Override

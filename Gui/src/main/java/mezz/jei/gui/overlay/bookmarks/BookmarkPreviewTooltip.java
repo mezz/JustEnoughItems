@@ -140,6 +140,12 @@ final class BookmarkPreviewTooltip implements IInputTarget, IMouseOverable {
 	}
 
 	@Override
+	public boolean scroll(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+		return this.controller.isActive(this) &&
+			this.drawable.getInputHandler().handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
+	}
+
+	@Override
 	public Optional<IInputInteraction> beginInput(
 		Screen screen,
 		UserInput input,
