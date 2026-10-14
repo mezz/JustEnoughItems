@@ -1,8 +1,12 @@
 package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.NativeImage;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
@@ -20,9 +24,18 @@ import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.InputPhase;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.common.transfer.RecipeTransferService;
+import mezz.jei.gui.bookmarks.RecipeBookmark;
+import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
+import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
 import mezz.jei.library.focus.FocusGroup;
+import net.minecraft.client.Screenshot;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenPosition;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +45,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-/** Checks changing grid contents and navigation preferences against real recipe layouts and slots. */
+/** Checks grid contents, clipping, and scrolling through real recipe layouts and pinned previews. */
 @SuppressWarnings("UnstableApiUsage")
 final class RecipeScrollGridClientTest {
 	private RecipeScrollGridClientTest() {}
@@ -147,6 +160,147 @@ final class RecipeScrollGridClientTest {
 				scrollRate.set(originalScrollRate);
 			}
 		});
+		assertClippedRendering(context);
+		assertPinnedRecipeScrolling(context);
+	}
+
+	private static void assertPinnedRecipeScrolling(FabricClientTestContext context) {
+		var originalScreen = context.computeOnClient(client -> client.screen);
+		var runtime = Internal.getJeiRuntime();
+		var overlay = (BookmarkOverlay) runtime.getBookmarkOverlay();
+		var bookmarks = overlay.getBookmarkList();
+		var originalBookmarks = context.computeOnClient(client -> bookmarks.getElements().stream().flatMap(element -> element.getBookmark().stream()).toList());
+		var config = Internal.getClientConfigs().getClientConfig();
+		boolean originalSmoothScrolling = config.smoothScrollingEnabled().get();
+		boolean originalPreview = config.bookmarkTooltipPreviewEnabled().get();
+		try {
+			var element = context.computeOnClient(client -> {
+				config.smoothScrollingEnabled().set(false);
+				config.bookmarkTooltipPreviewEnabled().set(true);
+				client.setScreen(new InventoryScreen(Objects.requireNonNull(client.player)));
+				var category = new TestCategory(runtime.getJeiHelpers().getGuiHelper());
+				var layout = runtime.getRecipeManager().createRecipeLayoutDrawable(category, "pinned", FocusGroup.EMPTY).orElseThrow();
+				var bookmark = Objects.requireNonNull(RecipeBookmark.create(layout, runtime.getIngredientManager(), new RecipeTransferService(runtime.getRecipeTransferManager())));
+				bookmarks.setFromConfigFile(List.of());
+				bookmarks.add(bookmark);
+				return (RecipeBookmarkElement<?, ?>) bookmark.getElement();
+			});
+			context.waitTicks(3);
+			ScreenPosition source = context.computeOnClient(client -> {
+				for (int y = 0; y < client.getWindow().getGuiScaledHeight(); y++) {
+					for (int x = 0; x < client.getWindow().getGuiScaledWidth(); x++) {
+						if (overlay.getIngredientUnderMouse(x, y).findAny().isPresent()) {
+							return new ScreenPosition(x + 4, y + 4);
+						}
+					}
+				}
+				throw new AssertionError("The recipe bookmark must be visible");
+			});
+			context.getInput().holdKey(InputConstants.KEY_LSHIFT);
+			double scale = context.computeOnClient(client -> client.getWindow().getGuiScale());
+			context.getInput().setCursorPos(source.x() * scale, source.y() * scale);
+			context.waitTicks(3);
+			var pinnedLayout = context.computeOnClient(client -> element.getInteractivePreview().orElseThrow().getRecipeLayout());
+			ScreenPosition point = context.computeOnClient(client -> new ScreenPosition(pinnedLayout.getRect().getX() + 12, pinnedLayout.getRect().getY() + 12));
+			context.getInput().setCursorPos(point.x() * scale, point.y() * scale);
+			int original = pinnedSlotCount(context, pinnedLayout, point);
+			context.getInput().scroll(-1, 0);
+			context.waitTicks(2);
+			int horizontal = pinnedSlotCount(context, pinnedLayout, point);
+			context.getInput().scroll(1, 0);
+			context.waitTicks(2);
+			int restored = pinnedSlotCount(context, pinnedLayout, point);
+			context.getInput().scroll(0, -1);
+			context.waitTicks(2);
+			int vertical = pinnedSlotCount(context, pinnedLayout, point);
+			check(original == 1 && horizontal == 4 && restored == 1 && vertical == 4,
+				"Pinned recipe widgets must receive both wheel axes: original=" + original + ", horizontal=" + horizontal + ", restored=" + restored + ", vertical=" + vertical);
+		} finally {
+			context.getInput().releaseKey(InputConstants.KEY_LSHIFT);
+			context.runOnClient(client -> {
+				bookmarks.setFromConfigFile(originalBookmarks);
+				client.setScreen(originalScreen);
+				config.smoothScrollingEnabled().set(originalSmoothScrolling);
+				config.bookmarkTooltipPreviewEnabled().set(originalPreview);
+			});
+		}
+	}
+
+	private static int pinnedSlotCount(FabricClientTestContext context, IRecipeLayoutDrawable<?> layout, ScreenPosition point) {
+		return context.computeOnClient(client -> layout.getSlotUnderMouse(point.x(), point.y()).orElseThrow().slot()
+			.getDisplayedIngredient(VanillaTypes.ITEM_STACK).orElseThrow().getCount());
+	}
+
+	private static void assertClippedRendering(FabricClientTestContext context) {
+		var originalScreen = context.computeOnClient(client -> client.screen);
+		var smoothScrolling = Internal.getClientConfigs().getClientConfig().smoothScrollingEnabled();
+		var scrollRate = Internal.getClientConfigs().getClientConfig().smoothScrollRate();
+		boolean originalSmoothScrolling = smoothScrolling.get();
+		int originalScrollRate = scrollRate.get();
+		try {
+			TestCategory category = context.computeOnClient(client -> {
+				smoothScrolling.set(true);
+				scrollRate.set(18);
+				var runtime = Internal.getJeiRuntime();
+				var testCategory = new TestCategory(runtime.getJeiHelpers().getGuiHelper());
+				var layout = runtime.getRecipeManager().createRecipeLayoutDrawable(testCategory, "render", FocusGroup.EMPTY).orElseThrow();
+				layout.setPosition(40, 50);
+				client.setScreen(new GridScreen(layout));
+				return testCategory;
+			});
+			context.waitTicks(3);
+			assertGridPixels(context, false);
+			context.runOnClient(client -> ((IJeiInputHandler) Objects.requireNonNull(category.grid)).handleMouseScrolled(1, 1, -0.5));
+			context.waitTicks(3);
+			context.takeScreenshot("jei-scroll-grid-partial-row");
+			assertGridPixels(context, true);
+		} finally {
+			context.runOnClient(client -> {
+				client.setScreen(originalScreen);
+				smoothScrolling.set(originalSmoothScrolling);
+				scrollRate.set(originalScrollRate);
+			});
+		}
+	}
+
+	private static void assertGridPixels(FabricClientTestContext context, boolean clipped) {
+		context.runOnClient(client -> {
+			try (NativeImage image = Screenshot.takeScreenshot(client.getMainRenderTarget())) {
+				double scale = client.getWindow().getGuiScale();
+				int visiblePixels = 0;
+				for (int y = 63; y < 81; y++) {
+					for (int x = 45; x < 97; x++) {
+						if ((image.getPixelRGBA((int) (x * scale), (int) (y * scale)) & 0xFFFFFF) != 0) {
+							visiblePixels++;
+						}
+					}
+				}
+				check(visiblePixels > 100, "Grid items must remain visible at their translated position, clipped=" + clipped + ", visible pixels=" + visiblePixels);
+				if (clipped) {
+					for (int y : new int[]{52, 91}) {
+						for (int x = 45; x < 97; x++) {
+							check((image.getPixelRGBA((int) (x * scale), (int) (y * scale)) & 0xFFFFFF) == 0,
+								"Partially visible rows must be clipped outside the grid at " + x + "," + y);
+						}
+					}
+				}
+			}
+		});
+	}
+
+	private static final class GridScreen extends Screen {
+		private final IRecipeLayoutDrawable<?> layout;
+
+		private GridScreen(IRecipeLayoutDrawable<?> layout) {
+			super(Component.literal("Grid rendering regression"));
+			this.layout = layout;
+		}
+
+		@Override
+		public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+			guiGraphics.fill(0, 0, width, height, 0xFF000000);
+			layout.drawRecipe(guiGraphics, -1, -1);
+		}
 	}
 
 	private static UserInput press(double x, double y) {
@@ -169,11 +323,21 @@ final class RecipeScrollGridClientTest {
 		}
 
 		@Override
+		public ResourceLocation getRegistryName(String recipe) {
+			return new ResourceLocation("jei", "scroll_grid_test/" + recipe);
+		}
+
+		@Override
 		public void setRecipe(IRecipeLayoutBuilder builder, String recipe, IFocusGroup focuses) {
 			for (int i = 1; i <= 12; i++) {
 				builder.addInputSlot().addItemStack(new ItemStack(Items.STONE, i));
 			}
 			builder.addOutputSlot(84, 4).addItemStack(new ItemStack(Items.DIAMOND));
+		}
+
+		@Override
+		public void draw(String recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+			guiGraphics.fill(0, 0, getWidth(), getHeight(), 0xFF000000);
 		}
 
 		@Override

@@ -14,6 +14,7 @@ import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.GridScrollMath;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ImmutableSize2i;
+import mezz.jei.common.util.MathUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import org.jetbrains.annotations.Nullable;
@@ -161,11 +162,12 @@ public class ScrollGridRecipeWidget extends AbstractScrollWidget implements IScr
 		}
 
 		if (rowPixelOffset > 0) {
+			ScreenRectangle scissorArea = MathUtil.transform(contentsArea, guiGraphics.pose().last().pose());
 			guiGraphics.enableScissor(
-				contentsArea.x(),
-				contentsArea.y(),
-				contentsArea.x() + contentsArea.width(),
-				contentsArea.y() + contentsArea.height()
+				scissorArea.left(),
+				scissorArea.top(),
+				scissorArea.right(),
+				scissorArea.bottom()
 			);
 		}
 
