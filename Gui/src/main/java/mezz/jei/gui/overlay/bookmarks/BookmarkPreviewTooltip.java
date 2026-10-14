@@ -14,6 +14,7 @@ import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IMouseOverable;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.ApiInputAdapter;
 import mezz.jei.common.input.interaction.ConsumedInput;
 import mezz.jei.common.input.interaction.IInputInteraction;
 import mezz.jei.common.input.interaction.InputAction;
@@ -180,6 +181,12 @@ final class BookmarkPreviewTooltip implements IInputTarget, IMouseOverable {
 			buttonArea.getWidth(),
 			buttonArea.getHeight()
 		));
+	}
+
+	@Override
+	public boolean scroll(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+		return this.controller.isActive(this) &&
+			ApiInputAdapter.handleMouseScrolled(this.drawable.getInputHandler(), mouseX, mouseY, scrollDeltaX, scrollDeltaY);
 	}
 
 	@Override

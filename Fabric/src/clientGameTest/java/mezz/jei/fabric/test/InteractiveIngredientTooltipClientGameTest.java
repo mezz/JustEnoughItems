@@ -2,7 +2,12 @@ package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.category.AbstractRecipeCategory;
+import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.bookmarks.BookmarkList;
@@ -20,14 +25,90 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
+import java.util.stream.IntStream;
 
-/** Exercises pinned tooltip bookmarking through Minecraft's keyboard callbacks. */
+/** Exercises pinned tooltip bookmarking and scrolling through Minecraft's input callbacks. */
 @SuppressWarnings("UnstableApiUsage")
 public class InteractiveIngredientTooltipClientGameTest {
 	static void run() {
 		FabricClientTestContext context = new FabricClientTestContext();
 		RecipeFocusSourceClientTest.run(context);
+		runScrollChecks(context);
 		runBookmarkChecks(context);
+	}
+
+	private static void runScrollChecks(FabricClientTestContext context) {
+		var originalScreen = context.computeOnClient(client -> client.screen);
+		var smoothScrolling = Internal.getClientConfigs().getClientConfig().smoothScrollingEnabled();
+		boolean originalSmoothScrolling = smoothScrolling.get();
+		try {
+			context.runOnClient(client -> {
+				smoothScrolling.set(false);
+				client.setScreen(new InventoryScreen(Objects.requireNonNull(client.player)));
+				var manager = Internal.getJeiRuntime().getRecipeManager();
+				var category = new ScrollCategory<>(manager.getRecipeCategory(RecipeTypes.SMELTING));
+				gui().showRecipes(category, manager.createRecipeLookup(RecipeTypes.SMELTING).get().limit(1).toList(), List.of());
+			});
+			context.waitTicks(3);
+			Point source = context.computeOnClient(client -> findPoint((x, y) -> layouts().getRecipeLayoutUnderMouse(x, y)
+				.flatMap(layout -> layout.getRecipeLayout().getSlotUnderMouse(x, y))
+				.filter(slot -> slot.slot().getDisplayedIngredients().count() == 80)
+				.isPresent()));
+			context.getInput().holdKey(InputConstants.KEY_LSHIFT);
+			move(context, source);
+			context.waitTicks(3);
+			Point ingredient = context.computeOnClient(client -> findPoint((x, y) -> gui().getForegroundInputLayer().isMouseOver(x, y) &&
+				gui().getIngredientUnderMouse(x, y).findAny().isPresent() &&
+				layouts().getRecipeLayoutUnderMouse(x, y).flatMap(layout -> layout.getRecipeLayout().getSlotUnderMouse(x, y)).isEmpty()));
+			move(context, ingredient);
+			String originalIngredient = tooltipIngredient(context, ingredient);
+
+			// Minecraft can report Shift-wheel as horizontal scrolling while the pin key is held.
+			context.getInput().scroll(-1, 0);
+			context.waitTicks(2);
+			String horizontallyScrolled = tooltipIngredient(context, ingredient);
+			context.getInput().scroll(1, 0);
+			context.waitTicks(2);
+			String restoredIngredient = tooltipIngredient(context, ingredient);
+			context.getInput().scroll(0, -1);
+			context.waitTicks(2);
+			String verticallyScrolled = tooltipIngredient(context, ingredient);
+			context.takeScreenshot("jei-pinned-grid-shift-scroll");
+
+			if (originalIngredient.equals(horizontallyScrolled) || !originalIngredient.equals(restoredIngredient) || !horizontallyScrolled.equals(verticallyScrolled)) {
+				throw new AssertionError("Pinned grids must scroll in both wheel axes without changing the underlying recipe: original=" + originalIngredient +
+					", horizontal=" + horizontallyScrolled + ", restored=" + restoredIngredient + ", vertical=" + verticallyScrolled);
+			}
+		} finally {
+			context.getInput().releaseKey(InputConstants.KEY_LSHIFT);
+			context.runOnClient(client -> {
+				gui().onClose();
+				client.setScreen(originalScreen);
+				smoothScrolling.set(originalSmoothScrolling);
+			});
+		}
+	}
+
+	private static String tooltipIngredient(FabricClientTestContext context, Point point) {
+		return context.computeOnClient(client -> gui().getIngredientUnderMouse(point.x(), point.y()).findFirst().orElseThrow()
+			.getTypedIngredient().getItemStack().orElseThrow().getHoverName().getString());
+	}
+
+	private static final class ScrollCategory<T> extends AbstractRecipeCategory<T> {
+		private ScrollCategory(IRecipeCategory<T> delegate) {
+			super(delegate.getRecipeType(), delegate.getTitle(), Internal.getJeiRuntime().getJeiHelpers().getGuiHelper().getSlotDrawable(), 160, 40);
+		}
+
+		@Override
+		public void setRecipe(IRecipeLayoutBuilder builder, T recipe, IFocusGroup focuses) {
+			var candidates = IntStream.range(0, 80).mapToObj(index -> {
+					ItemStack stack = new ItemStack(Items.STONE);
+					stack.setHoverName(Component.literal("Pinned candidate " + index));
+					return stack;
+				})
+				.toList();
+			builder.addInputSlot(4, 4).addItemStacks(candidates);
+		}
 	}
 
 	private static void runBookmarkChecks(FabricClientTestContext context) {
