@@ -2,27 +2,37 @@ package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiGuiEventListener;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
 import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.RecipeLayoutDrawableErrored;
 import mezz.jei.common.config.RecipeGuiNavigationMode;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.Scrollbar;
 import mezz.jei.common.util.ReflectionUtil;
 import mezz.jei.gui.recipes.IRecipeLayoutWithButtons;
+import mezz.jei.gui.recipes.IRecipeGuiLogic;
 import mezz.jei.gui.recipes.RecipeGuiLayouts;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.gui.recipes.lookups.ILookupState;
 import net.mezzdev.config.api.value.IConfigValue;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.navigation.ScreenPosition;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -36,6 +46,8 @@ final class RecipeInputCaptureClientTest {
 	static void run(FabricClientTestContext context) {
 		List<Runnable> cleanup = new ArrayList<>();
 		try {
+			assertIngredientNavigation(context);
+			assertLegacyIngredientNavigation(context);
 			TestCategory<?> category = context.computeOnClient(client -> {
 				var config = Internal.getClientConfigs().getClientConfig();
 				set(cleanup, config.recipeGuiNavigationMode(), RecipeGuiNavigationMode.PAGED);
@@ -154,6 +166,95 @@ final class RecipeInputCaptureClientTest {
 		}
 	}
 
+	private static void assertIngredientNavigation(FabricClientTestContext context) {
+		for (int input : new int[]{InputConstants.MOUSE_BUTTON_LEFT, InputConstants.MOUSE_BUTTON_RIGHT, InputConstants.KEY_R, InputConstants.KEY_U}) {
+			context.runOnClient(client -> {
+				client.setScreen(new InventoryScreen(Objects.requireNonNull(client.player)));
+				var focus = Internal.getJeiRuntime().getJeiHelpers().getFocusFactory().createFocus(
+					RecipeIngredientRole.OUTPUT, VanillaTypes.ITEM_STACK, new ItemStack(Items.IRON_PICKAXE));
+				gui().show(List.of(focus));
+			});
+			context.waitTicks(3);
+			var layout = context.computeOnClient(client -> visibleLayouts().getFirst());
+			var point = context.computeOnClient(client -> findStickSlot(layout));
+			double scale = context.computeOnClient(client -> client.getWindow().getGuiScale());
+			context.getInput().setCursorPos(point.x() * scale, point.y() * scale);
+			context.waitTick();
+			boolean showRecipes = input == InputConstants.MOUSE_BUTTON_LEFT || input == InputConstants.KEY_R;
+			if (input == InputConstants.MOUSE_BUTTON_LEFT || input == InputConstants.MOUSE_BUTTON_RIGHT) {
+				context.getInput().holdMouse(input);
+				context.runOnClient(client -> check(currentFocuses().getItemStackFocuses(RecipeIngredientRole.OUTPUT)
+					.anyMatch(focus -> focus.getTypedValue().getIngredient().is(Items.IRON_PICKAXE)),
+					"Ingredient navigation must wait for mouse release"));
+				context.getInput().releaseMouse(input);
+			} else {
+				context.getInput().pressKey(input);
+			}
+			context.waitTicks(2);
+			context.runOnClient(client -> {
+				List<RecipeIngredientRole> expectedRoles;
+				if (showRecipes) {
+					expectedRoles = List.of(RecipeIngredientRole.OUTPUT);
+				} else {
+					expectedRoles = List.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.CATALYST);
+				}
+				var focuses = currentFocuses().getItemStackFocuses().toList();
+				check(focuses.size() == expectedRoles.size() && focuses.stream().allMatch(focus -> focus.getTypedValue().getIngredient().is(Items.STICK) && expectedRoles.contains(focus.getRole())),
+					"Input " + input + " must navigate to the stick ingredient with roles " + expectedRoles);
+			});
+		}
+	}
+
+	private static void assertLegacyIngredientNavigation(FabricClientTestContext context) {
+		for (int input : new int[]{InputConstants.MOUSE_BUTTON_LEFT, InputConstants.MOUSE_BUTTON_RIGHT, InputConstants.KEY_R, InputConstants.KEY_U}) {
+			LegacyCategory<?> category = context.computeOnClient(client -> {
+				var manager = Internal.getJeiRuntime().getRecipeManager();
+				var legacy = new LegacyCategory<>(manager.getRecipeCategory(RecipeTypes.SMELTING));
+				gui().showRecipes(legacy, manager.createRecipeLookup(RecipeTypes.SMELTING).get().limit(1).toList(), List.of());
+				return legacy;
+			});
+			context.waitTicks(3);
+			var layout = context.computeOnClient(client -> visibleLayouts().getFirst());
+			move(context, layout, 48, 12);
+			if (input == InputConstants.MOUSE_BUTTON_LEFT || input == InputConstants.MOUSE_BUTTON_RIGHT) {
+				context.getInput().holdMouse(input);
+				context.runOnClient(client -> check(category.actions == 0, "Navigation must not invoke the legacy callback on press"));
+				context.getInput().releaseMouse(input);
+			} else {
+				context.getInput().pressKey(input);
+			}
+			context.waitTicks(2);
+			context.runOnClient(client -> {
+				check(category.actions == 0, "Ingredient navigation must take priority over a consuming legacy category");
+				check(currentFocuses().getItemStackFocuses().anyMatch(focus -> focus.getTypedValue().getIngredient().is(Items.STICK)),
+					"Input " + input + " must navigate to the legacy category's stick ingredient");
+			});
+		}
+	}
+
+	private static ScreenPosition findStickSlot(IRecipeLayoutDrawable<?> layout) {
+		var area = layout.getRect();
+		for (int y = area.getY(); y < area.getY() + area.getHeight(); y++) {
+			for (int x = area.getX(); x < area.getX() + area.getWidth(); x++) {
+				var slot = layout.getSlotUnderMouse(x, y)
+					.filter(candidate -> candidate.slot().getDisplayedIngredient(VanillaTypes.ITEM_STACK)
+						.filter(stack -> stack.is(Items.STICK)).isPresent())
+					.orElse(null);
+				if (slot != null) {
+					var bounds = slot.slot().getRect();
+					return new ScreenPosition(slot.offset().x() + bounds.getX() + bounds.getWidth() / 2,
+						slot.offset().y() + bounds.getY() + bounds.getHeight() / 2);
+				}
+			}
+		}
+		throw new AssertionError("Expected a stick ingredient in the pickaxe recipe");
+	}
+
+	private static IFocusGroup currentFocuses() {
+		var logic = new ReflectionUtil().getFieldWithClass(gui(), IRecipeGuiLogic.class).findFirst().orElseThrow();
+		return new ReflectionUtil().getFieldWithClass(logic, ILookupState.class).findFirst().orElseThrow().getFocuses();
+	}
+
 	private static void assertLegacyCategoryInput(FabricClientTestContext context) {
 		LegacyCategory<?> category = context.computeOnClient(client -> {
 			var manager = Internal.getJeiRuntime().getRecipeManager();
@@ -169,19 +270,42 @@ final class RecipeInputCaptureClientTest {
 		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
 		context.runOnClient(client -> check(category.actions == 1 && category.lastX == 12 && category.lastY == 12,
 			"Legacy category callbacks must execute once with coordinates relative to their recipe"));
+		context.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		move(context, layout, 200, 12);
+		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
+		context.runOnClient(client -> check(category.actions == 1, "Releasing outside the recipe must cancel the legacy callback"));
+		move(context, layout, 12, 12);
+		context.getInput().pressKey(InputConstants.KEY_Z);
+		context.runOnClient(client -> check(category.actions == 2, "Unhandled keyboard input must still reach the legacy callback"));
+		context.runOnClient(client -> category.failDraw = true);
+		context.waitTicks(3);
+		context.runOnClient(client -> check(visibleLayouts().getFirst() instanceof RecipeLayoutDrawableErrored<?>,
+			"A category draw failure must replace the layout with its error display"));
+		context.getInput().pressKey(InputConstants.KEY_Z);
+		context.runOnClient(client -> check(category.actions == 2, "Failed layouts must not receive category callbacks"));
 	}
 
 	private static final class LegacyCategory<T> extends AbstractRecipeCategory<T> {
 		private int actions;
 		private double lastX;
 		private double lastY;
+		private boolean failDraw;
 
 		private LegacyCategory(IRecipeCategory<T> delegate) {
 			super(delegate.getRecipeType(), delegate.getTitle(), new DrawableBlank(16, 16), 160, 60);
 		}
 
 		@Override
-		public void setRecipe(IRecipeLayoutBuilder builder, T recipe, IFocusGroup focuses) {}
+		public void setRecipe(IRecipeLayoutBuilder builder, T recipe, IFocusGroup focuses) {
+			builder.addSlot(RecipeIngredientRole.INPUT, 40, 4).addItemStack(new ItemStack(Items.STICK));
+		}
+
+		@Override
+		public void draw(T recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+			if (failDraw) {
+				throw new IllegalStateException("Intentional category draw failure");
+			}
+		}
 
 		@Override
 		@SuppressWarnings("removal")
