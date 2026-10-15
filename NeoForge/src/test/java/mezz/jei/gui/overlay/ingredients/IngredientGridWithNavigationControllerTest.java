@@ -49,7 +49,6 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.util.context.ContextMap;
-import net.minecraft.world.item.ItemStack;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -867,8 +866,8 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		@Override
-		public ItemStack getCheatItemStack(IIngredientManager ingredientManager) {
-			return ItemStack.EMPTY;
+		public boolean canClickToCheat() {
+			return false;
 		}
 
 		@Override
