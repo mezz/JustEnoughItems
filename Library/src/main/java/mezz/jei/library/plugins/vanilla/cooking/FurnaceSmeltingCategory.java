@@ -20,6 +20,6 @@ public class FurnaceSmeltingCategory extends AbstractCookingCategory<SmeltingRec
 		if (identifier.equals(FurnaceRecipeMaker.SPONGE_WITH_BUCKET)) {
 			return List.of(FurnaceRecipeMaker.SPONGE_RECIPE.identifier());
 		}
-		return List.of(identifier);
+		return super.getSourceRecipeIds(recipeHolder);
 	}
 }
