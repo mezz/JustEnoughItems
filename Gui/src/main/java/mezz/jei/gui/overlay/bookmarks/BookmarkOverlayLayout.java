@@ -18,9 +18,11 @@ final class BookmarkOverlayLayout {
 		int displayRight = displayArea.x() + displayArea.width();
 		int availableRight = displayRight;
 		for (ImmutableRect2i exclusionArea : guiExclusionAreas) {
-			boolean overlapsVertically = exclusionArea.y() < displayArea.y() + displayArea.height() &&
-				exclusionArea.y() + exclusionArea.height() > displayArea.y();
-			boolean attachedToGuiLeft = exclusionArea.x() < displayRight &&
+			boolean overlapsVertically = exclusionArea.y() < guiProperties.guiBottom() &&
+				exclusionArea.y() + exclusionArea.height() > guiProperties.guiTop();
+			// Screen-edge sidebars leave the full width available for slots above or below them.
+			boolean attachedToGuiLeft = exclusionArea.x() > displayArea.x() &&
+				exclusionArea.x() < displayRight &&
 				exclusionArea.x() + exclusionArea.width() >= displayRight;
 			if (overlapsVertically && attachedToGuiLeft) {
 				availableRight = Math.min(availableRight, Math.max(displayArea.x(), exclusionArea.x()));
