@@ -275,14 +275,15 @@ public interface IRecipeCategory<T> {
 	 * Return an empty list if the display has no underlying recipe.
 	 * The list and its elements must not be null, and identifiers must be distinct and in a stable order.
 	 * <p>
-	 * The default uses {@link #getRegistryName(Object)} when present. Categories with synthetic
-	 * identifiers should override this method. Source identifiers do not affect bookmarks.
+	 * The default uses {@link #getRegistryName(Object)}, excluding {@code null} and synthetic identifiers
+	 * whose paths start with {@code /}. Override when the underlying recipe identifiers differ.
+	 * Source identifiers do not affect bookmarks.
 	 *
 	 * @since 15.70.0
 	 */
 	default List<ResourceLocation> getSourceRecipeIds(T recipe) {
 		ResourceLocation identifier = getRegistryName(recipe);
-		if (identifier == null) {
+		if (identifier == null || identifier.getPath().startsWith("/")) {
 			return List.of();
 		}
 		return List.of(identifier);
