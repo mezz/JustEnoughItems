@@ -214,6 +214,15 @@ public interface IRecipeManager {
 	<T> IIngredientSupplier getRecipeIngredients(IRecipeCategory<T> recipeCategory, T recipe);
 
 	/**
+	 * Get the ingredients for a given recipe, collecting only the specified roles.
+	 * The supplier returns an empty list for roles that are not included.
+	 *
+	 * @param roles the roles to collect; an empty set collects no ingredients
+	 * @since 29.49.0
+	 */
+	<T> IIngredientSupplier getRecipeIngredients(IRecipeCategory<T> recipeCategory, T recipe, Set<RecipeIngredientRole> roles);
+
+	/**
 	 * Get the registered recipe type for the given unique id.
 	 * <p>
 	 * This is useful for integrating with other mods that do not share their

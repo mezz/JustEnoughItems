@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -31,7 +32,8 @@ public final class RecipeDebugUtil {
 		String recipeName = getNameForRecipe(recipe);
 		recipeInfoBuilder.append(recipeName);
 
-		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager, contextMap);
+		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager, contextMap,
+			EnumSet.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT, RecipeIngredientRole.CRAFTING_STATION));
 
 		recipeInfoBuilder.append(" {");
 		recipeInfoBuilder.append("\n  Outputs:");
