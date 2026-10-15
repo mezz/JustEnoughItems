@@ -6,6 +6,7 @@ import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IClientToggleState;
 import mezz.jei.common.config.IIngredientGridConfig;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
 import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.IMouseOverable;
@@ -353,7 +354,10 @@ public class IngredientGridWithNavigationController implements IPaged, IInputTar
 		}
 
 		for (IClickableIngredientInternal<?> clicked : this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY).toList()) {
-			ItemStack cheatItemStack = clicked.getCheatItemStack(ingredientManager);
+			if (!clicked.canClickToCheat()) {
+				continue;
+			}
+			ItemStack cheatItemStack = TypedIngredientUtil.getCheatItemStack(ingredientManager, clicked.getTypedIngredient());
 			if (!cheatItemStack.isEmpty()) {
 				return Optional.of(InputAction.run(() -> commandUtil.setHotbarStack(cheatItemStack, hotbarSlot))
 					.within(clicked::isMouseOver)
