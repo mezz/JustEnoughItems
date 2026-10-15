@@ -8,6 +8,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.InputPhase;
@@ -30,19 +31,23 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
-/** Verifies source IDs through registered recipes, bookmark JSON, tooltips, and copy controls. */
 @SuppressWarnings({"UnstableApiUsage", "removal"})
 final class RecipeSourceIdsClientTest {
 	private static final Identifier SHIELD_DECORATION = Identifier.withDefaultNamespace("shield_decoration");
+	private static final Identifier SYNTHETIC_ID = Identifier.fromNamespaceAndPath("jei_test", "/synthetic/recipe");
+	private static final Identifier NORMAL_ID = Identifier.fromNamespaceAndPath("jei_test", "folder/recipe");
 	private static final List<Identifier> MULTIPLE_SOURCES = List.of(
 		SHIELD_DECORATION,
 		Identifier.withDefaultNamespace("crafting_table")
@@ -72,9 +77,11 @@ final class RecipeSourceIdsClientTest {
 			try {
 				client.options.advancedItemTooltips = true;
 				for (var recipe : recipes) {
-					check(category.getSourceRecipeIds(recipe).equals(List.of(SHIELD_DECORATION)), "Generated displays must retain the original recipe ID");
+					assertTooltipIds(createLayout(category, recipe), List.of(SHIELD_DECORATION));
+				}
+				var synthetic = new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, SYNTHETIC_ID), recipes.getFirst().value());
+				for (var recipe : List.of(recipes.getFirst(), recipes.getLast(), synthetic)) {
 					var layout = createLayout(category, recipe);
-					assertTooltipIds(layout, List.of(SHIELD_DECORATION));
 					var bookmark = Objects.requireNonNull(RecipeBookmark.create(layout, runtime.getIngredientManager(), transferService));
 					var encoded = codec.encodeStart(ops, bookmark).getOrThrow();
 					var decoded = codec.parse(ops, encoded).getOrThrow();
@@ -83,7 +90,7 @@ final class RecipeSourceIdsClientTest {
 					var expectedRecipeData = codecHelper.<RecipeHolder<CraftingRecipe>>getRecipeHolderCodec().encodeStart(ops, recipe).getOrThrow();
 					check(expectedRecipeData.equals(encoded.getAsJsonObject().get("recipe")), "Crafting bookmarks must retain the existing recipe holder format");
 				}
-				check(bookmarks.size() == 2, "Displays with the same source must remain distinct after saving bookmarks");
+				check(bookmarks.size() == 3, "Generated and synthetic displays must remain distinct after saving bookmarks");
 				var multipleSources = createCategory(runtime.getJeiHelpers().getGuiHelper(), MULTIPLE_SOURCES);
 				assertTooltipIds(createLayout(multipleSources, recipes.getFirst()), MULTIPLE_SOURCES);
 				var noSources = createCategory(runtime.getJeiHelpers().getGuiHelper(), List.of());
@@ -113,6 +120,7 @@ final class RecipeSourceIdsClientTest {
 			check(client.gui.screen() == gui, "Copying multiple source IDs must keep the recipe screen open");
 			copy(gui, createCategory(runtime.getJeiHelpers().getGuiHelper(), List.of()), recipe);
 			check(client.keyboardHandler.getClipboard().equals("[minecraft:shield_decoration, minecraft:crafting_table]"), "A display with no source must leave the clipboard intact");
+			assertSyntheticDisplays(client, gui);
 		} finally {
 			copyKey.setKey(originalKey);
 			client.keyboardHandler.setClipboard(clipboard);
@@ -120,7 +128,49 @@ final class RecipeSourceIdsClientTest {
 		}
 	}
 
-	private static void copy(RecipesGui gui, IRecipeCategory<RecipeHolder<CraftingRecipe>> category, RecipeHolder<CraftingRecipe> recipe) {
+	private static void assertSyntheticDisplays(Minecraft client, RecipesGui gui) {
+		var syntheticCrafting = assertSyntheticDisplay(client, gui, RecipeTypes.CRAFTING);
+		assertSyntheticDisplay(client, gui, RecipeTypes.SMOKING);
+		assertSyntheticDisplay(client, gui, RecipeTypes.SMELTING);
+		assertSyntheticDisplay(client, gui, RecipeTypes.SMITHING);
+
+		var runtime = Internal.getJeiRuntime();
+		var guiHelper = runtime.getJeiHelpers().getGuiHelper();
+		var explicitSources = createCategory(guiHelper, MULTIPLE_SOURCES);
+		assertTooltipIds(createLayout(explicitSources, syntheticCrafting), MULTIPLE_SOURCES);
+		copy(gui, explicitSources, syntheticCrafting);
+		check(client.keyboardHandler.getClipboard().equals("[minecraft:shield_decoration, minecraft:crafting_table]"), "Synthetic displays must retain explicit source IDs");
+
+		var replacements = new CraftingRecipeCategory(guiHelper);
+		replacements.addExtension(CraftingRecipe.class, new CraftingCategoryExtension());
+		var normalCrafting = new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, NORMAL_ID), syntheticCrafting.value());
+		replacements.addReplacementSource(syntheticCrafting, normalCrafting);
+		assertTooltipIds(createLayout(replacements, syntheticCrafting), List.of(NORMAL_ID));
+		copy(gui, replacements, syntheticCrafting);
+		check(client.keyboardHandler.getClipboard().equals(NORMAL_ID.toString()), "Synthetic displays must retain replacement source IDs");
+	}
+
+	private static <R extends Recipe<?>> RecipeHolder<R> assertSyntheticDisplay(Minecraft client, RecipesGui gui, IRecipeType<RecipeHolder<R>> recipeType) {
+		var runtime = Internal.getJeiRuntime();
+		var manager = runtime.getRecipeManager();
+		var category = manager.getRecipeCategory(recipeType);
+		var template = manager.createRecipeLookup(recipeType).get()
+			.filter(recipe -> !recipe.value().isSpecial())
+			.findFirst().orElseThrow();
+		var synthetic = new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, SYNTHETIC_ID), template.value());
+		var normal = new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, NORMAL_ID), template.value());
+		var layout = createLayout(category, synthetic);
+		assertTooltipIds(layout, List.of());
+		String clipboard = client.keyboardHandler.getClipboard();
+		copy(gui, category, synthetic);
+		check(client.keyboardHandler.getClipboard().equals(clipboard), "Copying a synthetic display without sources must leave the clipboard intact");
+		assertTooltipIds(createLayout(category, normal), List.of(NORMAL_ID));
+		copy(gui, category, normal);
+		check(client.keyboardHandler.getClipboard().equals(NORMAL_ID.toString()), "Normal IDs with nested paths must remain copyable");
+		return synthetic;
+	}
+
+	private static <R> void copy(RecipesGui gui, IRecipeCategory<R> category, R recipe) {
 		var runtime = Internal.getJeiRuntime();
 		var layout = createLayout(category, recipe);
 		layout.setPosition(0, 0);
@@ -143,7 +193,7 @@ final class RecipeSourceIdsClientTest {
 		return category;
 	}
 
-	private static IRecipeLayoutDrawable<RecipeHolder<CraftingRecipe>> createLayout(IRecipeCategory<RecipeHolder<CraftingRecipe>> category, RecipeHolder<CraftingRecipe> recipe) {
+	private static <R> IRecipeLayoutDrawable<R> createLayout(IRecipeCategory<R> category, R recipe) {
 		return Internal.getJeiRuntime().getRecipeManager().createRecipeLayoutDrawable(category, recipe, FocusGroup.EMPTY).orElseThrow();
 	}
 
