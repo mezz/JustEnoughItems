@@ -238,7 +238,15 @@ public class InteractiveIngredientTooltipClientGameTest {
 		context.getInput().holdKey(InputConstants.KEY_LSHIFT);
 		move(context, new Point(source.x() + 1, source.y() + 1));
 		context.waitTicks(2);
-		context.takeScreenshot("jei-tooltip-occlusion-setup");
+		context.takeScreenshot("jei-interactive-tooltip-obscured-bookmark");
+		context.runOnClient(client -> {
+			BookmarkOverlay overlay = (BookmarkOverlay) Internal.getJeiRuntime().getBookmarkOverlay();
+			if (!overlay.isListDisplayed()) {
+				throw new AssertionError("Expected visible bookmarks for tooltip occlusion: hasRoom=" + overlay.hasRoom() +
+					", bookmarks=" + bookmarks().getElements().size() + ", overlayEnabled=" + Internal.getWorldConfig().isOverlayEnabled() +
+					", bookmarksEnabled=" + Internal.getWorldConfig().isBookmarkEnabled());
+			}
+		});
 		Point covered = context.computeOnClient(client -> findPoint(
 			new ImmutableRect2i(0, 0, client.getWindow().getGuiScaledWidth(), client.getWindow().getGuiScaledHeight()),
 			(x, y) -> gui().getForegroundInputLayer().containsMouse(x, y) &&
