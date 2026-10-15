@@ -195,6 +195,8 @@ dependencies {
 	modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
 		isTransitive = false
 	}
+	testImplementation(mezzConfigApiDependency)
+	testImplementation(mezzConfigGuiApiDependency)
 	testImplementation(
 		group = "org.junit.jupiter",
 		name = "junit-jupiter",
@@ -356,7 +358,25 @@ publishMods {
 	}
 }
 
+abstract class PackagedJarArgumentProvider : CommandLineArgumentProvider {
+	@get:InputFile
+	@get:PathSensitive(PathSensitivity.NONE)
+	abstract val jar: RegularFileProperty
+
+	@get:Classpath
+	abstract val classpath: ConfigurableFileCollection
+
+	override fun asArguments() = listOf(
+		"-Djei.test.packagedJar=${jar.get().asFile.absolutePath}",
+		"-Djei.test.packagedClasspath=${classpath.asPath}"
+	)
+}
+
 tasks.test {
+	jvmArgumentProviders.add(objects.newInstance<PackagedJarArgumentProvider>().apply {
+		jar.set(shadedJar.flatMap { it.archiveFile })
+		classpath.from(sourceSets.test.get().runtimeClasspath)
+	})
 	useJUnitPlatform()
 	include("mezz/jei/test/**")
 	exclude("mezz/jei/test/lib/**")
