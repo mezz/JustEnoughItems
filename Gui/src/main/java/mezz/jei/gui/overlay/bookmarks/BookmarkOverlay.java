@@ -381,7 +381,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
+	public boolean containsMouse(double mouseX, double mouseY) {
 		updateScreenPropertiesIfDirty();
 		if (!this.guiPropertiesCache.hasValidScreen()) {
 			return false;
@@ -389,10 +389,10 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		if (this.bookmarkButton.isMouseOver(mouseX, mouseY) || this.historyButton.isMouseOver(mouseX, mouseY)) {
 			return true;
 		}
-		if (isListDisplayed() && this.contents.isMouseOver(mouseX, mouseY)) {
+		if (isListDisplayed() && this.contents.containsMouse(mouseX, mouseY)) {
 			return true;
 		}
-		return toggleState.isOverlayEnabled() && this.lookupHistoryOverlay.isMouseOver(mouseX, mouseY);
+		return toggleState.isOverlayEnabled() && this.lookupHistoryOverlay.containsMouse(mouseX, mouseY);
 	}
 
 	@Override

@@ -86,7 +86,7 @@ final class BookmarkPreviewTooltip implements IInputTarget, IMouseOverable {
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
+	public boolean containsMouse(double mouseX, double mouseY) {
 		return this.tooltipRenderer.isMouseOver(mouseX, mouseY) || this.transferButton.isMouseOver(mouseX, mouseY);
 	}
 
@@ -168,7 +168,7 @@ final class BookmarkPreviewTooltip implements IInputTarget, IMouseOverable {
 
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
-		if (!isMouseOver(mouseX, mouseY)) {
+		if (!containsMouse(mouseX, mouseY)) {
 			return Optional.empty();
 		}
 

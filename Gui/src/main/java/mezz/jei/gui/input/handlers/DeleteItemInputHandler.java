@@ -52,7 +52,7 @@ public class DeleteItemInputHandler implements IInputTarget {
 		}
 		double mouseX = userInput.getMouseX();
 		double mouseY = userInput.getMouseY();
-		if (!this.ingredientGrid.isMouseOver(mouseX, mouseY)) {
+		if (!this.ingredientGrid.containsMouse(mouseX, mouseY)) {
 			return Optional.empty();
 		}
 		Minecraft minecraft = Minecraft.getInstance();
@@ -73,7 +73,7 @@ public class DeleteItemInputHandler implements IInputTarget {
 				serverConnection.sendPacketToServer(new PacketDeletePlayerItem(itemStack));
 			}
 		}, release -> player.containerMenu.getCarried() == itemStack && shouldDeleteItemOnClick(minecraft, release.getMouseX(), release.getMouseY()))
-			.within(ingredientGrid::isMouseOver));
+			.within(ingredientGrid::containsMouse));
 	}
 
 	@SuppressWarnings("MethodMayBeStatic")

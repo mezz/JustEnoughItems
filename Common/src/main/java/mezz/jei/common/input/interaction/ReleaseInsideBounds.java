@@ -19,7 +19,7 @@ import mezz.jei.common.input.UserInput;
 public record ReleaseInsideBounds(IInputInteraction interaction, IMouseOverable bounds) implements IInputInteraction {
 	@Override
 	public void complete(UserInput input) {
-		if (bounds.isMouseOver(input.getMouseX(), input.getMouseY())) {
+		if (bounds.containsMouse(input.getMouseX(), input.getMouseY())) {
 			interaction.complete(input);
 		} else {
 			interaction.cancel();

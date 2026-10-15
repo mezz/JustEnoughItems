@@ -183,7 +183,7 @@ public class RecipeCatalysts implements IRecipeFocusSource {
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
+	public boolean containsMouse(double mouseX, double mouseY) {
 		if (isEmpty()) {
 			return false;
 		}

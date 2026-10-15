@@ -303,7 +303,25 @@ publishMods {
 	}
 }
 
+abstract class PackagedJarArgumentProvider : CommandLineArgumentProvider {
+	@get:InputFile
+	@get:PathSensitive(PathSensitivity.NONE)
+	abstract val jar: RegularFileProperty
+
+	@get:Classpath
+	abstract val classpath: ConfigurableFileCollection
+
+	override fun asArguments() = listOf(
+		"-Djei.test.packagedJar=${jar.get().asFile.absolutePath}",
+		"-Djei.test.packagedClasspath=${classpath.asPath}"
+	)
+}
+
 tasks.named<Test>("test") {
+	jvmArgumentProviders.add(objects.newInstance<PackagedJarArgumentProvider>().apply {
+		jar.set(shadedJar.flatMap { it.archiveFile })
+		classpath.from(sourceSets.test.get().runtimeClasspath)
+	})
 	useJUnitPlatform()
 	include("mezz/jei/gui/config/**")
 	include("mezz/jei/gui/input/focus/**")

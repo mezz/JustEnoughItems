@@ -807,7 +807,7 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		@Override
-		public boolean isMouseOver(double mouseX, double mouseY) {
+		public boolean containsMouse(double mouseX, double mouseY) {
 			return false;
 		}
 
@@ -947,7 +947,7 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		@Override
-		public boolean isMouseOver(double mouseX, double mouseY) {
+		public boolean containsMouse(double mouseX, double mouseY) {
 			return false;
 		}
 

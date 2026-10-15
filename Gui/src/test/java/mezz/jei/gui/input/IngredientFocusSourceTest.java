@@ -60,7 +60,7 @@ public class IngredientFocusSourceTest {
 		}
 
 		@Override
-		public boolean isMouseOver(double mouseX, double mouseY) {
+		public boolean containsMouse(double mouseX, double mouseY) {
 			return true;
 		}
 
@@ -82,7 +82,7 @@ public class IngredientFocusSourceTest {
 		}
 
 		@Override
-		public boolean isMouseOver(double mouseX, double mouseY) {
+		public boolean containsMouse(double mouseX, double mouseY) {
 			return mouseOver;
 		}
 

@@ -353,7 +353,7 @@ public class JeiGuiResizeClientGameTest {
 			if (bookmarks) {
 				overlay = Internal.getJeiRuntime().getBookmarkOverlay();
 			}
-			check(((IRecipeFocusSource) overlay).isMouseOver(pressX, y), "Resize handle must belong to the overlay: point " + pressX + "," + y + ", initial " + initial + ", current " + grid(bookmarks).getBackgroundArea() + ", grid hit " + grid(bookmarks).isMouseOver(pressX, y) + ", config " + gridConfig(bookmarks).backgroundStyle().get());
+			check(((IRecipeFocusSource) overlay).containsMouse(pressX, y), "Resize handle must belong to the overlay: point " + pressX + "," + y + ", initial " + initial + ", current " + grid(bookmarks).getBackgroundArea() + ", grid hit " + grid(bookmarks).containsMouse(pressX, y) + ", config " + gridConfig(bookmarks).backgroundStyle().get());
 		});
 		move(context, x, y);
 		context.getInput().holdMouse(InputConstants.MOUSE_BUTTON_LEFT);
@@ -590,8 +590,8 @@ public class JeiGuiResizeClientGameTest {
 			if (bookmarks) {
 				overlay = (IRecipeFocusSource) Internal.getJeiRuntime().getBookmarkOverlay();
 			}
-			check(historyOverlay(bookmarks).isMouseOver(area.x() + 1, area.y() + 1), "Visible history must block ingredient lookup");
-			check(overlay.isMouseOver(area.x() + 1, area.y() + 1), "The owning overlay must block lookup over history, even when its main panel is hidden");
+			check(historyOverlay(bookmarks).containsMouse(area.x() + 1, area.y() + 1), "Visible history must block ingredient lookup");
+			check(overlay.containsMouse(area.x() + 1, area.y() + 1), "The owning overlay must block lookup over history, even when its main panel is hidden");
 			check(grid.getVisibleElements().count() == columns * rows, "History should populate new slots during the drag");
 			IClientConfig config = Internal.getClientConfigs().getClientConfig();
 			check(config.maxLookupHistoryColumns().get() == columns && config.maxLookupHistoryRows().get() == rows, "History dimensions must update during the drag");

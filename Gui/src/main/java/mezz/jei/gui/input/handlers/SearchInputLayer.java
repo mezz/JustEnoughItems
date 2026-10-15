@@ -45,7 +45,7 @@ public class SearchInputLayer implements IGuiInputLayer, ITextInputHandler {
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
+	public boolean containsMouse(double mouseX, double mouseY) {
 		return active.getAsBoolean() &&
 			(textFieldFilter.isMouseOver(mouseX, mouseY) || textFieldFilter.isCompletionMouseOver(mouseX, mouseY));
 	}

@@ -241,8 +241,8 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
-		return isListDisplayed() && contents.isMouseOver(mouseX, mouseY);
+	public boolean containsMouse(double mouseX, double mouseY) {
+		return isListDisplayed() && contents.containsMouse(mouseX, mouseY);
 	}
 
 	@Override

@@ -112,7 +112,7 @@ public class GuiEventHandler {
 		Minecraft minecraft = Minecraft.getInstance();
 
 		boolean mouseOverInputLayer = this.inputLayers.stream()
-			.anyMatch(inputLayer -> inputLayer.isMouseOver(mouseX, mouseY));
+			.anyMatch(inputLayer -> inputLayer.containsMouse(mouseX, mouseY));
 		if (!drawnOnBackground) {
 			drawOverlays(guiGraphics, mouseX, mouseY);
 		}
@@ -153,7 +153,7 @@ public class GuiEventHandler {
 		Minecraft minecraft = Minecraft.getInstance();
 
 		boolean mouseOverInputLayer = this.inputLayers.stream()
-			.anyMatch(inputLayer -> inputLayer.isMouseOver(mouseX, mouseY));
+			.anyMatch(inputLayer -> inputLayer.containsMouse(mouseX, mouseY));
 		int overlayMouseX = mouseX;
 		int overlayMouseY = mouseY;
 		if (mouseOverInputLayer) {
