@@ -16,6 +16,10 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.focus.Focus;
+
+import mezz.jei.library.gui.recipes.supplier.builder.IngredientSupplierBuilder;
+import mezz.jei.library.focus.FocusGroup;
+import mezz.jei.library.ingredients.RecipeIngredientSupplier;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
@@ -23,6 +27,8 @@ import mezz.jei.library.recipes.InternalRecipeManagerPlugin;
 import mezz.jei.library.recipes.RecipeCatalystBuilder;
 import mezz.jei.library.recipes.collect.RecipeMap;
 import mezz.jei.library.recipes.collect.RecipeTypeDataMap;
+import mezz.jei.library.util.IngredientSupplierHelper;
+import mezz.jei.library.util.RecipeDebugUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -32,12 +38,18 @@ import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import java.util.AbstractList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class InternalRecipeManagerPluginTest {
 	private static final IIngredientType<TestIngredient> INGREDIENT_TYPE = new TestIngredientType("test");
@@ -48,6 +60,188 @@ public class InternalRecipeManagerPluginTest {
 	private static final String FIRST_RECIPE = "first recipe";
 	private static final String SECOND_RECIPE = "second recipe";
 	private static final String THIRD_RECIPE = "third recipe";
+
+	@Test
+	void recipeLookupDoesNotReadRenderOnlyIngredients() {
+		IIngredientManager ingredientManager = createIngredientManager();
+		List<TestIngredient> fuels = unreadableIngredients();
+		TestRecipeCategory category = new TestRecipeCategory() {
+			@Override
+			public void setRecipe(IRecipeLayoutBuilder builder, String recipe, IFocusGroup focuses) {
+				builder.addInputSlot().addIngredient(INGREDIENT_TYPE, INPUT);
+				builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 1, 37)
+					.setStandardSlotBackground()
+					.addIngredients(INGREDIENT_TYPE, unreadableIngredients())
+					.addIngredientsUnsafe(fuels);
+				builder.addInvisibleIngredients(RecipeIngredientRole.RENDER_ONLY).addIngredientsUnsafe(fuels);
+				builder.addOutputSlot().addIngredient(INGREDIENT_TYPE, CATALYST);
+			}
+		};
+
+		RecipeIngredientSupplier ingredients = IngredientSupplierHelper.getIngredientSupplier(
+			FIRST_RECIPE, category, ingredientManager,
+			EnumSet.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT, RecipeIngredientRole.CATALYST)
+		);
+		EnumMap<RecipeIngredientRole, RecipeMap> roleMaps = createRoleMaps(ingredientManager);
+		roleMaps.values().forEach(roleMap -> roleMap.addRecipe(RECIPE_TYPE, FIRST_RECIPE, ingredients));
+
+		assertEquals(List.of(FIRST_RECIPE), roleMaps.get(RecipeIngredientRole.INPUT)
+			.getRecipes(RECIPE_TYPE, typedIngredient(ingredientManager, INPUT)));
+		assertEquals(List.of(FIRST_RECIPE), roleMaps.get(RecipeIngredientRole.OUTPUT)
+			.getRecipes(RECIPE_TYPE, typedIngredient(ingredientManager, CATALYST)));
+		assertEquals(List.of(), ingredients.getIngredients(RecipeIngredientRole.RENDER_ONLY));
+	}
+
+	@Test
+	void fullIngredientCollectionPreservesRenderOnlyIngredientsWithoutIndexingThem() {
+		IIngredientManager ingredientManager = createIngredientManager();
+		TestRecipeCategory category = new TestRecipeCategory() {
+			@Override
+			public void setRecipe(IRecipeLayoutBuilder builder, String recipe, IFocusGroup focuses) {
+				builder.addInputSlot().addIngredient(INGREDIENT_TYPE, INPUT);
+				builder.addSlot(RecipeIngredientRole.RENDER_ONLY).addIngredient(INGREDIENT_TYPE, CATALYST);
+			}
+		};
+		RecipeIngredientSupplier ingredients = IngredientSupplierHelper.getIngredientSupplier(
+			FIRST_RECIPE, category, ingredientManager
+		);
+		EnumMap<RecipeIngredientRole, RecipeMap> roleMaps = createRoleMaps(ingredientManager);
+		roleMaps.values().forEach(roleMap -> roleMap.addRecipe(RECIPE_TYPE, FIRST_RECIPE, ingredients));
+		ITypedIngredient<TestIngredient> renderOnly = typedIngredient(ingredientManager, CATALYST);
+		RecipeCatalystBuilder craftingStationBuilder = new RecipeCatalystBuilder(roleMaps.get(RecipeIngredientRole.CATALYST));
+		RecipeTypeDataMap recipeTypeDataMap = new RecipeTypeDataMap(List.of(category), craftingStationBuilder.buildRecipeCategoryCatalysts());
+		recipeTypeDataMap.get(RECIPE_TYPE).addRecipes(List.of(FIRST_RECIPE));
+		InternalRecipeManagerPlugin plugin = new InternalRecipeManagerPlugin(ingredientManager, recipeTypeDataMap, roleMaps);
+		Focus<TestIngredient> renderOnlyFocus = new Focus<>(RecipeIngredientRole.RENDER_ONLY, renderOnly);
+
+		assertEquals(List.of(CATALYST), ingredients.getIngredients(RecipeIngredientRole.RENDER_ONLY).stream()
+			.map(ITypedIngredient::getIngredient)
+			.toList());
+		assertEquals(List.of(), plugin.getRecipes(category, renderOnlyFocus));
+		assertEquals(List.of(), plugin.getRecipeTypes(renderOnlyFocus));
+		assertEquals(List.of(FIRST_RECIPE), roleMaps.get(RecipeIngredientRole.INPUT)
+			.getRecipes(RECIPE_TYPE, typedIngredient(ingredientManager, INPUT)));
+	}
+
+	@Test
+	void recipeDiagnosticsDoNotReadRenderOnlyIngredients() {
+		TestRecipeCategory category = new TestRecipeCategory() {
+			@Override
+			public void setRecipe(IRecipeLayoutBuilder builder, String recipe, IFocusGroup focuses) {
+				builder.addInputSlot().addIngredient(INGREDIENT_TYPE, INPUT);
+				builder.addOutputSlot().addIngredient(INGREDIENT_TYPE, CATALYST);
+				builder.addSlot(RecipeIngredientRole.RENDER_ONLY)
+					.addIngredients(INGREDIENT_TYPE, unreadableIngredients());
+			}
+		};
+
+		String diagnostic = RecipeDebugUtil.getDebugInfoFromRecipe(FIRST_RECIPE, category, createIngredientManager());
+
+		assertTrue(diagnostic.contains(INPUT.toString()));
+		assertTrue(diagnostic.contains(CATALYST.toString()));
+	}
+
+	@Test
+	void renderOnlySlotsDoNotRestrictSearchableFocusLinks() {
+		IIngredientManager ingredientManager = createIngredientManager();
+		TestRecipeCategory category = new TestRecipeCategory() {
+			@Override
+			public void setRecipe(IRecipeLayoutBuilder builder, String recipe, IFocusGroup focuses) {
+				var input = builder.addInputSlot().addIngredients(INGREDIENT_TYPE, List.of(INPUT, CATALYST));
+				var output = builder.addOutputSlot().addIngredients(INGREDIENT_TYPE, List.of(INPUT, CATALYST));
+				var renderOnly = builder.addSlot(RecipeIngredientRole.RENDER_ONLY)
+					.addIngredients(INGREDIENT_TYPE, unreadableIngredients());
+				builder.createFocusLink(List.of(input, renderOnly, output));
+				builder.createFocusLink(renderOnly);
+			}
+		};
+		RecipeIngredientSupplier ingredients = IngredientSupplierHelper.getIngredientSupplier(
+			FIRST_RECIPE, category, ingredientManager,
+			EnumSet.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT, RecipeIngredientRole.CATALYST)
+		);
+
+		assertEquals(1, ingredients.getFocusLinks().size());
+		assertEquals(Set.of(0), ingredients.getFocusLinks().getFirst().getVisibleIngredientIndexes(
+			FocusGroup.EMPTY,
+			ingredientManager,
+			ingredient -> ingredient.getIngredient().equals(INPUT)
+		));
+	}
+
+	@Test
+	void ingredientCollectionTracksOnlySelectedRoles() {
+		List<Set<RecipeIngredientRole>> selections = List.of(
+			Set.of(),
+			Set.of(RecipeIngredientRole.INPUT),
+			Set.of(RecipeIngredientRole.OUTPUT),
+			Set.of(RecipeIngredientRole.CATALYST),
+			Set.of(RecipeIngredientRole.RENDER_ONLY),
+			Set.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT),
+			EnumSet.allOf(RecipeIngredientRole.class)
+		);
+		for (Set<RecipeIngredientRole> roles : selections) {
+			TestRecipeCategory category = new TestRecipeCategory() {
+				@Override
+				public void setRecipe(IRecipeLayoutBuilder builder, String recipe, IFocusGroup focuses) {
+					for (RecipeIngredientRole role : EnumSet.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT, RecipeIngredientRole.CATALYST)) {
+						List<TestIngredient> ingredients;
+						if (roles.contains(role)) {
+							ingredients = List.of(INPUT);
+						} else {
+							ingredients = unreadableIngredients();
+						}
+						builder.addSlot(role).addIngredients(INGREDIENT_TYPE, ingredients);
+						builder.addInvisibleIngredients(role).addIngredients(INGREDIENT_TYPE, ingredients);
+					}
+				}
+			};
+			RecipeIngredientSupplier ingredients = IngredientSupplierHelper.getIngredientSupplier(
+				FIRST_RECIPE, category, createIngredientManager(), roles
+			);
+			for (RecipeIngredientRole role : EnumSet.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT, RecipeIngredientRole.CATALYST)) {
+				List<TestIngredient> expected;
+				if (roles.contains(role)) {
+					expected = List.of(INPUT, INPUT);
+				} else {
+					expected = List.of();
+				}
+				assertEquals(expected, ingredients.getIngredients(role).stream().map(ITypedIngredient::getIngredient).toList(), role.name());
+			}
+		}
+	}
+
+	@Test
+	void selectedFocusLinksPreserveBlankPositions() {
+		IIngredientManager ingredientManager = createIngredientManager();
+		IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager, Set.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT));
+		var input = builder.addInputSlot().addIngredients(INGREDIENT_TYPE, Arrays.asList(null, INPUT));
+		var output = builder.addOutputSlot().addIngredients(INGREDIENT_TYPE, Arrays.asList(CATALYST, null));
+		var renderOnly = builder.addSlot(RecipeIngredientRole.RENDER_ONLY).addIngredients(INGREDIENT_TYPE, unreadableIngredients());
+		builder.createFocusLink(input, output, renderOnly);
+		builder.createFocusLink(renderOnly);
+		RecipeIngredientSupplier ingredients = builder.buildIngredientSupplier();
+
+		assertEquals(List.of(INPUT), ingredients.getIngredients(RecipeIngredientRole.INPUT).stream()
+			.map(ITypedIngredient::getIngredient).toList());
+		assertTrue(ingredients.getIngredients(RecipeIngredientRole.RENDER_ONLY).isEmpty());
+		assertEquals(1, ingredients.getFocusLinks().size());
+		assertEquals(Set.of(1), ingredients.getFocusLinks().getFirst().getVisibleIngredientIndexes(
+			FocusGroup.EMPTY, ingredientManager, ingredient -> ingredient.getIngredient().equals(INPUT)));
+	}
+
+	private static <T> List<T> unreadableIngredients() {
+		return new AbstractList<>() {
+			@Override
+			public T get(int index) {
+				throw new AssertionError("Unselected ingredient roles must not be read");
+			}
+
+			@Override
+			public int size() {
+				return 100_000;
+			}
+		};
+	}
 
 	@Test
 	public void catalystFocusDoesNotDuplicateRecipeWhenIngredientIsAlsoCatalyst() {
@@ -203,7 +397,7 @@ public class InternalRecipeManagerPluginTest {
 	private static EnumMap<RecipeIngredientRole, RecipeMap> createRoleMaps(IIngredientManager ingredientManager) {
 		Comparator<RecipeType<?>> recipeTypeComparator = Comparator.comparing(recipeType -> recipeType.getUid().toString());
 		EnumMap<RecipeIngredientRole, RecipeMap> roleMaps = new EnumMap<>(RecipeIngredientRole.class);
-		for (RecipeIngredientRole role : RecipeIngredientRole.values()) {
+		for (RecipeIngredientRole role : EnumSet.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT, RecipeIngredientRole.CATALYST)) {
 			roleMaps.put(role, new RecipeMap(recipeTypeComparator, ingredientManager, role));
 		}
 		return roleMaps;

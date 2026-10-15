@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -82,7 +83,7 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 		Comparator<RecipeType<?>> recipeTypeComparator = recipeCategorySortingConfig.getComparator(recipeTypes);
 
 		this.recipeMaps = new EnumMap<>(RecipeIngredientRole.class);
-		for (RecipeIngredientRole role : RecipeIngredientRole.values()) {
+		for (RecipeIngredientRole role : EnumSet.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT, RecipeIngredientRole.CATALYST)) {
 			RecipeMap recipeMap = new RecipeMap(recipeTypeComparator, ingredientManager, role);
 			this.recipeMaps.put(role, recipeMap);
 		}
@@ -154,7 +155,7 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 			}
 			return null;
 		}
-		RecipeIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
+		RecipeIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager, recipeMaps.keySet());
 
 		try {
 			for (RecipeMap recipeMap : recipeMaps.values()) {
@@ -290,7 +291,8 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 		RecipeIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(
 			recipe,
 			recipeTypeData.getRecipeCategory(),
-			ingredientManager
+			ingredientManager,
+			recipeMaps.keySet()
 		);
 		return ingredientSupplier.getFocusLinks();
 	}
@@ -395,6 +397,6 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 
 	public boolean isRecipeCatalyst(RecipeType<?> recipeType, IFocus<?> focus) {
 		RecipeMap recipeMap = recipeMaps.get(focus.getRole());
-		return recipeMap.isCatalystForRecipeCategory(recipeType, focus.getTypedValue());
+		return recipeMap != null && recipeMap.isCatalystForRecipeCategory(recipeType, focus.getTypedValue());
 	}
 }

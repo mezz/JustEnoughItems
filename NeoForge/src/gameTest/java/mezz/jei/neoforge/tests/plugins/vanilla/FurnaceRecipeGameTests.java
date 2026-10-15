@@ -33,6 +33,7 @@ import net.neoforged.testframework.gametest.EmptyTemplate;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @ForEachTest(groups = "furnace_recipes")
 public final class FurnaceRecipeGameTests {
@@ -120,7 +121,7 @@ public final class FurnaceRecipeGameTests {
 
 	@GameTest
 	@EmptyTemplate
-	@TestHolder(description = "API-created smelting recipes use all furnace fuels by default.")
+	@TestHolder(description = "API-created smelting recipes display all furnace fuels without indexing them.")
 	public static void smeltingRecipeDefaultsToAllFuels(JeiGameTestHelper helper) {
 		VanillaRecipeFactory recipeFactory = TestIngredientManagers.createVanillaRecipeFactory();
 		RecipeHolder<SmeltingRecipe> recipeHolder = recipeFactory.createSmeltingRecipe(
@@ -143,12 +144,17 @@ public final class FurnaceRecipeGameTests {
 		IIngredientSupplier ingredients = IngredientSupplierHelper.getIngredientSupplier(
 			recipeHolder,
 			recipeCategory,
-			ingredientManager
+			ingredientManager,
+			Set.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT)
 		);
+		helper.assertTrue(ingredients.getIngredients(RecipeIngredientRole.RENDER_ONLY).isEmpty(), "Fuel display must not be indexed");
+		assertStacks(helper, List.of(new ItemStack(Items.COBBLESTONE)), getItemStacks(ingredients, RecipeIngredientRole.INPUT), "Indexed inputs");
+		assertStacks(helper, List.of(new ItemStack(Items.STONE)), getItemStacks(ingredients, RecipeIngredientRole.OUTPUT), "Indexed outputs");
+		IIngredientSupplier displayIngredients = IngredientSupplierHelper.getIngredientSupplier(recipeHolder, recipeCategory, ingredientManager);
 		assertStacks(
 			helper,
 			furnaceFuels,
-			getItemStacks(ingredients, RecipeIngredientRole.RENDER_ONLY),
+			getItemStacks(displayIngredients, RecipeIngredientRole.RENDER_ONLY),
 			"Default fuel-slot inputs"
 		);
 
