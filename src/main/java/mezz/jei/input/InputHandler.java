@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.item.ItemStack;
 
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -30,6 +31,8 @@ import mezz.jei.ingredients.IngredientFilter;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.runtime.JeiRuntime;
+import mezz.jei.util.CommandUtil;
+import mezz.jei.util.GiveMode;
 import mezz.jei.util.ReflectionUtil;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -127,6 +130,9 @@ public class InputHandler {
 	}
 
 	private boolean handleMouseClick(GuiScreen guiScreen, int mouseButton, int mouseX, int mouseY) {
+		if (handleInventoryCheat(mouseButton - 100, mouseX, mouseY)) {
+			return true;
+		}
 		IClickedIngredient<?> clicked = getFocusUnderMouseForClick(mouseX, mouseY);
 		if (Config.isEditModeEnabled() && clicked != null && handleClickEdit(clicked)) {
 			return true;
@@ -266,6 +272,9 @@ public class InputHandler {
 	}
 
 	private boolean handleFocusKeybinds(int eventKey) {
+		if (handleInventoryCheat(eventKey, MouseHelper.getX(), MouseHelper.getY())) {
+			return true;
+		}
 		final boolean showRecipe = KeyBindings.showRecipe.isActiveAndMatches(eventKey);
 		final boolean showUses = KeyBindings.showUses.isActiveAndMatches(eventKey);
 		final boolean bookmark = KeyBindings.bookmark.isActiveAndMatches(eventKey);
@@ -287,6 +296,26 @@ public class InputHandler {
 				} else {
 					IFocus.Mode mode = showRecipe ? IFocus.Mode.OUTPUT : IFocus.Mode.INPUT;
 					recipesGui.show(new Focus<Object>(mode, clicked.getValue()));
+					clicked.onClickHandled();
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean handleInventoryCheat(int eventKey, int mouseX, int mouseY) {
+		if (!Config.isCheatItemsEnabled()) {
+			return false;
+		}
+		boolean oneItem = KeyBindings.cheatOneItemToInventory.isActiveAndMatches(eventKey);
+		boolean itemStack = KeyBindings.cheatItemStackToInventory.isActiveAndMatches(eventKey);
+		if (oneItem || itemStack) {
+			IClickedIngredient<?> clicked = getIngredientUnderMouseForKey(mouseX, mouseY);
+			if (clicked != null) {
+				ItemStack stack = clicked.getCheatItemStack();
+				if (!stack.isEmpty()) {
+					CommandUtil.giveStack(stack, oneItem ? 1 : 0, GiveMode.INVENTORY);
 					clicked.onClickHandled();
 					return true;
 				}

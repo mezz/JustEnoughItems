@@ -28,7 +28,10 @@ public final class CommandUtil {
 	 * {@link GuiContainerCreative} has special client-side handling for itemStacks, just give the item on the client
 	 */
 	public static void giveStack(ItemStack itemStack, int mouseButton) {
-		final GiveMode giveMode = Config.getGiveMode();
+		giveStack(itemStack, mouseButton, Config.getGiveMode());
+	}
+
+	public static void giveStack(ItemStack itemStack, int mouseButton, GiveMode giveMode) {
 		Minecraft minecraft = Minecraft.getMinecraft();
 		EntityPlayerSP player = minecraft.player;
 		if (player == null) {

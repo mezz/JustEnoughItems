@@ -153,3 +153,6 @@ jei.tooltip.transfer.key=[%s to craft one]
 jei.tooltip.transfer.max.key=[%s to craft many]
 
 key.jei.toggleCheatModeConfigButton=Toggle Cheat Mode (Config Button)
+
+key.jei.cheatOneItemToInventory=Cheat One Item to Inventory
+key.jei.cheatItemStackToInventory=Cheat One Stack to Inventory
