@@ -7,6 +7,7 @@ import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IAdvancedRegistration;
@@ -218,6 +219,21 @@ public interface IRecipeManager {
 		recipeSlotDrawable.setPosition(xPos, yPos);
 		return recipeSlotDrawable;
 	}
+
+	/**
+	 * Get the ingredients for a given recipe.
+	 * @since 11.77.0
+	 */
+	<T> IIngredientSupplier getRecipeIngredients(IRecipeCategory<T> recipeCategory, T recipe);
+
+	/**
+	 * Get the ingredients for a given recipe, collecting only the specified roles.
+	 * The supplier returns an empty list for roles that are not included.
+	 *
+	 * @param roles the roles to collect; an empty set collects no ingredients
+	 * @since 11.77.0
+	 */
+	<T> IIngredientSupplier getRecipeIngredients(IRecipeCategory<T> recipeCategory, T recipe, Set<RecipeIngredientRole> roles);
 
 	/**
 	 * Get the registered recipe type for the given unique id.

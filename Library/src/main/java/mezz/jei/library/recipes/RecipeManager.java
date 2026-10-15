@@ -6,6 +6,7 @@ import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeCatalystLookup;
 import mezz.jei.api.recipe.IRecipeCategoriesLookup;
@@ -27,6 +28,7 @@ import mezz.jei.library.gui.recipes.layout.RecipeLayoutDrawableErrored;
 import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+import mezz.jei.library.util.IngredientSupplierHelper;
 
 import java.util.Collection;
 import java.util.List;
@@ -194,6 +196,16 @@ public class RecipeManager implements IRecipeManager, IRecipeVisibility {
 		builder.addOptionalTypedIngredients(ingredients);
 		CycleTimer cycleTimer = CycleTimer.create(ingredientCycleOffset);
 		return builder.build(focusedIngredients, cycleTimer);
+	}
+
+	@Override
+	public <T> IIngredientSupplier getRecipeIngredients(IRecipeCategory<T> recipeCategory, T recipe) {
+		return IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
+	}
+
+	@Override
+	public <T> IIngredientSupplier getRecipeIngredients(IRecipeCategory<T> recipeCategory, T recipe, Set<RecipeIngredientRole> roles) {
+		return IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager, roles);
 	}
 
 	@Override
