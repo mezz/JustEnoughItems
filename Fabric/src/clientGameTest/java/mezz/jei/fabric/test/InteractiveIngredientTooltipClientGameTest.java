@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IBookmark;
@@ -11,6 +12,7 @@ import mezz.jei.gui.input.PinnedTooltipManager;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.recipes.RecipeGuiLayouts;
 import mezz.jei.gui.recipes.RecipesGui;
+import net.mezzdev.config.api.value.IConfigValue;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -36,10 +38,10 @@ public class InteractiveIngredientTooltipClientGameTest {
 		try {
 			context.runOnClient(client -> {
 				var runtime = Internal.getJeiRuntime();
-				var sortBookmarks = Internal.getClientConfigs().getClientConfig().recipeSortingBookmarksEnabled();
-				boolean originalSortBookmarks = sortBookmarks.get();
-				cleanup.add(() -> sortBookmarks.set(originalSortBookmarks));
-				sortBookmarks.set(false);
+				var config = Internal.getClientConfigs().getClientConfig();
+				set(cleanup, config.recipeSortingBookmarksEnabled(), false);
+				set(cleanup, config.maxRecipeGuiColumns(), 1);
+				set(cleanup, config.recipeGuiWidth(), IClientConfig.minRecipeGuiWidth);
 				var originalBookmarks = bookmarks().getElements().stream()
 					.flatMap(element -> element.getBookmark().stream())
 					.toList();
@@ -113,6 +115,12 @@ public class InteractiveIngredientTooltipClientGameTest {
 		return findPoint(gui().getArea(), predicate);
 	}
 
+	private static <T> void set(List<Runnable> cleanup, IConfigValue<T> config, T value) {
+		T original = config.get();
+		cleanup.add(() -> config.set(original));
+		config.set(value);
+	}
+
 	private static Point findPoint(ImmutableRect2i area, BiPredicate<Integer, Integer> predicate) {
 		for (int y = area.y(); y < area.y() + area.height(); y++) {
 			for (int x = area.x(); x < area.x() + area.width(); x++) {
@@ -146,6 +154,15 @@ public class InteractiveIngredientTooltipClientGameTest {
 		context.getInput().holdKey(InputConstants.KEY_LSHIFT);
 		move(context, new Point(source.x() + 1, source.y() + 1));
 		context.waitTicks(2);
+		context.takeScreenshot("jei-interactive-tooltip-obscured-bookmark");
+		context.runOnClient(client -> {
+			BookmarkOverlay overlay = (BookmarkOverlay) Internal.getJeiRuntime().getBookmarkOverlay();
+			if (!overlay.isListDisplayed()) {
+				throw new AssertionError("Expected visible bookmarks for tooltip occlusion: hasRoom=" + overlay.hasRoom() +
+					", bookmarks=" + bookmarks().getElements().size() + ", overlayEnabled=" + Internal.getClientToggleState().isOverlayEnabled() +
+					", bookmarksEnabled=" + Internal.getClientToggleState().isBookmarkEnabled());
+			}
+		});
 		Point covered = context.computeOnClient(client -> findPoint(
 			new ImmutableRect2i(0, 0, client.getWindow().getGuiScaledWidth(), client.getWindow().getGuiScaledHeight()),
 			(x, y) -> gui().getForegroundInputLayer().isMouseOver(x, y) &&
