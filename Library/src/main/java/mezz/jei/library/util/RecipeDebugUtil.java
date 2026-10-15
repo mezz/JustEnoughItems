@@ -9,12 +9,13 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.platform.IPlatformModHelper;
 import mezz.jei.common.platform.IPlatformRecipeHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.library.ingredients.IIngredientSupplier;
+import mezz.jei.api.ingredients.IIngredientSupplier;
 import net.minecraft.world.item.crafting.Recipe;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -30,7 +31,8 @@ public final class RecipeDebugUtil {
 		String recipeName = getNameForRecipe(recipe);
 		recipeInfoBuilder.append(recipeName);
 
-		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager);
+		IIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager,
+			EnumSet.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT, RecipeIngredientRole.CATALYST));
 		if (ingredientSupplier == null) {
 			recipeInfoBuilder.append("\nFailed to get ingredients from recipe wrapper");
 			return recipeInfoBuilder.toString();

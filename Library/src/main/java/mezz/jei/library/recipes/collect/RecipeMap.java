@@ -9,7 +9,7 @@ import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.library.ingredients.IIngredientSupplier;
+import mezz.jei.api.ingredients.IIngredientSupplier;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;

@@ -1,7 +1,8 @@
 package mezz.jei.forge.tests.plugins.vanilla;
 
 import mezz.jei.api.constants.RecipeTypes;
-import mezz.jei.library.ingredients.IIngredientSupplier;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientSupplier;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
@@ -10,6 +11,7 @@ import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeTransferInfo;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceSmeltingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.JeiSmeltingRecipe;
 import mezz.jei.library.util.IngredientSupplierHelper;
+import mezz.jei.library.util.RecipeDebugUtil;
 import mezz.jei.forge.tests.lib.JeiGameTestHelper;
 import mezz.jei.forge.tests.lib.TestGuiHelper;
 import mezz.jei.forge.tests.lib.TestIngredientManagers;
@@ -32,6 +34,11 @@ import net.minecraft.world.item.crafting.SmeltingRecipe;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.ArrayList;
+import java.util.AbstractList;
+import mezz.jei.library.gui.recipes.supplier.builder.IngredientSupplierBuilder;
+import mezz.jei.library.ingredients.RecipeIngredientSupplier;
 
 @GameTestHolder("jei")
 @PrefixGameTestTemplate(false)
@@ -84,7 +91,8 @@ public final class FurnaceRecipeGameTests {
 		IIngredientSupplier ingredients = IngredientSupplierHelper.getIngredientSupplier(
 			recipeHolder,
 			recipeCategory,
-			ingredientManager
+			ingredientManager,
+			Set.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT, RecipeIngredientRole.CATALYST)
 		);
 		assertStacks(
 			helper,
@@ -150,10 +158,77 @@ public final class FurnaceRecipeGameTests {
 			"Default fuel-slot inputs"
 		);
 
+		IIngredientSupplier indexedIngredients = IngredientSupplierHelper.getIngredientSupplier(
+			recipeHolder,
+			recipeCategory,
+			ingredientManager,
+			Set.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT, RecipeIngredientRole.CATALYST)
+		);
+		assertStacks(helper, List.of(new ItemStack(Items.COBBLESTONE)), getItemStacks(indexedIngredients, RecipeIngredientRole.INPUT), "Indexed inputs");
+		assertStacks(helper, List.of(new ItemStack(Items.STONE)), getItemStacks(indexedIngredients, RecipeIngredientRole.OUTPUT), "Indexed outputs");
+		helper.assertTrue(indexedIngredients.getIngredients(RecipeIngredientRole.RENDER_ONLY).isEmpty(), "Fuel must not be indexed");
+
+		// Diagnostics must describe searchable ingredients without reading the full fuel list.
+		List<ItemStack> unreadableFuels = new AbstractList<>() {
+			@Override
+			public ItemStack get(int index) {
+				throw new AssertionError("Diagnostics must not read render-only fuels");
+			}
+
+			@Override
+			public int size() {
+				return 100_000;
+			}
+		};
+		String diagnostic = RecipeDebugUtil.getDebugInfoFromRecipe(
+			recipeHolder, new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE, unreadableFuels), ingredientManager
+		);
+		String inputInfo = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK).getErrorInfo(new ItemStack(Items.COBBLESTONE));
+		String outputInfo = ingredientManager.getIngredientHelper(VanillaTypes.ITEM_STACK).getErrorInfo(new ItemStack(Items.STONE));
+		helper.assertTrue(diagnostic.contains(inputInfo), "Diagnostics must include inputs");
+		helper.assertTrue(diagnostic.contains(outputInfo), "Diagnostics must include outputs");
+
 		FurnaceMenu menu = helper.openMenu(FurnaceMenu::new);
 		FurnaceRecipeTransferInfo transferInfo = new FurnaceRecipeTransferInfo();
 		helper.assertEquals(1, transferInfo.getRecipeSlots(menu, recipeHolder).size(), "Normal smelting transfer slot count");
 
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void ingredientCollectionSkipsUnselectedIngredientExpansion(GameTestHelper gameTestHelper) {
+		JeiGameTestHelper helper = new JeiGameTestHelper(gameTestHelper);
+		IIngredientManager ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(gameTestHelper.getLevel());
+		IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager, Set.of(RecipeIngredientRole.INPUT));
+		Ingredient fuelIngredient = new Ingredient(java.util.stream.Stream.empty()) {
+			@Override
+			public ItemStack[] getItems() {
+				throw new AssertionError("Unselected ingredients must not be expanded");
+			}
+		};
+
+		builder.addInputSlot().addIngredients(Ingredient.of(Items.STICK));
+		builder.addSlot(RecipeIngredientRole.RENDER_ONLY).addIngredients(fuelIngredient);
+		builder.addInvisibleIngredients(RecipeIngredientRole.RENDER_ONLY).addIngredients(fuelIngredient);
+		RecipeIngredientSupplier ingredients = builder.buildIngredientSupplier();
+
+		assertStacks(helper, List.of(new ItemStack(Items.STICK)), getItemStacks(ingredients, RecipeIngredientRole.INPUT), "Selected input");
+		helper.assertTrue(ingredients.getIngredients(RecipeIngredientRole.RENDER_ONLY).isEmpty(), "Unselected role must be empty");
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void ingredientCollectionCapturesListsWhenAdded(GameTestHelper gameTestHelper) {
+		JeiGameTestHelper helper = new JeiGameTestHelper(gameTestHelper);
+		IIngredientManager ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(gameTestHelper.getLevel());
+		IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager, Set.of(RecipeIngredientRole.INPUT));
+		List<ItemStack> stacks = new ArrayList<>(List.of(new ItemStack(Items.STICK)));
+		builder.addInputSlot().addItemStacks(stacks);
+		stacks.add(new ItemStack(Items.STONE));
+		RecipeIngredientSupplier ingredients = builder.buildIngredientSupplier();
+		stacks.clear();
+
+		assertStacks(helper, List.of(new ItemStack(Items.STICK)), getItemStacks(ingredients, RecipeIngredientRole.INPUT), "Collected input");
 		helper.succeed();
 	}
 

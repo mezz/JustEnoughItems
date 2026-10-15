@@ -1,12 +1,6 @@
 package mezz.jei.library.gui.recipes.supplier.builder;
 
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
-import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.drawable.TilingDirection;
-import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
-import mezz.jei.api.gui.placement.HorizontalAlignment;
-import mezz.jei.api.gui.placement.VerticalAlignment;
-import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -15,6 +9,8 @@ import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
 import mezz.jei.library.ingredients.DisplayIngredientAcceptor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +21,7 @@ import java.util.Optional;
  * Minimal version of {@link RecipeSlotBuilder} that can only return the ingredients,
  * but doesn't bother building anything for drawing on screen.
  */
-public class IngredientSlotBuilder implements IRecipeSlotBuilder {
+public class IngredientSlotBuilder extends IgnoredIngredientSlotBuilder {
 	private final DisplayIngredientAcceptor ingredients;
 	private final RecipeIngredientRole role;
 
@@ -89,78 +85,26 @@ public class IngredientSlotBuilder implements IRecipeSlotBuilder {
 	}
 
 	@Override
-	public IRecipeSlotBuilder setStandardSlotBackground() {
+	public IRecipeSlotBuilder addIngredients(Ingredient ingredient) {
+		this.ingredients.addIngredients(ingredient);
 		return this;
 	}
 
 	@Override
-	public IRecipeSlotBuilder setOutputSlotBackground() {
+	public <I> IRecipeSlotBuilder addTypedIngredient(ITypedIngredient<I> typedIngredient) {
+		this.ingredients.addTypedIngredient(typedIngredient);
 		return this;
 	}
 
 	@Override
-	public IRecipeSlotBuilder setBackground(IDrawable background, int xOffset, int yOffset) {
+	public IRecipeSlotBuilder addItemStack(ItemStack itemStack) {
+		this.ingredients.addItemStack(itemStack);
 		return this;
 	}
 
 	@Override
-	public IRecipeSlotBuilder setHoverPadding(int paddingTop, int paddingBottom, int paddingLeft, int paddingRight) {
-		return this;
-	}
-
-	@Override
-	public IRecipeSlotBuilder setOverlay(IDrawable overlay, int xOffset, int yOffset) {
-		return this;
-	}
-
-	@Override
-	public IRecipeSlotBuilder setFluidRenderer(long capacity, boolean showCapacity, int width, int height) {
-		return this;
-	}
-
-	@Override
-	public IRecipeSlotBuilder setFluidRenderer(long capacity, boolean showCapacity, int width, int height, TilingDirection tilingDirection) {
-		return this;
-	}
-
-	@Override
-	public <T> IRecipeSlotBuilder setCustomRenderer(IIngredientType<T> ingredientType, IIngredientRenderer<T> ingredientRenderer) {
-		return this;
-	}
-
-	@SuppressWarnings("removal")
-	@Override
-	public IRecipeSlotBuilder addTooltipCallback(mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback tooltipCallback) {
-		return this;
-	}
-
-	@Override
-	public IRecipeSlotBuilder addRichTooltipCallback(IRecipeSlotRichTooltipCallback tooltipCallback) {
-		return this;
-	}
-
-	@Override
-	public IRecipeSlotBuilder setSlotName(String slotName) {
-		return this;
-	}
-
-	@Override
-	public int getWidth() {
-		return 16;
-	}
-
-	@Override
-	public int getHeight() {
-		return 16;
-	}
-
-	@Override
-	public IRecipeSlotBuilder setPosition(int xPos, int yPos) {
-		return this;
-	}
-
-	@Override
-	public IRecipeSlotBuilder setPosition(int areaX, int areaY, int areaWidth, int areaHeight, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) {
+	public IRecipeSlotBuilder addItemLike(ItemLike itemLike) {
+		this.ingredients.addItemLike(itemLike);
 		return this;
 	}
 
