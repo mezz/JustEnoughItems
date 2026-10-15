@@ -5,8 +5,10 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.chat.JeiChatItemLinks;
+import mezz.jei.common.config.GiveMode;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.config.IWorldConfig;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.interaction.IInputInteraction;
@@ -28,6 +30,8 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /** Shortcuts for showing recipes, hiding ingredients, and giving items. */
 public final class IngredientCommands {
@@ -71,6 +75,16 @@ public final class IngredientCommands {
 			"Hide ingredient variants",
 			input -> input.is(keys.getToggleWildcardHideIngredient()),
 			(screen, input) -> prepareToggleIngredientVisibilityAction(input, IEditModeConfig.HideMode.WILDCARD)
+		);
+		commands.add(
+			"Give stack to inventory",
+			input -> input.is(keys.getCheatItemStackToInventory()),
+			(screen, input) -> prepareGiveIngredientToInventoryAction(input, GiveAmount.MAX)
+		);
+		commands.add(
+			"Give item to inventory",
+			input -> input.is(keys.getCheatOneItemToInventory()),
+			(screen, input) -> prepareGiveIngredientToInventoryAction(input, GiveAmount.ONE)
 		);
 		commands.add(
 			"Give stack",
@@ -132,15 +146,31 @@ public final class IngredientCommands {
 	}
 
 	private Optional<IInputInteraction> prepareGiveIngredientAction(Screen screen, UserInput input, GiveAmount amount) {
-		if (!toggles.isCheatItemsEnabled() || !(screen instanceof AbstractContainerScreen<?>)) {
+		if (!(screen instanceof AbstractContainerScreen<?>)) {
 			return Optional.empty();
 		}
-		for (IClickableIngredientInternal<?> clicked : focusSource.getIngredientUnderMouse(input, keys).toList()) {
-			ItemStack stack = clicked.getCheatItemStack(ingredients);
+		return prepareGiveAction(
+			focusSource.getIngredientUnderMouse(input, keys).filter(IClickableIngredientInternal::canClickToCheat),
+			stack -> commandUtil.giveStack(stack, amount));
+	}
+
+	private Optional<IInputInteraction> prepareGiveIngredientToInventoryAction(UserInput input, GiveAmount amount) {
+		return prepareGiveAction(
+			focusSource.getIngredientUnderMouse(input, keys),
+			stack -> commandUtil.giveStack(stack, amount, GiveMode.INVENTORY));
+	}
+
+	private Optional<IInputInteraction> prepareGiveAction(
+		Stream<IClickableIngredientInternal<?>> clickedIngredients,
+		Consumer<ItemStack> giveStack
+	) {
+		if (!toggles.isCheatItemsEnabled()) {
+			return Optional.empty();
+		}
+		for (IClickableIngredientInternal<?> clicked : clickedIngredients.toList()) {
+			ItemStack stack = TypedIngredientUtil.getCheatItemStack(ingredients, clicked.getTypedIngredient());
 			if (!stack.isEmpty()) {
-				InputAction action = createIngredientAction(clicked, () -> commandUtil.giveStack(stack, amount))
-					.when(toggles::isCheatItemsEnabled);
-				return Optional.of(action);
+				return Optional.of(createIngredientAction(clicked, () -> giveStack.accept(stack)).when(toggles::isCheatItemsEnabled));
 			}
 		}
 		return Optional.empty();

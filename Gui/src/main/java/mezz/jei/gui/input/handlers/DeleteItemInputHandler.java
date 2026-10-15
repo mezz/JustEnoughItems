@@ -6,6 +6,7 @@ import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.config.GiveMode;
 import mezz.jei.common.config.IClientConfig;
 import mezz.jei.common.gui.JeiTooltip;
+import mezz.jei.common.ingredients.TypedIngredientUtil;
 import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
@@ -14,6 +15,7 @@ import mezz.jei.common.input.interaction.InputAction;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketDeletePlayerItem;
 import mezz.jei.common.util.ServerCommandUtil;
+import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.overlay.ingredients.IIngredientGrid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -99,7 +101,8 @@ public class DeleteItemInputHandler implements IInputTarget {
 		if (giveMode == GiveMode.MOUSE_PICKUP) {
 			return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY)
 				.findFirst()
-				.map(c -> c.getCheatItemStack(ingredientManager))
+				.filter(IClickableIngredientInternal::canClickToCheat)
+				.map(c -> TypedIngredientUtil.getCheatItemStack(ingredientManager, c.getTypedIngredient()))
 				.map(i -> !ServerCommandUtil.canStack(itemStack, i))
 				.orElse(true);
 		}

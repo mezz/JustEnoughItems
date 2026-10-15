@@ -50,6 +50,8 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 
 	private final IJeiKeyMapping cheatOneItem;
 	private final IJeiKeyMapping cheatItemStack;
+	private final IJeiKeyMappingInternal cheatOneItemToInventory;
+	private final IJeiKeyMappingInternal cheatItemStackToInventory;
 
 	private final IJeiKeyMappingInternal toggleHideIngredient;
 	private final IJeiKeyMappingInternal toggleWildcardHideIngredient;
@@ -229,6 +231,18 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.buildMouseMiddle()
 			.register(registerMethod);
 
+		cheatOneItemToInventory = cheat.createMapping("key.jei.cheatOneItemToInventory")
+			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER_CHEAT_MODE)
+			.setModifier(JeiKeyModifier.ALT)
+			.buildMouseRight()
+			.register(registerMethod);
+
+		cheatItemStackToInventory = cheat.createMapping("key.jei.cheatItemStackToInventory")
+			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER_CHEAT_MODE)
+			.setModifier(JeiKeyModifier.ALT)
+			.buildMouseLeft()
+			.register(registerMethod);
+
 		// Hovering over config button
 		toggleCheatModeConfigButton = hoverConfig.createMapping("key.jei.toggleCheatModeConfigButton")
 			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER_CONFIG_BUTTON)
@@ -337,6 +351,8 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 				cheatOneItem2,
 				cheatItemStack1,
 				cheatItemStack2,
+				cheatOneItemToInventory,
+				cheatItemStackToInventory,
 				toggleEditMode,
 				toggleHideIngredient,
 				toggleWildcardHideIngredient,
@@ -513,6 +529,16 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	@Override
 	public IJeiKeyMapping getCheatItemStack() {
 		return cheatItemStack;
+	}
+
+	@Override
+	public IJeiKeyMapping getCheatOneItemToInventory() {
+		return cheatOneItemToInventory;
+	}
+
+	@Override
+	public IJeiKeyMapping getCheatItemStackToInventory() {
+		return cheatItemStackToInventory;
 	}
 
 	@Override

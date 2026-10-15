@@ -1,24 +1,21 @@
 package mezz.jei.gui.input;
 
-import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.input.IMouseOverable;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.gui.overlay.elements.IElement;
-import net.minecraft.world.item.ItemStack;
 
 public class ClickableIngredientInternal<V> implements IClickableIngredientInternal<V> {
 	private final IElement<V> element;
 	private final IMouseOverable mouseOverable;
 	private final boolean canClickToFocus;
-	private final boolean allowsCheating;
+	private final boolean canClickToCheat;
 
-	public ClickableIngredientInternal(IElement<V> element, IMouseOverable mouseOverable, boolean allowsCheating, boolean canClickToFocus) {
+	public ClickableIngredientInternal(IElement<V> element, IMouseOverable mouseOverable, boolean canClickToCheat, boolean canClickToFocus) {
 		ErrorUtil.checkNotNull(element, "element");
 		this.element = element;
 		this.mouseOverable = mouseOverable;
-		this.allowsCheating = allowsCheating;
+		this.canClickToCheat = canClickToCheat;
 		this.canClickToFocus = canClickToFocus;
 	}
 
@@ -43,12 +40,7 @@ public class ClickableIngredientInternal<V> implements IClickableIngredientInter
 	}
 
 	@Override
-	public ItemStack getCheatItemStack(IIngredientManager ingredientManager) {
-		if (allowsCheating) {
-			ITypedIngredient<V> value = element.getTypedIngredient();
-			IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(value.getType());
-			return ingredientHelper.getCheatItemStack(value.getIngredient());
-		}
-		return ItemStack.EMPTY;
+	public boolean canClickToCheat() {
+		return this.canClickToCheat;
 	}
 }

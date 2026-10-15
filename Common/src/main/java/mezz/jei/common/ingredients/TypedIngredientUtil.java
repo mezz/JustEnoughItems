@@ -7,10 +7,16 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.ingredients.itemStacks.TypedItemStack;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ErrorUtil;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 public final class TypedIngredientUtil {
 	private TypedIngredientUtil() {
+	}
+
+	public static <T> ItemStack getCheatItemStack(IIngredientManager ingredientManager, ITypedIngredient<T> typedIngredient) {
+		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
+		return ingredientHelper.getCheatItemStack(typedIngredient.getIngredient());
 	}
 
 	/**
