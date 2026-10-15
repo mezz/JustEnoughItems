@@ -49,6 +49,8 @@ public interface IInternalKeyMappings extends IJeiKeyMappings {
 
 	IJeiKeyMapping getCheatOneItem();
 	IJeiKeyMapping getCheatItemStack();
+	IJeiKeyMapping getCheatOneItemToInventory();
+	IJeiKeyMapping getCheatItemStackToInventory();
 
 	IJeiKeyMapping getToggleHideIngredient();
 	IJeiKeyMapping getToggleWildcardHideIngredient();

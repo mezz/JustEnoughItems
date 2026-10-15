@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /** Runs client assertions and real mouse callbacks through the client test harness. */
@@ -55,6 +56,10 @@ final class FabricClientTestContext {
 
 	Input getInput() {
 		return input;
+	}
+
+	void waitFor(Predicate<Minecraft> condition) {
+		ClientTestUtil.waitUntil(() -> computeOnClient(condition::test), Duration.ofSeconds(30), () -> "Timed out waiting for a client condition");
 	}
 
 	Path takeScreenshot(String name) {

@@ -62,6 +62,14 @@ final class AmecsKeyMappingClientTestHelper {
 		}
 	}
 
+	static Runnable clearModifiers(KeyMapping mapping) {
+		KeyModifiers modifiers = KeyBindingUtils.getBoundModifiers(mapping);
+		KeyModifiers original = new KeyModifiers();
+		original.copyModifiers(modifiers);
+		modifiers.unset();
+		return () -> modifiers.copyModifiers(original);
+	}
+
 	private static AmecsKeyBindingWithContext createKeyMapping(
 		String category,
 		String nameSuffix,
