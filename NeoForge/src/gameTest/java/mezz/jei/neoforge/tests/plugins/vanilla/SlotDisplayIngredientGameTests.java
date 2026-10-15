@@ -48,9 +48,11 @@ import net.neoforged.testframework.gametest.GameTest;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -59,6 +61,54 @@ public final class SlotDisplayIngredientGameTests {
 	private static final IRecipeType<String> RECIPE_TYPE = IRecipeType.create("jei", "slot_display_test", String.class);
 
 	private SlotDisplayIngredientGameTests() {
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Role filtering skips unselected displays and resolves selected displays during collection.")
+	public static void ingredientCollectionResolvesOnlySelectedRoles(JeiGameTestHelper helper) {
+		IIngredientManagerInternal ingredientManager = createIngredientManager(new ItemStack(Items.STICK), new ItemStack(Items.STONE));
+		ContextMap contextMap = SlotDisplayContext.fromLevel(helper.getLevel());
+		IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager, contextMap, Set.of(RecipeIngredientRole.OUTPUT));
+		CountingSlotDisplay.reset();
+		var output = builder.addOutputSlot().add(Items.STONE);
+		var renderOnly = builder.addSlot(RecipeIngredientRole.RENDER_ONLY).add(CountingSlotDisplay.INSTANCE);
+		builder.addInvisibleIngredients(RecipeIngredientRole.RENDER_ONLY).add(VanillaTypes.ITEM_STACK, CountingSlotDisplay.INSTANCE);
+		builder.createFocusLink(output, renderOnly);
+		RecipeIngredientSupplier ingredients = builder.buildIngredientSupplier();
+		helper.assertEquals(1, ingredients.getIngredients(RecipeIngredientRole.OUTPUT).size(), "Output count");
+		helper.assertTrue(ingredients.getIngredients(RecipeIngredientRole.RENDER_ONLY).isEmpty(), "Unselected role must be empty");
+		helper.assertEquals(1, ingredients.getFocusLinks().getFirst().slots().size(), "Focus links must omit unselected slots");
+		helper.assertEquals(0, CountingSlotDisplay.getResolveCount(), "Unselected displays must not resolve");
+
+		IngredientSupplierBuilder renderOnlyBuilder = new IngredientSupplierBuilder(ingredientManager, contextMap, Set.of(RecipeIngredientRole.RENDER_ONLY));
+		renderOnlyBuilder.addSlot(RecipeIngredientRole.RENDER_ONLY).add(CountingSlotDisplay.INSTANCE);
+		renderOnlyBuilder.addInvisibleIngredients(RecipeIngredientRole.RENDER_ONLY).add(VanillaTypes.ITEM_STACK, CountingSlotDisplay.INSTANCE);
+		helper.assertEquals(2, CountingSlotDisplay.getResolveCount(), "Selected displays must resolve during collection");
+		List<ITypedIngredient<?>> fuels = renderOnlyBuilder.buildIngredientSupplier().getIngredients(RecipeIngredientRole.RENDER_ONLY);
+		helper.assertEquals(2, fuels.size(), "Selected render-only ingredients");
+		for (ITypedIngredient<?> fuel : fuels) {
+			helper.assertSameStack(new ItemStack(Items.STICK), fuel.getIngredient(VanillaTypes.ITEM_STACK).orElseThrow(), "Resolved render-only ingredient");
+		}
+		helper.succeed();
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(description = "Ingredient collection reads lists when added, before later caller changes.")
+	public static void ingredientCollectionCapturesListsWhenAdded(JeiGameTestHelper helper) {
+		IIngredientManagerInternal ingredientManager = createIngredientManager(new ItemStack(Items.STICK), new ItemStack(Items.STONE));
+		IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager, SlotDisplayContext.fromLevel(helper.getLevel()), Set.of(RecipeIngredientRole.INPUT));
+		List<ItemStack> stacks = new ArrayList<>(List.of(new ItemStack(Items.STICK)));
+		builder.addInputSlot().addItemStacks(stacks);
+		stacks.add(new ItemStack(Items.STONE));
+		RecipeIngredientSupplier ingredients = builder.buildIngredientSupplier();
+		stacks.clear();
+
+		List<ITypedIngredient<?>> inputs = ingredients.getIngredients(RecipeIngredientRole.INPUT);
+		helper.assertEquals(1, inputs.size(), "List changes after addition must not affect collected ingredients");
+		helper.assertSameStack(new ItemStack(Items.STICK), inputs.getFirst().getIngredient(VanillaTypes.ITEM_STACK).orElseThrow(), "Collected input");
+		helper.succeed();
 	}
 
 	@GameTest

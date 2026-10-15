@@ -35,6 +35,7 @@ import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 
 import java.util.List;
+import java.util.Set;
 
 @ForEachTest(groups = "furnace_recipes")
 public final class FurnaceRecipeGameTests {
@@ -126,7 +127,7 @@ public final class FurnaceRecipeGameTests {
 
 	@GameTest
 	@EmptyTemplate
-	@TestHolder(description = "API-created smelting recipes use all furnace fuels by default.")
+	@TestHolder(description = "API-created smelting recipes display all furnace fuels without indexing them.")
 	public static void smeltingRecipeDefaultsToAllFuels(JeiGameTestHelper helper) {
 		VanillaRecipeFactory recipeFactory = TestIngredientManagers.createVanillaRecipeFactory(ContextMap.EMPTY);
 		RecipeHolder<SmeltingRecipe> recipeHolder = recipeFactory.createSmeltingRecipe(
@@ -139,6 +140,17 @@ public final class FurnaceRecipeGameTests {
 
 		FurnaceRecipeDisplay display = getFurnaceDisplay(helper, recipeHolder.value());
 		helper.assertTrue(display.fuel() instanceof SlotDisplay.AnyFuel, "Expected the default all-fuels display");
+		IIngredientManagerInternal ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel());
+		IIngredientSupplier ingredients = IngredientSupplierHelper.getIngredientSupplier(
+			recipeHolder,
+			new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE),
+			ingredientManager,
+			ContextMap.EMPTY,
+			Set.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT)
+		);
+		assertStacks(helper, List.of(new ItemStack(Items.COBBLESTONE)), getItemStacks(ingredients, RecipeIngredientRole.INPUT), "Indexed inputs");
+		assertStacks(helper, List.of(new ItemStack(Items.STONE)), getItemStacks(ingredients, RecipeIngredientRole.OUTPUT), "Indexed outputs");
+		helper.assertTrue(ingredients.getIngredients(RecipeIngredientRole.RENDER_ONLY).isEmpty(), "Fuel display must not be indexed");
 
 		FurnaceMenu menu = helper.openMenu(FurnaceMenu::new);
 		FurnaceRecipeTransferInfo transferInfo = new FurnaceRecipeTransferInfo();
