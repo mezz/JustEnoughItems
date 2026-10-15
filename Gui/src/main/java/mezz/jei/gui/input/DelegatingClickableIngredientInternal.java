@@ -2,11 +2,9 @@ package mezz.jei.gui.input;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.util.FocusUtil;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
@@ -33,8 +31,8 @@ public class DelegatingClickableIngredientInternal<T> implements IClickableIngre
 	}
 
 	@Override
-	public ItemStack getCheatItemStack(IIngredientManager ingredientManager) {
-		return delegate.getCheatItemStack(ingredientManager);
+	public boolean canClickToCheat() {
+		return delegate.canClickToCheat();
 	}
 
 	@Override
