@@ -118,7 +118,7 @@ public class SmithingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 				return sourceRecipeIds;
 			}
 		}
-		return List.of(recipeHolder.id());
+		return super.getSourceRecipeIds(recipeHolder);
 	}
 
 	@Override

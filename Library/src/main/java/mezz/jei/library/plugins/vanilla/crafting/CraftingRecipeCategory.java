@@ -118,8 +118,11 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 		return extendableHelper.getOptionalRecipeExtension(recipeHolder)
 			.map(extension -> extension.getSourceRecipeIds(recipeHolder))
 			.orElseGet(() -> {
-				ResourceLocation identifier = getRegistryName(recipeHolder);
-				return List.of(replacementSources.getOrDefault(identifier, identifier));
+				ResourceLocation source = replacementSources.get(getRegistryName(recipeHolder));
+				if (source != null) {
+					return List.of(source);
+				}
+				return super.getSourceRecipeIds(recipeHolder);
 			});
 	}
 
