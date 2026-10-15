@@ -31,7 +31,7 @@ public record InputAction(Consumer<UserInput> action, Predicate<UserInput> canEx
 
 	/** Requires the pointer to be over the given area when the action runs. */
 	public InputAction within(IMouseOverable area) {
-		return new InputAction(action, input -> canExecute.test(input) && area.isMouseOver(input.getMouseX(), input.getMouseY()));
+		return new InputAction(action, input -> canExecute.test(input) && area.containsMouse(input.getMouseX(), input.getMouseY()));
 	}
 
 	/** Checks a condition before running, such as whether a button is still visible or enabled. */

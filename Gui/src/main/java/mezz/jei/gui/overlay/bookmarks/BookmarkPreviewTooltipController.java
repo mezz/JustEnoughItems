@@ -55,9 +55,9 @@ public class BookmarkPreviewTooltipController implements IGuiInputLayer, IPinned
 		}
 	}
 
-	public boolean isMouseOver(double mouseX, double mouseY) {
+	public boolean containsMouse(double mouseX, double mouseY) {
 		BookmarkPreviewTooltip activeTooltip = this.activeTooltip;
-		return activeTooltip != null && activeTooltip.isMouseOver(mouseX, mouseY);
+		return activeTooltip != null && activeTooltip.containsMouse(mouseX, mouseY);
 	}
 
 	public void draw(PoseStack poseStack, int mouseX, int mouseY) {

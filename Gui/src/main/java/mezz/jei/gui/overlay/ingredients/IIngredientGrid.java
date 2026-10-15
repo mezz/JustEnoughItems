@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public interface IIngredientGrid extends IRecipeFocusSource {
-	boolean isMouseOver(double mouseX, double mouseY);
+	boolean containsMouse(double mouseX, double mouseY);
 
 	int size();
 

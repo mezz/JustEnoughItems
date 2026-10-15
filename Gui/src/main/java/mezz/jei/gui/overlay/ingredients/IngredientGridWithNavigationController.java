@@ -251,7 +251,7 @@ public class IngredientGridWithNavigationController implements IPaged, IInputTar
 
 	@Override
 	public boolean scroll(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
-		if (!mouseOverable.isMouseOver(mouseX, mouseY)) {
+		if (!mouseOverable.containsMouse(mouseX, mouseY)) {
 			return false;
 		}
 		if (usesScrollbar()) {
@@ -341,7 +341,7 @@ public class IngredientGridWithNavigationController implements IPaged, IInputTar
 
 		final double mouseX = input.getMouseX();
 		final double mouseY = input.getMouseY();
-		if (!this.mouseOverable.isMouseOver(mouseX, mouseY)) {
+		if (!this.mouseOverable.containsMouse(mouseX, mouseY)) {
 			return Optional.empty();
 		}
 

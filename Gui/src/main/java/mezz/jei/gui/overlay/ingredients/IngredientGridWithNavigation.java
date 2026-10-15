@@ -94,7 +94,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 			clientConfig,
 			this.commandUtil,
 			ingredientManager,
-			this::isMouseOver,
+			this::containsMouse,
 			ghostIngredientQuickMoveManager
 		);
 		this.navigation = new PageNavigation(this.controller, false);
@@ -358,7 +358,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		this.ingredientGrid.tick();
 	}
 
-	public boolean isMouseOver(double mouseX, double mouseY) {
+	public boolean containsMouse(double mouseX, double mouseY) {
 		updateLayoutIfDirty();
 		return this.active &&
 			(this.backgroundArea.contains(mouseX, mouseY) || this.resizer.isOverResizeHandle(mouseX, mouseY)) &&

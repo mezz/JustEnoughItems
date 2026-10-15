@@ -75,7 +75,7 @@ final class RecipeFocusSourceClientTest {
 						emptyArea.y() + emptyArea.height() / 2.0, false);
 					int searchX = searchField.x + 1;
 					int searchY = searchField.y + 1;
-					check(ingredients.isMouseOver(searchX, searchY), "Search must remain visible with no results");
+					check(ingredients.containsMouse(searchX, searchY), "Search must remain visible with no results");
 					click(client.screen, searchX, searchY, InputConstants.MOUSE_BUTTON_LEFT);
 					check(ingredients.hasKeyboardFocus(), "Search must remain focusable with no results");
 					click(client.screen, searchX, searchY, InputConstants.MOUSE_BUTTON_RIGHT);
@@ -92,7 +92,7 @@ final class RecipeFocusSourceClientTest {
 				double ingredientX = ingredientArea.x() + ingredientArea.width() / 2.0;
 				double ingredientY = ingredientArea.y() + ingredientArea.height() / 2.0;
 				assertBlocks(bookmarks, bookmarkArea, true, "Visible bookmark panel");
-				check(!ingredients.isMouseOver(-1, -1) && !bookmarks.isMouseOver(-1, -1),
+				check(!ingredients.containsMouse(-1, -1) && !bookmarks.containsMouse(-1, -1),
 					"Panels must not block outside their bounds");
 
 				toggles.setOverlayEnabled(false);
@@ -105,9 +105,9 @@ final class RecipeFocusSourceClientTest {
 
 				GuiContainerWrapper container = new GuiContainerWrapper(runtime.getScreenHelper());
 				var properties = runtime.getScreenHelper().getGuiProperties(client.screen).orElseThrow();
-				check(container.isMouseOver(properties.getGuiLeft() + 1, properties.getGuiTop() + 1),
+				check(container.containsMouse(properties.getGuiLeft() + 1, properties.getGuiTop() + 1),
 					"The container's blank border must block lookup");
-				check(!container.isMouseOver(-1, -1), "The container must not block outside its bounds");
+				check(!container.containsMouse(-1, -1), "The container must not block outside its bounds");
 
 				// Keep a hole inside a real grid instead of moving the whole grid around the exclusion.
 				layoutMode.set(IngredientGridLayoutMode.MAXIMIZE_AVAILABLE_SPACE);
@@ -144,7 +144,7 @@ final class RecipeFocusSourceClientTest {
 				int stationX = recipeArea.x() - stations.getWidth() + 1;
 				int stationY = recipeArea.y() + 1;
 				check(stations.getIngredientUnderMouse(stationX, stationY).findAny().isEmpty(), "Expected blank crafting-station padding");
-				check(stations.isMouseOver(stationX, stationY) && recipes.isMouseOver(stationX, stationY),
+				check(stations.containsMouse(stationX, stationY) && recipes.isMouseOver(stationX, stationY),
 					"Crafting-station padding must block lookup through the recipe GUI");
 				check(!recipes.isMouseOver(-1, -1), "Recipe GUI must not block outside its bounds");
 				recipes.onClose();
@@ -189,7 +189,7 @@ final class RecipeFocusSourceClientTest {
 	}
 
 	private static void assertBlocks(IRecipeFocusSource source, ImmutableRect2i area, boolean expected, String description) {
-		check(source.isMouseOver(area.x() + 1, area.y() + 1) == expected, description + ": expected blocking=" + expected);
+		check(source.containsMouse(area.x() + 1, area.y() + 1) == expected, description + ": expected blocking=" + expected);
 	}
 
 	private static void check(boolean condition, String message) {

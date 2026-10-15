@@ -105,9 +105,9 @@ final class InteractiveIngredientTooltipController implements IGuiInputLayer, IP
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
+	public boolean containsMouse(double mouseX, double mouseY) {
 		InteractiveIngredientTooltip activeTooltip = this.activeTooltip;
-		return activeTooltip != null && activeTooltip.isMouseOver(mouseX, mouseY);
+		return activeTooltip != null && activeTooltip.containsMouse(mouseX, mouseY);
 	}
 
 	@Override

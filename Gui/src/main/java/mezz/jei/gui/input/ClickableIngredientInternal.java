@@ -34,7 +34,7 @@ public class ClickableIngredientInternal<V> implements IClickableIngredientInter
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return mouseOverable.isMouseOver(mouseX, mouseY);
+		return mouseOverable.containsMouse(mouseX, mouseY);
 	}
 
 	@Override

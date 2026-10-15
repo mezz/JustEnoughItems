@@ -126,7 +126,7 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		final int dashWidth = 8;
 		final int spacing = 6;
 		if (availableWidth < 2 * dashWidth + spacing) {
-			net.minecraft.client.gui.GuiComponent.fill(poseStack,Math.min(x1 + dashWidth, x2), y, x1, y + height, argbColor);
+			net.minecraft.client.gui.GuiComponent.fill(poseStack, Math.min(x1 + dashWidth, x2), y, x1, y + height, argbColor);
 			return;
 		}
 
@@ -241,8 +241,8 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
-		return isListDisplayed() && contents.isMouseOver(mouseX, mouseY);
+	public boolean containsMouse(double mouseX, double mouseY) {
+		return isListDisplayed() && contents.containsMouse(mouseX, mouseY);
 	}
 
 	@Override

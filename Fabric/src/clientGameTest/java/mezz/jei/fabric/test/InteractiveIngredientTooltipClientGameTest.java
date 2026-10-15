@@ -57,7 +57,7 @@ public class InteractiveIngredientTooltipClientGameTest {
 			context.getInput().holdKey(InputConstants.KEY_LSHIFT);
 			move(context, source);
 			context.waitTicks(3);
-			Point ingredient = context.computeOnClient(client -> findPoint((x, y) -> gui().getForegroundInputLayer().isMouseOver(x, y) &&
+			Point ingredient = context.computeOnClient(client -> findPoint((x, y) -> gui().getForegroundInputLayer().containsMouse(x, y) &&
 				gui().getIngredientUnderMouse(x, y).findAny().isPresent() &&
 				layouts().getRecipeLayoutUnderMouse(x, y).flatMap(layout -> layout.getRecipeLayout().getSlotUnderMouse(x, y)).isEmpty()));
 			move(context, ingredient);
@@ -151,7 +151,7 @@ public class InteractiveIngredientTooltipClientGameTest {
 			context.waitTicks(2);
 			Point blank = context.computeOnClient(client -> findPoint((x, y) -> {
 				var foreground = gui().getForegroundInputLayer();
-				return foreground.isMouseOver(x, y) &&
+				return foreground.containsMouse(x, y) &&
 					gui().getIngredientUnderMouse(x, y).findAny().isEmpty() &&
 					layouts().getRecipeLayoutUnderMouse(x, y)
 						.filter(layout -> layout.getRecipeLayout().getSlotUnderMouse(x, y).isEmpty())
@@ -164,7 +164,7 @@ public class InteractiveIngredientTooltipClientGameTest {
 
 			Point ingredientPoint = context.computeOnClient(client -> findPoint((x, y) -> {
 				var foreground = gui().getForegroundInputLayer();
-				return foreground.isMouseOver(x, y) &&
+				return foreground.containsMouse(x, y) &&
 					gui().getIngredientUnderMouse(x, y).findAny().isPresent() &&
 					layouts().getRecipeLayoutUnderMouse(x, y)
 						.filter(layout -> layout.getRecipeLayout().getSlotUnderMouse(x, y).isEmpty())
@@ -241,7 +241,7 @@ public class InteractiveIngredientTooltipClientGameTest {
 		context.takeScreenshot("jei-tooltip-occlusion-setup");
 		Point covered = context.computeOnClient(client -> findPoint(
 			new ImmutableRect2i(0, 0, client.getWindow().getGuiScaledWidth(), client.getWindow().getGuiScaledHeight()),
-			(x, y) -> gui().getForegroundInputLayer().isMouseOver(x, y) &&
+			(x, y) -> gui().getForegroundInputLayer().containsMouse(x, y) &&
 				gui().getIngredientUnderMouse(x, y).findAny().isEmpty() &&
 				((BookmarkOverlay) Internal.getJeiRuntime().getBookmarkOverlay()).getIngredientUnderMouse(x, y).findAny().isPresent()
 		));

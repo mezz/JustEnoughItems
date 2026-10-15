@@ -20,12 +20,10 @@ import mezz.jei.common.input.interaction.IInputInteraction;
 import mezz.jei.common.input.interaction.InputAction;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.gui.input.ClickableIngredientInternal;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.common.input.IMouseOverable;
 import mezz.jei.common.input.UserInput;
-import mezz.jei.gui.overlay.elements.IngredientElement;
 import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
 import mezz.jei.gui.recipes.RecipeSlotClickTargetFactory;
 import mezz.jei.gui.recipes.RecipeTransferButtonController;
@@ -101,7 +99,7 @@ final class BookmarkPreviewTooltip implements IInputTarget, IMouseOverable {
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
+	public boolean containsMouse(double mouseX, double mouseY) {
 		return getTooltipArea().contains(mouseX, mouseY) || this.transferButton.isMouseOver(mouseX, mouseY);
 	}
 
@@ -216,7 +214,7 @@ final class BookmarkPreviewTooltip implements IInputTarget, IMouseOverable {
 
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
-		if (!isMouseOver(mouseX, mouseY)) {
+		if (!containsMouse(mouseX, mouseY)) {
 			return Optional.empty();
 		}
 

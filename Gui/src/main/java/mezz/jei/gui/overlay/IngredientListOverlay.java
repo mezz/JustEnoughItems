@@ -271,7 +271,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
+	public boolean containsMouse(double mouseX, double mouseY) {
 		updateScreenPropertiesIfDirty();
 		if (!this.controller.hasValidScreen()) {
 			return false;
@@ -279,13 +279,13 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		if (this.configButton.isMouseOver(mouseX, mouseY)) {
 			return true;
 		}
-		if (isListDisplayed() && this.contents.isMouseOver(mouseX, mouseY)) {
+		if (isListDisplayed() && this.contents.containsMouse(mouseX, mouseY)) {
 			return true;
 		}
 		if (isSearchDisplayed() && this.searchField.isMouseOver(mouseX, mouseY)) {
 			return true;
 		}
-		return worldConfig.isOverlayEnabled() && this.lookupHistoryOverlay.isMouseOver(mouseX, mouseY);
+		return worldConfig.isOverlayEnabled() && this.lookupHistoryOverlay.containsMouse(mouseX, mouseY);
 	}
 
 	@Override

@@ -180,7 +180,7 @@ public class IngredientGrid implements IIngredientGrid {
 	}
 
 	private Optional<IngredientListSlot> getHighlightedSlot(Minecraft minecraft, int mouseX, int mouseY) {
-		if (isMouseOver(mouseX, mouseY)) {
+		if (containsMouse(mouseX, mouseY)) {
 			if (!this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				return ingredientListRenderer.getSlots()
 					.filter(s -> s.getArea().contains(mouseX, mouseY))
@@ -204,7 +204,7 @@ public class IngredientGrid implements IIngredientGrid {
 	}
 
 	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
-		if (isMouseOver(mouseX, mouseY)) {
+		if (containsMouse(mouseX, mouseY)) {
 			if (this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				this.deleteItemHandler.drawTooltips(poseStack, mouseX, mouseY);
 			} else {
@@ -248,7 +248,7 @@ public class IngredientGrid implements IIngredientGrid {
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
+	public boolean containsMouse(double mouseX, double mouseY) {
 		return area.contains(mouseX, mouseY) &&
 			guiExclusionAreas.stream()
 				.noneMatch(area -> area.contains(mouseX, mouseY));
@@ -256,7 +256,7 @@ public class IngredientGrid implements IIngredientGrid {
 
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
-		if (!isMouseOver(mouseX, mouseY)) {
+		if (!containsMouse(mouseX, mouseY)) {
 			return Stream.empty();
 		}
 		return ingredientListRenderer.getSlots()
@@ -267,7 +267,7 @@ public class IngredientGrid implements IIngredientGrid {
 
 	@Override
 	public Stream<IDraggableIngredientInternal<?>> getDraggableIngredientUnderMouse(double mouseX, double mouseY) {
-		if (!isMouseOver(mouseX, mouseY)) {
+		if (!containsMouse(mouseX, mouseY)) {
 			return Stream.empty();
 		}
 		return ingredientListRenderer.getSlots()

@@ -516,7 +516,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	@Override
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (isOpen()) {
-			if (interactiveIngredientTooltipController.isMouseOver(mouseX, mouseY)) {
+			if (interactiveIngredientTooltipController.containsMouse(mouseX, mouseY)) {
 				return interactiveIngredientTooltipController.getIngredientUnderMouse(mouseX, mouseY);
 			}
 			return Stream.concat(
@@ -529,6 +529,11 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
+		return containsMouse(mouseX, mouseY);
+	}
+
+	@Override
+	public boolean containsMouse(double mouseX, double mouseY) {
 		if (!isOpen()) {
 			return false;
 		}
@@ -536,7 +541,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			getResizeHandle(mouseX, mouseY).isPresent() ||
 			optionButtons.getArea().contains(mouseX, mouseY) ||
 			recipeGuiTabs.isMouseOver(mouseX, mouseY) ||
-			recipeCatalysts.isMouseOver(mouseX, mouseY);
+			recipeCatalysts.containsMouse(mouseX, mouseY);
 	}
 
 	@Override
@@ -741,7 +746,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	public Optional<IRecipeLayoutWithButtons<?>> getRecipeLayoutUnderMouse(double mouseX, double mouseY) {
-		if (!isOpen() || interactiveIngredientTooltipController.isMouseOver(mouseX, mouseY)) {
+		if (!isOpen() || interactiveIngredientTooltipController.containsMouse(mouseX, mouseY)) {
 			return Optional.empty();
 		}
 		return layouts.getRecipeLayoutUnderMouse(mouseX, mouseY);
@@ -771,7 +776,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			.flatMap(layout -> layout.getSlotUnderMouse(mouseX, mouseY)
 				.map(slotUnderMouse -> interactiveIngredientTooltipController.show(
 					slotUnderMouse,
-					(x, y) -> layouts.isInsideViewport(x, y) && RecipeSlotClickTargetFactory.createMouseOverable(layout, slotUnderMouse).isMouseOver(x, y),
+					(x, y) -> layouts.isInsideViewport(x, y) && RecipeSlotClickTargetFactory.createMouseOverable(layout, slotUnderMouse).containsMouse(x, y),
 					mouseX,
 					mouseY
 				)))

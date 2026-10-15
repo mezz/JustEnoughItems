@@ -20,7 +20,6 @@ import mezz.jei.common.input.handlers.InputGroup;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.bookmarks.IBookmark;
 import mezz.jei.gui.elements.IconButton;
@@ -381,7 +380,7 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
+	public boolean containsMouse(double mouseX, double mouseY) {
 		updateScreenPropertiesIfDirty();
 		if (!this.guiPropertiesCache.hasValidScreen()) {
 			return false;
@@ -389,10 +388,10 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		if (this.bookmarkButton.isMouseOver(mouseX, mouseY) || this.historyButton.isMouseOver(mouseX, mouseY)) {
 			return true;
 		}
-		if (isListDisplayed() && this.contents.isMouseOver(mouseX, mouseY)) {
+		if (isListDisplayed() && this.contents.containsMouse(mouseX, mouseY)) {
 			return true;
 		}
-		return worldConfig.isOverlayEnabled() && this.lookupHistoryOverlay.isMouseOver(mouseX, mouseY);
+		return worldConfig.isOverlayEnabled() && this.lookupHistoryOverlay.containsMouse(mouseX, mouseY);
 	}
 
 	@Override

@@ -105,7 +105,7 @@ public class GuiEventHandler {
 		double mouseX = MouseUtil.getX();
 		double mouseY = MouseUtil.getY();
 		boolean mouseOverInputLayer = this.inputLayers.stream()
-			.anyMatch(inputLayer -> inputLayer.isMouseOver(mouseX, mouseY));
+			.anyMatch(inputLayer -> inputLayer.containsMouse(mouseX, mouseY));
 		int overlayMouseX = (int) mouseX;
 		int overlayMouseY = (int) mouseY;
 		if (mouseOverInputLayer) {
@@ -140,7 +140,7 @@ public class GuiEventHandler {
 		updateOverlayProperties(screen);
 
 		boolean mouseOverInputLayer = this.inputLayers.stream()
-			.anyMatch(inputLayer -> inputLayer.isMouseOver(mouseX, mouseY));
+			.anyMatch(inputLayer -> inputLayer.containsMouse(mouseX, mouseY));
 		int overlayMouseX = mouseX;
 		int overlayMouseY = mouseY;
 		if (mouseOverInputLayer) {

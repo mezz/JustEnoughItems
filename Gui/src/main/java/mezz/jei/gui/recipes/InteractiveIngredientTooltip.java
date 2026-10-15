@@ -127,7 +127,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 	}
 
 	@Override
-	public boolean isMouseOver(double mouseX, double mouseY) {
+	public boolean containsMouse(double mouseX, double mouseY) {
 		if (!this.recipesGui.isOpen()) {
 			return false;
 		}
@@ -141,7 +141,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		if (ingredient.isPresent()) {
 			return ingredient.stream();
 		}
-		if (this.sourceMouseOverable.isMouseOver(mouseX, mouseY)) {
+		if (this.sourceMouseOverable.containsMouse(mouseX, mouseY)) {
 			return this.clickTargetFactory.create(this.sourceSlot, this.sourceMouseOverable)
 				.stream();
 		}

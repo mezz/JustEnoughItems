@@ -54,7 +54,7 @@ public final class GuiInputScene {
 
 	private Optional<InputArea> findTarget(double mouseX, double mouseY) {
 		return inputAreas.stream()
-			.filter(inputArea -> inputArea.area().isMouseOver(mouseX, mouseY))
+			.filter(inputArea -> inputArea.area().containsMouse(mouseX, mouseY))
 			.findFirst();
 	}
 
