@@ -36,6 +36,9 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 		ITypedIngredient<V> ingredient = focus.getTypedValue();
 		RecipeIngredientRole role = focus.getRole();
 		RecipeIngredientRoleMap recipeIngredientRoleMap = this.recipeIngredientRoleMaps.get(role);
+		if (recipeIngredientRoleMap == null) {
+			return List.of();
+		}
 		return recipeIngredientRoleMap.getRecipeTypes(ingredient)
 			.toList();
 	}
@@ -47,6 +50,9 @@ public class InternalRecipeManagerPlugin implements IRecipeManagerPlugin {
 		RecipeIngredientRole role = focus.getRole();
 
 		RecipeIngredientRoleMap recipeIngredientRoleMap = this.recipeIngredientRoleMaps.get(role);
+		if (recipeIngredientRoleMap == null) {
+			return List.of();
+		}
 		List<T> recipes = recipeIngredientRoleMap.getRecipes(recipeType, ingredient);
 		if (recipeIngredientRoleMap.isCraftingStationForRecipeCategory(recipeType, ingredient)) {
 			List<T> recipesForCategory = getRecipes(recipeType);

@@ -17,6 +17,7 @@ import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.ingredients.RecipeIngredientSupplier;
 import mezz.jei.library.ingredients.RecipeIngredientSupplier.FocusLink;
 import mezz.jei.library.ingredients.SimpleIngredientAcceptor;
+import mezz.jei.library.ingredients.SlotIngredient;
 import mezz.jei.library.recipes.collect.RecipeIngredientRoleMap;
 import mezz.jei.library.recipes.collect.RecipeTypeData;
 import mezz.jei.library.recipes.collect.RecipeTypeDataMap;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -86,7 +88,7 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 		Comparator<IRecipeType<?>> recipeTypeComparator = recipeCategorySortingConfig.getComparator(recipeTypes);
 
 		this.recipeIngredientRoleMaps = new EnumMap<>(RecipeIngredientRole.class);
-		for (RecipeIngredientRole role : RecipeIngredientRole.values()) {
+		for (RecipeIngredientRole role : EnumSet.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT, RecipeIngredientRole.CRAFTING_STATION)) {
 			RecipeIngredientRoleMap recipeIngredientRoleMap = new RecipeIngredientRoleMap(recipeTypeComparator, ingredientManager, role);
 			this.recipeIngredientRoleMaps.put(role, recipeIngredientRoleMap);
 		}
@@ -159,7 +161,7 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 			}
 			return null;
 		}
-		RecipeIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager, contextMap);
+		RecipeIngredientSupplier ingredientSupplier = IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager, contextMap, recipeIngredientRoleMaps.keySet());
 
 		try {
 			for (RecipeIngredientRoleMap recipeIngredientRoleMap : recipeIngredientRoleMaps.values()) {
@@ -296,7 +298,8 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 			recipe,
 			recipeTypeData.getRecipeCategory(),
 			ingredientManager,
-			contextMap
+			contextMap,
+			recipeIngredientRoleMaps.keySet()
 		);
 		return ingredientSupplier.getFocusLinks();
 	}
@@ -326,8 +329,8 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 		SimpleIngredientAcceptor acceptor = new SimpleIngredientAcceptor(ingredientManager, contextMap, RecipeIngredientRole.CRAFTING_STATION);
 		craftingStation.accept(acceptor);
 		return acceptor.getAllSlotIngredients().stream()
-			.map(slotIngredient -> slotIngredient.typedIngredient())
-			.<ITypedIngredient<?>>map(ingredientManager::normalizeTypedIngredient);
+			.map(SlotIngredient::typedIngredient)
+			.map(ingredientManager::normalizeTypedIngredient);
 	}
 
 	private boolean isCraftingStationVisible(ITypedIngredient<?> craftingStation) {
@@ -402,6 +405,6 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 
 	public boolean isCraftingStation(IRecipeType<?> recipeType, IFocus<?> focus) {
 		RecipeIngredientRoleMap recipeIngredientRoleMap = recipeIngredientRoleMaps.get(focus.getRole());
-		return recipeIngredientRoleMap.isCraftingStationForRecipeCategory(recipeType, focus.getTypedValue());
+		return recipeIngredientRoleMap != null && recipeIngredientRoleMap.isCraftingStationForRecipeCategory(recipeType, focus.getTypedValue());
 	}
 }

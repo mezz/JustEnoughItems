@@ -32,6 +32,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class CodecHelper implements ICodecHelper {
 	private static final Codec<RecipeHolder<?>> RECIPE_HOLDER_CODEC = Codec.lazyInitialized(() -> {
@@ -154,7 +155,7 @@ public class CodecHelper implements ICodecHelper {
 				if (registryId == null) {
 					return DataResult.error(() -> "No registry id for recipe");
 				}
-				IIngredientSupplier ingredients = recipeManager.getRecipeIngredients(recipeCategory, recipe);
+				IIngredientSupplier ingredients = recipeManager.getRecipeIngredients(recipeCategory, recipe, Set.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT));
 				List<ITypedIngredient<?>> outputs = ingredients.getIngredients(RecipeIngredientRole.OUTPUT);
 				if (!outputs.isEmpty()) {
 					Data result = new Data(registryId, outputs.getFirst(), RecipeIngredientRole.OUTPUT);

@@ -213,6 +213,11 @@ public class RecipeManager implements IRecipeManager, IRecipeVisibility {
 	}
 
 	@Override
+	public <T> IIngredientSupplier getRecipeIngredients(IRecipeCategory<T> recipeCategory, T recipe, Set<RecipeIngredientRole> roles) {
+		return IngredientSupplierHelper.getIngredientSupplier(recipe, recipeCategory, ingredientManager, contextMap, roles);
+	}
+
+	@Override
 	public <T> void hideRecipes(IRecipeType<T> recipeType, Collection<T> recipes) {
 		ErrorUtil.checkNotNull(recipes, "recipe");
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
