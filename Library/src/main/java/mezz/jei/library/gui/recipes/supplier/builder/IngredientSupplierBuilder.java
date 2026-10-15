@@ -13,23 +13,32 @@ import net.minecraft.util.context.ContextMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
- * Minimal version of {@link IRecipeLayoutBuilder} that can only return the ingredients,
- * but doesn't bother building real slots or anything else for drawing on screen.
+ * Collects recipe ingredients and focus links for selected roles without building a drawable layout.
  */
 public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 	private final IIngredientManagerInternal ingredientManager;
 	private final ContextMap contextMap;
+	private final Set<RecipeIngredientRole> roles;
+	private final IgnoredIngredientSlotBuilder ignoredSlot;
 	private final Map<RecipeIngredientRole, List<IngredientSlotBuilder>> ingredientSlotBuilders;
 	private final List<List<IngredientSlotBuilder>> focusLinkedSlots = new ArrayList<>();
 
 	public IngredientSupplierBuilder(IIngredientManagerInternal ingredientManager, ContextMap contextMap) {
+		this(ingredientManager, contextMap, EnumSet.allOf(RecipeIngredientRole.class));
+	}
+
+	public IngredientSupplierBuilder(IIngredientManagerInternal ingredientManager, ContextMap contextMap, Set<RecipeIngredientRole> roles) {
 		this.ingredientManager = ingredientManager;
 		this.contextMap = contextMap;
+		this.roles = Set.copyOf(roles);
+		this.ignoredSlot = new IgnoredIngredientSlotBuilder(contextMap);
 		this.ingredientSlotBuilders = new EnumMap<>(RecipeIngredientRole.class);
 	}
 
@@ -40,6 +49,10 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 
 	@Override
 	public IRecipeSlotBuilder addSlot(RecipeIngredientRole role) {
+		Objects.requireNonNull(role, "role");
+		if (!roles.contains(role)) {
+			return ignoredSlot;
+		}
 		IngredientSlotBuilder slot = new IngredientSlotBuilder(ingredientManager, contextMap, role);
 		ingredientSlotBuilders.computeIfAbsent(role, key -> new ArrayList<>())
 			.add(slot);
@@ -75,8 +88,12 @@ public class IngredientSupplierBuilder implements IRecipeLayoutBuilder {
 	public void createFocusLink(Collection<? extends IIngredientAcceptor<?>> slots) {
 		List<IngredientSlotBuilder> builders = new ArrayList<>(slots.size());
 		for (IIngredientAcceptor<?> slot : slots) {
-			IngredientSlotBuilder builder = (IngredientSlotBuilder) slot;
-			builders.add(builder);
+			if (slot instanceof IngredientSlotBuilder slotBuilder) {
+				builders.add(slotBuilder);
+			}
+		}
+		if (builders.isEmpty()) {
+			return;
 		}
 		long ingredientCounts = builders.stream()
 			.map(IngredientSlotBuilder::getAllSlotIngredients)

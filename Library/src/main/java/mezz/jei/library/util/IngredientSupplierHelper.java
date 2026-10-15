@@ -1,6 +1,7 @@
 package mezz.jei.library.util;
 
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.focus.FocusGroup;
 import mezz.jei.library.gui.recipes.supplier.builder.IngredientSupplierBuilder;
@@ -10,6 +11,9 @@ import net.minecraft.util.context.ContextMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 public final class IngredientSupplierHelper {
 	private static final Logger LOGGER = LogManager.getLogger();
 
@@ -17,7 +21,11 @@ public final class IngredientSupplierHelper {
 	}
 
 	public static <T> RecipeIngredientSupplier getIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory, IIngredientManagerInternal ingredientManager, ContextMap contextMap) {
-		IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager, contextMap);
+		return getIngredientSupplier(recipe, recipeCategory, ingredientManager, contextMap, EnumSet.allOf(RecipeIngredientRole.class));
+	}
+
+	public static <T> RecipeIngredientSupplier getIngredientSupplier(T recipe, IRecipeCategory<T> recipeCategory, IIngredientManagerInternal ingredientManager, ContextMap contextMap, Set<RecipeIngredientRole> roles) {
+		IngredientSupplierBuilder builder = new IngredientSupplierBuilder(ingredientManager, contextMap, roles);
 		if (!recipeCategory.isHandled(recipe)) {
 			return builder.buildIngredientSupplier();
 		}
