@@ -13,6 +13,7 @@
     ],
     "fabric-client-gametest": [
       "mezz.jei.fabric.test.JeiFabricTextInputClientGameTest",
+      "mezz.jei.fabric.test.CheatToInventoryClientGameTest",
       "mezz.jei.fabric.test.BookmarkManagerClientGameTest",
       "mezz.jei.fabric.test.InteractiveIngredientTooltipClientGameTest",
       "mezz.jei.fabric.test.IngredientNavigationClientGameTest",
