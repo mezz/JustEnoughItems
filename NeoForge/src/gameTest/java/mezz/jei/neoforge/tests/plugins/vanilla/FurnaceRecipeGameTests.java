@@ -6,7 +6,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeMaker;
-import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeTransferInfo;
+import mezz.jei.library.plugins.vanilla.cooking.CookingRecipeTransferInfo;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceSmeltingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.JeiSmeltingRecipe;
 import mezz.jei.library.util.IngredientSupplierHelper;
@@ -19,6 +19,7 @@ import mezz.jei.neoforge.tests.recipe.transfer.RecipeTransferTestHelper;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.FurnaceMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -101,15 +102,11 @@ public final class FurnaceRecipeGameTests {
 			"Indexed outputs"
 		);
 
-		FurnaceMenu menu = helper.openMenu(FurnaceMenu::new);
-		FurnaceRecipeTransferInfo transferInfo = new FurnaceRecipeTransferInfo();
-		helper.assertEquals(2, transferInfo.getRecipeSlots(menu, recipeHolder).size(), "Special smelting transfer slot count");
-
 		TransferRecipe<RecipeHolder<SmeltingRecipe>> transferRecipe = new TransferRecipe<>(
 			recipeHolder,
 			List.of(TestRecipeSlotView.item(Items.WET_SPONGE), TestRecipeSlotView.item(Items.BUCKET))
 		);
-		menu = helper.openMenu(FurnaceMenu::new, new ItemStack(Items.WET_SPONGE), new ItemStack(Items.BUCKET));
+		FurnaceMenu menu = helper.openMenu(FurnaceMenu::new, new ItemStack(Items.WET_SPONGE), new ItemStack(Items.BUCKET));
 		var transferResult = helper.transfer(RecipeTypes.SMELTING, transferRecipe, menu);
 		helper.assertSuccessfulTransfer(
 			transferResult,
@@ -159,7 +156,7 @@ public final class FurnaceRecipeGameTests {
 		);
 
 		FurnaceMenu menu = helper.openMenu(FurnaceMenu::new);
-		FurnaceRecipeTransferInfo transferInfo = new FurnaceRecipeTransferInfo();
+		var transferInfo = new CookingRecipeTransferInfo<>(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING, holder -> recipeCategory.getFuel(holder.value()));
 		helper.assertEquals(1, transferInfo.getRecipeSlots(menu, recipeHolder).size(), "Normal smelting transfer slot count");
 
 		helper.succeed();

@@ -153,10 +153,22 @@ public final class PluginLoader {
 			.orElseThrow(() -> new NullPointerException("vanilla smithing category"));
 		BrewingExtensionHelper brewingExtensionHelper = vanillaPlugin.getBrewingExtensionHelper()
 			.orElseThrow(() -> new NullPointerException("vanilla brewing extension helper"));
+		var smeltingCategory = vanillaPlugin.getSmeltingCategory()
+			.orElseThrow(() -> new NullPointerException("vanilla smelting category"));
+		var blastingCategory = vanillaPlugin.getBlastingCategory()
+			.orElseThrow(() -> new NullPointerException("vanilla blasting category"));
+		var smokingCategory = vanillaPlugin.getSmokingCategory()
+			.orElseThrow(() -> new NullPointerException("vanilla smoking category"));
+		var campfireCookingCategory = vanillaPlugin.getCampfireCookingCategory()
+			.orElseThrow(() -> new NullPointerException("vanilla campfire cooking category"));
 		VanillaCategoryExtensionRegistration vanillaCategoryExtensionRegistration = new VanillaCategoryExtensionRegistration(
 			craftingCategory,
 			smithingCategory,
 			brewingExtensionHelper,
+			smeltingCategory,
+			blastingCategory,
+			smokingCategory,
+			campfireCookingCategory,
 			jeiHelpers
 		);
 		PluginCaller.callOnPlugins("Registering vanilla category extensions", plugins, p -> p.registerVanillaCategoryExtensions(vanillaCategoryExtensionRegistration));

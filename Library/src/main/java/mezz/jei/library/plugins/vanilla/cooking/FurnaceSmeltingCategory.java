@@ -20,11 +20,11 @@ public class FurnaceSmeltingCategory extends AbstractCookingCategory<SmeltingRec
 	}
 
 	@Override
-	public List<ResourceLocation> getSourceRecipeIds(RecipeHolder<SmeltingRecipe> recipeHolder) {
+	protected List<ResourceLocation> getDefaultSourceRecipeIds(RecipeHolder<SmeltingRecipe> recipeHolder) {
 		ResourceLocation identifier = recipeHolder.id();
 		if (identifier.equals(FurnaceRecipeMaker.SPONGE_WITH_BUCKET)) {
 			return List.of(FurnaceRecipeMaker.SPONGE_RECIPE);
 		}
-		return super.getSourceRecipeIds(recipeHolder);
+		return super.getDefaultSourceRecipeIds(recipeHolder);
 	}
 }
