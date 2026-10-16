@@ -93,7 +93,8 @@ public class TagInfoRecipeCategory<R extends ITagInfoRecipe, T extends RecipeTyp
 
 	@Override
 	public ResourceLocation getRegistryName(R recipe) {
-		return recipe.getTag().location();
+		ResourceLocation location = recipe.getTag().location();
+		return new ResourceLocation(location.getNamespace(), "/" + location.getPath());
 	}
 
 	@Override

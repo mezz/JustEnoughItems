@@ -35,7 +35,7 @@ public final class TippedArrowRecipeMaker {
 				ItemStack output = PotionUtils.setPotion(new ItemStack(Items.TIPPED_ARROW, 8), potion);
 
 				Ingredient potionIngredient = ingredientHelper.createNbtIngredient(input, stackHelper);
-				ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + output.getDescriptionId());
+				ResourceLocation id = new ResourceLocation(ModIds.MINECRAFT_ID, "/jei.tipped.arrow." + output.getDescriptionId());
 				return new JeiShapedRecipeBuilder(id, List.of(output))
 					.group(group)
 					.define('a', arrowIngredient)

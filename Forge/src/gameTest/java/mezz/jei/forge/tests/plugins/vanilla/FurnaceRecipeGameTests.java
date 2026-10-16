@@ -52,7 +52,7 @@ public final class FurnaceRecipeGameTests {
 		VanillaRecipeFactory recipeFactory = TestIngredientManagers.createVanillaRecipeFactory();
 		RecipeManager recipeManager = gameTestHelper.getLevel().getServer().getRecipeManager();
 		ResourceLocation spongeRecipeId = new ResourceLocation("minecraft", "sponge");
-		ResourceLocation spongeWithBucketRecipeId = new ResourceLocation("minecraft", "sponge_with_bucket");
+		ResourceLocation spongeWithBucketRecipeId = new ResourceLocation("minecraft", "/sponge_with_bucket");
 		List<SmeltingRecipe> vanillaRecipes = recipeManager.getAllRecipesFor(RecipeType.SMELTING);
 
 		List<SmeltingRecipe> recipes = FurnaceRecipeMaker.getRecipes(recipeFactory, recipeManager);

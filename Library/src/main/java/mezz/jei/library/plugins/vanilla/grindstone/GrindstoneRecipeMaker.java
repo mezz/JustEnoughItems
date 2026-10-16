@@ -101,7 +101,7 @@ public final class GrindstoneRecipeMaker {
 			return null;
 		}
 		String asciiLevel = Integer.toString(level);
-		String rawPath = "grindstone.disenchantment.%s.%s.%s".formatted(enchantmentId.getNamespace(), enchantmentId.getPath(), asciiLevel);
+		String rawPath = "/grindstone.disenchantment.%s.%s.%s".formatted(enchantmentId.getNamespace(), enchantmentId.getPath(), asciiLevel);
 		String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
 		return new ResourceLocation("minecraft", uidPath);
 	}
@@ -131,7 +131,7 @@ public final class GrindstoneRecipeMaker {
 				topInput.setDamageValue(topInput.getMaxDamage() * 3 / 4);
 				ItemStack bottomInput = topInput.copy();
 				String itemId = stack.getItem().getDescriptionId();
-				String rawPath = "grindstone.self_repair." + itemId;
+				String rawPath = "/grindstone.self_repair." + itemId;
 				String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
 				return getGrindstoneRecipe(platformHelper, grindstoneMenu, topInput, bottomInput, new ResourceLocation("minecraft", uidPath));
 			})

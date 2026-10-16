@@ -60,12 +60,12 @@ final class RecipeSourceIdsClientTest {
 			var manager = runtime.getRecipeManager();
 			var category = manager.getRecipeCategory(RecipeTypes.CRAFTING);
 			var sponge = manager.createRecipeLookup(RecipeTypes.SMELTING).get()
-				.filter(recipe -> recipe.getId().equals(new ResourceLocation("minecraft", "sponge_with_bucket")))
+				.filter(recipe -> recipe.getId().equals(new ResourceLocation("minecraft", "/sponge_with_bucket")))
 				.findFirst().orElseThrow();
 			check(manager.getRecipeCategory(RecipeTypes.SMELTING).getSourceRecipeIds(sponge)
 				.equals(List.of(new ResourceLocation("minecraft", "sponge"))), "Enhanced sponge displays must retain the underlying recipe ID");
 			var recipes = manager.createRecipeLookup(RecipeTypes.CRAFTING).get()
-				.filter(recipe -> recipe.getId().getPath().startsWith("jei.shield.decoration."))
+				.filter(recipe -> recipe.getId().getPath().startsWith("/jei.shield.decoration."))
 				.limit(2)
 				.toList();
 			check(recipes.size() == 2, "Expected distinct registered shield-decoration displays");
@@ -84,6 +84,11 @@ final class RecipeSourceIdsClientTest {
 					var encoded = serializer.serialize(bookmark);
 					var decoded = serializer.deserialize(encoded).getResult().orElseThrow();
 					check(bookmark.equals(decoded), "Bookmark JSON must preserve the individual display identity");
+					String legacyUid = recipe.getId().getNamespace() + ":" + recipe.getId().getPath().substring(1);
+					String legacy = encoded.replace(recipe.getId().toString(), legacyUid);
+					var migrated = serializer.deserialize(legacy).getResult().orElseThrow();
+					check(bookmark.equals(migrated), "Legacy generated recipe bookmarks must migrate to synthetic IDs");
+					check(serializer.serialize(migrated).equals(encoded), "Migrated bookmarks must save the current synthetic ID");
 					bookmarks.add(decoded);
 					check(encoded.contains(recipe.getId().toString()), "Crafting bookmarks must retain the generated display identifier");
 				}

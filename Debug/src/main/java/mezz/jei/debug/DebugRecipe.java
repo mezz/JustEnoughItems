@@ -23,7 +23,7 @@ public class DebugRecipe {
 
 	private DebugRecipe(Component buttonText, List<ItemStack> largeIngredientList) {
 		this.buttonText = buttonText;
-		this.registryName = new ResourceLocation(ModIds.JEI_ID, "debug_recipe_" + NEXT_ID);
+		this.registryName = new ResourceLocation(ModIds.JEI_ID, "/debug_recipe_" + NEXT_ID);
 		this.largeIngredientList = List.copyOf(largeIngredientList);
 		NEXT_ID++;
 	}

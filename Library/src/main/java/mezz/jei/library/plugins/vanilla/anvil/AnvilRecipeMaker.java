@@ -288,7 +288,7 @@ public final class AnvilRecipeMaker {
 						damagedThreeQuartersSingletonList,
 						damagedThreeQuartersSingletonList,
 						List.of(sameItemOutput),
-						new ResourceLocation(itemModId, "self_repair." + ingredientIdPath)
+						new ResourceLocation(itemModId, "/self_repair." + ingredientIdPath)
 					);
 					consumer.accept(repairWithSame);
 				}
@@ -302,7 +302,7 @@ public final class AnvilRecipeMaker {
 							List.of(damagedFully),
 							repairMaterials,
 							List.of(materialOutput),
-							new ResourceLocation(itemModId, "materials_repair." + ingredientIdPath)
+							new ResourceLocation(itemModId, "/materials_repair." + ingredientIdPath)
 						);
 						consumer.accept(repairWithMaterial);
 					}

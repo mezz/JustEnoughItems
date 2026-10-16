@@ -137,12 +137,13 @@ public class RecipeBookmarkSerializer {
 		}
 
 		T recipe = recipeResult.get();
+		ResourceLocation resolvedUid = Objects.requireNonNull(recipeCategory.getRegistryName(recipe));
 		IDrawable icon = RecipeCategoryIconUtil.create(
 			recipeCategory,
 			recipeManager,
 			guiHelper
 		);
-		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, icon, displayRole, recipeTransferService);
+		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, resolvedUid, output, icon, displayRole, recipeTransferService);
 		return IDeserializeResult.success(recipeBookmark);
 	}
 
@@ -156,7 +157,16 @@ public class RecipeBookmarkSerializer {
 			.or(() -> recipeManager.createRecipeLookup(recipeType)
 				.get()
 				.filter(r -> Objects.equals(recipeCategory.getRegistryName(r), recipeUid))
-				.findFirst());
+				.findFirst())
+			.or(() -> {
+				if (recipeUid.getPath().startsWith("/")) {
+					return Optional.empty();
+				}
+				ResourceLocation syntheticUid = new ResourceLocation(recipeUid.getNamespace(), "/" + recipeUid.getPath());
+				return recipeManager.createRecipeLookup(recipeType).get()
+					.filter(r -> Objects.equals(recipeCategory.getRegistryName(r), syntheticUid))
+					.findFirst();
+			});
 	}
 
 }
