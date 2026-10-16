@@ -11,16 +11,35 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
+import net.minecraft.resources.ResourceLocation;
+
+import java.util.List;
 
 /**
  * The {@link IRecipeCategoryDecorator} allows further customization of recipe categories.
- * It can be used to draw additional elements or tooltips on recipes, even of other mods.
+ * It can customize source recipe IDs, drawing, and tooltips, even for other mods' recipes.
  * <p>
  * Register it with {@link IAdvancedRegistration#addRecipeCategoryDecorator(RecipeType, IRecipeCategoryDecorator)}.
  *
  * @since 15.1.0
  */
 public interface IRecipeCategoryDecorator<T> {
+	/**
+	 * Modify the underlying recipe IDs shown in tooltips and copied from a recipe layout.
+	 * See {@link IRecipeCategory#getSourceRecipeIds(Object)} for the identifier contract.
+	 * <p>
+	 * Decorators receive the same mutable list in registration order when a layout is created,
+	 * starting with the category's source IDs. IDs may be added, removed, or cleared.
+	 * JEI copies the completed list for the layout after all decorators have run.
+	 * This does not change the display identifier or bookmarks.
+	 *
+	 * @param sourceRecipeIds the mutable source IDs, including changes from previous decorators
+	 * @since 15.72.0
+	 */
+	default void decorateSourceRecipeIds(List<ResourceLocation> sourceRecipeIds, T recipe, IRecipeCategory<T> recipeCategory) {
+
+	}
+
 	/**
 	 * Draw extras or additional info about the recipe after the {@link IRecipeCategory} that
 	 * this decorator is registered to has drawn.
