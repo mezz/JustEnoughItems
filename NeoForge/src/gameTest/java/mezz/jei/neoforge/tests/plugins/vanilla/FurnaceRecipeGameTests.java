@@ -49,7 +49,7 @@ public final class FurnaceRecipeGameTests {
 		VanillaRecipeFactory recipeFactory = TestIngredientManagers.createVanillaRecipeFactory(ContextMap.EMPTY);
 		RecipeMap recipeMap = helper.getLevel().getServer().getRecipeManager().recipeMap();
 		Identifier spongeRecipeId = Identifier.withDefaultNamespace("sponge");
-		Identifier spongeWithBucketRecipeId = Identifier.withDefaultNamespace("sponge_with_bucket");
+		Identifier spongeWithBucketRecipeId = Identifier.withDefaultNamespace("/sponge_with_bucket");
 		List<RecipeHolder<SmeltingRecipe>> vanillaRecipes = recipeMap.byType(RecipeType.SMELTING)
 			.stream()
 			.toList();

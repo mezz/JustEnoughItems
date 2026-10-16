@@ -60,7 +60,7 @@ public class DebugSimpleRecipeManagerPlugin implements ISimpleRecipeManagerPlugi
 			.pattern("lll")
 			.define('l', Ingredient.of(Items.LIGHT))
 			.build();
-		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "debug_simple_recipe");
+		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "/debug_simple_recipe");
 		ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, id);
 		return new RecipeHolder<>(resourceKey, recipe);
 	}
