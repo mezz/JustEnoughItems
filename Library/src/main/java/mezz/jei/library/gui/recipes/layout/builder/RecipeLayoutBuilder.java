@@ -48,6 +48,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	private final ContextMap contextMap;
 	private final IRecipeCategory<T> recipeCategory;
 	private final T recipe;
+	private final List<Identifier> sourceRecipeIds;
 
 	private boolean shapeless = false;
 	private int shapelessX = -1;
@@ -56,11 +57,20 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 	private int recipeTransferY = -1;
 	private int nextSlotIndex = 0;
 
-	public RecipeLayoutBuilder(IRecipeCategory<T> recipeCategory, T recipe, IIngredientManagerInternal ingredientManager, ContextMap contextMap) {
+	public RecipeLayoutBuilder(IRecipeCategory<T> recipeCategory, Collection<IRecipeCategoryDecorator<T>> decorators, T recipe, IIngredientManagerInternal ingredientManager, ContextMap contextMap) {
 		this.recipeCategory = recipeCategory;
 		this.recipe = recipe;
 		this.ingredientManager = ingredientManager;
 		this.contextMap = contextMap;
+		this.sourceRecipeIds = resolveSourceRecipeIds(decorators);
+	}
+
+	private List<Identifier> resolveSourceRecipeIds(Collection<IRecipeCategoryDecorator<T>> decorators) {
+		List<Identifier> sourceRecipeIds = new ArrayList<>(recipeCategory.getSourceRecipeIds(recipe));
+		for (IRecipeCategoryDecorator<T> decorator : decorators) {
+			decorator.decorateSourceRecipeIds(sourceRecipeIds, recipe, recipeCategory);
+		}
+		return List.copyOf(sourceRecipeIds);
 	}
 
 	@Override
@@ -77,7 +87,6 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 
 	private void addOutputSlotTooltipCallback(RecipeSlotBuilder slot) {
 		Identifier recipeId = recipeCategory.getIdentifier(recipe);
-		List<Identifier> sourceRecipeIds = recipeCategory.getSourceRecipeIds(recipe);
 		if (recipeId != null || !sourceRecipeIds.isEmpty()) {
 			IRecipeType<T> recipeType = recipeCategory.getRecipeType();
 			OutputSlotTooltipCallback callback = new OutputSlotTooltipCallback(recipeId, sourceRecipeIds, recipeType);
@@ -214,6 +223,7 @@ public class RecipeLayoutBuilder<T> implements IRecipeLayoutBuilder {
 			recipeCategory,
 			decorators,
 			recipe,
+			sourceRecipeIds,
 			recipeBackground,
 			recipeBorderPadding,
 			shapelessIcon,

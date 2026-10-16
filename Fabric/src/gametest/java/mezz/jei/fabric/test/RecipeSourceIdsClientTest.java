@@ -3,13 +3,16 @@ package mezz.jei.fabric.test;
 import com.google.gson.JsonPrimitive;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.serialization.JsonOps;
+import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.InputPhase;
@@ -42,12 +45,14 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @SuppressWarnings({"UnstableApiUsage", "removal"})
-final class RecipeSourceIdsClientTest {
+public final class RecipeSourceIdsClientTest implements IModPlugin {
 	private static final Identifier SHIELD_DECORATION = Identifier.withDefaultNamespace("shield_decoration");
 	private static final Identifier SYNTHETIC_ID = Identifier.fromNamespaceAndPath("jei_test", "/synthetic/recipe");
 	private static final Identifier NORMAL_ID = Identifier.fromNamespaceAndPath("jei_test", "folder/recipe");
@@ -55,8 +60,44 @@ final class RecipeSourceIdsClientTest {
 		SHIELD_DECORATION,
 		Identifier.withDefaultNamespace("crafting_table")
 	);
+	private static final Map<Identifier, List<Identifier>> DECORATED_SOURCES = new HashMap<>();
 
-	private RecipeSourceIdsClientTest() {
+	@Override
+	public Identifier getPluginUid() {
+		return Identifier.fromNamespaceAndPath("jei_test", "recipe_source_ids");
+	}
+
+	@Override
+	public void registerAdvanced(IAdvancedRegistration registration) {
+		registerDecorators(registration, RecipeTypes.CRAFTING);
+		registerDecorators(registration, RecipeTypes.SMELTING);
+	}
+
+	private static <R extends Recipe<?>> void registerDecorators(IAdvancedRegistration registration, IRecipeType<RecipeHolder<R>> recipeType) {
+		registration.addRecipeCategoryDecorator(recipeType, new IRecipeCategoryDecorator<>() {});
+		registration.addRecipeCategoryDecorator(recipeType, new IRecipeCategoryDecorator<>() {
+			@Override
+			public void decorateSourceRecipeIds(List<Identifier> sourceRecipeIds, RecipeHolder<R> recipe, IRecipeCategory<RecipeHolder<R>> recipeCategory) {
+				List<Identifier> sources = DECORATED_SOURCES.get(recipe.id().identifier());
+				if (sources != null) {
+					sourceRecipeIds.addAll(sources);
+				}
+			}
+		});
+		registration.addRecipeCategoryDecorator(recipeType, new IRecipeCategoryDecorator<>() {
+			@Override
+			public void decorateSourceRecipeIds(List<Identifier> sourceRecipeIds, RecipeHolder<R> recipe, IRecipeCategory<RecipeHolder<R>> recipeCategory) {
+				List<Identifier> sources = DECORATED_SOURCES.get(recipe.id().identifier());
+				if (sources != null) {
+					if (sources.isEmpty()) {
+						sourceRecipeIds.clear();
+					} else {
+						sourceRecipeIds.remove(SHIELD_DECORATION);
+						sourceRecipeIds.add(NORMAL_ID);
+					}
+				}
+			}
+		});
 	}
 
 	static void run(ClientGameTestContext context) {
@@ -164,6 +205,8 @@ final class RecipeSourceIdsClientTest {
 			copy(gui, createCategory(runtime.getJeiHelpers().getGuiHelper(), List.of()), recipe);
 			check(client.keyboardHandler.getClipboard().equals("[minecraft:shield_decoration, minecraft:crafting_table]"), "A display with no source must leave the clipboard intact");
 			assertSyntheticDisplays(client, gui);
+			assertDecoratedSources(client, gui, RecipeTypes.CRAFTING);
+			assertDecoratedSources(client, gui, RecipeTypes.SMELTING);
 		} finally {
 			copyKey.setKey(originalKey);
 			client.keyboardHandler.setClipboard(clipboard);
@@ -213,9 +256,44 @@ final class RecipeSourceIdsClientTest {
 		return synthetic;
 	}
 
+	private static <R extends Recipe<?>> void assertDecoratedSources(Minecraft client, RecipesGui gui, IRecipeType<RecipeHolder<R>> recipeType) {
+		var manager = Internal.getJeiRuntime().getRecipeManager();
+		var category = manager.getRecipeCategory(recipeType);
+		var recipe = manager.createRecipeLookup(recipeType).get()
+			.filter(holder -> !holder.value().isSpecial() && !holder.id().identifier().getPath().startsWith("/"))
+			.findFirst().orElseThrow();
+		Identifier recipeId = recipe.id().identifier();
+		var expectedSources = new ArrayList<>(category.getSourceRecipeIds(recipe));
+		expectedSources.add(MULTIPLE_SOURCES.getLast());
+		expectedSources.add(NORMAL_ID);
+		var sources = new ArrayList<>(MULTIPLE_SOURCES);
+		DECORATED_SOURCES.put(recipeId, sources);
+		try {
+			var layout = createLayout(category, recipe);
+			assertTooltipIds(layout, expectedSources);
+			sources.clear();
+			assertTooltipIds(layout, expectedSources);
+			copy(gui, layout);
+			check(client.keyboardHandler.getClipboard().equals(expectedSources.toString()), "Copying must use the same decorator IDs retained by the layout's tooltips");
+			check(getIdentifier(layout).equals(recipeId), "Decorators must preserve the display identifier");
+			assertBookmarks(client, List.of(layout));
+
+			var empty = createLayout(category, recipe);
+			assertTooltipIds(empty, List.of());
+			copy(gui, empty);
+			check(client.keyboardHandler.getClipboard().equals(expectedSources.toString()), "A decorator that clears the source IDs must leave the clipboard intact");
+		} finally {
+			DECORATED_SOURCES.remove(recipeId);
+		}
+		assertTooltipIds(createLayout(category, recipe), category.getSourceRecipeIds(recipe));
+	}
+
 	private static <R> void copy(RecipesGui gui, IRecipeCategory<R> category, R recipe) {
+		copy(gui, createLayout(category, recipe));
+	}
+
+	private static <R> void copy(RecipesGui gui, IRecipeLayoutDrawable<R> layout) {
 		var runtime = Internal.getJeiRuntime();
-		var layout = createLayout(category, recipe);
 		layout.setPosition(0, 0);
 		BookmarkList bookmarks = new ReflectionUtil().getFieldWithClass(gui, BookmarkList.class).findFirst().orElseThrow();
 		var buttons = RecipeLayoutWithButtons.create(layout, null, bookmarks, gui, new RecipeTransferService(runtime.getRecipeTransferManager()), List.of());
@@ -254,6 +332,7 @@ final class RecipeSourceIdsClientTest {
 	}
 
 	private static void assertTooltipIds(IRecipeLayoutDrawable<?> layout, List<Identifier> expectedIds) {
+		check(layout.getSourceRecipeIds().equals(expectedIds), "Layout source IDs must match the tooltip IDs");
 		var output = layout.getRecipeSlotsView().getSlotViews().stream().filter(slot -> slot.getRole() == RecipeIngredientRole.OUTPUT)
 			.map(IRecipeSlotDrawable.class::cast).findFirst().orElseThrow();
 		var tooltip = new JeiTooltip();
