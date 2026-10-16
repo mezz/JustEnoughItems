@@ -7,6 +7,6 @@ import net.minecraft.world.level.block.Blocks;
 
 public class BlastingCategory extends AbstractCookingCategory<BlastingRecipe> {
 	public BlastingCategory(IGuiHelper guiHelper) {
-		super(guiHelper, RecipeTypes.BLASTING, Blocks.BLAST_FURNACE, "gui.jei.category.blasting", 100);
+		super(guiHelper, RecipeTypes.BLASTING, Blocks.BLAST_FURNACE, "gui.jei.category.blasting", 100, 82, 54);
 	}
 }

@@ -7,6 +7,6 @@ import net.minecraft.world.level.block.Blocks;
 
 public class SmokingCategory extends AbstractCookingCategory<SmokingRecipe> {
 	public SmokingCategory(IGuiHelper guiHelper) {
-		super(guiHelper, RecipeTypes.SMOKING, Blocks.SMOKER, "gui.jei.category.smoking", 100);
+		super(guiHelper, RecipeTypes.SMOKING, Blocks.SMOKER, "gui.jei.category.smoking", 100, 82, 54);
 	}
 }
