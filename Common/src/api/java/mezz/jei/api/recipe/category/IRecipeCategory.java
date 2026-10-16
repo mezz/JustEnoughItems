@@ -261,6 +261,10 @@ public interface IRecipeCategory<T> {
 	 * This lets the player know where the recipe came from.
 	 *
 	 * Since 19.1.0, this is also used for bookmarking recipes.
+	 * <p>
+	 * A generated display should use a synthetic identifier whose path starts with {@code /}.
+	 * Return its underlying recipe identifiers from {@link #getSourceRecipeIds(Object)}
+	 * for advanced tooltips and copying recipe IDs.
 	 *
 	 * @return the JEI display identifier, or null if there is none
 	 *

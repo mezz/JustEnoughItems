@@ -47,7 +47,7 @@ public final class FurnaceRecipeGameTests {
 		VanillaRecipeFactory recipeFactory = TestIngredientManagers.createVanillaRecipeFactory();
 		RecipeManager recipeManager = helper.getLevel().getServer().getRecipeManager();
 		ResourceLocation spongeRecipeId = ResourceLocation.withDefaultNamespace("sponge");
-		ResourceLocation spongeWithBucketRecipeId = ResourceLocation.withDefaultNamespace("sponge_with_bucket");
+		ResourceLocation spongeWithBucketRecipeId = ResourceLocation.withDefaultNamespace("/sponge_with_bucket");
 		List<RecipeHolder<SmeltingRecipe>> vanillaRecipes = recipeManager.getAllRecipesFor(RecipeType.SMELTING);
 
 		List<RecipeHolder<SmeltingRecipe>> recipes = FurnaceRecipeMaker.getRecipes(recipeFactory, recipeManager, helper.getLevel().registryAccess());

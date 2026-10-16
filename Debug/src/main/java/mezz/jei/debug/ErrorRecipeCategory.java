@@ -68,6 +68,6 @@ public class ErrorRecipeCategory extends AbstractRecipeCategory<ErrorRecipe> {
 	@Override
 	public @Nullable ResourceLocation getRegistryName(ErrorRecipe recipe) {
 		ErrorRecipe.CrashType type = recipe.getType();
-		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "error." + type.name().toLowerCase());
+		return ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "/error." + type.name().toLowerCase());
 	}
 }

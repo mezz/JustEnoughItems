@@ -56,7 +56,7 @@ public class DebugSimpleRecipeManagerPlugin implements ISimpleRecipeManagerPlugi
 			.pattern("lll")
 			.define('l', Ingredient.of(Items.LIGHT))
 			.build();
-		ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "debug_simple_recipe");
+		ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "/debug_simple_recipe");
 		return new RecipeHolder<>(resourceLocation, recipe);
 	}
 }

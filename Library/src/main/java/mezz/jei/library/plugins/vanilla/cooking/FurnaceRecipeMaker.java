@@ -14,7 +14,7 @@ import java.util.List;
 
 public final class FurnaceRecipeMaker {
 	static final ResourceLocation SPONGE_RECIPE = ResourceLocation.withDefaultNamespace("sponge");
-	static final ResourceLocation SPONGE_WITH_BUCKET = ResourceLocation.withDefaultNamespace("sponge_with_bucket");
+	static final ResourceLocation SPONGE_WITH_BUCKET = ResourceLocation.withDefaultNamespace("/sponge_with_bucket");
 
 	private FurnaceRecipeMaker() {
 	}

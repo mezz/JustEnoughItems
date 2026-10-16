@@ -9,7 +9,7 @@ public class ObnoxiouslyLargeRecipe {
 	private final ResourceLocation recipeId;
 
 	public ObnoxiouslyLargeRecipe() {
-		recipeId = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "number_" + count);
+		recipeId = ResourceLocation.fromNamespaceAndPath(ModIds.JEI_ID, "/number_" + count);
 		count++;
 	}
 

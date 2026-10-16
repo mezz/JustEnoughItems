@@ -35,7 +35,7 @@ public final class TippedArrowRecipeMaker {
 				output.setCount(8);
 
 				Ingredient potionIngredient = Ingredient.of(input);
-				ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + output.getDescriptionId());
+				ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "/jei.tipped.arrow." + potion.unwrapKey().orElseThrow().location().getNamespace() + "." + potion.unwrapKey().orElseThrow().location().getPath());
 				CraftingRecipe recipe = vanillaRecipeFactory.createShapedRecipeBuilder(CraftingBookCategory.MISC, List.of(output))
 					.group(group)
 					.define('a', arrowIngredient)

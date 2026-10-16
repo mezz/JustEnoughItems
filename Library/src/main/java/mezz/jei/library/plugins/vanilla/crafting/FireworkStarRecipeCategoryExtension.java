@@ -23,6 +23,7 @@ import net.minecraft.world.item.crafting.FireworkStarFadeRecipe;
 import net.minecraft.world.item.crafting.FireworkStarRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +41,7 @@ public final class FireworkStarRecipeCategoryExtension implements ICraftingCateg
 	private final IPlatformRecipeHelper recipeHelper;
 	private final Map<Ingredient, List<ItemStack>> ingredientStacks = new HashMap<>();
 	private final Map<ResourceLocation, SampleLayout> sampleLayouts = new HashMap<>();
+	private final Map<ResourceLocation, ResourceLocation> sampleSources = new HashMap<>();
 
 	public FireworkStarRecipeCategoryExtension(IPlatformRecipeHelper recipeHelper) {
 		this.recipeHelper = recipeHelper;
@@ -48,6 +50,15 @@ public final class FireworkStarRecipeCategoryExtension implements ICraftingCateg
 	@Override
 	public boolean isHandled(RecipeHolder<CraftingRecipe> recipeHolder) {
 		return getRecipe(recipeHolder, FocusGroup.EMPTY).isPresent();
+	}
+
+	@Override
+	public @Nullable List<ResourceLocation> getSourceRecipeIds(RecipeHolder<CraftingRecipe> recipeHolder) {
+		ResourceLocation source = sampleSources.get(recipeHolder.id());
+		if (source == null) {
+			return null;
+		}
+		return List.of(source);
 	}
 
 	@Override
@@ -98,10 +109,11 @@ public final class FireworkStarRecipeCategoryExtension implements ICraftingCateg
 		for (SampleLayout layout : layouts) {
 			RecipeHolder<CraftingRecipe> holder = source;
 			if (!recipes.isEmpty()) {
-				var id = source.id().withSuffix("/jei_samples/" + layout.id());
+				var id = source.id().withPrefix("/").withSuffix("/jei_samples/" + layout.id());
 				holder = new RecipeHolder<>(id, source.value());
 			}
 			sampleLayouts.put(holder.id(), layout);
+			sampleSources.put(holder.id(), source.id());
 			recipes.add(holder);
 		}
 		return List.copyOf(recipes);
