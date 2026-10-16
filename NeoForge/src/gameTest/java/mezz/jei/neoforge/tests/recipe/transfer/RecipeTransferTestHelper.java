@@ -6,9 +6,13 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.network.packets.legacy.PacketRecipeTransferCounted;
 import mezz.jei.library.plugins.vanilla.VanillaPlugin;
+import mezz.jei.library.plugins.vanilla.cooking.BlastingCategory;
+import mezz.jei.library.plugins.vanilla.cooking.FurnaceSmeltingCategory;
+import mezz.jei.library.plugins.vanilla.cooking.SmokingCategory;
 import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
 import mezz.jei.neoforge.tests.lib.TargetSlots;
 import mezz.jei.neoforge.tests.lib.TestConnectionToServer;
+import mezz.jei.neoforge.tests.lib.TestGuiHelper;
 import mezz.jei.neoforge.tests.lib.TestRecipeSlotView;
 import mezz.jei.neoforge.tests.lib.TransferRecipe;
 import net.minecraft.gametest.framework.GameTestInfo;
@@ -26,6 +30,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public final class RecipeTransferTestHelper extends JeiGameTestHelper {
 	public RecipeTransferTestHelper(GameTestInfo info) {
@@ -153,7 +158,23 @@ public final class RecipeTransferTestHelper extends JeiGameTestHelper {
 
 	private static TestRecipeTransferRegistration createTransferRegistration(TestConnectionToServer serverConnection) {
 		TestRecipeTransferRegistration transferRegistration = new TestRecipeTransferRegistration(serverConnection);
-		new VanillaPlugin().registerRecipeTransferHandlers(transferRegistration);
+		VanillaPlugin vanillaPlugin = new VanillaPlugin() {
+			@Override
+			public Optional<FurnaceSmeltingCategory> getSmeltingCategory() {
+				return Optional.of(new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE));
+			}
+
+			@Override
+			public Optional<SmokingCategory> getSmokingCategory() {
+				return Optional.of(new SmokingCategory(TestGuiHelper.INSTANCE));
+			}
+
+			@Override
+			public Optional<BlastingCategory> getBlastingCategory() {
+				return Optional.of(new BlastingCategory(TestGuiHelper.INSTANCE));
+			}
+		};
+		vanillaPlugin.registerRecipeTransferHandlers(transferRegistration);
 		return transferRegistration;
 	}
 

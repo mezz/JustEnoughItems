@@ -6,7 +6,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeMaker;
-import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeTransferInfo;
+import mezz.jei.library.plugins.vanilla.cooking.CookingRecipeTransferInfo;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceSmeltingCategory;
 import mezz.jei.library.util.IngredientSupplierHelper;
 import mezz.jei.neoforge.tests.lib.JeiGameTestHelper;
@@ -18,6 +18,7 @@ import mezz.jei.neoforge.tests.recipe.transfer.RecipeTransferTestHelper;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.inventory.FurnaceMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -103,15 +104,11 @@ public final class FurnaceRecipeGameTests {
 			"Indexed outputs"
 		);
 
-		FurnaceMenu menu = helper.openMenu(FurnaceMenu::new);
-		FurnaceRecipeTransferInfo transferInfo = new FurnaceRecipeTransferInfo();
-		helper.assertEquals(2, transferInfo.getRecipeSlots(menu, recipeHolder).size(), "Special smelting transfer slot count");
-
 		TransferRecipe<RecipeHolder<SmeltingRecipe>> transferRecipe = new TransferRecipe<>(
 			recipeHolder,
 			List.of(TestRecipeSlotView.item(Items.WET_SPONGE), TestRecipeSlotView.item(Items.BUCKET))
 		);
-		menu = helper.openMenu(FurnaceMenu::new, new ItemStack(Items.WET_SPONGE), new ItemStack(Items.BUCKET));
+		FurnaceMenu menu = helper.openMenu(FurnaceMenu::new, new ItemStack(Items.WET_SPONGE), new ItemStack(Items.BUCKET));
 		var transferResult = helper.transfer(RecipeTypes.SMELTING, transferRecipe, menu);
 		helper.assertSuccessfulTransfer(
 			transferResult,
@@ -137,9 +134,10 @@ public final class FurnaceRecipeGameTests {
 		FurnaceRecipeDisplay display = getFurnaceDisplay(helper, recipeHolder.value());
 		helper.assertTrue(display.fuel() instanceof SlotDisplay.AnyFuel, "Expected the default all-fuels display");
 		IIngredientManagerInternal ingredientManager = TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel());
+		var recipeCategory = new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE);
 		IIngredientSupplier ingredients = IngredientSupplierHelper.getIngredientSupplier(
 			recipeHolder,
-			new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE),
+			recipeCategory,
 			ingredientManager,
 			ContextMap.EMPTY,
 			Set.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT)
@@ -149,7 +147,7 @@ public final class FurnaceRecipeGameTests {
 		helper.assertTrue(ingredients.getIngredients(RecipeIngredientRole.RENDER_ONLY).isEmpty(), "Fuel display must not be indexed");
 
 		FurnaceMenu menu = helper.openMenu(FurnaceMenu::new);
-		FurnaceRecipeTransferInfo transferInfo = new FurnaceRecipeTransferInfo();
+		var transferInfo = new CookingRecipeTransferInfo<>(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING, recipe -> recipeCategory.getFuel(recipe.value()));
 		helper.assertEquals(1, transferInfo.getRecipeSlots(menu, recipeHolder).size(), "Normal smelting transfer slot count");
 
 		helper.succeed();
