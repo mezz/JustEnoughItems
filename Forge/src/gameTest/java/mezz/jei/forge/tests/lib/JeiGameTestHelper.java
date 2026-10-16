@@ -50,6 +50,10 @@ public class JeiGameTestHelper {
 		gameTestHelper.succeed();
 	}
 
+	public net.minecraft.server.level.ServerLevel getLevel() {
+		return gameTestHelper.getLevel();
+	}
+
 	public GameTestAssertException createFailException(String message) {
 		return new GameTestAssertException(message);
 	}

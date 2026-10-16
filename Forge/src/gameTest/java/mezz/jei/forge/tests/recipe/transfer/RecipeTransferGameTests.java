@@ -40,11 +40,14 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.inventory.SmokerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraft.gametest.framework.GameTest;
@@ -231,7 +234,7 @@ public final class RecipeTransferGameTests {
 	public static void transfersToFurnaceInput(GameTestHelper gameTestHelper) {
 		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
 		// Setup: one raw iron stack is available as a smelting ingredient.
-		TransferRecipe<?> recipe = basicRecipe("smelting_input", Items.RAW_IRON);
+		TransferRecipe<?> recipe = cookingRecipe(helper, RecipeType.SMELTING, Items.RAW_IRON);
 		var menu = helper.openMenu(FurnaceMenu::new, new ItemStack(Items.RAW_IRON));
 
 		// Operation: transfer the smelting ingredient into a furnace.
@@ -291,7 +294,7 @@ public final class RecipeTransferGameTests {
 	public static void transfersToSmokerInput(GameTestHelper gameTestHelper) {
 		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
 		// Setup: one porkchop stack is available as a smoking ingredient.
-		TransferRecipe<?> recipe = basicRecipe("smoking_input", Items.PORKCHOP);
+		TransferRecipe<?> recipe = cookingRecipe(helper, RecipeType.SMOKING, Items.PORKCHOP);
 		var menu = helper.openMenu(SmokerMenu::new, new ItemStack(Items.PORKCHOP));
 
 		// Operation: transfer the smoking ingredient into a smoker.
@@ -351,7 +354,7 @@ public final class RecipeTransferGameTests {
 	public static void transfersToBlastFurnaceInput(GameTestHelper gameTestHelper) {
 		RecipeTransferTestHelper helper = new RecipeTransferTestHelper(gameTestHelper);
 		// Setup: one raw iron stack is available as a blasting ingredient.
-		TransferRecipe<?> recipe = basicRecipe("blasting_input", Items.RAW_IRON);
+		TransferRecipe<?> recipe = cookingRecipe(helper, RecipeType.BLASTING, Items.RAW_IRON);
 		var menu = helper.openMenu(BlastFurnaceMenu::new, new ItemStack(Items.RAW_IRON));
 
 		// Operation: transfer the blasting ingredient into a blast furnace.
@@ -2864,6 +2867,13 @@ public final class RecipeTransferGameTests {
 		ItemStack stack = new ItemStack(Items.TIPPED_ARROW, count);
 		PotionUtils.setPotion(stack, potion);
 		return stack;
+	}
+
+	private static <R extends AbstractCookingRecipe> TransferRecipe<R> cookingRecipe(JeiGameTestHelper helper, RecipeType<R> type, Item input) {
+		R recipe = helper.getLevel().getServer().getRecipeManager().getAllRecipesFor(type).stream()
+			.filter(holder -> holder.getIngredients().get(0).test(new ItemStack(input)))
+			.findFirst().orElseThrow();
+		return new TransferRecipe<>(recipe, List.of(TestRecipeSlotView.item(input)));
 	}
 
 }

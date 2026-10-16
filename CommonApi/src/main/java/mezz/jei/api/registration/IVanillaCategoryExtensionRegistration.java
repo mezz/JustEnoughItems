@@ -4,6 +4,8 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.category.extensions.IExtendableRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.brewing.IExtendableBrewingRecipeCategory;
+import mezz.jei.api.recipe.category.extensions.vanilla.cooking.ICookingCategoryExtension;
+import mezz.jei.api.recipe.category.extensions.vanilla.cooking.IExtendableCookingRecipeCategory;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.api.recipe.category.extensions.vanilla.smithing.IExtendableSmithingRecipeCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -40,4 +42,50 @@ public interface IVanillaCategoryExtensionRegistration {
 	 * @since 15.49.0
 	 */
 	IExtendableBrewingRecipeCategory getBrewingCategory();
+
+	/**
+	 * Get the vanilla smelting category, to extend it with your own mod's cooking category extensions.
+	 *
+	 * @since 15.73.0
+	 */
+	IExtendableCookingRecipeCategory getSmeltingCategory();
+
+	/**
+	 * Get the vanilla blasting category, to extend it with your own mod's cooking category extensions.
+	 *
+	 * @since 15.73.0
+	 */
+	IExtendableCookingRecipeCategory getBlastingCategory();
+
+	/**
+	 * Get the vanilla smoking category, to extend it with your own mod's cooking category extensions.
+	 *
+	 * @since 15.73.0
+	 */
+	IExtendableCookingRecipeCategory getSmokingCategory();
+
+	/**
+	 * Get the vanilla campfire cooking category, to extend it with your own mod's cooking category extensions.
+	 *
+	 * @since 15.73.0
+	 */
+	IExtendableCookingRecipeCategory getCampfireCookingCategory();
+
+	/**
+	 * Register the same extension with smelting, blasting, smoking, and campfire cooking.
+	 * Use the individual category getters to register extensions for a subset of these categories.
+	 * Each category selects its extensions independently, following
+	 * {@link IExtendableCookingRecipeCategory#addExtension(Class, ICookingCategoryExtension)}.
+	 *
+	 * @param recipeClass the cooking recipe class or shared interface to handle
+	 * @param extension an extension for handling these recipes in all four cooking categories
+	 * @param <R> the recipe class or shared interface
+	 * @since 15.73.0
+	 */
+	default <R> void addCookingCategoryExtension(Class<? extends R> recipeClass, ICookingCategoryExtension<R> extension) {
+		getSmeltingCategory().addExtension(recipeClass, extension);
+		getBlastingCategory().addExtension(recipeClass, extension);
+		getSmokingCategory().addExtension(recipeClass, extension);
+		getCampfireCookingCategory().addExtension(recipeClass, extension);
+	}
 }
