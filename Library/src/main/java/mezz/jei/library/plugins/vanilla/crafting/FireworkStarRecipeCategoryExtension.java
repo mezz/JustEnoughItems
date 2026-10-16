@@ -14,6 +14,7 @@ import mezz.jei.library.plugins.vanilla.ingredients.FireworkStarIngredientFactor
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
@@ -27,6 +28,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,6 +46,7 @@ public final class FireworkStarRecipeCategoryExtension implements ICraftingCateg
 	private final IPlatformRecipeHelper recipeHelper;
 	private final Map<Ingredient, List<ItemStack>> ingredientStacks = new HashMap<>();
 	private final Map<ResourceKey<Recipe<?>>, SampleLayout> sampleLayouts = new HashMap<>();
+	private final Map<ResourceKey<Recipe<?>>, Identifier> sampleSources = new HashMap<>();
 
 	public FireworkStarRecipeCategoryExtension(IPlatformRecipeHelper recipeHelper) {
 		this.recipeHelper = recipeHelper;
@@ -52,6 +55,15 @@ public final class FireworkStarRecipeCategoryExtension implements ICraftingCateg
 	@Override
 	public boolean isHandled(RecipeHolder<CraftingRecipe> recipeHolder) {
 		return getRecipe(recipeHolder, FocusGroup.EMPTY).isPresent();
+	}
+
+	@Override
+	public @Nullable List<Identifier> getSourceRecipeIds(RecipeHolder<CraftingRecipe> recipeHolder) {
+		Identifier source = sampleSources.get(recipeHolder.id());
+		if (source == null) {
+			return null;
+		}
+		return List.of(source);
 	}
 
 	@Override
@@ -113,11 +125,12 @@ public final class FireworkStarRecipeCategoryExtension implements ICraftingCateg
 		for (SampleLayout layout : layouts) {
 			RecipeHolder<CraftingRecipe> holder = source;
 			if (!recipes.isEmpty()) {
-				var id = source.id().identifier().withSuffix("/jei_samples/" + layout.id());
+				var id = source.id().identifier().withPrefix("/").withSuffix("/jei_samples/" + layout.id());
 				ResourceKey<Recipe<?>> key = ResourceKey.create(Registries.RECIPE, id);
 				holder = new RecipeHolder<>(key, source.value());
 			}
 			sampleLayouts.put(holder.id(), layout);
+			sampleSources.put(holder.id(), source.id().identifier());
 			recipes.add(holder);
 		}
 		return List.copyOf(recipes);

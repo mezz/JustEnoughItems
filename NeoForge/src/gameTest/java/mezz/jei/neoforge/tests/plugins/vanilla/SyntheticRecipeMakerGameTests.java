@@ -135,6 +135,7 @@ public final class SyntheticRecipeMakerGameTests {
 
 		helper.assertTrue(!recipes.isEmpty(), "Generated JEI anvil recipes should not be empty");
 		for (IJeiAnvilRecipe recipe : recipes) {
+			helper.assertTrue(recipe.getUid() == null || recipe.getUid().getPath().startsWith("/"), "Anvil recipe IDs must be synthetic");
 			assertAnvilRecipeProducesDisplayedOutput(helper, recipe);
 		}
 
@@ -149,6 +150,7 @@ public final class SyntheticRecipeMakerGameTests {
 
 		helper.assertTrue(!recipes.isEmpty(), "Generated JEI grindstone recipes should not be empty");
 		for (IJeiGrindstoneRecipe recipe : recipes) {
+			helper.assertTrue(recipe.getUid() != null && recipe.getUid().getPath().startsWith("/"), "Grindstone recipe IDs must be synthetic");
 			assertGrindstoneRecipeProducesDisplayedOutput(helper, recipe);
 		}
 
@@ -356,6 +358,7 @@ public final class SyntheticRecipeMakerGameTests {
 		helper.assertEquals(expectedOutputs.size(), jeiRecipes.size(), "Generated JEI recipe count");
 
 		for (RecipeHolder<CraftingRecipe> jeiRecipe : jeiRecipes) {
+			helper.assertTrue(jeiRecipe.id().identifier().getPath().startsWith("/"), "Generated crafting recipe IDs must be synthetic");
 			JeiCraftingRecipeIngredients recipeIngredients = getJeiCraftingRecipeIngredients(helper, displayContext, craftingCategory, jeiRecipe);
 			ItemStack actualOutput = helper.craftInCraftingTable(recipeIngredients.inputs());
 

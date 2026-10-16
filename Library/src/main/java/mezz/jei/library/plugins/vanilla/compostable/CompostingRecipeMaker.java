@@ -26,7 +26,7 @@ public class CompostingRecipeMaker {
 				if (compostValue > 0) {
 					Identifier ingredientUid = ingredientHelper.getIdentifier(itemStack);
 					String ingredientUidPath = ingredientUid.getPath();
-					Identifier recipeUid = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, ingredientUidPath);
+					Identifier recipeUid = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "/" + ingredientUidPath);
 					CompostingRecipe recipe = new CompostingRecipe(itemStack, compostValue, recipeUid);
 					consumer.accept(recipe);
 				}

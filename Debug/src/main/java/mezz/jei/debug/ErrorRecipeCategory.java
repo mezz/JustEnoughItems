@@ -69,6 +69,6 @@ public class ErrorRecipeCategory extends AbstractRecipeCategory<ErrorRecipe> {
 	@Override
 	public Identifier getIdentifier(ErrorRecipe recipe) {
 		ErrorRecipe.CrashType type = recipe.getType();
-		return Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "error." + type.name().toLowerCase());
+		return Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "/error." + type.name().toLowerCase());
 	}
 }

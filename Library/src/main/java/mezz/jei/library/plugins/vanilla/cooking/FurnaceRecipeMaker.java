@@ -21,7 +21,7 @@ public final class FurnaceRecipeMaker {
 		Registries.RECIPE,
 		Identifier.withDefaultNamespace("sponge")
 	);
-	static final Identifier SPONGE_WITH_BUCKET = Identifier.withDefaultNamespace("sponge_with_bucket");
+	static final Identifier SPONGE_WITH_BUCKET = Identifier.withDefaultNamespace("/sponge_with_bucket");
 
 	private FurnaceRecipeMaker() {
 	}

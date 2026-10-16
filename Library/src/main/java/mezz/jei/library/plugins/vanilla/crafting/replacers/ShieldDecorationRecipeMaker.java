@@ -44,7 +44,7 @@ public final class ShieldDecorationRecipeMaker {
 	private static RecipeHolder<CraftingRecipe> createRecipe(BannerItem banner) {
 		ItemStack output = createOutput(banner);
 
-		Identifier id = Identifier.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "jei.shield.decoration." + banner.getDescriptionId());
+		Identifier id = Identifier.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "/jei.shield.decoration." + banner.getDescriptionId());
 		ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, id);
 		CraftingRecipe recipe = new ShapelessRecipe(
 			"jei.shield.decoration",

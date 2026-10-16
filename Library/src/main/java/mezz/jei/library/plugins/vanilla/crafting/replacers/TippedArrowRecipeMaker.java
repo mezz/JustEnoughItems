@@ -38,7 +38,7 @@ public final class TippedArrowRecipeMaker {
 
 				Ingredient potionIngredient = Ingredient.of(input.getItem());
 				Identifier potionId = potion.key().identifier();
-				Identifier recipeId = Identifier.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "jei.tipped.arrow." + potionId.getNamespace() + "." + potionId.getPath());
+				Identifier recipeId = Identifier.fromNamespaceAndPath(ModIds.MINECRAFT_ID, "/jei.tipped.arrow." + potionId.getNamespace() + "." + potionId.getPath());
 				ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, recipeId);
 				SlotDisplay slotDisplay = new SlotDisplay.ItemStackSlotDisplay(output);
 				CraftingRecipe recipe = vanillaRecipeFactory.createShapedRecipeBuilder(CraftingBookCategory.MISC, slotDisplay)
