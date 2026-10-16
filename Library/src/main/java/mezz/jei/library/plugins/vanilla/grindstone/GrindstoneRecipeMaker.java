@@ -102,7 +102,7 @@ public final class GrindstoneRecipeMaker {
 
 	private static Identifier getDisenchantmentRecipeUid(Identifier enchantmentId, int level) {
 		String asciiLevel = Integer.toString(level);
-		String rawPath = "grindstone.disenchantment.%s.%s.%s".formatted(enchantmentId.getNamespace(), enchantmentId.getPath(), asciiLevel);
+		String rawPath = "/grindstone.disenchantment.%s.%s.%s".formatted(enchantmentId.getNamespace(), enchantmentId.getPath(), asciiLevel);
 		String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
 		return Identifier.withDefaultNamespace(uidPath);
 	}
@@ -131,7 +131,7 @@ public final class GrindstoneRecipeMaker {
 				ItemStack topInput = stack.copy();
 				ItemStack bottomInput = stack.copy();
 				String itemId = stack.getItem().getDescriptionId();
-				String rawPath = "grindstone.self_repair." + itemId;
+				String rawPath = "/grindstone.self_repair." + itemId;
 				String uidPath = ResourceLocationUtil.sanitizePath(rawPath);
 				IJeiGrindstoneRecipe recipe = getGrindstoneRecipe(platformHelper, grindstoneMenu, topInput, bottomInput, Identifier.withDefaultNamespace(uidPath));
 				if (recipe != null) {

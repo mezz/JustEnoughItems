@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 public final class ShieldDecorationRecipeMaker implements IRecipeReplacer {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final String GROUP = "jei.shield.decoration";
-	private static final String JEI_RECIPE_PATH_PREFIX = "jei.shield.decoration.";
+	private static final String JEI_RECIPE_PATH_PREFIX = "/jei.shield.decoration.";
 	private final IPlatformRecipeHelper recipeHelper;
 
 	public ShieldDecorationRecipeMaker(IPlatformRecipeHelper recipeHelper) {

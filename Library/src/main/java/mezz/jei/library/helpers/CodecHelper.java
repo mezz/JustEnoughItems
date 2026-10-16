@@ -25,6 +25,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.FireworkStarFadeRecipe;
+import net.minecraft.world.item.crafting.FireworkStarRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeMap;
 import org.jspecify.annotations.Nullable;
@@ -59,7 +61,10 @@ public class CodecHelper implements ICodecHelper {
 							ResourceKey<Recipe<?>> recipeKey = pair.getFirst();
 							Recipe<?> recipe = pair.getSecond();
 							if (recipe == null) {
-								return DataResult.error(() -> "Could not find recipe for key: " + recipeKey);
+								return DataResult.error(() -> "Could not find recipe for key: " + pair.getFirst());
+							}
+							if (recipes.byKey(recipeKey) == null && isLegacySyntheticRecipeId(recipeKey.identifier(), recipe)) {
+								recipeKey = ResourceKey.create(Registries.RECIPE, recipeKey.identifier().withPrefix("/"));
 							}
 							RecipeHolder<?> recipeHolder = new RecipeHolder<>(recipeKey, recipe);
 							return DataResult.success(recipeHolder);
@@ -77,6 +82,15 @@ public class CodecHelper implements ICodecHelper {
 				}
 			);
 	});
+
+	private static boolean isLegacySyntheticRecipeId(Identifier id, Recipe<?> recipe) {
+		String path = id.getPath();
+		return path.startsWith("jei.shield.decoration.") ||
+			path.startsWith("jei.tipped.arrow.") ||
+			id.equals(Identifier.withDefaultNamespace("sponge_with_bucket")) ||
+			(!path.startsWith("/") && path.contains("/jei_samples/") &&
+				(recipe instanceof FireworkStarRecipe || recipe instanceof FireworkStarFadeRecipe));
+	}
 
 	private final IIngredientManager ingredientManager;
 	private final IFocusFactory focusFactory;
@@ -142,11 +156,15 @@ public class CodecHelper implements ICodecHelper {
 
 				IRecipeType<T> recipeType = recipeCategory.getRecipeType();
 
-				return recipeManager.createRecipeLookup(recipeType)
-					.limitFocus(List.of(focus))
-					.get()
+				var recipeLookup = recipeManager.createRecipeLookup(recipeType)
+					.limitFocus(List.of(focus));
+				return recipeLookup.get()
 					.filter(recipe -> registryName.equals(recipeCategory.getIdentifier(recipe)))
 					.findFirst()
+					.or(() -> recipeLookup.get()
+						.filter(recipe -> !registryName.getPath().startsWith("/") &&
+							registryName.withPrefix("/").equals(recipeCategory.getIdentifier(recipe)))
+						.findFirst())
 					.map(DataResult::success)
 					.orElseGet(() -> DataResult.error(() -> "No recipe found for registry id: " + registryName));
 			},
