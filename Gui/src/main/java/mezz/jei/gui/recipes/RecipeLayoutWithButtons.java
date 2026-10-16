@@ -3,7 +3,6 @@ package mezz.jei.gui.recipes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.buttons.IIconButtonController;
 import mezz.jei.api.recipe.advanced.IRecipeButtonControllerFactory;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
@@ -207,9 +206,7 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 		private void copyRecipeId() {
 			Minecraft minecraft = Minecraft.getInstance();
 			LocalPlayer player = minecraft.player;
-			IRecipeCategory<R> recipeCategory = recipeLayout.getRecipeCategory();
-			R recipe = recipeLayout.getRecipe();
-			List<Identifier> sourceRecipeIds = recipeCategory.getSourceRecipeIds(recipe);
+			List<Identifier> sourceRecipeIds = recipeLayout.getSourceRecipeIds();
 			if (sourceRecipeIds.isEmpty()) {
 				MutableComponent message = Component.translatable("jei.message.copy.recipe.id.failure");
 				if (player != null) {
