@@ -175,8 +175,9 @@ public interface IRecipeCategory<T> {
 	 * This will also show the modId when the recipe modId and output item modId do not match.
 	 * This lets the player know where the recipe came from.
 	 * <p>
-	 * A generated display may use a synthetic identifier. Return its underlying recipe identifiers
-	 * from {@link #getSourceRecipeIds(Object)} for advanced tooltips and copying recipe IDs.
+	 * A generated display should use a synthetic identifier whose path starts with {@code /}.
+	 * Return its underlying recipe identifiers from {@link #getSourceRecipeIds(Object)}
+	 * for advanced tooltips and copying recipe IDs.
 	 *
 	 * @return the JEI display identifier, or null if there is none
 	 * @since 27.0.0

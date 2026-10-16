@@ -25,7 +25,7 @@ public class DebugRecipe {
 
 	private DebugRecipe(Component buttonText, boolean slotDisplayComparison, List<ItemStack> largeIngredientList) {
 		this.buttonText = buttonText;
-		this.id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "debug_recipe_" + NEXT_ID);
+		this.id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "/debug_recipe_" + NEXT_ID);
 		this.slotDisplayComparison = slotDisplayComparison;
 		this.largeIngredientList = List.copyOf(largeIngredientList);
 		NEXT_ID++;

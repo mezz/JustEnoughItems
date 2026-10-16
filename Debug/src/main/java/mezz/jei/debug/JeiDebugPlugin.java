@@ -226,7 +226,7 @@ public class JeiDebugPlugin implements IModPlugin {
 			createAnyPotionDisplayRecipe(registration.getVanillaRecipeFactory())
 		));
 
-		Identifier testRecipeWithoutTemplateId = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "test_recipe_without_template");
+		Identifier testRecipeWithoutTemplateId = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "/test_recipe_without_template");
 		RecipeHolder<SmithingRecipe> testRecipeWithoutTemplate = new RecipeHolder<>(
 			ResourceKey.create(Registries.RECIPE, testRecipeWithoutTemplateId),
 			new SmithingTransformRecipe(
@@ -269,7 +269,7 @@ public class JeiDebugPlugin implements IModPlugin {
 			)
 			.build();
 
-		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "counted_ingredient_transfer_test");
+		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "/counted_ingredient_transfer_test");
 		ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, id);
 		return new RecipeHolder<>(resourceKey, recipe);
 	}
@@ -287,7 +287,7 @@ public class JeiDebugPlugin implements IModPlugin {
 			.define('p', Ingredient.of(Items.POTION))
 			.build();
 
-		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "any_potion_display_test");
+		Identifier id = Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "/any_potion_display_test");
 		ResourceKey<Recipe<?>> resourceKey = ResourceKey.create(Registries.RECIPE, id);
 		return new RecipeHolder<>(resourceKey, recipe);
 	}
