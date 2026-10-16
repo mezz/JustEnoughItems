@@ -1,6 +1,7 @@
 package mezz.jei.api.recipe.category;
 
 import com.mojang.serialization.Codec;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
@@ -202,6 +203,8 @@ public interface IRecipeCategory<T> {
 	 * The default uses {@link #getIdentifier(Object)}, excluding {@code null} and synthetic identifiers
 	 * whose paths start with {@code /}. Override when the underlying recipe identifiers differ.
 	 * Source identifiers do not affect bookmarks.
+	 * Decorators may modify these IDs for a layout; use {@link IRecipeLayoutDrawable#getSourceRecipeIds()}
+	 * to get the resolved IDs for that layout.
 	 *
 	 * @since 30.42.0
 	 */

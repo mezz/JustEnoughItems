@@ -6,7 +6,8 @@
   "environment": "*",
   "entrypoints": {
     "jei_mod_plugin": [
-      "mezz.jei.fabric.test.BookmarkManagerClientGameTest"
+      "mezz.jei.fabric.test.BookmarkManagerClientGameTest",
+      "mezz.jei.fabric.test.RecipeSourceIdsClientTest"
     ],
     "fabric-gametest": [
       "mezz.jei.fabric.test.FluidIngredientGameTests"
