@@ -147,6 +147,11 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 	}
 
 	@Override
+	public List<ResourceLocation> getSourceRecipeIds() {
+		return List.copyOf(recipeCategory.getSourceRecipeIds(recipe));
+	}
+
+	@Override
 	public IJeiInputHandler getInputHandler() {
 		return inputHandler;
 	}

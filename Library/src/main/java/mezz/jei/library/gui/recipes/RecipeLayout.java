@@ -54,6 +54,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -91,6 +92,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	private final IFocusGroup focuses;
 	private final List<IRecipeWidget> allWidgets;
 	private final R recipe;
+	private final List<ResourceLocation> sourceRecipeIds;
 	private final IScalableDrawable recipeBackground;
 	private final int recipeBorderPadding;
 	private final ImmutableRect2i recipeTransferButtonArea;
@@ -110,8 +112,8 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		IScalableDrawable recipeBackground,
 		int recipeBorderPadding
 	) {
-		RecipeLayoutBuilder<T> builder = new RecipeLayoutBuilder<>(recipeCategory, recipe, ingredientManager);
 		try {
+			RecipeLayoutBuilder<T> builder = new RecipeLayoutBuilder<>(recipeCategory, decorators, recipe, ingredientManager);
 			recipeCategory.setRecipe(builder, recipe, focuses);
 			return builder.buildRecipeLayout(focuses, decorators, recipeBackground, recipeBorderPadding)
 				.map(layout -> layout);
@@ -126,6 +128,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		IRecipeCategory<R> recipeCategory,
 		Collection<IRecipeCategoryDecorator<R>> recipeCategoryDecorators,
 		R recipe,
+		List<ResourceLocation> sourceRecipeIds,
 		IScalableDrawable recipeBackground,
 		int recipeBorderPadding,
 		@Nullable ShapelessIcon shapelessIcon,
@@ -136,6 +139,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		IFocusGroup focuses
 	) {
 		this.recipeCategory = recipeCategory;
+		this.sourceRecipeIds = List.copyOf(sourceRecipeIds);
 		this.recipeCategoryDecorators = recipeCategoryDecorators;
 		this.drawables = new ArrayList<>();
 		this.slottedWidgets = new ArrayList<>();
@@ -407,6 +411,11 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	@Override
 	public R getRecipe() {
 		return recipe;
+	}
+
+	@Override
+	public List<ResourceLocation> getSourceRecipeIds() {
+		return sourceRecipeIds;
 	}
 
 	@Override

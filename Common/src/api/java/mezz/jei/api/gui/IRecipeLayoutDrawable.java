@@ -9,11 +9,15 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -144,6 +148,17 @@ public interface IRecipeLayoutDrawable<R> {
 	 * @since 11.5.0
 	 */
 	R getRecipe();
+
+	/**
+	 * Return the underlying recipe IDs used for this layout's tooltips and copy-ID shortcut.
+	 * JEI resolves and copies these IDs when creating the layout, including
+	 * {@link IRecipeCategoryDecorator#decorateSourceRecipeIds(List, Object, IRecipeCategory)} changes.
+	 *
+	 * @return an unmodifiable list, empty if there is no underlying recipe
+	 * @since 19.67.0
+	 */
+	@Unmodifiable
+	List<ResourceLocation> getSourceRecipeIds();
 
 	/**
 	 * Get the input handler for this recipe layout.
