@@ -50,7 +50,7 @@ import mezz.jei.library.plugins.vanilla.compostable.CompostingRecipeMaker;
 import mezz.jei.library.plugins.vanilla.cooking.BlastingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.CampfireCookingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeMaker;
-import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeTransferInfo;
+import mezz.jei.library.plugins.vanilla.cooking.CookingRecipeTransferInfo;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceSmeltingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.SmokingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.fuel.FuelRecipeMaker;
@@ -111,16 +111,12 @@ import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.inventory.SmokerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.BlastingRecipe;
-import net.minecraft.world.item.crafting.CampfireCookingRecipe;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.FireworkRocketRecipe;
 import net.minecraft.world.item.crafting.FireworkStarFadeRecipe;
 import net.minecraft.world.item.crafting.FireworkStarRecipe;
 import net.minecraft.world.item.crafting.ShieldDecorationRecipe;
 import net.minecraft.world.item.crafting.ShulkerBoxColoring;
-import net.minecraft.world.item.crafting.SmeltingRecipe;
-import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.item.crafting.SuspiciousStewRecipe;
 import net.minecraft.world.item.crafting.TippedArrowRecipe;
@@ -146,13 +142,13 @@ public class VanillaPlugin implements IModPlugin {
 	@Nullable
 	private IRecipeCategory<StonecutterRecipe> stonecuttingCategory;
 	@Nullable
-	private IRecipeCategory<SmeltingRecipe> furnaceCategory;
+	private FurnaceSmeltingCategory furnaceCategory;
 	@Nullable
-	private IRecipeCategory<SmokingRecipe> smokingCategory;
+	private SmokingCategory smokingCategory;
 	@Nullable
-	private IRecipeCategory<BlastingRecipe> blastingCategory;
+	private BlastingCategory blastingCategory;
 	@Nullable
-	private IRecipeCategory<CampfireCookingRecipe> campfireCategory;
+	private CampfireCookingCategory campfireCategory;
 	@Nullable
 	private SmithingRecipeCategory smithingCategory;
 	@Nullable
@@ -334,12 +330,15 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
+		var furnaceCategory = getSmeltingCategory().orElseThrow();
+		var smokingCategory = getSmokingCategory().orElseThrow();
+		var blastingCategory = getBlastingCategory().orElseThrow();
 		registration.addRecipeTransferHandler(CraftingMenu.class, MenuType.CRAFTING, RecipeTypes.CRAFTING, 1, 9, 10, 36);
-		registration.addRecipeTransferHandler(new FurnaceRecipeTransferInfo());
+		registration.addRecipeTransferHandler(new CookingRecipeTransferInfo<>(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING, recipe -> furnaceCategory.getFuel(recipe)));
 		registration.addRecipeTransferHandler(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.FUELING, 1, 1, 3, 36);
-		registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.SMOKING, 0, 1, 3, 36);
+		registration.addRecipeTransferHandler(new CookingRecipeTransferInfo<>(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.SMOKING, recipe -> smokingCategory.getFuel(recipe)));
 		registration.addRecipeTransferHandler(SmokerMenu.class, MenuType.SMOKER, RecipeTypes.FUELING, 1, 1, 3, 36);
-		registration.addRecipeTransferHandler(BlastFurnaceMenu.class, MenuType.BLAST_FURNACE, RecipeTypes.BLASTING, 0, 1, 3, 36);
+		registration.addRecipeTransferHandler(new CookingRecipeTransferInfo<>(BlastFurnaceMenu.class, MenuType.BLAST_FURNACE, RecipeTypes.BLASTING, recipe -> blastingCategory.getFuel(recipe)));
 		registration.addRecipeTransferHandler(BlastFurnaceMenu.class, MenuType.BLAST_FURNACE, RecipeTypes.FUELING, 1, 1, 3, 36);
 		registration.addRecipeTransferHandler(BrewingStandMenu.class, MenuType.BREWING_STAND, RecipeTypes.BREWING, 0, 4, 5, 36);
 		registration.addRecipeTransferHandler(AnvilMenu.class, MenuType.ANVIL, RecipeTypes.ANVIL, 0, 2, 3, 36);
@@ -391,6 +390,22 @@ public class VanillaPlugin implements IModPlugin {
 
 	public Optional<BrewingExtensionHelper> getBrewingExtensionHelper() {
 		return Optional.ofNullable(brewingExtensionHelper);
+	}
+
+	public Optional<FurnaceSmeltingCategory> getSmeltingCategory() {
+		return Optional.ofNullable(furnaceCategory);
+	}
+
+	public Optional<BlastingCategory> getBlastingCategory() {
+		return Optional.ofNullable(blastingCategory);
+	}
+
+	public Optional<SmokingCategory> getSmokingCategory() {
+		return Optional.ofNullable(smokingCategory);
+	}
+
+	public Optional<CampfireCookingCategory> getCampfireCookingCategory() {
+		return Optional.ofNullable(campfireCategory);
 	}
 
 	/**

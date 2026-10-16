@@ -11,6 +11,10 @@ import mezz.jei.forge.tests.lib.TestConnectionToServer;
 import mezz.jei.forge.tests.lib.TestRecipeSlotView;
 import mezz.jei.forge.tests.lib.TransferRecipe;
 import net.minecraft.gametest.framework.GameTestHelper;
+import mezz.jei.library.plugins.vanilla.cooking.BlastingCategory;
+import mezz.jei.library.plugins.vanilla.cooking.FurnaceSmeltingCategory;
+import mezz.jei.library.plugins.vanilla.cooking.SmokingCategory;
+import mezz.jei.forge.tests.lib.TestGuiHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -22,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public final class RecipeTransferTestHelper extends JeiGameTestHelper {
 	public RecipeTransferTestHelper(GameTestHelper helper) {
@@ -153,7 +158,23 @@ public final class RecipeTransferTestHelper extends JeiGameTestHelper {
 
 	private static TestRecipeTransferRegistration createTransferRegistration(TestConnectionToServer serverConnection) {
 		TestRecipeTransferRegistration transferRegistration = new TestRecipeTransferRegistration(serverConnection);
-		new VanillaPlugin().registerRecipeTransferHandlers(transferRegistration);
+		VanillaPlugin vanillaPlugin = new VanillaPlugin() {
+			@Override
+			public Optional<FurnaceSmeltingCategory> getSmeltingCategory() {
+				return Optional.of(new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE));
+			}
+
+			@Override
+			public Optional<SmokingCategory> getSmokingCategory() {
+				return Optional.of(new SmokingCategory(TestGuiHelper.INSTANCE, List.of()));
+			}
+
+			@Override
+			public Optional<BlastingCategory> getBlastingCategory() {
+				return Optional.of(new BlastingCategory(TestGuiHelper.INSTANCE, List.of()));
+			}
+		};
+		vanillaPlugin.registerRecipeTransferHandlers(transferRegistration);
 		return transferRegistration;
 	}
 

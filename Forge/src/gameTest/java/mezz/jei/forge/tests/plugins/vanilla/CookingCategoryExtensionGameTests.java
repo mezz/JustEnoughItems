@@ -1,0 +1,377 @@
+package mezz.jei.forge.tests.plugins.vanilla;
+
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.category.extensions.vanilla.cooking.ICookingCategoryExtension;
+import mezz.jei.api.recipe.category.extensions.vanilla.cooking.IExtendableCookingRecipeCategory;
+import mezz.jei.library.focus.Focus;
+import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.library.ingredients.RecipeIngredientSupplier;
+import mezz.jei.library.plugins.vanilla.cooking.AbstractCookingCategory;
+import mezz.jei.library.plugins.vanilla.cooking.BlastingCategory;
+import mezz.jei.library.plugins.vanilla.cooking.CampfireCookingCategory;
+import mezz.jei.library.plugins.vanilla.cooking.CookingCategoryExtension;
+import mezz.jei.library.plugins.vanilla.cooking.CookingRecipeTransferInfo;
+import mezz.jei.library.plugins.vanilla.cooking.FurnaceSmeltingCategory;
+import mezz.jei.library.plugins.vanilla.cooking.SmokingCategory;
+import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
+import mezz.jei.library.transfer.RecipeTransferHandlerHelper;
+import mezz.jei.library.util.IngredientSupplierHelper;
+import mezz.jei.forge.tests.lib.JeiGameTestHelper;
+import mezz.jei.forge.tests.lib.MenuFactory;
+import mezz.jei.forge.tests.lib.TestGuiHelper;
+import mezz.jei.forge.tests.lib.TestIngredientManagers;
+import mezz.jei.forge.tests.lib.TestStackHelper;
+import mezz.jei.forge.tests.lib.TestRecipeSlotView;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.FurnaceMenu;
+import net.minecraft.world.inventory.AbstractFurnaceMenu;
+import net.minecraft.world.inventory.SmokerMenu;
+import net.minecraft.world.inventory.BlastFurnaceMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.AbstractCookingRecipe;
+import net.minecraft.world.item.crafting.BlastingRecipe;
+import net.minecraft.world.item.crafting.CampfireCookingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import java.util.Arrays;
+import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
+import net.minecraft.world.item.crafting.SmokingRecipe;
+import net.minecraft.gametest.framework.GameTest;
+
+import java.util.List;
+import java.util.Set;
+
+@net.minecraftforge.gametest.GameTestHolder("jei")
+@net.minecraftforge.gametest.PrefixGameTestTemplate(false)
+public final class CookingCategoryExtensionGameTests {
+	private static final ICookingCategoryExtension<DynamicCookingRecipe> EXTENSION = (recipe, builder, input, output, focuses) -> {
+		input.addItemStacks(recipe.inputs());
+		output.addItemStacks(recipe.outputs());
+		builder.createFocusLink(input, output);
+	};
+
+	private CookingCategoryExtensionGameTests() {
+	}
+
+	@GameTest(template = "empty")
+	public static void interfaceExtensionCanBeReusedAcrossCookingCategories(net.minecraft.gametest.framework.GameTestHelper gameTestHelper) {
+		JeiGameTestHelper helper = new JeiGameTestHelper(gameTestHelper);
+		var smelting = new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE, List.of(new ItemStack(Items.COAL)));
+		var blasting = new BlastingCategory(TestGuiHelper.INSTANCE, List.of(new ItemStack(Items.COAL)));
+		var smoking = new SmokingCategory(TestGuiHelper.INSTANCE, List.of(new ItemStack(Items.COAL)));
+		var campfire = new CampfireCookingCategory(TestGuiHelper.INSTANCE);
+		for (IExtendableCookingRecipeCategory category : List.of(smelting, blasting, smoking, campfire)) {
+			category.addExtension(DynamicCookingRecipe.class, EXTENSION);
+		}
+		var ingredients = TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel());
+		assertLinkedRecipe(helper, smelting, new DynamicSmeltingRecipe(), ingredients, true);
+		assertLinkedRecipe(helper, blasting, new DynamicBlastingRecipe(), ingredients, true);
+		assertLinkedRecipe(helper, smoking, new DynamicSmokingRecipe(), ingredients, true);
+		assertLinkedRecipe(helper, campfire, new DynamicCampfireRecipe(), ingredients, false);
+
+		var menu = helper.openMenu(FurnaceMenu::new);
+		var transferInfo = new CookingRecipeTransferInfo<>(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING, recipe -> smelting.getFuel(recipe));
+		helper.assertEquals(1, transferInfo.getRecipeSlots(menu, holder(new DynamicSmeltingRecipe())).size(), "Display-less recipe transfer inputs");
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void unmatchedRecipesUseVanillaDisplays(net.minecraft.gametest.framework.GameTestHelper gameTestHelper) {
+		JeiGameTestHelper helper = new JeiGameTestHelper(gameTestHelper);
+		var smelting = new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE, List.of(new ItemStack(Items.COAL)));
+		var blasting = new BlastingCategory(TestGuiHelper.INSTANCE, List.of(new ItemStack(Items.COAL)));
+		var smoking = new SmokingCategory(TestGuiHelper.INSTANCE, List.of(new ItemStack(Items.COAL)));
+		var campfire = new CampfireCookingCategory(TestGuiHelper.INSTANCE);
+		for (IExtendableCookingRecipeCategory category : List.of(smelting, blasting, smoking, campfire)) {
+			category.addExtension(DynamicCookingRecipe.class, EXTENSION);
+		}
+		var ingredients = TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel());
+		assertVanillaRecipe(helper, smelting, RecipeType.SMELTING, ingredients);
+		assertVanillaRecipe(helper, blasting, RecipeType.BLASTING, ingredients);
+		assertVanillaRecipe(helper, smoking, RecipeType.SMOKING, ingredients);
+		assertVanillaRecipe(helper, campfire, RecipeType.CAMPFIRE_COOKING, ingredients);
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void cookingCategoryRegistrationsAreIndependent(net.minecraft.gametest.framework.GameTestHelper gameTestHelper) {
+		JeiGameTestHelper helper = new JeiGameTestHelper(gameTestHelper);
+		var smelting = new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE, List.of(new ItemStack(Items.COAL)));
+		var blasting = new BlastingCategory(TestGuiHelper.INSTANCE, List.of(new ItemStack(Items.COAL)));
+		var smoking = new SmokingCategory(TestGuiHelper.INSTANCE, List.of(new ItemStack(Items.COAL)));
+		var campfire = new CampfireCookingCategory(TestGuiHelper.INSTANCE);
+		var ingredients = TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel());
+
+		assertVanillaRecipe(helper, smelting, RecipeType.SMELTING, ingredients);
+		assertVanillaRecipe(helper, blasting, RecipeType.BLASTING, ingredients);
+		assertVanillaRecipe(helper, smoking, RecipeType.SMOKING, ingredients);
+		assertVanillaRecipe(helper, campfire, RecipeType.CAMPFIRE_COOKING, ingredients);
+		smelting.addExtension(Recipe.class, singleOutput(Items.DIAMOND));
+		assertOutput(helper, smelting, RecipeType.SMELTING, ingredients, Items.DIAMOND);
+		assertVanillaRecipe(helper, blasting, RecipeType.BLASTING, ingredients);
+		assertVanillaRecipe(helper, smoking, RecipeType.SMOKING, ingredients);
+		assertVanillaRecipe(helper, campfire, RecipeType.CAMPFIRE_COOKING, ingredients);
+
+		blasting.addExtension(Recipe.class, singleOutput(Items.EMERALD));
+		smoking.addExtension(Recipe.class, singleOutput(Items.GOLD_INGOT));
+		campfire.addExtension(Recipe.class, singleOutput(Items.IRON_INGOT));
+		assertOutput(helper, smelting, RecipeType.SMELTING, ingredients, Items.DIAMOND);
+		assertOutput(helper, blasting, RecipeType.BLASTING, ingredients, Items.EMERALD);
+		assertOutput(helper, smoking, RecipeType.SMOKING, ingredients, Items.GOLD_INGOT);
+		assertOutput(helper, campfire, RecipeType.CAMPFIRE_COOKING, ingredients, Items.IRON_INGOT);
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void specificExtensionsOverrideGeneralOnes(net.minecraft.gametest.framework.GameTestHelper gameTestHelper) {
+		JeiGameTestHelper helper = new JeiGameTestHelper(gameTestHelper);
+		var ingredients = TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel());
+		for (boolean registerGeneralFirst : List.of(true, false)) {
+			var category = new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE, List.of(new ItemStack(Items.COAL)));
+			if (registerGeneralFirst) {
+				category.addExtension(DynamicCookingRecipe.class, EXTENSION);
+			}
+			category.addExtension(SpecificCookingRecipe.class, singleOutput(Items.DIAMOND));
+			if (!registerGeneralFirst) {
+				category.addExtension(DynamicCookingRecipe.class, EXTENSION);
+			}
+			SmeltingRecipe recipe = holder(new SpecificSmeltingRecipe());
+			assertItems(helper, List.of(Items.DIAMOND), collect(category, recipe, ingredients), RecipeIngredientRole.OUTPUT);
+			category.addExtension(SpecificSmeltingRecipe.class, singleOutput(Items.EMERALD));
+			assertItems(helper, List.of(Items.EMERALD), collect(category, recipe, ingredients), RecipeIngredientRole.OUTPUT);
+		}
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void ambiguousInterfacesRequireDisambiguation(net.minecraft.gametest.framework.GameTestHelper gameTestHelper) {
+		JeiGameTestHelper helper = new JeiGameTestHelper(gameTestHelper);
+		var category = new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE, List.of(new ItemStack(Items.COAL)));
+		category.addExtension(DynamicCookingRecipe.class, EXTENSION);
+		category.addExtension(OtherCookingRecipe.class, singleOutput(Items.EMERALD));
+		SmeltingRecipe recipe = holder(new AmbiguousSmeltingRecipe());
+		var ingredients = TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel());
+		helper.assertTrue(!category.isHandled(recipe), "Ambiguous recipe must not be handled");
+		assertItems(helper, List.of(), collect(category, recipe, ingredients), RecipeIngredientRole.OUTPUT);
+		category.addExtension(AmbiguousSmeltingRecipe.class, EXTENSION);
+		assertItems(helper, List.of(Items.IRON_INGOT, Items.GOLD_INGOT), collect(category, recipe, ingredients), RecipeIngredientRole.OUTPUT);
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void fuelOverridesAreIndexedAndTransferred(net.minecraft.gametest.framework.GameTestHelper gameTestHelper) {
+		JeiGameTestHelper helper = new JeiGameTestHelper(gameTestHelper);
+		assertFuelTransfer(helper, new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE, List.of(new ItemStack(Items.COAL))), firstVanillaRecipe(helper, RecipeType.SMELTING), FurnaceMenu.class, MenuType.FURNACE, FurnaceMenu::new);
+		assertFuelTransfer(helper, new SmokingCategory(TestGuiHelper.INSTANCE, List.of(new ItemStack(Items.COAL))), firstVanillaRecipe(helper, RecipeType.SMOKING), SmokerMenu.class, MenuType.SMOKER, SmokerMenu::new);
+		assertFuelTransfer(helper, new BlastingCategory(TestGuiHelper.INSTANCE, List.of(new ItemStack(Items.COAL))), firstVanillaRecipe(helper, RecipeType.BLASTING), BlastFurnaceMenu.class, MenuType.BLAST_FURNACE, BlastFurnaceMenu::new);
+		helper.succeed();
+	}
+
+	@GameTest(template = "empty")
+	public static void fuelOverridesCanDisableSpecificFuelTransfer(net.minecraft.gametest.framework.GameTestHelper gameTestHelper) {
+		JeiGameTestHelper helper = new JeiGameTestHelper(gameTestHelper);
+		var ingredients = TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel());
+		SmeltingRecipe recipe = firstVanillaRecipe(helper, RecipeType.SMELTING);
+		for (Ingredient fuel : Arrays.asList(null, Ingredient.EMPTY)) {
+			var category = new FurnaceSmeltingCategory(TestGuiHelper.INSTANCE, List.of(new ItemStack(Items.COAL)));
+			category.addExtension(AbstractCookingRecipe.class, new CookingCategoryExtension() {
+				@Override
+				public @Nullable Ingredient getFuel(AbstractCookingRecipe ignoredRecipe, @Nullable Ingredient ignoredFuel) {
+					return fuel;
+				}
+
+				@Override
+				public ItemStack getFuelOutput(AbstractCookingRecipe recipe, ItemStack output) {
+					return new ItemStack(Items.BUCKET);
+				}
+			});
+			var indexed = collect(category, recipe, ingredients);
+
+			helper.assertEquals(Arrays.stream(recipe.getIngredients().get(0).getItems()).map(ItemStack::getItem).toList(), items(indexed, RecipeIngredientRole.INPUT), "Fuel must not be indexed as an input");
+			var menu = helper.openMenu(FurnaceMenu::new);
+			var transfer = new CookingRecipeTransferInfo<>(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING, holder -> category.getFuel(holder));
+			helper.assertEquals(1, transfer.getRecipeSlots(menu, recipe).size(), "Only the cooking input transfers");
+		}
+		helper.succeed();
+	}
+
+	@SuppressWarnings("removal")
+	private static <C extends AbstractFurnaceMenu, T extends AbstractCookingRecipe> void assertFuelTransfer(
+		JeiGameTestHelper helper,
+		AbstractCookingCategory<T> category,
+		T recipe,
+		Class<C> menuClass,
+		MenuType<C> menuType,
+		MenuFactory<C> menuFactory
+	) {
+		category.addExtension(AbstractCookingRecipe.class, new CookingCategoryExtension() {
+			@Override
+			public @Nullable Ingredient getFuel(AbstractCookingRecipe ignoredRecipe, @Nullable Ingredient ignoredFuel) {
+				return Ingredient.of(Items.LAVA_BUCKET);
+			}
+
+			@Override
+			public ItemStack getFuelOutput(AbstractCookingRecipe recipe, ItemStack output) {
+				return new ItemStack(Items.BUCKET);
+			}
+		});
+		var ingredients = TestIngredientManagers.createVanillaItemStackIngredientManager(helper.getLevel());
+		var indexed = collect(category, recipe, ingredients);
+		var inputs = items(indexed, RecipeIngredientRole.INPUT);
+		var outputs = items(indexed, RecipeIngredientRole.OUTPUT);
+		helper.assertEquals(Items.LAVA_BUCKET, inputs.get(inputs.size() - 1), "Indexed extension fuel");
+		helper.assertEquals(Items.BUCKET, outputs.get(outputs.size() - 1), "Indexed fuel remainder");
+
+		ItemStack input = recipe.getIngredients().get(0).getItems()[0];
+		C menu = helper.openMenu(menuFactory, input.copy(), new ItemStack(Items.LAVA_BUCKET));
+		var transferInfo = new CookingRecipeTransferInfo<>(menuClass, menuType, category.getRecipeType(), holder -> category.getFuel(holder));
+		var connection = helper.createServerConnection();
+		var transferHelper = new RecipeTransferHandlerHelper(new TestStackHelper(), ingredients, new CraftingRecipeCategory(TestGuiHelper.INSTANCE), connection);
+		var handler = transferHelper.createUnregisteredRecipeTransferHandler(transferInfo);
+		var error = helper.runWithServerConnection(connection, ignored -> handler.transferRecipe(menu, recipe, () -> List.of(TestRecipeSlotView.item(input), TestRecipeSlotView.item(Items.LAVA_BUCKET)), helper.getPlayer(), false, true));
+		helper.assertTrue(error == null, "Fuel recipe transfer must succeed");
+		helper.assertSameStack(input, menu.getSlot(0).getItem(), "Transferred cooking input");
+		helper.assertSameStack(new ItemStack(Items.LAVA_BUCKET), menu.getSlot(1).getItem(), "Transferred extension fuel");
+	}
+
+	private static <T extends AbstractCookingRecipe> void assertLinkedRecipe(
+		JeiGameTestHelper helper,
+		AbstractCookingCategory<T> category,
+		T recipe,
+		IIngredientManager ingredientManager,
+		boolean hasFuel
+	) {
+		T holder = holder(recipe);
+		helper.assertTrue(category.isHandled(holder), "Extension must handle " + recipe.getType());
+		RecipeIngredientSupplier ingredients = collect(category, holder, ingredientManager);
+		assertItems(helper, List.of(Items.RAW_IRON, Items.RAW_GOLD), ingredients, RecipeIngredientRole.INPUT);
+		assertItems(helper, List.of(Items.IRON_INGOT, Items.GOLD_INGOT), ingredients, RecipeIngredientRole.OUTPUT);
+		helper.assertEquals(1, ingredients.getFocusLinks().size(), "Linked ingredient pairs");
+		var link = ingredients.getFocusLinks().get(0);
+		for (int i = 0; i < 2; i++) {
+			for (RecipeIngredientRole role : List.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT)) {
+				ItemStack stack = ingredients.getIngredients(role).get(i).getItemStack().orElseThrow();
+				Focus<ItemStack> focus = Focus.createFromApi(ingredientManager, role, VanillaTypes.ITEM_STACK, stack);
+				helper.assertEquals(Set.of(i), link.getVisibleIngredientIndexes(focus, ingredientManager, ignored -> true), "Focused pair from " + role);
+			}
+		}
+		var allRoles = IngredientSupplierHelper.getIngredientSupplier(holder, category, ingredientManager);
+		helper.assertEquals(hasFuel, !allRoles.getIngredients(RecipeIngredientRole.RENDER_ONLY).isEmpty(), "Fuel display for " + recipe.getType());
+	}
+
+	private static <T extends AbstractCookingRecipe> void assertVanillaRecipe(JeiGameTestHelper helper, AbstractCookingCategory<T> category, RecipeType<T> recipeType, IIngredientManager ingredientManager) {
+		T recipe = firstVanillaRecipe(helper, recipeType);
+
+		var ingredients = collect(category, recipe, ingredientManager);
+		helper.assertEquals(Arrays.stream(recipe.getIngredients().get(0).getItems()).map(ItemStack::getItem).toList(), items(ingredients, RecipeIngredientRole.INPUT), "Vanilla inputs");
+		helper.assertEquals(List.of(recipe.getResultItem().getItem()), items(ingredients, RecipeIngredientRole.OUTPUT), "Vanilla outputs");
+		helper.assertTrue(ingredients.getFocusLinks().isEmpty(), "Vanilla slots are independent");
+	}
+
+	private static <T extends AbstractCookingRecipe> void assertOutput(JeiGameTestHelper helper, AbstractCookingCategory<T> category, RecipeType<T> recipeType, IIngredientManager ingredientManager, Item expected) {
+		assertItems(helper, List.of(expected), collect(category, firstVanillaRecipe(helper, recipeType), ingredientManager), RecipeIngredientRole.OUTPUT);
+	}
+
+	private static <T extends AbstractCookingRecipe> T firstVanillaRecipe(JeiGameTestHelper helper, RecipeType<T> recipeType) {
+		var recipes = helper.getLevel().getServer().getRecipeManager().getAllRecipesFor(recipeType);
+		return recipes.iterator().next();
+	}
+
+	private static <T extends AbstractCookingRecipe> RecipeIngredientSupplier collect(AbstractCookingCategory<T> category, T recipe, IIngredientManager ingredients) {
+		return (RecipeIngredientSupplier) IngredientSupplierHelper.getIngredientSupplier(recipe, category, ingredients, Set.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT));
+	}
+
+	private static <T extends AbstractCookingRecipe> T holder(T recipe) {
+		return recipe;
+	}
+
+	private static <R> ICookingCategoryExtension<R> singleOutput(Item result) {
+		return (recipe, builder, input, output, focuses) -> {
+			input.addItemStack(new ItemStack(Items.RAW_IRON));
+			output.addItemStack(new ItemStack(result));
+		};
+	}
+
+	private static void assertItems(JeiGameTestHelper helper, List<Item> expected, RecipeIngredientSupplier ingredients, RecipeIngredientRole role) {
+		helper.assertEquals(expected, items(ingredients, role), "Indexed " + role + " ingredients");
+	}
+
+	private static List<Item> items(RecipeIngredientSupplier ingredients, RecipeIngredientRole role) {
+		return ingredients.getIngredients(role).stream()
+			.map(ingredient -> ingredient.getItemStack().orElseThrow().getItem())
+			.toList();
+	}
+
+	private interface DynamicCookingRecipe {
+		default List<ItemStack> inputs() {
+			return List.of(new ItemStack(Items.RAW_IRON), new ItemStack(Items.RAW_GOLD));
+		}
+
+		default List<ItemStack> outputs() {
+			return List.of(new ItemStack(Items.IRON_INGOT), new ItemStack(Items.GOLD_INGOT));
+		}
+	}
+
+	private interface SpecificCookingRecipe extends DynamicCookingRecipe {
+	}
+
+	private interface OtherCookingRecipe {
+	}
+
+	private static class DynamicSmeltingRecipe extends SmeltingRecipe implements DynamicCookingRecipe {
+		DynamicSmeltingRecipe() {
+			super(new ResourceLocation("jeitests", "dynamic_cooking"), "", Ingredient.of(Items.RAW_IRON), new ItemStack(Items.IRON_INGOT), 0.5f, 200);
+		}
+
+		@Override
+		public boolean isSpecial() {
+			return true;
+		}
+	}
+
+	private static final class SpecificSmeltingRecipe extends DynamicSmeltingRecipe implements SpecificCookingRecipe {
+	}
+
+	private static final class AmbiguousSmeltingRecipe extends DynamicSmeltingRecipe implements OtherCookingRecipe {
+	}
+
+	private static final class DynamicBlastingRecipe extends BlastingRecipe implements DynamicCookingRecipe {
+		DynamicBlastingRecipe() {
+			super(new ResourceLocation("jeitests", "dynamic_cooking"), "", Ingredient.of(Items.RAW_IRON), new ItemStack(Items.IRON_INGOT), 0.5f, 100);
+		}
+
+		@Override
+		public boolean isSpecial() {
+			return true;
+		}
+	}
+
+	private static final class DynamicSmokingRecipe extends SmokingRecipe implements DynamicCookingRecipe {
+		DynamicSmokingRecipe() {
+			super(new ResourceLocation("jeitests", "dynamic_cooking"), "", Ingredient.of(Items.RAW_IRON), new ItemStack(Items.IRON_INGOT), 0.5f, 100);
+		}
+
+		@Override
+		public boolean isSpecial() {
+			return true;
+		}
+	}
+
+	private static final class DynamicCampfireRecipe extends CampfireCookingRecipe implements DynamicCookingRecipe {
+		DynamicCampfireRecipe() {
+			super(new ResourceLocation("jeitests", "dynamic_cooking"), "", Ingredient.of(Items.RAW_IRON), new ItemStack(Items.IRON_INGOT), 0.5f, 400);
+		}
+
+		@Override
+		public boolean isSpecial() {
+			return true;
+		}
+	}
+}

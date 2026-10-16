@@ -7,7 +7,8 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.library.plugins.vanilla.VanillaRecipeFactory;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeMaker;
-import mezz.jei.library.plugins.vanilla.cooking.FurnaceRecipeTransferInfo;
+import mezz.jei.library.plugins.vanilla.cooking.CookingRecipeTransferInfo;
+import net.minecraft.world.inventory.MenuType;
 import mezz.jei.library.plugins.vanilla.cooking.FurnaceSmeltingCategory;
 import mezz.jei.library.plugins.vanilla.cooking.JeiSmeltingRecipe;
 import mezz.jei.library.util.IngredientSupplierHelper;
@@ -108,7 +109,7 @@ public final class FurnaceRecipeGameTests {
 		);
 
 		FurnaceMenu menu = helper.openMenu(FurnaceMenu::new);
-		FurnaceRecipeTransferInfo transferInfo = new FurnaceRecipeTransferInfo();
+		var transferInfo = new CookingRecipeTransferInfo<>(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING, recipeCategory::getFuel);
 		helper.assertEquals(2, transferInfo.getRecipeSlots(menu, recipeHolder).size(), "Special smelting transfer slot count");
 
 		TransferRecipe<SmeltingRecipe> transferRecipe = new TransferRecipe<>(
@@ -189,7 +190,7 @@ public final class FurnaceRecipeGameTests {
 		helper.assertTrue(diagnostic.contains(outputInfo), "Diagnostics must include outputs");
 
 		FurnaceMenu menu = helper.openMenu(FurnaceMenu::new);
-		FurnaceRecipeTransferInfo transferInfo = new FurnaceRecipeTransferInfo();
+		var transferInfo = new CookingRecipeTransferInfo<>(FurnaceMenu.class, MenuType.FURNACE, RecipeTypes.SMELTING, recipeCategory::getFuel);
 		helper.assertEquals(1, transferInfo.getRecipeSlots(menu, recipeHolder).size(), "Normal smelting transfer slot count");
 
 		helper.succeed();
