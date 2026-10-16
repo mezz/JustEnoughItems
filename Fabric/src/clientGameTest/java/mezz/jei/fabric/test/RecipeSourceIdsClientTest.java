@@ -37,11 +37,17 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import java.util.HashSet;
 import java.util.List;
+import mezz.jei.api.IModPlugin;
+import mezz.jei.api.recipe.category.extensions.IRecipeCategoryDecorator;
+import mezz.jei.api.registration.IAdvancedRegistration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
-/** Verifies source IDs through registered recipes, bookmark JSON, tooltips, and copy controls. */
+/** Verifies source IDs through registered recipes, bookmark serialization, tooltips, and copy controls. */
 @SuppressWarnings({"UnstableApiUsage", "removal"})
-final class RecipeSourceIdsClientTest {
+public final class RecipeSourceIdsClientTest implements IModPlugin {
 	private static final ResourceLocation SHIELD_DECORATION = new ResourceLocation("minecraft", "shield_decoration");
 	private static final ResourceLocation SYNTHETIC_ID = new ResourceLocation("jei_test", "/synthetic/recipe");
 	private static final ResourceLocation NORMAL_ID = new ResourceLocation("jei_test", "folder/recipe");
@@ -50,7 +56,44 @@ final class RecipeSourceIdsClientTest {
 		new ResourceLocation("minecraft", "crafting_table")
 	);
 
-	private RecipeSourceIdsClientTest() {
+	private static final Map<ResourceLocation, List<ResourceLocation>> DECORATED_SOURCES = new HashMap<>();
+
+	@Override
+	public ResourceLocation getPluginUid() {
+		return new ResourceLocation("jei_test", "recipe_source_ids");
+	}
+
+	@Override
+	public void registerAdvanced(IAdvancedRegistration registration) {
+		registerDecorators(registration, RecipeTypes.CRAFTING);
+		registerDecorators(registration, RecipeTypes.SMELTING);
+	}
+
+	private static <R extends Recipe<?>> void registerDecorators(IAdvancedRegistration registration, RecipeType<R> recipeType) {
+		registration.addRecipeCategoryDecorator(recipeType, new IRecipeCategoryDecorator<>() {});
+		registration.addRecipeCategoryDecorator(recipeType, new IRecipeCategoryDecorator<>() {
+			@Override
+			public void decorateSourceRecipeIds(List<ResourceLocation> sourceRecipeIds, R recipe, IRecipeCategory<R> recipeCategory) {
+				List<ResourceLocation> sources = DECORATED_SOURCES.get(recipe.getId());
+				if (sources != null) {
+					sourceRecipeIds.addAll(sources);
+				}
+			}
+		});
+		registration.addRecipeCategoryDecorator(recipeType, new IRecipeCategoryDecorator<>() {
+			@Override
+			public void decorateSourceRecipeIds(List<ResourceLocation> sourceRecipeIds, R recipe, IRecipeCategory<R> recipeCategory) {
+				List<ResourceLocation> sources = DECORATED_SOURCES.get(recipe.getId());
+				if (sources != null) {
+					if (sources.isEmpty()) {
+						sourceRecipeIds.clear();
+					} else {
+						sourceRecipeIds.remove(SHIELD_DECORATION);
+						sourceRecipeIds.add(NORMAL_ID);
+					}
+				}
+			}
+		});
 	}
 
 	static void run() {
@@ -69,30 +112,26 @@ final class RecipeSourceIdsClientTest {
 				.limit(2)
 				.toList();
 			check(recipes.size() == 2, "Expected distinct registered shield-decoration displays");
-			var transferService = new RecipeTransferService(runtime.getRecipeTransferManager());
-			var serializer = new RecipeBookmarkSerializer(manager, runtime.getJeiHelpers().getFocusFactory(),
-				new TypedIngredientSerializer(runtime.getIngredientManager()), runtime.getIngredientManager(), runtime.getJeiHelpers().getGuiHelper(), transferService);
-			var bookmarks = new HashSet<>();
 			boolean advancedTooltips = client.options.advancedItemTooltips;
 			try {
 				client.options.advancedItemTooltips = true;
+				List<IRecipeLayoutDrawable<?>> layouts = new ArrayList<>();
 				for (var recipe : recipes) {
-					check(category.getSourceRecipeIds(recipe).equals(List.of(SHIELD_DECORATION)), "Generated displays must retain the original recipe ID");
 					var layout = createLayout(category, recipe);
 					assertTooltipIds(layout, List.of(SHIELD_DECORATION));
-					var bookmark = Objects.requireNonNull(RecipeBookmark.create(layout, runtime.getIngredientManager(), runtime.getRecipeManager(), runtime.getJeiHelpers().getGuiHelper(), transferService).orElseThrow());
-					var encoded = serializer.serialize(bookmark);
-					var decoded = serializer.deserialize(encoded).getResult().orElseThrow();
-					check(bookmark.equals(decoded), "Bookmark JSON must preserve the individual display identity");
-					String legacyUid = recipe.getId().getNamespace() + ":" + recipe.getId().getPath().substring(1);
-					String legacy = encoded.replace(recipe.getId().toString(), legacyUid);
-					var migrated = serializer.deserialize(legacy).getResult().orElseThrow();
-					check(bookmark.equals(migrated), "Legacy generated recipe bookmarks must migrate to synthetic IDs");
-					check(serializer.serialize(migrated).equals(encoded), "Migrated bookmarks must save the current synthetic ID");
-					bookmarks.add(decoded);
-					check(encoded.contains(recipe.getId().toString()), "Crafting bookmarks must retain the generated display identifier");
+					layouts.add(layout);
 				}
-				check(bookmarks.size() == 2, "Displays with the same source must remain distinct after saving bookmarks");
+				// The empty-potion arrow is not indexed as an ingredient on 1.19.2.
+				layouts.add(createLayoutForPrefix(RecipeTypes.CRAFTING, "/jei.tipped.arrow.item.minecraft.tipped_arrow.effect.healing"));
+				layouts.add(createLayoutForPrefix(RecipeTypes.SMELTING, "/sponge_with_bucket"));
+				layouts.add(createLayoutForPrefix(RecipeTypes.ANVIL, "/self_repair."));
+				layouts.add(createLayoutForPrefix(RecipeTypes.ANVIL, "/materials_repair."));
+				layouts.add(createLayoutForPrefix(RecipeTypes.GRINDSTONE, "/grindstone.self_repair."));
+				layouts.add(createLayoutForPrefix(RecipeTypes.GRINDSTONE, "/grindstone.disenchantment."));
+				layouts.add(createLayoutForPrefix(RecipeTypes.COMPOSTING, "/"));
+				layouts.add(createLayoutForPrefix(RecipeTypes.SMOKING, ""));
+				layouts.add(createLayoutForPrefix(RecipeTypes.BREWING, ""));
+				assertBookmarks(layouts);
 				var multipleSources = createCategory(runtime.getJeiHelpers().getGuiHelper(), MULTIPLE_SOURCES);
 				assertTooltipIds(createLayout(multipleSources, recipes.get(0)), MULTIPLE_SOURCES);
 				var noSources = createCategory(runtime.getJeiHelpers().getGuiHelper(), List.of());
@@ -123,6 +162,8 @@ final class RecipeSourceIdsClientTest {
 			copy(gui, createCategory(runtime.getJeiHelpers().getGuiHelper(), List.of()), recipe);
 			check(client.keyboardHandler.getClipboard().equals("[minecraft:shield_decoration, minecraft:crafting_table]"), "A display with no source must leave the clipboard intact");
 			assertSyntheticDisplays(client, gui);
+			assertDecoratedSources(client, gui, RecipeTypes.CRAFTING);
+			assertDecoratedSources(client, gui, RecipeTypes.SMELTING);
 		} finally {
 			copyKey.setKey(originalKey);
 			client.keyboardHandler.setClipboard(clipboard);
@@ -179,9 +220,44 @@ final class RecipeSourceIdsClientTest {
 		}
 	}
 
+	private static <R extends Recipe<?>> void assertDecoratedSources(Minecraft client, RecipesGui gui, RecipeType<R> recipeType) {
+		var manager = Internal.getJeiRuntime().getRecipeManager();
+		var category = manager.getRecipeCategory(recipeType);
+		var recipe = manager.createRecipeLookup(recipeType).get()
+			.filter(holder -> !holder.isSpecial() && !holder.getId().getPath().startsWith("/"))
+			.findFirst().orElseThrow();
+		ResourceLocation recipeId = recipe.getId();
+		var expectedSources = new ArrayList<>(category.getSourceRecipeIds(recipe));
+		expectedSources.add(MULTIPLE_SOURCES.get(1));
+		expectedSources.add(NORMAL_ID);
+		var sources = new ArrayList<>(MULTIPLE_SOURCES);
+		DECORATED_SOURCES.put(recipeId, sources);
+		try {
+			var layout = createLayout(category, recipe);
+			assertTooltipIds(layout, expectedSources);
+			sources.clear();
+			assertTooltipIds(layout, expectedSources);
+			copy(gui, layout);
+			check(client.keyboardHandler.getClipboard().equals(expectedSources.toString()), "Copying must use the same decorator IDs retained by the layout's tooltips");
+			check(getRegistryName(layout).equals(recipeId), "Decorators must preserve the display identifier");
+			assertBookmarks(List.of(layout));
+
+			var empty = createLayout(category, recipe);
+			assertTooltipIds(empty, List.of());
+			copy(gui, empty);
+			check(client.keyboardHandler.getClipboard().equals(expectedSources.toString()), "A decorator that clears the source IDs must leave the clipboard intact");
+		} finally {
+			DECORATED_SOURCES.remove(recipeId);
+		}
+		assertTooltipIds(createLayout(category, recipe), category.getSourceRecipeIds(recipe));
+	}
+
 	private static <R> void copy(RecipesGui gui, IRecipeCategory<R> category, R recipe) {
+		copy(gui, createLayout(category, recipe));
+	}
+
+	private static <R> void copy(RecipesGui gui, IRecipeLayoutDrawable<R> layout) {
 		var runtime = Internal.getJeiRuntime();
-		var layout = createLayout(category, recipe);
 		layout.setPosition(0, 0);
 		BookmarkList bookmarks = new ReflectionUtil().getFieldWithClass(gui, BookmarkList.class).findFirst().orElseThrow();
 		var buttons = RecipeLayoutWithButtons.create(layout, null, bookmarks, gui, new RecipeTransferService(runtime.getRecipeTransferManager()), List.of());
@@ -205,7 +281,48 @@ final class RecipeSourceIdsClientTest {
 		return Internal.getJeiRuntime().getRecipeManager().createRecipeLayoutDrawable(category, recipe, FocusGroup.EMPTY).orElseThrow();
 	}
 
+	private static <R> IRecipeLayoutDrawable<R> createLayoutForPrefix(RecipeType<R> recipeType, String prefix) {
+		var manager = Internal.getJeiRuntime().getRecipeManager();
+		var category = manager.getRecipeCategory(recipeType);
+		var recipe = manager.createRecipeLookup(recipeType).get()
+			.filter(value -> Objects.requireNonNull(category.getRegistryName(value)).getPath().startsWith(prefix))
+			.findFirst().orElseThrow(() -> new AssertionError("No recipe found for " + recipeType + ": " + prefix));
+		return createLayout(category, recipe);
+	}
+
+	private static <R> ResourceLocation getRegistryName(IRecipeLayoutDrawable<R> layout) {
+		return Objects.requireNonNull(layout.getRecipeCategory().getRegistryName(layout.getRecipe()));
+	}
+
+	private static void assertBookmarks(List<IRecipeLayoutDrawable<?>> layouts) {
+		var runtime = Internal.getJeiRuntime();
+		var manager = runtime.getRecipeManager();
+		var transferService = new RecipeTransferService(runtime.getRecipeTransferManager());
+		var serializer = new RecipeBookmarkSerializer(manager, runtime.getJeiHelpers().getFocusFactory(),
+			new TypedIngredientSerializer(runtime.getIngredientManager()), runtime.getIngredientManager(), runtime.getJeiHelpers().getGuiHelper(), transferService);
+		var bookmarks = new HashSet<>();
+		for (var layout : layouts) {
+			var bookmark = Objects.requireNonNull(RecipeBookmark.create(layout, runtime.getIngredientManager(), runtime.getRecipeManager(), runtime.getJeiHelpers().getGuiHelper(), transferService).orElseThrow());
+			String encoded = serializer.serialize(bookmark);
+			var deserialized = serializer.deserialize(encoded);
+			var decoded = deserialized.getResult().orElseThrow(() -> new AssertionError("Bookmark failed to load: " + encoded + "; " + deserialized.getDiagnostics()));
+			check(bookmark.equals(decoded), "Bookmarks must preserve the individual display identity");
+			ResourceLocation id = getRegistryName(layout);
+			check(encoded.contains(id.toString()), "Bookmarks must retain the display identifier");
+			if (id.getPath().startsWith("/")) {
+				String legacyUid = id.getNamespace() + ":" + id.getPath().substring(1);
+				String legacy = encoded.replace(id.toString(), legacyUid);
+				var migrated = serializer.deserialize(legacy).getResult().orElseThrow(() -> new AssertionError("Legacy bookmark failed to load: " + legacy));
+				check(bookmark.equals(migrated), "Legacy generated recipe bookmarks must migrate: " + id);
+				check(serializer.serialize(migrated).equals(encoded), "Migrated bookmarks must save the current synthetic ID: " + id);
+			}
+			bookmarks.add(decoded);
+		}
+		check(bookmarks.size() == layouts.size(), "Recipe displays must remain distinct after saving bookmarks");
+	}
+
 	private static void assertTooltipIds(IRecipeLayoutDrawable<?> layout, List<ResourceLocation> expectedIds) {
+		check(layout.getSourceRecipeIds().equals(expectedIds), "Layout source IDs must match the tooltip IDs");
 		var output = layout.getRecipeSlotsView().getSlotViews().stream().filter(slot -> slot.getRole() == RecipeIngredientRole.OUTPUT)
 			.map(IRecipeSlotDrawable.class::cast).findFirst().orElseThrow();
 		var tooltip = new JeiTooltip();

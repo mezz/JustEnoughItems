@@ -9,7 +9,8 @@
       "mezz.jei.fabric.test.JeiFabricClientTests"
     ],
     "jei_mod_plugin": [
-      "mezz.jei.fabric.test.BookmarkManagerClientGameTest"
+      "mezz.jei.fabric.test.BookmarkManagerClientGameTest",
+      "mezz.jei.fabric.test.RecipeSourceIdsClientTest"
     ]
   },
   "mixins": [
