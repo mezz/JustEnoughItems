@@ -9,7 +9,7 @@ public class ObnoxiouslyLargeRecipe {
 	private final ResourceLocation recipeId;
 
 	public ObnoxiouslyLargeRecipe() {
-		recipeId = new ResourceLocation(ModIds.JEI_ID, "number_" + count);
+		recipeId = new ResourceLocation(ModIds.JEI_ID, "/number_" + count);
 		count++;
 	}
 

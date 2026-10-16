@@ -43,7 +43,7 @@ public class DebugSimpleRecipeManagerPlugin implements ISimpleRecipeManagerPlugi
 	}
 
 	private CraftingRecipe generateRecipe() {
-		ResourceLocation id = new ResourceLocation(ModIds.JEI_ID, "debug_simple_recipe");
+		ResourceLocation id = new ResourceLocation(ModIds.JEI_ID, "/debug_simple_recipe");
 
 		NonNullList<Ingredient> inputs = NonNullList.of(
 			Ingredient.EMPTY,

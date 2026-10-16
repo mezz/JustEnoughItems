@@ -130,7 +130,8 @@ public class RecipeBookmarkSerializer {
 		}
 
 		T recipe = recipeResult.get();
-		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, recipeUid, output, displayRole, recipeTransferService);
+		ResourceLocation resolvedUid = Objects.requireNonNull(recipeCategory.getRegistryName(recipe));
+		RecipeBookmark<T, ?> recipeBookmark = new RecipeBookmark<>(recipeCategory, recipe, resolvedUid, output, displayRole, recipeTransferService);
 		return IDeserializeResult.success(recipeBookmark);
 	}
 
@@ -144,7 +145,16 @@ public class RecipeBookmarkSerializer {
 			.or(() -> recipeManager.createRecipeLookup(recipeType)
 				.get()
 				.filter(r -> Objects.equals(recipeCategory.getRegistryName(r), recipeUid))
-				.findFirst());
+				.findFirst())
+			.or(() -> {
+				if (recipeUid.getPath().startsWith("/")) {
+					return Optional.empty();
+				}
+				ResourceLocation syntheticUid = recipeUid.withPrefix("/");
+				return recipeManager.createRecipeLookup(recipeType).get()
+					.filter(r -> Objects.equals(recipeCategory.getRegistryName(r), syntheticUid))
+					.findFirst();
+			});
 	}
 
 }
