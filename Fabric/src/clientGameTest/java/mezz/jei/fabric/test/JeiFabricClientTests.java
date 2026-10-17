@@ -65,6 +65,7 @@ public final class JeiFabricClientTests implements ClientModInitializer {
 
 	private static void registerAllTests() {
 		List<FabricClientTestRunner.ClientTestCase> testCases = new ArrayList<>();
+		testCases.add(new FabricClientTestRunner.ClientTestCase("fabric-client-gametest", "configGuiKeyModifiers", ConfigGuiKeyModifiersClientGameTest::run));
 		testCases.add(ItemBatchRenderingClientGameTest.getTestCase());
 		testCases.add(new FabricClientTestRunner.ClientTestCase("fabric-client-rendering", "arrowSprites", () -> ClientTestUtil.runOnClient(SpriteRenderingTest::run, Duration.ofSeconds(30))));
 		testCases.add(IngredientDecoratorClientGameTest.getTestCase());

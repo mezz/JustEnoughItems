@@ -1,6 +1,6 @@
 package mezz.jei.gui.config;
 
-import net.mezzdev.config.api.value.serializer.IConfigValueSerializer;
+import net.mezzdev.config.gui.api.IConfigValueEditorMetadata;
 import net.mezzdev.config.gui.api.ConfigValueApplyMode;
 import net.mezzdev.config.gui.api.IConfigScreenValue;
 
@@ -15,7 +15,7 @@ final class RuntimeToggleScreenValue implements IConfigScreenValue<Boolean> {
 	private final BooleanSupplier valueSupplier;
 	private final Consumer<Boolean> valueSetter;
 	private final Function<Consumer<Boolean>, Runnable> listenerRegistrar;
-	private final IConfigValueSerializer<Boolean> serializer;
+	private final IConfigValueEditorMetadata<Boolean> metadata;
 
 	RuntimeToggleScreenValue(
 		String name,
@@ -24,7 +24,7 @@ final class RuntimeToggleScreenValue implements IConfigScreenValue<Boolean> {
 		BooleanSupplier valueSupplier,
 		Consumer<Boolean> valueSetter,
 		Function<Consumer<Boolean>, Runnable> listenerRegistrar,
-		IConfigValueSerializer<Boolean> serializer
+		IConfigValueEditorMetadata<Boolean> metadata
 	) {
 		this.name = name;
 		this.localizationKey = localizationKey;
@@ -32,7 +32,7 @@ final class RuntimeToggleScreenValue implements IConfigScreenValue<Boolean> {
 		this.valueSupplier = valueSupplier;
 		this.valueSetter = valueSetter;
 		this.listenerRegistrar = listenerRegistrar;
-		this.serializer = serializer;
+		this.metadata = metadata;
 	}
 
 	@Override
@@ -57,7 +57,7 @@ final class RuntimeToggleScreenValue implements IConfigScreenValue<Boolean> {
 
 	@Override
 	public boolean set(Boolean value) {
-		if (value == null || !serializer.isValid(value)) {
+		if (value == null || !metadata.isValid(value)) {
 			throw new IllegalArgumentException("Invalid value for " + name + ": " + value);
 		}
 		if (valueSupplier.getAsBoolean() == value) {
@@ -78,7 +78,7 @@ final class RuntimeToggleScreenValue implements IConfigScreenValue<Boolean> {
 	}
 
 	@Override
-	public IConfigValueSerializer<Boolean> getSerializer() {
-		return serializer;
+	public IConfigValueEditorMetadata<Boolean> getEditorMetadata() {
+		return metadata;
 	}
 }
