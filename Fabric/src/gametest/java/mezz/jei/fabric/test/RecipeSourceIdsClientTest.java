@@ -19,7 +19,6 @@ import mezz.jei.common.input.InputPhase;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ReflectionUtil;
-import mezz.jei.fabric.input.FabricKeyMapping;
 import mezz.jei.gui.bookmarks.BookmarkCodec;
 import mezz.jei.gui.bookmarks.BookmarkFactory;
 import mezz.jei.gui.bookmarks.BookmarkList;
@@ -191,8 +190,8 @@ public final class RecipeSourceIdsClientTest implements IModPlugin {
 		var gui = (RecipesGui) runtime.getRecipesGui();
 		Screen parent = client.gui.screen();
 		String clipboard = client.keyboardHandler.getClipboard();
-		FabricKeyMapping copyKey = (FabricKeyMapping) Objects.requireNonNull(KeyMapping.get("key.jei.copy.recipe.id"));
-		var originalKey = copyKey.getRealKey();
+		KeyMapping copyKey = Objects.requireNonNull(KeyMapping.get("key.jei.copy.recipe.id"));
+		var originalKey = InputConstants.getKey(copyKey.saveString());
 		try {
 			copyKey.setKey(InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_MIDDLE));
 			client.gui.setScreen(gui);

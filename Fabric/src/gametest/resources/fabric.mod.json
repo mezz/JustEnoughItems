@@ -17,6 +17,7 @@
       "mezz.jei.fabric.test.NetherBiomeFuelGameTests"
     ],
     "fabric-client-gametest": [
+      "mezz.jei.fabric.test.FabricKeyModifiersClientGameTest",
       "mezz.jei.fabric.test.ContainerIngredientShortcutsClientTest",
       "mezz.jei.fabric.test.CheatToInventoryClientGameTest",
       "mezz.jei.fabric.test.BookmarkManagerClientGameTest",

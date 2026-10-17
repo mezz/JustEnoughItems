@@ -5,12 +5,16 @@
   "compatibilityLevel": "JAVA_25",
   "mixins": [],
   "client": [
+    "AmecsKeyModifiersEarlyInitMixin",
     "AbstractContainerScreenMixin",
     "ClientPacketListenerRecipeUpdateMixin",
     "EffectsInInventoryMixin",
     "GuiGraphicsExtractorMixin",
     "KeyboardHandlerMixin",
+    "KeyBindsListEntryMixin",
+    "KeyBindsScreenMixin",
     "MinecraftMixin",
+    "OptionsMixin",
     "ScreenMixin"
   ],
   "injectors": {

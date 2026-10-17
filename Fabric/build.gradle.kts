@@ -41,6 +41,13 @@ val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForge
 val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
 val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
 val suffixtreeVersion = gradleProperty("suffixtreeVersion")
+val amecsDependency = "de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-mc26.2.0:1.0.2"
+
+repositories {
+    maven("https://maven.siphalor.de/") {
+        content { includeGroup("de.siphalor.amecs.amecs-key-modifiers") }
+    }
+}
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken = optionalGradleProperty("modrinthToken")
@@ -147,6 +154,8 @@ tasks.withType<JavaCompile> {
 }
 
 dependencies {
+    // Only the AMECS API is needed to compile the optional adapter. No 26.3 artifact is published yet.
+    compileOnly(amecsDependency) { isTransitive = false }
     compileOnly(mezzConfigApiDependency)
     runtimeOnly(mezzConfigDependency("fabric"))
     include(mezzConfigDependency("fabric"))
@@ -200,8 +209,20 @@ fabricApi {
 }
 
 dependencies {
+    "gametestCompileOnly"(amecsDependency) { isTransitive = false }
     "gametestImplementation"(testFixtures(project(":Common")))
     "gametestImplementation"(mezzConfigGuiFabricDependency)
+}
+
+// Run with -PamecsTestJar=/path/to/amecs.jar to test the optional AMECS integration.
+val amecsTestJar = providers.gradleProperty("amecsTestJar")
+// Supply a local 26.3 AMECS build here, or override with -PamecsRuntimeJar=/path/to/amecs.jar.
+val amecsRuntimeJar = file(providers.gradleProperty("amecsRuntimeJar")
+    .getOrElse("run/amecs/amecs-key-modifiers-${minecraftVersion}.jar"))
+tasks.named<JavaExec>("runClientGameTest") {
+    if (amecsTestJar.isPresent) {
+        jvmArgs("-Dfabric.addMods=${file(amecsTestJar.get()).absolutePath}")
+    }
 }
 
 loom {
@@ -224,6 +245,19 @@ loom {
             jvmArguments.addAll(
                 "-Dfabric.log.level=info"
             )
+        }
+        create("clientWithAmecs") {
+            client()
+            displayName.set("Fabric Client With AMECS")
+            generateRunConfig.set(true)
+            runDirectory.set(loomRunDir.resolve("clientWithAmecs"))
+            jvmArguments.addAll(
+                "-Dfabric.log.level=info",
+                "-Dfabric.addMods=${amecsRuntimeJar.absolutePath}"
+            )
+            task {
+                inputs.file(amecsRuntimeJar).withPropertyName("amecsRuntimeJar")
+            }
         }
         named("server") {
             server()
@@ -263,8 +297,6 @@ loom {
 
 sourceSets {
     named("main") {
-        java.exclude("**/Amecs*.java")
-        java.exclude("**/FabricAmecsSupport.java")
         resources.srcDir(dependencyResources)
     }
     named("gametest") {

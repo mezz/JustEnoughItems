@@ -56,19 +56,6 @@ public final class JUnitXmlTestReporter {
 		}
 	}
 
-	public static void runAndReportWithBooleanVariant(
-		String suiteName,
-		String variantProperty,
-		String variantSuffix,
-		String testName,
-		ThrowingRunnable test
-	) {
-		if (Boolean.getBoolean(variantProperty)) {
-			suiteName += "-" + variantSuffix;
-		}
-		runAndReport(suiteName, testName, test);
-	}
-
 	private static Path getOutputDirectory(String suiteName) {
 		Path moduleDirectory = getModuleDirectory();
 		return moduleDirectory

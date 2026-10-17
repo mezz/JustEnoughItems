@@ -8,7 +8,6 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ReflectionUtil;
-import mezz.jei.fabric.input.FabricKeyMapping;
 import mezz.jei.gui.input.GuiContainerWrapper;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.input.IRecipeFocusSource;
@@ -53,11 +52,10 @@ final class RecipeFocusSourceClientTest {
 			var originalVerticalAlignment = verticalAlignment.get();
 			var shrinkToFit = gridConfig.shrinkToFit();
 			boolean originalShrinkToFit = shrinkToFit.get();
-			FabricKeyMapping toggleKey = (FabricKeyMapping) Objects.requireNonNull(KeyMapping.get("key.jei.toggleOverlay"));
-			var originalToggleKey = toggleKey.getRealKey();
+			KeyMapping toggleKey = Objects.requireNonNull(KeyMapping.get("key.jei.toggleOverlay"));
+			Runnable restoreToggleKey = KeyMappingTestHelper.rebindUnmodified(toggleKey, InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_O));
 			try {
 				// An unbound toggle deliberately keeps the ingredient list visible.
-				toggleKey.setKey(InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_O));
 				toggles.setOverlayEnabled(true);
 				toggles.setBookmarkEnabled(true);
 				client.gui.setScreen(new InventoryScreen(Objects.requireNonNull(client.player)));
@@ -155,7 +153,7 @@ final class RecipeFocusSourceClientTest {
 				assertBlocks(container, recipeArea, false, "Closed container");
 			} finally {
 				client.gui.setScreen(null);
-				toggleKey.setKey(originalToggleKey);
+				restoreToggleKey.run();
 				layoutMode.set(originalLayoutMode);
 				verticalAlignment.set(originalVerticalAlignment);
 				shrinkToFit.set(originalShrinkToFit);

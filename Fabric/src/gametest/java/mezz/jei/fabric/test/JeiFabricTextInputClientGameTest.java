@@ -3,7 +3,6 @@ package mezz.jei.fabric.test;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.ReflectionUtil;
-import mezz.jei.fabric.input.FabricKeyMapping;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.test.client.ImeTextInputTestUtil;
@@ -12,7 +11,7 @@ import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.mixin.client.gametest.input.KeyboardHandlerAccessor;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
@@ -87,12 +86,17 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 
 				try {
 					assertEditorPriority(client, searchField);
-					ImeTextInputTestUtil.invokeKeyPress(client.keyboardHandler, client.getWindow().handle(), new KeyEvent(InputConstants.KEY_LSHIFT, 0, 0));
-					if (!searchField.isFocused()) {
-						throw new AssertionError("An unhandled modifier key must preserve search focus.");
-					}
-					if (client.gui.screen().getFocused() != searchField) {
-						throw new AssertionError("Expected JEI's search field to own the screen focus.");
+					KeyEvent shift = new KeyEvent(InputConstants.KEY_LSHIFT, 0, 0);
+					try {
+						ImeTextInputTestUtil.invokeKeyPress(client.keyboardHandler, client.getWindow().handle(), shift);
+						if (!searchField.isFocused()) {
+							throw new AssertionError("An unhandled modifier key must preserve search focus.");
+						}
+						if (client.gui.screen().getFocused() != searchField) {
+							throw new AssertionError("Expected JEI's search field to own the screen focus.");
+						}
+					} finally {
+						((KeyboardHandlerAccessor) client.keyboardHandler).invokeKeyPress(client.getWindow().handle(), InputConstants.RELEASE, shift);
 					}
 					if (!(client.gui.screen() instanceof PreeditBlockingContainerScreen)) {
 						throw new AssertionError("Expected this regression test to cover a screen that blocks normal preedit dispatch.");
@@ -190,8 +194,8 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 	}
 
 	private static void assertEditorPriority(Minecraft client, GuiTextFieldFilter searchField) {
-		FabricKeyMapping editMode = (FabricKeyMapping) Objects.requireNonNull(KeyMapping.get("key.jei.toggleEditMode"));
-		var originalKey = editMode.getRealKey();
+		KeyMapping editMode = Objects.requireNonNull(KeyMapping.get("key.jei.toggleEditMode"));
+		var originalKey = InputConstants.getKey(editMode.saveString());
 		var toggles = Internal.getClientToggleState();
 		boolean originalEditMode = toggles.isEditModeEnabled();
 		String originalText = searchField.getValue();
@@ -229,16 +233,8 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 			throw new AssertionError("Expected the focus-search key mapping to be registered.");
 		}
 
-		InputConstants.Key originalKey;
-		if (focusSearch instanceof FabricKeyMapping fabricKeyMapping) {
-			originalKey = fabricKeyMapping.getRealKey();
-		} else {
-			originalKey = KeyMappingHelper.getBoundKeyOf(focusSearch);
-		}
+		Runnable restoreMapping = KeyMappingTestHelper.rebindUnmodified(focusSearch, TEST_FOCUS_SEARCH_KEY);
 		try {
-			// Temporarily use an unmodified F for this callback-level test.
-			focusSearch.setKey(TEST_FOCUS_SEARCH_KEY);
-			KeyMapping.resetMapping();
 			KeyEvent event = new KeyEvent(KEY_CODE_F, 'f', 0);
 			ImeTextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, event);
 
@@ -249,8 +245,7 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 			}
 			assertions.run();
 		} finally {
-			focusSearch.setKey(originalKey);
-			KeyMapping.resetMapping();
+			restoreMapping.run();
 		}
 	}
 }

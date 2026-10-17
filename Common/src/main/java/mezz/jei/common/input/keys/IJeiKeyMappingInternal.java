@@ -3,24 +3,10 @@ package mezz.jei.common.input.keys;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.network.chat.Component;
 
 import java.util.function.Consumer;
 
 public interface IJeiKeyMappingInternal extends IJeiKeyMappingWithExtraModifiers {
-	@Override
-	boolean isActiveAndMatches(InputConstants.Key key);
-
-	default boolean isActiveAndMatchesAllowingExtraModifiers(InputConstants.Key key) {
-		return isActiveAndMatches(key);
-	}
-
-	@Override
-	boolean isUnbound();
-
-	@Override
-	Component getTranslatedKeyMessage();
-
 	KeyMapping getKeyMapping();
 
 	boolean isDown();

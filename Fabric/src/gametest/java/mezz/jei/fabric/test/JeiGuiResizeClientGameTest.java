@@ -12,7 +12,6 @@ import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.config.RecipeGuiNavigationMode;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ReflectionUtil;
-import mezz.jei.fabric.input.FabricKeyMapping;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
@@ -183,8 +182,8 @@ public class JeiGuiResizeClientGameTest implements FabricClientGameTest {
 			var pages = grid.getPageDelegate();
 			check(pages.getPageCount() > 2, "Expected several pages for shortcut navigation");
 			var screen = Objects.requireNonNull(client.gui.screen());
-			FabricKeyMapping mapping = (FabricKeyMapping) Objects.requireNonNull(KeyMapping.get("key.jei.nextPage"));
-			var originalKey = mapping.getRealKey();
+			KeyMapping mapping = Objects.requireNonNull(KeyMapping.get("key.jei.nextPage"));
+			var originalKey = InputConstants.getKey(mapping.saveString());
 			try {
 				mapping.setKey(InputConstants.Type.MOUSE.getOrCreate(4));
 				int initialPage = pages.getPageNumber();
@@ -214,12 +213,12 @@ public class JeiGuiResizeClientGameTest implements FabricClientGameTest {
 			var screen = Objects.requireNonNull(client.gui.screen());
 			var grid = grid(false);
 			var pages = grid.getPageDelegate();
-			FabricKeyMapping nextPage = (FabricKeyMapping) Objects.requireNonNull(KeyMapping.get("key.jei.nextPage"));
-			FabricKeyMapping previousPage = (FabricKeyMapping) Objects.requireNonNull(KeyMapping.get("key.jei.previousPage"));
-			FabricKeyMapping editMode = (FabricKeyMapping) Objects.requireNonNull(KeyMapping.get("key.jei.toggleEditMode"));
-			var originalNext = nextPage.getRealKey();
-			var originalPrevious = previousPage.getRealKey();
-			var originalEdit = editMode.getRealKey();
+			KeyMapping nextPage = Objects.requireNonNull(KeyMapping.get("key.jei.nextPage"));
+			KeyMapping previousPage = Objects.requireNonNull(KeyMapping.get("key.jei.previousPage"));
+			KeyMapping editMode = Objects.requireNonNull(KeyMapping.get("key.jei.toggleEditMode"));
+			var originalNext = InputConstants.getKey(nextPage.saveString());
+			var originalPrevious = InputConstants.getKey(previousPage.saveString());
+			var originalEdit = InputConstants.getKey(editMode.saveString());
 			var toggles = Internal.getClientToggleState();
 			boolean originalEditMode = toggles.isEditModeEnabled();
 			try {
@@ -301,8 +300,8 @@ public class JeiGuiResizeClientGameTest implements FabricClientGameTest {
 
 	private static <T> void assertMouseRecipeShortcut(String keyName, Supplier<T> state, T expected) {
 		var screen = Objects.requireNonNull(Minecraft.getInstance().gui.screen());
-		FabricKeyMapping mapping = (FabricKeyMapping) Objects.requireNonNull(KeyMapping.get(keyName));
-		var originalKey = mapping.getRealKey();
+		KeyMapping mapping = Objects.requireNonNull(KeyMapping.get(keyName));
+		var originalKey = InputConstants.getKey(mapping.saveString());
 		try {
 			mapping.setKey(InputConstants.Type.MOUSE.getOrCreate(4));
 			T initial = state.get();
