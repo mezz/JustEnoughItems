@@ -9,34 +9,42 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 public class FabricKeyMapping extends KeyMapping implements ContextAwareKeyMapping {
 	private InputConstants.Key realKey;
 	private final JeiKeyConflictContext context;
-	private final int defaultModifiers;
-	private int modifiers;
+	private final Set<FabricKeyModifier> defaultModifiers;
+	private Set<FabricKeyModifier> modifiers;
 
 	public FabricKeyMapping(String description, InputConstants.Type type, int keyCode, Category category, JeiKeyConflictContext context, JeiKeyModifier modifier) {
 		super(description, type, keyCode, category);
 		this.realKey = getDefaultKey();
 		this.context = context;
-		this.defaultModifiers = FabricKeyModifiers.from(modifier);
+		this.defaultModifiers = FabricKeyModifier.from(modifier);
 		this.modifiers = defaultModifiers;
 		hideFromMinecraftClickDispatch();
 	}
 
-	public int getModifiers() {
+	/** Returns the modifiers restored by the Controls reset action. */
+	public Set<FabricKeyModifier> getDefaultModifiers() {
+		return defaultModifiers;
+	}
+
+	public Set<FabricKeyModifier> getModifiers() {
 		return modifiers;
 	}
 
-	public void setModifiers(int modifiers) {
-		this.modifiers = FabricKeyModifiers.normalize(modifiers);
+	public void setModifiers(Set<FabricKeyModifier> modifiers) {
+		this.modifiers = Set.copyOf(modifiers);
 	}
 
-	/** Rebinds both the key and modifiers, using zero modifiers when unbound. */
-	public void setKeyAndModifiers(InputConstants.Key key, int modifiers) {
+	/** Rebinds both the key and modifiers, clearing modifiers when unbound. */
+	public void setKeyAndModifiers(InputConstants.Key key, Set<FabricKeyModifier> modifiers) {
 		setKey(key);
 		if (key.equals(InputConstants.UNKNOWN)) {
-			modifiers = 0;
+			modifiers = Set.of();
 		}
 		setModifiers(modifiers);
 	}
@@ -56,7 +64,7 @@ public class FabricKeyMapping extends KeyMapping implements ContextAwareKeyMappi
 	public boolean same(KeyMapping binding) {
 		// Special implementation which is aware of the key conflict context.
 		if (binding instanceof FabricKeyMapping other) {
-			return realKey.equals(other.realKey) && modifiers == other.modifiers &&
+			return realKey.equals(other.realKey) && modifiers.equals(other.modifiers) &&
 				(context.conflicts(other.context) || other.context.conflicts(context));
 		} else {
 			// This ensures symmetry between conflicts, as regular keybinds see this one as
@@ -74,14 +82,14 @@ public class FabricKeyMapping extends KeyMapping implements ContextAwareKeyMappi
 	public boolean matches(KeyEvent keyEvent) {
 		return this.realKey.getType() == InputConstants.Type.KEYBOARD &&
 			this.realKey.getValue() == keyEvent.key() &&
-			context.isActive() && matchesModifiers(keyEvent.modifiers(), false);
+			context.isActive() && matchesModifiers(FabricKeyModifier.fromMask(keyEvent.modifiers()), false);
 	}
 
 	@Override
 	public boolean matchesMouse(MouseButtonEvent mouseButtonEvent) {
 		return this.realKey.getType() == InputConstants.Type.MOUSE &&
 			this.realKey.getValue() == mouseButtonEvent.button() &&
-			context.isActive() && matchesModifiers(mouseButtonEvent.modifiers(), false);
+			context.isActive() && matchesModifiers(FabricKeyModifier.fromMask(mouseButtonEvent.modifiers()), false);
 	}
 
 	@Override
@@ -90,12 +98,12 @@ public class FabricKeyMapping extends KeyMapping implements ContextAwareKeyMappi
 		if (isUnbound()) {
 			return keyName;
 		}
-		return FabricKeyModifiers.getCombinedName(modifiers, keyName);
+		return FabricKeyModifier.getCombinedName(modifiers, keyName);
 	}
 
 	@Override
 	public boolean isDefault() {
-		return this.realKey.equals(getDefaultKey()) && modifiers == defaultModifiers;
+		return this.realKey.equals(getDefaultKey()) && modifiers.equals(defaultModifiers);
 	}
 
 	@Override
@@ -107,18 +115,20 @@ public class FabricKeyMapping extends KeyMapping implements ContextAwareKeyMappi
 	public boolean isActiveAndMatches(InputConstants.Key key, boolean allowExtraModifiers) {
 		return !isUnbound() &&
 			this.realKey.equals(key) &&
-			context.isActive() && matchesModifiers(FabricKeyModifiers.current(), allowExtraModifiers);
+			context.isActive() && matchesModifiers(FabricKeyModifier.current(), allowExtraModifiers);
 	}
 
-	private boolean matchesModifiers(int pressed, boolean allowExtraModifiers) {
+	private boolean matchesModifiers(EnumSet<FabricKeyModifier> pressed, boolean allowExtraModifiers) {
 		if (this.realKey.getType() == InputConstants.Type.KEYBOARD) {
-			pressed &= ~FabricKeyModifiers.forKey(this.realKey.getValue());
+			FabricKeyModifier keyModifier = FabricKeyModifier.forKey(this.realKey.getValue());
+			if (keyModifier != null) {
+				pressed.remove(keyModifier);
+			}
 		}
-		pressed = FabricKeyModifiers.normalize(pressed);
-		if (allowExtraModifiers || (modifiers == 0 && context.conflicts(JeiKeyConflictContext.IN_GAME))) {
-			return (pressed & modifiers) == modifiers;
+		if (allowExtraModifiers || (modifiers.isEmpty() && context.conflicts(JeiKeyConflictContext.IN_GAME))) {
+			return pressed.containsAll(modifiers);
 		}
-		return pressed == modifiers;
+		return pressed.equals(modifiers);
 	}
 
 	@Override

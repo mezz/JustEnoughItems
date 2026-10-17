@@ -15,7 +15,6 @@ import net.mezzdev.config.api.value.IConfigValue;
 import net.mezzdev.config.gui.ConfigScreen;
 import net.mezzdev.config.gui.ConfigValueCategoryPath;
 import net.mezzdev.config.gui.api.IConfigScreenValue;
-import net.mezzdev.config.gui.api.IConfigValueEditorSerializer;
 import net.mezzdev.config.gui.entries.ConfigEntryWidget;
 import net.mezzdev.config.gui.model.ConfigScreenModel;
 import net.mezzdev.config.gui.util.ImmutableRect2i;
@@ -89,8 +88,7 @@ final class ConfigScreenClientTest {
 				.filter(widget -> widget.getConfigValue().getLocalizationKey().equals(key))
 				.toList();
 			if (controls.size() != 1 ||
-				!(controls.getFirst().getConfigValue().getSerializer() instanceof IConfigValueEditorSerializer<?> serializer) ||
-				!serializer.getEditorType().getUid().equals(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "alignment"))
+				!controls.getFirst().getConfigValue().getEditorMetadata().getEditorType().getUid().equals(Identifier.fromNamespaceAndPath(ModIds.JEI_ID, "alignment"))
 			) {
 				problems.add("Expected one custom alignment control for " + list + ", found " + controls.size());
 			}
@@ -298,7 +296,7 @@ final class ConfigScreenClientTest {
 		context.getInput().setCursorPos(position[0], position[1]);
 	}
 
-	private static ConfigScreenModel getScreenModel(Screen screen) {
+	static ConfigScreenModel getScreenModel(Screen screen) {
 		if (!(screen instanceof ConfigScreen)) {
 			throw new AssertionError("Expected MezzConfig GUI, got " + screen.getClass().getName());
 		}

@@ -1,6 +1,7 @@
 package mezz.jei.fabric.mixin;
 
 import mezz.jei.fabric.input.FabricKeyMapping;
+import mezz.jei.fabric.input.FabricKeyModifier;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Options;
 import org.spongepowered.asm.mixin.Mixin;
@@ -40,13 +41,13 @@ public class OptionsMixin {
 	private void processJeiModifiers(Options.FieldAccess access, CallbackInfo ci) {
 		for (KeyMapping mapping : keyMappings) {
 			if (mapping instanceof FabricKeyMapping jeiMapping) {
-				int fallbackModifiers = jeiMapping.getModifiers();
+				int fallbackModifiers = FabricKeyModifier.toMask(jeiMapping.getModifiers());
 				if (jei$loadingOptions && !access.process("key_" + mapping.getName(), "").isEmpty()) {
 					// Preserve existing unmodified bindings, including ones using the new default key.
 					fallbackModifiers = 0;
 				}
 				int modifiers = access.process("jei_modifiers_" + mapping.getName(), fallbackModifiers);
-				jeiMapping.setModifiers(modifiers);
+				jeiMapping.setModifiers(FabricKeyModifier.fromMask(modifiers));
 			}
 		}
 	}

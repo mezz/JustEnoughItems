@@ -5,6 +5,8 @@ import mezz.jei.fabric.input.FabricKeyMapping;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 
+import java.util.Set;
+
 /** Temporarily rebinds a key without discarding the active backend's modifier settings. */
 final class KeyMappingTestHelper {
 	private KeyMappingTestHelper() {}
@@ -13,9 +15,9 @@ final class KeyMappingTestHelper {
 		InputConstants.Key originalKey = InputConstants.getKey(mapping.saveString());
 		Runnable restoreModifiers;
 		if (mapping instanceof FabricKeyMapping fabricMapping) {
-			int modifiers = fabricMapping.getModifiers();
+			var modifiers = fabricMapping.getModifiers();
 			restoreModifiers = () -> fabricMapping.setModifiers(modifiers);
-			fabricMapping.setKeyAndModifiers(key, 0);
+			fabricMapping.setKeyAndModifiers(key, Set.of());
 		} else {
 			if (FabricLoader.getInstance().isModLoaded("amecs_key_modifiers")) {
 				restoreModifiers = AmecsKeyModifiersClientGameTestHelper.saveModifiers(mapping);

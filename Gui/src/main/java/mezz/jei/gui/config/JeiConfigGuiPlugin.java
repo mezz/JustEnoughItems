@@ -13,6 +13,7 @@ import net.mezzdev.config.api.value.serializer.IConfigValueSerializer;
 import net.mezzdev.config.gui.api.ConfigGuiPlugin;
 import net.mezzdev.config.gui.api.IConfigGuiPlugin;
 import net.mezzdev.config.gui.api.IConfigGuiRegistration;
+import net.mezzdev.config.gui.api.IConfigValueEditorMetadataFactory;
 import net.mezzdev.config.gui.api.IConfigScreenCategoryBuilder;
 import net.mezzdev.config.gui.api.IConfigScreenBuilder;
 import net.mezzdev.config.gui.api.IConfigScreenFactory;
@@ -61,7 +62,7 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 			ConfigScreenCategories categories = configureCategories(screenBuilder);
 			Internal.getOptionalJeiRuntime()
 				.ifPresent(runtime -> {
-					configureRuntimeToggleValues(categories);
+					configureRuntimeToggleValues(categories, registration.getEditorMetadataFactory());
 					if (Internal.getJeiFeatures().isJeiGuiEnabled()) {
 						configureSortingOrderCategories(categories, runtime, JeiGuiSortingConfigRegistration.get());
 					}
@@ -206,11 +207,12 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 			.addValue(config.layoutMode());
 	}
 
-	private static void configureRuntimeToggleValues(ConfigScreenCategories categories) {
+	private static void configureRuntimeToggleValues(ConfigScreenCategories categories, IConfigValueEditorMetadataFactory metadataFactory) {
 		IClientConfigs clientConfigs = Internal.getClientConfigs();
 		IClientConfig clientConfig = clientConfigs.getClientConfig();
 		IClientToggleState toggleState = Internal.getClientToggleState();
 		IConfigValueSerializer<Boolean> serializer = clientConfig.cheatToHotbarUsingHotkeysEnabled().getEditorInfo().getSerializer();
+		var metadata = metadataFactory.create(serializer, false);
 
 		categories.bookmarkList()
 			.addScreenValue(new RuntimeToggleScreenValue(
@@ -220,7 +222,7 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 				toggleState::isBookmarkEnabled,
 				toggleState::setBookmarkEnabled,
 				toggleState::addBookmarkEnabledListener,
-				serializer
+				metadata
 			));
 
 		categories.cheating()
@@ -232,7 +234,7 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 				toggleState::isCheatItemsEnabled,
 				value -> CheatModeUtil.setCheatModeEnabled(toggleState, value),
 				toggleState::addCheatItemsEnabledListener,
-				serializer
+				metadata
 			));
 
 		categories.advanced()
@@ -243,7 +245,7 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 				toggleState::isEditModeEnabled,
 				toggleState::setEditModeEnabled,
 				toggleState::addEditModeEnabledListener,
-				serializer
+				metadata
 			));
 	}
 

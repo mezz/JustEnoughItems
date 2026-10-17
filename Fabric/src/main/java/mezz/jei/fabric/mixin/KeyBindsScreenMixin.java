@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.fabric.input.FabricKeyMapping;
 import mezz.jei.fabric.input.ContextAwareKeyMapping;
-import mezz.jei.fabric.input.FabricKeyModifiers;
+import mezz.jei.fabric.input.FabricKeyModifier;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.Screen;
@@ -50,9 +50,13 @@ public abstract class KeyBindsScreenMixin extends OptionsSubScreen {
 			if (event.isEscape()) {
 				key = InputConstants.UNKNOWN;
 			}
-			int modifier = FabricKeyModifiers.forKey(event.key());
-			mapping.setKeyAndModifiers(key, event.modifiers() & ~modifier);
-			if (modifier != 0) {
+			FabricKeyModifier modifier = FabricKeyModifier.forKey(event.key());
+			var modifiers = FabricKeyModifier.fromMask(event.modifiers());
+			if (modifier != null) {
+				modifiers.remove(modifier);
+			}
+			mapping.setKeyAndModifiers(key, modifiers);
+			if (modifier != null) {
 				// Record a standalone modifier while waiting for a possible shortcut key.
 				jei$pendingModifier = key;
 				keyBindsList.resetMappingAndUpdateButtons();
@@ -78,7 +82,7 @@ public abstract class KeyBindsScreenMixin extends OptionsSubScreen {
 	)
 	private void bindJeiMouse(MouseButtonEvent event, boolean doubleClick, CallbackInfoReturnable<Boolean> cir) {
 		if (selectedKey instanceof FabricKeyMapping mapping) {
-			mapping.setModifiers(event.modifiers());
+			mapping.setModifiers(FabricKeyModifier.fromMask(event.modifiers()));
 			jei$pendingModifier = null;
 		}
 	}

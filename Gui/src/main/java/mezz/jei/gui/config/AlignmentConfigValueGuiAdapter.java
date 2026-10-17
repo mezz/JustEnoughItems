@@ -4,11 +4,10 @@ import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import net.mezzdev.config.api.value.IConfigValue;
-import net.mezzdev.config.api.value.serializer.IDeserializeResult;
 import net.mezzdev.config.gui.api.ConfigValueApplyMode;
 import net.mezzdev.config.gui.api.ConfigValueEditorType;
 import net.mezzdev.config.gui.api.IConfigScreenValue;
-import net.mezzdev.config.gui.api.IConfigValueEditorSerializer;
+import net.mezzdev.config.gui.api.IConfigValueEditorMetadata;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
@@ -20,7 +19,7 @@ import java.util.function.Consumer;
  */
 final class AlignmentConfigValueGuiAdapter implements IConfigScreenValue<Alignment> {
 	public static final ConfigValueEditorType<Alignment> EDITOR_TYPE = ConfigValueEditorType.create(ModIds.JEI_ID, "alignment");
-	private static final IConfigValueEditorSerializer<Alignment> SERIALIZER = new AlignmentSerializer();
+	private static final IConfigValueEditorMetadata<Alignment> METADATA = new AlignmentMetadata();
 
 	private final String localizationKey;
 	private final IConfigValue<HorizontalAlignment> horizontalAlignment;
@@ -61,7 +60,7 @@ final class AlignmentConfigValueGuiAdapter implements IConfigScreenValue<Alignme
 
 	@Override
 	public boolean set(Alignment value) {
-		if (!SERIALIZER.isValid(value)) {
+		if (!METADATA.isValid(value)) {
 			throw new IllegalArgumentException("Invalid alignment: " + value);
 		}
 		boolean horizontalChanged = horizontalAlignment.set(value.horizontalAlignment());
@@ -85,30 +84,12 @@ final class AlignmentConfigValueGuiAdapter implements IConfigScreenValue<Alignme
 	}
 
 	@Override
-	public IConfigValueEditorSerializer<Alignment> getSerializer() {
-		return SERIALIZER;
+	public IConfigValueEditorMetadata<Alignment> getEditorMetadata() {
+		return METADATA;
 	}
 
-	private static final class AlignmentSerializer implements IConfigValueEditorSerializer<Alignment> {
+	private static final class AlignmentMetadata implements IConfigValueEditorMetadata<Alignment> {
 		private static final List<Alignment> VALID_VALUES = List.of(Alignment.values());
-
-		@Override
-		public String serialize(Alignment value) {
-			return value.name();
-		}
-
-		@Override
-		public IDeserializeResult<Alignment> deserialize(String string) {
-			string = string.trim();
-			if (string.startsWith("\"") && string.endsWith("\"")) {
-				string = string.substring(1, string.length() - 1);
-			}
-			try {
-				return IDeserializeResult.success(Alignment.valueOf(string));
-			} catch (IllegalArgumentException e) {
-				return IDeserializeResult.failure("Invalid alignment name: %s".formatted(e.getMessage()));
-			}
-		}
 
 		@Override
 		public boolean isValid(Alignment value) {
@@ -118,11 +99,6 @@ final class AlignmentConfigValueGuiAdapter implements IConfigScreenValue<Alignme
 		@Override
 		public Optional<List<Alignment>> getAllValidValues() {
 			return Optional.of(VALID_VALUES);
-		}
-
-		@Override
-		public String getValidValuesDescription() {
-			return VALID_VALUES.toString();
 		}
 
 		@Override
