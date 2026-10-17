@@ -154,5 +154,11 @@ jei.tooltip.transfer.max.key=[%s to craft many]
 
 key.jei.toggleCheatModeConfigButton=Toggle Cheat Mode (Config Button)
 
+key.jei.toggleHideIngredientsWhenNotSearching=Toggle Hide Ingredients When Not Searching (Config Button)
+config.jei.advanced.hideIngredientsWhenNotSearching=Hide Ingredients When Not Searching
+config.jei.advanced.hideIngredientsWhenNotSearching.comment=Hide the ingredient list until a search is entered. The search field remains available.
+jei.tooltip.ingredient.list.hidden.when.not.searching=Ingredients are hidden until you search.
+jei.tooltip.ingredient.list.show.always.hotkey=Press %s over this button to always show ingredients.
+
 key.jei.cheatOneItemToInventory=Cheat One Item to Inventory
 key.jei.cheatItemStackToInventory=Cheat One Stack to Inventory

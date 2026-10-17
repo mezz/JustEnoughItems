@@ -212,6 +212,19 @@ public final class Config {
 		}
 	}
 
+	public static boolean isHideIngredientsWhenNotSearchingEnabled() {
+		return values.hideIngredientsWhenNotSearching;
+	}
+
+	public static void toggleHideIngredientsWhenNotSearching() {
+		values.hideIngredientsWhenNotSearching = !values.hideIngredientsWhenNotSearching;
+		if (config != null) {
+			config.get(CATEGORY_ADVANCED, "hideIngredientsWhenNotSearching", defaultValues.hideIngredientsWhenNotSearching)
+				.set(values.hideIngredientsWhenNotSearching);
+			config.save();
+		}
+	}
+
 	public static int getMaxColumns() {
 		return values.maxColumns;
 	}
@@ -422,6 +435,7 @@ public final class Config {
 		categoryAdvanced.remove("maxSubtypes");
 
 		values.centerSearchBarEnabled = config.getBoolean(CATEGORY_ADVANCED, "centerSearchBarEnabled", defaultValues.centerSearchBarEnabled);
+		values.hideIngredientsWhenNotSearching = config.getBoolean(CATEGORY_ADVANCED, "hideIngredientsWhenNotSearching", defaultValues.hideIngredientsWhenNotSearching);
 
 		values.optimizeMemoryUsage = config.getBoolean(CATEGORY_ADVANCED, "optimizeMemoryUsage", defaultValues.optimizeMemoryUsage);
 

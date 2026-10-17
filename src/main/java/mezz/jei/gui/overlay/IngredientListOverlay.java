@@ -76,7 +76,11 @@ public class IngredientListOverlay implements IIngredientListOverlay, IMouseHand
 	}
 
 	public boolean isListDisplayed() {
-		return isSearchDisplayed() && !ingredientFilter.getIngredientList().isEmpty();
+		return isSearchDisplayed() && !isListHiddenWhenNotSearching() && !ingredientFilter.getIngredientList().isEmpty();
+	}
+
+	boolean isListHiddenWhenNotSearching() {
+		return Config.isHideIngredientsWhenNotSearchingEnabled() && Config.getFilterText().codePoints().allMatch(Character::isWhitespace);
 	}
 
 	boolean hasRoom() {

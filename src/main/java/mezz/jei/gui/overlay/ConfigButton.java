@@ -38,6 +38,11 @@ public class ConfigButton extends GuiIconToggleButton {
 			tooltip.add(TextFormatting.GOLD + Translator.translateToLocalFormatted("jei.tooltip.ingredient.list.disabled.how.to.fix", KeyBindings.toggleOverlay.getDisplayName()));
 		} else if (!parent.hasRoom()) {
 			tooltip.add(TextFormatting.GOLD + Translator.translateToLocal("jei.tooltip.not.enough.space"));
+		} else if (parent.isListHiddenWhenNotSearching()) {
+			tooltip.add(TextFormatting.GOLD + Translator.translateToLocal("jei.tooltip.ingredient.list.hidden.when.not.searching"));
+		}
+		if (Config.isOverlayEnabled() && Config.isHideIngredientsWhenNotSearchingEnabled() && KeyBindings.toggleHideIngredientsWhenNotSearching.getKeyCode() != 0) {
+			tooltip.add(Translator.translateToLocalFormatted("jei.tooltip.ingredient.list.show.always.hotkey", KeyBindings.toggleHideIngredientsWhenNotSearching.getDisplayName()));
 		}
 		if (Config.isCheatItemsEnabled()) {
 			tooltip.add(TextFormatting.RED + Translator.translateToLocal("jei.tooltip.cheat.mode.button.enabled"));
@@ -51,10 +56,15 @@ public class ConfigButton extends GuiIconToggleButton {
 	}
 
 	public boolean handleKeyPressed(int eventKey) {
-		if (Config.isOverlayEnabled() && isMouseOver(MouseHelper.getX(), MouseHelper.getY()) &&
-			KeyBindings.toggleCheatModeConfigButton.isActiveAndMatches(eventKey)) {
-			Config.toggleCheatItemsEnabled();
-			return true;
+		if (Config.isOverlayEnabled() && isMouseOver(MouseHelper.getX(), MouseHelper.getY())) {
+			if (KeyBindings.toggleCheatModeConfigButton.isActiveAndMatches(eventKey)) {
+				Config.toggleCheatItemsEnabled();
+				return true;
+			}
+			if (KeyBindings.toggleHideIngredientsWhenNotSearching.isActiveAndMatches(eventKey)) {
+				Config.toggleHideIngredientsWhenNotSearching();
+				return true;
+			}
 		}
 		return false;
 	}

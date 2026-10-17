@@ -6,6 +6,7 @@ public class ConfigValues {
 	// advanced
 	public boolean debugModeEnabled = false;
 	public boolean centerSearchBarEnabled = false;
+	public boolean hideIngredientsWhenNotSearching = false;
 	public boolean optimizeMemoryUsage = true;
 	public boolean addBookmarksToFront = true;
 	public GiveMode giveMode = GiveMode.MOUSE_PICKUP;
