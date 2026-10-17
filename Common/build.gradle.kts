@@ -21,11 +21,10 @@ val jUnitVersion = gradleProperty("jUnitVersion")
 val minecraftVersion = gradleProperty("minecraftVersion")
 val modId = gradleProperty("modId")
 val modJavaVersion = gradleProperty("modJavaVersion")
-val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
-val suffixtreeVersion = gradleProperty("suffixtreeVersion")
 val deduplicatingRunnerVersion = gradleProperty("deduplicatingRunnerVersion")
 val mezzConfigApiDependency: String by rootProject.extra
 val mezzConfigForgeDependency: String by rootProject.extra
+val luceneVersion = gradleProperty("luceneVersion")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
 base {
@@ -87,18 +86,7 @@ dependencies {
         isTransitive = false
     }
     implementation(mezzConfigApiDependency)
-    implementation(
-        group = "net.mezzdev",
-        name = "baked-substring-index",
-        version = bakedSubstringIndexVersion
-    ) {
-        isTransitive = false
-    }
-    implementation(
-        group = "net.mezzdev",
-        name = "suffixtree",
-        version = suffixtreeVersion
-    ) {
+    implementation("org.apache.lucene:lucene-core:${luceneVersion}") {
         isTransitive = false
     }
     dependencyProjects.forEach {

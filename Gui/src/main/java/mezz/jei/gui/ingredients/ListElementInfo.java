@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -148,11 +147,10 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		for (FormattedText component : tooltip) {
 			String string = component.getString();
 			string = StringUtil.removeChatFormatting(string);
-			string = Translator.toLowercaseWithLocale(string);
-			// Split tooltip strings into words to keep them from being too long.
-			// Longer strings are more expensive for the suffix tree to handle.
-			String[] strings = string.split(" ");
-			Collections.addAll(result, strings);
+			string = Translator.toLowercaseWithLocale(string).trim();
+			if (!string.isEmpty()) {
+				result.add(string);
+			}
 		}
 		return result;
 	}
@@ -195,8 +193,10 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 			if (itemGroup.contains(itemStack)) {
 				String name = itemGroup.getDisplayName().getString();
 				name = StringUtil.removeChatFormatting(name);
-				name = Translator.toLowercaseWithLocale(name);
-				Collections.addAll(creativeTabStrings, name.split(" "));
+				name = Translator.toLowercaseWithLocale(name).trim();
+				if (!name.isEmpty()) {
+					creativeTabStrings.add(name);
+				}
 			}
 		}
 		return creativeTabStrings;

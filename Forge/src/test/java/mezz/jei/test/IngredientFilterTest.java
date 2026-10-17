@@ -19,8 +19,7 @@ import mezz.jei.common.config.IIngredientFilterConfig;
 import mezz.jei.common.config.IIngredientGridConfig;
 import mezz.jei.common.config.ClientToggleState;
 import mezz.jei.common.config.SearchMode;
-import mezz.jei.common.search.GeneralizedSuffixTreeSearchStorage;
-import mezz.jei.common.search.SearchStorageBuilderAdapter;
+import mezz.jei.common.search.LuceneSearchStorageBuilder;
 import mezz.jei.common.util.Translator;
 import mezz.jei.gui.filter.FilterTextSource;
 import mezz.jei.gui.filter.IFilterTextSource;
@@ -94,7 +93,7 @@ public class IngredientFilterTest {
 
 	@BeforeEach
 	public void setup() {
-		setup(false);
+		setupFilter();
 	}
 
 	@AfterEach
@@ -102,7 +101,7 @@ public class IngredientFilterTest {
 		Internal.getOptionalClientConfigs().ifPresent(IClientConfigs::onRuntimeStopped);
 	}
 
-	private void setup(boolean lowMemorySlowSearchEnabled) {
+	private void setupFilter() {
 		TestPlugin testPlugin = new TestPlugin();
 
 		SubtypeInterpreters subtypeInterpreters = new SubtypeInterpreters();
@@ -124,7 +123,7 @@ public class IngredientFilterTest {
 				return Set.of();
 			}
 		};
-		IClientConfig clientConfig = new TestClientConfig(lowMemorySlowSearchEnabled);
+		IClientConfig clientConfig = new TestClientConfig();
 
 		this.ingredientFilterConfig = new TestIngredientFilterConfig();
 		TestIngredientFilterConfig ingredientFilterConfig = this.ingredientFilterConfig;
@@ -172,6 +171,20 @@ public class IngredientFilterTest {
 		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientList.size());
 	}
 
+	@Test
+	public void testRuntimeIngredientsRemainSearchableAfterReload() {
+		Assertions.assertNotNull(ingredientFilter);
+		Assertions.assertNotNull(ingredientManager);
+		Assertions.assertNotNull(filterTextSource);
+		TestIngredient ingredient = new TestIngredient(42);
+		ingredientManager.addIngredientsAtRuntime(TestIngredient.TYPE, List.of(ingredient));
+		filterTextSource.setFilterText("testingredient#42");
+		Assertions.assertEquals(List.of(ingredient), ingredientFilter.getFilteredIngredients(TestIngredient.TYPE));
+
+		ingredientFilter.rebuildItemFilter();
+		Assertions.assertEquals(List.of(ingredient), ingredientFilter.getFilteredIngredients(TestIngredient.TYPE));
+	}
+
 	@ParameterizedTest
 	@CsvSource({
 		"tr-TR, en-US, ingredient",
@@ -184,7 +197,7 @@ public class IngredientFilterTest {
 			Locale minecraftLocale = Locale.forLanguageTag(minecraftLanguageTag);
 			Translator.setLocaleSupplier(() -> minecraftLocale);
 			// Build the search index with the same language that JEI uses for the query.
-			setup(false);
+			setupFilter();
 			Assertions.assertNotNull(ingredientFilter);
 			Assertions.assertNotNull(filterTextSource);
 			Assertions.assertNotNull(ingredientFilterConfig);
@@ -296,8 +309,7 @@ public class IngredientFilterTest {
 	}
 
 	@Test
-	public void testUnhidingIngredientsWithLowMemorySearch() {
-		setup(true);
+	public void testUnhidingIngredients() {
 		Assertions.assertNotNull(ingredientFilter);
 		Assertions.assertNotNull(ingredientManager);
 		Assertions.assertNotNull(ingredientVisibility);
@@ -436,23 +448,6 @@ public class IngredientFilterTest {
 		filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
 		Assertions.assertFalse(filteredIngredients.contains(ALIASED_INGREDIENT));
 		Assertions.assertEquals(List.of("unprefixed"), searchStorageBuilderFactory.getAndClearCreatedIds());
-	}
-
-	@Test
-	public void testIngredientAliasesCanBeToggledWithLowMemorySearch() {
-		setup(true);
-		Assertions.assertNotNull(ingredientFilter);
-		Assertions.assertNotNull(filterTextSource);
-		Assertions.assertNotNull(ingredientFilterConfig);
-		Assertions.assertNotNull(searchStorageBuilderFactory);
-
-		filterTextSource.setFilterText(INGREDIENT_ALIAS);
-		Assertions.assertFalse(ingredientFilter.getFilteredIngredients(TestIngredient.TYPE).contains(ALIASED_INGREDIENT));
-
-		ingredientFilterConfig.searchIngredientAliases().set(true);
-		List<TestIngredient> filteredIngredients = ingredientFilter.getFilteredIngredients(TestIngredient.TYPE);
-		Assertions.assertEquals(List.of(ALIASED_INGREDIENT), filteredIngredients);
-		Assertions.assertTrue(searchStorageBuilderFactory.getAndClearCreatedIds().isEmpty());
 	}
 
 	@Test
@@ -655,7 +650,7 @@ public class IngredientFilterTest {
 
 		@Override
 		public <T> ISearchStorageBuilder<T> create() {
-			return new SearchStorageBuilderAdapter<>(new GeneralizedSuffixTreeSearchStorage<>());
+			return new LuceneSearchStorageBuilder<>();
 		}
 
 		@Override

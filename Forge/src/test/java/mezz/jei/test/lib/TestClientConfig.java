@@ -38,7 +38,6 @@ public class TestClientConfig implements IClientConfig {
 	private final IConfigValue<HistoryDisplaySide> lookupHistoryDisplaySide = value("lookupHistoryDisplaySide", HistoryDisplaySide.LEFT);
 	private final IConfigValue<Boolean> ingredientsSummaryEnabled = value("ingredientsSummaryEnabled", true);
 	private final IConfigValue<Boolean> showTagRecipesEnabled = value("showTagRecipesEnabled", false);
-	private final IConfigValue<Boolean> lowMemorySlowSearchEnabled;
 	private final IConfigValue<Boolean> catchRenderErrorsEnabled = value("catchRenderErrorsEnabled", false);
 	private final IConfigValue<Boolean> recipeSyncWarningEnabled = value("recipeSyncWarningEnabled", true);
 	private final IConfigValue<Boolean> lookupFluidContentsEnabled = value("lookupFluidContentsEnabled", false);
@@ -56,10 +55,6 @@ public class TestClientConfig implements IClientConfig {
 	private final IConfigValue<Boolean> recipeSortingCraftableEnabled = value("recipeSortingCraftableEnabled", false);
 	private final IConfigValue<Boolean> tagContentTooltipEnabled = value("tagContentTooltipEnabled", true);
 	private final IConfigValue<Boolean> hideSingleTagContentTooltipEnabled = value("hideSingleTagContentTooltipEnabled", true);
-
-	public TestClientConfig(boolean lowMemorySlowSearchEnabled) {
-		this.lowMemorySlowSearchEnabled = value("lowMemorySlowSearchEnabled", lowMemorySlowSearchEnabled);
-	}
 
 	private static <T> IConfigValue<T> value(String name, T value) {
 		return new TestJeiConfigValue<>(name, value);
@@ -188,11 +183,6 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Boolean> showTagRecipesEnabled() {
 		return showTagRecipesEnabled;
-	}
-
-	@Override
-	public IConfigValue<Boolean> lowMemorySlowSearchEnabled() {
-		return lowMemorySlowSearchEnabled;
 	}
 
 	@Override

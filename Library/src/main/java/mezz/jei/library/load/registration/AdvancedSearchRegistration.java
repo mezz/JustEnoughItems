@@ -4,7 +4,7 @@ import mezz.jei.api.registration.IAdvancedSearchRegistration;
 import mezz.jei.api.search.ISearchStorageBuilder;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.api.search.ISearchStorageFactory;
-import mezz.jei.common.search.BakedSubstringIndexBuilder;
+import mezz.jei.common.search.LuceneSearchStorageBuilder;
 import mezz.jei.common.search.SearchStorageBuilderAdapter;
 import mezz.jei.common.util.ErrorUtil;
 import org.apache.logging.log4j.LogManager;
@@ -21,7 +21,7 @@ public class AdvancedSearchRegistration implements IAdvancedSearchRegistration {
 	private final ISearchStorageBuilderFactory defaultSearchStorageBuilderFactory;
 
 	public AdvancedSearchRegistration() {
-		this(BakedSubstringIndexBuilder::new);
+		this(LuceneSearchStorageBuilder::new);
 	}
 
 	public AdvancedSearchRegistration(ISearchStorageBuilderFactory defaultSearchStorageBuilderFactory) {

@@ -36,8 +36,7 @@ val mezzConfigCurseForgeProjectSlug = gradleProperty("mezzConfigCurseForgeProjec
 val mezzConfigModrinthProjectId = gradleProperty("mezzConfigModrinthProjectId")
 val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForgeProjectSlug")
 val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
-val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
-val suffixtreeVersion = gradleProperty("suffixtreeVersion")
+val luceneVersion = gradleProperty("luceneVersion")
 val deduplicatingRunnerVersion = gradleProperty("deduplicatingRunnerVersion")
 val mezzConfigVersion = gradleProperty("mezzConfigVersion")
 val mezzConfigVersionRange = gradleProperty("mezzConfigVersionRange")
@@ -139,13 +138,10 @@ dependencies {
 		testImplementation(it)
 		add(gameTestSourceSet.implementationConfigurationName, it)
 	}
-	modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
+	modShadeImplementation("org.apache.lucene:lucene-core:${luceneVersion}") {
 		isTransitive = false
 	}
 	modShadeImplementation("net.mezzdev:deduplicating-runner:${deduplicatingRunnerVersion}") {
-		isTransitive = false
-	}
-	modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
 		isTransitive = false
 	}
 	changelogHtml(project(":Changelog"))
