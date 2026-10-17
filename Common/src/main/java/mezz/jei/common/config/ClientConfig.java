@@ -51,7 +51,6 @@ public final class ClientConfig implements IClientConfig {
 	private final IConfigValue<Boolean> showTagRecipesEnabled;
 
 	// advanced
-	private final IConfigValue<Boolean> lowMemorySlowSearchEnabled;
 	private final IConfigValue<Boolean> catchRenderErrorsEnabled;
 	private final IConfigValue<Boolean> recipeSyncWarningEnabled;
 	private final IConfigValue<Boolean> lookupFluidContentsEnabled;
@@ -281,10 +280,6 @@ public final class ClientConfig implements IClientConfig {
 		recipeSyncWarningEnabled = advanced.addBoolean("recipeSyncWarningEnabled", true)
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
-		lowMemorySlowSearchEnabled = advanced.addBoolean("lowMemorySlowSearchEnabled", false)
-			.addLegacyValue("performance", "lowMemorySlowSearchEnabled")
-			.setEditMode(ConfigValueEditMode.BATCH)
-			.build();
 	}
 
 	private static BookmarkAddPosition bookmarkAddPositionFromLegacyBoolean(boolean value) {
@@ -426,11 +421,6 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Boolean> ingredientsSummaryEnabled() {
 		return ingredientsSummaryEnabled;
-	}
-
-	@Override
-	public IConfigValue<Boolean> lowMemorySlowSearchEnabled() {
-		return lowMemorySlowSearchEnabled;
 	}
 
 	@Override

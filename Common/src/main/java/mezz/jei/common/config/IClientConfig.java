@@ -65,8 +65,6 @@ public interface IClientConfig {
 
 	IConfigValue<Boolean> showTagRecipesEnabled();
 
-	IConfigValue<Boolean> lowMemorySlowSearchEnabled();
-
 	IConfigValue<Boolean> catchRenderErrorsEnabled();
 
 	IConfigValue<Boolean> recipeSyncWarningEnabled();
@@ -111,14 +109,6 @@ public interface IClientConfig {
 
 	default void addMaxRecipeGuiHeightListener(Consumer<Integer> listener) {
 		addListener(maxRecipeGuiHeight(), listener);
-	}
-
-	default boolean isLowMemorySlowSearchEnabled() {
-		return lowMemorySlowSearchEnabled().get();
-	}
-
-	default void addLowMemorySlowSearchEnabledListener(Consumer<Boolean> listener) {
-		addListener(lowMemorySlowSearchEnabled(), listener);
 	}
 
 	default boolean isCatchRenderErrorsEnabled() {

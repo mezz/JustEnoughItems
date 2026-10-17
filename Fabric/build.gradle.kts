@@ -46,8 +46,6 @@ val minecraftVersion = gradleProperty("minecraftVersion")
 val modGroup = gradleProperty("modGroup")
 val modId = gradleProperty("modId")
 val modJavaVersion = gradleProperty("modJavaVersion")
-val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
-val suffixtreeVersion = gradleProperty("suffixtreeVersion")
 val parchmentVersionFabric = gradleProperty("parchmentVersionFabric")
 val parchmentMinecraftVersion = gradleProperty("parchmentMinecraftVersion")
 val modrinthId = gradleProperty("modrinthId")
@@ -62,6 +60,7 @@ val mezzConfigApiDependency: String by rootProject.extra
 val mezzConfigFabricDependency: String by rootProject.extra
 val mezzConfigGuiApiDependency: String by rootProject.extra
 val mezzConfigGuiFabricDependency: String by rootProject.extra
+val luceneVersion = gradleProperty("luceneVersion")
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken: String? by project
@@ -212,10 +211,7 @@ dependencies {
     }
     changelogHtml(project(":Changelog"))
     changelogMarkdown(project(":Changelog"))
-    modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
-        isTransitive = false
-    }
-    modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
+    modShadeImplementation("org.apache.lucene:lucene-core:${luceneVersion}") {
         isTransitive = false
     }
     embeddedLibraries("net.mezzdev:deduplicating-runner:${deduplicatingRunnerVersion}") {

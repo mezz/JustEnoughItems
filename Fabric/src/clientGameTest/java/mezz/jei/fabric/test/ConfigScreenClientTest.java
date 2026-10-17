@@ -135,7 +135,7 @@ final class ConfigScreenClientTest {
 				clientConfig.maxLookupHistoryIngredients(), clientConfig.lookupHistoryDisplaySide()
 			),
 			List.of("advanced"), List.of(
-				clientConfig.catchRenderErrorsEnabled(), clientConfig.recipeSyncWarningEnabled(), clientConfig.lowMemorySlowSearchEnabled()
+				clientConfig.catchRenderErrorsEnabled(), clientConfig.recipeSyncWarningEnabled()
 			)
 		);
 		expectedGroups.forEach((expectedPath, values) -> {

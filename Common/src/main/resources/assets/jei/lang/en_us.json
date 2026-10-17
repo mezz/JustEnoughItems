@@ -335,10 +335,6 @@
 
   "jei.config.client.performance": "Performance",
   "jei.config.client.performance.description": "Options that trade speed for lower memory use.",
-  "jei.config.client.advanced.lowMemorySlowSearchEnabled": "Use Less Memory for Search",
-  "jei.config.client.advanced.lowMemorySlowSearchEnabled.description": "Use less memory for ingredient search. Searching will be slower.",
-  "jei.config.client.advanced.lowMemorySlowSearchEnabled.value.true.description": "Use less memory and search more slowly.",
-  "jei.config.client.advanced.lowMemorySlowSearchEnabled.value.false.description": "Use normal search speed and memory.",
 
   "jei.config.client.advanced": "Advanced",
   "jei.config.client.advanced.description": "Options for troubleshooting and unusual cases.",

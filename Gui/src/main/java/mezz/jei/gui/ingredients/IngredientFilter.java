@@ -25,7 +25,6 @@ import mezz.jei.gui.overlay.elements.IngredientElement;
 import mezz.jei.gui.search.ElementPrefixParser;
 import mezz.jei.gui.search.ElementSearch;
 import mezz.jei.gui.search.ElementSearchIndex;
-import mezz.jei.gui.search.ElementSearchLowMem;
 import mezz.jei.gui.search.IElementSearch;
 import mezz.jei.gui.search.ISearchCompletionProvider;
 import mezz.jei.gui.search.SearchTokenizer;
@@ -56,7 +55,6 @@ public class IngredientFilter
 		ISearchCompletionProvider {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private final IClientConfig clientConfig;
 	private final IIngredientFilterConfig config;
 	private final IFilterTextSource filterTextSource;
 	private final IIngredientManager ingredientManager;
@@ -76,7 +74,6 @@ public class IngredientFilter
 	private List<IListElementInfo<?>> elementInfoCache;
 	private long completionRevision;
 	private final Set<ElementSearchIndex> dirtySearchIndexes = EnumSet.noneOf(ElementSearchIndex.class);
-	private boolean searchImplementationDirty;
 	private boolean sortIndexesDirty;
 
 	public IngredientFilter(
@@ -94,7 +91,6 @@ public class IngredientFilter
 		IWorldConfig worldConfig
 	) {
 		this.filterTextSource = filterTextSource;
-		this.clientConfig = clientConfig;
 		this.config = config;
 		this.ingredientManager = ingredientManager;
 		this.sortIndexUpdater = sortIndexUpdater;
@@ -103,7 +99,7 @@ public class IngredientFilter
 		this.ingredientVisibility = ingredientVisibility;
 		this.ingredientTypeSortingConfig = ingredientTypeSortingConfig;
 		this.elementPrefixParser = new ElementPrefixParser(ingredientManager, config, colorHelper, modIdHelper, searchStorageBuilderFactory);
-		this.elementSearch = createElementSearch(clientConfig, elementPrefixParser, ingredients, ingredientManager);
+		this.elementSearch = new ElementSearch(elementPrefixParser, ingredients, ingredientManager);
 		addConfigListeners(clientConfig, config);
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
@@ -129,7 +125,6 @@ public class IngredientFilter
 	}
 
 	private void addConfigListeners(IClientConfig clientConfig, IIngredientFilterConfig config) {
-		Internal.registerRuntimeListenerRemoval(clientConfig.lowMemorySlowSearchEnabled().addListener(v -> markSearchImplementationDirty()));
 		Internal.registerRuntimeListenerRemoval(clientConfig.ingredientSorterStages().addListener(v -> markSortIndexesDirty()));
 
 		addSearchIndexConfigListener(config.modNameSearchMode(), ElementSearchIndex.MOD_NAMES);
@@ -147,19 +142,6 @@ public class IngredientFilter
 
 	private <T> void addSearchIndexConfigListener(IConfigValue<T> configValue, ElementSearchIndex searchIndex) {
 		Internal.registerRuntimeListenerRemoval(configValue.addListener(v -> markSearchIndexDirty(searchIndex)));
-	}
-
-	private static IElementSearch createElementSearch(
-		IClientConfig clientConfig,
-		ElementPrefixParser elementPrefixParser,
-		List<IListElementInfo<?>> elementInfos,
-		IIngredientManager ingredientManager
-	) {
-		if (clientConfig.isLowMemorySlowSearchEnabled()) {
-			return new ElementSearchLowMem(elementPrefixParser.getNoPrefix(), elementInfos);
-		} else {
-			return new ElementSearch(elementPrefixParser, elementInfos, ingredientManager);
-		}
 	}
 
 	public <V> void addIngredient(IListElementInfo<V> info) {
@@ -181,20 +163,14 @@ public class IngredientFilter
 		invalidateCandidateCache();
 		Collection<IListElement<?>> ingredients = this.elementSearch.getAllIngredients();
 		List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, config, modIdHelper);
-		this.ingredientComparator = this.ingredientComparator = this.sortIndexUpdater.apply(elementInfos);
-		this.elementSearch = createElementSearch(this.clientConfig, this.elementPrefixParser, elementInfos, ingredientManager);
+		this.ingredientComparator = this.sortIndexUpdater.apply(elementInfos);
+		this.elementSearch = new ElementSearch(this.elementPrefixParser, elementInfos, ingredientManager);
 		this.dirtySearchIndexes.clear();
-		this.searchImplementationDirty = false;
 		this.sortIndexesDirty = false;
 	}
 
 	private void markSearchIndexDirty(ElementSearchIndex searchIndex) {
 		this.dirtySearchIndexes.add(searchIndex);
-		notifyListenersOfChange();
-	}
-
-	private void markSearchImplementationDirty() {
-		this.searchImplementationDirty = true;
 		notifyListenersOfChange();
 	}
 
@@ -213,11 +189,6 @@ public class IngredientFilter
 	}
 
 	private void updateDirtyState() {
-		if (searchImplementationDirty) {
-			rebuildItemFilter();
-			return;
-		}
-
 		List<IListElementInfo<?>> elementInfos = null;
 		if (!dirtySearchIndexes.isEmpty()) {
 			elementInfos = IngredientListElementFactory.rebuildList(
