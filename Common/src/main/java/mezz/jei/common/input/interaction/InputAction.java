@@ -29,9 +29,10 @@ public record InputAction(Consumer<UserInput> action, Predicate<UserInput> canEx
 		return new InputAction(input -> action.run());
 	}
 
-	/** Requires the pointer to be over the given area when the action runs. */
+	/** Requires mouse releases to remain over the area. Keyboard shortcuts use the target selected on press. */
 	public InputAction within(IMouseOverable area) {
-		return new InputAction(action, input -> canExecute.test(input) && area.isMouseOver(input.getMouseX(), input.getMouseY()));
+		return new InputAction(action, input -> canExecute.test(input) &&
+			(input.isKeyboardInput() || area.isMouseOver(input.getMouseX(), input.getMouseY())));
 	}
 
 	/** Checks a condition before running, such as whether a button is still visible or enabled. */
