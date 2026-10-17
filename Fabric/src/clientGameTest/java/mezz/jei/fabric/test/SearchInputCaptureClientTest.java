@@ -6,7 +6,6 @@ import mezz.jei.common.util.ReflectionUtil;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.test.client.TextInputTestUtil;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -110,7 +109,7 @@ final class SearchInputCaptureClientTest {
 
 	private static void assertEditorPriority(Minecraft client, GuiTextFieldFilter searchField) {
 		KeyMapping editMode = java.util.Arrays.stream(client.options.keyMappings).filter(mapping -> mapping.getName().equals("key.jei.toggleEditMode")).findFirst().orElseThrow();
-		var originalKey = KeyBindingHelper.getBoundKeyOf(editMode);
+		var originalKey = InputConstants.getKey(editMode.saveString());
 		var toggles = Internal.getClientToggleState();
 		boolean originalEditMode = toggles.isEditModeEnabled();
 		String originalText = searchField.getValue();

@@ -6,12 +6,12 @@ import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.IJeiKeyMappingBuilder;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;
-import org.lwjgl.glfw.GLFW;
+import net.fabricmc.loader.api.FabricLoader;
 
 public class FabricJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
-	protected final String category;
-	protected final String description;
-	protected JeiKeyConflictContext context = JeiKeyConflictContext.UNIVERSAL;
+	private final String category;
+	private final String description;
+	private JeiKeyConflictContext context = JeiKeyConflictContext.UNIVERSAL;
 	private JeiKeyModifier modifier = JeiKeyModifier.NONE;
 
 	public FabricJeiKeyMappingBuilder(String category, String description) {
@@ -33,37 +33,26 @@ public class FabricJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
 
 	@Override
 	protected IJeiKeyMappingInternal buildMouse(int mouseButton) {
-		if (hasUnsupportedModifier()) {
-			return buildKeyboardKey(GLFW.GLFW_KEY_UNKNOWN);
-		}
-
-		FabricKeyMapping keyMapping = new FabricKeyMapping(
-			description,
-			InputConstants.Type.MOUSE,
-			mouseButton,
-			category,
-			context
-		);
-		return new FabricJeiKeyMapping<>(keyMapping);
+		return build(InputConstants.Type.MOUSE, mouseButton);
 	}
 
 	@Override
 	public IJeiKeyMappingInternal buildKeyboardKey(int key) {
-		if (hasUnsupportedModifier()) {
-			key = GLFW.GLFW_KEY_UNKNOWN;
-		}
-
-		FabricKeyMapping keyMapping = new FabricKeyMapping(
-			description,
-			InputConstants.Type.KEYSYM,
-			key,
-			category,
-			context
-		);
-		return new FabricJeiKeyMapping<>(keyMapping);
+		return build(InputConstants.Type.KEYSYM, key);
 	}
 
-	private boolean hasUnsupportedModifier() {
-		return modifier != JeiKeyModifier.NONE;
+	private IJeiKeyMappingInternal build(InputConstants.Type type, int key) {
+		if (FabricLoader.getInstance().isModLoaded("amecs_key_modifiers")) {
+			return AmecsSupport.createMapping(description, type, key, category, context, modifier);
+		}
+		FabricKeyMapping keyMapping = new FabricKeyMapping(
+			description,
+			type,
+			key,
+			category,
+			context,
+			modifier
+		);
+		return new FabricJeiKeyMapping<>(keyMapping);
 	}
 }

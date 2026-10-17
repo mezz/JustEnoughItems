@@ -32,6 +32,10 @@ public final class JUnitXmlTestReporter {
 		String testName,
 		ThrowingRunnable test
 	) {
+		String variant = System.getProperty("jei.test.variant", "");
+		if (!variant.isEmpty()) {
+			suiteName += "-" + variant;
+		}
 		long startNanos = System.nanoTime();
 		Throwable failure = null;
 		try {
@@ -54,19 +58,6 @@ public final class JUnitXmlTestReporter {
 		if (failure != null) {
 			rethrow(failure);
 		}
-	}
-
-	public static void runAndReportWithBooleanVariant(
-		String suiteName,
-		String variantProperty,
-		String variantSuffix,
-		String testName,
-		ThrowingRunnable test
-	) {
-		if (Boolean.getBoolean(variantProperty)) {
-			suiteName += "-" + variantSuffix;
-		}
-		runAndReport(suiteName, testName, test);
 	}
 
 	private static Path getOutputDirectory(String suiteName) {

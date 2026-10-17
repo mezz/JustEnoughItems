@@ -3,10 +3,8 @@ package mezz.jei.fabric.test;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.ReflectionUtil;
-import mezz.jei.fabric.input.FabricKeyMapping;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.overlay.IngredientListOverlay;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 
@@ -22,10 +20,10 @@ public class CheatModeKeyClientTest {
 	}
 
 	private static void run(FabricClientTestContext context) {
-		KeyMapping global = context.computeOnClient(client -> java.util.Arrays.stream(client.options.keyMappings).filter(key -> key.getName().equals("key.jei.toggleCheatMode")).findFirst().orElseThrow());
-		KeyMapping hovered = context.computeOnClient(client -> java.util.Arrays.stream(client.options.keyMappings).filter(key -> key.getName().equals("key.jei.toggleCheatModeConfigButton")).findFirst().orElseThrow());
-		InputConstants.Key originalGlobal = context.computeOnClient(client -> boundKey(global));
-		InputConstants.Key originalHovered = context.computeOnClient(client -> boundKey(hovered));
+		KeyMapping global = context.computeOnClient(client -> java.util.Arrays.stream(client.options.keyMappings).filter(candidate -> candidate.getName().equals("key.jei.toggleCheatMode")).findFirst().orElseThrow());
+		KeyMapping hovered = context.computeOnClient(client -> java.util.Arrays.stream(client.options.keyMappings).filter(candidate -> candidate.getName().equals("key.jei.toggleCheatModeConfigButton")).findFirst().orElseThrow());
+		Runnable restoreGlobal = context.computeOnClient(client -> KeyMappingTestHelper.rebindUnmodified(global, InputConstants.UNKNOWN));
+		Runnable restoreHovered = context.computeOnClient(client -> KeyMappingTestHelper.rebindUnmodified(hovered, InputConstants.UNKNOWN));
 		boolean originalCheat = context.computeOnClient(client -> Internal.getClientToggleState().isCheatItemsEnabled());
 		boolean originalOverlay = context.computeOnClient(client -> Internal.getClientToggleState().isOverlayEnabled());
 		try {
@@ -76,9 +74,8 @@ public class CheatModeKeyClientTest {
 			context.getInput().releaseKey(InputConstants.KEY_LCONTROL);
 			context.getInput().releaseKey(InputConstants.KEY_N);
 			context.runOnClient(client -> {
-				global.setKey(originalGlobal);
-				hovered.setKey(originalHovered);
-				KeyMapping.resetMapping();
+				restoreGlobal.run();
+				restoreHovered.run();
 				Internal.getClientToggleState().setCheatItemsEnabled(originalCheat);
 				Internal.getClientToggleState().setOverlayEnabled(originalOverlay);
 				client.setScreen(null);
@@ -119,13 +116,6 @@ public class CheatModeKeyClientTest {
 			mapping.setKey(key);
 			KeyMapping.resetMapping();
 		});
-	}
-
-	private static InputConstants.Key boundKey(KeyMapping mapping) {
-		if (mapping instanceof FabricKeyMapping fabricMapping) {
-			return InputConstants.getKey(fabricMapping.saveString());
-		}
-		return KeyBindingHelper.getBoundKeyOf(mapping);
 	}
 
 	private static void move(FabricClientTestContext context, int x, int y) {

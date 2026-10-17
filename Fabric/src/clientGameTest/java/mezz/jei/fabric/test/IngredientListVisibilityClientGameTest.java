@@ -33,9 +33,7 @@ public class IngredientListVisibilityClientGameTest {
 				set(cleanup, config.lookupHistoryEnabled(), false);
 				set(cleanup, config.searchBarPosition(), SearchBarPosition.STANDARD);
 				KeyMapping shortcut = java.util.Arrays.stream(client.options.keyMappings).filter(key -> key.getName().equals("key.jei.toggleHideIngredientsWhenNotSearching")).findFirst().orElseThrow();
-				var originalShortcut = net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.getBoundKeyOf(shortcut);
-				cleanup.add(() -> shortcut.setKey(originalShortcut));
-				shortcut.setKey(InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_RIGHT));
+				cleanup.add(KeyMappingTestHelper.rebindUnmodified(shortcut, InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_RIGHT)));
 				set(cleanup, configs.getIngredientListConfig().maxColumns(), 6);
 				set(cleanup, configs.getIngredientListConfig().maxRows(), 4);
 				set(cleanup, configs.getIngredientListConfig().shrinkToFit(), false);
@@ -145,8 +143,8 @@ public class IngredientListVisibilityClientGameTest {
 		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_RIGHT);
 		context.runOnClient(client -> check(setting.get(), "Releasing outside the config button must cancel the shortcut"));
 
-		KeyMapping shortcut = context.computeOnClient(client -> java.util.Arrays.stream(client.options.keyMappings).filter(key -> key.getName().equals("key.jei.toggleHideIngredientsWhenNotSearching")).findFirst().orElseThrow());
-		var originalKey = context.computeOnClient(client -> net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.getBoundKeyOf(shortcut));
+		KeyMapping shortcut = context.computeOnClient(client -> java.util.Arrays.stream(client.options.keyMappings).filter(candidate -> candidate.getName().equals("key.jei.toggleHideIngredientsWhenNotSearching")).findFirst().orElseThrow());
+		var originalKey = context.computeOnClient(client -> InputConstants.getKey(shortcut.saveString()));
 		try {
 			context.runOnClient(client -> {
 				searchField().setFocused(false);

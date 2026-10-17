@@ -14,7 +14,6 @@ import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.textures.Textures;
-import mezz.jei.common.input.keys.JeiKeyModifier;
 import mezz.jei.common.transfer.RecipeTransferErrorInternal;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.transfer.RecipeTransferUtil;
@@ -25,6 +24,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -183,7 +183,7 @@ public class RecipeTransferButtonController implements IIconButtonController {
 		tooltip.addKeyUsageComponent("jei.tooltip.bookmarks.tooltips.transfer.usage", leftClick);
 		tooltip.add(JeiTooltip.createKeyUsageComponent(
 			"jei.tooltip.bookmarks.tooltips.transfer.max.usage",
-			JeiKeyModifier.SHIFT.getCombinedName(leftClick.getTranslatedKeyMessage()).copy()
+			Component.translatable("jei.key.combo.shift", leftClick.getTranslatedKeyMessage()).copy()
 		));
 	}
 

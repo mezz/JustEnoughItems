@@ -53,7 +53,6 @@ val mezzConfigCurseForgeProjectSlug = gradleProperty("mezzConfigCurseForgeProjec
 val mezzConfigModrinthProjectId = gradleProperty("mezzConfigModrinthProjectId")
 val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForgeProjectSlug")
 val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
-val amecsVersionFabric = gradleProperty("amecsVersionFabric")
 val amecsKeyModifiersVersionFabric = gradleProperty("amecsKeyModifiersVersionFabric")
 val amecsMinecraftVersion = gradleProperty("amecsMinecraftVersion")
 val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
@@ -185,16 +184,6 @@ dependencies {
     val jsr305 = "com.google.code.findbugs:jsr305:3.0.1"
     compileOnly(jsr305)
     testCompileOnly(jsr305)
-    modCompileOnly(
-        group = "de.siphalor.amecs.amecs-api-legacy",
-        name = "amecs-api-legacy-${amecsMinecraftVersion}",
-        version = amecsVersionFabric
-    )
-    modLocalRuntime(
-        group = "de.siphalor.amecs.amecs-api-legacy",
-        name = "amecs-api-legacy-${amecsMinecraftVersion}",
-        version = amecsVersionFabric
-    )
     modCompileOnly(
         group = "de.siphalor.amecs.amecs-key-modifiers",
         name = "amecs-key-modifiers-${amecsMinecraftVersion}",
@@ -330,7 +319,8 @@ loom {
             configName = "Fabric Client Game Tests Without AMECS"
             ideConfigGenerated(false)
             runDir(loomRunDir.resolve("clientGameTestWithoutAmecs").toString())
-            property("jei.fabric.clientTest", "withoutAmecs")
+            property("jei.fabric.clientTest", providers.gradleProperty("jeiFabricClientTestSuite").orElse("all").get())
+            property("jei.clientRecipeSyncTest", providers.gradleProperty("jeiClientRecipeSyncTest").orElse("singleplayer").get())
             vmArgs(
                 "-Dfabric.log.level=info"
             )

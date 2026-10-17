@@ -19,13 +19,11 @@ import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import mezz.jei.gui.recipes.RecipeCatalysts;
 import mezz.jei.gui.recipes.RecipesGui;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 
 import java.util.List;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 
@@ -51,11 +49,10 @@ final class RecipeFocusSourceClientTest {
 			var originalVerticalAlignment = verticalAlignment.get();
 			var shrinkToFit = gridConfig.shrinkToFit();
 			boolean originalShrinkToFit = shrinkToFit.get();
-			KeyMapping toggleKey = Arrays.stream(client.options.keyMappings).filter(mapping -> mapping.getName().equals("key.jei.toggleOverlay")).findFirst().orElseThrow();
-			var originalToggleKey = KeyBindingHelper.getBoundKeyOf(toggleKey);
+			KeyMapping toggleKey = java.util.Arrays.stream(client.options.keyMappings).filter(candidate -> candidate.getName().equals("key.jei.toggleOverlay")).findFirst().orElseThrow();
+			Runnable restoreToggleKey = KeyMappingTestHelper.rebindUnmodified(toggleKey, InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_O));
 			try {
 				// An unbound toggle deliberately keeps the ingredient list visible.
-				toggleKey.setKey(InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_O));
 				toggles.setOverlayEnabled(true);
 				toggles.setBookmarkEnabled(true);
 				client.setScreen(new InventoryScreen(Objects.requireNonNull(client.player)));
@@ -153,7 +150,7 @@ final class RecipeFocusSourceClientTest {
 				assertBlocks(container, recipeArea, false, "Closed container");
 			} finally {
 				client.setScreen(null);
-				toggleKey.setKey(originalToggleKey);
+				restoreToggleKey.run();
 				layoutMode.set(originalLayoutMode);
 				verticalAlignment.set(originalVerticalAlignment);
 				shrinkToFit.set(originalShrinkToFit);

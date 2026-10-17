@@ -25,7 +25,6 @@ import mezz.jei.gui.recipes.RecipesGui;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.mezzdev.config.api.value.IConfigValue;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -54,6 +53,8 @@ public class JeiGuiResizeClientGameTest {
 				client.resizeDisplay();
 				var configs = Internal.getClientConfigs();
 				set(cleanup, configs.getClientConfig().guiResizeEnabled(), true);
+				set(cleanup, configs.getClientConfig().hideIngredientsWhenNotSearching(), false);
+				set(cleanup, configs.getClientConfig().toastReflowEnabled(), false);
 				set(cleanup, configs.getClientConfig().recipeGuiWidth(), 240);
 				set(cleanup, configs.getClientConfig().maxRecipeGuiHeight(), 260);
 				set(cleanup, configs.getClientConfig().lookupHistoryEnabled(), false);
@@ -180,7 +181,7 @@ public class JeiGuiResizeClientGameTest {
 			check(pages.getPageCount() > 2, "Expected several pages for shortcut navigation");
 			var screen = Objects.requireNonNull(client.screen);
 			KeyMapping mapping = findKeyMapping("key.jei.nextPage");
-			var originalKey = KeyBindingHelper.getBoundKeyOf(mapping);
+			Runnable restoreBinding = KeyMappingTestHelper.rebindUnmodified(mapping, InputConstants.getKey(mapping.saveString()));
 			try {
 				mapping.setKey(InputConstants.Type.MOUSE.getOrCreate(4));
 				int initialPage = pages.getPageNumber();
@@ -200,7 +201,7 @@ public class JeiGuiResizeClientGameTest {
 				check(bookmarkPages.getPageNumber() == (bookmarkPage + 1) % bookmarkPages.getPageCount(), "The hovered list's keyboard shortcut must advance immediately");
 				check(pages.getPageNumber() == nextPage, "Only the hovered list must advance when both lists use the same shortcut");
 			} finally {
-				mapping.setKey(originalKey);
+				restoreBinding.run();
 			}
 		});
 	}
@@ -213,9 +214,9 @@ public class JeiGuiResizeClientGameTest {
 			KeyMapping nextPage = findKeyMapping("key.jei.nextPage");
 			KeyMapping previousPage = findKeyMapping("key.jei.previousPage");
 			KeyMapping editMode = findKeyMapping("key.jei.toggleEditMode");
-			var originalNext = KeyBindingHelper.getBoundKeyOf(nextPage);
-			var originalPrevious = KeyBindingHelper.getBoundKeyOf(previousPage);
-			var originalEdit = KeyBindingHelper.getBoundKeyOf(editMode);
+			Runnable restoreNext = KeyMappingTestHelper.rebindUnmodified(nextPage, InputConstants.getKey(nextPage.saveString()));
+			Runnable restorePrevious = KeyMappingTestHelper.rebindUnmodified(previousPage, InputConstants.getKey(previousPage.saveString()));
+			Runnable restoreEdit = KeyMappingTestHelper.rebindUnmodified(editMode, InputConstants.getKey(editMode.saveString()));
 			var toggles = Internal.getClientToggleState();
 			boolean originalEditMode = toggles.isEditModeEnabled();
 			try {
@@ -255,9 +256,9 @@ public class JeiGuiResizeClientGameTest {
 				clickShortcut(screen, 0, 0);
 				check(pages.getPageNumber() == (initialPage + 1) % pages.getPageCount(), "An unbound global command must allow the screen-scoped page command");
 			} finally {
-				nextPage.setKey(originalNext);
-				previousPage.setKey(originalPrevious);
-				editMode.setKey(originalEdit);
+				restoreNext.run();
+				restorePrevious.run();
+				restoreEdit.run();
 				toggles.setEditModeEnabled(originalEditMode);
 			}
 		});
@@ -297,7 +298,7 @@ public class JeiGuiResizeClientGameTest {
 	private static <T> void assertMouseRecipeShortcut(String keyName, Supplier<T> state, T expected) {
 		var screen = Objects.requireNonNull(Minecraft.getInstance().screen);
 		KeyMapping mapping = findKeyMapping(keyName);
-		var originalKey = KeyBindingHelper.getBoundKeyOf(mapping);
+		Runnable restoreBinding = KeyMappingTestHelper.rebindUnmodified(mapping, InputConstants.getKey(mapping.saveString()));
 		try {
 			mapping.setKey(InputConstants.Type.MOUSE.getOrCreate(4));
 			T initial = state.get();
@@ -307,7 +308,7 @@ public class JeiGuiResizeClientGameTest {
 			check(!ScreenMouseEvents.allowMouseRelease(screen).invoker().allowMouseRelease(screen, click.x(), click.y(), click.button()), keyName + " must consume the captured release");
 			check(Objects.equals(state.get(), expected), keyName + " must execute outside the panel");
 		} finally {
-			mapping.setKey(originalKey);
+			restoreBinding.run();
 		}
 	}
 
@@ -689,7 +690,7 @@ public class JeiGuiResizeClientGameTest {
 		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_LEFT);
 		context.waitTick();
 		context.runOnClient(client -> {
-			check(area.get().equals(initial), "Disabled resizing must leave the panel unchanged");
+			check(area.get().equals(initial), "Disabled resizing must leave the panel unchanged: initial=" + initial + ", actual=" + area.get());
 			Internal.getClientConfigs().getClientConfig().guiResizeEnabled().set(true);
 		});
 		context.waitTick();

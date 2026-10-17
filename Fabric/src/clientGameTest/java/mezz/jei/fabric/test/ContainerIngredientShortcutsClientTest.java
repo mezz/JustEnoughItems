@@ -76,7 +76,7 @@ public class ContainerIngredientShortcutsClientTest {
 		var ingredient = context.computeOnClient(client -> Internal.getJeiRuntime().getIngredientManager()
 			.createTypedIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.OAK_PLANKS), false).orElseThrow());
 		boolean bookmarked = context.computeOnClient(client -> Internal.getJeiRuntime().getBookmarkManager().contains(ingredient));
-		var bookmarkKey = context.computeOnClient(client -> net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.getBoundKeyOf(java.util.Arrays.stream(client.options.keyMappings).filter(mapping -> mapping.getName().equals("key.jei.bookmark")).findFirst().orElseThrow()));
+		var bookmarkKey = context.computeOnClient(client -> InputConstants.getKey(java.util.Arrays.stream(client.options.keyMappings).filter(candidate -> candidate.getName().equals("key.jei.bookmark")).findFirst().orElseThrow().saveString()));
 		try {
 			context.runOnClient(client -> Internal.getJeiRuntime().getBookmarkManager().remove(ingredient));
 			context.getInput().pressKey(bookmarkKey.getValue());
