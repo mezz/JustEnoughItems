@@ -1,8 +1,8 @@
 package mezz.jei.fabric.test;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.keys.JeiKeyModifier;
 import mezz.jei.fabric.test.mixin.KeyboardHandlerAccessor;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +34,7 @@ public final class FabricClientTestInput {
 	}
 
 	public static void pressKey(KeyMapping keyMapping) {
-		var key = KeyBindingHelper.getBoundKeyOf(keyMapping);
+		var key = InputConstants.getKey(keyMapping.saveString());
 		if (key.getType() != com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM) {
 			throw new IllegalArgumentException("Expected a keyboard mapping, got: " + key.getName());
 		}
@@ -84,7 +84,7 @@ public final class FabricClientTestInput {
 		}
 	}
 
-	private static void setKey(int key, boolean pressed) {
+	static void setKey(int key, boolean pressed) {
 		if (pressed) {
 			KEY_STATES.put(key, true);
 		} else {

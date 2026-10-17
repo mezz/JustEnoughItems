@@ -205,16 +205,6 @@ dependencies {
         version = "3.0.1"
     )
     modCompileOnly(
-        group = "de.siphalor.amecs.amecs-api-legacy",
-        name = "amecs-api-legacy-${amecsMinecraftVersion}",
-        version = amecsVersionFabric
-    )
-    modLocalRuntime(
-        group = "de.siphalor.amecs.amecs-api-legacy",
-        name = "amecs-api-legacy-${amecsMinecraftVersion}",
-        version = amecsVersionFabric
-    )
-    modCompileOnly(
         group = "de.siphalor.amecs.amecs-key-modifiers",
         name = "amecs-key-modifiers-${amecsMinecraftVersion}",
         version = amecsKeyModifiersVersionFabric
@@ -325,7 +315,8 @@ loom {
             configName = "Fabric Client Game Tests"
             ideConfigGenerated(false)
             runDir(loomRunDir.resolve("clientGameTest").toString())
-            property("jei.fabric.clientTest", "all")
+            property("jei.fabric.clientTest", providers.gradleProperty("jeiFabricClientTest").getOrElse("all"))
+            property("jei.clientRecipeSyncTest", providers.gradleProperty("jeiFabricClientRecipeSyncTest").getOrElse("singleplayer"))
             vmArgs(
                 "-Dfabric.log.level=info"
             )
@@ -337,7 +328,8 @@ loom {
             configName = "Fabric Client Game Tests Without AMECS"
             ideConfigGenerated(false)
             runDir(loomRunDir.resolve("clientGameTestWithoutAmecs").toString())
-            property("jei.fabric.clientTest", "keyMapping")
+            property("jei.fabric.clientTest", providers.gradleProperty("jeiFabricClientTest").getOrElse("all"))
+            property("jei.clientRecipeSyncTest", providers.gradleProperty("jeiFabricClientRecipeSyncTest").getOrElse("singleplayer"))
             vmArgs(
                 "-Dfabric.log.level=info"
             )

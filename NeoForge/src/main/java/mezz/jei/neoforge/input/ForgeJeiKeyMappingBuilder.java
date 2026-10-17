@@ -42,7 +42,7 @@ public class ForgeJeiKeyMappingBuilder extends AbstractJeiKeyMappingBuilder {
 	@Override
 	public IJeiKeyMappingBuilder setModifier(JeiKeyModifier modifier) {
 		this.keyModifier = switch (modifier) {
-			case CONTROL_OR_COMMAND -> KeyModifier.CONTROL;
+			case CONTROL, CONTROL_OR_COMMAND -> KeyModifier.CONTROL;
 			case SHIFT -> KeyModifier.SHIFT;
 			case ALT -> KeyModifier.ALT;
 			case NONE -> KeyModifier.NONE;

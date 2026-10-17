@@ -6,9 +6,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.GiveMode;
 import mezz.jei.gui.recipes.RecipesGui;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.server.IntegratedServer;
-import mezz.jei.fabric.input.FabricAmecsSupport;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -32,13 +30,9 @@ final class CheatToInventoryClientGameTest {
 		List<Runnable> cleanup = new ArrayList<>();
 		try {
 			context.runOnClient(client -> {
-				KeyMapping mapping = java.util.Arrays.stream(client.options.keyMappings).filter(key -> key.getName().equals(keyName)).findFirst().orElseThrow();
-				if (FabricAmecsSupport.isEnabled()) {
-					cleanup.add(AmecsKeyMappingClientTestHelper.clearModifiers(mapping));
-				}
-				var originalKey = net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.getBoundKeyOf(mapping);
-				cleanup.add(() -> mapping.setKey(originalKey));
-				mapping.setKey(InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_P));
+				var mapping = java.util.Arrays.stream(client.options.keyMappings).filter(candidate -> candidate.getName().equals(keyName)).findFirst().orElseThrow();
+				check(!mapping.isUnbound(), "JEI's modified shortcuts must be available");
+				cleanup.add(KeyMappingTestHelper.rebindUnmodified(mapping, InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_P)));
 				var toggles = Internal.getClientToggleState();
 				boolean originalCheatMode = toggles.isCheatItemsEnabled();
 				cleanup.add(() -> toggles.setCheatItemsEnabled(originalCheatMode));

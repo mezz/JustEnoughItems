@@ -1,6 +1,5 @@
 package mezz.jei.fabric.test;
 
-import mezz.jei.fabric.input.FabricAmecsSupport;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
@@ -50,7 +49,7 @@ final class FabricClientTestRunner {
 		String testName = "client-startup";
 		try {
 			waitForClientStartup();
-			boolean withoutAmecs = !FabricLoader.getInstance().isModLoaded(FabricAmecsSupport.AMECS_MOD_ID);
+			boolean withoutAmecs = !FabricLoader.getInstance().isModLoaded("amecs_key_modifiers");
 			for (ClientTestCase testCase : testCases) {
 				suiteName = testCase.suiteName();
 				testName = testCase.testName();
