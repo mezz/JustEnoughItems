@@ -314,7 +314,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		registerInputCommands(commands, keys);
 		return InputArea.builder("Ingredients", this)
 			.blockUnhandledMouseInput()
-			.controls(createInputHandler())
+			.controls(createInputHandler(keys))
 			.commands(commands)
 			.dragSources(createDragSources())
 			.build();
@@ -331,13 +331,13 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return controller.hasValidScreen() && toggleState.isOverlayEnabled() && lookupHistoryOverlay.isListDisplayed();
 	}
 
-	private IInputTarget createInputHandler() {
+	private IInputTarget createInputHandler(IInternalKeyMappings keys) {
 		return new InputGroup(
 			"IngredientListOverlay",
 			new Child(this::isHistoryDisplayed, lookupHistoryOverlay.getResizeInputHandler()),
 			new Child(this::isListDisplayed, contents.getResizeInputHandler()),
 			new Child(this::isListDisplayed, contents.createDeleteItemInputHandler()),
-			new Child(controller::hasValidScreen, configButton.createInputHandler()),
+			new Child(controller::hasValidScreen, configButton.createInputHandler(input -> input.is(keys.getToggleCheatModeConfigButton()))),
 			new Child(this::isListDisplayed, contents.createInputHandler()),
 			new Child(this::isHistoryDisplayed, lookupHistoryOverlay.createInputHandler())
 		);
