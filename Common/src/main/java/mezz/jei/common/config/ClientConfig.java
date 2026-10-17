@@ -16,6 +16,7 @@ public final class ClientConfig implements IClientConfig {
 	private static IClientConfig instance;
 
 	// appearance
+	private final IConfigValue<Boolean> overlaysEnabled;
 	private final IConfigValue<SearchBarPosition> searchBarPosition;
 	private final IConfigValue<Integer> maxRecipeGuiHeight;
 	private final IConfigValue<Integer> recipeGuiWidth;
@@ -107,6 +108,9 @@ public final class ClientConfig implements IClientConfig {
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
 
+		overlaysEnabled = ingredientList.addBoolean("overlaysEnabled", true)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
 		IConfigListValueSerializer<IngredientSortStage> ingredientSorterStagesSerializer = LegacyEnumSerializers.list(IngredientSortStage.class);
 		ingredientSorterStages = ingredientList.addEnumList("ingredientSortStages", IngredientSortStage.defaultStages, IngredientSortStage.class)
 			.addLegacyValueMigration("sorting", "ingredientSortStages", ingredientSorterStagesSerializer, List::copyOf)
@@ -297,6 +301,11 @@ public final class ClientConfig implements IClientConfig {
 	public static IClientConfig getInstance() {
 		Preconditions.checkNotNull(instance);
 		return instance;
+	}
+
+	@Override
+	public IConfigValue<Boolean> overlaysEnabled() {
+		return overlaysEnabled;
 	}
 
 	@Override
