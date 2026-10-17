@@ -30,7 +30,6 @@ import mezz.jei.library.plugins.vanilla.crafting.CraftingCategoryExtension;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.library.plugins.vanilla.crafting.replacers.TippedArrowRecipeMaker;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -192,7 +191,7 @@ public final class RecipeSourceIdsClientTest implements IModPlugin {
 		Screen parent = client.gui.screen();
 		String clipboard = client.keyboardHandler.getClipboard();
 		KeyMapping copyKey = Objects.requireNonNull(KeyMapping.get("key.jei.copy.recipe.id"));
-		var originalKey = KeyMappingHelper.getBoundKeyOf(copyKey);
+		var originalKey = InputConstants.getKey(copyKey.saveString());
 		try {
 			copyKey.setKey(InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_MIDDLE));
 			client.gui.setScreen(gui);

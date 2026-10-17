@@ -6,7 +6,6 @@ import mezz.jei.common.Internal;
 import mezz.jei.common.config.SearchBarPosition;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.ReflectionUtil;
-import mezz.jei.fabric.input.FabricKeyMapping;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
@@ -41,10 +40,8 @@ public class IngredientListVisibilityClientGameTest implements FabricClientGameT
 						set(cleanup, config.hideIngredientsWhenNotSearching(), false);
 						set(cleanup, config.lookupHistoryEnabled(), false);
 						set(cleanup, config.searchBarPosition(), SearchBarPosition.STANDARD);
-						FabricKeyMapping shortcut = (FabricKeyMapping) Objects.requireNonNull(KeyMapping.get("key.jei.toggleHideIngredientsWhenNotSearching"));
-						var originalShortcut = shortcut.getRealKey();
-						cleanup.add(() -> shortcut.setKey(originalShortcut));
-						shortcut.setKey(InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_RIGHT));
+						KeyMapping shortcut = Objects.requireNonNull(KeyMapping.get("key.jei.toggleHideIngredientsWhenNotSearching"));
+						cleanup.add(KeyMappingTestHelper.rebindUnmodified(shortcut, InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_RIGHT)));
 						set(cleanup, configs.getIngredientListConfig().maxColumns(), 6);
 						set(cleanup, configs.getIngredientListConfig().maxRows(), 4);
 						set(cleanup, configs.getIngredientListConfig().shrinkToFit(), false);
@@ -154,12 +151,12 @@ public class IngredientListVisibilityClientGameTest implements FabricClientGameT
 		context.getInput().releaseMouse(InputConstants.MOUSE_BUTTON_RIGHT);
 		context.runOnClient(client -> check(setting.get(), "Releasing outside the config button must cancel the shortcut"));
 
-		FabricKeyMapping shortcut = context.computeOnClient(client -> (FabricKeyMapping) Objects.requireNonNull(KeyMapping.get("key.jei.toggleHideIngredientsWhenNotSearching")));
-		var originalKey = context.computeOnClient(client -> shortcut.getRealKey());
+		KeyMapping shortcut = context.computeOnClient(client -> Objects.requireNonNull(KeyMapping.get("key.jei.toggleHideIngredientsWhenNotSearching")));
+		var originalKey = context.computeOnClient(client -> InputConstants.getKey(shortcut.saveString()));
 		try {
 			context.runOnClient(client -> {
 				searchField().setFocused(false);
-				shortcut.setKey(InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_P));
+				shortcut.setKey(InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_P));
 			});
 			context.getInput().pressKey(InputConstants.KEY_P);
 			context.runOnClient(client -> check(setting.get(), "The rebound shortcut must require hovering over the config button"));

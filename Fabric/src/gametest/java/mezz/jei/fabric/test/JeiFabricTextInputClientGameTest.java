@@ -1,11 +1,8 @@
 package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import de.siphalor.amecs.key_modifiers.api.AmecsKeyModifierCombination;
-import de.siphalor.amecs.key_modifiers.api.AmecsKeyModifiersApi;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.ReflectionUtil;
-import mezz.jei.fabric.input.FabricAmecsSupport;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.test.client.ImeTextInputTestUtil;
@@ -14,14 +11,13 @@ import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.mixin.client.gametest.input.KeyboardHandlerAccessor;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
 
@@ -30,15 +26,14 @@ import java.util.Objects;
  */
 @SuppressWarnings("UnstableApiUsage")
 public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
+	private static final int KEY_CODE_F = InputConstants.KEY_F;
 	private static final String FOCUS_SEARCH_KEY_MAPPING = "key.jei.focusSearch";
-	private static final InputConstants.Key TEST_FOCUS_SEARCH_KEY = InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_F);
+	private static final InputConstants.Key TEST_FOCUS_SEARCH_KEY = InputConstants.Type.KEYSYM.getOrCreate(KEY_CODE_F);
 
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		JUnitXmlTestReporter.runAndReportWithBooleanVariant(
+		JUnitXmlTestReporter.runAndReport(
 			"fabric-client-gametest",
-			"jei.fabric.disableAmecsSupport",
-			"without-amecs",
 			getClass().getSimpleName(),
 			() -> assertImeInputRoutedToSearchField(context)
 		);
@@ -91,12 +86,17 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 
 				try {
 					assertEditorPriority(client, searchField);
-					ImeTextInputTestUtil.invokeKeyPress(client.keyboardHandler, client.getWindow().handle(), new KeyEvent(InputConstants.KEY_LSHIFT, 0, 0));
-					if (!searchField.isFocused()) {
-						throw new AssertionError("An unhandled modifier key must preserve search focus.");
-					}
-					if (client.gui.screen().getFocused() != searchField) {
-						throw new AssertionError("Expected JEI's search field to own the screen focus.");
+					KeyEvent shift = new KeyEvent(InputConstants.KEY_LSHIFT, 0, 0);
+					try {
+						ImeTextInputTestUtil.invokeKeyPress(client.keyboardHandler, client.getWindow().handle(), shift);
+						if (!searchField.isFocused()) {
+							throw new AssertionError("An unhandled modifier key must preserve search focus.");
+						}
+						if (client.gui.screen().getFocused() != searchField) {
+							throw new AssertionError("Expected JEI's search field to own the screen focus.");
+						}
+					} finally {
+						((KeyboardHandlerAccessor) client.keyboardHandler).invokeKeyPress(client.getWindow().handle(), InputConstants.RELEASE, shift);
 					}
 					if (!(client.gui.screen() instanceof PreeditBlockingContainerScreen)) {
 						throw new AssertionError("Expected this regression test to cover a screen that blocks normal preedit dispatch.");
@@ -195,7 +195,7 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 
 	private static void assertEditorPriority(Minecraft client, GuiTextFieldFilter searchField) {
 		KeyMapping editMode = Objects.requireNonNull(KeyMapping.get("key.jei.toggleEditMode"));
-		var originalKey = KeyMappingHelper.getBoundKeyOf(editMode);
+		var originalKey = InputConstants.getKey(editMode.saveString());
 		var toggles = Internal.getClientToggleState();
 		boolean originalEditMode = toggles.isEditModeEnabled();
 		String originalText = searchField.getValue();
@@ -204,7 +204,7 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 			editMode.setKey(InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_BACKSPACE));
 			searchField.setValue("stone");
 			// Bindings use the physical key; vanilla text editing uses its character code.
-			var backspace = new KeyEvent(InputConstants.KEY_BACKSPACE, '\b', 0);
+			var backspace = new KeyEvent(InputConstants.KEY_BACKSPACE, 0, 0);
 			ImeTextInputTestUtil.invokeKeyPress(client.keyboardHandler, client.getWindow().handle(), backspace);
 			if (!searchField.getValue().equals("ston") || toggles.isEditModeEnabled()) {
 				throw new AssertionError("Focused search editing must take precedence over a conflicting global shortcut.");
@@ -233,16 +233,9 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 			throw new AssertionError("Expected the focus-search key mapping to be registered.");
 		}
 
-		InputConstants.Key originalKey = KeyMappingHelper.getBoundKeyOf(focusSearch);
-		Object originalModifiers = null;
-		if (FabricAmecsSupport.isEnabled()) {
-			originalModifiers = AmecsModifierState.clear(focusSearch);
-		}
+		Runnable restoreMapping = KeyMappingTestHelper.rebindUnmodified(focusSearch, TEST_FOCUS_SEARCH_KEY);
 		try {
-			// Modifier state cannot be synthesized by this callback-level test, so temporarily use an unmodified F.
-			focusSearch.setKey(TEST_FOCUS_SEARCH_KEY);
-			KeyMapping.resetMapping();
-			KeyEvent event = new KeyEvent(GLFW.GLFW_KEY_F, 0, 0);
+			KeyEvent event = new KeyEvent(KEY_CODE_F, 0, 0);
 			ImeTextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, event);
 
 			// A physical unmodified F also produces a character callback. JEI handles the shortcut's character.
@@ -252,33 +245,7 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 			}
 			assertions.run();
 		} finally {
-			focusSearch.setKey(originalKey);
-			if (originalModifiers != null) {
-				AmecsModifierState.restore(focusSearch, originalModifiers);
-			}
-			KeyMapping.resetMapping();
-		}
-	}
-
-	/**
-	 * Kept behind a nested class so the test can run when the optional AMECS classes are absent.
-	 */
-	private static final class AmecsModifierState {
-		private AmecsModifierState() {
-
-		}
-
-		private static Object clear(KeyMapping keyMapping) {
-			AmecsKeyModifierCombination boundModifiers = AmecsKeyModifiersApi.getBoundModifiers(keyMapping);
-			AmecsKeyModifierCombination originalModifiers = new AmecsKeyModifierCombination();
-			originalModifiers.copyFrom(boundModifiers);
-			boundModifiers.unset();
-			return originalModifiers;
-		}
-
-		private static void restore(KeyMapping keyMapping, Object originalModifiers) {
-			AmecsKeyModifierCombination boundModifiers = AmecsKeyModifiersApi.getBoundModifiers(keyMapping);
-			boundModifiers.copyFrom((AmecsKeyModifierCombination) originalModifiers);
+			restoreMapping.run();
 		}
 	}
 }

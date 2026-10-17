@@ -20,7 +20,6 @@ import mezz.jei.gui.recipes.CraftingStations;
 import mezz.jei.gui.recipes.RecipesGui;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -54,10 +53,9 @@ final class RecipeFocusSourceClientTest {
 			var shrinkToFit = gridConfig.shrinkToFit();
 			boolean originalShrinkToFit = shrinkToFit.get();
 			KeyMapping toggleKey = Objects.requireNonNull(KeyMapping.get("key.jei.toggleOverlay"));
-			var originalToggleKey = KeyMappingHelper.getBoundKeyOf(toggleKey);
+			Runnable restoreToggleKey = KeyMappingTestHelper.rebindUnmodified(toggleKey, InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_O));
 			try {
 				// An unbound toggle deliberately keeps the ingredient list visible.
-				toggleKey.setKey(InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_O));
 				toggles.setOverlayEnabled(true);
 				toggles.setBookmarkEnabled(true);
 				client.gui.setScreen(new InventoryScreen(Objects.requireNonNull(client.player)));
@@ -155,7 +153,7 @@ final class RecipeFocusSourceClientTest {
 				assertBlocks(container, recipeArea, false, "Closed container");
 			} finally {
 				client.gui.setScreen(null);
-				toggleKey.setKey(originalToggleKey);
+				restoreToggleKey.run();
 				layoutMode.set(originalLayoutMode);
 				verticalAlignment.set(originalVerticalAlignment);
 				shrinkToFit.set(originalShrinkToFit);
