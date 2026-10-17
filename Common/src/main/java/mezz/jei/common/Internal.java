@@ -82,7 +82,7 @@ public final class Internal {
 
 	public static IWorldConfig getWorldConfig() {
 		if (worldConfig == null) {
-			worldConfig = new WorldConfig();
+			worldConfig = new WorldConfig(getClientConfigs().getClientConfig().overlaysEnabled());
 		}
 		return worldConfig;
 	}
