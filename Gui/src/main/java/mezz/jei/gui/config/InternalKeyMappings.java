@@ -27,6 +27,7 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	private final IJeiKeyMappingInternal toggleEditMode;
 
 	private final IJeiKeyMappingInternal toggleCheatModeConfigButton;
+	private final IJeiKeyMappingInternal toggleHideIngredientsWhenNotSearching;
 
 	private final IJeiKeyMappingInternal recipeBack;
 	private final IJeiKeyMappingInternal recipeForward;
@@ -269,6 +270,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
 			.buildMouseLeft()
 			.register(registerMethod);
+		toggleHideIngredientsWhenNotSearching = hoverConfig.createMapping("key.jei.toggleHideIngredientsWhenNotSearching")
+			.setContext(JeiKeyConflictContext.JEI_GUI_HOVER_CONFIG_BUTTON)
+			.setModifier(JeiKeyModifier.CONTROL_OR_COMMAND)
+			.buildMouseRight()
+			.register(registerMethod);
 
 		// Edit Mode
 		toggleEditMode = editMode.createMapping("key.jei.toggleEditMode")
@@ -367,6 +373,7 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 				closeRecipeGui,
 				toggleCheatMode,
 				toggleCheatModeConfigButton,
+				toggleHideIngredientsWhenNotSearching,
 				cheatOneItem1,
 				cheatOneItem2,
 				cheatItemStack1,
@@ -439,6 +446,11 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 	@Override
 	public IJeiKeyMapping getToggleCheatModeConfigButton() {
 		return toggleCheatModeConfigButton;
+	}
+
+	@Override
+	public IJeiKeyMapping getToggleHideIngredientsWhenNotSearching() {
+		return toggleHideIngredientsWhenNotSearching;
 	}
 
 	@Override
