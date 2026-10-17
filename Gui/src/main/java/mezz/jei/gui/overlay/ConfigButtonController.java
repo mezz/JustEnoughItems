@@ -105,7 +105,7 @@ public class ConfigButtonController implements IIconButtonController {
 	public boolean onPress(IJeiUserInput input) {
 		if (toggleState.isOverlayEnabled()) {
 			if (!input.isSimulate()) {
-				if (input.is(keyBindings.getToggleCheatModeConfigButton())) {
+				if (input.getInputWithModifiers().hasControlDown() || input.is(keyBindings.getToggleCheatModeConfigButton())) {
 					CheatModeUtil.toggleCheatMode(toggleState);
 				} else if (input.is(keyBindings.getToggleHideIngredientsWhenNotSearching())) {
 					toggleHideIngredientsWhenNotSearching();
