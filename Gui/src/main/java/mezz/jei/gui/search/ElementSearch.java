@@ -58,10 +58,13 @@ public class ElementSearch implements IElementSearch {
 		Set<ElementSearchIndex> searchIndexes,
 		Collection<IListElementInfo<?>> infos
 	) {
-		for (ElementSearchIndex searchIndex : searchIndexes) {
-			rebuildSearchIndex(searchIndex, infos);
+		try {
+			for (ElementSearchIndex searchIndex : searchIndexes) {
+				rebuildSearchIndex(searchIndex, infos);
+			}
+		} finally {
+			updateCombinedSearchables();
 		}
-		updateCombinedSearchables();
 	}
 
 	private void rebuildSearchIndex(ElementSearchIndex searchIndex, Collection<IListElementInfo<?>> infos) {
