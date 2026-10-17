@@ -31,7 +31,7 @@
       "mezz.jei.gui.plugins.JeiGuiPlugin"
     ],
     "mezz_config_gui_plugin": [
-      "mezz.jei.gui.config.JeiConfigGuiPlugin"
+      "mezz.jei.fabric.input.FabricKeyMappingConfigGuiPlugin"
     ]
   },
   "mixins": [
@@ -52,6 +52,9 @@
     "amecs_key_modifiers": ">=${amecsKeyModifiersVersionFabric}"
   },
   "breaks": {
-    "${configGuiModId}": "${mezzConfigGuiFabricBreaksVersionRange}"
+    "${configGuiModId}": [
+      "<${mezzConfigGuiMinimumVersion}",
+      ">=${mezzConfigGuiMaximumVersion}"
+    ]
   }
 }

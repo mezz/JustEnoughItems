@@ -70,6 +70,7 @@ val mezzConfigVersionRange = gradleProperty("mezzConfigVersionRange")
 val mezzConfigFabricVersionRange = gradleProperty("mezzConfigFabricVersionRange")
 val mezzConfigGuiVersion = gradleProperty("mezzConfigGuiVersion")
 val mezzConfigGuiMinimumVersion = gradleProperty("mezzConfigGuiMinimumVersion")
+val mezzConfigGuiMaximumVersion = gradleProperty("mezzConfigGuiMaximumVersion")
 val specificationVersion = gradleProperty("specificationVersion")
 
 val mezzConfigApiDependency = "$configModGroup:${configModId}-${minecraftVersion}-config-api:$mezzConfigVersion"
@@ -141,9 +142,10 @@ subprojects {
             "modId" to modId,
             "modJavaVersion" to modJavaVersion,
             "modName" to modName,
-            "mezzConfigGuiVersionRange" to "[$mezzConfigGuiMinimumVersion,)",
-            "mezzConfigGuiFabricVersionRange" to ">=$mezzConfigGuiMinimumVersion",
-            "mezzConfigGuiFabricBreaksVersionRange" to "<$mezzConfigGuiMinimumVersion",
+            "mezzConfigGuiVersionRange" to "[$mezzConfigGuiMinimumVersion,$mezzConfigGuiMaximumVersion)",
+            "mezzConfigGuiFabricVersionRange" to ">=$mezzConfigGuiMinimumVersion <$mezzConfigGuiMaximumVersion",
+            "mezzConfigGuiMinimumVersion" to mezzConfigGuiMinimumVersion,
+            "mezzConfigGuiMaximumVersion" to mezzConfigGuiMaximumVersion,
             "mezzConfigVersionRange" to mezzConfigVersionRange,
             "mezzConfigFabricVersionRange" to mezzConfigFabricVersionRange,
             "version" to version,
