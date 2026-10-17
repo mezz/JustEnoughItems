@@ -6,16 +6,18 @@
   "mixins": [
   ],
   "client": [
+    "AmecsKeyModifiersEarlyInitMixin",
     "AbstractContainerScreenMixin",
-    "AmecsKeyBindingManagerMixin",
     "ChatListenerMixin",
     "ClientPacketListenerRecipeUpdateMixin",
     "ContainerEventHandlerMixin",
     "EffectRenderingInventoryScreenMixin",
     "GameMixin",
-    "KeyMappingMixin",
     "KeyboardHandlerMixin",
+    "KeyBindsListEntryMixin",
+    "KeyBindsScreenMixin",
     "MinecraftMixin",
+    "OptionsMixin",
     "ScreenMixin"
   ],
   "injectors": {
