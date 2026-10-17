@@ -58,8 +58,10 @@ final class ConfigScreenClientTest {
 
 	static void assertCategoryLayout(Screen screen) {
 		ConfigScreenModel model = getScreenModel(screen);
+		var clientConfigs = Internal.getClientConfigs();
+		var clientConfig = clientConfigs.getClientConfig();
 		Map<Object, String> valueCategories = new IdentityHashMap<>();
-		Map<IConfigValue<?>, List<String>> valuePaths = new IdentityHashMap<>();
+		Map<IConfigValue<?>, List<List<String>>> valuePaths = new IdentityHashMap<>();
 		Set<IConfigValue<?>> visibleConfigValues = Collections.newSetFromMap(new IdentityHashMap<>());
 		List<String> problems = new ArrayList<>();
 		for (var category : model.getCategories()) {
@@ -72,9 +74,9 @@ final class ConfigScreenClientTest {
 				ConfigValueCategoryPath.getCategories(value).stream()
 					.map(ConfigValueCategoryPath.Category::name)
 					.forEach(path::add);
-				value.getConfigValue().ifPresent(configValue -> valuePaths.put(configValue, path));
+				value.getConfigValue().ifPresent(configValue -> valuePaths.computeIfAbsent(configValue, ignored -> new ArrayList<>()).add(List.copyOf(path)));
 				String previousCategory = valueCategories.putIfAbsent(value.getIdentityKey(), category.getName());
-				if (previousCategory != null) {
+				if (previousCategory != null && value.getIdentityKey() != clientConfig.hideIngredientsWhenNotSearching()) {
 					problems.add(value.getLocalizationKey() + " appears in both " + previousCategory + " and " + category.getName());
 				}
 				if (value.getName().equals("horizontalAlignment") || value.getName().equals("verticalAlignment")) {
@@ -110,8 +112,6 @@ final class ConfigScreenClientTest {
 				problems.add("Expected one custom alignment control for " + list + ", found " + controls.size());
 			}
 		}
-		var clientConfigs = Internal.getClientConfigs();
-		var clientConfig = clientConfigs.getClientConfig();
 		var filterConfig = clientConfigs.getIngredientFilterConfig();
 		Map<List<String>, List<IConfigValue<?>>> expectedGroups = Map.of(
 			List.of("recipes", "appearance"), List.of(
@@ -140,12 +140,16 @@ final class ConfigScreenClientTest {
 		);
 		expectedGroups.forEach((expectedPath, values) -> {
 			for (var value : values) {
-				List<String> actualPath = valuePaths.get(value);
-				if (!expectedPath.equals(actualPath)) {
-					problems.add(value.getEditorInfo().getLocalizationKey() + " belongs in " + expectedPath + ", found " + actualPath);
+				List<List<String>> actualPaths = valuePaths.get(value);
+				if (!List.of(expectedPath).equals(actualPaths)) {
+					problems.add(value.getEditorInfo().getLocalizationKey() + " belongs in " + expectedPath + ", found " + actualPaths);
 				}
 			}
 		});
+		List<List<String>> ingredientVisibilityPaths = valuePaths.getOrDefault(clientConfig.hideIngredientsWhenNotSearching(), List.of());
+		if (ingredientVisibilityPaths.size() != 2 || !Set.copyOf(ingredientVisibilityPaths).equals(Set.of(List.of("lists", "ingredientList"), List.of("search")))) {
+			problems.add("Hide Ingredients When Not Searching must appear in Ingredient List and Search, found " + ingredientVisibilityPaths);
+		}
 		for (int i = 0; i < model.getCategories().size(); i++) {
 			if (model.getCategories().get(i).getName().equals("advanced") && model.hasSubcategories(i)) {
 				problems.add("Advanced must show its options without subcategories");
@@ -179,7 +183,7 @@ final class ConfigScreenClientTest {
 	}
 
 	static void captureOrganizedCategories(FabricClientTestContext context, String screenshotName) {
-		for (String categoryName : List.of("recipes", "input", "cheating", "search", "search.completion", "search.matching", "lookups", "advanced")) {
+		for (String categoryName : List.of("recipes", "input", "cheating", "ingredientList", "search", "search.completion", "search.matching", "lookups", "advanced")) {
 			context.runOnClient(client -> {
 				Screen screen = Objects.requireNonNull(client.screen);
 				ConfigScreenModel model = getScreenModel(screen);

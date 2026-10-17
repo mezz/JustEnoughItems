@@ -69,6 +69,11 @@ class IngredientListOverlayController {
 			public boolean isLookupHistoryEnabled() {
 				return clientConfig.lookupHistoryEnabled().get();
 			}
+
+			@Override
+			public boolean isHideIngredientsWhenNotSearchingEnabled() {
+				return clientConfig.hideIngredientsWhenNotSearching().get();
+			}
 		};
 	}
 
@@ -110,7 +115,11 @@ class IngredientListOverlayController {
 	}
 
 	boolean isListDisplayed() {
-		return isSearchDisplayed() && !contentsView.isEmpty();
+		return isSearchDisplayed() && !isListHiddenWhenNotSearching() && !contentsView.isEmpty();
+	}
+
+	boolean isListHiddenWhenNotSearching() {
+		return config.isHideIngredientsWhenNotSearchingEnabled() && filterTextSource.getFilterText().isBlank();
 	}
 
 	boolean isSearchDisplayed() {
@@ -205,6 +214,8 @@ class IngredientListOverlayController {
 		boolean isCenterSearchBarEnabled();
 
 		boolean isLookupHistoryEnabled();
+
+		boolean isHideIngredientsWhenNotSearchingEnabled();
 	}
 
 }
