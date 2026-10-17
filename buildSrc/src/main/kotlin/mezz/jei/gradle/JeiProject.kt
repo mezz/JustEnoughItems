@@ -74,13 +74,15 @@ private fun Project.configureJeiProject() {
 
 	tasks.withType(ProcessResources::class.java).configureEach {
 		val mezzConfigGuiMinimumVersion = gradleProperty("mezzConfigGuiMinimumVersion")
+		val mezzConfigGuiMaximumVersion = gradleProperty("mezzConfigGuiMaximumVersion")
 		val resourceProperties = mapOf(
 			"amecsVersionFabric" to amecsVersionFabric,
 			"configGuiModId" to gradleProperty("configGuiModId"),
 			"configModId" to gradleProperty("configModId"),
-			"mezzConfigGuiVersionRange" to "[$mezzConfigGuiMinimumVersion,)",
-			"mezzConfigGuiFabricVersionRange" to ">=$mezzConfigGuiMinimumVersion",
-			"mezzConfigGuiFabricBreaksVersionRange" to "<$mezzConfigGuiMinimumVersion",
+			"mezzConfigGuiVersionRange" to "[$mezzConfigGuiMinimumVersion,$mezzConfigGuiMaximumVersion)",
+			"mezzConfigGuiFabricVersionRange" to ">=$mezzConfigGuiMinimumVersion <$mezzConfigGuiMaximumVersion",
+			"mezzConfigGuiMinimumVersion" to mezzConfigGuiMinimumVersion,
+			"mezzConfigGuiMaximumVersion" to mezzConfigGuiMaximumVersion,
 			"mezzConfigVersionRange" to gradleProperty("mezzConfigVersionRange"),
 			"mezzConfigFabricVersionRange" to gradleProperty("mezzConfigFabricVersionRange"),
 			"curseHomepageUrl" to curseHomepageUrl,

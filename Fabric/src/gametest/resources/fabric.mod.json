@@ -20,6 +20,7 @@
       "mezz.jei.fabric.test.IngredientDecoratorClientGameTest",
       "mezz.jei.fabric.test.ChatItemLinksClientGameTest",
       "mezz.jei.fabric.test.JeiFabricTextInputClientGameTest",
+      "mezz.jei.fabric.test.ConfigGuiKeyModifiersClientGameTest",
       "mezz.jei.fabric.test.FabricKeyModifiersClientGameTest",
       "mezz.jei.fabric.test.ContainerIngredientShortcutsClientTest",
       "mezz.jei.fabric.test.CheatToInventoryClientGameTest",
