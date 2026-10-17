@@ -21,6 +21,7 @@
       "mezz.jei.fabric.test.BookmarkManagerClientGameTest",
       "mezz.jei.fabric.test.InteractiveIngredientTooltipClientGameTest",
       "mezz.jei.fabric.test.IngredientNavigationClientGameTest",
+      "mezz.jei.fabric.test.IngredientListVisibilityClientGameTest",
       "mezz.jei.fabric.test.JeiGuiResizeClientGameTest",
       "mezz.jei.fabric.test.JeiFabricCreativeInventoryClientGameTest",
       "mezz.jei.fabric.test.JeiFabricSingleplayerClientGameTest",

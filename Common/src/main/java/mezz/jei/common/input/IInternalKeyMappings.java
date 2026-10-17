@@ -16,6 +16,7 @@ public interface IInternalKeyMappings extends IJeiKeyMappings {
 	IJeiKeyMapping getToggleEditMode();
 
 	IJeiKeyMapping getToggleCheatModeConfigButton();
+	IJeiKeyMapping getToggleHideIngredientsWhenNotSearching();
 
 	IJeiKeyMapping getRecipeBack();
 	IJeiKeyMapping getRecipeForward();
