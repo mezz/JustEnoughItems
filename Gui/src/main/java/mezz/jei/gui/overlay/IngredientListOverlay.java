@@ -43,6 +43,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFocusSource {
+	private final ConfigButtonController configButtonController;
 	private final IconButton configButton;
 	private final IIngredientListOverlayContents contents;
 	private final LookupHistoryOverlay lookupHistoryOverlay;
@@ -80,7 +81,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 
 		this.searchField = new GuiTextFieldFilter(contents::isEmpty, clientConfig, searchCompletionProvider);
 		this.searchInputLayer = new SearchInputLayer(this.searchField, this::isSearchDisplayed);
-		this.configButton = new IconButton(new ConfigButtonController(this::isSearchDisplayed, toggleState, keyBindings));
+		this.configButtonController = new ConfigButtonController(this::isSearchDisplayed, this::isListHiddenWhenNotSearching, clientConfig.hideIngredientsWhenNotSearching(), toggleState, keyBindings);
+		this.configButton = new IconButton(configButtonController);
 		this.controller = IngredientListOverlayController.create(
 			this.guiPropertiesCache,
 			clientConfig,
@@ -141,6 +143,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private boolean isSearchDisplayed() {
 		updateScreenPropertiesIfDirty();
 		return this.controller.isSearchDisplayed();
+	}
+
+	private boolean isListHiddenWhenNotSearching() {
+		return this.controller.isListHiddenWhenNotSearching();
 	}
 
 	private void markScreenPropertiesDirty() {
@@ -315,6 +321,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	private void registerInputCommands(InputCommands commands, IInternalKeyMappings keys) {
+		configButtonController.registerInputCommands(commands, configButton::isMouseOver);
 		contents.registerInputCommands(commands, keys, this::isListDisplayed);
 		lookupHistoryOverlay.registerInputCommands(commands, keys, this::isHistoryDisplayed);
 	}

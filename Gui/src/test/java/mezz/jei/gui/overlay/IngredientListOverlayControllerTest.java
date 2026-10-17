@@ -421,6 +421,7 @@ public class IngredientListOverlayControllerTest {
 	private static class TestConfig implements IngredientListOverlayController.Config {
 		boolean centerSearchBarEnabled = false;
 		boolean lookupHistoryEnabled = false;
+		boolean hideIngredientsWhenNotSearchingEnabled = false;
 
 		@Override
 		public boolean isCenterSearchBarEnabled() {
@@ -430,6 +431,11 @@ public class IngredientListOverlayControllerTest {
 		@Override
 		public boolean isLookupHistoryEnabled() {
 			return lookupHistoryEnabled;
+		}
+
+		@Override
+		public boolean isHideIngredientsWhenNotSearchingEnabled() {
+			return hideIngredientsWhenNotSearchingEnabled;
 		}
 	}
 
