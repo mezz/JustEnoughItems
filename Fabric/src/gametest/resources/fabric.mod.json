@@ -13,6 +13,7 @@
       "mezz.jei.fabric.test.FluidIngredientGameTests"
     ],
     "fabric-client-gametest": [
+      "mezz.jei.fabric.test.FabricKeyModifiersClientGameTest",
       "mezz.jei.fabric.test.ContainerIngredientShortcutsClientTest",
       "mezz.jei.fabric.test.CheatToInventoryClientGameTest",
       "mezz.jei.fabric.test.BookmarkManagerClientGameTest",

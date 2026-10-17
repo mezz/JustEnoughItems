@@ -5,7 +5,6 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.ReflectionUtil;
-import mezz.jei.fabric.input.FabricKeyMapping;
 import mezz.jei.gui.recipes.IRecipeGuiLogic;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.recipes.lookups.ILookupState;
@@ -87,7 +86,7 @@ public class ContainerIngredientShortcutsClientTest implements FabricClientGameT
 		var ingredient = context.computeOnClient(client -> Internal.getJeiRuntime().getIngredientManager()
 			.createTypedIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Items.OAK_PLANKS), false).orElseThrow());
 		boolean bookmarked = context.computeOnClient(client -> Internal.getJeiRuntime().getBookmarkManager().contains(ingredient));
-		var bookmarkKey = context.computeOnClient(client -> ((FabricKeyMapping) Objects.requireNonNull(KeyMapping.get("key.jei.bookmark"))).getRealKey());
+		var bookmarkKey = context.computeOnClient(client -> InputConstants.getKey(Objects.requireNonNull(KeyMapping.get("key.jei.bookmark")).saveString()));
 		try {
 			context.runOnClient(client -> Internal.getJeiRuntime().getBookmarkManager().remove(ingredient));
 			context.getInput().pressKey(bookmarkKey.getValue());

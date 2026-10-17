@@ -11,10 +11,8 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 public class JeiFabricServerWithoutJeiClientGameTest implements FabricClientGameTest {
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		JUnitXmlTestReporter.runAndReportWithBooleanVariant(
+		JUnitXmlTestReporter.runAndReport(
 			"fabric-client-gametest",
-			"jei.fabric.disableAmecsSupport",
-			"without-amecs",
 			getClass().getSimpleName(),
 			() -> {
 				try (ExternalTestServer server = ExternalTestServer.startFabricWithoutJei(context);

@@ -32,10 +32,8 @@ import java.util.Objects;
 public class JeiFabricCreativeInventoryClientGameTest implements FabricClientGameTest {
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		JUnitXmlTestReporter.runAndReportWithBooleanVariant(
+		JUnitXmlTestReporter.runAndReport(
 			"fabric-client-gametest",
-			"jei.fabric.disableAmecsSupport",
-			"without-amecs",
 			getClass().getSimpleName(),
 			() -> {
 				try (TestSingleplayerContext ignored = context.worldBuilder()

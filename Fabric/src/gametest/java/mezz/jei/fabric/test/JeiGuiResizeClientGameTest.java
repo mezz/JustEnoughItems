@@ -29,7 +29,6 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.mezzdev.config.api.value.IConfigValue;
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -184,7 +183,7 @@ public class JeiGuiResizeClientGameTest implements FabricClientGameTest {
 			check(pages.getPageCount() > 2, "Expected several pages for shortcut navigation");
 			var screen = Objects.requireNonNull(client.screen);
 			KeyMapping mapping = Objects.requireNonNull(KeyMapping.get("key.jei.nextPage"));
-			var originalKey = KeyMappingHelper.getBoundKeyOf(mapping);
+			var originalKey = InputConstants.getKey(mapping.saveString());
 			try {
 				mapping.setKey(InputConstants.Type.MOUSE.getOrCreate(4));
 				int initialPage = pages.getPageNumber();
@@ -217,9 +216,9 @@ public class JeiGuiResizeClientGameTest implements FabricClientGameTest {
 			KeyMapping nextPage = Objects.requireNonNull(KeyMapping.get("key.jei.nextPage"));
 			KeyMapping previousPage = Objects.requireNonNull(KeyMapping.get("key.jei.previousPage"));
 			KeyMapping editMode = Objects.requireNonNull(KeyMapping.get("key.jei.toggleEditMode"));
-			var originalNext = KeyMappingHelper.getBoundKeyOf(nextPage);
-			var originalPrevious = KeyMappingHelper.getBoundKeyOf(previousPage);
-			var originalEdit = KeyMappingHelper.getBoundKeyOf(editMode);
+			var originalNext = InputConstants.getKey(nextPage.saveString());
+			var originalPrevious = InputConstants.getKey(previousPage.saveString());
+			var originalEdit = InputConstants.getKey(editMode.saveString());
 			var toggles = Internal.getClientToggleState();
 			boolean originalEditMode = toggles.isEditModeEnabled();
 			try {
@@ -302,7 +301,7 @@ public class JeiGuiResizeClientGameTest implements FabricClientGameTest {
 	private static <T> void assertMouseRecipeShortcut(String keyName, Supplier<T> state, T expected) {
 		var screen = Objects.requireNonNull(Minecraft.getInstance().screen);
 		KeyMapping mapping = Objects.requireNonNull(KeyMapping.get(keyName));
-		var originalKey = KeyMappingHelper.getBoundKeyOf(mapping);
+		var originalKey = InputConstants.getKey(mapping.saveString());
 		try {
 			mapping.setKey(InputConstants.Type.MOUSE.getOrCreate(4));
 			T initial = state.get();
