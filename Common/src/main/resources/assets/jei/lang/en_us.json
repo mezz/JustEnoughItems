@@ -192,7 +192,7 @@
   "_comment": "Config",
   "jei.config": "JEI Config",
   "jei.config.client.ingredientList.overlaysEnabled": "Show JEI Overlays",
-  "jei.config.client.ingredientList.overlaysEnabled.description": "Show or hide the ingredient and bookmark overlays for the current session. This value is not saved to the configuration file.",
+  "jei.config.client.ingredientList.overlaysEnabled.description": "Show or hide the ingredient and bookmark overlays. This preference is saved across game launches.",
   "jei.config.client.ingredientList.overlaysEnabled.value.true.description": "Show JEI's ingredient and bookmark overlays.",
   "jei.config.client.ingredientList.overlaysEnabled.value.false.description": "Hide JEI's ingredient and bookmark overlays.",
   "jei.config.client.bookmarkList.bookmarkOverlayEnabled": "Show Bookmark Overlay",
