@@ -1,5 +1,8 @@
 package mezz.jei.common.config;
 
+import net.mezzdev.config.api.value.IConfigValue;
+import org.jspecify.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -10,11 +13,23 @@ public class ClientToggleState implements IClientToggleState {
 	private final List<Consumer<Boolean>> bookmarkEnabledListeners = new ArrayList<>();
 	private final List<Consumer<Boolean>> cheatItemsEnabledListeners = new ArrayList<>();
 	private final List<Consumer<Boolean>> editModeEnabledListeners = new ArrayList<>();
+	@Nullable
+	private final IConfigValue<Boolean> overlayEnabledConfig;
 
 	private boolean overlayEnabled = true;
 	private boolean cheatItemsEnabled = false;
 	private boolean editModeEnabled = false;
 	private boolean bookmarkOverlayEnabled = true;
+
+	public ClientToggleState() {
+		this.overlayEnabledConfig = null;
+	}
+
+	public ClientToggleState(IConfigValue<Boolean> overlayEnabledConfig) {
+		this.overlayEnabledConfig = overlayEnabledConfig;
+		this.overlayEnabled = overlayEnabledConfig.get();
+		overlayEnabledConfig.addListener(change -> updateOverlayEnabled(change.newValue()));
+	}
 
 	@Override
 	public boolean isOverlayEnabled() {
@@ -28,6 +43,14 @@ public class ClientToggleState implements IClientToggleState {
 
 	@Override
 	public void setOverlayEnabled(boolean value) {
+		if (overlayEnabledConfig != null) {
+			overlayEnabledConfig.set(value);
+		} else {
+			updateOverlayEnabled(value);
+		}
+	}
+
+	private void updateOverlayEnabled(boolean value) {
 		if (this.overlayEnabled != value) {
 			this.overlayEnabled = value;
 			notifyListeners(overlayEnabledListeners, value);

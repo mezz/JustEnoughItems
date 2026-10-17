@@ -104,6 +104,7 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 		IConfigScreenCategoryBuilder lists = screenBuilder.addCategory("lists");
 
 		IConfigScreenCategoryBuilder ingredientList = addNestedCategory(lists, "ingredientList", "jei.config.client.ingredientList");
+		ingredientList.addValue(clientConfig.overlaysEnabled());
 		configureGridValues(ingredientList, clientConfigs.getIngredientListConfig(), "jei.config.client.ingredientList.alignment");
 		ingredientList.addValue(clientConfig.hideIngredientsWhenNotSearching())
 			.addValue(clientConfig.toastReflowEnabled())
@@ -182,7 +183,6 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 		IConfigScreenCategoryBuilder advanced = screenBuilder.addCategory("advanced");
 
 		return new ConfigScreenCategories(
-			ingredientList,
 			bookmarkList,
 			cheating,
 			ingredientSorting,
@@ -211,17 +211,6 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 		IClientConfig clientConfig = clientConfigs.getClientConfig();
 		IClientToggleState toggleState = Internal.getClientToggleState();
 		IConfigValueSerializer<Boolean> serializer = clientConfig.cheatToHotbarUsingHotkeysEnabled().getEditorInfo().getSerializer();
-
-		categories.ingredientList()
-			.addScreenValue(new RuntimeToggleScreenValue(
-				"overlaysEnabled",
-				"jei.config.client.ingredientList.overlaysEnabled",
-				true,
-				toggleState::isOverlayEnabled,
-				toggleState::setOverlayEnabled,
-				toggleState::addOverlayEnabledListener,
-				serializer
-			));
 
 		categories.bookmarkList()
 			.addScreenValue(new RuntimeToggleScreenValue(
@@ -314,7 +303,6 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 	}
 
 	private record ConfigScreenCategories(
-		IConfigScreenCategoryBuilder ingredientList,
 		IConfigScreenCategoryBuilder bookmarkList,
 		IConfigScreenCategoryBuilder cheating,
 		IConfigScreenCategoryBuilder ingredientSorting,
