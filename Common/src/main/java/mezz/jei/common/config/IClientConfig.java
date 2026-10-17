@@ -25,6 +25,8 @@ public interface IClientConfig {
 
 	IConfigValue<Boolean> compactInventoryEffects();
 
+	IConfigValue<Boolean> hideIngredientsWhenNotSearching();
+
 	IConfigValue<GiveMode> giveMode();
 
 	IConfigValue<Boolean> cheatToHotbarUsingHotkeysEnabled();

@@ -23,6 +23,7 @@ public final class ClientConfig implements IClientConfig {
 	private final IConfigValue<RecipeGuiNavigationMode> recipeGuiNavigationMode;
 	private final IConfigValue<Boolean> toastReflowEnabled;
 	private final IConfigValue<Boolean> compactInventoryEffects;
+	private final IConfigValue<Boolean> hideIngredientsWhenNotSearching;
 
 	// cheat_mode
 	private final IConfigValue<GiveMode> giveMode;
@@ -117,6 +118,9 @@ public final class ClientConfig implements IClientConfig {
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
 		compactInventoryEffects = ingredientList.addBoolean("compactInventoryEffects", true)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
+		hideIngredientsWhenNotSearching = ingredientList.addBoolean("hideIngredientsWhenNotSearching", false)
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
 
@@ -328,6 +332,11 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Boolean> compactInventoryEffects() {
 		return compactInventoryEffects;
+	}
+
+	@Override
+	public IConfigValue<Boolean> hideIngredientsWhenNotSearching() {
+		return hideIngredientsWhenNotSearching;
 	}
 
 	@Override
