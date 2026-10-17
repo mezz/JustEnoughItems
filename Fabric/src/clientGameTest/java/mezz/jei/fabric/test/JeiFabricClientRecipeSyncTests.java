@@ -192,6 +192,7 @@ final class JeiFabricClientRecipeSyncTests {
 					RecipeSlotTooltipClientTest.run();
 					RecipeScrollGridClientTest.run();
 					IngredientNavigationClientGameTest.run();
+					CheatModeKeyClientTest.run();
 					ContainerIngredientShortcutsClientTest.run();
 					IngredientListVisibilityClientGameTest.run();
 					CheatToInventoryClientGameTest.run();
