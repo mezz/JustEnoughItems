@@ -82,7 +82,7 @@ public final class Internal {
 
 	public static IClientToggleState getClientToggleState() {
 		if (toggleState == null) {
-			toggleState = new ClientToggleState();
+			toggleState = new ClientToggleState(getClientConfigs().getClientConfig().overlaysEnabled());
 		}
 		return toggleState;
 	}

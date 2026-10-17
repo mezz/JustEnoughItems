@@ -15,6 +15,8 @@ public interface IClientConfig {
 	int maximumRecipeGuiHeight = 7680;
 	boolean defaultCenterSearchBar = false;
 
+	IConfigValue<Boolean> overlaysEnabled();
+
 	IConfigValue<SearchBarPosition> searchBarPosition();
 
 	IConfigValue<Integer> maxRecipeGuiHeight();
