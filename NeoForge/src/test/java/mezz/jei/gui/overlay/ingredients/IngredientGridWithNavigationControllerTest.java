@@ -605,7 +605,7 @@ public class IngredientGridWithNavigationControllerTest {
 			IngredientGridNavigationMode navigationMode,
 			boolean smoothScrolling
 		) {
-			TestClientConfig clientConfig = new TestClientConfig(false);
+			TestClientConfig clientConfig = new TestClientConfig();
 			clientConfig.smoothScrollingEnabled().set(smoothScrolling);
 			TestConnectionToServer connection = new TestConnectionToServer();
 			IIngredientManager ingredientManager = createIngredientManager();

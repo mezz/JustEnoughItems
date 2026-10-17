@@ -1,35 +1,45 @@
 package mezz.jei.test;
 
+import mezz.jei.api.IModPlugin;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.registration.IAdvancedSearchRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.search.ISearchStorage;
 import mezz.jei.api.search.ISearchStorageBuilder;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
-import mezz.jei.common.search.GeneralizedSuffixTreeSearchStorage;
-import mezz.jei.common.search.SearchStorageBuilderAdapter;
+import mezz.jei.api.search.ISearchStorageFactory;
+import mezz.jei.common.search.LuceneSearchStorageBuilder;
 import mezz.jei.gui.ingredients.IListElement;
 import mezz.jei.gui.ingredients.IListElementInfo;
 import mezz.jei.gui.ingredients.IngredientListElementFactory;
 import mezz.jei.gui.search.ElementPrefixParser;
 import mezz.jei.gui.search.ElementSearch;
+import mezz.jei.gui.search.ElementSearchIndex;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
+import mezz.jei.library.load.PluginLoader;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
 import mezz.jei.test.lib.TestColorHelper;
 import mezz.jei.test.lib.TestIngredient;
 import mezz.jei.test.lib.TestIngredientFilterConfig;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ElementSearchIngredientsTest {
@@ -286,11 +296,60 @@ public class ElementSearchIngredientsTest {
 		Assertions.assertEquals(Set.of(21, 22), results);
 	}
 
+	@ParameterizedTest
+	@ValueSource(booleans = {false, true})
+	public void customStorageControlsMatchingAfterRuntimeAdditionsAndRebuilds(boolean useBuilder) {
+		IModPlugin plugin = new IModPlugin() {
+			@Override
+			public Identifier getPluginUid() {
+				return Identifier.fromNamespaceAndPath("jei_test", "prefix_search");
+			}
+
+			@Override
+			public void registerAdvancedSearch(IAdvancedSearchRegistration registration) {
+				if (useBuilder) {
+					registration.replaceSearchStorage((ISearchStorageBuilderFactory) PrefixSearchStorage::new);
+				} else {
+					registration.replaceSearchStorage((ISearchStorageFactory) PrefixSearchStorage::new);
+				}
+			}
+		};
+		ISearchStorageBuilderFactory factory = PluginLoader.createSearchStorageFactory(List.of(plugin));
+		SearchFixture fixture = createFixture(List.of(), factory);
+		List<IListElementInfo<?>> infos = fixture.createInfos(List.of(new TestIngredient(20), new TestIngredient(21)));
+		fixture = fixture.withInitialIngredients(infos);
+		assertPrefixSearchResults(fixture, Set.of(20, 21));
+
+		IListElementInfo<?> added = fixture.createInfos(List.of(new TestIngredient(22))).getFirst();
+		fixture.search().add(added, fixture.ingredientManager());
+		infos.add(added);
+		assertPrefixSearchResults(fixture, Set.of(20, 21, 22));
+		Assertions.assertEquals(Set.of(22), fixture.searchIngredientNumbers("&jei_test_mod:test_ingredient_22"));
+
+		fixture.search().rebuildSearchIndexes(Set.of(ElementSearchIndex.values()), infos);
+		assertPrefixSearchResults(fixture, Set.of(20, 21, 22));
+		fixture = fixture.withInitialIngredients(infos);
+		assertPrefixSearchResults(fixture, Set.of(20, 21, 22));
+	}
+
+	private static void assertPrefixSearchResults(SearchFixture fixture, Set<Integer> expected) {
+		for (String token : List.of("test ingredient display", "$test ingredient tooltip", "@modname", "^bla", "&jei_test_mod:")) {
+			Assertions.assertEquals(expected, fixture.searchIngredientNumbers(token), token);
+		}
+		for (String token : List.of("ingredient", "$ingredient", "@jei_test_mod", "^lack", "&test_ingredient")) {
+			Assertions.assertTrue(fixture.searchIngredientNumbers(token).isEmpty(), token);
+		}
+	}
+
 	private static SearchFixture createFixture() {
 		return createFixture(List.of());
 	}
 
 	private static SearchFixture createFixture(Collection<TestIngredient> extraIngredients) {
+		return createFixture(extraIngredients, LuceneSearchStorageBuilder::new);
+	}
+
+	private static SearchFixture createFixture(Collection<TestIngredient> extraIngredients, ISearchStorageBuilderFactory factory) {
 		IngredientManagerBuilder ingredientManagerBuilder = createIngredientManagerBuilder();
 		new TestPlugin().registerIngredients(ingredientManagerBuilder);
 		if (!extraIngredients.isEmpty()) {
@@ -301,12 +360,7 @@ public class ElementSearchIngredientsTest {
 			ingredientManager,
 			FILTER_CONFIG,
 			COLOR_HELPER,
-			new ISearchStorageBuilderFactory() {
-				@Override
-				public <T> ISearchStorageBuilder<T> create() {
-					return new SearchStorageBuilderAdapter<>(new GeneralizedSuffixTreeSearchStorage<>());
-				}
-			}
+			factory
 		);
 		return new SearchFixture(ingredientManager, elementPrefixParser, new ElementSearch(elementPrefixParser, List.of(), ingredientManager));
 	}
@@ -335,6 +389,38 @@ public class ElementSearchIngredientsTest {
 	private static int getIngredientNumber(IListElement<?> element) {
 		TestIngredient ingredient = (TestIngredient) element.getTypedIngredient().getIngredient();
 		return ingredient.number();
+	}
+
+	private static class PrefixSearchStorage<T> implements ISearchStorage<T>, ISearchStorageBuilder<T> {
+		private final List<Map.Entry<String, T>> entries = new ArrayList<>();
+
+		@Override
+		public void put(String key, T value) {
+			entries.add(Map.entry(key, value));
+		}
+
+		@Override
+		public ISearchStorage<T> build() {
+			return this;
+		}
+
+		@Override
+		public void getSearchResults(String token, Consumer<Collection<T>> resultsConsumer) {
+			resultsConsumer.accept(entries.stream()
+				.filter(entry -> entry.getKey().startsWith(token))
+				.map(Map.Entry::getValue)
+				.toList());
+		}
+
+		@Override
+		public void getAllElements(Consumer<Collection<T>> resultsConsumer) {
+			resultsConsumer.accept(entries.stream().map(Map.Entry::getValue).toList());
+		}
+
+		@Override
+		public String statistics() {
+			return "PrefixSearchStorage";
+		}
 	}
 
 	private record SearchFixture(

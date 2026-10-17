@@ -39,8 +39,7 @@ val mezzConfigCurseForgeProjectSlug = gradleProperty("mezzConfigCurseForgeProjec
 val mezzConfigModrinthProjectId = gradleProperty("mezzConfigModrinthProjectId")
 val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForgeProjectSlug")
 val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
-val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
-val suffixtreeVersion = gradleProperty("suffixtreeVersion")
+val luceneVersion = gradleProperty("luceneVersion")
 val amecsDependency = "de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-mc26.2.0:1.0.2"
 
 repositories {
@@ -188,10 +187,7 @@ dependencies {
     dependencySources(project(path = ":Common", configuration = "apiSourcesElements")) {
         isTransitive = false
     }
-    modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
-        isTransitive = false
-    }
-    modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
+    modShadeImplementation("org.apache.lucene:lucene-core:${luceneVersion}") {
         isTransitive = false
     }
     changelogHtml(project(":Changelog"))
