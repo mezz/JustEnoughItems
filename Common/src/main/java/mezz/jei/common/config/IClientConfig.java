@@ -61,8 +61,6 @@ public interface IClientConfig {
 
 	IConfigValue<Boolean> showTagRecipesEnabled();
 
-	IConfigValue<Boolean> lowMemorySlowSearchEnabled();
-
 	IConfigValue<Boolean> catchRenderErrorsEnabled();
 
 	IConfigValue<Boolean> recipeSyncWarningEnabled();

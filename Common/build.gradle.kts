@@ -19,12 +19,11 @@ val neoformTimestamp = gradleProperty("neoformTimestamp")
 val modId = gradleProperty("modId")
 val modJavaVersion = gradleProperty("modJavaVersion")
 val mixinVersion = gradleProperty("mixinVersion")
-val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
-val suffixtreeVersion = gradleProperty("suffixtreeVersion")
 val neoformVersionAndTimestamp = "$minecraftVersion-$neoformTimestamp"
 val deduplicatingRunnerVersion = gradleProperty("deduplicatingRunnerVersion")
 val mezzConfigApiDependency: String by rootProject.extra
 val mezzConfigNeoForgeDependency: String by rootProject.extra
+val luceneVersion = gradleProperty("luceneVersion")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
 val apiArchivesName = "${modId}-${minecraftVersion}-common-api"
@@ -100,18 +99,7 @@ dependencies {
         isTransitive = false
     }
     implementation(mezzConfigApiDependency)
-    implementation(
-        group = "net.mezzdev",
-        name = "baked-substring-index",
-        version = bakedSubstringIndexVersion
-    ) {
-        isTransitive = false
-    }
-    implementation(
-        group = "net.mezzdev",
-        name = "suffixtree",
-        version = suffixtreeVersion
-    ) {
+    implementation("org.apache.lucene:lucene-core:${luceneVersion}") {
         isTransitive = false
     }
 	testFixturesCompileOnly("org.jspecify:jspecify:1.0.0")

@@ -229,7 +229,6 @@ public class ClientConfigMigrationTest {
 		assertFalse(client.tagContentTooltipEnabled().get());
 		assertFalse(client.hideSingleTagContentTooltipEnabled().get());
 		assertTrue(client.ingredientsSummaryEnabled().get());
-		assertTrue(client.lowMemorySlowSearchEnabled().get());
 		assertTrue(client.lookupFluidContentsEnabled().get());
 		assertFalse(client.lookupBlockTagsEnabled().get());
 		assertTrue(client.lookupHistoryEnabled().get());

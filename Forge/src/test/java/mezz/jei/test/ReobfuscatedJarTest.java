@@ -35,7 +35,7 @@ public class ReobfuscatedJarTest {
 		) {
 			List<String> names = jar.stream()
 				.map(entry -> entry.getName())
-				.filter(name -> name.startsWith("mezz/jei/") && name.endsWith(".class"))
+				.filter(name -> name.startsWith("mezz/jei/") && !name.startsWith("mezz/jei/modshade/") && name.endsWith(".class"))
 				.map(name -> name.substring(0, name.length() - ".class".length()).replace('/', '.'))
 				.toList();
 			assertFalse(names.isEmpty(), "The packaged jar must contain JEI classes");
