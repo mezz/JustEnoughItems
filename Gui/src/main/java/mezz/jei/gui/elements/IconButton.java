@@ -12,6 +12,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public final class IconButton {
 	private final InternalIconButton button;
@@ -56,7 +57,12 @@ public final class IconButton {
 	}
 
 	public IInputTarget createInputHandler() {
-		return new ButtonInputHandler(button, controller);
+		return createInputHandler(input -> false);
+	}
+
+	/** Accepts a button-specific shortcut in addition to ordinary left clicks. */
+	public IInputTarget createInputHandler(Predicate<UserInput> shortcut) {
+		return new ButtonInputHandler(button, controller, shortcut);
 	}
 
 	public void tick() {
@@ -94,20 +100,25 @@ public final class IconButton {
 	private static class ButtonInputHandler implements IInputTarget {
 		private final InternalIconButton button;
 		private final IIconButtonController controller;
+		private final Predicate<UserInput> shortcut;
 
-		public ButtonInputHandler(InternalIconButton button, IIconButtonController controller) {
+		public ButtonInputHandler(InternalIconButton button, IIconButtonController controller, Predicate<UserInput> shortcut) {
 			this.button = button;
 			this.controller = controller;
+			this.shortcut = shortcut;
 		}
 
 		@Override
 		public Optional<IInputInteraction> beginInput(Screen screen, UserInput input, IInternalKeyMappings keys) {
-			boolean hit = input.ifMouseEvent((mouseX, mouseY, mouseButton) -> button.isActive() && button.isMouseOver(mouseX, mouseY) && button.isValidClickButton(mouseButton));
+			boolean hit = button.isActive() && button.isMouseOver(input.getMouseX(), input.getMouseY()) &&
+				(input.ifMouseEvent((mouseX, mouseY, mouseButton) -> button.isValidClickButton(mouseButton)) || shortcut.test(input));
 			if (!hit) {
 				return Optional.empty();
 			}
 			button.setPressed(true);
-			controller.onPress(input);
+			if (input.isSimulate()) {
+				controller.onPress(input);
+			}
 			return Optional.of(new ButtonPress(button, controller));
 		}
 
