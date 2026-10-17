@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class ListElementInfoTest {
 	@Test
-	public void tooltipStringsExcludeEmptyStrings() {
+	public void tooltipStringsPreserveLinesAndExcludeEmptyStrings() {
 		List<Component> tooltip = List.of(
 			Component.empty(),
 			Component.literal(""),
@@ -24,6 +24,6 @@ public class ListElementInfoTest {
 		Set<String> strings = ListElementInfo.getStrings(tooltip);
 
 		Assertions.assertFalse(strings.contains(""));
-		Assertions.assertEquals(Set.of("alpha", "beta", "gamma", "delta"), strings);
+		Assertions.assertEquals(Set.of("alpha  beta", "gamma\tdelta"), strings);
 	}
 }

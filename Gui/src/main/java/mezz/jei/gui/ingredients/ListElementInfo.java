@@ -179,25 +179,12 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		for (FormattedText component : tooltip) {
 			String string = component.getString();
 			string = StringUtil.removeChatFormatting(string);
-			string = Translator.toLowercaseWithLocale(string);
-			// Split tooltip strings into words to keep them from being too long.
-			// Longer strings are more expensive for the suffix tree to handle.
-			addSplitStrings(result, string);
-		}
-		return result;
-	}
-
-	private static void addSplitStrings(Set<String> result, String string) {
-		string = string.trim();
-		if (string.isEmpty()) {
-			return;
-		}
-		String[] strings = WHITESPACE_PATTERN.split(string);
-		for (String splitString : strings) {
-			if (!splitString.isEmpty()) {
-				result.add(splitString);
+			string = Translator.toLowercaseWithLocale(string).trim();
+			if (!string.isEmpty()) {
+				result.add(string);
 			}
 		}
+		return result;
 	}
 
 	private static List<String> getShortModNames(String modName) {
@@ -268,8 +255,10 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 			if (itemGroup.contains(itemStack)) {
 				String name = itemGroup.getDisplayName().getString();
 				name = StringUtil.removeChatFormatting(name);
-				name = Translator.toLowercaseWithLocale(name);
-				addSplitStrings(creativeTabStrings, name);
+				name = Translator.toLowercaseWithLocale(name).trim();
+				if (!name.isEmpty()) {
+					creativeTabStrings.add(name);
+				}
 			}
 		}
 		return creativeTabStrings;
