@@ -54,8 +54,7 @@ val mezzConfigCurseForgeProjectSlug = gradleProperty("mezzConfigCurseForgeProjec
 val mezzConfigModrinthProjectId = gradleProperty("mezzConfigModrinthProjectId")
 val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForgeProjectSlug")
 val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
-val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
-val suffixtreeVersion = gradleProperty("suffixtreeVersion")
+val luceneVersion = gradleProperty("luceneVersion")
 val amecsDependency = "de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric"
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
@@ -196,10 +195,7 @@ dependencies {
     dependencySources(project(path = ":Common", configuration = "apiSourcesElements")) {
         isTransitive = false
     }
-    modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
-        isTransitive = false
-    }
-    modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
+    modShadeImplementation("org.apache.lucene:lucene-core:${luceneVersion}") {
         isTransitive = false
     }
     val amecsKeyModifiers = "de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric"

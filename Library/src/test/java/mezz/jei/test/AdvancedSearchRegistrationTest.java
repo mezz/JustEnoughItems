@@ -4,7 +4,7 @@ import mezz.jei.api.search.ISearchStorage;
 import mezz.jei.api.search.ISearchStorageBuilder;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
 import mezz.jei.api.search.ISearchStorageFactory;
-import mezz.jei.common.search.BakedSubstringIndexBuilder;
+import mezz.jei.common.search.LuceneSearchStorageBuilder;
 import mezz.jei.common.search.LimitedStringStorageBuilder;
 import mezz.jei.library.load.PluginLoader;
 import mezz.jei.library.load.registration.AdvancedSearchRegistration;
@@ -18,10 +18,10 @@ import java.util.function.Consumer;
 
 public class AdvancedSearchRegistrationTest {
 	@Test
-	public void defaultStorageUsesBakedSubstringIndexBuilder() {
+	public void defaultStorageUsesLuceneSearchStorageBuilder() {
 		ISearchStorageBuilder<String> searchStorageBuilder = PluginLoader.createSearchStorageFactory(List.of()).create();
 
-		Assertions.assertInstanceOf(BakedSubstringIndexBuilder.class, searchStorageBuilder);
+		Assertions.assertInstanceOf(LuceneSearchStorageBuilder.class, searchStorageBuilder);
 	}
 
 	@Test
@@ -29,7 +29,7 @@ public class AdvancedSearchRegistrationTest {
 		AdvancedSearchRegistration searchRegistration = new AdvancedSearchRegistration();
 		ISearchStorageBuilder<String> searchStorageBuilder = searchRegistration.getDefaultSearchStorageBuilderFactory().create();
 
-		Assertions.assertInstanceOf(BakedSubstringIndexBuilder.class, searchStorageBuilder);
+		Assertions.assertInstanceOf(LuceneSearchStorageBuilder.class, searchStorageBuilder);
 	}
 
 	@Test

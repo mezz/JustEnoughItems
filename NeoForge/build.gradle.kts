@@ -53,8 +53,7 @@ val mezzConfigCurseForgeProjectSlug = gradleProperty("mezzConfigCurseForgeProjec
 val mezzConfigModrinthProjectId = gradleProperty("mezzConfigModrinthProjectId")
 val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForgeProjectSlug")
 val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
-val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
-val suffixtreeVersion = gradleProperty("suffixtreeVersion")
+val luceneVersion = gradleProperty("luceneVersion")
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken = optionalGradleProperty("modrinthToken")
@@ -210,10 +209,7 @@ dependencies {
 	dependencyProjectPaths.forEach {
 		implementation(project(it))
 	}
-	modShadeImplementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
-		isTransitive = false
-	}
-	modShadeImplementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
+	modShadeImplementation("org.apache.lucene:lucene-core:${luceneVersion}") {
 		isTransitive = false
 	}
 	"gameTestImplementation"("net.neoforged:testframework:${neoforgeVersion}") {

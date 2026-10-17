@@ -27,8 +27,7 @@ val neoformVersionAndTimestamp = gradleProperty("neoformVersionAndTimestamp")
 val modGroup = gradleProperty("modGroup")
 val modId = gradleProperty("modId")
 val modJavaVersion = gradleProperty("modJavaVersion")
-val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
-val suffixtreeVersion = gradleProperty("suffixtreeVersion")
+val luceneVersion = gradleProperty("luceneVersion")
 
 val baseArchivesName = "${modId}-${minecraftVersion}-common"
 val apiArchivesName = "${modId}-${minecraftVersion}-common-api"
@@ -99,10 +98,7 @@ dependencies {
     testImplementation(mezzConfigDependency("fabric"))
     implementation(apiSourceSet.output)
     implementation("org.jetbrains:annotations:26.1.0")
-    implementation("net.mezzdev:baked-substring-index:${bakedSubstringIndexVersion}") {
-        isTransitive = false
-    }
-    implementation("net.mezzdev:suffixtree:${suffixtreeVersion}") {
+    implementation("org.apache.lucene:lucene-core:${luceneVersion}") {
         isTransitive = false
     }
     testFixturesCompileOnly("org.jspecify:jspecify:1.0.0")
