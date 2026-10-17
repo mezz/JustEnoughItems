@@ -1,32 +1,21 @@
 package mezz.jei.fabric.mixin;
 
-import de.siphalor.amecs.key_modifiers.impl.AmecsKeyModifiersEarlyInit;
-import mezz.jei.fabric.input.AmecsHelper;
-import mezz.jei.fabric.input.FabricAmecsSupport;
+import mezz.jei.fabric.input.AmecsSupport;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * This mixin into AmecsKeyModifiers Early initializer because that
- * where AmecsKeyModifiers are usually sealed.
- */
-@Mixin(AmecsKeyModifiersEarlyInit.class)
+/** Registers JEI's Command modifier before AMECS seals its modifier registry. */
+@Pseudo
+@Mixin(targets = "de.siphalor.amecs.key_modifiers.impl.AmecsKeyModifiersEarlyInit", remap = false)
 public class AmecsKeyModifiersEarlyInitMixin {
-
 	@Inject(
-		method = "onInitialize()V",
-		at = @At(
-			value = "INVOKE",
-			target = "Lde/siphalor/amecs/key_modifiers/api/AmecsKeyModifiers;seal()V"
-		),
-		require = 0
+		method = "onInitialize",
+		at = @At(value = "INVOKE", target = "Lde/siphalor/amecs/key_modifiers/api/AmecsKeyModifiers;seal()V")
 	)
-	private static void onInit(CallbackInfo ci) {
-		AmecsHelper.initKeyMappingManagerLayer();
-		if (FabricAmecsSupport.isEnabled()) {
-			AmecsHelper.init();
-		}
+	private void beforeSeal(CallbackInfo ci) {
+		AmecsSupport.init();
 	}
 }

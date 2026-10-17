@@ -5,7 +5,6 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.GiveMode;
-import mezz.jei.fabric.input.FabricKeyMapping;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
@@ -44,11 +43,9 @@ public class CheatToInventoryClientGameTest implements FabricClientGameTest {
 		List<Runnable> cleanup = new ArrayList<>();
 		try {
 			context.runOnClient(client -> {
-				var mapping = (FabricKeyMapping) Objects.requireNonNull(KeyMapping.get(keyName));
-				check(mapping.isUnbound(), "Modified shortcuts must default to unbound on Fabric without modifier support");
-				var originalKey = net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.getBoundKeyOf(mapping);
-				cleanup.add(() -> mapping.setKey(originalKey));
-				mapping.setKey(InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_P));
+				var mapping = Objects.requireNonNull(KeyMapping.get(keyName));
+				check(!mapping.isUnbound(), "JEI's modified shortcuts must be available");
+				cleanup.add(KeyMappingTestHelper.rebindUnmodified(mapping, InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_P)));
 				var toggles = Internal.getClientToggleState();
 				boolean originalCheatMode = toggles.isCheatItemsEnabled();
 				cleanup.add(() -> toggles.setCheatItemsEnabled(originalCheatMode));

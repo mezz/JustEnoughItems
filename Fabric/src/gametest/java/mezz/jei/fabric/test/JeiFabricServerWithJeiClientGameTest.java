@@ -13,10 +13,8 @@ import java.util.Objects;
 public class JeiFabricServerWithJeiClientGameTest implements FabricClientGameTest {
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		JUnitXmlTestReporter.runAndReportWithBooleanVariant(
+		JUnitXmlTestReporter.runAndReport(
 			"fabric-client-gametest",
-			"jei.fabric.disableAmecsSupport",
-			"without-amecs",
 			getClass().getSimpleName(),
 			() -> {
 				try (ExternalTestServer server = ExternalTestServer.startFabricWithJei(context);

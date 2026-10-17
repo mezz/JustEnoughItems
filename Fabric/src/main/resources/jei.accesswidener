@@ -1,5 +1,7 @@
 accessWidener v1 named
 
+accessible class net/minecraft/client/Options$FieldAccess
+
 accessible field net/minecraft/client/gui/components/EditBox canLoseFocus Z
 
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen hoveredSlot Lnet/minecraft/world/inventory/Slot;

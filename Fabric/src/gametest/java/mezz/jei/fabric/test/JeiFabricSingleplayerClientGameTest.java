@@ -18,10 +18,8 @@ import java.util.Objects;
 public class JeiFabricSingleplayerClientGameTest implements FabricClientGameTest {
 	@Override
 	public void runTest(ClientGameTestContext context) {
-		JUnitXmlTestReporter.runAndReportWithBooleanVariant(
+		JUnitXmlTestReporter.runAndReport(
 			"fabric-client-gametest",
-			"jei.fabric.disableAmecsSupport",
-			"without-amecs",
 			getClass().getSimpleName(),
 			() -> {
 				assertConfigScreenRenders(context, "jei-config-menu");

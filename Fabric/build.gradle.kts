@@ -67,6 +67,7 @@ val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForge
 val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
 val bakedSubstringIndexVersion = gradleProperty("bakedSubstringIndexVersion")
 val suffixtreeVersion = gradleProperty("suffixtreeVersion")
+val amecsDependency = "de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric"
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken = optionalGradleProperty("modrinthToken")
@@ -83,7 +84,6 @@ val dependencyProjectPaths = listOf(":Common", ":Library", ":Gui")
 val commonProjectDirectory = isolatedProjectDirectory(":Common")
 val debugProjectDirectory = isolatedProjectDirectory(":Debug")
 
-val keyMappingGametestModId = "${modId}-key-mapping-test"
 val commonClientTestFixturesSource = commonProjectDirectory.dir("src/clientTestFixtures/java")
 val clientGameTestRunDirectory = layout.buildDirectory.dir("run/clientGameTest")
 val clientGameTestWithoutAmecsRunDirectory = layout.buildDirectory.dir("run/clientGameTestWithoutAmecs")
@@ -242,18 +242,14 @@ fabricApi {
     }
 }
 
-val keyMappingGametestSourceSet = sourceSets.create("keyMappingGametest") {
-    val gametestSourceSet = sourceSets.named("gametest").get()
-    compileClasspath += sourceSets.main.get().output + gametestSourceSet.compileClasspath
-    runtimeClasspath += output + compileClasspath + gametestSourceSet.runtimeClasspath.minus(gametestSourceSet.output)
-}
-val keyMappingGametestWithoutAmecsSourceSet = sourceSets.create("keyMappingGametestWithoutAmecs") {
-    runtimeClasspath += keyMappingGametestSourceSet.runtimeClasspath.filter {
+val gametestWithoutAmecsSourceSet = sourceSets.create("gametestWithoutAmecs") {
+    runtimeClasspath += sourceSets.named("gametest").get().runtimeClasspath.filter {
         !it.name.startsWith("amecs-key-modifiers-")
     }
 }
 
 dependencies {
+    "modGametestCompileOnly"(amecsDependency) { isTransitive = false }
     "gametestImplementation"(testFixtures(project(":Common")))
     "modGametestImplementation"(mezzConfigGuiFabricDependency)
 }
@@ -263,9 +259,6 @@ loom {
         create("jei") {
             sourceSet(sourceSets.main.get())
             sourceSet(apiSourceSet)
-        }
-        create(keyMappingGametestModId) {
-            sourceSet(keyMappingGametestSourceSet)
         }
     }
 
@@ -319,9 +312,10 @@ loom {
         create("clientGameTestWithoutAmecs") {
             inherit(named("clientGameTest").get())
             displayName.set("Fabric Client GameTest Without AMECS")
-            sourceSet.set(keyMappingGametestWithoutAmecsSourceSet.name)
+            sourceSet.set(gametestWithoutAmecsSourceSet.name)
             runDirectory.set(clientGameTestWithoutAmecsRunDirectory.get().asFile)
-            systemProperties.put("fabric.client.gametest.modid", keyMappingGametestModId)
+            systemProperties.put("fabric.client.gametest.modid", "${modId}-test")
+            systemProperties.put("jei.test.variant", "without-amecs")
         }
     }
 
@@ -334,16 +328,11 @@ sourceSets {
     }
     named("gametest") {
         java.srcDir(commonClientTestFixturesSource)
-        runtimeClasspath += keyMappingGametestSourceSet.output
     }
 }
 
-tasks.named("runClientGameTest") {
-    dependsOn(keyMappingGametestSourceSet.classesTaskName)
-}
-
 tasks.named("runClientGameTestWithoutAmecs") {
-    dependsOn(keyMappingGametestSourceSet.classesTaskName)
+    dependsOn(sourceSets.named("gametest").get().classesTaskName)
 }
 
 fun registerWriteClientGameTestOptionsTask(name: String, runDirectory: Provider<Directory>) =

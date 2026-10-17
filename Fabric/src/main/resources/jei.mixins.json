@@ -7,12 +7,16 @@
     "AmecsKeyModifiersEarlyInitMixin"
   ],
   "client": [
+    "AmecsKeyModifiersEarlyInitMixin",
     "AbstractContainerScreenMixin",
     "ClientPacketListenerRecipeUpdateMixin",
     "EffectsInInventoryMixin",
     "GuiGraphicsMixin",
     "KeyboardHandlerMixin",
+    "KeyBindsListEntryMixin",
+    "KeyBindsScreenMixin",
     "MinecraftMixin",
+    "OptionsMixin",
     "ScreenMixin"
   ],
   "injectors": {

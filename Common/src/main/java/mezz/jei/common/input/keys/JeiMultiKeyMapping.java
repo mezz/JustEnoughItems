@@ -8,9 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class JeiMultiKeyMapping implements IJeiKeyMappingWithExtraModifiers {
-	private final List<IJeiKeyMapping> mappings;
+	private final List<IJeiKeyMappingWithExtraModifiers> mappings;
 
-	public JeiMultiKeyMapping(IJeiKeyMapping... mappings) {
+	public JeiMultiKeyMapping(IJeiKeyMappingWithExtraModifiers... mappings) {
 		this.mappings = Arrays.asList(mappings);
 	}
 
@@ -23,12 +23,7 @@ public class JeiMultiKeyMapping implements IJeiKeyMappingWithExtraModifiers {
 	@Override
 	public boolean isActiveAndMatchesAllowingExtraModifiers(InputConstants.Key key) {
 		return this.mappings.stream()
-			.anyMatch(mapping -> {
-				if (mapping instanceof IJeiKeyMappingWithExtraModifiers withExtraModifiers) {
-					return withExtraModifiers.isActiveAndMatchesAllowingExtraModifiers(key);
-				}
-				return mapping.isActiveAndMatches(key);
-			});
+			.anyMatch(mapping -> mapping.isActiveAndMatchesAllowingExtraModifiers(key));
 	}
 
 	@Override
