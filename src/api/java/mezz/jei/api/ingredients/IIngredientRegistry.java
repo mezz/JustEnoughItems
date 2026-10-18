@@ -1,8 +1,11 @@
 package mezz.jei.api.ingredients;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.minecraft.item.ItemStack;
 
@@ -81,6 +84,33 @@ public interface IIngredientRegistry {
 	 * @since JEI 4.12.0
 	 */
 	<V> void removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients);
+
+	/**
+	 * Refreshes search and sorting after ingredient names, tooltips, or other searchable information change.
+	 * Call on the client main thread, batching related changes together.
+	 * Registered instances are refreshed by their unchanged unique IDs; unknown ingredients are ignored.
+	 *
+	 * @param ingredientType the type of ingredients to refresh
+	 * @param ingredients ingredients identifying the registered instances by unique ID
+	 * @since JEI 4.24.0
+	 */
+	default <V> void refreshIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
+		IIngredientHelper<V> helper = getIngredientHelper(ingredientType);
+		Set<String> requestedIds = new HashSet<>();
+		for (V ingredient : ingredients) {
+			requestedIds.add(helper.getUniqueId(ingredient));
+		}
+		List<V> registered = new ArrayList<>();
+		for (V ingredient : getAllIngredients(ingredientType)) {
+			if (requestedIds.contains(helper.getUniqueId(ingredient))) {
+				registered.add(ingredient);
+			}
+		}
+		if (!registered.isEmpty()) {
+			removeIngredientsAtRuntime(ingredientType, registered);
+			addIngredientsAtRuntime(ingredientType, registered);
+		}
+	}
 
 	/**
 	 * Helper method to get ingredient type for an ingredient.

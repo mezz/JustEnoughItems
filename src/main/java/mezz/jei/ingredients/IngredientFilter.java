@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -41,7 +43,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 	 * includes all elements (even hidden ones) for use when rebuilding
 	 */
 	private final NonNullList<IIngredientListElement> elementList;
-	private final GeneralizedSuffixTree searchTree;
+	private GeneralizedSuffixTree searchTree;
 	private final Char2ObjectMap<PrefixedSearchTree> prefixedSearchTrees = new Char2ObjectOpenHashMap<>();
 	private final IngredientFilterBackgroundBuilder backgroundBuilder;
 	private CombinedSearchTrees combinedSearchTrees;
@@ -55,12 +57,7 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		this.blacklist = blacklist;
 		this.elementList = NonNullList.create();
 		this.searchTree = new GeneralizedSuffixTree();
-		createPrefixedSearchTree('@', Config::getModNameSearchMode, IIngredientListElement::getModNameStrings);
-		createPrefixedSearchTree('#', Config::getTooltipSearchMode, IIngredientListElement::getTooltipStrings);
-		createPrefixedSearchTree('$', Config::getOreDictSearchMode, IIngredientListElement::getOreDictStrings);
-		createPrefixedSearchTree('%', Config::getCreativeTabSearchMode, IIngredientListElement::getCreativeTabsStrings);
-		createPrefixedSearchTree('^', Config::getColorSearchMode, IIngredientListElement::getColorStrings);
-		createPrefixedSearchTree('&', Config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId()));
+		createPrefixedSearchTrees();
 
 		this.combinedSearchTrees = buildCombinedSearchTrees(this.searchTree, this.prefixedSearchTrees.values());
 		this.backgroundBuilder = new IngredientFilterBackgroundBuilder(prefixedSearchTrees, elementList);
@@ -75,6 +72,15 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 			}
 		}
 		return combinedSearchTrees;
+	}
+
+	private void createPrefixedSearchTrees() {
+		createPrefixedSearchTree('@', Config::getModNameSearchMode, IIngredientListElement::getModNameStrings);
+		createPrefixedSearchTree('#', Config::getTooltipSearchMode, IIngredientListElement::getTooltipStrings);
+		createPrefixedSearchTree('$', Config::getOreDictSearchMode, IIngredientListElement::getOreDictStrings);
+		createPrefixedSearchTree('%', Config::getCreativeTabSearchMode, IIngredientListElement::getCreativeTabsStrings);
+		createPrefixedSearchTree('^', Config::getColorSearchMode, IIngredientListElement::getColorStrings);
+		createPrefixedSearchTree('&', Config::getResourceIdSearchMode, element -> Collections.singleton(element.getResourceId()));
 	}
 
 	private void createPrefixedSearchTree(char prefix, PrefixedSearchTree.IModeGetter modeGetter, PrefixedSearchTree.IStringsGetter stringsGetter) {
@@ -113,6 +119,11 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 		updateHiddenState(element);
 		final int index = elementList.size();
 		elementList.add(element);
+		indexIngredient(element, index);
+		filterCached = null;
+	}
+
+	private void indexIngredient(IIngredientListElement<?> element, int index) {
 		for (String name : element.getNameStrings()) {
 			searchTree.put(name, index);
 		}
@@ -126,7 +137,40 @@ public class IngredientFilter implements IIngredientFilter, IIngredientGridSourc
 				}
 			}
 		}
-		filterCached = null;
+	}
+
+	public <V> void refreshIngredients(IIngredientHelper<V> helper, Collection<IIngredientListElement<V>> updatedElements) {
+		if (updatedElements.isEmpty()) {
+			return;
+		}
+		Map<String, IIngredientListElement<V>> replacements = new HashMap<>();
+		for (IIngredientListElement<V> element : updatedElements) {
+			replacements.put(helper.getUniqueId(element.getIngredient()), element);
+		}
+		for (int i = 0; i < elementList.size(); i++) {
+			IIngredientListElement<?> current = elementList.get(i);
+			if (current.getIngredientHelper() == helper) {
+				@SuppressWarnings("unchecked")
+				V ingredient = (V) current.getIngredient();
+				IIngredientListElement<V> replacement = replacements.get(helper.getUniqueId(ingredient));
+				if (replacement != null) {
+					replacement.setVisible(current.isVisible());
+					elementList.set(i, replacement);
+				}
+			}
+		}
+
+		elementList.sort(IngredientListElementComparator.INSTANCE);
+		searchTree = new GeneralizedSuffixTree();
+		prefixedSearchTrees.clear();
+		createPrefixedSearchTrees();
+		for (int i = 0; i < elementList.size(); i++) {
+			indexIngredient(elementList.get(i), i);
+		}
+		trimToSize();
+		combinedSearchTrees = buildCombinedSearchTrees(searchTree, prefixedSearchTrees.values());
+		invalidateCache();
+		notifyListenersOfChange();
 	}
 
 	public void invalidateCache() {

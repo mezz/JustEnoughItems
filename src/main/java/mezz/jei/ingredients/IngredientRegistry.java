@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -232,6 +233,32 @@ public class IngredientRegistry implements IIngredientRegistry {
 	@Override
 	public <V> void addIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
 		addIngredientsAtRuntime(ingredientType, ingredients, Internal.getIngredientFilter());
+	}
+
+	@Override
+	public <V> void refreshIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
+		refreshIngredientsAtRuntime(ingredientType, ingredients, Internal.getIngredientFilter());
+	}
+
+	public <V> void refreshIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients, IngredientFilter ingredientFilter) {
+		ErrorUtil.assertMainThread();
+		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
+		ErrorUtil.checkNotNull(ingredients, "ingredients");
+		IIngredientHelper<V> helper = getIngredientHelper(ingredientType);
+		Set<String> requestedIds = new HashSet<>();
+		for (V ingredient : ingredients) {
+			requestedIds.add(helper.getUniqueId(ingredient));
+		}
+		List<V> registered = new ArrayList<>();
+		for (V ingredient : getAllIngredients(ingredientType)) {
+			if (requestedIds.contains(helper.getUniqueId(ingredient))) {
+				registered.add(ingredient);
+			}
+		}
+		if (!registered.isEmpty()) {
+			NonNullList<IIngredientListElement<V>> elements = IngredientListElementFactory.createList(this, ingredientType, registered, modIdHelper);
+			ingredientFilter.refreshIngredients(helper, elements);
+		}
 	}
 
 	@Override

@@ -35,7 +35,7 @@ public class TestPlugin implements IModPlugin {
 
 		@Override
 		public List<String> getTooltip(Minecraft minecraft, TestIngredient ingredient, ITooltipFlag tooltipFlag) {
-			return Collections.singletonList("Test Ingredient Tooltip " + ingredient);
+			return Collections.singletonList("Test Ingredient Tooltip " + ingredient.getDisplayName());
 		}
 	}
 

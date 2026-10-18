@@ -27,7 +27,9 @@ import org.junit.Test;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class IngredientFilterTest {
@@ -157,6 +159,59 @@ public class IngredientFilterTest {
 
 		ingredientList = ingredientFilter.getIngredientList();
 		Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT - 1, ingredientList.size());
+	}
+
+	@Test
+	public void refreshUsesRegisteredInstancesAndRemovesObsoleteSearchTerms() {
+		Assert.assertNotNull(ingredientFilter);
+		Assert.assertNotNull(ingredientRegistry);
+		Assert.assertNotNull(baseList);
+		Config.setFilterText("");
+		ingredientFilter.addIngredients(baseList);
+		TestIngredient registered = (TestIngredient) baseList.get(0).getIngredient();
+		String originalName = registered.toString();
+		registered.setDisplayName("renamed cobalt");
+
+		// Callers may supply equivalent copies; JEI must reread the registered object.
+		ingredientRegistry.refreshIngredientsAtRuntime(TestIngredient.TYPE,
+			Arrays.asList(new TestIngredient(registered.getNumber()), new TestIngredient(9999)), ingredientFilter);
+
+		try {
+			Config.setFilterText("cobalt");
+			List<IIngredientListElement> renamedMatches = ingredientFilter.getIngredientList();
+			Assert.assertEquals(1, renamedMatches.size());
+			Assert.assertSame(registered, renamedMatches.get(0).getIngredient());
+			Config.setFilterText(originalName);
+			Assert.assertTrue("Old names must no longer match after refreshing", ingredientFilter.getIngredientList().isEmpty());
+			Config.setFilterText("");
+			Assert.assertEquals("Unknown IDs must not add ingredients", TestPlugin.BASE_INGREDIENT_COUNT, ingredientFilter.getIngredientList().size());
+		} finally {
+			Config.setFilterText("");
+		}
+	}
+
+	@Test
+	public void refreshKeepsHiddenIngredientsHidden() {
+		Assert.assertNotNull(ingredientFilter);
+		Assert.assertNotNull(ingredientRegistry);
+		Assert.assertNotNull(jeiHelpers);
+		Assert.assertNotNull(baseList);
+		Config.setFilterText("");
+		TestIngredient hidden = (TestIngredient) baseList.get(0).getIngredient();
+		jeiHelpers.getIngredientBlacklist().addIngredientToBlacklist(hidden);
+		ingredientFilter.addIngredients(baseList);
+		hidden.setDisplayName("hidden cobalt");
+
+		ingredientRegistry.refreshIngredientsAtRuntime(TestIngredient.TYPE, Collections.singleton(hidden), ingredientFilter);
+
+		try {
+			Config.setFilterText("cobalt");
+			Assert.assertTrue("Refreshing metadata must not reveal a hidden ingredient", ingredientFilter.getIngredientList().isEmpty());
+			Config.setFilterText("");
+			Assert.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT - 1, ingredientFilter.getIngredientList().size());
+		} finally {
+			Config.setFilterText("");
+		}
 	}
 
 	private void addIngredients(IngredientFilter ingredientFilter) {
