@@ -3,7 +3,7 @@ package mezz.jei.gui.ingredients;
 import mezz.jei.api.ingredients.ITypedIngredient;
 
 public class ListElement<V> implements IListElement<V> {
-	private final ITypedIngredient<V> ingredient;
+	private ITypedIngredient<V> ingredient;
 	private final int createdIndex;
 	private int sortIndex;
 	private boolean visible = true;
@@ -17,6 +17,11 @@ public class ListElement<V> implements IListElement<V> {
 	@Override
 	public final ITypedIngredient<V> getTypedIngredient() {
 		return ingredient;
+	}
+
+	@Override
+	public void setTypedIngredient(ITypedIngredient<V> ingredient) {
+		this.ingredient = ingredient;
 	}
 
 	@Override

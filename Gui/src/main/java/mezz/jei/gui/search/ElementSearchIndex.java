@@ -1,7 +1,7 @@
 package mezz.jei.gui.search;
 
 public enum ElementSearchIndex {
-	UNPREFIXED,
+	NAMES_AND_ALIASES,
 	MOD_NAMES,
 	TAGS,
 	TOOLTIPS,

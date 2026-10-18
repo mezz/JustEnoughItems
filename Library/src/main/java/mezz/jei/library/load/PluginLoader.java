@@ -30,6 +30,7 @@ import mezz.jei.common.platform.IPlatformFluidHelperInternal;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.recipes.BrewingExtensionHelper;
 import mezz.jei.common.search.LuceneSearchStorageBuilder;
+import mezz.jei.common.search.RemovalFallbackSearchStorage;
 import mezz.jei.common.util.LoggedTimer;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.library.config.EditModeConfig;
@@ -225,10 +226,11 @@ public final class PluginLoader {
 	}
 
 	public static ISearchStorageBuilderFactory createSearchStorageFactory(List<IModPlugin> plugins) {
-		ISearchStorageBuilderFactory defaultSearchStorageBuilderFactory = LuceneSearchStorageBuilder::new;
+		ISearchStorageBuilderFactory defaultSearchStorageBuilderFactory = LuceneSearchStorageBuilder.FACTORY;
 		AdvancedSearchRegistration searchRegistration = new AdvancedSearchRegistration(defaultSearchStorageBuilderFactory);
 		PluginCaller.callOnPlugins("Registering advanced search", plugins, p -> p.registerAdvancedSearch(searchRegistration));
 		return searchRegistration.getSearchStorageBuilderFactoryOverride()
+			.map(RemovalFallbackSearchStorage::wrap)
 			.orElse(defaultSearchStorageBuilderFactory);
 	}
 
