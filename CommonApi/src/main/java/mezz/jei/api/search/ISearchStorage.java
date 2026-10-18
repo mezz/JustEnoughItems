@@ -36,6 +36,29 @@ public interface ISearchStorage<T> {
 	void put(String key, T value);
 
 	/**
+	 * Whether {@link #removeAll(Collection)} is supported.
+	 * This capability must remain constant for the lifetime of the storage.
+	 *
+	 * @since 11.80.0
+	 */
+	default boolean supportsDeletion() {
+		return false;
+	}
+
+	/**
+	 * Remove the given value instances and all their search entries, comparing values by identity ({@code ==}).
+	 *
+	 * If a rebuild is required, return {@code false} without changes.
+	 *
+	 * @return {@code true} if removal completed, even when no values matched; {@code false} if a rebuild is required
+	 * @throws UnsupportedOperationException if {@link #supportsDeletion()} is {@code false}
+	 * @since 11.80.0
+	 */
+	default boolean removeAll(Collection<T> values) {
+		throw new UnsupportedOperationException("Search storage does not support deletion");
+	}
+
+	/**
 	 * Get implementation-specific statistics for logging.
 	 *
 	 * @since 11.12.0

@@ -39,4 +39,14 @@ public interface ISearchStorageBuilderFactory {
 		Objects.requireNonNull(id, "id");
 		return create();
 	}
+
+	/**
+	 * Whether deletion support is guaranteed for every storage built by this factory.
+	 * If {@code true}, all built storage must return {@code true} from {@link ISearchStorage#supportsDeletion()}.
+	 *
+	 * @since 11.80.0
+	 */
+	default boolean supportsDeletion() {
+		return false;
+	}
 }

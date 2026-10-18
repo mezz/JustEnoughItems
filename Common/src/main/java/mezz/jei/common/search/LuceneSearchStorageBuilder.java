@@ -2,6 +2,7 @@ package mezz.jei.common.search;
 
 import mezz.jei.api.search.ISearchStorage;
 import mezz.jei.api.search.ISearchStorageBuilder;
+import mezz.jei.api.search.ISearchStorageBuilderFactory;
 
 /**
  * Builds a {@link LuceneSearchStorage} from the initial ingredient data.
@@ -9,6 +10,18 @@ import mezz.jei.api.search.ISearchStorageBuilder;
  * Single-use: calls to {@link #put(String, Object)} and {@link #build()} fail after building.
  */
 public class LuceneSearchStorageBuilder<T> implements ISearchStorageBuilder<T> {
+	public static final ISearchStorageBuilderFactory FACTORY = new ISearchStorageBuilderFactory() {
+		@Override
+		public <T> ISearchStorageBuilder<T> create() {
+			return new LuceneSearchStorageBuilder<>();
+		}
+
+		@Override
+		public boolean supportsDeletion() {
+			return true;
+		}
+	};
+
 	private final LuceneSearchStorage<T> storage = new LuceneSearchStorage<>();
 	private boolean built;
 

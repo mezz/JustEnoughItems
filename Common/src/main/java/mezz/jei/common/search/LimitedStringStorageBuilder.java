@@ -3,14 +3,15 @@ package mezz.jei.common.search;
 import mezz.jei.api.search.ISearchStorage;
 import mezz.jei.api.search.ISearchStorageBuilder;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
-import mezz.jei.common.collect.SetMultiMap;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class LimitedStringStorageBuilder<T> implements ISearchStorageBuilder<T> {
-	private final SetMultiMap<String, T> multiMap = new SetMultiMap<>(() -> Collections.newSetFromMap(new IdentityHashMap<>()));
+	private final Map<String, Set<T>> valuesByKey = new HashMap<>();
 	private final ISearchStorageBuilder<Set<T>> storageBuilder;
 
 	public LimitedStringStorageBuilder(ISearchStorageBuilderFactory factory) {
@@ -23,10 +24,10 @@ public class LimitedStringStorageBuilder<T> implements ISearchStorageBuilder<T> 
 
 	@Override
 	public void put(String key, T value) {
-		boolean isNewKey = !multiMap.containsKey(key);
-		multiMap.put(key, value);
+		boolean isNewKey = !valuesByKey.containsKey(key);
+		Set<T> set = valuesByKey.computeIfAbsent(key, k -> Collections.newSetFromMap(new IdentityHashMap<>()));
+		set.add(value);
 		if (isNewKey) {
-			Set<T> set = multiMap.get(key);
 			storageBuilder.put(key, set);
 		}
 	}
@@ -34,6 +35,6 @@ public class LimitedStringStorageBuilder<T> implements ISearchStorageBuilder<T> 
 	@Override
 	public ISearchStorage<T> build() {
 		ISearchStorage<Set<T>> searchStorage = this.storageBuilder.build();
-		return new LimitedStringStorage<>(searchStorage, multiMap);
+		return new LimitedStringStorage<>(searchStorage, valuesByKey);
 	}
 }

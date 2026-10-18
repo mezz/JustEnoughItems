@@ -122,6 +122,16 @@ public interface IIngredientManager {
 	<V> void removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients);
 
 	/**
+	 * Refresh search, sorting, and suggestions after ingredient names, tooltips, or other searchable information change.
+	 *
+	 * Call on the client main thread, batching related changes together.
+	 * JEI rereads its registered instances, matched by their unchanged {@link UidContext#Ingredient} UIDs.
+	 *
+	 * @since 11.80.0
+	 */
+	<V> void refreshIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients);
+
+	/**
 	 * Helper method to get ingredient type for an ingredient.
 	 * Returns null if there is no known type for the given ingredient.
 	 *
@@ -366,5 +376,14 @@ public interface IIngredientManager {
 		 * @since 11.5.0
 		 */
 		<V> void onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients);
+
+		/**
+		 * Called when registered ingredients need their search data refreshed.
+		 *
+		 * @see IIngredientManager#refreshIngredientsAtRuntime
+		 * @since 11.80.0
+		 */
+		default <V> void onIngredientsUpdated(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
+		}
 	}
 }

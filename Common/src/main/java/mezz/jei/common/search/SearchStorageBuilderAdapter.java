@@ -10,6 +10,10 @@ public class SearchStorageBuilderAdapter<T> implements ISearchStorageBuilder<T> 
 		this.searchStorage = searchStorage;
 	}
 
+	ISearchStorage<T> getSearchStorage() {
+		return searchStorage;
+	}
+
 	@Override
 	public void put(String key, T value) {
 		searchStorage.put(key, value);
