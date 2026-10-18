@@ -39,7 +39,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -69,10 +71,11 @@ public class IngredientFilter
 	@Nullable
 	private List<IElement<?>> ingredientListCached;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
-	@Nullable
-	private List<IListElementInfo<?>> elementInfoCache;
+	private final Map<IListElement<?>, IListElementInfo<?>> elementInfoCache = new LinkedHashMap<>();
+	private final Set<IListElement<?>> dirtyIngredients = Collections.newSetFromMap(new IdentityHashMap<>());
 	private long completionRevision;
 	private final Set<ElementSearchIndex> dirtySearchIndexes = EnumSet.noneOf(ElementSearchIndex.class);
+	private boolean ingredientAliasesDirty;
 	private boolean sortIndexesDirty;
 
 	public IngredientFilter(
@@ -102,7 +105,7 @@ public class IngredientFilter
 		addConfigListeners(clientConfig, config);
 
 		LOGGER.info("Adding {} ingredients", ingredients.size());
-		this.elementInfoCache = List.copyOf(ingredients);
+		cacheElementInfos(ingredients);
 
 		for (IListElementInfo<?> ingredient : ingredients) {
 			updateHiddenState(ingredient.getElement());
@@ -133,8 +136,11 @@ public class IngredientFilter
 		addSearchIndexConfigListener(config.searchAdvancedTooltips(), ElementSearchIndex.TOOLTIPS);
 		addSearchIndexConfigListener(config.searchModIds(), ElementSearchIndex.MOD_NAMES);
 		addSearchIndexConfigListener(config.searchModAliases(), ElementSearchIndex.MOD_NAMES);
-		addSearchIndexConfigListener(config.searchIngredientAliases(), ElementSearchIndex.UNPREFIXED);
 		addSearchIndexConfigListener(config.searchShortModNames(), ElementSearchIndex.MOD_NAMES);
+		Internal.registerRuntimeListenerRemoval(config.searchIngredientAliases().addListener(v -> {
+			this.ingredientAliasesDirty = true;
+			markSearchIndexDirty(ElementSearchIndex.NAMES_AND_ALIASES);
+		}));
 	}
 
 	private <T> void addSearchIndexConfigListener(IConfigValue<T> configValue, ElementSearchIndex searchIndex) {
@@ -146,6 +152,7 @@ public class IngredientFilter
 		updateHiddenState(element);
 
 		this.elementSearch.add(info, ingredientManager);
+		this.elementInfoCache.put(element, info);
 
 		invalidateCache();
 		invalidateCandidateCache();
@@ -160,9 +167,13 @@ public class IngredientFilter
 		invalidateCandidateCache();
 		Collection<IListElement<?>> ingredients = this.elementSearch.getAllIngredients();
 		List<IListElementInfo<?>> elementInfos = IngredientListElementFactory.rebuildList(ingredientManager, ingredients, config, modIdHelper);
+		this.elementInfoCache.clear();
+		cacheElementInfos(elementInfos);
 		this.sortIndexUpdater.apply(elementInfos);
 		this.elementSearch = new ElementSearch(this.elementPrefixParser, elementInfos, ingredientManager);
+		this.dirtyIngredients.clear();
 		this.dirtySearchIndexes.clear();
+		this.ingredientAliasesDirty = false;
 		this.sortIndexesDirty = false;
 	}
 
@@ -186,32 +197,41 @@ public class IngredientFilter
 	}
 
 	private void updateDirtyState() {
-		List<IListElementInfo<?>> elementInfos = null;
-		if (!dirtySearchIndexes.isEmpty()) {
-			elementInfos = IngredientListElementFactory.rebuildList(
-				ingredientManager,
-				this.elementSearch.getAllIngredients(),
-				config,
-				modIdHelper
-			);
-			this.elementSearch.rebuildSearchIndexes(dirtySearchIndexes, elementInfos);
-			this.dirtySearchIndexes.clear();
-			invalidateCache();
-			invalidateCandidateCache();
+		if (ingredientAliasesDirty || !dirtyIngredients.isEmpty() || !dirtySearchIndexes.isEmpty()) {
+			refreshSearch();
 		}
 
 		if (sortIndexesDirty) {
-			if (elementInfos == null) {
-				elementInfos = IngredientListElementFactory.rebuildList(
-					ingredientManager,
-					this.elementSearch.getAllIngredients(),
-					config,
-					modIdHelper
-				);
-			}
-			this.sortIndexUpdater.apply(elementInfos);
+			this.sortIndexUpdater.apply(new ArrayList<>(elementInfoCache.values()));
 			this.sortIndexesDirty = false;
 			invalidateCache();
+		}
+	}
+
+	private void refreshSearch() {
+		if (ingredientAliasesDirty) {
+			for (IListElementInfo<?> info : elementInfoCache.values()) {
+				if (!dirtyIngredients.contains(info.getElement())) {
+					info.refreshIngredientAliases(ingredientManager, config);
+				}
+			}
+		}
+
+		List<IListElementInfo<?>> updatedInfos = IngredientListElementFactory.rebuildList(ingredientManager, dirtyIngredients, config, modIdHelper);
+		cacheElementInfos(updatedInfos);
+		this.elementSearch.update(updatedInfos, dirtySearchIndexes, elementInfoCache.values());
+
+		this.sortIndexesDirty |= !dirtyIngredients.isEmpty();
+		this.dirtyIngredients.clear();
+		this.dirtySearchIndexes.clear();
+		this.ingredientAliasesDirty = false;
+		invalidateCache();
+		invalidateCandidateCache();
+	}
+
+	private void cacheElementInfos(Collection<IListElementInfo<?>> infos) {
+		for (IListElementInfo<?> info : infos) {
+			this.elementInfoCache.put(info.getElement(), info);
 		}
 	}
 
@@ -349,6 +369,23 @@ public class IngredientFilter
 	}
 
 	@Override
+	public <V> void onIngredientsUpdated(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
+		boolean changed = false;
+		for (ITypedIngredient<V> ingredient : ingredients) {
+			IListElement<V> element = this.elementSearch.findElement(ingredient, ingredientHelper);
+			if (element != null) {
+				element.setTypedIngredient(ingredient);
+				changed |= dirtyIngredients.add(element);
+			}
+		}
+		if (changed) {
+			invalidateCache();
+			invalidateCandidateCache();
+			notifyListenersOfChange();
+		}
+	}
+
+	@Override
 	public <V> void onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
 		// ignore this, it's handled by onIngredientVisibilityChanged
 	}
@@ -441,17 +478,10 @@ public class IngredientFilter
 	@Override
 	public Collection<IListElementInfo<?>> getAllElementInfos() {
 		updateDirtyState();
-		if (elementInfoCache != null) {
-			return elementInfoCache;
-		}
-		Collection<IListElement<?>> elements = this.elementSearch.getAllIngredients();
-		List<IListElementInfo<?>> infos = IngredientListElementFactory.rebuildList(ingredientManager, elements, config, modIdHelper);
-		elementInfoCache = infos;
-		return infos;
+		return Collections.unmodifiableCollection(elementInfoCache.values());
 	}
 
 	private void invalidateCandidateCache() {
-		elementInfoCache = null;
 		completionRevision++;
 	}
 

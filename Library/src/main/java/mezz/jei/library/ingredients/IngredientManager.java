@@ -7,6 +7,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.ingredients.ITypedIngredientFactory;
@@ -26,8 +27,10 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class IngredientManager implements IIngredientManager, ITypedIngredientFactory {
@@ -201,6 +204,31 @@ public class IngredientManager implements IIngredientManager, ITypedIngredientFa
 		ingredientInfo.removeIngredients(typedIngredients);
 
 		this.listeners.forEach(listener -> listener.onIngredientsRemoved(ingredientHelper, typedIngredients));
+	}
+
+	@Override
+	public <V> void refreshIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients) {
+		ErrorUtil.assertMainThread();
+		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
+		ErrorUtil.checkNotNull(ingredients, "ingredients");
+
+		IngredientInfo<V> ingredientInfo = this.registeredIngredients.getIngredientInfo(ingredientType);
+		IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
+		Set<ITypedIngredient<V>> registeredIngredients = new LinkedHashSet<>();
+		for (V ingredient : ingredients) {
+			ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, false);
+			if (typedIngredient != null) {
+				Object uid = ingredientHelper.getUid(typedIngredient, UidContext.Ingredient);
+				ITypedIngredient<V> registered = ingredientInfo.getIngredientByUid(uid);
+				if (registered != null) {
+					registeredIngredients.add(registered);
+				}
+			}
+		}
+		if (!registeredIngredients.isEmpty()) {
+			List<ITypedIngredient<V>> updated = List.copyOf(registeredIngredients);
+			this.listeners.forEach(listener -> listener.onIngredientsUpdated(ingredientHelper, updated));
+		}
 	}
 
 	@Override

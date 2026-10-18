@@ -16,6 +16,8 @@ public interface IListElementInfo<V> {
 
 	List<String> getNames();
 
+	void refreshIngredientAliases(IIngredientManager ingredientManager, IIngredientFilterConfig config);
+
 	String getModNameForSorting();
 
 	Collection<String> getModNames(IIngredientFilterConfig config);
