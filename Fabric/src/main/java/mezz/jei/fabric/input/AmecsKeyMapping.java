@@ -64,7 +64,13 @@ public class AmecsKeyMapping extends AmecsKeyMappingWithKeyModifiers implements 
 		}
 		AmecsKeyModifierCombination modifiers = AmecsKeyModifiersApi.getBoundModifiers(this);
 		if (allowExtraModifiers || (modifiers.isUnset() && context.conflicts(JeiKeyConflictContext.IN_GAME))) {
-			return pressed.contains(modifiers);
+			// AMECS 1.0.2's contains compares the complete combination.
+			for (AmecsKeyModifier modifier : AmecsKeyModifiers.getAll()) {
+				if (modifiers.get(modifier) && !pressed.get(modifier)) {
+					return false;
+				}
+			}
+			return true;
 		}
 		return pressed.equals(modifiers);
 	}

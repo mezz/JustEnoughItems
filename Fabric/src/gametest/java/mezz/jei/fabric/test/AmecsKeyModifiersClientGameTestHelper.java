@@ -130,6 +130,11 @@ final class AmecsKeyModifiersClientGameTestHelper {
 
 	static void assertShortcutModifiers(ClientGameTestContext context) {
 		context.runOnClient(client -> client.gui.setScreen(new InventoryScreen(Objects.requireNonNull(client.player))));
+		context.runOnClient(client -> {
+			var mapping = (IJeiKeyMappingWithExtraModifiers) Internal.getKeyMappings().getToggleCheatModeConfigButton();
+			var mouse = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_LEFT);
+			check(!mapping.isActiveAndMatchesAllowingExtraModifiers(mouse), "Allowing extra modifiers must still require the bound modifier");
+		});
 		int shortcutKey = InputConstants.KEY_LCONTROL;
 		if (InputQuirks.REPLACE_CTRL_KEY_WITH_CMD_KEY) {
 			shortcutKey = InputConstants.KEY_LGUI;
