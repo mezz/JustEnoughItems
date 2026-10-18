@@ -52,7 +52,7 @@ public class ElementPrefixParser {
 			IListElementInfo::getNames,
 			searchStorageBuilderFactory
 		);
-		this.prefixInfoBySearchIndex.put(ElementSearchIndex.UNPREFIXED, noPrefix);
+		this.prefixInfoBySearchIndex.put(ElementSearchIndex.NAMES_AND_ALIASES, noPrefix);
 
 		addPrefix(ElementSearchIndex.MOD_NAMES, new PrefixInfo<>(
 			"mod_names",
@@ -157,6 +157,11 @@ public class ElementPrefixParser {
 			@Override
 			public <T> LimitedStringStorageBuilder<T> create(String id) {
 				return new LimitedStringStorageBuilder<>(searchStorageBuilderFactory, id);
+			}
+
+			@Override
+			public boolean supportsDeletion() {
+				return searchStorageBuilderFactory.supportsDeletion();
 			}
 		};
 	}

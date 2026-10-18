@@ -15,6 +15,12 @@ public interface IElementSearch {
 
 	Collection<IListElement<?>> getAllIngredients();
 
+	void update(
+		Collection<IListElementInfo<?>> updatedInfos,
+		Set<ElementSearchIndex> rebuildingIndexes,
+		Collection<IListElementInfo<?>> allInfos
+	);
+
 	void rebuildSearchIndexes(
 		Set<ElementSearchIndex> searchIndexes,
 		Collection<IListElementInfo<?>> elementInfos
