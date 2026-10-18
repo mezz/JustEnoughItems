@@ -21,7 +21,7 @@ public class AdvancedSearchRegistration implements IAdvancedSearchRegistration {
 	private final ISearchStorageBuilderFactory defaultSearchStorageBuilderFactory;
 
 	public AdvancedSearchRegistration() {
-		this(LuceneSearchStorageBuilder::new);
+		this(LuceneSearchStorageBuilder.FACTORY);
 	}
 
 	public AdvancedSearchRegistration(ISearchStorageBuilderFactory defaultSearchStorageBuilderFactory) {

@@ -10,6 +10,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
 import net.minecraft.client.renderer.Rect2i;
@@ -121,6 +122,16 @@ public interface IIngredientManager {
 	 * Used by mods that have items created while the game is running, or use the server to define items.
 	 */
 	<V> void removeIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients);
+
+	/**
+	 * Refresh search, sorting, and suggestions after ingredient names, tooltips, or other searchable information change.
+	 *
+	 * Call on the client main thread, batching related changes together.
+	 * JEI rereads its registered instances, matched by their unchanged {@link UidContext#Ingredient} UIDs.
+	 *
+	 * @since 29.52.0
+	 */
+	<V> void refreshIngredientsAtRuntime(IIngredientType<V> ingredientType, Collection<V> ingredients);
 
 	/**
 	 * Helper method to get ingredient type for an ingredient.
@@ -314,5 +325,14 @@ public interface IIngredientManager {
 		 * @since 11.5.0
 		 */
 		<V> void onIngredientsRemoved(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients);
+
+		/**
+		 * Called when registered ingredients need their search data refreshed.
+		 *
+		 * @see IIngredientManager#refreshIngredientsAtRuntime
+		 * @since 29.52.0
+		 */
+		default <V> void onIngredientsUpdated(IIngredientHelper<V> ingredientHelper, Collection<ITypedIngredient<V>> ingredients) {
+		}
 	}
 }

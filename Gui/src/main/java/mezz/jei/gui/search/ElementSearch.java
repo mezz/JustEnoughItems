@@ -19,6 +19,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -96,6 +97,45 @@ public class ElementSearch implements IElementSearch {
 		}
 		ISearchStorage<IListElement<?>> searchStorage = storageBuilder.build();
 		return new PrefixedSearchable<>(searchStorage, prefixInfo);
+	}
+
+	@Override
+	public void update(
+		Collection<IListElementInfo<?>> updatedInfos,
+		Set<ElementSearchIndex> rebuildingIndexes,
+		Collection<IListElementInfo<?>> allInfos
+	) {
+		Set<ElementSearchIndex> indexesToRebuild = EnumSet.noneOf(ElementSearchIndex.class);
+		indexesToRebuild.addAll(rebuildingIndexes);
+		if (!updatedInfos.isEmpty()) {
+			updateExistingIndexes(updatedInfos, indexesToRebuild);
+		}
+		if (!indexesToRebuild.isEmpty()) {
+			rebuildSearchIndexes(indexesToRebuild, allInfos);
+		}
+	}
+
+	private void updateExistingIndexes(Collection<IListElementInfo<?>> infos, Set<ElementSearchIndex> indexesToRebuild) {
+		Collection<IListElement<?>> elements = infos.stream().<IListElement<?>>map(IListElementInfo::getElement).toList();
+		for (ElementSearchIndex index : ElementSearchIndex.values()) {
+			if (indexesToRebuild.contains(index)) {
+				continue;
+			}
+			PrefixInfo<IListElementInfo<?>, IListElement<?>> prefixInfo = elementPrefixParser.getPrefixInfo(index);
+			if (prefixInfo.getMode() == SearchMode.DISABLED) {
+				continue;
+			}
+			ISearchStorage<IListElement<?>> storage = prefixedSearchables.get(prefixInfo).getSearchStorage();
+			if (!storage.supportsDeletion() || !storage.removeAll(elements)) {
+				indexesToRebuild.add(index);
+				continue;
+			}
+			for (IListElementInfo<?> info : infos) {
+				for (String string : prefixInfo.getStrings(info)) {
+					putIfNotBlank(storage, string, info.getElement());
+				}
+			}
+		}
 	}
 
 	@Override

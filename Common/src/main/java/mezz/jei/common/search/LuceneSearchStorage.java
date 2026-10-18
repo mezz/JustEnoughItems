@@ -4,6 +4,7 @@ import mezz.jei.api.search.ISearchStorage;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.IntPoint;
 import org.apache.lucene.document.NumericDocValuesField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.DirectoryReader;
@@ -24,6 +25,7 @@ import org.apache.lucene.search.UsageTrackingQueryCachingPolicy;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.util.IOConsumer;
 import org.apache.lucene.util.UnicodeUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,10 +34,15 @@ import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -61,7 +68,9 @@ public class LuceneSearchStorage<T> implements ISearchStorage<T> {
 	private final Directory directory = new ByteBuffersDirectory();
 	private final LRUQueryCache queryCache = new LRUQueryCache(MAX_CACHED_QUERIES, MAX_QUERY_CACHE_BYTES);
 	private final UsageTrackingQueryCachingPolicy queryCachingPolicy = new UsageTrackingQueryCachingPolicy();
-	private final List<T> values = new ArrayList<>();
+	private final Map<T, Integer> valueIds = new IdentityHashMap<>();
+	private final List<@Nullable T> values = new ArrayList<>();
+	private final ArrayDeque<Integer> freeValueIds = new ArrayDeque<>();
 	private final ArrayList<Entry> pending = new ArrayList<>();
 	@Nullable
 	private DirectoryReader reader;
@@ -73,8 +82,16 @@ public class LuceneSearchStorage<T> implements ISearchStorage<T> {
 	public void put(String key, T value) {
 		Objects.requireNonNull(key);
 		Objects.requireNonNull(value);
-		int valueId = values.size();
-		values.add(value);
+		int valueId = valueIds.computeIfAbsent(value, v -> {
+			if (!freeValueIds.isEmpty()) {
+				int id = freeValueIds.removeFirst();
+				values.set(id, v);
+				return id;
+			}
+			int id = values.size();
+			values.add(v);
+			return id;
+		});
 		int utf8Length = getUtf8Length(key);
 		if (utf8Length > IndexWriter.MAX_TERM_LENGTH) {
 			String preview = key.substring(0, key.offsetByCodePoints(0, 80))
@@ -87,30 +104,65 @@ public class LuceneSearchStorage<T> implements ISearchStorage<T> {
 		pending.add(new Entry(key, valueId));
 	}
 
+	@Override
+	public boolean supportsDeletion() {
+		return true;
+	}
+
+	@Override
+	public boolean removeAll(Collection<T> removedValues) {
+		Set<Integer> removedIds = new HashSet<>();
+		for (T value : removedValues) {
+			Integer id = valueIds.get(value);
+			if (id != null) {
+				removedIds.add(id);
+			}
+		}
+		if (!removedIds.isEmpty()) {
+			writeToIndex(writer -> writer.deleteDocuments(IntPoint.newSetQuery(VALUE_FIELD, removedIds)));
+			pending.removeIf(entry -> removedIds.contains(entry.valueId()));
+			for (Integer id : removedIds) {
+				valueIds.remove(values.get(id));
+				values.set(id, null);
+				freeValueIds.addLast(id);
+			}
+		}
+		return true;
+	}
+
+	private void writeToIndex(IOConsumer<IndexWriter> action) {
+		try (IndexWriter writer = new IndexWriter(directory, new IndexWriterConfig(ANALYZER))) {
+			try {
+				action.accept(writer);
+			} catch (IOException | RuntimeException e) {
+				try {
+					writer.rollback();
+				} catch (IOException rollbackException) {
+					e.addSuppressed(rollbackException);
+				}
+				throw e;
+			}
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+		readerDirty = true;
+	}
+
 	void refresh() {
 		try {
 			if (!pending.isEmpty()) {
-				try (IndexWriter writer = new IndexWriter(directory, new IndexWriterConfig(ANALYZER))) {
-					try {
-						for (Entry entry : pending) {
-							Document document = new Document();
-							document.add(new StringField(KEY_FIELD, entry.key(), Field.Store.NO));
-							// Document ids can change during merges; use our own stable value ids.
-							document.add(new NumericDocValuesField(VALUE_FIELD, entry.valueId()));
-							writer.addDocument(document);
-						}
-					} catch (IOException | RuntimeException e) {
-						try {
-							writer.rollback();
-						} catch (IOException rollbackException) {
-							e.addSuppressed(rollbackException);
-						}
-						throw e;
+				writeToIndex(writer -> {
+					for (Entry entry : pending) {
+						Document document = new Document();
+						document.add(new StringField(KEY_FIELD, entry.key(), Field.Store.NO));
+						// Document ids can change during merges; use our own stable value ids.
+						document.add(new NumericDocValuesField(VALUE_FIELD, entry.valueId()));
+						document.add(new IntPoint(VALUE_FIELD, entry.valueId()));
+						writer.addDocument(document);
 					}
-				}
+				});
 				pending.clear();
 				pending.trimToSize();
-				readerDirty = true;
 			}
 			if (readerDirty) {
 				DirectoryReader previous = reader;
@@ -185,7 +237,7 @@ public class LuceneSearchStorage<T> implements ISearchStorage<T> {
 
 	@Override
 	public void getAllElements(Consumer<Collection<T>> resultsConsumer) {
-		resultsConsumer.accept(Collections.unmodifiableList(values));
+		resultsConsumer.accept(Collections.unmodifiableSet(valueIds.keySet()));
 	}
 
 	@Override
@@ -195,7 +247,7 @@ public class LuceneSearchStorage<T> implements ISearchStorage<T> {
 			for (String file : directory.listAll()) {
 				bytes += directory.fileLength(file);
 			}
-			return "LuceneSearchStorage: entries=" + values.size() + ", indexBytes=" + bytes +
+			return "LuceneSearchStorage: values=" + valueIds.size() + ", indexBytes=" + bytes +
 				", pending=" + pending.size();
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
@@ -218,7 +270,7 @@ public class LuceneSearchStorage<T> implements ISearchStorage<T> {
 				@Override
 				public void collect(int doc) throws IOException {
 					if (valueIds.advanceExact(doc)) {
-						results.add(values.get(Math.toIntExact(valueIds.longValue())));
+						results.add(Objects.requireNonNull(values.get(Math.toIntExact(valueIds.longValue()))));
 					}
 				}
 			};

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.parallel.Isolated;
 
 import java.util.Collections;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Set;
 
 @Isolated("Temporarily replaces Lucene's default query cache")
@@ -122,6 +123,84 @@ public class LuceneSearchStorageTest {
 	}
 
 	@Test
+	public void replacesAllKeysWithoutResurrectingRemovedOrPendingEntries() {
+		LuceneSearchStorageBuilder<Object> builder = new LuceneSearchStorageBuilder<>();
+		Object crystal = new Object();
+		Object other = new Object();
+		builder.put("mysterious crystal", crystal);
+		builder.put("undiscovered aspect", crystal);
+		builder.put("other crystal", other);
+		ISearchStorage<Object> storage = builder.build();
+		for (int batch = 0; batch < 30; batch++) {
+			storage.put("pending obsolete name", crystal);
+			Assertions.assertTrue(storage.removeAll(List.of(crystal, crystal, new Object())));
+			Assertions.assertEquals(Set.of(other), allElements(storage));
+			storage.put("discarded replacement", crystal);
+			Assertions.assertTrue(storage.removeAll(List.of(crystal)));
+			storage.put("discovered aspect " + batch, crystal);
+			Assertions.assertEquals(Set.of(crystal), search(storage, "discovered aspect " + batch));
+			Assertions.assertEquals(Set.of(other), search(storage, "crystal"));
+			Assertions.assertTrue(search(storage, "undiscovered").isEmpty());
+			Assertions.assertTrue(search(storage, "pending").isEmpty());
+			Assertions.assertTrue(search(storage, "discarded").isEmpty());
+			Assertions.assertEquals(Set.of(crystal, other), allElements(storage));
+		}
+		Assertions.assertTrue(storage.removeAll(List.of(crystal, other)));
+		Assertions.assertTrue(search(storage, "aspect").isEmpty());
+		Assertions.assertTrue(allElements(storage).isEmpty());
+		storage.put("new crystal", other);
+		Assertions.assertEquals(Set.of(other), search(storage, "crystal"));
+	}
+
+	@Test
+	public void removesValuesByIdentityIncludingOversizedAndUncommittedKeys() {
+		String first = new String("equal value");
+		String second = new String("equal value");
+		ISearchStorage<String> storage = new LuceneSearchStorageBuilder<String>().build();
+		storage.put("x".repeat(32_767), first);
+		storage.put("pending", first);
+		storage.put("retained", second);
+		Assertions.assertTrue(storage.removeAll(List.of(first)));
+		Assertions.assertEquals(Set.of(second), allElements(storage));
+		Assertions.assertTrue(search(storage, "pending").isEmpty());
+		Assertions.assertSame(second, search(storage, "retained").iterator().next());
+	}
+
+	@Test
+	public void removesAllUncommittedValuesBeforeTheFirstSearch() {
+		ISearchStorage<Object> storage = new LuceneSearchStorageBuilder<Object>().build();
+		Object removed = new Object();
+		storage.put("pending", removed);
+		Assertions.assertTrue(storage.removeAll(List.of(removed)));
+		Assertions.assertTrue(search(storage, "pending").isEmpty());
+		Assertions.assertTrue(allElements(storage).isEmpty());
+		Object replacement = new Object();
+		storage.put("replacement", replacement);
+		Assertions.assertEquals(Set.of(replacement), search(storage, "replacement"));
+		Assertions.assertTrue(search(storage, "pending").isEmpty());
+	}
+
+	@Test
+	public void removesSharedKeyMembersWithoutRemovingOtherValues() {
+		LimitedStringStorageBuilder<String> builder = new LimitedStringStorageBuilder<>(LuceneSearchStorageBuilder::new);
+		String first = new String("equal value");
+		String second = new String("equal value");
+		builder.put("shared", first);
+		builder.put("shared", second);
+		builder.put("first only", first);
+		ISearchStorage<String> storage = builder.build();
+		Assertions.assertTrue(storage.removeAll(List.of(first)));
+		Assertions.assertSame(second, search(storage, "shared").iterator().next());
+		Assertions.assertEquals(1, search(storage, "shared").size());
+		Assertions.assertTrue(search(storage, "first only").isEmpty());
+		Assertions.assertSame(second, allElements(storage).iterator().next());
+		storage.put("first only", first);
+		Assertions.assertSame(first, search(storage, "first only").iterator().next());
+		Assertions.assertTrue(storage.removeAll(List.of(first, second)));
+		Assertions.assertTrue(allElements(storage).isEmpty());
+	}
+
+	@Test
 	public void doesNotPopulateLucenesSharedCache() {
 		QueryCache previousCache = IndexSearcher.getDefaultQueryCache();
 		LRUQueryCache sharedCache = new LRUQueryCache(128, 4L * 1024 * 1024);
@@ -141,6 +220,12 @@ public class LuceneSearchStorageTest {
 			storage.put("cached runtime ingredient", "added");
 			for (int i = 0; i < 10; i++) {
 				Assertions.assertEquals(Set.of("initial", "added"), search(storage, "cached"));
+			}
+			storage.removeAll(List.of("initial"));
+			storage.put("replacement", "replacement");
+			for (int i = 0; i < 10; i++) {
+				Assertions.assertEquals(Set.of("added"), search(storage, "cached"));
+				Assertions.assertEquals(Set.of("replacement"), search(storage, "replacement"));
 			}
 			Assertions.assertEquals(0, sharedCache.getCacheCount());
 		} finally {

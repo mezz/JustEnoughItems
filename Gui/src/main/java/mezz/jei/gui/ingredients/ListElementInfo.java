@@ -41,7 +41,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 
 	private final IListElement<V> element;
 	private final IModIdHelper modIdHelper;
-	private final List<String> names;
+	private List<String> names;
 	private final List<String> modIds;
 	private final List<String> modNames;
 	private final Identifier id;
@@ -58,15 +58,19 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		try {
 			return new ListElementInfo<>(element, ingredientManager, config, modIdHelper);
 		} catch (RuntimeException e) {
-			try {
-				ITypedIngredient<V> typedIngredient = element.getTypedIngredient();
-				IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
-				String ingredientInfo = ingredientHelper.getErrorInfo(typedIngredient.getIngredient());
-				LOGGER.warn("Found a broken ingredient {}", ingredientInfo, e);
-			} catch (RuntimeException e2) {
-				LOGGER.warn("Found a broken ingredient.", e2);
-			}
+			logBrokenIngredient(element, ingredientManager, e);
 			return null;
+		}
+	}
+
+	private static <V> void logBrokenIngredient(IListElement<V> element, IIngredientManager ingredientManager, RuntimeException e) {
+		try {
+			ITypedIngredient<V> typedIngredient = element.getTypedIngredient();
+			IIngredientHelper<V> ingredientHelper = ingredientManager.getIngredientHelper(typedIngredient.getType());
+			String ingredientInfo = ingredientHelper.getErrorInfo(typedIngredient.getIngredient());
+			LOGGER.warn("Found a broken ingredient {}", ingredientInfo, e);
+		} catch (RuntimeException e2) {
+			LOGGER.warn("Found a broken ingredient.", e2);
 		}
 	}
 
@@ -91,26 +95,39 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 		}
 
 		String displayNameLowercase = DisplayNameUtil.getLowercaseDisplayNameForSearch(ingredient, ingredientHelper);
+		this.names = createNames(displayNameLowercase, ingredientManager, config);
+	}
+
+	private List<String> createNames(String displayNameLowercase, IIngredientManager ingredientManager, IIngredientFilterConfig config) {
 		if (!config.searchIngredientAliases().get()) {
-			this.names = List.of(displayNameLowercase);
-			return;
+			return List.of(displayNameLowercase);
 		}
-		Collection<String> aliases = ingredientManager.getIngredientAliases(value);
+		Collection<String> aliases = ingredientManager.getIngredientAliases(element.getTypedIngredient());
 		if (aliases.isEmpty()) {
-			this.names = List.of(displayNameLowercase);
-		} else {
-			this.names = new ArrayList<>(1 + aliases.size());
-			this.names.add(displayNameLowercase);
-			for (String alias : aliases) {
-				String lowercaseAlias = Translator.toLowercaseWithLocale(alias);
-				this.names.add(lowercaseAlias);
-			}
+			return List.of(displayNameLowercase);
 		}
+		List<String> names = new ArrayList<>(1 + aliases.size());
+		names.add(displayNameLowercase);
+		for (String alias : aliases) {
+			String lowercaseAlias = Translator.toLowercaseWithLocale(alias);
+			names.add(lowercaseAlias);
+		}
+		return names;
 	}
 
 	@Override
 	public List<String> getNames() {
 		return names;
+	}
+
+	@Override
+	public void refreshIngredientAliases(IIngredientManager ingredientManager, IIngredientFilterConfig config) {
+		try {
+			this.names = createNames(names.getFirst(), ingredientManager, config);
+		} catch (RuntimeException e) {
+			this.names = List.of(names.getFirst());
+			logBrokenIngredient(element, ingredientManager, e);
+		}
 	}
 
 	@Override
