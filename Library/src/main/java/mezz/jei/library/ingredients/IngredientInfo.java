@@ -91,6 +91,11 @@ public class IngredientInfo<T> {
 		this.ingredientIndex.removeAll(ingredients);
 	}
 
+	@Nullable
+	public ITypedIngredient<T> getIngredientByUid(Object uid) {
+		return ingredientIndex.getIngredientByUid(uid);
+	}
+
 	@Unmodifiable
 	public List<ITypedIngredient<T>> getGroupedIngredients(ITypedIngredient<T> ingredient) {
 		Object groupingUid = ingredientHelper.getGroupingUid(ingredient);
