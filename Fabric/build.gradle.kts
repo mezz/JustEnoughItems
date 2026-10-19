@@ -1,4 +1,5 @@
 import mezz.jei.gradle.dependencyInfo
+import mezz.jei.gradle.externalSourceSetClasspath
 import mezz.jei.gradle.mezzConfigDependency
 import mezz.jei.gradle.mezzConfigGuiDependency
 import mezz.jei.gradle.UnpackArchives
@@ -56,6 +57,10 @@ val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForge
 val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
 val luceneVersion = gradleProperty("luceneVersion")
 val amecsDependency = "de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric"
+
+repositories {
+    google { content { includeModule("com.android.tools", "r8") } }
+}
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken = optionalGradleProperty("modrinthToken")
@@ -368,7 +373,23 @@ tasks.named<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
 }
 
+// Shared API annotations are compile-only and absent from the loader runtime classpath.
+val r8Libraries = configurations.create("r8Libraries") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+dependencies {
+    add(r8Libraries.name, "com.google.code.findbugs:jsr305:3.0.2")
+}
+
+val r8LibraryClasspath = externalSourceSetClasspath(listOf(sourceSets.main.get(), apiSourceSet))
+
 val shadedJar = modShade.shadeJar()
+shadedJar.configure {
+    shrink.set(true)
+    shrinkLibraryClasspath.setFrom(r8LibraryClasspath.minus(project.files(configurations)), r8Libraries)
+    shrinkRuleFiles.from(isolatedProjectDirectory(":").file("config/lucene-r8.pro"))
+}
 apply(from = "../gradle/verify-jar-bytecode.gradle")
 val shadedSourcesJar = modShade.shadeSourcesJar()
 
