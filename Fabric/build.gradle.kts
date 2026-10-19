@@ -373,6 +373,7 @@ shadedJar.configure {
     shrinkLibraryClasspath.setFrom(r8LibraryClasspath.minus(project.files(configurations)), r8Libraries)
     shrinkRuleFiles.from(isolatedProjectDirectory(":").file("config/lucene-r8.pro"))
 }
+apply(from = "../gradle/verify-jar-bytecode.gradle")
 val shadedSourcesJar = modShade.shadeSourcesJar()
 
 val apiJarTask = tasks.register<Jar>("apiJar") {
