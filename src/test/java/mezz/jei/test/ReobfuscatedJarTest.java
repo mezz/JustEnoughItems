@@ -1,5 +1,6 @@
 package mezz.jei.test;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -7,18 +8,43 @@ import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-/** Checks JEI interface implementations in the shipped jar using Java reflection. */
+/** Checks bytecode compatibility and JEI interface implementations in the shipped jar. */
 public class ReobfuscatedJarTest {
+	@Test
+	public void packagedClassesTargetJava8() throws IOException {
+		String jarPath = System.getProperty("jei.test.packagedJar");
+		assertNotNull("Run through :test to check the reobfuscated jar", jarPath);
+		List<String> failures = new ArrayList<>();
+		try (JarFile jar = new JarFile(jarPath)) {
+			for (JarEntry entry : Collections.list(jar.entries())) {
+				if (entry.getName().endsWith(".class")) {
+					try (DataInputStream input = new DataInputStream(jar.getInputStream(entry))) {
+						assertEquals("Invalid class file: " + entry.getName(), 0xCAFEBABE, input.readInt());
+						input.readUnsignedShort(); // minor version
+						int majorVersion = input.readUnsignedShort();
+						if (majorVersion > 52) {
+							failures.add(entry.getName() + " has class file version " + majorVersion);
+						}
+					}
+				}
+			}
+		}
+		assertTrue("Classes incompatible with Java 8 in " + jarPath + ":\n" + String.join("\n", failures), failures.isEmpty());
+	}
+
 	@Test
 	public void concreteClassesImplementPackagedInterfaces() throws IOException, ClassNotFoundException {
 		String jarPath = System.getProperty("jei.test.packagedJar");

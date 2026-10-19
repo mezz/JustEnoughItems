@@ -49,7 +49,7 @@ java {
 	}
 }
 
-listOf("compileApiJava", "compileJava", "compileTestJava").forEach { taskName ->
+listOf("compileApiJava", "compileJava", "compileTestJava", "compileInjectedTagsJava").forEach { taskName ->
 	tasks.named<JavaCompile>(taskName) {
 		options.release.set(modJavaVersion.toInt())
 	}
