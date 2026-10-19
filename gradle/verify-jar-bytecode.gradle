@@ -1,0 +1,63 @@
+import java.util.jar.JarFile
+
+def archive = tasks.named('modShadeJar').flatMap { it.archiveFile }
+def javaVersion = providers.gradleProperty('modJavaVersion').map { it.toInteger() }
+
+def verification = tasks.register('verifyJarBytecode') {
+    group = 'verification'
+    description = 'Checks the published mod jar and bundled jars against the supported Java version.'
+    inputs.file(archive).withPathSensitivity(PathSensitivity.NONE)
+    inputs.property('javaVersion', javaVersion)
+
+    doLast { task ->
+        def target = javaVersion.get()
+        def failures = []
+        int classCount = 0
+        def inspect
+        inspect = { File file, String path ->
+            // Let the JDK select the multi-release entries used by the target Java version.
+            new JarFile(file, false, JarFile.OPEN_READ, Runtime.Version.parse(target.toString())).withCloseable { jar ->
+                jar.versionedStream().forEach { entry ->
+                    if (entry.name.endsWith('.class')) {
+                        classCount++
+                        jar.getInputStream(entry).withCloseable { input ->
+                            def header = new DataInputStream(input)
+                            if (header.readInt() != (int) 0xCAFEBABE) {
+                                throw new GradleException("Invalid class file: $path!/${entry.realName}")
+                            }
+                            header.readUnsignedShort() // minor version
+                            int major = header.readUnsignedShort()
+                            if (major > target + 44) {
+                                failures.add("$path!/${entry.realName} has class file version $major")
+                            }
+                        }
+                    } else if (entry.name.endsWith('.jar')) {
+                        def nested = File.createTempFile('bytecode-', '.jar', task.temporaryDir)
+                        try {
+                            jar.getInputStream(entry).withCloseable { input ->
+                                nested.withOutputStream { it << input }
+                            }
+                            inspect(nested, "$path!/${entry.realName}")
+                        } finally {
+                            nested.delete()
+                        }
+                    }
+                }
+            }
+        }
+
+        def file = archive.get().asFile
+        inspect(file, file.name)
+        if (classCount == 0) {
+            throw new GradleException("No class files found in $file")
+        }
+        if (!failures.empty) {
+            throw new GradleException("Classes incompatible with Java $target in $file:\n${failures.join('\n')}")
+        }
+        logger.lifecycle('Verified {} classes in {} for Java {}', classCount, file.name, target)
+    }
+}
+
+tasks.named('check') {
+    dependsOn(verification)
+}
