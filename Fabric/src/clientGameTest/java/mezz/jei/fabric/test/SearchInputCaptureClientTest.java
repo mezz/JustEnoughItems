@@ -2,6 +2,7 @@ package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.Internal;
+import mezz.jei.common.config.SearchBarPosition;
 import mezz.jei.common.util.ReflectionUtil;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
@@ -29,7 +30,44 @@ final class SearchInputCaptureClientTest {
 			field.setFocused(false);
 		});
 		assertMouseFocusChangesOnRelease(context);
+		captureCompletionOverIngredients(context);
 	}
+
+	private static void captureCompletionOverIngredients(FabricClientTestContext context) {
+		var config = Internal.getClientConfigs().getClientConfig();
+		boolean completionEnabled = config.searchCompletionEnabled().get();
+		boolean hideIngredients = config.hideIngredientsWhenNotSearching().get();
+		SearchBarPosition position = config.searchBarPosition().get();
+		String originalText = context.computeOnClient(client -> Internal.getJeiRuntime().getIngredientFilter().getFilterText());
+		try {
+			context.runOnClient(client -> {
+				config.searchCompletionEnabled().set(true);
+				config.hideIngredientsWhenNotSearching().set(false);
+				config.searchBarPosition().set(SearchBarPosition.STANDARD);
+				client.setScreen(new InventoryScreen(Objects.requireNonNull(client.player)));
+				var overlay = (IngredientListOverlay) Internal.getJeiRuntime().getIngredientListOverlay();
+				var field = new ReflectionUtil().getFieldWithClass(overlay, GuiTextFieldFilter.class).findFirst().orElseThrow();
+				field.setValue("");
+				field.setFocused(true);
+			});
+			context.waitFor(client -> {
+				var overlay = (IngredientListOverlay) Internal.getJeiRuntime().getIngredientListOverlay();
+				var field = new ReflectionUtil().getFieldWithClass(overlay, GuiTextFieldFilter.class).findFirst().orElseThrow();
+				return overlay.isListDisplayed() && field.isCompletionVisible();
+			});
+			context.waitTicks(2);
+			context.takeScreenshot("jei-search-completion-over-ingredients");
+		} finally {
+			context.runOnClient(client -> {
+				config.searchCompletionEnabled().set(completionEnabled);
+				config.hideIngredientsWhenNotSearching().set(hideIngredients);
+				config.searchBarPosition().set(position);
+				Internal.getJeiRuntime().getIngredientFilter().setFilterText(originalText);
+				client.setScreen(null);
+			});
+		}
+	}
+
 	private static void assertMouseFocusChangesOnRelease(FabricClientTestContext context) {
 		GuiTextFieldFilter searchField = context.computeOnClient(client -> {
 			client.setScreen(new InventoryScreen(Objects.requireNonNull(client.player)));
