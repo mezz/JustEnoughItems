@@ -120,11 +120,12 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 			.addValues(List.of(
 				clientConfig.bookmarkAddPosition(),
 				clientConfig.bookmarkOutputAsRecipe(),
-				clientConfig.dragToRearrangeBookmarksEnabled(),
-				clientConfig.bookmarkTooltipPreviewEnabled(),
-				clientConfig.bookmarkTooltipIngredientsEnabled(),
-				clientConfig.holdShiftToShowBookmarkTooltipFeaturesEnabled()
-			));
+				clientConfig.dragToRearrangeBookmarksEnabled()
+			))
+			.addScreenValue(new BookmarkPreviewConfigValue(clientConfig))
+			.addValue(clientConfig.bookmarkTooltipIngredientsEnabled());
+		bookmarkList.getValueBuilder(clientConfig.bookmarkTooltipPreviewEnabled()).hide();
+		bookmarkList.getValueBuilder(clientConfig.holdShiftToShowBookmarkTooltipFeaturesEnabled()).hide();
 
 		configureSearchValues(screenBuilder.addCategory("search"), clientConfigs);
 

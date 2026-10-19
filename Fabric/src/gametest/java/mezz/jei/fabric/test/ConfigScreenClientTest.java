@@ -76,11 +76,16 @@ final class ConfigScreenClientTest {
 				}
 				for (var value : category.getConfigValues()) {
 					String name = value.getEditorInfo().getName();
-					if (!name.equals("horizontalAlignment") && !name.equals("verticalAlignment") && !visibleConfigValues.contains(value)) {
+					if (!List.of("horizontalAlignment", "verticalAlignment", "bookmarkTooltipPreview", "holdShiftToShowBookmarkTooltipFeatures").contains(name) && !visibleConfigValues.contains(value)) {
 						problems.add("Missing config setting: " + value.getEditorInfo().getLocalizationKey());
 					}
 				}
 			}
+		}
+		var previewControls = model.getAllEntryWidgets()
+			.filter(widget -> widget.getConfigValue().getName().equals("bookmarkPreviewMode")).toList();
+		if (previewControls.size() != 1 || previewControls.getFirst().getConfigValue().getEditorMetadata().getAllValidValues().orElseThrow().size() != 3) {
+			problems.add("Expected one three-state bookmark preview control");
 		}
 		for (String list : List.of("ingredientList", "bookmarkList")) {
 			String key = "jei.config.client." + list + ".alignment";
