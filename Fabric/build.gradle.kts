@@ -393,6 +393,7 @@ tasks.named<Jar>("sourcesJar") {
 }
 
 val shadedJar = modShade.shadeJar()
+apply(from = "../gradle/verify-jar-bytecode.gradle")
 val shadedSourcesJar = modShade.shadeSourcesJar()
 
 configurations.named("modShadeRuntimeElements") {
