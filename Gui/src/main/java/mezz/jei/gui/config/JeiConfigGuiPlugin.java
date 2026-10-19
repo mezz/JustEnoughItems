@@ -72,7 +72,7 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 
 	private static void configureSearchValues(IConfigScreenCategoryBuilder search, IClientConfigs clientConfigs) {
 		IClientConfig clientConfig = clientConfigs.getClientConfig();
-		search.addValue(clientConfig.hideIngredientsWhenNotSearching());
+		search.addValue(clientConfig.searchBarPosition());
 		addNestedCategory(search, "completion", "jei.config.client.search.completion")
 			.addValues(List.of(
 				clientConfig.searchCompletionEnabled(),
