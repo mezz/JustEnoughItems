@@ -29,6 +29,8 @@ import java.util.TreeSet;
 import java.util.function.IntSupplier;
 
 public class SearchCompletionOverlay {
+	// Item models and stack-count decorations render above the base GUI plane.
+	private static final int FOREGROUND_Z = 300;
 	private static final int LINE_HEIGHT = 11;
 	private static final int MIN_ROW_HEIGHT = 14;
 	private static final int ROW_SPACING = 2;
@@ -630,19 +632,31 @@ public class SearchCompletionOverlay {
 	}
 
 	public void draw(GuiGraphics guiGraphics) {
-		if (!visible || overlayArea == null || filteredCandidates.isEmpty()) {
+		ImmutableRect2i area = this.overlayArea;
+		if (!visible || area == null || filteredCandidates.isEmpty()) {
 			return;
 		}
 
+		var poseStack = guiGraphics.pose();
+		poseStack.pushPose();
+		try {
+			poseStack.translate(0, 0, FOREGROUND_Z);
+			drawContents(guiGraphics, area);
+		} finally {
+			poseStack.popPose();
+		}
+	}
+
+	private void drawContents(GuiGraphics guiGraphics, ImmutableRect2i area) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Font font = minecraft.font;
-		int x = overlayArea.getX();
-		int y = overlayArea.getY();
-		int overlayWidth = overlayArea.getWidth();
-		int overlayHeight = overlayArea.getHeight();
+		int x = area.getX();
+		int y = area.getY();
+		int overlayWidth = area.getWidth();
+		int overlayHeight = area.getHeight();
 		int visibleRowCount = rowLayouts.size();
 
-		background.draw(guiGraphics, overlayArea);
+		background.draw(guiGraphics, area);
 
 		for (int i = 0; i < rowLayouts.size(); i++) {
 			int candidateIndex = scrollOffset + i;
