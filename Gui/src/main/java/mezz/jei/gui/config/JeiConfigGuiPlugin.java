@@ -1,5 +1,6 @@
 package mezz.jei.gui.config;
 
+import com.google.common.base.Suppliers;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
@@ -17,6 +18,8 @@ import net.mezzdev.config.gui.api.IConfigValueEditorMetadataFactory;
 import net.mezzdev.config.gui.api.IConfigScreenCategoryBuilder;
 import net.mezzdev.config.gui.api.IConfigScreenBuilder;
 import net.mezzdev.config.gui.api.IConfigScreenFactory;
+import net.mezzdev.config.gui.api.IQuickConfigMenuFactory;
+import net.mezzdev.config.gui.api.IQuickConfigMenu;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -25,6 +28,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +38,10 @@ import java.util.stream.Collectors;
 public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 	@Nullable
 	private static IConfigScreenFactory screenFactory;
+	@Nullable
+	private static IQuickConfigMenuFactory quickMenuFactory;
+	@Nullable
+	private static Supplier<ScreenValues> screenValuesSupplier;
 
 	@Override
 	public void onScreenFactoryAvailable(IConfigScreenFactory screenFactory) {
@@ -55,19 +63,45 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 
 	@Override
 	public void register(IConfigGuiRegistration registration) {
+		quickMenuFactory = registration.getQuickConfigMenuFactory();
+		// Create adapters after config registration and reuse them so both menus match by instance.
+		var screenValues = Suppliers.memoize(() -> createScreenValues(registration.getEditorMetadataFactory()));
+		screenValuesSupplier = screenValues;
 		registration.registerValueEditor(AlignmentConfigValueGuiAdapter.EDITOR_TYPE, ignored -> new AlignmentConfigValueEditor());
 		registration.configureScreen(screenBuilder -> {
 			screenBuilder.setTitle(Component.translatable("jei.config"));
 			screenBuilder.clearDefaultCategories();
-			ConfigScreenCategories categories = configureCategories(screenBuilder);
+			var values = screenValues.get();
+			ConfigScreenCategories categories = configureCategories(screenBuilder, values);
 			Internal.getOptionalJeiRuntime()
 				.ifPresent(runtime -> {
-					configureRuntimeToggleValues(categories, registration.getEditorMetadataFactory());
+					configureRuntimeToggleValues(categories, values);
 					if (Internal.getJeiFeatures().isJeiGuiEnabled()) {
 						configureSortingOrderCategories(categories, runtime, JeiGuiSortingConfigRegistration.get());
 					}
 				});
 		});
+	}
+
+	public static Optional<IQuickConfigMenu> createQuickMenu() {
+		var factory = quickMenuFactory;
+		var valuesSupplier = screenValuesSupplier;
+		if (factory == null || valuesSupplier == null || Internal.getOptionalJeiRuntime().isEmpty()) {
+			return Optional.empty();
+		}
+		IClientConfig config = Internal.getClientConfigs().getClientConfig();
+		var values = valuesSupplier.get();
+		return Optional.of(factory.createBuilder(Component.translatable("jei.config.client.quickMenu"))
+			.addDefault(values.bookmarkOverlay())
+			.addDefault(config.lookupHistoryEnabled())
+			.addDefault(values.cheatMode())
+			.addDefault(config.hideIngredientsWhenNotSearching())
+			.addDefault(config.searchCompletionEnabled())
+			.addAdditional(values.bookmarkPreview())
+			.addAdditional(config.searchBarPosition())
+			.addAdditional(config.maxLookupHistoryRows())
+			.addAdditional(config.ingredientSorterStages())
+			.build());
 	}
 
 	private static void configureSearchValues(IConfigScreenCategoryBuilder search, IClientConfigs clientConfigs) {
@@ -98,7 +132,7 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 			.addValueByName("searchColors");
 	}
 
-	private static ConfigScreenCategories configureCategories(IConfigScreenBuilder screenBuilder) {
+	private static ConfigScreenCategories configureCategories(IConfigScreenBuilder screenBuilder, ScreenValues values) {
 		IClientConfigs clientConfigs = Internal.getClientConfigs();
 		IClientConfig clientConfig = clientConfigs.getClientConfig();
 
@@ -122,7 +156,7 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 				clientConfig.bookmarkOutputAsRecipe(),
 				clientConfig.dragToRearrangeBookmarksEnabled()
 			))
-			.addScreenValue(new BookmarkPreviewConfigValue(clientConfig))
+			.addScreenValue(values.bookmarkPreview())
 			.addValue(clientConfig.bookmarkTooltipIngredientsEnabled());
 		bookmarkList.getValueBuilder(clientConfig.bookmarkTooltipPreviewEnabled()).hide();
 		bookmarkList.getValueBuilder(clientConfig.holdShiftToShowBookmarkTooltipFeaturesEnabled()).hide();
@@ -208,15 +242,20 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 			.addValue(config.layoutMode());
 	}
 
-	private static void configureRuntimeToggleValues(ConfigScreenCategories categories, IConfigValueEditorMetadataFactory metadataFactory) {
-		IClientConfigs clientConfigs = Internal.getClientConfigs();
-		IClientConfig clientConfig = clientConfigs.getClientConfig();
+	private static void configureRuntimeToggleValues(ConfigScreenCategories categories, ScreenValues values) {
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
+		categories.bookmarkList().addScreenValue(values.bookmarkOverlay());
+		categories.cheating().getValueBuilder(clientConfig.giveMode()).insertBefore(values.cheatMode());
+		categories.advanced().addScreenValue(values.editMode());
+	}
+
+	private static ScreenValues createScreenValues(IConfigValueEditorMetadataFactory metadataFactory) {
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 		IClientToggleState toggleState = Internal.getClientToggleState();
 		IConfigValueSerializer<Boolean> serializer = clientConfig.cheatToHotbarUsingHotkeysEnabled().getEditorInfo().getSerializer();
 		var metadata = metadataFactory.create(serializer, false);
-
-		categories.bookmarkList()
-			.addScreenValue(new RuntimeToggleScreenValue(
+		return new ScreenValues(
+			new RuntimeToggleScreenValue(
 				"bookmarkOverlayEnabled",
 				"jei.config.client.bookmarkList.bookmarkOverlayEnabled",
 				true,
@@ -224,11 +263,8 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 				toggleState::setBookmarkEnabled,
 				toggleState::addBookmarkEnabledListener,
 				metadata
-			));
-
-		categories.cheating()
-			.getValueBuilder(clientConfig.giveMode())
-			.insertBefore(new RuntimeToggleScreenValue(
+			),
+			new RuntimeToggleScreenValue(
 				"cheatModeEnabled",
 				"jei.config.client.cheating.cheatModeEnabled",
 				false,
@@ -236,10 +272,8 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 				value -> CheatModeUtil.setCheatModeEnabled(toggleState, value),
 				toggleState::addCheatItemsEnabledListener,
 				metadata
-			));
-
-		categories.advanced()
-			.addScreenValue(new RuntimeToggleScreenValue(
+			),
+			new RuntimeToggleScreenValue(
 				"editModeEnabled",
 				"jei.config.client.advanced.editModeEnabled",
 				false,
@@ -247,7 +281,9 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 				toggleState::setEditModeEnabled,
 				toggleState::addEditModeEnabledListener,
 				metadata
-			));
+			),
+			new BookmarkPreviewConfigValue(clientConfig)
+		);
 	}
 
 	private static void configureSortingOrderCategories(
@@ -304,6 +340,13 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 			.setTitle(Component.translatable(localizationKey))
 			.setDescription(Component.translatable(localizationKey + ".description"));
 	}
+
+	private record ScreenValues(
+		RuntimeToggleScreenValue bookmarkOverlay,
+		RuntimeToggleScreenValue cheatMode,
+		RuntimeToggleScreenValue editMode,
+		BookmarkPreviewConfigValue bookmarkPreview
+	) {}
 
 	private record ConfigScreenCategories(
 		IConfigScreenCategoryBuilder bookmarkList,

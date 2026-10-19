@@ -32,6 +32,11 @@ public class ModHelper implements IPlatformModHelper {
 	}
 
 	@Override
+	public boolean isModLoaded(String modId) {
+		return FabricLoader.getInstance().isModLoaded(modId);
+	}
+
+	@Override
 	public List<byte[]> getModIconByteCandidates(String modId) {
 		return modIconCache.computeIfAbsent(modId, this::computeModIconBytes);
 	}
