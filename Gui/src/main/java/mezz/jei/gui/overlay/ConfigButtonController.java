@@ -14,6 +14,8 @@ import mezz.jei.common.input.IMouseOverable;
 import mezz.jei.common.input.interaction.InputAction;
 import mezz.jei.common.platform.IPlatformConfigHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.gui.config.MezzConfigGuiIntegration;
 import mezz.jei.gui.input.InputCommands;
 import mezz.jei.gui.util.CheatModeUtil;
 import net.mezzdev.config.api.value.IConfigValue;
@@ -26,6 +28,7 @@ import net.minecraft.network.chat.Style;
 
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 public class ConfigButtonController implements IIconButtonController {
 	private final IDrawable normalIcon;
@@ -35,8 +38,12 @@ public class ConfigButtonController implements IIconButtonController {
 	private final IConfigValue<Boolean> hideIngredientsWhenNotSearching;
 	private final IWorldConfig worldConfig;
 	private final IInternalKeyMappings keyBindings;
+	private final Runnable clearKeyboardFocus;
+	private final Supplier<ImmutableRect2i> buttonArea;
+	private final BooleanSupplier isQuickConfigAvailable;
+	private final MezzConfigGuiIntegration configGuiIntegration = new MezzConfigGuiIntegration();
 
-	public ConfigButtonController(BooleanSupplier isSearchDisplayed, BooleanSupplier isListHiddenWhenNotSearching, IConfigValue<Boolean> hideIngredientsWhenNotSearching, IWorldConfig worldConfig, IInternalKeyMappings keyBindings) {
+	public ConfigButtonController(BooleanSupplier isSearchDisplayed, BooleanSupplier isListHiddenWhenNotSearching, IConfigValue<Boolean> hideIngredientsWhenNotSearching, IWorldConfig worldConfig, IInternalKeyMappings keyBindings, Runnable clearKeyboardFocus, Supplier<ImmutableRect2i> buttonArea, BooleanSupplier isQuickConfigAvailable) {
 		Textures textures = Internal.getTextures();
 		this.normalIcon = textures.getConfigButtonIcon();
 		this.cheatIcon = textures.getConfigButtonCheatIcon();
@@ -45,6 +52,9 @@ public class ConfigButtonController implements IIconButtonController {
 		this.hideIngredientsWhenNotSearching = hideIngredientsWhenNotSearching;
 		this.worldConfig = worldConfig;
 		this.keyBindings = keyBindings;
+		this.clearKeyboardFocus = clearKeyboardFocus;
+		this.buttonArea = buttonArea;
+		this.isQuickConfigAvailable = isQuickConfigAvailable;
 	}
 
 	@Override
@@ -59,6 +69,9 @@ public class ConfigButtonController implements IIconButtonController {
 	@Override
 	public void getTooltips(ITooltipBuilder tooltip) {
 		tooltip.add(Component.translatable("jei.tooltip.config"));
+		if (worldConfig.isOverlayEnabled()) {
+			tooltip.add(Component.translatable(getConfigClickHint()).withStyle(ChatFormatting.GRAY));
+		}
 		if (!worldConfig.isOverlayEnabled()) {
 			tooltip.add(
 				Component.translatable("jei.tooltip.ingredient.list.disabled")
@@ -100,6 +113,13 @@ public class ConfigButtonController implements IIconButtonController {
 		}
 	}
 
+	private String getConfigClickHint() {
+		if (isQuickMenuOpen() || !configGuiIntegration.isAvailable()) {
+			return "jei.tooltip.config.open.full";
+		}
+		return "jei.tooltip.config.open.quick";
+	}
+
 	@Override
 	public boolean onPress(IJeiUserInput input) {
 		if (worldConfig.isOverlayEnabled()) {
@@ -108,7 +128,7 @@ public class ConfigButtonController implements IIconButtonController {
 					CheatModeUtil.toggleCheatMode(worldConfig);
 				} else if (input.is(keyBindings.getToggleHideIngredientsWhenNotSearching())) {
 					toggleHideIngredientsWhenNotSearching();
-				} else {
+				} else if (!openQuickMenu()) {
 					openSettings();
 				}
 			}
@@ -130,6 +150,20 @@ public class ConfigButtonController implements IIconButtonController {
 
 	private void toggleHideIngredientsWhenNotSearching() {
 		hideIngredientsWhenNotSearching.set(!hideIngredientsWhenNotSearching.get());
+	}
+
+	public boolean openQuickMenu() {
+		boolean opened = configGuiIntegration.openQuickMenu(buttonArea, isQuickConfigAvailable,
+			ConfigButtonController::openSettings, this::getTooltips);
+		if (opened) {
+			// Clear the widget because Minecraft 1.19.2 clears screen focus without unfocusing the previous widget.
+			clearKeyboardFocus.run();
+		}
+		return opened;
+	}
+
+	public boolean isQuickMenuOpen() {
+		return configGuiIntegration.isQuickMenuOpen();
 	}
 
 	private static void openSettings() {
