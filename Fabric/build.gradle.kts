@@ -1,4 +1,5 @@
 import mezz.jei.gradle.dependencyInfo
+import mezz.jei.gradle.externalSourceSetClasspath
 import mezz.jei.gradle.mezzConfigDependency
 import mezz.jei.gradle.mezzConfigGuiDependency
 import mezz.jei.gradle.UnpackArchives
@@ -43,6 +44,7 @@ val luceneVersion = gradleProperty("luceneVersion")
 val amecsDependency = "de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-mc26.2.0:1.0.2"
 
 repositories {
+    google { content { includeModule("com.android.tools", "r8") } }
     maven("https://maven.siphalor.de/") {
         content { includeGroup("de.siphalor.amecs.amecs-key-modifiers") }
     }
@@ -354,7 +356,23 @@ tasks.named<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
 }
 
+// Shared API annotations are compile-only and absent from the loader runtime classpath.
+val r8Libraries = configurations.create("r8Libraries") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+dependencies {
+    add(r8Libraries.name, "com.google.code.findbugs:jsr305:3.0.2")
+}
+
+val r8LibraryClasspath = externalSourceSetClasspath(listOf(sourceSets.main.get(), apiSourceSet))
+
 val shadedJar = modShade.shadeJar()
+shadedJar.configure {
+    shrink.set(true)
+    shrinkLibraryClasspath.setFrom(r8LibraryClasspath.minus(project.files(configurations)), r8Libraries)
+    shrinkRuleFiles.from(isolatedProjectDirectory(":").file("config/lucene-r8.pro"))
+}
 val shadedSourcesJar = modShade.shadeSourcesJar()
 
 val apiJarTask = tasks.register<Jar>("apiJar") {
