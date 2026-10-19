@@ -427,6 +427,7 @@ tasks.named<ProcessResources>(sourceSets.main.get().processResourcesTaskName) {
 }
 
 val shadedJar = modShade.shadeJar()
+apply(from = "../gradle/verify-jar-bytecode.gradle")
 val shadedSourcesJar = modShade.shadeSourcesJar()
 
 val apiJarTask = tasks.register<Jar>("apiJar") {
