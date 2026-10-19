@@ -9,11 +9,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(KeyboardHandler.class)
+// Run after modal character handlers so menus can consume input before JEI edits search.
+@Mixin(value = KeyboardHandler.class, priority = 1100)
 public class KeyboardHandlerMixin {
 	@Inject(
 		method = "charTyped",
-		at = @At("HEAD"),
+		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;charTyped(Lnet/minecraft/client/input/CharacterEvent;)Z"),
 		cancellable = true
 	)
 	private void beforeCharTypedEvent(long handle, CharacterEvent event, CallbackInfo ci) {

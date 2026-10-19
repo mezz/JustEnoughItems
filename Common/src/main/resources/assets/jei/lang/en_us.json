@@ -1,6 +1,10 @@
 {
   "_comment": "Debug (for a debug mode, do not need translation)",
   "jei.tooltip.config": "JEI Config",
+  "jei.tooltip.config.open.quick": "Click for the JEI Quick Config Menu.",
+  "jei.tooltip.config.open.full": "Click again to open the config screen.",
+  "jei.tooltip.config.open.full.direct": "Click to open the config screen.",
+  "jei.config.client.quickMenu": "JEI Quick Menu",
   "jei.config.client.bookmarkList.bookmarkPreviewMode": "Recipe Bookmark Previews",
   "jei.config.client.bookmarkList.bookmarkPreviewMode.description": "Choose when recipe previews and extra details appear on recipe bookmarks. The Shift option uses the configured bookmark details key.",
   "jei.config.client.bookmarkList.bookmarkPreviewMode.value.DISABLED": "Disabled",
