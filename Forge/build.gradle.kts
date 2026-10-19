@@ -258,6 +258,7 @@ val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 val reobfJarTask = tasks.named<AbstractArchiveTask>("reobfJar")
 
 val shadedJar = modShade.shadeJar()
+apply(from = "../gradle/verify-jar-bytecode.gradle")
 val shadedSourcesJar = modShade.shadeSourcesJar()
 
 publishMods {
