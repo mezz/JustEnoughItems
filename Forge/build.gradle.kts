@@ -85,7 +85,6 @@ apiSourceSet.compileClasspath += commonApiSourceSet.output
 sourceSets.configureEach {
     if (name != "api") {
         compileClasspath += apiSourceSet.output + commonApiSourceSet.output
-        runtimeClasspath += apiSourceSet.output + commonApiSourceSet.output
     }
 }
 
@@ -238,7 +237,6 @@ minecraft {
 			mods {
 				create(modId) {
 					source(sourceSets.main.get())
-					source(apiSourceSet)
 				}
 				create("${modId}debug") {
 					source(forgeDebugSourceSet)
@@ -282,6 +280,8 @@ tasks.withType<JavaExec>().configureEach {
 }
 
 tasks.named<JavaCompile>(sourceSets.main.get().compileJavaTaskName) {
+    // Keep public API classes in the mod's class loader during development runs.
+    source(apiSourceSet.allJava)
     source(commonApiSourceSet.allJava)
 	dependencyProjects.forEach {
 		source(it.sourceSets.main.get().allSource)
