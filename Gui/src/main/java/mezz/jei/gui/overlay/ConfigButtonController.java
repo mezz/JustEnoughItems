@@ -14,6 +14,8 @@ import mezz.jei.common.input.IMouseOverable;
 import mezz.jei.common.input.interaction.InputAction;
 import mezz.jei.common.platform.IPlatformConfigHelper;
 import mezz.jei.common.platform.Services;
+import mezz.jei.common.util.ImmutableRect2i;
+import mezz.jei.gui.config.MezzConfigGuiIntegration;
 import mezz.jei.gui.input.InputCommands;
 import mezz.jei.gui.util.CheatModeUtil;
 import net.mezzdev.config.api.value.IConfigValue;
@@ -27,6 +29,7 @@ import net.minecraft.network.chat.Style;
 import java.net.URI;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 public class ConfigButtonController implements IIconButtonController {
 	private final IDrawable normalIcon;
@@ -36,8 +39,11 @@ public class ConfigButtonController implements IIconButtonController {
 	private final IConfigValue<Boolean> hideIngredientsWhenNotSearching;
 	private final IClientToggleState toggleState;
 	private final IInternalKeyMappings keyBindings;
+	private final Supplier<ImmutableRect2i> buttonArea;
+	private final BooleanSupplier isQuickConfigAvailable;
+	private final MezzConfigGuiIntegration configGuiIntegration = new MezzConfigGuiIntegration();
 
-	public ConfigButtonController(BooleanSupplier isSearchDisplayed, BooleanSupplier isListHiddenWhenNotSearching, IConfigValue<Boolean> hideIngredientsWhenNotSearching, IClientToggleState toggleState, IInternalKeyMappings keyBindings) {
+	public ConfigButtonController(BooleanSupplier isSearchDisplayed, BooleanSupplier isListHiddenWhenNotSearching, IConfigValue<Boolean> hideIngredientsWhenNotSearching, IClientToggleState toggleState, IInternalKeyMappings keyBindings, Supplier<ImmutableRect2i> buttonArea, BooleanSupplier isQuickConfigAvailable) {
 		Textures textures = Internal.getTextures();
 		this.normalIcon = textures.getConfigButtonIcon();
 		this.cheatIcon = textures.getConfigButtonCheatIcon();
@@ -46,6 +52,8 @@ public class ConfigButtonController implements IIconButtonController {
 		this.hideIngredientsWhenNotSearching = hideIngredientsWhenNotSearching;
 		this.toggleState = toggleState;
 		this.keyBindings = keyBindings;
+		this.buttonArea = buttonArea;
+		this.isQuickConfigAvailable = isQuickConfigAvailable;
 	}
 
 	@Override
@@ -60,6 +68,9 @@ public class ConfigButtonController implements IIconButtonController {
 	@Override
 	public void getTooltips(ITooltipBuilder tooltip) {
 		tooltip.add(Component.translatable("jei.tooltip.config"));
+		if (toggleState.isOverlayEnabled()) {
+			tooltip.add(Component.translatable(getConfigClickHint()).withStyle(ChatFormatting.GRAY));
+		}
 		if (!toggleState.isOverlayEnabled()) {
 			tooltip.add(
 				Component.translatable("jei.tooltip.ingredient.list.disabled")
@@ -101,6 +112,13 @@ public class ConfigButtonController implements IIconButtonController {
 		}
 	}
 
+	private String getConfigClickHint() {
+		if (isQuickMenuOpen() || !configGuiIntegration.isAvailable()) {
+			return "jei.tooltip.config.open.full";
+		}
+		return "jei.tooltip.config.open.quick";
+	}
+
 	@Override
 	public boolean onPress(IJeiUserInput input) {
 		if (toggleState.isOverlayEnabled()) {
@@ -109,7 +127,7 @@ public class ConfigButtonController implements IIconButtonController {
 					CheatModeUtil.toggleCheatMode(toggleState);
 				} else if (input.is(keyBindings.getToggleHideIngredientsWhenNotSearching())) {
 					toggleHideIngredientsWhenNotSearching();
-				} else {
+				} else if (!openQuickMenu()) {
 					openSettings();
 				}
 			}
@@ -131,6 +149,15 @@ public class ConfigButtonController implements IIconButtonController {
 
 	private void toggleHideIngredientsWhenNotSearching() {
 		hideIngredientsWhenNotSearching.set(!hideIngredientsWhenNotSearching.get());
+	}
+
+	public boolean openQuickMenu() {
+		return configGuiIntegration.openQuickMenu(buttonArea, isQuickConfigAvailable,
+			ConfigButtonController::openSettings, this::getTooltips);
+	}
+
+	public boolean isQuickMenuOpen() {
+		return configGuiIntegration.isQuickMenuOpen();
 	}
 
 	private static void openSettings() {

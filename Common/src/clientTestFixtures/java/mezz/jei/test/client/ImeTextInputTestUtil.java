@@ -339,7 +339,7 @@ public final class ImeTextInputTestUtil {
 		}
 	}
 
-	private static void invokePreeditCallback(KeyboardHandler keyboardHandler, long windowHandle, @Nullable PreeditEvent event) {
+	public static void invokePreeditCallback(KeyboardHandler keyboardHandler, long windowHandle, @Nullable PreeditEvent event) {
 		try {
 			Method method = KeyboardHandler.class.getDeclaredMethod("preeditCallback", long.class, PreeditEvent.class);
 			method.setAccessible(true);
