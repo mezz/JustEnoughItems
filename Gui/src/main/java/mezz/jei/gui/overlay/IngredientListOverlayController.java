@@ -105,8 +105,8 @@ class IngredientListOverlayController {
 
 	void init() {
 		this.lastFilterText = this.filterTextSource.getFilterText();
-		this.searchField.setValue(this.lastFilterText);
-		this.searchField.setFocused(false);
+		this.searchField.setFilterText(this.lastFilterText);
+		this.searchField.setKeyboardFocus(false);
 		this.filterTextSource.addListener(newFilterText -> {
 			String oldFilterText = this.lastFilterText;
 			this.lastFilterText = newFilterText;
@@ -141,7 +141,7 @@ class IngredientListOverlayController {
 	}
 
 	private void onFilterTextChanged(String oldFilterText, String newFilterText) {
-		this.searchField.setValue(newFilterText);
+		this.searchField.setFilterText(newFilterText);
 		if (!oldFilterText.isEmpty() && newFilterText.isEmpty()) {
 			this.contentsPageNavigation.updateLayoutToFirstPage();
 		}
@@ -174,7 +174,7 @@ class IngredientListOverlayController {
 		this.hasValidScreen = false;
 		this.contentsView.close();
 		this.lookupHistory.close();
-		this.searchField.setFocused(false);
+		this.searchField.setKeyboardFocus(false);
 	}
 
 	private void updateBounds(IGuiProperties guiProperties, Set<ImmutableRect2i> guiExclusionAreas) {
@@ -205,7 +205,7 @@ class IngredientListOverlayController {
 			this.contentsView.hasRoom(),
 			this.contentsView.getBackgroundArea()
 		);
-		this.searchField.setValue(filterTextSource.getFilterText());
+		this.searchField.setFilterText(filterTextSource.getFilterText());
 		this.searchField.updateBounds(searchAndConfigAreas.searchArea());
 		this.configButton.updateBounds(searchAndConfigAreas.configButtonArea());
 	}

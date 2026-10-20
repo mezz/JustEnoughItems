@@ -4,12 +4,16 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodType;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.jar.JarFile;
 
@@ -18,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Checks JEI interface implementations in the shipped jar using Java reflection. */
+/** Checks packaged dependencies and guards JEI interfaces against Minecraft remapping collisions. */
 public class ReobfuscatedJarTest {
 	@Test
 	public void packagedLuceneIndexesAndSearches() throws Exception {
@@ -40,7 +44,7 @@ public class ReobfuscatedJarTest {
 	}
 
 	@Test
-	public void concreteClassesImplementPackagedInterfaces() throws IOException, ClassNotFoundException {
+	public void packagedJeiInterfacesAvoidMinecraftRemappingCollisions() throws Exception {
 		String jarPath = System.getProperty("jei.test.packagedJar");
 		assertNotNull(jarPath, "Run through :Forge:test to check the reobfuscated jar");
 		List<String> failures = new ArrayList<>();
@@ -55,18 +59,53 @@ public class ReobfuscatedJarTest {
 			assertFalse(names.isEmpty(), "The packaged jar must contain JEI classes");
 			for (String name : names) {
 				Class<?> type = Class.forName(name, false, loader);
-				if (!Modifier.isAbstract(type.getModifiers())) {
-					for (var method : type.getMethods()) {
-						// Minecraft dependencies use development names here, so check JEI's own contracts.
-						if (method.getDeclaringClass().getName().startsWith("mezz.jei.") && Modifier.isAbstract(method.getModifiers())) {
-							failures.add(name + " does not implement " + method);
+				if (type.isInterface()) {
+					Set<String> packagedMethods = new HashSet<>();
+					for (Method method : type.getDeclaredMethods()) {
+						packagedMethods.add(methodSignature(method));
+					}
+					Class<?> developmentType = Class.forName(name, false, getClass().getClassLoader());
+					// Minecraft override mappings may not propagate consistently to unrelated JEI interfaces.
+					// Avoid JEI interface method names that collide with Minecraft methods subject to remapping.
+					for (Method method : developmentType.getDeclaredMethods()) {
+						if (Modifier.isPublic(method.getModifiers()) && !packagedMethods.contains(methodSignature(method))) {
+							failures.add(name + "#" + methodSignature(method) + " is remapped; use a JEI interface method name that does not collide with Minecraft methods");
 						}
+					}
+				} else if (!Modifier.isAbstract(type.getModifiers())) {
+					for (Method method : findInterfaceImplementationRisks(type)) {
+						failures.add(name + " has no concrete JEI implementation of " + method + "; use a distinct JEI method name instead of relying on Minecraft's mapped methods");
 					}
 				}
 			}
 		}
 		failures.sort(String::compareTo);
-		assertTrue(failures.isEmpty(), () -> "Broken method linkage in " + jarPath + ":\n" + String.join("\n", failures));
+		assertTrue(failures.isEmpty(), () -> "JEI interface methods at risk from Minecraft remapping in " + jarPath + ":\n" + String.join("\n", failures));
+	}
+
+	private static String methodSignature(Method method) {
+		return method.getName() + MethodType.methodType(method.getReturnType(), method.getParameterTypes()).toMethodDescriptorString();
+	}
+
+	private static Set<Method> findInterfaceImplementationRisks(Class<?> type) throws NoSuchMethodException {
+		Set<Method> methods = new HashSet<>(List.of(type.getMethods()));
+		// This classpath uses Minecraft's development names, which can mask missing
+		// packaged overrides in getMethods(). Inspect the interface declarations directly.
+		for (Class<?> current = type; current != null; current = current.getSuperclass()) {
+			for (Class<?> interfaceType : current.getInterfaces()) {
+				methods.addAll(List.of(interfaceType.getMethods()));
+			}
+		}
+		Set<Method> atRisk = new HashSet<>();
+		for (Method method : methods) {
+			if (method.getDeclaringClass().getName().startsWith("mezz.jei.") && Modifier.isAbstract(method.getModifiers())) {
+				Method implementation = type.getMethod(method.getName(), method.getParameterTypes());
+				if (Modifier.isAbstract(implementation.getModifiers()) || implementation.getDeclaringClass().getName().startsWith("net.minecraft.")) {
+					atRisk.add(method);
+				}
+			}
+		}
+		return atRisk;
 	}
 
 	private static URL[] packagedClasspath() throws IOException {

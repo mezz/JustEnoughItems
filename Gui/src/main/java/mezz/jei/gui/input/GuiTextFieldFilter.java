@@ -78,6 +78,11 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 	}
 
 	@Override
+	public void setFilterText(String filterText) {
+		setValue(filterText);
+	}
+
+	@Override
 	public void setValue(String filterText) {
 		if (!filterText.equals(getValue())) {
 			super.setValue(filterText);
@@ -97,6 +102,11 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return area.contains(mouseX, mouseY);
+	}
+
+	@Override
+	public void setKeyboardFocus(boolean focused) {
+		setFocused(focused);
 	}
 
 	@Override
