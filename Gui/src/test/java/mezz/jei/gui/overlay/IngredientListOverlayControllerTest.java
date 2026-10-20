@@ -589,12 +589,12 @@ public class IngredientListOverlayControllerTest {
 		ImmutableRect2i area;
 
 		@Override
-		public void setValue(String filterText) {
+		public void setFilterText(String filterText) {
 			values.add(filterText);
 		}
 
 		@Override
-		public void setFocused(boolean focused) {
+		public void setKeyboardFocus(boolean focused) {
 			focusValues.add(focused);
 		}
 
