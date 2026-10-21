@@ -82,16 +82,24 @@ public class FabricKeyModifiersClientGameTest {
 	}
 
 	static void pressShiftModifiedKey(FabricClientTestContext context, int key) {
-		context.getInput().holdKey(InputConstants.KEY_LSHIFT);
+		pressModifiedKey(context, key, InputConstants.KEY_LSHIFT, GLFW.GLFW_MOD_SHIFT);
+	}
+
+	static void pressAltModifiedKey(FabricClientTestContext context, int key) {
+		pressModifiedKey(context, key, InputConstants.KEY_LALT, GLFW.GLFW_MOD_ALT);
+	}
+
+	private static void pressModifiedKey(FabricClientTestContext context, int key, int modifierKey, int modifiers) {
+		context.getInput().holdKey(modifierKey);
 		try {
 			context.runOnClient(client -> {
 				// Fabric's input helper omits modifier flags from keyboard callbacks.
 				KeyboardHandlerAccessor keyboard = (KeyboardHandlerAccessor) client.keyboardHandler;
-				keyboard.jei$invokeKeyPress(client.getWindow().getWindow(), key, GLFW.glfwGetKeyScancode(key), InputConstants.PRESS, GLFW.GLFW_MOD_SHIFT);
-				keyboard.jei$invokeKeyPress(client.getWindow().getWindow(), key, GLFW.glfwGetKeyScancode(key), InputConstants.RELEASE, GLFW.GLFW_MOD_SHIFT);
+				keyboard.jei$invokeKeyPress(client.getWindow().getWindow(), key, GLFW.glfwGetKeyScancode(key), InputConstants.PRESS, modifiers);
+				keyboard.jei$invokeKeyPress(client.getWindow().getWindow(), key, GLFW.glfwGetKeyScancode(key), InputConstants.RELEASE, modifiers);
 			});
 		} finally {
-			context.getInput().releaseKey(InputConstants.KEY_LSHIFT);
+			context.getInput().releaseKey(modifierKey);
 		}
 	}
 

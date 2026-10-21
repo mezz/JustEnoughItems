@@ -212,7 +212,8 @@ public class JeiGuiStarter {
 			bookmarkList,
 			lookupHistory,
 			guiHelper,
-			focusUtil
+			focusUtil,
+			ingredientListOverlay
 		);
 		registration.setRecipesGui(recipesGui);
 		JeiInputSetup input = JeiInputSetup.create(
@@ -235,7 +236,7 @@ public class JeiGuiStarter {
 			screenHelper,
 			bookmarkOverlay,
 			ingredientListOverlay,
-			input.scene().getForegroundLayers()
+			input.scene()
 		);
 		ResourceReloadHandler resourceReloadHandler = new ResourceReloadHandler(
 			ingredientListOverlay,

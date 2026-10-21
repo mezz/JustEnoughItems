@@ -3,6 +3,7 @@ package mezz.jei.fabric.test;
 import com.mojang.blaze3d.platform.NativeImage;
 import mezz.jei.fabric.test.mixin.MouseHandlerAccessor;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.screens.Screen;
@@ -24,12 +25,23 @@ import java.util.function.Supplier;
 final class FabricClientTestContext {
 	private static final AtomicBoolean REGISTERED = new AtomicBoolean();
 	private static final AtomicLong TICKS = new AtomicLong();
+	private static final AtomicLong LAST_SCREEN_RENDER_TICK = new AtomicLong();
 	private final Input input = new Input();
 
 	FabricClientTestContext() {
 		if (REGISTERED.compareAndSet(false, true)) {
-			ClientTestUtil.runOnClient(client -> ClientTickEvents.END_CLIENT_TICK.register(ignored -> TICKS.incrementAndGet()));
+			ClientTestUtil.runOnClient(client -> {
+				ClientTickEvents.END_CLIENT_TICK.register(ignored -> TICKS.incrementAndGet());
+				ScreenEvents.AFTER_INIT.register((minecraft, screen, width, height) -> trackScreenRenders(screen));
+				if (client.screen != null) {
+					trackScreenRenders(client.screen);
+				}
+			});
 		}
+	}
+
+	private static void trackScreenRenders(Screen screen) {
+		ScreenEvents.afterRender(screen).register((renderedScreen, graphics, mouseX, mouseY, tickDelta) -> LAST_SCREEN_RENDER_TICK.set(TICKS.get()));
 	}
 
 	void runOnClient(Consumer<Minecraft> task) {
@@ -51,7 +63,12 @@ final class FabricClientTestContext {
 
 	void waitTicks(int count) {
 		long target = TICKS.get() + count;
-		ClientTestUtil.waitUntil(() -> TICKS.get() >= target, Duration.ofSeconds(30), () -> "Timed out waiting for " + count + " client ticks");
+		// GUI layouts update while rendering, so a tick alone does not make their bounds observable.
+		ClientTestUtil.waitUntil(
+			() -> TICKS.get() >= target && computeOnClient(client -> client.screen == null || LAST_SCREEN_RENDER_TICK.get() >= target),
+			Duration.ofSeconds(30),
+			() -> "Timed out waiting for " + count + " client ticks and a screen render"
+		);
 	}
 
 	Input getInput() {
@@ -65,6 +82,8 @@ final class FabricClientTestContext {
 	Path takeScreenshot(String name) {
 		return computeOnClient(client -> {
 			Path path = client.gameDirectory.toPath().resolve("screenshots").resolve(name + ".png");
+			// Flush queued GUI geometry before reading the render target.
+			client.renderBuffers().bufferSource().endBatch();
 			try (NativeImage image = Screenshot.takeScreenshot(client.getMainRenderTarget())) {
 				Files.createDirectories(path.getParent());
 				image.writeToFile(path);
@@ -83,7 +102,7 @@ final class FabricClientTestContext {
 				client.setWindowActive(true);
 				// Inject one movement event; desktop cursor warps can enqueue a second,
 				// clipped event when the test window is larger than the virtual display.
-				((MouseHandlerAccessor) client.mouseHandler).jei$invokeOnMove(window, x, y);
+				FabricClientTestInput.moveCursor(() -> ((MouseHandlerAccessor) client.mouseHandler).jei$invokeOnMove(window, x, y));
 			});
 		}
 

@@ -4,6 +4,7 @@ import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IMouseOverable;
 import mezz.jei.common.input.handlers.InputGroup;
 import mezz.jei.common.input.interaction.ApiInputAdapter.IMouseDragHandler;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -13,8 +14,8 @@ import java.util.List;
  * Examples include the ingredient list, recipe display, and tooltips. Create one with {@link #builder}.
  *
  * @param name label used in debug logs
- * @param area tests whether this input area is visible and contains the mouse pointer;
- *             also supplies ingredient lookup when it implements {@link IRecipeFocusSource}
+ * @param area tests visibility and mouse position; also supplies ingredient lookup and foreground
+ *             updates when it implements {@link IRecipeFocusSource} or {@link mezz.jei.common.input.IGuiInputLayer}
  * @param blocksUnhandledMouseInput whether to block mouse input from reaching the Minecraft screen
  *                                  even when no control or shortcut handles it
  * @param controls input handler for the controls, tried before this input area's shortcuts
@@ -24,9 +25,11 @@ import java.util.List;
  *                    the first to accept it starts the drag, along with any selected click action
  * @param apiDragHandler public recipe callbacks to try under the pointer when no control is using mouse movement;
  *                       null for input areas without recipe callbacks
+ * @param keyboardNavigation keyboard navigation, or null if the area cannot take keyboard focus
  */
 public record InputArea(String name, IMouseOverable area, boolean blocksUnhandledMouseInput, IInputTarget controls,
-	InputCommands commands, List<DragSource> dragSources, @Nullable IMouseDragHandler apiDragHandler) {
+	InputCommands commands, List<DragSource> dragSources, @Nullable IMouseDragHandler apiDragHandler,
+	@Nullable GuiEventListener keyboardNavigation) {
 	public InputArea {
 		dragSources = List.copyOf(dragSources);
 	}
@@ -36,7 +39,7 @@ public record InputArea(String name, IMouseOverable area, boolean blocksUnhandle
 	 * By default, mouse input that JEI does not handle can reach the Minecraft screen.
 	 *
 	 * @param name label used in debug logs
-	 * @param area tests visibility and whether the mouse pointer is inside; may also supply ingredient lookup
+	 * @param area tests visibility and whether the mouse pointer is inside
 	 */
 	public static Builder builder(String name, IMouseOverable area) {
 		return new Builder(name, area);
@@ -51,6 +54,7 @@ public record InputArea(String name, IMouseOverable area, boolean blocksUnhandle
 		private InputCommands commands = new InputCommands();
 		private List<DragSource> dragSources = List.of();
 		private @Nullable IMouseDragHandler apiDragHandler;
+		private @Nullable GuiEventListener keyboardNavigation;
 
 		private Builder(String name, IMouseOverable area) {
 			this.name = name;
@@ -92,8 +96,14 @@ public record InputArea(String name, IMouseOverable area, boolean blocksUnhandle
 			return this;
 		}
 
+		/** Sets keyboard navigation for this area's components. */
+		public Builder keyboardNavigation(GuiEventListener keyboardNavigation) {
+			this.keyboardNavigation = keyboardNavigation;
+			return this;
+		}
+
 		public InputArea build() {
-			return new InputArea(name, area, blocksUnhandledMouseInput, controls, commands, dragSources, apiDragHandler);
+			return new InputArea(name, area, blocksUnhandledMouseInput, controls, commands, dragSources, apiDragHandler, keyboardNavigation);
 		}
 	}
 }

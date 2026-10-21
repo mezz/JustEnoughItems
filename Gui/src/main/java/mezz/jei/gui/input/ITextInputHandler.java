@@ -15,6 +15,9 @@ public interface ITextInputHandler extends IInputTarget, IMouseOverable {
 	/** Whether this control is available and selected for typing. */
 	boolean hasKeyboardFocus();
 
+	/** Selects this control for typing. */
+	void focus();
+
 	/** Stops editing this control, such as when the player clicks elsewhere or closes the screen. */
 	void clearFocus();
 

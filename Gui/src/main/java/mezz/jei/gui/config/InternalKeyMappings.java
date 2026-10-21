@@ -197,11 +197,13 @@ public final class InternalKeyMappings implements IInternalKeyMappings {
 
 		previousSearch = search.createMapping("key.jei.previousSearch")
 			.setContext(JeiKeyConflictContext.JEI_GUI_FOCUSED_SEARCH)
+			.setModifier(JeiKeyModifier.ALT)
 			.buildKeyboardKey(GLFW.GLFW_KEY_UP)
 			.register(registerMethod);
 
 		nextSearch = search.createMapping("key.jei.nextSearch")
 			.setContext(JeiKeyConflictContext.JEI_GUI_FOCUSED_SEARCH)
+			.setModifier(JeiKeyModifier.ALT)
 			.buildKeyboardKey(GLFW.GLFW_KEY_DOWN)
 			.register(registerMethod);
 

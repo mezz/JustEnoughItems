@@ -3,8 +3,10 @@
  *
  * <p>An {@link mezz.jei.gui.input.InputArea} groups the controls, shortcuts, and drag
  * sources for part of a Minecraft screen, such as the ingredient list or recipe display.
- * {@link mezz.jei.gui.input.GuiInputScene} selects the first area under the pointer,
- * from front to back. Ingredient lookup uses that same area.</p>
+ * {@link mezz.jei.gui.input.GuiInputScene} targets the focused area for keyboard input,
+ * or the first area under the pointer from front to back. Ingredient lookup uses that same area.
+ * {@link mezz.jei.gui.input.focus.GuiKeyboardFocus} transfers focus between JEI controls
+ * and restores the underlying screen's focus when JEI releases it.</p>
  *
  * <p>For example, a player points at an ingredient in a recipe tooltip and uses Show
  * Recipes. JEI looks up that ingredient rather than one hidden behind the tooltip.</p>
