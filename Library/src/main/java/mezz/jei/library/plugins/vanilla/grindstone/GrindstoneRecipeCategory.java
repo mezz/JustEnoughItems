@@ -28,12 +28,10 @@ public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneR
 	private static final String topSlotName = "topSlot";
 	private static final String bottomSlotName = "bottomSlot";
 	private final IDrawable background;
-	private final IDrawable icon;
 	private final Component localizedName;
 
 	public GrindstoneRecipeCategory(IGuiHelper guiHelper) {
 		background = guiHelper.createBlankDrawable(125, 52);
-		icon = guiHelper.createDrawableItemLike(Blocks.GRINDSTONE);
 		localizedName = Blocks.GRINDSTONE.getName();
 	}
 
@@ -53,8 +51,8 @@ public class GrindstoneRecipeCategory implements IRecipeCategory<IJeiGrindstoneR
 	}
 
 	@Override
-	public IDrawable getIcon() {
-		return icon;
+	public @Nullable IDrawable getIcon() {
+		return null;
 	}
 
 	@Override

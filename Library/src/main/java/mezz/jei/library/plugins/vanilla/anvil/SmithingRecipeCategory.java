@@ -26,7 +26,7 @@ public class SmithingRecipeCategory extends AbstractRecipeCategory<UpgradeRecipe
 		super(
 			RecipeTypes.SMITHING,
 			Blocks.SMITHING_TABLE.getName(),
-			guiHelper.createDrawableItemLike(Blocks.SMITHING_TABLE),
+			null,
 			125,
 			28
 		);

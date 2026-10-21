@@ -20,7 +20,6 @@ import mezz.jei.common.gui.textures.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -35,7 +34,7 @@ public class BrewingRecipeCategory extends AbstractRecipeCategory<IJeiBrewingRec
 		super(
 			RecipeTypes.BREWING,
 			Component.translatable("gui.jei.category.brewing"),
-			guiHelper.createDrawableItemLike(Blocks.BREWING_STAND),
+			null,
 			114,
 			61
 		);

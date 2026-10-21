@@ -9,7 +9,6 @@ import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
-import net.minecraft.world.level.block.Blocks;
 
 public class StoneCuttingRecipeCategory extends AbstractRecipeCategory<StonecutterRecipe> {
 	public static final int width = 82;
@@ -19,7 +18,7 @@ public class StoneCuttingRecipeCategory extends AbstractRecipeCategory<Stonecutt
 		super(
 			RecipeTypes.STONECUTTING,
 			Component.translatable("gui.jei.category.stoneCutter"),
-			guiHelper.createDrawableItemLike(Blocks.STONECUTTER),
+			null,
 			width,
 			height
 		);
