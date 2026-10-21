@@ -81,7 +81,7 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 						((KeyboardHandlerAccessor) client.keyboardHandler).invokeOnKey(client.getWindow().handle(), InputConstants.RELEASE, shift);
 					}
 
-					searchField.setFocused(false);
+					searchField.clearFocus();
 					focusSearchWithHotkey(
 						client.keyboardHandler, client.getWindow().handle(), () -> TextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField)
 					);
@@ -186,7 +186,7 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 				throw new AssertionError("Focused search editing must take precedence over a conflicting global shortcut.");
 			}
 
-			searchField.setFocused(false);
+			searchField.clearFocus();
 			TextInputTestUtil.invokeKeyPress(client.keyboardHandler, client.getWindow().handle(), backspace);
 			if (!toggles.isEditModeEnabled() || !searchField.getValue().equals("ston")) {
 				throw new AssertionError("The same shortcut must execute immediately once the search field loses focus.");
@@ -195,7 +195,7 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 			editMode.setKey(originalKey);
 			toggles.setEditModeEnabled(originalEditMode);
 			searchField.setValue(originalText);
-			searchField.setFocused(true);
+			searchField.focus();
 		}
 	}
 

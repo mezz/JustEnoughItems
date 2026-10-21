@@ -12,15 +12,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public class ScreenFocusHandlerTest {
+public class GuiKeyboardFocusTest {
 	@Test
 	public void doesNotRestoreUnfocusedEditBoxInWidgets() {
 		EditBox searchField = createEditBox();
 		TestScreen screen = TestScreen.create(searchField);
 
-		ScreenFocusHandler focusHandler = ScreenFocusHandler.create(screen);
-
-		Assertions.assertNull(focusHandler);
+		Runnable restoreFocus = GuiKeyboardFocus.suspendScreenFocus(screen);
+		restoreFocus.run();
 		Assertions.assertFalse(searchField.isFocused());
 	}
 
@@ -31,15 +30,12 @@ public class ScreenFocusHandlerTest {
 		searchField.setCanLoseFocus(false);
 		searchField.setFocused(true);
 
-		ScreenFocusHandler focusHandler = ScreenFocusHandler.create(screen);
-		Assertions.assertNotNull(focusHandler);
-
-		focusHandler.unFocus();
+		Runnable restoreFocus = GuiKeyboardFocus.suspendScreenFocus(screen);
 
 		Assertions.assertFalse(searchField.isFocused());
-		Assertions.assertTrue(searchField.canLoseFocus);
+		Assertions.assertFalse(searchField.canLoseFocus);
 
-		focusHandler.focus();
+		restoreFocus.run();
 
 		Assertions.assertTrue(searchField.isFocused());
 		Assertions.assertFalse(searchField.canLoseFocus);
@@ -53,16 +49,28 @@ public class ScreenFocusHandlerTest {
 		TestScreen screen = TestScreen.create(nestedScreen);
 		searchField.setFocused(true);
 
-		ScreenFocusHandler focusHandler = ScreenFocusHandler.create(screen);
-		Assertions.assertNotNull(focusHandler);
-
-		focusHandler.unFocus();
+		Runnable restoreFocus = GuiKeyboardFocus.suspendScreenFocus(screen);
 		Assertions.assertFalse(searchField.isFocused());
 
-		focusHandler.focus();
+		restoreFocus.run();
 		Assertions.assertTrue(searchField.isFocused());
 		Assertions.assertNull(screen.getFocused());
 		Assertions.assertNull(nestedScreen.getFocused());
+	}
+
+	@Test
+	public void restoresTheScreensFocusedWidget() {
+		EditBox searchField = createEditBox();
+		TestScreen screen = TestScreen.create(searchField);
+		screen.setFocused(searchField);
+
+		Runnable restoreFocus = GuiKeyboardFocus.suspendScreenFocus(screen);
+		Assertions.assertNull(screen.getFocused());
+		Assertions.assertFalse(searchField.isFocused());
+
+		restoreFocus.run();
+		Assertions.assertSame(searchField, screen.getFocused());
+		Assertions.assertTrue(searchField.isFocused());
 	}
 
 	private static class TestScreen extends Screen {
@@ -88,6 +96,7 @@ public class ScreenFocusHandlerTest {
 	private static EditBox createEditBox() {
 		return new EditBox((Font) null, 0, 0, 100, 20, Component.literal("search"));
 	}
+
 	private static <T> T allocateInstance(Class<T> instanceClass) {
 		try {
 			Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");

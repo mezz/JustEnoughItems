@@ -30,6 +30,7 @@ import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.util.CommandUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import org.jspecify.annotations.Nullable;
 
@@ -376,6 +377,22 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	@Override
+	public GuiEventListener createKeyboardNavigation(BooleanSupplier active) {
+		return new IngredientGridKeyboardNavigation(ingredientGrid, controller, active);
+	}
+
+	@Override
+	public boolean selectKeyboardIngredient(IElement<?> ingredient) {
+		if (!ingredientSource.getElements().contains(ingredient)) {
+			return false;
+		}
+		updateLayoutIfDirty();
+		controller.updateLayoutKeepingPageAnchorVisible(ingredient);
+		ingredientGrid.select(ingredient);
+		return ingredientGrid.getFocusedSlot().isPresent();
+	}
+
+	@Override
 	public void registerInputCommands(InputCommands commands, IInternalKeyMappings keys, BooleanSupplier active) {
 		controller.registerInputCommands(commands, keys, active);
 	}
@@ -387,6 +404,17 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 			return Stream.empty();
 		}
 		return this.ingredientGrid.getIngredientUnderMouse(mouseX, mouseY)
+			.map(this.controller::createPageAnchorIngredient);
+	}
+
+	@Override
+	public Stream<IClickableIngredientInternal<?>> getKeyboardFocusedIngredients() {
+		updateLayoutIfDirty();
+		if (!this.active) {
+			return Stream.empty();
+		}
+		return this.ingredientGrid.getFocusedSlot().stream()
+			.flatMap(slot -> slot.getClickableIngredient().stream())
 			.map(this.controller::createPageAnchorIngredient);
 	}
 

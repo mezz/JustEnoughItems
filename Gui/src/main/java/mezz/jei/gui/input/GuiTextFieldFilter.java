@@ -8,7 +8,7 @@ import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.TextHistory;
-import mezz.jei.gui.input.focus.ScreenFocusHandler;
+import mezz.jei.gui.input.focus.GuiKeyboardFocus;
 import mezz.jei.gui.overlay.ISearchField;
 import mezz.jei.gui.search.ISearchCompletionProvider;
 import mezz.jei.gui.search.SearchCompletionOverlay;
@@ -16,9 +16,7 @@ import mezz.jei.gui.search.SearchSyntaxHighlighter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
@@ -34,14 +32,15 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 	private final ScalableDrawable background;
 	private ImmutableRect2i backgroundBounds;
 
-	private @Nullable ScreenFocusHandler screenUnfocusHandler;
+	private final GuiKeyboardFocus keyboardFocus;
 
 	private final SearchCompletionOverlay completionOverlay;
 
-	public GuiTextFieldFilter(BooleanSupplier filterEmpty, IClientConfig clientConfig, ISearchCompletionProvider searchCompletionProvider) {
+	public GuiTextFieldFilter(BooleanSupplier filterEmpty, IClientConfig clientConfig, ISearchCompletionProvider searchCompletionProvider, GuiKeyboardFocus keyboardFocus) {
 		super(Minecraft.getInstance().font, 0, 0, 0, 0, Component.translatable("gui.jei.search"));
 		this.filterEmpty = filterEmpty;
 		this.clientConfig = clientConfig;
+		this.keyboardFocus = keyboardFocus;
 
 		setMaxLength(maxSearchLength);
 		this.area = ImmutableRect2i.EMPTY;
@@ -94,30 +93,21 @@ public class GuiTextFieldFilter extends EditBox implements ISearchField {
 		return area.contains(mouseX, mouseY);
 	}
 
+	/** Selects this search field for typing. */
+	public void focus() {
+		keyboardFocus.focus(this);
+	}
+
 	@Override
-	public void setFocused(boolean keyboardFocus) {
-		final boolean previousFocus = isFocused();
-		super.setFocused(keyboardFocus);
+	public void clearFocus() {
+		keyboardFocus.clear(this);
+	}
 
-		if (previousFocus != keyboardFocus) {
-			Minecraft minecraft = Minecraft.getInstance();
-			if (keyboardFocus) {
-				Screen screen = minecraft.screen;
-				if (screen != null) {
-					screenUnfocusHandler = ScreenFocusHandler.create(screen);
-					if (screenUnfocusHandler != null) {
-						screenUnfocusHandler.unFocus();
-					}
-				}
-			} else {
-				if (screenUnfocusHandler != null) {
-					screenUnfocusHandler.focus();
-					screenUnfocusHandler = null;
-				}
-			}
-
-			String text = getValue();
-			history.add(text);
+	@Override
+	public void setFocused(boolean focused) {
+		if (isFocused() != focused) {
+			super.setFocused(focused);
+			history.add(getValue());
 		}
 	}
 

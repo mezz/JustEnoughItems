@@ -1,6 +1,8 @@
 package mezz.jei.neoforge.startup;
 
 import mezz.jei.gui.events.GuiEventHandler;
+import mezz.jei.gui.input.GuiInputScene;
+import mezz.jei.gui.input.focus.GuiKeyboardFocus;
 import mezz.jei.neoforge.events.JeiScreenRenderForegroundEvent;
 import mezz.jei.neoforge.events.RuntimeEventSubscriptions;
 import net.minecraft.client.gui.GuiGraphics;
@@ -17,7 +19,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -110,7 +111,7 @@ public class EventRegistrationTest {
 		private int mouseY;
 
 		private TestGuiEventHandler() {
-			super(null, null, null, List.of());
+			super(null, null, null, new GuiInputScene(new GuiKeyboardFocus()));
 		}
 
 		@Override

@@ -65,7 +65,7 @@ public final class JeiNeoForgeClientTextInputTests {
 			}
 
 			try {
-				searchField.setFocused(false);
+				searchField.clearFocus();
 				focusSearchWithHotkey(
 					client.keyboardHandler, client.getWindow().handle(), () -> TextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField)
 				);
