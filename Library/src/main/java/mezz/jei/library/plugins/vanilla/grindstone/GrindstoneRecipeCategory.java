@@ -30,7 +30,7 @@ public class GrindstoneRecipeCategory extends AbstractRecipeCategory<IJeiGrindst
 		super(
 			RecipeTypes.GRINDSTONE,
 			Blocks.GRINDSTONE.getName(),
-			guiHelper.createDrawableItemLike(Blocks.GRINDSTONE),
+			null,
 			125,
 			52
 		);

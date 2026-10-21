@@ -3,6 +3,7 @@ package mezz.jei.api.recipe.category;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Simple abstract implementation of {@link IRecipeCategory} to help simplify creating recipe categories.
@@ -11,14 +12,18 @@ import net.minecraft.network.chat.Component;
 public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 	private final RecipeType<T> recipeType;
 	private final Component title;
+	@Nullable
 	private final IDrawable icon;
 	private final int width;
 	private final int height;
 
 	/**
+	 * Creates a category with the given title and layout dimensions.
+	 *
+	 * @param icon the category tab icon, or null to use a recipe catalyst
 	 * @since 15.20.0
 	 */
-	public AbstractRecipeCategory(RecipeType<T> recipeType, Component title, IDrawable icon, int width, int height) {
+	public AbstractRecipeCategory(RecipeType<T> recipeType, Component title, @Nullable IDrawable icon, int width, int height) {
 		this.recipeType = recipeType;
 		this.title = title;
 		this.icon = icon;
@@ -37,6 +42,7 @@ public abstract class AbstractRecipeCategory<T> implements IRecipeCategory<T> {
 	}
 
 	@Override
+	@Nullable
 	public final IDrawable getIcon() {
 		return icon;
 	}

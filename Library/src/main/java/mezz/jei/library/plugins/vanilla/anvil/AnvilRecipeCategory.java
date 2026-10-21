@@ -32,7 +32,7 @@ public class AnvilRecipeCategory extends AbstractRecipeCategory<IJeiAnvilRecipe>
 		super(
 			RecipeTypes.ANVIL,
 			Blocks.ANVIL.getName(),
-			guiHelper.createDrawableItemLike(Blocks.ANVIL),
+			null,
 			125,
 			38
 		);
