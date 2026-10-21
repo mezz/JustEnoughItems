@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 
 import java.util.stream.Stream;
 
-/** Finds ingredients under the mouse pointer in the selected input area for recipe lookup and other shortcuts. */
+/** Finds the keyboard-focused or hovered ingredient for recipe lookup and other shortcuts. */
 public class IngredientFocusSource {
 	private final GuiInputScene inputScene;
 
@@ -14,7 +14,20 @@ public class IngredientFocusSource {
 		this.inputScene = inputScene;
 	}
 
-	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(UserInput input, IInternalKeyMappings keyBindings) {
+	public boolean hasKeyboardFocus() {
+		return inputScene.getKeyboardTarget().isPresent();
+	}
+
+	public Stream<IClickableIngredientInternal<?>> getIngredientForInput(UserInput input, IInternalKeyMappings keyBindings) {
+		if (input.isKeyboardInput()) {
+			InputArea target = inputScene.getTarget(input).orElse(null);
+			if (target != null && target.keyboardNavigation() != null && target.keyboardNavigation().isFocused()) {
+				if (target.area() instanceof IRecipeFocusSource source) {
+					return source.getKeyboardFocusedIngredients();
+				}
+				return Stream.empty();
+			}
+		}
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
 
