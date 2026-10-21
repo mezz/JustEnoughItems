@@ -1,6 +1,5 @@
 package mezz.jei.gui.overlay.ingredients;
 
-import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
@@ -20,10 +19,7 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.ImmutableSize2i;
-import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.config.IWorldConfig;
-import mezz.jei.gui.ingredients.GuiIngredientProperties;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.handlers.DeleteItemInputHandler;
@@ -32,6 +28,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import mezz.jei.common.gui.TooltipPositioner;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,6 +56,7 @@ public class IngredientGrid implements IIngredientGrid {
 	private ImmutableRect2i area = ImmutableRect2i.EMPTY;
 	private int visibleSlotCount = 0;
 	private int smoothScrollRowPixelOffset = 0;
+	private @Nullable IElement<?> selectedElement;
 
 	public IngredientGrid(
 		IIngredientManager ingredientManager,
@@ -180,6 +178,10 @@ public class IngredientGrid implements IIngredientGrid {
 	}
 
 	private Optional<IngredientListSlot> getHighlightedSlot(Minecraft minecraft, int mouseX, int mouseY) {
+		Optional<IngredientListSlot> focused = getFocusedSlot();
+		if (focused.isPresent()) {
+			return focused;
+		}
 		if (containsMouse(mouseX, mouseY)) {
 			if (!this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				return ingredientListRenderer.getSlots()
@@ -204,6 +206,13 @@ public class IngredientGrid implements IIngredientGrid {
 	}
 
 	public void drawTooltips(Minecraft minecraft, PoseStack poseStack, int mouseX, int mouseY) {
+		Optional<IngredientListSlot> focused = getFocusedSlot();
+		if (focused.isPresent()) {
+			IngredientListSlot slot = focused.get();
+			TooltipPositioner positioner = new IngredientTooltipPositioner(slot.getArea());
+			slot.getOptionalElement().ifPresent(element -> drawTooltip(poseStack, slot.getArea().getX(), slot.getArea().getY(), element, positioner));
+			return;
+		}
 		if (containsMouse(mouseX, mouseY)) {
 			if (this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
 				this.deleteItemHandler.drawTooltips(poseStack, mouseX, mouseY);
@@ -213,12 +222,12 @@ public class IngredientGrid implements IIngredientGrid {
 					.map(IngredientListSlot::getOptionalElement)
 					.flatMap(Optional::stream)
 					.findFirst()
-					.ifPresent(element -> drawTooltip(poseStack, mouseX, mouseY, element));
+					.ifPresent(element -> drawTooltip(poseStack, mouseX, mouseY, element, null));
 			}
 		}
 	}
 
-	private <T> void drawTooltip(PoseStack poseStack, int mouseX, int mouseY, IElement<T> element) {
+	private <T> void drawTooltip(PoseStack poseStack, int mouseX, int mouseY, IElement<T> element, @Nullable TooltipPositioner positioner) {
 		ITypedIngredient<T> typedIngredient = element.getTypedIngredient();
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(ingredientType);
@@ -229,7 +238,7 @@ public class IngredientGrid implements IIngredientGrid {
 		if (searchable) {
 			addCreativeTabs(tooltip, typedIngredient, ingredientHelper);
 		}
-		tooltip.draw(poseStack, mouseX, mouseY, typedIngredient, ingredientRenderer, ingredientManager);
+		tooltip.draw(poseStack, mouseX, mouseY, typedIngredient, ingredientRenderer, ingredientManager, positioner);
 	}
 	private static <T> void addCreativeTabs(
 		ITooltipBuilder tooltipBuilder,
@@ -314,6 +323,19 @@ public class IngredientGrid implements IIngredientGrid {
 			updateSlots(smoothScrollRowPixelOffset);
 		}
 		this.ingredientListRenderer.set(firstItemIndex, ingredientList);
+	}
+
+	public void select(@Nullable IElement<?> element) {
+		this.selectedElement = element;
+	}
+
+	public Optional<IngredientListSlot> getFocusedSlot() {
+		if (selectedElement == null || !selectedElement.isVisible()) {
+			return Optional.empty();
+		}
+		return getSlots()
+			.filter(slot -> slot.getOptionalElement().orElse(null) == selectedElement)
+			.findFirst();
 	}
 
 	public boolean hasRoom() {

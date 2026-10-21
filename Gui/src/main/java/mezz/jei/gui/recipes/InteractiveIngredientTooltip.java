@@ -1,11 +1,9 @@
 package mezz.jei.gui.recipes;
 
-import mezz.jei.common.util.ImmutableRect2i;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
-import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.inputs.RecipeSlotUnderMouse;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -13,10 +11,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
-import mezz.jei.common.Internal;
 import mezz.jei.common.gui.IngredientGridTooltipComponent;
-import mezz.jei.common.gui.JeiGuiColors;
-import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -28,8 +23,6 @@ import mezz.jei.common.input.interaction.MouseDrag;
 import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.util.FocusUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
@@ -40,9 +33,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 final class InteractiveIngredientTooltip implements IGuiInputLayer {
-	private static final int NAVIGATION_BACKGROUND_PADDING = 2;
 	// Vanilla adds another 400 Z for each tooltip. Keep these additions within 1.19's 1000-deep GUI projection.
-	private static final int TOOLTIP_BACKGROUND_Z = 300;
 	private static final int NESTED_TOOLTIP_FOREGROUND_Z = 300;
 	private static final InputConstants.Key LEFT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_LEFT);
 	private static final InputConstants.Key RIGHT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_RIGHT);
@@ -52,12 +43,10 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 	private final FocusUtil focusUtil;
 	private final IIngredientManager ingredientManager;
 	private final RecipeSlotClickTargetFactory clickTargetFactory;
-	private final IScalableDrawable background;
+	private final PinnedTooltipRenderer tooltipRenderer;
 	private final RecipeSlotUnderMouse sourceSlot;
 	private final IMouseOverable sourceMouseOverable;
 	private final InteractiveIngredientGridTooltipComponent ingredientGrid;
-	private final int anchorX;
-	private final int anchorY;
 
 	static Optional<InteractiveIngredientTooltip> create(
 		InteractiveIngredientTooltipController controller,
@@ -118,12 +107,10 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		this.focusUtil = focusUtil;
 		this.ingredientManager = ingredientManager;
 		this.clickTargetFactory = clickTargetFactory;
-		this.background = Internal.getTextures().getInteractiveIngredientTooltipBackground();
 		this.sourceSlot = sourceSlot;
 		this.sourceMouseOverable = sourceMouseOverable;
 		this.ingredientGrid = ingredientGrid;
-		this.anchorX = anchorX;
-		this.anchorY = anchorY;
+		this.tooltipRenderer = new PinnedTooltipRenderer(anchorX, anchorY);
 	}
 
 	@Override
@@ -131,7 +118,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		if (!this.recipesGui.isOpen()) {
 			return false;
 		}
-		return getNavigationArea().contains(mouseX, mouseY);
+		return this.tooltipRenderer.isMouseOver(mouseX, mouseY);
 	}
 
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
@@ -175,31 +162,7 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 		replaceIngredientGrid(tooltip, this.ingredientGrid);
 		this.ingredientGrid.setMousePosition(mouseX, mouseY);
 
-		ImmutableRect2i navigationArea = getNavigationArea();
-		Minecraft minecraft = Minecraft.getInstance();
-		GuiComponent.fill(
-			poseStack,
-			0,
-			0,
-			minecraft.getWindow().getGuiScaledWidth(),
-			minecraft.getWindow().getGuiScaledHeight(),
-			JeiGuiColors.getColor(GuiColor.INTERACTIVE_INGREDIENT_TOOLTIP_SCREEN_DIM)
-		);
-		poseStack.pushPose();
-		{
-			poseStack.translate(0, 0, TOOLTIP_BACKGROUND_Z);
-			if (!navigationArea.isEmpty()) {
-				this.background.draw(
-					poseStack,
-					navigationArea.x(),
-					navigationArea.y(),
-					navigationArea.width(),
-					navigationArea.height()
-				);
-			}
-		}
-		poseStack.popPose();
-		tooltip.draw(poseStack, this.anchorX, this.anchorY);
+		this.tooltipRenderer.draw(poseStack, tooltip);
 		this.ingredientGrid.getTypedIngredientUnderMouse(mouseX, mouseY)
 			.ifPresent(ingredient -> drawIngredientTooltip(poseStack, mouseX, mouseY, ingredient));
 	}
@@ -221,14 +184,6 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 			tooltip.draw(poseStack, mouseX, mouseY, ingredient, ingredientRenderer, this.ingredientManager);
 		}
 		poseStack.popPose();
-	}
-
-	private ImmutableRect2i getNavigationArea() {
-		ImmutableRect2i tooltipArea = this.ingredientGrid.getArea();
-		if (tooltipArea.isEmpty()) {
-			return ImmutableRect2i.EMPTY;
-		}
-		return tooltipArea.expandBy(NAVIGATION_BACKGROUND_PADDING);
 	}
 
 	private static void replaceIngredientGrid(ITooltipBuilder tooltip, TooltipComponent candidateComponent) {

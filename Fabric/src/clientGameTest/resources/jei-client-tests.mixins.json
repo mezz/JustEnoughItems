@@ -8,7 +8,9 @@
     "IndigoChunkRenderInfoMixin",
     "IndigoBlockRenderInfoMixin",
     "KeyboardHandlerAccessor",
-    "MouseHandlerAccessor"
+    "MouseHandlerAccessor",
+    "ScreenTooltipMixin",
+    "MouseHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

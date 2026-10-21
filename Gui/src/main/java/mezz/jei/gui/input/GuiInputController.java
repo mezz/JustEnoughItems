@@ -6,7 +6,9 @@ import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.interaction.ConsumedInput;
 import mezz.jei.common.input.interaction.IInputInteraction;
+import mezz.jei.common.input.interaction.InputAction;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,8 +21,8 @@ import java.util.Optional;
 
 /**
  * Sends input to JEI controls and shortcuts, keeping mouse interactions until release or cancellation.
- * Focused text editing gets the first chance to handle keyboard input. Controls under
- * the pointer are tried before shortcuts. Shortcut priority is the selected input area's
+ * Focused text editing gets the first chance to handle keyboard input, followed by keyboard
+ * navigation. Controls in the selected input area are tried before shortcuts. Shortcut priority is the selected input area's
  * shortcuts, then shared shortcuts, then other areas' shortcuts that work anywhere on the screen.
  *
  * <p>For example, a player editing "stone" presses Backspace. The search field removes
@@ -47,7 +49,7 @@ public final class GuiInputController {
 	}
 
 	public boolean keyPressed(Screen screen, UserInput input) {
-		return scene.dispatch(input.getMouseX(), input.getMouseY(), () -> {
+		return scene.dispatch(input, () -> {
 			int initialScreenChangeCount = screenChangeCount;
 			Optional<IInputInteraction> action = resolve(screen, input);
 			if (!isScreenUnchanged(screen, initialScreenChangeCount)) {
@@ -60,13 +62,14 @@ public final class GuiInputController {
 	}
 
 	public boolean mousePressed(Screen screen, UserInput input) {
+		scene.clearKeyboardFocus();
 		MouseCapture previous = captures.get(input.getKey());
 		if (previous != null && previous.keepsCaptureOnRepeatedPress()) {
 			return true;
 		}
 		cancel(input.getKey());
-		return scene.dispatch(input.getMouseX(), input.getMouseY(), () -> {
-			InputArea target = scene.getTarget(input.getMouseX(), input.getMouseY()).orElse(null);
+		return scene.dispatch(input, () -> {
+			InputArea target = scene.getTarget(input).orElse(null);
 			int initialScreenChangeCount = screenChangeCount;
 			IInputInteraction interaction = resolve(screen, input).orElse(null);
 			IInputInteraction ingredientDrag = null;
@@ -90,7 +93,7 @@ public final class GuiInputController {
 	}
 
 	private Optional<IInputInteraction> resolve(Screen screen, UserInput input) {
-		InputArea target = scene.getTarget(input.getMouseX(), input.getMouseY()).orElse(null);
+		InputArea target = scene.getTarget(input).orElse(null);
 		if (DebugConfig.isDebugInputsEnabled()) {
 			String targetName = "none";
 			if (target != null) {
@@ -106,13 +109,23 @@ public final class GuiInputController {
 			}
 		}
 		if (target != null) {
-			if (!editing || target.area() != editor) {
+			GuiEventListener navigation = target.keyboardNavigation();
+			boolean keyboardFocused = input.isKeyboardInput() && navigation != null && mezz.jei.gui.input.focus.GuiKeyboardFocus.hasFocus(navigation);
+			if (keyboardFocused) {
+				if (input.ifKeyboardEvent(navigation::keyPressed)) {
+					return Optional.of(ConsumedInput.INSTANCE);
+				}
+				if (input.ifKeyboardEvent((keyCode, scanCode, modifiers) -> keyCode == InputConstants.KEY_ESCAPE || keyCode == InputConstants.KEY_TAB)) {
+					return Optional.of(InputAction.run(editor::focus));
+				}
+			}
+			if (!keyboardFocused && (!editing || target.area() != editor)) {
 				Optional<IInputInteraction> control = target.controls().beginInput(screen, input, keys);
 				if (control.isPresent()) {
 					return control;
 				}
 			}
-			Optional<IInputInteraction> shortcut = target.commands().resolve(screen, input, true);
+			Optional<IInputInteraction> shortcut = target.commands().resolve(screen, input, !keyboardFocused);
 			if (shortcut.isPresent()) {
 				return shortcut;
 			}
@@ -126,7 +139,7 @@ public final class GuiInputController {
 			capture.cancel();
 			return true;
 		}
-		InputArea target = scene.getTarget(input.getMouseX(), input.getMouseY()).orElse(null);
+		InputArea target = scene.getTarget(input).orElse(null);
 		if (target == null || target.area() != editor) {
 			editor.clearFocus();
 		}
@@ -170,6 +183,7 @@ public final class GuiInputController {
 	}
 
 	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+		scene.clearKeyboardFocus();
 		return scene.dispatch(mouseX, mouseY, () -> {
 			InputArea target = scene.getTarget(mouseX, mouseY).orElse(null);
 			if (target == null) {
@@ -180,7 +194,8 @@ public final class GuiInputController {
 	}
 
 	public boolean charTyped(char codePoint, int modifiers) {
-		return editor.hasKeyboardFocus() && editor.onCharTyped(codePoint, modifiers);
+		scene.updateKeyboardFocus();
+		return (editor.hasKeyboardFocus() && editor.onCharTyped(codePoint, modifiers)) || scene.getKeyboardTarget().isPresent();
 	}
 
 	public void screenChanged() {
@@ -188,7 +203,6 @@ public final class GuiInputController {
 		List<MouseCapture> pending = List.copyOf(captures.values());
 		captures.clear();
 		pending.forEach(MouseCapture::cancel);
-		editor.clearFocus();
 		scene.resetInput();
 	}
 

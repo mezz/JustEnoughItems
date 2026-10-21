@@ -63,7 +63,7 @@ public class BookmarkCommands {
 	private Optional<IInputInteraction> prepareRecipeBookmarkAction(UserInput input) {
 		double mouseX = input.getMouseX();
 		double mouseY = input.getMouseY();
-		if (!inputScene.isTarget(recipesGui, mouseX, mouseY)) {
+		if (!inputScene.isTarget(recipesGui, input)) {
 			return Optional.empty();
 		}
 		Optional<IRecipeLayoutWithButtons<?>> layoutWithButtons = recipesGui.getRecipeLayoutUnderMouse(mouseX, mouseY);
@@ -97,7 +97,7 @@ public class BookmarkCommands {
 	}
 
 	private Optional<IInputInteraction> prepareIngredientBookmarkAction(UserInput input, IInternalKeyMappings keyBindings) {
-		return focusSource.getIngredientUnderMouse(input, keyBindings)
+		return focusSource.getIngredientForInput(input, keyBindings)
 			.findFirst()
 			.map(clicked -> new InputAction(release -> bookmarkList.onElementBookmarked(clicked.getElement(), release, bookmarkOverlay))
 				.within(clicked::isMouseOver).when(clicked.getElement()::isVisible));

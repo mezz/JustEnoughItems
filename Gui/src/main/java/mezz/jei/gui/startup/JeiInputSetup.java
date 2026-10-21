@@ -61,6 +61,7 @@ public record JeiInputSetup(GuiInputScene scene, ClientInputHandler handler) {
 		ChatCommands chatCommands = new ChatCommands(recipesGui, focusUtil, screenHelper, bookmarkManager);
 		InputArea chatInputArea = chatCommands.createInputArea(keyMappings);
 		GuiInputScene inputScene = new GuiInputScene(
+			ingredientListOverlay.getKeyboardFocus(),
 			searchInputArea,
 			recipeTooltipInputArea,
 			bookmarkTooltipInputArea,
@@ -128,7 +129,7 @@ public record JeiInputSetup(GuiInputScene scene, ClientInputHandler handler) {
 				(screen, input) -> inputArea.commands().resolve(screen, input, false));
 		}
 		commands.add("Legacy recipe category callback",
-			input -> inputScene.isTarget(recipesGui, input.getMouseX(), input.getMouseY()),
+			input -> inputScene.isTarget(recipesGui, input),
 			(screen, input) -> recipesGui.getRecipeLayouts().beginLegacyCategoryInput(input));
 
 		GuiInputController controller = new GuiInputController(inputScene, commands, searchInputLayer, keyMappings);

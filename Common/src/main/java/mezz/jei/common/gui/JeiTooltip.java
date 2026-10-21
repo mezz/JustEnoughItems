@@ -195,6 +195,10 @@ public class JeiTooltip implements ITooltipBuilder {
 			.collect(Collectors.joining("\n", "[\n", "\n]"));
 	}
 
+	public void draw(PoseStack poseStack, int x, int y, TooltipPositioner positioner) {
+		TooltipRenderHelper.withPositioner(positioner, () -> draw(poseStack, x, y));
+	}
+
 	public void draw(PoseStack poseStack, int x, int y) {
 		if (typedIngredient != null) {
 			draw(poseStack, x, y, typedIngredient);
@@ -232,6 +236,18 @@ public class JeiTooltip implements ITooltipBuilder {
 		IIngredientRenderer<T> ingredientRenderer,
 		IIngredientManager ingredientManager
 	) {
+		draw(poseStack, x, y, typedIngredient, ingredientRenderer, ingredientManager, TooltipRenderHelper.getPositioner());
+	}
+
+	public <T> void draw(
+		PoseStack poseStack,
+		int x,
+		int y,
+		ITypedIngredient<T> typedIngredient,
+		IIngredientRenderer<T> ingredientRenderer,
+		IIngredientManager ingredientManager,
+		@Nullable TooltipPositioner positioner
+	) {
 		TooltipRenderData renderData = prepareForIngredientTooltip(typedIngredient, ingredientRenderer, ingredientManager);
 		if (isEmpty()) {
 			return;
@@ -242,7 +258,7 @@ public class JeiTooltip implements ITooltipBuilder {
 		if (screen == null) {
 			return;
 		}
-		SafeIngredientUtil.renderTooltip(
+		TooltipRenderHelper.withPositioner(positioner, () -> SafeIngredientUtil.renderTooltip(
 			screen,
 			poseStack,
 			this,
@@ -252,7 +268,7 @@ public class JeiTooltip implements ITooltipBuilder {
 			renderData.itemStack(),
 			typedIngredient,
 			ingredientManager
-		);
+		));
 	}
 
 	public <T> TooltipRenderData prepareForIngredientTooltip(

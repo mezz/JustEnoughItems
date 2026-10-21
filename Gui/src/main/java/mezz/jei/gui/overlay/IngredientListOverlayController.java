@@ -106,7 +106,7 @@ class IngredientListOverlayController {
 	void init() {
 		this.lastFilterText = this.filterTextSource.getFilterText();
 		this.searchField.setFilterText(this.lastFilterText);
-		this.searchField.setKeyboardFocus(false);
+		this.searchField.clearFocus();
 		this.filterTextSource.addListener(newFilterText -> {
 			String oldFilterText = this.lastFilterText;
 			this.lastFilterText = newFilterText;
@@ -174,7 +174,7 @@ class IngredientListOverlayController {
 		this.hasValidScreen = false;
 		this.contentsView.close();
 		this.lookupHistory.close();
-		this.searchField.setKeyboardFocus(false);
+		this.searchField.clearFocus();
 	}
 
 	private void updateBounds(IGuiProperties guiProperties, Set<ImmutableRect2i> guiExclusionAreas) {

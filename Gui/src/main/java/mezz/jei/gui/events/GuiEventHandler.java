@@ -15,6 +15,7 @@ import mezz.jei.common.util.LimitedLogger;
 import mezz.jei.common.util.RectDebugger;
 import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.common.input.MouseUtil;
+import mezz.jei.gui.input.GuiInputScene;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import net.minecraft.client.Minecraft;
@@ -41,18 +42,20 @@ public class GuiEventHandler {
 	private final IScreenHelper screenHelper;
 	private final BookmarkOverlay bookmarkOverlay;
 	private final List<IGuiInputLayer> inputLayers;
-	private boolean drawnOnBackground = false;
+	private boolean drawnOnBackground;
+	private final GuiInputScene inputScene;
 
 	public GuiEventHandler(
 		IScreenHelper screenHelper,
 		BookmarkOverlay bookmarkOverlay,
 		IngredientListOverlay ingredientListOverlay,
-		List<IGuiInputLayer> inputLayers
+		GuiInputScene inputScene
 	) {
 		this.screenHelper = screenHelper;
 		this.bookmarkOverlay = bookmarkOverlay;
 		this.ingredientListOverlay = ingredientListOverlay;
-		this.inputLayers = List.copyOf(inputLayers);
+		this.inputScene = inputScene;
+		this.inputLayers = inputScene.getForegroundLayers();
 	}
 
 	public void onGuiInit(Screen screen) {
@@ -84,6 +87,7 @@ public class GuiEventHandler {
 	public void updateForScreenRender(Screen screen, int mouseX, int mouseY) {
 		updateOverlayProperties(screen);
 		this.inputLayers.forEach(inputLayer -> inputLayer.update(mouseX, mouseY));
+		this.inputScene.updateKeyboardFocus();
 	}
 
 	public void onDrawBackgroundPost(Screen screen, PoseStack poseStack) {
@@ -175,7 +179,7 @@ public class GuiEventHandler {
 				});
 		}
 
-		if (!mouseOverInputLayer) {
+		if (!mouseOverInputLayer || inputScene.getKeyboardTarget().isPresent()) {
 			ingredientListOverlay.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 			bookmarkOverlay.drawTooltips(minecraft, poseStack, mouseX, mouseY);
 		}

@@ -94,6 +94,36 @@ public final class IngredientGridLayout {
 			(mouseExclusionPoint != null && stackArea.contains(mouseExclusionPoint));
 	}
 
+	/** Steps through slots by one cell or one row, returning -1 when no occupied slot remains. */
+	static int findNextSlot(List<Boolean> occupied, int columns, int current, int step, boolean crossRows) {
+		for (int next = current + step; next >= 0 && next < occupied.size(); next += step) {
+			if (!crossRows && next / columns != current / columns) {
+				return -1;
+			}
+			if (occupied.get(next)) {
+				return next;
+			}
+		}
+		// If the column ends, use the nearest populated column in the next available row.
+		if (Math.abs(step) > 1) {
+			int column = Math.floorMod(current, columns);
+			int firstRow = Math.floorDiv(current, columns) + Integer.signum(step);
+			for (int row = firstRow * columns; row >= 0 && row < occupied.size(); row += step) {
+				for (int offset = 1; offset < columns; offset++) {
+					int left = row + column - offset;
+					int right = row + column + offset;
+					if (left >= row && left < occupied.size() && occupied.get(left)) {
+						return left;
+					}
+					if (right < row + columns && right < occupied.size() && occupied.get(right)) {
+						return right;
+					}
+				}
+			}
+		}
+		return -1;
+	}
+
 	public record SlotLayout(ImmutableRect2i area, boolean blocked) {
 
 	}

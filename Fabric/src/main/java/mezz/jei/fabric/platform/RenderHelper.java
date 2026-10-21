@@ -69,7 +69,7 @@ public class RenderHelper implements IPlatformRenderHelper {
 			))
 			.collect(Collectors.toCollection(ArrayList::new));
 
-		screen.renderTooltipInternal(poseStack, components, x, y);
+		mezz.jei.common.gui.TooltipRenderHelper.renderTooltip(screen, poseStack, components, x, y, font, (tooltipX, tooltipY) -> screen.renderTooltipInternal(poseStack, components, tooltipX, tooltipY));
 	}
 
 	@Override

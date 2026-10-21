@@ -1,4 +1,5 @@
 import mezz.jei.gradle.externalSourceSetClasspath
+import mezz.jei.gradle.WriteClientOptions
 import net.fabricmc.loom.LoomGradleExtension
 import net.fabricmc.loom.api.mappings.layered.MappingsNamespace
 import mezz.jei.gradle.gradleProperty
@@ -344,11 +345,9 @@ sourceSets {
 }
 
 fun registerWriteClientTestOptionsTask(name: String, runName: String) =
-    tasks.register<Copy>(name) {
-        from(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
-        into(clientTestGameDirectory(runName))
-        // The client saves changed pack selections to this file during the test.
-        outputs.upToDateWhen { false }
+    tasks.register<WriteClientOptions>(name) {
+        templateFile.set(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
+        optionsFile.set(clientTestGameDirectory(runName).file("options.txt"))
     }
 
 val writeClientGameTestOptions = registerWriteClientTestOptionsTask(
@@ -382,14 +381,18 @@ val cleanClientGameTestResults = tasks.register<Delete>("cleanClientGameTestResu
         layout.buildDirectory.dir("test-results/fabric-client-fluid-ingredients"),
         layout.buildDirectory.dir("test-results/fabric-client-creative-inventory"),
         layout.buildDirectory.dir("test-results/fabric-client-key-mapping"),
-        layout.buildDirectory.dir("test-results/fabric-client-gametest")
+        layout.buildDirectory.dir("test-results/fabric-client-gametest"),
+        layout.buildDirectory.dir("test-results/fabric-client-keyboard-navigation"),
+        layout.buildDirectory.dir("test-results/fabric-client-gui-resize")
     )
 }
 val cleanClientGameTestWithoutAmecsResults = tasks.register<Delete>("cleanClientGameTestWithoutAmecsResults") {
     delete(
         layout.buildDirectory.dir("test-results/fabric-client-resources-without-amecs"),
         layout.buildDirectory.dir("test-results/fabric-client-key-mapping-without-amecs"),
-        layout.buildDirectory.dir("test-results/fabric-client-gametest-without-amecs")
+        layout.buildDirectory.dir("test-results/fabric-client-gametest-without-amecs"),
+        layout.buildDirectory.dir("test-results/fabric-client-keyboard-navigation-without-amecs"),
+        layout.buildDirectory.dir("test-results/fabric-client-gui-resize-without-amecs")
     )
 }
 

@@ -19,6 +19,7 @@ import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.filter.IFilterTextSource;
 import mezz.jei.gui.input.DragSource;
 import mezz.jei.gui.input.GuiTextFieldFilter;
+import mezz.jei.gui.input.focus.GuiKeyboardFocus;
 import mezz.jei.gui.input.IClickableIngredientInternal;
 import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
@@ -26,12 +27,14 @@ import mezz.jei.gui.input.InputArea;
 import mezz.jei.gui.input.InputCommands;
 import mezz.jei.gui.input.handlers.SearchInputLayer;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistoryOverlay;
+import mezz.jei.gui.overlay.elements.IElement;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;
 import mezz.jei.gui.overlay.ingredients.IIngredientListOverlayContents;
 import mezz.jei.gui.overlay.ingredients.IngredientGridBackgroundRenderer;
 import mezz.jei.gui.search.ISearchCompletionProvider;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import org.jetbrains.annotations.Nullable;
@@ -52,6 +55,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	private final GuiPropertiesCache<Screen> guiPropertiesCache;
 	private final IngredientGridBackgroundRenderer backgroundRenderer;
 	private final GuiTextFieldFilter searchField;
+	private final GuiKeyboardFocus keyboardFocus = new GuiKeyboardFocus();
+	private final GuiEventListener keyboardNavigation;
 	private final SearchInputLayer searchInputLayer;
 	private final IngredientListOverlayController controller;
 	private boolean screenPropertiesDirty;
@@ -79,8 +84,13 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		this.worldConfig = worldConfig;
 		this.clientConfig = clientConfig;
 
-		this.searchField = new GuiTextFieldFilter(contents::isEmpty, clientConfig, searchCompletionProvider);
-		this.searchInputLayer = new SearchInputLayer(this.searchField, this::isSearchDisplayed);
+		this.searchField = new GuiTextFieldFilter(contents::isEmpty, clientConfig, searchCompletionProvider, keyboardFocus);
+		this.keyboardNavigation = contents.createKeyboardNavigation(this::isListDisplayed);
+		this.searchInputLayer = new SearchInputLayer(this.searchField, this::isSearchDisplayed, () -> {
+			if (!contents.isEmpty()) {
+				keyboardFocus.focus(keyboardNavigation);
+			}
+		});
 		this.configButtonController = new ConfigButtonController(this::isSearchDisplayed, this::isListHiddenWhenNotSearching, clientConfig.hideIngredientsWhenNotSearching(), worldConfig, keyBindings);
 		this.configButton = new IconButton(configButtonController);
 		this.controller = IngredientListOverlayController.create(
@@ -277,6 +287,14 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 	}
 
 	@Override
+	public Stream<IClickableIngredientInternal<?>> getKeyboardFocusedIngredients() {
+		if (isListDisplayed()) {
+			return this.contents.getKeyboardFocusedIngredients();
+		}
+		return Stream.empty();
+	}
+
+	@Override
 	public boolean containsMouse(double mouseX, double mouseY) {
 		updateScreenPropertiesIfDirty();
 		if (!this.controller.hasValidScreen()) {
@@ -306,6 +324,23 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return Stream.empty();
 	}
 
+	public GuiKeyboardFocus getKeyboardFocus() {
+		return keyboardFocus;
+	}
+
+	/** Remembers the active ingredient selection for returning from the recipe screen. */
+	public Runnable captureKeyboardSelection() {
+		IElement<?> selected = contents.getKeyboardFocusedIngredients()
+			.findFirst()
+			.map(IClickableIngredientInternal::getElement)
+			.orElse(null);
+		return () -> {
+			if (selected != null && isListDisplayed() && contents.selectKeyboardIngredient(selected)) {
+				keyboardFocus.focus(keyboardNavigation);
+			}
+		};
+	}
+
 	/** Creates this overlay's controls, shortcuts, and ingredient drag sources. */
 	public InputArea createInputArea(IInternalKeyMappings keys) {
 		InputCommands commands = new InputCommands();
@@ -313,6 +348,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return InputArea.builder("Ingredients", this)
 			.blockUnhandledMouseInput()
 			.controls(createInputHandler(keys))
+			.keyboardNavigation(keyboardNavigation)
 			.commands(commands)
 			.dragSources(createDragSources())
 			.build();

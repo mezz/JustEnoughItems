@@ -4,6 +4,7 @@ import mezz.jei.common.input.IGuiInputLayer;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.interaction.IInputInteraction;
+import mezz.jei.gui.input.focus.GuiKeyboardFocus;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.Screen;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ public class IngredientFocusSourceTest {
 		TestInputLayer foreground = new TestInputLayer(true);
 		TestFocusSource obscured = new TestFocusSource();
 		IngredientFocusSource combined = new IngredientFocusSource(new GuiInputScene(
+			new GuiKeyboardFocus(),
 			InputArea.builder("Foreground", foreground).blockUnhandledMouseInput().build(),
 			InputArea.builder("Following", obscured).blockUnhandledMouseInput().build()
 		));
@@ -38,6 +40,7 @@ public class IngredientFocusSourceTest {
 		TestInputLayer foreground = new TestInputLayer(false);
 		TestFocusSource following = new TestFocusSource();
 		IngredientFocusSource combined = new IngredientFocusSource(new GuiInputScene(
+			new GuiKeyboardFocus(),
 			InputArea.builder("Foreground", foreground).blockUnhandledMouseInput().build(),
 			InputArea.builder("Following", following).blockUnhandledMouseInput().build()
 		));

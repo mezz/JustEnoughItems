@@ -147,7 +147,7 @@ public class IngredientListVisibilityClientGameTest {
 		var originalKey = context.computeOnClient(client -> InputConstants.getKey(shortcut.saveString()));
 		try {
 			context.runOnClient(client -> {
-				searchField().setFocused(false);
+				searchField().clearFocus();
 				shortcut.setKey(InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_P));
 			});
 			context.getInput().pressKey(InputConstants.KEY_P);

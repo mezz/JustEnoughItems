@@ -7,8 +7,10 @@ import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.interaction.IInputInteraction;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.InputCommands;
+import mezz.jei.gui.overlay.elements.IElement;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.Optional;
@@ -43,6 +45,11 @@ public interface IIngredientListOverlayContents extends IIngredientGridView, IIn
 	 * Creates the input handler for the ingredient list contents.
 	 */
 	IInputTarget createInputHandler();
+
+	GuiEventListener createKeyboardNavigation(BooleanSupplier active);
+
+	/** Restores an ingredient's selection and visibility if it is still in the list. */
+	boolean selectKeyboardIngredient(IElement<?> ingredient);
 
 	void registerInputCommands(InputCommands commands, IInternalKeyMappings keys, BooleanSupplier active);
 

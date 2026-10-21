@@ -59,6 +59,7 @@ import mezz.jei.gui.input.IDraggableIngredientInternal;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.InputArea;
 import mezz.jei.gui.input.InputCommands;
+import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
 import mezz.jei.gui.recipes.lookups.IFocusedRecipes;
 import mezz.jei.gui.recipes.lookups.StaticFocusedRecipes;
@@ -94,6 +95,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final BookmarkList bookmarkList;
 	private final List<IRecipeButtonControllerFactory> recipeButtonControllerFactories;
 	private final IFocusFactory focusFactory;
+	private final IngredientListOverlay ingredientListOverlay;
 
 	private int headerHeight;
 
@@ -118,8 +120,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private final IconButton previousPage;
 	private final InteractiveIngredientTooltipController interactiveIngredientTooltipController;
 
-	@Nullable
-	private Screen parentScreen;
+	private @Nullable Screen parentScreen;
+	private Runnable restoreParentSelection = () -> {};
 	/**
 	 * The GUI tries to size itself to this ideal area.
 	 * This is a stable place to anchor buttons so that
@@ -145,7 +147,8 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		IGuiHelper guiHelper,
 		BookmarkList bookmarkList,
 		LookupHistory lookupHistory,
-		FocusUtil focusUtil
+		FocusUtil focusUtil,
+		IngredientListOverlay ingredientListOverlay
 	) {
 		super(Component.literal("Recipes"));
 		this.recipeButtonControllerFactories = recipeManager.getRecipeButtonControllerFactories();
@@ -155,6 +158,7 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		this.guiHelper = guiHelper;
 		this.recipeTransferService = recipeTransferService;
 		this.bookmarkList = bookmarkList;
+		this.ingredientListOverlay = ingredientListOverlay;
 		this.logic = new RecipeGuiLogic(
 			recipeManager,
 			ingredientManager,
@@ -669,19 +673,23 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	private void reopenIfOpen() {
 		if (resizeDrag == null && isOpen() && minecraft != null) {
 			Screen currentParentScreen = parentScreen;
+			Runnable restoreSelection = restoreParentSelection;
 			minecraft.setScreen(currentParentScreen);
 			parentScreen = currentParentScreen;
 			open();
+			restoreParentSelection = restoreSelection;
 		}
 	}
 
 	private void open() {
-		if (minecraft != null) {
-			if (!isOpen()) {
-				parentScreen = minecraft.screen;
-			}
-			minecraft.setScreen(this);
+		if (minecraft == null) {
+			return;
 		}
+		if (!isOpen()) {
+			parentScreen = minecraft.screen;
+			restoreParentSelection = ingredientListOverlay.captureKeyboardSelection();
+		}
+		minecraft.setScreen(this);
 	}
 
 	@Override
@@ -697,9 +705,12 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		resizeDrag = null;
 		inputHandler.resetInput();
 		if (isOpen() && minecraft != null) {
+			Runnable restoreSelection = restoreParentSelection;
+			restoreParentSelection = () -> {};
 			minecraft.setScreen(parentScreen);
 			parentScreen = null;
 			logic.clearHistory();
+			restoreSelection.run();
 			return;
 		}
 		super.onClose();

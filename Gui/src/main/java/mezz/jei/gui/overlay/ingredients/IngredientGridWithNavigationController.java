@@ -288,7 +288,7 @@ public class IngredientGridWithNavigationController implements IPaged, IInputTar
 		commands.add(InputCommands.Scope.HOVERED, "Hotbar assignment", input -> active.getAsBoolean(), this::checkHotbarKeys);
 	}
 
-	private boolean usesScrollbar() {
+	public boolean usesScrollbar() {
 		return this.gridConfig.navigationMode().get()
 			.usesScrollbar();
 	}
@@ -319,6 +319,10 @@ public class IngredientGridWithNavigationController implements IPaged, IInputTar
 
 	public boolean scrollByPixels(double pixels) {
 		return usesScrollbar() && updateLayoutWhenChanged(this.scrollController.scrollByPixels(pixels));
+	}
+
+	public boolean scrollByRows(int rows) {
+		return usesScrollbar() && updateLayoutWhenChanged(this.scrollController.scrollByRows(rows));
 	}
 
 	private boolean updateLayoutWhenChanged(boolean layoutChanged) {

@@ -3,12 +3,9 @@ package mezz.jei.gui.overlay.bookmarks;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
-import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.JeiGuiColors;
-import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
@@ -28,7 +25,7 @@ import mezz.jei.gui.overlay.elements.RecipeBookmarkElement;
 import mezz.jei.gui.recipes.RecipeSlotClickTargetFactory;
 import mezz.jei.gui.recipes.RecipeTransferButtonController;
 import mezz.jei.gui.util.FocusUtil;
-import net.minecraft.client.gui.GuiComponent;
+import mezz.jei.gui.recipes.PinnedTooltipRenderer;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 
@@ -40,9 +37,7 @@ import java.util.stream.Stream;
 final class BookmarkPreviewTooltip implements IInputTarget, IMouseOverable {
 	private static final InputConstants.Key LEFT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_LEFT);
 	private static final InputConstants.Key RIGHT_MOUSE_BUTTON = InputConstants.Type.MOUSE.getOrCreate(InputConstants.MOUSE_BUTTON_RIGHT);
-	private static final int BACKGROUND_PADDING = 2;
 	// Vanilla adds another 400 Z for each tooltip. Keep these additions within 1.19's 1000-deep GUI projection.
-	private static final int TOOLTIP_BACKGROUND_Z = 300;
 	private static final int NESTED_TOOLTIP_FOREGROUND_Z = 300;
 
 	private final BookmarkPreviewTooltipController controller;
@@ -51,11 +46,9 @@ final class BookmarkPreviewTooltip implements IInputTarget, IMouseOverable {
 	private final PreviewTooltipComponent<?> component;
 	private final IRecipeLayoutDrawable<?> drawable;
 	private final RecipeSlotClickTargetFactory clickTargetFactory;
-	private final IScalableDrawable background;
+	private final PinnedTooltipRenderer tooltipRenderer;
 	private final IconButton transferButton;
 	private final IInputTarget transferButtonInputHandler;
-	private final int anchorX;
-	private final int anchorY;
 
 	BookmarkPreviewTooltip(
 		BookmarkPreviewTooltipController controller,
@@ -77,10 +70,8 @@ final class BookmarkPreviewTooltip implements IInputTarget, IMouseOverable {
 			Internal.getKeyMappings().getPauseRecipeCycling()::isDown
 		);
 		this.transferButton = new IconButton(RecipeTransferButtonController.createForPinnedRecipe(this.drawable, recipeTransferService));
-		this.background = Internal.getTextures().getInteractiveIngredientTooltipBackground();
 		this.transferButtonInputHandler = this.transferButton.createInputHandler();
-		this.anchorX = anchorX;
-		this.anchorY = anchorY;
+		this.tooltipRenderer = new PinnedTooltipRenderer(anchorX, anchorY);
 	}
 
 	public boolean isSourceVisible() {
@@ -104,11 +95,7 @@ final class BookmarkPreviewTooltip implements IInputTarget, IMouseOverable {
 	}
 
 	private ImmutableRect2i getTooltipArea() {
-		ImmutableRect2i tooltipArea = this.component.getTooltipArea();
-		if (tooltipArea.isEmpty()) {
-			return ImmutableRect2i.EMPTY;
-		}
-		return tooltipArea.expandBy(BACKGROUND_PADDING);
+		return this.tooltipRenderer.getArea();
 	}
 
 	public void update() {
@@ -120,33 +107,7 @@ final class BookmarkPreviewTooltip implements IInputTarget, IMouseOverable {
 		this.element.getPinnedTooltip(tooltip);
 		this.component.setInteractive(mouseX, mouseY, getInteractiveWidth());
 
-		ImmutableRect2i tooltipArea = getTooltipArea();
-		Screen screen = net.minecraft.client.Minecraft.getInstance().screen;
-		if (screen != null) {
-			GuiComponent.fill(
-				poseStack,
-				0,
-				0,
-				screen.width,
-				screen.height,
-				JeiGuiColors.getColor(GuiColor.INTERACTIVE_INGREDIENT_TOOLTIP_SCREEN_DIM)
-			);
-		}
-		poseStack.pushPose();
-		{
-			poseStack.translate(0, 0, TOOLTIP_BACKGROUND_Z);
-			if (!tooltipArea.isEmpty()) {
-				this.background.draw(
-					poseStack,
-					tooltipArea.x(),
-					tooltipArea.y(),
-					tooltipArea.width(),
-					tooltipArea.height()
-				);
-			}
-		}
-		poseStack.popPose();
-		tooltip.draw(poseStack, this.anchorX, this.anchorY);
+		this.tooltipRenderer.draw(poseStack, tooltip);
 		poseStack.pushPose();
 		{
 			poseStack.translate(0, 0, NESTED_TOOLTIP_FOREGROUND_Z);

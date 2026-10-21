@@ -120,7 +120,7 @@ public class InteractiveIngredientTooltipClientGameTest {
 				var recipeWidth = config.recipeGuiWidth();
 				int originalRecipeWidth = recipeWidth.get();
 				cleanup.add(() -> recipeWidth.set(originalRecipeWidth));
-				// Leave room for the bookmark panel at 1.20.1's automatic GUI scale.
+				// Leave room for the bookmark panel at the automatic GUI scale.
 				recipeWidth.set(200);
 				var columns = config.maxRecipeGuiColumns();
 				int originalColumns = columns.get();
@@ -213,7 +213,16 @@ public class InteractiveIngredientTooltipClientGameTest {
 				}
 			}
 		}
-		throw new AssertionError("Expected a tooltip test target over a recipe layout");
+		var reflection = new mezz.jei.common.util.ReflectionUtil();
+		List<?> entries = reflection.getFieldWithClass(layouts(), List.class).findFirst().orElseThrow();
+		var details = entries.stream().map(entry -> ((mezz.jei.gui.recipes.IRecipeLayoutWithButtons<?>) entry).getRecipeLayout())
+			.map(layout -> layout.getRecipeCategory().getClass().getSimpleName() + " " + new ImmutableRect2i(layout.getRect()) + " slots=" +
+				layout.getRecipeSlotsView().getSlotViews().stream().map(slot -> slot + " count=" + slot.getDisplayedIngredients().count() + " layoutHit=" +
+					layouts().getRecipeLayoutUnderMouse(layout.getRect().getX() + 5, layout.getRect().getY() + 5).isPresent() + " slotHit=" +
+					layout.getSlotUnderMouse(layout.getRect().getX() + 5, layout.getRect().getY() + 5).isPresent())
+					.toList())
+			.toList();
+		throw new AssertionError("Expected a tooltip test target over a recipe layout: search=" + area + ", viewport=" + reflection.getFieldWithClass(layouts(), ImmutableRect2i.class).findFirst() + ", layouts=" + details);
 	}
 
 	private static boolean checkObscuredBookmark(FabricClientTestContext context, Point source) {

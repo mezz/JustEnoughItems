@@ -72,7 +72,7 @@ public class RenderHelper implements IPlatformRenderHelper {
 	@Override
 	public void renderTooltip(Screen screen, PoseStack poseStack, List<Either<FormattedText, TooltipComponent>> elements, int x, int y, Font font, ItemStack stack) {
 		List<ClientTooltipComponent> components = gatherTooltipComponents(stack, elements, x, screen.width, screen.height, font);
-		screen.renderTooltipInternal(poseStack, components, x, y);
+		mezz.jei.common.gui.TooltipRenderHelper.renderTooltip(screen, poseStack, components, x, y, font, (tooltipX, tooltipY) -> screen.renderTooltipInternal(poseStack, components, tooltipX, tooltipY));
 	}
 
 	private static List<ClientTooltipComponent> gatherTooltipComponents(ItemStack stack, List<Either<FormattedText, TooltipComponent>> elements, int mouseX, int screenWidth, int screenHeight, Font fallbackFont) {
