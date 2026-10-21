@@ -25,6 +25,7 @@
       "mezz.jei.fabric.test.CheatModeKeyClientTest",
       "mezz.jei.fabric.test.InteractiveIngredientTooltipClientGameTest",
       "mezz.jei.fabric.test.IngredientNavigationClientGameTest",
+      "mezz.jei.fabric.test.IngredientKeyboardNavigationClientGameTest",
       "mezz.jei.fabric.test.IngredientListVisibilityClientGameTest",
       "mezz.jei.fabric.test.JeiGuiResizeClientGameTest",
       "mezz.jei.fabric.test.JeiFabricCreativeInventoryClientGameTest",

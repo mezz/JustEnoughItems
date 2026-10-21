@@ -77,7 +77,7 @@ public final class ImeTextInputTestUtil {
 	) {
 		ChatTextInputFixture fixture = openChatWithTextInputFocused(minecraft, searchField);
 
-		searchField.setFocused(false);
+		searchField.clearFocus();
 
 		if (fixture.screen().getFocused() != fixture.chatInput()) {
 			throw new AssertionError("Expected a redundant JEI unfocus call to preserve the chat input's screen focus.");
@@ -135,7 +135,7 @@ public final class ImeTextInputTestUtil {
 			throw new AssertionError("Expected a client player for the creative search test.");
 		}
 
-		searchField.setFocused(false);
+		searchField.clearFocus();
 		GameType originalGameType = minecraft.gameMode.getPlayerMode();
 		CreativeModeInventoryScreen screen;
 		try {
@@ -181,7 +181,7 @@ public final class ImeTextInputTestUtil {
 		CreativeModeInventoryScreen screen,
 		GuiTextFieldFilter searchField
 	) {
-		searchField.setFocused(false);
+		searchField.clearFocus();
 		if (!getCreativeSearch(screen).isFocused()) {
 			throw new AssertionError("Expected unfocusing JEI to restore the creative inventory search box.");
 		}
@@ -276,7 +276,7 @@ public final class ImeTextInputTestUtil {
 			.findFirst()
 			.orElseThrow(() -> new AssertionError("Expected the chat screen to contain an input field."));
 
-		searchField.setFocused(false);
+		searchField.clearFocus();
 		chatScreen.setFocused(chatInput);
 		chatInput.setFocused(true);
 

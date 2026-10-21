@@ -22,10 +22,12 @@ import java.util.function.BooleanSupplier;
 public class SearchInputLayer implements IGuiInputLayer, ITextInputHandler {
 	private final GuiTextFieldFilter textFieldFilter;
 	private final BooleanSupplier active;
+	private final Runnable onSubmit;
 
-	public SearchInputLayer(GuiTextFieldFilter textFieldFilter, BooleanSupplier active) {
+	public SearchInputLayer(GuiTextFieldFilter textFieldFilter, BooleanSupplier active, Runnable onSubmit) {
 		this.textFieldFilter = textFieldFilter;
 		this.active = active;
+		this.onSubmit = onSubmit;
 	}
 
 	@Override
@@ -54,7 +56,7 @@ public class SearchInputLayer implements IGuiInputLayer, ITextInputHandler {
 	/** Creates input handling for the search field and its suggestions. */
 	public InputArea createInputArea(IInternalKeyMappings keys) {
 		InputCommands commands = new InputCommands();
-		commands.add("Focus Search", keys.getFocusSearch(), active, () -> textFieldFilter.setFocused(true));
+		commands.add("Focus Search", keys.getFocusSearch(), active, this::focus);
 		return InputArea.builder("Search", this)
 			.blockUnhandledMouseInput()
 			.controls(this)
@@ -71,12 +73,6 @@ public class SearchInputLayer implements IGuiInputLayer, ITextInputHandler {
 			if (input.is(keys.getEnterKey()) || input.is(keys.getTabKey())) {
 				return Optional.of(InputAction.run(textFieldFilter::acceptCompletion));
 			}
-			if (input.is(keys.getPreviousSearch())) {
-				return Optional.of(InputAction.run(() -> textFieldFilter.moveCompletion(-1)));
-			}
-			if (input.is(keys.getNextSearch())) {
-				return Optional.of(InputAction.run(() -> textFieldFilter.moveCompletion(1)));
-			}
 			if (input.is(keys.getEscapeKey())) {
 				return Optional.of(InputAction.run(textFieldFilter::closeCompletion));
 			}
@@ -85,13 +81,16 @@ public class SearchInputLayer implements IGuiInputLayer, ITextInputHandler {
 					.within(textFieldFilter::isCompletionMouseOver));
 			}
 		}
-		if (hasKeyboardFocus() && (input.is(keys.getEnterKey()) || input.is(keys.getEscapeKey()))) {
+		if (hasKeyboardFocus() && (input.is(keys.getEnterKey()) || input.is(keys.getTabKey()))) {
+			return Optional.of(InputAction.run(onSubmit));
+		}
+		if (hasKeyboardFocus() && input.is(keys.getEscapeKey())) {
 			return Optional.of(InputAction.run(this::clearFocus));
 		}
 		if (input.is(keys.getHoveredClearSearchBar()) && textFieldFilter.isMouseOver(input.getMouseX(), input.getMouseY())) {
 			return Optional.of(InputAction.run(() -> {
 					textFieldFilter.setValue("");
-					textFieldFilter.setFocused(true);
+					focus();
 				})
 				.within(textFieldFilter::isMouseOver));
 		}
@@ -103,7 +102,7 @@ public class SearchInputLayer implements IGuiInputLayer, ITextInputHandler {
 			return Optional.of(new InputAction(release -> {
 					UserInput click = input.withMousePosition(release.getMouseX(), release.getMouseY());
 					if (click.ifMouseEvent(textFieldFilter::mouseClicked)) {
-						textFieldFilter.setFocused(true);
+						focus();
 					}
 				})
 				.within(textFieldFilter::isMouseOver)
@@ -121,6 +120,15 @@ public class SearchInputLayer implements IGuiInputLayer, ITextInputHandler {
 		if (input.is(keys.getNextSearch())) {
 			return prepareSearchHistoryAction(TextHistory.Direction.NEXT);
 		}
+		if (input.ifKeyboardEvent(event -> event.key() == InputConstants.KEY_UP || event.key() == InputConstants.KEY_DOWN)) {
+			if (!textFieldFilter.isCompletionVisible()) {
+				return Optional.of(InputAction.run(onSubmit));
+			}
+			if (input.ifKeyboardEvent(event -> event.key() == InputConstants.KEY_UP)) {
+				return Optional.of(InputAction.run(() -> textFieldFilter.moveCompletion(-1)));
+			}
+			return Optional.of(InputAction.run(() -> textFieldFilter.moveCompletion(1)));
+		}
 		if (textFieldFilter.canConsumeInput() && input.isAllowedChatCharacter()) {
 			return Optional.of(ConsumedInput.INSTANCE);
 		}
@@ -128,12 +136,19 @@ public class SearchInputLayer implements IGuiInputLayer, ITextInputHandler {
 	}
 
 	private Optional<IInputInteraction> prepareSearchHistoryAction(TextHistory.Direction direction) {
-		return textFieldFilter.getHistory(direction).map(text -> InputAction.run(() -> textFieldFilter.setValue(text)));
+		return Optional.of(InputAction.run(() -> textFieldFilter.getHistory(direction).ifPresent(textFieldFilter::setValue)));
+	}
+
+	@Override
+	public void focus() {
+		if (active.getAsBoolean()) {
+			textFieldFilter.focus();
+		}
 	}
 
 	@Override
 	public void clearFocus() {
-		textFieldFilter.setFocused(false);
+		textFieldFilter.clearFocus();
 	}
 
 	@Override

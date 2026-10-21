@@ -66,9 +66,9 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 					.orElseThrow(() -> new AssertionError("Expected JEI's ingredient overlay to contain a search field."));
 
 				ImeTextInputTestUtil.assertContainerTextInputFocused(client, testScreen);
-				searchField.setFocused(true);
+				searchField.focus();
 				ImeTextInputTestUtil.assertSearchFieldTookTextInputFocus(client, testScreen, searchField);
-				searchField.setFocused(false);
+				searchField.clearFocus();
 				testScreen.setFocused(null);
 
 				CreativeModeInventoryScreen creativeScreen = ImeTextInputTestUtil.openCreativeSearchWithTextInputFocused(client, searchField);
@@ -102,7 +102,7 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 						throw new AssertionError("Expected this regression test to cover a screen that blocks normal preedit dispatch.");
 					}
 
-					searchField.setFocused(false);
+					searchField.clearFocus();
 					focusSearchWithHotkey(
 						client.keyboardHandler, client.getWindow().handle(), () -> ImeTextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField)
 					);
@@ -210,7 +210,7 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 				throw new AssertionError("Focused search editing must take precedence over a conflicting global shortcut.");
 			}
 
-			searchField.setFocused(false);
+			searchField.clearFocus();
 			ImeTextInputTestUtil.invokeKeyPress(client.keyboardHandler, client.getWindow().handle(), backspace);
 			if (!toggles.isEditModeEnabled() || !searchField.getValue().equals("ston")) {
 				throw new AssertionError("The same shortcut must execute immediately once the search field loses focus.");
@@ -219,7 +219,7 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 			editMode.setKey(originalKey);
 			toggles.setEditModeEnabled(originalEditMode);
 			searchField.setValue(originalText);
-			searchField.setFocused(true);
+			searchField.focus();
 		}
 	}
 

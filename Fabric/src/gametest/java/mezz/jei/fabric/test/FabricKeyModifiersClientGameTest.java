@@ -93,17 +93,25 @@ public class FabricKeyModifiersClientGameTest implements FabricClientGameTest {
 	}
 
 	static void pressShiftModifiedKey(ClientGameTestContext context, int key) {
-		context.getInput().holdKey(InputConstants.KEY_LSHIFT);
+		pressModifiedKey(context, key, InputConstants.KEY_LSHIFT, InputConstants.MOD_SHIFT);
+	}
+
+	static void pressAltModifiedKey(ClientGameTestContext context, int key) {
+		pressModifiedKey(context, key, InputConstants.KEY_LALT, InputConstants.MOD_ALT);
+	}
+
+	private static void pressModifiedKey(ClientGameTestContext context, int key, int modifierKey, int modifiers) {
+		context.getInput().holdKey(modifierKey);
 		try {
 			context.runOnClient(client -> {
 				// Fabric's input helper omits modifier flags from keyboard callbacks.
 				KeyboardHandlerAccessor keyboard = (KeyboardHandlerAccessor) client.keyboardHandler;
-				KeyEvent event = new KeyEvent(key, SDLKeyboard.SDL_GetKeyFromScancode(key, (short) InputConstants.MOD_SHIFT, false), InputConstants.MOD_SHIFT);
+				KeyEvent event = new KeyEvent(key, SDLKeyboard.SDL_GetKeyFromScancode(key, (short) modifiers, false), modifiers);
 				keyboard.invokeKeyPress(client.getWindow().handle(), InputConstants.PRESS, event);
 				keyboard.invokeKeyPress(client.getWindow().handle(), InputConstants.RELEASE, event);
 			});
 		} finally {
-			context.getInput().releaseKey(InputConstants.KEY_LSHIFT);
+			context.getInput().releaseKey(modifierKey);
 		}
 	}
 

@@ -155,7 +155,7 @@ public class IngredientListVisibilityClientGameTest implements FabricClientGameT
 		var originalKey = context.computeOnClient(client -> InputConstants.getKey(shortcut.saveString()));
 		try {
 			context.runOnClient(client -> {
-				searchField().setFocused(false);
+				searchField().clearFocus();
 				shortcut.setKey(InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_P));
 			});
 			context.getInput().pressKey(InputConstants.KEY_P);
