@@ -20,13 +20,13 @@ final class SearchInputCaptureClientTest {
 			client.setScreen(new InventoryScreen(Objects.requireNonNull(client.player)));
 			var overlay = (IngredientListOverlay) Internal.getJeiRuntime().getIngredientListOverlay();
 			var field = new ReflectionUtil().getFieldWithClass(overlay, GuiTextFieldFilter.class).findFirst().orElseThrow();
-			field.setFocused(true);
+			field.focus();
 			assertEditorPriority(client, field);
 			TextInputTestUtil.invokeKeyPress(client.keyboardHandler, client.getWindow().getWindow(), InputConstants.KEY_LSHIFT);
 			if (!field.isFocused()) {
 				throw new AssertionError("An unhandled modifier key must preserve search focus.");
 			}
-			field.setFocused(false);
+			field.clearFocus();
 		});
 		assertMouseFocusChangesOnRelease(context);
 	}
@@ -123,7 +123,7 @@ final class SearchInputCaptureClientTest {
 				throw new AssertionError("Focused search editing must take precedence over a conflicting global shortcut.");
 			}
 
-			searchField.setFocused(false);
+			searchField.clearFocus();
 			TextInputTestUtil.invokeKeyPress(client.keyboardHandler, client.getWindow().getWindow(), backspace);
 			if (!toggles.isEditModeEnabled() || !searchField.getValue().equals("ston")) {
 				throw new AssertionError("The same shortcut must execute immediately once the search field loses focus.");
@@ -132,7 +132,7 @@ final class SearchInputCaptureClientTest {
 			editMode.setKey(originalKey);
 			toggles.setEditModeEnabled(originalEditMode);
 			searchField.setValue(originalText);
-			searchField.setFocused(true);
+			searchField.focus();
 		}
 	}
 

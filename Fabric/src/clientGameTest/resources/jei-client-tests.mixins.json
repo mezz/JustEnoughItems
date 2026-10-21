@@ -6,7 +6,9 @@
   "client": [
     "InputConstantsMixin",
     "KeyboardHandlerAccessor",
-    "MouseHandlerAccessor"
+    "MouseHandlerAccessor",
+    "GuiGraphicsMixin",
+    "MouseHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

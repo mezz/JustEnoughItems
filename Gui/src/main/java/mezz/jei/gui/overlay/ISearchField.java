@@ -12,9 +12,9 @@ public interface ISearchField {
 	void setValue(String filterText);
 
 	/**
-	 * Sets whether the search field has keyboard focus.
+	 * Releases keyboard focus from the search field.
 	 */
-	void setFocused(boolean focused);
+	void clearFocus();
 
 	/**
 	 * Updates the search field bounds for the current overlay layout.

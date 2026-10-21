@@ -78,7 +78,7 @@ final class RecipeFocusSourceClientTest {
 					click(client.screen, searchX, searchY, InputConstants.MOUSE_BUTTON_RIGHT);
 					check(runtime.getIngredientFilter().getFilterText().isEmpty(), "Search input must clear a query with no results");
 					check(ingredients.isListDisplayed(), "Clearing search must restore the ingredient list");
-					searchField.setFocused(false);
+					searchField.clearFocus();
 				}
 				shrinkToFit.set(originalShrinkToFit);
 				ingredients.isListDisplayed();

@@ -594,8 +594,8 @@ public class IngredientListOverlayControllerTest {
 		}
 
 		@Override
-		public void setFocused(boolean focused) {
-			focusValues.add(focused);
+		public void clearFocus() {
+			focusValues.add(false);
 		}
 
 		@Override

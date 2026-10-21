@@ -16,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class FabricClientTestInput {
 	private static final Map<Integer, Boolean> KEY_STATES = new ConcurrentHashMap<>();
+	private static boolean injectingCursorMove;
+	private static volatile boolean scriptedCursor;
 
 	private FabricClientTestInput() {
 
@@ -31,6 +33,23 @@ public final class FabricClientTestInput {
 
 	public static void clear() {
 		KEY_STATES.clear();
+		injectingCursorMove = false;
+		scriptedCursor = false;
+	}
+
+	static void moveCursor(Runnable movement) {
+		scriptedCursor = true;
+		injectingCursorMove = true;
+		try {
+			movement.run();
+		} finally {
+			injectingCursorMove = false;
+		}
+	}
+
+	/** Keeps desktop cursor callbacks from replacing positions controlled by a client test. */
+	public static boolean shouldIgnoreCursorMove() {
+		return scriptedCursor && !injectingCursorMove;
 	}
 
 	public static void pressKey(KeyMapping keyMapping) {

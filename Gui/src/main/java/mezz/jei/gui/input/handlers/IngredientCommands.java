@@ -67,6 +67,11 @@ public final class IngredientCommands {
 
 	public void registerInputCommands(InputCommands commands) {
 		commands.add(
+			"Open focused ingredient",
+			input -> input.is(keys.getEnterKey()),
+			(screen, input) -> prepareKeyboardRecipeLookupAction(input)
+		);
+		commands.add(
 			"Hide ingredient",
 			input -> input.is(keys.getToggleHideIngredient()),
 			(screen, input) -> prepareToggleIngredientVisibilityAction(input, IEditModeConfig.HideMode.SINGLE)
@@ -119,7 +124,7 @@ public final class IngredientCommands {
 	}
 
 	private Optional<IInputInteraction> prepareElementAction(UserInput input) {
-		for (IClickableIngredientInternal<?> clicked : focusSource.getIngredientUnderMouse(input, keys).toList()) {
+		for (IClickableIngredientInternal<?> clicked : focusSource.getIngredientForInput(input, keys).toList()) {
 			Optional<InputAction> action = clicked.getElement().prepareAction(input, keys);
 			if (action.isPresent()) {
 				return Optional.of(action.get().within(clicked::isMouseOver).when(clicked.getElement()::isVisible));
@@ -132,7 +137,7 @@ public final class IngredientCommands {
 		if (!toggles.isEditModeEnabled()) {
 			return Optional.empty();
 		}
-		return focusSource.getIngredientUnderMouse(input, keys).findFirst()
+		return focusSource.getIngredientForInput(input, keys).findFirst()
 			.map(clicked -> createIngredientAction(clicked, () -> toggleIngredientVisibility(clicked.getTypedIngredient(), mode))
 				.when(toggles::isEditModeEnabled));
 	}
@@ -150,13 +155,13 @@ public final class IngredientCommands {
 			return Optional.empty();
 		}
 		return prepareGiveAction(
-			focusSource.getIngredientUnderMouse(input, keys).filter(IClickableIngredientInternal::canClickToCheat),
+			focusSource.getIngredientForInput(input, keys).filter(IClickableIngredientInternal::canClickToCheat),
 			stack -> commandUtil.giveStack(stack, amount));
 	}
 
 	private Optional<IInputInteraction> prepareGiveIngredientToInventoryAction(UserInput input, GiveAmount amount) {
 		return prepareGiveAction(
-			focusSource.getIngredientUnderMouse(input, keys),
+			focusSource.getIngredientForInput(input, keys),
 			stack -> commandUtil.giveStack(stack, amount, GiveMode.INVENTORY));
 	}
 
@@ -176,15 +181,22 @@ public final class IngredientCommands {
 		return Optional.empty();
 	}
 
+	private Optional<IInputInteraction> prepareKeyboardRecipeLookupAction(UserInput input) {
+		if (!input.isKeyboardInput() || !focusSource.hasKeyboardFocus()) {
+			return Optional.empty();
+		}
+		return prepareRecipeLookupAction(input, List.of(RecipeIngredientRole.OUTPUT));
+	}
+
 	private Optional<IInputInteraction> prepareRecipeLookupAction(UserInput input, List<RecipeIngredientRole> roles) {
-		return focusSource.getIngredientUnderMouse(input, keys)
+		return focusSource.getIngredientForInput(input, keys)
 			.filter(clicked -> clicked.getElement().isVisible())
 			.findFirst()
 			.map(clicked -> createIngredientAction(clicked, () -> clicked.show(recipes, focusUtil, roles)));
 	}
 
 	private Optional<IInputInteraction> prepareShareIngredientAction(UserInput input) {
-		return focusSource.getIngredientUnderMouse(input, keys)
+		return focusSource.getIngredientForInput(input, keys)
 			.filter(clicked -> clicked.getElement().isVisible())
 			.findFirst()
 			.map(clicked -> createIngredientAction(clicked, () -> shareIngredientToChat(clicked.getTypedIngredient())));

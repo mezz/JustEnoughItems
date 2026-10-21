@@ -1,6 +1,13 @@
 package mezz.jei.test.client;
 
 import mezz.jei.gui.input.GuiTextFieldFilter;
+import mezz.jei.gui.util.GuiEventListenerUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.level.GameType;
 import net.minecraft.client.KeyboardHandler;
 import org.lwjgl.glfw.GLFW;
 
@@ -66,4 +73,66 @@ public final class TextInputTestUtil {
 		}
 	}
 
+	public static CreativeModeInventoryScreen openCreativeSearchWithTextInputFocused(
+		Minecraft minecraft,
+		GuiTextFieldFilter searchField
+	) {
+		if (minecraft.player == null) {
+			throw new AssertionError("Expected a client player for the creative search test.");
+		}
+
+		searchField.clearFocus();
+		GameType originalGameType = minecraft.gameMode.getPlayerMode();
+		CreativeModeInventoryScreen screen;
+		try {
+			minecraft.gameMode.setLocalMode(GameType.CREATIVE);
+			screen = new CreativeModeInventoryScreen(
+				minecraft.player,
+				minecraft.player.connection.enabledFeatures(),
+				minecraft.options.operatorItemsTab().get()
+			);
+			minecraft.setScreen(screen);
+			selectCreativeSearchTab(screen);
+		} finally {
+			minecraft.gameMode.setLocalMode(originalGameType);
+		}
+
+		EditBox creativeSearch = getCreativeSearch(screen);
+		if (!creativeSearch.isFocused() || !creativeSearch.isVisible()) {
+			throw new AssertionError("Expected the creative inventory search box to start focused and visible.");
+		}
+		if (searchField.isFocused()) {
+			throw new AssertionError("Expected JEI's search field to start unfocused in the creative search tab.");
+		}
+
+		return screen;
+	}
+
+	public static void assertCreativeSearchFocusRestored(
+		CreativeModeInventoryScreen screen,
+		GuiTextFieldFilter searchField
+	) {
+		searchField.clearFocus();
+		if (!getCreativeSearch(screen).isFocused()) {
+			throw new AssertionError("Expected unfocusing JEI to restore the creative inventory search box.");
+		}
+	}
+
+	private static void selectCreativeSearchTab(CreativeModeInventoryScreen screen) {
+		try {
+			Method method = CreativeModeInventoryScreen.class.getDeclaredMethod("selectTab", CreativeModeTab.class);
+			method.setAccessible(true);
+			method.invoke(screen, CreativeModeTabs.searchTab());
+		} catch (InvocationTargetException e) {
+			throw new AssertionError("Selecting the creative search tab failed.", e.getCause());
+		} catch (ReflectiveOperationException e) {
+			throw new AssertionError("Failed to select the creative search tab.", e);
+		}
+	}
+
+	private static EditBox getCreativeSearch(CreativeModeInventoryScreen screen) {
+		return GuiEventListenerUtil.getEditBoxes(screen)
+			.findFirst()
+			.orElseThrow(() -> new AssertionError("Expected the creative search tab to contain an input field."));
+	}
 }

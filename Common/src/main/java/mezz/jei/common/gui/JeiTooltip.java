@@ -214,7 +214,7 @@ public class JeiTooltip implements ITooltipBuilder {
 		draw(guiGraphics, x, y, typedIngredient, ingredientRenderer, ingredientManager, null);
 	}
 
-	private <T> void draw(
+	public <T> void draw(
 		GuiGraphics guiGraphics,
 		int x,
 		int y,

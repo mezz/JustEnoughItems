@@ -24,12 +24,23 @@ public final class JeiFabricClientTests implements ClientModInitializer {
 			case "creativeInventory" -> JeiFabricCreativeInventoryClientGameTest.register();
 			case "fluidIngredients" -> FluidIngredientGameTests.register();
 			case "keyMapping" -> JeiFabricKeyMappingClientTests.register();
+			case "keyboardNavigation" -> FabricClientTestRunner.register("fabric-client-keyboard-navigation", "ingredientList", () -> {
+				try (FabricClientTestWorld ignored = FabricClientTestWorld.create()) {
+					IngredientKeyboardNavigationClientGameTest.run();
+					SearchInputCaptureClientTest.run();
+				}
+			});
+			case "guiResize" -> FabricClientTestRunner.register("fabric-client-gui-resize", "resize", () -> {
+				try (FabricClientTestWorld ignored = FabricClientTestWorld.create()) {
+					JeiGuiResizeClientGameTest.run();
+				}
+			});
 			default -> FabricClientTestRunner.register(
 				"fabric-client-tests",
 				"unknown-test-suite",
 				() -> {
 					throw new IllegalArgumentException(
-						"Unknown JEI Fabric client test suite '" + testSuite + "'. Expected one of: all, recipeSync, creativeInventory, fluidIngredients, keyMapping"
+						"Unknown JEI Fabric client test suite '" + testSuite + "'. Expected one of: all, recipeSync, creativeInventory, fluidIngredients, keyMapping, keyboardNavigation, guiResize"
 					);
 				}
 			);

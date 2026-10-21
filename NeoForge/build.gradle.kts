@@ -1,3 +1,4 @@
+import mezz.jei.gradle.WriteClientOptions
 import mezz.jei.gradle.externalSourceSetClasspath
 import mezz.jei.gradle.optionalGradleProperty
 import mezz.jei.gradle.gradleProperty
@@ -396,9 +397,9 @@ val copyClientRecipeSyncTestFmlConfigTasks = clientRecipeSyncRuns.associate { (r
 }
 
 val writeClientRecipeSyncTestOptionsTasks = clientRecipeSyncRuns.associate { (runName, _) ->
-	runName to tasks.register<Copy>("write${capitalizedRunName(runName)}Options") {
-		from(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
-		into(clientRecipeSyncTestGameDirectory(runName))
+	runName to tasks.register<WriteClientOptions>("write${capitalizedRunName(runName)}Options") {
+		templateFile.set(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
+		optionsFile.set(clientRecipeSyncTestGameDirectory(runName).file("options.txt"))
 	}
 }
 
