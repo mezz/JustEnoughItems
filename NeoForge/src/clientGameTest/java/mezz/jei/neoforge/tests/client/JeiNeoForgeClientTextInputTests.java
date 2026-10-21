@@ -61,9 +61,9 @@ public final class JeiNeoForgeClientTextInputTests {
 				.orElseThrow(() -> new AssertionError("Expected JEI's ingredient overlay to contain a search field."));
 
 			ImeTextInputTestUtil.assertContainerTextInputFocused(client, testScreen);
-			searchField.setFocused(true);
+			searchField.focus();
 			ImeTextInputTestUtil.assertSearchFieldTookTextInputFocus(client, testScreen, searchField);
-			searchField.setFocused(false);
+			searchField.clearFocus();
 			testScreen.setFocused(null);
 
 			CreativeModeInventoryScreen creativeScreen = ImeTextInputTestUtil.openCreativeSearchWithTextInputFocused(client, searchField);
@@ -87,7 +87,7 @@ public final class JeiNeoForgeClientTextInputTests {
 					throw new AssertionError("Expected this regression test to cover a screen that blocks normal preedit dispatch.");
 				}
 
-				searchField.setFocused(false);
+				searchField.clearFocus();
 				focusSearchWithHotkey(
 					client.keyboardHandler, client.getWindow().handle(), () -> ImeTextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField)
 				);
