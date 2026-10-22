@@ -14,11 +14,16 @@ import java.util.Map;
 import java.util.Optional;
 
 public class TypedIngredientCodecs {
-	private static final Map<IIngredientType<?>, Codec<ITypedIngredient<?>>> codecMapCache = new HashMap<>();
-	private static @Nullable Codec<IIngredientType<?>> ingredientTypeCodec;
-	private static @Nullable MapCodec<ITypedIngredient<?>> ingredientCodec;
+	private final IIngredientManager ingredientManager;
+	private final Map<IIngredientType<?>, Codec<ITypedIngredient<?>>> codecMapCache = new HashMap<>();
+	private @Nullable Codec<IIngredientType<?>> ingredientTypeCodec;
+	private @Nullable MapCodec<ITypedIngredient<?>> ingredientCodec;
 
-	public static Codec<IIngredientType<?>> getIngredientTypeCodec(IIngredientManager ingredientManager) {
+	public TypedIngredientCodecs(IIngredientManager ingredientManager) {
+		this.ingredientManager = ingredientManager;
+	}
+
+	public Codec<IIngredientType<?>> getIngredientTypeCodec() {
 		if (ingredientTypeCodec == null) {
 			ingredientTypeCodec = Codec.STRING.flatXmap(
 				uid -> {
@@ -35,29 +40,29 @@ public class TypedIngredientCodecs {
 		return ingredientTypeCodec;
 	}
 
-	public static MapCodec<ITypedIngredient<?>> getIngredientCodec(IIngredientManager ingredientManager) {
+	public MapCodec<ITypedIngredient<?>> getIngredientCodec() {
 		if (ingredientCodec == null) {
-			Codec<IIngredientType<?>> ingredientTypeCodec = getIngredientTypeCodec(ingredientManager);
+			Codec<IIngredientType<?>> ingredientTypeCodec = getIngredientTypeCodec();
 			ingredientCodec = ingredientTypeCodec.dispatchMap(
 				ITypedIngredient::getType,
-				type -> getIngredientCodec(type, ingredientManager).fieldOf("ingredient")
+				type -> getIngredientCodec(type).fieldOf("ingredient")
 			);
 		}
 		return ingredientCodec;
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> Codec<ITypedIngredient<T>> getIngredientCodec(IIngredientType<T> ingredientType, IIngredientManager ingredientManager) {
+	public <T> Codec<ITypedIngredient<T>> getIngredientCodec(IIngredientType<T> ingredientType) {
 		Codec<ITypedIngredient<T>> result = (Codec<ITypedIngredient<T>>) (Object) codecMapCache.get(ingredientType);
 		if (result == null) {
 			Codec<T> codec = ingredientManager.getIngredientCodec(ingredientType);
-			result = create(codec, ingredientManager);
+			result = create(codec);
 			codecMapCache.put(ingredientType, (Codec<ITypedIngredient<?>>) (Object) result);
 		}
 		return result;
 	}
 
-	private static <T> Codec<ITypedIngredient<T>> create(Codec<T> ingredientCodec, IIngredientManager ingredientManager) {
+	private <T> Codec<ITypedIngredient<T>> create(Codec<T> ingredientCodec) {
 		return ingredientCodec.flatXmap(
 			ingredient -> {
 				Optional<IIngredientType<T>> type = ingredientManager.getIngredientTypeChecked(ingredient);
