@@ -2,10 +2,10 @@ package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.Internal;
-import mezz.jei.common.util.ReflectionUtil;
 import mezz.jei.fabric.input.FabricKeyMapping;
 import mezz.jei.gui.elements.IconButton;
 import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.test.client.ReflectionUtil;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;

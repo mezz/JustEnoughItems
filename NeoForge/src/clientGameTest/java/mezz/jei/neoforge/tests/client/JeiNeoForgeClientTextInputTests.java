@@ -2,11 +2,11 @@ package mezz.jei.neoforge.tests.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.Internal;
-import mezz.jei.common.util.ReflectionUtil;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.test.client.ImeTextInputTestUtil;
 import mezz.jei.test.client.PreeditBlockingContainerScreen;
+import mezz.jei.test.client.ReflectionUtil;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
