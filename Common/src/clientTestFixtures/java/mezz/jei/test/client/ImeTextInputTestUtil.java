@@ -2,9 +2,9 @@ package mezz.jei.test.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.TextInputManager;
-import mezz.jei.common.util.ReflectionUtil;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.util.GuiEventListenerUtil;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.IMEPreeditOverlay;
@@ -242,8 +242,7 @@ public final class ImeTextInputTestUtil {
 	}
 
 	private static EditBox getCreativeSearch(CreativeModeInventoryScreen screen) {
-		ReflectionUtil reflectionUtil = new ReflectionUtil();
-		return reflectionUtil.getFieldWithClass(screen, EditBox.class)
+		return GuiEventListenerUtil.getEditBoxes(screen)
 			.findFirst()
 			.orElseThrow(() -> new AssertionError("Expected the creative search tab to contain an input field."));
 	}
@@ -273,8 +272,7 @@ public final class ImeTextInputTestUtil {
 		ChatScreen chatScreen = new ChatScreen("", false);
 		minecraft.gui.setScreen(chatScreen);
 
-		ReflectionUtil reflectionUtil = new ReflectionUtil();
-		EditBox chatInput = reflectionUtil.getFieldWithClass(chatScreen, EditBox.class)
+		EditBox chatInput = GuiEventListenerUtil.getEditBoxes(chatScreen)
 			.findFirst()
 			.orElseThrow(() -> new AssertionError("Expected the chat screen to contain an input field."));
 
