@@ -1,4 +1,4 @@
-package mezz.jei.common.util;
+package mezz.jei.test.client;
 
 import mezz.jei.common.collect.Table;
 import org.apache.logging.log4j.LogManager;
