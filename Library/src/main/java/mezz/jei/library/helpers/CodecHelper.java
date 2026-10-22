@@ -92,29 +92,29 @@ public class CodecHelper implements ICodecHelper {
 				(recipe instanceof FireworkStarRecipe || recipe instanceof FireworkStarFadeRecipe));
 	}
 
-	private final IIngredientManager ingredientManager;
+	private final TypedIngredientCodecs typedIngredientCodecs;
 	private final IFocusFactory focusFactory;
 	private final Map<IRecipeType<?>, Codec<?>> defaultRecipeCodecs = new HashMap<>();
 	private @Nullable Codec<IRecipeType<?>> recipeTypeCodec;
 
 	public CodecHelper(IIngredientManager ingredientManager, IFocusFactory focusFactory) {
-		this.ingredientManager = ingredientManager;
+		this.typedIngredientCodecs = new TypedIngredientCodecs(ingredientManager);
 		this.focusFactory = focusFactory;
 	}
 
 	@Override
 	public Codec<IIngredientType<?>> getIngredientTypeCodec() {
-		return TypedIngredientCodecs.getIngredientTypeCodec(ingredientManager);
+		return typedIngredientCodecs.getIngredientTypeCodec();
 	}
 
 	@Override
 	public MapCodec<ITypedIngredient<?>> getTypedIngredientCodec() {
-		return TypedIngredientCodecs.getIngredientCodec(ingredientManager);
+		return typedIngredientCodecs.getIngredientCodec();
 	}
 
 	@Override
 	public <T> Codec<ITypedIngredient<T>> getTypedIngredientCodec(IIngredientType<T> ingredientType) {
-		return TypedIngredientCodecs.getIngredientCodec(ingredientType, ingredientManager);
+		return typedIngredientCodecs.getIngredientCodec(ingredientType);
 	}
 
 	@Override
