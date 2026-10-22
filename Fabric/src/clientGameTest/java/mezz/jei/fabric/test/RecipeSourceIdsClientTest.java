@@ -18,7 +18,7 @@ import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.InputPhase;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.transfer.RecipeTransferService;
-import mezz.jei.common.util.ReflectionUtil;
+import mezz.jei.test.client.ReflectionUtil;
 import mezz.jei.gui.bookmarks.BookmarkCodec;
 import mezz.jei.gui.bookmarks.BookmarkFactory;
 import mezz.jei.gui.bookmarks.BookmarkList;

@@ -2,7 +2,7 @@ package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.Internal;
-import mezz.jei.common.util.ReflectionUtil;
+import mezz.jei.test.client.ReflectionUtil;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.test.client.TextInputTestUtil;

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.Internal;
-import mezz.jei.common.util.ReflectionUtil;
+import mezz.jei.test.client.ReflectionUtil;
 import mezz.jei.gui.recipes.IRecipeGuiLogic;
 import mezz.jei.gui.recipes.RecipesGui;
 import mezz.jei.gui.recipes.lookups.ILookupState;

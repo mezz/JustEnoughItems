@@ -3,8 +3,7 @@ package mezz.jei.gui.input;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
-import mezz.jei.common.util.ReflectionUtil;
-import net.minecraft.client.gui.components.EditBox;
+import mezz.jei.gui.util.GuiEventListenerUtil;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -12,7 +11,6 @@ import net.minecraft.client.gui.screens.Screen;
 public class ClientInputHandler {
 	private final GuiInputController controller;
 	private final IInternalKeyMappings keybindings;
-	private final ReflectionUtil reflectionUtil = new ReflectionUtil();
 
 	public ClientInputHandler(GuiInputController controller, IInternalKeyMappings keybindings) {
 		this.controller = controller;
@@ -89,7 +87,7 @@ public class ClientInputHandler {
 	}
 
 	private boolean isContainerTextFieldFocused(Screen screen) {
-		return reflectionUtil.getFieldWithClass(screen, EditBox.class)
+		return GuiEventListenerUtil.getEditBoxes(screen)
 			.anyMatch(textField -> textField.isActive() && textField.isFocused());
 	}
 }

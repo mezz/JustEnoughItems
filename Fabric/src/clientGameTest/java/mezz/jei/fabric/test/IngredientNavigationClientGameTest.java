@@ -5,7 +5,7 @@ import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.config.NavigationVisibility;
 import mezz.jei.common.gui.elements.Scrollbar;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.ReflectionUtil;
+import mezz.jei.test.client.ReflectionUtil;
 import mezz.jei.gui.PageNavigation;
 import mezz.jei.gui.elements.ScrollbarWidget;
 import mezz.jei.gui.overlay.ingredients.IIngredientGridSource;

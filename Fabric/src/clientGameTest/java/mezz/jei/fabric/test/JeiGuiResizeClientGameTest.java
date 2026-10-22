@@ -11,7 +11,7 @@ import mezz.jei.common.config.IngredientGridBackgroundStyle;
 import mezz.jei.common.config.IngredientGridNavigationMode;
 import mezz.jei.common.config.RecipeGuiNavigationMode;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.ReflectionUtil;
+import mezz.jei.test.client.ReflectionUtil;
 import mezz.jei.gui.bookmarks.BookmarkList;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;

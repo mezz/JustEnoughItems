@@ -25,7 +25,7 @@ import mezz.jei.common.config.RecipeGuiNavigationMode;
 import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.gui.elements.Scrollbar;
-import mezz.jei.common.util.ReflectionUtil;
+import mezz.jei.test.client.ReflectionUtil;
 import mezz.jei.gui.recipes.IRecipeLayoutWithButtons;
 import mezz.jei.gui.recipes.IRecipeGuiLogic;
 import mezz.jei.gui.recipes.RecipeGuiLayouts;

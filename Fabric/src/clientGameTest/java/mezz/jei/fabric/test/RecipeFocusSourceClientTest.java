@@ -7,7 +7,7 @@ import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.common.Internal;
 import mezz.jei.common.config.IngredientGridLayoutMode;
 import mezz.jei.common.util.ImmutableRect2i;
-import mezz.jei.common.util.ReflectionUtil;
+import mezz.jei.test.client.ReflectionUtil;
 import mezz.jei.gui.input.GuiContainerWrapper;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.input.IRecipeFocusSource;
