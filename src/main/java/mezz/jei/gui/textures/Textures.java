@@ -66,7 +66,7 @@ public class Textures {
 	}
 
 	private TextureInfo registerGuiSprite(String name, int width, int height) {
-		TextureAtlasSprite textureAtlasSprite = textureMap.registerSprite(new ResourceLocation(Constants.MOD_ID, "gui/" + name));
+		TextureAtlasSprite textureAtlasSprite = textureMap.registerSprite(new ResourceLocation(Constants.MOD_ID, "gui/sprites/" + name));
 		ResourceLocation location = textureMap.getLocation();
 		return new TextureInfo(location, textureAtlasSprite, width, height);
 	}
