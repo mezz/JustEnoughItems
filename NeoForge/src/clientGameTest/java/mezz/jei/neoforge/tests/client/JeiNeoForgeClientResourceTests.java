@@ -25,7 +25,7 @@ import java.util.List;
 public final class JeiNeoForgeClientResourceTests {
 	private static final String JUNIT_SUITE_NAME = "neoforge-client-resources";
 	private static final Duration RESOURCE_RELOAD_TIMEOUT = Duration.ofSeconds(30);
-	private static final Identifier GUI_BACKGROUND_TEXTURE = Identifier.fromNamespaceAndPath("jei", "textures/gui/sprites/gui_background.png");
+	private static final Identifier GUI_BACKGROUND_TEXTURE = Identifier.fromNamespaceAndPath("jei", "textures/gui/sprites/gui_background_v2.png");
 	private static final String CLIENT_TEST_RESOURCE_PACK_ID = "file/jei-client-test-pack";
 	private static final String JEI_MOD_RESOURCE_PACK_ID = "mod/jei";
 	private static final Identifier CONFIG_BUTTON_TEXTURE = Identifier.fromNamespaceAndPath("jei", "textures/gui/sprites/icons/config_button.png");

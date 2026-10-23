@@ -71,24 +71,24 @@ public class Textures {
 
 		this.slot = createGuiSprite("slot", 18, 18);
 		this.outputSlot = createGuiSprite("output_slot", 26, 26);
-		this.recipeCatalystSlotBackground = createScalableGuiSprite("recipe_catalyst_slot_background");
-		this.ingredientListSlotBackground = createScalableGuiSprite("ingredient_list_slot_background");
-		this.bookmarkListSlotBackground = createScalableGuiSprite("bookmark_list_slot_background");
+		this.recipeCatalystSlotBackground = createScalableGuiSprite("recipe_catalyst_slot_background_v2");
+		this.ingredientListSlotBackground = createScalableGuiSprite("ingredient_list_slot_background_v2");
+		this.bookmarkListSlotBackground = createScalableGuiSprite("bookmark_list_slot_background_v2");
 		this.tabSelected = createGuiSprite("tab_selected", 24, 24);
 		this.tabUnselected = createGuiSprite("tab_unselected", 24, 24);
-		this.recipeGuiBackground = createScalableGuiSprite("gui_background");
-		this.ingredientListBackground = createScalableGuiSprite("ingredient_list_background");
-		this.bookmarkListBackground = createScalableGuiSprite("bookmark_list_background");
+		this.recipeGuiBackground = createScalableGuiSprite("gui_background_v2");
+		this.ingredientListBackground = createScalableGuiSprite("ingredient_list_background_v2");
+		this.bookmarkListBackground = createScalableGuiSprite("bookmark_list_background_v2");
 		this.exclusionAreaShadow = createScalableGuiSprite("exclusion_area_shadow");
-		this.recipeBackground = createScalableGuiSprite("single_recipe_background");
+		this.recipeBackground = createScalableGuiSprite("single_recipe_background_v2");
 		this.interactiveIngredientTooltipBackground = createScalableGuiSprite("interactive_ingredient_tooltip_background");
-		this.recipePreviewBackground = createScalableGuiSprite("recipe_preview_background");
-		this.searchBackground = createScalableGuiSprite("search_background");
+		this.recipePreviewBackground = createScalableGuiSprite("recipe_preview_background_v2");
+		this.searchBackground = createScalableGuiSprite("search_background_v2");
 		this.completionOverlayBackground = createScalableGuiSprite("completion_overlay_background");
-		this.scrollbarBackground = createScalableGuiSprite("scrollbar_background");
-		this.scrollbarMarker = createScalableGuiSprite("scrollbar_marker");
-		this.catalystTab = createScalableGuiSprite("catalyst_tab");
-		this.recipeOptionsTab = createScalableGuiSprite("recipe_options_tab");
+		this.scrollbarBackground = createScalableGuiSprite("scrollbar_background_v2");
+		this.scrollbarMarker = createScalableGuiSprite("scrollbar_marker_v2");
+		this.catalystTab = createScalableGuiSprite("catalyst_tab_v2");
+		this.recipeOptionsTab = createScalableGuiSprite("recipe_options_tab_v2");
 		this.recipeArrow = createGuiSprite("recipe_arrow", 22, 16);
 		this.recipeArrowFilled = createGuiSprite("recipe_arrow_filled", 22, 16);
 		this.recipePlusSign = createGuiSprite("recipe_plus_sign", 13, 13);
@@ -98,17 +98,17 @@ public class Textures {
 		this.brewingStandBubbles = createGuiSprite("brewing_stand_bubbles", 11, 28);
 		this.brewingStandArrow = createGuiSprite("brewing_stand_arrow", 7, 27);
 
-		this.buttonDisabled = createScalableGuiSprite("button_disabled");
-		this.buttonEnabled = createScalableGuiSprite("button_enabled");
-		this.buttonHighlight = createScalableGuiSprite("button_highlight");
-		this.buttonPressed = createScalableGuiSprite("button_pressed");
-		this.buttonPressedHighlight = createScalableGuiSprite("button_pressed_highlighted");
+		this.buttonDisabled = createScalableGuiSprite("button_disabled_v2");
+		this.buttonEnabled = createScalableGuiSprite("button_enabled_v2");
+		this.buttonHighlight = createScalableGuiSprite("button_highlight_v2");
+		this.buttonPressed = createScalableGuiSprite("button_pressed_v2");
+		this.buttonPressedHighlight = createScalableGuiSprite("button_pressed_highlight_v2");
 
-		IDrawableStatic rawShapelessIcon = createGuiSprite("icons/shapeless_icon", 32, 32);
+		IDrawableStatic rawShapelessIcon = createGuiSprite("icons/shapeless_icon_v2", 32, 32);
 		this.shapelessIcon = new HighResolutionDrawable(rawShapelessIcon, 4);
 
-		this.arrowPrevious = createGuiSprite("icons/arrow_previous", 9, 7);
-		this.arrowNext = createGuiSprite("icons/arrow_next", 9, 7);
+		this.arrowPrevious = createGuiSprite("icons/arrow_previous_v2", 9, 7);
+		this.arrowNext = createGuiSprite("icons/arrow_next_v2", 9, 7);
 		this.recipeTransfer = createGuiSprite("icons/recipe_transfer", 7, 7);
 		this.recipeBookmark = createGuiSprite("icons/recipe_bookmark", 9, 9);
 		this.configButtonIcon = createGuiSprite("icons/config_button", 16, 16);
