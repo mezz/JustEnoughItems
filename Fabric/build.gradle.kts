@@ -358,8 +358,8 @@ fun registerCopyClientResourcePackTask(name: String, runName: String) =
     tasks.register<Sync>(name) {
         from(layout.projectDirectory.file("src/clientGameTest/templates/resourcepacks/jei-client-test-pack/pack.mcmeta"))
         // A larger replacement texture catches stale sprite dimensions after a resource reload.
-        from(project(":Common").layout.projectDirectory.file("src/main/resources/assets/jei/textures/jei/atlas/gui/gui_background.png")) {
-            into("assets/jei/textures/jei/atlas/gui/icons")
+        from(project(":Common").layout.projectDirectory.file("src/main/resources/assets/jei/textures/gui/sprites/gui_background.png")) {
+            into("assets/jei/textures/gui/sprites/icons")
             rename { "config_button.png" }
         }
         into(clientTestGameDirectory(runName).dir("resourcepacks/jei-client-test-pack"))

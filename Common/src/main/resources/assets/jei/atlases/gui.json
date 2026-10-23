@@ -2,7 +2,7 @@
     "sources": [
         {
             "type": "directory",
-            "source": "jei/atlas/gui",
+            "source": "gui/sprites",
             "prefix": ""
         }
     ]

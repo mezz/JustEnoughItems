@@ -18,9 +18,9 @@ import java.time.Duration;
 public final class JeiFabricClientResourceTests {
 	private static final String JUNIT_SUITE_NAME = "fabric-client-resources";
 	private static final Duration RESOURCE_RELOAD_TIMEOUT = Duration.ofSeconds(30);
-	private static final ResourceLocation GUI_BACKGROUND_TEXTURE = new ResourceLocation("jei", "textures/jei/atlas/gui/gui_background.png");
+	private static final ResourceLocation GUI_BACKGROUND_TEXTURE = new ResourceLocation("jei", "textures/gui/sprites/gui_background.png");
 	private static final String CLIENT_TEST_RESOURCE_PACK_ID = "file/jei-client-test-pack";
-	private static final ResourceLocation CONFIG_BUTTON_TEXTURE = new ResourceLocation("jei", "textures/jei/atlas/gui/icons/config_button.png");
+	private static final ResourceLocation CONFIG_BUTTON_TEXTURE = new ResourceLocation("jei", "textures/gui/sprites/icons/config_button.png");
 	private static final ResourceLocation CONFIG_BUTTON_SPRITE = new ResourceLocation("jei", "icons/config_button");
 	private static final int CLIENT_TEST_TEXTURE_SIZE = 64;
 	private static final int DEFAULT_TEXTURE_SIZE = 16;
