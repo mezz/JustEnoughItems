@@ -15,7 +15,7 @@ public class JeiSpriteUploader extends TextureAtlasHolder {
 	private final Set<ResourceLocation> registeredSprites = new HashSet<>();
 
 	public JeiSpriteUploader(TextureManager textureManager) {
-		super(textureManager, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS, "gui");
+		super(textureManager, Constants.LOCATION_JEI_GUI_TEXTURE_ATLAS, "gui/sprites");
 	}
 
 	public void registerSprite(ResourceLocation location) {
