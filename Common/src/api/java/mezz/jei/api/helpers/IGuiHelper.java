@@ -75,6 +75,19 @@ public interface IGuiHelper {
 	IDrawableStatic createDrawableSprite(TextureAtlas textureAtlas, Identifier spriteId, int width, int height);
 
 	/**
+	 * Creates a drawable from Minecraft's GUI sprite atlas with an explicit logical size.
+	 * The size stays the same when resource packs replace the sprite with a higher-resolution texture.
+	 *
+	 * @param spriteId the sprite identifier, relative to {@code textures/gui/sprites/}, without {@code .png}
+	 * @param width the drawable width in GUI pixels, must be positive
+	 * @param height the drawable height in GUI pixels, must be positive
+	 * @return a drawable that stretches the sprite to the given size
+	 * @see #createScalableDrawableSprite(Identifier) to respect the sprite's GUI scaling metadata
+	 * @since 27.54.0
+	 */
+	IDrawableStatic createDrawableSprite(Identifier spriteId, int width, int height);
+
+	/**
 	 * Create a scalable drawable from a gui sprite.
 	 *
 	 * @return a new {@link IScalableDrawable} with the given texture atlas and sprite location
@@ -82,6 +95,16 @@ public interface IGuiHelper {
 	 * @since 27.9.0
 	 */
 	IScalableDrawable createScalableDrawableSprite(TextureAtlas textureAtlas, Identifier spriteId);
+
+	/**
+	 * Creates a drawable from Minecraft's GUI sprite atlas that can be drawn at any size.
+	 * Respects the sprite's GUI scaling metadata, including tiling and nine-slice borders.
+	 *
+	 * @param spriteId the sprite identifier, relative to {@code textures/gui/sprites/}, without {@code .png}
+	 * @return a drawable that uses the size supplied when drawing
+	 * @since 27.54.0
+	 */
+	IScalableDrawable createScalableDrawableSprite(Identifier spriteId);
 
 	/**
 	 * Creates an animated texture for a gui, revealing the texture over time.
