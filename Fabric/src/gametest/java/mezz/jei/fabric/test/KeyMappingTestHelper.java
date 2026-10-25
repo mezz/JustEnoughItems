@@ -1,6 +1,7 @@
 package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.fabric.input.ContextAwareKeyMapping;
 import mezz.jei.fabric.input.FabricKeyMapping;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
@@ -8,6 +9,13 @@ import net.minecraft.client.KeyMapping;
 /** Temporarily rebinds a key without discarding the active backend's modifier settings. */
 final class KeyMappingTestHelper {
 	private KeyMappingTestHelper() {}
+
+	static Runnable resetToDefault(KeyMapping mapping) {
+		Runnable restore = rebindUnmodified(mapping, mapping.getDefaultKey());
+		((ContextAwareKeyMapping) mapping).resetModifiersToDefault();
+		KeyMapping.resetMapping();
+		return restore;
+	}
 
 	static Runnable rebindUnmodified(KeyMapping mapping, InputConstants.Key key) {
 		InputConstants.Key originalKey = InputConstants.getKey(mapping.saveString());
