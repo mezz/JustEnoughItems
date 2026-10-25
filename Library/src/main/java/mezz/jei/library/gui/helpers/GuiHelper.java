@@ -36,6 +36,7 @@ import mezz.jei.library.gui.widgets.AbstractScrollWidget;
 import mezz.jei.library.gui.widgets.DrawableWidget;
 import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
 import mezz.jei.library.gui.widgets.ScrollGridWidgetFactory;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 
@@ -75,10 +76,24 @@ public class GuiHelper implements IGuiHelper {
 	}
 
 	@Override
+	public IDrawableStatic createDrawableSprite(ResourceLocation spriteId, int width, int height) {
+		ErrorUtil.checkNotNull(spriteId, "spriteId");
+		checkPositive(width, "width");
+		checkPositive(height, "height");
+		return new DrawableSprite(Minecraft.getInstance().getGuiSprites(), spriteId, width, height);
+	}
+
+	@Override
 	public IScalableDrawable createScalableDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId) {
 		ErrorUtil.checkNotNull(textureAtlas, "textureAtlas");
 		ErrorUtil.checkNotNull(spriteId, "spriteId");
 		return new ScalableDrawable(textureAtlas, spriteId);
+	}
+
+	@Override
+	public IScalableDrawable createScalableDrawableSprite(ResourceLocation spriteId) {
+		ErrorUtil.checkNotNull(spriteId, "spriteId");
+		return new ScalableDrawable(Minecraft.getInstance().getGuiSprites(), spriteId);
 	}
 
 	@Override

@@ -52,7 +52,17 @@ public final class TestGuiHelper implements IGuiHelper {
 	}
 
 	@Override
+	public IDrawableStatic createDrawableSprite(ResourceLocation spriteId, int width, int height) {
+		return new TestDrawable(width, height);
+	}
+
+	@Override
 	public IScalableDrawable createScalableDrawableSprite(TextureAtlas textureAtlas, ResourceLocation spriteId) {
+		return DRAWABLE;
+	}
+
+	@Override
+	public IScalableDrawable createScalableDrawableSprite(ResourceLocation spriteId) {
 		return DRAWABLE;
 	}
 
