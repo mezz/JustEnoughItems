@@ -73,6 +73,11 @@ public class TagIngredientElement<T> extends IngredientElement<T> {
 			.orElse(false);
 	}
 
+	if (!clientConfig.showTagBadges().getValue()) {
+    return;
+}
+
+	
 	static <R> Optional<R> findTagRecipe(TagKey<?> tagKey, IRecipeCategory<R> recipeCategory, Stream<R> recipes) {
 		return recipes
 			.filter(recipe -> tagKey.location().equals(recipeCategory.getIdentifier(recipe)))
