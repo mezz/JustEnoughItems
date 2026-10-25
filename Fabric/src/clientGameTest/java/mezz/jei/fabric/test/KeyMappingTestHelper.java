@@ -1,6 +1,7 @@
 package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import mezz.jei.fabric.input.ContextAwareKeyMapping;
 import mezz.jei.fabric.input.FabricKeyMapping;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
@@ -12,6 +13,13 @@ final class KeyMappingTestHelper {
 	static KeyMapping find(String name) {
 		return java.util.Arrays.stream(net.minecraft.client.Minecraft.getInstance().options.keyMappings)
 			.filter(mapping -> mapping.getName().equals(name)).findFirst().orElseThrow();
+	}
+
+	static Runnable resetToDefault(KeyMapping mapping) {
+		Runnable restore = rebindUnmodified(mapping, mapping.getDefaultKey());
+		((ContextAwareKeyMapping) mapping).resetModifiersToDefault();
+		KeyMapping.resetMapping();
+		return restore;
 	}
 
 	static Runnable rebindUnmodified(KeyMapping mapping, InputConstants.Key key) {
