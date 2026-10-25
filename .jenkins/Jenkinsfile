@@ -14,7 +14,7 @@ def publishMods(String gradleTask) {
                 if (attempt++ > 0) {
                     sleep time: 2, unit: 'MINUTES'
                 }
-                sh "./gradlew :${loader}:${gradleTask}"
+                sh "./gradlew --no-daemon :${loader}:${gradleTask}"
             }
         }
     }
@@ -39,7 +39,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh '''
-                    ./gradlew \
+                    ./gradlew --no-daemon \
                         :Forge:build \
                         :Fabric:build \
                         :Common:build \
@@ -55,7 +55,7 @@ pipeline {
 
         stage('API Compatibility') {
             steps {
-                sh "./gradlew checkApiCompatibility"
+                sh "./gradlew --no-daemon checkApiCompatibility"
             }
         }
         stage('Client GameTests') {
@@ -69,7 +69,7 @@ pipeline {
                         JEI_JVM_DIAGNOSTIC_FILE="$WORKSPACE/Fabric/build/reports/client-gametest-diagnostics.txt" \
                             python3 .jenkins/runWithJvmDiagnostics.py \
                             xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
-                            ./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs --no-parallel
+                            ./gradlew --no-daemon :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs --no-parallel
                     else
                         echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
                     fi
@@ -80,7 +80,7 @@ pipeline {
         stage('Publish Maven') {
             steps {
                 sh '''
-                    ./gradlew \
+                    ./gradlew --no-daemon \
                         :Gui:publish \
                         :Library:publish \
                         :Forge:publish \
