@@ -33,7 +33,9 @@ import mezz.jei.library.gui.recipes.layout.builder.RecipeSlotBuilder;
 import mezz.jei.library.gui.widgets.ScrollBoxRecipeWidget;
 import mezz.jei.library.focus.FocusGroup;
 import mezz.jei.library.ingredients.IIngredientManagerInternal;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.data.AtlasIds;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
 
@@ -75,10 +77,22 @@ public class GuiHelper implements IGuiHelper {
 	}
 
 	@Override
+	public IDrawableStatic createDrawableSprite(Identifier spriteId, int width, int height) {
+		TextureAtlas guiAtlas = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.GUI);
+		return createDrawableSprite(guiAtlas, spriteId, width, height);
+	}
+
+	@Override
 	public IScalableDrawable createScalableDrawableSprite(TextureAtlas textureAtlas, Identifier spriteId) {
 		ErrorUtil.checkNotNull(textureAtlas, "textureAtlas");
 		ErrorUtil.checkNotNull(spriteId, "spriteId");
 		return new ScalableDrawable(textureAtlas, spriteId);
+	}
+
+	@Override
+	public IScalableDrawable createScalableDrawableSprite(Identifier spriteId) {
+		TextureAtlas guiAtlas = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.GUI);
+		return createScalableDrawableSprite(guiAtlas, spriteId);
 	}
 
 	@Override
