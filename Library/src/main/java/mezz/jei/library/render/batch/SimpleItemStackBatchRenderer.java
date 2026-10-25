@@ -11,8 +11,9 @@ import java.util.List;
 public class SimpleItemStackBatchRenderer implements IItemStackBatchRenderer {
 	@Override
 	public void renderBatch(GuiGraphicsExtractor guiGraphics, ItemStackRenderer itemStackRenderer, List<BatchRenderElement<ItemStack>> elements) {
-		var font = Minecraft.getInstance().font;
+		var minecraft = Minecraft.getInstance();
 		for (BatchRenderElement<ItemStack> element : elements) {
+			var font = itemStackRenderer.getFontRenderer(minecraft, element.ingredient());
 			guiGraphics.fakeItem(element.ingredient(), element.x(), element.y());
 			guiGraphics.itemDecorations(font, element.ingredient(), element.x(), element.y());
 		}
