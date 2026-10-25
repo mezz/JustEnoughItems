@@ -438,13 +438,13 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 		boolean isTag = getTagKey().isPresent();
 		if (isTag) {
-			if (!clientConfig.showTagBadges().get()) {
-				return;
-			}
+			if (!clientConfig.getShowTagBadges()) {
+        return;
+        }
 		} else {
-			if (!clientConfig.showListBadges().get()) {
-				return;
-			}
+			if (!clientConfig.getShowListBadges()) {
+          return;
+         }
 		}
 
 		Textures textures = Internal.getTextures();
