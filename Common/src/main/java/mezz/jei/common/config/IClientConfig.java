@@ -93,4 +93,7 @@ public interface IClientConfig {
 	IConfigValue<Boolean> tagContentTooltipEnabled();
 
 	IConfigValue<Boolean> hideSingleTagContentTooltipEnabled();
+
+	boolean getShowTagBadges();
+	boolean getShowListBadges();
 }
