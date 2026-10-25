@@ -74,6 +74,11 @@ public class IngredientKeyboardNavigationClientGameTest implements FabricClientG
 						bind(cleanup, "key.jei.showRecipe", InputConstants.KEY_R);
 						bind(cleanup, "key.jei.showUses", InputConstants.KEY_U);
 						bind(cleanup, "key.jei.bookmark", InputConstants.KEY_A);
+						// Reused run directories can retain the old unmodified history shortcuts.
+						for (String name : List.of("key.jei.previousSearch", "key.jei.nextSearch")) {
+							KeyMapping mapping = Objects.requireNonNull(KeyMapping.get(name));
+							cleanup.add(KeyMappingTestHelper.resetToDefault(mapping));
+						}
 					});
 					assertMovement(context);
 					assertTooltipBounds(context);
