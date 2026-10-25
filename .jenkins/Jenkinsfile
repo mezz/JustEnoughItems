@@ -14,7 +14,7 @@ def publishMods(String gradleTask) {
                 if (attempt++ > 0) {
                     sleep time: 2, unit: 'MINUTES'
                 }
-                sh "./gradlew :${loader}:${gradleTask}"
+                sh "./gradlew :${loader}:${gradleTask} --no-daemon"
             }
         }
     }
@@ -38,7 +38,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh './gradlew build'
+                sh './gradlew build --no-daemon'
             }
         }
 
@@ -63,7 +63,7 @@ pipeline {
 
         stage('Publish Maven') {
             steps {
-                sh './gradlew publish -PDEPLOY_DIR="$MAVEN_DEPLOY_DIR"'
+                sh './gradlew publish --no-daemon -PDEPLOY_DIR="$MAVEN_DEPLOY_DIR"'
             }
         }
 
