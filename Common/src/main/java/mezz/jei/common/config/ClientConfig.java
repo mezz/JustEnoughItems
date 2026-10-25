@@ -25,8 +25,8 @@ public final class ClientConfig implements IClientConfig {
 	private final IConfigValue<Boolean> toastReflowEnabled;
 	private final IConfigValue<Boolean> compactInventoryEffects;
 	private final IConfigValue<Boolean> hideIngredientsWhenNotSearching;
-	private final IJeiConfigValue<Boolean> showTagBadges;
-    private final IJeiConfigValue<Boolean> showListBadges;
+	private final IConfigValue<Boolean> showTagBadges;
+    private final IConfigValue<Boolean> showListBadges;
 
 	// cheat_mode
 	private final IConfigValue<GiveMode> giveMode;
