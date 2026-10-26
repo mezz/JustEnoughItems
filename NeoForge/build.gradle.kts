@@ -480,6 +480,20 @@ tasks.named<CompatibilityTask>("checkJarCompatibility") {
 	artifact.set("${project.group}:$apiArchivesName")
 }
 
+// Compare the packaged API against the same published artifact as the standalone API jar.
+listOf("" to apiArchivesName, "Common" to "${modId}-${minecraftVersion}-common-api").forEach { (apiName, artifactName) ->
+	tasks.register("checkRuntime${apiName}ApiCompatibility", CompatibilityTask::class.java, layout, providers, providers.gradleProperty("specificationVersion")).configure {
+		group = LifecycleBasePlugin.VERIFICATION_GROUP
+		description = "Checks the packaged $artifactName API against the latest published API jar in the same major version."
+		mavens.set(listOf("https://maven.blamejared.com"))
+		libraries.setFrom(emptyList<Any>())
+		nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
+		fail.set(true)
+		inputJar.set(shadedJar.flatMap { it.archiveFile })
+		artifact.set("${project.group}:$artifactName")
+	}
+}
+
 publishMods {
 	file.set(shadedJar.flatMap { it.archiveFile })
 	type = BETA
