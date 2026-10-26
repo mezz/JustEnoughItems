@@ -1,3 +1,7 @@
+import org.gradle.api.attributes.Bundling
+import org.gradle.api.attributes.Usage
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.Provider
 import mezz.jei.gradle.gradleProperty
 import mezz.jei.gradle.ValidateApiCompatibilityReports
 import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
@@ -206,11 +210,51 @@ apiProjectPaths.forEach { apiProjectPath ->
     }
 }
 
+// Check the packaged APIs in each loader's final production namespace.
+val runtimeApiCompatibilityReports = mutableListOf<Provider<RegularFile>>()
+val runtimeApiCompatibilityTasks = listOf("Fabric", "NeoForge", "Forge").flatMap { loader ->
+    val runtimeInput = configurations.create("${loader.lowercase()}RuntimeApiCompatibilityInput") {
+        isCanBeConsumed = false
+        isCanBeResolved = true
+        isTransitive = false
+        attributes {
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage::class.java, Usage.JAVA_RUNTIME))
+            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class.java, Bundling.SHADOWED))
+        }
+    }
+    dependencies.add(runtimeInput.name, dependencies.project(mapOf(
+        "path" to ":$loader",
+        "configuration" to "modShadeRuntimeElements"
+    )))
+    val runtimeJar = runtimeInput.incoming.files.elements.map { it.single().asFile }
+    val commonApiSuffix = if (loader == "Fabric") "common-api-intermediary" else "common-api"
+    listOf("Common" to commonApiSuffix, "" to "${loader.lowercase()}-api").map { (apiName, artifactSuffix) ->
+        val report = layout.buildDirectory.file("reports/apiCompatibility/${loader.lowercase()}-runtime-$artifactSuffix.json")
+        runtimeApiCompatibilityReports.add(report)
+        tasks.register("check${loader}Runtime${apiName}ApiCompatibility", CompatibilityTask::class.java,
+            layout, providers, providers.gradleProperty("specificationVersion")).apply {
+            configure {
+                group = LifecycleBasePlugin.VERIFICATION_GROUP
+                description = "Checks $loader's packaged $artifactSuffix API against the latest published API jar in the same major version."
+                output.set(report)
+                inputJar.fileProvider(runtimeJar)
+                artifact.set("${modGroup}:${modId}-${minecraftVersion}-$artifactSuffix")
+                mavens.set(listOf("https://maven.blamejared.com"))
+                libraries.setFrom(emptyList<Any>())
+                nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
+                // The aggregate validator applies the same policy as the standalone API checks.
+            }
+        }
+    }
+}
+
 val checkApiCompatibility = tasks.register<ValidateApiCompatibilityReports>("checkApiCompatibility") {
     group = LifecycleBasePlugin.VERIFICATION_GROUP
-    description = "Checks all published JEI API jars for compatibility with the latest published API jars in the same major version."
+    description = "Checks standalone API jars and packaged loader APIs against the latest published API jars in the same major version."
     dependsOn(apiProjectPaths.map { "$it:checkJarCompatibility" })
+    dependsOn(runtimeApiCompatibilityTasks)
     reportFiles.from(apiCompatibilityReports.values)
+    reportFiles.from(runtimeApiCompatibilityReports)
     apiSourceFiles.from(apiProjectPaths.map { apiProjectPath ->
         project(apiProjectPath).fileTree("src/api/java") {
             include("**/*.java")
