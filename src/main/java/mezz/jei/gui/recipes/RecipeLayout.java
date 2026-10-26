@@ -221,26 +221,34 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		if (hoveredIngredient != null) {
 			hoveredIngredient.drawOverlays(minecraft, posX, posY, recipeMouseX, recipeMouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {
-			List<String> categoryTooltipStrings = LegacyUtil.getTooltipStrings(recipeCategory, recipeMouseX, recipeMouseY);
-			List<String> tooltipStrings = new ArrayList<>(categoryTooltipStrings);
-			List<String> wrapperTooltips = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
-			//noinspection ConstantConditions
-			if (wrapperTooltips != null) {
-				tooltipStrings.addAll(wrapperTooltips);
-			}
-			if (tooltipStrings.isEmpty() && shapelessIcon != null) {
-				tooltipStrings = new ArrayList<>(shapelessIcon.getTooltipStrings(recipeMouseX, recipeMouseY));
-			}
+			List<String> tooltipStrings = getTooltipStrings(recipeMouseX, recipeMouseY);
 			if (recipeTransferButton != null) {
 				recipeTransferButton.drawRecipeError(minecraft, mouseX, mouseY);
 				recipeTransferButton.addShortcutTooltips(tooltipStrings);
 			}
-			if (tooltipStrings != null && !tooltipStrings.isEmpty()) {
+			if (!tooltipStrings.isEmpty()) {
 				TooltipRenderer.drawHoveringText(minecraft, tooltipStrings, mouseX, mouseY);
 			}
 		}
 
 		GlStateManager.disableAlpha();
+	}
+
+	List<String> getTooltipStrings(int recipeMouseX, int recipeMouseY) {
+		List<String> categoryTooltipStrings = LegacyUtil.getTooltipStrings(recipeCategory, recipeMouseX, recipeMouseY);
+		List<String> tooltipStrings = new ArrayList<>(categoryTooltipStrings);
+		List<String> wrapperTooltips = recipeWrapper.getTooltipStrings(recipeMouseX, recipeMouseY);
+		//noinspection ConstantConditions
+		if (wrapperTooltips != null) {
+			tooltipStrings.addAll(wrapperTooltips);
+		}
+		if (tooltipStrings.isEmpty() && shapelessIcon != null) {
+			List<String> shapelessTooltips = shapelessIcon.getTooltipStrings(recipeMouseX, recipeMouseY);
+			if (shapelessTooltips != null) {
+				tooltipStrings.addAll(shapelessTooltips);
+			}
+		}
+		return tooltipStrings;
 	}
 
 	@Override
