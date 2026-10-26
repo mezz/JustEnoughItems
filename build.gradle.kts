@@ -1,6 +1,5 @@
 import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
-import com.gtnewhorizons.retrofuturagradle.mcp.DeobfuscateTask
 import org.gradle.api.attributes.java.TargetJvmVersion
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -137,8 +136,8 @@ minecraft {
 	injectedTags.set(mapOf("VERSION" to project.version))
 }
 
-tasks.withType<DeobfuscateTask> {
-	accessTransformerFiles.from("${projectDir}/src/main/resources/jei_at.cfg")
+mcpTasks {
+	deobfuscationATs.from(layout.projectDirectory.file("src/main/resources/jei_at.cfg"))
 }
 
 tasks.withType<ProcessResources> {
