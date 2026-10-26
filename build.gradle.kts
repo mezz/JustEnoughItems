@@ -388,10 +388,26 @@ val checkApiJarCompatibility = tasks.named<CompatibilityTask>("checkJarCompatibi
 	fail.set(true)
 }
 
+val checkRuntimeApiCompatibility = tasks.register("checkRuntimeApiCompatibility", CompatibilityTask::class.java,
+	layout, providers, providers.gradleProperty("specificationVersion")).apply {
+	configure {
+		group = "verification"
+		description = "Checks the shipped jar against the latest published JEI 4 API."
+		inputJar.set(tasks.reobfJar.flatMap { it.archiveFile })
+		artifact.set("$modGroup:$baseArchivesName")
+		classifier.set("api")
+		output.set(layout.buildDirectory.file("reports/apiCompatibility/runtime.json"))
+		mavens.set(listOf("https://maven.blamejared.com"))
+		libraries.setFrom(emptyList<Any>())
+		nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
+		fail.set(true)
+	}
+}
+
 val checkApiCompatibility = tasks.register("checkApiCompatibility") {
 	group = "verification"
-	description = "Checks compatibility with the latest published JEI 4 API."
-	dependsOn(checkApiJarCompatibility)
+	description = "Checks standalone and shipped APIs against the latest published JEI 4 API."
+	dependsOn(checkApiJarCompatibility, checkRuntimeApiCompatibility)
 }
 
 tasks.named("check") {
