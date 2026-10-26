@@ -33,8 +33,11 @@ val apiProjectPaths = listOf(":Common", ":Fabric", ":NeoForge")
 
 val checkApiCompatibility = tasks.register("checkApiCompatibility") {
     group = LifecycleBasePlugin.VERIFICATION_GROUP
-    description = "Checks all published JEI API jars for compatibility with the latest published API jars in the same major version."
+    description = "Checks API jars and final runtime jars against the latest published API jars in the same major version."
     dependsOn(apiProjectPaths.map { "$it:checkJarCompatibility" })
+    dependsOn(listOf(":Fabric", ":NeoForge").flatMap { loader ->
+        listOf("$loader:checkRuntimeApiCompatibility", "$loader:checkRuntimeCommonApiCompatibility")
+    })
 }
 
 tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME) {
