@@ -65,6 +65,7 @@ public final class JeiFabricClientTests implements ClientModInitializer {
 
 	private static void registerAllTests() {
 		List<FabricClientTestRunner.ClientTestCase> testCases = new ArrayList<>();
+		testCases.add(ItemBatchRenderingClientGameTest.getTestCase());
 		testCases.add(JeiFabricClientResourceTests.getTestCase());
 		testCases.add(ConfigScreenClientTest.getTestCase());
 		testCases.add(IngredientNavigationClientTest.getTestCase());
