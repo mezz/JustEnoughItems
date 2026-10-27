@@ -3,16 +3,21 @@ package mezz.jei.gui.input;
 import com.mojang.blaze3d.platform.InputConstants;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
+import mezz.jei.common.input.interaction.IInputInteraction;
 import mezz.jei.gui.util.GuiEventListenerUtil;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 
+import java.util.Optional;
+
 /** Connects Minecraft's input callbacks to JEI's input controller. */
 public class ClientInputHandler {
 	private final GuiInputController controller;
 	private final IInternalKeyMappings keybindings;
+	/** Retained for every character callback from the last key press. */
+	private Optional<IInputInteraction> keyInteraction = Optional.empty();
 
 	public ClientInputHandler(GuiInputController controller, IInternalKeyMappings keybindings) {
 		this.controller = controller;
@@ -20,6 +25,7 @@ public class ClientInputHandler {
 	}
 
 	public void onGuiChanged() {
+		keyInteraction = Optional.empty();
 		controller.screenChanged();
 	}
 
@@ -31,11 +37,12 @@ public class ClientInputHandler {
 	 * select its search field before the creative inventory's search field handles the key.</p>
 	 */
 	public boolean onKeyboardKeyPressedPre(Screen screen, UserInput input) {
+		keyInteraction = Optional.empty();
 		// Focus Search transfers keyboard focus even when the creative inventory's search field is selected.
 		if (screen instanceof ChatScreen || input.is(keybindings.getFocusSearch()) || !isContainerTextFieldFocused(screen)) {
-			return controller.keyPressed(screen, input);
+			keyInteraction = controller.keyPressed(screen, input);
 		}
-		return false;
+		return keyInteraction.isPresent();
 	}
 
 	/**
@@ -44,7 +51,8 @@ public class ClientInputHandler {
 	 */
 	public boolean onKeyboardKeyPressedPost(Screen screen, UserInput input) {
 		if (!(screen instanceof ChatScreen) && isContainerTextFieldFocused(screen)) {
-			return controller.keyPressed(screen, input);
+			keyInteraction = controller.keyPressed(screen, input);
+			return keyInteraction.isPresent();
 		}
 		return false;
 	}
@@ -52,9 +60,13 @@ public class ClientInputHandler {
 	/**
 	 * Offers typed characters to JEI before the Minecraft screen handles them, when no
 	 * Minecraft text field has keyboard focus. JEI inserts them only if its search field
-	 * has keyboard focus.
+	 * has keyboard focus. Characters from a consumed action are cancelled before reaching
+	 * either JEI's editor or the screen.
 	 */
 	public boolean onKeyboardCharTypedPre(Screen screen, CharacterEvent event) {
+		if (consumesCharacters()) {
+			return true;
+		}
 		if (!isContainerTextFieldFocused(screen)) {
 			return controller.charTyped(event);
 		}
@@ -66,12 +78,13 @@ public class ClientInputHandler {
 	 * to handle them. JEI inserts them only if its search field has keyboard focus.
 	 */
 	public void onKeyboardCharTypedPost(Screen screen, CharacterEvent event) {
-		if (isContainerTextFieldFocused(screen)) {
+		if (!consumesCharacters() && isContainerTextFieldFocused(screen)) {
 			controller.charTyped(event);
 		}
 	}
 
 	public boolean onGuiMouseClicked(Screen screen, UserInput input) {
+		keyInteraction = Optional.empty();
 		return controller.mousePressed(screen, input);
 	}
 
@@ -86,6 +99,10 @@ public class ClientInputHandler {
 	public boolean onGuiMouseDragged(Screen screen, MouseButtonEvent event, double dragX, double dragY) {
 		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(event.button());
 		return controller.mouseDragged(screen, event.x(), event.y(), input, dragX, dragY);
+	}
+
+	private boolean consumesCharacters() {
+		return keyInteraction.map(IInputInteraction::consumesCharacters).orElse(false);
 	}
 
 	private boolean isContainerTextFieldFocused(Screen screen) {
