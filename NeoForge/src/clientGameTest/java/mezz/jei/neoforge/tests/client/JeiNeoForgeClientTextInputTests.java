@@ -11,6 +11,9 @@ import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.CharacterEvent;
+import java.util.List;
+import java.time.Duration;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,6 +49,13 @@ public final class JeiNeoForgeClientTextInputTests {
 			}
 			InventoryScreen testScreen = new InventoryScreen(client.player);
 			client.setScreen(testScreen);
+		});
+		ClientTestUtil.waitUntil(
+			() -> ClientTestUtil.computeOnClient(client -> Internal.getJeiRuntime().getIngredientListOverlay().isListDisplayed()),
+			Duration.ofSeconds(60),
+			() -> "Expected JEI's ingredient list on the inventory screen."
+		);
+		ClientTestUtil.runOnClient(client -> {
 
 			IngredientListOverlay ingredientListOverlay = (IngredientListOverlay) Internal.getJeiRuntime()
 				.getIngredientListOverlay();
@@ -59,27 +69,15 @@ public final class JeiNeoForgeClientTextInputTests {
 				.findFirst()
 				.orElseThrow(() -> new AssertionError("Expected JEI's ingredient overlay to contain a search field."));
 
-			focusSearchWithHotkey(client.keyboardHandler, client.getWindow().handle());
-			if (!ingredientListOverlay.hasKeyboardFocus()) {
-				throw new AssertionError("Expected the focus-search hotkey to focus JEI's search field.");
-			}
-
 			try {
-				searchField.clearFocus();
-				focusSearchWithHotkey(
-					client.keyboardHandler, client.getWindow().handle(), () -> TextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField)
-				);
+				assertFocusSearchAndTextInput(client.keyboardHandler, client.getWindow().handle(), searchField);
 			} finally {
 				client.setScreen(null);
 			}
 		});
 	}
 
-	private static void focusSearchWithHotkey(KeyboardHandler keyboardHandler, long windowHandle) {
-		focusSearchWithHotkey(keyboardHandler, windowHandle, () -> {});
-	}
-
-	private static void focusSearchWithHotkey(KeyboardHandler keyboardHandler, long windowHandle, Runnable assertions) {
+	private static void assertFocusSearchAndTextInput(KeyboardHandler keyboardHandler, long windowHandle, GuiTextFieldFilter searchField) {
 		KeyMapping focusSearch = KeyMapping.get(FOCUS_SEARCH_KEY_MAPPING);
 		if (focusSearch == null) {
 			throw new AssertionError("Expected the focus-search key mapping to be registered.");
@@ -90,11 +88,65 @@ public final class JeiNeoForgeClientTextInputTests {
 		try {
 			// GLFW modifier state cannot be synthesized by this test harness, so temporarily remove Cmd/Ctrl.
 			focusSearch.setKeyModifierAndCode(KeyModifier.NONE, TEST_FOCUS_SEARCH_KEY);
-			KeyEvent event = new KeyEvent(GLFW.GLFW_KEY_F, 0, 0);
-			TextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, event);
-			assertions.run();
+			int key = GLFW.GLFW_KEY_F;
+
+			for (String text : List.of("", "stone")) {
+				for (int codePoint : new int[]{'f', 0x1F600}) {
+					searchField.setValue(text);
+					searchField.clearFocus();
+					TextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, new KeyEvent(key, 0, 0));
+					if (!searchField.isFocused()) {
+						throw new AssertionError("Expected the focus-search hotkey to focus JEI's search field.");
+					}
+					TextInputTestUtil.invokeCharacterCallback(keyboardHandler, windowHandle, new CharacterEvent(codePoint, 0));
+					if (!searchField.getValue().equals(text)) {
+						throw new AssertionError("Expected the focus-search hotkey to preserve '" + text + "', got: " + searchField.getValue());
+					}
+					searchField.setValue("");
+					TextInputTestUtil.typePlainText(keyboardHandler, windowHandle, searchField);
+				}
+			}
+
+			assertHistoryShortcutDoesNotType(keyboardHandler, windowHandle, searchField);
+
+			focusSearch.setKeyModifierAndCode(KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_F6));
+
+			searchField.clearFocus();
+			TextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, new KeyEvent(GLFW.GLFW_KEY_F6, 0, 0));
+			if (!searchField.isFocused()) {
+				throw new AssertionError("Expected the nonprinting focus-search hotkey to focus JEI's search field.");
+			}
+			TextInputTestUtil.typePlainText(keyboardHandler, windowHandle, searchField);
 		} finally {
 			focusSearch.setKeyModifierAndCode(originalModifier, originalKey);
+
+		}
+	}
+
+	private static void assertHistoryShortcutDoesNotType(KeyboardHandler keyboardHandler, long windowHandle, GuiTextFieldFilter searchField) {
+		KeyMapping previousSearch = java.util.Objects.requireNonNull(KeyMapping.get("key.jei.previousSearch"));
+		InputConstants.Key originalKey = previousSearch.getKey();
+		KeyModifier originalModifier = previousSearch.getKeyModifier();
+		try {
+			previousSearch.setKeyModifierAndCode(KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_G));
+
+			searchField.setValue("stone");
+			searchField.clearFocus();
+			searchField.focus();
+			searchField.setValue("dirt");
+			TextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, new KeyEvent(GLFW.GLFW_KEY_G, 0, 0));
+			if (!searchField.isFocused() || !searchField.getValue().equals("stone")) {
+				throw new AssertionError("Expected the history shortcut to recall 'stone' while keeping search focused.");
+			}
+			TextInputTestUtil.invokeCharacterCallback(keyboardHandler, windowHandle, new CharacterEvent('g', 0));
+			if (!searchField.getValue().equals("stone")) {
+				throw new AssertionError("Expected the history shortcut's character to be consumed, got: " + searchField.getValue());
+			}
+			searchField.setValue("");
+			TextInputTestUtil.typePlainText(keyboardHandler, windowHandle, searchField);
+		} finally {
+			previousSearch.setKeyModifierAndCode(originalModifier, originalKey);
+
 		}
 	}
 }
