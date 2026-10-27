@@ -9,6 +9,7 @@ import net.fabricmc.loom.task.RemapSourcesJarTask
 import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import java.lang.module.ModuleFinder
 
 plugins {
     java
@@ -448,11 +449,29 @@ val r8LibraryClasspath = externalSourceSetClasspath(listOf(sourceSets.main.get()
 // ModShade shrinks the remapped jar, so R8 also needs Minecraft's production names.
 val r8MinecraftClasspath = LoomGradleExtension.get(project).getMinecraftJarsCollection(MappingsNamespace.INTERMEDIARY)
 
+// Dependency module descriptors describe their original jars, not the shaded mod.
+modShade.exclude("module-info.class")
+modShade.exclude("META-INF/versions/**/module-info.class")
 val shadedJar = modShade.shadeJar()
 shadedJar.configure {
     shrink.set(true)
     shrinkLibraryClasspath.setFrom(r8LibraryClasspath.minus(project.files(configurations)), r8MinecraftClasspath, r8Libraries)
     shrinkRuleFiles.from(rootProject.layout.projectDirectory.file("config/lucene-r8.pro"))
+}
+val verifyJarModule = tasks.register("verifyJarModule") {
+    group = "verification"
+    description = "Checks the published mod jar's module metadata."
+    val archive = shadedJar.flatMap { it.archiveFile }
+    inputs.file(archive).withPathSensitivity(PathSensitivity.NONE)
+    doLast {
+        val modules = ModuleFinder.of(archive.get().asFile.toPath()).findAll()
+        check(modules.size == 1 && modules.single().descriptor().isAutomatic) {
+            "The packaged mod jar must be discoverable as an automatic module"
+        }
+    }
+}
+tasks.check {
+    dependsOn(verifyJarModule)
 }
 apply(from = "../gradle/verify-jar-bytecode.gradle")
 val shadedSourcesJar = modShade.shadeSourcesJar()

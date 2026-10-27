@@ -4,9 +4,11 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.module.ModuleFinder;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
@@ -15,8 +17,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Checks JEI interface implementations in the shipped jar using Java reflection. */
+/** Checks the shipped Forge jar. */
 public class ReobfuscatedJarTest {
+	@Test
+	public void packagedJarHasValidModuleMetadata() {
+		String jarPath = System.getProperty("jei.test.packagedJar");
+		assertNotNull(jarPath, "Run through :Forge:test to check the packaged jar");
+		var modules = ModuleFinder.of(Path.of(jarPath)).findAll();
+		assertTrue(modules.size() == 1, "The packaged jar must be discoverable as one module");
+		assertTrue(modules.iterator().next().descriptor().isAutomatic(), "The mod jar must not inherit a dependency's module descriptor");
+	}
+
 	@Test
 	public void concreteClassesImplementPackagedInterfaces() throws IOException, ClassNotFoundException {
 		String jarPath = System.getProperty("jei.test.packagedJar");
