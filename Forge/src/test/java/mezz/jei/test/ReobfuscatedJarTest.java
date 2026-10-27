@@ -5,10 +5,12 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodType;
+import java.lang.module.ModuleFinder;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -24,6 +26,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** Checks packaged dependencies and guards JEI interfaces against Minecraft remapping collisions. */
 public class ReobfuscatedJarTest {
+	@Test
+	public void packagedJarHasValidModuleMetadata() {
+		String jarPath = System.getProperty("jei.test.packagedJar");
+		assertNotNull(jarPath, "Run through :Forge:test to check the packaged jar");
+		var modules = ModuleFinder.of(Path.of(jarPath)).findAll();
+		assertTrue(modules.size() == 1, "The packaged jar must be discoverable as one module");
+		assertTrue(modules.iterator().next().descriptor().isAutomatic(), "The mod jar must not inherit a dependency's module descriptor");
+	}
+
 	@Test
 	public void packagedLuceneIndexesAndSearches() throws Exception {
 		try (URLClassLoader loader = new URLClassLoader(packagedClasspath(), ClassLoader.getPlatformClassLoader())) {

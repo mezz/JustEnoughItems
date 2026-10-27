@@ -274,6 +274,9 @@ dependencies {
 val r8LibraryClasspath = externalSourceSetClasspath(listOf(sourceSets.main.get()))
     .minus(files(dependencyProjects.map { it.sourceSets.main.get().output }))
 
+// Dependency module descriptors describe their original jars, not the shaded mod.
+modShade.exclude("module-info.class")
+modShade.exclude("META-INF/versions/**/module-info.class")
 val shadedJar = modShade.shadeJar()
 shadedJar.configure {
     shrink.set(true)
