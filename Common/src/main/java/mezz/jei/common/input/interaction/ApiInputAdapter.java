@@ -79,6 +79,11 @@ public final class ApiInputAdapter {
 	 */
 	private record RelativeInteraction(IInputInteraction interaction, Supplier<Rect2i> area) implements IInputInteraction {
 		@Override
+		public boolean consumesCharacters() {
+			return interaction.consumesCharacters();
+		}
+
+		@Override
 		public void complete(UserInput input) {
 			interaction.complete(relative(input, area.get()));
 		}
