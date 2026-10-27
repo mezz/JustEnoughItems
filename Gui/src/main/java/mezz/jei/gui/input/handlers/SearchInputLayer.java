@@ -129,7 +129,7 @@ public class SearchInputLayer implements IGuiInputLayer, ITextInputHandler {
 			return Optional.of(InputAction.run(() -> textFieldFilter.moveCompletion(1)));
 		}
 		if (textFieldFilter.canConsumeInput() && input.isAllowedChatCharacter()) {
-			return Optional.of(ConsumedInput.INSTANCE);
+			return Optional.of(ConsumedInput.TEXT_INPUT);
 		}
 		return Optional.empty();
 	}

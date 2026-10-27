@@ -8,6 +8,7 @@ import mezz.jei.gui.input.GuiTextFieldFilter;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.test.client.TextInputTestUtil;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -17,6 +18,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -131,10 +133,69 @@ final class JeiFabricKeyMappingClientTests {
 				IngredientListOverlay overlay = (IngredientListOverlay) Internal.getJeiRuntime().getIngredientListOverlay();
 				GuiTextFieldFilter searchField = new ReflectionUtil().getFieldWithClass(overlay, GuiTextFieldFilter.class)
 					.findFirst().orElseThrow(() -> new AssertionError("Expected JEI's search field."));
-				TextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().getWindow(), searchField);
+				assertShortcutCharacters(client.keyboardHandler, client.getWindow().getWindow(), searchField);
 			});
 		} finally {
 			ClientTestUtil.runOnClient(client -> restoreBinding.get().run());
+		}
+	}
+
+	private static void assertShortcutCharacters(KeyboardHandler keyboard, long window, GuiTextFieldFilter searchField) {
+		for (String text : List.of("", "stone")) {
+			for (int codePoint : new int[]{'f', 0x1F600}) {
+				searchField.setValue(text);
+				searchField.clearFocus();
+				TextInputTestUtil.invokeKeyPress(keyboard, window, GLFW.GLFW_KEY_F);
+				if (!searchField.isFocused()) {
+					throw new AssertionError("Expected the focus shortcut to select JEI search.");
+				}
+				TextInputTestUtil.invokeCharacterCallback(keyboard, window, codePoint);
+				if (!searchField.getValue().equals(text)) {
+					throw new AssertionError("Expected the focus shortcut to preserve '" + text + "', got: " + searchField.getValue());
+				}
+				searchField.setValue("");
+				TextInputTestUtil.invokeKeyPress(keyboard, window, GLFW.GLFW_KEY_F);
+				TextInputTestUtil.invokeCharacterCallback(keyboard, window, 'f');
+				if (!searchField.getValue().equals("f")) {
+					throw new AssertionError("Expected the bound letter to type normally when search already has focus.");
+				}
+				searchField.setValue("");
+				TextInputTestUtil.typePlainText(keyboard, window, searchField);
+			}
+		}
+
+		KeyMapping previousSearch = KeyMappingTestHelper.find("key.jei.previousSearch");
+		Runnable restoreHistory = KeyMappingTestHelper.rebindUnmodified(previousSearch, InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_G));
+		try {
+			searchField.setValue("stone");
+			searchField.clearFocus();
+			searchField.focus();
+			searchField.setValue("dirt");
+			TextInputTestUtil.invokeKeyPress(keyboard, window, GLFW.GLFW_KEY_G);
+			if (!searchField.isFocused() || !searchField.getValue().equals("stone")) {
+				throw new AssertionError("Expected the history shortcut to recall 'stone' while keeping search focused.");
+			}
+			TextInputTestUtil.invokeCharacterCallback(keyboard, window, 'g');
+			if (!searchField.getValue().equals("stone")) {
+				throw new AssertionError("Expected the history shortcut's character to be consumed, got: " + searchField.getValue());
+			}
+			searchField.setValue("");
+			TextInputTestUtil.typePlainText(keyboard, window, searchField);
+		} finally {
+			restoreHistory.run();
+		}
+
+		KeyMapping focusSearch = KeyMappingTestHelper.find(FOCUS_SEARCH_TRANSLATION_KEY);
+		Runnable restoreFocus = KeyMappingTestHelper.rebindUnmodified(focusSearch, InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_F6));
+		try {
+			searchField.clearFocus();
+			TextInputTestUtil.invokeKeyPress(keyboard, window, GLFW.GLFW_KEY_F6);
+			if (!searchField.isFocused()) {
+				throw new AssertionError("Expected the nonprinting focus shortcut to select JEI search.");
+			}
+			TextInputTestUtil.typePlainText(keyboard, window, searchField);
+		} finally {
+			restoreFocus.run();
 		}
 	}
 
