@@ -12,6 +12,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
 import java.util.Arrays;
+import java.util.List;
 import java.time.Duration;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import org.apache.logging.log4j.LogManager;
@@ -91,13 +92,64 @@ public final class JeiNeoForgeClientTextInputTests {
 			focusSearch.setKeyModifierAndCode(KeyModifier.NONE, TEST_FOCUS_SEARCH_KEY);
 			int key = GLFW.GLFW_KEY_F;
 			KeyMapping.resetMapping();
-			TextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, key);
+			for (String text : List.of("", "stone")) {
+				for (int codePoint : new int[]{'f', 0x1F600}) {
+					searchField.setValue(text);
+					searchField.clearFocus();
+					TextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, key);
+					if (!searchField.isFocused()) {
+						throw new AssertionError("Expected the focus-search hotkey to focus JEI's search field.");
+					}
+					TextInputTestUtil.invokeCharacterCallback(keyboardHandler, windowHandle, codePoint);
+					if (!searchField.getValue().equals(text)) {
+						throw new AssertionError("Expected the focus-search hotkey to preserve '" + text + "', got: " + searchField.getValue());
+					}
+					searchField.setValue("");
+					TextInputTestUtil.typePlainText(keyboardHandler, windowHandle, searchField);
+				}
+			}
+
+			assertHistoryShortcutDoesNotType(keyboardHandler, windowHandle, searchField);
+
+			focusSearch.setKeyModifierAndCode(KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_F6));
+			KeyMapping.resetMapping();
+			searchField.clearFocus();
+			TextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, GLFW.GLFW_KEY_F6);
 			if (!searchField.isFocused()) {
-				throw new AssertionError("Expected the focus-search hotkey to focus JEI's search field.");
+				throw new AssertionError("Expected the nonprinting focus-search hotkey to focus JEI's search field.");
 			}
 			TextInputTestUtil.typePlainText(keyboardHandler, windowHandle, searchField);
 		} finally {
 			focusSearch.setKeyModifierAndCode(originalModifier, originalKey);
+			KeyMapping.resetMapping();
+		}
+	}
+
+	private static void assertHistoryShortcutDoesNotType(KeyboardHandler keyboardHandler, long windowHandle, GuiTextFieldFilter searchField) {
+		KeyMapping previousSearch = Arrays.stream(Minecraft.getInstance().options.keyMappings)
+			.filter(mapping -> mapping.getName().equals("key.jei.previousSearch"))
+			.findFirst().orElseThrow(() -> new AssertionError("Expected the previous-search key mapping to be registered."));
+		InputConstants.Key originalKey = previousSearch.getKey();
+		KeyModifier originalModifier = previousSearch.getKeyModifier();
+		try {
+			previousSearch.setKeyModifierAndCode(KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_G));
+			KeyMapping.resetMapping();
+			searchField.setValue("stone");
+			searchField.clearFocus();
+			searchField.focus();
+			searchField.setValue("dirt");
+			TextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, GLFW.GLFW_KEY_G);
+			if (!searchField.isFocused() || !searchField.getValue().equals("stone")) {
+				throw new AssertionError("Expected the history shortcut to recall 'stone' while keeping search focused.");
+			}
+			TextInputTestUtil.invokeCharacterCallback(keyboardHandler, windowHandle, 'g');
+			if (!searchField.getValue().equals("stone")) {
+				throw new AssertionError("Expected the history shortcut's character to be consumed, got: " + searchField.getValue());
+			}
+			searchField.setValue("");
+			TextInputTestUtil.typePlainText(keyboardHandler, windowHandle, searchField);
+		} finally {
+			previousSearch.setKeyModifierAndCode(originalModifier, originalKey);
 			KeyMapping.resetMapping();
 		}
 	}
