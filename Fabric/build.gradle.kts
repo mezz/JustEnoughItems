@@ -378,7 +378,8 @@ val cleanClientGameTestResults = tasks.register<Delete>("cleanClientGameTestResu
         layout.buildDirectory.dir("test-results/fabric-client-key-mapping"),
         layout.buildDirectory.dir("test-results/fabric-client-gametest"),
         layout.buildDirectory.dir("test-results/fabric-client-keyboard-navigation"),
-        layout.buildDirectory.dir("test-results/fabric-client-gui-resize")
+        layout.buildDirectory.dir("test-results/fabric-client-gui-resize"),
+        layout.buildDirectory.dir("test-results/fabric-client-rendering")
     )
 }
 val cleanClientGameTestWithoutAmecsResults = tasks.register<Delete>("cleanClientGameTestWithoutAmecsResults") {
@@ -387,7 +388,8 @@ val cleanClientGameTestWithoutAmecsResults = tasks.register<Delete>("cleanClient
         layout.buildDirectory.dir("test-results/fabric-client-key-mapping-without-amecs"),
         layout.buildDirectory.dir("test-results/fabric-client-gametest-without-amecs"),
         layout.buildDirectory.dir("test-results/fabric-client-keyboard-navigation-without-amecs"),
-        layout.buildDirectory.dir("test-results/fabric-client-gui-resize-without-amecs")
+        layout.buildDirectory.dir("test-results/fabric-client-gui-resize-without-amecs"),
+        layout.buildDirectory.dir("test-results/fabric-client-rendering-without-amecs")
     )
 }
 
