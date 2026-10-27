@@ -12,6 +12,9 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.CharacterEvent;
+
+import java.util.List;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -87,6 +90,8 @@ public final class JeiNeoForgeClientTextInputTests {
 					throw new AssertionError("Expected this regression test to cover a screen that blocks normal preedit dispatch.");
 				}
 
+				assertFocusSearchAndTextInput(client.keyboardHandler, client.getWindow().handle(), searchField);
+
 				searchField.clearFocus();
 				focusSearchWithHotkey(
 					client.keyboardHandler, client.getWindow().handle(), () -> ImeTextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField)
@@ -120,6 +125,79 @@ public final class JeiNeoForgeClientTextInputTests {
 			assertions.run();
 		} finally {
 			focusSearch.setKeyModifierAndCode(originalModifier, originalKey);
+		}
+	}
+
+	private static void assertFocusSearchAndTextInput(KeyboardHandler keyboardHandler, long windowHandle, GuiTextFieldFilter searchField) {
+		KeyMapping focusSearch = KeyMapping.get(FOCUS_SEARCH_KEY_MAPPING);
+		if (focusSearch == null) {
+			throw new AssertionError("Expected the focus-search key mapping to be registered.");
+		}
+
+		InputConstants.Key originalKey = focusSearch.getKey();
+		KeyModifier originalModifier = focusSearch.getKeyModifier();
+		try {
+			// Native modifier state cannot be synthesized by this test harness, so temporarily remove Cmd/Ctrl.
+			focusSearch.setKeyModifierAndCode(KeyModifier.NONE, TEST_FOCUS_SEARCH_KEY);
+			int key = KEY_CODE_F;
+
+			for (String text : List.of("", "stone")) {
+				for (int codePoint : new int[]{'f', 0x1F600}) {
+					searchField.setValue(text);
+					searchField.clearFocus();
+					ImeTextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, new KeyEvent(key, 'f', 0));
+					if (!searchField.isFocused()) {
+						throw new AssertionError("Expected the focus-search hotkey to focus JEI's search field.");
+					}
+					ImeTextInputTestUtil.invokeCharacterCallback(keyboardHandler, windowHandle, new CharacterEvent(codePoint));
+					if (!searchField.getValue().equals(text)) {
+						throw new AssertionError("Expected the focus-search hotkey to preserve '" + text + "', got: " + searchField.getValue());
+					}
+					searchField.setValue("");
+					ImeTextInputTestUtil.typePlainText(keyboardHandler, windowHandle, searchField);
+				}
+			}
+
+			assertHistoryShortcutDoesNotType(keyboardHandler, windowHandle, searchField);
+
+			focusSearch.setKeyModifierAndCode(KeyModifier.NONE, InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_F6));
+
+			searchField.clearFocus();
+			ImeTextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, new KeyEvent(InputConstants.KEY_F6, 0, 0));
+			if (!searchField.isFocused()) {
+				throw new AssertionError("Expected the nonprinting focus-search hotkey to focus JEI's search field.");
+			}
+			ImeTextInputTestUtil.typePlainText(keyboardHandler, windowHandle, searchField);
+		} finally {
+			focusSearch.setKeyModifierAndCode(originalModifier, originalKey);
+
+		}
+	}
+
+	private static void assertHistoryShortcutDoesNotType(KeyboardHandler keyboardHandler, long windowHandle, GuiTextFieldFilter searchField) {
+		KeyMapping previousSearch = java.util.Objects.requireNonNull(KeyMapping.get("key.jei.previousSearch"));
+		InputConstants.Key originalKey = previousSearch.getKey();
+		KeyModifier originalModifier = previousSearch.getKeyModifier();
+		try {
+			previousSearch.setKeyModifierAndCode(KeyModifier.NONE, InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_G));
+
+			searchField.setValue("stone");
+			searchField.clearFocus();
+			searchField.focus();
+			searchField.setValue("dirt");
+			ImeTextInputTestUtil.invokeKeyPress(keyboardHandler, windowHandle, new KeyEvent(InputConstants.KEY_G, 'g', 0));
+			if (!searchField.isFocused() || !searchField.getValue().equals("stone")) {
+				throw new AssertionError("Expected the history shortcut to recall 'stone' while keeping search focused.");
+			}
+			ImeTextInputTestUtil.invokeCharacterCallback(keyboardHandler, windowHandle, new CharacterEvent('g'));
+			if (!searchField.getValue().equals("stone")) {
+				throw new AssertionError("Expected the history shortcut's character to be consumed, got: " + searchField.getValue());
+			}
+			searchField.setValue("");
+			ImeTextInputTestUtil.typePlainText(keyboardHandler, windowHandle, searchField);
+		} finally {
+			previousSearch.setKeyModifierAndCode(originalModifier, originalKey);
+
 		}
 	}
 }

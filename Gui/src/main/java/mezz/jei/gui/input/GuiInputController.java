@@ -49,16 +49,16 @@ public final class GuiInputController {
 		this.keys = keys;
 	}
 
-	public boolean keyPressed(Screen screen, UserInput input) {
+	public Optional<IInputInteraction> keyPressed(Screen screen, UserInput input) {
 		return scene.dispatch(input, () -> {
 			int initialScreenChangeCount = screenChangeCount;
 			Optional<IInputInteraction> action = resolve(screen, input);
 			if (!isScreenUnchanged(screen, initialScreenChangeCount)) {
 				action.ifPresent(IInputInteraction::cancel);
-				return true;
+				return Optional.of(ConsumedInput.INSTANCE);
 			}
 			action.ifPresent(interaction -> interaction.complete(input));
-			return action.isPresent();
+			return action;
 		});
 	}
 

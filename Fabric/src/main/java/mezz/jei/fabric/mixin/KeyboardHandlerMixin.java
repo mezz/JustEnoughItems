@@ -1,7 +1,6 @@
 package mezz.jei.fabric.mixin;
 
 import mezz.jei.fabric.events.JeiCharTypedEvents;
-import mezz.jei.fabric.input.KeyboardHandlerExtension;
 import mezz.jei.gui.input.GuiTextFieldFilter;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -15,26 +14,13 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(KeyboardHandler.class)
-public class KeyboardHandlerMixin implements KeyboardHandlerExtension {
-	@Unique
-	private boolean consumeNextCharTyped;
-
-	@Override
-	public void jei$setConsumeNextCharTyped(boolean consumeNextCharTyped) {
-		this.consumeNextCharTyped = consumeNextCharTyped;
-	}
-
+public class KeyboardHandlerMixin {
 	@Inject(
 		method = "charTyped",
 		at = @At("HEAD"),
 		cancellable = true
 	)
 	private void beforeCharTypedEvent(long handle, CharacterEvent event, CallbackInfo ci) {
-		if (this.consumeNextCharTyped) {
-			this.consumeNextCharTyped = false;
-			ci.cancel();
-			return;
-		}
 		beforeCharTypedEventInternal(handle, event, ci);
 	}
 
