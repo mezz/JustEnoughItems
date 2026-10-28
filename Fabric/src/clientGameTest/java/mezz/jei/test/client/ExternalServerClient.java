@@ -4,6 +4,7 @@ import mezz.jei.test.lib.ExternalServerProcess;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConnectScreen;
+import net.minecraft.client.gui.screens.DisconnectedScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -59,12 +60,17 @@ public final class ExternalServerClient {
 			ConnectScreen.startConnecting(screen, client, ServerAddress.parseString(serverData.ip), serverData, false);
 		});
 		clientAccess.waitFor(
-			ExternalServerClient::isClientConnected,
+			client -> isClientConnected(client) || client.screen instanceof DisconnectedScreen,
 			() -> "Timed out connecting to external server " + server.getConnectionAddress() + " (" +
 				describeClientState(clientAccess) + ", " +
 				server.describeProcessState() + "):\n" +
 				server.readServerLogTail()
 		);
+		if (!clientAccess.compute(ExternalServerClient::isClientConnected)) {
+			throw new AssertionError("Disconnected while connecting to external server " + server.getConnectionAddress() + " (" +
+				describeClientState(clientAccess) + ", " + server.describeProcessState() + "):\n" +
+				server.readServerLogTail());
+		}
 	}
 
 	public static void disconnect(ClientAccess clientAccess) {
@@ -230,6 +236,9 @@ public final class ExternalServerClient {
 		String screenName = "null";
 		if (screen != null) {
 			screenName = screen.getClass().getName();
+			if (screen instanceof DisconnectedScreen) {
+				screenName += " (" + screen.getNarrationMessage().getString() + ")";
+			}
 		}
 		return "useNativeTransport=" + client.options.useNativeTransport +
 			", hasLevel=" + (client.level != null) +
