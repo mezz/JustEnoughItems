@@ -14,8 +14,8 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -24,14 +24,15 @@ import java.util.function.Supplier;
 /** Runs client assertions and real mouse callbacks through the client test harness. */
 final class FabricClientTestContext {
 	private static final AtomicBoolean REGISTERED = new AtomicBoolean();
-	private static final AtomicLong TICKS = new AtomicLong();
-	private static final AtomicLong LAST_SCREEN_RENDER_TICK = new AtomicLong();
+	private static final Object TICK_LOCK = new Object();
+	private static long ticks;
+	private static long lastScreenRenderTick;
 	private final Input input = new Input();
 
 	FabricClientTestContext() {
 		if (REGISTERED.compareAndSet(false, true)) {
 			ClientTestUtil.runOnClient(client -> {
-				ClientTickEvents.END_CLIENT_TICK.register(ignored -> TICKS.incrementAndGet());
+				ClientTickEvents.END_CLIENT_TICK.register(FabricClientTestContext::onClientTick);
 				ScreenEvents.AFTER_INIT.register((minecraft, screen, width, height) -> trackScreenRenders(screen));
 				if (client.screen != null) {
 					trackScreenRenders(client.screen);
@@ -41,7 +42,22 @@ final class FabricClientTestContext {
 	}
 
 	private static void trackScreenRenders(Screen screen) {
-		ScreenEvents.afterRender(screen).register((renderedScreen, graphics, mouseX, mouseY, tickDelta) -> LAST_SCREEN_RENDER_TICK.set(TICKS.get()));
+		ScreenEvents.afterRender(screen).register((renderedScreen, graphics, mouseX, mouseY, tickDelta) -> {
+			synchronized (TICK_LOCK) {
+				lastScreenRenderTick = ticks;
+				TICK_LOCK.notifyAll();
+			}
+		});
+	}
+
+	private static void onClientTick(Minecraft client) {
+		synchronized (TICK_LOCK) {
+			ticks++;
+			if (client.screen == null) {
+				lastScreenRenderTick = ticks;
+				TICK_LOCK.notifyAll();
+			}
+		}
 	}
 
 	void runOnClient(Consumer<Minecraft> task) {
@@ -62,13 +78,23 @@ final class FabricClientTestContext {
 	}
 
 	void waitTicks(int count) {
-		long target = TICKS.get() + count;
 		// GUI layouts update while rendering, so a tick alone does not make their bounds observable.
-		ClientTestUtil.waitUntil(
-			() -> TICKS.get() >= target && computeOnClient(client -> client.screen == null || LAST_SCREEN_RENDER_TICK.get() >= target),
-			Duration.ofSeconds(30),
-			() -> "Timed out waiting for " + count + " client ticks and a screen render"
-		);
+		synchronized (TICK_LOCK) {
+			long target = ticks + count;
+			long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
+			while (ticks < target || lastScreenRenderTick < target) {
+				long remaining = deadline - System.nanoTime();
+				if (remaining <= 0) {
+					throw new AssertionError("Timed out waiting for " + count + " client ticks and a screen render");
+				}
+				try {
+					TimeUnit.NANOSECONDS.timedWait(TICK_LOCK, remaining);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					throw new AssertionError("Interrupted while waiting for client ticks and a screen render", e);
+				}
+			}
+		}
 	}
 
 	Input getInput() {

@@ -2,6 +2,7 @@ narrator:0
 narratorHotkey:false
 onboardAccessibility:false
 pauseOnLostFocus:false
+enableVsync:false
 renderDistance:2
 simulationDistance:5
 soundCategory_master:0.0
