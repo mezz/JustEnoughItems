@@ -61,6 +61,8 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	 * When {@code doTransfer} is true, call
 	 * {@link IRecipeTransferContext#completeRecipeTransfer(RecipeTransferResult)}
 	 * when the transfer has finished.
+	 * Handlers registered with {@link IRecipeTransferRegistration#addRecipeTransferHandlerWithResults}
+	 * receive a context that tracks completion automatically.
 	 *
 	 * @param context information about the recipe transfer
 	 * @param doTransfer if true, do the transfer. if false, check for errors but do not transfer any items

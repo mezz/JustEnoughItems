@@ -13,10 +13,10 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.common.network.packets.PacketRecipeTransferCountedWithResult;
-import mezz.jei.common.network.packets.PacketRecipeTransferResult;
 import mezz.jei.common.network.packets.PacketRecipeTransferWithResult;
 import mezz.jei.common.network.packets.legacy.PacketRecipeTransfer;
 import mezz.jei.common.network.packets.legacy.PacketRecipeTransferCounted;
+import mezz.jei.common.transfer.PendingRecipeTransfers;
 import mezz.jei.common.transfer.RecipeTransferOperationsResult;
 import mezz.jei.common.transfer.RecipeTransferUtil;
 import mezz.jei.common.transfer.TransferOperation;
@@ -165,6 +165,9 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		if (doTransfer) {
 			boolean requireCompleteSets = transferInfo.requireCompleteSets(container, recipe);
 			boolean supportsTransferResults = supportsServerRecipeTransferResults(useCountedTransferPacket);
+			if (context != null && !supportsTransferResults) {
+				PendingRecipeTransfers.INSTANCE.discard(context.getTransferId(), this);
+			}
 			if (context != null && supportsTransferResults) {
 				sendTransferWithResult(
 					transferOperations.results,
@@ -215,7 +218,6 @@ public class BasicRecipeTransferHandler<C extends AbstractContainerMenu, R> impl
 		boolean useCountedTransferPacket,
 		IRecipeTransferContext<R, C> context
 	) {
-		PacketRecipeTransferResult.registerPendingRecipeTransfer(context);
 		int transferId = context.getTransferId();
 		if (useCountedTransferPacket) {
 			PacketRecipeTransferCountedWithResult packet = PacketRecipeTransferCountedWithResult.fromSlots(

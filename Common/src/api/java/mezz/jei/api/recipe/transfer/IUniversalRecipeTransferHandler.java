@@ -56,4 +56,21 @@ public interface IUniversalRecipeTransferHandler<C extends AbstractContainerMenu
 	 */
 	@Nullable
 	IRecipeTransferError transferRecipe(C container, Object recipe, IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer);
+
+	/**
+	 * Handles a recipe transfer or checks whether it can be transferred.
+	 * Override this method when registering with {@link IRecipeTransferRegistration#addUniversalRecipeTransferHandlerWithResults}.
+	 * When {@code doTransfer} is true, report the eventual result through
+	 * {@link IRecipeTransferContext#completeRecipeTransfer(RecipeTransferResult)} on the client thread.
+	 *
+	 * @param context information about the recipe transfer
+	 * @param doTransfer if true, perform the transfer; if false, only check whether it is possible
+	 * @return an error if the recipe cannot be transferred, or null on success
+	 *
+	 * @since 31.18.0
+	 */
+	@Nullable
+	default IRecipeTransferError transferRecipe(IRecipeTransferContext<?, C> context, boolean doTransfer) {
+		return transferRecipe(context.getContainer(), context.getRecipe(), context.getRecipeSlots(), context.getPlayer(), context.isMaxTransfer(), doTransfer);
+	}
 }

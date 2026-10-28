@@ -1,6 +1,7 @@
 package mezz.jei.library.recipes;
 
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.recipe.transfer.IRecipeTransferContext;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
@@ -35,6 +36,11 @@ public class UniversalRecipeTransferHandlerAdapter<C extends AbstractContainerMe
 		@SuppressWarnings("unchecked")
 		IRecipeType<R> cast = (IRecipeType<R>) Constants.UNIVERSAL_RECIPE_TRANSFER_TYPE;
 		return cast;
+	}
+
+	@Override
+	public @Nullable IRecipeTransferError transferRecipe(IRecipeTransferContext<R, C> context, boolean doTransfer) {
+		return universalRecipeTransferHandler.transferRecipe(context, doTransfer);
 	}
 
 	@Override

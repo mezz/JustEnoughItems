@@ -6,6 +6,7 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferListener;
 import mezz.jei.api.recipe.transfer.RecipeTransferResult;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.common.network.packets.PacketRecipeTransferResult;
+import mezz.jei.common.transfer.PendingRecipeTransfers;
 import mezz.jei.common.transfer.RecipeTransferLifecycleManager;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.entity.player.Player;
@@ -26,7 +27,7 @@ public class RecipeTransferLifecycleManagerTest {
 
 	@AfterEach
 	public void clearPendingRecipeTransfers() {
-		PacketRecipeTransferResult.clearPendingRecipeTransfers();
+		PendingRecipeTransfers.INSTANCE.clear();
 	}
 
 	@Test
@@ -63,8 +64,8 @@ public class RecipeTransferLifecycleManagerTest {
 		contextReference.set(context);
 
 		lifecycleManager.beforeRecipeTransfer(context);
-		PacketRecipeTransferResult.registerPendingRecipeTransfer(context);
-		new PacketRecipeTransferResult(TRANSFER_ID, true).completePendingRecipeTransfer();
+		IRecipeTransferContext<?, ?> completion = PendingRecipeTransfers.INSTANCE.registerRecipeTransfer(context, this);
+		completion.completeRecipeTransfer(RecipeTransferResult.SUCCESS);
 
 		assertEquals(List.of("before", "after:SUCCESS"), events);
 	}
@@ -82,24 +83,76 @@ public class RecipeTransferLifecycleManagerTest {
 		var context = new TestRecipeTransferContext(lifecycleManager);
 
 		lifecycleManager.beforeRecipeTransfer(context);
-		PacketRecipeTransferResult.registerPendingRecipeTransfer(context);
-		PacketRecipeTransferResult.clearPendingRecipeTransfers();
-		new PacketRecipeTransferResult(TRANSFER_ID, true).completePendingRecipeTransfer();
+		IRecipeTransferContext<?, ?> completion = PendingRecipeTransfers.INSTANCE.registerRecipeTransfer(context, this);
+		PendingRecipeTransfers.INSTANCE.clear();
+		completion.completeRecipeTransfer(RecipeTransferResult.SUCCESS);
 
 		assertEquals(List.of(), completedTransfers);
+	}
+
+	@Test
+	public void resultsOnlyCompleteTheMatchingTransferOnce() {
+		List<String> completedTransfers = new ArrayList<>();
+		IRecipeTransferListener listener = new IRecipeTransferListener() {
+			@Override
+			public void afterRecipeTransfer(IRecipeTransferContext<?, ?> context, RecipeTransferResult result) {
+				completedTransfers.add(context.getTransferId() + ":" + result);
+			}
+		};
+		var lifecycleManager = new RecipeTransferLifecycleManager(List.of(listener));
+		var firstContext = new TestRecipeTransferContext(lifecycleManager, TRANSFER_ID);
+		var secondContext = new TestRecipeTransferContext(lifecycleManager, TRANSFER_ID + 1);
+		int firstId = firstContext.getTransferId();
+		int secondId = secondContext.getTransferId();
+		IRecipeTransferContext<?, ?> firstCompletion = PendingRecipeTransfers.INSTANCE.registerRecipeTransfer(firstContext, this);
+		IRecipeTransferContext<?, ?> secondCompletion = PendingRecipeTransfers.INSTANCE.registerRecipeTransfer(secondContext, this);
+
+		new PacketRecipeTransferResult(TRANSFER_ID + 2, true).completePendingRecipeTransfer();
+		secondCompletion.completeRecipeTransfer(RecipeTransferResult.REJECTED);
+		new PacketRecipeTransferResult(secondId, true).completePendingRecipeTransfer();
+		new PacketRecipeTransferResult(firstId, true).completePendingRecipeTransfer();
+		firstCompletion.completeRecipeTransfer(RecipeTransferResult.REJECTED);
+
+		assertEquals(List.of("43:REJECTED", "42:SUCCESS"), completedTransfers);
+	}
+
+	@Test
+	public void oldContextCannotCompleteANewTransferWithTheSameId() {
+		List<RecipeTransferResult> results = new ArrayList<>();
+		IRecipeTransferListener listener = new IRecipeTransferListener() {
+			@Override
+			public void afterRecipeTransfer(IRecipeTransferContext<?, ?> context, RecipeTransferResult result) {
+				results.add(result);
+			}
+		};
+		var lifecycleManager = new RecipeTransferLifecycleManager(List.of(listener));
+		IRecipeTransferContext<?, ?> oldCompletion = PendingRecipeTransfers.INSTANCE.registerRecipeTransfer(new TestRecipeTransferContext(lifecycleManager), this);
+		PendingRecipeTransfers.INSTANCE.clear();
+		IRecipeTransferContext<?, ?> newCompletion = PendingRecipeTransfers.INSTANCE.registerRecipeTransfer(new TestRecipeTransferContext(lifecycleManager), this);
+
+		oldCompletion.completeRecipeTransfer(RecipeTransferResult.SUCCESS);
+		assertEquals(List.of(), results);
+		newCompletion.completeRecipeTransfer(RecipeTransferResult.REJECTED);
+		assertEquals(List.of(RecipeTransferResult.REJECTED), results);
 	}
 
 	private static class TestRecipeTransferContext implements IRecipeTransferContext<String, AbstractContainerMenu> {
 		private static final IRecipeType<String> RECIPE_TYPE = IRecipeType.create("jei", "test_transfer_listener", String.class);
 		private final RecipeTransferLifecycleManager lifecycleManager;
+		private final int transferId;
 
 		public TestRecipeTransferContext(RecipeTransferLifecycleManager lifecycleManager) {
+			this(lifecycleManager, TRANSFER_ID);
+		}
+
+		public TestRecipeTransferContext(RecipeTransferLifecycleManager lifecycleManager, int transferId) {
 			this.lifecycleManager = lifecycleManager;
+			this.transferId = transferId;
 		}
 
 		@Override
 		public int getTransferId() {
-			return TRANSFER_ID;
+			return transferId;
 		}
 
 		@Override

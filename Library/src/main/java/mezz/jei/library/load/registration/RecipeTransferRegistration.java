@@ -16,6 +16,7 @@ import mezz.jei.library.recipes.RecipeTransferManager;
 import mezz.jei.library.recipes.UniversalRecipeTransferHandlerAdapter;
 import mezz.jei.library.transfer.BasicRecipeTransferHandler;
 import mezz.jei.library.transfer.BasicRecipeTransferInfo;
+import mezz.jei.library.transfer.RecipeTransferHandlerWithResults;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import org.jspecify.annotations.Nullable;
@@ -66,8 +67,10 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 	public <C extends AbstractContainerMenu, R> void addRecipeTransferHandler(IRecipeTransferInfo<C, R> recipeTransferInfo) {
 		ErrorUtil.checkNotNull(recipeTransferInfo, "recipeTransferInfo");
 
-		IRecipeTransferHandler<C, R> recipeTransferHandler = new BasicRecipeTransferHandler<>(serverConnection, stackHelper, handlerHelper, recipeTransferInfo);
-		addRecipeTransferHandler(recipeTransferHandler, recipeTransferInfo.getRecipeType());
+		addRecipeTransferHandlerWithResults(
+			new BasicRecipeTransferHandler<>(serverConnection, stackHelper, handlerHelper, recipeTransferInfo),
+			recipeTransferInfo.getRecipeType()
+		);
 	}
 
 	@Override
@@ -80,12 +83,31 @@ public class RecipeTransferRegistration implements IRecipeTransferRegistration {
 	}
 
 	@Override
+	public <C extends AbstractContainerMenu, R> void addRecipeTransferHandlerWithResults(
+		IRecipeTransferHandler<C, R> recipeTransferHandler,
+		IRecipeType<R> recipeType
+	) {
+		ErrorUtil.checkNotNull(recipeType, "recipeType");
+		IRecipeTransferHandler<C, R> handler = RecipeTransferHandlerWithResults.create(recipeTransferHandler);
+		addRecipeTransferHandler(handler, recipeType);
+	}
+
+	@Override
 	public <C extends AbstractContainerMenu> void addUniversalRecipeTransferHandler(IUniversalRecipeTransferHandler<C> universalRecipeTransferHandler) {
 		ErrorUtil.checkNotNull(universalRecipeTransferHandler, "universalRecipeTransferHandler");
 
 		Class<? extends C> containerClass = universalRecipeTransferHandler.getContainerClass();
 		UniversalRecipeTransferHandlerAdapter<C, ?> adapter = new UniversalRecipeTransferHandlerAdapter<>(universalRecipeTransferHandler);
 		this.recipeTransferHandlers.put(containerClass, adapter.getRecipeType(), adapter);
+	}
+
+	@Override
+	public <C extends AbstractContainerMenu> void addUniversalRecipeTransferHandlerWithResults(
+		IUniversalRecipeTransferHandler<C> universalRecipeTransferHandler
+	) {
+		ErrorUtil.checkNotNull(universalRecipeTransferHandler, "universalRecipeTransferHandler");
+		IRecipeTransferHandler<C, Object> handler = RecipeTransferHandlerWithResults.create(new UniversalRecipeTransferHandlerAdapter<>(universalRecipeTransferHandler));
+		addRecipeTransferHandler(handler, handler.getRecipeType());
 	}
 
 	@Override

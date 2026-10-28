@@ -2,6 +2,7 @@ package mezz.jei.api.recipe.transfer;
 
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.types.IRecipeType;
+import mezz.jei.api.registration.IRecipeTransferRegistration;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -26,7 +27,11 @@ public interface IRecipeTransferContext<R, C extends AbstractContainerMenu> {
 
 	/**
 	 * Reports that this recipe transfer has finished.
-	 * Call this after completing a transfer requested with {@code doTransfer} set to true.
+	 * Call this on the client thread after completing a transfer requested with {@code doTransfer} set to true.
+	 * The context may be retained for asynchronous completion.
+	 * With {@link IRecipeTransferRegistration#addRecipeTransferHandlerWithResults} or
+	 * {@link IRecipeTransferRegistration#addUniversalRecipeTransferHandlerWithResults},
+	 * calls during checks, repeated completions, and results arriving after a failed attempt or stopped JEI runtime are ignored.
 	 *
 	 * @param result the result of the transfer
 	 *

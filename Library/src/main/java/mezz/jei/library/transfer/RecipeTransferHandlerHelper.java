@@ -87,8 +87,7 @@ public class RecipeTransferHandlerHelper implements IRecipeTransferHandlerHelper
 	@Override
 	public <C extends AbstractContainerMenu, R> IRecipeTransferHandler<C, R> createUnregisteredRecipeTransferHandler(IRecipeTransferInfo<C, R> recipeTransferInfo) {
 		ErrorUtil.checkNotNull(recipeTransferInfo, "recipeTransferInfo");
-		return new BasicRecipeTransferHandler<>(serverConnection, stackHelper, this, recipeTransferInfo);
-
+		return RecipeTransferHandlerWithResults.create(new BasicRecipeTransferHandler<>(serverConnection, stackHelper, this, recipeTransferInfo));
 	}
 
 	@Override

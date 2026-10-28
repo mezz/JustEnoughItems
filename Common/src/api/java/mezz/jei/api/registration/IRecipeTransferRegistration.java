@@ -2,6 +2,7 @@ package mezz.jei.api.registration;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.recipe.transfer.IRecipeTransferContext;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
 import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
@@ -57,12 +58,42 @@ public interface IRecipeTransferRegistration {
 	<C extends AbstractContainerMenu, R> void addRecipeTransferHandler(IRecipeTransferHandler<C, R> recipeTransferHandler, IRecipeType<R> recipeType);
 
 	/**
+	 * Adds a handler with automatic tracking of transfer completion.
+	 * The handler must override {@link IRecipeTransferHandler#transferRecipe(IRecipeTransferContext, boolean)}
+	 * and report the result through the supplied context's {@link IRecipeTransferContext#completeRecipeTransfer} method.
+	 * Checks and attempts that return a blocking error or throw are not left awaiting a result.
+	 *
+	 * @param recipeTransferHandler the handler that reports completion through its context
+	 * @param recipeType the recipe type handled
+	 *
+	 * @since 31.18.0
+	 */
+	<C extends AbstractContainerMenu, R> void addRecipeTransferHandlerWithResults(
+		IRecipeTransferHandler<C, R> recipeTransferHandler,
+		IRecipeType<R> recipeType
+	);
+
+	/**
 	 * Add a universal handler that can handle any category of recipe.
 	 * Useful for mods with recipe pattern encoding, for automated recipe systems.
 	 *
 	 * @since 19.8.1
 	 */
 	<C extends AbstractContainerMenu> void addUniversalRecipeTransferHandler(IUniversalRecipeTransferHandler<C> universalRecipeTransferHandler);
+
+	/**
+	 * Adds a universal handler with automatic tracking of transfer completion.
+	 * The handler must override {@link IUniversalRecipeTransferHandler#transferRecipe(IRecipeTransferContext, boolean)}
+	 * and report the result through the supplied context's {@link IRecipeTransferContext#completeRecipeTransfer} method.
+	 * Checks and attempts that return a blocking error or throw are not left awaiting a result.
+	 *
+	 * @param universalRecipeTransferHandler the handler that reports completion through its context
+	 *
+	 * @since 31.18.0
+	 */
+	<C extends AbstractContainerMenu> void addUniversalRecipeTransferHandlerWithResults(
+		IUniversalRecipeTransferHandler<C> universalRecipeTransferHandler
+	);
 
 	/**
 	 * Add a listener that observes attempts to transfer recipes through JEI.

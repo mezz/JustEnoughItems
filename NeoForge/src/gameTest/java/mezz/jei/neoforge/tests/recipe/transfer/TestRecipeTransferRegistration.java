@@ -12,6 +12,7 @@ import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingCategoryExtension;
 import mezz.jei.library.plugins.vanilla.crafting.CraftingRecipeCategory;
 import mezz.jei.library.transfer.RecipeTransferHandlerHelper;
+import mezz.jei.library.transfer.RecipeTransferHandlerWithResults;
 import mezz.jei.neoforge.tests.lib.TestGuiHelper;
 import mezz.jei.neoforge.tests.lib.TestIngredientManagers;
 import mezz.jei.neoforge.tests.lib.TestStackHelper;
@@ -71,7 +72,22 @@ final class TestRecipeTransferRegistration implements IRecipeTransferRegistratio
 	}
 
 	@Override
+	public <C extends AbstractContainerMenu, R> void addRecipeTransferHandlerWithResults(
+		IRecipeTransferHandler<C, R> recipeTransferHandler,
+		IRecipeType<R> recipeType
+	) {
+		addRecipeTransferHandler(RecipeTransferHandlerWithResults.create(recipeTransferHandler), recipeType);
+	}
+
+	@Override
 	public <C extends AbstractContainerMenu> void addUniversalRecipeTransferHandler(IUniversalRecipeTransferHandler<C> universalRecipeTransferHandler) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public <C extends AbstractContainerMenu> void addUniversalRecipeTransferHandlerWithResults(
+		IUniversalRecipeTransferHandler<C> universalRecipeTransferHandler
+	) {
 		throw new UnsupportedOperationException();
 	}
 

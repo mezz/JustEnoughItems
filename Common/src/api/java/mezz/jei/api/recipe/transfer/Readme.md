@@ -14,6 +14,12 @@ If your machine uses ghost slots for crafting, or has a massive storage system b
 
 There are helpers in `IRecipeTransferHandlerHelper` to aid this implementation.
 
+## Reporting Completion
+
+For a transfer that finishes immediately, call `context.completeRecipeTransfer(result)` on the client thread.
+
+For asynchronous transfers, use `addRecipeTransferHandlerWithResults` or `addUniversalRecipeTransferHandlerWithResults`. JEI tracks completion through the supplied `IRecipeTransferContext`. Retain the context with your asynchronous request and call `context.completeRecipeTransfer(result)` on the client thread. Duplicate completions and results received after JEI stops are ignored.
+
 ## Universal Handlers
 
 A universal handler is one step above complete control, it can handle every category of recipe instead of just one.
