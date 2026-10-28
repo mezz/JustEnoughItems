@@ -6,6 +6,7 @@
   "client": [
     "InputConstantsMixin",
     "KeyboardHandlerAccessor",
+    "MinecraftMixin",
     "MouseHandlerAccessor",
     "GuiGraphicsMixin",
     "MouseHandlerMixin"

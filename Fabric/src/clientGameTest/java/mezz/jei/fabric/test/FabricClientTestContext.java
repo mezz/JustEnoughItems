@@ -16,14 +16,16 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /** Runs client assertions and real mouse callbacks through the 1.21.1 test harness. */
-final class FabricClientTestContext {
+public final class FabricClientTestContext {
 	private static final AtomicBoolean REGISTERED = new AtomicBoolean();
+	private static final AtomicInteger TICK_WAITERS = new AtomicInteger();
 	private static final Object TICK_LOCK = new Object();
 	private static long ticks;
 	private static long lastScreenRenderTick;
@@ -82,19 +84,29 @@ final class FabricClientTestContext {
 		synchronized (TICK_LOCK) {
 			long target = ticks + count;
 			long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
-			while (ticks < target || lastScreenRenderTick < target) {
-				long remaining = deadline - System.nanoTime();
-				if (remaining <= 0) {
-					throw new AssertionError("Timed out waiting for " + count + " client ticks and a screen render");
+			TICK_WAITERS.incrementAndGet();
+			try {
+				while (ticks < target || lastScreenRenderTick < target) {
+					long remaining = deadline - System.nanoTime();
+					if (remaining <= 0) {
+						throw new AssertionError("Timed out waiting for " + count + " client ticks and a screen render");
+					}
+					try {
+						TimeUnit.NANOSECONDS.timedWait(TICK_LOCK, remaining);
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+						throw new AssertionError("Interrupted while waiting for client ticks and a screen render", e);
+					}
 				}
-				try {
-					TimeUnit.NANOSECONDS.timedWait(TICK_LOCK, remaining);
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-					throw new AssertionError("Interrupted while waiting for client ticks and a screen render", e);
-				}
+			} finally {
+				TICK_WAITERS.decrementAndGet();
 			}
 		}
+	}
+
+	/** Whether a test needs the next client tick and screen render. */
+	public static boolean isWaitingForTicks() {
+		return TICK_WAITERS.get() > 0;
 	}
 
 	void waitFor(Predicate<Minecraft> condition) {
