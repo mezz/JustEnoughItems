@@ -95,7 +95,7 @@ public class Textures {
 		this.recipePlusSign = registerGuiSprite("recipe_plus_sign", 13, 13);
 		this.exclusionAreaShadow = registerNineSliceGuiSprite("exclusion_area_shadow", 12, 12, 4, 4, 4, 4);
 
-		this.brewingStandBackground = registerGuiSprite("brewing_stand_background", 64, 60);
+		this.brewingStandBackground = registerGuiSprite("brewing_stand_background_v2", 64, 60);
 		this.brewingStandBlazeHeat = registerGuiSprite("brewing_stand_blaze_heat", 18, 4);
 		this.brewingStandBubbles = registerGuiSprite("brewing_stand_bubbles", 11, 28);
 		this.brewingStandArrow = registerGuiSprite("brewing_stand_arrow", 7, 27);
