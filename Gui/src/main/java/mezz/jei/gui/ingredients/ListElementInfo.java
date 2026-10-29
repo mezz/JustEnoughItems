@@ -12,7 +12,6 @@ import mezz.jei.common.util.SafeIngredientUtil;
 import mezz.jei.common.util.StringUtil;
 import mezz.jei.common.util.Translator;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -195,7 +194,7 @@ public class ListElementInfo<V> implements IListElementInfo<V> {
 
 	public static Set<String> getStrings(@Unmodifiable List<Component> tooltip) {
 		Set<String> result = new HashSet<>();
-		for (FormattedText component : tooltip) {
+		for (Component component : tooltip) {
 			String string = component.getString();
 			string = StringUtil.removeChatFormatting(string);
 			string = Translator.toLowercaseWithLocale(string).trim();

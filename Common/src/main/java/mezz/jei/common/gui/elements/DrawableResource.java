@@ -2,7 +2,7 @@ package mezz.jei.common.gui.elements;
 
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.pipeline.RenderPipelines;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.resources.Identifier;
 
 public class DrawableResource implements IDrawableStatic {
@@ -57,7 +57,7 @@ public class DrawableResource implements IDrawableStatic {
 		int vHeight = this.height - (maskBottom + maskTop);
 
 		guiGraphics.blit(
-			RenderPipelines.GUI_TEXTURED,
+			GuiPipeline.TEXTURED,
 			this.id,
 			xOffset + paddingLeft + maskLeft,
 			yOffset + paddingTop + maskTop,

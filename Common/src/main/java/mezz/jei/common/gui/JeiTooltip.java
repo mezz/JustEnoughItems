@@ -146,7 +146,7 @@ public class JeiTooltip implements ITooltipBuilder {
 	public String toString() {
 		return lines.stream()
 			.map(e -> e.map(
-				FormattedText::getString,
+				text -> text.getString(Component.STRING_SIZE_LIMIT),
 				Object::toString
 			))
 			.collect(Collectors.joining("\n", "[\n", "\n]"));

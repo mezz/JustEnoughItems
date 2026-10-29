@@ -5,7 +5,7 @@ import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.pipeline.RenderPipelines;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
@@ -35,7 +35,7 @@ public class ScalableDrawable implements IScalableDrawable {
 				IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 				renderHelper.blitTiledSprite(
 					guiGraphics,
-					RenderPipelines.GUI_TEXTURED,
+					GuiPipeline.TEXTURED,
 					sprite,
 					tileScaling,
 					xOffset,
@@ -49,7 +49,7 @@ public class ScalableDrawable implements IScalableDrawable {
 				IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 				renderHelper.blitNineSlicedSprite(
 					guiGraphics,
-					RenderPipelines.GUI_TEXTURED,
+					GuiPipeline.TEXTURED,
 					sprite,
 					nineSliceScaling,
 					xOffset,
@@ -60,7 +60,7 @@ public class ScalableDrawable implements IScalableDrawable {
 			}
 			default -> {
 				guiGraphics.blitSprite(
-					RenderPipelines.GUI_TEXTURED,
+					GuiPipeline.TEXTURED,
 					sprite,
 					xOffset,
 					yOffset,

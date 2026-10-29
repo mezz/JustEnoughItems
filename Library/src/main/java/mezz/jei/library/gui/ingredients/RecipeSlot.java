@@ -34,7 +34,7 @@ import mezz.jei.library.ingredients.SlotIngredient;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.pipeline.RenderPipelines;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
@@ -457,7 +457,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		int height = this.rect.getHeight();
 
 		guiGraphics.blitSprite(
-			RenderPipelines.GUI_TEXTURED,
+			GuiPipeline.TEXTURED,
 			sprite,
 			x - 4,
 			y - 4,

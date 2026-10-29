@@ -177,7 +177,7 @@ public class StyledTextHelperTest {
 
 	private static List<StyledText> getStyledTexts(Component component) {
 		List<StyledText> styledTexts = new ArrayList<>();
-		component.visit((style, text) -> {
+		component.visitWithoutResult((style, text) -> {
 			if (!text.isEmpty()) {
 				addStyledText(styledTexts, text, style);
 			}

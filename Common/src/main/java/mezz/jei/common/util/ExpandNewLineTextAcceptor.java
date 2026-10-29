@@ -4,19 +4,20 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.util.Unit;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ExpandNewLineTextAcceptor implements FormattedText.StyledContentConsumer<Void> {
+public class ExpandNewLineTextAcceptor implements FormattedText.StyledContentConsumer<Unit> {
 	private final List<FormattedText> lines = new ArrayList<>();
 	@Nullable
 	private MutableComponent lastComponent;
 
 	@Override
-	public Optional<Void> accept(Style style, String line) {
+	public Optional<Unit> accept(Style style, String line) {
 		String[] descriptionLineExpanded = line.split("\\\\n");
 		for (int i = 0; i < descriptionLineExpanded.length; i++) {
 			String s = descriptionLineExpanded[i];

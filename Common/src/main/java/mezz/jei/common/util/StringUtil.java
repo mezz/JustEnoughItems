@@ -52,7 +52,7 @@ public final class StringUtil {
 	public static Style getStyleAtEnd(FormattedText text) {
 		final Style[] endStyle = {Style.EMPTY};
 
-		text.visit(
+		text.visitWithoutResult(
 			(style, s) -> {
 				endStyle[0] = style;
 				return Optional.empty();
@@ -255,7 +255,7 @@ public final class StringUtil {
 
 		public static StyledLine from(FormattedText text) {
 			List<StyledPart> parts = new ArrayList<>();
-			text.visit((style, contents) -> {
+			text.visitWithoutResult((style, contents) -> {
 				if (!contents.isEmpty()) {
 					parts.add(new StyledPart(contents, style));
 				}
@@ -316,7 +316,7 @@ public final class StringUtil {
 		List<FormattedText> descriptionLinesExpanded = new ArrayList<>();
 		for (Component descriptionLine : descriptionComponents) {
 			ExpandNewLineTextAcceptor newLineTextAcceptor = new ExpandNewLineTextAcceptor();
-			descriptionLine.visit(newLineTextAcceptor, Style.EMPTY);
+			descriptionLine.visitWithoutResult(newLineTextAcceptor, Style.EMPTY);
 			newLineTextAcceptor.addLinesTo(descriptionLinesExpanded);
 		}
 		return descriptionLinesExpanded;

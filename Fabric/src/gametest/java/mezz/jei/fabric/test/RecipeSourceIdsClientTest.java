@@ -336,7 +336,7 @@ public final class RecipeSourceIdsClientTest implements IModPlugin {
 			.map(IRecipeSlotDrawable.class::cast).findFirst().orElseThrow();
 		var tooltip = new JeiTooltip();
 		output.getTooltip(tooltip);
-		var lines = tooltip.getLines().stream().flatMap(line -> line.left().stream()).map(text -> text.getString()).toList();
+		var lines = tooltip.getLines().stream().flatMap(line -> line.left().stream()).map(text -> text.getString(Component.STRING_SIZE_LIMIT)).toList();
 		var expectedLines = expectedIds.stream().map(id -> Component.translatable("jei.tooltip.recipe.id", Component.literal(id.toString())).getString()).toList();
 		var actualLines = lines.stream().filter(line -> line.startsWith("Recipe ID: ")).toList();
 		check(actualLines.equals(expectedLines), "Tooltip recipe IDs must match the sources: " + actualLines);

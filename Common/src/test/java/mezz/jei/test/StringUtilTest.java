@@ -3,6 +3,7 @@ package mezz.jei.test;
 import mezz.jei.common.util.Pair;
 import mezz.jei.common.util.StringUtil;
 import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -57,7 +58,7 @@ public class StringUtilTest {
 	private static List<String> getStrings(Pair<List<FormattedText>, Boolean> result) {
 		return result.first()
 			.stream()
-			.map(FormattedText::getString)
+			.map(text -> text.getString(Component.STRING_SIZE_LIMIT))
 			.toList();
 	}
 
@@ -73,12 +74,12 @@ public class StringUtilTest {
 
 		@Override
 		public int width(FormattedText text) {
-			return text.getString().length();
+			return text.getString(Component.STRING_SIZE_LIMIT).length();
 		}
 
 		@Override
 		public FormattedText substrByWidth(FormattedText text, int width) {
-			String string = text.getString();
+			String string = text.getString(Component.STRING_SIZE_LIMIT);
 			return FormattedText.of(string.substring(0, Math.min(width, string.length())));
 		}
 	}

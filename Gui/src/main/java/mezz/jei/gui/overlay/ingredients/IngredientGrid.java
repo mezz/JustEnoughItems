@@ -29,7 +29,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.BelowOrAboveWidgetTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
-import net.minecraft.client.renderer.pipeline.RenderPipelines;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
@@ -197,7 +197,7 @@ public class IngredientGrid implements IIngredientGrid {
 
 	private static void drawHighlight(GuiGraphicsExtractor guiGraphics, ImmutableRect2i area, Identifier sprite) {
 		guiGraphics.blitSprite(
-			RenderPipelines.GUI_TEXTURED,
+			GuiPipeline.TEXTURED,
 			sprite,
 			area.getX() - 4,
 			area.getY() - 4,

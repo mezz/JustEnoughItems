@@ -4,7 +4,7 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.pipeline.RenderPipelines;
+import net.minecraft.client.gui.GuiPipeline;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.Identifier;
@@ -73,7 +73,7 @@ public class DrawableSprite implements IDrawableStatic {
 		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
 		renderHelper.blitSprite(
 			guiGraphics,
-			RenderPipelines.GUI_TEXTURED,
+			GuiPipeline.TEXTURED,
 			sprite,
 			width,
 			height,
