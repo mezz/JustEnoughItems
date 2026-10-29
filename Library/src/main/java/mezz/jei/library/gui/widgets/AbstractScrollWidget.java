@@ -18,7 +18,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.util.Mth;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -174,7 +173,7 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 	public final boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
 		if (getHiddenAmount() > 0) {
 			scrollOffsetY -= calculateScrollAmount(scrollDeltaY);
-			scrollOffsetY = Mth.clamp(scrollOffsetY, 0.0F, 1.0F);
+			scrollOffsetY = Math.clamp(scrollOffsetY, 0.0F, 1.0F);
 		} else {
 			scrollOffsetY = 0.0f;
 		}

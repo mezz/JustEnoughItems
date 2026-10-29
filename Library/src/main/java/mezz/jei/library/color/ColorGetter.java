@@ -9,7 +9,6 @@ import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -83,9 +82,9 @@ public final class ColorGetter {
 					int red = (int) ((colorInt[0] - 1) * (float) (renderColor >> 16 & 255) / 255.0F);
 					int green = (int) ((colorInt[1] - 1) * (float) (renderColor >> 8 & 255) / 255.0F);
 					int blue = (int) ((colorInt[2] - 1) * (float) (renderColor & 255) / 255.0F);
-					red = Mth.clamp(red, 0, 255);
-					green = Mth.clamp(green, 0, 255);
-					blue = Mth.clamp(blue, 0, 255);
+					red = Math.clamp(red, 0, 255);
+					green = Math.clamp(green, 0, 255);
+					blue = Math.clamp(blue, 0, 255);
 					int color = ((0xFF) << 24) |
 						((red & 0xFF) << 16) |
 						((green & 0xFF) << 8) |

@@ -14,7 +14,7 @@ import mezz.jei.gui.config.IngredientTypeSortingConfig;
 import mezz.jei.gui.recipes.RecipeCategoryIconUtil;
 import net.mezzdev.config.gui.api.IConfigValueIcon;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.TextureResources;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
@@ -207,15 +207,14 @@ public final class SortingOrderConfigValues {
 
 		int width = image.getWidth();
 		int height = image.getHeight();
-		try {
-			DynamicTexture texture = new DynamicTexture(() -> "JEI mod icon: " + modId, image);
+		try (image) {
+			TextureResources texture = TextureResources.from2dImage(() -> "JEI mod icon: " + modId, image);
 			Identifier textureLocation = Identifier.fromNamespaceAndPath("jei", "mod_icon/" + modId);
 			Minecraft.getInstance()
 				.getTextureManager()
 				.register(textureLocation, texture);
 			return Optional.of(new TextureConfigValueIcon(textureLocation, width, height));
 		} catch (RuntimeException e) {
-			image.close();
 			LOGGER.warn("Failed to register mod icon for {}", modId, e);
 			return Optional.empty();
 		}

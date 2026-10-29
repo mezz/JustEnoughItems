@@ -23,7 +23,6 @@ import mezz.jei.gui.overlay.ingredients.IngredientGridWithNavigation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.util.Mth;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -138,9 +137,9 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		for (int i = 0; i < dashCount; i++) {
 			float x = x1 + i * floatInterval;
 			guiGraphics.fill(
-				(int) Mth.clamp(x + dashWidth, x1, x2),
+				(int) Math.clamp(x + dashWidth, x1, x2),
 				y,
-				(int) Mth.clamp(x, x1, x2),
+				(int) Math.clamp(x, x1, x2),
 				y + height,
 				argbColor);
 		}

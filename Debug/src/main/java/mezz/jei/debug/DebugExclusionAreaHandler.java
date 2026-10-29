@@ -7,7 +7,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.util.Mth;
 import org.lwjgl.sdl.SDLMouse;
 
 import java.lang.reflect.Field;
@@ -158,8 +157,8 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 		if (dragging && leftButtonDown) {
 			int screenWidth = minecraft.getWindow().getGuiScaledWidth();
 			int screenHeight = minecraft.getWindow().getGuiScaledHeight();
-			x = Mth.clamp((int) (mouseX - dragOffsetX), 0, screenWidth - width);
-			y = Mth.clamp((int) (mouseY - dragOffsetY), 0, screenHeight - height);
+			x = Math.clamp((int) (mouseX - dragOffsetX), 0, screenWidth - width);
+			y = Math.clamp((int) (mouseY - dragOffsetY), 0, screenHeight - height);
 		}
 
 		if (resizing && leftButtonDown) {
