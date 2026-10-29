@@ -23,8 +23,6 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 	private long lastUpdateTime = 0;
 	private boolean interactive;
 	private int interactiveWidth;
-	private double mouseX = -1;
-	private double mouseY = -1;
 
 	public PreviewTooltipComponent(
 		IRecipeLayoutDrawable<R> drawable,
@@ -38,11 +36,9 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 		return drawable;
 	}
 
-	public void setInteractive(double mouseX, double mouseY, int interactiveWidth) {
+	public void setInteractive(int interactiveWidth) {
 		this.interactive = true;
 		this.interactiveWidth = interactiveWidth;
-		this.mouseX = mouseX;
-		this.mouseY = mouseY;
 	}
 
 	public void setStatic() {
@@ -63,29 +59,22 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 
 	@Override
 	public void extractImage(Font font, int x, int y, int w, int h, GuiGraphicsExtractor guiGraphics) {
+		drawable.setPosition(x + 2, y + 5);
 		if (interactive) {
-			int mouseX = (int) this.mouseX;
-			int mouseY = (int) this.mouseY;
-			drawable.setPosition(x + 2, y + 5);
-			drawable.drawRecipe(guiGraphics, mouseX, mouseY);
-			return;
+			drawable.drawRecipe(guiGraphics);
+		} else {
+			guiGraphics.extractWithoutMouse(() -> {
+				drawable.drawRecipe(guiGraphics);
+				drawTransferError(guiGraphics);
+			});
 		}
-		var pose = guiGraphics.pose();
-		pose.pushMatrix();
-		{
-			pose.translate(x + 2, y + 5);
-			drawable.setPosition(0, 0);
-			drawable.drawRecipe(guiGraphics, 0, 0);
-			drawTransferError(guiGraphics, x, y);
-		}
-		pose.popMatrix();
 	}
 
-	private void drawTransferError(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	private void drawTransferError(GuiGraphicsExtractor guiGraphics) {
 		updateTransferError();
 		if (transferError != null) {
 			Rect2i recipeRect = drawable.getRect();
-			transferError.showError(guiGraphics, mouseX, mouseY, drawable.getRecipeSlotsView(), recipeRect.getX(), recipeRect.getY());
+			transferError.showError(guiGraphics, drawable.getRecipeSlotsView(), recipeRect.getX(), recipeRect.getY());
 		}
 	}
 

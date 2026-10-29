@@ -67,7 +67,7 @@ public class EventRegistration {
 
 	private void beforeExtract(Screen screen, GuiGraphicsExtractor guiGraphics) {
 		if (guiEventHandler != null) {
-			guiEventHandler.updateForScreenRender(screen, guiGraphics.mouseX(), guiGraphics.mouseY());
+			guiEventHandler.updateForScreenRender(screen, guiGraphics);
 		}
 	}
 
@@ -144,9 +144,9 @@ public class EventRegistration {
 		}
 	}
 
-	private void drawForeground(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	private void drawForeground(Screen screen, GuiGraphicsExtractor guiGraphics) {
 		if (guiEventHandler != null) {
-			guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY);
+			guiEventHandler.drawForScreenForeground(screen, guiGraphics);
 		}
 	}
 

@@ -243,10 +243,10 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		return area.y() + area.height();
 	}
 
-	public void drawScreen(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void drawScreen(Minecraft minecraft, GuiGraphicsExtractor guiGraphics) {
 		updateScreenPropertiesIfDirty();
 		drawBackground(guiGraphics);
-		drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+		drawForeground(minecraft, guiGraphics);
 	}
 
 	public void drawBackground(GuiGraphicsExtractor guiGraphics) {
@@ -275,23 +275,27 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		);
 	}
 
-	public void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		updateScreenPropertiesIfDirty();
 		if (isListDisplayed()) {
 			this.bookmarkDragManager.updateDrag(mouseX, mouseY);
-			drawPageFlipEdgeHighlights(guiGraphics, mouseX, mouseY);
-			this.contents.drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+			drawPageFlipEdgeHighlights(guiGraphics);
+			this.contents.drawForeground(minecraft, guiGraphics);
 		}
 		if (guiPropertiesCache.hasValidScreen() && toggleState.isOverlayEnabled()) {
-			this.lookupHistoryOverlay.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+			this.lookupHistoryOverlay.draw(minecraft, guiGraphics);
 		}
 		if (this.guiPropertiesCache.hasValidScreen()) {
-			this.bookmarkButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
-			this.historyButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
+			this.bookmarkButton.draw(guiGraphics);
+			this.historyButton.draw(guiGraphics);
 		}
 	}
 
-	private void drawPageFlipEdgeHighlights(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	private void drawPageFlipEdgeHighlights(GuiGraphicsExtractor guiGraphics) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		if (!this.bookmarkDragManager.isDragging() || !canFlipPage()) {
 			return;
 		}
@@ -343,19 +347,19 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		}
 	}
 
-	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics) {
 		updateScreenPropertiesIfDirty();
-		if (!this.bookmarkDragManager.drawDraggedItem(guiGraphics, mouseX, mouseY)) {
+		if (!this.bookmarkDragManager.drawDraggedItem(guiGraphics)) {
 			if (isListDisplayed() && !previewTooltipController.isVisible()) {
-				this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+				this.contents.drawTooltips(minecraft, guiGraphics);
 			}
 			if (guiPropertiesCache.hasValidScreen() && toggleState.isOverlayEnabled()) {
-				this.lookupHistoryOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+				this.lookupHistoryOverlay.drawTooltips(minecraft, guiGraphics);
 			}
 		}
 		if (this.guiPropertiesCache.hasValidScreen()) {
-			bookmarkButton.drawTooltips(guiGraphics, mouseX, mouseY);
-			historyButton.drawTooltips(guiGraphics, mouseX, mouseY);
+			bookmarkButton.drawTooltips(guiGraphics);
+			historyButton.drawTooltips(guiGraphics);
 		}
 	}
 
@@ -479,12 +483,12 @@ public class BookmarkOverlay implements IRecipeFocusSource, IBookmarkOverlay {
 		);
 	}
 
-	public void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawOnForeground(GuiGraphicsExtractor guiGraphics) {
 		updateScreenPropertiesIfDirty();
 		if (isListDisplayed()) {
-			this.contents.drawOnForeground(guiGraphics, mouseX, mouseY);
+			this.contents.drawOnForeground(guiGraphics);
 		}
-		this.lookupHistoryOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
+		this.lookupHistoryOverlay.drawOnForeground(guiGraphics);
 	}
 
 	public List<BookmarkDragTarget> createBookmarkDragTargets(IBookmark draggedBookmark) {

@@ -142,7 +142,9 @@ final class InteractiveIngredientTooltip implements IGuiInputLayer {
 
 	@SuppressWarnings("removal")
 	@Override
-	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void draw(GuiGraphicsExtractor guiGraphics) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		if (!this.recipesGui.isOpen()) {
 			return;
 		}

@@ -43,13 +43,13 @@ public final class IconButton {
 		return area;
 	}
 
-	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void draw(GuiGraphicsExtractor guiGraphics) {
 		if (this.area.isEmpty()) {
 			return;
 		}
 
 		this.button.extractRenderState(guiGraphics);
-		this.controller.drawExtras(guiGraphics, area.toMutable(), mouseX, mouseY, partialTicks);
+		this.controller.drawExtras(guiGraphics, area.toMutable());
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
@@ -69,7 +69,9 @@ public final class IconButton {
 		this.controller.updateState(this.button);
 	}
 
-	public void drawTooltips(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(GuiGraphicsExtractor guiGraphics) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		if (isMouseOver(mouseX, mouseY)) {
 			JeiTooltip tooltip = new JeiTooltip();
 			controller.getTooltips(tooltip);

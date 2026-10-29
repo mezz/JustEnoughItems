@@ -377,7 +377,6 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 		super.extractRenderState(guiGraphics);
 		int mouseX = guiGraphics.mouseX();
 		int mouseY = guiGraphics.mouseY();
-		float partialTicks = guiGraphics.partialTicks();
 		ResizeHandle resizeHandle = getResizeHandle(mouseX, mouseY);
 		if (resizeDrag != null) {
 			resizeHandle = resizeDrag.handle();
@@ -408,31 +407,31 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 			StringUtil.drawCenteredStringWithShadow(guiGraphics, font, pageString, pageArea, JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_TEXT));
 		}
 
-		nextRecipeCategory.draw(guiGraphics, mouseX, mouseY, partialTicks);
-		previousRecipeCategory.draw(guiGraphics, mouseX, mouseY, partialTicks);
+		nextRecipeCategory.draw(guiGraphics);
+		previousRecipeCategory.draw(guiGraphics);
 		if (!logic.isScrolling()) {
-			nextPage.draw(guiGraphics, mouseX, mouseY, partialTicks);
-			previousPage.draw(guiGraphics, mouseX, mouseY, partialTicks);
+			nextPage.draw(guiGraphics);
+			previousPage.draw(guiGraphics);
 		}
-		this.scrollbar.draw(guiGraphics, mouseX, mouseY);
+		this.scrollbar.draw(guiGraphics);
 
 		updateInteractiveIngredientTooltip(mouseX, mouseY);
 
-		Optional<IRecipeLayoutDrawable<?>> hoveredRecipeLayout = this.layouts.draw(guiGraphics, mouseX, mouseY);
-		optionButtons.draw(guiGraphics, mouseX, mouseY, partialTicks);
-		Optional<IRecipeSlotDrawable> hoveredRecipeCatalyst = craftingStations.draw(guiGraphics, mouseX, mouseY);
+		Optional<IRecipeLayoutDrawable<?>> hoveredRecipeLayout = this.layouts.draw(guiGraphics);
+		optionButtons.draw(guiGraphics);
+		Optional<IRecipeSlotDrawable> hoveredRecipeCatalyst = craftingStations.draw(guiGraphics);
 
-		recipeGuiTabs.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+		recipeGuiTabs.draw(minecraft, guiGraphics);
 
 		if (!interactiveIngredientTooltipController.isVisible()) {
-			this.layouts.drawTooltips(guiGraphics, mouseX, mouseY);
+			this.layouts.drawTooltips(guiGraphics);
 
-			optionButtons.drawTooltips(guiGraphics, mouseX, mouseY);
+			optionButtons.drawTooltips(guiGraphics);
 
-			hoveredRecipeLayout.ifPresent(l -> l.drawOverlays(guiGraphics, mouseX, mouseY));
+			hoveredRecipeLayout.ifPresent(l -> l.drawOverlays(guiGraphics));
 
 			hoveredRecipeCatalyst.ifPresent(h -> {
-				h.drawTooltip(guiGraphics, mouseX, mouseY);
+				h.drawTooltip(guiGraphics);
 			});
 		}
 

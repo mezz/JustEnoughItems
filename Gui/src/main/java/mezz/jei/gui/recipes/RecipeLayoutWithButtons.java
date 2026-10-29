@@ -74,12 +74,12 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 	}
 
 	@Override
-	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		recipeLayout.drawRecipe(guiGraphics, mouseX, mouseY);
+	public void draw(GuiGraphicsExtractor guiGraphics) {
+		recipeLayout.drawRecipe(guiGraphics);
 
 		for (IconButton button : buttons) {
 			if (button.isVisible()) {
-				button.draw(guiGraphics, mouseX, mouseY, partialTicks);
+				button.draw(guiGraphics);
 			}
 		}
 	}
@@ -166,10 +166,12 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 	}
 
 	@Override
-	public void drawTooltips(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(GuiGraphicsExtractor guiGraphics) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		for (IconButton button : buttons) {
 			if (button.isVisible() && button.isMouseOver(mouseX, mouseY)) {
-				button.drawTooltips(guiGraphics, mouseX, mouseY);
+				button.drawTooltips(guiGraphics);
 				return;
 			}
 		}

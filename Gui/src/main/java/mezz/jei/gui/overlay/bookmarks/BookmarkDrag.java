@@ -103,7 +103,9 @@ public class BookmarkDrag<T> {
 		return !bookmark.isVisible();
 	}
 
-	public boolean drawItem(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public boolean drawItem(GuiGraphicsExtractor guiGraphics) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		if (bookmark.isVisible()) {
 			return false;
 		}

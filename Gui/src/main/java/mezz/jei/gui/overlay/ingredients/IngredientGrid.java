@@ -145,7 +145,7 @@ public class IngredientGrid implements IIngredientGrid {
 		return area;
 	}
 
-	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean drawSlotBackgrounds) {
+	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, boolean drawSlotBackgrounds) {
 		if (this.smoothScrollRowPixelOffset > 0 || this.area.height() % IngredientGridLayout.INGREDIENT_HEIGHT != 0) {
 			guiGraphics.enableScissor(
 				this.area.x(),
@@ -154,16 +154,18 @@ public class IngredientGrid implements IIngredientGrid {
 				this.area.y() + this.area.height()
 			);
 			try {
-				drawContents(minecraft, guiGraphics, mouseX, mouseY, drawSlotBackgrounds);
+				drawContents(minecraft, guiGraphics, drawSlotBackgrounds);
 			} finally {
 				guiGraphics.disableScissor();
 			}
 		} else {
-			drawContents(minecraft, guiGraphics, mouseX, mouseY, drawSlotBackgrounds);
+			drawContents(minecraft, guiGraphics, drawSlotBackgrounds);
 		}
 	}
 
-	private void drawContents(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, boolean drawSlotBackgrounds) {
+	private void drawContents(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, boolean drawSlotBackgrounds) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		if (drawSlotBackgrounds) {
 			IDrawableStatic slotBackground = Internal.getTextures().getSlot();
 			this.ingredientListRenderer.getSlots()
@@ -206,7 +208,9 @@ public class IngredientGrid implements IIngredientGrid {
 		);
 	}
 
-	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		Optional<IngredientListSlot> focused = getFocusedSlot();
 		if (focused.isPresent()) {
 			IngredientListSlot slot = focused.get();
@@ -216,7 +220,7 @@ public class IngredientGrid implements IIngredientGrid {
 		}
 		if (isMouseOver(mouseX, mouseY)) {
 			if (this.deleteItemHandler.shouldDeleteItemOnClick(minecraft, mouseX, mouseY)) {
-				this.deleteItemHandler.drawTooltips(guiGraphics, mouseX, mouseY);
+				this.deleteItemHandler.drawTooltips(guiGraphics);
 			} else {
 				ingredientListRenderer.getSlots()
 					.filter(s -> s.isMouseOver(mouseX, mouseY))

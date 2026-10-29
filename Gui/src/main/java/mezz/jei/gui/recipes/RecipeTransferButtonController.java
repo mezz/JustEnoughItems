@@ -154,7 +154,7 @@ public class RecipeTransferButtonController implements IIconButtonController {
 	}
 
 	@Override
-	public void drawExtras(GuiGraphicsExtractor guiGraphics, Rect2i buttonArea, int mouseX, int mouseY, float partialTicks) {
+	public void drawExtras(GuiGraphicsExtractor guiGraphics, Rect2i buttonArea) {
 		IRecipeTransferError recipeTransferError = this.recipeTransferError;
 		if (recipeTransferError != null) {
 			if (recipeTransferError.getType() == IRecipeTransferError.Type.COSMETIC) {
@@ -170,11 +170,11 @@ public class RecipeTransferButtonController implements IIconButtonController {
 					color
 				);
 			}
-			if (buttonArea.contains(mouseX, mouseY)) {
+			if (buttonArea.contains(guiGraphics.mouseX(), guiGraphics.mouseY())) {
 				IRecipeSlotsView recipeSlotsView = recipeLayout.getRecipeSlotsView();
 				Rect2i recipeRect = recipeLayout.getRect();
 				var poseStack = guiGraphics.pose();
-				runWithRestoredPose(poseStack, () -> recipeTransferError.showError(guiGraphics, mouseX, mouseY, recipeSlotsView, recipeRect.getX(), recipeRect.getY()));
+				runWithRestoredPose(poseStack, () -> recipeTransferError.showError(guiGraphics, recipeSlotsView, recipeRect.getX(), recipeRect.getY()));
 			}
 		}
 	}

@@ -33,9 +33,9 @@ public class JeiScreenEvents {
 	}
 
 	private static DrawForeground createDrawForegroundInvoker(DrawForeground[] callbacks) {
-		return (screen, guiGraphics, mouseX, mouseY) -> {
+		return (screen, guiGraphics) -> {
 			for (DrawForeground callback : callbacks) {
-				callback.drawForeground(screen, guiGraphics, mouseX, mouseY);
+				callback.drawForeground(screen, guiGraphics);
 			}
 		};
 	}
@@ -43,7 +43,7 @@ public class JeiScreenEvents {
 	@Environment(EnvType.CLIENT)
 	@FunctionalInterface
 	public interface DrawForeground {
-		void drawForeground(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
+		void drawForeground(Screen screen, GuiGraphicsExtractor guiGraphics);
 	}
 
 	public static final Event<DrawBackground> DRAW_BACKGROUND = createDrawBackgroundEvent();

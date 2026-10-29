@@ -182,9 +182,9 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		return List.copyOf(lineSegments);
 	}
 
-	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics) {
 		if (isListDisplayed()) {
-			this.contents.drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+			this.contents.drawForeground(minecraft, guiGraphics);
 			if (!this.historyListConfig.backgroundStyle().get().isEnabled()) {
 				ImmutableRect2i area = this.contents.getBackgroundArea();
 				int color = JeiGuiColors.getColor(GuiColor.LOOKUP_HISTORY_LINE);
@@ -194,9 +194,9 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		}
 	}
 
-	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics) {
 		if (isListDisplayed()) {
-			this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+			this.contents.drawTooltips(minecraft, guiGraphics);
 		}
 	}
 
@@ -226,9 +226,9 @@ public class LookupHistoryOverlay implements IRecipeFocusSource, ILookupHistoryO
 		this.contents.close();
 	}
 
-	public void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawOnForeground(GuiGraphicsExtractor guiGraphics) {
 		if (isListDisplayed()) {
-			this.contents.drawOnForeground(guiGraphics, mouseX, mouseY);
+			this.contents.drawOnForeground(guiGraphics);
 		}
 	}
 

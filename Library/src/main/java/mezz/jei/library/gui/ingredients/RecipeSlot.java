@@ -494,6 +494,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 	}
 
 	@Override
+	@Deprecated(since = "32.1.0")
 	public void drawTooltip(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		JeiTooltip tooltip = new JeiTooltip();
 		addTooltip(tooltip);

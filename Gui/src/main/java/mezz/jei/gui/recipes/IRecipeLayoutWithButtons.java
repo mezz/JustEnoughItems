@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.jspecify.annotations.Nullable;
 
 public interface IRecipeLayoutWithButtons<R> {
-	void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks);
+	void draw(GuiGraphicsExtractor guiGraphics);
 
 	void updateBounds(int recipeXOffset, int recipeYOffset);
 
@@ -22,7 +22,7 @@ public interface IRecipeLayoutWithButtons<R> {
 	@Nullable
 	RecipeBookmark<?, ?> getRecipeBookmark();
 
-	void drawTooltips(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
+	void drawTooltips(GuiGraphicsExtractor guiGraphics);
 
 	int getMissingCountHint();
 }

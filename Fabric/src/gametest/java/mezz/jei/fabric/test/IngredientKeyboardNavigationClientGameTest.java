@@ -192,8 +192,8 @@ public class IngredientKeyboardNavigationClientGameTest implements FabricClientG
 		focus(context);
 		context.runOnClient(client -> {
 			var searchArea = search().getArea();
-			TooltipBoundsGraphics screenGraphics = new TooltipBoundsGraphics(client);
-			JeiScreenEvents.DRAW_FOREGROUND.invoker().drawForeground(client.gui.screen(), screenGraphics, searchArea.x() + 4, searchArea.y() + 4);
+			TooltipBoundsGraphics screenGraphics = new TooltipBoundsGraphics(client, searchArea.x() + 4, searchArea.y() + 4);
+			JeiScreenEvents.DRAW_FOREGROUND.invoker().drawForeground(client.gui.screen(), screenGraphics);
 			screenGraphics.extractDeferredElements();
 			check(!screenGraphics.tooltip.isEmpty(), "Keyboard tooltip must render while the mouse remains over search");
 			ImmutableRect2i original = grid().getArea();
@@ -204,7 +204,7 @@ public class IngredientKeyboardNavigationClientGameTest implements FabricClientG
 					grid().updateBounds(new ImmutableRect2i(width - 18, top, 18, 18), Set.of(), null);
 					contents().updateLayoutToFirstPage();
 					TooltipBoundsGraphics graphics = new TooltipBoundsGraphics(client);
-					grid().drawTooltips(client, graphics, -1, -1);
+					grid().drawTooltips(client, graphics);
 					graphics.extractDeferredElements();
 					ImmutableRect2i tooltip = graphics.tooltip;
 					check(!tooltip.isEmpty(), "Keyboard selection must render its tooltip");
@@ -224,7 +224,11 @@ public class IngredientKeyboardNavigationClientGameTest implements FabricClientG
 		private ImmutableRect2i tooltip = ImmutableRect2i.EMPTY;
 
 		private TooltipBoundsGraphics(Minecraft client) {
-			super(client, new GuiRenderState(), -1, -1);
+			this(client, -1, -1);
+		}
+
+		private TooltipBoundsGraphics(Minecraft client, int mouseX, int mouseY) {
+			super(client, new GuiRenderState(), mouseX, mouseY);
 		}
 
 		@Override

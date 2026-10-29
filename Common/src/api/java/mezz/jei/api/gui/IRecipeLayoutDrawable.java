@@ -37,17 +37,41 @@ public interface IRecipeLayoutDrawable<R> {
 	void setPosition(int posX, int posY);
 
 	/**
+	 * Draws the recipe without overlays, using the extractor's screen mouse position.
+	 *
+	 * @since 32.1.0
+	 */
+	@SuppressWarnings("deprecation")
+	default void drawRecipe(GuiGraphicsExtractor guiGraphics) {
+		drawRecipe(guiGraphics, guiGraphics.mouseX(), guiGraphics.mouseY());
+	}
+
+	/**
 	 * Draw the recipe without overlays such as item tool tips.
 	 *
 	 * @since 3.13.2
+	 * @deprecated use {@link #drawRecipe(GuiGraphicsExtractor)}
 	 */
+	@Deprecated(since = "32.1.0")
 	void drawRecipe(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
+
+	/**
+	 * Draws recipe overlays such as tooltips, using the extractor's screen mouse position.
+	 *
+	 * @since 32.1.0
+	 */
+	@SuppressWarnings("deprecation")
+	default void drawOverlays(GuiGraphicsExtractor guiGraphics) {
+		drawOverlays(guiGraphics, guiGraphics.mouseX(), guiGraphics.mouseY());
+	}
 
 	/**
 	 * Draw the recipe overlays such as item tool tips.
 	 *
 	 * @since 4.7.4
+	 * @deprecated use {@link #drawOverlays(GuiGraphicsExtractor)}
 	 */
+	@Deprecated(since = "32.1.0")
 	void drawOverlays(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
 
 	/**

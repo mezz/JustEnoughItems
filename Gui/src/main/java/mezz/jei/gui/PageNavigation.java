@@ -94,7 +94,7 @@ public class PageNavigation {
 		this.backButton.tick();
 	}
 
-	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics) {
 		if (isVisible()) {
 			guiGraphics.fill(
 				backButton.getX() + backButton.getWidth(),
@@ -110,8 +110,8 @@ public class PageNavigation {
 			if (centerArea.width() <= availableWidth) {
 				guiGraphics.text(font, pageNumDisplayString, centerArea.getX(), centerArea.getY(), JeiGuiColors.getColor(GuiColor.PAGE_NAVIGATION_TEXT));
 			}
-			nextButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
-			backButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
+			nextButton.draw(guiGraphics);
+			backButton.draw(guiGraphics);
 		}
 	}
 

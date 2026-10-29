@@ -59,10 +59,25 @@ public interface IRecipeTransferError {
 	}
 
 	/**
+	 * Draws a user-facing or cosmetic transfer error using the extractor's screen mouse position.
+	 *
+	 * @param recipeSlotsView the recipe slots associated with the error
+	 * @param recipeX the recipe's X position in screen coordinates
+	 * @param recipeY the recipe's Y position in screen coordinates
+	 * @since 32.1.0
+	 */
+	@SuppressWarnings("deprecation")
+	default void showError(GuiGraphicsExtractor guiGraphics, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
+		showError(guiGraphics, guiGraphics.mouseX(), guiGraphics.mouseY(), recipeSlotsView, recipeX, recipeY);
+	}
+
+	/**
 	 * Called on {@link Type#USER_FACING} and {@link Type#COSMETIC} errors.
 	 *
 	 * @since 9.3.0
+	 * @deprecated use {@link #showError(GuiGraphicsExtractor, IRecipeSlotsView, int, int)}
 	 */
+	@Deprecated(since = "32.1.0")
 	default void showError(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
 
 	}

@@ -80,7 +80,9 @@ public class DeleteItemInputHandler implements IInputTarget {
 	}
 
 	@SuppressWarnings("MethodMayBeStatic")
-	public void drawTooltips(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(GuiGraphicsExtractor guiGraphics) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		JeiTooltip tooltip = new JeiTooltip();
 		tooltip.add(Component.translatable("jei.tooltip.delete.item"));
 		tooltip.draw(guiGraphics, mouseX, mouseY);

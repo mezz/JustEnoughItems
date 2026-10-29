@@ -32,6 +32,7 @@ public class JeiFabricSingleplayerClientGameTest implements FabricClientGameTest
 					RecipeScrollGridClientTest.run(context);
 					RecipeSourceIdsClientTest.run(context);
 					CookingCategoryExtensionClientTest.run(context);
+					ExtractorRenderingClientTest.run(context);
 					RecipeGuiScrollingClientTest.run(context);
 				}
 				JeiFabricClientGameTestAssertions.assertClientRecipesCleared(context, "Fabric singleplayer");

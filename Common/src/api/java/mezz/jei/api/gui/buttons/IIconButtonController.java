@@ -85,6 +85,17 @@ public interface IIconButtonController {
 	}
 
 	/**
+	 * Draws additional visuals after the button, using the extractor's mouse position and timing.
+	 *
+	 * @param buttonArea the button's area in screen coordinates
+	 * @since 32.1.0
+	 */
+	@SuppressWarnings("deprecation")
+	default void drawExtras(GuiGraphicsExtractor guiGraphics, Rect2i buttonArea) {
+		drawExtras(guiGraphics, buttonArea, guiGraphics.mouseX(), guiGraphics.mouseY(), guiGraphics.deltaTracker().getGameTimeDeltaPartialTick(false));
+	}
+
+	/**
 	 * Draws additional visuals for the button.
 	 *
 	 * <p>
@@ -99,7 +110,9 @@ public interface IIconButtonController {
 	 * @param partialTicks the partial tick time
 	 *
 	 * @since 27.2.0
+	 * @deprecated use {@link #drawExtras(GuiGraphicsExtractor, Rect2i)}
 	 */
+	@Deprecated(since = "32.1.0")
 	default void drawExtras(GuiGraphicsExtractor guiGraphics, Rect2i buttonArea, int mouseX, int mouseY, float partialTicks) {
 
 	}

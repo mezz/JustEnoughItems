@@ -65,7 +65,7 @@ public class RecipeBookmarkButtonController implements IIconButtonController {
 	}
 
 	@Override
-	public void drawExtras(GuiGraphicsExtractor guiGraphics, Rect2i buttonArea, int mouseX, int mouseY, float partialTicks) {
+	public void drawExtras(GuiGraphicsExtractor guiGraphics, Rect2i buttonArea) {
 		if (bookmarked) {
 			guiGraphics.fill(
 				buttonArea.getX(),

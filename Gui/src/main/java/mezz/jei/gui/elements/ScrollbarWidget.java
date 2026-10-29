@@ -29,7 +29,9 @@ public final class ScrollbarWidget implements IInputTarget {
 		}
 	}
 
-	public void draw(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+	public void draw(GuiGraphicsExtractor graphics) {
+		int mouseX = graphics.mouseX();
+		int mouseY = graphics.mouseY();
 		if (scrollbar.getArea().isEmpty()) {
 			return;
 		}

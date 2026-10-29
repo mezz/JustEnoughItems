@@ -133,7 +133,9 @@ public class CraftingStations implements IRecipeFocusSource {
 		);
 	}
 
-	public Optional<IRecipeSlotDrawable> draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public Optional<IRecipeSlotDrawable> draw(GuiGraphicsExtractor guiGraphics) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		int ingredientCount = recipeSlots.size();
 		if (ingredientCount > 0) {
 			int slotWidth = width - (2 * borderSize);

@@ -69,6 +69,7 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 	}
 
 	@Override
+	@Deprecated(since = "32.1.0")
 	public void drawRecipe(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		background.draw(guiGraphics, getRectWithBorder());
 
@@ -90,6 +91,7 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 	}
 
 	@Override
+	@Deprecated(since = "32.1.0")
 	public void drawOverlays(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 
 	}

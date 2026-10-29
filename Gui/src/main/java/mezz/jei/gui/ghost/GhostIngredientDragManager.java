@@ -51,24 +51,26 @@ public class GhostIngredientDragManager {
 		this.toggleState = toggleState;
 	}
 
-	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics) {
 		if (!(minecraft.gui.screen() instanceof AbstractContainerScreen)) { // guiContainer uses drawOnForeground
-			drawGhostIngredientHighlights(guiGraphics, mouseX, mouseY);
+			drawGhostIngredientHighlights(guiGraphics);
 		}
 		if (ghostIngredientDrag != null) {
-			ghostIngredientDrag.drawItem(guiGraphics, mouseX, mouseY);
+			ghostIngredientDrag.drawItem(guiGraphics);
 		}
 		ghostIngredientsReturning.forEach(returning -> returning.drawItem(guiGraphics));
 		ghostIngredientsReturning.removeIf(GhostIngredientReturning::isComplete);
 	}
 
-	public void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		drawGhostIngredientHighlights(guiGraphics, mouseX, mouseY);
+	public void drawOnForeground(GuiGraphicsExtractor guiGraphics) {
+		drawGhostIngredientHighlights(guiGraphics);
 	}
 
-	private void drawGhostIngredientHighlights(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	private void drawGhostIngredientHighlights(GuiGraphicsExtractor guiGraphics) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		if (this.ghostIngredientDrag != null) {
-			this.ghostIngredientDrag.drawTargets(guiGraphics, mouseX, mouseY);
+			this.ghostIngredientDrag.drawTargets(guiGraphics);
 		} else {
 			ITypedIngredient<?> hovered = this.source.getIngredientUnderMouse(mouseX, mouseY)
 				.map(IClickableIngredientInternal::getTypedIngredient)
@@ -79,7 +81,7 @@ public class GhostIngredientDragManager {
 				this.hoveredTargetAreas = getHoveredTargetAreas(hovered);
 			}
 			if (!this.hoveredTargetAreas.isEmpty() && !toggleState.isCheatItemsEnabled()) {
-				GhostIngredientDrag.drawTargets(guiGraphics, mouseX, mouseY, this.hoveredTargetAreas);
+				GhostIngredientDrag.drawTargets(guiGraphics, this.hoveredTargetAreas);
 			}
 		}
 	}

@@ -29,8 +29,8 @@ public final class RecipeLayoutWithButtonsErrored<R> implements IRecipeLayoutWit
 	}
 
 	@Override
-	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		errorLayout.drawRecipe(guiGraphics, mouseX, mouseY);
+	public void draw(GuiGraphicsExtractor guiGraphics) {
+		errorLayout.drawRecipe(guiGraphics);
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public final class RecipeLayoutWithButtonsErrored<R> implements IRecipeLayoutWit
 	}
 
 	@Override
-	public void drawTooltips(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(GuiGraphicsExtractor guiGraphics) {
 
 	}
 

@@ -75,7 +75,7 @@ final class CookingCategoryExtensionClientTest {
 
 	private static void assertLabels(Minecraft client, IRecipeLayoutDrawable<?> layout, int cookingTime, float experience) {
 		var graphics = new TextCapturingGraphics(client);
-		layout.drawRecipe(graphics, -1, -1);
+		layout.drawRecipe(graphics);
 		String time = Component.translatable("gui.jei.category.smelting.time.seconds", cookingTime / 20).getString();
 		check(graphics.text.contains(time), "Cooking time label must use the extension value: " + time + " in " + graphics.text);
 		if (experience > 0) {

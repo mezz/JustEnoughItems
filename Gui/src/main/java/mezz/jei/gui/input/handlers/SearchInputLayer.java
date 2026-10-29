@@ -41,7 +41,7 @@ public class SearchInputLayer implements IGuiInputLayer, ITextInputHandler {
 	}
 
 	@Override
-	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void draw(GuiGraphicsExtractor guiGraphics) {
 		if (active.getAsBoolean()) {
 			textFieldFilter.drawCompletion(guiGraphics);
 		}

@@ -24,15 +24,15 @@ public interface IIngredientListOverlayContents extends IIngredientGridView, IIn
 	/**
 	 * Draws the visible ingredients and their navigation controls.
 	 */
-	void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks);
+	void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics);
 
 	/** Draws ingredient tooltips and drag animations. */
-	void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
+	void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics);
 
 	/**
 	 * Highlights where the hovered or dragged ingredient can be dropped.
 	 */
-	void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
+	void drawOnForeground(GuiGraphicsExtractor guiGraphics);
 
 	void tick();
 

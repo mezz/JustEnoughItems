@@ -188,16 +188,26 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	}
 
 	@Override
+	@Deprecated(since = "32.1.0")
 	public void drawRecipe(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		ensureRecipeExtrasAreCreated();
 
 		recipeBackground.draw(guiGraphics, getRectWithBorder());
 
-		final double recipeMouseX = mouseX - area.getX();
-		final double recipeMouseY = mouseY - area.getY();
+		final double recipeMouseX;
+		final double recipeMouseY;
+		final RecipeSlotUnderMouse hoveredSlotResult;
+		if (mouseX >= 0 && mouseY >= 0) {
+			recipeMouseX = mouseX - area.getX();
+			recipeMouseY = mouseY - area.getY();
+			hoveredSlotResult = getSlotUnderMouse(mouseX, mouseY).orElse(null);
+		} else {
+			recipeMouseX = Double.NEGATIVE_INFINITY;
+			recipeMouseY = Double.NEGATIVE_INFINITY;
+			hoveredSlotResult = null;
+		}
 
 		IRecipeSlotsView recipeCategorySlotsView = () -> Collections.unmodifiableList(slots);
-		RecipeSlotUnderMouse hoveredSlotResult = getSlotUnderMouse(mouseX, mouseY).orElse(null);
 
 		var poseStack = guiGraphics.pose();
 		poseStack.pushMatrix();
@@ -250,6 +260,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	}
 
 	@Override
+	@Deprecated(since = "32.1.0")
 	public void drawOverlays(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		ensureRecipeExtrasAreCreated();
 

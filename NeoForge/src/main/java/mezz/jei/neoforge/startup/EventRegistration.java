@@ -112,7 +112,7 @@ public class EventRegistration {
 	) {
 		subscriptions.register(EventPriority.HIGHEST, ScreenEvent.Render.Pre.class, event -> {
 			Screen screen = event.getScreen();
-			guiEventHandler.updateForScreenRender(screen, event.getMouseX(), event.getMouseY());
+			guiEventHandler.updateForScreenRender(screen, event.getGuiGraphics());
 		});
 		subscriptions.register(EventPriority.HIGHEST, RenderTooltipEvent.GatherComponents.class, event -> {
 			if (PinnedTooltipManager.shouldSuppressExternalTooltip()) {
@@ -135,11 +135,9 @@ public class EventRegistration {
 		subscriptions.register(EventPriority.LOWEST, ScreenEvent.Render.Foreground.class, event -> {
 			Screen screen = event.getScreen();
 			var guiGraphics = event.getGuiGraphics();
-			int mouseX = event.getMouseX();
-			int mouseY = event.getMouseY();
 			guiGraphics.nextStratum();
 			runWithIdentityPose(guiGraphics, () -> {
-				guiEventHandler.drawForScreenForeground(screen, guiGraphics, mouseX, mouseY);
+				guiEventHandler.drawForScreenForeground(screen, guiGraphics);
 			});
 		});
 		subscriptions.register(EventPriority.HIGHEST, ScreenEvent.Render.Background.class, event -> {

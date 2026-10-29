@@ -25,7 +25,7 @@ public abstract class RecipeGuiTab implements IInputTarget {
 
 	public abstract boolean isSelected(IRecipeCategory<?> selectedCategory);
 
-	public void draw(boolean selected, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void draw(boolean selected, GuiGraphicsExtractor guiGraphics) {
 		Textures textures = Internal.getTextures();
 		IDrawable tab = textures.getTabUnselected();
 		if (selected) {

@@ -79,11 +79,11 @@ public class RecipeOptionButtons {
 		return area;
 	}
 
-	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void draw(GuiGraphicsExtractor guiGraphics) {
 		backgroundTab.draw(guiGraphics, this.area);
 
 		for (IconButton button : buttons) {
-			button.draw(guiGraphics, mouseX, mouseY, partialTicks);
+			button.draw(guiGraphics);
 		}
 	}
 
@@ -99,9 +99,9 @@ public class RecipeOptionButtons {
 		return new InputGroup("RecipeOptionButtons", handlers);
 	}
 
-	public void drawTooltips(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(GuiGraphicsExtractor guiGraphics) {
 		for (IconButton button : buttons) {
-			button.drawTooltips(guiGraphics, mouseX, mouseY);
+			button.drawTooltips(guiGraphics);
 		}
 	}
 }

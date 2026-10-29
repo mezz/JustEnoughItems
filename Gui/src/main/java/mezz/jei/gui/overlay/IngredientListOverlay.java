@@ -193,10 +193,10 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return this.searchInputLayer;
 	}
 
-	public void drawScreen(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void drawScreen(Minecraft minecraft, GuiGraphicsExtractor guiGraphics) {
 		updateScreenPropertiesIfDirty();
 		drawBackground(guiGraphics);
-		drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+		drawForeground(minecraft, guiGraphics);
 	}
 
 	public void drawBackground(GuiGraphicsExtractor guiGraphics) {
@@ -228,41 +228,41 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		);
 	}
 
-	public void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics) {
 		if (isListDisplayed()) {
-			this.contents.drawForeground(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+			this.contents.drawForeground(minecraft, guiGraphics);
 		}
 		if (isSearchDisplayed()) {
-			this.searchField.extractForegroundRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+			this.searchField.extractForegroundRenderState(guiGraphics);
 		}
 		if (this.controller.hasValidScreen()) {
-			this.configButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
+			this.configButton.draw(guiGraphics);
 
 		}
 		if (this.controller.hasValidScreen() && toggleState.isOverlayEnabled()) {
-			this.lookupHistoryOverlay.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+			this.lookupHistoryOverlay.draw(minecraft, guiGraphics);
 		}
 	}
 
-	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics) {
 		updateScreenPropertiesIfDirty();
 		if (isListDisplayed()) {
-			this.contents.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+			this.contents.drawTooltips(minecraft, guiGraphics);
 		}
 		if (this.controller.hasValidScreen()) {
-			this.configButton.drawTooltips(guiGraphics, mouseX, mouseY);
+			this.configButton.drawTooltips(guiGraphics);
 		}
 		if (this.controller.hasValidScreen() && toggleState.isOverlayEnabled()) {
-			this.lookupHistoryOverlay.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+			this.lookupHistoryOverlay.drawTooltips(minecraft, guiGraphics);
 		}
 	}
 
-	public void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawOnForeground(GuiGraphicsExtractor guiGraphics) {
 		updateScreenPropertiesIfDirty();
 		if (isListDisplayed()) {
-			this.contents.drawOnForeground(guiGraphics, mouseX, mouseY);
+			this.contents.drawOnForeground(guiGraphics);
 		}
-		this.lookupHistoryOverlay.drawOnForeground(guiGraphics, mouseX, mouseY);
+		this.lookupHistoryOverlay.drawOnForeground(guiGraphics);
 	}
 
 	public void tick() {

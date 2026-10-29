@@ -48,7 +48,7 @@ public class ScreenMixin {
 		graphics.nextStratum();
 		runWithIdentityPose(
 			graphics,
-			() -> JeiScreenEvents.DRAW_FOREGROUND.invoker().drawForeground(screen, graphics, graphics.mouseX(), graphics.mouseY())
+			() -> JeiScreenEvents.DRAW_FOREGROUND.invoker().drawForeground(screen, graphics)
 		);
 	}
 

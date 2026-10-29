@@ -12,8 +12,6 @@ import mezz.jei.common.input.interaction.ReleaseInsideBounds;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IClickableIngredientInternal;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import org.apache.logging.log4j.LogManager;
@@ -155,38 +153,31 @@ public class RecipeGuiLayouts implements IInputTarget {
 		}
 	}
 
-	public Optional<IRecipeLayoutDrawable<?>> draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public Optional<IRecipeLayoutDrawable<?>> draw(GuiGraphicsExtractor guiGraphics) {
 		if (viewport == null) {
-			return drawContents(guiGraphics, mouseX, mouseY);
+			return drawContents(guiGraphics);
 		}
 		guiGraphics.enableScissor(viewport.x(), viewport.y(), viewport.x() + viewport.width(), viewport.y() + viewport.height());
 		try {
-			if (!isInsideViewport(mouseX, mouseY)) {
-				return drawContents(guiGraphics, Integer.MIN_VALUE, Integer.MIN_VALUE);
+			if (!isInsideViewport(guiGraphics.mouseX(), guiGraphics.mouseY())) {
+				guiGraphics.extractWithoutMouse(() -> drawContents(guiGraphics));
+				return Optional.empty();
 			}
-			return drawContents(guiGraphics, mouseX, mouseY);
+			return drawContents(guiGraphics);
 		} finally {
 			guiGraphics.disableScissor();
 		}
 	}
 
-	private Optional<IRecipeLayoutDrawable<?>> drawContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		IRecipeLayoutDrawable<?> hoveredLayout = null;
-
-		Minecraft minecraft = Minecraft.getInstance();
-		DeltaTracker deltaTracker = minecraft.getDeltaTracker();
-		float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(false);
-
-		safeCallOnRecipeLayouts(r -> r.draw(guiGraphics, mouseX, mouseY, partialTicks));
-
+	private Optional<IRecipeLayoutDrawable<?>> drawContents(GuiGraphicsExtractor guiGraphics) {
+		safeCallOnRecipeLayouts(r -> r.draw(guiGraphics));
 		for (IRecipeLayoutWithButtons<?> recipeLayoutWithButtons : recipeLayoutsWithButtons) {
-			IRecipeLayoutDrawable<?> recipeLayout = recipeLayoutWithButtons.getRecipeLayout();
-			if (recipeLayout.isMouseOver(mouseX, mouseY)) {
-				hoveredLayout = recipeLayout;
-				break;
+			IRecipeLayoutDrawable<?> layout = recipeLayoutWithButtons.getRecipeLayout();
+			if (layout.isMouseOver(guiGraphics.mouseX(), guiGraphics.mouseY())) {
+				return Optional.of(layout);
 			}
 		}
-		return Optional.ofNullable(hoveredLayout);
+		return Optional.empty();
 	}
 
 	private void safeCallOnRecipeLayouts(Consumer<IRecipeLayoutWithButtons<?>> consumer) {
@@ -203,9 +194,9 @@ public class RecipeGuiLayouts implements IInputTarget {
 		}
 	}
 
-	public void drawTooltips(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		if (isInsideViewport(mouseX, mouseY)) {
-			safeCallOnRecipeLayouts(r -> r.drawTooltips(guiGraphics, mouseX, mouseY));
+	public void drawTooltips(GuiGraphicsExtractor guiGraphics) {
+		if (isInsideViewport(guiGraphics.mouseX(), guiGraphics.mouseY())) {
+			safeCallOnRecipeLayouts(r -> r.drawTooltips(guiGraphics));
 		}
 	}
 

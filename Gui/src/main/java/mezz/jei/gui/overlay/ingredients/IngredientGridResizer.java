@@ -67,7 +67,9 @@ final class IngredientGridResizer implements IInputTarget {
 		return getHandle(mouseX, mouseY).isPresent();
 	}
 
-	void requestCursor(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+	void requestCursor(GuiGraphicsExtractor graphics) {
+		int mouseX = graphics.mouseX();
+		int mouseY = graphics.mouseY();
 		ResizeHandle handle = getHandle(mouseX, mouseY);
 		if (drag != null) {
 			handle = drag.handle();

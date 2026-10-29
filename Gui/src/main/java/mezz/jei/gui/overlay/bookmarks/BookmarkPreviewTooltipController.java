@@ -62,10 +62,10 @@ public class BookmarkPreviewTooltipController implements IGuiInputLayer, IPinned
 	}
 
 	@Override
-	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void draw(GuiGraphicsExtractor guiGraphics) {
 		BookmarkPreviewTooltip activeTooltip = this.activeTooltip;
 		if (activeTooltip != null) {
-			PinnedTooltipManager.draw(this, () -> activeTooltip.draw(guiGraphics, mouseX, mouseY));
+			PinnedTooltipManager.draw(this, () -> activeTooltip.draw(guiGraphics));
 		}
 	}
 

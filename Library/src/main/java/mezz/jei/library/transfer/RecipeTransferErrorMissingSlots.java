@@ -18,6 +18,7 @@ public class RecipeTransferErrorMissingSlots extends RecipeTransferErrorTooltip 
 	}
 
 	@Override
+	@Deprecated(since = "32.1.0")
 	public void showError(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, IRecipeSlotsView recipeSlotsView, int recipeX, int recipeY) {
 		var poseStack = guiGraphics.pose();
 		poseStack.pushMatrix();

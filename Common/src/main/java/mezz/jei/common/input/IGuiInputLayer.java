@@ -14,5 +14,5 @@ public interface IGuiInputLayer extends IInputTarget, IMouseOverable {
 
 	}
 
-	void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
+	void draw(GuiGraphicsExtractor guiGraphics);
 }

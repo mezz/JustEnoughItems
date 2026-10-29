@@ -117,19 +117,21 @@ public class RecipeGuiTabs implements IPaged, IInputTarget {
 		pageNavigation.updatePageNumber();
 	}
 
-	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void draw(Minecraft minecraft, GuiGraphicsExtractor guiGraphics) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		IRecipeCategory<?> selectedCategory = recipeGuiLogic.getSelectedRecipeCategory();
 
 		RecipeGuiTab hovered = null;
 		for (RecipeGuiTab tab : tabs) {
 			boolean selected = tab.isSelected(selectedCategory);
-			tab.draw(selected, guiGraphics, mouseX, mouseY);
+			tab.draw(selected, guiGraphics);
 			if (tab.isMouseOver(mouseX, mouseY)) {
 				hovered = tab;
 			}
 		}
 
-		pageNavigation.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
+		pageNavigation.draw(minecraft, guiGraphics);
 
 		if (hovered != null) {
 			JeiTooltip tooltip = hovered.getTooltip();

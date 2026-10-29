@@ -45,11 +45,11 @@ public class GhostIngredientDrag<T> {
 		this.dragCanStartTime = System.currentTimeMillis() + clientConfig.dragDelayMs().get();
 	}
 
-	public void drawTargets(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawTargets(GuiGraphicsExtractor guiGraphics) {
 		for (HandlerData<T> data : handlersData) {
 			IGhostIngredientHandler<?> handler = data.handler;
 			if (handler.shouldHighlightTargets()) {
-				drawTargets(guiGraphics, mouseX, mouseY, data.targetAreas);
+				drawTargets(guiGraphics, data.targetAreas);
 			}
 		}
 	}
@@ -78,7 +78,9 @@ public class GhostIngredientDrag<T> {
 		return mouseDistSq > 64.0;
 	}
 
-	public void drawItem(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawItem(GuiGraphicsExtractor guiGraphics) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		if (!canStart(this, mouseX, mouseY)) {
 			return;
 		}
@@ -86,7 +88,9 @@ public class GhostIngredientDrag<T> {
 		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, ingredient, mouseX - 8, mouseY - 8);
 	}
 
-	public static void drawTargets(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, List<Rect2i> targetAreas) {
+	public static void drawTargets(GuiGraphicsExtractor guiGraphics, List<Rect2i> targetAreas) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		for (Rect2i area : targetAreas) {
 			int color;
 			if (MathUtil.contains(area, mouseX, mouseY)) {

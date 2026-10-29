@@ -90,7 +90,7 @@ public class IngredientFocusSourceTest {
 		}
 
 		@Override
-		public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+		public void draw(GuiGraphicsExtractor guiGraphics) {
 
 		}
 

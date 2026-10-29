@@ -60,8 +60,8 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 	}
 
 	@Override
-	public void draw(boolean selected, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-		super.draw(selected, guiGraphics, mouseX, mouseY);
+	public void draw(boolean selected, GuiGraphicsExtractor guiGraphics) {
+		super.draw(selected, guiGraphics);
 
 		IDrawable icon = RecipeCategoryIconUtil.create(category, recipeManager, guiHelper);
 		int iconX = area.x() + (TAB_WIDTH - icon.getWidth()) / 2;

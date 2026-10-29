@@ -326,28 +326,30 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	@Override
-	public void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	public void drawForeground(Minecraft minecraft, GuiGraphicsExtractor guiGraphics) {
 		if (!this.active) {
 			return;
 		}
 		boolean drawSlotBackgrounds = this.gridConfig.backgroundStyle().get() == IngredientGridBackgroundStyle.GRID;
-		this.ingredientGrid.draw(minecraft, guiGraphics, mouseX, mouseY, drawSlotBackgrounds);
-		this.scrollbar.draw(guiGraphics, mouseX, mouseY);
-		this.navigation.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);
-		this.resizer.requestCursor(guiGraphics, mouseX, mouseY);
+		this.ingredientGrid.draw(minecraft, guiGraphics, drawSlotBackgrounds);
+		this.scrollbar.draw(guiGraphics);
+		this.navigation.draw(minecraft, guiGraphics);
+		this.resizer.requestCursor(guiGraphics);
 	}
 
 	@Override
-	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawTooltips(Minecraft minecraft, GuiGraphicsExtractor guiGraphics) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		updateLayoutIfDirty();
 		if (!this.active) {
 			return;
 		}
-		this.ghostIngredientDragManager.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+		this.ghostIngredientDragManager.drawTooltips(minecraft, guiGraphics);
 		if (this.resizer.isMouseOver(mouseX, mouseY)) {
 			return;
 		}
-		this.ingredientGrid.drawTooltips(minecraft, guiGraphics, mouseX, mouseY);
+		this.ingredientGrid.drawTooltips(minecraft, guiGraphics);
 	}
 
 	@Override
@@ -448,12 +450,12 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 	}
 
 	@Override
-	public void drawOnForeground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void drawOnForeground(GuiGraphicsExtractor guiGraphics) {
 		updateLayoutIfDirty();
 		if (!this.active) {
 			return;
 		}
-		this.ghostIngredientDragManager.drawOnForeground(guiGraphics, mouseX, mouseY);
+		this.ghostIngredientDragManager.drawOnForeground(guiGraphics);
 	}
 
 	@Override

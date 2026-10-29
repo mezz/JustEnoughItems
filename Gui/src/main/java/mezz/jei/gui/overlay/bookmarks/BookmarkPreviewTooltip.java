@@ -94,16 +94,18 @@ final class BookmarkPreviewTooltip implements IInputTarget, IMouseOverable {
 		this.transferButton.tick();
 	}
 
-	public void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
+	public void draw(GuiGraphicsExtractor guiGraphics) {
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
 		JeiTooltip tooltip = new JeiTooltip();
 		this.element.getPinnedTooltip(tooltip);
-		this.component.setInteractive(mouseX, mouseY, getInteractiveWidth());
+		this.component.setInteractive(getInteractiveWidth());
 
 		this.tooltipRenderer.draw(guiGraphics, tooltip);
 		updateTransferButtonBounds();
-		this.transferButton.draw(guiGraphics, mouseX, mouseY, 0.0f);
-		this.drawable.drawOverlays(guiGraphics, mouseX, mouseY);
-		this.transferButton.drawTooltips(guiGraphics, mouseX, mouseY);
+		this.transferButton.draw(guiGraphics);
+		this.drawable.drawOverlays(guiGraphics);
+		this.transferButton.drawTooltips(guiGraphics);
 
 		if (isMouseOver(mouseX, mouseY)) {
 			if (this.transferButton.isMouseOver(mouseX, mouseY) ||
