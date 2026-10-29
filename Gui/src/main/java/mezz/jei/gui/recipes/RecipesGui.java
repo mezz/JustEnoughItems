@@ -367,14 +367,17 @@ public class RecipesGui extends Screen implements IRecipesGui, IRecipeFocusSourc
 	}
 
 	@Override
-	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-		super.extractBackground(graphics, mouseX, mouseY, a);
+	public void extractBackground(GuiGraphicsExtractor graphics) {
+		super.extractBackground(graphics);
 		this.background.draw(graphics, area);
 	}
 
 	@Override
-	public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		super.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+	public void extractRenderState(GuiGraphicsExtractor guiGraphics) {
+		super.extractRenderState(guiGraphics);
+		int mouseX = guiGraphics.mouseX();
+		int mouseY = guiGraphics.mouseY();
+		float partialTicks = guiGraphics.partialTicks();
 		ResizeHandle resizeHandle = getResizeHandle(mouseX, mouseY);
 		if (resizeDrag != null) {
 			resizeHandle = resizeDrag.handle();

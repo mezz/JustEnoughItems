@@ -45,7 +45,7 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 
 	private boolean wasLeftButtonDown = false;
 	private final BooleanSupplier screenHasGuiProperties;
-	private final Renderable renderScheduler = (guiGraphics, mouseX, mouseY, partialTick) -> {
+	private final Renderable renderScheduler = guiGraphics -> {
 		if (screenHasGuiProperties()) {
 			guiGraphics.setPreeditOverlay(this::draw);
 		}
@@ -67,7 +67,7 @@ public class DebugExclusionAreaHandler implements IGlobalGuiHandler {
 		return getAreas();
 	}
 
-	private void draw(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+	private void draw(GuiGraphicsExtractor guiGraphics) {
 		if (!isActive()) {
 			return;
 		}

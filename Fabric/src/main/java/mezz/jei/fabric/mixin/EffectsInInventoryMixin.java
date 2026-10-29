@@ -19,7 +19,7 @@ public abstract class EffectsInInventoryMixin {
 	private AbstractContainerScreen<?> screen;
 
 	@ModifyVariable(
-		method = "extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;II)V",
+		method = "extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V",
 		name = "maxWidth",
 		at = @At("STORE")
 	)

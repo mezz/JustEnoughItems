@@ -3,7 +3,7 @@ package mezz.jei.gui.config.sorting;
 import net.mezzdev.config.gui.api.IConfigValueIcon;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.pipeline.RenderPipelines;
 import net.minecraft.resources.Identifier;
 
 record TextureConfigValueIcon(Identifier textureLocation, int textureWidth, int textureHeight) implements IConfigValueIcon {

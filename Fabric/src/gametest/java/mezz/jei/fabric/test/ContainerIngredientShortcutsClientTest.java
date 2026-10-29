@@ -139,10 +139,10 @@ public class ContainerIngredientShortcutsClientTest implements FabricClientGameT
 		}
 
 		@Override
-		public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-			super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+		public void extractRenderState(GuiGraphicsExtractor graphics) {
+			super.extractRenderState(graphics);
 			graphics.item(virtualSlot.getItem(), leftPos + 8, topPos + 18);
-			if (isHovering(8, 18, 16, 16, mouseX, mouseY)) {
+			if (isHovering(8, 18, 16, 16, graphics.mouseX(), graphics.mouseY())) {
 				hoveredSlot = virtualSlot;
 			}
 		}

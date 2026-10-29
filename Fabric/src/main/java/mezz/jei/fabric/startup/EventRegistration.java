@@ -65,9 +65,9 @@ public class EventRegistration {
 		ScreenEvents.beforeExtract(screen).register(this::beforeExtract);
 	}
 
-	private void beforeExtract(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+	private void beforeExtract(Screen screen, GuiGraphicsExtractor guiGraphics) {
 		if (guiEventHandler != null) {
-			guiEventHandler.updateForScreenRender(screen, mouseX, mouseY);
+			guiEventHandler.updateForScreenRender(screen, guiGraphics.mouseX(), guiGraphics.mouseY());
 		}
 	}
 

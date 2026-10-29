@@ -12,16 +12,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractContainerScreen.class)
 public class AbstractContainerScreenMixin {
 	@Inject(
-		method = "extractCarriedItem(Lnet/minecraft/client/gui/GuiGraphicsExtractor;II)V",
+		method = "extractCarriedItem(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V",
 		at = @At("HEAD")
 	)
-	private void drawForeground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, CallbackInfo ci) {
+	private void drawForeground(GuiGraphicsExtractor graphics, CallbackInfo ci) {
 		@SuppressWarnings("DataFlowIssue")
 		AbstractContainerScreen<?> screen = (AbstractContainerScreen<?>) (Object) this;
 		graphics.nextStratum();
 		runWithIdentityPose(
 			graphics,
-			() -> JeiScreenEvents.DRAW_FOREGROUND.invoker().drawForeground(screen, graphics, mouseX, mouseY)
+			() -> JeiScreenEvents.DRAW_FOREGROUND.invoker().drawForeground(screen, graphics, graphics.mouseX(), graphics.mouseY())
 		);
 	}
 

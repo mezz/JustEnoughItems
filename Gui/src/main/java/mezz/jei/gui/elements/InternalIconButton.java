@@ -38,7 +38,7 @@ class InternalIconButton extends Button implements IButtonState {
 	}
 
 	@Override
-	protected void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+	protected void extractContents(GuiGraphicsExtractor guiGraphics) {
 		SPRITES.render(
 			guiGraphics,
 			this.active,

@@ -48,7 +48,7 @@ public final class IconButton {
 			return;
 		}
 
-		this.button.extractRenderState(guiGraphics, mouseX, mouseY, partialTicks);
+		this.button.extractRenderState(guiGraphics);
 		this.controller.drawExtras(guiGraphics, area.toMutable(), mouseX, mouseY, partialTicks);
 	}
 

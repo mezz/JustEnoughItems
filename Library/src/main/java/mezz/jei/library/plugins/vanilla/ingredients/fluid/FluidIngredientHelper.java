@@ -13,6 +13,7 @@ import mezz.jei.common.util.TagUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -119,7 +120,7 @@ public class FluidIngredientHelper<T> implements IIngredientHelper<T> {
 	@Override
 	public ItemStack getCheatItemStack(T ingredient) {
 		Fluid fluid = fluidType.getBase(ingredient);
-		Item filledBucket = fluid.getBucket();
+		Item filledBucket = BuiltInRegistries.ITEM.getValue(fluid.getBucket());
 		return filledBucket.getDefaultInstance();
 	}
 

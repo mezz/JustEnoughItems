@@ -194,7 +194,7 @@ public class IngredientKeyboardNavigationClientGameTest implements FabricClientG
 			var searchArea = search().getArea();
 			TooltipBoundsGraphics screenGraphics = new TooltipBoundsGraphics(client);
 			JeiScreenEvents.DRAW_FOREGROUND.invoker().drawForeground(client.gui.screen(), screenGraphics, searchArea.x() + 4, searchArea.y() + 4);
-			screenGraphics.extractDeferredElements(searchArea.x() + 4, searchArea.y() + 4, 0);
+			screenGraphics.extractDeferredElements();
 			check(!screenGraphics.tooltip.isEmpty(), "Keyboard tooltip must render while the mouse remains over search");
 			ImmutableRect2i original = grid().getArea();
 			int width = client.getWindow().getGuiScaledWidth();
@@ -205,7 +205,7 @@ public class IngredientKeyboardNavigationClientGameTest implements FabricClientG
 					contents().updateLayoutToFirstPage();
 					TooltipBoundsGraphics graphics = new TooltipBoundsGraphics(client);
 					grid().drawTooltips(client, graphics, -1, -1);
-					graphics.extractDeferredElements(0, 0, 0);
+					graphics.extractDeferredElements();
 					ImmutableRect2i tooltip = graphics.tooltip;
 					check(!tooltip.isEmpty(), "Keyboard selection must render its tooltip");
 					check(tooltip.x() >= TooltipRenderUtil.PADDING_LEFT && tooltip.y() >= TooltipRenderUtil.PADDING_TOP &&
