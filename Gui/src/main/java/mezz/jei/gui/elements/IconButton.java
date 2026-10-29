@@ -53,7 +53,7 @@ public final class IconButton {
 	}
 
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		return this.button.visible && this.area.contains(mouseX, mouseY);
+		return this.button.isVisible() && this.area.contains(mouseX, mouseY);
 	}
 
 	public IInputTarget createInputHandler() {
@@ -78,7 +78,7 @@ public final class IconButton {
 	}
 
 	public boolean isVisible() {
-		return button.visible;
+		return button.isVisible();
 	}
 
 	public int getX() {

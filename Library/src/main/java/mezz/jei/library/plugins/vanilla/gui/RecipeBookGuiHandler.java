@@ -29,7 +29,7 @@ public class RecipeBookGuiHandler<C extends RecipeBookMenu, T extends AbstractRe
 			ImmutableRect2i bookArea = screenHelper.getBookArea(guiRecipeBook);
 			extraAreas.add(bookArea.toMutable());
 			for (RecipeBookTabButton tab : screenHelper.getTabButtons(guiRecipeBook)) {
-				if (tab.visible) {
+				if (tab.isVisible()) {
 					extraAreas.add(new Rect2i(tab.getX(), tab.getY(), tab.getWidth(), tab.getHeight()));
 				}
 			}

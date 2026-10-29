@@ -18,7 +18,7 @@ import java.util.List;
 @Mixin(GuiGraphicsExtractor.class)
 public class GuiGraphicsExtractorMixin {
 	@Inject(
-		method = "setTooltipForNextFrameInternal",
+		method = "setTooltipForNextFrameInternal(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;ZZ)V",
 		at = @At("HEAD"),
 		cancellable = true
 	)
@@ -30,6 +30,7 @@ public class GuiGraphicsExtractorMixin {
 		ClientTooltipPositioner positioner,
 		Identifier style,
 		boolean replaceExisting,
+		boolean extraSpaceAfterFirstLine,
 		CallbackInfo ci
 	) {
 		@SuppressWarnings("DataFlowIssue")
