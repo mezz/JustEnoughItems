@@ -108,7 +108,7 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	@Override
 	public void render(GuiGraphicsExtractor guiGraphics, T ingredient, int posX, int posY) {
 		Fluid fluid = type.getBase(ingredient);
-		if (fluid.isSame(Fluids.EMPTY)) {
+		if (fluid == Fluids.EMPTY) {
 			return;
 		}
 
@@ -216,7 +216,7 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	@Override
 	public List<Component> getTooltip(T fluidStack, Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
 		Fluid fluidType = type.getBase(fluidStack);
-		if (fluidType.isSame(Fluids.EMPTY)) {
+		if (fluidType == Fluids.EMPTY) {
 			return new ArrayList<>();
 		}
 

@@ -79,7 +79,7 @@ public class FluidHelper implements IPlatformFluidHelperInternal<FluidStack> {
 	@Override
 	public List<Component> getTooltip(FluidStack ingredient, @Nullable Player player, Item.TooltipContext tooltipContext, TooltipFlag tooltipFlag) {
 		Fluid fluid = ingredient.getFluid();
-		if (fluid.isSame(Fluids.EMPTY)) {
+		if (fluid == Fluids.EMPTY) {
 			return List.of();
 		}
 

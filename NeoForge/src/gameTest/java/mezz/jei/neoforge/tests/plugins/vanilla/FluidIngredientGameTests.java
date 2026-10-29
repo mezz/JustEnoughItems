@@ -82,26 +82,27 @@ public final class FluidIngredientGameTests {
 
 	@GameTest
 	@EmptyTemplate
-	@TestHolder(description = "Invalid flowing NeoForge fluid stacks are filtered without adding blank positions.")
-	public static void flowingFluidStacksAreFilteredWithoutBlankPositions(JeiGameTestHelper helper) {
-		// Setup: a source followed by flowing variants reproduces a rotating recipe slot from a fluid tag.
+	@TestHolder(description = "Invalid NeoForge fluid stacks are filtered without adding blank positions.")
+	public static void invalidFluidStacksAreFilteredWithoutBlankPositions(JeiGameTestHelper helper) {
+		// Setup: a source, empty values, and an intentional blank share a rotating recipe slot.
 		FluidIngredientHelper<FluidStack> ingredientHelper = createIngredientHelper();
 		DisplayIngredientAcceptor acceptor = createIngredientAcceptor();
 		FluidStack sourceWater = new FluidStack(Fluids.WATER, 1000);
-		FluidStack flowingWater = new FluidStack(Fluids.FLOWING_WATER, 1000);
-		FluidStack flowingLava = new FluidStack(Fluids.FLOWING_LAVA, 1000);
+		FluidStack zeroAmountWater = new FluidStack(Fluids.WATER, 1000);
+		zeroAmountWater.setAmount(0);
+		FluidStack emptyFluid = FluidStack.EMPTY;
 		List<@Nullable FluidStack> fluidStacks = new ArrayList<>();
 		fluidStacks.add(sourceWater);
-		fluidStacks.add(flowingWater);
+		fluidStacks.add(zeroAmountWater);
 		fluidStacks.add(null);
-		fluidStacks.add(flowingLava);
+		fluidStacks.add(emptyFluid);
 
-		// Operation: submit source, flowing, and intentional blank values through JEI's display ingredient boundary.
+		// Operation: submit source, empty, and intentional blank values through JEI's display ingredient boundary.
 		acceptor.addIngredients(NeoForgeTypes.FLUID_STACK, fluidStacks);
 
 		// Assertions: invalid values are omitted, but the original null remains as an intentional blank.
-		helper.assertTrue(!ingredientHelper.isValidIngredient(flowingWater), "Expected raw flowing water to be invalid");
-		helper.assertTrue(!ingredientHelper.isValidIngredient(flowingLava), "Expected raw flowing lava to be invalid");
+		helper.assertTrue(!ingredientHelper.isValidIngredient(zeroAmountWater), "Expected zero-sized water to be invalid");
+		helper.assertTrue(!ingredientHelper.isValidIngredient(emptyFluid), "Expected an empty fluid stack to be invalid");
 		List<? extends @Nullable ITypedIngredient<?>> acceptedIngredients = acceptor.getAllIngredients();
 		helper.assertEquals(2, acceptedIngredients.size(), "Expected the valid source and intentional blank to remain");
 		FluidStack acceptedSourceWater = Objects.requireNonNull(acceptedIngredients.getFirst())
