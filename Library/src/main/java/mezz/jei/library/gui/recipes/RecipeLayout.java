@@ -39,6 +39,7 @@ import mezz.jei.common.gui.elements.RecipeButtonWidget;
 import mezz.jei.common.gui.elements.RecipeCycleButtonWidget;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ErrorUtil;
+import mezz.jei.common.util.GuiGraphicsUtil;
 import mezz.jei.common.util.ImmutablePoint2i;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
@@ -59,6 +60,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
+import org.joml.Matrix3x2f;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.time.Duration;
@@ -194,19 +196,6 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 
 		recipeBackground.draw(guiGraphics, getRectWithBorder());
 
-		final double recipeMouseX;
-		final double recipeMouseY;
-		final RecipeSlotUnderMouse hoveredSlotResult;
-		if (mouseX >= 0 && mouseY >= 0) {
-			recipeMouseX = mouseX - area.getX();
-			recipeMouseY = mouseY - area.getY();
-			hoveredSlotResult = getSlotUnderMouse(mouseX, mouseY).orElse(null);
-		} else {
-			recipeMouseX = Double.NEGATIVE_INFINITY;
-			recipeMouseY = Double.NEGATIVE_INFINITY;
-			hoveredSlotResult = null;
-		}
-
 		IRecipeSlotsView recipeCategorySlotsView = () -> Collections.unmodifiableList(slots);
 
 		var poseStack = guiGraphics.pose();
@@ -214,23 +203,28 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		{
 			poseStack.translate(area.getX(), area.getY());
 
+			var recipeMouse = GuiGraphicsUtil.getLocalMousePosition(guiGraphics.pose(), mouseX, mouseY);
+			RecipeSlotUnderMouse hoveredSlotResult = getSlotUnderMouseInRecipe(recipeMouse.x(), recipeMouse.y()).orElse(null);
+
 			// defensive push/pop to protect against recipe categories changing the last pose
 			poseStack.pushMatrix();
 			{
-				recipeCategory.draw(recipe, recipeCategorySlotsView, guiGraphics, recipeMouseX, recipeMouseY);
+				recipeCategory.draw(recipe, recipeCategorySlotsView, guiGraphics, recipeMouse.x(), recipeMouse.y());
 				for (IRecipeSlotDrawable slot : slots) {
 					boolean hovered = hoveredSlotResult != null && hoveredSlotResult.slot() == slot;
 					slot.draw(guiGraphics, hovered);
 				}
-				RecipeWidgetRenderer.forEachWidget(allWidgets, recipeMouseX, recipeMouseY, (widget, position, relativeMouseX, relativeMouseY) -> {
+				for (IRecipeWidget widget : allWidgets) {
+					ScreenPosition position = widget.getPosition();
 					poseStack.pushMatrix();
 					try {
 						poseStack.translate(position.x(), position.y());
-						widget.drawWidget(guiGraphics, relativeMouseX, relativeMouseY);
+						var widgetMouse = GuiGraphicsUtil.getLocalMousePosition(guiGraphics.pose(), mouseX, mouseY);
+						widget.drawWidget(guiGraphics, widgetMouse.x(), widgetMouse.y());
 					} finally {
 						poseStack.popMatrix();
 					}
-				});
+				}
 			}
 			poseStack.popMatrix();
 
@@ -247,7 +241,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 				// defensive push/pop to protect against recipe category decorators changing the last pose
 				poseStack.pushMatrix();
 				{
-					decorator.draw(recipe, recipeCategory, recipeCategorySlotsView, guiGraphics, recipeMouseX, recipeMouseY);
+					decorator.draw(recipe, recipeCategory, recipeCategorySlotsView, guiGraphics, recipeMouse.x(), recipeMouse.y());
 				}
 				poseStack.popMatrix();
 			}
@@ -264,17 +258,19 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	public void drawOverlays(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		ensureRecipeExtrasAreCreated();
 
-		final int recipeMouseX = mouseX - area.getX();
-		final int recipeMouseY = mouseY - area.getY();
+		var recipePose = new Matrix3x2f(guiGraphics.pose()).translate(area.x(), area.y());
+		var recipeMouse = GuiGraphicsUtil.getLocalMousePosition(recipePose, mouseX, mouseY);
+		final double recipeMouseX = recipeMouse.x();
+		final double recipeMouseY = recipeMouse.y();
 
 		IRecipeSlotsView recipeCategorySlotsView = () -> Collections.unmodifiableList(slots);
-		RecipeSlotUnderMouse hoveredSlotResult = getSlotUnderMouse(mouseX, mouseY).orElse(null);
+		RecipeSlotUnderMouse hoveredSlotResult = getSlotUnderMouseInRecipe(recipeMouseX, recipeMouseY).orElse(null);
 
 		var poseStack = guiGraphics.pose();
 		if (hoveredSlotResult != null) {
 			IRecipeSlotDrawable hoveredSlot = hoveredSlotResult.slot();
 			hoveredSlot.drawTooltip(guiGraphics, mouseX, mouseY);
-		} else if (isMouseOver(mouseX, mouseY)) {
+		} else if (recipeMouseX >= 0 && recipeMouseY >= 0 && recipeMouseX < area.width() && recipeMouseY < area.height()) {
 			JeiTooltip tooltip = new JeiTooltip();
 			try {
 				recipeCategory.getTooltip(tooltip, recipe, recipeCategorySlotsView, recipeMouseX, recipeMouseY);
@@ -340,7 +336,10 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 		ensureRecipeExtrasAreCreated();
 		final double recipeMouseX = mouseX - area.getX();
 		final double recipeMouseY = mouseY - area.getY();
+		return getSlotUnderMouseInRecipe(recipeMouseX, recipeMouseY);
+	}
 
+	private Optional<RecipeSlotUnderMouse> getSlotUnderMouseInRecipe(double recipeMouseX, double recipeMouseY) {
 		for (ISlottedRecipeWidget widget : slottedWidgets) {
 			ScreenPosition position = widget.getPosition();
 			double relativeMouseX = recipeMouseX - position.x();

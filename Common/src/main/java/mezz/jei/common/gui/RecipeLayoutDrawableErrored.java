@@ -12,6 +12,7 @@ import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.common.Internal;
+import mezz.jei.common.util.GuiGraphicsUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -77,13 +78,12 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 		poseStack.pushMatrix();
 		{
 			poseStack.translate(area.x(), area.y());
-			int recipeMouseX = mouseX - area.x();
-			int recipeMouseY = mouseY - area.y();
 			ScreenPosition position = scrollBoxWidget.getPosition();
 			poseStack.pushMatrix();
 			{
 				poseStack.translate(position.x(), position.y());
-				scrollBoxWidget.drawWidget(guiGraphics, recipeMouseX - position.x(), recipeMouseY - position.y());
+				var localMouse = GuiGraphicsUtil.getLocalMousePosition(guiGraphics.pose(), mouseX, mouseY);
+				scrollBoxWidget.drawWidget(guiGraphics, localMouse.x(), localMouse.y());
 			}
 			poseStack.popMatrix();
 		}

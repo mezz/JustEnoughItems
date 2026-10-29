@@ -1,6 +1,7 @@
 package mezz.jei.common.chat;
 
 import mezz.jei.common.chat.JeiChatItemLinks.IngredientLink;
+import mezz.jei.common.util.GuiGraphicsUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.Font;
@@ -165,8 +166,7 @@ public final class JeiChatItemLinkHover {
 				return null;
 			}
 
-			Matrix3x2f localPose = renderState.pose.invert(new Matrix3x2f());
-			Vector2f localMousePos = localPose.transformPosition(new Vector2f(this.mouseX, this.mouseY));
+			Vector2f localMousePos = GuiGraphicsUtil.getLocalMousePosition(renderState.pose, this.mouseX, this.mouseY);
 			float localMouseX = localMousePos.x();
 			float localMouseY = localMousePos.y();
 			List<ActiveArea> activeAreas = getActiveAreas(renderState);

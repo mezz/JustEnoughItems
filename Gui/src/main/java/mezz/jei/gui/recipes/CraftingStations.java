@@ -8,6 +8,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.elements.ScalableDrawable;
 import mezz.jei.common.gui.textures.Textures;
+import mezz.jei.common.util.GuiGraphicsUtil;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.gui.input.ClickableIngredientInternal;
@@ -134,8 +135,7 @@ public class CraftingStations implements IRecipeFocusSource {
 	}
 
 	public Optional<IRecipeSlotDrawable> draw(GuiGraphicsExtractor guiGraphics) {
-		int mouseX = guiGraphics.mouseX();
-		int mouseY = guiGraphics.mouseY();
+		var localMouse = GuiGraphicsUtil.getLocalMousePosition(guiGraphics);
 		int ingredientCount = recipeSlots.size();
 		if (ingredientCount > 0) {
 			int slotWidth = width - (2 * borderSize);
@@ -145,10 +145,10 @@ public class CraftingStations implements IRecipeFocusSource {
 
 			IRecipeSlotDrawable hovered = null;
 			for (IRecipeSlotDrawable recipeSlot : this.recipeSlots) {
-				if (recipeSlot.isMouseOver(mouseX, mouseY)) {
+				if (recipeSlot.isMouseOver(localMouse.x(), localMouse.y())) {
 					hovered = recipeSlot;
 				}
-				recipeSlot.draw(guiGraphics, recipeSlot.isMouseOver(mouseX, mouseY));
+				recipeSlot.draw(guiGraphics, recipeSlot.isMouseOver(localMouse.x(), localMouse.y()));
 			}
 			return Optional.ofNullable(hovered);
 		}

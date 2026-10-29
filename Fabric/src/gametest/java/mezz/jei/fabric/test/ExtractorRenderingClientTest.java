@@ -39,6 +39,18 @@ final class ExtractorRenderingClientTest {
 			check(category.mouseX == 13 && category.mouseY == 17, "Category coordinates must remain relative to the layout");
 			check(category.widgetMouseX == 10 && category.widgetMouseY == 13, "Widget coordinates must remain relative to the widget");
 
+			graphics.pose().pushMatrix();
+			try {
+				graphics.pose().translate(5, 7).scale(2);
+				layout.setPosition(10, 20);
+				layout.drawRecipe(graphics);
+				check(category.mouseX == 14 && category.mouseY == 10, "Category coordinates must include the parent render pose");
+				check(category.widgetMouseX == 11 && category.widgetMouseY == 6, "Widget coordinates must include the parent render pose");
+			} finally {
+				graphics.pose().popMatrix();
+				layout.setPosition(40, 50);
+			}
+
 			layout.drawRecipe(graphics, 60, 80);
 			check(category.mouseX == 20 && category.mouseY == 30, "The legacy overload must honor its explicit mouse position");
 
