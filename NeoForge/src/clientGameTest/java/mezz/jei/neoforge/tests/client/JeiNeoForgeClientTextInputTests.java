@@ -98,10 +98,13 @@ public final class JeiNeoForgeClientTextInputTests {
 					if (!searchField.isFocused()) {
 						throw new AssertionError("Expected the focus-search hotkey to focus JEI's search field.");
 					}
+					TextInputTestUtil.invokeKeyRelease(keyboardHandler, windowHandle, new KeyEvent(GLFW.GLFW_KEY_LEFT_SHIFT, 0, 0));
 					TextInputTestUtil.invokeCharacterCallback(keyboardHandler, windowHandle, new CharacterEvent(codePoint, 0));
 					if (!searchField.getValue().equals(text)) {
 						throw new AssertionError("Expected the focus-search hotkey to preserve '" + text + "', got: " + searchField.getValue());
 					}
+					TextInputTestUtil.invokeKeyRelease(keyboardHandler, windowHandle, new KeyEvent(key, 0, 0));
+					TextInputTestUtil.typeImeText(keyboardHandler, windowHandle, searchField);
 					searchField.setValue("");
 					TextInputTestUtil.typePlainText(keyboardHandler, windowHandle, searchField);
 				}
@@ -116,6 +119,9 @@ public final class JeiNeoForgeClientTextInputTests {
 			if (!searchField.isFocused()) {
 				throw new AssertionError("Expected the nonprinting focus-search hotkey to focus JEI's search field.");
 			}
+			TextInputTestUtil.invokeKeyRelease(keyboardHandler, windowHandle, new KeyEvent(GLFW.GLFW_KEY_F6, 0, 0));
+			TextInputTestUtil.typeImeText(keyboardHandler, windowHandle, searchField);
+			TextInputTestUtil.assertImeInputAfterBackspace(keyboardHandler, windowHandle, searchField);
 			TextInputTestUtil.typePlainText(keyboardHandler, windowHandle, searchField);
 		} finally {
 			focusSearch.setKeyModifierAndCode(originalModifier, originalKey);

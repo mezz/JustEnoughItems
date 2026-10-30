@@ -45,6 +45,35 @@ public final class TextInputTestUtil {
 		invokeKeyEvent(keyboardHandler, windowHandle, GLFW.GLFW_PRESS, event);
 	}
 
+	public static void invokeKeyRelease(KeyboardHandler keyboardHandler, long windowHandle, KeyEvent event) {
+		invokeKeyEvent(keyboardHandler, windowHandle, GLFW.GLFW_RELEASE, event);
+	}
+
+	public static void typeImeText(KeyboardHandler keyboardHandler, long windowHandle, GuiTextFieldFilter searchField) {
+		String text = "苹果";
+		String expected = searchField.getValue() + text;
+		// An IME commits text without sending a corresponding key press.
+		text.codePoints().forEach(codePoint -> invokeCharacterCallback(keyboardHandler, windowHandle, new CharacterEvent(codePoint, 0)));
+		if (!searchField.isFocused()) {
+			throw new AssertionError("Expected committing IME text to keep JEI's search field focused.");
+		}
+		assertSearchText(searchField, expected);
+	}
+
+	public static void assertImeInputAfterBackspace(KeyboardHandler keyboardHandler, long windowHandle, GuiTextFieldFilter searchField) {
+		searchField.setValue("苹果");
+		KeyEvent backspace = new KeyEvent(GLFW.GLFW_KEY_BACKSPACE, 0, 0);
+		for (int attempt = 0; attempt < 2; attempt++) {
+			for (int i = 0; i < 2; i++) {
+				invokeKeyPress(keyboardHandler, windowHandle, backspace);
+				invokeKeyRelease(keyboardHandler, windowHandle, backspace);
+			}
+			assertSearchText(searchField, "");
+			typeImeText(keyboardHandler, windowHandle, searchField);
+		}
+		searchField.setValue("");
+	}
+
 	private static void invokeKeyEvent(KeyboardHandler keyboardHandler, long windowHandle, int action, KeyEvent event) {
 		try {
 			Method method = KeyboardHandler.class.getDeclaredMethod("keyPress", long.class, int.class, KeyEvent.class);

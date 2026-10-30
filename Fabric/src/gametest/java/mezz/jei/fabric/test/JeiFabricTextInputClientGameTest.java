@@ -83,7 +83,12 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 
 					searchField.clearFocus();
 					focusSearchWithHotkey(
-						client.keyboardHandler, client.getWindow().handle(), () -> TextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField)
+						client.keyboardHandler, client.getWindow().handle(), () -> {
+							TextInputTestUtil.invokeKeyRelease(client.keyboardHandler, client.getWindow().handle(), new KeyEvent(KEY_CODE_F, 0, 0));
+							TextInputTestUtil.typeImeText(client.keyboardHandler, client.getWindow().handle(), searchField);
+							TextInputTestUtil.assertImeInputAfterBackspace(client.keyboardHandler, client.getWindow().handle(), searchField);
+							TextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField);
+						}
 					);
 				} finally {
 					client.setScreen(null);

@@ -8,7 +8,9 @@ import mezz.jei.gui.util.GuiEventListenerUtil;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -16,8 +18,8 @@ import java.util.Optional;
 public class ClientInputHandler {
 	private final GuiInputController controller;
 	private final IInternalKeyMappings keybindings;
-	/** Retained for every character callback from the last key press. */
-	private Optional<IInputInteraction> keyInteraction = Optional.empty();
+	/** Suppresses the handled key's character callbacks until that key is released. */
+	private InputConstants.@Nullable Key characterSuppressionKey;
 
 	public ClientInputHandler(GuiInputController controller, IInternalKeyMappings keybindings) {
 		this.controller = controller;
@@ -25,7 +27,7 @@ public class ClientInputHandler {
 	}
 
 	public void onGuiChanged() {
-		keyInteraction = Optional.empty();
+		characterSuppressionKey = null;
 		controller.screenChanged();
 	}
 
@@ -37,12 +39,12 @@ public class ClientInputHandler {
 	 * select its search field before the creative inventory's search field handles the key.</p>
 	 */
 	public boolean onKeyboardKeyPressedPre(Screen screen, UserInput input) {
-		keyInteraction = Optional.empty();
+		characterSuppressionKey = null;
 		// Focus Search transfers keyboard focus even when the creative inventory's search field is selected.
 		if (screen instanceof ChatScreen || input.is(keybindings.getFocusSearch()) || !isContainerTextFieldFocused(screen)) {
-			keyInteraction = controller.keyPressed(screen, input);
+			return handleKeyPress(screen, input);
 		}
-		return keyInteraction.isPresent();
+		return false;
 	}
 
 	/**
@@ -51,10 +53,24 @@ public class ClientInputHandler {
 	 */
 	public boolean onKeyboardKeyPressedPost(Screen screen, UserInput input) {
 		if (!(screen instanceof ChatScreen) && isContainerTextFieldFocused(screen)) {
-			keyInteraction = controller.keyPressed(screen, input);
-			return keyInteraction.isPresent();
+			return handleKeyPress(screen, input);
 		}
 		return false;
+	}
+
+	private boolean handleKeyPress(Screen screen, UserInput input) {
+		Optional<IInputInteraction> interaction = controller.keyPressed(screen, input);
+		characterSuppressionKey = interaction.filter(IInputInteraction::consumesCharacters)
+			.map(ignored -> input.getKey())
+			.orElse(null);
+		return interaction.isPresent();
+	}
+
+	/** Allows later IME commits that arrive without another key press. */
+	public void onKeyboardKeyReleased(KeyEvent event) {
+		if (InputConstants.getKey(event).equals(characterSuppressionKey)) {
+			characterSuppressionKey = null;
+		}
 	}
 
 	/**
@@ -64,7 +80,7 @@ public class ClientInputHandler {
 	 * either JEI's editor or the screen.
 	 */
 	public boolean onKeyboardCharTypedPre(Screen screen, CharacterEvent event) {
-		if (consumesCharacters()) {
+		if (characterSuppressionKey != null) {
 			return true;
 		}
 		if (!isContainerTextFieldFocused(screen)) {
@@ -78,13 +94,13 @@ public class ClientInputHandler {
 	 * to handle them. JEI inserts them only if its search field has keyboard focus.
 	 */
 	public void onKeyboardCharTypedPost(Screen screen, CharacterEvent event) {
-		if (!consumesCharacters() && isContainerTextFieldFocused(screen)) {
+		if (characterSuppressionKey == null && isContainerTextFieldFocused(screen)) {
 			controller.charTyped(event);
 		}
 	}
 
 	public boolean onGuiMouseClicked(Screen screen, UserInput input) {
-		keyInteraction = Optional.empty();
+		characterSuppressionKey = null;
 		return controller.mousePressed(screen, input);
 	}
 
@@ -99,10 +115,6 @@ public class ClientInputHandler {
 	public boolean onGuiMouseDragged(Screen screen, MouseButtonEvent event, double dragX, double dragY) {
 		InputConstants.Key input = InputConstants.Type.MOUSE.getOrCreate(event.button());
 		return controller.mouseDragged(screen, event.x(), event.y(), input, dragX, dragY);
-	}
-
-	private boolean consumesCharacters() {
-		return keyInteraction.map(IInputInteraction::consumesCharacters).orElse(false);
 	}
 
 	private boolean isContainerTextFieldFocused(Screen screen) {
