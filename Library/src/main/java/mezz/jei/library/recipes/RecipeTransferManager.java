@@ -12,15 +12,12 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import org.jspecify.annotations.Nullable;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public class RecipeTransferManager implements IRecipeTransferManager {
 	private final ImmutableTable<Class<? extends AbstractContainerMenu>, IRecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers;
 	private final List<IRecipeTransferListener> recipeTransferListeners;
-	private final Set<AbstractContainerMenu> unsupportedContainers = new HashSet<>();
 
 	public RecipeTransferManager(
 		ImmutableTable<Class<? extends AbstractContainerMenu>, IRecipeType<?>, IRecipeTransferHandler<?, ?>> recipeTransferHandlers,
@@ -35,16 +32,13 @@ public class RecipeTransferManager implements IRecipeTransferManager {
 		ErrorUtil.checkNotNull(container, "container");
 		ErrorUtil.checkNotNull(recipeCategory, "recipeCategory");
 
-		MenuType<C> menuType = getMenuType(container);
 		IRecipeType<R> recipeType = recipeCategory.getRecipeType();
-		@SuppressWarnings("unchecked")
-		Class<? extends C> containerClass = (Class<? extends C>) container.getClass();
-		Optional<IRecipeTransferHandler<C, R>> handler = getHandler(containerClass, menuType, recipeType);
+		Optional<IRecipeTransferHandler<C, R>> handler = getHandler(container, recipeType);
 		if (handler.isPresent()) {
 			return handler;
 		}
 
-		return getHandler(containerClass, menuType, Constants.UNIVERSAL_RECIPE_TRANSFER_TYPE);
+		return getHandler(container, Constants.UNIVERSAL_RECIPE_TRANSFER_TYPE);
 	}
 
 	@Override
@@ -53,27 +47,21 @@ public class RecipeTransferManager implements IRecipeTransferManager {
 	}
 
 	@Nullable
-	private <C extends AbstractContainerMenu> MenuType<C> getMenuType(C container) {
-		if (unsupportedContainers.contains(container)) {
-			return null;
-		}
+	private static MenuType<?> getMenuType(AbstractContainerMenu container) {
 		try {
-			@SuppressWarnings({"UnnecessaryLocalVariable", "unchecked"})
-			MenuType<C> cast = (MenuType<C>) container.getType();
-			return cast;
+			return container.getType();
 		} catch (UnsupportedOperationException ignored) {
-			unsupportedContainers.add(container);
 			return null;
 		}
 	}
 
-	private <C extends AbstractContainerMenu, R> Optional<IRecipeTransferHandler<C, R>> getHandler(Class<? extends C> containerClass, @Nullable MenuType<C> menuType, IRecipeType<?> recipeType) {
-		IRecipeTransferHandler<?, ?> handler = recipeTransferHandlers.get(containerClass, recipeType);
+	private <C extends AbstractContainerMenu, R> Optional<IRecipeTransferHandler<C, R>> getHandler(C container, IRecipeType<?> recipeType) {
+		IRecipeTransferHandler<?, ?> handler = recipeTransferHandlers.get(container.getClass(), recipeType);
 		if (handler == null) {
 			return Optional.empty();
 		}
 		Optional<? extends MenuType<?>> handlerMenuType = handler.getMenuType();
-		if (handlerMenuType.isEmpty() || handlerMenuType.get().equals(menuType)) {
+		if (handlerMenuType.isEmpty() || handlerMenuType.get().equals(getMenuType(container))) {
 			@SuppressWarnings("unchecked")
 			IRecipeTransferHandler<C, R> cast = (IRecipeTransferHandler<C, R>) handler;
 			return Optional.of(cast);
