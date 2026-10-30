@@ -1,9 +1,7 @@
 package mezz.jei.fabric.startup;
 
-import com.mojang.blaze3d.platform.Window;
 import mezz.jei.common.input.InputPhase;
 import mezz.jei.common.input.UserInput;
-import mezz.jei.fabric.events.JeiCharTypedEvents;
 import mezz.jei.fabric.events.JeiScreenEvents;
 import mezz.jei.gui.events.GuiEventHandler;
 import mezz.jei.gui.input.ClientInputHandler;
@@ -39,7 +37,6 @@ public class EventRegistration {
 
 	private void registerEvents() {
 		ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> registerScreenEvents(screen));
-		JeiCharTypedEvents.BEFORE_CHAR_TYPED.register(this::beforeCharTyped);
 		ScreenEvents.AFTER_INIT.register(this::afterInit);
 		JeiScreenEvents.DRAW_FOREGROUND.register(this::drawForeground);
 		JeiScreenEvents.DRAW_BACKGROUND.register(this::drawBackground);
@@ -53,6 +50,7 @@ public class EventRegistration {
 
 		ScreenKeyboardEvents.allowKeyPress(screen).register(this::allowKeyPress);
 		ScreenKeyboardEvents.allowKeyRelease(screen).register(this::allowKeyRelease);
+		ScreenKeyboardEvents.allowCharType(screen).register(this::allowCharType);
 		ScreenMouseEvents.allowMouseClick(screen).register(this::allowMouseClick);
 		ScreenMouseEvents.allowMouseRelease(screen).register(this::allowMouseRelease);
 		ScreenMouseEvents.allowMouseDrag(screen).register(this::allowMouseDrag);
@@ -129,17 +127,8 @@ public class EventRegistration {
 		}
 	}
 
-	private boolean beforeCharTyped(long windowHandle, CharacterEvent event) {
-		Minecraft minecraft = Minecraft.getInstance();
-		Window window = minecraft.getWindow();
-		if (window.handle() == windowHandle &&
-			clientInputHandler != null &&
-			minecraft.gui.screen() instanceof Screen screen &&
-			minecraft.gui.overlay() == null
-		) {
-			return clientInputHandler.onKeyboardCharTypedPre(screen, event);
-		}
-		return false;
+	private boolean allowCharType(Screen screen, CharacterEvent event) {
+		return clientInputHandler == null || !clientInputHandler.onKeyboardCharTypedPre(screen, event);
 	}
 
 	private void afterInit(Minecraft client, Screen screen, int scaledWidth, int scaledHeight) {
