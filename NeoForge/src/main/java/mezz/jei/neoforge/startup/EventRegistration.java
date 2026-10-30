@@ -48,6 +48,8 @@ public class EventRegistration {
 			}
 		});
 
+		subscriptions.register(ScreenEvent.KeyReleased.Pre.class, event -> handler.onKeyboardKeyReleased(event.getKeyEvent()));
+
 		subscriptions.register(ScreenEvent.CharacterTyped.Pre.class, event -> {
 			Screen screen = event.getScreen();
 			CharacterEvent characterEvent = event.getCharacterEvent();

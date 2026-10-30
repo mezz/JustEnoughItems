@@ -52,6 +52,7 @@ public class EventRegistration {
 		}
 
 		ScreenKeyboardEvents.allowKeyPress(screen).register(this::allowKeyPress);
+		ScreenKeyboardEvents.allowKeyRelease(screen).register(this::allowKeyRelease);
 		ScreenMouseEvents.allowMouseClick(screen).register(this::allowMouseClick);
 		ScreenMouseEvents.allowMouseRelease(screen).register(this::allowMouseRelease);
 		ScreenMouseEvents.allowMouseDrag(screen).register(this::allowMouseDrag);
@@ -99,6 +100,13 @@ public class EventRegistration {
 		}
 		UserInput userInput = UserInput.fromVanilla(keyEvent);
 		return !clientInputHandler.onKeyboardKeyPressedPre(screen, userInput);
+	}
+
+	private boolean allowKeyRelease(Screen screen, KeyEvent event) {
+		if (clientInputHandler != null) {
+			clientInputHandler.onKeyboardKeyReleased(event);
+		}
+		return true;
 	}
 
 	private boolean allowMouseScroll(Screen screen, double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {

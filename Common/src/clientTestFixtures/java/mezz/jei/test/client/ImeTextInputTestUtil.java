@@ -192,6 +192,36 @@ public final class ImeTextInputTestUtil {
 		invokeKeyEvent(keyboardHandler, windowHandle, InputConstants.PRESS, event);
 	}
 
+	public static void invokeKeyRelease(KeyboardHandler keyboardHandler, long windowHandle, KeyEvent event) {
+		invokeKeyEvent(keyboardHandler, windowHandle, InputConstants.RELEASE, event);
+	}
+
+	public static void typeImeText(KeyboardHandler keyboardHandler, long windowHandle, GuiTextFieldFilter searchField) {
+		String text = "苹果";
+		String expected = searchField.getValue() + text;
+		// An IME can commit multiple characters without sending a corresponding key press.
+		keyboardHandler.textInput(windowHandle, text);
+		if (!searchField.isFocused()) {
+			throw new AssertionError("Expected committing IME text to keep JEI's search field focused.");
+		}
+		assertTextInputEnabled(Minecraft.getInstance(), "committing IME text");
+		assertSearchText(searchField, expected);
+	}
+
+	public static void assertImeInputAfterBackspace(KeyboardHandler keyboardHandler, long windowHandle, GuiTextFieldFilter searchField) {
+		searchField.setValue("苹果");
+		KeyEvent backspace = new KeyEvent(InputConstants.KEY_BACKSPACE, '\b', 0);
+		for (int attempt = 0; attempt < 2; attempt++) {
+			for (int i = 0; i < 2; i++) {
+				invokeKeyPress(keyboardHandler, windowHandle, backspace);
+				invokeKeyRelease(keyboardHandler, windowHandle, backspace);
+			}
+			assertSearchText(searchField, "");
+			typeImeText(keyboardHandler, windowHandle, searchField);
+		}
+		searchField.setValue("");
+	}
+
 	private static void invokeKeyEvent(KeyboardHandler keyboardHandler, long windowHandle, int action, KeyEvent event) {
 		try {
 			Method method = KeyboardHandler.class.getDeclaredMethod("keyPress", long.class, int.class, KeyEvent.class);
