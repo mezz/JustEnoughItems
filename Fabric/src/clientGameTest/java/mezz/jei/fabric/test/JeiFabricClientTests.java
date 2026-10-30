@@ -28,6 +28,7 @@ public final class JeiFabricClientTests implements ClientModInitializer {
 				JeiFabricClientResourceTests.getTestCase(),
 				JeiFabricKeyMappingClientTests.getTestCase()
 			));
+			case "textInput" -> FabricClientTestRunner.register(JeiFabricKeyMappingClientTests.getTextInputTestCase());
 			case "withoutAmecs" -> FabricClientTestRunner.register(List.of(
 				JeiFabricClientResourceTests.getTestCase(),
 				RecipeButtonsClientTest.getTestCase(),
@@ -50,7 +51,7 @@ public final class JeiFabricClientTests implements ClientModInitializer {
 				"unknown-test-suite",
 				() -> {
 					throw new IllegalArgumentException(
-						"Unknown JEI Fabric client test suite '" + testSuite + "'. Expected one of: all, bookmarks, fluidIngredients, recipeSync, creativeInventory, keyMapping, resources, withoutAmecs, keyboardNavigation, guiResize"
+						"Unknown JEI Fabric client test suite '" + testSuite + "'. Expected one of: all, bookmarks, fluidIngredients, recipeSync, creativeInventory, keyMapping, textInput, resources, withoutAmecs, keyboardNavigation, guiResize"
 					);
 				}
 			);
