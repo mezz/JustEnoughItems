@@ -48,6 +48,7 @@ import mezz.jei.test.lib.TestIngredientHelper;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
 import net.mezzdev.config.api.sorting.ISortingConfig;
+import net.mezzdev.config.api.sorting.ISortingSnapshot;
 import net.mezzdev.config.api.migration.ISortingConfigMigrator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.context.ContextKeySet;
@@ -1116,6 +1117,35 @@ public class IngredientFilterTest {
 			return allValues.stream()
 				.sorted(getComparator(allValues))
 				.toList();
+		}
+
+		@Override
+		public ISortingSnapshot<String> getSnapshot(Collection<String> allValues) {
+			List<String> sortedValues;
+			if (visible) {
+				sortedValues = allValues.stream().distinct().sorted().toList();
+			} else {
+				sortedValues = List.of();
+			}
+			Set<String> visibleValues = Set.copyOf(sortedValues);
+			Comparator<String> comparator = Comparator.comparing((String value) -> !visibleValues.contains(value))
+				.thenComparing(Comparator.naturalOrder());
+			return new ISortingSnapshot<>() {
+				@Override
+				public List<String> getSortedValues() {
+					return sortedValues;
+				}
+
+				@Override
+				public boolean isVisible(String value) {
+					return visibleValues.contains(value);
+				}
+
+				@Override
+				public Comparator<String> getComparator() {
+					return comparator;
+				}
+			};
 		}
 
 		@Override
