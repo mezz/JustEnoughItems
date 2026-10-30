@@ -4,6 +4,10 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.IngredientsTooltipComponent;
+import mezz.jei.common.gui.IngredientTooltipComponent;
+import mezz.jei.forge.chat.JeiChatEventHandler;
+import mezz.jei.forge.chat.JeiChatTooltipEventHandler;
+import mezz.jei.forge.chat.JeiInternalShowCommand;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
 import mezz.jei.forge.network.NetworkHandler;
@@ -76,6 +80,10 @@ public class JustEnoughItemsClient {
 			Internal.setKeyMappings(keyMappings);
 		});
 
+		JeiChatEventHandler.register(subscriptions);
+		JeiChatTooltipEventHandler.register(subscriptions);
+		JeiInternalShowCommand.register(subscriptions);
+
 		IEventBus modEventBus = subscriptions.getModEventBus();
 		DeferredRegister<RecipeSerializer<?>> deferredRegister = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, ModIds.JEI_ID);
 		deferredRegister.register(modEventBus);
@@ -101,6 +109,7 @@ public class JustEnoughItemsClient {
 	}
 
 	private void onRegisterClientTooltipEvent(RegisterClientTooltipComponentFactoriesEvent event) {
+		event.register(IngredientTooltipComponent.class, Function.identity());
 		event.register(IngredientsTooltipComponent.class, Function.identity());
 		event.register(PreviewTooltipComponent.class, Function.identity());
 		event.register(RecipeSlotOptionsTooltipComponent.class, Function.identity());

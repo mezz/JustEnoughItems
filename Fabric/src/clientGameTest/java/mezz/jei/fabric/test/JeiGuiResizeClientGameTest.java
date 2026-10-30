@@ -41,7 +41,7 @@ public class JeiGuiResizeClientGameTest {
 	static void run() {
 		FabricClientTestContext context = new FabricClientTestContext();
 		List<Runnable> cleanup = new ArrayList<>();
-		int[] windowSize = context.computeOnClient(client -> new int[]{client.getWindow().getScreenWidth(), client.getWindow().getScreenHeight()});
+		int[] windowSize = context.computeOnClient(client -> new int[]{client.getWindow().getWidth(), client.getWindow().getHeight()});
 		try {
 			context.runOnClient(client -> {
 				int scale = client.options.guiScale().get();
@@ -696,8 +696,8 @@ public class JeiGuiResizeClientGameTest {
 
 	private static void move(FabricClientTestContext context, double x, double y) {
 		double[] position = context.computeOnClient(client -> new double[]{
-			x * client.getWindow().getScreenWidth() / client.getWindow().getGuiScaledWidth(),
-			y * client.getWindow().getScreenHeight() / client.getWindow().getGuiScaledHeight()
+			x * client.getWindow().getWidth() / client.getWindow().getGuiScaledWidth(),
+			y * client.getWindow().getHeight() / client.getWindow().getGuiScaledHeight()
 		});
 		context.getInput().setCursorPos(position[0], position[1]);
 	}
