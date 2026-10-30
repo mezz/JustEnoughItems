@@ -14,6 +14,7 @@
     ],
     "fabric-client-gametest": [
       "mezz.jei.fabric.test.ItemBatchRenderingClientGameTest",
+      "mezz.jei.fabric.test.ChatItemLinksClientGameTest",
       "mezz.jei.fabric.test.FabricKeyModifiersClientGameTest",
       "mezz.jei.fabric.test.ContainerIngredientShortcutsClientTest",
       "mezz.jei.fabric.test.CheatToInventoryClientGameTest",
