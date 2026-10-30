@@ -133,6 +133,7 @@ public final class FabricClientTestContext {
 	}
 
 	static final class Input {
+		/** Uses framebuffer coordinates, matching Fabric's client test input API. */
 		void setCursorPos(double x, double y) {
 			ClientTestUtil.runOnClient(client -> {
 				long window = client.getWindow().getWindow();
@@ -140,7 +141,9 @@ public final class FabricClientTestContext {
 				client.setWindowActive(true);
 				// Inject one movement event; desktop cursor warps can enqueue a second,
 				// clipped event when the test window is larger than the virtual display.
-				FabricClientTestInput.moveCursor(() -> ((MouseHandlerAccessor) client.mouseHandler).jei$invokeOnMove(window, x, y));
+				double windowX = x * client.getWindow().getScreenWidth() / client.getWindow().getWidth();
+				double windowY = y * client.getWindow().getScreenHeight() / client.getWindow().getHeight();
+				FabricClientTestInput.moveCursor(() -> ((MouseHandlerAccessor) client.mouseHandler).jei$invokeOnMove(window, windowX, windowY));
 			});
 		}
 
@@ -180,7 +183,12 @@ public final class FabricClientTestContext {
 		}
 
 		void resizeWindow(int width, int height) {
-			ClientTestUtil.runOnClient(client -> GLFW.glfwSetWindowSize(client.getWindow().getWindow(), width, height));
+			ClientTestUtil.runOnClient(client -> {
+				var window = client.getWindow();
+				int windowWidth = width * window.getScreenWidth() / window.getWidth();
+				int windowHeight = height * window.getScreenHeight() / window.getHeight();
+				GLFW.glfwSetWindowSize(window.getWindow(), windowWidth, windowHeight);
+			});
 		}
 	}
 }

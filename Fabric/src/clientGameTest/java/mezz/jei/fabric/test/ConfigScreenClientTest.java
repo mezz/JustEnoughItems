@@ -311,8 +311,8 @@ final class ConfigScreenClientTest {
 
 	private static void moveMouse(FabricClientTestContext context, double x, double y) {
 		double[] position = context.computeOnClient(client -> new double[]{
-			x * client.getWindow().getScreenWidth() / client.getWindow().getGuiScaledWidth(),
-			y * client.getWindow().getScreenHeight() / client.getWindow().getGuiScaledHeight()
+			x * client.getWindow().getWidth() / client.getWindow().getGuiScaledWidth(),
+			y * client.getWindow().getHeight() / client.getWindow().getGuiScaledHeight()
 		});
 		context.getInput().setCursorPos(position[0], position[1]);
 	}

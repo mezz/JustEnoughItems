@@ -148,10 +148,13 @@ public final class JeiChatItemLinks {
 	}
 
 	public static String createShowRecipeCommand(IngredientLink link) {
-		return SHOW_RECIPE_COMMAND + " " + createCommandArgument(link);
+		return "/" + SHOW_RECIPE_COMMAND + " " + createCommandArgument(link);
 	}
 
 	public static Optional<IngredientLink> parseShowRecipeCommand(String command) {
+		if (command.startsWith("/")) {
+			command = command.substring(1);
+		}
 		String prefix = SHOW_RECIPE_COMMAND + " ";
 		if (!command.startsWith(prefix)) {
 			return Optional.empty();
