@@ -7,11 +7,15 @@ import mezz.jei.common.config.IClientConfigs;
 import mezz.jei.common.config.legacy.LegacySortingConfigMigrator;
 import net.mezzdev.config.api.IConfigRegistration;
 import net.mezzdev.config.api.sorting.ISortingConfig;
+import net.mezzdev.config.api.sorting.ISortingSnapshot;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -48,20 +52,15 @@ public class RecipeCategorySortingConfig {
 		this(Objects.requireNonNull(clientConfigs).getRecipeCategorySortingConfig());
 	}
 
-	public Comparator<RecipeType<?>> getComparator(Collection<RecipeType<?>> recipeTypes) {
-		List<String> values = recipeTypes.stream()
-			.map(RecipeCategorySortingConfig::getRecipeCategoryString)
-			.toList();
-		Comparator<String> comparator = sortingConfig.getComparator(values);
-		return Comparator.comparing(RecipeCategorySortingConfig::getRecipeCategoryString, comparator);
-	}
-
-	public boolean isRecipeCategoryVisible(Collection<RecipeType<?>> recipeTypes, RecipeType<?> recipeType) {
-		String value = getRecipeCategoryString(recipeType);
-		List<String> values = recipeTypes.stream()
-			.map(RecipeCategorySortingConfig::getRecipeCategoryString)
-			.toList();
-		return sortingConfig.isVisible(values, value);
+	public Snapshot getSnapshot(Collection<RecipeType<?>> recipeTypes) {
+		Map<RecipeType<?>, String> categoryIds = new HashMap<>();
+		List<String> values = new ArrayList<>(recipeTypes.size());
+		for (RecipeType<?> recipeType : recipeTypes) {
+			String id = getRecipeCategoryString(recipeType);
+			categoryIds.put(recipeType, id);
+			values.add(id);
+		}
+		return new Snapshot(sortingConfig.getSnapshot(values), Map.copyOf(categoryIds));
 	}
 
 	public Runnable addChangeListener(Runnable listener) {
@@ -81,5 +80,33 @@ public class RecipeCategorySortingConfig {
 
 	private static String getRecipeCategoryString(RecipeType<?> recipeType) {
 		return recipeType.getUid().toString();
+	}
+
+	public static final class Snapshot {
+		private final ISortingSnapshot<String> sorting;
+		private final Map<RecipeType<?>, String> categoryIds;
+		private final Comparator<RecipeType<?>> comparator;
+
+		private Snapshot(ISortingSnapshot<String> sorting, Map<RecipeType<?>, String> categoryIds) {
+			this.sorting = sorting;
+			this.categoryIds = categoryIds;
+			this.comparator = Comparator.comparing(this::getCategoryId, sorting.getComparator());
+		}
+
+		public Comparator<RecipeType<?>> getComparator() {
+			return comparator;
+		}
+
+		public boolean isVisible(RecipeType<?> recipeType) {
+			return sorting.isVisible(getCategoryId(recipeType));
+		}
+
+		private String getCategoryId(RecipeType<?> recipeType) {
+			String id = categoryIds.get(recipeType);
+			if (id != null) {
+				return id;
+			}
+			return getRecipeCategoryString(recipeType);
+		}
 	}
 }
