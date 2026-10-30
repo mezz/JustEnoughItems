@@ -149,10 +149,14 @@ public final class JeiNeoForgeClientTextInputTests {
 					if (!searchField.isFocused()) {
 						throw new AssertionError("Expected the focus-search hotkey to focus JEI's search field.");
 					}
+					// Releasing a different key must not let the shortcut's characters through.
+					ImeTextInputTestUtil.invokeKeyRelease(keyboardHandler, windowHandle, new KeyEvent(InputConstants.KEY_LSHIFT, 0, 0));
 					ImeTextInputTestUtil.invokeCharacterCallback(keyboardHandler, windowHandle, new CharacterEvent(codePoint));
 					if (!searchField.getValue().equals(text)) {
 						throw new AssertionError("Expected the focus-search hotkey to preserve '" + text + "', got: " + searchField.getValue());
 					}
+					ImeTextInputTestUtil.invokeKeyRelease(keyboardHandler, windowHandle, new KeyEvent(key, 'f', 0));
+					ImeTextInputTestUtil.typeImeText(keyboardHandler, windowHandle, searchField);
 					searchField.setValue("");
 					ImeTextInputTestUtil.typePlainText(keyboardHandler, windowHandle, searchField);
 				}
@@ -167,6 +171,9 @@ public final class JeiNeoForgeClientTextInputTests {
 			if (!searchField.isFocused()) {
 				throw new AssertionError("Expected the nonprinting focus-search hotkey to focus JEI's search field.");
 			}
+			ImeTextInputTestUtil.invokeKeyRelease(keyboardHandler, windowHandle, new KeyEvent(InputConstants.KEY_F6, 0, 0));
+			ImeTextInputTestUtil.typeImeText(keyboardHandler, windowHandle, searchField);
+			ImeTextInputTestUtil.assertImeInputAfterBackspace(keyboardHandler, windowHandle, searchField);
 			ImeTextInputTestUtil.typePlainText(keyboardHandler, windowHandle, searchField);
 		} finally {
 			focusSearch.setKeyModifierAndCode(originalModifier, originalKey);
