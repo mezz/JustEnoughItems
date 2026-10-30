@@ -43,6 +43,34 @@ public final class TextInputTestUtil {
 		invokeKeyEvent(keyboardHandler, windowHandle, GLFW.GLFW_PRESS, key);
 	}
 
+	public static void invokeKeyRelease(KeyboardHandler keyboardHandler, long windowHandle, int key) {
+		invokeKeyEvent(keyboardHandler, windowHandle, GLFW.GLFW_RELEASE, key);
+	}
+
+	public static void typeImeText(KeyboardHandler keyboardHandler, long windowHandle, GuiTextFieldFilter searchField) {
+		String text = "苹果";
+		String expected = searchField.getValue() + text;
+		// An IME can commit multiple characters without sending a corresponding key press.
+		text.codePoints().forEach(codePoint -> invokeCharacterCallback(keyboardHandler, windowHandle, codePoint));
+		if (!searchField.isFocused()) {
+			throw new AssertionError("Expected committing IME text to keep JEI's search field focused.");
+		}
+		assertSearchText(searchField, expected);
+	}
+
+	public static void assertImeInputAfterBackspace(KeyboardHandler keyboardHandler, long windowHandle, GuiTextFieldFilter searchField) {
+		searchField.setValue("苹果");
+		for (int attempt = 0; attempt < 2; attempt++) {
+			for (int i = 0; i < 2; i++) {
+				invokeKeyPress(keyboardHandler, windowHandle, GLFW.GLFW_KEY_BACKSPACE);
+				invokeKeyRelease(keyboardHandler, windowHandle, GLFW.GLFW_KEY_BACKSPACE);
+			}
+			assertSearchText(searchField, "");
+			typeImeText(keyboardHandler, windowHandle, searchField);
+		}
+		searchField.setValue("");
+	}
+
 	private static void invokeKeyEvent(KeyboardHandler keyboardHandler, long windowHandle, int action, int key) {
 		try {
 			Method method = KeyboardHandler.class.getDeclaredMethod("keyPress", long.class, int.class, int.class, int.class, int.class);

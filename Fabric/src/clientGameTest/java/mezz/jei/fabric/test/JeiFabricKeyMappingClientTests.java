@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *     <li>{@code :Fabric:runClientGameTestWithoutAmecs} removes AMECS from the runtime classpath and runs only this
  *     test to exercise JEI's plain Fabric key-mapping path.</li>
  * </ul>
+ * <p>Use {@code -PjeiFabricClientTest=textInput} to run only the search input checks.</p>
  */
 final class JeiFabricKeyMappingClientTests {
 	private static final String JUNIT_SUITE_NAME = "fabric-client-key-mapping";
@@ -45,6 +46,10 @@ final class JeiFabricKeyMappingClientTests {
 
 	public static FabricClientTestRunner.ClientTestCase getTestCase() {
 		return new FabricClientTestRunner.ClientTestCase(JUNIT_SUITE_NAME, TEST_NAME, JeiFabricKeyMappingClientTests::runTest);
+	}
+
+	public static FabricClientTestRunner.ClientTestCase getTextInputTestCase() {
+		return new FabricClientTestRunner.ClientTestCase("fabric-client-text-input", "search", JeiFabricKeyMappingClientTests::assertFocusSearchHotkeyDoesNotTypeItsCharacter);
 	}
 
 	private static void runTest() {
@@ -109,7 +114,7 @@ final class JeiFabricKeyMappingClientTests {
 				Internal.getJeiRuntime().getIngredientFilter().setFilterText("");
 			});
 
-			FabricClientTestInput.pressKey(GLFW.GLFW_KEY_F);
+			FabricClientTestInput.holdKey(GLFW.GLFW_KEY_F);
 			ClientTestUtil.waitUntil(
 				() -> ClientTestUtil.computeOnClient(client -> Internal.getJeiRuntime().getIngredientListOverlay().hasKeyboardFocus()),
 				ASSERTION_TIMEOUT,
@@ -121,11 +126,14 @@ final class JeiFabricKeyMappingClientTests {
 			if (!filterText.isEmpty()) {
 				throw new AssertionError("Expected the focus-search hotkey character to be consumed, got: " + filterText);
 			}
+			FabricClientTestInput.releaseKey(GLFW.GLFW_KEY_F);
 
 			ClientTestUtil.runOnClient(client -> {
 				IngredientListOverlay overlay = (IngredientListOverlay) Internal.getJeiRuntime().getIngredientListOverlay();
 				GuiTextFieldFilter searchField = new ReflectionUtil().getFieldWithClass(overlay, GuiTextFieldFilter.class)
 					.findFirst().orElseThrow(() -> new AssertionError("Expected JEI's search field."));
+				TextInputTestUtil.typeImeText(client.keyboardHandler, client.getWindow().getWindow(), searchField);
+				TextInputTestUtil.assertImeInputAfterBackspace(client.keyboardHandler, client.getWindow().getWindow(), searchField);
 				TextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().getWindow(), searchField);
 			});
 		} finally {

@@ -47,6 +47,8 @@ public class EventRegistration {
 			}
 		});
 
+		subscriptions.register(ScreenEvent.KeyReleased.Pre.class, event -> handler.onKeyboardKeyReleased(event.getKeyCode(), event.getScanCode()));
+
 		subscriptions.register(ScreenEvent.CharacterTyped.Pre.class, event -> {
 			Screen screen = event.getScreen();
 			char codePoint = event.getCodePoint();
