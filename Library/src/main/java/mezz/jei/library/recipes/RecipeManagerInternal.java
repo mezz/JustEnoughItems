@@ -13,6 +13,7 @@ import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientVisibility;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.library.config.RecipeCategorySortingConfig;
+import mezz.jei.library.config.RecipeCategorySortingConfig.Snapshot;
 import mezz.jei.library.ingredients.IIngredientManagerInternal;
 import mezz.jei.library.ingredients.RecipeIngredientSupplier;
 import mezz.jei.library.ingredients.RecipeIngredientSupplier.FocusLink;
@@ -57,6 +58,8 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 	private final IIngredientVisibility ingredientVisibility;
 	private final RecipeCategorySortingConfig recipeCategorySortingConfig;
 	private final List<IRecipeType<?>> recipeTypes;
+	@Nullable
+	private Snapshot recipeCategorySortingSnapshot;
 	private final Runnable removeRecipeCategorySortingConfigChangeListener;
 
 	@Nullable
@@ -85,7 +88,7 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 		this.recipeTypes = recipeCategories.stream()
 			.<IRecipeType<?>>map(IRecipeCategory::getRecipeType)
 			.toList();
-		Comparator<IRecipeType<?>> recipeTypeComparator = recipeCategorySortingConfig.getComparator(recipeTypes);
+		Comparator<IRecipeType<?>> recipeTypeComparator = (first, second) -> getRecipeCategorySortingSnapshot().getComparator().compare(first, second);
 
 		this.recipeIngredientRoleMaps = new EnumMap<>(RecipeIngredientRole.class);
 		for (RecipeIngredientRole role : EnumSet.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT, RecipeIngredientRole.CRAFTING_STATION)) {
@@ -355,10 +358,18 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 
 	private boolean isRecipeTypeHidden(IRecipeType<?> recipeType) {
 		return hiddenRecipeTypes.contains(recipeType) ||
-			!recipeCategorySortingConfig.isRecipeCategoryVisible(recipeTypes, recipeType);
+			!getRecipeCategorySortingSnapshot().isVisible(recipeType);
+	}
+
+	private Snapshot getRecipeCategorySortingSnapshot() {
+		if (recipeCategorySortingSnapshot == null) {
+			recipeCategorySortingSnapshot = recipeCategorySortingConfig.getSnapshot(recipeTypes);
+		}
+		return recipeCategorySortingSnapshot;
 	}
 
 	private void onRecipeCategorySortingConfigChanged() {
+		recipeCategorySortingSnapshot = null;
 		recipeCategoriesVisibleCache = null;
 	}
 
