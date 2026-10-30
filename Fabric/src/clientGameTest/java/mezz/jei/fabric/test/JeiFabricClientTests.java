@@ -20,6 +20,8 @@ public final class JeiFabricClientTests implements ClientModInitializer {
 
 		switch (testSuite) {
 			case "all" -> registerAllTests();
+			case "chatLinks" -> FabricClientTestRunner.register(ChatItemLinksClientGameTest.getTestCase());
+			case "itemRendering" -> FabricClientTestRunner.register(ItemBatchRenderingClientGameTest.getTestCase());
 			case "bookmarks" -> BookmarkManagerClientGameTest.register();
 			case "fluidIngredients" -> FluidIngredientGameTests.register();
 			case "recipeSync" -> JeiFabricClientRecipeSyncTests.register();
@@ -51,7 +53,7 @@ public final class JeiFabricClientTests implements ClientModInitializer {
 				"unknown-test-suite",
 				() -> {
 					throw new IllegalArgumentException(
-						"Unknown JEI Fabric client test suite '" + testSuite + "'. Expected one of: all, bookmarks, fluidIngredients, recipeSync, creativeInventory, keyMapping, textInput, resources, withoutAmecs, keyboardNavigation, guiResize"
+						"Unknown JEI Fabric client test suite '" + testSuite + "'. Expected one of: all, chatLinks, itemRendering, bookmarks, fluidIngredients, recipeSync, creativeInventory, keyMapping, textInput, resources, withoutAmecs, keyboardNavigation, guiResize"
 					);
 				}
 			);
@@ -61,6 +63,7 @@ public final class JeiFabricClientTests implements ClientModInitializer {
 	private static void registerAllTests() {
 		List<FabricClientTestRunner.ClientTestCase> testCases = new ArrayList<>();
 		testCases.add(ItemBatchRenderingClientGameTest.getTestCase());
+		testCases.add(ChatItemLinksClientGameTest.getTestCase());
 		testCases.add(JeiFabricClientResourceTests.getTestCase());
 		testCases.add(ConfigScreenClientTest.getTestCase());
 		testCases.add(IngredientNavigationClientTest.getTestCase());

@@ -58,7 +58,7 @@ public record JeiInputSetup(GuiInputScene scene, ClientInputHandler handler) {
 		InputArea bookmarkInputArea = bookmarkOverlay.createInputArea(keyMappings);
 		GuiContainerWrapper containerWrapper = new GuiContainerWrapper(screenHelper);
 		InputArea containerInputArea = containerWrapper.createInputArea(recipesGui, focusFactory);
-		ChatCommands chatCommands = new ChatCommands(recipesGui, focusUtil, screenHelper, bookmarkManager);
+		ChatCommands chatCommands = new ChatCommands(recipesGui, focusUtil, screenHelper, bookmarkManager, ingredientManager);
 		InputArea chatInputArea = chatCommands.createInputArea(keyMappings);
 		GuiInputScene inputScene = new GuiInputScene(
 			ingredientListOverlay.getKeyboardFocus(),

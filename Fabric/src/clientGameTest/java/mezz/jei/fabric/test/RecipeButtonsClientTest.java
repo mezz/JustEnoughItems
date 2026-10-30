@@ -287,10 +287,15 @@ final class RecipeButtonsClientTest {
 
 	private static void move(IRecipeLayoutDrawable<?> layout, int x, int y) {
 		ClientTestUtil.runOnClient(client -> {
-			double scale = client.getWindow().getGuiScale();
 			var area = layout.getRect();
-			((MouseHandlerAccessor) client.mouseHandler).jei$invokeOnMove(client.getWindow().getWindow(),
-				(area.getX() + x) * scale, (area.getY() + y) * scale);
+			var window = client.getWindow();
+			double framebufferX = (area.getX() + x) * (double) window.getWidth() / window.getGuiScaledWidth();
+			double framebufferY = (area.getY() + y) * (double) window.getHeight() / window.getGuiScaledHeight();
+			new FabricClientTestContext().getInput().setCursorPos(framebufferX, framebufferY);
+			double actualX = client.mouseHandler.xpos() * client.getWindow().getGuiScaledWidth() / client.getWindow().getScreenWidth();
+			double actualY = client.mouseHandler.ypos() * client.getWindow().getGuiScaledHeight() / client.getWindow().getScreenHeight();
+			check(Math.abs(actualX - area.getX() - x) < 1 && Math.abs(actualY - area.getY() - y) < 1,
+				"Recipe button cursor must reach GUI " + (area.getX() + x) + ", " + (area.getY() + y) + "; actual " + actualX + ", " + actualY);
 		});
 		waitTicks(1);
 	}

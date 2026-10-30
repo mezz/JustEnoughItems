@@ -172,6 +172,8 @@ public class JeiChatItemLinksTest {
 
 		// Assertions: chat screen input handlers can recover the linked ingredient from the style command.
 		assertEquals(Optional.of(link), parsedLink);
+		assertTrue(command.startsWith("/"), "Minecraft 1.21.1 requires a slash for run_command click events");
+		assertEquals(Optional.of(link), JeiChatItemLinks.parseShowRecipeCommand(command.substring(1)));
 	}
 
 	@Test
