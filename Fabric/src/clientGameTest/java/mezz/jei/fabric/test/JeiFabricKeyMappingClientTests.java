@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *     <li>{@code :Fabric:runClientGameTest} includes this test with AMECS and its JEI integration enabled.</li>
  *     <li>{@code :Fabric:runClientGameTestWithoutAmecs} removes AMECS from the runtime classpath to exercise JEI's plain Fabric key-mapping path.</li>
  * </ul>
+ * <p>Use {@code -PjeiFabricClientTestSuite=textInput} to run only the search input checks.</p>
  */
 final class JeiFabricKeyMappingClientTests {
 	private static final String JUNIT_SUITE_NAME = "fabric-client-key-mapping";
@@ -48,6 +49,10 @@ final class JeiFabricKeyMappingClientTests {
 
 	public static FabricClientTestRunner.ClientTestCase getTestCase() {
 		return new FabricClientTestRunner.ClientTestCase(JUNIT_SUITE_NAME, TEST_NAME, JeiFabricKeyMappingClientTests::runTest);
+	}
+
+	public static FabricClientTestRunner.ClientTestCase getTextInputTestCase() {
+		return new FabricClientTestRunner.ClientTestCase("fabric-client-text-input", "search", JeiFabricKeyMappingClientTests::assertFocusSearchHotkeyDoesNotTypeItsCharacter);
 	}
 
 	private static void runTest() {
@@ -116,7 +121,7 @@ final class JeiFabricKeyMappingClientTests {
 				Internal.getJeiRuntime().getIngredientFilter().setFilterText("");
 			});
 
-			FabricClientTestInput.pressKey(GLFW.GLFW_KEY_F);
+			FabricClientTestInput.holdKey(GLFW.GLFW_KEY_F);
 			ClientTestUtil.waitUntil(
 				() -> ClientTestUtil.computeOnClient(client -> Internal.getJeiRuntime().getIngredientListOverlay().hasKeyboardFocus()),
 				ASSERTION_TIMEOUT,
@@ -128,11 +133,14 @@ final class JeiFabricKeyMappingClientTests {
 			if (!filterText.isEmpty()) {
 				throw new AssertionError("Expected the focus-search hotkey character to be consumed, got: " + filterText);
 			}
+			FabricClientTestInput.releaseKey(GLFW.GLFW_KEY_F);
 
 			ClientTestUtil.runOnClient(client -> {
 				IngredientListOverlay overlay = (IngredientListOverlay) Internal.getJeiRuntime().getIngredientListOverlay();
 				GuiTextFieldFilter searchField = new ReflectionUtil().getFieldWithClass(overlay, GuiTextFieldFilter.class)
 					.findFirst().orElseThrow(() -> new AssertionError("Expected JEI's search field."));
+				TextInputTestUtil.typeImeText(client.keyboardHandler, client.getWindow().getWindow(), searchField);
+				TextInputTestUtil.assertImeInputAfterBackspace(client.keyboardHandler, client.getWindow().getWindow(), searchField);
 				assertShortcutCharacters(client.keyboardHandler, client.getWindow().getWindow(), searchField);
 			});
 		} finally {
@@ -153,12 +161,14 @@ final class JeiFabricKeyMappingClientTests {
 				if (!searchField.getValue().equals(text)) {
 					throw new AssertionError("Expected the focus shortcut to preserve '" + text + "', got: " + searchField.getValue());
 				}
+				TextInputTestUtil.invokeKeyRelease(keyboard, window, GLFW.GLFW_KEY_F);
 				searchField.setValue("");
 				TextInputTestUtil.invokeKeyPress(keyboard, window, GLFW.GLFW_KEY_F);
 				TextInputTestUtil.invokeCharacterCallback(keyboard, window, 'f');
 				if (!searchField.getValue().equals("f")) {
 					throw new AssertionError("Expected the bound letter to type normally when search already has focus.");
 				}
+				TextInputTestUtil.invokeKeyRelease(keyboard, window, GLFW.GLFW_KEY_F);
 				searchField.setValue("");
 				TextInputTestUtil.typePlainText(keyboard, window, searchField);
 			}
@@ -179,6 +189,9 @@ final class JeiFabricKeyMappingClientTests {
 			if (!searchField.getValue().equals("stone")) {
 				throw new AssertionError("Expected the history shortcut's character to be consumed, got: " + searchField.getValue());
 			}
+			TextInputTestUtil.invokeKeyRelease(keyboard, window, GLFW.GLFW_KEY_G);
+			searchField.setValue("");
+			TextInputTestUtil.typeImeText(keyboard, window, searchField);
 			searchField.setValue("");
 			TextInputTestUtil.typePlainText(keyboard, window, searchField);
 		} finally {
@@ -193,6 +206,10 @@ final class JeiFabricKeyMappingClientTests {
 			if (!searchField.isFocused()) {
 				throw new AssertionError("Expected the nonprinting focus shortcut to select JEI search.");
 			}
+			TextInputTestUtil.invokeKeyRelease(keyboard, window, GLFW.GLFW_KEY_F6);
+			searchField.setValue("");
+			TextInputTestUtil.typeImeText(keyboard, window, searchField);
+			searchField.setValue("");
 			TextInputTestUtil.typePlainText(keyboard, window, searchField);
 		} finally {
 			restoreFocus.run();
