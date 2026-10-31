@@ -83,14 +83,14 @@ public class RecipeManagerInternal implements IIngredientVisibility.IListener {
 		this.recipeTypes = recipeCategories.stream()
 			.<RecipeType<?>>map(IRecipeCategory::getRecipeType)
 			.toList();
-		Comparator<RecipeType<?>> recipeTypeComparator = (first, second) -> getRecipeCategorySortingSnapshot().getComparator().compare(first, second);
 
 		this.recipeMaps = new EnumMap<>(RecipeIngredientRole.class);
 		for (RecipeIngredientRole role : EnumSet.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT, RecipeIngredientRole.CATALYST)) {
-			RecipeMap recipeMap = new RecipeMap(recipeTypeComparator, ingredientManager, role);
+			RecipeMap recipeMap = new RecipeMap(ingredientManager, role);
 			this.recipeMaps.put(role, recipeMap);
 		}
 
+		Comparator<RecipeType<?>> recipeTypeComparator = (first, second) -> getRecipeCategorySortingSnapshot().getComparator().compare(first, second);
 		this.recipeCategoryComparator = Comparator.comparing(IRecipeCategory::getRecipeType, recipeTypeComparator);
 		this.recipeCategories = recipeCategories.stream()
 			.sorted(this.recipeCategoryComparator)
