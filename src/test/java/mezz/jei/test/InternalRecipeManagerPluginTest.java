@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableTable;
 import mezz.jei.Internal;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -17,20 +18,25 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
+import mezz.jei.api.recipe.IRecipeRegistryPlugin;
 import mezz.jei.collect.ListMultiMap;
 import mezz.jei.gui.Focus;
 import mezz.jei.ingredients.IngredientBlacklistInternal;
+import mezz.jei.ingredients.IngredientFilter;
+import mezz.jei.ingredients.IngredientListElementFactory;
 import mezz.jei.ingredients.IngredientRegistry;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.recipes.InternalRecipeRegistryPlugin;
 import mezz.jei.recipes.RecipeCategoryComparator;
 import mezz.jei.recipes.RecipeMap;
+import mezz.jei.recipes.RecipeRegistry;
 import mezz.jei.startup.ModIngredientRegistration;
 import mezz.jei.test.lib.TestIngredient;
 import mezz.jei.test.lib.TestIngredientHelper;
 import mezz.jei.test.lib.TestModIdHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraftforge.common.MinecraftForge;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -40,6 +46,86 @@ public class InternalRecipeManagerPluginTest {
 	private static final TestRecipeWrapper FIRST_RECIPE = new TestRecipeWrapper("first recipe");
 	private static final TestRecipeWrapper SECOND_RECIPE = new TestRecipeWrapper("second recipe");
 	private static final TestRecipeWrapper THIRD_RECIPE = new TestRecipeWrapper("third recipe");
+
+	@Test
+	public void focusedCategoryLookupsSortMergedPluginResultsAndRefreshVisibility() {
+		// Direct matches, catalysts and a dynamic plugin contribute overlapping, unordered categories.
+		IngredientRegistry ingredients = createIngredientRegistry();
+		Internal.setIngredientRegistry(ingredients);
+		IngredientFilter filter = new IngredientFilter(new IngredientBlacklistInternal());
+		filter.addIngredients(IngredientListElementFactory.createBaseList(ingredients, new TestModIdHelper()));
+		Internal.setIngredientFilter(filter);
+		// The fixture queries visibility directly without a Forge-transformed event hierarchy.
+		MinecraftForge.EVENT_BUS.unregister(filter);
+		TestRecipeCategory gamma = category("test:gamma");
+		TestRecipeCategory alpha = category("test:alpha");
+		TestRecipeCategory dynamic = category("test:dynamic");
+		TestRecipeCategory beta = category("test:beta");
+		List<IRecipeCategory> registrationOrder = Arrays.asList(gamma, alpha, dynamic, beta);
+		ListMultiMap<String, Object> recipes = new ListMultiMap<>();
+		for (TestRecipeCategory category : Arrays.asList(alpha, beta, gamma)) {
+			recipes.put(category.getUid(), matchingRecipe(category.getUid()));
+		}
+		ListMultiMap<String, Object> catalysts = new ListMultiMap<>();
+		catalysts.put(alpha.getUid(), INPUT);
+		catalysts.put(beta.getUid(), INPUT);
+		TestRecipeWrapper dynamicRecipe = matchingRecipe("dynamic recipe");
+		IRecipeRegistryPlugin plugin = new IRecipeRegistryPlugin() {
+			@Override
+			public <V> List<String> getRecipeCategoryUids(IFocus<V> focus) {
+				return Arrays.asList(beta.getUid(), dynamic.getUid(), alpha.getUid());
+			}
+
+			@Override
+			public <T extends IRecipeWrapper, V> List<T> getRecipeWrappers(IRecipeCategory<T> category, IFocus<V> focus) {
+				return getRecipeWrappers(category);
+			}
+
+			@Override
+			@SuppressWarnings("unchecked")
+			public <T extends IRecipeWrapper> List<T> getRecipeWrappers(IRecipeCategory<T> category) {
+				return category == dynamic ? Collections.singletonList((T) dynamicRecipe) : Collections.emptyList();
+			}
+		};
+		RecipeRegistry registry = new RecipeRegistry(
+			registrationOrder, Collections.emptyList(), new ListMultiMap<>(), ImmutableTable.of(),
+			Collections.emptyList(), recipes, new ListMultiMap<>(), catalysts, ingredients, Collections.singletonList(plugin)
+		);
+		Focus<TestIngredient> inputs = new Focus<>(IFocus.Mode.INPUT, INPUT);
+		Focus<TestIngredient> outputs = new Focus<>(IFocus.Mode.OUTPUT, INPUT);
+
+		List<IRecipeCategory> inputCategories = registry.getRecipeCategories(inputs);
+		List<IRecipeCategory> outputCategories = registry.getRecipeCategories(outputs);
+		registry.hideRecipeCategory(alpha.getUid());
+		List<IRecipeCategory> hiddenCategories = registry.getRecipeCategories(inputs);
+		registry.unhideRecipeCategory(alpha.getUid());
+		List<IRecipeCategory> restoredCategories = registry.getRecipeCategories(inputs);
+
+		// Only the final merged lookup determines category order, and visibility changes remain observable.
+		Assert.assertEquals(registrationOrder, inputCategories);
+		Assert.assertEquals(registrationOrder, outputCategories);
+		Assert.assertEquals(Arrays.asList(gamma, dynamic, beta), hiddenCategories);
+		Assert.assertEquals(registrationOrder, restoredCategories);
+	}
+
+	private static TestRecipeCategory category(String uid) {
+		return new TestRecipeCategory() {
+			@Override
+			public String getUid() {
+				return uid;
+			}
+		};
+	}
+
+	private static TestRecipeWrapper matchingRecipe(String name) {
+		return new TestRecipeWrapper(name) {
+			@Override
+			public void getIngredients(IIngredients ingredients) {
+				ingredients.setInput(TestIngredient.TYPE, INPUT);
+				ingredients.setOutput(TestIngredient.TYPE, INPUT);
+			}
+		};
+	}
 
 	@Test
 	public void inputFocusDoesNotDuplicateRecipeWhenIngredientIsAlsoCatalyst() {
@@ -216,7 +302,7 @@ public class InternalRecipeManagerPluginTest {
 		}
 	}
 
-	private static final class TestRecipeWrapper implements IRecipeWrapper {
+	private static class TestRecipeWrapper implements IRecipeWrapper {
 		private final String name;
 
 		private TestRecipeWrapper(String name) {

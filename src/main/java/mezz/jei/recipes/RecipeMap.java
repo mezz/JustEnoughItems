@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Ordering;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IIngredientType;
@@ -23,11 +22,9 @@ import mezz.jei.ingredients.IngredientInformation;
 public class RecipeMap {
 	private final Table<IRecipeCategory, String, List<IRecipeWrapper>> recipeWrapperTable = Table.hashBasedTable();
 	private final ListMultiMap<String, String> categoryUidMap = new ListMultiMap<>();
-	private final Ordering<String> recipeCategoryOrdering;
 	private final IIngredientRegistry ingredientRegistry;
 
 	public RecipeMap(final RecipeCategoryComparator recipeCategoryComparator, IIngredientRegistry ingredientRegistry) {
-		this.recipeCategoryOrdering = Ordering.from(recipeCategoryComparator);
 		this.ingredientRegistry = ingredientRegistry;
 	}
 
@@ -40,7 +37,7 @@ public class RecipeMap {
 			recipeCategories.addAll(categoryUidMap.get(key));
 		}
 
-		return recipeCategoryOrdering.immutableSortedCopy(recipeCategories);
+		return ImmutableList.copyOf(recipeCategories);
 	}
 
 	public <V> void addRecipeCategory(IRecipeCategory recipeCategory, V ingredient, IIngredientHelper<V> ingredientHelper) {
