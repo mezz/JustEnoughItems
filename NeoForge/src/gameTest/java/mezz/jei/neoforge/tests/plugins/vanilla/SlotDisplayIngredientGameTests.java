@@ -47,7 +47,6 @@ import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -246,7 +245,6 @@ public final class SlotDisplayIngredientGameTests {
 		IngredientSupplierBuilder supplierBuilder = new IngredientSupplierBuilder(ingredientManager, contextMap);
 		supplierBuilder.addSlot(RecipeIngredientRole.INPUT).add(ingredient);
 		RecipeIngredientRoleMap roleMap = new RecipeIngredientRoleMap(
-			Comparator.comparing(recipeType -> recipeType.getUid().toString()),
 			ingredientManager,
 			RecipeIngredientRole.INPUT
 		);
@@ -414,7 +412,6 @@ public final class SlotDisplayIngredientGameTests {
 		supplierBuilder.addSlot(RecipeIngredientRole.INPUT).add(slotDisplay);
 		RecipeIngredientSupplier ingredientSupplier = supplierBuilder.buildIngredientSupplier();
 		RecipeIngredientRoleMap roleMap = new RecipeIngredientRoleMap(
-			Comparator.comparing(recipeType -> recipeType.getUid().toString()),
 			ingredientManager,
 			RecipeIngredientRole.INPUT
 		);

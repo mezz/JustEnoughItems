@@ -1,37 +1,53 @@
 package mezz.jei.test;
 
+import com.google.common.collect.ImmutableListMultimap;
 import com.mojang.serialization.Codec;
-import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.common.config.ClientToggleState;
+import mezz.jei.library.config.EditModeConfig;
+import mezz.jei.library.config.RecipeCategorySortingConfig;
 import mezz.jei.library.focus.Focus;
-import mezz.jei.library.gui.recipes.supplier.builder.IngredientSupplierBuilder;
+import mezz.jei.library.focus.FocusFactory;
 import mezz.jei.library.focus.FocusGroup;
-import mezz.jei.library.ingredients.RecipeIngredientSupplier;
+import mezz.jei.library.gui.recipes.supplier.builder.IngredientSupplierBuilder;
+import mezz.jei.library.helpers.CodecHelper;
 import mezz.jei.library.ingredients.IIngredientManagerInternal;
+import mezz.jei.library.ingredients.IngredientBlacklistInternal;
+import mezz.jei.library.ingredients.IngredientVisibility;
+import mezz.jei.library.ingredients.RecipeIngredientSupplier;
 import mezz.jei.library.ingredients.SlotIngredient;
 import mezz.jei.library.ingredients.subtypes.SubtypeInterpreters;
 import mezz.jei.library.ingredients.subtypes.SubtypeManager;
 import mezz.jei.library.load.registration.IngredientManagerBuilder;
 import mezz.jei.library.recipes.CraftingStationBuilder;
 import mezz.jei.library.recipes.InternalRecipeManagerPlugin;
+import mezz.jei.library.recipes.RecipeCategoriesLookup;
+import mezz.jei.library.recipes.RecipeManagerInternal;
 import mezz.jei.library.recipes.collect.RecipeIngredientRoleMap;
 import mezz.jei.library.recipes.collect.RecipeTypeDataMap;
 import mezz.jei.library.util.IngredientSupplierHelper;
 import mezz.jei.library.util.RecipeDebugUtil;
+import net.mezzdev.config.file.ConfigFileWatcherSettings;
+import net.mezzdev.config.file.ConfigManager;
 import net.minecraft.DetectedVersion;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKeySet;
@@ -39,14 +55,16 @@ import net.minecraft.server.Bootstrap;
 import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.display.DisplayContentsFactory;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.nio.file.Path;
 import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -55,6 +73,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -75,6 +94,85 @@ public class InternalRecipeManagerPluginTest {
 	static void setup() {
 		SharedConstants.setVersion(DetectedVersion.BUILT_IN);
 		Bootstrap.bootStrap();
+	}
+
+	@Test
+	void focusedCategoryLookupsSortMergedResultsAndRefreshConfigChanges(@TempDir Path directory) {
+		IIngredientManagerInternal ingredientManager = createIngredientManager();
+		IRecipeType<String> alpha = IRecipeType.create("test", "alpha", String.class);
+		IRecipeType<String> beta = IRecipeType.create("test", "beta", String.class);
+		IRecipeType<String> gamma = IRecipeType.create("test", "gamma", String.class);
+		IRecipeType<String> dynamic = IRecipeType.create("test", "dynamic", String.class);
+		IRecipeCategory<String> alphaCategory = matchingCategory(alpha);
+		IRecipeCategory<String> betaCategory = matchingCategory(beta);
+		IRecipeCategory<String> gammaCategory = matchingCategory(gamma);
+		IRecipeCategory<String> dynamicCategory = matchingCategory(dynamic);
+		List<String> ids = List.of("test:alpha", "test:beta", "test:gamma", "test:dynamic");
+		var disabled = ConfigFileWatcherSettings.clientDefaults().withEnabled(false);
+		var configManager = new ConfigManager("Merged category lookup test", disabled, disabled);
+		var sorting = configManager.createInMemorySortingConfig(Comparator.<String>naturalOrder(), true);
+		sorting.setSortedValues(ids, List.of("test:dynamic", "test:beta", "test:gamma", "test:alpha"));
+		var codecHelper = new CodecHelper(ingredientManager, new FocusFactory(ingredientManager));
+		var editMode = new EditModeConfig(new EditModeConfig.FileSerializer(directory.resolve("blacklist.json"), RegistryAccess.EMPTY, codecHelper), ingredientManager);
+		var visibility = new IngredientVisibility(new IngredientBlacklistInternal(ingredientManager), new ClientToggleState(), editMode, ingredientManager);
+		ImmutableListMultimap.Builder<IRecipeType<?>, Consumer<IIngredientAcceptor<?>>> stations = ImmutableListMultimap.builder();
+		stations.put(alpha, acceptor -> acceptor.add(INGREDIENT_TYPE, INPUT));
+		stations.put(beta, acceptor -> acceptor.add(INGREDIENT_TYPE, INPUT));
+		var manager = new RecipeManagerInternal(
+			List.of(gammaCategory, alphaCategory, dynamicCategory, betaCategory), stations.build(), ingredientManager,
+			new ContextMap.Builder().create(new ContextKeySet.Builder().build()), new RecipeCategorySortingConfig(sorting), visibility
+		);
+		manager.addRecipes(alpha, List.of("alpha recipe"), new ContextMap.Builder().create(new ContextKeySet.Builder().build()));
+		manager.addRecipes(beta, List.of("beta recipe"), new ContextMap.Builder().create(new ContextKeySet.Builder().build()));
+		manager.addRecipes(gamma, List.of("gamma recipe"), new ContextMap.Builder().create(new ContextKeySet.Builder().build()));
+		manager.addPlugins(List.of(new IRecipeManagerPlugin() {
+			@Override
+			public <V> List<IRecipeType<?>> getRecipeTypes(IFocus<V> focus) {
+				if (focus.getRole() == RecipeIngredientRole.CRAFTING_STATION) {
+					return List.of();
+				}
+				return List.of(dynamic);
+			}
+
+			@Override
+			public <T, V> List<T> getRecipes(IRecipeType<T> type, IFocus<V> focus) {
+				if (focus.getRole() == RecipeIngredientRole.CRAFTING_STATION) {
+					return List.of();
+				}
+				return getRecipes(type);
+			}
+
+			@Override
+			public <T> List<T> getRecipes(IRecipeType<T> type) {
+				if (type.equals(dynamic)) {
+					return List.of(type.getRecipeClass().cast("dynamic recipe"));
+				}
+				return List.of();
+			}
+		}));
+		ITypedIngredient<TestIngredient> ingredient = typedIngredient(ingredientManager, INPUT);
+		List<IFocus<?>> recipes = List.of(new Focus<>(RecipeIngredientRole.OUTPUT, ingredient));
+		List<IFocus<?>> uses = List.of(
+			new Focus<>(RecipeIngredientRole.INPUT, ingredient),
+			new Focus<>(RecipeIngredientRole.CRAFTING_STATION, ingredient)
+		);
+		try {
+			assertEquals(List.of(dynamicCategory, betaCategory, gammaCategory, alphaCategory),
+				new RecipeCategoriesLookup(manager, ingredientManager).limitFocus(recipes).get().toList());
+			assertEquals(List.of(dynamicCategory, betaCategory, gammaCategory, alphaCategory),
+				new RecipeCategoriesLookup(manager, ingredientManager).limitFocus(uses).get().toList());
+			sorting.setSortedValues(ids, List.of("test:alpha", "test:dynamic", "test:beta"));
+			assertEquals(List.of(alphaCategory, dynamicCategory, betaCategory),
+				new RecipeCategoriesLookup(manager, ingredientManager).limitFocus(recipes).get().toList());
+			assertEquals(List.of(alphaCategory, dynamicCategory, betaCategory),
+				new RecipeCategoriesLookup(manager, ingredientManager).limitFocus(uses).get().toList());
+			assertEquals(List.of(alphaCategory, dynamicCategory, betaCategory, gammaCategory),
+				new RecipeCategoriesLookup(manager, ingredientManager).limitFocus(uses).includeHidden().get().toList());
+			assertEquals(List.of(dynamicCategory, betaCategory),
+				new RecipeCategoriesLookup(manager, ingredientManager).limitFocus(uses).limitTypes(List.of(beta, dynamic)).get().toList());
+		} finally {
+			manager.onRuntimeStopped();
+		}
 	}
 
 	@Test
@@ -431,11 +529,25 @@ public class InternalRecipeManagerPluginTest {
 		return new PluginFixture(ingredientManager, roleMaps, plugin);
 	}
 
+	private static IRecipeCategory<String> matchingCategory(IRecipeType<String> type) {
+		return new TestRecipeCategory() {
+			@Override
+			public IRecipeType<String> getRecipeType() {
+				return type;
+			}
+
+			@Override
+			public void setRecipe(IRecipeLayoutBuilder builder, String recipe, IFocusGroup focuses) {
+				builder.addInputSlot().add(INGREDIENT_TYPE, INPUT);
+				builder.addOutputSlot().add(INGREDIENT_TYPE, INPUT);
+			}
+		};
+	}
+
 	private static EnumMap<RecipeIngredientRole, RecipeIngredientRoleMap> createRoleMaps(IIngredientManager ingredientManager) {
-		Comparator<IRecipeType<?>> recipeTypeComparator = Comparator.comparing(recipeType -> recipeType.getUid().toString());
 		EnumMap<RecipeIngredientRole, RecipeIngredientRoleMap> roleMaps = new EnumMap<>(RecipeIngredientRole.class);
 		for (RecipeIngredientRole role : EnumSet.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT, RecipeIngredientRole.CRAFTING_STATION)) {
-			roleMaps.put(role, new RecipeIngredientRoleMap(recipeTypeComparator, ingredientManager, role));
+			roleMaps.put(role, new RecipeIngredientRoleMap(ingredientManager, role));
 		}
 		return roleMaps;
 	}

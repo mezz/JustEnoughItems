@@ -14,7 +14,6 @@ import mezz.jei.library.ingredients.SlotIngredient;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -27,12 +26,10 @@ public class RecipeIngredientRoleMap {
 	private final RecipeIngredientTable recipeTable = new RecipeIngredientTable();
 	private final IngredientUidIndex<Set<IRecipeType<?>>> ingredientUidToCategoryMap = new IngredientUidIndex<>();
 	private final IngredientUidIndex<Set<IRecipeType<?>>> craftingStationUidToRecipeCategoryMap = new IngredientUidIndex<>();
-	private final Comparator<IRecipeType<?>> recipeTypeComparator;
 	private final IIngredientManager ingredientManager;
 	private final RecipeIngredientRole role;
 
-	public RecipeIngredientRoleMap(Comparator<IRecipeType<?>> recipeTypeComparator, IIngredientManager ingredientManager, RecipeIngredientRole role) {
-		this.recipeTypeComparator = recipeTypeComparator;
+	public RecipeIngredientRoleMap(IIngredientManager ingredientManager, RecipeIngredientRole role) {
 		this.ingredientManager = ingredientManager;
 		this.role = role;
 	}
@@ -47,8 +44,7 @@ public class RecipeIngredientRoleMap {
 		return Stream.of(recipeTypes.exact(), recipeTypes.grouping(), catalystRecipeTypes)
 			.filter(Objects::nonNull)
 			.flatMap(Collection::stream)
-			.distinct()
-			.sorted(recipeTypeComparator);
+			.distinct();
 	}
 
 	public <T> void addCraftingStationForCategory(IRecipeType<?> recipeType, ITypedIngredient<T> ingredient) {
