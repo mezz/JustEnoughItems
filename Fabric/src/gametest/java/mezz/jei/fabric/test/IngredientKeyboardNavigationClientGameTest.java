@@ -76,6 +76,7 @@ public class IngredientKeyboardNavigationClientGameTest implements FabricClientG
 						bind(cleanup, "key.jei.bookmark", InputConstants.KEY_A);
 					});
 					assertMovement(context);
+					assertEscapeClosesInventory(context);
 					assertTooltipBounds(context);
 					assertSearchTransitions(context);
 					assertSearchHistory(context);
@@ -134,11 +135,42 @@ public class IngredientKeyboardNavigationClientGameTest implements FabricClientG
 		context.getInput().pressKey(InputConstants.KEY_LEFT);
 		context.getInput().pressKey(InputConstants.KEY_UP);
 		context.runOnClient(client -> check(focused().getArea().equals(start), "Left then Up must return to the first ingredient"));
-		context.getInput().pressKey(InputConstants.KEY_ESCAPE);
+		context.getInput().pressKey(InputConstants.KEY_F);
 		context.runOnClient(client -> {
-			check(search().isFocused(), "Escape must return to search");
+			check(search().isFocused(), "Focus Search must return to search");
 			check(grid().getFocusedSlot().isEmpty(), "Returning to search must clear ingredient focus");
 		});
+	}
+
+	private static void assertEscapeClosesInventory(ClientGameTestContext context) {
+		GameType original = context.computeOnClient(client -> client.gameMode.getPlayerMode());
+		try {
+			for (GameType mode : new GameType[]{GameType.SURVIVAL, GameType.CREATIVE}) {
+				context.runOnClient(client -> client.gameMode.setLocalMode(mode));
+				if (mode == GameType.CREATIVE) {
+					context.runOnClient(client -> {
+						client.gui.setScreen(null);
+						Internal.getJeiRuntime().getIngredientFilter().setFilterText("planks");
+						ImeTextInputTestUtil.openCreativeSearchWithTextInputFocused(client, search());
+					});
+					context.waitTicks(2);
+				} else {
+					open(context, "planks");
+				}
+				focus(context);
+				context.getInput().pressKey(InputConstants.KEY_ESCAPE);
+				context.runOnClient(client -> {
+					check(client.gui.screen() == null, "Escape from ingredient navigation must close the " + mode + " inventory in one press");
+					check(!search().isFocused(), "Closing the inventory must not focus search");
+					check(grid().getFocusedSlot().isEmpty(), "Closing the inventory must clear ingredient selection");
+				});
+			}
+		} finally {
+			context.runOnClient(client -> {
+				client.gui.setScreen(null);
+				client.gameMode.setLocalMode(original);
+			});
+		}
 	}
 
 	private static void assertActions(ClientGameTestContext context) {
@@ -255,7 +287,7 @@ public class IngredientKeyboardNavigationClientGameTest implements FabricClientG
 		for (int key : new int[]{InputConstants.KEY_UP, InputConstants.KEY_DOWN}) {
 			context.getInput().pressKey(key);
 			context.runOnClient(client -> check(grid().getFocusedSlot().isPresent() && search().getValue().equals("birch planks"), "Plain arrows must select ingredients without changing the query"));
-			context.getInput().pressKey(InputConstants.KEY_ESCAPE);
+			context.getInput().pressKey(InputConstants.KEY_F);
 		}
 		FabricKeyModifiersClientGameTest.pressAltModifiedKey(context, InputConstants.KEY_DOWN);
 		FabricKeyModifiersClientGameTest.pressAltModifiedKey(context, InputConstants.KEY_DOWN);
@@ -361,7 +393,7 @@ public class IngredientKeyboardNavigationClientGameTest implements FabricClientG
 			context.runOnClient(client -> check(Internal.getClientConfigs().getClientConfig().hideIngredientsWhenNotSearching().get() == original,
 				"Keyboard navigation must not activate a different control under the mouse"));
 			// Leave the grid, then the search editor, before trying a pointer shortcut.
-			context.getInput().pressKey(InputConstants.KEY_ESCAPE);
+			context.getInput().pressKey(InputConstants.KEY_F);
 			context.getInput().pressKey(InputConstants.KEY_ESCAPE);
 			context.getInput().pressKey(InputConstants.KEY_F8);
 			context.runOnClient(client -> check(Internal.getClientConfigs().getClientConfig().hideIngredientsWhenNotSearching().get() != original,
@@ -533,9 +565,9 @@ public class IngredientKeyboardNavigationClientGameTest implements FabricClientG
 			focus(context);
 			context.getInput().pressKey(InputConstants.KEY_RIGHT);
 			context.runOnClient(client -> check(grid().getFocusedSlot().isPresent(), "Creative search must not retain keyboard input while navigating results"));
-			context.getInput().pressKey(InputConstants.KEY_ESCAPE);
+			context.getInput().pressKey(InputConstants.KEY_F);
 			context.runOnClient(client -> {
-				check(search().isFocused(), "Leaving creative result navigation must return to search");
+				check(search().isFocused(), "Focus Search must return from creative result navigation to search");
 				ImeTextInputTestUtil.assertCreativeSearchFocusRestored(client, (CreativeModeInventoryScreen) client.gui.screen(), search());
 			});
 			focus(context);
