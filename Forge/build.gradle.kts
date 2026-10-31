@@ -152,6 +152,7 @@ dependencies {
 	changelogHtml(project(":Changelog"))
 	changelogMarkdown(project(":Changelog"))
 	testImplementation(mezzConfigApiDependency)
+	testImplementation(mezzConfigForgeDependency)
 	testImplementation(
 		group = "org.junit.jupiter",
 		name = "junit-jupiter",

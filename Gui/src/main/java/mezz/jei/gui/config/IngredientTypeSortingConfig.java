@@ -7,8 +7,10 @@ import mezz.jei.common.config.legacy.LegacySortingConfigMigrator;
 import mezz.jei.gui.ingredients.IListElementInfo;
 import net.mezzdev.config.api.IConfigRegistration;
 import net.mezzdev.config.api.sorting.ISortingConfig;
+import net.mezzdev.config.api.sorting.ISortingSnapshot;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -58,12 +60,12 @@ public class IngredientTypeSortingConfig {
 		return Comparator.comparing(IngredientTypeSortingConfig::getIngredientTypeString, comparator);
 	}
 
-	public boolean isIngredientTypeVisible(Collection<IIngredientType<?>> ingredientTypes, IIngredientType<?> ingredientType) {
-		String value = getIngredientTypeString(ingredientType);
-		List<String> values = ingredientTypes.stream()
-			.map(IngredientTypeSortingConfig::getIngredientTypeString)
-			.toList();
-		return sortingConfig.isVisible(values, value);
+	public ISortingSnapshot<String> getSnapshot(Collection<IIngredientType<?>> ingredientTypes) {
+		List<String> values = new ArrayList<>(ingredientTypes.size());
+		for (IIngredientType<?> ingredientType : ingredientTypes) {
+			values.add(getIngredientTypeString(ingredientType));
+		}
+		return sortingConfig.getSnapshot(values);
 	}
 
 	public Runnable addChangeListener(Runnable listener) {
