@@ -1,6 +1,26 @@
 package mezz.jei.test;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.google.common.collect.ImmutableListMultimap;
+import mezz.jei.api.gui.builder.IIngredientAcceptor;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
+import mezz.jei.common.config.WorldConfig;
+import mezz.jei.library.config.EditModeConfig;
+import mezz.jei.library.config.RecipeCategorySortingConfig;
+import mezz.jei.library.ingredients.IngredientBlacklistInternal;
+import mezz.jei.library.ingredients.IngredientVisibility;
+import mezz.jei.library.recipes.RecipeCategoriesLookup;
+import mezz.jei.library.recipes.RecipeManagerInternal;
+import net.mezzdev.config.file.ConfigFileWatcherSettings;
+import net.mezzdev.config.file.ConfigManager;
+import net.minecraft.SharedConstants;
+import net.minecraft.server.Bootstrap;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.io.TempDir;
+import java.nio.file.Path;
+import java.util.function.Consumer;
+
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -59,6 +79,106 @@ public class InternalRecipeManagerPluginTest {
 	private static final String FIRST_RECIPE = "first recipe";
 	private static final String SECOND_RECIPE = "second recipe";
 	private static final String THIRD_RECIPE = "third recipe";
+
+	@BeforeAll
+	static void setup() {
+		SharedConstants.tryDetectVersion();
+		Bootstrap.bootStrap();
+	}
+
+	@Test
+	void focusedCategoryLookupsSortMergedResultsAndRefreshConfigChanges(@TempDir Path directory) {
+		IIngredientManager ingredientManager = createIngredientManager();
+		RecipeType<String> alpha = RecipeType.create("test", "alpha", String.class);
+		RecipeType<String> beta = RecipeType.create("test", "beta", String.class);
+		RecipeType<String> gamma = RecipeType.create("test", "gamma", String.class);
+		RecipeType<String> dynamic = RecipeType.create("test", "dynamic", String.class);
+		IRecipeCategory<String> alphaCategory = matchingCategory(alpha);
+		IRecipeCategory<String> betaCategory = matchingCategory(beta);
+		IRecipeCategory<String> gammaCategory = matchingCategory(gamma);
+		IRecipeCategory<String> dynamicCategory = matchingCategory(dynamic);
+		List<String> ids = List.of("test:alpha", "test:beta", "test:gamma", "test:dynamic");
+		var disabled = ConfigFileWatcherSettings.clientDefaults().withEnabled(false);
+		var configManager = new ConfigManager("Merged category lookup test", disabled, disabled);
+		var sorting = configManager.createInMemorySortingConfig(Comparator.<String>naturalOrder(), true);
+		sorting.setSortedValues(ids, List.of("test:dynamic", "test:beta", "test:gamma", "test:alpha"));
+		var editMode = new EditModeConfig(new EditModeConfig.FileSerializer(directory.resolve("blacklist.json")), ingredientManager);
+		var visibility = new IngredientVisibility(new IngredientBlacklistInternal(ingredientManager), new WorldConfig(), editMode, ingredientManager);
+		ImmutableListMultimap.Builder<RecipeType<?>, Consumer<IIngredientAcceptor<?>>> stations = ImmutableListMultimap.builder();
+		stations.put(alpha, acceptor -> acceptor.addIngredient(INGREDIENT_TYPE, INPUT));
+		stations.put(beta, acceptor -> acceptor.addIngredient(INGREDIENT_TYPE, INPUT));
+		var manager = new RecipeManagerInternal(
+			List.of(gammaCategory, alphaCategory, dynamicCategory, betaCategory), stations.build(), ingredientManager,
+			new RecipeCategorySortingConfig(sorting), visibility
+		);
+		manager.addRecipes(alpha, List.of("alpha recipe"));
+		manager.addRecipes(beta, List.of("beta recipe"));
+		manager.addRecipes(gamma, List.of("gamma recipe"));
+		manager.addPlugins(List.of(new IRecipeManagerPlugin() {
+			@Override
+			public <V> List<RecipeType<?>> getRecipeTypes(IFocus<V> focus) {
+				if (focus.getRole() == RecipeIngredientRole.CATALYST) {
+					return List.of();
+				}
+				return List.of(dynamic);
+			}
+
+			@Override
+			public <T, V> List<T> getRecipes(IRecipeCategory<T> category, IFocus<V> focus) {
+				if (focus.getRole() == RecipeIngredientRole.CATALYST) {
+					return List.of();
+				}
+				return getRecipes(category);
+			}
+
+			@Override
+			public <T> List<T> getRecipes(IRecipeCategory<T> category) {
+				RecipeType<T> type = category.getRecipeType();
+				if (type.equals(dynamic)) {
+					return List.of(type.getRecipeClass().cast("dynamic recipe"));
+				}
+				return List.of();
+			}
+		}));
+		ITypedIngredient<TestIngredient> ingredient = typedIngredient(ingredientManager, INPUT);
+		List<IFocus<?>> recipes = List.of(new Focus<>(RecipeIngredientRole.OUTPUT, ingredient));
+		List<IFocus<?>> uses = List.of(
+			new Focus<>(RecipeIngredientRole.INPUT, ingredient),
+			new Focus<>(RecipeIngredientRole.CATALYST, ingredient)
+		);
+		try {
+			assertEquals(List.of(dynamicCategory, betaCategory, gammaCategory, alphaCategory),
+				new RecipeCategoriesLookup(manager, ingredientManager).limitFocus(recipes).get().toList());
+			assertEquals(List.of(dynamicCategory, betaCategory, gammaCategory, alphaCategory),
+				new RecipeCategoriesLookup(manager, ingredientManager).limitFocus(uses).get().toList());
+			sorting.setSortedValues(ids, List.of("test:alpha", "test:dynamic", "test:beta"));
+			assertEquals(List.of(alphaCategory, dynamicCategory, betaCategory),
+				new RecipeCategoriesLookup(manager, ingredientManager).limitFocus(recipes).get().toList());
+			assertEquals(List.of(alphaCategory, dynamicCategory, betaCategory),
+				new RecipeCategoriesLookup(manager, ingredientManager).limitFocus(uses).get().toList());
+			assertEquals(List.of(alphaCategory, dynamicCategory, betaCategory, gammaCategory),
+				new RecipeCategoriesLookup(manager, ingredientManager).limitFocus(uses).includeHidden().get().toList());
+			assertEquals(List.of(dynamicCategory, betaCategory),
+				new RecipeCategoriesLookup(manager, ingredientManager).limitFocus(uses).limitTypes(List.of(beta, dynamic)).get().toList());
+		} finally {
+			manager.onRuntimeStopped();
+		}
+	}
+
+	private static IRecipeCategory<String> matchingCategory(RecipeType<String> type) {
+		return new TestRecipeCategory() {
+			@Override
+			public RecipeType<String> getRecipeType() {
+				return type;
+			}
+
+			@Override
+			public void setRecipe(IRecipeLayoutBuilder builder, String recipe, IFocusGroup focuses) {
+				builder.addInputSlot().addIngredient(INGREDIENT_TYPE, INPUT);
+				builder.addOutputSlot().addIngredient(INGREDIENT_TYPE, INPUT);
+			}
+		};
+	}
 
 	@Test
 	public void recipeLookupDoesNotReadRenderOnlyIngredients() {
@@ -375,10 +495,9 @@ public class InternalRecipeManagerPluginTest {
 	}
 
 	private static EnumMap<RecipeIngredientRole, RecipeMap> createRoleMaps(IIngredientManager ingredientManager) {
-		Comparator<RecipeType<?>> recipeTypeComparator = Comparator.comparing(recipeType -> recipeType.getUid().toString());
 		EnumMap<RecipeIngredientRole, RecipeMap> roleMaps = new EnumMap<>(RecipeIngredientRole.class);
 		for (RecipeIngredientRole role : EnumSet.of(RecipeIngredientRole.INPUT, RecipeIngredientRole.OUTPUT, RecipeIngredientRole.CATALYST)) {
-			roleMaps.put(role, new RecipeMap(recipeTypeComparator, ingredientManager, role));
+			roleMaps.put(role, new RecipeMap(ingredientManager, role));
 		}
 		return roleMaps;
 	}

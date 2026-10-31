@@ -13,7 +13,6 @@ import mezz.jei.api.ingredients.IIngredientSupplier;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -26,12 +25,10 @@ public class RecipeMap {
 	private final RecipeIngredientTable recipeTable = new RecipeIngredientTable();
 	private final IngredientUidIndex<Set<RecipeType<?>>> ingredientUidToCategoryMap = new IngredientUidIndex<>();
 	private final IngredientUidIndex<Set<RecipeType<?>>> categoryCatalystUidToRecipeCategoryMap = new IngredientUidIndex<>();
-	private final Comparator<RecipeType<?>> recipeTypeComparator;
 	private final IIngredientManager ingredientManager;
 	private final RecipeIngredientRole role;
 
-	public RecipeMap(Comparator<RecipeType<?>> recipeTypeComparator, IIngredientManager ingredientManager, RecipeIngredientRole role) {
-		this.recipeTypeComparator = recipeTypeComparator;
+	public RecipeMap(IIngredientManager ingredientManager, RecipeIngredientRole role) {
 		this.ingredientManager = ingredientManager;
 		this.role = role;
 	}
@@ -43,8 +40,7 @@ public class RecipeMap {
 		Set<RecipeType<?>> catalystRecipeTypes = categoryCatalystUidToRecipeCategoryMap.get(ingredientType, uid).exact();
 		return Stream.of(recipeTypes, catalystRecipeTypes)
 			.filter(Objects::nonNull)
-			.flatMap(Collection::stream)
-			.sorted(recipeTypeComparator);
+			.flatMap(Collection::stream);
 	}
 
 	public <T> void addCatalystForCategory(RecipeType<?> recipeType, ITypedIngredient<T> ingredient) {
