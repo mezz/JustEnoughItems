@@ -220,6 +220,7 @@ dependencies {
 	"clientGameTestRuntimeOnly"(mezzConfigNeoForgeDependency)
 	"clientGameTestRuntimeOnly"(mezzConfigGuiNeoForgeDependency)
 	testImplementation(mezzConfigApiDependency)
+	testImplementation(mezzConfigNeoForgeDependency)
 	testImplementation(mezzConfigGuiApiDependency)
 	testImplementation(
 		group = "org.junit.jupiter",
