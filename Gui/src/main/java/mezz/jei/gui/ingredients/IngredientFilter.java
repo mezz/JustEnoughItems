@@ -29,6 +29,7 @@ import mezz.jei.gui.search.ISearchCompletionProvider;
 import mezz.jei.gui.search.SearchTokenizer;
 import mezz.jei.gui.search.Token;
 import net.mezzdev.config.api.value.IConfigValue;
+import net.mezzdev.config.api.sorting.ISortingSnapshot;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
@@ -70,6 +71,8 @@ public class IngredientFilter
 
 	@Nullable
 	private List<IElement<?>> ingredientListCached;
+	@Nullable
+	private ISortingSnapshot<String> ingredientTypeSortingSnapshot;
 	private final List<SourceListChangedListener> listeners = new ArrayList<>();
 	private final Map<IListElement<?>, IListElementInfo<?>> elementInfoCache = new LinkedHashMap<>();
 	private final Set<IListElement<?>> dirtyIngredients = Collections.newSetFromMap(new IdentityHashMap<>());
@@ -192,6 +195,7 @@ public class IngredientFilter
 	}
 
 	public void onIngredientTypeSortOrderConfigChanged() {
+		ingredientTypeSortingSnapshot = null;
 		markSortIndexesDirty();
 		updateHidden();
 	}
@@ -293,10 +297,10 @@ public class IngredientFilter
 	}
 
 	private boolean isIngredientTypeVisible(IIngredientType<?> ingredientType) {
-		return this.ingredientTypeSortingConfig.isIngredientTypeVisible(
-			ingredientManager.getRegisteredIngredientTypes(),
-			ingredientType
-		);
+		if (ingredientTypeSortingSnapshot == null) {
+			ingredientTypeSortingSnapshot = ingredientTypeSortingConfig.getSnapshot(ingredientManager.getRegisteredIngredientTypes());
+		}
+		return ingredientTypeSortingSnapshot.isVisible(IngredientTypeSortingConfig.getIngredientTypeString(ingredientType));
 	}
 
 	@Override
