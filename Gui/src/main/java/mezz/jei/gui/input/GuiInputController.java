@@ -115,7 +115,7 @@ public final class GuiInputController {
 				if (input.ifKeyboardEvent(navigation::keyPressed)) {
 					return Optional.of(ConsumedInput.INSTANCE);
 				}
-				if (input.ifKeyboardEvent((keyCode, scanCode, modifiers) -> keyCode == InputConstants.KEY_ESCAPE || keyCode == InputConstants.KEY_TAB)) {
+				if (input.ifKeyboardEvent((keyCode, scanCode, modifiers) -> keyCode == InputConstants.KEY_TAB)) {
 					return Optional.of(InputAction.run(editor::focus));
 				}
 			}
