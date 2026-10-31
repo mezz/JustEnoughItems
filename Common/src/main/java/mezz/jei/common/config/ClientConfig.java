@@ -25,6 +25,8 @@ public final class ClientConfig implements IClientConfig {
 	private final IConfigValue<Boolean> toastReflowEnabled;
 	private final IConfigValue<Boolean> compactInventoryEffects;
 	private final IConfigValue<Boolean> hideIngredientsWhenNotSearching;
+	private final IConfigValue<Boolean> showTagBadges;
+    private final IConfigValue<Boolean> showListBadges;
 
 	// cheat_mode
 	private final IConfigValue<GiveMode> giveMode;
@@ -106,7 +108,15 @@ public final class ClientConfig implements IClientConfig {
 			.addLegacyValue("appearance", "centerSearch")
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
+        
+		showTagBadges = ingredientList.addBoolean("showTagBadges", true)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
 
+        showListBadges = ingredientList.addBoolean("showListBadges", true)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
+		
 		overlaysEnabled = ingredientList.addBoolean("overlaysEnabled", true)
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
@@ -507,4 +517,14 @@ public final class ClientConfig implements IClientConfig {
 	public IConfigValue<Boolean> hideSingleTagContentTooltipEnabled() {
 		return hideSingleTagContentTooltipEnabled;
 	}
+
+	@Override
+    public boolean getShowTagBadges() {
+        return showTagBadges.getValue();
+    }
+
+    @Override
+    public boolean getShowListBadges() {
+        return showListBadges.getValue();
+    }
 }
