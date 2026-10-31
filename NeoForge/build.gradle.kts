@@ -205,6 +205,7 @@ dependencies {
 	"gameTestRuntimeOnly"(mezzConfigDependency("neoforge"))
 	"clientGameTestRuntimeOnly"(mezzConfigDependency("neoforge"))
 	testImplementation(mezzConfigApiDependency)
+	testImplementation(mezzConfigDependency("neoforge"))
 	testImplementation(mezzConfigGuiApiDependency)
 	implementation(apiSourceSet.output)
 	implementation(project(path = ":Common", configuration = "apiClassesElements"))

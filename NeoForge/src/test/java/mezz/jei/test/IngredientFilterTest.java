@@ -48,8 +48,8 @@ import mezz.jei.test.lib.TestIngredientHelper;
 import mezz.jei.test.lib.TestModIdHelper;
 import mezz.jei.test.lib.TestPlugin;
 import net.mezzdev.config.api.sorting.ISortingConfig;
-import net.mezzdev.config.api.sorting.ISortingSnapshot;
-import net.mezzdev.config.api.migration.ISortingConfigMigrator;
+import net.mezzdev.config.file.ConfigFileWatcherSettings;
+import net.mezzdev.config.file.ConfigManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -65,7 +65,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -99,7 +98,7 @@ public class IngredientFilterTest {
 	@Nullable
 	private ClientToggleState toggleState;
 	@Nullable
-	private TestSortingConfig ingredientTypeSortingConfig;
+	private ISortingConfig<String> ingredientTypeSortingConfig;
 	@Nullable
 	private RecordingSearchStorageBuilderFactory searchStorageBuilderFactory;
 
@@ -166,7 +165,7 @@ public class IngredientFilterTest {
 
 		this.toggleState = new ClientToggleState();
 		IClientToggleState toggleState = this.toggleState;
-		this.ingredientTypeSortingConfig = new TestSortingConfig();
+		this.ingredientTypeSortingConfig = createSortingConfig();
 
 		this.ingredientVisibility = new IngredientVisibility(blacklist, toggleState, editModeConfig, ingredientManager);
 		this.filterTextSource = new FilterTextSource();
@@ -191,7 +190,7 @@ public class IngredientFilterTest {
 			clientConfig,
 			ingredientFilterConfig,
 			ingredientManager,
-			ingredients -> IngredientSorter.sortIngredients(clientConfig, new ModNameSortingConfig(new TestSortingConfig()),
+			ingredients -> IngredientSorter.sortIngredients(clientConfig, new ModNameSortingConfig(createSortingConfig()),
 				new IngredientTypeSortingConfig(ingredientTypeSortingConfig), ingredientManager, ingredients),
 			baseList,
 			modIdHelper,
@@ -202,6 +201,7 @@ public class IngredientFilterTest {
 			toggleState
 		);
 		searchStorageBuilderFactory.clearCreatedIds();
+		Internal.registerRuntimeListenerRemoval(ingredientTypeSortingConfig.addChangeListener(ingredientFilter::onIngredientTypeSortOrderConfigChanged));
 
 		this.ingredientManager.registerIngredientListener(blacklist);
 		this.ingredientManager.registerIngredientListener(ingredientFilter);
@@ -514,17 +514,22 @@ public class IngredientFilterTest {
 	}
 
 	@Test
-	public void testRemovedIngredientTypesAreHidden() {
+	public void testIngredientTypeVisibilityChangesApplyToExistingAndNewIngredients() {
 		Assertions.assertNotNull(ingredientFilter);
 		Assertions.assertNotNull(ingredientTypeSortingConfig);
+		Assertions.assertNotNull(ingredientManager);
 
-		ingredientTypeSortingConfig.setVisible(false);
-		ingredientFilter.onIngredientTypeSortOrderConfigChanged();
+		String typeId = IngredientTypeSortingConfig.getIngredientTypeString(TestIngredient.TYPE);
+		ingredientTypeSortingConfig.setSortedValues(List.of(typeId), List.of());
 		Assertions.assertTrue(ingredientFilter.getElements().isEmpty());
 
-		ingredientTypeSortingConfig.setVisible(true);
-		ingredientFilter.onIngredientTypeSortOrderConfigChanged();
-		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT, ingredientFilter.getElements().size());
+		TestIngredient added = new TestIngredient(TestPlugin.BASE_INGREDIENT_COUNT);
+		ingredientManager.addIngredientsAtRuntime(TestIngredient.TYPE, List.of(added));
+		Assertions.assertTrue(ingredientFilter.getElements().isEmpty());
+
+		ingredientTypeSortingConfig.setSortedValues(List.of(typeId), List.of(typeId));
+		Assertions.assertEquals(TestPlugin.BASE_INGREDIENT_COUNT + 1, ingredientFilter.getElements().size());
+		Assertions.assertTrue(ingredientFilter.getFilteredIngredients(TestIngredient.TYPE).contains(added));
 	}
 
 	@Test
@@ -1104,86 +1109,10 @@ public class IngredientFilterTest {
 		}
 	}
 
-	private static class TestSortingConfig implements ISortingConfig<String> {
-		private boolean visible = true;
-
-		public void setVisible(boolean visible) {
-			this.visible = visible;
-		}
-
-		@Override
-		public List<String> getSortedValues(Collection<String> allValues) {
-			return allValues.stream()
-				.sorted(getComparator(allValues))
-				.toList();
-		}
-
-		@Override
-		public ISortingSnapshot<String> getSnapshot(Collection<String> allValues) {
-			List<String> sortedValues;
-			if (visible) {
-				sortedValues = allValues.stream().distinct().sorted().toList();
-			} else {
-				sortedValues = List.of();
-			}
-			Set<String> visibleValues = Set.copyOf(sortedValues);
-			Comparator<String> comparator = Comparator.comparing((String value) -> !visibleValues.contains(value))
-				.thenComparing(Comparator.naturalOrder());
-			return new ISortingSnapshot<>() {
-				@Override
-				public List<String> getSortedValues() {
-					return sortedValues;
-				}
-
-				@Override
-				public boolean isVisible(String value) {
-					return visibleValues.contains(value);
-				}
-
-				@Override
-				public Comparator<String> getComparator() {
-					return comparator;
-				}
-			};
-		}
-
-		@Override
-		public List<String> getDefaultSortedValues(Collection<String> allValues) {
-			return getSortedValues(allValues);
-		}
-
-		@Override
-		public boolean setSortedValues(Collection<String> allValues, List<String> sortedValues) {
-			return false;
-		}
-
-		@Override
-		public Comparator<String> getComparator(Collection<String> allValues) {
-			return Comparator.naturalOrder();
-		}
-
-		@Override
-		public boolean isVisible(Collection<String> allValues, String value) {
-			return visible;
-		}
-
-		@Override
-		public boolean allowsRemovingValues() {
-			return true;
-		}
-
-		@Override
-		public Runnable addChangeListener(Runnable listener) {
-			return () -> {};
-		}
-
-		@Override
-		public ISortingConfig<String> setLegacyMigration(
-			List<Path> legacyPaths,
-			ISortingConfigMigrator<String> migrator
-		) {
-			return this;
-		}
+	private static ISortingConfig<String> createSortingConfig() {
+		var disabledWatcher = ConfigFileWatcherSettings.clientDefaults().withEnabled(false);
+		var manager = new ConfigManager("Ingredient filter test", disabledWatcher, disabledWatcher);
+		return manager.createInMemorySortingConfig(Comparator.naturalOrder(), true);
 	}
 
 	private static class TestClientConfigs implements IClientConfigs {
@@ -1218,7 +1147,7 @@ public class IngredientFilterTest {
 
 		@Override
 		public ISortingConfig<String> getRecipeCategorySortingConfig() {
-			return new TestSortingConfig();
+			return createSortingConfig();
 		}
 
 		@Override
