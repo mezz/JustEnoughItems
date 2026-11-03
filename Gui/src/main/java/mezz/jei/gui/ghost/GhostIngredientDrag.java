@@ -3,6 +3,7 @@ package mezz.jei.gui.ghost;
 import net.minecraft.client.gui.GuiComponent;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -15,7 +16,6 @@ import mezz.jei.common.input.UserInput;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.MathUtil;
 import mezz.jei.common.util.SafeIngredientUtil;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.phys.Vec2;
 
@@ -86,7 +86,7 @@ public class GhostIngredientDrag<T> {
 			return;
 		}
 
-		SafeIngredientUtil.render(poseStack, ingredientRenderer, ingredient, mouseX - 8, mouseY - 8);
+		SafeIngredientUtil.render(poseStack, ingredientRenderer, ingredient, mouseX - 8, mouseY - 8, IIngredientRenderContext.INGREDIENT);
 	}
 
 	public static void drawTargets(PoseStack poseStack, int mouseX, int mouseY, List<Rect2i> targetAreas) {

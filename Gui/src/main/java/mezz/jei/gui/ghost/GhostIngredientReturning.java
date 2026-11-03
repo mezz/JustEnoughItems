@@ -1,6 +1,7 @@
 package mezz.jei.gui.ghost;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.util.ImmutableRect2i;
@@ -66,7 +67,7 @@ public class GhostIngredientReturning<T> {
 		poseStack.pushPose();
 		{
 			poseStack.translate(x, y, 0);
-			SafeIngredientUtil.render(poseStack, ingredientRenderer, ingredient, 0, 0);
+			SafeIngredientUtil.render(poseStack, ingredientRenderer, ingredient, 0, 0, IIngredientRenderContext.INGREDIENT);
 		}
 		poseStack.popPose();
 	}

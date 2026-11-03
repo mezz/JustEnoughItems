@@ -5,14 +5,13 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
+import mezz.jei.library.render.ItemStackRenderer;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.library.render.ItemStackRenderer;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -76,21 +75,9 @@ public final class ItemStackBatchRenderer {
 			bufferSource.endBatch();
 		}
 
-		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-		for (ElementWithModel element : useBlockLight) {
-			ItemStack ingredient = element.stack();
-			Font font = renderHelper.getFontRenderer(minecraft, ingredient);
-			itemRenderer.renderGuiItemDecorations(font, ingredient, element.x(), element.y());
-		}
-		for (ElementWithModel element : noBlockLight) {
-			ItemStack ingredient = element.stack();
-			Font font = renderHelper.getFontRenderer(minecraft, ingredient);
-			itemRenderer.renderGuiItemDecorations(font, ingredient, element.x(), element.y());
-		}
-		RenderSystem.disableBlend();
 		for (BatchRenderElement<ItemStack> element : customRender) {
-			ItemStack ingredient = element.ingredient();
-			itemStackRenderer.render(poseStack, ingredient, element.x(), element.y());
+			RenderSystem.enableDepthTest();
+			itemStackRenderer.render(poseStack, element.ingredient(), element.x(), element.y());
 			RenderSystem.disableBlend();
 		}
 		RenderSystem.disableBlend();

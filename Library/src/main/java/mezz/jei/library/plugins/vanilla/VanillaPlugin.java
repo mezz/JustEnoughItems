@@ -82,6 +82,7 @@ import mezz.jei.library.plugins.vanilla.ingredients.subtypes.PotionSubtypeInterp
 import mezz.jei.library.plugins.vanilla.ingredients.subtypes.SuspiciousStewSubtypeInterpreter;
 import mezz.jei.library.plugins.vanilla.stonecutting.StoneCuttingRecipeCategory;
 import mezz.jei.library.render.FluidTankRenderer;
+import mezz.jei.library.render.ItemStackDecorator;
 import mezz.jei.library.render.ItemStackRenderer;
 import mezz.jei.library.transfer.PlayerRecipeTransferHandler;
 import mezz.jei.common.util.ErrorUtil;
@@ -311,6 +312,9 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+		var ingredientRenderer = registration.getJeiHelpers().getIngredientManager().getIngredientRenderer(VanillaTypes.ITEM_STACK);
+		registration.addIngredientDecorator(VanillaTypes.ITEM_STACK, new ItemStackDecorator(ingredientRenderer));
+
 		registration.addRecipeClickArea(CraftingScreen.class, 88, 32, 28, 23, RecipeTypes.CRAFTING);
 		registration.addRecipeClickArea(InventoryScreen.class, 137, 29, 10, 13, RecipeTypes.CRAFTING);
 		registration.addRecipeClickArea(BrewingStandScreen.class, 97, 16, 14, 30, RecipeTypes.BREWING);

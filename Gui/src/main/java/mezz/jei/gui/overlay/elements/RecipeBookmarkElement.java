@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay.elements;
 
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -399,7 +400,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 				// 3D icons draw still draw under tooltips.
 				poseStack.translate(8 + xOffset, 8 + yOffset, 200);
 				poseStack.scale(0.5f, 0.5f, 0.5f);
-				icon.draw(poseStack);
+				icon.draw(poseStack, 0, 0, IIngredientRenderContext.ICON);
 			}
 			poseStack.popPose();
 		}

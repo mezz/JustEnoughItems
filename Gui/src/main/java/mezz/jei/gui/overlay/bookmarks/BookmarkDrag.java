@@ -1,6 +1,7 @@
 package mezz.jei.gui.overlay.bookmarks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.Internal;
@@ -107,7 +108,7 @@ public class BookmarkDrag<T> {
 			return false;
 		}
 
-		SafeIngredientUtil.render(poseStack, ingredientRenderer, ingredient, mouseX - 8, mouseY - 8);
+		SafeIngredientUtil.render(poseStack, ingredientRenderer, ingredient, mouseX - 8, mouseY - 8, IIngredientRenderContext.INGREDIENT);
 		return true;
 	}
 

@@ -3,7 +3,9 @@ package mezz.jei.api.ingredients;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
@@ -29,7 +31,11 @@ public interface IIngredientRenderer<T> {
 	 * @param ingredient the ingredient to render.
 	 *
 	 * @since 9.3.0
+	 * @deprecated use {@link #render(PoseStack, Object, int, int, IIngredientRenderContext)}
+	 * with both offsets set to {@code 0}.
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "11.81.0", forRemoval = true)
 	void render(PoseStack stack, T ingredient);
 
 	/**
@@ -41,7 +47,9 @@ public interface IIngredientRenderer<T> {
 	 * @param posY       the y offset for rendering this ingredient
 	 *
 	 * @since 11.7.0
+	 * @deprecated use {@link #render(PoseStack, Object, int, int, IIngredientRenderContext)}
 	 */
+	@Deprecated(since = "11.81.0", forRemoval = true)
 	default void render(PoseStack poseStack, T ingredient, int posX, int posY) {
 		poseStack.pushPose();
 		try {
@@ -53,14 +61,55 @@ public interface IIngredientRenderer<T> {
 	}
 
 	/**
+	 * Renders an ingredient at a specific location in the given context.
+	 * Draw decoration overlays only when {@link IIngredientRenderContext#renderDecorations()} is enabled.
+	 * Renderers obtained from {@link IIngredientManager} also invoke registered decorators when decorations are enabled.
+	 *
+	 * @param poseStack the graphics for rendering the ingredient
+	 * @param ingredient the ingredient to render
+	 * @param posX the ingredient's left edge, relative to the current graphics pose
+	 * @param posY the ingredient's top edge, relative to the current graphics pose
+	 * @param context controls whether ingredient decorations are rendered
+	 *
+	 * @since 11.81.0
+	 */
+	default void render(PoseStack poseStack, T ingredient, int posX, int posY, IIngredientRenderContext context) {
+		render(poseStack, ingredient, posX, posY);
+	}
+
+	/**
 	 * Render a batch of ingredients.
 	 * Implementing this is not necessary, but can be used to optimize rendering many ingredients at once.
 	 *
 	 * @since 11.7.0
+	 * @deprecated use {@link #renderBatch(PoseStack, List, IIngredientRenderContext)}
 	 */
+	@Deprecated(since = "11.81.0", forRemoval = true)
 	default void renderBatch(PoseStack poseStack, List<BatchRenderElement<T>> elements) {
-		for (BatchRenderElement<T> element : elements) {
-			render(poseStack, element.ingredient(), element.x(), element.y());
+		for (var element : elements) {
+			render(poseStack, element.ingredient(), element.x(), element.y(), IIngredientRenderContext.INGREDIENT);
+		}
+	}
+
+	/**
+	 * Renders a batch of ingredients in the given context.
+	 * Draw decoration overlays only when {@link IIngredientRenderContext#renderDecorations()} is enabled.
+	 * Renderers obtained from {@link IIngredientManager} also invoke registered decorators when decorations are enabled.
+	 *
+	 * @param poseStack the graphics for rendering the ingredients
+	 * @param elements the ingredients and their positions
+	 * @param context controls whether ingredient decorations are rendered
+	 *
+	 * @since 11.81.0
+	 */
+	default void renderBatch(PoseStack poseStack, List<BatchRenderElement<T>> elements, IIngredientRenderContext context) {
+		// Use the existing batch override for standard ingredient rendering so older renderers keep their batching behavior.
+		if (context == IIngredientRenderContext.INGREDIENT) {
+			renderBatch(poseStack, elements);
+			return;
+		}
+		for (var element : elements) {
+			render(poseStack, element.ingredient(), element.x(), element.y(), context);
 		}
 	}
 

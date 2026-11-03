@@ -1,6 +1,7 @@
 package mezz.jei.gui.recipes;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -66,7 +67,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		IDrawable icon = RecipeCategoryIconUtil.create(category, recipeManager, guiHelper);
 		int iconX = area.getX() + (TAB_WIDTH - icon.getWidth()) / 2;
 		int iconY = area.getY() + (TAB_HEIGHT - icon.getHeight()) / 2;
-		icon.draw(poseStack, iconX, iconY);
+		icon.draw(poseStack, iconX, iconY, IIngredientRenderContext.ICON);
 	}
 
 	@Override

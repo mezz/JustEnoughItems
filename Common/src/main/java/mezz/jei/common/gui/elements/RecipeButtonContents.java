@@ -1,5 +1,6 @@
 package mezz.jei.common.gui.elements;
 
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.util.StringUtil;
@@ -56,7 +57,7 @@ interface RecipeButtonContents {
 			pose.pushPose();
 			try {
 				pose.translate((width - icon.getWidth()) / 2.0f, (height - icon.getHeight()) / 2.0f, 0);
-				icon.draw(graphics);
+				icon.draw(graphics, 0, 0, IIngredientRenderContext.ICON);
 			} finally {
 				pose.popPose();
 			}

@@ -1,8 +1,9 @@
 package mezz.jei.common.gui.elements;
 
 import com.google.common.base.Preconditions;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 /**
  * Draws an icon at a higher resolution than normal (determined by the scale parameter).
@@ -56,5 +57,17 @@ public class HighResolutionDrawable implements IDrawable {
 			this.drawable.draw(poseStack);
 		}
 		poseStack.popPose();
+	}
+
+	@Override
+	public void draw(PoseStack poseStack, int xOffset, int yOffset, IIngredientRenderContext context) {
+		poseStack.pushPose();
+		try {
+			poseStack.translate(xOffset, yOffset, 0);
+			poseStack.scale(1 / (float) scale, 1 / (float) scale, 1);
+			this.drawable.draw(poseStack, 0, 0, context);
+		} finally {
+			poseStack.popPose();
+		}
 	}
 }

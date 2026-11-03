@@ -105,11 +105,13 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	}
 
 	@Override
+	@Deprecated(since = "11.81.0", forRemoval = true)
 	public void render(PoseStack poseStack, T fluidStack) {
 		render(poseStack, fluidStack, 0, 0);
 	}
 
 	@Override
+	@Deprecated(since = "11.81.0", forRemoval = true)
 	public void render(PoseStack poseStack, T ingredient, int posX, int posY) {
 		RenderSystem.enableBlend();
 		RenderSystem.setShaderColor(1, 1, 1, 1);

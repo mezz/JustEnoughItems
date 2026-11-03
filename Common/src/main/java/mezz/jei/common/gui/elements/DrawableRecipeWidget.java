@@ -1,6 +1,7 @@
 package mezz.jei.common.gui.elements;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.widgets.IDrawableWidget;
 
@@ -29,6 +30,6 @@ public class DrawableRecipeWidget extends AbstractRecipeWidgetBuilder<IDrawableW
 
 	@Override
 	public void drawWidget(PoseStack poseStack, double mouseX, double mouseY) {
-		drawable.draw(poseStack);
+		drawable.draw(poseStack, 0, 0, IIngredientRenderContext.ICON);
 	}
 }

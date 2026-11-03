@@ -25,6 +25,7 @@ public class DebugIngredientRenderer implements IIngredientRenderer<DebugIngredi
 	}
 
 	@Override
+	@Deprecated(since = "11.81.0", forRemoval = true)
 	public void render(PoseStack poseStack, DebugIngredient ingredient) {
 		Minecraft minecraft = Minecraft.getInstance();
 		Font font = getFontRenderer(minecraft, ingredient);

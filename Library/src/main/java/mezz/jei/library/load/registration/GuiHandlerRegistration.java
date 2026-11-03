@@ -6,13 +6,15 @@ import mezz.jei.api.gui.handlers.IGlobalGuiHandler;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.gui.handlers.IScreenHandler;
 import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.rendering.IIngredientDecorator;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.runtime.IScreenHelper;
-import mezz.jei.common.ingredients.ITypedIngredientFactory;
 import mezz.jei.common.util.ErrorUtil;
 import mezz.jei.common.collect.ListMultiMap;
 import mezz.jei.library.gui.GuiContainerHandlers;
 import mezz.jei.library.gui.helpers.ScreenHelper;
+import mezz.jei.library.ingredients.IngredientManager;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -30,9 +32,11 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 	private final Map<Class<?>, IScreenHandler<?>> guiScreenHandlers = new HashMap<>();
 	private final ListMultiMap<Class<?>, IGhostIngredientHandler<?>> ghostIngredientHandlers = new ListMultiMap<>();
 	private final IJeiHelpers jeiHelpers;
+	private final IngredientManager ingredientManager;
 
-	public GuiHandlerRegistration(IJeiHelpers jeiHelpers) {
+	public GuiHandlerRegistration(IJeiHelpers jeiHelpers, IngredientManager ingredientManager) {
 		this.jeiHelpers = jeiHelpers;
+		this.ingredientManager = ingredientManager;
 	}
 
 	@Override
@@ -54,6 +58,13 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 	public void addGlobalGuiHandler(IGlobalGuiHandler globalGuiHandler) {
 		ErrorUtil.checkNotNull(globalGuiHandler, "globalGuiHandler");
 		this.globalGuiHandlers.add(globalGuiHandler);
+	}
+
+	@Override
+	public <T> void addIngredientDecorator(IIngredientType<T> ingredientType, IIngredientDecorator<T> decorator) {
+		ErrorUtil.checkNotNull(ingredientType, "ingredientType");
+		ErrorUtil.checkNotNull(decorator, "decorator");
+		ingredientManager.addIngredientDecorator(ingredientType, decorator);
 	}
 
 	@Override
@@ -79,8 +90,8 @@ public class GuiHandlerRegistration implements IGuiHandlerRegistration {
 		this.ghostIngredientHandlers.put(guiClass, handler);
 	}
 
-	public IScreenHelper createGuiScreenHelper(ITypedIngredientFactory typedIngredientFactory) {
-		return new ScreenHelper(typedIngredientFactory, globalGuiHandlers, guiContainerHandlers, ghostIngredientHandlers, guiScreenHandlers);
+	public IScreenHelper createGuiScreenHelper() {
+		return new ScreenHelper(ingredientManager, globalGuiHandlers, guiContainerHandlers, ghostIngredientHandlers, guiScreenHandlers);
 	}
 
 	@Override

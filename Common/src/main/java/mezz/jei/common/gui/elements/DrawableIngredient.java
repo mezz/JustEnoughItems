@@ -2,6 +2,7 @@ package mezz.jei.common.gui.elements;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 
@@ -31,8 +32,16 @@ public class DrawableIngredient<V> implements IDrawable {
 
 	@Override
 	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
+		draw(poseStack, xOffset, yOffset, IIngredientRenderContext.INGREDIENT);
+	}
+
+	@Override
+	public void draw(PoseStack poseStack, int xOffset, int yOffset, IIngredientRenderContext context) {
 		RenderSystem.enableDepthTest();
-		this.ingredientRenderer.render(poseStack, ingredient, xOffset, yOffset);
-		RenderSystem.disableDepthTest();
+		try {
+			ingredientRenderer.render(poseStack, ingredient, xOffset, yOffset, context);
+		} finally {
+			RenderSystem.disableDepthTest();
+		}
 	}
 }

@@ -5,6 +5,7 @@ import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 
 /**
@@ -33,5 +34,16 @@ public interface IDrawable {
 	}
 
 	void draw(PoseStack poseStack, int xOffset, int yOffset);
+
+	/**
+	 * Draws at the given offsets in the given ingredient rendering context.
+	 * The context controls whether ingredient drawables render decoration overlays and registered decorators.
+	 * Drawables that contain other drawables must forward the context to their children.
+	 *
+	 * @since 11.81.0
+	 */
+	default void draw(PoseStack poseStack, int xOffset, int yOffset, IIngredientRenderContext context) {
+		draw(poseStack, xOffset, yOffset);
+	}
 
 }

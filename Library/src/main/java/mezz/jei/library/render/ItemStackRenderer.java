@@ -2,6 +2,7 @@ package mezz.jei.library.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
@@ -30,12 +31,19 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	private final ItemStackBatchRendererCache batchRenderer = new ItemStackBatchRendererCache();
 
 	@Override
+	@Deprecated(since = "11.81.0", forRemoval = true)
 	public void render(PoseStack poseStack, @Nullable ItemStack ingredient) {
-		render(poseStack, ingredient, 0, 0);
+		render(poseStack, ingredient, 0, 0, IIngredientRenderContext.INGREDIENT);
 	}
 
 	@Override
+	@Deprecated(since = "11.81.0", forRemoval = true)
 	public void render(PoseStack poseStack, @Nullable ItemStack ingredient, int posX, int posY) {
+		render(poseStack, ingredient, posX, posY, IIngredientRenderContext.INGREDIENT);
+	}
+
+	@Override
+	public void render(PoseStack poseStack, @Nullable ItemStack ingredient, int posX, int posY, IIngredientRenderContext context) {
 		if (ingredient != null) {
 			PoseStack modelViewStack = RenderSystem.getModelViewStack();
 			modelViewStack.pushPose();
@@ -45,10 +53,8 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 				RenderSystem.enableDepthTest();
 
 				Minecraft minecraft = Minecraft.getInstance();
-				Font font = getFontRenderer(minecraft, ingredient);
 				ItemRenderer itemRenderer = minecraft.getItemRenderer();
 				itemRenderer.renderAndDecorateFakeItem(ingredient, posX, posY);
-				itemRenderer.renderGuiItemDecorations(font, ingredient, posX, posY);
 				RenderSystem.disableBlend();
 			}
 			modelViewStack.popPose();
@@ -58,8 +64,14 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	}
 
 	@Override
-	public void renderBatch(PoseStack poseStack, List<BatchRenderElement<ItemStack>> batchRenderElements) {
-		batchRenderer.renderBatch(poseStack, this, batchRenderElements);
+	@Deprecated(since = "11.81.0", forRemoval = true)
+	public void renderBatch(PoseStack poseStack, List<BatchRenderElement<ItemStack>> elements) {
+		renderBatch(poseStack, elements, IIngredientRenderContext.INGREDIENT);
+	}
+
+	@Override
+	public void renderBatch(PoseStack poseStack, List<BatchRenderElement<ItemStack>> elements, IIngredientRenderContext context) {
+		batchRenderer.renderBatch(poseStack, this, elements);
 	}
 
 	@Override
@@ -97,13 +109,4 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 		return renderHelper.getFontRenderer(minecraft, ingredient);
 	}
 
-	@Override
-	public int getWidth() {
-		return 16;
-	}
-
-	@Override
-	public int getHeight() {
-		return 16;
-	}
 }

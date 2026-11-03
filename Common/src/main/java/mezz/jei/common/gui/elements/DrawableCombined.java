@@ -3,6 +3,7 @@ package mezz.jei.common.gui.elements;
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 
 import java.util.List;
 
@@ -49,6 +50,13 @@ public class DrawableCombined implements IDrawableAnimated {
 	public void draw(PoseStack poseStack, int xOffset, int yOffset) {
 		for (IDrawable drawable : drawables) {
 			drawable.draw(poseStack, xOffset, yOffset);
+		}
+	}
+
+	@Override
+	public void draw(PoseStack poseStack, int xOffset, int yOffset, IIngredientRenderContext context) {
+		for (IDrawable drawable : drawables) {
+			drawable.draw(poseStack, xOffset, yOffset, context);
 		}
 	}
 }
