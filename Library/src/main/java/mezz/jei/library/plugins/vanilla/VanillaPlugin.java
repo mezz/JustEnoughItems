@@ -450,6 +450,14 @@ public class VanillaPlugin implements IModPlugin {
 
 	@Override
 	public void onRuntimeUnavailable() {
+		clearPlayerDependentCaches();
+	}
+
+	/**
+	 * Releases menus whose fake inventories belong to the previous client player.
+	 * The menus are recreated lazily and reused for the new player.
+	 */
+	public static void clearPlayerDependentCaches() {
 		AnvilHelper.clearCache();
 		GrindstoneRecipeMaker.clearCache();
 	}
