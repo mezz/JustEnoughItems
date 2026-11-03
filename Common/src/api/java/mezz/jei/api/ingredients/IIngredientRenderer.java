@@ -73,9 +73,10 @@ public interface IIngredientRenderer<T> {
 	 * @return The tooltip text for the ingredient.
 	 * @deprecated use {@link #getTooltip(Object, Item.TooltipContext, Player, TooltipFlag)}
 	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(since = "30.26.0", forRemoval = true)
-	List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag);
+	default List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag) {
+		return getTooltip(ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
+	}
 
 	/**
 	 * Get the tooltip text for this ingredient. JEI searches tooltips based on this.
@@ -86,14 +87,9 @@ public interface IIngredientRenderer<T> {
 	 * @param tooltipFlag    Whether to show advanced information on item tooltips, toggled by F3+H
 	 * @return The tooltip text for the ingredient.
 	 *
-	 * @implNote Implementations should override this method. The default implementation delegates to the deprecated overload
-	 * to support renderers compiled against older versions of the API.
-	 *
 	 * @since 30.26.0
 	 */
-	default List<Component> getTooltip(T ingredient, Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
-		return getTooltip(ingredient, tooltipFlag);
-	}
+	List<Component> getTooltip(T ingredient, Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag);
 
 	/**
 	 * Get a rich tooltip for this ingredient. JEI renders the tooltip based on this.
@@ -105,11 +101,9 @@ public interface IIngredientRenderer<T> {
 	 * @since 19.5.4
 	 * @deprecated use {@link #getTooltip(ITooltipBuilder, Object, Item.TooltipContext, Player, TooltipFlag)}
 	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated(since = "30.26.0", forRemoval = true)
 	default void getTooltip(ITooltipBuilder tooltip, T ingredient, TooltipFlag tooltipFlag) {
-		List<Component> components = getTooltip(ingredient, tooltipFlag);
-		tooltip.addAll(components);
+		getTooltip(tooltip, ingredient, Item.TooltipContext.EMPTY, null, tooltipFlag);
 	}
 
 	/**

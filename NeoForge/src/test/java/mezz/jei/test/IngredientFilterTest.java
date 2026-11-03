@@ -53,6 +53,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.context.ContextMap;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import org.jspecify.annotations.Nullable;
@@ -1065,9 +1066,7 @@ public class IngredientFilterTest {
 		}
 
 		@Override
-		@Deprecated(since = "30.26.0", forRemoval = true)
-		@SuppressWarnings("removal")
-		public List<Component> getTooltip(TestIngredient ingredient, TooltipFlag tooltipFlag) {
+		public List<Component> getTooltip(TestIngredient ingredient, Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
 			tooltipReads.add(ingredient.number());
 			return List.of(Component.literal(aspects.get(ingredient.number()) + " aspect tooltip"));
 		}

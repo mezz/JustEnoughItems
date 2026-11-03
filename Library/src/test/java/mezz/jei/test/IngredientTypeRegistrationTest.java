@@ -15,6 +15,8 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextMap;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -125,9 +127,8 @@ class IngredientTypeRegistrationTest {
 		public void render(GuiGraphicsExtractor guiGraphics, T ingredient) {
 		}
 
-		@SuppressWarnings("removal")
 		@Override
-		public List<Component> getTooltip(T ingredient, TooltipFlag tooltipFlag) {
+		public List<Component> getTooltip(T ingredient, Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
 			return List.of();
 		}
 	}

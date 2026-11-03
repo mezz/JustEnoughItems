@@ -39,6 +39,8 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	IRecipeType<R> getRecipeType();
 
 	/**
+	 * Transfers a recipe or checks whether it can be transferred.
+	 *
 	 * @param container   the container to act on
 	 * @param recipe      the raw recipe instance
 	 * @param recipeSlots the view of the recipe slots, with information about the ingredients
@@ -46,6 +48,8 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	 * @param maxTransfer if true, transfer as many items as possible. if false, transfer one set
 	 * @param doTransfer  if true, do the transfer. if false, check for errors but do not actually transfer the items
 	 * @return a recipe transfer error if the recipe can't be transferred. Return null on success.
+	 * @throws UnsupportedOperationException if the handler does not implement this deprecated overload.
+	 * Call {@link #transferRecipe(IRecipeTransferContext, boolean)} instead.
 	 *
 	 * @deprecated use {@link #transferRecipe(IRecipeTransferContext, boolean)}
 	 *
@@ -53,10 +57,14 @@ public interface IRecipeTransferHandler<C extends AbstractContainerMenu, R> {
 	 */
 	@Deprecated(since = "30.30.0", forRemoval = true)
 	@Nullable
-	IRecipeTransferError transferRecipe(C container, R recipe, IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer);
+	default IRecipeTransferError transferRecipe(C container, R recipe, IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer) {
+		throw new UnsupportedOperationException("Call transferRecipe(IRecipeTransferContext, boolean)");
+	}
 
 	/**
 	 * Handles a recipe transfer or checks whether it can be transferred.
+	 *
+	 * Override this method to handle recipe transfers. You can leave the deprecated method unimplemented.
 	 *
 	 * When {@code doTransfer} is true, call
 	 * {@link IRecipeTransferContext#completeRecipeTransfer(RecipeTransferResult)}
