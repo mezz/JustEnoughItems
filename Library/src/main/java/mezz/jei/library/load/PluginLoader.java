@@ -206,9 +206,9 @@ public final class PluginLoader {
 	}
 
 	public static IScreenHelper createGuiScreenHelper(List<IModPlugin> plugins, IJeiHelpers jeiHelpers, IIngredientManagerInternal ingredientManager) {
-		GuiHandlerRegistration guiHandlerRegistration = new GuiHandlerRegistration(jeiHelpers);
+		GuiHandlerRegistration guiHandlerRegistration = new GuiHandlerRegistration(jeiHelpers, ingredientManager);
 		PluginCaller.callOnPlugins("Registering gui handlers", plugins, p -> p.registerGuiHandlers(guiHandlerRegistration));
-		return guiHandlerRegistration.createGuiScreenHelper(ingredientManager);
+		return guiHandlerRegistration.createGuiScreenHelper();
 	}
 
 	public static IRecipeTransferManager createRecipeTransferManager(

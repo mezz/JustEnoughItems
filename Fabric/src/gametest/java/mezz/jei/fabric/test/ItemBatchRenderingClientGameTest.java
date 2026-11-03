@@ -1,7 +1,9 @@
 package mezz.jei.fabric.test;
 
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
-import mezz.jei.library.render.ItemStackRenderer;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
+import mezz.jei.common.Internal;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -22,6 +24,7 @@ public class ItemBatchRenderingClientGameTest implements FabricClientGameTest {
 	public void runTest(ClientGameTestContext context) {
 		JUnitXmlTestReporter.runAndReport("fabric-client-gametest", getClass().getSimpleName(), () -> {
 			try (TestSingleplayerContext ignored = context.worldBuilder().create()) {
+				JeiFabricClientGameTestAssertions.assertJeiStartedWithSyncedRecipes(context);
 				context.runOnClient(client -> {
 					ItemStack blocks = new ItemStack(Items.OAK_PLANKS, 64);
 					ItemStack sword = new ItemStack(Items.DIAMOND_SWORD);
@@ -29,10 +32,11 @@ public class ItemBatchRenderingClientGameTest implements FabricClientGameTest {
 					GuiRenderState state = new GuiRenderState();
 					GuiGraphicsExtractor graphics = new GuiGraphicsExtractor(client, state, 0, 0);
 
-					new ItemStackRenderer().renderBatch(graphics, List.of(
+					var renderer = Internal.getJeiRuntime().getIngredientManager().getIngredientRenderer(VanillaTypes.ITEM_STACK);
+					renderer.renderBatch(graphics, List.of(
 						new BatchRenderElement<>(blocks, 16, 16),
 						new BatchRenderElement<>(sword, 40, 16)
-					));
+					), IIngredientRenderContext.INGREDIENT);
 
 					// Inspect the actual render output, including the decorations missing from the old batch path.
 					List<String> labels = new ArrayList<>();

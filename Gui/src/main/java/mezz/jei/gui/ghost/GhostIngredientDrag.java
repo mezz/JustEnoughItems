@@ -1,5 +1,6 @@
 package mezz.jei.gui.ghost;
 
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
 import mezz.jei.api.ingredients.IIngredientRenderer;
@@ -83,7 +84,7 @@ public class GhostIngredientDrag<T> {
 			return;
 		}
 
-		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, ingredient, mouseX - 8, mouseY - 8);
+		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, ingredient, mouseX - 8, mouseY - 8, IIngredientRenderContext.INGREDIENT);
 	}
 
 	public static void drawTargets(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, List<Rect2i> targetAreas) {

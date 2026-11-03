@@ -10,6 +10,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.rendering.IIngredientDecorator;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IIngredientAliasRegistration;
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -68,13 +70,25 @@ public interface IIngredientManager {
 
 	/**
 	 * Returns the ingredient renderer for this ingredient.
+	 * Its context-aware render methods invoke registered decorators when the context enables decorations.
 	 */
 	<V> IIngredientRenderer<V> getIngredientRenderer(V ingredient);
 
 	/**
-	 * Returns the ingredient renderer for this ingredient class.
+	 * Returns the ingredient renderer for this ingredient type.
+	 * Its context-aware render methods invoke registered decorators when the context enables decorations.
 	 */
 	<V> IIngredientRenderer<V> getIngredientRenderer(IIngredientType<V> ingredientType);
+
+	/**
+	 * Gets the decorators registered for an ingredient type, in registration order.
+	 *
+	 * @return an unmodifiable list, or an empty list if no decorators are registered
+	 *
+	 * @since 29.54.0
+	 */
+	@Unmodifiable
+	<T> List<IIngredientDecorator<T>> getIngredientDecorators(IIngredientType<T> ingredientType);
 
 	/**
 	 * Returns an appropriate ingredient serializer codec for this ingredient type.

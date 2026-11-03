@@ -1,5 +1,6 @@
 package mezz.jei.library.gui.ingredients;
 
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import com.mojang.datafixers.util.Either;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
@@ -405,7 +406,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		final int y = this.rect.getY();
 
 		if (background != null) {
-			background.draw(guiGraphics, x, y);
+			background.draw(guiGraphics, x, y, IIngredientRenderContext.ICON);
 		}
 
 		if (hovered) {
@@ -419,7 +420,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 			.ifPresent(ingredient -> drawIngredient(guiGraphics, ingredient, x, y));
 
 		if (overlay != null) {
-			overlay.draw(guiGraphics, x, y);
+			overlay.draw(guiGraphics, x, y, IIngredientRenderContext.ICON);
 		}
 
 		displayedIngredient.ifPresent(ignored -> drawCandidatesBadge(guiGraphics));
@@ -470,7 +471,7 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		IIngredientType<T> ingredientType = typedIngredient.getType();
 		IIngredientRenderer<T> ingredientRenderer = getIngredientRenderer(ingredientType);
 
-		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, typedIngredient, xPos, yPos);
+		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, typedIngredient, xPos, yPos, IIngredientRenderContext.INGREDIENT);
 	}
 
 	@SuppressWarnings("removal")

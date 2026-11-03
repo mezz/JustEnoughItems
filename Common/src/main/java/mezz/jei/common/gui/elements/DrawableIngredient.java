@@ -1,5 +1,6 @@
 package mezz.jei.common.gui.elements;
 
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -27,6 +28,11 @@ public class DrawableIngredient<V> implements IDrawable {
 
 	@Override
 	public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset) {
-		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, typedIngredient, xOffset, yOffset);
+		draw(guiGraphics, xOffset, yOffset, IIngredientRenderContext.INGREDIENT);
+	}
+
+	@Override
+	public void draw(GuiGraphicsExtractor guiGraphics, int xOffset, int yOffset, IIngredientRenderContext context) {
+		SafeIngredientUtil.render(guiGraphics, ingredientRenderer, typedIngredient, xOffset, yOffset, context);
 	}
 }

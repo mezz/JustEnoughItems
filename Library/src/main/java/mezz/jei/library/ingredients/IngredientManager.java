@@ -7,9 +7,11 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.rendering.IIngredientDecorator;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IClickableIngredient;
+import mezz.jei.common.collect.ListMultiMap;
 import mezz.jei.common.input.ClickableIngredient;
 import mezz.jei.common.input.ClickableIngredientFactory;
 import mezz.jei.common.ingredients.TypedIngredientUtil;
@@ -40,6 +42,7 @@ public class IngredientManager implements IIngredientManagerInternal {
 
 	private final RegisteredIngredients registeredIngredients;
 	private final SlotDisplayInterpreterRegistry slotDisplayInterpreterRegistry;
+	private final ListMultiMap<IIngredientType<?>, IIngredientDecorator<?>> ingredientDecorators = new ListMultiMap<>();
 	private final List<IIngredientListener> listeners = new ArrayList<>();
 
 	public IngredientManager(
@@ -132,6 +135,19 @@ public class IngredientManager implements IIngredientManagerInternal {
 		return this.registeredIngredients
 			.getIngredientInfo(ingredientType)
 			.getIngredientRenderer();
+	}
+
+	@Override
+	@Unmodifiable
+	public <T> List<IIngredientDecorator<T>> getIngredientDecorators(IIngredientType<T> ingredientType) {
+		@SuppressWarnings("unchecked")
+		List<IIngredientDecorator<T>> decorators = (List<IIngredientDecorator<T>>) (Object) ingredientDecorators.get(ingredientType);
+		return decorators;
+	}
+
+	@Override
+	public <T> void addIngredientDecorator(IIngredientType<T> ingredientType, IIngredientDecorator<T> decorator) {
+		ingredientDecorators.put(ingredientType, decorator);
 	}
 
 	@Override
