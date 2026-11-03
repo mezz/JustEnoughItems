@@ -1,5 +1,6 @@
 package mezz.jei.library.plugins.vanilla.cooking.fuel;
 
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
@@ -112,7 +113,12 @@ public abstract class AbstractFuelCategory extends AbstractRecipeCategory<IJeiFu
 
 		@Override
 		public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset) {
-			icon.draw(guiGraphics, xOffset, yOffset);
+			draw(guiGraphics, xOffset, yOffset, IIngredientRenderContext.INGREDIENT);
+		}
+
+		@Override
+		public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, IIngredientRenderContext context) {
+			icon.draw(guiGraphics, xOffset, yOffset, context);
 
 			var poseStack = guiGraphics.pose();
 			poseStack.pushMatrix();

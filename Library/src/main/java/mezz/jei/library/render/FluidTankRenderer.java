@@ -101,11 +101,13 @@ public class FluidTankRenderer<T> implements IIngredientRenderer<T> {
 	}
 
 	@Override
+	@Deprecated(since = "27.55.0", forRemoval = true)
 	public void render(GuiGraphics guiGraphics, T fluidStack) {
 		render(guiGraphics, fluidStack, 0, 0);
 	}
 
 	@Override
+	@Deprecated(since = "27.55.0", forRemoval = true)
 	public void render(GuiGraphics guiGraphics, T ingredient, int posX, int posY) {
 		Fluid fluid = type.getBase(ingredient);
 		if (fluid.isSame(Fluids.EMPTY)) {

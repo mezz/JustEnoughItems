@@ -1,5 +1,6 @@
 package mezz.jei.common.gui;
 
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.common.util.SafeIngredientUtil;
@@ -36,7 +37,8 @@ public class IngredientTooltipComponent<T> implements ClientTooltipComponent, To
 			ingredientRenderer,
 			typedIngredient,
 			x + INGREDIENT_PADDING,
-			y + INGREDIENT_PADDING
+			y + INGREDIENT_PADDING,
+			IIngredientRenderContext.INGREDIENT
 		);
 	}
 }

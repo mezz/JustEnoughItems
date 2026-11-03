@@ -4,6 +4,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.placement.HorizontalAlignment;
 import mezz.jei.api.gui.placement.IPlaceable;
 import mezz.jei.api.gui.placement.VerticalAlignment;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.common.util.PlaceableUtil;
 import net.minecraft.client.gui.GuiGraphics;
@@ -51,6 +52,11 @@ public class OffsetDrawable implements IDrawable, IPlaceable<OffsetDrawable> {
 	@Override
 	public void draw(GuiGraphics guiGraphics) {
 		this.drawable.draw(guiGraphics, this.xOffset, this.yOffset);
+	}
+
+	@Override
+	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, IIngredientRenderContext context) {
+		this.drawable.draw(guiGraphics, this.xOffset + xOffset, this.yOffset + yOffset, context);
 	}
 
 	@Override
