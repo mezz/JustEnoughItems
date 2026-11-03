@@ -17,6 +17,7 @@ import mezz.jei.api.gui.widgets.IScrollBoxWidget;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
@@ -215,9 +216,9 @@ public interface IGuiHelper {
 	 * This is useful for slotless icons and other renderer-owned visuals that do not have a registered
 	 * or displayed ingredient.
 	 *
-	 * The drawable calls the renderer's positional
-	 * {@link IIngredientRenderer#render(net.minecraft.client.gui.GuiGraphics, Object, int, int)}
-	 * overload with the requested draw offsets.
+	 * Use {@link IDrawable#draw(net.minecraft.client.gui.GuiGraphics, int, int, IIngredientRenderContext)}
+	 * to control whether ingredient decorations are drawn. Drawing without an explicit context uses
+	 * {@link IIngredientRenderContext#INGREDIENT}.
 	 *
 	 * @since 15.56.0
 	 */

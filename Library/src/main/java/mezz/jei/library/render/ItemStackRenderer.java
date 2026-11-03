@@ -1,6 +1,7 @@
 package mezz.jei.library.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
@@ -22,26 +23,35 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 	private final ItemStackBatchRendererCache batchRenderer = new ItemStackBatchRendererCache();
 
 	@Override
+	@Deprecated(since = "15.75.0", forRemoval = true)
 	public void render(GuiGraphics guiGraphics, @Nullable ItemStack ingredient) {
-		render(guiGraphics, ingredient, 0, 0);
+		render(guiGraphics, ingredient, 0, 0, IIngredientRenderContext.INGREDIENT);
 	}
 
 	@Override
+	@Deprecated(since = "15.75.0", forRemoval = true)
 	public void render(GuiGraphics guiGraphics, @Nullable ItemStack ingredient, int posX, int posY) {
+		render(guiGraphics, ingredient, posX, posY, IIngredientRenderContext.INGREDIENT);
+	}
+
+	@Override
+	public void render(GuiGraphics guiGraphics, @Nullable ItemStack ingredient, int posX, int posY, IIngredientRenderContext context) {
 		if (ingredient != null) {
 			RenderSystem.enableDepthTest();
-
-			Minecraft minecraft = Minecraft.getInstance();
-			Font font = getFontRenderer(minecraft, ingredient);
 			guiGraphics.renderFakeItem(ingredient, posX, posY);
-			guiGraphics.renderItemDecorations(font, ingredient, posX, posY);
 			RenderSystem.disableBlend();
 		}
 	}
 
 	@Override
-	public void renderBatch(GuiGraphics guiGraphics, List<BatchRenderElement<ItemStack>> batchRenderElements) {
-		batchRenderer.renderBatch(guiGraphics, this, batchRenderElements);
+	@Deprecated(since = "15.75.0", forRemoval = true)
+	public void renderBatch(GuiGraphics guiGraphics, List<BatchRenderElement<ItemStack>> elements) {
+		renderBatch(guiGraphics, elements, IIngredientRenderContext.INGREDIENT);
+	}
+
+	@Override
+	public void renderBatch(GuiGraphics guiGraphics, List<BatchRenderElement<ItemStack>> elements, IIngredientRenderContext context) {
+		batchRenderer.renderBatch(guiGraphics, elements);
 	}
 
 	@Override
@@ -70,13 +80,4 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 		return renderHelper.getFontRenderer(minecraft, ingredient);
 	}
 
-	@Override
-	public int getWidth() {
-		return 16;
-	}
-
-	@Override
-	public int getHeight() {
-		return 16;
-	}
 }

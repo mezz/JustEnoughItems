@@ -37,6 +37,7 @@ public class ErrorIngredientRenderer implements IIngredientRenderer<ErrorIngredi
 	}
 
 	@Override
+	@Deprecated(since = "15.75.0", forRemoval = true)
 	public void render(GuiGraphics guiGraphics, ErrorIngredient ingredient) {
 		Minecraft minecraft = Minecraft.getInstance();
 		switch (ingredient.crashType()) {

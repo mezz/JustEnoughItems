@@ -1,6 +1,7 @@
 package mezz.jei.common.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -13,6 +14,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.util.MathUtil;
+import mezz.jei.common.util.SafeIngredientUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -130,6 +132,7 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 
 	private record RenderElement<T>(
 		IIngredientRenderer<T> renderer,
+		IIngredientType<T> type,
 		T ingredient
 	) {
 		public static <T> RenderElement<T> create(SummaryElement<T> summaryElement, IIngredientManager ingredientManager) {
@@ -138,11 +141,11 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 			IIngredientHelper<T> helper = ingredientManager.getIngredientHelper(type);
 			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(type);
 			T ingredient = helper.copyWithAmount(typedIngredient.getIngredient(), summaryElement.getAmount());
-			return new RenderElement<>(renderer, ingredient);
+			return new RenderElement<>(renderer, type, ingredient);
 		}
 
 		public void render(GuiGraphics guiGraphics) {
-			renderer.render(guiGraphics, ingredient);
+			SafeIngredientUtil.render(guiGraphics, renderer, type, ingredient, 0, 0, IIngredientRenderContext.INGREDIENT);
 		}
 	}
 }

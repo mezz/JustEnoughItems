@@ -2,6 +2,7 @@ package mezz.jei.gui.elements;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.Internal;
@@ -81,7 +82,7 @@ class InternalIconButton extends Button implements IButtonState {
 		poseStack.pushPose();
 		{
 			poseStack.translate(xOffset, yOffset, 0);
-			icon.draw(guiGraphics);
+			icon.draw(guiGraphics, 0, 0, IIngredientRenderContext.ICON);
 		}
 		poseStack.popPose();
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
