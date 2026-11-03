@@ -1,5 +1,6 @@
 package mezz.jei.common.gui.elements;
 
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.widgets.IDrawableWidget;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,6 +30,6 @@ public class DrawableRecipeWidget extends AbstractRecipeWidgetBuilder<IDrawableW
 
 	@Override
 	public void drawWidget(GuiGraphics guiGraphics, double mouseX, double mouseY) {
-		drawable.draw(guiGraphics);
+		drawable.draw(guiGraphics, 0, 0, IIngredientRenderContext.ICON);
 	}
 }

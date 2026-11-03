@@ -282,6 +282,12 @@ public class JeiDebugPlugin implements IModPlugin {
 		IJeiHelpers jeiHelpers = registration.getJeiHelpers();
 		IIngredientManager ingredientManager = jeiHelpers.getIngredientManager();
 
+		registration.addIngredientDecorator(VanillaTypes.ITEM_STACK, (guiGraphics, stack, x, y, context) -> {
+			if (stack.is(Items.STICK)) {
+				guiGraphics.fill(x, y, x + 3, y + 3, 0xFFFF00FF);
+			}
+		});
+
 		registration.addGuiContainerHandler(BrewingStandScreen.class, new IGuiContainerHandler<>() {
 			@Override
 			public List<Rect2i> getGuiExtraAreas(BrewingStandScreen containerScreen) {

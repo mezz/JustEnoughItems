@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.List;
 
 import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.api.ingredients.rendering.IIngredientDecorator;
 import mezz.jei.api.recipe.RecipeType;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -50,6 +52,18 @@ public interface IGuiHandlerRegistration {
 	 * Used for guis that display next to GUIs and would normally intersect with JEI.
 	 */
 	void addGlobalGuiHandler(IGlobalGuiHandler globalGuiHandler);
+
+	/**
+	 * Adds decorations to an ingredient type rendered by JEI.
+	 * Multiple decorators can be registered for a type and are drawn in registration order after the ingredients.
+	 * JEI invokes decorators only when the rendering context enables decorations.
+	 *
+	 * @param ingredientType the type of ingredients to decorate
+	 * @param decorator draws additional decorations for each visible ingredient of this type
+	 *
+	 * @since 19.71.0
+	 */
+	<T> void addIngredientDecorator(IIngredientType<T> ingredientType, IIngredientDecorator<T> decorator);
 
 	/**
 	 * Add a clickable area on a gui to jump to specific categories of recipes in JEI.

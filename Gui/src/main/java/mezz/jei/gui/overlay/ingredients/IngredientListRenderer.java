@@ -6,6 +6,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
@@ -128,7 +129,7 @@ public class IngredientListRenderer {
 		IIngredientRenderer<T> ingredientRenderer = ingredientManager.getIngredientRenderer(type);
 		@SuppressWarnings("unchecked")
 		List<BatchRenderElement<T>> elements = (List<BatchRenderElement<T>>) (Object) entry.getValue();
-		SafeIngredientUtil.renderBatch(guiGraphics, type, ingredientRenderer, elements);
+		SafeIngredientUtil.renderBatch(guiGraphics, type, ingredientRenderer, elements, IIngredientRenderContext.INGREDIENT);
 	}
 
 	private void renderEditMode(GuiGraphics guiGraphics) {

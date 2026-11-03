@@ -1,6 +1,7 @@
 package mezz.jei.library.gui.recipes;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
@@ -239,7 +240,7 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 				// defensive push/pop to protect against recipe category drawables changing the last pose
 				poseStack.pushPose();
 				{
-					drawable.draw(guiGraphics);
+					drawable.draw(guiGraphics, 0, 0, IIngredientRenderContext.ICON);
 
 					// rendered text often messes with the color, this clears it
 					RenderSystem.setShaderColor(1, 1, 1, 1);

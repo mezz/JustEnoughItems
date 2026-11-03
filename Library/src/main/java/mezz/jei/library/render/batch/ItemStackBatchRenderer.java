@@ -6,12 +6,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.library.render.ItemStackRenderer;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -57,7 +55,7 @@ public final class ItemStackBatchRenderer {
 		}
 	}
 
-	public void render(GuiGraphics guiGraphics, Minecraft minecraft, ItemRenderer itemRenderer, ItemStackRenderer itemStackRenderer) {
+	public void render(GuiGraphics guiGraphics, ItemRenderer itemRenderer) {
 		if (!noBlockLight.isEmpty()) {
 			Lighting.setupForFlatItems();
 			for (ElementWithModel element : noBlockLight) {
@@ -75,21 +73,9 @@ public final class ItemStackBatchRenderer {
 			guiGraphics.flush();
 		}
 
-		IPlatformRenderHelper renderHelper = Services.PLATFORM.getRenderHelper();
-		for (ElementWithModel element : useBlockLight) {
-			ItemStack ingredient = element.stack();
-			Font font = renderHelper.getFontRenderer(minecraft, ingredient);
-			guiGraphics.renderItemDecorations(font, ingredient, element.x(), element.y());
-		}
-		for (ElementWithModel element : noBlockLight) {
-			ItemStack ingredient = element.stack();
-			Font font = renderHelper.getFontRenderer(minecraft, ingredient);
-			guiGraphics.renderItemDecorations(font, ingredient, element.x(), element.y());
-		}
-		RenderSystem.disableBlend();
 		for (BatchRenderElement<ItemStack> element : customRender) {
-			ItemStack ingredient = element.ingredient();
-			itemStackRenderer.render(guiGraphics, ingredient, element.x(), element.y());
+			RenderSystem.enableDepthTest();
+			guiGraphics.renderFakeItem(element.ingredient(), element.x(), element.y());
 			RenderSystem.disableBlend();
 		}
 		RenderSystem.disableBlend();

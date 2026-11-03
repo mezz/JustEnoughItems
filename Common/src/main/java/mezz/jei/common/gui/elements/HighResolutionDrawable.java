@@ -1,6 +1,7 @@
 package mezz.jei.common.gui.elements;
 
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import net.minecraft.client.gui.GuiGraphics;
 
 /**
@@ -48,5 +49,18 @@ public class HighResolutionDrawable implements IDrawable {
 			this.drawable.draw(guiGraphics);
 		}
 		poseStack.popPose();
+	}
+
+	@Override
+	public void draw(GuiGraphics guiGraphics, int xOffset, int yOffset, IIngredientRenderContext context) {
+		var poseStack = guiGraphics.pose();
+		poseStack.pushPose();
+		try {
+			poseStack.translate(xOffset, yOffset, 0);
+			poseStack.scale(1 / (float) scale, 1 / (float) scale, 1);
+			this.drawable.draw(guiGraphics, 0, 0, context);
+		} finally {
+			poseStack.popPose();
+		}
 	}
 }

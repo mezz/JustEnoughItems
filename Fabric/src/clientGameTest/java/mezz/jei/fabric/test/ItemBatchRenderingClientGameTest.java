@@ -1,8 +1,11 @@
 package mezz.jei.fabric.test;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
-import mezz.jei.library.render.ItemStackRenderer;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
+import mezz.jei.common.Internal;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -25,6 +28,7 @@ final class ItemBatchRenderingClientGameTest {
 
 	private static void run() {
 		FabricClientTestContext context = new FabricClientTestContext();
+		context.waitFor(client -> Internal.getOptionalJeiRuntime().isPresent());
 		try {
 			context.setScreen(DecorationScreen::new);
 			context.takeScreenshot("jei-item-batch-decorations");
@@ -44,20 +48,28 @@ final class ItemBatchRenderingClientGameTest {
 
 	private static void assertMatchingPixels(NativeImage image, int scale, int top, int width, int height, IntPredicate matches, String decoration) {
 		int matchingPixels = 0;
+		int decorationOnlyPixels = 0;
 		for (int y = top * scale; y < (top + height) * scale; y++) {
 			for (int x = 0; x < width * scale; x++) {
 				boolean reference = matches.test(image.getPixelRGBA(16 * scale + x, y));
 				boolean batch = matches.test(image.getPixelRGBA(80 * scale + x, y));
+				boolean icon = matches.test(image.getPixelRGBA(144 * scale + x, y));
 				if (reference != batch) {
 					throw new AssertionError("Batched " + decoration + " differs from single-item rendering at " + x + ", " + y);
 				}
 				if (reference) {
 					matchingPixels++;
+					if (!icon) {
+						decorationOnlyPixels++;
+					}
 				}
 			}
 		}
 		if (matchingPixels < 5) {
 			throw new AssertionError("The reference renderer did not draw the expected " + decoration);
+		}
+		if (decorationOnlyPixels < 5) {
+			throw new AssertionError("Icon rendering did not hide the expected " + decoration);
 		}
 	}
 
@@ -71,7 +83,7 @@ final class ItemBatchRenderingClientGameTest {
 	}
 
 	private static final class DecorationScreen extends Screen {
-		private final ItemStackRenderer renderer = new ItemStackRenderer();
+		private final IIngredientRenderer<ItemStack> renderer = Internal.getJeiRuntime().getIngredientManager().getIngredientRenderer(VanillaTypes.ITEM_STACK);
 		private final ItemStack blocks = new ItemStack(Items.OAK_PLANKS, 64);
 		private final ItemStack sword = new ItemStack(Items.DIAMOND_SWORD);
 		private final ItemStack chest = new ItemStack(Items.CHEST, 16);
@@ -84,14 +96,19 @@ final class ItemBatchRenderingClientGameTest {
 		@Override
 		public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 			graphics.fill(0, 0, width, height, 0xff202020);
-			renderer.render(graphics, blocks, 16, 16);
-			renderer.render(graphics, sword, 16, 48);
-			renderer.render(graphics, chest, 16, 80);
+			renderer.render(graphics, blocks, 16, 16, IIngredientRenderContext.INGREDIENT);
+			renderer.render(graphics, sword, 16, 48, IIngredientRenderContext.INGREDIENT);
+			renderer.render(graphics, chest, 16, 80, IIngredientRenderContext.INGREDIENT);
 			renderer.renderBatch(graphics, List.of(
 				new BatchRenderElement<>(blocks, 80, 16),
 				new BatchRenderElement<>(sword, 80, 48),
 				new BatchRenderElement<>(chest, 80, 80)
-			));
+			), IIngredientRenderContext.INGREDIENT);
+			renderer.renderBatch(graphics, List.of(
+				new BatchRenderElement<>(blocks, 144, 16),
+				new BatchRenderElement<>(sword, 144, 48),
+				new BatchRenderElement<>(chest, 144, 80)
+			), IIngredientRenderContext.ICON);
 			graphics.flush();
 		}
 	}
