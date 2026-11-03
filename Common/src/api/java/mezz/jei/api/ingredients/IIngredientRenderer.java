@@ -2,7 +2,9 @@ package mezz.jei.api.ingredients;
 
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.api.runtime.IIngredientManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -29,7 +31,11 @@ public interface IIngredientRenderer<T> {
 	 * @param ingredient the ingredient to render.
 	 *
 	 * @since 9.3.0
+	 * @deprecated use {@link #render(GuiGraphicsExtractor, Object, int, int, IIngredientRenderContext)}
+	 * with both offsets set to {@code 0}.
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "31.18.0", forRemoval = true)
 	void render(GuiGraphicsExtractor guiGraphics, T ingredient);
 
 	/**
@@ -41,7 +47,9 @@ public interface IIngredientRenderer<T> {
 	 * @param posY       the y offset for rendering this ingredient
 	 *
 	 * @since 19.5.5
+	 * @deprecated use {@link #render(GuiGraphicsExtractor, Object, int, int, IIngredientRenderContext)}
 	 */
+	@Deprecated(since = "31.18.0", forRemoval = true)
 	default void render(GuiGraphicsExtractor guiGraphics, T ingredient, int posX, int posY) {
 		var poseStack = guiGraphics.pose();
 		poseStack.pushMatrix();
@@ -54,14 +62,48 @@ public interface IIngredientRenderer<T> {
 	}
 
 	/**
+	 * Renders an ingredient at a specific location in the given context.
+	 * Draw decoration overlays only when {@link IIngredientRenderContext#renderDecorations()} is enabled.
+	 * Renderers obtained from {@link IIngredientManager} also invoke registered decorators when decorations are enabled.
+	 *
+	 * @param guiGraphics the graphics for rendering the ingredient
+	 * @param ingredient the ingredient to render
+	 * @param posX the ingredient's left edge, relative to the current graphics pose
+	 * @param posY the ingredient's top edge, relative to the current graphics pose
+	 * @param context controls whether ingredient decorations are rendered
+	 *
+	 * @since 31.18.0
+	 */
+	default void render(GuiGraphicsExtractor guiGraphics, T ingredient, int posX, int posY, IIngredientRenderContext context) {
+		render(guiGraphics, ingredient, posX, posY);
+	}
+
+	/**
 	 * Render a batch of ingredients.
 	 * Implementing this is not necessary, but can be used to optimize rendering many ingredients at once.
 	 *
 	 * @since 19.14.0
+	 * @deprecated use {@link #renderBatch(GuiGraphicsExtractor, List, IIngredientRenderContext)}
 	 */
+	@Deprecated(since = "31.18.0", forRemoval = true)
 	default void renderBatch(GuiGraphicsExtractor guiGraphics, List<BatchRenderElement<T>> elements) {
-		for (BatchRenderElement<T> element : elements) {
-			render(guiGraphics, element.ingredient(), element.x(), element.y());
+		renderBatch(guiGraphics, elements, IIngredientRenderContext.INGREDIENT);
+	}
+
+	/**
+	 * Renders a batch of ingredients in the given context.
+	 * Draw decoration overlays only when {@link IIngredientRenderContext#renderDecorations()} is enabled.
+	 * Renderers obtained from {@link IIngredientManager} also invoke registered decorators when decorations are enabled.
+	 *
+	 * @param guiGraphics the graphics for rendering the ingredients
+	 * @param elements the ingredients and their positions
+	 * @param context controls whether ingredient decorations are rendered
+	 *
+	 * @since 31.18.0
+	 */
+	default void renderBatch(GuiGraphicsExtractor guiGraphics, List<BatchRenderElement<T>> elements, IIngredientRenderContext context) {
+		for (var element : elements) {
+			render(guiGraphics, element.ingredient(), element.x(), element.y(), context);
 		}
 	}
 

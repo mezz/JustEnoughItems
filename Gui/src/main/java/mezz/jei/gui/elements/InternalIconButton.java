@@ -1,5 +1,6 @@
 package mezz.jei.gui.elements;
 
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.common.gui.elements.DrawableBlank;
@@ -60,7 +61,7 @@ class InternalIconButton extends Button implements IButtonState {
 		poseStack.pushMatrix();
 		{
 			poseStack.translate(xOffset, yOffset);
-			icon.draw(guiGraphics);
+			icon.draw(guiGraphics, 0, 0, IIngredientRenderContext.ICON);
 		}
 		poseStack.popMatrix();
 	}

@@ -5,6 +5,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.rendering.BatchRenderElement;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.Internal;
 import mezz.jei.common.gui.JeiGuiColors;
@@ -144,24 +145,24 @@ public final class SafeIngredientUtil {
 		GuiGraphicsExtractor guiGraphics,
 		IIngredientType<T> ingredientType,
 		IIngredientRenderer<T> ingredientRenderer,
-		List<BatchRenderElement<T>> elements
+		List<BatchRenderElement<T>> elements,
+		IIngredientRenderContext context
 	) {
 		if (CRASHING_INGREDIENT_BATCH_RENDERERS.contains(ingredientRenderer)) {
 			for (BatchRenderElement<T> element : elements) {
-				render(guiGraphics, ingredientRenderer, ingredientType, element);
+				render(guiGraphics, ingredientRenderer, ingredientType, element.ingredient(), element.x(), element.y(), context);
 			}
-			return;
-		}
-
-		try {
-			ingredientRenderer.renderBatch(guiGraphics, elements);
-		} catch (RuntimeException | LinkageError e) {
-			CRASHING_INGREDIENT_BATCH_RENDERERS.add(ingredientRenderer);
-			LOGGER.error(
-				"Caught an error while rendering a batch of Ingredients with ingredient renderer: {}",
-				ingredientRenderer.getClass(),
-				e
-			);
+		} else {
+			try {
+				ingredientRenderer.renderBatch(guiGraphics, elements, context);
+			} catch (RuntimeException | LinkageError e) {
+				CRASHING_INGREDIENT_BATCH_RENDERERS.add(ingredientRenderer);
+				LOGGER.error(
+					"Caught an error while rendering a batch of Ingredients with ingredient renderer: {}",
+					ingredientRenderer.getClass(),
+					e
+				);
+			}
 		}
 	}
 
@@ -170,18 +171,10 @@ public final class SafeIngredientUtil {
 		IIngredientRenderer<T> ingredientRenderer,
 		ITypedIngredient<T> typedIngredient,
 		int x,
-		int y
+		int y,
+		IIngredientRenderContext context
 	) {
-		render(guiGraphics, ingredientRenderer, typedIngredient.getType(), typedIngredient.getIngredient(), x, y);
-	}
-
-	public static <T> void render(
-		GuiGraphicsExtractor guiGraphics,
-		IIngredientRenderer<T> ingredientRenderer,
-		IIngredientType<T> ingredientType,
-		BatchRenderElement<T> element
-	) {
-		render(guiGraphics, ingredientRenderer, ingredientType, element.ingredient(), element.x(), element.y());
+		render(guiGraphics, ingredientRenderer, typedIngredient.getType(), typedIngredient.getIngredient(), x, y, context);
 	}
 
 	public static <T> void render(
@@ -190,7 +183,8 @@ public final class SafeIngredientUtil {
 		IIngredientType<T> ingredientType,
 		T ingredient,
 		int x,
-		int y
+		int y,
+		IIngredientRenderContext context
 	) {
 		if (CRASHING_INGREDIENT_RENDERERS.contains(ingredient)) {
 			renderError(guiGraphics);
@@ -198,7 +192,7 @@ public final class SafeIngredientUtil {
 		}
 
 		try {
-			ingredientRenderer.render(guiGraphics, ingredient, x, y);
+			ingredientRenderer.render(guiGraphics, ingredient, x, y, context);
 		} catch (RuntimeException | LinkageError e) {
 			CRASHING_INGREDIENT_RENDERERS.add(ingredient);
 

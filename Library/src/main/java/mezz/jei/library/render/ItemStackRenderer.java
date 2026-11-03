@@ -1,12 +1,10 @@
 package mezz.jei.library.render;
 
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.ingredients.IIngredientRenderer;
-import mezz.jei.api.ingredients.rendering.BatchRenderElement;
 import mezz.jei.common.platform.IPlatformRenderHelper;
 import mezz.jei.common.platform.Services;
-import mezz.jei.library.render.batch.IItemStackBatchRenderer;
-import mezz.jei.library.render.batch.SimpleItemStackBatchRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -20,26 +18,23 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 
 public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
-	private final IItemStackBatchRenderer batchRenderer = new SimpleItemStackBatchRenderer();
-
 	@Override
+	@Deprecated(since = "31.18.0", forRemoval = true)
 	public void render(GuiGraphicsExtractor guiGraphics, @Nullable ItemStack ingredient) {
-		render(guiGraphics, ingredient, 0, 0);
+		render(guiGraphics, ingredient, 0, 0, IIngredientRenderContext.INGREDIENT);
 	}
 
 	@Override
+	@Deprecated(since = "31.18.0", forRemoval = true)
 	public void render(GuiGraphicsExtractor guiGraphics, @Nullable ItemStack ingredient, int posX, int posY) {
-		if (ingredient != null) {
-			Minecraft minecraft = Minecraft.getInstance();
-			Font font = getFontRenderer(minecraft, ingredient);
-			guiGraphics.fakeItem(ingredient, posX, posY);
-			guiGraphics.itemDecorations(font, ingredient, posX, posY);
-		}
+		render(guiGraphics, ingredient, posX, posY, IIngredientRenderContext.INGREDIENT);
 	}
 
 	@Override
-	public void renderBatch(GuiGraphicsExtractor guiGraphics, List<BatchRenderElement<ItemStack>> batchRenderElements) {
-		batchRenderer.renderBatch(guiGraphics, this, batchRenderElements);
+	public void render(GuiGraphicsExtractor guiGraphics, @Nullable ItemStack ingredient, int posX, int posY, IIngredientRenderContext context) {
+		if (ingredient != null) {
+			guiGraphics.fakeItem(ingredient, posX, posY);
+		}
 	}
 
 	@Override
@@ -71,13 +66,4 @@ public class ItemStackRenderer implements IIngredientRenderer<ItemStack> {
 		return renderHelper.getFontRenderer(minecraft, ingredient);
 	}
 
-	@Override
-	public int getWidth() {
-		return 16;
-	}
-
-	@Override
-	public int getHeight() {
-		return 16;
-	}
 }

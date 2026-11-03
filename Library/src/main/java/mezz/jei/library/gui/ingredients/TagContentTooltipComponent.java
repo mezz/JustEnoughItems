@@ -1,5 +1,6 @@
 package mezz.jei.library.gui.ingredients;
 
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -39,6 +40,6 @@ public class TagContentTooltipComponent extends IngredientGridTooltipComponent<I
 	) {
 		IIngredientType<T> ingredientType = ingredient.getType();
 		IIngredientRenderer<T> renderer = this.ingredientManager.getIngredientRenderer(ingredientType);
-		SafeIngredientUtil.render(guiGraphics, renderer, ingredient, x, y);
+		SafeIngredientUtil.render(guiGraphics, renderer, ingredient, x, y, IIngredientRenderContext.INGREDIENT);
 	}
 }

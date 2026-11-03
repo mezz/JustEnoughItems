@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay.elements;
 
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
@@ -399,7 +400,7 @@ public class RecipeBookmarkElement<R, I> implements IElement<I> {
 			{
 				poseStack.translate(8 + xOffset, 8 + yOffset);
 				poseStack.scale(0.5f, 0.5f);
-				icon.draw(guiGraphics);
+				icon.draw(guiGraphics, 0, 0, IIngredientRenderContext.ICON);
 			}
 			poseStack.popMatrix();
 		}

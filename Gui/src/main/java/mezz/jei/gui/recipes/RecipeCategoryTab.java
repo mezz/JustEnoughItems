@@ -1,5 +1,6 @@
 package mezz.jei.gui.recipes;
 
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IModIdHelper;
@@ -66,7 +67,7 @@ public class RecipeCategoryTab extends RecipeGuiTab {
 		IDrawable icon = RecipeCategoryIconUtil.create(category, recipeManager, guiHelper);
 		int iconX = area.x() + (TAB_WIDTH - icon.getWidth()) / 2;
 		int iconY = area.y() + (TAB_HEIGHT - icon.getHeight()) / 2;
-		icon.draw(guiGraphics, iconX, iconY);
+		icon.draw(guiGraphics, iconX, iconY, IIngredientRenderContext.ICON);
 	}
 
 	@Override
