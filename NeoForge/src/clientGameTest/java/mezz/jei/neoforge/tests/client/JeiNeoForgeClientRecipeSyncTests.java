@@ -3,6 +3,7 @@ package mezz.jei.neoforge.tests.client;
 import mezz.jei.common.Internal;
 import mezz.jei.common.network.ClientConnectionHelper;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
+import mezz.jei.test.client.FakeMenuClientTest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.resources.ResourceLocation;
@@ -286,6 +287,9 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 				runSingleplayerTestCase(displayName(), () -> {
 					assertSyncedRecipesFromSingleplayer();
 					JeiNeoForgeClientTextInputTests.run();
+					FakeMenuClientTest.run(ClientTestUtil::runOnClient, condition -> ClientTestUtil.waitUntil(
+						() -> ClientTestUtil.computeOnClient(condition::test), ASSERTION_TIMEOUT, () -> "Timed out waiting for fake-menu player replacement"
+					));
 				});
 			}
 		},
@@ -380,9 +384,10 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 					.createFreshLevel(levelId, levelSettings, WorldOptions.defaultWithRandomSeed(), WorldPresets::createNormalWorldDimensions, new TitleScreen());
 			}, WORLD_LOAD_TIMEOUT);
 			ClientTestUtil.waitUntil(
-				() -> ClientTestUtil.computeOnClient(client -> client.level != null && client.hasSingleplayerServer()),
+				() -> ClientTestUtil.computeOnClient(client -> client.level != null && client.player != null &&
+					client.hasSingleplayerServer() && client.levelRenderer.isSectionCompiled(client.player.blockPosition())),
 				ASSERTION_TIMEOUT,
-				() -> "Timed out creating integrated server world: " + levelId
+				() -> "Timed out loading integrated server world: " + levelId
 			);
 			return new SingleplayerWorld(levelId);
 		}

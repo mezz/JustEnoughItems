@@ -2,6 +2,7 @@ package mezz.jei.forge.startup;
 
 import mezz.jei.common.Internal;
 import mezz.jei.forge.events.PermanentEventSubscriptions;
+import mezz.jei.library.plugins.vanilla.VanillaPlugin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -52,6 +53,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 	public void register(PermanentEventSubscriptions subscriptions) {
 		subscriptions.register(EventPriority.LOWEST, ClientPlayerNetworkEvent.LoggingIn.class, this::onLoggingIn);
 		subscriptions.register(EventPriority.LOWEST, RecipesUpdatedEvent.class, this::onRecipesUpdatedEvent);
+		subscriptions.register(ClientPlayerNetworkEvent.Clone.class, event -> VanillaPlugin.clearPlayerDependentCaches());
 
 		subscriptions.register(ClientPlayerNetworkEvent.LoggingOut.class, event -> {
 			if (event.getPlayer() != null) {
