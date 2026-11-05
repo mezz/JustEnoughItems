@@ -10,6 +10,7 @@
     "AmecsKeyModifiersEarlyInitMixin",
     "AbstractContainerScreenMixin",
     "ClientPacketListenerRecipeUpdateMixin",
+    "ClientPacketListenerRespawnMixin",
     "EffectsInInventoryMixin",
     "GuiGraphicsMixin",
     "KeyboardHandlerMixin",
