@@ -2,6 +2,7 @@ package mezz.jei.forge.test;
 
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.common.Internal;
+import mezz.jei.test.client.FakeMenuClientTest;
 import mezz.jei.test.lib.ExternalServerProcess;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.minecraft.client.Minecraft;
@@ -169,6 +170,9 @@ public final class JeiForgeClientTests {
 					access -> access.registryOrThrow(Registries.WORLD_PRESET).getOrThrow(WorldPresets.FLAT).createWorldDimensions());
 			});
 			assertRegistration(1, true);
+			FakeMenuClientTest.run(ForgeClientTestUtil::run, condition -> ForgeClientTestUtil.waitUntil(
+				() -> ForgeClientTestUtil.compute(condition::test), "Timed out waiting for fake-menu player replacement"
+			));
 		} finally {
 			disconnect();
 			ForgeClientTestUtil.run(client -> {
