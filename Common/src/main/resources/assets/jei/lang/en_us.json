@@ -629,5 +629,10 @@
   "jei.key.modifier.shift": "SHIFT",
   "jei.key.modifier.control": "CTRL",
   "jei.key.modifier.command": "CMD",
-  "jei.key.modifier.alt": "ALT"
+  "jei.key.modifier.alt": "ALT",
+  "config.jei.display.showTagBadges": "Show Tag Badges",
+  "config.jei.display.showTagBadges.comment": "Display a visual badge icon on ingredients that represent an item or fluid tag.",
+  "config.jei.display.showListBadges": "Show List Badges",
+  "config.jei.display.showListBadges.comment": "Display a visual badge icon on ingredients that represent a list of alternative items."
+
 }
