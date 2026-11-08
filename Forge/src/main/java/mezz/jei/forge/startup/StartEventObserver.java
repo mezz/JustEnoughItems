@@ -12,6 +12,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
+import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -20,6 +21,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class observes events and determines when it's the right time to start JEI.
@@ -46,6 +49,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 	private State state = State.LISTENING;
 	private boolean observedLogin;
 	private boolean observedRecipeSync;
+	private boolean observedTagSync;
 
 	public StartEventObserver(IConnectionToServer serverConnection, Runnable startRunnable, Runnable stopRunnable) {
 		this.serverConnection = serverConnection;
@@ -56,6 +60,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 	public void register(PermanentEventSubscriptions subscriptions) {
 		subscriptions.register(EventPriority.LOWEST, ClientPlayerNetworkEvent.LoggingIn.class, this::onLoggingIn);
 		subscriptions.register(EventPriority.LOWEST, RecipesUpdatedEvent.class, this::onRecipesUpdatedEvent);
+		subscriptions.register(EventPriority.LOWEST, TagsUpdatedEvent.class, this::onTagsUpdatedEvent);
 
 		subscriptions.register(ClientPlayerNetworkEvent.LoggingOut.class, event -> {
 			if (event.getPlayer() != null) {
@@ -104,12 +109,26 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 			startIfReady();
 		}
 	}
+	
+	private void onTagsUpdatedEvent(TagsUpdatedEvent event) {
+	
+	    // Only server-synced tags matter here - ignore server's reloads
+	    if (event.getUpdateCause() != TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED) {
+        	return;
+        }
+        if (!observeConnectionEvent(event)){
+            return;
+        }
+        this.observedTagSync = true;
+        startIfReady();
+	
+	}
 
 	private void startIfReady() {
 		if (this.state != State.LISTENING || !this.observedLogin) {
 			return;
 		}
-		if (shouldWaitForRecipes() && !this.observedRecipeSync) {
+		if (shouldWaitForRecipes() && (!this.observedRecipeSync || !this.observedTagSync)) {
 			return;
 		}
 		transitionState(State.JEI_STARTED);
@@ -137,24 +156,30 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 
 	private String getRequiredStartEventsString() {
 		if (shouldWaitForRecipes()) {
-			return "[%s, %s]".formatted(ClientPlayerNetworkEvent.LoggingIn.class.getName(), RecipesUpdatedEvent.class.getName());
+			return "[%s, %s]".formatted(
+                ClientPlayerNetworkEvent.LoggingIn.class.getName(), 
+                RecipesUpdatedEvent.class.getName(), 
+                TagsUpdatedEvent.class.getName()
+			);
 		}
 		return "[%s]".formatted(ClientPlayerNetworkEvent.LoggingIn.class.getName());
 	}
 
 	private String getMissingStartEventsString() {
-		StringBuilder missingEvents = new StringBuilder("[");
-		if (!observedLogin) {
-			missingEvents.append(ClientPlayerNetworkEvent.LoggingIn.class.getName());
-		}
-		if (shouldWaitForRecipes() && !observedRecipeSync) {
-			if (missingEvents.length() > 1) {
-				missingEvents.append(", ");
-			}
-			missingEvents.append(RecipesUpdatedEvent.class.getName());
-		}
-		return missingEvents.append("]").toString();
-	}
+    	List<String> missingEvents = new ArrayList<>();
+    	if (!observedLogin) {
+    		missingEvents.add(ClientPlayerNetworkEvent.LoggingIn.class.getName());
+    	}
+    	if (shouldWaitForRecipes()) {
+    		if (!observedRecipeSync) {
+    			missingEvents.add(RecipesUpdatedEvent.class.getName());
+    		}
+    		if (!observedTagSync) {
+    			missingEvents.add(TagsUpdatedEvent.class.getName());
+    		}
+    	}
+    	return "[" + String.join(", ", missingEvents) + "]";
+    }
 
 	private static <T extends Event> void logReceivedEvent(T event) {
 		LOGGER.debug("JEI StartEventObserver received event: {}", event.getClass());
@@ -209,5 +234,6 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 	private void clearObservedStartEvents() {
 		this.observedLogin = false;
 		this.observedRecipeSync = false;
+		this.observedTagSync = false;
 	}
 }
