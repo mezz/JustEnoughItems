@@ -3,13 +3,25 @@ package mezz.jei.neoforge.tests.client;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.buttons.ButtonSnapshot;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.runtime.IJeiGuiRuntime;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
+import mezz.jei.common.Internal;
+import mezz.jei.library.gui.BookmarkManagerDummy;
+import mezz.jei.library.gui.BookmarkOverlayDummy;
+import mezz.jei.library.gui.IngredientListOverlayDummy;
+import mezz.jei.library.gui.recipes.RecipesGuiDummy;
+import mezz.jei.library.ingredients.IngredientFilterApiDummy;
+import mezz.jei.library.load.PluginLoader;
+import mezz.jei.library.load.registration.RuntimeRegistration;
+import mezz.jei.library.runtime.JeiRuntime;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
@@ -31,9 +43,83 @@ final class JeiNeoForgeInspectionTests {
 			client.gui.setScreen(new InventoryScreen(client.player));
 		});
 		waitForOverlay();
+		verifyGuiRuntimeRegistration();
+		ButtonSnapshot nextButton = ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.runtime.getGuiRuntime().getIngredientListOverlay().getNextButton());
+		ButtonSnapshot backButton = ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.runtime.getGuiRuntime().getIngredientListOverlay().getBackButton());
+		ButtonSnapshot configButton = ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.runtime.getGuiRuntime().getConfigButton().orElseThrow());
+		ButtonSnapshot toggleButton = ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.runtime.getGuiRuntime().getBookmarkToggleButton().orElseThrow());
 		ClientTestUtil.runOnClient(client -> {
 			IJeiRuntime runtime = InspectionTestPlugin.runtime;
-			IRecipesGui gui = runtime.getRecipesGui();
+			var overlay = runtime.getGuiRuntime().getIngredientListOverlay();
+			check(overlay.isListDisplayed() && overlay.hasRoom(), "Ingredient overlay must fit beside the inventory");
+			checkContains(overlay.getBounds(), overlay.getGridBounds(), "Ingredient grid must fit inside the panel");
+			check(overlay.getPageCount() > 1 && overlay.getPageIndex() >= 0 && overlay.getPageIndex() < overlay.getPageCount(),
+				"The unfiltered ingredient list must expose valid pagination");
+			check(configButton.visible() && configButton.active(), "Inventory must expose the config control");
+			checkScreenBounds(configButton.bounds(), client.gui.screen().width, client.gui.screen().height, "Config control");
+			if (nextButton.visible()) {
+				check(nextButton.active(), "Multiple pages must enable visible forward navigation");
+				checkContains(overlay.getBounds(), nextButton.bounds(), "Forward navigation must fit inside the panel");
+			}
+			if (backButton.visible()) {
+				check(backButton.active(), "Multiple pages must enable visible backward navigation");
+				checkContains(overlay.getBounds(), backButton.bounds(), "Backward navigation must fit inside the panel");
+			}
+			check(toggleButton.visible() && toggleButton.active(), "Inventory must expose the bookmark toggle");
+			checkScreenBounds(toggleButton.bounds(), client.gui.screen().width, client.gui.screen().height, "Bookmark toggle");
+			var toggleState = Internal.getClientToggleState();
+			boolean overlayEnabled = toggleState.isOverlayEnabled();
+			boolean bookmarksEnabled = toggleState.isBookmarkEnabled();
+			boolean nextActive = nextButton.active();
+			boolean backActive = backButton.active();
+			boolean nextVisible = nextButton.visible();
+			boolean backVisible = backButton.visible();
+			ScreenRectangle nextBounds = nextButton.bounds();
+			ScreenRectangle backBounds = backButton.bounds();
+			try {
+				toggleState.setOverlayEnabled(false);
+				toggleState.setBookmarkEnabled(false);
+				ButtonSnapshot hiddenNext = overlay.getNextButton();
+				ButtonSnapshot hiddenBack = overlay.getBackButton();
+				ButtonSnapshot disabledListConfig = runtime.getGuiRuntime().getConfigButton().orElseThrow();
+				ButtonSnapshot disabledListToggle = runtime.getGuiRuntime().getBookmarkToggleButton().orElseThrow();
+				check(!overlay.isListDisplayed() && !hiddenNext.visible() && !hiddenBack.visible(),
+					"Disabling the overlay must hide its list and page controls");
+				check(hiddenNext.active() == nextActive && hiddenBack.active() == backActive,
+					"Page controls must preserve their enabled state while hidden");
+				check(nextButton.visible() == nextVisible && backButton.visible() == backVisible &&
+					nextButton.active() == nextActive && backButton.active() == backActive &&
+					nextButton.bounds().equals(nextBounds) && backButton.bounds().equals(backBounds),
+					"Disabling the overlay must not alter previously captured button snapshots");
+				check(disabledListConfig.visible() && disabledListConfig.active(),
+					"The config control must remain available while the overlay is disabled");
+				check(!runtime.getGuiRuntime().getBookmarkOverlay().isListDisplayed() && disabledListToggle.visible() && disabledListToggle.active(),
+					"The bookmark toggle must remain available while the bookmark list is disabled");
+			} finally {
+				toggleState.setOverlayEnabled(overlayEnabled);
+				toggleState.setBookmarkEnabled(bookmarksEnabled);
+			}
+			runtime.getGuiRuntime().getIngredientFilter().setFilterText("inspection_no_matching_ingredient_7fd692");
+		});
+		ClientTestUtil.waitUntil(() -> ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.runtime.getGuiRuntime().getIngredientFilter().getFilteredIngredients(VanillaTypes.ITEM_STACK).isEmpty()),
+			TIMEOUT, () -> "Expected an empty search result");
+		ClientTestUtil.runOnClient(client -> {
+			IJeiRuntime runtime = InspectionTestPlugin.runtime;
+			var empty = runtime.getGuiRuntime().getIngredientListOverlay();
+			ButtonSnapshot emptyNext = empty.getNextButton();
+			ButtonSnapshot emptyBack = empty.getBackButton();
+			ButtonSnapshot emptyConfig = runtime.getGuiRuntime().getConfigButton().orElseThrow();
+			check(!empty.isListDisplayed() && empty.hasRoom() && emptyConfig.visible() && emptyConfig.active(),
+				"Empty search must hide the ingredient panel while retaining its config control");
+			check(empty.getPageIndex() == 0 && empty.getPageCount() == 1, "Empty search must reset pagination to its only page");
+			check(!emptyNext.visible() && !emptyBack.visible() && !emptyNext.active() && !emptyBack.active(),
+				"Empty search must hide and disable ingredient-page controls");
+			check(nextButton.active() && backButton.active(), "Filtering must not alter the initial page-button snapshots");
+			checkScreenBounds(emptyConfig.bounds(), client.gui.screen().width, client.gui.screen().height, "Config control after empty search");
+			runtime.getGuiRuntime().getIngredientFilter().setFilterText("");
+			check(empty.getNextButton().active() && empty.getBackButton().active(), "Clearing the search must re-enable page controls");
+			check(!emptyNext.active() && !emptyBack.active(), "Clearing the search must not alter the empty-search button snapshots");
+			IRecipesGui gui = runtime.getGuiRuntime().getRecipesGui();
 			var focus = runtime.getJeiHelpers().getFocusFactory().createFocus(RecipeIngredientRole.INPUT, VanillaTypes.ITEM_STACK, new ItemStack(Items.OAK_LOG));
 			gui.show(focus);
 			check(gui.isOpen() && gui.getFocuses().size() == 1, "Current recipe focuses");
@@ -98,6 +184,41 @@ final class JeiNeoForgeInspectionTests {
 				"Transfer without the recipe view must complete and preserve the current screen");
 			client.gui.setScreen(null);
 		});
+		ClientTestUtil.waitUntil(() -> ClientTestUtil.computeOnClient(client -> !InspectionTestPlugin.runtime.getGuiRuntime().getIngredientListOverlay().isListDisplayed()),
+			TIMEOUT, () -> "Closed inventory must hide overlay");
+		ClientTestUtil.runOnClient(client -> {
+			var overlay = InspectionTestPlugin.runtime.getGuiRuntime().getIngredientListOverlay();
+			var bookmarks = InspectionTestPlugin.runtime.getGuiRuntime().getBookmarkOverlay();
+			ButtonSnapshot closedConfig = InspectionTestPlugin.runtime.getGuiRuntime().getConfigButton().orElseThrow();
+			ButtonSnapshot closedToggle = InspectionTestPlugin.runtime.getGuiRuntime().getBookmarkToggleButton().orElseThrow();
+			check(!closedConfig.visible() && !overlay.getNextButton().visible() && !overlay.getBackButton().visible(),
+				"Closing the inventory must hide ingredient controls while keeping their snapshots available");
+			check(!bookmarks.isListDisplayed() && !closedToggle.visible() && !bookmarks.getNextButton().visible() && !bookmarks.getBackButton().visible(),
+				"Closing the inventory must hide bookmarks and their controls while keeping their snapshots available");
+			check(configButton.visible() && toggleButton.visible(), "Closing the inventory must not alter the initial control snapshots");
+			var filter = InspectionTestPlugin.runtime.getGuiRuntime().getIngredientFilter();
+			String previousFilter = filter.getFilterText();
+			try {
+				filter.setFilterText("oak");
+				ScreenRectangle emptyBounds = new ScreenRectangle(0, 0, 0, 0);
+				check(!overlay.hasRoom() && overlay.getBounds().equals(emptyBounds) && overlay.getGridBounds().equals(emptyBounds),
+					"Changing the filter with no screen open must not restore the previous overlay layout");
+				check(overlay.getPageIndex() == 0 && overlay.getPageCount() == 0,
+					"A closed overlay must not expose pages after a filter change");
+			} finally {
+				filter.setFilterText(previousFilter);
+			}
+		});
+		ClientTestUtil.runOnClient(client -> client.gui.setScreen(new InventoryScreen(client.player)));
+		waitForOverlay();
+		ClientTestUtil.runOnClient(client -> {
+			ButtonSnapshot reopenedToggle = InspectionTestPlugin.runtime.getGuiRuntime().getBookmarkToggleButton().orElseThrow();
+			ButtonSnapshot reopenedConfig = InspectionTestPlugin.runtime.getGuiRuntime().getConfigButton().orElseThrow();
+			check(reopenedToggle.visible() && reopenedToggle.active(), "Reopening the inventory must expose the bookmark toggle");
+			check(reopenedConfig.visible() && reopenedConfig.active(), "Reopening the inventory must expose the config control");
+			checkScreenBounds(reopenedToggle.bounds(), client.gui.screen().width, client.gui.screen().height, "Bookmark toggle after reopening inventory");
+			checkScreenBounds(reopenedConfig.bounds(), client.gui.screen().width, client.gui.screen().height, "Config control after reopening inventory");
+		});
 		verifyVanillaTransfers();
 	}
 
@@ -118,14 +239,114 @@ final class JeiNeoForgeInspectionTests {
 			.orElseThrow(() -> new AssertionError("Expected an independently created recipe layout"));
 	}
 
+	@SuppressWarnings("removal")
+	private static void verifyGuiRuntimeRegistration() {
+		ClientTestUtil.runOnClient(client -> {
+			IJeiRuntime runtime = InspectionTestPlugin.runtime;
+			IJeiGuiRuntime guiRuntime = runtime.getGuiRuntime();
+			var recipesGui = guiRuntime.getRecipesGui();
+			var ingredientOverlay = guiRuntime.getIngredientListOverlay();
+			var bookmarkOverlay = guiRuntime.getBookmarkOverlay();
+			var ingredientFilter = guiRuntime.getIngredientFilter();
+			var bookmarkManager = guiRuntime.getBookmarkManager();
+			check(runtime.getRecipesGui() == recipesGui && runtime.getIngredientListOverlay() == ingredientOverlay &&
+				runtime.getBookmarkOverlay() == bookmarkOverlay && runtime.getIngredientFilter() == ingredientFilter &&
+				runtime.getBookmarkManager() == bookmarkManager,
+				"Legacy and grouped GUI accessors must expose the same components");
+			RuntimeRegistration registration = new RuntimeRegistration(
+				runtime.getRecipeManager(), runtime.getJeiHelpers(), runtime.getEditModeConfig(),
+				runtime.getIngredientManager(), runtime.getRecipeTransferManager(), runtime.getScreenHelper(),
+				PluginLoader.createSearchStorageFactory(List.of())
+			);
+			IJeiGuiRuntime disabled = registration.getGuiRuntime();
+			check(disabled.getRecipesGui() == RecipesGuiDummy.INSTANCE &&
+				disabled.getIngredientListOverlay() == IngredientListOverlayDummy.INSTANCE &&
+				disabled.getBookmarkOverlay() == BookmarkOverlayDummy.INSTANCE &&
+				disabled.getIngredientFilter() == IngredientFilterApiDummy.INSTANCE &&
+				disabled.getBookmarkManager() == BookmarkManagerDummy.INSTANCE &&
+				disabled.getConfigButton().isEmpty() && disabled.getBookmarkToggleButton().isEmpty(),
+				"Disabled GUI must provide component dummies without GUI controls");
+			registration.setRecipesGui(recipesGui);
+			registration.setIngredientListOverlay(ingredientOverlay);
+			registration.setBookmarkOverlay(bookmarkOverlay);
+			registration.setIngredientFilter(ingredientFilter);
+			registration.setBookmarkManager(bookmarkManager);
+			IJeiGuiRuntime legacyOnly = registration.getGuiRuntime();
+			checkSameGuiComponents(guiRuntime, legacyOnly, "Individual registrations must work without registering a GUI runtime");
+			check(legacyOnly.getConfigButton().isEmpty() && legacyOnly.getBookmarkToggleButton().isEmpty(),
+				"Individual component registrations must not introduce GUI controls");
+
+			registration.setRecipesGui(RecipesGuiDummy.INSTANCE);
+			registration.setIngredientListOverlay(IngredientListOverlayDummy.INSTANCE);
+			registration.setBookmarkOverlay(BookmarkOverlayDummy.INSTANCE);
+			registration.setIngredientFilter(IngredientFilterApiDummy.INSTANCE);
+			registration.setBookmarkManager(BookmarkManagerDummy.INSTANCE);
+			registration.setGuiRuntime(guiRuntime);
+			IJeiGuiRuntime registered = registration.getGuiRuntime();
+			checkSameGuiComponents(guiRuntime, registered, "Registering a whole GUI runtime must replace earlier individual registrations");
+
+			var configButton = guiRuntime.getConfigButton();
+			var toggleButton = guiRuntime.getBookmarkToggleButton();
+			registration.setRecipesGui(RecipesGuiDummy.INSTANCE);
+			registration.setIngredientListOverlay(IngredientListOverlayDummy.INSTANCE);
+			registration.setBookmarkOverlay(BookmarkOverlayDummy.INSTANCE);
+			IJeiGuiRuntime overridden = registration.getGuiRuntime();
+			check(overridden.getRecipesGui() == RecipesGuiDummy.INSTANCE &&
+				overridden.getIngredientListOverlay() == IngredientListOverlayDummy.INSTANCE &&
+				overridden.getBookmarkOverlay() == BookmarkOverlayDummy.INSTANCE &&
+				overridden.getIngredientFilter() == ingredientFilter &&
+				overridden.getBookmarkManager() == bookmarkManager &&
+				overridden.getConfigButton().equals(configButton) && overridden.getBookmarkToggleButton().equals(toggleButton),
+				"Individual registrations must replace their components and preserve independent GUI controls");
+			registration.setGuiRuntime(guiRuntime);
+			checkSameGuiComponents(guiRuntime, registration.getGuiRuntime(), "A later whole GUI runtime registration must replace individual registrations");
+
+			IJeiRuntime compatibilityRuntime = new JeiRuntime(
+				runtime.getRecipeManager(), runtime.getIngredientManager(), runtime.getKeyMappings(), runtime.getJeiHelpers(),
+				runtime.getScreenHelper(), runtime.getRecipeTransferManager(), runtime.getEditModeConfig(), overridden, runtime.getConfigManager()
+			);
+			check(compatibilityRuntime.getRecipesGui() == RecipesGuiDummy.INSTANCE &&
+				compatibilityRuntime.getIngredientListOverlay() == IngredientListOverlayDummy.INSTANCE &&
+				compatibilityRuntime.getBookmarkOverlay() == BookmarkOverlayDummy.INSTANCE &&
+				compatibilityRuntime.getIngredientFilter() == ingredientFilter &&
+				compatibilityRuntime.getBookmarkManager() == bookmarkManager,
+				"Legacy access must expose registered components and preserve the remaining GUI components");
+			registration.setGuiRuntime(disabled);
+			checkSameGuiComponents(guiRuntime, registered, "Later registrations must not alter a previously resolved GUI runtime");
+			checkSameGuiComponents(guiRuntime, legacyOnly, "Later registrations must not alter previously resolved individual registrations");
+			check(overridden.getRecipesGui() == RecipesGuiDummy.INSTANCE &&
+				legacyOnly.getConfigButton().isEmpty() && overridden.getConfigButton().equals(configButton),
+				"Later registrations must preserve previously resolved overrides and controls");
+		});
+	}
+
+	private static void checkSameGuiComponents(IJeiGuiRuntime expected, IJeiGuiRuntime actual, String message) {
+		check(actual.getRecipesGui() == expected.getRecipesGui() &&
+			actual.getIngredientListOverlay() == expected.getIngredientListOverlay() &&
+			actual.getBookmarkOverlay() == expected.getBookmarkOverlay() &&
+			actual.getIngredientFilter() == expected.getIngredientFilter() &&
+			actual.getBookmarkManager() == expected.getBookmarkManager(), message);
+	}
+
 	private static void waitForOverlay() {
-		ClientTestUtil.waitUntil(() -> ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.runtime.getIngredientListOverlay().isListDisplayed()),
+		ClientTestUtil.waitUntil(() -> ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.runtime.getGuiRuntime().getIngredientListOverlay().isListDisplayed()),
 			TIMEOUT, () -> "Expected ingredient overlay on inventory screen");
+	}
+
+	private static void checkContains(ScreenRectangle outer, ScreenRectangle inner, String message) {
+		check(inner.width() > 0 && inner.height() > 0 && inner.left() >= outer.left() && inner.top() >= outer.top() &&
+			inner.left() + inner.width() <= outer.left() + outer.width() && inner.top() + inner.height() <= outer.top() + outer.height(),
+			message + ": panel=" + outer + ", contents=" + inner);
+	}
+
+	private static void checkScreenBounds(ScreenRectangle bounds, int width, int height, String message) {
+		checkContains(new ScreenRectangle(0, 0, width, height), bounds, message + " must use GUI-scaled screen coordinates");
 	}
 
 	private static void verifyVanillaTransfers() {
 		for (boolean max : new boolean[]{false, true}) {
 			ClientTestUtil.runOnClient(client -> client.gui.setScreen(new InventoryScreen(client.player)));
+			waitForOverlay();
 			runOnServer(player -> {
 				player.getInventory().clearContent();
 				for (int slot = 1; slot <= 4; slot++) {
@@ -139,7 +360,7 @@ final class JeiNeoForgeInspectionTests {
 			int completedBefore = ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.vanillaCompletions);
 			ClientTestUtil.runOnClient(client -> {
 				IJeiRuntime runtime = InspectionTestPlugin.runtime;
-				IRecipesGui gui = runtime.getRecipesGui();
+				IRecipesGui gui = runtime.getGuiRuntime().getRecipesGui();
 				var focus = runtime.getJeiHelpers().getFocusFactory()
 					.createFocus(RecipeIngredientRole.OUTPUT, VanillaTypes.ITEM_STACK, new ItemStack(Items.OAK_PLANKS));
 				gui.show(focus);
@@ -180,7 +401,7 @@ final class JeiNeoForgeInspectionTests {
 				check(player.inventoryMenu.getSlot(0).getItem().is(Items.OAK_PLANKS), "Server crafting result after recipe transfer");
 			});
 			ClientTestUtil.runOnClient(client -> {
-				IRecipesGui gui = InspectionTestPlugin.runtime.getRecipesGui();
+				IRecipesGui gui = InspectionTestPlugin.runtime.getGuiRuntime().getRecipesGui();
 				check(gui.isOpen() != max, "Server acknowledgment must preserve whether the recipe view is open");
 				if (gui.isOpen()) {
 					client.gui.screen().onClose();

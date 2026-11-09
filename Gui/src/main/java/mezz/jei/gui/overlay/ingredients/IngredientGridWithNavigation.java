@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay.ingredients;
 
+import mezz.jei.api.gui.buttons.ButtonSnapshot;
 import mezz.jei.api.gui.placement.VerticalAlignment;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -281,6 +282,7 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		return this.backgroundArea;
 	}
 
+	@Override
 	public ImmutableRect2i getIngredientGridArea() {
 		updateLayoutIfDirty();
 		return this.ingredientGrid.getArea();
@@ -297,14 +299,46 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 		return this.slotBackgroundArea;
 	}
 
+	@Override
+	public int getPageIndex() {
+		updateLayoutIfDirty();
+		if (!active) {
+			return 0;
+		}
+		return controller.getPageNumber();
+	}
+
+	@Override
+	public int getPageCount() {
+		updateLayoutIfDirty();
+		if (!active) {
+			return 0;
+		}
+		return controller.getPageCount();
+	}
+
+	@Override
 	public ImmutableRect2i getNextPageButtonArea() {
 		updateLayoutIfDirty();
 		return this.navigation.getNextButtonArea();
 	}
 
+	@Override
+	public ButtonSnapshot getNextButton(boolean visible) {
+		updateLayoutIfDirty();
+		return navigation.getNextButton(active && visible);
+	}
+
+	@Override
 	public ImmutableRect2i getBackButtonArea() {
 		updateLayoutIfDirty();
 		return this.navigation.getBackButtonArea();
+	}
+
+	@Override
+	public ButtonSnapshot getBackButton(boolean visible) {
+		updateLayoutIfDirty();
+		return navigation.getBackButton(active && visible);
 	}
 
 	public IPaged getPageDelegate() {
@@ -443,6 +477,8 @@ public class IngredientGridWithNavigation implements IIngredientListOverlayConte
 
 	@Override
 	public void close() {
+		// Discard the previous screen's area so source changes cannot reopen a closed grid.
+		this.availableArea = null;
 		clearLayout();
 		this.ghostIngredientDragManager.stopDrag();
 	}

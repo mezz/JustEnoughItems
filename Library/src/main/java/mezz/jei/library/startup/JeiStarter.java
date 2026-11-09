@@ -199,11 +199,7 @@ public final class JeiStarter {
 			screenHelper,
 			recipeTransferManager,
 			editModeConfig,
-			runtimeRegistration.getIngredientListOverlay(),
-			runtimeRegistration.getBookmarkOverlay(),
-			runtimeRegistration.getBookmarkManager(),
-			runtimeRegistration.getRecipesGui(),
-			runtimeRegistration.getIngredientFilter(),
+			runtimeRegistration.getGuiRuntime(),
 			configManagerForPlugins
 		);
 		timer.stop();
