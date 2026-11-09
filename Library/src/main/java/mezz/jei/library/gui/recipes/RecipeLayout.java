@@ -2,6 +2,7 @@ package mezz.jei.library.gui.recipes;
 
 import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
@@ -254,53 +255,64 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	public void drawOverlays(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
 		ensureRecipeExtrasAreCreated();
 
-		final int recipeMouseX = mouseX - area.getX();
-		final int recipeMouseY = mouseY - area.getY();
-
-		IRecipeSlotsView recipeCategorySlotsView = () -> Collections.unmodifiableList(slots);
-		RecipeSlotUnderMouse hoveredSlotResult = getSlotUnderMouse(mouseX, mouseY).orElse(null);
-
-		var poseStack = guiGraphics.pose();
-		if (hoveredSlotResult != null) {
-			IRecipeSlotDrawable hoveredSlot = hoveredSlotResult.slot();
-			hoveredSlot.drawTooltip(guiGraphics, mouseX, mouseY);
+		RecipeSlotUnderMouse hoveredSlot = getSlotUnderMouse(mouseX, mouseY).orElse(null);
+		if (hoveredSlot != null) {
+			hoveredSlot.slot().drawTooltip(guiGraphics, mouseX, mouseY);
 		} else if (isMouseOver(mouseX, mouseY)) {
-			JeiTooltip tooltip = new JeiTooltip();
-			try {
-				recipeCategory.getTooltip(tooltip, recipe, recipeCategorySlotsView, recipeMouseX, recipeMouseY);
-				for (IRecipeCategoryDecorator<R> decorator : recipeCategoryDecorators) {
-					decorator.decorateTooltips(tooltip, recipe, recipeCategory, recipeCategorySlotsView, recipeMouseX, recipeMouseY);
-				}
-			} catch (RuntimeException e) {
-				LIMITED_LOGGER.log(
-					Level.ERROR,
-					"recipe.category.tooltip.crash",
-					logger -> {
-						logger.error(
-							"Error while getting tooltip from recipe:\n{}",
-							ErrorUtil.getRecipeInfo(recipeCategory, recipe),
-							e
-						);
-					}
-				);
-			}
-
-			RecipeWidgetTooltipDispatcher.addWidgetTooltips(
-				tooltip,
-				allWidgets,
-				recipeMouseX,
-				recipeMouseY,
-				area.width(),
-				area.height()
-			);
-
-			if (tooltip.isEmpty() && shapelessIcon != null) {
-				if (shapelessIcon.isMouseOver(recipeMouseX, recipeMouseY)) {
-					shapelessIcon.addTooltip(tooltip);
-				}
-			}
-			tooltip.draw(guiGraphics, mouseX, mouseY);
+			getRecipeTooltip(mouseX, mouseY).draw(guiGraphics, mouseX, mouseY);
 		}
+	}
+
+	@Override
+	public void getTooltip(ITooltipBuilder tooltip, double mouseX, double mouseY) {
+		ensureRecipeExtrasAreCreated();
+		RecipeSlotUnderMouse hoveredSlot = getSlotUnderMouse(mouseX, mouseY).orElse(null);
+		if (hoveredSlot != null) {
+			hoveredSlot.slot().getTooltip(tooltip);
+		} else if (isMouseOver(mouseX, mouseY)) {
+			getRecipeTooltip(mouseX, mouseY).copyTo(tooltip);
+		}
+	}
+
+	private JeiTooltip getRecipeTooltip(double mouseX, double mouseY) {
+		double recipeMouseX = mouseX - area.getX();
+		double recipeMouseY = mouseY - area.getY();
+		IRecipeSlotsView recipeCategorySlotsView = () -> Collections.unmodifiableList(slots);
+		JeiTooltip tooltip = new JeiTooltip();
+		try {
+			recipeCategory.getTooltip(tooltip, recipe, recipeCategorySlotsView, recipeMouseX, recipeMouseY);
+			for (IRecipeCategoryDecorator<R> decorator : recipeCategoryDecorators) {
+				decorator.decorateTooltips(tooltip, recipe, recipeCategory, recipeCategorySlotsView, recipeMouseX, recipeMouseY);
+			}
+		} catch (RuntimeException e) {
+			LIMITED_LOGGER.log(
+				Level.ERROR,
+				"recipe.category.tooltip.crash",
+				logger -> {
+					logger.error(
+						"Error while getting tooltip from recipe:\n{}",
+						ErrorUtil.getRecipeInfo(recipeCategory, recipe),
+						e
+					);
+				}
+			);
+		}
+
+		RecipeWidgetTooltipDispatcher.addWidgetTooltips(
+			tooltip,
+			allWidgets,
+			recipeMouseX,
+			recipeMouseY,
+			area.width(),
+			area.height()
+		);
+
+		if (tooltip.isEmpty() && shapelessIcon != null) {
+			if (shapelessIcon.isMouseOver(recipeMouseX, recipeMouseY)) {
+				shapelessIcon.addTooltip(tooltip);
+			}
+		}
+		return tooltip;
 	}
 
 	@Override
@@ -382,8 +394,19 @@ public class RecipeLayout<R> implements IRecipeLayoutDrawable<R>, IRecipeExtrasB
 	}
 
 	@Override
+	public List<IRecipeWidget> getWidgets() {
+		ensureRecipeExtrasAreCreated();
+		return List.copyOf(allWidgets);
+	}
+
+	@Override
 	public R getRecipe() {
 		return recipe;
+	}
+
+	@Override
+	public boolean isShapeless() {
+		return shapelessIcon != null;
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package mezz.jei.gui.recipes;
 
+import mezz.jei.api.gui.IJeiTooltipComponent;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -17,7 +18,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public final class InteractiveIngredientGridTooltipComponent extends IngredientGridTooltipComponent<ITypedIngredient<?>> {
+public final class InteractiveIngredientGridTooltipComponent extends IngredientGridTooltipComponent<ITypedIngredient<?>> implements IJeiTooltipComponent {
 	private final List<IRecipeSlotDrawable> slots;
 
 	public InteractiveIngredientGridTooltipComponent(IGuiHelper guiHelper, List<ITypedIngredient<?>> ingredients) {
@@ -32,6 +33,16 @@ public final class InteractiveIngredientGridTooltipComponent extends IngredientG
 			),
 			MAX_VISIBLE_INGREDIENTS
 		);
+	}
+
+	@Override
+	public List<String> getText() {
+		return List.of();
+	}
+
+	@Override
+	public List<ITypedIngredient<?>> getIngredients() {
+		return getIngredientList();
 	}
 
 	@Override

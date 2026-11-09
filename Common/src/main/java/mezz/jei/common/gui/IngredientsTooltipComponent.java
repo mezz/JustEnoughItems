@@ -1,6 +1,6 @@
 package mezz.jei.common.gui;
 
-import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
+import mezz.jei.api.gui.IJeiTooltipComponent;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -8,6 +8,7 @@ import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
@@ -17,7 +18,6 @@ import mezz.jei.common.util.SafeIngredientUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class IngredientsTooltipComponent implements ClientTooltipComponent, TooltipComponent {
+public class IngredientsTooltipComponent implements ClientTooltipComponent, IJeiTooltipComponent {
 	private static final int MAX_INGREDIENTS_PER_ROW = 16;
 	private static final int INGREDIENT_SIZE = 18;
 	private static final int INGREDIENT_PADDING = 1;
@@ -74,6 +74,18 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 		IIngredientType<T> type = typedIngredient.getType();
 		IIngredientHelper<T> ingredientHelper = ingredientManager.getIngredientHelper(type);
 		return ingredientHelper.getUid(typedIngredient, UidContext.Recipe);
+	}
+
+	@Override
+	public List<String> getText() {
+		return List.of();
+	}
+
+	@Override
+	public List<ITypedIngredient<?>> getIngredients() {
+		return ingredients.stream()
+			.flatMap(element -> element.getTypedIngredient().stream())
+			.toList();
 	}
 
 	@Override
@@ -133,7 +145,8 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 	private record RenderElement<T>(
 		IIngredientRenderer<T> renderer,
 		IIngredientType<T> type,
-		T ingredient
+		T ingredient,
+		Optional<ITypedIngredient<T>> typedIngredient
 	) {
 		public static <T> RenderElement<T> create(SummaryElement<T> summaryElement, IIngredientManager ingredientManager) {
 			ITypedIngredient<T> typedIngredient = summaryElement.getIngredient();
@@ -141,7 +154,11 @@ public class IngredientsTooltipComponent implements ClientTooltipComponent, Tool
 			IIngredientHelper<T> helper = ingredientManager.getIngredientHelper(type);
 			IIngredientRenderer<T> renderer = ingredientManager.getIngredientRenderer(type);
 			T ingredient = helper.copyWithAmount(typedIngredient.getIngredient(), summaryElement.getAmount());
-			return new RenderElement<>(renderer, type, ingredient);
+			return new RenderElement<>(renderer, type, ingredient, ingredientManager.createTypedIngredient(type, ingredient, false));
+		}
+
+		public Optional<ITypedIngredient<?>> getTypedIngredient() {
+			return typedIngredient.map(value -> value);
 		}
 
 		public void render(GuiGraphicsExtractor guiGraphics) {

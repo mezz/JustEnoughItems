@@ -42,6 +42,14 @@ final class JeiNeoForgeInspectionTests {
 			check(!gui.setRecipeCategory(IRecipeType.create("jeiclienttests", "missing", Object.class)), "Unavailable category must fail");
 			check(gui.getPageIndex() == 0 && gui.getPageCount() > 1, "Numeric recipe pagination");
 			IRecipeLayoutDrawable<?> layout = firstLayout(gui);
+			check(layout.isShapeless() && !layout.getWidgets().isEmpty(), "Visible layout extras");
+			var tooltip = runtime.getJeiHelpers().getGuiHelper().createTooltipBuilder();
+			layout.getTooltip(tooltip, layout.getRect().getX() + 4, layout.getRect().getY() + 35);
+			check(tooltip.getLines().stream().anyMatch(line -> line.left().map(text -> text.getString().contains("Inspection category tooltip")).orElse(false)), "Recipe tooltip query");
+			tooltip.clear();
+			layout.getTooltip(tooltip, layout.getRect().getX() + 5, layout.getRect().getY() + 5);
+			check(!tooltip.getLines().isEmpty() && tooltip.getLines().stream().noneMatch(line -> line.left().map(text -> text.getString().contains("Inspection category tooltip")).orElse(false)), "Slot tooltip must take precedence over category tooltip");
+
 			InspectionTestPlugin.attempts = 0;
 			InspectionTestPlugin.starts = 0;
 			InspectionTestPlugin.completions = 0;
