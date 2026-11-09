@@ -91,7 +91,7 @@ public interface IJeiRuntime {
 	IScreenHelper getScreenHelper();
 
 	/**
-	 * Get a manager that holds all the registered recipe transfer handlers.
+	 * Get a manager for transferring recipes and looking up registered transfer handlers.
 	 * This is used by JEI's GUI and can be used by other mods that want to use the same information from JEI.
 	 *
 	 * @since 11.5.0
