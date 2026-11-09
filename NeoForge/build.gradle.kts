@@ -72,6 +72,7 @@ sourceSets {
 		runtimeClasspath += sourceSets.main.get().output
 	}
 	create("clientGameTest") {
+		compileClasspath += sourceSets.main.get().output
 		java.srcDir(project(":Common").layout.projectDirectory.dir("src/testFixtures/java"))
 		java.srcDir(commonClientTestFixturesSource)
 	}
@@ -161,6 +162,7 @@ val clientRecipeSyncTestProperty = "jei.clientRecipeSyncTest"
 val clientRecipeSyncTestRunName = "clientRecipeSyncTest"
 val clientResourcePackName = "jei-client-test-pack"
 val clientRecipeSyncTestCaseRuns = listOf(
+	"clientInspectionTest" to "inspection",
 	"clientRecipeSyncSingleplayer" to "singleplayer",
 	"clientRecipeSyncNeoForgeServerWithJei" to "neoforgeServerWithJei",
 	"clientRecipeSyncNeoForgeServerWithoutJei" to "neoforgeServerWithoutJei",

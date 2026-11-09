@@ -1,6 +1,8 @@
 package mezz.jei.api.runtime;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Unmodifiable;
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 
 import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.recipe.RecipeType;
@@ -42,11 +44,39 @@ public interface IRecipesGui {
 	void show(List<IFocus<?>> focuses);
 
 	/**
+	 * Returns the focuses for the current view, or an empty list when closed.
+	 * Do not modify the ingredients in the returned focuses.
+	 * @since 19.72.0
+	 */
+	@Unmodifiable
+	List<IFocus<?>> getFocuses();
+
+	/**
 	 * Show entire categories of recipes.
 	 *
 	 * @param recipeTypes a list of recipe types to display, in order. Must not be empty.
 	 */
 	void showTypes(List<RecipeType<?>> recipeTypes);
+
+	/**
+	 * Returns the categories available in the current view, in display order, or an empty list when closed.
+	 * @since 19.72.0
+	 */
+	@Unmodifiable
+	List<IRecipeCategory<?>> getRecipeCategories();
+
+	/**
+	 * Returns the selected category, or an empty result when closed.
+	 * @since 19.72.0
+	 */
+	Optional<IRecipeCategory<?>> getSelectedRecipeCategory();
+
+	/**
+	 * Selects a category already available in the current view, preserving its focuses.
+	 * @return true if the category is now selected, false if the view is closed or the category is unavailable
+	 * @since 19.72.0
+	 */
+	boolean setRecipeCategory(RecipeType<?> recipeType);
 
 	/**
 	 * Show specific recipes for one recipe category, with multiple {@link IFocus}.
@@ -59,9 +89,38 @@ public interface IRecipesGui {
 	<T> void showRecipes(IRecipeCategory<T> recipeCategory, List<T> recipes, List<IFocus<?>> focuses);
 
 	/**
+	 * Returns the zero-based page index within the selected category, or {@code -1} when closed.
+	 * In scrolling mode, this is the page containing the first visible recipe.
+	 * @since 19.72.0
+	 */
+	int getPageIndex();
+
+	/**
+	 * Returns the number of pages in the selected category, or zero when closed.
+	 * @since 19.72.0
+	 */
+	int getPageCount();
+
+	/**
+	 * Returns the visible recipe layouts in display order, or an empty list when closed.
+	 * Partially clipped layouts are included. Their bounds use GUI-scaled screen coordinates.
+	 * Do not reposition or tick the returned layouts.
+	 * Reacquire the layouts after navigating, resizing, or reloading.
+	 * @since 19.72.0
+	 */
+	@Unmodifiable
+	List<IRecipeLayoutDrawable<?>> getVisibleRecipeLayouts();
+
+	/**
 	 * @return the ingredient that's currently under the mouse in this gui
 	 */
 	<T> Optional<T> getIngredientUnderMouse(IIngredientType<T> ingredientType);
+
+	/**
+	 * Returns whether the recipe view is the current screen.
+	 * @since 19.72.0
+	 */
+	boolean isOpen();
 
 	/**
 	 * Get the screen that the {@link IRecipesGui} was opened from.

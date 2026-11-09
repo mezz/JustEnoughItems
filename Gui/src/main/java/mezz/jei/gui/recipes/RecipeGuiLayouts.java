@@ -117,6 +117,13 @@ public class RecipeGuiLayouts implements IInputTarget {
 		this.cachedInputHandler = null;
 	}
 
+	public List<IRecipeLayoutDrawable<?>> getVisibleRecipeLayouts() {
+		return this.recipeLayoutsWithButtons.stream()
+			.<IRecipeLayoutDrawable<?>>map(IRecipeLayoutWithButtons::getRecipeLayout)
+			.filter(layout -> viewport == null || viewport.intersects(new ImmutableRect2i(layout.getRectWithBorder())))
+			.toList();
+	}
+
 	public Stream<IClickableIngredientInternal<?>> getIngredientUnderMouse(double mouseX, double mouseY) {
 		if (!isInsideViewport(mouseX, mouseY)) {
 			return Stream.empty();

@@ -2,6 +2,7 @@ package mezz.jei.gui.recipes;
 
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.common.util.ImmutableSize2i;
@@ -19,6 +20,12 @@ import java.util.stream.Stream;
 public interface IRecipeGuiLogic extends IScrollbarController {
 
 	String getPageString();
+
+	int getPageIndex();
+
+	int getPageCount();
+
+	List<IFocus<?>> getFocuses();
 
 	boolean isScrolling();
 

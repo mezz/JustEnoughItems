@@ -1,5 +1,6 @@
 package mezz.jei.gui.overlay.ingredients;
 
+import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiProperties;
@@ -827,7 +828,27 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		@Override
+		public List<IFocus<?>> getFocuses() {
+			return List.of();
+		}
+
+		@Override
 		public void showTypes(List<RecipeType<?>> recipeTypes) {
+		}
+
+		@Override
+		public List<IRecipeCategory<?>> getRecipeCategories() {
+			return List.of();
+		}
+
+		@Override
+		public Optional<IRecipeCategory<?>> getSelectedRecipeCategory() {
+			return Optional.empty();
+		}
+
+		@Override
+		public boolean setRecipeCategory(RecipeType<?> recipeType) {
+			return false;
 		}
 
 		@Override
@@ -835,8 +856,28 @@ public class IngredientGridWithNavigationControllerTest {
 		}
 
 		@Override
+		public int getPageIndex() {
+			return -1;
+		}
+
+		@Override
+		public int getPageCount() {
+			return 0;
+		}
+
+		@Override
+		public List<IRecipeLayoutDrawable<?>> getVisibleRecipeLayouts() {
+			return List.of();
+		}
+
+		@Override
 		public <T> Optional<T> getIngredientUnderMouse(IIngredientType<T> ingredientType) {
 			return Optional.empty();
+		}
+
+		@Override
+		public boolean isOpen() {
+			return false;
 		}
 
 		@Override

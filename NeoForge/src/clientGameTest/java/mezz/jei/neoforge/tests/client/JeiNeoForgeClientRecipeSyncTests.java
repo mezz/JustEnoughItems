@@ -88,8 +88,12 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 	}
 
 	private static void runSingleplayerTestCase(String name, Runnable assertions) {
+		runSingleplayerTestCase(name, GameType.CREATIVE, assertions);
+	}
+
+	private static void runSingleplayerTestCase(String name, GameType gameType, Runnable assertions) {
 		LOGGER.info("Starting JEI NeoForge client recipe sync test: {}", name);
-		try (SingleplayerWorld ignored = SingleplayerWorld.create()) {
+		try (SingleplayerWorld ignored = SingleplayerWorld.create(gameType)) {
 			assertions.run();
 		}
 		assertJeiClientStateCleared(name);
@@ -284,6 +288,15 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 	}
 
 	private enum TestCase {
+		INSPECTION("inspection", "NeoForge inspection API") {
+			@Override
+			public void run() {
+				runSingleplayerTestCase(displayName(), GameType.SURVIVAL, () -> {
+					assertSyncedRecipesFromSingleplayer();
+					JeiNeoForgeInspectionTests.run();
+				});
+			}
+		},
 		SINGLEPLAYER("singleplayer", "NeoForge singleplayer") {
 			@Override
 			public void run() {
@@ -371,12 +384,12 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 			this.levelId = levelId;
 		}
 
-		public static SingleplayerWorld create() {
+		public static SingleplayerWorld create(GameType gameType) {
 			String levelId = "jei-client-test-" + UUID.randomUUID();
 			ClientTestUtil.runOnClient(client -> {
 				LevelSettings levelSettings = new LevelSettings(
 					"JEI Client Test",
-					GameType.CREATIVE,
+					gameType,
 					false,
 					Difficulty.NORMAL,
 					true,
