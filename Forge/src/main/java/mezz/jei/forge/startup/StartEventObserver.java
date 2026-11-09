@@ -109,19 +109,19 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 			startIfReady();
 		}
 	}
-	
+
 	private void onTagsUpdatedEvent(TagsUpdatedEvent event) {
-	
-	    // Only server-synced tags matter here - ignore server's reloads
-	    if (event.getUpdateCause() != TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED) {
-        	return;
-        }
-        if (!observeConnectionEvent(event)){
-            return;
-        }
-        this.observedTagSync = true;
-        startIfReady();
-	
+
+		// Only server-synced tags matter here - ignore server's reloads
+		if (event.getUpdateCause() != TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED) {
+			return;
+		}
+		if (!observeConnectionEvent(event)) {
+			return;
+		}
+		this.observedTagSync = true;
+		startIfReady();
+
 	}
 
 	private void startIfReady() {
@@ -157,29 +157,29 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 	private String getRequiredStartEventsString() {
 		if (shouldWaitForRecipes()) {
 			return "[%s, %s]".formatted(
-                ClientPlayerNetworkEvent.LoggingIn.class.getName(), 
-                RecipesUpdatedEvent.class.getName(), 
-                TagsUpdatedEvent.class.getName()
+				ClientPlayerNetworkEvent.LoggingIn.class.getName(),
+				RecipesUpdatedEvent.class.getName(),
+				TagsUpdatedEvent.class.getName()
 			);
 		}
 		return "[%s]".formatted(ClientPlayerNetworkEvent.LoggingIn.class.getName());
 	}
 
 	private String getMissingStartEventsString() {
-    	List<String> missingEvents = new ArrayList<>();
-    	if (!observedLogin) {
-    		missingEvents.add(ClientPlayerNetworkEvent.LoggingIn.class.getName());
-    	}
-    	if (shouldWaitForRecipes()) {
-    		if (!observedRecipeSync) {
-    			missingEvents.add(RecipesUpdatedEvent.class.getName());
-    		}
-    		if (!observedTagSync) {
-    			missingEvents.add(TagsUpdatedEvent.class.getName());
-    		}
-    	}
-    	return "[" + String.join(", ", missingEvents) + "]";
-    }
+		List<String> missingEvents = new ArrayList<>();
+		if (!observedLogin) {
+			missingEvents.add(ClientPlayerNetworkEvent.LoggingIn.class.getName());
+		}
+		if (shouldWaitForRecipes()) {
+			if (!observedRecipeSync) {
+				missingEvents.add(RecipesUpdatedEvent.class.getName());
+			}
+			if (!observedTagSync) {
+				missingEvents.add(TagsUpdatedEvent.class.getName());
+			}
+		}
+		return "[" + String.join(", ", missingEvents) + "]";
+	}
 
 	private static <T extends Event> void logReceivedEvent(T event) {
 		LOGGER.debug("JEI StartEventObserver received event: {}", event.getClass());
