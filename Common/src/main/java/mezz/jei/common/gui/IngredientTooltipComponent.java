@@ -1,15 +1,17 @@
 package mezz.jei.common.gui;
 
-import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
+import mezz.jei.api.gui.IJeiTooltipComponent;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.rendering.IIngredientRenderContext;
 import mezz.jei.common.util.SafeIngredientUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 
-public class IngredientTooltipComponent<T> implements ClientTooltipComponent, TooltipComponent {
+import java.util.List;
+
+public class IngredientTooltipComponent<T> implements ClientTooltipComponent, IJeiTooltipComponent {
 	private static final int INGREDIENT_PADDING = 1;
 
 	private final ITypedIngredient<T> typedIngredient;
@@ -18,6 +20,16 @@ public class IngredientTooltipComponent<T> implements ClientTooltipComponent, To
 	public IngredientTooltipComponent(ITypedIngredient<T> typedIngredient, IIngredientRenderer<T> ingredientRenderer) {
 		this.typedIngredient = typedIngredient;
 		this.ingredientRenderer = ingredientRenderer;
+	}
+
+	@Override
+	public List<String> getText() {
+		return List.of();
+	}
+
+	@Override
+	public List<ITypedIngredient<?>> getIngredients() {
+		return List.of(typedIngredient);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
@@ -336,6 +337,12 @@ public interface IGuiHelper {
 	 * @since 19.18.8
 	 */
 	IRecipeWidget createWidgetFromDrawable(IDrawable drawable, int xPos, int yPos);
+
+	/**
+	 * Creates an empty tooltip builder.
+	 * @since 19.74.0
+	 */
+	ITooltipBuilder createTooltipBuilder();
 
 	/**
 	 * Create a timer to help with rendering things that normally depend on ticks.

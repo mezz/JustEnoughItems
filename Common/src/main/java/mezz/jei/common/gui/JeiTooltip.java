@@ -115,6 +115,14 @@ public class JeiTooltip implements ITooltipBuilder {
 		return lines;
 	}
 
+	public void copyTo(ITooltipBuilder tooltip) {
+		tooltip.getLines().addAll(lines);
+		tooltip.getLines().addAll(ingredientTooltipFooter);
+		if (typedIngredient != null) {
+			tooltip.setIngredient(typedIngredient);
+		}
+	}
+
 	public void addAll(JeiTooltip tooltip) {
 		lines.addAll(tooltip.lines);
 		ingredientTooltipFooter.addAll(tooltip.ingredientTooltipFooter);

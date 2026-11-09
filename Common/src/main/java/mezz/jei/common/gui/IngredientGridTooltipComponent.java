@@ -59,6 +59,10 @@ public abstract class IngredientGridTooltipComponent<T> implements ClientTooltip
 		this.background = Internal.getTextures().getRecipePreviewBackground();
 	}
 
+	protected List<T> getIngredientList() {
+		return List.copyOf(ingredients);
+	}
+
 	static int getMaximumWidth() {
 		return MAX_WIDTH;
 	}

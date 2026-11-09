@@ -2,6 +2,8 @@ package mezz.jei.common.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.drawable.IScalableDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -97,6 +99,11 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 	}
 
 	@Override
+	public void getTooltip(ITooltipBuilder tooltip, double mouseX, double mouseY) {
+
+	}
+
+	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return area.contains(mouseX, mouseY);
 	}
@@ -137,6 +144,11 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 	}
 
 	@Override
+	public List<IRecipeWidget> getWidgets() {
+		return List.of(scrollBoxWidget);
+	}
+
+	@Override
 	public IRecipeCategory<R> getRecipeCategory() {
 		return recipeCategory;
 	}
@@ -144,6 +156,11 @@ public class RecipeLayoutDrawableErrored<R> implements IRecipeLayoutDrawable<R> 
 	@Override
 	public R getRecipe() {
 		return recipe;
+	}
+
+	@Override
+	public boolean isShapeless() {
+		return false;
 	}
 
 	@Override

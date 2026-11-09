@@ -1,6 +1,8 @@
 package mezz.jei.library.gui.helpers;
 
 import mezz.jei.api.gui.ITickTimer;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
@@ -269,6 +271,11 @@ public class GuiHelper implements IGuiHelper {
 	@Override
 	public int getScrollBoxScrollbarExtraWidth() {
 		return AbstractScrollWidget.getScrollBoxScrollbarExtraWidth();
+	}
+
+	@Override
+	public ITooltipBuilder createTooltipBuilder() {
+		return new JeiTooltip();
 	}
 
 	@Override

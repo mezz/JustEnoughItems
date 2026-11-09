@@ -19,7 +19,7 @@ public class ShapelessIcon {
 		icon.draw(guiGraphics, area.getX(), area.getY());
 	}
 
-	public boolean isMouseOver(int mouseX, int mouseY) {
+	public boolean isMouseOver(double mouseX, double mouseY) {
 		return area.contains(mouseX, mouseY);
 	}
 

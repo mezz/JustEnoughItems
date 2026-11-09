@@ -27,6 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -106,6 +107,18 @@ public final class InspectionTestPlugin implements IModPlugin {
 		public void setRecipe(IRecipeLayoutBuilder builder, Integer recipe, IFocusGroup focuses) {
 			builder.addSlot(RecipeIngredientRole.INPUT, 4, 4).addItemStack(new ItemStack(Items.OAK_LOG));
 			builder.addSlot(RecipeIngredientRole.OUTPUT, 90, 4).addItemStack(new ItemStack(Items.APPLE, recipe + 1));
+			builder.setShapeless();
+		}
+
+		@Override
+		public void getTooltip(mezz.jei.api.gui.builder.ITooltipBuilder tooltip, Integer recipe,
+			IRecipeSlotsView slots, double mouseX, double mouseY) {
+			tooltip.add(Component.literal("Inspection category tooltip"));
+		}
+
+		@Override
+		public void createRecipeExtras(mezz.jei.api.gui.widgets.IRecipeExtrasBuilder builder, Integer recipe, IFocusGroup focuses) {
+			builder.addText(List.of(Component.literal("Inspection widget")), 110, 15).setPosition(4, 30);
 		}
 	}
 

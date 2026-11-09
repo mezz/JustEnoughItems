@@ -2,6 +2,9 @@ package mezz.jei.gui.overlay.bookmarks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.gui.IJeiTooltipComponent;
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.common.transfer.RecipeTransferService;
 import net.minecraft.client.Minecraft;
@@ -12,10 +15,12 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jetbrains.annotations.Nullable;
 
-public class PreviewTooltipComponent<R> implements ClientTooltipComponent, TooltipComponent {
+import java.util.List;
+import java.util.Optional;
+
+public class PreviewTooltipComponent<R> implements ClientTooltipComponent, IJeiTooltipComponent {
 	private static final int UPDATE_INTERVAL_MS = 2000;
 
 	private final IRecipeLayoutDrawable<R> drawable;
@@ -33,6 +38,19 @@ public class PreviewTooltipComponent<R> implements ClientTooltipComponent, Toolt
 	) {
 		this.drawable = drawable;
 		this.recipeTransferService = recipeTransferService;
+	}
+
+	@Override
+	public List<String> getText() {
+		return List.of();
+	}
+
+	@Override
+	public List<ITypedIngredient<?>> getIngredients() {
+		return drawable.getRecipeSlotsView().getSlotViews().stream()
+			.map(IRecipeSlotView::getDisplayedIngredient)
+			.flatMap(Optional::stream)
+			.toList();
 	}
 
 	public IRecipeLayoutDrawable<R> getRecipeLayout() {

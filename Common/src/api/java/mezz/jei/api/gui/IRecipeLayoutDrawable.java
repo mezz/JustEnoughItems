@@ -1,6 +1,8 @@
 package mezz.jei.api.gui;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
+import mezz.jei.api.gui.widgets.IRecipeWidget;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.gui.inputs.IJeiInputHandler;
@@ -50,6 +52,17 @@ public interface IRecipeLayoutDrawable<R> {
 	 * @since 4.7.4
 	 */
 	void drawOverlays(GuiGraphics guiGraphics, int mouseX, int mouseY);
+
+	/**
+	 * Adds the tooltip for the given screen position to the builder.
+	 * A hovered slot supplies the entire tooltip, even when its tooltip is empty.
+	 *
+	 * @param tooltip an empty builder, available from {@link mezz.jei.api.helpers.IGuiHelper#createTooltipBuilder()}
+	 * @param mouseX the horizontal position in GUI-scaled screen coordinates
+	 * @param mouseY the vertical position in GUI-scaled screen coordinates
+	 * @since 19.74.0
+	 */
+	void getTooltip(ITooltipBuilder tooltip, double mouseX, double mouseY);
 
 	/**
 	 * Returns true if the mouse is hovering over the recipe.
@@ -138,6 +151,15 @@ public interface IRecipeLayoutDrawable<R> {
 	IRecipeSlotsView getRecipeSlotsView();
 
 	/**
+	 * Returns the widgets in this recipe layout, in the order they were added.
+	 * Widget coordinates are relative to the layout's top-left corner.
+	 *
+	 * @since 19.74.0
+	 */
+	@Unmodifiable
+	List<IRecipeWidget> getWidgets();
+
+	/**
 	 * Get the recipe category that this recipe layout is a part of.
 	 * @since 11.5.0
 	 */
@@ -148,6 +170,12 @@ public interface IRecipeLayoutDrawable<R> {
 	 * @since 11.5.0
 	 */
 	R getRecipe();
+
+	/**
+	 * Returns whether this layout displays JEI's shapeless indicator.
+	 * @since 19.74.0
+	 */
+	boolean isShapeless();
 
 	/**
 	 * Return the underlying recipe IDs used for this layout's tooltips and copy-ID shortcut.
