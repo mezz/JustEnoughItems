@@ -1,5 +1,6 @@
 package mezz.jei.gui;
 
+import mezz.jei.api.gui.buttons.ButtonSnapshot;
 import mezz.jei.api.gui.buttons.IButtonState;
 import mezz.jei.api.gui.buttons.IIconButtonController;
 import mezz.jei.api.gui.inputs.IJeiUserInput;
@@ -126,8 +127,16 @@ public class PageNavigation {
 		return nextButton.getArea();
 	}
 
+	public ButtonSnapshot getNextButton(boolean visible) {
+		return nextButton.getSnapshot(visible && isVisible());
+	}
+
 	public ImmutableRect2i getBackButtonArea() {
 		return backButton.getArea();
+	}
+
+	public ButtonSnapshot getBackButton(boolean visible) {
+		return backButton.getSnapshot(visible && isVisible());
 	}
 
 	public IInputTarget createInputHandler() {

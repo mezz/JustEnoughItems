@@ -53,6 +53,7 @@ import mezz.jei.gui.overlay.IngredientListOverlay;
 import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import mezz.jei.gui.overlay.bookmarks.history.LookupHistory;
 import mezz.jei.gui.recipes.RecipesGui;
+import mezz.jei.gui.runtime.JeiGuiRuntime;
 import mezz.jei.gui.util.FocusUtil;
 import net.mezzdev.config.api.value.change.IConfigValueBatchChangeListener;
 import net.minecraft.client.Minecraft;
@@ -156,7 +157,6 @@ public class JeiGuiStarter {
 		timer.stop();
 
 		IIngredientFilter ingredientFilterApi = new IngredientFilterApi(ingredientFilter, filterTextSource);
-		registration.setIngredientFilter(ingredientFilterApi);
 
 		BookmarkFactory bookmarkFactory = new BookmarkFactory(codecHelper, registryAccess, ingredientManager);
 		Codec<IBookmark> bookmarkCodec = BookmarkCodec.create(codecHelper, ingredientManager, recipeManager, recipeTransferService, bookmarkFactory).codec();
@@ -187,12 +187,10 @@ public class JeiGuiStarter {
 			colorHelper,
 			ingredientFilter
 		);
-		registration.setIngredientListOverlay(ingredientListOverlay);
 
 		BookmarkList bookmarkList = new BookmarkList(recipeManager, focusFactory, ingredientManager, registryAccess, bookmarkConfig, clientConfig, guiHelper, codecHelper, bookmarkFactory, bookmarkCodec);
 		bookmarkConfig.loadBookmarks(recipeManager, focusFactory, guiHelper, ingredientManager, registryAccess, bookmarkList, codecHelper, bookmarkCodec, bookmarkFactory, recipeTransferService);
 		IBookmarkManager bookmarkManager = new BookmarkManager(bookmarkList, bookmarkFactory, recipeManager, focusFactory, ingredientManager, recipeTransferService);
-		registration.setBookmarkManager(bookmarkManager);
 
 		BookmarkOverlay bookmarkOverlay = OverlayHelper.createBookmarkOverlay(
 			ingredientManager,
@@ -209,7 +207,6 @@ public class JeiGuiStarter {
 			textures,
 			colorHelper
 		);
-		registration.setBookmarkOverlay(bookmarkOverlay);
 
 		FocusUtil focusUtil = new FocusUtil(focusFactory, clientConfig, ingredientManager);
 
@@ -226,7 +223,13 @@ public class JeiGuiStarter {
 			focusUtil,
 			ingredientListOverlay
 		);
-		registration.setRecipesGui(recipesGui);
+		registration.setGuiRuntime(new JeiGuiRuntime(
+			ingredientListOverlay,
+			bookmarkOverlay,
+			recipesGui,
+			ingredientFilterApi,
+			bookmarkManager
+		));
 		JeiInputSetup input = JeiInputSetup.create(
 			ingredientListOverlay,
 			bookmarkOverlay,

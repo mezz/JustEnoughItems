@@ -11,6 +11,8 @@ import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IIngredientVisibility;
+import mezz.jei.api.runtime.IJeiGuiRuntime;
+import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.search.ISearchStorageBuilderFactory;
@@ -57,6 +59,14 @@ public interface IRuntimeRegistration {
 	 * that want to override JEI's GUI and have it still work with mods that use JEI's API.
 	 */
 	void setRecipesGui(IRecipesGui recipesGui);
+
+	/**
+	 * Sets the GUI runtime exposed by {@link IJeiRuntime#getGuiRuntime()}.
+	 * Replaces earlier individual registrations of the recipe GUI, ingredient list overlay, ingredient filter,
+	 * bookmark overlay, and bookmark manager.
+	 * @since 19.75.0
+	 */
+	void setGuiRuntime(IJeiGuiRuntime guiRuntime);
 
 	/**
 	 * Set the Ingredient Filter.

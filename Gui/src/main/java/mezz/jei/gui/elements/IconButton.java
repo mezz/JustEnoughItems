@@ -1,5 +1,6 @@
 package mezz.jei.gui.elements;
 
+import mezz.jei.api.gui.buttons.ButtonSnapshot;
 import mezz.jei.api.gui.buttons.IIconButtonController;
 import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.common.input.IInputTarget;
@@ -37,6 +38,10 @@ public final class IconButton {
 
 	public void setForcePressed(boolean forcePressed) {
 		this.button.setForcePressed(forcePressed);
+	}
+
+	public ButtonSnapshot getSnapshot(boolean parentVisible) {
+		return new ButtonSnapshot(area.toScreenRectangle(), parentVisible && button.visible && !area.isEmpty(), button.active);
 	}
 
 	public ImmutableRect2i getArea() {
@@ -79,6 +84,10 @@ public final class IconButton {
 
 	public boolean isVisible() {
 		return button.visible;
+	}
+
+	public boolean isActive() {
+		return button.active;
 	}
 
 	public int getX() {

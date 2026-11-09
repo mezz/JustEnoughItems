@@ -10,6 +10,7 @@ import mezz.jei.api.runtime.IEditModeConfig;
 import mezz.jei.api.runtime.IIngredientFilter;
 import mezz.jei.api.runtime.IIngredientListOverlay;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IJeiGuiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.api.runtime.IScreenHelper;
 import mezz.jei.api.search.ISearchStorage;
@@ -18,6 +19,7 @@ import mezz.jei.api.search.ISearchStorageFactory;
 import mezz.jei.library.gui.BookmarkManagerDummy;
 import mezz.jei.library.gui.BookmarkOverlayDummy;
 import mezz.jei.library.gui.IngredientListOverlayDummy;
+import mezz.jei.library.gui.JeiGuiRuntimeDummy;
 import mezz.jei.library.gui.recipes.RecipesGuiDummy;
 import mezz.jei.library.ingredients.IngredientFilterApiDummy;
 
@@ -30,6 +32,7 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 	private final IScreenHelper screenHelper;
 	private final ISearchStorageBuilderFactory searchStorageBuilderFactory;
 
+	private IJeiGuiRuntime buttonSource = JeiGuiRuntimeDummy.INSTANCE;
 	private IIngredientListOverlay ingredientListOverlay = IngredientListOverlayDummy.INSTANCE;
 	private IBookmarkOverlay bookmarkOverlay = BookmarkOverlayDummy.INSTANCE;
 	private IBookmarkManager bookmarkManager = BookmarkManagerDummy.INSTANCE;
@@ -72,6 +75,16 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 	@Override
 	public void setRecipesGui(IRecipesGui recipesGui) {
 		this.recipesGui = recipesGui;
+	}
+
+	@Override
+	public void setGuiRuntime(IJeiGuiRuntime guiRuntime) {
+		this.buttonSource = guiRuntime;
+		this.ingredientListOverlay = guiRuntime.getIngredientListOverlay();
+		this.bookmarkOverlay = guiRuntime.getBookmarkOverlay();
+		this.bookmarkManager = guiRuntime.getBookmarkManager();
+		this.recipesGui = guiRuntime.getRecipesGui();
+		this.ingredientFilter = guiRuntime.getIngredientFilter();
 	}
 
 	@Override
@@ -125,23 +138,7 @@ public class RuntimeRegistration implements IRuntimeRegistration {
 		return searchStorageBuilderFactory;
 	}
 
-	public IIngredientListOverlay getIngredientListOverlay() {
-		return ingredientListOverlay;
-	}
-
-	public IBookmarkOverlay getBookmarkOverlay() {
-		return bookmarkOverlay;
-	}
-
-	public IBookmarkManager getBookmarkManager() {
-		return bookmarkManager;
-	}
-
-	public IRecipesGui getRecipesGui() {
-		return recipesGui;
-	}
-
-	public IIngredientFilter getIngredientFilter() {
-		return this.ingredientFilter;
+	public IJeiGuiRuntime getGuiRuntime() {
+		return new RegisteredGuiRuntime(recipesGui, ingredientListOverlay, ingredientFilter, bookmarkOverlay, bookmarkManager, buttonSource);
 	}
 }

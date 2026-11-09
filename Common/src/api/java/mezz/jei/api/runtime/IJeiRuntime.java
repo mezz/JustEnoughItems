@@ -20,35 +20,61 @@ public interface IJeiRuntime {
 	IRecipeManager getRecipeManager();
 
 	/**
+	 * Gives access to JEI's GUI components, ingredient filter, and bookmarks.
+	 * @since 19.75.0
+	 */
+	IJeiGuiRuntime getGuiRuntime();
+
+	/**
 	 * The {@link IRecipesGui} is JEI's gui for displaying recipes.
 	 * Use this interface to open the gui and display recipes.
+	 * @deprecated use {@link IJeiGuiRuntime#getRecipesGui()} from {@link #getGuiRuntime()}
 	 */
-	IRecipesGui getRecipesGui();
+	@Deprecated(since = "19.75.0", forRemoval = true)
+	default IRecipesGui getRecipesGui() {
+		return getGuiRuntime().getRecipesGui();
+	}
 
 	/**
 	 * The {@link IIngredientFilter} is JEI's filter that can be set by players or controlled by mods.
 	 * Use this interface to get information from and interact with it.
+	 * @deprecated use {@link IJeiGuiRuntime#getIngredientFilter()} from {@link #getGuiRuntime()}
 	 */
-	IIngredientFilter getIngredientFilter();
+	@Deprecated(since = "19.75.0", forRemoval = true)
+	default IIngredientFilter getIngredientFilter() {
+		return getGuiRuntime().getIngredientFilter();
+	}
 
 	/**
 	 * The {@link IIngredientListOverlay} is JEI's gui that displays all the ingredients next to an open container gui.
 	 * Use this interface to get information from and interact with it.
+	 * @deprecated use {@link IJeiGuiRuntime#getIngredientListOverlay()} from {@link #getGuiRuntime()}
 	 */
-	IIngredientListOverlay getIngredientListOverlay();
+	@Deprecated(since = "19.75.0", forRemoval = true)
+	default IIngredientListOverlay getIngredientListOverlay() {
+		return getGuiRuntime().getIngredientListOverlay();
+	}
 
 	/**
 	 * The {@link IBookmarkOverlay} is JEI's gui that displays all the bookmarked ingredients next to an open container gui.
 	 * Use this interface to get information from it.
+	 * @deprecated use {@link IJeiGuiRuntime#getBookmarkOverlay()} from {@link #getGuiRuntime()}
 	 */
-	IBookmarkOverlay getBookmarkOverlay();
+	@Deprecated(since = "19.75.0", forRemoval = true)
+	default IBookmarkOverlay getBookmarkOverlay() {
+		return getGuiRuntime().getBookmarkOverlay();
+	}
 
 	/**
 	 * The {@link IBookmarkManager} gives access to JEI's ingredient and recipe bookmarks.
 	 *
 	 * @since 19.53.0
+	 * @deprecated use {@link IJeiGuiRuntime#getBookmarkManager()} from {@link #getGuiRuntime()}
 	 */
-	IBookmarkManager getBookmarkManager();
+	@Deprecated(since = "19.75.0", forRemoval = true)
+	default IBookmarkManager getBookmarkManager() {
+		return getGuiRuntime().getBookmarkManager();
+	}
 
 	/**
 	 * {@link IJeiHelpers} provides helpers and tools for addon mods.

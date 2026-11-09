@@ -1,10 +1,12 @@
 package mezz.jei.gui.overlay.ingredients;
 
+import mezz.jei.api.gui.buttons.ButtonSnapshot;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.interaction.IInputInteraction;
+import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.input.IRecipeFocusSource;
 import mezz.jei.gui.input.InputCommands;
 import mezz.jei.gui.overlay.elements.IElement;
@@ -21,6 +23,20 @@ import java.util.stream.Stream;
  * Ingredient display and input handling for an overlay.
  */
 public interface IIngredientListOverlayContents extends IIngredientGridView, IIngredientGridPageNavigation, IRecipeFocusSource {
+	ImmutableRect2i getIngredientGridArea();
+
+	int getPageIndex();
+
+	int getPageCount();
+
+	ImmutableRect2i getNextPageButtonArea();
+
+	ButtonSnapshot getNextButton(boolean visible);
+
+	ImmutableRect2i getBackButtonArea();
+
+	ButtonSnapshot getBackButton(boolean visible);
+
 	/**
 	 * Draws the visible ingredients and their navigation controls.
 	 */
