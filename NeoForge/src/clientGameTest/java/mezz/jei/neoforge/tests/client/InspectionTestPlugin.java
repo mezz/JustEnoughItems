@@ -36,6 +36,9 @@ public final class InspectionTestPlugin implements IModPlugin {
 	static final Identifier UID = Identifier.fromNamespaceAndPath("jeiclienttests", "inspection");
 	static final IRecipeType<Integer> TYPE = IRecipeType.create("jeiclienttests", "inspection", Integer.class);
 	static volatile IJeiRuntime runtime;
+	static int availableCallbacks;
+	static int unavailableCallbacks;
+	static int refreshCallbacks;
 	static int attempts;
 	static int starts;
 	static int completions;
@@ -51,11 +54,18 @@ public final class InspectionTestPlugin implements IModPlugin {
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 		runtime = jeiRuntime;
+		availableCallbacks++;
 	}
 
 	@Override
 	public void onRuntimeUnavailable() {
 		runtime = null;
+		unavailableCallbacks++;
+	}
+
+	@Override
+	public void onRuntimeRefreshed() {
+		refreshCallbacks++;
 	}
 
 	@Override

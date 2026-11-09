@@ -2,10 +2,12 @@ package mezz.jei.fabric.startup;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.common.Internal;
+import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.network.IConnectionToServer;
 import mezz.jei.fabric.events.JeiLifecycleEvents;
 import mezz.jei.fabric.network.ClientNetworkHandler;
 import mezz.jei.fabric.network.ConnectionToServer;
+import mezz.jei.fabric.plugins.fabric.FabricGuiPlugin;
 import mezz.jei.gui.config.InternalKeyMappings;
 import mezz.jei.library.config.JeiConfigData;
 import mezz.jei.library.startup.JeiStarter;
@@ -87,6 +89,16 @@ public class ClientLifecycleHandler {
 				stopJei();
 				startJei();
 			}
+		};
+	}
+
+	public ResourceManagerReloadListener getResourceReloadListener() {
+		return resourceManager -> {
+			JeiGuiColors.onResourceManagerReload(resourceManager);
+			FabricGuiPlugin.getResourceReloadHandler().ifPresent(handler -> {
+				handler.onResourceManagerReload(resourceManager);
+				jeiStarter.onRuntimeRefreshed();
+			});
 		};
 	}
 

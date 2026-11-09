@@ -258,6 +258,12 @@ public final class JeiStarter {
 		}
 	}
 
+	public void onRuntimeRefreshed() {
+		if (running) {
+			PluginCaller.callOnPlugins("Sending Runtime Refreshed", plugins, IModPlugin::onRuntimeRefreshed);
+		}
+	}
+
 	public void stop() {
 		if (!running) {
 			return;
