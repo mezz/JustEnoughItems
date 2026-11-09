@@ -1,14 +1,12 @@
 package mezz.jei.fabric;
 
 import mezz.jei.common.Internal;
-import mezz.jei.common.gui.JeiGuiColors;
 import mezz.jei.common.util.MinecraftLocaleSupplier;
 import mezz.jei.common.util.Translator;
 import mezz.jei.fabric.chat.JeiChatEventHandler;
 import mezz.jei.fabric.chat.JeiInternalShowCommand;
 import mezz.jei.fabric.events.JeiIdentifiableResourceReloadListener;
 import mezz.jei.fabric.events.JeiLifecycleEvents;
-import mezz.jei.fabric.plugins.fabric.FabricGuiPlugin;
 import mezz.jei.fabric.startup.ClientLifecycleHandler;
 import mezz.jei.library.config.JeiConfigData;
 import mezz.jei.library.config.JeiConfigRegistration;
@@ -16,7 +14,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 
 @SuppressWarnings("unused")
 public class JustEnoughItemsClient implements ClientModInitializer {
@@ -40,17 +37,10 @@ public class JustEnoughItemsClient implements ClientModInitializer {
 					.registerReloadListener(new JeiIdentifiableResourceReloadListener("lifecycle", clientLifecycleHandler.getReloadListener()));
 
 				ResourceManagerHelper.get(PackType.CLIENT_RESOURCES)
-					.registerReloadListener(new JeiIdentifiableResourceReloadListener("resources_reload", createReloadListener()));
+					.registerReloadListener(new JeiIdentifiableResourceReloadListener("resources_reload", clientLifecycleHandler.getResourceReloadListener()));
 			});
 			ClientLifecycleEvents.CLIENT_STOPPING.register(event -> Internal.onClientStopping());
 		});
 	}
 
-	public ResourceManagerReloadListener createReloadListener() {
-		return (resourceManager) -> {
-			JeiGuiColors.onResourceManagerReload(resourceManager);
-			FabricGuiPlugin.getResourceReloadHandler()
-				.ifPresent(r -> r.onResourceManagerReload(resourceManager));
-		};
-	}
 }

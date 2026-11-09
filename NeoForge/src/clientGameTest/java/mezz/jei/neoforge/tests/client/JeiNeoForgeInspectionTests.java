@@ -12,6 +12,7 @@ import mezz.jei.api.runtime.IJeiGuiRuntime;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import mezz.jei.common.Internal;
+import mezz.jei.gui.startup.ResourceReloadHandler;
 import mezz.jei.library.gui.BookmarkManagerDummy;
 import mezz.jei.library.gui.BookmarkOverlayDummy;
 import mezz.jei.library.gui.IngredientListOverlayDummy;
@@ -20,17 +21,20 @@ import mezz.jei.library.ingredients.IngredientFilterApiDummy;
 import mezz.jei.library.load.PluginLoader;
 import mezz.jei.library.load.registration.RuntimeRegistration;
 import mezz.jei.library.runtime.JeiRuntime;
+import mezz.jei.neoforge.plugins.neoforge.NeoForgeGuiPlugin;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundUpdateRecipesPacket;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 final class JeiNeoForgeInspectionTests {
 	private static final Duration TIMEOUT = Duration.ofSeconds(60);
@@ -220,6 +224,54 @@ final class JeiNeoForgeInspectionTests {
 			checkScreenBounds(reopenedConfig.bounds(), client.screen.width, client.screen.height, "Config control after reopening inventory");
 		});
 		verifyVanillaTransfers();
+		verifyRuntimeReplacement();
+		verifyInPlaceRefresh();
+	}
+
+	private static void verifyInPlaceRefresh() {
+		IJeiRuntime runtime = ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.runtime);
+		int availableBefore = ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.availableCallbacks);
+		int unavailableBefore = ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.unavailableCallbacks);
+		int refreshedBefore = ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.refreshCallbacks);
+		ClientTestUtil.computeOnClient(client -> client.reloadResourcePacks())
+			.orTimeout(TIMEOUT.toSeconds(), TimeUnit.SECONDS)
+			.join();
+		ClientTestUtil.runOnClient(client -> {
+			check(InspectionTestPlugin.runtime == runtime,
+				"Filter refresh must preserve the runtime");
+			check(InspectionTestPlugin.refreshCallbacks == refreshedBefore + 1,
+				"Filter refresh must notify plugins exactly once");
+			check(InspectionTestPlugin.availableCallbacks == availableBefore && InspectionTestPlugin.unavailableCallbacks == unavailableBefore,
+				"Filter refresh must not replace the runtime or repeat availability callbacks");
+		}, TIMEOUT);
+	}
+
+	private static void verifyRuntimeReplacement() {
+		IJeiRuntime oldRuntime = ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.runtime);
+		ResourceReloadHandler oldReloadHandler = ClientTestUtil.computeOnClient(client -> NeoForgeGuiPlugin.getResourceReloadHandler().orElseThrow());
+		int availableBefore = ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.availableCallbacks);
+		int unavailableBefore = ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.unavailableCallbacks);
+		int refreshedBefore = ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.refreshCallbacks);
+		replaceRuntime(oldRuntime);
+		ClientTestUtil.runOnClient(client -> check(
+			InspectionTestPlugin.availableCallbacks == availableBefore + 1 && InspectionTestPlugin.unavailableCallbacks == unavailableBefore + 1 &&
+				InspectionTestPlugin.refreshCallbacks == refreshedBefore,
+			"Recipe reload must use availability callbacks instead of reporting an in-place refresh"));
+		verifyStaleRefreshHandler(oldReloadHandler);
+	}
+
+	private static void replaceRuntime(IJeiRuntime oldRuntime) {
+		ClientTestUtil.runOnClient(client -> client.getConnection().handleUpdateRecipes(new ClientboundUpdateRecipesPacket(Internal.getClientSyncedRecipes())));
+		ClientTestUtil.waitUntil(() -> ClientTestUtil.computeOnClient(client -> InspectionTestPlugin.runtime != null && InspectionTestPlugin.runtime != oldRuntime),
+			TIMEOUT, () -> "Recipe reload must replace the runtime");
+	}
+
+	private static void verifyStaleRefreshHandler(ResourceReloadHandler handler) {
+		ClientTestUtil.runOnClient(client -> {
+			int refreshedBefore = InspectionTestPlugin.refreshCallbacks;
+			handler.onResourceManagerReload(client.getResourceManager());
+			check(InspectionTestPlugin.refreshCallbacks == refreshedBefore, "A replaced runtime's handler must not report a refresh of the current runtime");
+		}, TIMEOUT);
 	}
 
 	@SuppressWarnings("unchecked")

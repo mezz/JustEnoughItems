@@ -181,6 +181,15 @@ public interface IModPlugin {
 	}
 
 	/**
+	 * Called after a resource reload refreshes JEI's ingredient list.
+	 *
+	 * @since 19.76.0
+	 */
+	default void onRuntimeRefreshed() {
+
+	}
+
+	/**
 	 * Called when JEI's runtime features are no longer available, after a user quits or logs out of a world.
 	 * @since 11.5.0
 	 */
