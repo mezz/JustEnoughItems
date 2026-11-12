@@ -50,6 +50,11 @@ public final class LegacyEnumSerializers {
 		Function<String, T> legacyValueMigration
 	) implements IConfigValueSerializer<T> {
 		@Override
+		public Class<T> getValueClass() {
+			return enumClass;
+		}
+
+		@Override
 		public String serialize(T value) {
 			return value.name();
 		}
@@ -170,6 +175,11 @@ public final class LegacyEnumSerializers {
 	private record EnumSerializer<T extends Enum<T>>(
 		Class<T> enumClass
 	) implements IConfigValueSerializer<T> {
+		@Override
+		public Class<T> getValueClass() {
+			return enumClass;
+		}
+
 		@Override
 		public String serialize(T value) {
 			return value.name();
