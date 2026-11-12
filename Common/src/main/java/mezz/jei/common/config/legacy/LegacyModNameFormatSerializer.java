@@ -75,6 +75,11 @@ public final class LegacyModNameFormatSerializer implements IConfigListValueSeri
 
 	private final class ChatFormattingSerializer implements IConfigValueSerializer<ChatFormatting> {
 		@Override
+		public Class<ChatFormatting> getValueClass() {
+			return ChatFormatting.class;
+		}
+
+		@Override
 		public String serialize(ChatFormatting value) {
 			return value.name();
 		}

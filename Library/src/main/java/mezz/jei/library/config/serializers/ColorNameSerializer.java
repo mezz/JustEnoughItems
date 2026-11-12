@@ -21,6 +21,11 @@ public class ColorNameSerializer implements IConfigKeyValueSerializer<ColorName,
 	private ColorNameSerializer() {}
 
 	@Override
+	public Class<ColorName> getValueClass() {
+		return ColorName.class;
+	}
+
+	@Override
 	public IConfigValueSerializer<String> getKeySerializer() {
 		return NAME_SERIALIZER;
 	}
@@ -101,6 +106,11 @@ public class ColorNameSerializer implements IConfigKeyValueSerializer<ColorName,
 
 	private static final class NameSerializer implements IConfigValueSerializer<String> {
 		@Override
+		public Class<String> getValueClass() {
+			return String.class;
+		}
+
+		@Override
 		public String serialize(String value) {
 			return value;
 		}
@@ -131,6 +141,11 @@ public class ColorNameSerializer implements IConfigKeyValueSerializer<ColorName,
 	private static final class RgbColorSerializer implements IConfigValueSerializer<PackedColor> {
 		private static final String HEX_PREFIX = "0x";
 		private static final int HEX_DIGITS = 6;
+
+		@Override
+		public Class<PackedColor> getValueClass() {
+			return PackedColor.class;
+		}
 
 		@Override
 		public String serialize(PackedColor value) {
