@@ -93,6 +93,11 @@ final class AlignmentConfigValueGuiAdapter implements IConfigScreenValue<Alignme
 		private static final List<Alignment> VALID_VALUES = List.of(Alignment.values());
 
 		@Override
+		public Class<Alignment> getValueClass() {
+			return Alignment.class;
+		}
+
+		@Override
 		public String serialize(Alignment value) {
 			return value.name();
 		}
