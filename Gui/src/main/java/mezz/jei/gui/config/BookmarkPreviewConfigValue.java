@@ -96,6 +96,11 @@ final class BookmarkPreviewConfigValue implements IConfigScreenValue<BookmarkPre
 
 	private static final class ModeSerializer implements IConfigValueEditorSerializer<Mode> {
 		@Override
+		public Class<Mode> getValueClass() {
+			return Mode.class;
+		}
+
+		@Override
 		public String serialize(Mode value) {
 			return value.name();
 		}
