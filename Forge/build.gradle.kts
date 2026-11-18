@@ -1,4 +1,3 @@
-import mezz.jei.gradle.externalSourceSetClasspath
 import mezz.jei.gradle.gradleProperty
 import mezz.jei.gradle.WriteClientOptions
 import org.slf4j.event.Level
@@ -17,10 +16,6 @@ repositories {
 	maven("https://maven.blamejared.com/") {
 		content { includeGroup("net.mezzdev.config") }
 	}
-}
-
-repositories {
-    google { content { includeModule("com.android.tools", "r8") } }
 }
 
 // gradle.properties
@@ -316,27 +311,10 @@ val sourcesJarTask = tasks.named<Jar>("sourcesJar") {
 	archiveClassifier.set("sources")
 }
 
-// Shared API annotations are compile-only and absent from the loader runtime classpath.
-val r8Libraries = configurations.create("r8Libraries") {
-    isCanBeConsumed = false
-    isCanBeResolved = true
-}
-dependencies {
-    add(r8Libraries.name, "com.google.code.findbugs:jsr305:3.0.2")
-}
-
-val r8LibraryClasspath = externalSourceSetClasspath(listOf(sourceSets.main.get()))
-    .minus(files(dependencyProjects.map { it.sourceSets.main.get().output }))
-
 // Dependency module descriptors describe their original jars, not the shaded mod.
 modShade.exclude("module-info.class")
 modShade.exclude("META-INF/versions/**/module-info.class")
 val shadedJar = modShade.shadeJar()
-shadedJar.configure {
-    shrink.set(true)
-    shrinkLibraryClasspath.setFrom(r8LibraryClasspath.minus(project.files(configurations)), r8Libraries)
-    shrinkRuleFiles.from(rootProject.layout.projectDirectory.file("config/lucene-r8.pro"))
-}
 apply(from = "../gradle/verify-jar-bytecode.gradle")
 val shadedSourcesJar = modShade.shadeSourcesJar()
 val reobfJarTask = tasks.named<AbstractArchiveTask>("reobfJar")
