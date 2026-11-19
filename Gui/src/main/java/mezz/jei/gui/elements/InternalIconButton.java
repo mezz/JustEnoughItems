@@ -10,6 +10,7 @@ import mezz.jei.common.gui.elements.DrawableBlank;
 import mezz.jei.common.gui.elements.DrawableNineSliceTexture;
 import mezz.jei.common.gui.textures.Textures;
 import mezz.jei.common.util.ImmutableRect2i;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.CommonComponents;
@@ -78,6 +79,10 @@ class InternalIconButton extends Button implements IButtonState {
 			xOffset += 0.5;
 			yOffset += 0.5;
 		}
+		// Snap centered and pressed offsets to physical pixels so odd GUI scales do not place icon edges on fragment centers.
+		double guiScale = Minecraft.getInstance().getWindow().getGuiScale();
+		xOffset = Math.round(xOffset * guiScale) / guiScale;
+		yOffset = Math.round(yOffset * guiScale) / guiScale;
 		var poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		{
