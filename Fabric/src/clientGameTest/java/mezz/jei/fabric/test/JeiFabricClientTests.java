@@ -1,7 +1,9 @@
 package mezz.jei.fabric.test;
 
+import mezz.jei.test.client.SpriteRenderingTest;
 import net.fabricmc.api.ClientModInitializer;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +53,7 @@ public final class JeiFabricClientTests implements ClientModInitializer {
 	private static void registerAllTests() {
 		List<FabricClientTestRunner.ClientTestCase> testCases = new ArrayList<>();
 		testCases.add(ItemBatchRenderingClientGameTest.getTestCase());
+		testCases.add(new FabricClientTestRunner.ClientTestCase("fabric-client-rendering", "arrowSprites", () -> ClientTestUtil.runOnClient(SpriteRenderingTest::run, Duration.ofSeconds(30))));
 		testCases.add(IngredientDecoratorClientGameTest.getTestCase());
 		testCases.add(FakeMenuClientGameTest.getTestCase());
 		testCases.add(ChatItemLinksClientGameTest.getTestCase());
