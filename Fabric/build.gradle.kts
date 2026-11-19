@@ -40,11 +40,15 @@ val mezzConfigModrinthProjectId = gradleProperty("mezzConfigModrinthProjectId")
 val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForgeProjectSlug")
 val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
 val luceneVersion = gradleProperty("luceneVersion")
-val amecsDependency = "de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-mc26.2.0:1.0.2"
+val amecsDependency = "de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-mc26.3.0:1.0.3"
+val amecsKeyMappingMatchersDependency = "de.siphalor.amecs.amecs-key-mapping-matchers:amecs-key-mapping-matchers-mc26.3.0:1.0.0"
 
 repositories {
     maven("https://maven.siphalor.de/") {
-        content { includeGroup("de.siphalor.amecs.amecs-key-modifiers") }
+        content {
+            includeGroup("de.siphalor.amecs.amecs-key-modifiers")
+            includeGroup("de.siphalor.amecs.amecs-key-mapping-matchers")
+        }
     }
 }
 
@@ -153,8 +157,8 @@ tasks.withType<JavaCompile> {
 }
 
 dependencies {
-    // Only the AMECS API is needed to compile the optional adapter. No 26.3 artifact is published yet.
     compileOnly(amecsDependency) { isTransitive = false }
+    compileOnly(amecsKeyMappingMatchersDependency) { isTransitive = false }
     compileOnly(mezzConfigApiDependency)
     runtimeOnly(mezzConfigDependency("fabric"))
     compileOnly(mezzConfigGuiApiDependency)
