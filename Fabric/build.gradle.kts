@@ -165,7 +165,6 @@ tasks.withType<JavaCompile> {
 dependencies {
     compileOnly(mezzConfigApiDependency)
     runtimeOnly(mezzConfigDependency("fabric"))
-    include(mezzConfigDependency("fabric"))
     compileOnly(mezzConfigGuiApiDependency)
     add("localRuntime", mezzConfigGuiFabricDependency)
     minecraft("com.mojang:minecraft:${minecraftVersion}")

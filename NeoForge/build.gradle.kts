@@ -193,12 +193,6 @@ dependencies {
 	runtimeOnly(mezzConfigDependency("neoforge"))
 	compileOnly(mezzConfigGuiApiDependency)
 	add(mezzConfigGuiRuntime.name, mezzConfigGuiNeoForgeDependency)
-	jarJar(mezzConfigDependency("neoforge")) {
-		version {
-			strictly(gradleProperty("mezzConfigVersionRange"))
-			prefer(gradleProperty("mezzConfigVersion"))
-		}
-	}
 	"gameTestRuntimeOnly"(mezzConfigDependency("neoforge"))
 	"clientGameTestRuntimeOnly"(mezzConfigDependency("neoforge"))
 	testImplementation(mezzConfigApiDependency)
