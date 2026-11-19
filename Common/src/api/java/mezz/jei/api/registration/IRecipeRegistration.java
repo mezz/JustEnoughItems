@@ -41,6 +41,9 @@ public interface IRecipeRegistration {
 	/**
 	 * Add the recipes provided by your plugin.
 	 *
+	 * @throws IllegalArgumentException if a recipe is not an instance of the recipe type's
+	 * {@link IRecipeType#getRecipeClass() declared class}
+	 *
 	 * @since 9.5.0
 	 */
 	<T> void addRecipes(IRecipeType<T> recipeType, List<T> recipes);
