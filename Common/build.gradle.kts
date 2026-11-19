@@ -54,6 +54,7 @@ configurations.create("apiClassesElements") {
 
 neoForge {
     neoFormVersion = neoformVersionAndTimestamp
+    accessTransformers.from("src/main/accesstransformer.cfg")
     addModdingDependenciesTo(apiSourceSet)
     addModdingDependenciesTo(sourceSets.test.get())
 

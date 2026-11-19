@@ -49,6 +49,9 @@ accessible class net/minecraft/client/gui/components/toasts/ToastManager$ToastIn
 
 accessible method net/minecraft/world/item/crafting/ShapedRecipePattern shrink (Ljava/util/List;)[Ljava/lang/String;
 
+accessible method net/minecraft/core/HolderSet$Named <init> (Lnet/minecraft/core/HolderOwner;Lnet/minecraft/tags/TagKey;)V
+accessible method net/minecraft/core/HolderSet$Named bind (Ljava/util/List;)V
+
 accessible field net/minecraft/gametest/framework/UnknownGameTestException reason Ljava/lang/Throwable;
 accessible field net/minecraft/world/item/crafting/FireworkRocketRecipe PAPER_INGREDIENT Lnet/minecraft/world/item/crafting/Ingredient;
 accessible field net/minecraft/world/item/crafting/FireworkRocketRecipe GUNPOWDER_INGREDIENT Lnet/minecraft/world/item/crafting/Ingredient;

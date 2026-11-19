@@ -9,6 +9,8 @@ import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.Minecraft;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,8 +37,8 @@ final class ExternalTestServer implements AutoCloseable {
 		this.server = server;
 	}
 
-	public static ExternalTestServer startVanilla(ClientGameTestContext context) {
-		return start(context, "vanilla-server-without-jei", LaunchType.VANILLA);
+	public static ExternalTestServer startVanillaWithDialogDatapack(ClientGameTestContext context) {
+		return start(context, "vanilla-server-without-jei", LaunchType.VANILLA_WITH_DIALOG_DATAPACK);
 	}
 
 	public static ExternalTestServer startFabricWithJei(ClientGameTestContext context) {
@@ -131,7 +133,22 @@ final class ExternalTestServer implements AutoCloseable {
 				return currentClasspathWithoutJei();
 			}
 		},
-		VANILLA("vanilla server without JEI", "net.minecraft.server.Main") {
+		VANILLA_WITH_DIALOG_DATAPACK("vanilla server with dialog datapack", "net.minecraft.server.Main") {
+			@Override
+			public void prepareWorldDirectory(Path worldDirectory) throws IOException {
+				Path datapack = FabricLoader.getInstance().getModContainer("jei-test")
+					.flatMap(mod -> mod.findPath("test-datapacks/issue-4619"))
+					.orElseThrow(() -> new IOException("Missing the #4619 dialog datapack in the client GameTest resources."));
+				Path destination = worldDirectory.resolve("datapacks/issue-4619");
+				try (var files = Files.walk(datapack)) {
+					for (Path source : files.filter(Files::isRegularFile).toList()) {
+						Path target = destination.resolve(datapack.relativize(source).toString());
+						Files.createDirectories(target.getParent());
+						Files.copy(source, target);
+					}
+				}
+			}
+
 			@Override
 			protected String classpath(Path serverDirectory) {
 				return ExternalServerProcess.currentClasspath();
