@@ -157,7 +157,6 @@ dependencies {
     compileOnly(amecsDependency) { isTransitive = false }
     compileOnly(mezzConfigApiDependency)
     runtimeOnly(mezzConfigDependency("fabric"))
-    include(mezzConfigDependency("fabric"))
     compileOnly(mezzConfigGuiApiDependency)
     add("localRuntime", mezzConfigGuiFabricDependency)
     minecraft("com.mojang:minecraft:${minecraftVersion}")
