@@ -1,6 +1,8 @@
 package mezz.jei.common.recipes;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -9,12 +11,18 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.ServerPacksSource;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.tags.TagKey;
 import net.minecraft.tags.TagLoader;
 import net.minecraft.world.item.crafting.RecipeMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -56,9 +64,9 @@ public final class VanillaClientRecipeLoader {
 			PackType.SERVER_DATA,
 			List.of(ServerPacksSource.createVanillaPackSource().fullResources())
 		)) {
-			RegistryAccess.Frozen baseRegistryAccess = registryAccess.freeze();
-			List<Registry.PendingTags<?>> basePendingTags = TagLoader.loadTagsForExistingRegistries(resourceManager, baseRegistryAccess);
-			List<HolderLookup.RegistryLookup<?>> baseLookups = TagLoader.buildUpdatedLookups(baseRegistryAccess, basePendingTags);
+			List<HolderLookup.RegistryLookup<?>> baseLookups = registryAccess.registries()
+				.map(entry -> createFallbackLookup(resourceManager, entry.value()))
+				.collect(Collectors.toUnmodifiableList());
 			RegistryAccess.Frozen worldRegistryAccess = RegistryDataLoader.load(resourceManager, baseLookups, RegistryDataLoader.WORLD_REGISTRIES, Runnable::run)
 				.join();
 			List<Registry.PendingTags<?>> worldPendingTags = TagLoader.loadTagsForExistingRegistries(resourceManager, worldRegistryAccess);
@@ -74,9 +82,48 @@ public final class VanillaClientRecipeLoader {
 				.toList();
 			RegistryAccess.Frozen recipeRegistryAccess = RegistryDataLoader.load(resourceManager, updatedLookups, recipeRegistryData, Runnable::run)
 				.join();
-			basePendingTags.forEach(Registry.PendingTags::apply);
 			worldPendingTags.forEach(Registry.PendingTags::apply);
 			return RecipeMap.create(recipeRegistryAccess.lookupOrThrow(Registries.RECIPE));
+		}
+	}
+
+	private static <T> HolderLookup.RegistryLookup<T> createFallbackLookup(ResourceManager resources, Registry<T> registry) {
+		var tagContents = TagLoader.loadTagsForRegistry(resources, registry.key(), (id, required) -> registry.get(id));
+		if (tagContents.isEmpty()) {
+			return registry;
+		}
+
+		// Bind separate tag sets so recipes keep the original element holders and the live registry keeps its server tags.
+		Map<TagKey<T>, HolderSet.Named<T>> tags = new HashMap<>();
+		tagContents.forEach((key, contents) -> tags.put(key, new FallbackTag<>(registry, key, contents)));
+		return new FallbackLookup<>(registry, tags);
+	}
+
+	private record FallbackLookup<T>(
+		Registry<T> parent,
+		Map<TagKey<T>, HolderSet.Named<T>> tags
+	) implements HolderLookup.RegistryLookup.Delegate<T> {
+		@Override
+		public Optional<HolderSet.Named<T>> get(TagKey<T> key) {
+			return Optional.ofNullable(tags.get(key));
+		}
+
+		@Override
+		public Stream<HolderSet.Named<T>> listTags() {
+			return tags.values().stream();
+		}
+	}
+
+	private static final class FallbackTag<T> extends HolderSet.Named<T> {
+		private FallbackTag(Registry<T> owner, TagKey<T> key, List<Holder<T>> contents) {
+			super(owner, key);
+			bind(contents);
+		}
+
+		@Override
+		public boolean contains(Holder<T> holder) {
+			// Use the fallback tag contents because each holder still tracks the server's tag membership.
+			return contents().contains(holder);
 		}
 	}
 }
