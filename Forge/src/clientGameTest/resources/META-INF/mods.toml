@@ -1,0 +1,15 @@
+modLoader="javafml"
+loaderVersion="[41,)"
+license="MIT"
+
+[[mods]]
+modId="jei_client_tests"
+version="1.0.0"
+displayName="JEI Forge Client GameTests"
+
+[[dependencies.jei_client_tests]]
+modId="jei"
+mandatory=true
+versionRange="[11,)"
+ordering="AFTER"
+side="CLIENT"

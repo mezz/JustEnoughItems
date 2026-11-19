@@ -1,5 +1,6 @@
 import mezz.jei.gradle.externalSourceSetClasspath
 import mezz.jei.gradle.gradleProperty
+import mezz.jei.gradle.WriteClientOptions
 import org.slf4j.event.Level
 
 plugins {
@@ -64,6 +65,12 @@ val gameTestSourceSet = sourceSets.create("gameTest") {
 	runtimeClasspath += sourceSets.main.get().output
 }
 
+val clientGameTestSourceSet = sourceSets.create("clientGameTest") {
+	java.srcDir(project(":Common").layout.projectDirectory.dir("src/clientTestFixtures/java"))
+	compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
+	runtimeClasspath += sourceSets.main.get().runtimeClasspath
+}
+
 sourceSets {
 	named("test") {
 		resources {
@@ -74,6 +81,10 @@ sourceSets {
 }
 
 configurations.named(gameTestSourceSet.implementationConfigurationName) {
+	extendsFrom(configurations.implementation.get())
+}
+
+configurations.named(clientGameTestSourceSet.implementationConfigurationName) {
 	extendsFrom(configurations.implementation.get())
 }
 
@@ -139,6 +150,7 @@ dependencies {
 		compileOnly(it)
 		testImplementation(it)
 		add(gameTestSourceSet.implementationConfigurationName, it)
+		add(clientGameTestSourceSet.implementationConfigurationName, it)
 	}
 	modShadeImplementation("org.apache.lucene:lucene-core:${luceneVersion}") {
 		isTransitive = false
@@ -176,7 +188,7 @@ legacyForge {
 
 	enable {
 		setForgeVersion(forgeArtifactVersion)
-		setEnabledSourceSets(setOf(sourceSets.main.get(), sourceSets.test.get(), gameTestSourceSet))
+		setEnabledSourceSets(setOf(sourceSets.main.get(), sourceSets.test.get(), gameTestSourceSet, clientGameTestSourceSet))
 		setDisableRecompilation(false)
 	}
 
@@ -191,9 +203,25 @@ legacyForge {
 		create("${modId}debug") {
 			sourceSet(debugProject.sourceSets.main.get())
 		}
+		create("jei_client_tests") {
+			sourceSet(clientGameTestSourceSet)
+		}
 	}
 
 	runs {
+		configureEach {
+			loadedMods.set(setOf(legacyForge.mods.getByName(modId), legacyForge.mods.getByName("${modId}debug")))
+		}
+		create("clientGameTest") {
+			client()
+			sourceSet = clientGameTestSourceSet
+			loadedMods.set(setOf(legacyForge.mods.getByName(modId), legacyForge.mods.getByName("jei_client_tests")))
+			gameDirectory = file("run/clientGameTest-$minecraftVersion")
+			logLevel = Level.INFO
+			systemProperty("jei.forge.clientTest", providers.gradleProperty("jeiForgeClientTestSuite").orElse("all").get())
+			systemProperty("jei.test.serverLaunch", layout.buildDirectory.file("clientGameTest/server-launch.properties").get().asFile.absolutePath)
+			programArguments.addAll("--username", "JeiClientTest", "--width", "1280", "--height", "720")
+		}
 		create("clientDev") {
 			client()
 			systemProperty("forge.logging.console.level", "debug")
@@ -239,8 +267,35 @@ tasks.named("runGameTestServer") {
 	dependsOn(copyGameTestStructures)
 }
 
+val writeClientGameTestOptions = tasks.register<WriteClientOptions>("writeClientGameTestOptions") {
+	templateFile.set(layout.projectDirectory.file("src/clientGameTest/templates/options.txt"))
+	optionsFile.set(layout.projectDirectory.file("run/clientGameTest-$minecraftVersion/options.txt"))
+}
+
+val serverRun = tasks.named<JavaExec>("runServer")
+val writeClientTestServerLaunch = tasks.register<WriteProperties>("writeClientTestServerLaunch") {
+	destinationFile.set(layout.buildDirectory.file("clientGameTest/server-launch.properties"))
+	dependsOn(serverRun.map { it.taskDependencies.getDependencies(it) })
+	property("java", serverRun.flatMap { it.javaLauncher }.map { it.executablePath.asFile.absolutePath })
+	property("modClasses", legacyForge.runs.getByName("server").environment.map { it["MOD_CLASSES"].orEmpty() })
+	val serverClasspath = sourceSets.main.get().runtimeClasspath
+	property("arguments", serverRun.map { run ->
+		(run.allJvmArgs + listOf("-cp", serverClasspath.asPath, run.mainClass.get()) + run.args.orEmpty())
+			.joinToString("\n")
+	})
+}
+
+val cleanClientGameTestResults = tasks.register<Delete>("cleanClientGameTestResults") {
+	delete(layout.buildDirectory.dir("test-results/forge-client-startup"))
+}
+
+tasks.named("runClientGameTest") {
+	dependsOn(writeClientGameTestOptions, writeClientTestServerLaunch, cleanClientGameTestResults)
+}
+
 tasks.check {
 	dependsOn("runGameTestServer")
+	dependsOn(tasks.named(clientGameTestSourceSet.compileJavaTaskName))
 }
 
 tasks.jar {
