@@ -58,6 +58,7 @@ public class RecipeRegistration implements IRecipeRegistration {
 	public <T> void addRecipes(IRecipeType<T> recipeType, List<T> recipes) {
 		ErrorUtil.checkNotNull(recipeType, "recipeType");
 		ErrorUtil.checkNotNull(recipes, "recipes");
+		ErrorUtil.validateRecipes(recipeType, recipes);
 		this.recipeManager.addRecipes(recipeType, recipes, contextMap);
 	}
 
