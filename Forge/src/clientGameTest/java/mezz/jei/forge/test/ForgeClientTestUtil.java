@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 final class ForgeClientTestUtil {
 	private ForgeClientTestUtil() {
@@ -45,6 +46,10 @@ final class ForgeClientTestUtil {
 	}
 
 	static void waitUntil(BooleanSupplier condition, String message) {
+		waitUntil(condition, () -> message);
+	}
+
+	static void waitUntil(BooleanSupplier condition, Supplier<String> timeoutMessage) {
 		long deadline = System.nanoTime() + Duration.ofSeconds(120).toNanos();
 		while (System.nanoTime() < deadline) {
 			if (condition.getAsBoolean()) {
@@ -57,6 +62,6 @@ final class ForgeClientTestUtil {
 				throw new AssertionError("Interrupted while waiting for a client GameTest condition", e);
 			}
 		}
-		throw new AssertionError(message);
+		throw new AssertionError(timeoutMessage.get());
 	}
 }

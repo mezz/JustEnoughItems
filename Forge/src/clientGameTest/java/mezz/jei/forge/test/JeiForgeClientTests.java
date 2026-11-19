@@ -2,14 +2,12 @@ package mezz.jei.forge.test;
 
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.common.Internal;
+import mezz.jei.test.client.ExternalServerClient;
 import mezz.jei.test.client.FakeMenuClientTest;
 import mezz.jei.test.lib.ExternalServerProcess;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
@@ -34,6 +32,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Exercises JEI's Forge startup through real client logins, tag packets, and plugin registration.
@@ -41,6 +43,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Mod("jei_client_tests")
 public final class JeiForgeClientTests {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final ExternalServerClient.ClientAccess CLIENT_ACCESS = new ExternalServerClient.ClientAccess() {
+		@Override
+		public void run(Consumer<Minecraft> task) {
+			ForgeClientTestUtil.run(task);
+		}
+
+		@Override
+		public <T> T compute(Function<Minecraft, T> task) {
+			return ForgeClientTestUtil.compute(task);
+		}
+
+		@Override
+		public void waitFor(Predicate<Minecraft> predicate, Supplier<String> timeoutMessage) {
+			ForgeClientTestUtil.waitUntil(() -> ForgeClientTestUtil.compute(predicate::test), timeoutMessage);
+		}
+	};
+
 	private final AtomicBoolean started = new AtomicBoolean();
 
 	public JeiForgeClientTests() {
@@ -96,30 +115,23 @@ public final class JeiForgeClientTests {
 	}
 
 	private static void testDedicated(boolean jeiOnServer) {
+		ExternalServerClient.assertNativeTransportDisabled(CLIENT_ACCESS);
 		ForgeClientTestUtil.run(client -> StartupRecipePlugin.reset());
 		try (ExternalServerProcess server = ExternalServerProcess.start(
 			"forge-startup", "Forge startup test server", new ServerLauncher(jeiOnServer)
 		)) {
 			try {
-				connect(server);
+				ExternalServerClient.connect(server, CLIENT_ACCESS);
 				assertRegistration(1, jeiOnServer);
 				server.sendCommand("reload");
 				assertRegistration(2, jeiOnServer);
 				disconnect();
-				connect(server);
+				ExternalServerClient.connect(server, CLIENT_ACCESS);
 				assertRegistration(3, jeiOnServer);
 			} finally {
 				disconnect();
 			}
 		}
-	}
-
-	private static void connect(ExternalServerProcess server) {
-		ForgeClientTestUtil.run(client -> {
-			String address = server.getConnectionAddress();
-			ConnectScreen.startConnecting(new TitleScreen(), client, ServerAddress.parseString(address),
-				new ServerData("JEI startup GameTest", address, false), false);
-		});
 	}
 
 	private static void disconnect() {

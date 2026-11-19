@@ -65,11 +65,12 @@ pipeline {
             steps {
                 sh '''
                     if command -v xvfb-run >/dev/null 2>&1; then
+                        # Limit Gradle to one worker so the client suites cannot overlap on this display.
                         JEI_JVM_DIAGNOSTIC_DELAY_SECONDS=600 \
                         JEI_JVM_DIAGNOSTIC_FILE="$WORKSPACE/Fabric/build/reports/client-gametest-diagnostics.txt" \
                             python3 .jenkins/runWithJvmDiagnostics.py \
                             xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
-                            ./gradlew --no-daemon :Forge:runClientGameTest :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs --no-parallel
+                            ./gradlew --no-daemon --max-workers=1 :Forge:runClientGameTest :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs
                     else
                         echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
                     fi

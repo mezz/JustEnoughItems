@@ -25,6 +25,8 @@ public final class MinimalWorldGenServerProperties {
 		properties.setProperty("simulation-distance", "2");
 		properties.setProperty("spawn-protection", "0");
 		properties.setProperty("sync-chunk-writes", "false");
+		// Use Java NIO on both ends so Linux CI uses the same test transport as other platforms.
+		properties.setProperty("use-native-transport", "false");
 		properties.setProperty("view-distance", "2");
 		return properties;
 	}
