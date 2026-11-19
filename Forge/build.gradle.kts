@@ -33,8 +33,6 @@ val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForge
 val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
 val luceneVersion = gradleProperty("luceneVersion")
 val deduplicatingRunnerVersion = gradleProperty("deduplicatingRunnerVersion")
-val mezzConfigVersion = gradleProperty("mezzConfigVersion")
-val mezzConfigVersionRange = gradleProperty("mezzConfigVersionRange")
 val mezzConfigApiDependency: String by rootProject.extra
 val mezzConfigForgeDependency: String by rootProject.extra
 val mezzConfigGuiApiDependency: String by rootProject.extra
@@ -120,8 +118,6 @@ configurations.runtimeClasspath {
 	extendsFrom(mezzConfigLocalRuntime)
 }
 
-jarJar.register()
-
 java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(modJavaVersion))
@@ -172,13 +168,6 @@ dependencies {
 	implementation(minecraft.dependency(forgeDependency))
 	compileOnly(mezzConfigApiDependency)
 	mezzConfigLocalRuntime(mezzConfigForgeDependency)
-	"jarJar"(mezzConfigForgeDependency) {
-		isTransitive = false
-		jarJar.configure(this) {
-			setRange(mezzConfigVersionRange)
-			setVersion(mezzConfigVersion)
-		}
-	}
 	compileOnly(mezzConfigGuiApiDependency)
 	mezzConfigLocalRuntime(mezzConfigGuiForgeDependency)
 	dependencyProjects.forEach {

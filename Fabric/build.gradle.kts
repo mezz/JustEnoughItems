@@ -218,7 +218,6 @@ dependencies {
     "clientGameTestCompileOnly"("org.jspecify:jspecify:1.0.1")
     compileOnly(mezzConfigApiDependency)
     modLocalRuntime(mezzConfigFabricDependency)
-    include(mezzConfigFabricDependency)
     compileOnly(mezzConfigGuiApiDependency)
     modRuntimeOnly(mezzConfigGuiFabricDependency)
     vanillaDependencyProjects.forEach {
