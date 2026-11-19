@@ -18,6 +18,7 @@
       "mezz.jei.fabric.test.NetherBiomeFuelGameTests"
     ],
     "fabric-client-gametest": [
+      "mezz.jei.fabric.test.SpriteRenderingClientGameTest",
       "mezz.jei.fabric.test.FakeMenuClientGameTest",
       "mezz.jei.fabric.test.IngredientDecoratorClientGameTest",
       "mezz.jei.fabric.test.ChatItemLinksClientGameTest",
