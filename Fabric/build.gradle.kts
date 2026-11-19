@@ -56,6 +56,16 @@ val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForge
 val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
 val luceneVersion = gradleProperty("luceneVersion")
 val amecsDependency = "de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric"
+val amecsKeyMappingMatchersDependency = "de.siphalor.amecs.amecs-key-mapping-matchers:amecs-key-mapping-matchers-${amecsMinecraftVersion}:1.0.0"
+
+repositories {
+    maven("https://maven.siphalor.de/") {
+        content {
+            includeGroup("de.siphalor.amecs.amecs-key-modifiers")
+            includeGroup("de.siphalor.amecs.amecs-key-mapping-matchers")
+        }
+    }
+}
 
 // set by ORG_GRADLE_PROJECT_modrinthToken in Jenkinsfile
 val modrinthToken = optionalGradleProperty("modrinthToken")
@@ -163,6 +173,8 @@ tasks.withType<JavaCompile> {
 }
 
 dependencies {
+    compileOnly(amecsDependency) { isTransitive = false }
+    compileOnly(amecsKeyMappingMatchersDependency) { isTransitive = false }
     compileOnly(mezzConfigApiDependency)
     runtimeOnly(mezzConfigDependency("fabric"))
     compileOnly(mezzConfigGuiApiDependency)
@@ -197,13 +209,8 @@ dependencies {
     modShadeImplementation("org.apache.lucene:lucene-core:${luceneVersion}") {
         isTransitive = false
     }
-    val amecsKeyModifiers = "de.siphalor.amecs.amecs-key-modifiers:amecs-key-modifiers-${amecsMinecraftVersion}:$amecsVersionFabric"
-    compileOnly(amecsKeyModifiers) {
-        isTransitive = false
-    }
-    localRuntime(amecsKeyModifiers) {
-        isTransitive = false
-    }
+    localRuntime(amecsDependency) { isTransitive = false }
+    localRuntime(amecsKeyMappingMatchersDependency) { isTransitive = false }
     changelogHtml(project(":Changelog"))
     changelogMarkdown(project(":Changelog"))
 }
@@ -220,7 +227,7 @@ fabricApi {
 
 val gametestWithoutAmecsSourceSet = sourceSets.create("gametestWithoutAmecs") {
     runtimeClasspath += sourceSets.named("gametest").get().runtimeClasspath.filter {
-        !it.name.startsWith("amecs-key-modifiers-")
+        !it.name.startsWith("amecs-key-modifiers-") && !it.name.startsWith("amecs-key-mapping-matchers-")
     }
 }
 
