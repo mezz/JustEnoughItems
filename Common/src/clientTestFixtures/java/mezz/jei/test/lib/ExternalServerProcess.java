@@ -92,6 +92,16 @@ public final class ExternalServerProcess implements AutoCloseable {
 		return "127.0.0.1:" + port;
 	}
 
+	public void sendCommand(String command) {
+		try {
+			processInput.write(command);
+			processInput.newLine();
+			processInput.flush();
+		} catch (IOException e) {
+			throw new AssertionError("Failed to send command to external server: " + command, e);
+		}
+	}
+
 	public String describeProcessState() {
 		if (process.isAlive()) {
 			return "external server process is still running";

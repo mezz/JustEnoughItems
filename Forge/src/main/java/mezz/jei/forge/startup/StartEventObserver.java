@@ -13,6 +13,7 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import org.apache.logging.log4j.LogManager;
@@ -20,13 +21,14 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
+import java.util.StringJoiner;
 
 /**
  * This class observes events and determines when it's the right time to start JEI.
  *
- * JEI needs to see {@link ClientPlayerNetworkEvent.LoggingIn} before it is ready to start. When
- * the connection can provide server recipe content, JEI also waits for {@link RecipesUpdatedEvent}
- * so it does not briefly start with fallback client recipes.
+ * JEI waits for {@link ClientPlayerNetworkEvent.LoggingIn} and client-side {@link TagsUpdatedEvent}
+ * before registering recipes so plugins can resolve tag ingredients. When the connection can provide
+ * server recipe content, JEI also waits for {@link RecipesUpdatedEvent}.
  *
  * Connections that never provide synced recipes continue with fallback recipes.
  * Datapack reloads can fire another recipe event after JEI has started; if that event provides
@@ -46,6 +48,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 	private State state = State.LISTENING;
 	private boolean observedLogin;
 	private boolean observedRecipeSync;
+	private boolean observedTagSync;
 
 	public StartEventObserver(IConnectionToServer serverConnection, Runnable startRunnable, Runnable stopRunnable) {
 		this.serverConnection = serverConnection;
@@ -56,6 +59,7 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 	public void register(PermanentEventSubscriptions subscriptions) {
 		subscriptions.register(EventPriority.LOWEST, ClientPlayerNetworkEvent.LoggingIn.class, this::onLoggingIn);
 		subscriptions.register(EventPriority.LOWEST, RecipesUpdatedEvent.class, this::onRecipesUpdatedEvent);
+		subscriptions.register(EventPriority.LOWEST, TagsUpdatedEvent.class, this::onTagsUpdatedEvent);
 
 		subscriptions.register(ClientPlayerNetworkEvent.LoggingOut.class, event -> {
 			if (event.getPlayer() != null) {
@@ -105,8 +109,19 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 		}
 	}
 
+	private void onTagsUpdatedEvent(TagsUpdatedEvent event) {
+		// Ignore server data loads so an integrated server cannot start JEI before its client receives tags.
+		if (event.getUpdateCause() != TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED || !observeConnectionEvent(event)) {
+			return;
+		}
+		this.observedTagSync = true;
+		startIfReady();
+	}
+
 	private void startIfReady() {
-		if (this.state != State.LISTENING || !this.observedLogin) {
+		// Wait for client tags on every connection so plugins can resolve tag ingredients.
+		// This also lets the server brand arrive before we decide whether to wait for recipes.
+		if (this.state != State.LISTENING || !this.observedLogin || !this.observedTagSync) {
 			return;
 		}
 		if (shouldWaitForRecipes() && !this.observedRecipeSync) {
@@ -137,23 +152,27 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 
 	private String getRequiredStartEventsString() {
 		if (shouldWaitForRecipes()) {
-			return "[%s, %s]".formatted(ClientPlayerNetworkEvent.LoggingIn.class.getName(), RecipesUpdatedEvent.class.getName());
+			return "[%s, %s, %s]".formatted(
+				ClientPlayerNetworkEvent.LoggingIn.class.getName(),
+				TagsUpdatedEvent.class.getName(),
+				RecipesUpdatedEvent.class.getName()
+			);
 		}
-		return "[%s]".formatted(ClientPlayerNetworkEvent.LoggingIn.class.getName());
+		return "[%s, %s]".formatted(ClientPlayerNetworkEvent.LoggingIn.class.getName(), TagsUpdatedEvent.class.getName());
 	}
 
 	private String getMissingStartEventsString() {
-		StringBuilder missingEvents = new StringBuilder("[");
+		StringJoiner missingEvents = new StringJoiner(", ", "[", "]");
 		if (!observedLogin) {
-			missingEvents.append(ClientPlayerNetworkEvent.LoggingIn.class.getName());
+			missingEvents.add(ClientPlayerNetworkEvent.LoggingIn.class.getName());
+		}
+		if (!observedTagSync) {
+			missingEvents.add(TagsUpdatedEvent.class.getName());
 		}
 		if (shouldWaitForRecipes() && !observedRecipeSync) {
-			if (missingEvents.length() > 1) {
-				missingEvents.append(", ");
-			}
-			missingEvents.append(RecipesUpdatedEvent.class.getName());
+			missingEvents.add(RecipesUpdatedEvent.class.getName());
 		}
-		return missingEvents.append("]").toString();
+		return missingEvents.toString();
 	}
 
 	private static <T extends Event> void logReceivedEvent(T event) {
@@ -209,5 +228,6 @@ public class StartEventObserver implements ResourceManagerReloadListener {
 	private void clearObservedStartEvents() {
 		this.observedLogin = false;
 		this.observedRecipeSync = false;
+		this.observedTagSync = false;
 	}
 }

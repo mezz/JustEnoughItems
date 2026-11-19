@@ -69,7 +69,7 @@ pipeline {
                         JEI_JVM_DIAGNOSTIC_FILE="$WORKSPACE/Fabric/build/reports/client-gametest-diagnostics.txt" \
                             python3 .jenkins/runWithJvmDiagnostics.py \
                             xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
-                            ./gradlew --no-daemon :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs --no-parallel
+                            ./gradlew --no-daemon :Forge:runClientGameTest :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs --no-parallel
                     else
                         echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
                     fi
