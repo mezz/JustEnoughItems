@@ -2,6 +2,8 @@ package mezz.jei.common.recipes;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -15,6 +17,8 @@ import net.minecraft.server.packs.repository.ServerPacksSource;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.tags.TagKey;
 import net.minecraft.tags.TagLoader;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -23,9 +27,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Stream;
 
 /**
  * Loads the vanilla recipe JSON files that are bundled with the Minecraft client.
@@ -84,10 +92,48 @@ public final class VanillaClientRecipeLoader {
 		RegistryAccess registryAccess,
 		CloseableResourceManager resourceManager
 	) {
-		RegistryAccess.Frozen frozenRegistryAccess = registryAccess.freeze();
-		List<Registry.PendingTags<?>> pendingTags = TagLoader.loadTagsForExistingRegistries(resourceManager, frozenRegistryAccess);
-		List<HolderLookup.RegistryLookup<?>> updatedLookups = TagLoader.buildUpdatedLookups(frozenRegistryAccess, pendingTags);
-		HolderLookup.Provider lookupProvider = HolderLookup.Provider.create(updatedLookups.stream());
+		HolderLookup.Provider lookupProvider = HolderLookup.Provider.create(registryAccess.registries()
+			.map(entry -> createFallbackLookup(resourceManager, entry.value())));
 		return lookupProvider.createSerializationContext(JsonOps.INSTANCE);
+	}
+
+	private static <T> HolderLookup.RegistryLookup<T> createFallbackLookup(ResourceManager resources, Registry<T> registry) {
+		var tagContents = TagLoader.loadTagsForRegistry(resources, registry.key(), (id, required) -> registry.get(id));
+		if (tagContents.isEmpty()) {
+			return registry;
+		}
+
+		// Bind separate tag sets so recipes keep the original element holders and the live registry keeps its server tags.
+		Map<TagKey<T>, HolderSet.Named<T>> tags = new HashMap<>();
+		tagContents.forEach((key, contents) -> tags.put(key, new FallbackTag<>(registry, key, contents)));
+		return new FallbackLookup<>(registry, tags);
+	}
+
+	private record FallbackLookup<T>(
+		Registry<T> parent,
+		Map<TagKey<T>, HolderSet.Named<T>> tags
+	) implements HolderLookup.RegistryLookup.Delegate<T> {
+		@Override
+		public Optional<HolderSet.Named<T>> get(TagKey<T> key) {
+			return Optional.ofNullable(tags.get(key));
+		}
+
+		@Override
+		public Stream<HolderSet.Named<T>> listTags() {
+			return tags.values().stream();
+		}
+	}
+
+	private static final class FallbackTag<T> extends HolderSet.Named<T> {
+		private FallbackTag(Registry<T> owner, TagKey<T> key, List<Holder<T>> contents) {
+			super(owner, key);
+			bind(contents);
+		}
+
+		@Override
+		public boolean contains(Holder<T> holder) {
+			// Use the fallback tag contents because each holder still tracks the server's tag membership.
+			return contents().contains(holder);
+		}
 	}
 }

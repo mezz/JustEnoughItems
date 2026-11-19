@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:multi_action",
+  "title": { "text": "Server Quick Commands" },
+  "external_title": { "text": "Server Quick Commands" },
+  "can_close_with_escape": true,
+  "pause": false,
+  "after_action": "close",
+  "columns": 1,
+  "actions": [
+    { "label": { "text": "Spawn" }, "action": { "type": "minecraft:run_command", "command": "spawn" } }
+  ],
+  "exit_action": { "label": { "text": "Back" }, "width": 200 }
+}

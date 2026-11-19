@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -44,17 +45,16 @@ public final class ExternalServerProcess implements AutoCloseable {
 		Path serverLog = serverDirectory.resolve("server.log");
 		int port = findAvailablePort();
 
+		List<String> command;
 		try {
 			Files.createDirectories(serverDirectory);
-			writeServerFiles(serverDirectory, port);
+			Properties properties = MinimalWorldGenServerProperties.createForLocalhost(port);
+			writeServerFiles(serverDirectory, properties);
+			launcher.prepareWorldDirectory(serverDirectory.resolve(properties.getProperty("level-name")));
+			command = launcher.createCommand(serverDirectory, port);
 		} catch (IOException e) {
 			closeOnStartFailure(temporaryDirectory, e);
 			throw new AssertionError("Failed to prepare " + description + " in " + serverDirectory, e);
-		}
-
-		List<String> command;
-		try {
-			command = launcher.createCommand(serverDirectory, port);
 		} catch (RuntimeException | Error e) {
 			closeOnStartFailure(temporaryDirectory, e);
 			throw e;
@@ -224,17 +224,20 @@ public final class ExternalServerProcess implements AutoCloseable {
 		}
 	}
 
-	private static void writeServerFiles(Path serverDirectory, int port) throws IOException {
+	private static void writeServerFiles(Path serverDirectory, Properties properties) throws IOException {
 		Files.writeString(serverDirectory.resolve("eula.txt"), "eula=true\n", StandardCharsets.UTF_8);
 
 		try (BufferedWriter writer = Files.newBufferedWriter(serverDirectory.resolve("server.properties"), StandardCharsets.UTF_8)) {
-			MinimalWorldGenServerProperties.createForLocalhost(port)
-				.store(writer, "JEI client game test server");
+			properties.store(writer, "JEI client game test server");
 		}
 	}
 
 	public interface Launcher {
 		List<String> createCommand(Path serverDirectory, int port);
+
+		default void prepareWorldDirectory(Path worldDirectory) throws IOException {
+
+		}
 
 		default void configureEnvironment(Map<String, String> environment) {
 
