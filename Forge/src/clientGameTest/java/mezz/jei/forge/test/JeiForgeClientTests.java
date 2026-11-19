@@ -6,6 +6,7 @@ import mezz.jei.test.client.ExternalServerClient;
 import mezz.jei.test.client.FakeMenuClientTest;
 import mezz.jei.test.lib.ExternalServerProcess;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
+import mezz.jei.test.lib.SpriteRenderingTest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.core.Registry;
@@ -88,7 +89,7 @@ public final class JeiForgeClientTests {
 			String suite = System.getProperty("jei.forge.clientTest", "all");
 			List<String> tests;
 			if (suite.equals("all")) {
-				tests = List.of("dedicated", "clientOnly", "singleplayer");
+				tests = List.of("spriteRendering", "dedicated", "clientOnly", "singleplayer");
 			} else {
 				tests = List.of(suite);
 			}
@@ -96,6 +97,7 @@ public final class JeiForgeClientTests {
 				LOGGER.info("Running JEI Forge client GameTest: {}", test);
 				JUnitXmlTestReporter.runAndReport("forge-client-startup", test, () -> {
 					switch (test) {
+						case "spriteRendering" -> ForgeClientTestUtil.run(SpriteRenderingTest::run);
 						case "dedicated" -> testDedicated(true);
 						case "clientOnly" -> testDedicated(false);
 						case "singleplayer" -> testSingleplayer();
