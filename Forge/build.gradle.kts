@@ -39,8 +39,6 @@ val mezzConfigGuiCurseForgeProjectSlug = gradleProperty("mezzConfigGuiCurseForge
 val mezzConfigGuiModrinthProjectId = gradleProperty("mezzConfigGuiModrinthProjectId")
 val luceneVersion = gradleProperty("luceneVersion")
 val deduplicatingRunnerVersion = gradleProperty("deduplicatingRunnerVersion")
-val mezzConfigVersion = gradleProperty("mezzConfigVersion")
-val mezzConfigVersionRange = gradleProperty("mezzConfigVersionRange")
 val mezzConfigApiDependency: String by rootProject.extra
 val mezzConfigForgeDependency: String by rootProject.extra
 val mezzConfigGuiApiDependency: String by rootProject.extra
@@ -135,13 +133,6 @@ fun Configuration.singleFileContents(): Provider<String> =
 dependencies {
 	compileOnly(mezzConfigApiDependency)
 	modRuntimeOnly(mezzConfigForgeDependency)
-	jarJar(mezzConfigForgeDependency) {
-		isTransitive = false
-		version {
-			strictly(mezzConfigVersionRange)
-			prefer(mezzConfigVersion)
-		}
-	}
 	compileOnly(mezzConfigGuiApiDependency)
 	modRuntimeOnly(mezzConfigGuiForgeDependency)
 	dependencyProjects.forEach {
