@@ -24,6 +24,14 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      # Forge's mapping generator needs Java 8 in addition to the build and game JDKs.
+      - name: Set up JDK 8 for Forge mappings
+        id: forge-java
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+
       - name: Set up JDKs 21 and 25
         uses: actions/setup-java@v6
         with:
@@ -43,6 +51,7 @@ jobs:
 
       - name: Check API compatibility
         env:
+          JDK8: ${{ steps.forge-java.outputs.path }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
           FIRST_COMMIT_SHA: ${{ github.event.commits[0].id || github.sha }}
         run: |

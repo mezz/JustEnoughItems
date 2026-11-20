@@ -25,6 +25,14 @@ jobs:
           fetch-depth: 2
           persist-credentials: false
 
+      # Forge's mapping generator needs Java 8 in addition to the build and game JDKs.
+      - name: Set up JDK 8 for Forge mappings
+        id: forge-java
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+
       - name: Set up JDKs 21 and 25
         uses: actions/setup-java@v6
         with:
@@ -52,9 +60,13 @@ jobs:
           key: neoform-minecraft-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('gradle.properties', '**/*.gradle.kts', 'gradle/wrapper/gradle-wrapper.properties', 'buildSrc/src/**', '**/accesstransformer.cfg') }}
 
       - name: Build and run server tests
+        env:
+          JDK8: ${{ steps.forge-java.outputs.path }}
         run: ./gradlew :Forge:build :Fabric:build :NeoForge:build :Common:build :NeoForge:runGameTestServer
 
       - name: Run Client GameTests
+        env:
+          JDK8: ${{ steps.forge-java.outputs.path }}
         timeout-minutes: 10
         run: |
           if command -v xvfb-run >/dev/null 2>&1; then
