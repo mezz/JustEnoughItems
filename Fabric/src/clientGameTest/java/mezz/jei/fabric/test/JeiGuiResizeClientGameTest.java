@@ -97,6 +97,9 @@ public class JeiGuiResizeClientGameTest {
 				cleanup.reversed().forEach(Runnable::run);
 			});
 			context.getInput().resizeWindow(windowSize[0], windowSize[1]);
+			// Wait for native resize callbacks so the next test starts with restored GUI bounds.
+			context.waitFor(client -> client.getWindow().getWidth() == windowSize[0] && client.getWindow().getHeight() == windowSize[1]);
+			context.waitTick();
 		}
 	}
 

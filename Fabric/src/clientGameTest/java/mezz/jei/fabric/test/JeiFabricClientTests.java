@@ -36,6 +36,7 @@ public final class JeiFabricClientTests implements ClientModInitializer {
 			case "guiResize" -> FabricClientTestRunner.register("fabric-client-gui-resize", "resize", () -> {
 				try (FabricClientTestWorld ignored = FabricClientTestWorld.create()) {
 					JeiGuiResizeClientGameTest.run();
+					RecipeGuiScrollingClientTest.run();
 				}
 			});
 			default -> FabricClientTestRunner.register(
