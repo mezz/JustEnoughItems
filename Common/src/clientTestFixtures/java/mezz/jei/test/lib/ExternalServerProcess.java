@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -147,12 +148,15 @@ public final class ExternalServerProcess implements AutoCloseable {
 
 	private void waitUntilReady() {
 		Instant deadline = Instant.now().plus(SERVER_START_TIMEOUT);
+		String readyMarker = "JEI client test server ready " + UUID.randomUUID();
+		// Wait for a console command because Forge logs Done before it allows player logins.
+		sendCommand("say " + readyMarker);
 
 		while (Instant.now().isBefore(deadline)) {
 			if (!process.isAlive()) {
 				throw new AssertionError("External server stopped during startup:\n" + readServerLogTail());
 			}
-			if (isServerDone()) {
+			if (serverLogContains(readyMarker)) {
 				return;
 			}
 			sleepDuringServerStartup();
@@ -161,9 +165,9 @@ public final class ExternalServerProcess implements AutoCloseable {
 		throw new AssertionError("Timed out starting external server in " + serverDirectory + ":\n" + readServerLogTail());
 	}
 
-	private boolean isServerDone() {
+	private boolean serverLogContains(String message) {
 		try {
-			return Files.exists(serverLog) && Files.readString(serverLog).contains("Done (");
+			return Files.exists(serverLog) && Files.readString(serverLog).contains(message);
 		} catch (IOException e) {
 			throw new AssertionError("Failed to read external server log: " + serverLog, e);
 		}
