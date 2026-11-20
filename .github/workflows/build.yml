@@ -54,7 +54,8 @@ jobs:
         run: ./gradlew build -x checkApiCompatibility
 
       - name: Run Client GameTests
-        timeout-minutes: 10
+        # The three sequential client suites can exceed ten minutes on hosted runners.
+        timeout-minutes: 20
         run: |
           if command -v xvfb-run >/dev/null 2>&1; then
             # Limit Gradle to one worker so the client suites cannot overlap on this display.
