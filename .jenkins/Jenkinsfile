@@ -38,6 +38,8 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                // Capture retained settings before build preparation clears the client test directories.
+                archiveArtifacts allowEmptyArchive: true, artifacts: 'Fabric/build/run/clientGameTestWithoutAmecs/config/jei/client/jei-client.ini'
                 sh './gradlew build --no-daemon'
             }
         }
@@ -59,6 +61,11 @@ pipeline {
                         echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
                     fi
                 '''
+            }
+            post {
+                unsuccessful {
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Fabric/build/run/**/screenshots/*jei-interactive-tooltip*.png'
+                }
             }
         }
 

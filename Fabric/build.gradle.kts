@@ -316,6 +316,11 @@ tasks.named("runClientGameTestWithoutAmecs") {
     dependsOn(sourceSets.named("gametest").get().classesTaskName)
 }
 
+tasks.named<Delete>("deleteGameTestRunDir") {
+    // Clear the custom profile too so saved overlay settings cannot hide the bookmarks during tests.
+    delete(clientGameTestWithoutAmecsRunDirectory)
+}
+
 fun registerWriteClientGameTestOptionsTask(name: String, runDirectory: Provider<Directory>) =
     tasks.register<Copy>(name) {
         from(layout.projectDirectory.file("src/gametest/templates/options.txt"))
