@@ -81,12 +81,31 @@ private fun Project.configureApiCompatibility() {
 	dependencies.add(apiCompatibilityChecker.name, "org.ow2.asm:asm-tree:$apiCompatibilityAsmVersion")
 
 	val apiCompatibilityModules = listOf(
-		ApiCompatibilityModule(":Common", "checkCommonApiCompatibility", "common-api"),
-		ApiCompatibilityModule(":Fabric", "checkFabricApiCompatibility", "fabric-api"),
-		ApiCompatibilityModule(":NeoForge", "checkNeoForgeApiCompatibility", "neoforge-api"),
+		ApiCompatibilityModule(":Common", "checkCommonApiCompatibility", "common-api", listOf(":Fabric", ":NeoForge")),
+		ApiCompatibilityModule(":Fabric", "checkFabricApiCompatibility", "fabric-api", listOf(":Fabric")),
+		ApiCompatibilityModule(":NeoForge", "checkNeoForgeApiCompatibility", "neoforge-api", listOf(":NeoForge")),
 	)
 
-	val apiCompatibilityCheckTasks = apiCompatibilityModules.map { module ->
+	val runtimeInputJars = apiCompatibilityModules.flatMap { it.runtimeProjectPaths }.distinct().associateWith { projectPath ->
+		val runtimeName = projectPath.removePrefix(":")
+		val runtimeInput = configurations.create("${runtimeName.lowercase()}RuntimeApiCompatibilityInput") {
+			description = "Final $projectPath runtime jar for API compatibility checks."
+			isCanBeConsumed = false
+			isCanBeResolved = true
+			isTransitive = false
+			attributes {
+				attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage::class.java, Usage.JAVA_RUNTIME))
+				attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class.java, Bundling.SHADOWED))
+			}
+		}
+		dependencies.add(runtimeInput.name, dependencies.project(mapOf(
+			"path" to projectPath,
+			"configuration" to "modShadeRuntimeElements",
+		)))
+		runtimeInput.incoming.files.elements.map { it.single().asFile }
+	}
+
+	val apiCompatibilityCheckTasks = apiCompatibilityModules.flatMap { module ->
 		val artifactId = "$modId-${apiCompatibilityMinecraftVersion.get()}-${module.artifactSuffix}"
 		val inputConfiguration = configurations.create("${module.taskName}Input") {
 			description = "Current ${module.projectPath} API jar for compatibility checks."
@@ -142,7 +161,7 @@ private fun Project.configureApiCompatibility() {
 			argumentProviders.add(checkerArguments)
 		}
 
-		tasks.register(module.taskName, ValidateApiCompatibilityReport::class.java) {
+		val apiCheckTask = tasks.register(module.taskName, ValidateApiCompatibilityReport::class.java) {
 			group = LifecycleBasePlugin.VERIFICATION_GROUP
 			description = "Checks ${module.projectPath} against the configured $artifactId API baseline."
 
@@ -153,11 +172,43 @@ private fun Project.configureApiCompatibility() {
 				include("**/*.java")
 			})
 		}
+
+		// Compare both artifacts against the same resolved published API baseline.
+		val runtimeCheckTasks = module.runtimeProjectPaths.map { runtimeProjectPath ->
+			val runtimeName = runtimeProjectPath.removePrefix(":")
+			val apiName = if (module.projectPath == ":Common") "Common" else ""
+			val taskName = "check${runtimeName}Runtime${apiName}ApiCompatibility"
+			val runtimeReport = layout.buildDirectory.file("reports/apiCompatibility/${runtimeName.lowercase()}-runtime-${module.artifactSuffix}.json")
+			val runtimeChecker = tasks.register("${taskName}WithJarCompatibilityChecker", JavaExec::class.java) {
+				group = LifecycleBasePlugin.VERIFICATION_GROUP
+				description = "Checks $runtimeProjectPath's final runtime jar against the configured $artifactId API baseline."
+				classpath = apiCompatibilityChecker
+				mainClass.set("net.neoforged.jarcompatibilitychecker.ConsoleTool")
+				inputs.property("apiCompatibilityBaselineVersion", apiCompatibilityBaselineVersion)
+				val checkerArguments = objects.newInstance(JarCompatibilityCheckerArgumentProvider::class.java)
+				checkerArguments.baselineJar.from(resolveBaselineTask.flatMap { it.baselineJar })
+				checkerArguments.resolvedBaselineVersion.set(resolveBaselineTask.flatMap { it.resolvedVersionFile })
+				checkerArguments.inputJar.fileProvider(runtimeInputJars.getValue(runtimeProjectPath))
+				checkerArguments.outputFile.set(runtimeReport)
+				argumentProviders.add(checkerArguments)
+			}
+			tasks.register(taskName, ValidateApiCompatibilityReport::class.java) {
+				group = LifecycleBasePlugin.VERIFICATION_GROUP
+				description = "Checks $runtimeProjectPath's packaged ${module.projectPath} API against the configured $artifactId API baseline."
+				dependsOn(runtimeChecker)
+				reportFile.set(runtimeReport)
+				val apiProjectDirectory = isolatedProjectDirectory(module.projectPath)
+				sourceFiles.from(apiProjectDirectory.dir("src/api/java").asFileTree.matching {
+					include("**/*.java")
+				})
+			}
+		}
+		listOf(apiCheckTask) + runtimeCheckTasks
 	}
 
 	tasks.register("checkApiCompatibility") {
 		group = LifecycleBasePlugin.VERIFICATION_GROUP
-		description = "Checks all published JEI API jars for compatibility with the configured published API baselines."
+		description = "Checks API jars and final runtime jars against the configured published API baselines."
 		dependsOn(apiCompatibilityCheckTasks)
 	}
 
@@ -356,6 +407,7 @@ private data class ApiCompatibilityModule(
 	val projectPath: String,
 	val taskName: String,
 	val artifactSuffix: String,
+	val runtimeProjectPaths: List<String>,
 )
 
 private data class ApiCompatibilityError(

@@ -2,6 +2,7 @@ package mezz.jei.library.ingredients;
 
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.ingredients.rendering.IIngredientDecorator;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.ingredients.ITypedIngredientFactory;
@@ -29,4 +30,6 @@ public interface IIngredientManagerInternal extends IIngredientManager, ITypedIn
 	);
 
 	<T> List<ITypedIngredient<T>> getGroupedIngredients(ITypedIngredient<T> ingredient);
+
+	<T> void addIngredientDecorator(IIngredientType<T> ingredientType, IIngredientDecorator<T> decorator);
 }

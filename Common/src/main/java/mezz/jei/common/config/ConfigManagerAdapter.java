@@ -1,6 +1,8 @@
 package mezz.jei.common.config;
 
+import mezz.jei.api.constants.ModIds;
 import net.mezzdev.config.api.Configs;
+import net.mezzdev.config.api.schema.ConfigSchemaType;
 import net.mezzdev.config.api.schema.category.IConfigCategory;
 import net.mezzdev.config.api.schema.IConfigSchema;
 import net.mezzdev.config.api.value.editor.IConfigValueEditorInfo;
@@ -88,8 +90,12 @@ public final class ConfigManagerAdapter {
 		@Override
 		@Unmodifiable
 		public Collection<mezz.jei.api.runtime.config.IJeiConfigFile> getConfigFiles() {
+			// Only expose JEI's local client files because legacy config editors require a backing file for every entry.
 			return schemas.get()
 				.stream()
+				.filter(schema -> ModIds.JEI_ID.equals(schema.getModId()))
+				.filter(schema -> schema.getType() == ConfigSchemaType.CLIENT)
+				.filter(schema -> schema.getPath().isPresent())
 				.map(configFile -> (mezz.jei.api.runtime.config.IJeiConfigFile) new ConfigFile(configFile, listenerRemovalRegistrar))
 				.toList();
 		}

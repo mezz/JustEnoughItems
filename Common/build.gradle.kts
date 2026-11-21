@@ -2,6 +2,7 @@ import mezz.jei.gradle.dependencyInfo
 import mezz.jei.gradle.mezzConfigDependency
 import mezz.jei.gradle.addFabricMinecraftDependencies
 import mezz.jei.gradle.gradleProperty
+import mezz.jei.gradle.isolatedProjectDirectory
 import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
@@ -49,6 +50,10 @@ configurations.create("apiClassesElements") {
 }
 
 addFabricMinecraftDependencies()
+
+loom {
+    accessWidenerPath.set(isolatedProjectDirectory(":Fabric").file("src/main/resources/jei.accesswidener"))
+}
 
 afterEvaluate {
     configurations.named(apiSourceSet.compileClasspathConfigurationName) {

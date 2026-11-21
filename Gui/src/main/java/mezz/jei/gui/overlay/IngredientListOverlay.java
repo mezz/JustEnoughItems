@@ -91,7 +91,7 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 				keyboardFocus.focus(keyboardNavigation);
 			}
 		});
-		this.configButtonController = new ConfigButtonController(this::isSearchDisplayed, this::isListHiddenWhenNotSearching, clientConfig.hideIngredientsWhenNotSearching(), toggleState, keyBindings);
+		this.configButtonController = new ConfigButtonController(this::isSearchDisplayed, this::isListHiddenWhenNotSearching, clientConfig.hideIngredientsWhenNotSearching(), toggleState, keyBindings, this::getConfigButtonArea, this::isQuickConfigAvailable);
 		this.configButton = new IconButton(configButtonController);
 		this.controller = IngredientListOverlayController.create(
 			this.guiPropertiesCache,
@@ -193,6 +193,14 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 		return this.searchInputLayer;
 	}
 
+	private ImmutableRect2i getConfigButtonArea() {
+		return configButton.getArea();
+	}
+
+	private boolean isQuickConfigAvailable() {
+		return controller.hasValidScreen() && toggleState.isOverlayEnabled();
+	}
+
 	public void drawScreen(Minecraft minecraft, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
 		updateScreenPropertiesIfDirty();
 		drawBackground(guiGraphics);
@@ -236,8 +244,8 @@ public class IngredientListOverlay implements IIngredientListOverlay, IRecipeFoc
 			this.searchField.extractForegroundRenderState(guiGraphics, mouseX, mouseY, partialTicks);
 		}
 		if (this.controller.hasValidScreen()) {
+			this.configButton.setForcePressed(configButtonController.isQuickMenuOpen());
 			this.configButton.draw(guiGraphics, mouseX, mouseY, partialTicks);
-
 		}
 		if (this.controller.hasValidScreen() && toggleState.isOverlayEnabled()) {
 			this.lookupHistoryOverlay.draw(minecraft, guiGraphics, mouseX, mouseY, partialTicks);

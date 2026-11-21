@@ -38,7 +38,7 @@ public abstract class AbstractCookingCategory<T extends AbstractCookingRecipe> e
 		super(
 			recipeType,
 			Component.translatable(translationKey),
-			guiHelper.createDrawableItemLike(icon),
+			null,
 			width,
 			height
 		);

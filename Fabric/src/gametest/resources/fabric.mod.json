@@ -9,6 +9,7 @@
       "mezz.jei.fabric.test.NetherBiomeTestMod"
     ],
     "jei_mod_plugin": [
+      "mezz.jei.fabric.test.IngredientDecoratorClientGameTest",
       "mezz.jei.fabric.test.BookmarkManagerClientGameTest",
       "mezz.jei.fabric.test.RecipeSourceIdsClientTest"
     ],
@@ -17,6 +18,10 @@
       "mezz.jei.fabric.test.NetherBiomeFuelGameTests"
     ],
     "fabric-client-gametest": [
+      "mezz.jei.fabric.test.SpriteRenderingClientGameTest",
+      "mezz.jei.fabric.test.FakeMenuClientGameTest",
+      "mezz.jei.fabric.test.IngredientDecoratorClientGameTest",
+      "mezz.jei.fabric.test.ChatItemLinksClientGameTest",
       "mezz.jei.fabric.test.ConfigGuiKeyModifiersClientGameTest",
       "mezz.jei.fabric.test.FabricKeyModifiersClientGameTest",
       "mezz.jei.fabric.test.ContainerIngredientShortcutsClientTest",
@@ -27,6 +32,7 @@
       "mezz.jei.fabric.test.IngredientNavigationClientGameTest",
       "mezz.jei.fabric.test.IngredientKeyboardNavigationClientGameTest",
       "mezz.jei.fabric.test.IngredientListVisibilityClientGameTest",
+      "mezz.jei.fabric.test.QuickConfigClientGameTest",
       "mezz.jei.fabric.test.JeiGuiResizeClientGameTest",
       "mezz.jei.fabric.test.JeiFabricCreativeInventoryClientGameTest",
       "mezz.jei.fabric.test.JeiFabricSingleplayerClientGameTest",

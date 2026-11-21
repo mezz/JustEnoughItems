@@ -29,7 +29,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
-import net.minecraft.world.level.block.Blocks;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +46,7 @@ public class CraftingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<
 		super(
 			RecipeTypes.CRAFTING,
 			Component.translatable("gui.jei.category.craftingTable"),
-			guiHelper.createDrawableItemLike(Blocks.CRAFTING_TABLE),
+			null,
 			width,
 			height
 		);

@@ -134,6 +134,12 @@ public class BookmarkPreviewTooltipController implements IGuiInputLayer, IPinned
 	}
 
 	@Override
+	public boolean scroll(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+		BookmarkPreviewTooltip activeTooltip = this.activeTooltip;
+		return activeTooltip != null && activeTooltip.scroll(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
+	}
+
+	@Override
 	public Optional<IInputInteraction> beginInput(
 		Screen screen,
 		UserInput input,

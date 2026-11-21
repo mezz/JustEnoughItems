@@ -18,13 +18,14 @@ import java.util.Optional;
 public class TestJeiConfigValue<T> implements IConfigValue<T>, IConfigValueEditorInfo<T> {
 	private final String name;
 	private final T defaultValue;
-	private final IConfigValueSerializer<T> serializer = new TestSerializer<>();
+	private final IConfigValueSerializer<T> serializer;
 	private final List<IConfigValueChangeListener<T>> changeListeners = new ArrayList<>();
 	private T value;
 
 	public TestJeiConfigValue(String name, T value) {
 		this.name = name;
 		this.defaultValue = value;
+		this.serializer = new TestSerializer<>(value);
 		this.value = value;
 	}
 
@@ -115,6 +116,22 @@ public class TestJeiConfigValue<T> implements IConfigValue<T>, IConfigValueEdito
 	) implements IAppliedConfigValueChange<T> {}
 
 	private static class TestSerializer<T> implements IConfigValueSerializer<T> {
+		private final Class<? extends T> valueClass;
+
+		@SuppressWarnings("unchecked")
+		private TestSerializer(T value) {
+			this.valueClass = (Class<? extends T>) switch (value) {
+				case Enum<?> enumValue -> enumValue.getDeclaringClass();
+				case List<?> ignored -> List.class;
+				default -> value.getClass();
+			};
+		}
+
+		@Override
+		public Class<? extends T> getValueClass() {
+			return valueClass;
+		}
+
 		@Override
 		public String serialize(T value) {
 			return String.valueOf(value);

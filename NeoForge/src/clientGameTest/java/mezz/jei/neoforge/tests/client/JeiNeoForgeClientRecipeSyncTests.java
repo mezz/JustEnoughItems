@@ -3,6 +3,8 @@ package mezz.jei.neoforge.tests.client;
 import mezz.jei.common.Internal;
 import mezz.jei.common.network.ClientConnectionHelper;
 import mezz.jei.test.lib.JUnitXmlTestReporter;
+import mezz.jei.test.client.SpriteRenderingTest;
+import mezz.jei.test.client.FakeMenuClientTest;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.core.RegistrySetBuilder;
@@ -72,6 +74,8 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 		try {
 			JeiNeoForgeClientResourceTests.run();
 			LOGGER.info("JEI NeoForge client resource test passed");
+			JUnitXmlTestReporter.runAndReport("neoforge-client-rendering", "arrowSprites", () -> ClientTestUtil.runOnClient(SpriteRenderingTest::run, Duration.ofSeconds(30)));
+			LOGGER.info("JEI NeoForge arrow rendering test passed");
 			testName = TestCase.fromSystemPropertyId();
 			for (TestCase currentTestCase : TestCase.fromSystemProperty()) {
 				testName = currentTestCase.displayName;
@@ -316,6 +320,9 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 				runSingleplayerTestCase(displayName(), () -> {
 					assertSyncedRecipesFromSingleplayer();
 					JeiNeoForgeClientTextInputTests.run();
+					FakeMenuClientTest.run(ClientTestUtil::runOnClient, condition -> ClientTestUtil.waitUntil(
+						() -> ClientTestUtil.computeOnClient(condition::test), ASSERTION_TIMEOUT, () -> "Timed out waiting for fake-menu player replacement"
+					));
 				});
 			}
 		},

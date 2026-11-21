@@ -16,7 +16,6 @@ import mezz.jei.common.gui.JeiGuiColors.GuiColor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Blocks;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ public class GrindstoneRecipeCategory extends AbstractRecipeCategory<IJeiGrindst
 		super(
 			RecipeTypes.GRINDSTONE,
 			Component.translatable("gui.jei.category.grindstone"),
-			guiHelper.createDrawableItemLike(Blocks.GRINDSTONE),
+			null,
 			73,
 			52
 		);

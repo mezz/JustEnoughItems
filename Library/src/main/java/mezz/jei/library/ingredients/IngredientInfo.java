@@ -9,6 +9,7 @@ import mezz.jei.api.ingredients.IIngredientTypeWithSubtypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.common.collect.ListMultiMap;
+import mezz.jei.common.ingredients.DecoratingIngredientRenderer;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -41,7 +42,7 @@ public class IngredientInfo<T> {
 	) {
 		this.ingredientType = ingredientType;
 		this.ingredientHelper = ingredientHelper;
-		this.ingredientRenderer = ingredientRenderer;
+		this.ingredientRenderer = DecoratingIngredientRenderer.create(ingredientType, ingredientRenderer);
 		this.ingredientCodec = ingredientCodec;
 		this.registeringPluginUid = registeringPluginUid;
 

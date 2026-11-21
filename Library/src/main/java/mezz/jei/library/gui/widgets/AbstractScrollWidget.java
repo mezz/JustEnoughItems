@@ -172,6 +172,10 @@ public abstract class AbstractScrollWidget implements IRecipeWidget, IJeiInputHa
 
 	@Override
 	public final boolean handleMouseScrolled(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
+		// Use horizontal scrolling too because holding Shift to pin previews can change the wheel axis.
+		if (scrollDeltaY == 0) {
+			scrollDeltaY = scrollDeltaX;
+		}
 		if (getHiddenAmount() > 0) {
 			scrollOffsetY -= calculateScrollAmount(scrollDeltaY);
 			scrollOffsetY = Mth.clamp(scrollOffsetY, 0.0F, 1.0F);

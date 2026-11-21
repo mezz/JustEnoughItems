@@ -25,6 +25,7 @@ public class ErrorIngredientRenderer implements IIngredientRenderer<ErrorIngredi
 	}
 
 	@Override
+	@Deprecated(since = "31.18.0", forRemoval = true)
 	public void render(GuiGraphicsExtractor guiGraphics, ErrorIngredient ingredient) {
 		Minecraft minecraft = Minecraft.getInstance();
 		if (ingredient.crashType() == ErrorIngredient.CrashType.TooltipCrash) {

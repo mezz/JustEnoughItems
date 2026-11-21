@@ -1,11 +1,11 @@
 package mezz.jei.fabric.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import de.siphalor.amecs.key_mapping_matchers.impl.AmecsKeyMappingManager;
+import de.siphalor.amecs.key_mapping_matchers.impl.AmecsKeyMappingManagerLayer;
 import de.siphalor.amecs.key_modifiers.api.AmecsKeyModifier;
 import de.siphalor.amecs.key_modifiers.api.AmecsKeyModifierCombination;
 import de.siphalor.amecs.key_modifiers.api.AmecsKeyModifiers;
-import de.siphalor.amecs.key_modifiers.impl.AmecsKeyMappingManager;
-import de.siphalor.amecs.key_modifiers.impl.AmecsKeyMappingManagerLayer;
 import mezz.jei.common.input.keys.IJeiKeyMappingInternal;
 import mezz.jei.common.input.keys.JeiKeyConflictContext;
 import mezz.jei.common.input.keys.JeiKeyModifier;

@@ -15,7 +15,6 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
 import net.minecraft.world.item.crafting.display.StonecutterRecipeDisplay;
-import net.minecraft.world.level.block.Blocks;
 
 public class StoneCuttingRecipeCategory extends AbstractRecipeCategory<RecipeHolder<StonecutterRecipe>> {
 	public static final int width = 82;
@@ -25,7 +24,7 @@ public class StoneCuttingRecipeCategory extends AbstractRecipeCategory<RecipeHol
 		super(
 			RecipeTypes.STONECUTTING,
 			Component.translatable("gui.jei.category.stoneCutter"),
-			guiHelper.createDrawableItemLike(Blocks.STONECUTTER),
+			null,
 			width,
 			height
 		);

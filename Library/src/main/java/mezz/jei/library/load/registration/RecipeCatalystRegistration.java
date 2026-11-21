@@ -19,11 +19,14 @@ import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.ItemLike;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
+	private static final Logger LOGGER = LogManager.getLogger();
 	private final ListMultiMap<IRecipeType<?>, Consumer<IIngredientAcceptor<?>>> craftingStations = new ListMultiMap<>();
 	private final IIngredientManagerInternal ingredientManager;
 	private final IJeiHelpers jeiHelpers;
@@ -56,11 +59,7 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 		ErrorUtil.checkNotNull(ingredients, "ingredients");
 
 		for (T ingredient : ingredients) {
-			ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, true);
-			if (typedIngredient == null) {
-				throw new IllegalArgumentException("Recipe catalyst must be a valid ingredient");
-			}
-			addCraftingStation(recipeType, typedIngredient);
+			addCraftingStation(recipeType, ingredientType, ingredient);
 		}
 	}
 
@@ -78,12 +77,9 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 		ErrorUtil.checkNotNull(ingredients, "ingredients");
 
 		for (ItemLike itemLike : ingredients) {
+			ErrorUtil.checkNotNull(itemLike, "itemLike");
 			ItemStack itemStack = itemLike.asItem().getDefaultInstance();
-			ITypedIngredient<ItemStack> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, VanillaTypes.ITEM_STACK, itemStack, true);
-			if (typedIngredient == null) {
-				throw new IllegalArgumentException("Recipe catalyst must be a valid ingredient");
-			}
-			addCraftingStation(recipeType, typedIngredient);
+			addCraftingStation(recipeType, VanillaTypes.ITEM_STACK, itemStack);
 		}
 	}
 
@@ -94,10 +90,12 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
 		ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, true);
-		if (typedIngredient == null) {
-			throw new IllegalArgumentException("Recipe catalyst must be a valid ingredient");
+		if (typedIngredient != null) {
+			addCraftingStation(recipeType, typedIngredient);
+		} else {
+			String ingredientInfo = ErrorUtil.getIngredientInfo(ingredient, ingredientType, ingredientManager);
+			LOGGER.warn("Skipping invalid crafting station for {}: {}", recipeType.getUid(), ingredientInfo);
 		}
-		addCraftingStation(recipeType, typedIngredient);
 	}
 
 	@SuppressWarnings("removal")
@@ -108,12 +106,7 @@ public class RecipeCatalystRegistration implements IRecipeCatalystRegistration {
 		ErrorUtil.checkNotNull(ingredient, "ingredient");
 
 		for (IRecipeType<?> recipeType : recipeTypes) {
-			ErrorUtil.checkNotNull(recipeType, "recipeType");
-			ITypedIngredient<T> typedIngredient = TypedIngredient.createAndFilterInvalid(this.ingredientManager, ingredientType, ingredient, true);
-			if (typedIngredient == null) {
-				throw new IllegalArgumentException("Recipe catalyst must be a valid ingredient");
-			}
-			addCraftingStation(recipeType, typedIngredient);
+			addCraftingStation(recipeType, ingredientType, ingredient);
 		}
 	}
 

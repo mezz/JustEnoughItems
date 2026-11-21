@@ -135,7 +135,10 @@ public class InteractiveIngredientTooltipClientGameTest implements FabricClientG
 
 	private static boolean checkObscuredBookmark(ClientGameTestContext context, Point source) {
 		context.getInput().releaseKey(InputConstants.KEY_LSHIFT);
-		move(context, source);
+		// Pause cycling before adding overrides because a cycle clears the wide tooltip's names.
+		// Keep the cursor off recipe slots until the wide tooltip is ready to pin.
+		move(context, new Point(0, 0));
+		context.getInput().holdKey(InputConstants.KEY_LSHIFT);
 		context.runOnClient(client -> {
 			var runtime = Internal.getJeiRuntime();
 			var slot = layouts().getRecipeLayoutUnderMouse(source.x(), source.y()).orElseThrow()
@@ -152,7 +155,6 @@ public class InteractiveIngredientTooltipClientGameTest implements FabricClientG
 			runtime.getIngredientManager().getAllTypedIngredients(VanillaTypes.ITEM_STACK)
 				.stream().limit(80).forEach(runtime.getBookmarkManager()::add);
 		});
-		context.getInput().holdKey(InputConstants.KEY_LSHIFT);
 		move(context, new Point(source.x() + 1, source.y() + 1));
 		context.waitTicks(2);
 		Point covered = context.computeOnClient(client -> findPoint(

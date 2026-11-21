@@ -23,6 +23,14 @@ import mezz.jei.common.input.UserInput;
  */
 public interface IInputInteraction {
 	/**
+	 * Whether a handled key also consumes its character callbacks.
+	 * Actions consume characters by default; text input returns false to receive them.
+	 */
+	default boolean consumesCharacters() {
+		return true;
+	}
+
+	/**
 	 * Finishes handling the input. A click action may be skipped if its original control
 	 * is no longer available or the mouse button was released with the pointer outside it.
 	 *

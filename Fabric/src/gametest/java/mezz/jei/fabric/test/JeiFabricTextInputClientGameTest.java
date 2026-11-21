@@ -104,7 +104,12 @@ public class JeiFabricTextInputClientGameTest implements FabricClientGameTest {
 
 					searchField.clearFocus();
 					focusSearchWithHotkey(
-						client.keyboardHandler, client.getWindow().handle(), () -> ImeTextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField)
+						client.keyboardHandler, client.getWindow().handle(), () -> {
+							ImeTextInputTestUtil.invokeKeyRelease(client.keyboardHandler, client.getWindow().handle(), new KeyEvent(KEY_CODE_F, 'f', 0));
+							ImeTextInputTestUtil.typeImeText(client.keyboardHandler, client.getWindow().handle(), searchField);
+							ImeTextInputTestUtil.assertImeInputAfterBackspace(client.keyboardHandler, client.getWindow().handle(), searchField);
+							ImeTextInputTestUtil.typePlainText(client.keyboardHandler, client.getWindow().handle(), searchField);
+						}
 					);
 					ImeTextInputTestUtil.typeKoreanText(client.keyboardHandler, client.getWindow().handle(), searchField);
 					ImeTextInputTestUtil.assertScreenCleanupKeepsChatTextInputEnabled(client, ingredientListOverlay, searchField);

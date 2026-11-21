@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
+import mezz.jei.common.ingredients.DecoratingIngredientRenderer;
 
 import java.util.Map;
 import java.util.Optional;
@@ -32,7 +33,7 @@ public class RendererOverrides {
 				"All ingredient render overrides for one slot must have the same height."
 			);
 		}
-		this.overrides.put(ingredientType, ingredientRenderer);
+		this.overrides.put(ingredientType, DecoratingIngredientRenderer.create(ingredientType, ingredientRenderer));
 	}
 
 	public <T> Optional<IIngredientRenderer<T>> getIngredientRenderer(IIngredientType<T> ingredientType) {
