@@ -49,11 +49,12 @@ pipeline {
             steps {
                 sh '''
                     if command -v xvfb-run >/dev/null 2>&1; then
+                        # Keep client JVMs sequential when Gradle reuses the configuration cache.
                         JEI_JVM_DIAGNOSTIC_DELAY_SECONDS=600 \
                         JEI_JVM_DIAGNOSTIC_FILE="$WORKSPACE/Fabric/build/reports/client-gametest-diagnostics.txt" \
                             python3 .jenkins/runWithJvmDiagnostics.py \
                             xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
-                            ./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs :NeoForge:runClientRecipeSyncTest --no-daemon --no-parallel
+                            ./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs :NeoForge:runClientRecipeSyncTest --no-daemon --no-parallel --max-workers=1
                     else
                         echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
                     fi
