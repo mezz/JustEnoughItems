@@ -317,7 +317,8 @@ tasks.named("runClientGameTestWithoutAmecs") {
 }
 
 tasks.named<Delete>("deleteGameTestRunDir") {
-    // Clear the custom profile too so saved overlay settings cannot hide the bookmarks during tests.
+    // Extend Loom's cleanup from clientGameTest to clientGameTestWithoutAmecs so retained overlay settings
+    // cannot hide the bookmark panel during tests.
     delete(clientGameTestWithoutAmecsRunDirectory)
 }
 
