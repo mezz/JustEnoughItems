@@ -198,14 +198,6 @@ public class GuiIngredient<T> extends Gui implements IGuiIngredient<T> {
 		try {
 			GlStateManager.disableDepth();
 
-			RenderHelper.disableStandardItemLighting();
-			drawRect(xOffset + rect.x + xPadding,
-				yOffset + rect.y + yPadding,
-				xOffset + rect.x + rect.width - xPadding,
-				yOffset + rect.y + rect.height - yPadding,
-				0x7FFFFFFF);
-			GlStateManager.color(1f, 1f, 1f, 1f);
-
 			ITooltipFlag.TooltipFlags tooltipFlag = minecraft.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL;
 			List<String> tooltip = ingredientRenderer.getTooltip(minecraft, value, tooltipFlag);
 			tooltip = ForgeModIdHelper.getInstance().addModNameToIngredientTooltip(tooltip, value, ingredientHelper);

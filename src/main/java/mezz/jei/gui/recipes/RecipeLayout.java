@@ -1,13 +1,13 @@
 package mezz.jei.gui.recipes;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import mezz.jei.color.ColorUtil;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -61,7 +61,6 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 	private final IRecipeWrapper recipeWrapper;
 	@Nullable
 	private final IFocus<?> focus;
-	private final Color highlightColor = new Color(0x7FFFFFFF, true);
 	@Nullable
 	private ShapelessIcon shapelessIcon;
 	private final DrawableNineSliceTexture recipeBorder;
@@ -188,7 +187,7 @@ public class RecipeLayout implements IRecipeLayoutDrawable {
 		GlStateManager.popMatrix();
 
 		for (GuiIngredientGroup guiIngredientGroup : guiIngredientGroups.values()) {
-			guiIngredientGroup.draw(minecraft, posX, posY, highlightColor, mouseX, mouseY);
+			guiIngredientGroup.draw(minecraft, posX, posY, ColorUtil.HOVER_HIGHLIGHT, mouseX, mouseY);
 		}
 		if (recipeTransferButton != null) {
 			float partialTicks = minecraft.getRenderPartialTicks();

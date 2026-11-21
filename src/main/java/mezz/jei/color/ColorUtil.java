@@ -3,6 +3,11 @@ package mezz.jei.color;
 import java.awt.Color;
 
 public final class ColorUtil {
+	/**
+	 * Color for indicating an ingredient being hovered on.
+	 */
+	public static final Color HOVER_HIGHLIGHT = new Color(0x7FFFFFFF, true);
+
 	private ColorUtil() {
 
 	}

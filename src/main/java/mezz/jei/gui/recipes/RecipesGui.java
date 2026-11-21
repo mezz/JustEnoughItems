@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import mezz.jei.color.ColorUtil;
 import net.minecraftforge.fml.client.config.HoverChecker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -252,6 +253,7 @@ public class RecipesGui extends GuiScreen implements IRecipesGui, IShowsRecipeFo
 			hoveredLayout.drawOverlays(mc, mouseX, mouseY);
 		}
 		if (hoveredRecipeCatalyst != null) {
+			hoveredRecipeCatalyst.drawHighlight(mc, ColorUtil.HOVER_HIGHLIGHT, 0, 0);
 			hoveredRecipeCatalyst.drawOverlays(mc, 0, 0, mouseX, mouseY);
 		}
 
