@@ -20,6 +20,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.material.Fluid;
 
+import java.net.URLEncoder;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -29,8 +32,9 @@ public final class JeiChatItemLinks {
 	public static final String SHOW_RECIPE_COMMAND = "jei_internal_show";
 	public static final String LINK_ARGUMENT = "link";
 
-	private static final String LINK_VERSION = "v1";
+	private static final String LINK_VERSION = "v2";
 	private static final String LINK_VERSION_PREFIX = LINK_VERSION + ":";
+	private static final String LEGACY_LINK_VERSION_PREFIX = "v1:";
 	private static final String LINK_MARKER_PREFIX = "[JEI:";
 	private static final String LINK_MARKER_SUFFIX = "]";
 	private static final char LINK_VALUE_SEPARATOR = ';';
@@ -123,35 +127,42 @@ public final class JeiChatItemLinks {
 
 	public static String createCommandArgument(IngredientLink link) {
 		return LINK_VERSION_PREFIX +
-			link.ingredientTypeUid() +
+			URLEncoder.encode(link.ingredientTypeUid(), StandardCharsets.UTF_8) +
 			LINK_VALUE_SEPARATOR +
-			link.ingredientUid();
+			URLEncoder.encode(link.ingredientUid(), StandardCharsets.UTF_8);
 	}
 
 	public static Optional<IngredientLink> parseCommandArgument(String linkText) {
-		if (!linkText.startsWith(LINK_VERSION_PREFIX)) {
+		String payload;
+		boolean encoded;
+		if (linkText.startsWith(LINK_VERSION_PREFIX)) {
+			payload = linkText.substring(LINK_VERSION_PREFIX.length());
+			encoded = true;
+		} else if (linkText.startsWith(LEGACY_LINK_VERSION_PREFIX)) {
+			payload = linkText.substring(LEGACY_LINK_VERSION_PREFIX.length());
+			encoded = false;
+		} else {
 			return Optional.empty();
 		}
-
-		int ingredientTypeUidStart = LINK_VERSION_PREFIX.length();
-		int separator = linkText.indexOf(LINK_VALUE_SEPARATOR, ingredientTypeUidStart);
-		if (separator <= ingredientTypeUidStart) {
+		int separator = payload.indexOf(LINK_VALUE_SEPARATOR);
+		if (separator <= 0 || separator == payload.length() - 1) {
 			return Optional.empty();
 		}
-
-		int ingredientUidStart = separator + 1;
-		if (ingredientUidStart >= linkText.length()) {
-			return Optional.empty();
+		String ingredientTypeUid = payload.substring(0, separator);
+		String ingredientUid = payload.substring(separator + 1);
+		// Keep v1 payloads raw because '%' and '+' are literal UID data in that format.
+		if (encoded) {
+			try {
+				ingredientTypeUid = URLDecoder.decode(ingredientTypeUid, StandardCharsets.UTF_8);
+				ingredientUid = URLDecoder.decode(ingredientUid, StandardCharsets.UTF_8);
+			} catch (IllegalArgumentException e) {
+				return Optional.empty();
+			}
 		}
-
-		String ingredientTypeUid = linkText.substring(ingredientTypeUidStart, separator);
 		if (!isValidIngredientTypeUid(ingredientTypeUid)) {
 			return Optional.empty();
 		}
-
-		String ingredientUid = linkText.substring(ingredientUidStart);
-		IngredientLink link = new IngredientLink(ingredientTypeUid, ingredientUid);
-		return Optional.of(link);
+		return Optional.of(new IngredientLink(ingredientTypeUid, ingredientUid));
 	}
 
 	public static String createShowRecipeCommand(IngredientLink link) {
