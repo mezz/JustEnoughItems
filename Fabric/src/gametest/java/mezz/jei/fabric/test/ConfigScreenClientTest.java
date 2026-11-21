@@ -102,7 +102,8 @@ final class ConfigScreenClientTest {
 		Map<List<String>, List<IConfigValue<?>>> expectedGroups = Map.of(
 			List.of("recipes", "appearance"), List.of(
 				clientConfig.recipeSlotCyclingEnabled(), clientConfig.maxRecipeGuiHeight(),
-				clientConfig.recipeGuiWidth(), clientConfig.maxRecipeGuiColumns()
+				clientConfig.recipeGuiWidth(), clientConfig.maxRecipeGuiColumns(),
+				clientConfig.showTagBadges(), clientConfig.showListBadges()
 			),
 			List.of("input", "mouse"), List.of(clientConfig.guiResizeEnabled(), clientConfig.dragDelayMs()),
 			List.of("input", "scrolling"), List.of(clientConfig.smoothScrollingEnabled(), clientConfig.smoothScrollRate()),

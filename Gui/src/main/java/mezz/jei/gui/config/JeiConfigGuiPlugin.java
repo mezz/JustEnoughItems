@@ -170,7 +170,9 @@ public class JeiConfigGuiPlugin implements IConfigGuiPlugin {
 				clientConfig.maxRecipeGuiHeight(),
 				clientConfig.recipeGuiWidth(),
 				clientConfig.maxRecipeGuiColumns(),
-				clientConfig.recipeSlotCyclingEnabled()
+				clientConfig.recipeSlotCyclingEnabled(),
+				clientConfig.showTagBadges(),
+				clientConfig.showListBadges()
 			));
 		IConfigScreenCategoryBuilder lookups = addNestedCategory(recipes, "lookups", "jei.config.client.lookups")
 			.addValues(List.of(

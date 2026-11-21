@@ -58,6 +58,10 @@ public interface IClientConfig {
 
 	IConfigValue<Boolean> ingredientsSummaryEnabled();
 
+	IConfigValue<Boolean> showTagBadges();
+
+	IConfigValue<Boolean> showListBadges();
+
 	IConfigValue<Boolean> showTagRecipesEnabled();
 
 	IConfigValue<Boolean> catchRenderErrorsEnabled();
@@ -93,7 +97,4 @@ public interface IClientConfig {
 	IConfigValue<Boolean> tagContentTooltipEnabled();
 
 	IConfigValue<Boolean> hideSingleTagContentTooltipEnabled();
-
-	boolean getShowTagBadges();
-	boolean getShowListBadges();
 }
