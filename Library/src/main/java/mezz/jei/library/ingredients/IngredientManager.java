@@ -190,7 +190,7 @@ public class IngredientManager implements IIngredientManagerInternal {
 				LOGGER.warn("Attempted to add an Ingredient that is not on the server: {}", errorInfo);
 				continue;
 			}
-			ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, false);
+			ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, true);
 			if (typedIngredient == null) {
 				LOGGER.warn("Attempted to add an invalid ingredient at runtime: {}", ingredientHelper.getErrorInfo(ingredient));
 				continue;

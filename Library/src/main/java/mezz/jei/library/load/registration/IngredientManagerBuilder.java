@@ -96,7 +96,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 				LOGGER.warn("Attempted to add an Ingredient that is not on the server: {}", errorInfo);
 				continue;
 			}
-			ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, false);
+			ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, true);
 			if (typedIngredient == null) {
 				LOGGER.warn("Detected an invalid ingredient during ingredient registration: {}", ingredientHelper.getErrorInfo(ingredient));
 				continue;
@@ -131,7 +131,7 @@ public class IngredientManagerBuilder implements IModIngredientRegistration, IIn
 				continue;
 			}
 
-			ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, false);
+			ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, true);
 			if (typedIngredient == null) {
 				LOGGER.warn("Detected an invalid ingredient when adding extra ingredients: {}", ingredientHelper.getErrorInfo(ingredient));
 				continue;
