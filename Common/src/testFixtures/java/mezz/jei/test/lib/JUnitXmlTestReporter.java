@@ -32,6 +32,10 @@ public final class JUnitXmlTestReporter {
 		String testName,
 		ThrowingRunnable test
 	) {
+		String variant = System.getProperty("jei.test.variant", "");
+		if (!variant.isEmpty()) {
+			suiteName += "-" + variant;
+		}
 		long startNanos = System.nanoTime();
 		Throwable failure = null;
 		try {

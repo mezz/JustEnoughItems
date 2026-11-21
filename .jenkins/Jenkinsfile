@@ -38,26 +38,37 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                // Capture retained settings before build preparation clears the client test directories.
+                archiveArtifacts allowEmptyArchive: true, artifacts: 'Fabric/build/run/clientGameTest*/config/jei/client/jei-client.ini'
                 sh './gradlew build --no-daemon'
             }
         }
 
         stage('Client GameTests') {
+            environment {
+                SDL_OPENGL_FORCE_SRGB_FRAMEBUFFER = 'skip'
+            }
             options {
                 timeout(time: 15, unit: 'MINUTES')
             }
             steps {
                 sh '''
                     if command -v xvfb-run >/dev/null 2>&1; then
+                        # Keep client JVMs sequential when Gradle reuses the configuration cache.
                         JEI_JVM_DIAGNOSTIC_DELAY_SECONDS=600 \
                         JEI_JVM_DIAGNOSTIC_FILE="$WORKSPACE/Fabric/build/reports/client-gametest-diagnostics.txt" \
                             python3 .jenkins/runWithJvmDiagnostics.py \
                             xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
-                            ./gradlew :Fabric:runClientGameTest --no-daemon --no-parallel
+                            ./gradlew :Fabric:runClientGameTest :Fabric:runClientGameTestWithoutAmecs :NeoForge:runClientRecipeSyncTest --no-daemon --no-parallel --max-workers=1
                     else
                         echo "ERROR: xvfb-run is not available; skipping client GameTests." >&2
                     fi
                 '''
+            }
+            post {
+                unsuccessful {
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'Fabric/build/run/**/screenshots/*jei-interactive-tooltip*.png'
+                }
             }
         }
 

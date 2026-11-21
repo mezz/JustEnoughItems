@@ -34,8 +34,25 @@ public class InteractiveIngredientTooltipClientGameTest implements FabricClientG
 		JUnitXmlTestReporter.runAndReport("fabric-client-gametest", getClass().getSimpleName(), () -> {
 			try (TestSingleplayerContext ignored = context.worldBuilder().create()) {
 				JeiFabricClientGameTestAssertions.assertJeiStartedWithSyncedRecipes(context);
-				RecipeFocusSourceClientTest.run(context);
-				runBookmarkChecks(context);
+				int[] windowSize = context.computeOnClient(client -> new int[]{client.getWindow().getScreenWidth(), client.getWindow().getScreenHeight()});
+				int guiScale = context.computeOnClient(client -> client.options.guiScale().get());
+				try {
+					// Keep the recipe near the bookmarks because Minecraft caps tooltip line widths.
+					context.getInput().resizeWindow(1280, 720);
+					context.runOnClient(client -> {
+						int scale = Math.ceilDiv(client.getWindow().getWidth(), 480);
+						client.options.guiScale().set(scale);
+						client.resizeGui();
+					});
+					RecipeFocusSourceClientTest.run(context);
+					runBookmarkChecks(context);
+				} finally {
+					context.getInput().resizeWindow(windowSize[0], windowSize[1]);
+					context.runOnClient(client -> {
+						client.options.guiScale().set(guiScale);
+						client.resizeGui();
+					});
+				}
 			}
 		});
 	}
@@ -68,6 +85,8 @@ public class InteractiveIngredientTooltipClientGameTest implements FabricClientG
 			context.getInput().holdKey(InputConstants.KEY_LSHIFT);
 			move(context, source);
 			context.waitTicks(2);
+			// Render the tooltip because advancing game ticks does not calculate its input bounds.
+			context.takeScreenshot("jei-interactive-tooltip-open");
 			Point blank = context.computeOnClient(client -> findPoint((x, y) -> {
 				var foreground = gui().getForegroundInputLayer();
 				return foreground.isMouseOver(x, y) &&
@@ -143,11 +162,14 @@ public class InteractiveIngredientTooltipClientGameTest implements FabricClientG
 			var runtime = Internal.getJeiRuntime();
 			var slot = layouts().getRecipeLayoutUnderMouse(source.x(), source.y()).orElseThrow()
 				.getRecipeLayout().getSlotUnderMouse(source.x(), source.y()).orElseThrow().slot();
-			// A wide tooltip reaches across the bookmark list, as long translated item names can do.
+			// Force the tooltip left across the bookmarks even when the GUI has room on the right.
+			String name = "Wide interactive tooltip for bookmark occlusion regression ";
+			int repetitions = client.getWindow().getGuiScaledWidth() / client.font.width(name) + 1;
+			Component wideName = Component.literal(name.repeat(repetitions));
 			var candidates = slot.getDisplayedIngredients().flatMap(ingredient -> ingredient.getItemStack().stream())
 				.map(stack -> {
 					stack = stack.copy();
-					stack.set(DataComponents.CUSTOM_NAME, Component.literal("Wide interactive tooltip for bookmark occlusion regression"));
+					stack.set(DataComponents.CUSTOM_NAME, wideName);
 					return stack;
 				})
 				.toList();
@@ -157,6 +179,8 @@ public class InteractiveIngredientTooltipClientGameTest implements FabricClientG
 		});
 		move(context, new Point(source.x() + 1, source.y() + 1));
 		context.waitTicks(2);
+		// Render the replacement tooltip before checking which bookmarks its bounds cover.
+		context.takeScreenshot("jei-interactive-tooltip-bookmark-occlusion");
 		Point covered = context.computeOnClient(client -> findPoint(
 			new ImmutableRect2i(0, 0, client.getWindow().getGuiScaledWidth(), client.getWindow().getGuiScaledHeight()),
 			(x, y) -> gui().getForegroundInputLayer().isMouseOver(x, y) &&

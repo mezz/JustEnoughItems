@@ -69,6 +69,7 @@ val debugProjectDirectory = isolatedProjectDirectory(":Debug")
 
 val commonClientTestFixturesSource = commonProjectDirectory.dir("src/clientTestFixtures/java")
 val clientGameTestRunDirectory = layout.buildDirectory.dir("run/clientGameTest")
+val clientGameTestWithoutAmecsRunDirectory = layout.buildDirectory.dir("run/clientGameTestWithoutAmecs")
 
 val apiSourceSet = sourceSets.create("api") {
     resources.setSrcDirs(emptyList<String>())
@@ -207,8 +208,18 @@ fabricApi {
     }
 }
 
+val gametestWithoutAmecsSourceSet = sourceSets.create("gametestWithoutAmecs") {
+    runtimeClasspath += sourceSets.named("gametest").get().runtimeClasspath.filter {
+        !it.name.startsWith("amecs-key-modifiers-") && !it.name.startsWith("amecs-key-mapping-matchers-")
+    }
+}
+
 dependencies {
     "gametestCompileOnly"(amecsDependency) { isTransitive = false }
+    if (!providers.gradleProperty("amecsTestJar").isPresent) {
+        "gametestRuntimeOnly"(amecsDependency) { isTransitive = false }
+    }
+    "gametestRuntimeOnly"(amecsKeyMappingMatchersDependency) { isTransitive = false }
     "gametestImplementation"(testFixtures(project(":Common")))
     "gametestImplementation"(mezzConfigGuiFabricDependency)
 }
@@ -289,6 +300,14 @@ loom {
             val gameTestJunitReportFile = layout.buildDirectory.file("test-results/gameTest/TEST-fabric-game-tests.xml")
             systemProperties.put("fabric-api.gametest.report-file", gameTestJunitReportFile.get().asFile.absolutePath)
         }
+        create("clientGameTestWithoutAmecs") {
+            inherit(named("clientGameTest").get())
+            displayName.set("Fabric Client GameTest Without AMECS")
+            sourceSet.set(gametestWithoutAmecsSourceSet.name)
+            runDirectory.set(clientGameTestWithoutAmecsRunDirectory.get().asFile)
+            systemProperties.put("fabric.client.gametest.modid", "${modId}-test")
+            systemProperties.put("jei.test.variant", "without-amecs")
+        }
     }
 
     accessWidenerPath.set(file("src/main/resources/jei.accesswidener"))
@@ -303,6 +322,16 @@ sourceSets {
     }
 }
 
+tasks.named("runClientGameTestWithoutAmecs") {
+    dependsOn(sourceSets.named("gametest").get().classesTaskName)
+}
+
+tasks.named<Delete>("deleteGameTestRunDir") {
+    // Extend Loom's cleanup from clientGameTest to clientGameTestWithoutAmecs so retained overlay settings
+    // cannot hide the bookmark panel during tests.
+    delete(clientGameTestWithoutAmecsRunDirectory)
+}
+
 fun registerWriteClientGameTestOptionsTask(name: String, runDirectory: Provider<Directory>) =
     tasks.register<Copy>(name) {
         from(layout.projectDirectory.file("src/gametest/templates/options.txt"))
@@ -314,8 +343,17 @@ val writeClientGameTestOptions = registerWriteClientGameTestOptionsTask(
     "writeClientGameTestOptions",
     clientGameTestRunDirectory
 )
+val writeClientGameTestWithoutAmecsOptions = registerWriteClientGameTestOptionsTask(
+    "writeClientGameTestWithoutAmecsOptions",
+    clientGameTestWithoutAmecsRunDirectory
+)
+
 tasks.named("runClientGameTest") {
     dependsOn(writeClientGameTestOptions)
+}
+
+tasks.named("runClientGameTestWithoutAmecs") {
+    dependsOn(writeClientGameTestWithoutAmecsOptions)
 }
 
 val debugClassesTask = tasks.named(debugSourceSet.classesTaskName)
