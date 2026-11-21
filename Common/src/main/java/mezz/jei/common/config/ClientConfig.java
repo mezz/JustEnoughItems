@@ -47,6 +47,8 @@ public final class ClientConfig implements IClientConfig {
 	private final IConfigValue<HistoryDisplaySide> lookupHistoryDisplaySide;
 
 	// recipes gui
+	private final IConfigValue<Boolean> showTagBadges;
+	private final IConfigValue<Boolean> showListBadges;
 	private final IConfigValue<Boolean> ingredientsSummaryEnabled;
 	private final IConfigValue<Boolean> showTagRecipesEnabled;
 
@@ -185,6 +187,12 @@ public final class ClientConfig implements IClientConfig {
 			.setEditMode(ConfigValueEditMode.IMMEDIATE)
 			.build();
 
+		showTagBadges = recipes.addBoolean("showTagBadges", true)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
+		showListBadges = recipes.addBoolean("showListBadges", true)
+			.setEditMode(ConfigValueEditMode.IMMEDIATE)
+			.build();
 		showTagRecipesEnabled = recipes.addBoolean("showTagRecipesEnabled", true)
 			.addLegacyValue("cheating", "showTagRecipesEnabled")
 			.setEditMode(ConfigValueEditMode.BATCH)
@@ -356,6 +364,16 @@ public final class ClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Boolean> showHiddenIngredients() {
 		return showHiddenIngredients;
+	}
+
+	@Override
+	public IConfigValue<Boolean> showTagBadges() {
+		return showTagBadges;
+	}
+
+	@Override
+	public IConfigValue<Boolean> showListBadges() {
+		return showListBadges;
 	}
 
 	@Override

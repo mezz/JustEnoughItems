@@ -58,6 +58,10 @@ public interface IClientConfig {
 
 	IConfigValue<Boolean> ingredientsSummaryEnabled();
 
+	IConfigValue<Boolean> showTagBadges();
+
+	IConfigValue<Boolean> showListBadges();
+
 	IConfigValue<Boolean> showTagRecipesEnabled();
 
 	IConfigValue<Boolean> catchRenderErrorsEnabled();

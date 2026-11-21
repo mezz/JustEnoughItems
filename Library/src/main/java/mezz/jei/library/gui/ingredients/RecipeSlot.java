@@ -435,10 +435,21 @@ public class RecipeSlot implements IRecipeSlotView, IRecipeSlotDrawable {
 		if (!hasCandidates()) {
 			return;
 		}
+
+		IClientConfig clientConfig = Internal.getClientConfigs().getClientConfig();
 		Textures textures = Internal.getTextures();
-		IDrawable badgeIcon = getTagKey()
-			.map(tagKey -> textures.getTagBadgeIcon())
-			.orElseGet(textures::getListBadgeIcon);
+		IDrawable badgeIcon;
+		if (getTagKey().isPresent()) {
+			if (!clientConfig.showTagBadges().get()) {
+				return;
+			}
+			badgeIcon = textures.getTagBadgeIcon();
+		} else {
+			if (!clientConfig.showListBadges().get()) {
+				return;
+			}
+			badgeIcon = textures.getListBadgeIcon();
+		}
 		int badgeX = this.rect.getX() + this.rect.getWidth() - badgeIcon.getWidth() + 1;
 		int badgeY = this.rect.getY() - 1;
 		badgeIcon.draw(guiGraphics, badgeX, badgeY);
