@@ -36,6 +36,8 @@ public class TestClientConfig implements IClientConfig {
 	private final IConfigValue<Integer> maxLookupHistoryIngredients = value("maxLookupHistoryIngredients", 0);
 	private final IConfigValue<HistoryDisplaySide> lookupHistoryDisplaySide = value("lookupHistoryDisplaySide", HistoryDisplaySide.LEFT);
 	private final IConfigValue<Boolean> ingredientsSummaryEnabled = value("ingredientsSummaryEnabled", true);
+	private final IConfigValue<Boolean> showTagBadges = value("showTagBadges", true);
+	private final IConfigValue<Boolean> showListBadges = value("showListBadges", true);
 	private final IConfigValue<Boolean> showTagRecipesEnabled = value("showTagRecipesEnabled", false);
 	private final IConfigValue<Boolean> catchRenderErrorsEnabled = value("catchRenderErrorsEnabled", false);
 	private final IConfigValue<Boolean> recipeSyncWarningEnabled = value("recipeSyncWarningEnabled", true);
@@ -177,6 +179,16 @@ public class TestClientConfig implements IClientConfig {
 	@Override
 	public IConfigValue<Boolean> ingredientsSummaryEnabled() {
 		return ingredientsSummaryEnabled;
+	}
+
+	@Override
+	public IConfigValue<Boolean> showTagBadges() {
+		return showTagBadges;
+	}
+
+	@Override
+	public IConfigValue<Boolean> showListBadges() {
+		return showListBadges;
 	}
 
 	@Override
