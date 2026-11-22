@@ -2,6 +2,7 @@ package mezz.jei.neoforge.tests.lib;
 
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableBuilder;
@@ -17,6 +18,7 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.common.gui.JeiTooltip;
 import mezz.jei.library.gui.helpers.CraftingGridHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -192,6 +194,11 @@ public final class TestGuiHelper implements IGuiHelper {
 	@Override
 	public IRecipeWidget createWidgetFromDrawable(IDrawable drawable, int xPos, int yPos) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ITooltipBuilder createTooltipBuilder() {
+		return new JeiTooltip();
 	}
 
 	@Override
