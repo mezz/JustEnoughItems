@@ -4,6 +4,8 @@ import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
 import mezz.jei.gradle.gradleProperty
 import mezz.jei.gradle.ValidateApiCompatibilityReports
+import net.fabricmc.loom.LoomGradleExtension
+import net.fabricmc.loom.api.mappings.layered.MappingsNamespace
 import net.neoforged.jarcompatibilitychecker.core.NonExtendableApiCheckMode
 import net.neoforged.jarcompatibilitychecker.gradle.CompatibilityTask
 import org.gradle.language.base.plugins.LifecycleBasePlugin
@@ -196,6 +198,7 @@ apiProjectPaths.forEach { apiProjectPath ->
     val apiProject = project(apiProjectPath)
     apiProject.pluginManager.apply("net.neoforged.jarcompatibilitychecker")
     apiProject.pluginManager.withPlugin("java") {
+        val compileClasspath = apiProject.configurations.getByName("compileClasspath")
         apiProject.tasks.named<CompatibilityTask>("checkJarCompatibility") {
             group = LifecycleBasePlugin.VERIFICATION_GROUP
             description = "Checks $apiProjectPath against the latest published API jar in the same major version."
@@ -204,10 +207,18 @@ apiProjectPaths.forEach { apiProjectPath ->
             inputJar.set(apiProject.tasks.named<AbstractArchiveTask>(apiJarTaskName).flatMap { it.archiveFile })
             artifact.set("${modGroup}:${modId}-${minecraftVersion}-${apiProject.name.lowercase()}-api")
             mavens.set(listOf("https://maven.blamejared.com"))
-            // Match the previous CLI check and avoid loading the full Minecraft compile classpath.
-            libraries.setFrom(emptyList<Any>())
+            // Include API dependencies so inherited Minecraft and library contracts can be checked.
+            libraries.setFrom(compileClasspath)
             nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
             // Keep fail disabled so the target branch validator can filter its known non-extendable API exceptions.
+        }
+        apiProject.pluginManager.withPlugin("fabric-loom") {
+            val loom = LoomGradleExtension.get(apiProject)
+            apiProject.tasks.named<CompatibilityTask>("checkJarCompatibility") {
+                // Match the remapped API jar so the checker can resolve Minecraft parent types.
+                libraries.setFrom(compileClasspath.minus(loom.namedMinecraftJars)
+                    .plus(loom.getMinecraftJarsCollection(MappingsNamespace.INTERMEDIARY)))
+            }
         }
     }
 }
@@ -242,7 +253,7 @@ val runtimeApiCompatibilityTasks = listOf("Fabric", "NeoForge", "Forge").flatMap
                 inputJar.fileProvider(runtimeJar)
                 artifact.set("${modGroup}:${modId}-${minecraftVersion}-$artifactSuffix")
                 mavens.set(listOf("https://maven.blamejared.com"))
-                libraries.setFrom(emptyList<Any>())
+                libraries.setFrom(project(":$loader").tasks.named<CompatibilityTask>("checkJarCompatibility").map { it.libraries })
                 nonExtendableApiCheckMode.set(NonExtendableApiCheckMode.SKIP)
                 // The aggregate validator applies the same policy as the standalone API checks.
             }
