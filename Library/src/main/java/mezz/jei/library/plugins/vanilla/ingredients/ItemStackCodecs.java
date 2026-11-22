@@ -7,6 +7,8 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -16,6 +18,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public final class ItemStackCodecs {
 	private static final Codec<DataComponentPatch> NBT_PRESERVING_COMPONENT_PATCH_CODEC = new Codec<>() {
@@ -31,6 +34,14 @@ public final class ItemStackCodecs {
 
 		@Override
 		public <T> DataResult<T> encode(DataComponentPatch input, DynamicOps<T> ops, T prefix) {
+			// Reject components the codec would omit so saved ingredients cannot reload as another variant.
+			var split = input.split();
+			var transientType = Stream.concat(split.added().keySet().stream(), split.removed().stream())
+				.filter(DataComponentType::isTransient)
+				.findFirst();
+			if (transientType.isPresent()) {
+				return DataResult.error(() -> "Cannot save transient item component: " + BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(transientType.get()));
+			}
 			return DataComponentPatch.CODEC.encodeStart(createNbtOps(ops), input)
 				.flatMap(tag -> Codec.STRING.encode(tag.toString(), ops, prefix));
 		}
