@@ -248,7 +248,8 @@ public class IngredientManager implements IIngredientManagerInternal {
 			LOGGER.debug("Ingredients removed at runtime: {}", ingredientStrings);
 		}
 
-		List<ITypedIngredient<V>> typedIngredients = TypedIngredient.createAndFilterInvalidNonnullList(this, ingredientType, ingredients, false);
+		// Normalize removal inputs because the ingredient list stores normalized ingredients.
+		List<ITypedIngredient<V>> typedIngredients = TypedIngredient.createAndFilterInvalidNonnullList(this, ingredientType, ingredients, true);
 
 		ingredientInfo.removeIngredients(typedIngredients);
 
@@ -265,7 +266,7 @@ public class IngredientManager implements IIngredientManagerInternal {
 		IIngredientHelper<V> ingredientHelper = ingredientInfo.getIngredientHelper();
 		Set<ITypedIngredient<V>> registeredIngredients = new LinkedHashSet<>();
 		for (V ingredient : ingredients) {
-			ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, false);
+			ITypedIngredient<V> typedIngredient = TypedIngredient.createAndFilterInvalid(ingredientHelper, ingredientType, ingredient, true);
 			if (typedIngredient != null) {
 				Object uid = ingredientHelper.getUid(typedIngredient, UidContext.Ingredient);
 				ITypedIngredient<V> registered = ingredientInfo.getIngredientByUid(uid);

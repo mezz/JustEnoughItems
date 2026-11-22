@@ -1,7 +1,9 @@
 package mezz.jei.test;
 
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.common.util.RegistryUtil;
 import mezz.jei.common.util.StackHelper;
 import mezz.jei.library.ingredients.IngredientManager;
@@ -26,12 +28,16 @@ import net.minecraft.world.item.Items;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class IngredientNormalizationTest {
@@ -80,6 +86,63 @@ class IngredientNormalizationTest {
 		assertTrue(ItemStack.isSameItemSameComponents(stack, registered));
 		assertEquals(64, stack.getCount());
 		assertEquals(name, stack.get(DataComponents.CUSTOM_NAME));
+		ingredientManager.removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, List.of(stack));
+		assertTrue(ingredientManager.getAllIngredients(VanillaTypes.ITEM_STACK).isEmpty());
+	}
+
+	@ParameterizedTest
+	@EnumSource(Registration.class)
+	void registrationRecoversEmptyCountsAndRemovesUsingOriginalSources(Registration registration) {
+		ItemStack zero = new ItemStack(Items.DIAMOND, 0);
+		ItemStack negative = new ItemStack(Items.EMERALD, -1);
+		List<ItemStack> sources = List.of(zero, negative, ItemStack.EMPTY);
+		ItemStack book = new ItemStack(Items.BOOK);
+		IngredientManagerBuilder builder = createBuilder(List.of(book));
+		if (registration == Registration.INITIAL) {
+			builder = createBuilder(List.of(book, zero, negative, ItemStack.EMPTY));
+		} else if (registration == Registration.EXTRA) {
+			builder.addExtraIngredients(VanillaTypes.ITEM_STACK, sources);
+		}
+		IngredientManager manager = builder.build();
+		if (registration == Registration.RUNTIME) {
+			manager.addIngredientsAtRuntime(VanillaTypes.ITEM_STACK, sources);
+		}
+
+		assertEquals(3, manager.getAllIngredients(VanillaTypes.ITEM_STACK).size());
+		assertTrue(manager.getAllIngredients(VanillaTypes.ITEM_STACK).stream().allMatch(stack -> stack.getCount() == 1));
+		manager.removeIngredientsAtRuntime(VanillaTypes.ITEM_STACK, sources);
+		assertEquals(1, manager.getAllIngredients(VanillaTypes.ITEM_STACK).size());
+		assertEquals(0, zero.getCount());
+		assertEquals(0, negative.getCount());
+		assertTrue(manager.getAllIngredients(VanillaTypes.ITEM_STACK).stream().allMatch(stack -> stack.is(Items.BOOK)));
+	}
+
+	@Test
+	void refreshMatchesTheNormalizedIngredientUsingTheOriginalSource() {
+		ItemStack source = new ItemStack(Items.DIAMOND, 0);
+		IngredientManager manager = createBuilder(List.of()).build();
+		manager.addIngredientsAtRuntime(VanillaTypes.ITEM_STACK, List.of(source));
+		List<ITypedIngredient<?>> updated = new ArrayList<>();
+		manager.registerIngredientListener(new IIngredientManager.IIngredientListener() {
+			@Override
+			public <V> void onIngredientsAdded(IIngredientHelper<V> helper, Collection<ITypedIngredient<V>> ingredients) {
+			}
+
+			@Override
+			public <V> void onIngredientsRemoved(IIngredientHelper<V> helper, Collection<ITypedIngredient<V>> ingredients) {
+			}
+
+			@Override
+			public <V> void onIngredientsUpdated(IIngredientHelper<V> helper, Collection<ITypedIngredient<V>> ingredients) {
+				updated.addAll(ingredients);
+			}
+		});
+
+		manager.refreshIngredientsAtRuntime(VanillaTypes.ITEM_STACK, List.of(source));
+
+		assertEquals(1, updated.size());
+		assertSame(manager.getAllTypedIngredients(VanillaTypes.ITEM_STACK).iterator().next(), updated.getFirst());
+		assertEquals(0, source.getCount());
 	}
 
 	private static IngredientManagerBuilder createBuilder(List<ItemStack> ingredients) {
