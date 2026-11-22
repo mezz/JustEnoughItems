@@ -22,17 +22,15 @@ public class JeiChatItemLinksTest {
 	public void linkMarkersUseIngredientTypeAndUid() {
 		// Setup: marker data for an item ingredient that can be resolved by the receiving client.
 		IngredientLink ingredientLink = createItemLink("minecraft:diamond");
-		String expectedLinkText = createExpectedLinkText(ingredientLink);
+		String expectedLinkText = "v2:item_stack;minecraft%3Adiamond";
 
 		// Operation: create a JEI link marker.
 		String marker = createLinkMarker(ingredientLink);
 		String linkText = getLinkText(marker);
 		Optional<IngredientLink> parsedLink = JeiChatItemLinks.parseCommandArgument(linkText);
 
-		// Assertions: raw ingredient type and UID are visible in the serialized chat text.
+		// Assertions: the marker escapes the UID and parsing recovers the original ingredient identity.
 		assertEquals(expectedLinkText, linkText);
-		assertTrue(linkText.contains(VanillaTypes.ITEM_STACK.getUid()));
-		assertTrue(linkText.contains("minecraft:diamond"));
 		assertTrue(parsedLink.isPresent());
 		IngredientLink link = parsedLink.get();
 		assertEquals(VanillaTypes.ITEM_STACK.getUid(), link.ingredientTypeUid());
@@ -40,17 +38,17 @@ public class JeiChatItemLinksTest {
 	}
 
 	@Test
-	public void fluidLinkMarkersUseReadableTypeAndUid() {
+	public void fluidLinkMarkersUseEscapedTypeAndUid() {
 		// Setup: marker data for a fluid ingredient that can be resolved by the receiving client.
 		IngredientLink ingredientLink = new IngredientLink(NeoForgeTypes.FLUID_STACK.getUid(), "minecraft:lava");
-		String expectedLinkText = "v1:fluid_stack;minecraft:lava";
+		String expectedLinkText = "v2:fluid_stack;minecraft%3Alava";
 
 		// Operation: create a JEI link marker.
 		String marker = createLinkMarker(ingredientLink);
 		String linkText = getLinkText(marker);
 		Optional<IngredientLink> parsedLink = JeiChatItemLinks.parseCommandArgument(linkText);
 
-		// Assertions: the serialized chat text stays readable for clients without JEI.
+		// Assertions: fluid links use the escaped format and preserve their ingredient identity.
 		assertEquals("[JEI:" + expectedLinkText + "] ", marker);
 		assertEquals(expectedLinkText, linkText);
 		assertEquals(Optional.of(ingredientLink), parsedLink);
@@ -77,7 +75,7 @@ public class JeiChatItemLinksTest {
 		// Operation: check for JEI link markers.
 		boolean hasLinkMarkers = JeiChatItemLinks.hasLinkMarkers(rawText);
 
-		// Assertions: this feature has no legacy format, so only complete JEI UID links are accepted.
+		// Assertions: only complete JEI UID links are accepted.
 		assertFalse(hasLinkMarkers);
 	}
 
@@ -91,7 +89,7 @@ public class JeiChatItemLinksTest {
 		boolean hasLinkMarkers = JeiChatItemLinks.hasLinkMarkers(rawText);
 		Optional<IngredientLink> parsedLink = JeiChatItemLinks.parseCommandArgument(linkText);
 
-		// Assertions: this feature has no legacy format, so old marker shapes are not accepted.
+		// Assertions: length-prefixed marker shapes are not accepted.
 		assertFalse(hasLinkMarkers);
 		assertTrue(parsedLink.isEmpty());
 	}
@@ -130,8 +128,8 @@ public class JeiChatItemLinksTest {
 	}
 
 	@Test
-	public void rawUidLinkMarkersCanContainReadableCharacters() {
-		// Setup: a raw UID with spaces and symbols that are common in readable text.
+	public void escapedLinkMarkersPreserveSpacesAndSymbols() {
+		// Setup: a UID with spaces and symbols that require escaping in link markers.
 		IngredientLink ingredientLink = new IngredientLink("test:ingredient", "uid with spaces ; and symbols");
 		String marker = createLinkMarker(ingredientLink);
 		String rawText = "Look at " + marker.trim() + "!";
@@ -144,7 +142,7 @@ public class JeiChatItemLinksTest {
 			return Optional.empty();
 		});
 
-		// Assertions: the full raw UID is recovered from the readable link marker.
+		// Assertions: parsing recovers the full UID from the escaped link marker.
 		assertEquals("Look at [Complex Ingredient]!", parsed.getString());
 	}
 
@@ -255,15 +253,6 @@ public class JeiChatItemLinksTest {
 	private static String createLinkMarker(IngredientLink link) {
 		String linkText = JeiChatItemLinks.createCommandArgument(link);
 		return "[JEI:" + linkText + "] ";
-	}
-
-	private static String createExpectedLinkText(IngredientLink link) {
-		String ingredientTypeUid = link.ingredientTypeUid();
-		String ingredientUid = link.ingredientUid();
-		return "v1:" +
-			ingredientTypeUid +
-			";" +
-			ingredientUid;
 	}
 
 	private static String getLinkText(String marker) {
