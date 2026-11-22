@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -137,12 +138,30 @@ public final class ExternalServerProcess implements AutoCloseable {
 
 	private void waitUntilReady() {
 		Instant deadline = Instant.now().plus(SERVER_START_TIMEOUT);
+		// Wait for world creation so the console reader captures a command source with a level.
+		waitUntilLogged("Done (", deadline);
+		String readyMessage = "JEI test server ready " + UUID.randomUUID();
+		// Wait for command execution so startup callbacks finish before clients connect.
+		sendCommand("say " + readyMessage);
+		waitUntilLogged(readyMessage, deadline);
+	}
 
+	private void sendCommand(String command) {
+		try {
+			processInput.write(command);
+			processInput.newLine();
+			processInput.flush();
+		} catch (IOException e) {
+			throw new AssertionError("Failed to send command to external server: " + command, e);
+		}
+	}
+
+	private void waitUntilLogged(String message, Instant deadline) {
 		while (Instant.now().isBefore(deadline)) {
 			if (!process.isAlive()) {
 				throw new AssertionError("External server stopped during startup:\n" + readServerLogTail());
 			}
-			if (isServerDone()) {
+			if (hasLogged(message)) {
 				return;
 			}
 			sleepDuringServerStartup();
@@ -151,9 +170,9 @@ public final class ExternalServerProcess implements AutoCloseable {
 		throw new AssertionError("Timed out starting external server in " + serverDirectory + ":\n" + readServerLogTail());
 	}
 
-	private boolean isServerDone() {
+	private boolean hasLogged(String message) {
 		try {
-			return Files.exists(serverLog) && Files.readString(serverLog).contains("Done (");
+			return Files.exists(serverLog) && Files.readString(serverLog).contains(message);
 		} catch (IOException e) {
 			throw new AssertionError("Failed to read external server log: " + serverLog, e);
 		}
