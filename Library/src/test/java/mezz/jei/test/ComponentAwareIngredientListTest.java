@@ -16,7 +16,9 @@ import net.minecraft.SharedConstants;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.component.DataComponentInitializers;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ClickEvent;
@@ -29,6 +31,7 @@ import net.minecraft.world.item.component.CustomData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -45,6 +48,8 @@ class ComponentAwareIngredientListTest {
 	static void bootstrap() {
 		SharedConstants.setVersion(DetectedVersion.BUILT_IN);
 		Bootstrap.bootStrap();
+		BuiltInRegistries.DATA_COMPONENT_INITIALIZERS.build(VanillaRegistries.createWorldLookup())
+			.forEach(DataComponentInitializers.PendingComponents::apply);
 	}
 
 	@BeforeEach
@@ -55,6 +60,29 @@ class ComponentAwareIngredientListTest {
 	@AfterEach
 	void clearRegistryAccess() {
 		RegistryUtil.setRegistryAccess(null);
+	}
+
+	@Test
+	void plainItemLinksFitChatInputAndResolveAfterFraming() {
+		ItemStack diamond = new ItemStack(Items.DIAMOND);
+		Fixture fixture = fixture(List.of(diamond), new SubtypeRegistration());
+		var ingredient = fixture.manager.createTypedIngredient(VanillaTypes.ITEM_STACK, diamond, false).orElseThrow();
+		String marker = JeiChatItemLinks.createLinkMarker(ingredient, fixture.manager);
+		assertTrue(marker.length() <= 256, () -> "Marker exceeds the chat input limit: " + marker.length());
+		var parsed = JeiChatItemLinks.parse(marker, link -> Optional.of("Diamond")).getSiblings().getFirst();
+		var command = assertInstanceOf(ClickEvent.RunCommand.class, parsed.getStyle().getClickEvent());
+		var link = JeiChatItemLinks.parseShowRecipeCommand(command.command()).orElseThrow();
+		var resolved = JeiChatItemLinks.resolveTypedIngredient(link, fixture.manager).orElseThrow().getItemStack().orElseThrow();
+		assertTrue(ItemStack.isSameItemSameComponents(diamond, resolved));
+	}
+
+	@Test
+	void legacyPlainItemLinksResolveToRegisteredItems() {
+		ItemStack diamond = new ItemStack(Items.DIAMOND);
+		Fixture fixture = fixture(List.of(diamond), new SubtypeRegistration());
+		var link = JeiChatItemLinks.parseCommandArgument("v1:item_stack;minecraft:diamond").orElseThrow();
+		var resolved = JeiChatItemLinks.resolveTypedIngredient(link, fixture.manager).orElseThrow().getItemStack().orElseThrow();
+		assertTrue(ItemStack.isSameItemSameComponents(diamond, resolved));
 	}
 
 	@ParameterizedTest
