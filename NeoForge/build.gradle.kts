@@ -550,6 +550,7 @@ publishing {
 			artifact(shadedSourcesJar)
 
 			val dependencyInfos = listOf(
+				dependencyInfo(mezzConfigNeoForgeDependency) + ("scope" to "runtime"),
 				dependencyInfo(mezzConfigGuiNeoForgeDependency) + ("optional" to "true")
 			) + dependencyProjects.map {
 				mapOf(

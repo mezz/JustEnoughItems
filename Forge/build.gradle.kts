@@ -426,6 +426,7 @@ publishing {
 			artifact(shadedSourcesJar)
 
 			val dependencyInfos = listOf(
+				dependencyInfo(mezzConfigForgeDependency) + ("scope" to "runtime"),
 				dependencyInfo(mezzConfigGuiForgeDependency) + ("optional" to "true")
 			) + dependencyProjects.map {
 				mapOf(
