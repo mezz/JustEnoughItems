@@ -74,6 +74,8 @@ public class IngredientKeyboardNavigationClientGameTest implements FabricClientG
 						bind(cleanup, "key.jei.showRecipe", InputConstants.KEY_R);
 						bind(cleanup, "key.jei.showUses", InputConstants.KEY_U);
 						bind(cleanup, "key.jei.bookmark", InputConstants.KEY_A);
+						// Bind the toggle because JEI keeps the overlay visible when its shortcut is unbound.
+						cleanup.add(KeyMappingTestHelper.resetToDefault(Objects.requireNonNull(KeyMapping.get("key.jei.toggleOverlay"))));
 						// Reused run directories can retain the old unmodified history shortcuts.
 						for (String name : List.of("key.jei.previousSearch", "key.jei.nextSearch")) {
 							KeyMapping mapping = Objects.requireNonNull(KeyMapping.get(name));
