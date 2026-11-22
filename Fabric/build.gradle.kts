@@ -393,9 +393,9 @@ apply(from = "../gradle/verify-jar-bytecode.gradle")
 val shadedSourcesJar = modShade.shadeSourcesJar()
 
 configurations.named("modShadeRuntimeElements") {
-    // These project dependencies are unpacked into the Fabric jar above.
-    // Do not also publish them as external Maven dependencies.
-    setExtendsFrom(emptyList())
+    // Publish the original MezzConfig coordinates because consumers remap the mod for their own environment.
+    // Keep the project dependencies out of metadata because we unpack them into the Fabric jar above.
+    setExtendsFrom(listOf(configurations.modRuntimeOnly.get()))
 }
 
 val apiJarTask = tasks.register<Jar>("apiJar") {
@@ -586,7 +586,6 @@ publishing {
             from(components["java"])
 
             val dependencyInfos = listOf(
-                dependencyInfo(mezzConfigDependency("fabric")) + ("scope" to "runtime"),
                 dependencyInfo(mezzConfigGuiFabricDependency) + ("optional" to "true")
             )
             pom.withXml {
