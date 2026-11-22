@@ -119,7 +119,7 @@ public class ConfigGuiKeyModifiersClientGameTest implements FabricClientGameTest
 		var original = value.getValue();
 		var adapter = original.configKeyMapping();
 		var defaults = value.getDefaultValue();
-		check(!original.binding().isUnbound(), "The GUI must see the real key, including hidden JEI keys");
+		check(original.binding().getKey().equals(InputConstants.getKey(mapping.saveString())), "The GUI must see the real key, including hidden JEI keys");
 		check(value.getValue().equals(original), "Reading defaults must not change the live binding");
 		IConfigScreenValue<KeyMappingValue> screenValue = IConfigScreenValue.withApplyMode(
 			IConfigScreenValue.withRestartRequirement(value, ConfigValueRestartRequirement.NONE),
