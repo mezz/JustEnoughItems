@@ -4,6 +4,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.ModIds;
 import mezz.jei.api.registration.IRuntimeRegistration;
+import mezz.jei.api.runtime.IJeiFeatures;
 import mezz.jei.forge.events.RuntimeEventSubscriptions;
 import mezz.jei.forge.startup.EventRegistration;
 import mezz.jei.gui.startup.JeiEventHandlers;
@@ -25,6 +26,7 @@ public class ForgeGuiPlugin implements IModPlugin {
 	private static @Nullable ResourceReloadHandler resourceReloadHandler;
 
 	private final JeiGuiSortingConfigData sortingConfigData = JeiGuiSortingConfigRegistration.get();
+	private @Nullable IJeiFeatures jeiFeatures;
 	private final RuntimeEventSubscriptions runtimeSubscriptions = new RuntimeEventSubscriptions(MinecraftForge.EVENT_BUS);
 
 	@Override
@@ -33,7 +35,16 @@ public class ForgeGuiPlugin implements IModPlugin {
 	}
 
 	@Override
+	public void configureJei(IJeiFeatures jeiFeatures) {
+		this.jeiFeatures = jeiFeatures;
+	}
+
+	@Override
 	public void registerRuntime(IRuntimeRegistration registration) {
+		if (!isJeiGuiEnabled()) {
+			return;
+		}
+
 		if (!runtimeSubscriptions.isEmpty()) {
 			LOGGER.error("JEI GUI is already running.");
 			runtimeSubscriptions.clear();
@@ -54,5 +65,10 @@ public class ForgeGuiPlugin implements IModPlugin {
 
 	public static Optional<ResourceReloadHandler> getResourceReloadHandler() {
 		return Optional.ofNullable(resourceReloadHandler);
+	}
+
+	private boolean isJeiGuiEnabled() {
+		IJeiFeatures jeiFeatures = this.jeiFeatures;
+		return jeiFeatures == null || jeiFeatures.isJeiGuiEnabled();
 	}
 }
