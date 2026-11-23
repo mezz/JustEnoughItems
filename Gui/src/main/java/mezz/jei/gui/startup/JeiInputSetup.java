@@ -128,9 +128,9 @@ public record JeiInputSetup(GuiInputScene scene, ClientInputHandler handler) {
 				input -> inputScene.getTarget(input.getMouseX(), input.getMouseY()).orElse(null) != inputArea,
 				(screen, input) -> inputArea.commands().resolve(screen, input, false));
 		}
-		commands.add("Legacy recipe category callback",
+		commands.add("Recipe API callbacks",
 			input -> inputScene.isTarget(recipesGui, input),
-			(screen, input) -> recipesGui.getRecipeLayouts().beginLegacyCategoryInput(input));
+			(screen, input) -> recipesGui.getRecipeLayouts().beginApiInput(screen, input, keyMappings));
 
 		GuiInputController controller = new GuiInputController(inputScene, commands, searchInputLayer, keyMappings);
 		ClientInputHandler handler = new ClientInputHandler(controller, keyMappings);

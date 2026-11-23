@@ -293,6 +293,7 @@ public final class JeiNeoForgeClientRecipeSyncTests {
 			public void run() {
 				runSingleplayerTestCase(displayName(), GameType.SURVIVAL, () -> {
 					assertSyncedRecipesFromSingleplayer();
+					RecipeIngredientNavigationTest.run();
 					JeiNeoForgeInspectionTests.run();
 				});
 			}
