@@ -12,10 +12,8 @@ import mezz.jei.common.input.IInputTarget;
 import mezz.jei.common.input.IInternalKeyMappings;
 import mezz.jei.common.input.UserInput;
 import mezz.jei.common.input.handlers.InputGroup;
-import mezz.jei.common.input.interaction.ApiInputAdapter;
 import mezz.jei.common.input.interaction.IInputInteraction;
 import mezz.jei.common.input.interaction.InputAction;
-import mezz.jei.common.input.interaction.ReleaseInsideBounds;
 import mezz.jei.common.transfer.RecipeTransferService;
 import mezz.jei.common.util.ImmutableRect2i;
 import mezz.jei.gui.bookmarks.BookmarkList;
@@ -164,14 +162,20 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 	}
 
 	@Override
-	public IInputTarget createUserInputHandler() {
+	public IInputTarget createControlsInputHandler() {
 		List<IInputTarget> inputHandlers = new ArrayList<>();
 		for (IconButton button : buttons) {
 			inputHandlers.add(button.createInputHandler());
 		}
-		inputHandlers.add(new RecipeLayoutInputTarget<>(transferButton, recipeLayout));
+		inputHandlers.add(new RecipeWidgetsInputHandler(recipeLayout));
+		inputHandlers.add(new RecipeLayoutShortcutInputHandler<>(transferButton, recipeLayout));
 
 		return new InputGroup("RecipeLayoutWithButtons", inputHandlers);
+	}
+
+	@Override
+	public IInputTarget createApiInputHandler() {
+		return new RecipeApiInputHandler(recipeLayout);
 	}
 
 	@Override
@@ -235,22 +239,18 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 	}
 
 	/**
-	 * Offers input to the recipe handler provided by a mod before trying JEI's recipe shortcuts.
+	 * Handles recipe-specific shortcuts before shared commands.
 	 *
 	 * @param transferButton handles recipe transfer shortcuts outside ingredient slots
-	 * @param recipeLayout the recipe whose handler receives input and whose area is checked on release
+	 * @param recipeLayout the recipe receiving the shortcuts
 	 * @param <R> recipe type displayed by the layout
 	 */
-	private record RecipeLayoutInputTarget<R>(RecipeTransferButtonController transferButton, IRecipeLayoutDrawable<R> recipeLayout) implements IInputTarget {
+	private record RecipeLayoutShortcutInputHandler<R>(RecipeTransferButtonController transferButton, IRecipeLayoutDrawable<R> recipeLayout) implements IInputTarget {
 
 		@Override
 		public Optional<IInputInteraction> beginInput(Screen screen, UserInput input, IInternalKeyMappings keyBindings) {
 			if (!recipeLayout.isMouseOver(input.getMouseX(), input.getMouseY())) {
 				return Optional.empty();
-			}
-			Optional<IInputInteraction> extension = ApiInputAdapter.beginInput(screen, input, keyBindings, recipeLayout.getInputHandler());
-			if (extension.isPresent()) {
-				return extension.map(interaction -> new ReleaseInsideBounds(interaction, recipeLayout::isMouseOver));
 			}
 			if (input.is(keyBindings.getCopyRecipeId())) {
 				return Optional.of(InputAction.run(this::copyRecipeId).within(recipeLayout::isMouseOver));
@@ -288,12 +288,6 @@ public final class RecipeLayoutWithButtons<R> implements IRecipeLayoutWithButton
 			if (player != null) {
 				player.sendSystemMessage(message);
 			}
-		}
-
-		@Override
-		public boolean scroll(double mouseX, double mouseY, double scrollDeltaX, double scrollDeltaY) {
-			return recipeLayout.isMouseOver(mouseX, mouseY) &&
-				recipeLayout.getInputHandler().handleMouseScrolled(mouseX, mouseY, scrollDeltaX, scrollDeltaY);
 		}
 	}
 }

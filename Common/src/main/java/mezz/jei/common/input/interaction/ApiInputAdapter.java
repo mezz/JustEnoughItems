@@ -22,10 +22,7 @@ public final class ApiInputAdapter {
 	 * For a public handler, a mouse press checks whether it accepts the click, and release
 	 * calls it again to perform the action. Keyboard input executes immediately.
 	 */
-	public static Optional<IInputInteraction> beginInput(Screen screen, UserInput input, IInternalKeyMappings keys, IJeiInputHandler handler) {
-		if (handler instanceof IInputTarget target) {
-			return target.beginInput(screen, input, keys);
-		}
+	public static Optional<IInputInteraction> beginInput(UserInput input, IJeiInputHandler handler) {
 		if (!handler.handleInput(input.getMouseX(), input.getMouseY(), input)) {
 			return Optional.empty();
 		}

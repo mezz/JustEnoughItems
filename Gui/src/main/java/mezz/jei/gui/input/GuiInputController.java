@@ -131,19 +131,7 @@ public final class GuiInputController {
 				return shortcut;
 			}
 		}
-		Optional<IInputInteraction> global = commands.resolve(screen, input, false);
-		if (global.isPresent()) {
-			return global;
-		}
-		for (InputArea inputArea : scene.getInputAreas()) {
-			if (inputArea != target) {
-				Optional<IInputInteraction> shortcut = inputArea.commands().resolve(screen, input, false);
-				if (shortcut.isPresent()) {
-					return shortcut;
-				}
-			}
-		}
-		return Optional.empty();
+		return commands.resolve(screen, input, false);
 	}
 
 	public boolean mouseReleased(Screen screen, UserInput input) {

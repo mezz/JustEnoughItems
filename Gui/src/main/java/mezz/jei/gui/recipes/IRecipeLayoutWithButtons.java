@@ -13,7 +13,9 @@ public interface IRecipeLayoutWithButtons<R> {
 
 	int totalWidth();
 
-	IInputTarget createUserInputHandler();
+	IInputTarget createControlsInputHandler();
+
+	IInputTarget createApiInputHandler();
 
 	void tick();
 

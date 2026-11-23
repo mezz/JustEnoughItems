@@ -298,7 +298,7 @@ public final class RecipeSourceIdsClientTest implements IModPlugin {
 		var buttons = RecipeLayoutWithButtons.create(layout, null, bookmarks, gui, new RecipeTransferService(runtime.getRecipeTransferManager()), List.of());
 		var event = new MouseButtonEvent(5, 5, new MouseButtonInfo(InputConstants.MOUSE_BUTTON_MIDDLE, 0));
 		var input = UserInput.fromVanilla(event, false, InputPhase.PRESS).orElseThrow();
-		var interaction = buttons.createUserInputHandler().beginInput(gui, input, Internal.getKeyMappings()).orElseThrow();
+		var interaction = buttons.createControlsInputHandler().beginInput(gui, input, Internal.getKeyMappings()).orElseThrow();
 		interaction.complete(UserInput.fromVanilla(event, false, InputPhase.RELEASE).orElseThrow());
 	}
 
