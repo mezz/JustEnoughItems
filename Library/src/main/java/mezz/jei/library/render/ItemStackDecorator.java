@@ -9,6 +9,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.item.ItemStack;
 
 public class ItemStackDecorator implements IIngredientDecorator<ItemStack> {
+	private static final int MINECRAFT_ITEM_COUNT_Z = 200;
+
 	private final IIngredientRenderer<ItemStack> ingredientRenderer;
 
 	public ItemStackDecorator(IIngredientRenderer<ItemStack> ingredientRenderer) {
@@ -22,6 +24,8 @@ public class ItemStackDecorator implements IIngredientDecorator<ItemStack> {
 		modelView.pushPose();
 		try {
 			modelView.mulPoseMatrix(poseStack.last().pose());
+			// Compensate for Minecraft's count offset so stack counts stay at JEI's chosen decoration depth.
+			modelView.translate(0, 0, -MINECRAFT_ITEM_COUNT_Z);
 			RenderSystem.applyModelViewMatrix();
 			Minecraft.getInstance().getItemRenderer().renderGuiItemDecorations(font, ingredient, x, y);
 		} finally {
