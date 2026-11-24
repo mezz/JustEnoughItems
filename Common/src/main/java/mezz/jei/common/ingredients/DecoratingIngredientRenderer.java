@@ -101,7 +101,7 @@ public final class DecoratingIngredientRenderer<T> implements IIngredientRendere
 		var pose = guiGraphics.pose();
 		pose.pushPose();
 		try {
-			// Draw above the item models because the 1.21.1 GUI uses depth to layer buffered draws.
+			// Draw above item models so depth testing keeps decoration overlays visible.
 			pose.translate(0, 0, 200);
 			decorator.render(guiGraphics, ingredient, x, y, context);
 		} catch (RuntimeException | LinkageError e) {
