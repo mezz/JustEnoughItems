@@ -4,8 +4,9 @@ package mezz.jei.library.color;
  * Java Color Thief
  * by Sven Woltmann, Fonpit AG
  *
- * http://www.androidpit.com
- * http://www.androidpit.de
+ * https://www.androidpit.com
+ * https://www.androidpit.de
+ * https://github.com/SvenWoltmann/color-thief-java/tree/762a54ea6
  *
  * License
  * -------
@@ -71,8 +72,7 @@ public class ColorThief {
 	}
 
 	/**
-	 * Gets the image's pixels via BufferedImage.getRaster().getDataBuffer().
-	 * Fast, but doesn't work for all color models.
+	 * Samples RGB values from an RGBA image, ignoring mostly transparent pixels.
 	 *
 	 * @param sourceImage the source image
 	 * @param quality     1 is the highest quality setting. There is a trade-off between
@@ -95,8 +95,7 @@ public class ColorThief {
 		int numUsedPixels = 0;
 		int[][] pixelArray = new int[numRegardedPixels][];
 
-		int i = 0;
-		while (i < pixelCount) {
+		for (int i = 0; i < pixelCount; i += quality) {
 			int x = i % width;
 			int y = i / width;
 			int rgba = sourceImage.getPixelRGBA(x, y);
@@ -108,9 +107,6 @@ public class ColorThief {
 			if (a >= 125 && !(ignoreWhite && r > 250 && g > 250 && b > 250)) {
 				pixelArray[numUsedPixels] = new int[]{r, g, b};
 				numUsedPixels++;
-				i += quality;
-			} else {
-				i++;
 			}
 		}
 		// trim the array

@@ -4,8 +4,9 @@ package mezz.jei.library.color;
  * Java Color Thief
  * by Sven Woltmann, Fonpit AG
  *
- * http://www.androidpit.com
- * http://www.androidpit.de
+ * https://www.androidpit.com
+ * https://www.androidpit.de
+ * https://github.com/SvenWoltmann/color-thief-java/tree/762a54ea6
  *
  * License
  * -------
@@ -167,7 +168,7 @@ public class MMCQ {
 	 */
 	public static class CMap {
 
-		public final ArrayList<VBox> vboxes = new ArrayList<VBox>();
+		public final ArrayList<VBox> vboxes = new ArrayList<>();
 
 		public void push(VBox box) {
 			vboxes.add(box);
@@ -439,7 +440,7 @@ public class MMCQ {
 
 		// get the beginning vbox from the colors
 		VBox vbox = vboxFromPixels(pixels, histo);
-		ArrayList<VBox> pq = new ArrayList<VBox>();
+		ArrayList<VBox> pq = new ArrayList<>();
 		pq.add(vbox);
 
 		// Round up to have the same behaviour as in JavaScript
@@ -453,7 +454,9 @@ public class MMCQ {
 		Collections.sort(pq, COMPARATOR_PRODUCT);
 
 		// next set - generate the median cuts using the (npix * vol) sorting.
-		iter(pq, COMPARATOR_PRODUCT, maxcolors - pq.size(), histo);
+		if (maxcolors > pq.size()) {
+			iter(pq, COMPARATOR_PRODUCT, maxcolors, histo);
+		}
 
 		// Reverse to put the highest elements first into the color map
 		Collections.reverse(pq);
@@ -471,7 +474,6 @@ public class MMCQ {
 	 * Inner function to do the iteration.
 	 */
 	private static void iter(List<VBox> lh, Comparator<VBox> comparator, int target, int[] histo) {
-		int ncolors = 1;
 		int niters = 0;
 		VBox vbox;
 
@@ -497,11 +499,10 @@ public class MMCQ {
 			lh.add(vbox1);
 			if (vbox2 != null) {
 				lh.add(vbox2);
-				ncolors++;
 			}
 			Collections.sort(lh, comparator);
 
-			if (ncolors >= target) {
+			if (lh.size() >= target) {
 				return;
 			}
 			if (niters++ > MAX_ITERATIONS) {
@@ -531,7 +532,7 @@ public class MMCQ {
 			}
 
 			// Otherwise sort by products
-			return aCount * aVolume - bCount * bVolume;
+			return Long.compare((long) aCount * aVolume, (long) bCount * bVolume);
 		}
 	};
 

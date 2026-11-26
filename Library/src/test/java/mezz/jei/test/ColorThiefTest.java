@@ -2,9 +2,12 @@ package mezz.jei.test;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import mezz.jei.library.color.ColorThief;
+import mezz.jei.library.color.MMCQ;
 import net.minecraft.util.FastColor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class ColorThiefTest {
 	private static final int WIDTH = 4;
@@ -48,6 +51,24 @@ public class ColorThiefTest {
 			assertPaletteContains(palette, 0xFF00FF00);
 			assertPaletteContains(palette, 0xFF0000FF);
 			assertPaletteContains(palette, 0xFFFFFFFF);
+		}
+	}
+
+	@ParameterizedTest
+	@ValueSource(ints = {2, 3, 4, 8, 16, 256})
+	public void quantizesToRequestedNumberOfColors(int colorCount) {
+		try (NativeImage image = createImage(64, 64)) {
+			for (int i = 0; i < 4096; i++) {
+				int red = (i & 15) * 16;
+				int green = ((i >> 4) & 15) * 16;
+				int blue = (i >> 8) * 16;
+				setPixel(image, i % 64, i / 64, FastColor.ARGB32.color(255, red, green, blue));
+			}
+
+			MMCQ.CMap colorMap = ColorThief.getColorMap(image, colorCount, 1, false);
+
+			Assertions.assertNotNull(colorMap);
+			Assertions.assertEquals(colorCount, colorMap.size());
 		}
 	}
 
@@ -122,6 +143,24 @@ public class ColorThiefTest {
 
 			Assertions.assertEquals(1, palette.length);
 			assertColorCloseTo(0xFFFF0000, palette[0]);
+		}
+	}
+
+	@ParameterizedTest
+	@ValueSource(ints = {0x00FFFFFF, 0x7CFFFFFF, 0xFFFFFFFF})
+	public void keepsSamplingStrideWhenPixelsAreIgnored(int ignoredArgbColor) {
+		try (NativeImage image = createImage(5, 1)) {
+			setPixel(image, 0, 0, ignoredArgbColor);
+			setPixel(image, 1, 0, 0xFF00FF00);
+			setPixel(image, 2, 0, 0xFFFF0000);
+			setPixel(image, 3, 0, 0xFF00FF00);
+			setPixel(image, 4, 0, 0xFF0000FF);
+
+			int[][] palette = ColorThief.getPalette(image, 2, 2, true);
+
+			Assertions.assertEquals(2, palette.length);
+			assertPaletteContains(palette, 0xFFFF0000);
+			assertPaletteContains(palette, 0xFF0000FF);
 		}
 	}
 
